@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.9 2004-06-04 19:12:58 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.10 2004-06-06 10:58:10 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -266,7 +266,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
     return TRUE;
 }
 
-BOOLE capsLoadRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
+BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
 {
     static ULO revolutioncount = 0;
     ULO revolution, len;

@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.10 2004-06-04 19:12:57 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.11 2004-06-06 10:58:10 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -1034,28 +1034,57 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
 }
 
 void floppyNextTick(ULO sel_drv, ULO track) {
-  ULO modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
+#ifdef FELLOW_SUPPORT_CAPS
+    ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
+#endif
+    ULO modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
 								     floppy[sel_drv].trackinfo[track].mfm_length;
-  floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
+    floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
+#ifdef FELLOW_SUPPORT_CAPS
+    if((previous_motor_ticks > floppy[sel_drv].motor_ticks) 
+        && floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
+        && floppy[sel_drv].flakey)
+            {
+                ULO track = floppy[sel_drv].track;    
+                capsLoadNextRevolution(
+                    sel_drv, 
+                    floppy[sel_drv].track, 
+                    floppy[sel_drv].trackinfo[track].mfm_data, 
+                    &floppy[sel_drv].trackinfo[track].mfm_length);
+            }
+#endif
 }
 
 void floppyEndOfLineC(void) {
-  LON sel_drv = floppySelectedGet();
-  if (floppyDMAWriteStarted()) {floppyDMAWrite(); floppy_has_sync = FALSE; return;}
-  if (sel_drv == -1) {floppy_has_sync = FALSE; return;}
-  if (floppyIsSpinning(sel_drv)) {
-    ULO i;
-    ULO track = floppyGetLinearTrack(sel_drv);
-    ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-    for (i = 0; i < words; i++) {
-      UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
-      BOOLE found_sync = floppyCheckSync(word_under_head);
-      if (floppyHasIndex(sel_drv)) ciaRaiseIndexIRQ();
-      if (floppyDMAReadStarted()) floppyReadWord(word_under_head, found_sync);
-      floppyNextTick(sel_drv, track);
+    LON sel_drv = floppySelectedGet();
+    if (floppyDMAWriteStarted()) 
+    {
+        floppyDMAWrite(); 
+        floppy_has_sync = FALSE; 
+        return;
     }
-  }
-  else floppy_has_sync = FALSE;
+    if (sel_drv == -1) 
+    {
+        floppy_has_sync = FALSE; 
+        return;
+    }
+    if (floppyIsSpinning(sel_drv)) 
+    {
+        ULO i;
+        ULO track = floppyGetLinearTrack(sel_drv);
+        ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+        for (i = 0; i < words; i++) 
+        {
+            UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
+            BOOLE found_sync = floppyCheckSync(word_under_head);
+            if (floppyHasIndex(sel_drv)) 
+                ciaRaiseIndexIRQ();
+            if (floppyDMAReadStarted()) 
+                floppyReadWord(word_under_head, found_sync);
+            floppyNextTick(sel_drv, track);
+        }
+    }
+    else floppy_has_sync = FALSE;
 }
 
 /*===========================================================================*/
