@@ -6,10 +6,10 @@
 ;============================
 
 %macro TEST_ODD_ACCESS 1 ; HANDLER
-%ifndef MEMORY_ALLOW_ODD_ACCESS
-		test	cl, 1
-		jnz	near %1
-%endif
+		test	ecx, 1
+		jz	%%l1
+		call	%1
+%%l1:
 %endmacro
 
 

@@ -54,24 +54,6 @@
 
 %define PC_PTR
 
-;========================================
-; Allow odd memory access, (for 68020++) 
-;========================================
-
-%define MEMORY_ALLOW_ODD_ACCESS
-
-
-;============================
-; C versus Assembly selection
-;============================
-
-;=====================
-; Sound emulation in C
-;=====================
-
-;%define SOUND_C
-
-
 ;=====================
 ; Don't touch the rest
 ;=====================
