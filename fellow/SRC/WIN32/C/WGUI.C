@@ -13,8 +13,9 @@
 
 #include <windows.h>
 #include <windowsx.h>
+#include <windef.h>
 #include "resource.h"
-
+#include <process.h>
 #include <commctrl.h>
 #include <prsht.h>
 
@@ -27,16 +28,13 @@
 #include "config.h"
 #include "draw.h"
 #include "wdbg.h"
-
+#include "ini.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
-HWND wgui_hSplash;                             /* Handle of the splash window */
-BOOL wgui_splash_terminate;
-BOOL wgui_splash_timeout;
-HANDLE wgui_hSplash_thread;                /* Handle of splash control thread */
-cfg *wgui_cfg;                                   /* GUI copy of configuration */
-
+cfg *wgui_cfg;                               /* GUI copy of configuration */
+ini *wgui_ini;								 /* GUI copy of initdata */
+STR extractedfilename[CFG_FILENAME_LENGTH];
 
 /*============================================================================*/
 /* Flags for various global events                                            */
@@ -50,12 +48,15 @@ typedef enum {
   WGUI_OPEN_CONFIGURATION,
   WGUI_SAVE_CONFIGURATION,
   WGUI_SAVE_CONFIGURATION_AS,
+  WGUI_LOAD_HISTORY0,
+  WGUI_LOAD_HISTORY1,
+  WGUI_LOAD_HISTORY2,
+  WGUI_LOAD_HISTORY3,
   WGUI_DEBUGGER_START,
   WGUI_ABOUT
 } wguiActions;
 
 wguiActions wgui_action;
-STR currentConfigFileName[CFG_FILENAME_LENGTH] = "default.wfc";
 
 /*============================================================================*/
 /* Forward declarations for each property sheet dialog procedure              */
@@ -145,6 +146,17 @@ wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {wguiCPUDialogProc,
 						     wguiGameportDialogProc,
 						     wguiVariousDialogProc};
 
+/*============================================================================*/
+/* Extract the filename from a full path name                                 */
+/*============================================================================*/
+
+STR *wguiExtractFilename(STR *fullpathname) {
+  BYT *strpointer;
+
+  strpointer = strrchr(fullpathname, '\\');
+  strncpy(extractedfilename, fullpathname + strlen(fullpathname) - strlen(strpointer) + 1, strlen(fullpathname) - strlen(strpointer) - 1);
+  return extractedfilename;
+}
 
 /*============================================================================*/
 /* Runs a session in the file requester                                       */
@@ -189,9 +201,26 @@ BOOLE wguiSelectFile(HWND DlgHWND,
   ofn.nMaxFile = filenamesize;
   ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
-  ofn.lpstrInitialDir = NULL;
-  if (SelectFileType == FSEL_ADF) { 
+  
+  switch (SelectFileType) {
+  case FSEL_ROM:
+	ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini);
+    break;
+  case FSEL_ADF:
 	ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
+	break;
+  case FSEL_KEY:
+	ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini);
+    break;
+  case FSEL_HDF:
+	ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
+    break;
+  case FSEL_WFC:
+	ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
+    break;
+  
+  default:
+	ofn.lpstrInitialDir = NULL;
   }
   ofn.lpstrTitle = title;
   ofn.Flags = OFN_EXPLORER |
@@ -277,6 +306,90 @@ BOOLE wguiSelectDirectory(HWND DlgHWND,
   return GetOpenFileName(&ofn);
 }
 
+/*============================================================================*/
+/* Install history of configuration files into window menu                    */
+/*============================================================================*/
+
+void wguiRemoveAllHistory(void) {
+	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION0, MF_BYCOMMAND);
+	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION1, MF_BYCOMMAND);
+	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION2, MF_BYCOMMAND);
+	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION3, MF_BYCOMMAND);
+}
+
+void wguiInstallHistoryIntoMenu(void) {
+	STR cfgfilename[CFG_FILENAME_LENGTH+2];
+
+	wguiRemoveAllHistory();
+	cfgfilename[0] = '&'; cfgfilename[1] = '1'; cfgfilename[2] = ' '; cfgfilename[3] = '\0';
+	if (strcmp(iniGetConfigurationHistoryFilename(wgui_ini, 0),"") != 0) {
+		strcat(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+		AppendMenu(GetSubMenu(GetMenu(wgui_hDialog),0), MF_STRING, ID_FILE_HISTORYCONFIGURATION0, cfgfilename);
+	}
+
+	cfgfilename[1] = '2'; cfgfilename[3] = '\0';
+	if (strcmp(iniGetConfigurationHistoryFilename(wgui_ini, 1),"") != 0) {
+		strcat(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+		AppendMenu(GetSubMenu(GetMenu(wgui_hDialog),0), MF_STRING, ID_FILE_HISTORYCONFIGURATION1, cfgfilename);
+	}
+
+	cfgfilename[1] = '3'; cfgfilename[3] = '\0';
+	if (strcmp(iniGetConfigurationHistoryFilename(wgui_ini, 2),"") != 0) {
+		strcat(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+		AppendMenu(GetSubMenu(GetMenu(wgui_hDialog),0), MF_STRING, ID_FILE_HISTORYCONFIGURATION2, cfgfilename);
+	}
+
+	cfgfilename[1] = '4'; cfgfilename[3] = '\0';
+	if (strcmp(iniGetConfigurationHistoryFilename(wgui_ini, 3),"") != 0) {
+		strcat(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+		AppendMenu(GetSubMenu(GetMenu(wgui_hDialog),0), MF_STRING, ID_FILE_HISTORYCONFIGURATION3, cfgfilename);
+	}
+}
+
+void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert) {
+	STR cfgfilename[CFG_FILENAME_LENGTH];
+	ULO i;
+
+	for (i=3; i>0; i--) {
+		cfgfilename[0]='\0';
+		strncat(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, i-1), CFG_FILENAME_LENGTH);
+		iniSetConfigurationHistoryFilename(wgui_ini, i, cfgfilename);
+	}
+	iniSetConfigurationHistoryFilename(wgui_ini, 0, cfgfilenametoinsert);
+	wguiInstallHistoryIntoMenu();
+}
+
+void wguiDeleteCfgFromHistory(ULO itemtodelete) {
+	ULO i;
+
+	for (i=itemtodelete; i<3; i++) {
+		iniSetConfigurationHistoryFilename(wgui_ini, i, iniGetConfigurationHistoryFilename(wgui_ini, i+1));
+	}
+	iniSetConfigurationHistoryFilename(wgui_ini, 3, "");
+	wguiInstallHistoryIntoMenu();
+}
+
+void wguiSwapCfgsInHistory(ULO itemA, ULO itemB) {
+	STR cfgfilename[CFG_FILENAME_LENGTH];
+	
+	strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, itemA), CFG_FILENAME_LENGTH);
+	iniSetConfigurationHistoryFilename(wgui_ini, itemA, iniGetConfigurationHistoryFilename(wgui_ini, itemB));
+	iniSetConfigurationHistoryFilename(wgui_ini, itemB, cfgfilename);
+	wguiInstallHistoryIntoMenu();
+}
+
+void wguiPutCfgInHistoryOnTop(ULO cfgtotop) {
+	ULO i;
+	STR cfgfilename[CFG_FILENAME_LENGTH];
+
+	strncpy(cfgfilename, iniGetConfigurationHistoryFilename(wgui_ini, cfgtotop), CFG_FILENAME_LENGTH);
+	for (i=cfgtotop; i>0; i--) {
+		iniSetConfigurationHistoryFilename(wgui_ini, i, iniGetConfigurationHistoryFilename(wgui_ini, i-1));
+	}
+	iniSetConfigurationHistoryFilename(wgui_ini, 0, cfgfilename);
+	wguiInstallHistoryIntoMenu();
+}
+
 
 /*============================================================================*/
 /* Saves and loads configuration files (*.wfc)                                */
@@ -291,13 +404,15 @@ void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
 		     "Save As", 
 		     FSEL_WFC)) {
     cfgSaveToFilename(wgui_cfg, filename);
-	strncpy(currentConfigFileName, filename, CFG_FILENAME_LENGTH);
+	iniSetCurrentConfigurationFilename(wgui_ini, filename);
   }
 }
 
 
 void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
   STR filename[CFG_FILENAME_LENGTH];
+  STR pathname[CFG_FILENAME_LENGTH];
+  BYT *strpointer;
   
   if (wguiSelectFile(hwndDlg,
 		     filename, 
@@ -305,13 +420,17 @@ void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
 		     "Open", 
 		     FSEL_WFC)) {
     cfgLoadFromFilename(wgui_cfg, filename);
-	strncpy(currentConfigFileName, filename, CFG_FILENAME_LENGTH);
+	iniSetCurrentConfigurationFilename(wgui_ini, filename);
+	
+	// extract directory for ini-file
+	strpointer = strrchr(filename, '\\');
+	strncpy(pathname, filename, strlen(filename) - strlen(strpointer));
+	pathname[strlen(filename) - strlen(strpointer)] = '\0';
+	iniSetLastUsedCfgDir(wgui_ini, pathname);
+
+	wguiInsertCfgIntoHistory(filename);
   }
 }
-
-/*============================================================================*/
-/* Install configuration in the GUI components                                */
-/*============================================================================*/
 
 /*============================================================================*/
 /* CPU config                                                                 */
@@ -1524,6 +1643,8 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 				   WPARAM wParam,
 				   LPARAM lParam) {
   STR filename[CFG_FILENAME_LENGTH];
+  STR pathname[CFG_FILENAME_LENGTH];
+  BYT *strpointer;
 
   switch (uMsg) {
     case WM_INITDIALOG:
@@ -1539,8 +1660,14 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 			       "Select Kickstart ROM File", 
 			       FSEL_ROM)) {
 	      cfgSetKickImage(wgui_cfg, filename);
-	      Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_KICKSTART),
-			   cfgGetKickImage(wgui_cfg));
+		  
+		  // extract directory for ini-file
+	      strpointer = strrchr(filename, '\\');
+		  strncpy(pathname, filename, strlen(filename) - strlen(strpointer));
+		  pathname[strlen(filename) - strlen(strpointer)] = '\0';
+		  iniSetLastUsedKickImageDir(wgui_ini, pathname);
+
+		  Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_KICKSTART), cfgGetKickImage(wgui_cfg));
 	    }
 	    break;
 	  case IDC_BUTTON_KEYFILE_FILEDIALOG:
@@ -1550,6 +1677,13 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 			       "Select Keyfile", 
 			       FSEL_KEY)) {
 	      cfgSetKey(wgui_cfg, filename);
+
+		  // extract directory for ini-file
+		  strpointer = strrchr(filename, '\\');
+		  strncpy(pathname, filename, strlen(filename) - strlen(strpointer));
+		  pathname[strlen(filename) - strlen(strpointer)] = '\0';
+		  iniSetLastUsedKeyDir(wgui_ini, pathname);
+
 	      Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_KEYFILE),
 			   cfgGetKey(wgui_cfg));
 	    }
@@ -2043,7 +2177,7 @@ BOOL CALLBACK wguiScreenDialogProc(HWND hwndDlg,
 /* This process also creates and runs the dialog.                             */
 /*============================================================================*/
 
-BOOL wguiConfigurationDialog(void)
+int wguiConfigurationDialog(void)
 {
   int i;
   PROPSHEETPAGE propertysheets[PROP_SHEETS];
@@ -2086,13 +2220,17 @@ BOOL CALLBACK wguiAboutDialogProc(HWND hwndDlg,
   switch (uMsg) {
     case WM_INITDIALOG:
       return TRUE;
-    case WM_COMMAND:
+	case WM_COMMAND:
       switch (LOWORD(wParam)) {
 	  case IDCANCEL:
 	  case IDOK:
 	    EndDialog(hwndDlg, LOWORD(wParam));
 	    return TRUE;
 	    break;
+	  case IDC_STATIC_LINK:
+		SetTextColor((HDC) LOWORD(lParam), RGB(0, 0, 255));
+		ShellExecute(NULL, "open", "http://fellow.sourceforge.net", NULL,NULL, SW_SHOWNORMAL);
+		break;  
 	  default:
 	    break;
 	}
@@ -2145,8 +2283,20 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	  case ID_FILE_SAVECONFIGURATIONAS:
 		wgui_action = WGUI_SAVE_CONFIGURATION_AS;
 		break;
+	  case ID_FILE_HISTORYCONFIGURATION0:   
+		wgui_action = WGUI_LOAD_HISTORY0;
+		break;
+	  case ID_FILE_HISTORYCONFIGURATION1:
+		wgui_action = WGUI_LOAD_HISTORY1;
+		break;
+      case ID_FILE_HISTORYCONFIGURATION2:   
+		wgui_action = WGUI_LOAD_HISTORY2;
+		break;
+      case ID_FILE_HISTORYCONFIGURATION3:   
+		wgui_action = WGUI_LOAD_HISTORY3;
+		break;
 	  case IDC_CONFIGURATION:
-	    wguiConfigurationDialog();
+		wguiConfigurationDialog();
 	    break;
 	  case IDC_HARD_RESET:
 	    fellowPreStartReset(TRUE);
@@ -2217,27 +2367,6 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
  
 
 /*============================================================================*/
-/* DialogProc for our splash dialog window                                    */
-/*============================================================================*/
-
-BOOL CALLBACK wguiSplashProc(HWND hwndDlg,
-			     UINT uMsg,
-			     WPARAM wParam,
-			     LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      return TRUE;
-    case WM_TIMER:
-      if (wParam == 1) {                  /* 1 is the ID of our splash timer */
-	wgui_splash_timeout = TRUE;
-	return 0;
-      }
-  }
-  return FALSE;
-}
-
-
-/*============================================================================*/
 /* The functions below this line are for "public" use by other modules        */
 /*============================================================================*/
 
@@ -2250,7 +2379,7 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
   STR text[1024];
 
   sprintf(text, "%s\n%s\n%s", line1, line2, line3);
-  MessageBox(NULL, text, "Fellow Amiga Emulator", 0);
+  MessageBox(NULL, text, "WinFellow Amiga Emulator", 0);
 }
 
 
@@ -2261,6 +2390,8 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 BOOLE wguiEnter(void) {
   BOOLE quit_emulator = FALSE;
   BOOLE debugger_start = FALSE;
+  RECT dialogRect;
+
   do {
     MSG myMsg;
     BOOLE end_loop = FALSE;
@@ -2271,47 +2402,100 @@ BOOLE wguiEnter(void) {
 			        MAKEINTRESOURCE(IDD_MAIN),
 			        NULL,
 			        wguiDialogProc); 
+	SetWindowPos(wgui_hDialog, NULL, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), -1, -1, SWP_NOSIZE);
     wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+
+	// install history into menu
+	wguiInstallHistoryIntoMenu();
     ShowWindow(wgui_hDialog, win_drv_nCmdShow);
+
     while (!end_loop) {
       if (GetMessage(&myMsg, wgui_hDialog, 0, 0))
         if (!IsDialogMessage(wgui_hDialog, &myMsg))
 	  DispatchMessage(&myMsg);
       switch (wgui_action) {
         case WGUI_START_EMULATION:
-	  end_loop = TRUE;
-	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+		  end_loop = TRUE;
+		  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	  fellowPreStartReset(fellowGetPreStartReset() |
 			      cfgManagerConfigurationActivate(&cfg_manager));
 	  break;
         case WGUI_QUIT_EMULATOR:
-	  end_loop = TRUE;
-	  quit_emulator = TRUE;
-	  break;
+		  end_loop = TRUE;
+		  quit_emulator = TRUE;
+		  break;
 		case WGUI_OPEN_CONFIGURATION:
 		  wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_SAVE_CONFIGURATION:
-		  cfgSaveToFilename(wgui_cfg, currentConfigFileName);		  
+		  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));		  
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_SAVE_CONFIGURATION_AS:
 		  wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
-	case WGUI_DEBUGGER_START:
-	  end_loop = TRUE;
-	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	  fellowPreStartReset(fellowGetPreStartReset() |
-			      cfgManagerConfigurationActivate(&cfg_manager));
-	  debugger_start = TRUE;
+		case WGUI_LOAD_HISTORY0:
+		  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) {
+			wguiDeleteCfgFromHistory(0);
+		  } else {
+			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+		  }
+		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_LOAD_HISTORY1:
+		  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) {
+			wguiDeleteCfgFromHistory(1);
+		  } else {
+			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+			wguiPutCfgInHistoryOnTop(1);
+		  } 
+		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_LOAD_HISTORY2:
+		  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) {
+			wguiDeleteCfgFromHistory(2);
+		  } else {
+			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+			wguiPutCfgInHistoryOnTop(2);
+		  } 
+		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_LOAD_HISTORY3:
+		  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) {
+			wguiDeleteCfgFromHistory(3);
+		  } else {
+			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+			wguiPutCfgInHistoryOnTop(3);
+		  } 
+		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_DEBUGGER_START:
+		  end_loop = TRUE;
+		  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+	      fellowPreStartReset(fellowGetPreStartReset() |
+		  cfgManagerConfigurationActivate(&cfg_manager));
+		  debugger_start = TRUE;
         default:
-	  break;
+		  break;
       }
     }
-    cfgSaveToFilename(wgui_cfg, currentConfigFileName);
+    cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+	
+	// save main window position
+	GetWindowRect(wgui_hDialog, &dialogRect);
+	iniSetMainWindowPosition(wgui_ini, dialogRect.left, dialogRect.top);
+
     DestroyWindow(wgui_hDialog);
     if (!quit_emulator && debugger_start) {
       debugger_start = FALSE;
@@ -2333,7 +2517,7 @@ BOOLE wguiEnter(void) {
 
 void wguiStartup(void) {
   wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
-  cfgLoadFromFilename(wgui_cfg, currentConfigFileName);
+  wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
 }
 
 
@@ -2342,7 +2526,6 @@ void wguiStartup(void) {
 /*============================================================================*/
 
 void wguiShutdown(void) {
-/*  cfgManagerFreeConfig(&cfg_manager, wgui_cfg);*/
 }
 
 
