@@ -69,11 +69,15 @@
 #include "sound.h"
 #include "sprite.h"
 #include "modrip.h"
-#include "modrip_win32.h"
+#include "blit.h"
 
 /*=======================================================*/
 /* external references not exported by the include files */
 /*=======================================================*/
+
+/* blit.c */
+extern ULO bltcon, bltafwm, bltalwm, bltapt, bltbpt, bltcpt, bltdpt, bltamod, bltbmod;
+extern ULO bltcmod, bltdmod, bltadat, bltbdat, bltcdat, bltzero;
 
 /* copper.c */
 extern ULO copcon, cop1lc, cop2lc;
@@ -90,17 +94,6 @@ extern ULO spry[8];
 extern ULO sprly[8];
 extern ULO spratt[8];
 extern ULO sprite_state[8];
-
-/* graph.c */
-extern ULO ddfstrt, ddfstop;
-extern ULO diwxleft, diwxright, diwytop, diwybottom;
-extern ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
-extern ULO graph_DIW_first_visible;
-extern ULO graph_DIW_last_visible;
-extern ULO graph_DDF_start;
-extern ULO draw_right;
-extern ULO draw_top;
-extern ULO draw_bottom;
 
 /* sound.c */
 extern soundStateFunc audstate[4];
@@ -161,6 +154,8 @@ BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg, UINT uMsg,
@@ -176,20 +171,22 @@ BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg,
 /* the various sheets of the main dialog and their dialog procs */
 /*==============================================================*/
 
-#define DEBUG_PROP_SHEETS 9
+#define DEBUG_PROP_SHEETS 10
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY,
-  IDD_DEBUG_COPPER, IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN,
-  IDD_DEBUG_EVENTS, IDD_DEBUG_SOUND
+  IDD_DEBUG_CPU,     IDD_DEBUG_MEMORY,  IDD_DEBUG_CIA, 
+  IDD_DEBUG_FLOPPY,  IDD_DEBUG_BLITTER, IDD_DEBUG_COPPER, 
+  IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN,  IDD_DEBUG_EVENTS, 
+  IDD_DEBUG_SOUND
 };
 
 typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
-  wdbgCPUDialogProc, wdbgMemoryDialogProc, wdbgCIADialogProc,
-  wdbgFloppyDialogProc, wdbgCopperDialogProc, wdbgSpriteDialogProc,
-  wdbgScreenDialogProc, wdbgEventDialogProc, wdbgSoundDialogProc
+  wdbgCPUDialogProc,    wdbgMemoryDialogProc,  wdbgCIADialogProc,
+  wdbgFloppyDialogProc, wdbgBlitterDialogProc, wdbgCopperDialogProc, 
+  wdbgSpriteDialogProc, wdbgScreenDialogProc,  wdbgEventDialogProc, 
+  wdbgSoundDialogProc
 };
 
 /*===========================*/
@@ -622,6 +619,78 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     sprintf(s, "drawstrt:%X graphemstrt:%X", drawstart, graphemstart);
     y = wdbgLineOut(hDC, s, x, y);
 #endif
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* Updates the blitter state                                                  */
+/*============================================================================*/
+
+void wdbgUpdateBlitterState(HWND hwndDlg)
+{
+  STR s[WDBG_STRLEN];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i, list1, list2, atpc;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
+      bltcon, bltafwm, bltalwm);
+    y = wdbgLineOut(hDC, s, x, y);
+
+	sprintf(s, "");
+    y = wdbgLineOut(hDC, s, x, y);
+
+	sprintf(s, "bltapt:  %08X bltbpt:  %08X bltcpt:  %08X bltdpt:  %08X ",
+      bltapt, bltbpt, bltcpt, bltdpt);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "bltamod: %08X bltbmod: %08X bltcmod: %08X bltdmod: %08X ",
+      bltamod, bltbmod, bltcmod, bltdmod);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "bltadat: %08X bltbdat: %08X bltcdat: %08X bltzero: %08X ",
+      bltadat, bltbdat, bltcdat, bltzero);
+    y = wdbgLineOut(hDC, s, x, y);
 
     DeleteDC(hDC_image);
     DeleteObject(myarrow);
@@ -1178,6 +1247,33 @@ BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
       return TRUE;
     case WM_PAINT:
       wdbgUpdateFloppyState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our blitter dialog                                          */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateBlitterState(hwndDlg);
       break;
     case WM_COMMAND:
       switch (LOWORD(wParam)) {

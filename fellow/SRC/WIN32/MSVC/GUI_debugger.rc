@@ -154,6 +154,16 @@ BEGIN
     PUSHBUTTON      "Dump chipm.",IDC_DEBUG_DUMPCHIP,457,35,46,14
 END
 
+IDD_DEBUG_BLITTER DIALOG DISCARDABLE  0, 0, 516, 256
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Blitter"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Bliiter Information:",IDC_STATIC,7,49,440,200
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -228,6 +238,14 @@ BEGIN
     END
 
     IDD_DEBUG_SOUND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_BLITTER, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 509
