@@ -48,6 +48,8 @@ FCODESECTIONSTART
 %include "mac/cia.mac"
 %include "mac/bus.mac"
 
+;CFUNCEXTERN busScanEventsLevel4
+CFUNCEXTERN busScanEventsLevel6
 
 ;==============================================================================
 ; CIA memory access wrappers, calls routines in cia.c
@@ -121,7 +123,8 @@ global _ciaSetupEventWrapper_
 _ciaSetupEventWrapper_:
 		push	ebx
 		push	eax
-		SCAN_EVENTS_LVL6
+		call busScanEventsLevel6
+		;SCAN_EVENTS_LVL6
 		pop	eax
 		pop	ebx
 		ret

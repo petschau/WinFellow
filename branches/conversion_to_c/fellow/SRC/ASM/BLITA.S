@@ -84,19 +84,31 @@ CFUNCEXTERN blitInitiate
 ;=======================================================
 
 CFUNCEXTERN blitterCopyABCD
-	
+CFUNCEXTERN blitterLineMode
+CFUNCEXTERN busScanEventsLevel4
+
 		FALIGN32
 
 global _finish_blit_
 _finish_blit_:
 		mov	dword [blitend], -1
-		SCAN_EVENTS_LVL4
+		
+		call busScanEventsLevel4
+		;SCAN_EVENTS_LVL4
+		
 		mov	dword [blitterdmawaiting], 0
 		mov	dword [blit_started], 0
 		and	dword [dmaconr], 0bfffh	
 		mov	ebx, dword [bltcon]
 		test	ebx, 1
-		jnz	blitterlinemode
+		jz	skipblm
+		pushad
+		call blitterLineMode
+		popad
+		ret
+skipblm:
+
+
 %ifdef BLIT_TSC_PROFILE
 		TSC_BEFORE blit_tsc_tmp
 %endif

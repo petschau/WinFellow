@@ -817,7 +817,10 @@ void blitFinishBlit(void)
   {
     blitterLineMode();
   }
-  blitterCopyABCD();
+  else
+  {
+    blitterCopyABCD();
+  }
 }
 
 void blitMinitermsSet(ULO data)

@@ -101,6 +101,10 @@ _busstart_:	 ; Used to check code alignment
 %include "mac/sprite.mac"
 
 CFUNCEXTERN timerEndOfFrame
+CFUNCEXTERN blitFinishBlit
+CFUNCEXTERN busScanEventsLevel3
+CFUNCEXTERN busScanEventsLevel4
+CFUNCEXTERN busScanEventsLevel6
 
 ;===========================================================
 ; bus_run_
@@ -332,7 +336,9 @@ _endOfLine_:	push	edx
 		;==============================================================
 
 		add	dword [eol_next], CYCLESPERLINE
-		SCAN_EVENTS_LVL3
+		
+		call busScanEventsLevel3
+		;SCAN_EVENTS_LVL3
 
 		pop	ebx
 		pop	ecx
@@ -474,7 +480,8 @@ _endOfFrame_:	push	edx
 		; Recalculate the entire event queue
 		;==============================================================
 
-		SCAN_EVENTS_LVL6
+		call busScanEventsLevel6
+		;SCAN_EVENTS_LVL6
 
 
 		;==============================================================

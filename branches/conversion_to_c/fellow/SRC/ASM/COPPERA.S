@@ -38,7 +38,6 @@
 ;   possible waiting positions to check for the next match?)
 ;===============================================================================
 
-
 %include "mac/nasm.mac"
 %include "mac/renaming.mac"
 %include "generic/defs.inc"
@@ -63,6 +62,9 @@ _copperstart_:			; Used to check code alignment
 
 %include "func/bus.inc"
 %include "mac/bus.mac"
+
+CFUNCEXTERN busScanEventsLevel2
+
 
 %macro CPU_LOAD_ADD 0
 		cmp	dword [cpu_next], -1
@@ -205,7 +207,8 @@ _copperUpdateDMA_:
 		mov	byte [copper_dma], 0
 		push	eax
 		push	ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -237,7 +240,8 @@ _copperUpdateDMA_:
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -263,7 +267,8 @@ _copperEndOfFrame_:
 		mov	dword [copper_next], 40
 		push	eax
 		push	ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	ebx
 		pop	eax
 .copper_restart_not:
@@ -288,7 +293,8 @@ _copperLoad1_:	mov	edx, dword [cop1lc]
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -314,7 +320,8 @@ _copperLoad2_:	mov	edx, dword [cop2lc]
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -355,7 +362,12 @@ _copperEmulate_:
 		mov	ebx, dword [copper_cycletable + 4*ebx]
 		add	ebx, dword [curcycle]
 		mov	dword [copper_next], ebx
-		SCAN_EVENTS_LVL2
+		
+		pushad
+		call busScanEventsLevel2
+		popad
+		;SCAN_EVENTS_LVL2
+		
 		cmp	ecx, 80h
 		jae	.okay
 		test	dword [copcon], 0ffffh     ; Access to $40-$7e?
@@ -376,7 +388,8 @@ _copperEmulate_:
 		pop	ebx
 		ret
 .notokay:	mov	dword [copper_next], -1
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -458,7 +471,8 @@ _copperEmulate_:
 		add	ebx, ecx
 		add	ebx, 4
 .cwaitexit:	mov	dword [copper_next], ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -504,7 +518,8 @@ _copperEmulate_:
 		add	ecx, 4
 .cnofix:
 .fluks:		mov	dword [copper_next], ecx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -516,7 +531,8 @@ _copperEmulate_:
 .ctrueexit:	mov	ebx, dword [curcycle]
 		add	ebx, 4
 		mov	dword [copper_next], ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -557,7 +573,8 @@ _copperEmulate_:
 .cdontskip:	mov	ebx, dword [curcycle]
 		add	ebx, 4
 		mov	dword [copper_next], ebx
-		SCAN_EVENTS_LVL2
+		call busScanEventsLevel2
+		;SCAN_EVENTS_LVL2
 		pop	edx
 		pop	ecx
 		pop	ebx
