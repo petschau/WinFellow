@@ -53,6 +53,7 @@
 #include "gui_general.h"
 #include "gui_debugger.h"
 
+#include "fellow.h"
 #include "windrv.h"
 #include "sound.h"
 #include "cpu.h"
@@ -74,6 +75,7 @@
 #include "sprite.h"
 #include "modrip.h"
 #include "blit.h"
+
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -401,7 +403,7 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 		fetl(memory_adress + i * 16 + 12));
 
 	for (j = 0; j < 16; j++) {
-	  k = fetb(memory_adress + i * 16 + j) & 0xff;
+	  k = (UBY) fetb(memory_adress + i * 16 + j) & 0xff;
 	  if (k < 32)
 	    st[j + 41] = '.';
 	  else
@@ -643,7 +645,6 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
 
     ULO y = WDBG_CPU_REGISTERS_Y;
     ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i, list1, list2, atpc;
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -868,7 +869,6 @@ void wdbgUpdateScreenState(HWND hwndDlg)
 
     ULO y = WDBG_CPU_REGISTERS_Y;
     ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -961,7 +961,6 @@ void wdbgUpdateEventState(HWND hwndDlg)
 
     ULO y = WDBG_CPU_REGISTERS_Y;
     ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,

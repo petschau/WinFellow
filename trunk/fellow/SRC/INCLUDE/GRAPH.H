@@ -134,6 +134,7 @@ extern void graphP2C2XInit(void);
 extern void graphLineDescClear(void);
 extern void graphLineDescClearSkips(void);
 extern void graphInitializeShadowColors(void);
+extern void graphHardReset(void);
 extern void graphEmulationStart(void);
 extern void graphEmulationStop(void);
 extern void graphStartup(void);

@@ -64,6 +64,7 @@ typedef struct {
   ULO wait;			/* Used to delay irq for writes */
   BOOLE wait_for_sync;
   BOOLE sync_found;
+  BOOLE dont_use_gap;
 } floppyDMAinfostruct;
 
 /* Status symbols */
@@ -117,6 +118,9 @@ extern void floppySetFastDMA(BOOLE fastDMA);
 
 /* Module control */
 
+extern void floppyHardReset(void);
+extern void floppyEmulationStart(void);
+extern void floppyEmulationStop(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
 

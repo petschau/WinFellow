@@ -173,7 +173,7 @@ DWORD WINAPI winDrvFellowStepOver(void* in)
 
 DWORD WINAPI winDrvFellowRunDebug(void* in)
 {
-  fellowRunDebug();
+  fellowRunDebug(0);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }

@@ -25,6 +25,7 @@ Tuesday, September 19, 2000
 #include "fmem.h"
 #include "gameport.h"
 #include "mousedrv.h"
+#include "joydrv.h"
 
 /*===========================================================================*/
 /* IO-Registers                                                              */

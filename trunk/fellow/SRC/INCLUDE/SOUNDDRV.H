@@ -6,7 +6,7 @@
 /* Implementing these functions creates a sound driver for Fellow            */
 /*===========================================================================*/
 
-extern BOOLE soundDvStartup(sound_device *devinfo);
+extern BOOLE soundDrvStartup(sound_device *devinfo);
 extern void soundDrvShutdown(void);
 extern BOOLE soundDrvEmulationStart(ULO outputrate,
 				    BOOLE bits16, 

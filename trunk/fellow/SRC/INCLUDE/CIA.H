@@ -24,6 +24,7 @@ extern void ciaSetupEventWrapper(void);
 
 /* Cia functions written in C */
 
+extern void ciaHardReset(void);
 extern void ciaEmulationStart(void);
 extern void ciaEmulationStop(void);
 extern void ciaStartup(void);
@@ -31,6 +32,8 @@ extern void ciaShutdown(void);
 extern void ciaMemoryMap(void);
 extern void ciaHandleEventC(void);
 extern void ciaRaiseIndexIRQ(void); /* For the floppy loader */
+extern void ciaRaiseIRQC(ULO i, ULO req); /* For kbd.c */
+extern void ciaWritesp(ULO i, ULO data); /* For kbd.c */
 
 /* Cia event data */
 
