@@ -205,3 +205,18 @@ BOOLE modripGuiDumpChipMem(void)
     MB_ICONQUESTION);
   return(result == IDYES);
 }
+
+/*=====================================*/
+/* run Pro-Wizard over the saved file? */
+/*=====================================*/
+BOOLE modripGuiRunProWiz(void)
+{
+  char message[MODRIP_TEMPSTRLEN];
+  int result;
+
+  sprintf(message, "You have Pro-Wizard installed in WinFellow's directory.");
+  strcat(message, " Do you want to run it over the saved file?");
+  result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
+    MB_ICONQUESTION);
+  return(result == IDYES);
+}
