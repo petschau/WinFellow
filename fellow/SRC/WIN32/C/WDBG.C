@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/17:                                                                */
+/* - screen state updated witn information provided by Petter                 */
 /* 2000/12/14:                                                                */
 /* - moved module ripper into it's own module                                 */
 /* 2000/12/13:                                                                */
@@ -786,7 +788,7 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
 void wdbgUpdateScreenState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
+  STR s[128];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -826,32 +828,46 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    sprintf(s,
-	    "clipleftx-%.3d   cliprightx-%.3d         cliptop-%.3d           clipbot-%d",
-	    draw_left, draw_right, draw_top, draw_bottom);
+    sprintf(s, "DIWSTRT - %.4X DIWSTOP - %.4X DDFSTRT - %.4X DDFSTOP - %.4X LOF     - %.4X",
+	    diwstrt, diwstop, ddfstrt, ddfstop, lof);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s,
-	    "DDFStartpos-%.3d DIWfirstvisiblepos-%.3d DIWlastvisiblepos-%.3d",
-	    graph_DDF_start, graph_DIW_first_visible, graph_DIW_last_visible);
+    sprintf(s, "BPLCON0 - %.4X BPLCON1 - %.4X BPLCON2 - %.4X BPL1MOD - %.4X BPL2MOD - %.4X",
+	    bplcon0, bplcon1, bplcon2, bpl1mod, bpl2mod);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s,
-	    "diwxleft-%.3d    diwxright-%.3d          diwytop-%.3d           diwybot-%.3d",
+    sprintf(s, "BPL1PT -%.6X BPL2PT -%.6X BPL3PT -%.6X BPL4PT -%.6X BPL5PT -%.6X",
+            bpl1pt, bpl2pt, bpl3pt, bpl4pt, bpl5pt);
+    y = wdbgLineOut(hDC, s, x, y);
+      
+    sprintf(s, "BPL6PT -%.6X DMACON  - %.4X", bpl6pt, dmacon);
+    y = wdbgLineOut(hDC, s, x, y);
+    y++;
+
+    sprintf(s, "Host window clip envelope (Hor) (Ver): (%d, %d) (%d, %d)",
+            draw_left, draw_right, draw_top, draw_bottom);
+    y = wdbgLineOut(hDC, s, x, y);
+    
+    sprintf(s, "Even/odd scroll (lores/hires): (%d, %d) (%d, %d)",
+            evenscroll, evenhiscroll, oddscroll, oddhiscroll);
+    y = wdbgLineOut(hDC, s, x, y);
+    
+    sprintf(s, "Visible bitplane data envelope (Hor) (Ver): (%d, %d) (%d, %d)",
 	    diwxleft, diwxright, diwytop, diwybottom);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "ddfstrt-%.3d     ddfstop-%.3d", ddfstrt, ddfstop);
+    sprintf(s, "DDF (First output cylinder, length in words): (%d, %d)",
+	    graph_DDF_start, graph_DDF_word_count);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s,
-	    "oddscroll-%.3d   oddhiscroll-%.3d        evenscroll-%.3d        evenhiscroll-%.3d",
-	    oddscroll, oddhiscroll, evenscroll, evenhiscroll);
+    sprintf(s, "DIW (First visible pixel, last visible pixel + 1): (%d, %d)",
+	    graph_DIW_first_visible, graph_DIW_last_visible);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "intena-%.4X     intreq-%.4X", intena, intreq);
-    y = wdbgLineOut(hDC, s, x, y);
-
+    sprintf(s, "Raster beam position (x, y): (%d, %d)",
+	    graph_raster_x, graph_raster_y);
+    y = wdbgLineOut(hDC, s, x, y);    
+    
     DeleteDC(hDC_image);
     DeleteObject(myarrow);
     DeleteObject(myfont);
