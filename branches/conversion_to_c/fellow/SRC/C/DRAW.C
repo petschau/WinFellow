@@ -32,7 +32,7 @@
   It can be imported into excel for better viewing
 */
 
-//#define DRAW_TSC_PROFILE
+#define DRAW_TSC_PROFILE
 
 #ifdef DRAW_TSC_PROFILE
 LLO dlsbg1x8_tmp = 0;
@@ -308,6 +308,11 @@ BOOLE draw_fps_counter_enabled;
 #define DRAW_LED_COLOR_ON  0x00FF00 /* Green */
 #define DRAW_LED_COLOR_OFF 0x000000 /* Black */
 
+// Indexes into the HAM drawing table
+
+#define draw_HAM_modify_table_bitindex 0
+#define draw_HAM_modify_table_holdmask 4
+
 BOOLE draw_LEDs_enabled;
 BOOLE draw_LEDs_state[DRAW_LED_COUNT];
 
@@ -321,11 +326,11 @@ ULO draw_view_scroll;                        /* Scroll visible window runtime */
 
 
 /*============================================================================*/
-/* Scale control, both horisontally and vertically the pixels can be scaled   */
+/* Scale control, both Horizontally and vertically the pixels can be scaled   */
 /* by the factors given in the variables below                                */
 /*============================================================================*/
 
-ULO draw_hscale;                                          /* Horisontal scale */
+ULO draw_hscale;                                          /* Horizontal scale */
 ULO draw_vscale;                                       /* Base vertical scale */
 BOOLE draw_scanlines;                                        /* Use scanlines */
 BOOLE draw_deinterlace;                           /* Remove interlace flicker */
@@ -690,22 +695,22 @@ draw_line_func draw_line_dual_hires_funcs[2][8] = {
 #endif
 
 draw_line_func draw_line_HAM_lores_funcs[2][8] = {
-  drawLineHAM1x8,
-  drawLineHAM2x8,
-  drawLineHAM1x16,
-  drawLineHAM2x16,
-  drawLineHAM1x24,
-  drawLineHAM2x24,
-	drawLineHAM1x32,
-	drawLineHAM2x32,
-	drawLineHAM1x8,
-	drawLineHAM2x8,
-	drawLineHAM1x16,
-	drawLineHAM2x16,
-	drawLineHAM1x24,
-	drawLineHAM2x24,
-	drawLineHAM1x32,
-	drawLineHAM2x32
+  drawLineHAM1x8_C,
+  drawLineHAM2x8_C,
+  drawLineHAM1x16_C,
+  drawLineHAM2x16_C,
+  drawLineHAM1x24_C,
+  drawLineHAM2x24_C,
+	drawLineHAM1x32_C,
+	drawLineHAM2x32_C,
+	drawLineHAM1x8_C,
+	drawLineHAM2x8_C,
+	drawLineHAM1x16_C,
+	drawLineHAM2x16_C,
+	drawLineHAM1x24_C,
+	drawLineHAM2x24_C,
+	drawLineHAM1x32_C,
+	drawLineHAM2x32_C
 };
 
 /*============================================================================*/
@@ -1171,8 +1176,8 @@ BOOLE drawGetDeinterlace(void) {
   return draw_deinterlace;
 }
 
-void drawSetHorisontalScale(ULO horisontalscale) {
-  draw_hscale = horisontalscale;
+void drawSetHorizontalScale(ULO Horizontalscale) {
+  draw_hscale = Horizontalscale;
 }
 
 void drawSetVerticalScale(ULO verticalscale) {
@@ -1684,7 +1689,7 @@ BOOLE drawStartup(void) {
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
   drawSetDeinterlace(FALSE);
-  drawSetHorisontalScale(1);
+  drawSetHorizontalScale(1);
   drawSetVerticalScale(1);
   drawSetScanlines(FALSE);
   drawSetFrameskipRatio(1);
@@ -2928,7 +2933,7 @@ void drawLineDual2x32_C(graph_line *linedescription)
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */ 
+/* Horizontal Scale:	1x                                                        */ 
 /* Pixel format:		8 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -2938,7 +2943,9 @@ void drawLineDual2x32_C(graph_line *linedescription)
 void drawLineBPL1x8_C(graph_line *linedesc)
 {
   drawLineSegmentBG1x8(linedesc->BG_pad_front, linedesc->colors[0]);
+  __asm { pushad }
   ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+  __asm { popad }
 	drawLineSegmentBG1x8(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
@@ -2962,7 +2969,7 @@ void drawLineBPL2x8_C(graph_line *linedesc)
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */ 
+/* Horizontal Scale:	1x                                                        */ 
 /* Pixel format:		16 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -2972,14 +2979,16 @@ void drawLineBPL2x8_C(graph_line *linedesc)
 void drawLineBPL1x16_C(graph_line *linedesc)
 {
   drawLineSegmentBG1x16(linedesc->BG_pad_front, linedesc->colors[0]);
+  __asm { pushad }
   ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+  __asm { popad }
 	drawLineSegmentBG1x16(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	2x                                                        */ 
+/* Horizontal Scale:	2x                                                        */ 
 /* Pixel format:		16 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -2989,14 +2998,16 @@ void drawLineBPL1x16_C(graph_line *linedesc)
 void drawLineBPL2x16_C(graph_line *linedesc)
 {
   drawLineSegmentBG2x16(linedesc->BG_pad_front, linedesc->colors[0]);
+  __asm { pushad }
   ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+  __asm { popad }
  	drawLineSegmentBG2x16(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */ 
+/* Horizontal Scale:	1x                                                        */ 
 /* Pixel format:		24 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3013,7 +3024,7 @@ void drawLineBPL1x24_C(graph_line *linedesc)
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	2x                                                        */ 
+/* Horizontal Scale:	2x                                                        */ 
 /* Pixel format:		24 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3030,7 +3041,7 @@ void drawLineBPL2x24_C(graph_line *linedesc)
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */ 
+/* Horizontal Scale:	1x                                                        */ 
 /* Pixel format:		32 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3040,14 +3051,16 @@ void drawLineBPL2x24_C(graph_line *linedesc)
 void drawLineBPL1x32_C(graph_line *linedesc)
 {
   drawLineSegmentBG1x32(linedesc->BG_pad_front, linedesc->colors[0]);
+  __asm { pushad }
   ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+  __asm { popad }
 	drawLineSegmentBG1x32(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horisontal Scale:	2x                                                        */ 
+/* Horizontal Scale:	2x                                                        */ 
 /* Pixel format:		32 bit                                                      */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3064,7 +3077,7 @@ void drawLineBPL2x32_C(graph_line *linedesc)
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */
+/* Horizontal Scale:	1x                                                        */
 /* Pixel format:		8 bit RGB                                                   */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3143,7 +3156,7 @@ static __inline void drawLineSegmentBG2x8(ULO topad, ULO bgcolor)
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */
+/* Horizontal Scale:	1x                                                        */
 /* Pixel format:		16 bit RGB                                                  */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3180,7 +3193,7 @@ static __inline void drawLineSegmentBG1x16(ULO topad, ULO bgcolor)
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horisontal Scale:	2x                                                        */
+/* Horizontal Scale:	2x                                                        */
 /* Pixel format:		16 bit RGB                                                  */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3296,7 +3309,7 @@ static __inline void drawLineSegmentBG2x24(ULO topad, ULO bgcolor)
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horisontal Scale:	1x                                                        */
+/* Horizontal Scale:	1x                                                        */
 /* Pixel format:		32 bit RGB                                                  */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3335,7 +3348,7 @@ static __inline void drawLineSegmentBG1x32(ULO topad, ULO bgcolor)
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horisontal Scale:	2x                                                        */
+/* Horizontal Scale:	2x                                                        */
 /* Pixel format:		32 bit RGB                                                  */
 /*                                                                              */
 /* Input:                                                                       */
@@ -3468,4 +3481,634 @@ void drawLineBG2x32_C(graph_line *linedesc)
   #ifdef DRAW_TSC_PROFILE
     drawTscAfter(&dlsbg2x32_tmp, &dlsbg2x32, &dlsbg2x32_times);
   #endif
+}
+	
+/*==============================================================================*/
+/* void drawLineHAM1x8(graph_line *linedescription);                            */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	1x                                                        */
+/* Pixel format:		8 bit indexed RGB                                           */
+/*==============================================================================*/
+
+void drawLineHAM1x8_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *(draw_8bit_to_color + ((*((ULO *) ((UBY *) linedesc->colors + *source_line_ptr))) & 0xff));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *(draw_8bit_to_color + ((*((ULO *) ((UBY *) linedesc->colors + *source_line_ptr))) & 0xff));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *draw_buffer_current_ptr = (UBY) (*(draw_color_table + (hampixel & 0xfff)));
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr++;
+  }
+  spriteMergeHAM1x8(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM2x8(graph_line *linedescription);                            */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	2x                                                        */
+/* Pixel format:		8 bit indexed RGB                                           */
+/*==============================================================================*/
+
+void drawLineHAM2x8_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *(draw_8bit_to_color + ((*((ULO *) ((UBY *) linedesc->colors + *source_line_ptr))) & 0xff));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *(draw_8bit_to_color + ((*((ULO *) ((UBY *) linedesc->colors + *source_line_ptr))) & 0xff));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *((UWO *) draw_buffer_current_ptr) = (UWO) (*(draw_color_table + (hampixel & 0xfff)));
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 2;
+  }
+  spriteMergeHAM2x8(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM1x16(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	1x                                                        */
+/* Pixel format:		15/16 bit indexed RGB                                       */
+/*==============================================================================*/
+
+void drawLineHAM1x16_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 2;
+  }
+  spriteMergeHAM1x16(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM2x16(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	2x                                                        */
+/* Pixel format:		15/16 bit indexed RGB                                       */
+/*==============================================================================*/
+
+void drawLineHAM2x16_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+      }
+
+      *((ULO *) draw_buffer_current_ptr) = hampixel;
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 4;
+  }
+  spriteMergeHAM2x16(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM1x32(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	1x                                                        */
+/* Pixel format:		32 bit indexed RGB                                          */
+/*==============================================================================*/
+
+void drawLineHAM1x32_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *((ULO *) draw_buffer_current_ptr) = hampixel;
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 4;
+  }
+  spriteMergeHAM1x32(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM2x32(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	2x                                                        */
+/* Pixel format:		32 bit indexed RGB                                          */
+/*==============================================================================*/
+
+void drawLineHAM2x32_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *((ULO *) draw_buffer_current_ptr) = hampixel;
+      *((ULO *) draw_buffer_current_ptr + 1) = hampixel;
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 8;
+  }
+  spriteMergeHAM2x32(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM1x24(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	1x                                                        */
+/* Pixel format:		24 bit indexed RGB                                          */
+/*==============================================================================*/
+
+void drawLineHAM1x24_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+      }
+
+      *((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
+      *((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 3;
+  }
+  spriteMergeHAM1x24(draw_buffer_current_ptr_local, linedesc);
+}
+
+/*==============================================================================*/
+/* void drawLineHAM2x24(graph_line *linedescription);                           */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale:	2x                                                        */
+/* Pixel format:		24 bit indexed RGB                                          */
+/*==============================================================================*/
+
+void drawLineHAM2x24_C(graph_line *linedesc)
+{
+  UBY * source_line_ptr;
+  LON nonvisible;
+  ULO bitindex;
+  ULO holdmask;
+  ULO hampixel;
+  UBY * draw_buffer_current_ptr_local;
+  ULO pixels_left_to_draw;
+
+  nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+  draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+  hampixel = 0;
+
+  if (nonvisible > 0)
+  {
+    /*========================================*/
+	  /* Preprocess none visible pixels         */
+	  /*========================================*/
+    source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+    while (nonvisible > 0) 
+    {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+      }
+      source_line_ptr++;
+      nonvisible--;
+    }
+  }
+
+  /*===============================*/
+	/* Draw visible HAM pixels       */
+  /*===============================*/
+  pixels_left_to_draw = linedesc->DIW_pixel_count;
+  source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+  while (pixels_left_to_draw > 0)
+  {
+      if ((*source_line_ptr & 0xc0) == 0)
+      {
+        hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+      }
+      else
+      {
+        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+        bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+        hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+      }
+
+      *((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
+      *((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+      draw_buffer_current_ptr += 3;
+      *((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
+      *((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+      source_line_ptr++;
+      pixels_left_to_draw--;
+      draw_buffer_current_ptr += 3;
+  }
+  spriteMergeHAM2x24(draw_buffer_current_ptr_local, linedesc);
 }

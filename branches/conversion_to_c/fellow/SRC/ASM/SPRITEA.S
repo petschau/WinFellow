@@ -38,8 +38,8 @@ FDATASECTIONSTART
 %include "data/sprite.inc"
 %include "data/graph.inc"
 %include "data/fmem.inc"
-%include "data/draw.inc"
 
+CDATAEXTERN draw_hscale;
 	
 FDATASECTIONEND
 FCODESECTIONSTART
