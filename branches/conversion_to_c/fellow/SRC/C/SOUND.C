@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.5 2005-01-22 22:43:46 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.6 2005-01-22 22:51:39 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -632,7 +632,7 @@ void soundVolumeTableInitialize(BOOLE stereo) {
       if (j == 0)
 	soundSetSampleVolume((UBY) (i & 0xff), (UBY) j, (WOR)  0);
       else
-        soundSetSampleVolume((UBY) (i & 0xff), (UBY) j, (WOR) ((i*j*s)/2));
+        soundSetSampleVolume((UBY) (i & 0xff), (UBY) j, (WOR) ((i*j*s)));
 }
 
 
