@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2001/01/03:                                                                */
+/* - added missing emulation necessity check                                  */
 /* 2000/12/30:                                                                */
 /* - blitter operations log toggle                                            */
 /* 2000/12/17:                                                                */
@@ -1446,12 +1448,16 @@ void wdbgDebugSessionRun(HWND parent)
   /* The configuration has been activated, but we must prepare the modules */
   /* for emulation ourselves */
 
-  wdbg_hDialog = parent;
-  fellowEmulationStart();
-  if (fellowGetPreStartReset())
-    fellowHardReset();
-  wdbgSessionMainDialog();
-  fellowEmulationStop();
+  if (wguiCheckEmulationNecessities()) {
+    wdbg_hDialog = parent;
+    fellowEmulationStart();
+    if (fellowGetPreStartReset())
+      fellowHardReset();
+    wdbgSessionMainDialog();
+    fellowEmulationStop();
+  }
+  else
+    MessageBox(parent, "Specified KickImage does not exist", "Configuration Error", 0);
 }
 
 #endif /* WGUI */
