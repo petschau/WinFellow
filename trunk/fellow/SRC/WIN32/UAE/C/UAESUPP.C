@@ -1,7 +1,6 @@
+/* @(#) $Id: UAESUPP.C,v 1.4 2004-05-27 18:05:23 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: UAESUPP.C,v 1.3 2004-05-27 12:30:24 carfesh Exp $     */
 /*                                                                         */
 /* UAE support                                                             */
 /*                                                                         */
@@ -28,6 +27,15 @@
 /*=========================================================================*/
 
 #include <stdio.h>
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#endif
+#include <stdlib.h>
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <crtdbg.h>
+#endif
+
 #include "uae2fell.h"
 #include "fmem.h"
 
@@ -105,3 +113,21 @@ void write_log (const char *format,...)
 	fellowAddLog(buffer);
     va_end (parms);
 }
+
+/* written to replace the macro my_strdup, so that we can track down memory leaks better */
+
+char *my_strdup(char *str) 
+{
+  char *result = NULL;
+  size_t length = strlen(str)+1;
+  if(length > 0) 
+  {
+    result = malloc(length);
+    if(result == NULL) 
+      return NULL;
+
+    strcpy(result, str);
+  }
+  return result;
+}
+
