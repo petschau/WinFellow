@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G6 /MTd /Gm /GX /ZI /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FAcs /FR /FD /c
+# ADD CPP /nologo /G6 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
