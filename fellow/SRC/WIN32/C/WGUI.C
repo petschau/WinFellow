@@ -2160,6 +2160,7 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg,
       break;
     case WM_DESTROY:
       wguiExtractFloppyConfig(hwndDlg, wgui_cfg);
+			wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
       break;
   }
   return FALSE;
@@ -3046,7 +3047,7 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 		wgui_action = WGUI_LOAD_HISTORY3;
 		break;
 	  case IDC_CONFIGURATION:
-		wguiConfigurationDialog();
+			wguiConfigurationDialog();
 	    break;
 	  case IDC_HARD_RESET:
 	    fellowPreStartReset(TRUE);
