@@ -518,41 +518,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\grapha.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\mmx.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -718,9 +683,6 @@
 					RelativePath="..\..\incasm\mac\gameport.mac">
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\graph.mac">
-				</File>
-				<File
 					RelativePath="..\..\incasm\mac\kbd.mac">
 				</File>
 				<File
@@ -764,9 +726,6 @@
 					RelativePath="..\..\incasm\func\gameport.inc">
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\graph.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\func\kbd.inc">
 				</File>
 				<File
@@ -805,9 +764,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\gameport.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\graph.inc">
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\sound.inc">
