@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.3 2004-06-02 12:53:18 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.4 2004-06-02 13:15:21 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -234,7 +234,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
         *current_mfm_data++ = *(capsTrackInfo.trackdata[0]+ i);
 #if TRACECAPS
     {
-	    FILE *f = fopen("C:\\CAPSTest.txt","wb");
+	    FILE *f = fopen("CAPSDump.txt","wb");
 	    fwrite(capsTrackInfo.trackdata[0], len, 1, f);
 	    fclose(f);
     }
