@@ -26,6 +26,7 @@
 #include "draw.h"
 #include "fswrap.h"
 #include "graph.h"
+#include "cia.h"
 
 #include "xdms.h"
 #include "zlibwrap.h"
@@ -231,8 +232,8 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
   /* Track and sector info */
 
   tmp = 0xff000000 | (tra<<16) | (sec<<8) | (11 - sec);
-  odd = tmp & MFM_MASK;
-  even = (tmp>>1) & MFM_MASK;
+  odd = (tmp & MFM_MASK) | MFM_FILLL;
+  even = ((tmp>>1) & MFM_MASK) | MFM_FILLL;
   *(dest +  8) = (UBY) ((even & 0xff000000)>>24);
   *(dest +  9) = (UBY) ((even & 0xff0000)>>16);
   *(dest + 10) = (UBY) ((even & 0xff00)>>8);
@@ -301,44 +302,54 @@ void floppyGapMfmEncode(UBY *dst) {
 
 /*===========================================================*/
 /* Decode one MFM sector from src to dst                     */
+/* Warning: Amiga OS appears to tag the gap with a sync..?   */
 /* src is pointing after sync words on entry                 */
 /* Returns the sector number found in the MFM encoded header */
 /*===========================================================*/
 
-ULO floppySectorMfmDecode(UBY *src, UBY *dst) {
-  ULO sector;
+ULO floppySectorMfmDecode(UBY *src, UBY *dst, ULO track) {
+  ULO src_sector, src_track, src_ff;
   ULO odd, even, i;
   odd = (src[0]<<24) | (src[1]<<16) | (src[2]<<8) | src[3];
   even = (src[4]<<24) | (src[5]<<16) | (src[6]<<8) | src[7];
   even &= MFM_MASK;
   odd  = (odd & MFM_MASK) << 1;
   even |= odd;
-  sector = (even & 0xff00)>>8;
+  src_ff = (even & 0xff000000)>>24;
+  src_sector = (even & 0xff00)>>8;
+  src_track = (even & 0xff0000)>>16;
+  if ((src_ff != 0xff) || (src_sector > 10) || (src_track != track))
+    return 0xffffffff;
   src += (48 + 8);
   for (i = 0; i < 512; i++) {
-    even = (*(src + i)) & 0x55;
-    odd = (*(src + i + 512)) & 0x55;
+    even = (*(src + i)) & MFM_MASK;
+    odd = (*(src + i + 512)) & MFM_MASK;
     *(dst++) = (UBY) ((even<<1) | odd);
   }
-  return sector;
+  return src_sector;
 }
 
 /*=================================================================*/
 /* Save one sector to disk and cache                               */
 /* mfmsrc points to after the sync words somewhere in Amiga memory */
 /* It uses tmptrack as scratchpad                                  */
+/* returns TRUE if this really was a sector                        */
 /*=================================================================*/
 
-void floppySectorSave(ULO drive, ULO track, UBY *mfmsrc) {
+BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc) {
   ULO sector;
   if (!floppy[drive].writeprot) {
-    if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack)) < 11) {
+    if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11) {
       fseek(floppy[drive].F,
 	    floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
       fwrite(tmptrack, 1, 512, floppy[drive].F);
       memcpy(floppy[drive].trackinfo[track].mfm_data + sector*1088, mfmsrc - 8, 1088);
     }
+    else {
+      return FALSE;
+    }
   }
+  return TRUE;
 }
 
 /*===============================*/
@@ -588,7 +599,7 @@ void floppyImageNormalLoad(ULO drive) {
 /*========================*/
 
 void floppyImageExtendedLoad(ULO drive) {
-  ULO i, j;
+  ULO i;
   ULO file_offset; /* position of current track in the image file */
   ULO mfm_offset;  /* position of current track in the floppy cache */
   UBY tinfo[4];
@@ -621,8 +632,8 @@ void floppyImageExtendedLoad(ULO drive) {
     {
       mfm_offset  += lengths[i] + 2;
       floppy[drive].trackinfo[i].mfm_length = lengths[i] + 2;
-      floppy[drive].trackinfo[i].mfm_data[0] = syncs[i] >> 8;
-      floppy[drive].trackinfo[i].mfm_data[1] = syncs[i] & 0xff;
+      floppy[drive].trackinfo[i].mfm_data[0] = (UBY) (syncs[i] >> 8);
+      floppy[drive].trackinfo[i].mfm_data[1] = (UBY) (syncs[i] & 0xff);
       fread(floppy[drive].trackinfo[i].mfm_data + 2, 1, lengths[i], floppy[drive].F);
     }
     file_offset += lengths[i];
@@ -819,17 +830,24 @@ BOOLE floppyIsSpinning(ULO sel_drv) {
   return floppy[sel_drv].motor && floppy[sel_drv].enabled && floppy[sel_drv].inserted;
 }
 
-/*==============================================*/
-/* Initialize disk DMA reading                  */
-/*==============================================*/
+/*======================================================================*/
+/* Initialize disk DMA reading                                          */
+/* I'm having a problem with KS3.1, which will eventually write corrupt */
+/* mfm-sectors if there is a gap in the mfm read from the disk.         */
+/* I don't understand why this happens, but for now, get around the     */
+/* problem by not using gap for disk accesses performed by the KS.      */
+/*======================================================================*/
 
-void floppyDMAReadInit(void) {
+void floppyDMAReadInit(ULO drive) {
   floppy_DMA_started = TRUE;
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt & 0x1ffffe;
   floppy_DMA.wait_for_sync = (dsksync != 0);
   floppy_DMA.sync_found = FALSE;
+  floppy_DMA.dont_use_gap = ((cpuGetPC(pc) & 0xf80000) == 0xf80000);
+  if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
+    floppy[drive].motor_ticks = 0;
 }
 
 /*==========================================*/
@@ -855,20 +873,19 @@ ULO floppyFindNextSync(ULO pos, LON length) {
 void floppyDMAWriteInit(LON drive) {
   LON length = (dsklen & 0x3fff)*2;
   ULO pos = dskpt & 0x1ffffe;
-  ULO pos_stop = (pos + length - 1080) & 0x1ffffe; /* Stop searching when less than a full sector left */
   ULO track_lin;
   BOOLE is_sync = FALSE, past_sync = FALSE, ended = FALSE;
   if ((drive == -1) || !floppyDMAChannelOn()) ended = TRUE;
   track_lin = floppyGetLinearTrack(drive);
-  while (length > 0)
-  {
+  while (length > 0) {
     ULO next_after_sync_offset = floppyFindNextSync(pos, length);
     length -= next_after_sync_offset;
     pos += next_after_sync_offset;
     if (length > 0) {
-      floppySectorSave(drive, track_lin, memory_chip + pos);
-      length -= 1080;
-      pos += 1080;
+      if (floppySectorSave(drive, track_lin, memory_chip + pos)) {
+        length -= 1080;
+        pos += 1080;
+      }
     }
   }
   floppy_DMA_read = FALSE;
@@ -884,7 +901,7 @@ void floppyDMAWriteInit(LON drive) {
 
 void floppyDMAStart(void) {
   if (dsklen & 0x4000) floppyDMAWriteInit(floppySelectedGet());
-  else floppyDMAReadInit();
+  else floppyDMAReadInit(floppySelectedGet());
   diskDMAen = 0;
 }
 
@@ -932,7 +949,9 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
 }
 
 void floppyNextTick(ULO sel_drv, ULO track) {
-  floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % (floppy[sel_drv].trackinfo[track].mfm_length);
+  ULO modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
+								     floppy[sel_drv].trackinfo[track].mfm_length;
+  floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 }
 
 void floppyEndOfLineC(void) {
