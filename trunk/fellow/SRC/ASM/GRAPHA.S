@@ -370,7 +370,7 @@ _wdiwstrt_:	mov	dword [diwstrt], edx
 		and	edx, 0ffh
 		jmp	.l2
 .l1:		mov	edx, 88
-.l2:		mov	dword [diwxleft], 88
+.l2:		mov	dword [diwxleft], edx
 		jmp	_graphCalculateWindow_
 
 	
