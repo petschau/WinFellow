@@ -46,9 +46,6 @@ FCODESECTIONSTART
 %include "mac/cia.mac"
 %include "mac/bus.mac"
 
-;CFUNCEXTERN busScanEventsLevel4
-CFUNCEXTERN busScanEventsLevel6
-
 ;==============================================================================
 ; CIA memory access wrappers, calls routines in cia.c
 ;==============================================================================
@@ -101,38 +98,6 @@ _ciaReadLong_:
 		CIAREADLONG_CWRAP
 		ret
 
-
-;==============================================================================
-; Event scheduling for CIA
-;==============================================================================
-
-
-		FALIGN32
-
-global _ciaHandleEventWrapper_
-_ciaHandleEventWrapper_:
-		CIA_HANDLE_EVENT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _ciaSetupEventWrapper_
-_ciaSetupEventWrapper_:
-		push	ebx
-		push	eax
-		
-		pushad
-		call busScanEventsLevel6
-		popad
-		;SCAN_EVENTS_LVL6
-
-		pop	eax
-		pop	ebx
-		ret
-
-
-		FALIGN32
 
 FCODESECTIONEND
 FBSSSECTIONSTART

@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.19 2004-07-25 22:33:21 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.20 2005-01-01 00:28:10 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -906,11 +906,11 @@ void floppyTimeBufDataFree(void) {
 /*============================*/
 
 void floppyIOHandlersInstall(void) {
-  memorySetIOReadStub(0x1a, rdskbytr);
-  memorySetIOWriteStub(0x20, wdskpth);
-  memorySetIOWriteStub(0x22, wdskptl);
-  memorySetIOWriteStub(0x24, wdsklen);
-  memorySetIOWriteStub(0x7e, wdsksync);
+  memorySetIOReadStub(0x1a, rdskbytrC);
+  memorySetIOWriteStub(0x20, wdskpthC);
+  memorySetIOWriteStub(0x22, wdskptlC);
+  memorySetIOWriteStub(0x24, wdsklenC);
+  memorySetIOWriteStub(0x7e, wdsksyncC);
 }
 
 void floppyIORegistersClear(void) {

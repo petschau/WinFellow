@@ -78,20 +78,21 @@
 #define memoryDmemReadLong ASMRENAME(memoryDmemReadLong)
 #define memoryDmemWriteLongASM ASMRENAME(memoryDmemWriteLongASM)
 
-#define rserdatr ASMRENAME(rserdatr)
+//#define rserdatr ASMRENAME(rserdatr)
 //#define wserdat ASMRENAME(wserdat)
 //#define wserper ASMRENAME(wserper)
-#define rintenar ASMRENAME(rintenar)
-#define rintreqr ASMRENAME(rintreqr)
-#define rdefault ASMRENAME(rdefault)
+//#define rintenar ASMRENAME(rintenar)
+//#define rintreqr ASMRENAME(rintreqr)
+//#define rdefault ASMRENAME(rdefault)
 
 #define wdmacon ASMRENAME(wdmacon)
-#define wintena ASMRENAME(wintena)
-#define wintreq ASMRENAME(wintreq)
-#define wadcon ASMRENAME(wadcon)
-#define wdefault ASMRENAME(wdefault)
+//#define wintena ASMRENAME(wintena)
+//#define wintreq ASMRENAME(wintreq)
+//#define wadcon ASMRENAME(wadcon)
+//#define wdefault ASMRENAME(wdefault)
 
 #define fmemstart ASMRENAME(fmemstart)
+#define cpuRaiseInterrupt ASMRENAME(cpuRaiseInterrupt)
 
 /* Declare exported functions from assembly */
 
@@ -192,19 +193,20 @@ extern void memoryDmemWriteLongASM(ULO data, ULO ea);
 
 /* IO-Register access functions */
 
-extern ULO rserdatr(ULO address);
-extern ULO rintenar(ULO address);
-extern ULO rintreqr(ULO address);
-extern ULO rdefault(ULO address);
-//extern void wserdat(ULO data, ULO address);
-//extern void wserper(ULO data, ULO address);
+ULO rserdatr_C(ULO address);
+ULO rintenar_C(ULO address);
+ULO rintreqr_C(ULO address);
+ULO rdefault_C(ULO address);
+void wserdat_C(ULO data, ULO address);
+void wserper_C(ULO data, ULO address);
 extern void wdmacon(ULO data, ULO address);
-extern void wintena(ULO data, ULO address);
-extern void wintreq(ULO data, ULO address);
-extern void wadcon(ULO data, ULO address);
-extern void wdefault(ULO data, ULO address);
+void wintena_C(ULO data, ULO address);
+void wintreq_C(ULO data, ULO address);
+void wadcon_C(ULO data, ULO address);
+void wdefault_C(ULO data, ULO address);
 
 extern void fmemstart(void);  /* Code alignment label */
+extern void cpuRaiseInterrupt(void);
 
 /* End of assembly function declarations */
 

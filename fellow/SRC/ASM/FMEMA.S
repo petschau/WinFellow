@@ -29,7 +29,6 @@ FDATASECTIONSTART
 
 
 %include "data/fmem.inc"
-%include "data/floppy.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
 	
@@ -45,13 +44,9 @@ _memorystart_:			; Used to check code alignment
 %include "func/cpu.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/floppy.inc"
-%include "func/gameport.inc"
 %include "func/fmem.inc"
 %include "mac/fmem.mac"
 %include "mac/cia.mac"
-%include "mac/floppy.mac"
-%include "mac/gameport.mac"
 		
 		
 ;==============================================================================
@@ -1048,48 +1043,6 @@ _wdefault_:	inc	dword [memory_undefined_io_write_counter]
 ;==============================================================================
 ; Some hardware IO-register access wrappers, calls routines in C
 ;==============================================================================
-
-
-		FALIGN32
-
-global _rdskbytr_
-_rdskbytr_:
-		RDSKBYTR_CWRAP
-		mov eax, edx
-		ret
-
-
-		FALIGN32
-
-global _wdskpth_
-_wdskpth_:
-		WDSKPTH_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdskptl_
-_wdskptl_:
-		WDSKPTL_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdsklen_
-_wdsklen_:
-		WDSKLEN_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdsksync_
-_wdsksync_:
-		WDSKSYNC_CWRAP
-		ret
-
 
 		FALIGN32
 

@@ -10,7 +10,6 @@
 #define ciaWriteByte ASMRENAME(ciaWriteByte)
 #define ciaWriteWord ASMRENAME(ciaWriteWord)
 #define ciaWriteLong ASMRENAME(ciaWriteLong)
-#define ciaSetupEventWrapper ASMRENAME(ciaSetupEventWrapper)
 
 /* Declare assembly functions referenced from C */
 
@@ -20,7 +19,6 @@ extern ULO ciaReadLong(ULO ea);
 extern void ciaWriteByte(ULO data, ULO ea);
 extern void ciaWriteWord(ULO data, ULO ea);
 extern void ciaWriteLong(ULO data, ULO ea);
-extern void ciaSetupEventWrapper(void);
 
 /* Cia functions written in C */
 

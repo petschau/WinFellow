@@ -226,12 +226,12 @@ void gameportJoystickHandler(gameport_inputs joydev,
 /*===========================================================================*/
 
 void gameportIOHandlersInstall(void) {
-  memorySetIOReadStub(0xa, rjoy0dat);
-  memorySetIOReadStub(0xc, rjoy1dat);
-  memorySetIOReadStub(0x12, rpot0dat);
-  memorySetIOReadStub(0x14, rpot1dat);
-  memorySetIOReadStub(0x16, rpotgor);
-  memorySetIOWriteStub(0x36, wjoytest);
+  memorySetIOReadStub(0xa, rjoy0datC);
+  memorySetIOReadStub(0xc, rjoy1datC);
+  memorySetIOReadStub(0x12, rpot0datC);
+  memorySetIOReadStub(0x14, rpot1datC);
+  memorySetIOReadStub(0x16, rpotgorC);
+  memorySetIOWriteStub(0x36, wjoytestC);
 }
 
 

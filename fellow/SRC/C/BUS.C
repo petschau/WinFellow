@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.1.1.1.2.8 2004-08-16 17:29:17 worfje Exp $ */
+/* @(#) $Id: BUS.C,v 1.1.1.1.2.9 2005-01-01 00:28:10 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -37,6 +37,7 @@
 #include "floppy.h"
 #include "kbd.h"
 #include "sound.h"
+#include "kbd.h"
 
 
 ULO debugging;
@@ -53,7 +54,7 @@ buseventfunc lvl2_ptr, lvl3_ptr, lvl4_ptr, lvl5_ptr, lvl6_ptr, lvl7_ptr;
 UWO bus_cycle_to_ypos[0x20000];
 UBY bus_cycle_to_xpos[0x20000];
 
-extern ULO copper_ptr, copper_next;
+extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip, draw_frame_skip_factor, fellow_request_emulation_stop;
 
 /*===========================================================================*/
 /* Cycle counter to raster beam position table                               */
@@ -126,7 +127,7 @@ void busScanLevel6(ULO* lvlx_next, buseventfunc* lvlx_ptr)
   if ((*lvlx_next) > (ULO) cia_next_event_time)
   {
     *lvlx_next = cia_next_event_time;
-    *lvlx_ptr = ciaHandleEventWrapper;
+    *lvlx_ptr = ciaHandleEventC;
   }
   lvl6_next = *lvlx_next;
   lvl6_ptr = *lvlx_ptr; 
@@ -279,8 +280,8 @@ void endOfLineC(void)
 	/* Handle keyboard events                                       */
 	/*==============================================================*/
 
-  kbdQueueHandler();
-  kbdEventEOLHandler();
+  kbdQueueHandlerC();
+  kbdEventEOLHandlerC();
 
 	/*==============================================================*/
 	/* Set up the next end of line event                            */

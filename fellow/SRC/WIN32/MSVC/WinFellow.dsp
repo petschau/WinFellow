@@ -484,116 +484,6 @@ InputPath=..\..\asm\fmema.s
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\mmx.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Asm\Sse.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
 # End Group
 # Begin Group "Assembly Include Files"
 
@@ -615,19 +505,7 @@ SOURCE=..\..\incasm\mac\cpu.mac
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\mac\floppy.mac
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\mac\fmem.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\gameport.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\kbd.mac
 # End Source File
 # Begin Source File
 
@@ -655,23 +533,7 @@ SOURCE=..\..\incasm\func\cpu.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\func\fellow.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\floppy.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\func\fmem.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\gameport.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\kbd.inc
 # End Source File
 # End Group
 # Begin Group "Data"
@@ -703,19 +565,7 @@ SOURCE=..\..\incasm\data\fhfile.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\data\floppy.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\data\fmem.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\gameport.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\timer.inc
 # End Source File
 # End Group
 # Begin Group "Generic"

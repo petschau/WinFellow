@@ -58,15 +58,16 @@ FDATASECTIONSTART
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/fmem.inc"
-%include "data/floppy.inc"
 %include "data/cia.inc"
 %include "data/copper.inc"
-%include "data/timer.inc"		
+;%include "data/timer.inc"		
 
 CDATAEXTERN blitend
 CDATAEXTERN draw_frame_count;
 CDATAEXTERN draw_frame_skip;
 CDATAEXTERN draw_frame_skip_factor;
+
+CFUNCEXTERN kbdEventEOFHandlerC;
 
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
@@ -81,13 +82,9 @@ _busstart_:	 ; Used to check code alignment
 
 %include "func/fmem.inc"
 %include "func/cpu.inc"
-%include "func/floppy.inc"
-%include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/kbd.inc"
 %include "mac/fmem.mac"
-%include "mac/kbd.mac"
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
@@ -315,7 +312,9 @@ _endOfFrame_:	push	edx
 		; Handle keyboard events
 		;==============================================================
 
-		KBDEVENTEOFHANDLER_CWRAP
+		pushad
+		call	kbdEventEOFHandlerC
+		popad
 
 
 		;==============================================================

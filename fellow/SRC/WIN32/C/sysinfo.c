@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.11.2.6 2004-06-12 15:36:02 carfesh Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.11.2.7 2005-01-01 00:28:11 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -1013,10 +1013,10 @@ static void sysinfoDetectCPU (void) {
 	fellowAddTimelessLog("\tCPU clock: \t%3.0f MHz\n", speed);
   }
   
-  if (detectMMX() == 1) {
+  if (sysinfoDetectMMX() == 1) {
 	fellowAddTimelessLog("\tCPU supports: \tMMX instruction set\n");
   }
-  if (detectSSE() == 1) {
+  if (sysinfoDetectSSE() == 1) {
 	fellowAddTimelessLog("\tCPU supports: \tSSE instruction set\n");
   }
 
@@ -1052,3 +1052,73 @@ void sysinfoLogSysInfo(void)
   sysinfoDetectCPU();
   fellowAddTimelessLog("\n\ndebug information:\n\n");
 }
+
+BOOL sysinfoDetectMMX(void)
+{	
+	BOOL mmxFound;
+
+	mmxFound = 0;
+	_asm
+	{
+		pushad
+		pushfd
+		pop	eax
+		mov     ebx, eax
+		xor     eax, 00200000h
+		push    eax
+		popfd
+		pushfd
+		pop     eax
+		cmp     eax, ebx
+		jz      no_mmx
+		mov     eax, 1
+		cpuid
+		test    edx, 0800000h
+		jz      no_mmx
+		popad
+		mov     eax, 1
+		jmp     outt
+no_mmx:	
+		popad
+		xor     eax, eax
+outt:		
+		mov mmxFound, eax
+	}
+	return mmxFound;
+}
+
+BOOL sysinfoDetectSSE(void)
+{
+	BOOL sseFound;
+
+	sseFound = 0;
+
+	_asm 
+	{
+		pushad
+		pushfd
+		pop	eax
+		mov     ebx, eax
+		xor     eax, 00200000h
+		push    eax
+		popfd
+		pushfd
+		pop     eax
+		cmp     eax, ebx
+		jz      no_sse
+		mov     eax, 1
+		cpuid
+		test    edx, 02000000h
+		jz      no_sse
+		popad
+		mov     eax, 1
+		jmp     outt
+no_sse:	
+		popad
+		xor     eax, eax
+outt:		
+		mov sseFound, eax;
+	}
+	return sseFound;
+}
+
