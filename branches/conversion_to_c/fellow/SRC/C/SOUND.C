@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.6 2005-01-22 22:51:39 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.7 2005-01-23 16:30:20 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -84,10 +84,17 @@ double filter_value45 = 0.857270436755215389; // 7000 Hz at 45454 Hz samplingrat
 double filter_value33 = 0.809385175167476725; // 7000 Hz at 33100 Hz samplingrate
 double filter_value22 = 0.727523105310746957; // 7000 Hz at 22005 Hz samplingrate
 double filter_value15 = 0.639362082983339100; // 7000 Hz at 15650 Hz samplingrate
+/*
 double amplitude_div45 = 3.5000000000;
 double amplitude_div33 = 2.8000000000;
 double amplitude_div22 = 1.9000000000;
 double amplitude_div15 = 1.4000000000;
+*/
+
+double amplitude_div45 = 7.035;
+double amplitude_div33 = 5.25;
+double amplitude_div22 = 3.67;
+double amplitude_div15 = 2.773;
 double last_right = 0.0000000000;
 double last_left = 0.0000000000;
 
