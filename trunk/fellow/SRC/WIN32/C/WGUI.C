@@ -20,6 +20,7 @@
 #include <commctrl.h>
 #include <prsht.h>
 
+#include "wgui.h"
 #include "windrv.h"
 #include "sound.h"
 #include "cpu.h"
@@ -94,6 +95,7 @@ typedef enum {
   WGUI_LOAD_HISTORY1,
   WGUI_LOAD_HISTORY2,
   WGUI_LOAD_HISTORY3,
+  WGUI_MULTIPLE_GRAPHICAL_BUFFERS,
   WGUI_DEBUGGER_START,
   WGUI_ABOUT
 } wguiActions;
@@ -2362,6 +2364,14 @@ int wguiConfigurationDialog(void)
   return PropertySheet(&propertysheetheader);
 }
 
+void wguiSetCheckOfUseMultipleGraphicalBuffers(BOOLE useMultipleGraphicalBuffers) {
+	
+	if (useMultipleGraphicalBuffers) {
+		CheckMenuItem(GetMenu(wgui_hDialog), ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS, MF_CHECKED);
+	} else {
+		CheckMenuItem(GetMenu(wgui_hDialog), ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS, MF_UNCHECKED);
+	}	
+}
 
 /*============================================================================*/
 /* DialogProc for the About box                                               */
@@ -2448,6 +2458,9 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 		break;
       case ID_FILE_HISTORYCONFIGURATION3:   
 		wgui_action = WGUI_LOAD_HISTORY3;
+		break;
+	  case ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS:
+		wgui_action = WGUI_MULTIPLE_GRAPHICAL_BUFFERS;
 		break;
 	  case IDC_CONFIGURATION:
 		wguiConfigurationDialog();
@@ -2561,7 +2574,9 @@ BOOLE wguiEnter(void) {
 			        NULL,
 			        wguiDialogProc); 
 	SetWindowPos(wgui_hDialog, NULL, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), -1, -1, SWP_NOSIZE);
-    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+    wguiStartupPost();
+	wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	
 
 	// install history into menu
 	wguiInstallHistoryIntoMenu();
@@ -2643,6 +2658,11 @@ BOOLE wguiEnter(void) {
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
+		case WGUI_MULTIPLE_GRAPHICAL_BUFFERS:
+		  iniSetUseMultipleGraphicalBuffers(wgui_ini, !iniGetUseMultipleGraphicalBuffers(wgui_ini));
+		  wguiSetCheckOfUseMultipleGraphicalBuffers(iniGetUseMultipleGraphicalBuffers(wgui_ini));
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
 		case WGUI_DEBUGGER_START:
 		  end_loop = TRUE;
 		  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
@@ -2683,6 +2703,9 @@ void wguiStartup(void) {
   wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
 }
 
+void wguiStartupPost(void) {
+  wguiSetCheckOfUseMultipleGraphicalBuffers(iniGetUseMultipleGraphicalBuffers(wgui_ini));
+}
 
 /*============================================================================*/
 /* Called at the end of Fellow execution                                      */
