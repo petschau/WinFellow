@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
@@ -211,12 +211,20 @@
 #define IDC_GAMEPORT0_FIRE0             1113
 #define IDC_GAMEPORT0_FIRE1             1114
 #define IDC_GAMEPORT1_UP                1115
+#define IDC_GAMEPORT0_FIRE2             1116
+#define IDC_GAMEPORT0_AUTOFIRE0         1116
 #define IDC_GAMEPORT1_RIGHT             1117
 #define IDC_GAMEPORT1_LEFT              1118
 #define IDC_GAMEPORT1_FIRE0             1119
 #define IDC_GAMEPORT1_FIRE1             1120
 #define IDC_GAMEPORT1_DOWN              1121
+#define IDC_GAMEPORT1_FIRE2             1122
+#define IDC_GAMEPORT1_AUTOFIRE0         1122
 #define IDC_SLIDER_SCREEN_AREA          1123
+#define IDC_GAMEPORT0_FIRE3             1123
+#define IDC_GAMEPORT0_AUTOFIRE1         1123
+#define IDC_GAMEPORT1_FIRE3             1124
+#define IDC_GAMEPORT1_AUTOFIRE1         1124
 #define IDC_CHECK_HORIZONTAL_SCALE      1125
 #define IDC_SLIDER_FRAME_SKIPPING       1127
 #define IDC_CHECK_MULTIPLE_BUFFERS      1128
