@@ -302,6 +302,51 @@ _memoryChipWriteLong_:
 		ret
 
 
+; -----------------------------
+; ROM overlayed to $000000 bank 
+; -----------------------------
+
+
+		FALIGN32
+
+global _memoryOVLReadByte_
+_memoryOVLReadByte_:	
+		and	ecx, 0ffffffh
+		movzx	edx, byte [memory_kick + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadWord_
+_memoryOVLReadWord_:	
+		and	ecx, 0ffffffh
+		xor	edx, edx
+		mov	dh, byte [memory_kick + ecx]
+		mov	dl, byte [memory_kick + 1 + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadLong_
+_memoryOVLReadLong_:
+		and	ecx, 0ffffffh
+		mov	edx, dword [memory_kick + ecx]
+		bswap	edx
+		ret
+
+		FALIGN32
+
+global _memoryOVLWriteByte_
+global _memoryOVLWriteWord_
+global _memoryOVLWriteLong_
+_memoryOVLWriteByte_:
+_memoryOVLWriteWord_:
+_memoryOVLWriteLong_:
+		mov	ecx, dword [memory_wriorgadr]
+		ret
+	
 ; ---------
 ; Fast bank 
 ; ---------
