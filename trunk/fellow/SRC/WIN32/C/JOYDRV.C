@@ -13,7 +13,7 @@
 #include "joydrv.h"
 #include "windrv.h"
 
-#define DIRECTINPUT_VERSION 0x0300
+#define DIRECTINPUT_VERSION 0x0500
 #include <dinput.h>
 
 
