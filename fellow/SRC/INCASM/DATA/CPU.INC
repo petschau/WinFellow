@@ -5,12 +5,8 @@
 ; Includes data declared in the C 68000 module
 ;==============================================================================
 
-%ifndef ASM_CPU_ASM
-extern _a
-extern _d
-extern _aend
-%endif
-
+CDATAEXTERN a
+CDATAEXTERN d
 CDATAEXTERN stopreturnadr
 CDATAEXTERN irq_changed
 CDATAEXTERN cpu_speed
