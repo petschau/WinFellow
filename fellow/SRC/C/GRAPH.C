@@ -24,6 +24,7 @@
 #include "bus.h"
 #include "sound.h"
 #include "draw.h"
+#include "graph.h"
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -2043,18 +2044,10 @@ void graphDecodeNOP_C(void)
 
 void graphEndOfLine_C(void)
 {
-  
-}
-
-
-/*
-void graphEndOfLine(void)
-{
-
 	graph_line* current_graph_line;
 
 	// skip this frame?
-	if (draw_frame_skip != 0) 
+	if (draw_frame_skip == 0) 
 	{
 		// update diw state
 		graphPlayfieldOnOff();
@@ -2071,63 +2064,178 @@ void graphEndOfLine(void)
 			{
 				if (graph_raster_y >= 0x18) 
 				{
-					spritesDecode();
+				  __asm 
+          {
+					pushad
+					call spritesDecode
+					popad
+				  }
 				}
 			}
 			
 			// sprites decoded, sprites_onlineflag is set if there are any
-			
 			// update pointer to drawing routine
-			update_drawmode();
-
+			drawUpdateDrawmode();
+		  
 			// check if we are clipped
-
 			if ((graph_raster_y >= draw_top) || (graph_raster_y < draw_bottom))
 			{
-				// .decode
+
 				// visible line, either background or bitplanes
 				if (graph_allow_bpl_line_skip == 0) 
 				{
-					_graphComposeLineOutput_
+				  __asm 
+          {
+					  pushad
+					  push current_graph_line
+					  call graphComposeLineOutput
+					  pop edx
+					  popad
+				  }
 				}
 				else
 				{
-					_graphComposeLineOutputSmart_
+			    __asm 
+          {
+				    pushad
+				    push current_graph_line
+				    call graphComposeLineOutputSmart
+				    pop edx
+				    popad
+			    }
 				}
-				// add	esp, 4 ????????????????
-
 			}
 			else
 			{
-				// .nop_line
 				// do nop decoding, no screen output needed
-		
-				// pop ebp ?????????????????
 				if (draw_line_BG_routine != draw_line_routine)
 				{
-					// push dword .drawend
-					graphDecodeNOP;
+					graphDecodeNOP_C();
 				}
 			}
 
 			// if diw state changing from background to bitplane output,
-		    // set new drawing routine pointer
+	    // set new drawing routine pointer
 
 			// .draw_end
-			if (draw_switch_bg_to_bpl != 0) {
-
+			if (draw_switch_bg_to_bpl != 0) 
+      {
 				draw_line_BPL_manage_routine = draw_line_routine;
-				draw_switch_bg_to_bpl = 0
-
+				draw_switch_bg_to_bpl = 0;
 			}
-
 		}
 	}
-	
 
 	// .skip_frame
-	_graphSpriteHack_
-
-		// no return??? or did something get pushed on the stack?
+  __asm {
+    pushad
+    call graphSpriteHack
+    popad
+  }
 }
-*/
+
+/*===========================================================================*/
+/* Smart compose the visible layout of the line                              */
+/* [4 + esp] - linedesc struct                                               */
+/*===========================================================================*/
+
+void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
+{
+  BOOLE line_desc_changed;
+  ULO local_DIW_first_draw;
+  ULO local_DIW_pixel_count;
+  UBY* local_line1;
+  UBY* local_line2;
+
+  line_desc_changed = FALSE;
+
+  // remember the basic properties of the line
+  __asm {
+    pushad
+    push ebp
+    push current_graph_line
+    call graphLinedescMakeSmart
+    pop edx
+    pop ebp
+    mov line_desc_changed, eax
+    popad
+  }
+
+	// check if we need to decode bitplane data
+  if (draw_line_BG_routine != draw_line_routine)
+  {
+  	// do the planar to chunky conversion
+		// stuff the data into a temporary array
+		// then copy it and compare
+    graph_decode_line_ptr();
+   
+  	// compare line data to old data  
+    local_DIW_first_draw = current_graph_line->DIW_first_draw;
+    local_DIW_pixel_count = current_graph_line->DIW_pixel_count;
+    local_line1 = current_graph_line->line1;
+    __asm {
+      pushad
+      push ebp
+      push local_DIW_first_draw
+		  push local_DIW_pixel_count
+      push local_line1
+      lea edx, graph_line1_tmp
+      push edx
+      call graphCompareCopy
+      pop edx
+      pop edx
+      pop edx
+      pop edx
+      pop ebp
+ 		  or line_desc_changed, eax
+      popad
+    }
+
+		// if the line is dual playfield, compare second playfield too
+    if ((bplcon0 & 0x0400) != 0x0)
+    {
+      local_DIW_first_draw = current_graph_line->DIW_first_draw;
+      local_DIW_pixel_count = current_graph_line->DIW_pixel_count;
+      local_line2 = current_graph_line->line2;
+      __asm {
+        pushad
+        push ebp
+        push local_DIW_first_draw
+		    push local_DIW_pixel_count
+        push local_line2
+		    lea edx, graph_line2_tmp
+        push edx
+        call graphCompareCopy
+        pop edx
+        pop edx
+        pop edx
+        pop edx
+        pop ebp
+		    or line_desc_changed, eax
+        popad
+      }
+    }
+  
+		// add sprites to the line image
+    if (sprites_online == 1)
+    {
+      line_desc_changed = TRUE;
+      __asm {
+        pushad
+        call spritesMerge
+        popad
+      }
+		  sprites_online = 0;
+    }
+    
+		// final test for line skip
+    if (line_desc_changed == TRUE)
+    {
+      current_graph_line->linetype = GRAPH_LINE_BPL;
+    }
+    else
+    {
+      current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
+    }
+  }
+}

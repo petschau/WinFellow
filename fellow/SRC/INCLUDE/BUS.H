@@ -19,7 +19,7 @@
 #define endOfLine ASMRENAME(endOfLine)
 #define copperEmulate ASMRENAME(copperEmulate)
 #define endOfFrame ASMRENAME(endOfFrame)
-#define graphEndOfLine ASMRENAME(graphEndOfLine)
+//#define graphEndOfLine ASMRENAME(graphEndOfLine)
 
 
 /* Assembly functions called from C */
@@ -40,7 +40,7 @@ extern void finish_blit(void);
 extern void endOfLine(void);
 extern void copperEmulate(void);
 extern void endOfFrame(void);
-extern void graphEndOfLine(void);
+//extern void graphEndOfLine(void);
 
 
 
