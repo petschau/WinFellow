@@ -35,6 +35,7 @@ FDATASECTIONSTART
 %include "data/bus.inc"
 %include "data/blit.inc"
 %include "data/draw.inc"
+%include "data/cpu.inc"
 	
 FDATASECTIONEND
 FCODESECTIONSTART
@@ -206,23 +207,29 @@ wril:
 
 ;==============================================================================
 ; These raises exception 3 when reading an odd address
+; and the CPU is < 020
 ;==============================================================================
 
 
 		FALIGN32
 
 global oddread
-oddread:	mov	dword [memory_fault_read] , 1
+oddread:	cmp	dword [cpu_major], 2
+		jl	.ex3
+		ret
+.ex3:  		mov	dword [memory_fault_read] , 1
 		mov	dword [memory_fault_address], ecx
 		mov	ebx, 0ch
 		mov	eax, 44
 		jmp	_cpuPrepareException_
 
-
 		FALIGN32
 
 global oddwrite
-oddwrite:	mov	dword [memory_fault_read] , 0
+oddwrite:	cmp	dword [cpu_major], 2
+		jl	.ex3
+		ret
+.ex3:		mov	dword [memory_fault_read] , 0
 		mov	ecx, dword [memory_wriorgadr]
 		mov	dword [memory_fault_address], ecx
 		mov	ebx, 0ch
