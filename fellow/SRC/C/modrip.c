@@ -881,7 +881,6 @@ void modripScanFellowFloppies(void)
 
 void modripRIP(void)
 {
-  BOOLE result;
   if(!modripGuiInitialize()) return;
   modripGuiSetBusy();
   modripScanFellowMemory();

@@ -15,7 +15,7 @@
 /* own includes */
 #include "modrip.h"
 
-extern void modripGuiInitialize(void);
+extern BOOLE modripGuiInitialize(void);
 extern void modripGuiSetBusy(void);
 extern void modripGuiUnSetBusy(void);
 extern BOOLE modripGuiSaveRequest(struct ModuleInfo *);
