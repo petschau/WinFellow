@@ -328,7 +328,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       */
     break;
   case WM_DESTROY:
-      fellowAddLog("Window is dead!\n");
+      fellowAddLog("WM_DESTROY\n");
       gfxDrvChangeDInputDeviceStates(FALSE);
       return 0;
       break;
@@ -352,6 +352,11 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
       return 0;
       break;
+    case WM_CLOSE:
+      fellowAddLog("WM_CLOSE\n");
+      fellowRequestEmulationStop();
+      return 0; /* We handled this message */ 
+
       
   }
   return DefWindowProc(hWnd, message, wParam, lParam);
@@ -1270,14 +1275,25 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
   RECT srcwin;
   RECT dstwin;
   LPDIRECTDRAWSURFACE lpDDSDestination;
-  
-  /* Source surface is always the secondary off-screen buffer  
-     Select the part of it that has been drawn to */
-  srcwin.left = draw_hoffset;
+  DDBLTFX bltfx;
+
+  memset(&bltfx, 0, sizeof(DDBLTFX));
+  bltfx.dwSize = sizeof(DDBLTFX);
+
+  /* Source surface is always the secondary off-screen buffer */
+
+  /* Srcwin is used when we do vertical scaling */
+  /* Prevent horisontal scaling of the offscreen buffer */
+  srcwin.left = 0;
+  srcwin.right = ddraw_device->mode->width;
   srcwin.top = draw_voffset;
-  srcwin.right = draw_hoffset + draw_width_amiga_real;
-  srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
-  
+  /* Want to maximize the likelyhood of hardware acceleration by keeping heights
+     integer aligned */
+  if (ddraw_device->mode->windowed)
+    srcwin.bottom = draw_voffset + (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+  else
+    srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
+
   /* Destination is always the primary or one the backbuffers attached to it */
   gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
   if (!ddraw_device->mode->windowed) {
@@ -1293,9 +1309,9 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 				      &ddraw_device->hwnd_clientrect_screen :
 		                      &dstwin,
                                     ddraw_device->lpDDSSecondary,
-                                    &srcwin,
-                                    0,
-                                    NULL)) != DD_OK) {
+                                    (ddraw_device->vertical_scale == 1) ? NULL : &srcwin,
+                                    DDBLT_ASYNC,
+                                    &bltfx)) != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
     if (err == DDERR_SURFACELOST) {
       /* Reclaim surface, if that also fails, pass over the blit and hope it */
@@ -1309,11 +1325,11 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
       if ((err = IDirectDrawSurface_Blt(lpDDSDestination,
                                         (ddraw_device->mode->windowed) ?
 				          &ddraw_device->hwnd_clientrect_screen :
-		                          0,
+		                          &dstwin,
                                         ddraw_device->lpDDSSecondary,
-                                        &srcwin,
-                                        0,
-                                        NULL)) != DD_OK) {
+                                        (ddraw_device->vertical_scale == 1) ? NULL : &srcwin,
+                                        DDBLT_ASYNC,
+                                        &bltfx)) != DD_OK) {
 	/* Failed second time, pass over */
         gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blit failed after restore) ", err);
       }
@@ -1348,30 +1364,64 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device) {
 
 
 /*==========================================================================*/
+/* Create a second offscreen buffer                                         */
+/* A second buffer is needed when the blitter is used for displaying data   */
+/*==========================================================================*/
+
+BOOLE
+gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device) {
+  BOOLE result = TRUE;
+  HRESULT err;
+  ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
+  ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
+  ddraw_device->ddsdSecondary.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY |
+                                               DDSCAPS_OFFSCREENPLAIN;
+  ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
+  ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
+  if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
+                                        &(ddraw_device->ddsdSecondary),
+                                        &(ddraw_device->lpDDSSecondary),
+                                        NULL)) != DD_OK) {
+    gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() ", err);
+    result = FALSE;
+  }
+  else
+    gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
+  return result;
+}
+
+
+/*==========================================================================*/
 /* Create the surfaces                                                      */
 /* Called before emulation start                                            */
 /*==========================================================================*/
 
 ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
   HRESULT err;
-  ULO buffercountactual, trybuffers;
+  ULO buffercountactual, buffer_count_want;
   DDSCAPS ddscaps;
-  BOOLE success = FALSE;
-  
-  trybuffers = (ddraw_device->mode->windowed ||
-	        (ddraw_device->vertical_scale > 1)) ? 1 : ddraw_device->maxbuffercount;
-  while (trybuffers != 0 && !success) {
+  BOOLE success = TRUE;
+
+  if (ddraw_device->use_blitter)
+     success = gfxDrvDDrawCreateSecondaryOffscreenSurface(ddraw_device);
+  if (!success) return 0;
+
+  /* We want x backbuffers first, then reduce it until it succeeds */
+  buffer_count_want = (ddraw_device->use_blitter) ? 1 : ddraw_device->maxbuffercount;
+  success = FALSE;
+  while (buffer_count_want > 0 && !success) {
+    success = TRUE;
     if (ddraw_device->lpDDSPrimary != NULL)
       gfxDrvDDrawSurfacesRelease(ddraw_device);
     ddraw_device->ddsdPrimary.dwSize = sizeof(ddraw_device->ddsdPrimary);
     ddraw_device->ddsdPrimary.dwFlags = DDSD_CAPS;
     ddraw_device->ddsdPrimary.ddsCaps.dwCaps = DDSCAPS_PRIMARYSURFACE |
                                                DDSCAPS_VIDEOMEMORY;
-    if (trybuffers > 1) {
+    if (buffer_count_want > 1) {
       ddraw_device->ddsdPrimary.dwFlags |= DDSD_BACKBUFFERCOUNT;
       ddraw_device->ddsdPrimary.ddsCaps.dwCaps |= DDSCAPS_FLIP |
 						  DDSCAPS_COMPLEX;
-      ddraw_device->ddsdPrimary.dwBackBufferCount = trybuffers -1;
+      ddraw_device->ddsdPrimary.dwBackBufferCount = buffer_count_want - 1;
       ddraw_device->ddsdBack.dwSize = sizeof(ddraw_device->ddsdBack);
     }
     if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
@@ -1379,39 +1429,37 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
                                           &(ddraw_device->lpDDSPrimary),
                                           NULL)) != DD_OK) {
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): ", err);
-      ddraw_device->buffercount = 0;
+      success = FALSE;
     }
-    else {
-      if (trybuffers > 1) {
+    else { /* Here we have got a buffer, clear it */
+      if (buffer_count_want > 1) {
 	ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
 	if ((err = IDirectDrawSurface_GetAttachedSurface(ddraw_device->lpDDSPrimary,
 	                                                 &ddscaps,
 	                                                 &(ddraw_device->lpDDSBack))) != DD_OK) {
 	  gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): (GetAttachedSurface()) ", err);
-	  ddraw_device->buffercount = 0;
+          success = FALSE;
 	}
 	else { /* Have a backbuffer, seems to work fine */
           gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
           gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
-	  if (trybuffers > 2)
+	  if (buffer_count_want > 2)
             if ((err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary,
                                                NULL,
-                                               0)) != DD_OK)
+                                               0)) != DD_OK) {
 	      gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(), Flip(): ", err);
+              success = FALSE;
+	    }
 	    else
 	      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
-	  ddraw_device->buffercount = trybuffers;
 	}
       }
       else { /* No backbuffer, don't clear if we are in a window */
-		  if (!ddraw_device->mode->windowed)
-			  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
-		  ddraw_device->buffercount = trybuffers;
+	if (!ddraw_device->mode->windowed)
+	  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
       }
     }
-    success = (ddraw_device->buffercount != 0);
-    if (!success)
-      trybuffers--;
+    if (!success) buffer_count_want--;
   }
   
   /* Here we have created a primary buffer, possibly with backbuffers */
@@ -1421,11 +1469,11 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
     memset(&ddpf, 0, sizeof(ddpf));
     ddpf.dwSize = sizeof(ddpf);
     if ((err = IDirectDrawSurface_GetPixelFormat(ddraw_device->lpDDSPrimary,
-      &ddpf)) != DD_OK) {
+                                                 &ddpf)) != DD_OK) {
       /* We failed to find the pixel format */
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): GetPixelFormat() ", err);
       gfxDrvDDrawSurfacesRelease(ddraw_device);
-      ddraw_device->buffercount = 0;
+      success = FALSE;
     }
     else {
       /* Examine pixelformat */
@@ -1447,44 +1495,24 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
 	if (ddraw_device->drawmode->bits == 8) {
 	  if (!gfxDrvDDrawSetPalette(ddraw_device)) {
 	    gfxDrvDDrawSurfacesRelease(ddraw_device);
-	    ddraw_device->buffercount = 0;
+	    success = FALSE;
 	  }
 	}
-	if ((ddraw_device->buffercount != 0) && (ddraw_device->mode->windowed)) {
+	if (success && (ddraw_device->mode->windowed)) {
 	  if (!gfxDrvDDrawClipperInitialize(ddraw_device)) {
 	    gfxDrvDDrawSurfacesRelease(ddraw_device);
-	    ddraw_device->buffercount = 0;
+	    success = FALSE;
 	  }
 	}
       }
       else { /* Unsupported pixel format..... */
 	fellowAddLog("gfxDrvDDrawSurfacesInitialized(): Window mode - unsupported Pixelformat\n");
 	gfxDrvDDrawSurfacesRelease(ddraw_device);
-	ddraw_device->buffercount = 0;
+	success = FALSE;
       }
     }
   }
-  
-  /* Create a secondary buffer if needed */
-  
-  if (success && (ddraw_device->mode->windowed || ddraw_device->use_blitter)) {
-    ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
-    ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-    ddraw_device->ddsdSecondary.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY |
-                                                 DDSCAPS_OFFSCREENPLAIN;
-    ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
-    ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
-    if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
-                                          &(ddraw_device->ddsdSecondary),
-                                          &(ddraw_device->lpDDSSecondary),
-                                          NULL)) != DD_OK) {
-      gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): Secondary ", err);
-      gfxDrvDDrawSurfacesRelease(ddraw_device);
-      ddraw_device->buffercount = 0;
-    }
-    else
-      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
-  }
+  ddraw_device->buffercount = (success) ? buffer_count_want : 0;
   return ddraw_device->buffercount;
 }
 
