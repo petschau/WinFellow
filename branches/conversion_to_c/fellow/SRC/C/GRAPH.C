@@ -542,7 +542,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO *end_odd;
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+    ULO dat1=0, dat2=0, dat3=0, dat4=0, dat5=0, dat6=0; 
     
 	if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 	{
