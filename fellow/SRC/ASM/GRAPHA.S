@@ -409,6 +409,9 @@ _wdiwstop_:	mov	ecx, edx
 	
 ;-------------------------------------------------------------------------------
 ; DDFSTRT - $dff092 Write
+; When this value is written, the scroll (BPLCON1) also need to be reevaluated
+; for _reversal_ of the scroll values.
+; _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here
 ;-------------------------------------------------------------------------------
 
 
@@ -422,7 +425,8 @@ _wddfstrt_:	and	edx, 0fch
 .l1:		mov	dword [ddfstrt], edx
 		sub	edx, 014h
 		mov	dword [sprite_ddf_kill], edx
-		jmp	_graphCalculateWindow_
+		mov	edx, dword [bplcon1]
+		jmp	_wbplcon1_
 
 
 ;-------------------------------------------------------------------------------
@@ -618,7 +622,8 @@ _wbpl1pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl1ptl_
-_wbpl1ptl_:	mov	word [_bpl1pt], dx
+_wbpl1ptl_:	and	edx, 0fffeh
+  		mov	word [_bpl1pt], dx
 		ret
 
 
@@ -638,7 +643,8 @@ _wbpl2pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl2ptl_
-_wbpl2ptl_:	mov	word [_bpl2pt], dx
+_wbpl2ptl_:	and	edx, 0fffeh
+  		mov	word [_bpl2pt], dx
 		ret
 
 
@@ -658,7 +664,8 @@ _wbpl3pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl3ptl_
-_wbpl3ptl_:	mov	word [_bpl3pt], dx
+_wbpl3ptl_:	and	edx, 0fffeh
+  		mov	word [_bpl3pt], dx
 		ret
 
 
@@ -678,7 +685,8 @@ _wbpl4pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl4ptl_
-_wbpl4ptl_:	mov	word [_bpl4pt], dx
+_wbpl4ptl_:	and	edx, 0fffeh
+		mov	word [_bpl4pt], dx
 		ret
 
 
@@ -698,7 +706,8 @@ _wbpl5pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl5ptl_
-_wbpl5ptl_:	mov	word [_bpl5pt], dx
+_wbpl5ptl_:	and	edx, 0fffeh
+		mov	word [_bpl5pt], dx
 		ret
 
 
@@ -718,7 +727,8 @@ _wbpl6pth_:	and	edx, 01fh
 		FALIGN32
 
 global _wbpl6ptl_
-_wbpl6ptl_:	mov	word [_bpl6pt], dx
+_wbpl6ptl_:	and	edx, 0fffeh
+		mov	word [_bpl6pt], dx
 		ret
 
 
@@ -825,7 +835,7 @@ _wbplcon1_:	and	edx, 0ffh
 
 
 ;-------------------------------------------------------------------------------
-; BPLCON2 - $dff108 Write
+; BPLCON2 - $dff104 Write
 ;-------------------------------------------------------------------------------
 
 
