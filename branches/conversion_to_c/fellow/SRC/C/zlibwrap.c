@@ -1,19 +1,29 @@
-/*============================================================================*/
-/* Fellow Amiga Emulator - zlib wrapper                                       */
-/*                                                                            */
-/* Author: Torsten Enderling (carfesh@gmx.net)                                */
-/*         (Wraps zlib code to have one simple call for decompression.)       */
-/*                                                                            */
-/* originates from minigzip.c                                                 */
-/*                                                                            */
-/* This file is under the GNU General Public License (GPL)                    */
-/*============================================================================*/
-/*============================================================================*/
-/* Changelog:                                                                 */
-/* ==========                                                                 */
-/* 02/14/2001: added compression of files                                     */
-/* 10/03/2000: first version.                                                 */
-/*============================================================================*/
+/*=========================================================================*/
+/* Fellow Amiga Emulator - zlib wrapper                                    */
+/*                                                                         */
+/* @(#) $Id: zlibwrap.c,v 1.2.2.1 2004-05-27 10:05:27 carfesh Exp $        */
+/*                                                                         */
+/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/*         (Wraps zlib code to have one simple call for decompression.)    */
+/*                                                                         */
+/* originates from minigzip.c                                              */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #include "defs.h"
 #include "zlib.h"
