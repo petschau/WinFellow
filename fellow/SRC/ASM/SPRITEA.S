@@ -31,6 +31,32 @@
 FASMFILESTART
 FDATASECTIONSTART
 
+CDATAEXTERN graph_raster_y;
+CDATAEXTERN graph_raster_x;
+CDATAEXTERN bplcon0;
+CDATAEXTERN draw_hscale;
+CDATAEXTERN graph_DIW_last_visible;
+CDATAEXTERN bplcon2;
+
+
+%define graph_line_type                          0
+%define graph_line_line1                         4
+%define graph_line_line2                      1028
+%define graph_line_colors                     2052
+%define graph_line_DIW_first_draw             2308
+%define graph_line_DIW_pixel_count            2312
+%define graph_line_BG_pad_front               2316
+%define graph_line_BG_pad_back                2320
+%define graph_line_draw_routine               2324
+%define graph_line_draw_BPL_res_routine       2328
+%define graph_line_DDF_start                  2332
+%define graph_line_frames_left_until_BG_skip  2336
+%define graph_line_sprite_ham_slot            2340
+%define graph_line_bplcon2                    2344
+%define graph_line_reserved1                  2346
+%define graph_line_end                        2348
+
+
 ;----------------------------------------------------------------------------- 
 ; Include data from other modules
 ;----------------------------------------------------------------------------- 
@@ -38,32 +64,6 @@ FDATASECTIONSTART
 %include "data/sprite.inc"
 %include "data/fmem.inc"
 
-CDATAEXTERN draw_hscale;
-CDATAEXTERN graph_raster_y;
-CDATAEXTERN bplcon0;
-CDATAEXTERN bplcon2;
-CDATAEXTERN graph_DIW_last_visible;
-CDATAEXTERN graph_raster_x;
-
-CFUNCEXTERN spriteDecode4Sprite_C;
-CFUNCEXTERN spriteDecode16Sprite_C;
-
-%define graph_line_type                         0
-%define graph_line_line1			4
-%define graph_line_line2			1028
-%define graph_line_colors			2052
-%define graph_line_DIW_first_draw		2308
-%define graph_line_DIW_pixel_count		2312
-%define graph_line_BG_pad_front			2316
-%define graph_line_BG_pad_back			2320
-%define graph_line_draw_routine			2324
-%define graph_line_draw_BPL_res_routine		2328
-%define graph_line_DDF_start			2332
-%define graph_line_frames_left_until_BG_skip	2336
-%define graph_line_sprite_ham_slot		2340
-%define graph_line_bplcon2			2344
-%define graph_line_reserved1			2346
-%define graph_line_end				2348
 	
 FDATASECTIONEND
 FCODESECTIONSTART
@@ -76,7 +76,279 @@ FCODESECTIONSTART
 %include "mac/sprite.mac"
 
 
+	
+;------------------------------------------------------------------------------
+; Decode sprite 4 colors
+; esi - buffer to decode to
+; ecx - pointer to spritedata array
+; ebx - sprite class (0,1,2,3)
+;------------------------------------------------------------------------------
 
+decode4sprite_:	xor	edx,edx
+		mov	edi,dword [sprite4_0 + ebx*4]
+		mov	ebp,dword [sprite4_1 + ebx*4]
+		mov	dl,byte [ecx]
+		mov	eax,dword [8*edx + edi]
+		mov	ebx,dword [8*edx + edi + 4]
+		mov	dl,byte [2 + ecx]
+		or	eax,dword [8*edx + ebp]
+		or	ebx,dword [8*edx + ebp + 4]
+		mov	dl,byte [1 + ecx]
+		mov	dword [esi],eax
+		mov	dword [4 + esi],ebx
+		mov	eax,dword [8*edx + edi]
+		mov	ebx,dword [8*edx + edi + 4]
+		mov	dl,byte [3 + ecx]
+		or	eax,dword [8*edx + ebp]
+		or	ebx,dword [8*edx + ebp + 4]
+		mov	dword [8 + esi],eax
+		mov	dword [12 + esi],ebx
+		ret
+
+
+		FALIGN32
+
+
+;------------------------------------------------------------------------------
+; Decode sprite 16 colors
+; esi - buffer to decode to
+; ecx - pointer to spritedata array
+;------------------------------------------------------------------------------
+
+decode16sprite_:xor	edx, edx
+		mov	dl, byte [ecx]
+		mov	eax, dword [sprite_deco01     + 8*edx]
+		mov	ebx, dword [sprite_deco01 + 4 + 8*edx]
+		mov	dl, byte [1 + ecx]
+		mov	edi, dword [sprite_deco01     + 8*edx]
+		mov	ebp, dword [sprite_deco01 + 4 + 8*edx]
+		mov	dl, byte [2 + ecx]
+		or	eax, dword [sprite_deco02     + 8*edx]
+		or	ebx, dword [sprite_deco02 + 4 + 8*edx]
+		mov	dl, byte [3 + ecx]
+		or	edi, dword [sprite_deco02     + 8*edx]
+		or	ebp, dword [sprite_deco02 + 4 + 8*edx]
+		mov	dl, byte [4 + ecx]
+		or	eax, dword [sprite_deco03     + 8*edx]
+		or	ebx, dword [sprite_deco03 + 4 + 8*edx]
+		mov	dl, byte [5 + ecx]
+		or	edi, dword [sprite_deco03     + 8*edx]
+		or	ebp, dword [sprite_deco03 + 4 + 8*edx]
+		mov	dl, byte [6 + ecx]
+		or	eax, dword [sprite_deco04     + 8*edx]
+		or	ebx, dword [sprite_deco04 + 4 + 8*edx]
+		mov	dl, byte [7 + ecx]
+		or	edi, dword [sprite_deco04     +8*edx]
+		or	ebp, dword [sprite_deco04 + 4 +8*edx]
+		mov	dword [esi], eax
+		mov	dword [4 + esi], ebx
+		mov	dword [8 + esi], edi
+		mov	dword [12 + esi], ebp
+		ret
+
+
+
+; Decode sprites
+
+; The following 1000 lines of code are pretty terrible.....
+
+; We know dma is on, so read all the needed datawords
+; if sprite_state is 0, read two control words
+; else if sprite_state is 1, we are waiting for first line
+; else if sprite_state is 2 , read two data words and decode them
+; else if sprite_state is 3, sprite is off
+; state 4 is when data is written directly to the data registers
+;	  and real state is 2
+; state 5 is when sprite is really off, but data is written.
+
+		FALIGN32
+
+global _spritesDecode_
+_spritesDecode_:
+		push	esi		; Esi used in nxt_inst loop copper part
+		push	eax
+		xor	esi, esi	; Counts sprites*4
+					; No sprites initially
+		mov	dword [sprites_online], 0
+	
+dsloop:		mov	ebx, dword [sprite_state + esi]; state for sprite
+		mov	dword [sprite_online + esi], 0; Not displayed
+		mov	dword [sprite_16col + esi], 0; Initially 4 color
+		cmp	ebx, 3
+		je	near dsloopend	; State 3, skip sprite, this is OK
+		cmp	ebx, 1
+		jne	dsrwr0
+
+; State 1, waiting for first line, check if this line is the one
+
+		mov	eax, dword [graph_raster_y]; Next line the first line?
+		cmp	eax, dword [spry + esi]
+		jne	near dsloopend	; No, skip statechange and sprite
+		mov	dword [sprite_state + esi], 2	; Statechange
+		mov	ebx, 2
+dsrwr0:		; State 2 or 0 or 4 or 5, Here two words must be read
+		mov	ecx, dword [sprpt + esi]
+		cmp	ebx, 4	; State 4, words replaced by CPU
+		je	dsrwr0a
+		cmp	ebx, 5	; State 5, words written out of order by CPU
+		je	dsrwr0b
+		mov	edx, dword [memory_chip + ecx]
+		mov	dword [sprdat + esi], edx
+dsrwr0a:	add	ecx, 4
+		and	ecx, 01ffffeh
+		mov	dword [sprpt + esi], ecx
+		test	ebx, ebx
+		jz	near dsrwc0
+		mov	ecx, dword [sprly + esi]
+		cmp	ecx, dword [graph_raster_y]
+		je	near dsrwc0
+
+		;--------------------------------------------------------------
+		; State 2, Data words
+		; If sprite is attached, and the other too, let odd sprite
+		; do the decoding
+		;--------------------------------------------------------------
+
+dsrwr0b:
+  		test	esi, 04h	; test wether we are odd or even sprite
+		jnz	dsoddsprite
+
+		; Even attached sprites does nothing, the odd sprite handles it
+
+                ; Funny quirk, the attach bit in even sprites seems to have
+		; no effect. If the odd sprite is attached, both are.
+
+		; Another quirk, if the positions don't match, the sprites
+		; still take color as if they were part of a 16 color image.
+		; The missing bitplanes has value 0, the overlapping part
+		; forms a 16-color image. Since sprite positions have
+		; hi-res resolutions, while the sprite image is lores,
+		; the overlapping parts can probably cover two half-pixels
+		; in the other sprite. I am not sure what happens in this
+		; case, since this quirk is not emulated at all, it only has
+		; curiosity interest.
+
+		test	dword [spratt + 4 + esi], 1
+					; Even sprite is attached if
+		jz	dsrwrr		; odd sprite is attached
+		
+		; OK we are attached and even, let odd sprite do the job
+		; But we need a kludge here.....
+		; It seems KSV1.2 does not end its sprite lists properly...??
+		; So the att bit is pretty random sometimes.
+		; So if it seems likely that the odd sprite is not operating
+		; properly, we show the sprite as a 4 color sprite anyway
+		; If state is 0 or 1, we need to check if the odd sprite
+		; becomes active on this line.
+
+		cmp	dword [sprite_state + esi + 4], 3
+		je	dsrwrr
+
+		cmp	dword [sprite_state + esi + 4], 2
+		jae	near dsresumeattached
+			
+		mov	eax, dword [graph_raster_y]; Next line the first line?
+		cmp	eax, dword [spry + esi + 4]
+		jne	dsrwrr
+
+		jmp	dsresumeattached
+dsoddsprite:
+; We are odd sprite, if attached, both are.
+
+		test	dword [spratt + esi], 1 ; Attached?
+		jz	dsrwrr
+
+		; OK we are attached and odd, we must do the job
+
+		lea	ecx, [sprdat - 4 + esi]
+		push	esi
+		lea	esi, [sprite + 4*esi]
+		call	decode16sprite_
+		pop	esi
+		mov	dword [sprites_online], 1
+		mov	dword [sprite_online + esi], 1
+		mov	dword [sprite_16col + esi], 1
+		jmp	dsresumeattached
+
+dsrwrr:	 ; No attached sprites, 4 color decode
+
+		lea	ecx, [sprdat + esi]
+		mov	ebx, esi
+		shr	ebx, 3
+		push	esi
+		lea	esi, [sprite + 4*esi]
+
+		call	decode4sprite_
+		pop	esi
+		mov	dword [sprites_online], 1
+		mov	dword [sprite_online + esi], 1
+
+dsresumeattached:
+		cmp	dword [sprite_state + esi], 4
+		jb	drest
+		mov	eax, dword [sprite_state_old + esi]
+		mov	dword [sprite_state + esi], eax
+drest:		cmp	dword [sprite_state + esi], 5	
+		je	dres1
+		mov	eax,dword [graph_raster_y]    ; Check if this was the last line
+		inc	eax
+		cmp	eax,dword [sprly + esi]
+		jne	near dsloopend
+		mov	dword [sprite_state + esi], 0
+		jmp	dsloopend
+dres1:		mov	dword [sprite_state + esi], 3
+		jmp	dsloopend
+dsrwc0: ; State 0, Control words
+		test	edx, edx
+		jnz	dsrwcc
+		mov	dword [sprite_state + esi], 3
+		mov	dword [sprx + esi], edx
+		mov	dword [spry + esi], edx
+		mov	dword [sprly + esi], edx
+		mov	dword [spratt + esi], edx
+		jmp	dsloopend
+dsrwcc:		mov	eax, edx
+		rol	eax, 1
+		and	eax, 1
+		mov	dword [spratt + esi], eax
+		xor	eax, eax			; Find x position
+		mov	al, dh
+		shl	eax, 1
+		mov	ebx, edx
+		shr	ebx, 24
+		and	ebx, 1
+		or	eax, ebx
+		inc	eax			; Sprites delayed 1 cycle
+		mov	dword [sprx + esi], eax  ; Now found x position
+		xor	eax, eax			; Find first y position
+		mov	al, dl
+		mov	ebx, edx
+		shr	ebx, 16
+		and	ebx, 0400h
+		shr	ebx, 2
+		or	eax, ebx
+		mov	dword [spry + esi], eax
+						; Now found first y position
+		xor	eax, eax		; Now find last y position
+		ror	edx, 16
+		mov	al, dl
+		mov	ah, dh
+		and	eax, 02ffh
+		shr	ah, 1
+		mov	dword [sprly + esi], eax
+						; Now found last y position
+		cmp	eax,dword [graph_raster_y]
+		je	dsloopend
+		mov	dword [sprite_state + esi], 1
+						; Set waiting for first line
+dsloopend:	add	esi, 4
+		cmp	esi, dword [sprite_ddf_kill]
+		jae	dsexit
+		cmp	esi, 32
+		jne	near dsloop
+dsexit:		pop	eax
+		pop	esi
+		ret
 
 
 ;==============================================================================
@@ -703,6 +975,418 @@ skipdualloressprite:
 		jne	near mergedualloresloop
 		ret
 
+
+;-------------------------------------------------------------------------------
+; Decide delay of sprite ptr update
+; ebx - cycle raster xpos must be past to trigger delay
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _decidedelay_
+_decidedelay_:	
+		cmp	dword [sprite_write_real], 1
+		je	ddnodelay
+		cmp	ebx, dword [graph_raster_x]
+		ja	ddnodelay
+		mov	ebx, dword [sprite_write_next]
+		mov	dword [sprite_write_buffer + ebx], ecx
+		mov	dword [sprite_write_buffer + 4 + ebx], edx
+		add	ebx, 8
+		mov	dword [sprite_write_next], ebx
+		mov	ebx, 1
+		ret
+ddnodelay:	xor	ebx, ebx
+		ret
+
+
+;=======
+; SPR0PT
+;=======
+
+; $dff120 - WORD
+
+
+		FALIGN32
+
+global _wspr0pth_
+_wspr0pth_:	push	ebx
+		mov	ebx, 0
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr0h
+		pop	ebx
+		ret
+.wspr0h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2], dx
+		ret
+
+
+; $dff122 - WORD
+
+
+		FALIGN32
+
+global _wspr0ptl_
+_wspr0ptl_:	push	ebx
+		mov	ebx, 0
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr0l
+		pop	ebx
+		ret
+.wspr0l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt], dx
+		ret
+
+
+;=======
+; SPR1PT
+;=======
+
+; $dff124 - WORD
+
+
+		FALIGN32
+
+global _wspr1pth_
+_wspr1pth_:	push	ebx
+		mov	ebx, 4
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr1h
+		pop	ebx
+		ret
+.wspr1h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 + 4], dx
+		ret
+
+
+; $dff126 - WORD
+
+
+		FALIGN32
+
+global _wspr1ptl_
+_wspr1ptl_:	push	ebx
+		mov	ebx, 4
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr1l
+		pop	ebx
+		ret
+.wspr1l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 4], dx
+		ret
+
+
+;=======
+; SPR2PT
+;=======
+
+; $dff128 - WORD
+
+
+		FALIGN32
+
+global _wspr2pth_
+_wspr2pth_:	push	ebx
+		mov	ebx, 8
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr2h
+		pop	ebx
+		ret
+.wspr2h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 + 8], dx
+		ret
+
+
+; $dff12a - WORD
+
+		FALIGN32
+
+global _wspr2ptl_
+_wspr2ptl_:	push	ebx
+		mov	ebx, 8
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr2l
+		pop	ebx
+		ret
+.wspr2l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 8], dx
+		ret
+
+
+;=======
+; SPR3PT
+;=======
+
+; $dff12c - WORD
+
+
+		FALIGN32
+
+global _wspr3pth_
+_wspr3pth_:	push	ebx
+		mov	ebx, 12
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr3h
+		pop	ebx
+		ret
+.wspr3h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 + 12],dx
+		ret
+
+
+; $dff12e - WORD
+
+
+		FALIGN32
+
+global _wspr3ptl_
+_wspr3ptl_:	push	ebx
+		mov	ebx, 12
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr3l
+		pop	ebx
+		ret
+.wspr3l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 12], dx
+		ret
+
+
+;=======
+; SPR4PT
+;=======
+
+; $dff130 - WORD
+
+
+		FALIGN32
+
+global _wspr4pth_
+_wspr4pth_:	push	ebx
+		mov	ebx, 16
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr4h
+		pop	ebx
+		ret
+.wspr4h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 + 16], dx
+		ret
+
+
+; $dff132 - WORD
+
+
+		FALIGN32
+
+global _wspr4ptl_
+_wspr4ptl_:	push	ebx
+		mov	ebx, 16
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr4l
+		pop	ebx
+		ret
+.wspr4l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 16], dx
+		ret
+
+
+;=======
+; SPR5PT
+;=======
+
+; $dff134 - WORD
+
+
+		FALIGN32
+
+global _wspr5pth_
+_wspr5pth_:	push	ebx
+		mov	ebx, 20
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr5h
+		pop	ebx
+		ret
+.wspr5h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 + 20], dx
+		ret
+
+
+; $dff136 - WORD
+
+
+		FALIGN32
+
+global _wspr5ptl_
+_wspr5ptl_:	push	ebx
+		mov	ebx, 20
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr5l
+		pop	ebx
+		ret
+.wspr5l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 20], dx
+		ret
+
+
+;=======
+; SPR6PT
+;=======
+
+; $dff138 - WORD
+
+
+		FALIGN32
+
+global _wspr6pth_
+_wspr6pth_:	push	ebx
+		mov	ebx, 24
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr6h
+		pop	ebx
+		ret
+.wspr6h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 +24], dx
+		ret
+
+
+; $dff13a - WORD
+
+
+		FALIGN32
+
+global _wspr6ptl_
+_wspr6ptl_:	push	ebx
+		mov	ebx, 24
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr6l
+		pop	ebx
+		ret
+.wspr6l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 24], dx
+		ret
+
+
+;=======
+; SPR7PT
+;=======
+
+; $dff13c - WORD
+
+
+		FALIGN32
+
+global _wspr7pth_
+_wspr7pth_:	push	ebx
+		mov	ebx, 28
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr7h
+		pop	ebx
+		ret
+.wspr7h:	pop	ebx
+		and	edx, 01fh		; Store 21 bit (2 MB)
+		mov	word [sprpt + 2 +28], dx
+		ret
+
+
+; $dff13e - WORD
+
+
+		FALIGN32
+
+global _wspr7ptl_
+_wspr7ptl_:	push	ebx
+		mov	ebx, 28
+		add	ebx, dword [sprite_delay]
+		call	_decidedelay_
+		test	ebx, 1
+		jz	.wspr7l
+		pop	ebx
+		ret
+.wspr7l:	pop	ebx
+		and	edx, 0fffeh		; No odd adresses
+		mov	word [sprpt + 28], dx
+		ret
+
+
+;==============================================================================
+; Sprite IO-register access wrappers, calls routines in graph.c
+;==============================================================================
+
+
+		FALIGN32
+
+global _wsprxpos_
+_wsprxpos_:
+		WSPRXPOS_CWRAP
+		ret
+
+
+		FALIGN32
+
+global _wsprxctl_
+_wsprxctl_:
+		WSPRXCTL_CWRAP
+		ret
+
+
+		FALIGN32
+
+global _wsprxdata_
+_wsprxdata_:
+		WSPRXDATA_CWRAP
+		ret
+
+
+		FALIGN32
+
+global _wsprxdatb_
+_wsprxdatb_:
+		WSPRXDATB_CWRAP
+		ret
 
 
 FCODESECTIONEND
