@@ -187,9 +187,19 @@ extern void drawSetVerticalScale(ULO verticalscale);
 extern void drawSetScanlines(BOOLE scanlines);
 extern void drawSetFrameskipRatio(ULO frameskipratio);
 extern void drawSetFPSCounterEnabled(BOOLE enabled);
-extern void drawSetFPSCounter(ULO value);
 extern void drawSetLEDsEnabled(BOOLE enabled);
 extern void drawSetLED(ULO index, BOOLE state);
+
+
+/*===========================================================================*/
+/* Draw statistics                                                           */
+/*===========================================================================*/
+
+extern void drawStatClear(void);
+extern void drawStatTimestamp(void);
+extern ULO drawStatLast50FramesFps(void);
+extern ULO drawStatLastFrameFps(void);
+extern ULO drawStatSessionFps(void);
 
 
 /*===========================================================================*/
