@@ -79,6 +79,7 @@ _m68000start_:
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 
+CFUNCEXTERN busScanEventsLevel5
 
 %ifdef PREFETCH
 
@@ -750,7 +751,9 @@ rIRQ_noprevious:mov	dword [interruptlevel], edx	; Save runlevel
 		mov	dword [irq_next], eax
 		mov	dword [interruptflag], 1
 
-rIRQ_sched_exit:SCAN_EVENTS_LVL5
+rIRQ_sched_exit:
+		call busScanEventsLevel5
+		;SCAN_EVENTS_LVL5
 rIRQ_exit:	pop	edx
 		pop	ecx
 		pop	ebx
@@ -813,7 +816,8 @@ si_step6:	mov	edx, dword [interruptaddress]; step 6
 		mov	dword [cpu_stop], 0
 si_nostop:	mov	dword [interruptflag], 0
 		mov	dword [irq_next], -1		; step 8
-		SCAN_EVENTS_LVL5
+		call busScanEventsLevel5
+		;SCAN_EVENTS_LVL5
 		popad
 		ret
 
