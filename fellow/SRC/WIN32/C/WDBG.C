@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/30:                                                                */
+/* - blitter operations log toggle                                            */
 /* 2000/12/17:                                                                */
 /* - screen state updated witn information provided by Petter                 */
 /* 2000/12/14:                                                                */
@@ -1271,6 +1273,7 @@ BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
 {
   switch (uMsg) {
     case WM_INITDIALOG:
+	  Button_SetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT), blitterGetOperationLog());
       return TRUE;
     case WM_PAINT:
       wdbgUpdateBlitterState(hwndDlg);
