@@ -69,7 +69,12 @@ UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data]
 /*============================================================================*/
 
 ULO blitend;
-ULO blit_height, blit_width, blitterdmawaiting;
+ULO blit_height, blit_width;
+
+// flag showing that a sprite has been activated (a write to BLTSIZE)
+// but at the time of activation the sprite DMA was turned of
+ULO blitterdmawaiting; 
+
 BOOLE blitter_operation_log, blitter_operation_log_first;
 ULO blit_a_shift_asc, blit_a_shift_desc;
 ULO blit_b_shift_asc, blit_b_shift_desc;

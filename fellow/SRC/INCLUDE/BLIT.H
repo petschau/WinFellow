@@ -171,7 +171,10 @@ extern ULO blitend;
 extern ULO blitterstatus;
 extern ULO bltzero;
 extern BOOLE blitter_ECS;
-
+extern ULO blit_cycle_length;
+extern ULO blit_cycle_free;
+extern ULO blitterdmawaiting;
+extern BOOLE blit_started;
 
 /*===========================================================================*/
 /* Blitter-properties                                                        */

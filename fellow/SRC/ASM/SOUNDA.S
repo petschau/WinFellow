@@ -200,7 +200,16 @@ _soundState1_:
 		mov	edx, dword [audioirqmask + edx]
 		mov	ecx, 0138h			   ; 09c * 2
 		or	dh, 080h
-		jmp	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
+		ret
 
 
 ;==============================================================================
@@ -291,7 +300,16 @@ _soundState3_:	cmp	dword [audpercounter + edx], 010000h
 		mov	edx, dword [audioirqmask + edx]
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		jmp	dword [memory_iobank_write + ecx]
+		
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+		
+		ret
 
 
 		;-------------------
@@ -354,7 +372,16 @@ _soundState5_:
 		mov	edx, dword [audioirqmask + edx]
 		mov	ecx, 0138h				 ;9c*2
 		or	dh, 080h
-		jmp	dword [memory_iobank_write + ecx]
+		
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
+		ret
 
 
 
@@ -500,7 +527,15 @@ channel0441off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel1441:	test	dword [dmacon], 2	  ; Channel on?
@@ -528,7 +563,15 @@ channel1441off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel2441:	test	dword [dmacon], 4	  ; Channel on?
@@ -556,7 +599,15 @@ channel2441off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel3441:	test	dword [dmacon], 8	  ; Channel on?
@@ -584,7 +635,15 @@ channel3441off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel4441:	
@@ -692,7 +751,15 @@ channel0313off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel1313:	test	dword [dmacon], 2	  ; Channel on?
@@ -721,7 +788,15 @@ channel1313off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel2313:	test	dword [dmacon], 4	  ; Channel on?
@@ -753,7 +828,15 @@ channel2313off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel3313:	test	dword [dmacon], 8	  ; Channel on?
@@ -782,7 +865,15 @@ channel3313off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel4313:
@@ -915,7 +1006,15 @@ chan0220even:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 
@@ -952,7 +1051,15 @@ chan1220even:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 
@@ -989,7 +1096,15 @@ chan2220even:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 
@@ -1026,7 +1141,15 @@ chan3220even:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel4220:
@@ -1133,7 +1256,15 @@ channel0156off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel1156:	test	dword [dmacon], 2	  ; Channel on?
@@ -1162,7 +1293,15 @@ channel1156off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel2156:	test	dword [dmacon], 4	  ; Channel on?
@@ -1194,7 +1333,15 @@ channel2156off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel3156:	test	dword [dmacon], 8	  ; Channel on?
@@ -1223,7 +1370,15 @@ channel3156off:
 		push	eax
 		mov	ecx, 0138h				; 9c*2
 		or	dh, 080h
-		call	dword [memory_iobank_write + ecx]
+
+		pushad
+		push ecx
+		push edx
+		call dword [memory_iobank_write + ecx]
+		pop edx
+		pop ecx
+		popad
+
 		pop	eax
 
 channel4156:	mov	ebx, 1

@@ -72,8 +72,8 @@
 #define memoryDmemWriteLongASM ASMRENAME(memoryDmemWriteLongASM)
 
 #define rserdatr ASMRENAME(rserdatr)
-#define wserdat ASMRENAME(wserdat)
-#define wserper ASMRENAME(wserper)
+//#define wserdat ASMRENAME(wserdat)
+//#define wserper ASMRENAME(wserper)
 #define rintenar ASMRENAME(rintenar)
 #define rintreqr ASMRENAME(rintreqr)
 #define rdefault ASMRENAME(rdefault)
@@ -180,8 +180,8 @@ extern ULO rserdatr(ULO address);
 extern ULO rintenar(ULO address);
 extern ULO rintreqr(ULO address);
 extern ULO rdefault(ULO address);
-extern void wserdat(ULO data, ULO address);
-extern void wserper(ULO data, ULO address);
+//extern void wserdat(ULO data, ULO address);
+//extern void wserper(ULO data, ULO address);
 extern void wdmacon(ULO data, ULO address);
 extern void wintena(ULO data, ULO address);
 extern void wintreq(ULO data, ULO address);

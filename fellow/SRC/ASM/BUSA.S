@@ -316,7 +316,11 @@ _endOfFrame_:	push	edx
 		mov	ecx, 0102h			; Zero scroll
 
 		pushad
+		push ecx
+		push edx
 		call	dword [memory_iobank_write + 2*ecx]
+		pop edx
+		pop ecx
 		popad
 
 
@@ -370,7 +374,11 @@ _endOfFrame_:	push	edx
 		mov	edx, 08020h
 
 		pushad
+		push ecx
+		push edx
 		call	dword [memory_iobank_write + 0138h]
+		pop edx
+		pop ecx
 		popad
 
 

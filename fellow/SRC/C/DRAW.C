@@ -1253,7 +1253,7 @@ static void drawModeTablesInitialize(draw_mode *dm) {
   ULO i, funcindex;
   
   draw_buffer_draw = draw_buffer_show = 0;
-  for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor);
+  for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor_C);
   funcindex = (draw_hscale == 1) ? 0 : 1;
 
   if (dm->bits == 32) funcindex += 6;

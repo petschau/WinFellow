@@ -171,11 +171,6 @@
 		jnz	near %1
 %endmacro
 
-%macro TEST_MMX 1 ; THE_LABEL
-		test	byte [fellow_mmx_detected], 0ffh
-		jnz	near %1
-%endmacro
-
 %macro LOAD_WORDS_TO_DECODE 1 ; NO_WORK_LABEL
 		mov	eax, dword [graph_DDF_word_count]
 		test	eax, eax
