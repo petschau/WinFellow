@@ -4019,6 +4019,9 @@
 						Culture="1047"/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath=".\WinFellow.exe.manifest">
+			</File>
 		</Filter>
 		<Filter
 			Name="icons"
