@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.5.2.5 2004-05-28 11:46:22 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.5.2.6 2004-05-28 12:55:25 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -3208,12 +3208,20 @@ void filesys_reset (void)
     /* We get called once from customreset at the beginning of the program
      * before filesys_start_threads has been called. Survive that.  */
     if (current_mountinfo == 0)
-	return;
+	    return;
 
     for (u = units; u; u = u1) {
-	u1 = u->next;
-	free (u);
+	    u1 = u->next;
+        /* FELLOW BUGFIX (START) */
+        if(u->ui.volname) /* memory leak fixed */
+        {
+            free(u->ui.volname);
+            u->ui.volname = NULL;
+        }
+        /* FELLOW BUGFIX (END) */
+	    free (u);
     }
+
     unit_num = 0;
     units = 0;
 
