@@ -307,13 +307,13 @@ ULO floppySectorMFMDecode(UBY *src, UBY *dst) {
   ULO sector;
   ULO odd, even, i;
 
-  odd = ((*(src++))<<24) | ((*(src++))<<16) | ((*(src++))<<8) | *(src++);
-  even = ((*(src++))<<24) | ((*(src++))<<16) | ((*(src++))<<8) | *(src++);
+  odd = (src[0]<<24) | (src[1]<<16) | (src[2]<<8) | src[3];
+  even = (src[4]<<24) | (src[5]<<16) | (src[6]<<8) | src[7];
   even &= 0x55555555;
   odd  = (odd & 0x55555555) << 1;
   even |= odd;
   sector = (even & 0xff00)>>8;
-  src += 48;
+  src += (48 + 8);
   for (i = 0; i < 512; i++) {
     even = (*(src + i)) & 0x55;
     odd = (*(src + i + 512)) & 0x55;
