@@ -14,6 +14,8 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2002/08/18: included more detailed source information since I was unable   */
+/*             at first to find the corresponding sourcelines                 */
 /* 2000/10/24: included draft cpu detection code on assembly level; basically */
 /*             this is a port of the MemTest86 routines to VisualC            */
 /* 2000/10/23: additional hardware enumeration tree ROOT for some NT versions */
@@ -35,8 +37,7 @@
 #define cpuid _asm _emit 0x0f _asm _emit 0xa2
 #define rdtsc _asm _emit 0x0f _asm _emit 0x31
 
-struct cpu_ident
-{
+struct cpu_ident {
   char type;
   char model;
   char step;
@@ -45,8 +46,7 @@ struct cpu_ident
   long capability;
   char vend_id[12];
   unsigned char cache_info[16];
-}
-cpu_id;
+} cpu_id;
 
 #define MYREGBUFFERSIZE 1024
 
@@ -90,8 +90,8 @@ RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
   LONG lRet;
   char *result;
 
-  if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) !=
-      ERROR_SUCCESS) return NULL;
+  if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
+	return NULL;
   lRet =
     RegQueryValueEx (hKey, ValueName, NULL, &dwType, (LPBYTE) szBuffer,
 		     &dwBufLen);
@@ -113,8 +113,7 @@ RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
 /* is returned, if failed it returns NULL                                      */
 /*=============================================================================*/
 static DWORD *
-RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName)
-{
+RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
   HKEY hKey;
   DWORD dwBuffer;
   DWORD dwBufLen = sizeof (dwBuffer);
@@ -122,8 +121,8 @@ RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName)
   LONG lRet;
   DWORD *result;
 
-  if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) !=
-      ERROR_SUCCESS) return NULL;
+  if (RegOpenKeyEx (RootKey, SubKey, 0, KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) 
+	return NULL;
   lRet =
     RegQueryValueEx (hKey, ValueName, NULL, &dwType, (LPBYTE) & dwBuffer,
 		     &dwBufLen);
@@ -166,18 +165,16 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
       return;
   }
 
-  for (CurrentSubKey = 0; CurrentSubKey < dwNoSubkeys; CurrentSubKey++)
-    {
+  for (CurrentSubKey = 0; CurrentSubKey < dwNoSubkeys; CurrentSubKey++) {
       dwSubKeyNameLen = MYREGBUFFERSIZE;
       if (RegEnumKeyEx (hKey,
 			CurrentSubKey,
 			szSubKeyName,
 			&dwSubKeyNameLen,
-			NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
-	{
-	  /* LogErrorMessageFromSystem (); */
-	  continue;
-	}
+			NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
+	    /* LogErrorMessageFromSystem (); */
+	    continue;
+	  }
 
       /* now query this subkey for the keys with the real information...
          I hate the registry. */
@@ -434,6 +431,7 @@ static void fellowVersionInfo (void) {
 /* http://reality.sgi.com/cbrady/memtest86                                    */
 /*                                                                            */
 /* lines marked with @@@@@ differ from the original source                    */
+/* original code from head.s                                                  */
 /*============================================================================*/
 static void cpu_get_features (void) {
 
@@ -660,6 +658,7 @@ cpu_speed (void)
 
 /*============================================*/
 /* parse the contents of the cpu_id structure */
+/* original function is cpu_type from init.c  */
 /*============================================*/
 static void DetectCPU (void) {
   int i, off = 0;
