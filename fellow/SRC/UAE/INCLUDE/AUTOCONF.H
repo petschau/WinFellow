@@ -13,6 +13,8 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
+  @(#) $Id: AUTOCONF.H,v 1.4 2004-05-27 12:29:50 carfesh Exp $
+
    FELLOW IN (END)------------------- */
 
 typedef uae_u32 (*TrapFunction) (void);

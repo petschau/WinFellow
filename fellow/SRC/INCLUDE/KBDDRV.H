@@ -1,6 +1,8 @@
 #ifndef KBDDRV_H
 #define KBDDRV_H
 
+#define MAX_JOYKEY_VALUE	8
+
 extern STR *symbol_pretty_name[106];
 
 extern STR *kbdDrvKeyString(ULO symbolickey);

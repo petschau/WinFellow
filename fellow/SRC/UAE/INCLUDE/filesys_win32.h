@@ -1,6 +1,8 @@
 /*=========================================================================*/
 /* UAE - The Un*x Amiga Emulator                                           */
 /*                                                                         */
+/* @(#) $Id: filesys_win32.h,v 1.3 2004-05-27 12:29:50 carfesh Exp $   */
+/*                                                                         */
 /* Unix file system handler for AmigaDOS                                   */
 /* Windows related functions                                               */
 /*                                                                         */

@@ -256,10 +256,10 @@ BEGIN
     PUSHBUTTON      "...",IDC_BUTTON_KEYFILE_FILEDIALOG,200,110,15,12
 END
 
-IDD_GAMEPORT DIALOG  0, 0, 235, 156
+IDD_GAMEPORT DIALOGEX 0, 0, 235, 174
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "gameport"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     GROUPBOX        "gameport equipment",IDC_STATIC,10,5,135,50
     LTEXT           "gameport 1",IDC_STATIC,15,22,36,8
@@ -268,29 +268,33 @@ BEGIN
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_GAMEPORT2,55,35,80,63,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "keyboard 1",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
-                    WS_GROUP,75,70,36,8
-    LTEXT           "up",IDC_STATIC,25,85,9,8
-    LTEXT           "down",IDC_STATIC,25,95,18,8
-    LTEXT           "left",IDC_STATIC,25,105,10,8
-    LTEXT           "right",IDC_STATIC,25,115,14,8
-    GROUPBOX        "keys",IDC_STATIC,10,60,215,90
+    GROUPBOX        "keys",IDC_STATIC,10,60,215,105
+    LTEXT           "keyboard 1",IDC_STATIC,75,70,36,8
     LTEXT           "keyboard 2",IDC_STATIC,150,70,36,8
-    CONTROL         "not set",IDC_GAMEPORT0_UP,"Static",SS_LEFTNOWORDWRAP | 
-                    WS_GROUP,75,85,69,8
-    LTEXT           "not set",IDC_GAMEPORT0_DOWN,75,95,69,8
-    LTEXT           "not set",IDC_GAMEPORT0_LEFT,75,105,69,8
-    LTEXT           "not set",IDC_GAMEPORT0_RIGHT,75,115,69,8
+    LTEXT           "up",IDC_STATIC,25,85,9,8
+    LTEXT           "not set",IDC_GAMEPORT0_UP,75,85,70,8
     LTEXT           "not set",IDC_GAMEPORT1_UP,150,85,70,8
+    LTEXT           "down",IDC_STATIC,25,95,18,8
+    LTEXT           "not set",IDC_GAMEPORT0_DOWN,75,95,70,8
     LTEXT           "not set",IDC_GAMEPORT1_DOWN,150,95,70,8
+    LTEXT           "left",IDC_STATIC,25,105,10,8
+    LTEXT           "not set",IDC_GAMEPORT0_LEFT,75,105,70,8
     LTEXT           "not set",IDC_GAMEPORT1_LEFT,150,105,70,8
+    LTEXT           "right",IDC_STATIC,25,115,14,8
+    LTEXT           "not set",IDC_GAMEPORT0_RIGHT,75,115,70,8
     LTEXT           "not set",IDC_GAMEPORT1_RIGHT,150,115,70,8
     LTEXT           "fire 0",IDC_STATIC,25,125,16,8
+    LTEXT           "not set",IDC_GAMEPORT0_FIRE0,75,125,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_FIRE0,150,125,70,8
     LTEXT           "fire 1",IDC_STATIC,25,135,16,8
-    LTEXT           "not set",IDC_GAMEPORT0_FIRE0,75,125,69,8
-    LTEXT           "not set",IDC_GAMEPORT0_FIRE1,75,135,69,8
-    LTEXT           "not set",IDC_GAMEPORT1_FIRE0,150,125,69,8
-    LTEXT           "not set",IDC_GAMEPORT1_FIRE1,150,135,69,8
+    LTEXT           "not set",IDC_GAMEPORT0_FIRE1,75,135,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_FIRE1,150,135,70,8
+    LTEXT           "autofire 0",IDC_STATIC,25,145,30,8
+    LTEXT           "not set",IDC_GAMEPORT0_AUTOFIRE0,75,145,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_AUTOFIRE0,150,145,70,8
+    LTEXT           "autofire 1",IDC_STATIC,25,155,30,8
+    LTEXT           "not set",IDC_GAMEPORT0_AUTOFIRE1,75,155,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_AUTOFIRE1,150,155,70,8
 END
 
 IDD_VARIOUS DIALOG  0, 0, 235, 156
@@ -502,7 +506,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 149
+        BOTTOMMARGIN, 167
     END
 
     IDD_VARIOUS, DIALOG

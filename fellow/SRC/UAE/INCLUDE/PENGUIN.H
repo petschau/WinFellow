@@ -16,6 +16,8 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
+  @(#) $Id: PENGUIN.H,v 1.3 2004-05-27 12:29:50 carfesh Exp $
+
    FELLOW IN (END)------------------- */
 
 #undef SUPPORT_PENGUINS
