@@ -6,16 +6,28 @@
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
 
+/* ---------------- KNOWN BUGS/FIXLIST ----------------- 
+- autofire support for joy replacement
+- additional key functions for wide usage by the emulator
+*/
+
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 05, 2000
+- added DikKeyString for the translation of a DIK key to a string - highly not optimized - ** internal **
+- added kbd_drv_joykey to the prsReadFile call ** internal **
+- now joy replacement are first filled with DIK keys and then translated to PCK symbolic key
+- added dxver.h include, dx version is decided with USE_DX3 or USE_DX5 macro
+*/
+
 #include "defs.h"
 #include "keycodes.h"
 #include "kbd.h"
 #include "kbddrv.h"
 #include "gameport.h"
 #include "windrv.h"
+#include "kbdparser.h"
 
-
-#define DIRECTINPUT_VERSION 0x0300
-#include <dinput.h>
+#include "dxver.h"
 
 #define MAX_KEYS	256
 
@@ -424,6 +436,8 @@ UBY kbd_drv_pc_symbol_to_amiga_scancode[106] = {
 BOOLE kbd_drv_home_pressed;
 BOOLE kbd_drv_end_pressed;
 
+// the order of kbd_drv_joykey_directions enum influence the order of the replacement_keys array in kbdparser.c
+
 typedef enum {
   JOYKEY_LEFT = 0,
   JOYKEY_RIGHT = 1,
@@ -709,98 +723,98 @@ void kbdDrvStateHasChanged(BOOL active) {
 /*===========================================================================*/
 
 BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
-	ULO eol_evpos = kbd_state.eventsEOL.inpos;
-	ULO eof_evpos = kbd_state.eventsEOF.inpos;
+  ULO eol_evpos = kbd_state.eventsEOL.inpos;
+  ULO eof_evpos = kbd_state.eventsEOF.inpos;
+  
+  ULO port, setting;
+  
+  for (;;) {
 	
-	ULO port, setting;
-
-	for (;;) {
-
-		if (kbd_drv_capture)
-			break;
-
-		if( released( PCK_PAGE_DOWN ))
-		{
-			if( ispressed(PCK_HOME) )
-			{
-				issue_event( EVENT_RESOLUTION_NEXT );
-			} else {
-				if( ispressed(PCK_END) )
-					issue_event( EVENT_SCALEY_NEXT );
-			}
-		}
-		if( released( PCK_PAGE_UP ))
-		{
-			if( ispressed(PCK_HOME) )
-			{
-				issue_event( EVENT_RESOLUTION_PREV );
-			} else {
-				if( ispressed(PCK_END) )
-					issue_event( EVENT_SCALEY_PREV );
-			}
-		}
-		if( released( PCK_F11 ))
-			issue_event( EVENT_EXIT );
-		
-		if( released( PCK_F12 ))
-		{
-			mouseDrvToggleFocus();
-			joyDrvToggleFocus();
-			break;
-		}
-		
-		if( ispressed(PCK_HOME) )
-		{
-			if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
-			if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
-			if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
-			if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
-		}
-		else if( ispressed(PCK_END) )
-		{
-			if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
-			if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
-			if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
-			if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
-		}
-		/*
-		if( released( PCK_F11 ) && kbd_drv_home_pressed )
-		issue_event( EVENT_BMP_DUMP );
-		*/
-		
-		if( ispressed(PCK_HOME) )
-		{
-			if( ispressed( PCK_NUMPAD_2 ))
-				issue_event( EVENT_SCROLL_DOWN );
-			if( ispressed( PCK_NUMPAD_4 ))
-				issue_event( EVENT_SCROLL_LEFT );
-			
-			if( ispressed( PCK_NUMPAD_6 ))
-				issue_event( EVENT_SCROLL_RIGHT );
-			if( ispressed( PCK_NUMPAD_8 ))
-				issue_event( EVENT_SCROLL_UP );
-		}
-		
-		// Check joysticks replacements
-		// New here: Must remember last value to decide if a change has happened
-
-		for( port = 0; port < 2; port++ )
-			for( setting = 0; setting < 2; setting++ )
-				if( kbd_drv_joykey_enabled[port][setting] )
-				{
-					// Here the gameport is set up for input from the specified set of joykeys 
-					// Check each key for change
-					kbd_drv_joykey_directions direction;
-					for (direction = JOYKEY_LEFT; direction <= JOYKEY_FIRE1; direction++)
-						if (symbol_key == kbd_drv_joykey[setting][direction])
-							if( pressed( symbol_key ) || released( symbol_key ))
-								kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
-				}
-		break;
+	if (kbd_drv_capture)
+	  break;
+	
+	if( released( PCK_PAGE_DOWN ))
+	{
+	  if( ispressed(PCK_HOME) )
+	  {
+		issue_event( EVENT_RESOLUTION_NEXT );
+	  } else {
+		if( ispressed(PCK_END) )
+		  issue_event( EVENT_SCALEY_NEXT );
+	  }
 	}
-
-	return (eol_evpos != kbd_state.eventsEOL.inpos) ||
-		(eof_evpos != kbd_state.eventsEOF.inpos);
+	if( released( PCK_PAGE_UP ))
+	{
+	  if( ispressed(PCK_HOME) )
+	  {
+		issue_event( EVENT_RESOLUTION_PREV );
+	  } else {
+		if( ispressed(PCK_END) )
+		  issue_event( EVENT_SCALEY_PREV );
+	  }
+	}
+	if( released( PCK_F11 ))
+	  issue_event( EVENT_EXIT );
+	
+	if( released( PCK_F12 ))
+	{
+	  mouseDrvToggleFocus();
+	  joyDrvToggleFocus();
+	  break;
+	}
+	
+	if( ispressed(PCK_HOME) )
+	{
+	  if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
+	  if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
+	  if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
+	  if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
+	}
+	else if( ispressed(PCK_END) )
+	{
+	  if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
+	  if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
+	  if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
+	  if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
+	}
+	/*
+	if( released( PCK_F11 ) && kbd_drv_home_pressed )
+	issue_event( EVENT_BMP_DUMP );
+	*/
+	
+	if( ispressed(PCK_HOME) )
+	{
+	  if( ispressed( PCK_NUMPAD_2 ))
+		issue_event( EVENT_SCROLL_DOWN );
+	  if( ispressed( PCK_NUMPAD_4 ))
+		issue_event( EVENT_SCROLL_LEFT );
+	  
+	  if( ispressed( PCK_NUMPAD_6 ))
+		issue_event( EVENT_SCROLL_RIGHT );
+	  if( ispressed( PCK_NUMPAD_8 ))
+		issue_event( EVENT_SCROLL_UP );
+	}
+	
+	// Check joysticks replacements
+	// New here: Must remember last value to decide if a change has happened
+	
+	for( port = 0; port < 2; port++ )
+	  for( setting = 0; setting < 2; setting++ )
+		if( kbd_drv_joykey_enabled[port][setting] )
+		{
+		  // Here the gameport is set up for input from the specified set of joykeys 
+		  // Check each key for change
+		  kbd_drv_joykey_directions direction;
+		  for (direction = JOYKEY_LEFT; direction <= JOYKEY_FIRE1; direction++)
+			if (symbol_key == kbd_drv_joykey[setting][direction])
+			  if( pressed( symbol_key ) || released( symbol_key ))
+				kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
+		}
+		break;
+  }
+  
+  return (eol_evpos != kbd_state.eventsEOL.inpos) ||
+	(eof_evpos != kbd_state.eventsEOF.inpos);
 }
 
 
@@ -809,38 +823,38 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 /*===========================================================================*/
     
 void kbdDrvKeypress(ULO keycode, BOOL pressed) {
-	kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
-	BOOLE keycode_pressed = pressed;
-	BOOLE keycode_was_pressed = prevkeys[keycode];
-
-	/* DEBUG info, not needed now
-	char szMsg[255];
-	sprintf( szMsg, "Keypress %s %s\n"
+  kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
+  BOOLE keycode_pressed = pressed;
+  BOOLE keycode_was_pressed = prevkeys[keycode];
+  
+  /* DEBUG info, not needed now
+  char szMsg[255];
+  sprintf( szMsg, "Keypress %s %s\n"
 		, kbdDrvKeyString( symbolic_key )
 		, ( pressed ? "pressed" : "released" )
-	);
-	fellowAddLog( szMsg );
-	*/
-
-	keys[keycode] = pressed;
-
-	if ((!keycode_pressed) && keycode_was_pressed) {
-		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-		if (!kbdDrvEventChecker(symbolic_key))
-		{
-			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-			kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
-		}
+		);
+		fellowAddLog( szMsg );
+  */
+  
+  keys[keycode] = pressed;
+  
+  if ((!keycode_pressed) && keycode_was_pressed) {
+	// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+	if (!kbdDrvEventChecker(symbolic_key))
+	{
+	  UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+	  kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
 	}
-	else if (keycode_pressed && !keycode_was_pressed) {
-		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-		if (!kbdDrvEventChecker(symbolic_key))
-		{
-			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-			kbdKeyAdd(a_code);
-		}
+  }
+  else if (keycode_pressed && !keycode_was_pressed) {
+	// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+	if (!kbdDrvEventChecker(symbolic_key))
+	{
+	  UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+	  kbdKeyAdd(a_code);
 	}
-	prevkeys[keycode] = pressed;
+  }
+  prevkeys[keycode] = pressed;
 }
 
 
@@ -858,32 +872,32 @@ void kbdDrvBufferOverflowHandler(void) {
 
 void kbdDrvKeypressHandler(void)
 {
-	DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
-	DWORD itemcount = DINPUT_BUFFERSIZE;
-	HRESULT res;
+  DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
+  DWORD itemcount = DINPUT_BUFFERSIZE;
+  HRESULT res;
 		
-	if( !kbd_drv_active)
-		return;
-
-	do {
-		res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID,
-			sizeof(DIDEVICEOBJECTDATA),
-			rgod,
-			&itemcount,
-			0);
-		if (res == DIERR_INPUTLOST) kbdDrvDInputAcquire();
-	}
-	while (res == DIERR_INPUTLOST);
+  if( !kbd_drv_active)
+	return;
+  
+  do {
+	res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID,
+	  sizeof(DIDEVICEOBJECTDATA),
+	  rgod,
+	  &itemcount,
+	  0);
+	if (res == DIERR_INPUTLOST) kbdDrvDInputAcquire();
+  }
+  while (res == DIERR_INPUTLOST);
+  
+  if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
+	kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
+  else {
 	
-	if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
-		kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
-	else {
-		
-		ULO i = 0;
-		
-		for (i = 0; i < itemcount; i++)
-			kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
-	}
+	ULO i = 0;
+	
+	for (i = 0; i < itemcount; i++)
+	  kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+  }
 }    
     
 
@@ -912,6 +926,18 @@ STR *kbdDrvKeyString(ULO symbolickey) {
   if (symbolickey >= 106)
     symbolickey = PCK_NONE;
   return kbd_drv_pc_symbol_to_string[symbolickey];
+}
+
+STR *DikKeyString(int dikkey)
+{
+  int j;
+
+  for( j = 0; j < PCK_LAST_KEY; j++ )
+  {
+	if( dikkey == symbol_to_DIK_kbddrv[j] )
+	  return kbdDrvKeyString(j);
+  }
+  return "UNKNOWN";
 }
 
 
@@ -1067,142 +1093,159 @@ void kbdDrvStartup(void) {
   kbd_drv_joykey_event[0][1][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_ACTIVE;
   kbd_drv_joykey_event[1][0][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_INACTIVE;
   kbd_drv_joykey_event[1][1][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_ACTIVE;
-  kbd_drv_joykey[0][JOYKEY_UP]    = PCK_UP;
-  kbd_drv_joykey[0][JOYKEY_DOWN]  = PCK_DOWN;
-  kbd_drv_joykey[0][JOYKEY_LEFT]  = PCK_LEFT;
-  kbd_drv_joykey[0][JOYKEY_RIGHT] = PCK_RIGHT;
-  kbd_drv_joykey[0][JOYKEY_FIRE0] = PCK_RIGHT_CTRL;
-  kbd_drv_joykey[0][JOYKEY_FIRE1] = PCK_RIGHT_ALT;
-  kbd_drv_joykey[1][JOYKEY_UP]    = PCK_R;
-  kbd_drv_joykey[1][JOYKEY_DOWN]  = PCK_F;
-  kbd_drv_joykey[1][JOYKEY_LEFT]  = PCK_D;
-  kbd_drv_joykey[1][JOYKEY_RIGHT] = PCK_G;
-  kbd_drv_joykey[1][JOYKEY_FIRE0] = PCK_LEFT_CTRL;
-  kbd_drv_joykey[1][JOYKEY_FIRE1] = PCK_LEFT_ALT;
+  
+  kbd_drv_joykey[0][JOYKEY_UP]    = DIK_UP;
+  kbd_drv_joykey[0][JOYKEY_DOWN]  = DIK_DOWN;
+  kbd_drv_joykey[0][JOYKEY_LEFT]  = DIK_LEFT;
+  kbd_drv_joykey[0][JOYKEY_RIGHT] = DIK_RIGHT;
+  kbd_drv_joykey[0][JOYKEY_FIRE0] = DIK_RCONTROL;
+  kbd_drv_joykey[0][JOYKEY_FIRE1] = DIK_RMENU;
+  kbd_drv_joykey[1][JOYKEY_UP]    = DIK_R;
+  kbd_drv_joykey[1][JOYKEY_DOWN]  = DIK_F;
+  kbd_drv_joykey[1][JOYKEY_LEFT]  = DIK_D;
+  kbd_drv_joykey[1][JOYKEY_RIGHT] = DIK_G;
+  kbd_drv_joykey[1][JOYKEY_FIRE0] = DIK_LCONTROL;
+  kbd_drv_joykey[1][JOYKEY_FIRE1] = DIK_LMENU;
   
   for (port = 0; port < 2; port++)
     for (setting = 0; setting < 2; setting++)
       kbd_drv_joykey_enabled[port][setting] = FALSE;
-    kbd_drv_capture = FALSE;
-    kbd_drv_captured_key = FALSE;
     
-    for( i = 0; i < PCK_LAST_KEY; i++ )
-      kbddrv_DIK_to_symbol[ i ] = PCK_NONE;
-    
-    kbddrv_DIK_to_symbol[ DIK_ESCAPE          ] = PCK_ESCAPE; /* First row */
-    kbddrv_DIK_to_symbol[ DIK_F1              ] = PCK_F1;
-    kbddrv_DIK_to_symbol[ DIK_F2              ] = PCK_F2;
-    kbddrv_DIK_to_symbol[ DIK_F3              ] = PCK_F3;
-    kbddrv_DIK_to_symbol[ DIK_F4              ] = PCK_F4;
-    kbddrv_DIK_to_symbol[ DIK_F5              ] = PCK_F5;
-    kbddrv_DIK_to_symbol[ DIK_F6              ] = PCK_F6;
-    kbddrv_DIK_to_symbol[ DIK_F7              ] = PCK_F7;
-    kbddrv_DIK_to_symbol[ DIK_F8              ] = PCK_F8;
-    kbddrv_DIK_to_symbol[ DIK_F9              ] = PCK_F9;
-    kbddrv_DIK_to_symbol[ DIK_F10             ] = PCK_F10;
-    kbddrv_DIK_to_symbol[ DIK_F11             ] = PCK_F11;
-    kbddrv_DIK_to_symbol[ DIK_F12             ] = PCK_F12;
-    kbddrv_DIK_to_symbol[ DIK_SYSRQ           ] = PCK_PRINT_SCREEN;
-    kbddrv_DIK_to_symbol[ DIK_SCROLL          ] = PCK_SCROLL_LOCK;
-    /*kbddrv_DIK_to_symbol[ DIK_PAUSE           ] = PCK_PAUSE; */
-    kbddrv_DIK_to_symbol[ DIK_GRAVE           ] = PCK_GRAVE;  /* Second row */
-    kbddrv_DIK_to_symbol[ DIK_1               ] = PCK_1;
-    kbddrv_DIK_to_symbol[ DIK_2               ] = PCK_2;
-    kbddrv_DIK_to_symbol[ DIK_3               ] = PCK_3;
-    kbddrv_DIK_to_symbol[ DIK_4               ] = PCK_4;
-    kbddrv_DIK_to_symbol[ DIK_5               ] = PCK_5;
-    kbddrv_DIK_to_symbol[ DIK_6               ] = PCK_6;
-    kbddrv_DIK_to_symbol[ DIK_7               ] = PCK_7;
-    kbddrv_DIK_to_symbol[ DIK_8               ] = PCK_8;
-    kbddrv_DIK_to_symbol[ DIK_9               ] = PCK_9;
-    kbddrv_DIK_to_symbol[ DIK_0               ] = PCK_0;
-    kbddrv_DIK_to_symbol[ DIK_MINUS           ] = PCK_MINUS;
-    kbddrv_DIK_to_symbol[ DIK_EQUALS          ] = PCK_EQUALS;
-    kbddrv_DIK_to_symbol[ DIK_BACK            ] = PCK_BACKSPACE;
-    kbddrv_DIK_to_symbol[ DIK_INSERT          ] = PCK_INSERT;
-    kbddrv_DIK_to_symbol[ DIK_HOME            ] = PCK_HOME;
-    kbddrv_DIK_to_symbol[ DIK_PRIOR           ] = PCK_PAGE_UP;
-    kbddrv_DIK_to_symbol[ DIK_NUMLOCK         ] = PCK_NUM_LOCK;
-    kbddrv_DIK_to_symbol[ DIK_DIVIDE          ] = PCK_NUMPAD_DIVIDE;
-    kbddrv_DIK_to_symbol[ DIK_MULTIPLY        ] = PCK_NUMPAD_MULTIPLY;
-    kbddrv_DIK_to_symbol[ DIK_SUBTRACT        ] = PCK_NUMPAD_MINUS;
-    kbddrv_DIK_to_symbol[ DIK_TAB             ] = PCK_TAB;  /* Third row */
-    kbddrv_DIK_to_symbol[ DIK_Q               ] = PCK_Q;
-    kbddrv_DIK_to_symbol[ DIK_W               ] = PCK_W;
-    kbddrv_DIK_to_symbol[ DIK_E               ] = PCK_E;
-    kbddrv_DIK_to_symbol[ DIK_R               ] = PCK_R;
-    kbddrv_DIK_to_symbol[ DIK_T               ] = PCK_T;
-    kbddrv_DIK_to_symbol[ DIK_Y               ] = PCK_Y;
-    kbddrv_DIK_to_symbol[ DIK_U               ] = PCK_U;
-    kbddrv_DIK_to_symbol[ DIK_I               ] = PCK_I;
-    kbddrv_DIK_to_symbol[ DIK_O               ] = PCK_O;
-    kbddrv_DIK_to_symbol[ DIK_P               ] = PCK_P;
-    kbddrv_DIK_to_symbol[ DIK_LBRACKET        ] = PCK_LBRACKET;
-    kbddrv_DIK_to_symbol[ DIK_RBRACKET        ] = PCK_RBRACKET;
-    kbddrv_DIK_to_symbol[ DIK_RETURN          ] = PCK_RETURN;
-    kbddrv_DIK_to_symbol[ DIK_DELETE          ] = PCK_DELETE;
-    kbddrv_DIK_to_symbol[ DIK_END             ] = PCK_END;
-    kbddrv_DIK_to_symbol[ DIK_NEXT            ] = PCK_PAGE_DOWN;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD7         ] = PCK_NUMPAD_7;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD8         ] = PCK_NUMPAD_8;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD9         ] = PCK_NUMPAD_9;
-    kbddrv_DIK_to_symbol[ DIK_ADD             ] = PCK_NUMPAD_PLUS;
-    
-    kbddrv_DIK_to_symbol[ DIK_CAPITAL         ] = PCK_CAPS_LOCK; /* Fourth row */
-    kbddrv_DIK_to_symbol[ DIK_A               ] = PCK_A;
-    kbddrv_DIK_to_symbol[ DIK_S               ] = PCK_S;
-    kbddrv_DIK_to_symbol[ DIK_D               ] = PCK_D;
-    kbddrv_DIK_to_symbol[ DIK_F               ] = PCK_F;
-    kbddrv_DIK_to_symbol[ DIK_G               ] = PCK_G;
-    kbddrv_DIK_to_symbol[ DIK_H               ] = PCK_H;
-    kbddrv_DIK_to_symbol[ DIK_J               ] = PCK_J;
-    kbddrv_DIK_to_symbol[ DIK_K               ] = PCK_K;
-    kbddrv_DIK_to_symbol[ DIK_L               ] = PCK_L;
-    kbddrv_DIK_to_symbol[ DIK_SEMICOLON       ] = PCK_SEMICOLON;
-    kbddrv_DIK_to_symbol[ DIK_APOSTROPHE      ] = PCK_APOSTROPHE;
-    kbddrv_DIK_to_symbol[ DIK_BACKSLASH       ] = PCK_BACKSLASH;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD4         ] = PCK_NUMPAD_4;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD5         ] = PCK_NUMPAD_5;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD6         ] = PCK_NUMPAD_6;
-    
-    kbddrv_DIK_to_symbol[ DIK_LSHIFT          ] = PCK_LEFT_SHIFT; /* Fifth row */
-    kbddrv_DIK_to_symbol[ 0x56                ] = PCK_NONAME1;
-    kbddrv_DIK_to_symbol[ DIK_Z               ] = PCK_Z;
-    kbddrv_DIK_to_symbol[ DIK_X               ] = PCK_X;
-    kbddrv_DIK_to_symbol[ DIK_C               ] = PCK_C;
-    kbddrv_DIK_to_symbol[ DIK_V               ] = PCK_V;
-    kbddrv_DIK_to_symbol[ DIK_B               ] = PCK_B;
-    kbddrv_DIK_to_symbol[ DIK_N               ] = PCK_N;
-    kbddrv_DIK_to_symbol[ DIK_M               ] = PCK_M;
-    kbddrv_DIK_to_symbol[ DIK_COMMA           ] = PCK_COMMA;
-    kbddrv_DIK_to_symbol[ DIK_PERIOD          ] = PCK_PERIOD;
-    kbddrv_DIK_to_symbol[ DIK_SLASH           ] = PCK_SLASH;
-    kbddrv_DIK_to_symbol[ DIK_RSHIFT          ] = PCK_RIGHT_SHIFT;
-    kbddrv_DIK_to_symbol[ DIK_UP              ] = PCK_UP;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD1         ] = PCK_NUMPAD_1;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD2         ] = PCK_NUMPAD_2;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD3         ] = PCK_NUMPAD_3;
-    kbddrv_DIK_to_symbol[ DIK_NUMPADENTER     ] = PCK_NUMPAD_ENTER;
-    
-    kbddrv_DIK_to_symbol[ DIK_LCONTROL        ] = PCK_LEFT_CTRL; /* Sixth row */
-    kbddrv_DIK_to_symbol[ DIK_LWIN            ] = PCK_LEFT_WINDOWS;
-    kbddrv_DIK_to_symbol[ DIK_LMENU           ] = PCK_LEFT_ALT;
-    kbddrv_DIK_to_symbol[ DIK_SPACE           ] = PCK_SPACE;
-    kbddrv_DIK_to_symbol[ DIK_RMENU           ] = PCK_RIGHT_ALT;
-    kbddrv_DIK_to_symbol[ DIK_RWIN            ] = PCK_RIGHT_WINDOWS;
-    kbddrv_DIK_to_symbol[ DIK_APPS            ] = PCK_START_MENU;
-    kbddrv_DIK_to_symbol[ DIK_RCONTROL        ] = PCK_RIGHT_CTRL;
-    kbddrv_DIK_to_symbol[ DIK_LEFT            ] = PCK_LEFT;
-    kbddrv_DIK_to_symbol[ DIK_DOWN            ] = PCK_DOWN;
-    kbddrv_DIK_to_symbol[ DIK_RIGHT           ] = PCK_RIGHT;
-    kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
-    kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
-    
-    prsReadFile("mapping.key", kbd_drv_pc_symbol_to_amiga_scancode);
-    
-    kbd_drv_active = FALSE;
-    kbd_drv_lpDI = NULL;
-    kbd_drv_lpDID = NULL;
+  kbd_drv_capture = FALSE;
+  kbd_drv_captured_key = FALSE;
+  
+  for( i = 0; i < PCK_LAST_KEY; i++ )
+    kbddrv_DIK_to_symbol[ i ] = PCK_NONE;
+  
+  kbddrv_DIK_to_symbol[ DIK_ESCAPE          ] = PCK_ESCAPE; /* First row */
+  kbddrv_DIK_to_symbol[ DIK_F1              ] = PCK_F1;
+  kbddrv_DIK_to_symbol[ DIK_F2              ] = PCK_F2;
+  kbddrv_DIK_to_symbol[ DIK_F3              ] = PCK_F3;
+  kbddrv_DIK_to_symbol[ DIK_F4              ] = PCK_F4;
+  kbddrv_DIK_to_symbol[ DIK_F5              ] = PCK_F5;
+  kbddrv_DIK_to_symbol[ DIK_F6              ] = PCK_F6;
+  kbddrv_DIK_to_symbol[ DIK_F7              ] = PCK_F7;
+  kbddrv_DIK_to_symbol[ DIK_F8              ] = PCK_F8;
+  kbddrv_DIK_to_symbol[ DIK_F9              ] = PCK_F9;
+  kbddrv_DIK_to_symbol[ DIK_F10             ] = PCK_F10;
+  kbddrv_DIK_to_symbol[ DIK_F11             ] = PCK_F11;
+  kbddrv_DIK_to_symbol[ DIK_F12             ] = PCK_F12;
+  kbddrv_DIK_to_symbol[ DIK_SYSRQ           ] = PCK_PRINT_SCREEN;
+  kbddrv_DIK_to_symbol[ DIK_SCROLL          ] = PCK_SCROLL_LOCK;
+  /*kbddrv_DIK_to_symbol[ DIK_PAUSE           ] = PCK_PAUSE; */
+  kbddrv_DIK_to_symbol[ DIK_GRAVE           ] = PCK_GRAVE;  /* Second row */
+  kbddrv_DIK_to_symbol[ DIK_1               ] = PCK_1;
+  kbddrv_DIK_to_symbol[ DIK_2               ] = PCK_2;
+  kbddrv_DIK_to_symbol[ DIK_3               ] = PCK_3;
+  kbddrv_DIK_to_symbol[ DIK_4               ] = PCK_4;
+  kbddrv_DIK_to_symbol[ DIK_5               ] = PCK_5;
+  kbddrv_DIK_to_symbol[ DIK_6               ] = PCK_6;
+  kbddrv_DIK_to_symbol[ DIK_7               ] = PCK_7;
+  kbddrv_DIK_to_symbol[ DIK_8               ] = PCK_8;
+  kbddrv_DIK_to_symbol[ DIK_9               ] = PCK_9;
+  kbddrv_DIK_to_symbol[ DIK_0               ] = PCK_0;
+  kbddrv_DIK_to_symbol[ DIK_MINUS           ] = PCK_MINUS;
+  kbddrv_DIK_to_symbol[ DIK_EQUALS          ] = PCK_EQUALS;
+  kbddrv_DIK_to_symbol[ DIK_BACK            ] = PCK_BACKSPACE;
+  kbddrv_DIK_to_symbol[ DIK_INSERT          ] = PCK_INSERT;
+  kbddrv_DIK_to_symbol[ DIK_HOME            ] = PCK_HOME;
+  kbddrv_DIK_to_symbol[ DIK_PRIOR           ] = PCK_PAGE_UP;
+  kbddrv_DIK_to_symbol[ DIK_NUMLOCK         ] = PCK_NUM_LOCK;
+  kbddrv_DIK_to_symbol[ DIK_DIVIDE          ] = PCK_NUMPAD_DIVIDE;
+  kbddrv_DIK_to_symbol[ DIK_MULTIPLY        ] = PCK_NUMPAD_MULTIPLY;
+  kbddrv_DIK_to_symbol[ DIK_SUBTRACT        ] = PCK_NUMPAD_MINUS;
+  kbddrv_DIK_to_symbol[ DIK_TAB             ] = PCK_TAB;  /* Third row */
+  kbddrv_DIK_to_symbol[ DIK_Q               ] = PCK_Q;
+  kbddrv_DIK_to_symbol[ DIK_W               ] = PCK_W;
+  kbddrv_DIK_to_symbol[ DIK_E               ] = PCK_E;
+  kbddrv_DIK_to_symbol[ DIK_R               ] = PCK_R;
+  kbddrv_DIK_to_symbol[ DIK_T               ] = PCK_T;
+  kbddrv_DIK_to_symbol[ DIK_Y               ] = PCK_Y;
+  kbddrv_DIK_to_symbol[ DIK_U               ] = PCK_U;
+  kbddrv_DIK_to_symbol[ DIK_I               ] = PCK_I;
+  kbddrv_DIK_to_symbol[ DIK_O               ] = PCK_O;
+  kbddrv_DIK_to_symbol[ DIK_P               ] = PCK_P;
+  kbddrv_DIK_to_symbol[ DIK_LBRACKET        ] = PCK_LBRACKET;
+  kbddrv_DIK_to_symbol[ DIK_RBRACKET        ] = PCK_RBRACKET;
+  kbddrv_DIK_to_symbol[ DIK_RETURN          ] = PCK_RETURN;
+  kbddrv_DIK_to_symbol[ DIK_DELETE          ] = PCK_DELETE;
+  kbddrv_DIK_to_symbol[ DIK_END             ] = PCK_END;
+  kbddrv_DIK_to_symbol[ DIK_NEXT            ] = PCK_PAGE_DOWN;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD7         ] = PCK_NUMPAD_7;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD8         ] = PCK_NUMPAD_8;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD9         ] = PCK_NUMPAD_9;
+  kbddrv_DIK_to_symbol[ DIK_ADD             ] = PCK_NUMPAD_PLUS;
+  
+  kbddrv_DIK_to_symbol[ DIK_CAPITAL         ] = PCK_CAPS_LOCK; /* Fourth row */
+  kbddrv_DIK_to_symbol[ DIK_A               ] = PCK_A;
+  kbddrv_DIK_to_symbol[ DIK_S               ] = PCK_S;
+  kbddrv_DIK_to_symbol[ DIK_D               ] = PCK_D;
+  kbddrv_DIK_to_symbol[ DIK_F               ] = PCK_F;
+  kbddrv_DIK_to_symbol[ DIK_G               ] = PCK_G;
+  kbddrv_DIK_to_symbol[ DIK_H               ] = PCK_H;
+  kbddrv_DIK_to_symbol[ DIK_J               ] = PCK_J;
+  kbddrv_DIK_to_symbol[ DIK_K               ] = PCK_K;
+  kbddrv_DIK_to_symbol[ DIK_L               ] = PCK_L;
+  kbddrv_DIK_to_symbol[ DIK_SEMICOLON       ] = PCK_SEMICOLON;
+  kbddrv_DIK_to_symbol[ DIK_APOSTROPHE      ] = PCK_APOSTROPHE;
+  kbddrv_DIK_to_symbol[ DIK_BACKSLASH       ] = PCK_BACKSLASH;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD4         ] = PCK_NUMPAD_4;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD5         ] = PCK_NUMPAD_5;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD6         ] = PCK_NUMPAD_6;
+  
+  kbddrv_DIK_to_symbol[ DIK_LSHIFT          ] = PCK_LEFT_SHIFT; /* Fifth row */
+  kbddrv_DIK_to_symbol[ 0x56                ] = PCK_NONAME1;
+  kbddrv_DIK_to_symbol[ DIK_Z               ] = PCK_Z;
+  kbddrv_DIK_to_symbol[ DIK_X               ] = PCK_X;
+  kbddrv_DIK_to_symbol[ DIK_C               ] = PCK_C;
+  kbddrv_DIK_to_symbol[ DIK_V               ] = PCK_V;
+  kbddrv_DIK_to_symbol[ DIK_B               ] = PCK_B;
+  kbddrv_DIK_to_symbol[ DIK_N               ] = PCK_N;
+  kbddrv_DIK_to_symbol[ DIK_M               ] = PCK_M;
+  kbddrv_DIK_to_symbol[ DIK_COMMA           ] = PCK_COMMA;
+  kbddrv_DIK_to_symbol[ DIK_PERIOD          ] = PCK_PERIOD;
+  kbddrv_DIK_to_symbol[ DIK_SLASH           ] = PCK_SLASH;
+  kbddrv_DIK_to_symbol[ DIK_RSHIFT          ] = PCK_RIGHT_SHIFT;
+  kbddrv_DIK_to_symbol[ DIK_UP              ] = PCK_UP;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD1         ] = PCK_NUMPAD_1;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD2         ] = PCK_NUMPAD_2;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD3         ] = PCK_NUMPAD_3;
+  kbddrv_DIK_to_symbol[ DIK_NUMPADENTER     ] = PCK_NUMPAD_ENTER;
+  
+  kbddrv_DIK_to_symbol[ DIK_LCONTROL        ] = PCK_LEFT_CTRL; /* Sixth row */
+  kbddrv_DIK_to_symbol[ DIK_LWIN            ] = PCK_LEFT_WINDOWS;
+  kbddrv_DIK_to_symbol[ DIK_LMENU           ] = PCK_LEFT_ALT;
+  kbddrv_DIK_to_symbol[ DIK_SPACE           ] = PCK_SPACE;
+  kbddrv_DIK_to_symbol[ DIK_RMENU           ] = PCK_RIGHT_ALT;
+  kbddrv_DIK_to_symbol[ DIK_RWIN            ] = PCK_RIGHT_WINDOWS;
+  kbddrv_DIK_to_symbol[ DIK_APPS            ] = PCK_START_MENU;
+  kbddrv_DIK_to_symbol[ DIK_RCONTROL        ] = PCK_RIGHT_CTRL;
+  kbddrv_DIK_to_symbol[ DIK_LEFT            ] = PCK_LEFT;
+  kbddrv_DIK_to_symbol[ DIK_DOWN            ] = PCK_DOWN;
+  kbddrv_DIK_to_symbol[ DIK_RIGHT           ] = PCK_RIGHT;
+  kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
+  kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
+
+  prsReadFile( "mapping.key", kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
+
+  for (port = 0; port < 2; port++)
+    for (setting = JOYKEY_LEFT; setting <= JOYKEY_FIRE1; setting++)
+	{
+#ifdef _DEBUG
+	  char szMsg[255];
+#endif
+
+	  kbd_drv_joykey[port][setting] = kbddrv_DIK_to_symbol[kbd_drv_joykey[port][setting]];
+	  
+#ifdef _DEBUG
+	  sprintf( szMsg, "keyplacement port %d direction %d: %s\n", port, setting, kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
+	  fellowAddLog( szMsg );
+#endif
+	}
+
+  kbd_drv_active = FALSE;
+  kbd_drv_lpDI = NULL;
+  kbd_drv_lpDID = NULL;
 }
 
 
