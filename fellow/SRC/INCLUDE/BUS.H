@@ -14,9 +14,9 @@
 #define bus_debug ASMRENAME(bus_debug)
 
 #define cpuSetUpInterrupt ASMRENAME(cpuSetUpInterrupt)
-#define finish_blit ASMRENAME(finish_blit)
+//#define finish_blit ASMRENAME(finish_blit)
 #define endOfLine ASMRENAME(endOfLine)
-#define copperEmulate ASMRENAME(copperEmulate)
+//#define copperEmulate ASMRENAME(copperEmulate)
 #define endOfFrame ASMRENAME(endOfFrame)
 //#define graphEndOfLine ASMRENAME(graphEndOfLine)
 
@@ -34,9 +34,9 @@ extern void endOfFrame(void);
 extern void busstart(void);  /* Code alignment label */
 
 extern void cpuSetUpInterrupt(void);
-extern void finish_blit(void);
+//extern void finish_blit(void);
 extern void endOfLine(void);
-extern void copperEmulate(void);
+//extern void copperEmulate(void);
 extern void endOfFrame(void);
 //extern void graphEndOfLine(void);
 

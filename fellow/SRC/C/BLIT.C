@@ -769,7 +769,7 @@ void blitFinishBlit(void)
   blitend = -1;
   busScanEventsLevel4();
   blitterdmawaiting = 0;
-  blit_started = 0;
+  blit_started = FALSE;
   dmaconr = dmaconr & 0x0000bfff;
   if ((bltcon & 0x00000001) == 0x00000001)
   {

@@ -1,8 +1,6 @@
 #ifndef COPPER_H
 #define COPPER_H
 
-#define copperUpdateDMA ASMRENAME(copperUpdateDMA)
-
 void wcopcon_C(ULO data, ULO address);
 void wcop1lch_C(ULO data, ULO address);
 void wcop1lcl_C(ULO data, ULO address);
@@ -26,5 +24,6 @@ extern void copperShutdown(void);
 void copperLoad1C(void);
 void copperLoad2C(void);
 void copperEmulateC(void);
+
 
 #endif
