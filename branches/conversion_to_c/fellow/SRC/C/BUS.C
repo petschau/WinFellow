@@ -17,6 +17,7 @@
 #include "fmem.h"
 #include "blit.h"
 #include "bus.h"
+#include "graph.h"
 
 
 ULO debugging;
@@ -63,9 +64,9 @@ void busEventlistClear(void) {
   lvl4_next = CYCLESPERFRAME;
   lvl4_ptr = endOfFrame;
   lvl3_next = CYCLESPERLINE - 1;
-  lvl3_ptr = endOfLine;
+  lvl3_ptr = endOfLineC;
   lvl2_next = CYCLESPERLINE - 1;
-  lvl2_ptr = endOfLine;
+  lvl2_ptr = endOfLineC;
 }
 
 
@@ -101,7 +102,7 @@ void busStartup(void) {
 void busShutdown(void) {
 }
 
-void busScanLevel6(ULO* lvlx_next, void (**lvlx_ptr)(void))
+void busScanLevel6(ULO* lvlx_next, buseventfunc* lvlx_ptr)
 { 
   if ((*lvlx_next) > cia_next_event_time)
   {
@@ -112,7 +113,7 @@ void busScanLevel6(ULO* lvlx_next, void (**lvlx_ptr)(void))
   lvl6_ptr = *lvlx_ptr; 
 }
 
-void busScanLevel5(ULO* lvlx_next, void (**lvlx_ptr)(void))
+void busScanLevel5(ULO* lvlx_next, buseventfunc* lvlx_ptr)
 { 
   if ((*lvlx_next) > irq_next)
   {
@@ -123,29 +124,29 @@ void busScanLevel5(ULO* lvlx_next, void (**lvlx_ptr)(void))
   lvl5_ptr = *lvlx_ptr; 
 }
 
-void busScanLevel4(ULO* lvlx_next, void (**lvlx_ptr)(void))
+void busScanLevel4(ULO* lvlx_next, buseventfunc* lvlx_ptr)
 { 
   if ((*lvlx_next) > blitend)
   {
     *lvlx_next = blitend;
-    *lvlx_ptr = finish_blit;
+    *lvlx_ptr = blitFinishBlit;
   }
   lvl4_next = *lvlx_next;
   lvl4_ptr = *lvlx_ptr; 
 }
 
-void busScanLevel3(ULO* lvlx_next, void (**lvlx_ptr)(void))
+void busScanLevel3(ULO* lvlx_next, buseventfunc* lvlx_ptr)
 { 
   if ((*lvlx_next) > eol_next)
   {
     *lvlx_next = eol_next;
-    *lvlx_ptr = endOfLine;
+    *lvlx_ptr = endOfLineC;
   }
   lvl3_next = *lvlx_next;
   lvl3_ptr = *lvlx_ptr; 
 }
 
-void busScanLevel2(ULO* lvlx_next, void (**lvlx_ptr)(void))
+void busScanLevel2(ULO* lvlx_next, buseventfunc* lvlx_ptr)
 { 
   if ((*lvlx_next) > copper_next)
   {
@@ -159,7 +160,7 @@ void busScanLevel2(ULO* lvlx_next, void (**lvlx_ptr)(void))
 void busScanEventsLevel2(void)
 { 
   ULO lvlx_next;
-  void (*lvlx_ptr)(void);
+  buseventfunc lvlx_ptr;
 
   lvlx_next = lvl3_next;
   lvlx_ptr = lvl3_ptr;
@@ -170,7 +171,7 @@ void busScanEventsLevel2(void)
 void busScanEventsLevel3(void)
 { 
   ULO lvlx_next;
-  void (*lvlx_ptr)(void);
+  buseventfunc lvlx_ptr;
 
   lvlx_next = lvl4_next;
   lvlx_ptr = lvl4_ptr;
@@ -182,7 +183,7 @@ void busScanEventsLevel3(void)
 void busScanEventsLevel4(void)
 { 
   ULO lvlx_next;
-  void (*lvlx_ptr)(void);
+  buseventfunc lvlx_ptr;
 
   lvlx_next = lvl5_next;
   lvlx_ptr = lvl5_ptr;
@@ -195,7 +196,7 @@ void busScanEventsLevel4(void)
 void busScanEventsLevel5(void)
 { 
   ULO lvlx_next;
-  void (*lvlx_ptr)(void);
+  buseventfunc lvlx_ptr;
 
   lvlx_next = lvl6_next;
   lvlx_ptr = lvl6_ptr;
@@ -209,7 +210,7 @@ void busScanEventsLevel5(void)
 void busScanEventsLevel6(void)
 { 
   ULO lvlx_next;
-  void (*lvlx_ptr)(void);
+  buseventfunc lvlx_ptr;
 
   lvlx_next = CYCLESPERFRAME;
   lvlx_ptr = endOfFrame;
@@ -220,3 +221,211 @@ void busScanEventsLevel6(void)
   busScanLevel3(&lvlx_next, &lvlx_ptr);
   busScanLevel2(&lvlx_next, &lvlx_ptr);
 }
+
+
+/*==============================================================================*/
+/* Global end of line handler                                                   */
+/*==============================================================================*/
+
+void endOfLineC(void)
+{
+
+  /*==============================================================*/
+	/* Handles graphics planar to chunky conversion                 */
+	/* and updates the graphics emulation for a new line            */
+	/*==============================================================*/
+  
+  graphEndOfLine(); // assembly function
+
+	/*==============================================================*/
+	/* Update the CIA B event counter                               */
+	/*==============================================================*/
+
+	//mov	eax, 1
+	//CIA_UPDATE_EVENTCOUNTER_CWRAP
+  ciaUpdateEventCounterC(1);
+
+	/*==============================================================*/
+	/* Handles disk DMA if it is running                            */
+	/*==============================================================*/
+
+	floppyEndOfLineC();
+
+	/*==============================================================*/
+	/* Update the sound emulation                                   */
+	/*==============================================================*/
+
+	//SOUND_END_OF_LINE_CWRAP
+  soundEndOfLine();
+
+	/*==============================================================*/
+	/* Handle keyboard events                                       */
+	/*==============================================================*/
+
+	//	KBDQUEUEHANDLER_CWRAP
+  kbdQueueHandler();
+	//	KBDEVENTEOLHANDLER_CWRAP
+  kbdEventEOLHandler();
+
+	/*==============================================================*/
+	/* Set up the next end of line event                            */
+	/*==============================================================*/
+
+	eol_next += CYCLESPERLINE;
+	busScanEventsLevel3();
+}
+
+/*==============================================================================*/
+/* Global end of frame handler                                                  */
+/*==============================================================================*/
+
+
+/*
+		FALIGN32
+
+global _endOfFrame_
+_endOfFrame_:	push	edx
+		push	ebx
+
+
+		;==============================================================
+		; Draw the frame in the host buffer
+		;==============================================================
+
+		call	_drawEndOfFrame_
+
+
+		;==============================================================
+		; Handle keyboard events
+		;==============================================================
+
+		KBDEVENTEOFHANDLER_CWRAP
+
+
+		;==============================================================
+		; Reset some aspects of the graphics emulation
+		;==============================================================
+
+		xor	dword [lof], 08000h		; Short/long frame 
+		xor	edx, edx
+		mov	ecx, 0102h			; Zero scroll
+
+		pushad
+		call	dword [memory_iobank_write + 2*ecx]
+		popad
+
+
+		;==============================================================
+		; Restart copper
+		;==============================================================
+
+		call	_copperEndOfFrame_		; Restart copper
+
+
+		;==============================================================
+		; Update frame counters
+		;==============================================================
+
+		inc	dword [draw_frame_count]	; Count frames
+		dec	dword [draw_frame_skip]		; Frame skipping
+		jns	.l6
+		mov	edx, dword [draw_frame_skip_factor]
+		mov	dword [draw_frame_skip], edx
+.l6:
+
+		;==============================================================
+		; Update CIA timer counters
+		;==============================================================
+
+		CIA_UPDATE_TIMERS_EOF_CWRAP
+
+
+		;==============================================================
+		; Sprite end of frame updates
+		;==============================================================
+
+		SPRITE_EOF_CWRAP
+
+
+		;==============================================================
+		; Recalculate blitter finished time
+		;==============================================================
+
+		mov	dword [graph_playfield_on], ecx
+		test	dword [blitend], 0ffffffffh
+		js	.l14
+		sub	dword [blitend], CYCLESPERFRAME
+		setns	byte [blitend]
+.l14:
+
+		;==============================================================
+		; Flag vertical refresh IRQ
+		;==============================================================
+
+		mov	edx, 08020h
+
+		pushad
+		call	dword [memory_iobank_write + 0138h]
+		popad
+
+
+		;==============================================================
+		; Set up next end of line event
+		;==============================================================
+
+		mov	dword [eol_next], CYCLESPERLINE
+		dec	dword [eol_next]
+
+
+		;==============================================================
+		; Update next CPU instruction time
+		;==============================================================
+
+		mov	ebx, dword [cpu_next]
+		test	ebx, ebx
+		js	.l15
+		sub	ebx, CYCLESPERFRAME
+		mov	dword [cpu_next], ebx
+.l15:
+
+		;==============================================================
+		; Update next IRQ time
+		;==============================================================
+
+		mov	ebx, dword [irq_next]
+		test	ebx, ebx
+		js	.l16
+		sub	ebx, CYCLESPERFRAME
+		mov	dword [irq_next], ebx
+.l16:
+
+		;==============================================================
+		; Perform graphics end of frame
+		;==============================================================
+
+		call	graphEndOfFrame
+		call	timerEndOfFrame
+
+		;==============================================================
+		; Recalculate the entire event queue
+		;==============================================================
+
+		call busScanEventsLevel6
+		;SCAN_EVENTS_LVL6
+
+
+		;==============================================================
+		; Bail out of emulation if we're asked to
+		;==============================================================
+
+		test	dword [fellow_request_emulation_stop], 1
+		jnz	.l18
+		test	dword [fellow_request_emulation_stop_immediately], 1
+		jz	.l17
+.l18:		mov	esp, dword [exceptionstack]
+		jmp	bus_exit
+
+.l17:		pop	ebx
+		pop	edx
+		ret
+*/

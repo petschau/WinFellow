@@ -6,7 +6,7 @@
 ;==============================================================================
 
 extern _return_from_stop_
-extern _endOfLine_
+;extern _endOfLine_
 extern _endOfFrame_
 extern _bus_trace_mode_
 

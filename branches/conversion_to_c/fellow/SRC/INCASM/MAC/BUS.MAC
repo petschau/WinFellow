@@ -20,9 +20,9 @@
 		mov	dword [graph_raster_x], ebx
 		mov	dword [graph_raster_y], ecx
 		
-		;pushad
+		pushad
 		call dword [lvl2_ptr]
-		;popad
+		popad
 		jmp dword %%nxt
 %endmacro
 
@@ -47,9 +47,9 @@
         	mov	dword [graph_raster_x], ebx
         	mov	dword [graph_raster_y], ecx
 		
-		;pushad
+		pushad
 		call	dword [lvl2_ptr]
-		;popad
+		popad
 		jmp dword %2
 %endmacro
 

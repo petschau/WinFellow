@@ -36,7 +36,6 @@ FDATASECTIONSTART
 %include "data/copper.inc"
 %include "data/draw.inc"
 %include "data/sprite.inc"
-%include "data/blit.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
 
@@ -58,6 +57,13 @@ CDATAEXTERN gcc_times
 CDATAEXTERN gcc_pixels
 %endif
 
+CDATAEXTERN bltzero
+CDATAEXTERN blitter_ECS
+CDATAEXTERN blitend
+CDATAEXTERN blit_cycle_free
+CDATAEXTERN blitterdmawaiting
+CDATAEXTERN blit_started
+
 
 
 FDATASECTIONEND
@@ -74,7 +80,6 @@ _graphemstart_:				; Used to check code alignment
 %include "mac/drawmode.mac"
 %include "func/sprite.inc"
 %include "func/sound.inc"
-%include "func/blit.inc"
 %include "func/copper.inc"
 
 
@@ -3515,6 +3520,7 @@ _graphComposeLineOutputSmart_:
 global _graphEndOfLine_
 _graphEndOfLine_:
 
+		pushad
 
 		;==============================================================
 		; Skip this frame?
@@ -3621,8 +3627,10 @@ _graphEndOfLine_:
 
 .skip_frame:
 
-		jmp	_graphSpriteHack_
-		
+		call	_graphSpriteHack_
+
+		popad		
+		ret
 
 		FALIGN32
 

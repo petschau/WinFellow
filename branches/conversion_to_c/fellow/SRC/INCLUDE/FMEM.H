@@ -309,7 +309,7 @@ extern UBY memory_bogo[];
 extern UBY memory_kick[];
 extern ULO memory_chipsize;
 extern UBY memory_emem[];
-
+//extern memoryIOReadFunc memory_iobank_write[];
 
 extern ULO intenar,intena,intreq;
 extern ULO potgor;

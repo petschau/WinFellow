@@ -30,7 +30,6 @@ FDATASECTIONSTART
 
 %include "data/fmem.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
 %include "data/copper.inc"
 %include "data/cia.inc"
 %include "data/cpu.inc"
@@ -42,7 +41,6 @@ FCODESECTIONSTART
 %include "func/cia.inc"
 %include "func/copper.inc"
 %include "func/bus.inc"
-%include "func/blit.inc"
 %include "func/cpu.inc"
 
 %include "mac/cia.mac"
