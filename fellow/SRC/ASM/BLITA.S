@@ -925,7 +925,8 @@ no_sign:
 		add	esp, 44
 		mov	edx, 08040h
 		mov	ecx, 0dff09ch
-		jmp	wriw
+		call	wriw
+		ret
 
 
 ; ========================================================

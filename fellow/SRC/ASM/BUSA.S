@@ -373,7 +373,10 @@ _endOfFrame_:	push	edx
 		xor	dword [lof], 08000h		; Short/long frame 
 		xor	edx, edx
 		mov	ecx, 0102h			; Zero scroll
+
+		pushad
 		call	dword [memory_iobank_write + 2*ecx]
+		popad
 
 
 		;==============================================================
@@ -424,7 +427,10 @@ _endOfFrame_:	push	edx
 		;==============================================================
 
 		mov	edx, 08020h
+
+		pushad
 		call	dword [memory_iobank_write + 0138h]
+		popad
 
 
 		;==============================================================

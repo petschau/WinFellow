@@ -154,6 +154,32 @@ extern void wbltcdat(ULO data, ULO address);
 extern void wbltbdat(ULO data, ULO address);
 extern void wbltadat(ULO data, ULO address);
 
+void wbltcon0_C(ULO data, ULO address);
+void wbltcon1_C(ULO data, ULO address);
+void wbltafwm_C(ULO data, ULO address);
+void wbltalwm_C(ULO data, ULO address);
+void wbltcpth_C(ULO data, ULO address);
+void wbltcptl_C(ULO data, ULO address);
+void wbltbpth_C(ULO data, ULO address);
+void wbltbptl_C(ULO data, ULO address);
+void wbltapth_C(ULO data, ULO address);
+void wbltaptl_C(ULO data, ULO address);
+void wbltdpth_C(ULO data, ULO address);
+void wbltdptl_C(ULO data, ULO address);
+void wbltsize_C(ULO data, ULO address);
+void wbltcmod_C(ULO data, ULO address);
+void wbltbmod_C(ULO data, ULO address);
+void wbltamod_C(ULO data, ULO address);
+void wbltdmod_C(ULO data, ULO address);
+void wbltcdat_C(ULO data, ULO address);
+void wbltbdat_C(ULO data, ULO address);
+void wbltadat_C(ULO data, ULO address);
+
+void wbltcon0l_C(ULO data, ULO address);
+void wbltsizh_C(ULO data, ULO address);
+void wbltsizv_C(ULO data, ULO address);
+
+
 
 /*==========================*/
 /* Global blitter variables */
