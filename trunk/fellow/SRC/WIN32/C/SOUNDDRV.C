@@ -271,6 +271,16 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
   sprintf(s, "ddscaps.dwMaxSecondarySampleRate - %d\n", maxrate);
   fellowAddLog(s);
 
+  /* Set maximum sample rate to 44100 if it cannot be determined
+     from the driver caps; this is supposed to fix problems with
+	 ESS SOLO-1 PCI soundcards */
+
+  if (maxrate == 0) {
+    maxrate = 44100;
+	sprintf(s, "ddscaps.dwMaxSecondarySampleRate correction applied - %d\n", maxrate);
+	fellowAddLog(s);
+  }
+
   if (stereo) {
     if (bits16) {
 		soundDrvAddMode(dsound_device, stereo, bits16, 15650);

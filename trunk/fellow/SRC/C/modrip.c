@@ -5,12 +5,15 @@
 /*                                                                            */
 /* based on information found on Exotica (http://exotica.fix.no), the xmp     */
 /* source code (http://xmp.helllabs.org), Amiga Mod Packers Described         */
-/* (www.multimania.com/asle/ampd.html) and too many other web sources         */
+/* (http://www.multimania.com/asle/ampd.html) and too many other web sources  */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2004/05/26:                                                                */
+/* - fixed a bug in modripChipDump (only run prowiz if memory was actually    */
+/*   dumped); fixed level 3 compiler warnings                                 */
 /* 2000/12/27:                                                                */
 /* - chipmem dump now also saves bogo and fast mem                            */
 /* 2000/12/18:                                                                */
@@ -41,12 +44,14 @@
 #include "defs.h"
 #include "fmem.h"
 #include "floppy.h"
+#include "fellow.h"
 
 /* own includes */
 #include <stdio.h>
 #include <memory.h>
 #include <string.h>
 #include <ctype.h>
+#include <io.h>
 
 #include "modrip.h"
 #ifdef WIN32
@@ -55,15 +60,18 @@
 #include "modrip_linux.h"
 #endif
 
+#define MODRIPDOLOGGING 1
+
+#if MODRIPDOLOGGING
 /* define this to have logfile output */
 #define RIPLOG1(x)       fellowAddLog(x);
 #define RIPLOG2(x, y)    fellowAddLog(x, y);
 #define RIPLOG3(x, y, z) fellowAddLog(x, y, z);
-/* 
+#else
 #define RIPLOG1(x)
 #define RIPLOG2(x)
 #define RIPLOG3(x)
-*/
+#endif
 
 static ULO modripModsFound;
 
@@ -80,7 +88,7 @@ static ULO modripModsFound;
 /* gets the values via memory access function func               */
 /*===============================================================*/
 
-static BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
+BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 {
   ULO i;
   FILE *modfile;
@@ -239,7 +247,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
       if ((info.end - info.start < MODRIP_MAXMODLEN)) {
       /* get module name */
       for (i = 0; i < 20; i++) {
-        info.modname[i] = (*func)(info.start + i);
+        info.modname[i] = (char)((*func)(info.start + i));
 	  }
       info.modname[20] = 0;	
 
@@ -251,22 +259,21 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 		 }
          if(!ScratchyName) {
           strcpy(info.filename, info.modname);
-          strcat(info.filename, ".mod");
+          strcat(info.filename, ".amod");
 		}
 		else
-          sprintf(info.filename, "mod%d.mod", modripModsFound++);
+          sprintf(info.filename, "mod%d.amod", modripModsFound++);
 	  }
-      else {
+    else {
         sprintf(info.filename, "mod%d.mod", modripModsFound++);
 	  }
 
-	  if(modripGuiSaveRequest(&info)) 
-        if(!modripSaveMem(&info, func))
-          modripGuiErrorSave(&info);
+	  modripGuiSaveRequest(&info, func);
 	  }
 	}
   }
 }
+
 
 /*============================*/
 /* detect SoundFX 1.3 and 2.0 */
@@ -353,18 +360,17 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 		
       if (size < MODRIP_MAXMODLEN) {
         /* set filename for the module file */
-        sprintf(info.filename, "SFX.Mod%d.cus", modripModsFound++);
+        sprintf(info.filename, "SFX.Mod%d.amod", modripModsFound++);
 
-      if(modripGuiSaveRequest(&info)) 
-        if(!modripSaveMem(&info, func))
-          modripGuiErrorSave(&info);
-      }
+    modripGuiSaveRequest(&info, func);
+ }
     }
   }
 }
 
+
 /*===========================*/
-/* detect SoundMon           */
+/* detect BP-SoundMon        */
 /* games: Alien Breed (+SE), */
 /*   ProjectX (+SE)          */
 /*===========================*/
@@ -454,7 +460,7 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
     /* get song name */
     for (i = 0; i < 26; i++) {
-      info.modname[i] = (*func)(info.start + i);
+      info.modname[i] = (char)((*func)(info.start + i));
 	}
     info.modname[26] = 0;	
 
@@ -472,24 +478,22 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
       if(!ScratchyName) {
 		sprintf(info.filename, "BP.");
         strcat(info.filename, info.modname);
-        strcat(info.filename, ".cus");
+        strcat(info.filename, ".amod");
 	  }
 	  else
-        sprintf(info.filename, "BP.Mod%d.cus", modripModsFound++);
+        sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
 	  }
      else {
-      sprintf(info.filename, "BP.Mod%d.cus", modripModsFound++);
+      sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
 	 }
 
-    if(modripGuiSaveRequest(&info)) 
-      if(!modripSaveMem(&info, func))
-        modripGuiErrorSave(&info);
-  }     
+   modripGuiSaveRequest(&info, func);  
+ }     
 }
 
 /*==================================*/
 /* detect FredEditor                */
-/* games: Fuzzball                  */
+/* games: Fuzzball, Ilyad           */
 /*==================================*/
 
 static void modripDetectFred(ULO address, MemoryAccessFunc func)
@@ -555,7 +559,7 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 
   offset = i + 2;
 
-  ModuleStart = -(0x10000 - BEWORD(address + offset)) + offset;
+  ModuleStart = offset - 0x10000 + BEWORD(address + offset);
   instDataOffset = BEWORD(address + offset + 4) + offset + 4;
 
   for(j = 0;
@@ -572,7 +576,7 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 
   RIPLOG2("mod-ripper checkpoint ModuleStart (%d)\n", ModuleStart);
 
-  if((-(0x10000 - BEWORD(address + offset)) + offset) != ModuleStart) return;
+  if((offset - 0x10000 + BEWORD(address + offset)) != ModuleStart) return;
 
   songDataOffset = BEWORD(address + offset + 4) + offset + 4;
 
@@ -587,13 +591,13 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 
   songNo = (*func)(address + instDataOffset - 13) + 1;
 
-  for (i = songData; i < instData; i++) {
+  for (i = songData; i < (ULO) instData; i++) {
     if ((*func)(address + i) == 0x83)
-      instMax = max((*func)(address + i + 1), instMax);
+      instMax = max((*func)(address + i + 1), (ULO)instMax);
   }
   instMax++;
  
-  for(i = 0; i < instMax; i++) {
+  for(i = 0; i < (ULO) instMax; i++) {
     sampDataOffset = BEDWORD(address + instData + i*64);
     if (
         (BEWORD(address + instData + i*64 + 4) == 0)
@@ -612,13 +616,11 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
     info.end += instData + instMax * 64;
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "FRED.Mod%d.cus", modripModsFound++);
+    sprintf(info.filename, "FRED.Mod%d.amod", modripModsFound++);
 
-    if(modripGuiSaveRequest(&info)) 
-      if(!modripSaveMem(&info, func))
-        modripGuiErrorSave(&info);
-  }   
+  modripGuiSaveRequest(&info, func);
 }
+  }
 
 /*==========================*/
 /* detect ProRunner 2.0     */
@@ -670,11 +672,9 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   info.end += sampPtr + sampSize;
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "PR2.Mod%d.cus", modripModsFound++);
+    sprintf(info.filename, "PR2.Mod%d.amod", modripModsFound++);
 
-    if(modripGuiSaveRequest(&info)) 
-      if(!modripSaveMem(&info, func))
-        modripGuiErrorSave(&info);
+  modripGuiSaveRequest(&info, func);
   }   
 }
 
@@ -763,11 +763,8 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   info.end = info.start + sampDataPtr + sampSize + (loopSizeCurr << 1);
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "%s.Mod%d.cus", info.typesig, modripModsFound++);
-
-    if(modripGuiSaveRequest(&info)) 
-      if(!modripSaveMem(&info, func))
-        modripGuiErrorSave(&info);
+    sprintf(info.filename, "%s.Mod%d.amod", info.typesig, modripModsFound++);
+    modripGuiSaveRequest(&info, func);
   }   
 }
 
@@ -861,7 +858,6 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
 {
   FILE *f;
   char message[MODRIP_TEMPSTRLEN];
-  ULO i;
   int readbytes;
 
   if(f = fopen(filename, "rb")) {
@@ -927,8 +923,7 @@ static void modripScanFellowFloppies(void)
 
 void modripChipDump(void)
 {
-  BOOLE Saved;
-  int result;
+  BOOLE Saved = FALSE;
 
   if(modripGuiDumpChipMem()) {
     Saved = modripSaveChipMem("chip.mem");

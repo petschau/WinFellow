@@ -21,8 +21,13 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
+				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				OptimizeForProcessor="1"
+				EnableIntrinsicFunctions="TRUE"
+				ImproveFloatingPointConsistency="TRUE"
+				FavorSizeOrSpeed="1"
+				OptimizeForProcessor="2"
+				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="win32/include,../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5"
 				StringPooling="TRUE"
@@ -32,6 +37,7 @@
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
@@ -95,6 +101,7 @@
 				ObjectFile=".\Dx3Debug/"
 				ProgramDataBaseFileName=".\Dx3Debug/"
 				BrowseInformation="1"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CompileAs="0"/>
@@ -163,6 +170,7 @@
 				AssemblerListingLocation=".\Dx3Release/"
 				ObjectFile=".\Dx3Release/"
 				ProgramDataBaseFileName=".\Dx3Release/"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				CompileAs="0"/>
 			<Tool
@@ -218,7 +226,8 @@
 				Optimization="0"
 				OptimizeForProcessor="1"
 				AdditionalIncludeDirectories="../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/WinFellow.pch"
 				AssemblerOutput="2"
@@ -226,6 +235,7 @@
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
 				BrowseInformation="1"
+				WarningLevel="3"
 				SuppressStartupBanner="TRUE"
 				DebugInformationFormat="4"
 				CompileAs="0"/>

@@ -1,9 +1,27 @@
-/*--------------------------------------------*/
-/* UAE to Fellow bridge header file           */
-/* In the case where similar functions exist, */
-/* macros are defined which expand to the     */
-/* Fellow equivalent.                         */
-/*--------------------------------------------*/
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* uae2fell.h -- UAE to Fellow bridge header file                          */
+/*                                                                         */
+/* In the case where similar functions exist, macros are defined which     */
+/* expand to the Fellow equivalent.                                        */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #ifndef UAE2FELLH
 #define UAE2FELLH
@@ -12,6 +30,7 @@
 #include "cpu.h"
 #include "fhfile.h"
 #include "fmem.h"
+#include "fellow.h"
 
 
 /*------------------------*/
@@ -38,8 +57,12 @@
 #define my_mkdir(P, M) (mkdir(P))
 #define REGPARAM2
 #define REGPARAM
-#define version 31
 #define uae_quit fellowNastyExit
+
+#define version 043
+#define UAEMAJOR  ((version / 100) % 10)
+#define UAEMINOR  ((version / 10) % 10)
+#define UAESUBREV ((version / 1) % 10)
 
 /*================*/
 /* UAE's Hardfile */
@@ -63,7 +86,7 @@ extern void m68k_do_rts(void);
 
 #define get_long(ADR) (fetl(ADR))
 #define get_word(ADR) (fetw(ADR))
-#define get_byte(ADR) (fetb(ADR))
+#define get_byte(ADR) (char)(fetb(ADR))
 
 #define put_long(ADR, DATA) (wril(DATA, ADR))
 #define put_word(ADR, DATA) (wriw(DATA, ADR))
@@ -72,9 +95,10 @@ extern void m68k_do_rts(void);
 #define expamem_write(OFFSET, DATA) (memoryEmemSet(OFFSET,DATA))
 #define expamem memory_emem
 #define expamem_init_clear memoryEmemClear
-#define chipmem_size memory_chipsize
+#define allocated_chipmem memory_chipsize
 extern uae_u8 filesysory[65536];
-
+extern void expamem_init_filesys (void);
+extern void expamem_map_filesys (ULO mapping);
 
 /*===========================================*/
 /* These access memory with a direct pointer */
@@ -102,6 +126,7 @@ extern char warning_buffer[256];
 /*===================*/
 
 #define xmalloc malloc
+#define xcalloc calloc
 
 /*===================*/
 /* UAE random define */

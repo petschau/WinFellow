@@ -31,11 +31,6 @@
 #include "ffilesys.h"
 #include "ini.h"
 
-
-#ifdef UAE_FILESYS
-#include "uaefsys.h"
-#endif
-
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
 /*============================================================================*/
@@ -541,7 +536,7 @@ void cfgSetDefaults(cfg *config) {
   /* Default configuration description                                        */
   /*==========================================================================*/
 
-  cfgSetDescription(config, "winfellow amiga emulator v0.4.3 configuration");
+  cfgSetDescription(config, FELLOWLONGVERSION);
   
 
   /*==========================================================================*/

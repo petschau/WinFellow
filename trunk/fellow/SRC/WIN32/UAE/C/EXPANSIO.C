@@ -9,10 +9,17 @@
   *
   */
 
+/* FELLOW IN (START)-----------------
 
-/* Only code needed to run the filesystem driver is retained in this file */
-/* Removed is code relating to different autoconfig devices.              */
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
+  Only code needed to run the filesystem driver is retained in this file.
+  Removed is code relating to different autoconfig devices.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)--------------------
 #include "sysconfig.h"
@@ -24,6 +31,7 @@
 #include "memory.h"
 #include "autoconf.h"
 #include "picasso96.h"
+#include "savestate.h"
    FELLOW OUT (END)---------------------*/
 
 /* FELLOW IN (START)----------------------*/
@@ -138,27 +146,29 @@ uaecptr ROM_hardfile_resname = 0, ROM_hardfile_resid = 0;
 uaecptr ROM_hardfile_init = 0;
 
 /* FELLOW OUT, autoconfig support and fast memory code removed */
-
+/* FELLOW OUT, fastmem_bank removed */
 /*
  * Filesystem device ROM
  * This is very simple, the Amiga shouldn't be doing things with it.
  */
 
-static uae_u32 filesys_start; /* Determined by the OS */
-uae_u8 filesysory[65536];
-
-/* FELLOW OUT (START)----------------------------------
-
+/* FELLOW OUT (START)----------------
 static uae_u32 filesys_lget(uaecptr) REGPARAM;
 static uae_u32 filesys_wget(uaecptr) REGPARAM;
 static uae_u32 filesys_bget(uaecptr) REGPARAM;
 static void filesys_lput(uaecptr, uae_u32) REGPARAM;
 static void filesys_wput(uaecptr, uae_u32) REGPARAM;
 static void filesys_bput(uaecptr, uae_u32) REGPARAM;
+   FELLOW OUT (END)------------------ */
 
+static uae_u32 filesys_start; /* Determined by the OS */
+uae_u8 filesysory[65536];
+
+/* FELLOW OUT (START)----------------
 uae_u32 REGPARAM2 filesys_lget(uaecptr addr)
 {
     uae_u8 *m;
+	special_mem |= S_READ;
     addr -= filesys_start & 65535;
     addr &= 65535;
     m = filesysory + addr;
@@ -168,6 +178,7 @@ uae_u32 REGPARAM2 filesys_lget(uaecptr addr)
 uae_u32 REGPARAM2 filesys_wget(uaecptr addr)
 {
     uae_u8 *m;
+	special_mem |= S_READ;
     addr -= filesys_start & 65535;
     addr &= 65535;
     m = filesysory + addr;
@@ -176,6 +187,7 @@ uae_u32 REGPARAM2 filesys_wget(uaecptr addr)
 
 uae_u32 REGPARAM2 filesys_bget(uaecptr addr)
 {
+	special_mem |= S_READ;
     addr -= filesys_start & 65535;
     addr &= 65535;
     return filesysory[addr];
@@ -183,27 +195,36 @@ uae_u32 REGPARAM2 filesys_bget(uaecptr addr)
 
 static void REGPARAM2 filesys_lput(uaecptr addr, uae_u32 l)
 {
+	special_mem |= S_WRITE;
     write_log ("filesys_lput called\n");
 }
 
 static void REGPARAM2 filesys_wput(uaecptr addr, uae_u32 w)
 {
+	special_mem |= S_WRITE;
     write_log ("filesys_wput called\n");
 }
 
 static void REGPARAM2 filesys_bput(uaecptr addr, uae_u32 b)
-{
-    fprintf (stderr, "filesys_bput called. This usually means that you are using\n");
-    fprintf (stderr, "Kickstart 1.2. Please give UAE the \"-a\" option next time\n");
-    fprintf (stderr, "you start it. If you are _not_ using Kickstart 1.2, then\n");
-    fprintf (stderr, "there's a bug somewhere.\n");
-    fprintf (stderr, "Exiting...\n");
+{	
+	special_mem |= S_WRITE;
+    write_log ("filesys_bput called. This usually means that you are using\n");
+    write_log ("Kickstart 1.2. Please give UAE the \"-a\" option next time\n");
+    write_log ("you start it. If you are _not_ using Kickstart 1.2, then\n");
+    write_log ("there's a bug somewhere.\n");
+    write_log ("Exiting...\n");
     uae_quit ();
 }
 
-   FELLOW OUT (END)-----------------------------------*/
+addrbank filesys_bank = {
+    filesys_lget, filesys_wget, filesys_bget,
+    filesys_lput, filesys_wput, filesys_bput,
+    default_xlate, default_check, NULL
+};
 
-/* FELLOW IN (START)----------------------------------*/
+   FELLOW OUT (END)------------------ */
+
+/* FELLOW IN (START)----------------- */
 
 ULO filesys_lgetC(ULO addr)
 {
@@ -242,23 +263,26 @@ void filesys_wputC(ULO w, ULO addr)
 
 void filesys_bputC(ULO b, ULO addr)
 {
-    fprintf (stderr, "filesys_bput called. This usually means that you are using\n");
-    fprintf (stderr, "Kickstart 1.2. Please give UAE the \"-a\" option next time\n");
-    fprintf (stderr, "you start it. If you are _not_ using Kickstart 1.2, then\n");
-    fprintf (stderr, "there's a bug somewhere.\n");
-    fprintf (stderr, "Exiting...\n");
+    write_log ("filesys_bput called. This usually means that you are using\n");
+    /* FELLOW CHANGE (START)-------------
+	write_log ("Kickstart 1.2. Please give UAE the \"-a\" option next time\n");
+    write_log ("you start it. If you are _not_ using Kickstart 1.2, then\n"); */
+	write_log ("Kickstart 1.2. If you are _not_ using Kickstart 1.2, then\n");
+	/* FELLOW CHANGE (END)--------------- */
+    write_log ("there's a bug somewhere.\n");
+    write_log ("Exiting...\n");
     uae_quit ();
 }
 
-/* FELLOW IN (END)----------------------------------*/
+/* FELLOW IN (END)------------------- */
 
-/* FELLOW OUT (START) ------------------------------
+/* FELLOW OUT (START)----------------
 addrbank filesys_bank = {
     filesys_lget, filesys_wget, filesys_bget,
     filesys_lput, filesys_wput, filesys_bput,
     default_xlate, default_check
 };
-/* FELLOW OUT (END)---------------------------------*/
+   FELLOW OUT (END)------------------ */
 
 /* FELLOW OUT, removed Z3 and Z2 code */
 
@@ -269,14 +293,14 @@ addrbank filesys_bank = {
  */
 
 
-/*static void expamem_map_filesys (void)  FELLOW OUT */
-void expamem_map_filesys (int mapping)  /* FELLOW IN */
+/* FELLOW CHANGE: static void expamem_map_filesys (void) */
+void expamem_map_filesys (ULO mapping)
 {
     uaecptr a;
     /* FELLOW IN (START) -------------------*/
     int bank;
 
-    filesys_start = (mapping<<8) & 0xff0000;
+    filesys_start = (mapping<<8) & (RTAREA_BASE + 0xf0000);
     bank = filesys_start>>16;
     memoryBankSet(filesys_bgetASM, filesys_wgetASM, filesys_lgetASM, filesys_bputASM,
                   filesys_wputASM, filesys_lputASM, filesysory, bank, bank, FALSE);
@@ -284,21 +308,25 @@ void expamem_map_filesys (int mapping)  /* FELLOW IN */
     
     /* FELLOW OUT (START)------------------------
     filesys_start = ((expamem_hi | (expamem_lo >> 4)) << 16);
-    map_banks (&filesys_bank, filesys_start >> 16, 1);
-    write_log ("Filesystem: mapped memory.\n");
-       FELLOW OUT (START)------------------------*/
-
+    map_banks (&filesys_bank, filesys_start >> 16, 1, 0);
+    write_log ("Filesystem: mapped memory @$%lx.\n", filesys_start);
+       FELLOW OUT (END)------------------------*/
     /* 68k code needs to know this. */
     a = here ();
-    org (0xF0FFFC);
+    org (RTAREA_BASE+0xFFFC);
     dl (filesys_start + 0x2000);
     org (a);
 }
 
-/* static   FELLOW OUT */
+/* FELLOW CHANGE: static void expamem_init_filesys (void) */
 void expamem_init_filesys (void)
 {
-    uae_u8 diagarea[] = { 0x90, 0x00, 0x01, 0x0C, 0x01, 0x00, 0x01, 0x06 };
+    /* struct DiagArea - the size has to be large enough to store several device ROMTags */
+    uae_u8 diagarea[] = { 0x90, 0x00, /* da_Config, da_Flags */
+                          0x02, 0x00, /* da_Size */
+                          0x01, 0x00, /* da_DiagPoint */
+                          0x01, 0x06  /* da_BootPoint */
+    };
 
     expamem_init_clear();
     expamem_write (0x00, Z2_MEM_64KB | rom_card | zorroII);
@@ -314,13 +342,13 @@ void expamem_init_filesys (void)
     expamem_write (0x20, 0x00); /* ser.no. Byte 2 */
     expamem_write (0x24, 0x01); /* ser.no. Byte 3 */
 
+	/* er_InitDiagVec */
     expamem_write (0x28, 0x10); /* Rom-Offset hi */
     expamem_write (0x2c, 0x00); /* ROM-Offset lo */
 
     expamem_write (0x40, 0x00); /* Ctrl/Statusreg.*/
 
     /* Build a DiagArea */
-
     memcpy (expamem + 0x1000, diagarea, sizeof diagarea);
 
     /* Call DiagEntry */

@@ -41,8 +41,11 @@ typedef struct {
   ULO  m_lastusedconfigurationtab;
   STR  m_lastusedglobaldiskdir[CFG_FILENAME_LENGTH];
   STR  m_lastusedhdfdir[CFG_FILENAME_LENGTH];
+  STR  m_lastusedmoddir[CFG_FILENAME_LENGTH];
   
 } ini;
+
+extern ini* wgui_ini;
 
 /*============================================================================*/
 /* struct ini property access functions                                       */
@@ -66,8 +69,13 @@ extern void iniSetLastUsedGlobalDiskDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedGlobalDiskDir(ini *initdata);
 extern void iniSetLastUsedHdfDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedHdfDir(ini *initdata);
+extern void iniSetLastUsedModDir(ini *initdata, STR *directory);
+extern STR *iniGetLastUsedModDir(ini *initdata);
 extern void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab);
 extern ULO iniGetLastUsedCfgTab(ini *initdata);
+
+extern BOOLE iniSetOption(ini *initdata, STR *initoptionstr);
+extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);
 
 /*============================================================================*/
 /* struct iniManager                                                          */
