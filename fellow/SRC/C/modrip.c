@@ -900,8 +900,18 @@ static void modripScanFellowFloppies(void)
 
 void modripChipDump(void)
 {
+  BOOLE Saved;
+  int result;
+
   if(modripGuiDumpChipMem())
-    modripSaveChipMem("chip.mem");
+    Saved = modripSaveChipMem("chip.mem");
+  if(Saved) {
+    if(!access("prowiz.exe", 04)) {
+      /* prowiz.exe has been found */
+      if(modripGuiRunProWiz())
+        system("prowiz.exe chip.mem");
+	}
+  }
 }
 
 /*============================================================================*/
