@@ -22,6 +22,7 @@
 #include "timer.h"
 #include "fonts.h"
 #include "copper.h"
+#include "wgui.h"
 
 
 /*============================================================================*/
@@ -74,6 +75,7 @@ ULO draw_hscale;                                          /* Horisontal scale */
 ULO draw_vscale;                                       /* Base vertical scale */
 BOOLE draw_scanlines;                                        /* Use scanlines */
 BOOLE draw_deinterlace;                           /* Remove interlace flicker */
+BOOLE draw_allow_multiple_buffers;          /* Allows the use of more buffers */
 
 
 /*============================================================================*/
@@ -333,7 +335,7 @@ static void drawDualTranslationInitialize(void) {
             }
           else l = i;                     /* PF1 visible amd not transparent */
           }
-        draw_dual_translate[k][i][j] = l;
+        draw_dual_translate[k][i][j] = (UBY) l;
         }
       }
     }
@@ -380,9 +382,9 @@ static void drawViewScroll(void) {
 static void drawLED8(ULO x, ULO y, ULO width, ULO height, ULO color) {
   UBY *bufb;
   ULO x1, y1;
-  UBY color8 = draw_color_table[((color & 0xf00000) >> 12) |
-                                ((color & 0x00f000) >> 8) |
-                                ((color & 0x0000f0) >> 4)];
+  UBY color8 = (UBY) draw_color_table[((color & 0xf00000) >> 12) |
+				      ((color & 0x00f000) >> 8) |
+				      ((color & 0x0000f0) >> 4)];
   ULO pitch = drawValidateBufferPointer(0);
   if (pitch == 0) return;
   bufb = draw_buffer_top_ptr + pitch*y + x;
@@ -396,9 +398,9 @@ static void drawLED8(ULO x, ULO y, ULO width, ULO height, ULO color) {
 static void drawLED16(ULO x, ULO y, ULO width, ULO height, ULO color) {
   UWO *bufw;
   ULO x1, y1;
-  UWO color16 = draw_color_table[((color & 0xf00000) >> 12) |
-                                 ((color & 0x00f000) >> 8) |
-                                 ((color & 0x0000f0) >> 4)];
+  UWO color16 = (UWO) draw_color_table[((color & 0xf00000) >> 12) |
+				       ((color & 0x00f000) >> 8) |
+				       ((color & 0x0000f0) >> 4)];
   ULO pitch = drawValidateBufferPointer(0);
   if (pitch == 0) return;
   bufw = ((UWO *) (draw_buffer_top_ptr + pitch*y)) + x;
@@ -416,9 +418,9 @@ static void drawLED24(ULO x, ULO y, ULO width, ULO height, ULO color) {
   ULO color24 = draw_color_table[((color & 0xf00000) >> 12) |
                                  ((color & 0x00f000) >> 8) |
                                  ((color & 0x0000f0) >> 4)];
-  UBY color24_1 = (color24 & 0xff0000) >> 16;
-  UBY color24_2 = (color24 & 0x00ff00) >> 8;
-  UBY color24_3 = (color24 & 0x0000ff);
+  UBY color24_1 = (UBY) ((color24 & 0xff0000) >> 16);
+  UBY color24_2 = (UBY) ((color24 & 0x00ff00) >> 8);
+  UBY color24_3 = (UBY) (color24 & 0x0000ff);
   ULO pitch = drawValidateBufferPointer(0);
   if (pitch == 0) return;
   bufb = draw_buffer_top_ptr + pitch*y + x*3;
@@ -499,7 +501,7 @@ static void drawFpsChar(ULO character, ULO x) {
 /*============================================================================*/
 
 static void drawFpsText(STR *text) {
-  ULO i, c, fg;
+  ULO i, c;
 
   for (i = 0; i < 4; i++) {
     c = *text++;
@@ -643,6 +645,89 @@ static void drawFpsCounter(void) {
 
 
 /*============================================================================*/
+/* Draw module properties                                                     */
+/*============================================================================*/
+
+BOOLE drawSetMode(ULO width,
+		  ULO height, 
+		  ULO colorbits, 
+		  ULO refresh,
+		  BOOLE windowed)
+{
+  felist *l;
+  for (l = draw_modes; l != NULL; l = listNext(l)) {
+    draw_mode *dm = (draw_mode*) listNode(l);
+    if ((dm->width == width) &&
+        (dm->height == height) &&
+	(windowed || (dm->bits == colorbits)) &&
+	(dm->refresh == refresh) &&
+	(dm->windowed == windowed)) {
+      draw_mode_current = dm;
+      return TRUE;
+    }
+  }
+  draw_mode_current = (draw_mode*) listNode(draw_modes);
+  return FALSE;
+}
+
+felist *drawGetModes(void) {
+  return draw_modes;
+}
+
+void drawSetDeinterlace(BOOLE deinterlace) {
+  draw_deinterlace = deinterlace;
+}
+
+BOOLE drawGetDeinterlace(void) {
+  return draw_deinterlace;
+}
+
+void drawSetHorisontalScale(ULO horisontalscale) {
+  draw_hscale = horisontalscale;
+}
+
+void drawSetVerticalScale(ULO verticalscale) {
+  draw_vscale = verticalscale;
+}
+
+ULO drawGetVerticalScale(void) {
+  return draw_vscale;
+}
+
+void drawSetScanlines(BOOLE scanlines) {
+  draw_scanlines = scanlines;
+}
+
+BOOLE drawGetScanlines(void) {
+  return draw_scanlines;
+}
+
+void drawSetFrameskipRatio(ULO frameskipratio) {
+  draw_frame_skip_factor = frameskipratio;
+}
+
+void drawSetFPSCounterEnabled(BOOLE enabled) {
+  draw_fps_counter_enabled = enabled;
+}
+
+void drawSetLEDsEnabled(BOOLE enabled) {
+  draw_LEDs_enabled = enabled;
+}
+
+void drawSetLED(ULO index, BOOLE state) {
+  if (index < DRAW_LED_COUNT) draw_LEDs_state[index] = state;
+}
+
+void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers) {
+  draw_allow_multiple_buffers = allow_multiple_buffers;
+}
+
+BOOLE drawGetAllowMultipleBuffers(void) {
+  return draw_allow_multiple_buffers;
+}
+
+
+/*============================================================================*/
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/
 
@@ -714,9 +799,9 @@ static void drawColorTranslationInitialize(void) {
     /* Use 6 levels of red and blue, 7 levels of green */
     
     for (k = 0; k < 4096; k++) {
-      b = ((((k & 0xf)<<4)*(16.0/15.0)) + 25) / 51;
-      g = (((k & 0xf0)*(16.0/15.0)) + 25) / 51;
-      r = ((((k & 0xf00)>>4)*(16.0/15.0)) + 25) / 51;
+      b = (ULO) (((((k & 0xf)<<4)*(16.0/15.0)) + 25) / 51);
+      g = (ULO) ((((k & 0xf0)*(16.0/15.0)) + 25) / 51);
+      r = (ULO) (((((k & 0xf00)>>4)*(16.0/15.0)) + 25) / 51);
       draw_color_table[k] = r + g*6 + b*36 + 10;
       draw_8bit_to_color[draw_color_table[k]] = k | (k<<16);
       draw_color_table[k] = draw_color_table[k]<<24 |
@@ -759,6 +844,8 @@ static void drawAmigaScreenWidth(draw_mode *dm) {
   }
   draw_width_amiga_real = draw_width_amiga*totalscale;
 }
+
+
 
 
 /*============================================================================*/
@@ -897,80 +984,6 @@ static void drawBufferFlip(void) {
   gfxDrvBufferFlip();
 }
 
-
-/*============================================================================*/
-/* Draw module properties                                                     */
-/*============================================================================*/
-
-BOOLE drawSetMode(ULO width,
-		  ULO height, 
-		  ULO colorbits, 
-		  ULO refresh,
-		  BOOLE windowed)
-{
-  felist *l;
-  for (l = draw_modes; l != NULL; l = listNext(l)) {
-    draw_mode *dm = (draw_mode*) listNode(l);
-    if ((dm->width == width) &&
-        (dm->height == height) &&
-	(windowed || (dm->bits == colorbits)) &&
-	(dm->refresh == refresh) &&
-	(dm->windowed == windowed)) {
-      draw_mode_current = dm;
-      return TRUE;
-    }
-  }
-  draw_mode_current = (draw_mode*) listNode(draw_modes);
-  return FALSE;
-}
-
-felist *drawGetModes(void) {
-  return draw_modes;
-}
-
-void drawSetDeinterlace(BOOLE deinterlace) {
-  draw_deinterlace = deinterlace;
-}
-
-BOOLE drawGetDeinterlace(void) {
-  return draw_deinterlace;
-}
-
-void drawSetHorisontalScale(ULO horisontalscale) {
-  draw_hscale = horisontalscale;
-}
-
-void drawSetVerticalScale(ULO verticalscale) {
-  draw_vscale = verticalscale;
-}
-
-ULO drawGetVerticalScale(void) {
-  return draw_vscale;
-}
-
-void drawSetScanlines(BOOLE scanlines) {
-  draw_scanlines = scanlines;
-}
-
-BOOLE drawGetScanlines(void) {
-  return draw_scanlines;
-}
-
-void drawSetFrameskipRatio(ULO frameskipratio) {
-  draw_frame_skip_factor = frameskipratio;
-}
-
-void drawSetFPSCounterEnabled(BOOLE enabled) {
-  draw_fps_counter_enabled = enabled;
-}
-
-void drawSetLEDsEnabled(BOOLE enabled) {
-  draw_LEDs_enabled = enabled;
-}
-
-void drawSetLED(ULO index, BOOLE state) {
-  if (index < DRAW_LED_COUNT) draw_LEDs_state[index] = state;
-}
 
 /*============================================================================*/
 /* Performance statistics interface					      */
@@ -1133,7 +1146,7 @@ void drawEmulationStart(void) {
   draw_frame_skip = 0;
   gfxDrvSetMode(draw_mode_current, drawGetVerticalScale());
   /* Use 1 buffer when deinterlacing, else 3 */
-  gfxDrvEmulationStart((drawGetDeinterlace()) ? 1 : 3);
+  gfxDrvEmulationStart((drawGetDeinterlace() || (!drawGetAllowMultipleBuffers())) ? 1 : 3);
   drawStatClear();
 }
 
@@ -1146,6 +1159,8 @@ BOOLE drawEmulationStartPost(void) {
     draw_buffer_show = 0;
     draw_buffer_draw = draw_buffer_count - 1;
   }
+  else
+    wguiRequester("Failure: The graphics driver failed to allocate enough graphics card memory", "", "");
   return result;
 }
 
@@ -1185,6 +1200,7 @@ BOOLE drawStartup(void) {
   drawSetFrameskipRatio(1);
   drawSetFPSCounterEnabled(FALSE);
   drawSetLEDsEnabled(FALSE);
+  drawSetAllowMultipleBuffers(FALSE);
   for (i = 0; i < DRAW_LED_COUNT; i++) drawSetLED(i, FALSE);
   return TRUE;
 }
