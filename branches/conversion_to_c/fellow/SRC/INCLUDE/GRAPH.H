@@ -139,6 +139,21 @@ extern void graphEmulationStart(void);
 extern void graphEmulationStop(void);
 extern void graphStartup(void);
 extern void graphShutdown(void);
+void graphCalculateWindow_C(void);
+void graphCalculateWindowHires_C(void);
+
+void graphDecode0_C(void);
+void graphDecode1_C(void);
+void graphDecode2_C(void);
+void graphDecode3_C(void);
+void graphDecode4_C(void);
+void graphDecode5_C(void);
+void graphDecode6_C(void);
+void graphDecode2Dual_C(void);
+void graphDecode3Dual_C(void);
+void graphDecode4Dual_C(void);
+void graphDecode5Dual_C(void);
+void graphDecode6Dual_C(void);
 
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
