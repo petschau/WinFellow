@@ -19,6 +19,7 @@
 #include "bus.h"
 #include "graph.h"
 #include "floppy.h"
+#include "kbd.h"
 
 
 ULO debugging;
