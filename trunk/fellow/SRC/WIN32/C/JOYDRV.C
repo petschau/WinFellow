@@ -13,6 +13,9 @@
 
 /* ---------------- CHANGE LOG ----------------- 
 Monday, September 11, 2000
+- fixed joyDrvMovementHandler again
+
+Monday, September 11, 2000
 - fixed joyDrvMovementHandler if the input is lost for 50 times consecutives, the driver is marked as failed and a new joyDrvEmulationStart should be issued
 - fixed joyDrvEmulationStart, some internal variables were initialized only at startup (joyDrvStartup)
 
@@ -457,7 +460,7 @@ void joyDrvToggleFocus() {
 void joyDrvMovementHandler() {
   int i;
   
-  if (!joy_drv_in_use)
+  if ( joy_drv_failed || !joy_drv_in_use )
 	return;
 
   if (((gameport_input[0] == GP_ANALOG0) ||
@@ -467,7 +470,7 @@ void joyDrvMovementHandler() {
 	
 	DIJOYSTATE dims;
 	HRESULT res;
-	int LostCounter = 50;
+	int LostCounter = 25;
 
 #else
 	
@@ -501,7 +504,7 @@ void joyDrvMovementHandler() {
 	  if( LostCounter-- < 0 )
 	  {
 		joyDrvDInputFailure("joyDrvMovementHandler(): abort -- ", res );
-		joyDrvToggleFocus();
+		joy_drv_failed = TRUE;
 		return;
 	  }
 
@@ -610,6 +613,7 @@ void joyDrvHardReset(void) {
 /*===========================================================================*/
 
 void joyDrvEmulationStart(void) {
+  joy_drv_failed = FALSE;
   joy_drv_focus = TRUE;
   joy_drv_active = FALSE;
   joy_drv_in_use = FALSE;
@@ -623,6 +627,7 @@ void joyDrvEmulationStart(void) {
 
 void joyDrvEmulationStop(void) {
   joyDrvDInputRelease();
+  joy_drv_failed = TRUE;
 }
 
 
