@@ -8,6 +8,15 @@
 ;===============================================================================
 
 ;===============================================================================
+;Changelog:
+;
+; 2000 12 21 (PS) - Reorganized linemode using macros. No unsafe pointers.
+;                   Changed doubtful handling of data from the B channel.
+;
+;===============================================================================
+
+
+;===============================================================================
 ; Summary of what is in this file:
 ;
 ; * Get and Set functions for each blitter hardware register.
@@ -604,44 +613,198 @@ _finish_blit_:	mov	dword [blitend], -1
 blitterlinemode:mov	dword [bltlinepointflag], 0
 		mov	eax, dword [linecount]
 		mov	dword [bltlineheight], eax	; Line height
+
 		mov	eax, dword [bltcon]
+
+		; Prepare ebx, the A shift count
+
+		mov	ecx, eax
+		shr	ecx, 6
+		and	ecx, 1
+		mov	dword [bltlinedecision], ecx
+
 		mov	ecx, eax
 		shr	ecx, 28
 		and	ecx, 00fh
 		and	eax, 1ch
 		mov	ebx, ecx
-		mov	bp, word [bltapt]	; edi is decision variable
+
+		mov	ebp, dword [bltapt]
+
 		mov	esi, dword [bltcpt]	  ; get C data adress
 		mov	edi, dword [bltdpt]	  ; get destination adress
-		add	esi, dword memory_chip
-		add	edi, dword memory_chip
-		sub	esi, 2
+
+		; Prepare ecx, the B data
+
 		mov	edx, dword [bltbdatoriginal]
 		mov	ecx, dword [bltcon]
 		shr	ecx, 12
 		and	ecx, 0fh
 		ror	dx, cl
-		mov	dword [bltbdatline], edx
-		xor	ecx, ecx
-		test	edx, 1
-		jz	bliq
-		mov	ecx, -1
+		mov	ecx, edx
+
+		; Call routine which performs the line
+
 bliq:		jmp	dword [bltlinesudsulaul + eax]
 		; Jump to correct draw routine
 
 
+
+%macro BLITTER_LINEMODE_READ 0
+		test	dword [bltcon], 02000000h   ; If C is enabled, read one word from bplcpt (esi)
+		jz	near %%l1
+		mov	edx, dword [memory_chip - 2 + esi]
+		bswap	edx
+%%l1:
+%endmacro
+
+
+%macro BLITTER_LINEMODE_PREPARE_A 0
+		; Prepare data from channel A
+		; It is static data from bltadat, shifted by the current A shift count (ebx)
+
+		push	ebx
+		push	ecx
+		mov	cl, bl
+		mov	ebx, dword [bltadat]
+		shr	bx, cl
+%endmacro
+
+%macro BLITTER_LINEMODE_PREPARE_B 0
+		mov	eax,  dword [esp]
+		mov	ecx, 0
+		test	eax, 1
+		jz	%%l1
+		dec	ecx
+%%l1:
+%endmacro
+
+%macro BLITTER_LINEMODE_MAKE_D 0
+		; Calculate D
+
+		call	dword [bltminterm]
+		pop	ecx
+		pop	ebx
+%endmacro
+
+
+%macro BLITTER_LINEMODE_STORE_D 0
+		; Store D
+
+		mov	byte [memory_chip + edi], ah		; Store result
+		mov	byte [memory_chip + 1 + edi], al
+		or	dword [bltzero], eax
+%endmacro
+
+
+; Label to jump to when there is no increase
+%macro BLITTER_LINEMODE_TEST_DECISION 1
+		; Line logic
+
+; Just a test
+;		cmp	dword [bltlineheight], 1
+;		je	near blitterlinemodeend
+
+		test	dword [bltlinedecision], 1
+		jz	near %%l1
+		
+		; Do not yet increase
+		
+		mov	eax, 1
+		add	bp, word [bltbmod] ; D < 0 , D = D + 2*sdelta
+		js	near %%l3
+		dec	eax
+%%l3:		mov	dword [bltlinedecision], eax
+		jmp	near %1
+%%l1:		
+		; Increase
+		
+		; D >= 0, D = D + 2*sdelta-2*ldelta
+		mov	eax, 1
+		add	bp, word [bltamod]
+		js	near %%l4
+		dec	eax
+%%l4:		mov	dword [bltlinedecision], eax
+%%l2:
+%endmacro
+
+%macro BLITTER_LINEMODE_INCREASE_X 0
+		inc	ebx
+		cmp	ebx, 16
+		jne	near %%l1
+		xor	ebx, ebx
+		add	esi, 2
+		add	edi, 2
+		and	esi, 01ffffeh
+		and	edi, 01ffffeh
+%%l1:		
+%endmacro
+
+%macro BLITTER_LINEMODE_DECREASE_X 0
+		dec	ebx
+		jns	near %%l1
+		mov	ebx, 15
+		sub	esi, 2
+		sub	edi, 2
+		and	esi, 01ffffeh
+		and	edi, 01ffffeh
+%%l1:		
+%endmacro
+
+%macro BLITTER_LINEMODE_INCREASE_Y 0
+		mov	edx, dword [bltcmod]
+		add	esi, edx
+		add	edi, edx
+		and	esi, 01ffffeh
+		and	edi, 01ffffeh
+%endmacro
+
+%macro BLITTER_LINEMODE_DECREASE_Y 0
+		mov	edx, dword [bltcmod]
+		sub	esi, edx
+		sub	edi, edx
+		and	esi, 01ffffeh
+		and	edi, 01ffffeh
+%endmacro
+
+%macro BLITTER_LINEMODE_ROTATE_B 0
+		; Rotate B data to the left 
+
+		rol	cx, 1
+%endmacro
+
+; Label of the top of the loop
+%macro BLITTER_LINEMODE_ITERATE_LOOP 1
+		dec	dword [bltlineheight]
+		jnz	near %1
+		jmp	blitterlinemodeend
+%endmacro
+
+%macro BLITTER_LINEMODE_ALLOW_DOT 0
+		mov	dword [bltlinepointflag],0 ; enable dot on this line
+%endmacro
+
+; Label of code to jump to when no dot is allowed
+%macro BLITTER_LINEMODE_CHECK_SINGLE_DOT 0
+		test	dword [bltcon],2	   ; Test sing
+		jz	near %%l1
+		test	dword [bltlinepointflag],1 ; No draw if bit already set
+		jnz	near %%l2
+		mov	dword [bltlinepointflag],1
+		jmp	near %%l1
+%%l2:		mov	ebx, 0
+%%l1:
+%endmacro
+
 ;===============================================
 ; SUD/SUL/AUL = 000
 ; Line goes down to the right, Y is independent
-;
-; Registers:
-; ebp - D
-; esi - cpt
-; edi - dpt
-; ebx - bltadat
-; ecx - bltbdat
-; edx - bltcdat
-; eax - result
+; 
+; Input registers:
+; ebx - Initial channel A shift count
+; ecx - Data for channel B
+; esi - bltcpt
+; edi - bltdpt
 ;===============================================
 
 
@@ -649,51 +812,28 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 
 global _blitterlinemodeoctant0_
 _blitterlinemodeoctant0_:
-oct0c:		test	dword [bltcon], 02000000h
-		jz	oct0u
-		mov	edx, dword [esi]
-		bswap	edx
-oct0u:		push	ebx
-		push	ecx
-		mov	cl, bl
-		mov	ebx, dword [bltadat]
-		shr	bx, cl
-		pop	ecx
-		call	dword [bltminterm]
-		pop	ebx
-		mov	byte [edi], ah		; Store result
-		mov	byte [1 + edi], al
-		or	dword [bltzero], eax
-		mov	eax, dword [bltcmod]
-		or	bp, bp				; D 
-		jns	oct0a
-		add	ebp, dword [bltbmod] ; D < 0 , D = D + 2*sdelta
-		jmp	oct0b
-oct0a:		add	ebp, dword [bltamod]
-		; D >= 0, D = D + 2*sdelta-2*ldelta
-		inc	ebx
-		cmp	ebx, 16
-		jne	oct0b
-		xor	ebx, ebx
-		add	esi, 2
-		add	edi, 2
-oct0b:		add	esi, eax
-		add	edi, eax
-		mov	eax, dword [bltbdatline]
-		rol	ax, 1
-		mov	dword [bltbdatline], eax
-		xor	ecx, ecx
-		test	eax, 1
-		jz	oct0q
-		dec	ecx
-oct0q:		dec	dword [bltlineheight]
-		jnz	near oct0c
-		jmp	blitterlinemodeend
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_INCREASE_X
+.noincrease:	BLITTER_LINEMODE_INCREASE_Y
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;=============================================
 ; SUD/SUL/AUL = 001
 ; Line goes up to the right, Y is independent
+; 
+; Input registers:
+; ebx - Initial channel A shift count
+; ecx - Data for channel B
+; esi - bltcpt
+; edi - bltdpt
 ;=============================================
 
 
@@ -701,45 +841,17 @@ oct0q:		dec	dword [bltlineheight]
 
 global _blitterlinemodeoctant1_
 _blitterlinemodeoctant1_: 
-oct1c:		test	dword [bltcon], 02000000h
-		jz	oct1u
-		mov	edx, dword [esi]
-		bswap	edx
-oct1u:		push	ebx
-		push	ecx
-		mov	cl, bl
-		mov	ebx, dword [bltadat]
-		shr	bx, cl
-		pop	ecx
-		call	dword [bltminterm]
-		pop	ebx
-		mov	byte [edi], ah	; Store result
-		mov	byte [1 + edi], al
-		or	dword [bltzero], eax
-		mov	eax, dword [bltcmod]
-		or	bp, bp			; D < 0
-		jns	oct1a		 
-		add	ebp, dword [bltbmod]; D < 0 , D = D + 2*sdelta
-		jmp	oct1b
-oct1a:		add	ebp, dword [bltamod]; D >= 0, D=D+2*sdelta-2*ldelta
-		inc	ebx
-		cmp	ebx, 16
-		jne	oct1b
-		xor	ebx, ebx
-		add	edi, 2
-		add	esi, 2
-oct1b:		sub	edi, eax
-		sub	esi, eax
-		mov	eax, dword [bltbdatline]
-		rol	ax, 1
-		mov	dword [bltbdatline], eax
-		xor	ecx, ecx
-		test	eax, 1
-		jz	oct1q
-		dec	ecx
-oct1q:		dec	dword [bltlineheight]
-		jnz	near oct1c
-		jmp	blitterlinemodeend
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_INCREASE_X
+.noincrease:	BLITTER_LINEMODE_DECREASE_Y
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;===============================================
@@ -747,49 +859,21 @@ oct1q:		dec	dword [bltlineheight]
 ; Line goes down, to the left, Y is independent
 ;===============================================
 
-
 		FALIGN32
 
 global _blitterlinemodeoctant2_
 _blitterlinemodeoctant2_: 
-oct2c:		test	dword [bltcon], 02000000h
-		jz	oct2u
-		mov	edx, dword [esi]
-		bswap	edx
-oct2u:		push	ebx
-		push	ecx
-		mov	cl, bl
-		mov	ebx, dword [bltadat]
-		shr	bx, cl
-		pop	ecx
-		call	dword [bltminterm]
-		pop	ebx
-		mov	byte [edi], ah    ; Store result
-		mov	byte [1 + edi], al
-		or	dword [bltzero], eax
-		mov	eax, dword [bltcmod]
-		or	bp, bp			; D < 0
-		jns	oct2a		 
-		add	ebp, dword [bltbmod]; D < 0 , D = D + 2*sdelta
-		jmp	oct2b
-oct2a:		add	ebp, dword [bltamod]; D >= 0, D=D+2*sdelta-2*ldelta
-		dec	ebx
-		jns	oct2b
-		mov	ebx, 15
-		sub	edi, 2
-		sub	esi, 2
-oct2b:		add	edi, eax
-		add	esi, eax
-		mov	eax, dword [bltbdatline]
-		rol	ax, 1
-		mov	dword [bltbdatline], eax
-		xor	ecx, ecx
-		test	eax, 1
-		jz	oct2q
-		dec	ecx
-oct2q:		dec	dword [bltlineheight]
-		jnz	near oct2c
-		jmp	blitterlinemodeend
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_DECREASE_X
+.noincrease:	BLITTER_LINEMODE_INCREASE_Y
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;============================================
@@ -802,58 +886,17 @@ oct2q:		dec	dword [bltlineheight]
 
 global _blitterlinemodeoctant3_
 _blitterlinemodeoctant3_: 
-oct3c:
-
-		test	dword [bltcon],02000000h
-		jz	oct3u
-		mov	edx,dword [esi]
-		bswap	edx
-oct3u:
-
-		push	ebx
-		push	ecx
-		mov	cl,bl
-		mov	ebx,dword [bltadat]
-		shr	bx,cl
-		pop	ecx
-
-
-		call	dword [bltminterm]
-
-		pop	ebx
-
-		mov	byte [edi],ah    ; Store result
-		mov	byte [1 + edi],al
-		or	dword [bltzero],eax
-		mov	eax,dword [bltcmod]
-		or	bp,bp			  ; D < 0
-		jns	oct3a		 
-		add	ebp,dword [bltbmod]	   ; D < 0 , D = D + 2*sdelta
-		jmp	oct3b
-oct3a:		add	ebp,dword [bltamod]	   ; D >= 0, D = D + 2*sdelta-2*ldelta
-
-
-		dec	ebx
-		jns	oct3b
-		mov	ebx,15
-
-		sub	edi,2
-		sub	esi,2
-oct3b:		sub	edi,eax
-		sub	esi,eax
-
-		mov	eax,dword [bltbdatline]
-		rol	ax,1
-		mov	dword [bltbdatline],eax
-		xor	ecx,ecx
-		test	eax,1
-		jz	oct3q
-		dec	ecx
-oct3q:
-
-		dec	dword [bltlineheight]
-		jnz	near oct3c
-		jmp	blitterlinemodeend
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_DECREASE_X
+.noincrease:	BLITTER_LINEMODE_DECREASE_Y
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;===============================================
@@ -866,67 +909,19 @@ oct3q:
 
 global _blitterlinemodeoctant4_
 _blitterlinemodeoctant4_: 
-oct4c:
-
-		test	dword [bltcon],02000000h
-		jz	oct4u
-		mov	edx,dword [esi]
-		bswap	edx
-oct4u:
-
-		test	dword [bltcon],2	   ; Test sing
-		jz	oct4e
-		test	dword [bltlinepointflag],1 ; No draw if bit already set
-		jnz	oct4f
-		mov	dword [bltlinepointflag],1
-oct4e:
-
-		push	ebx
-		push	ecx
-		mov	cl,bl
-		mov	ebx,dword [bltadat]
-		shr	bx,cl
-		pop	ecx
-
-
-		call	dword [bltminterm]
-
-		pop	ebx
-
-		mov	byte [edi],ah    ; Store result
-		mov	byte [1 + edi],al
-		or	dword [bltzero],eax
-oct4f:		or	bp,bp			  ; D < 0
-		jns	oct4a		 
-		add	ebp,dword [bltbmod]	   ; D < 0 , D = D + 2*sdelta
-		jmp	oct4b
-oct4a:		mov	eax,dword [bltcmod]	   ; Y increases
-		add	ebp,dword [bltamod]	   ; D >= 0, D = D + 2*sdelta-2*ldelta
-		add	edi,eax
-		add	esi,eax
-		mov	dword [bltlinepointflag],0 ; enable dot on this line
-oct4b:
-		inc	ebx
-		cmp	ebx,16
-		jne	oct4d
-		xor	ebx,ebx
-		add	edi,2
-		add	esi,2
-oct4d:
-
-
-		mov	eax,dword [bltbdatline]
-		rol	ax,1
-		mov	dword [bltbdatline],eax
-		xor	ecx,ecx
-		test	eax,1
-		jz	oct4q
-		dec	ecx
-oct4q:
-
-		dec	dword [bltlineheight]
-		jnz	near oct4c
-		jmp	blitterlinemodeend
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_CHECK_SINGLE_DOT
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_INCREASE_Y
+		BLITTER_LINEMODE_ALLOW_DOT
+.noincrease:	BLITTER_LINEMODE_INCREASE_X
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;==============================================
@@ -939,65 +934,19 @@ oct4q:
 
 global _blitterlinemodeoctant5_
 _blitterlinemodeoctant5_: 
-oct5c:
-		test	dword [bltcon],02000000h
-		jz	oct5u
-		mov	edx,dword [esi]
-		bswap	edx
-oct5u:
-		test	dword [bltcon],2
-		jz	oct5e
-		test	dword [bltlinepointflag],1
-		jnz	oct5f
-		mov	dword [bltlinepointflag],1
-oct5e:
-
-		push	ebx
-		push	ecx
-		mov	cl,bl
-		mov	ebx,dword [bltadat]
-		shr	bx,cl
-		pop	ecx
-
-
-		call	dword [bltminterm]
-
-		pop	ebx
-
-		mov	byte [edi],ah    ; Store result
-		mov	byte [1 + edi],al
-		or	dword [bltzero],eax
-oct5f:		or	bp,bp			  ; D < 0
-		jns	oct5a		 
-		add	ebp,dword [bltbmod]	   ; D < 0 , D = D + 2*sdelta
-		jmp	oct5b
-oct5a:		mov	eax,dword [bltcmod]	   ; Y increases
-		add	ebp,dword [bltamod]	   ; D >= 0, D = D + 2*sdelta-2*ldelta
-		add	edi,eax
-		add	esi,eax
-		mov	dword [bltlinepointflag],0
-oct5b:
-		dec	ebx
-		jns	oct5d
-		mov	ebx,15
-
-		sub	edi,2
-		sub	esi,2
-oct5d:
-		mov	eax,dword [bltbdatline]
-		rol	ax,1
-		mov	dword [bltbdatline],eax
-		xor	ecx,ecx
-		test	eax,1
-		jz	oct5q
-		dec	ecx
-oct5q:
-
-
-		dec	dword [bltlineheight]
-		jnz	near oct5c
-		jmp	blitterlinemodeend
-
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_CHECK_SINGLE_DOT
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_INCREASE_Y
+		BLITTER_LINEMODE_ALLOW_DOT
+.noincrease:	BLITTER_LINEMODE_DECREASE_X
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
 
 ;==============================================
@@ -1010,62 +959,20 @@ oct5q:
 
 global _blitterlinemodeoctant6_
 _blitterlinemodeoctant6_: 
-oct6c:
-		test	dword [bltcon],02000000h
-		jz	oct6u
-		mov	edx,dword [esi]
-		bswap	edx
-oct6u:
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_CHECK_SINGLE_DOT
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_DECREASE_Y
+		BLITTER_LINEMODE_ALLOW_DOT
+.noincrease:	BLITTER_LINEMODE_INCREASE_X
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
-		test	dword [bltcon],2
-		jz	oct6e
-		test	dword [bltlinepointflag],1
-		jnz	oct6f
-		mov	dword [bltlinepointflag],1
-oct6e:
-		push	ebx
-		push	ecx
-		mov	cl,bl
-		mov	ebx,dword [bltadat]
-		shr	bx,cl
-		pop	ecx
-
-
-		call	dword [bltminterm]
-
-		pop	ebx
-	
-		mov	byte [edi],ah    ; Store result
-		mov	byte [1 + edi],al
-		or	dword [bltzero],eax
-oct6f:		or	bp,bp			  ; D < 0
-		jns	oct6a		 
-		add	ebp,dword [bltbmod]	   ; D < 0 , D = D + 2*sdelta
-		jmp	oct6b
-oct6a:		mov	eax,dword [bltcmod]	   ; Y decreases
-		add	ebp,dword [bltamod]	   ; D >= 0, D = D + 2*sdelta-2*ldelta
-		sub	edi,eax
-		sub	esi,eax
-		mov	dword [bltlinepointflag],0
-oct6b:
-		inc	ebx
-		cmp	ebx,16
-		jne	oct6d
-		xor	ebx,ebx
-		add	edi,2
-		add	esi,2
-oct6d:
-		mov	eax,dword [bltbdatline]
-		rol	ax,1
-		mov	dword [bltbdatline],eax
-		xor	ecx,ecx
-		test	eax,1
-		jz	oct6q
-		dec	ecx
-oct6q:
-		dec	dword [bltlineheight]
-		jnz	near oct6c
-		jmp	blitterlinemodeend
 
 
 ;===============================================
@@ -1078,75 +985,28 @@ oct6q:
 
 global _blitterlinemodeoctant7_
 _blitterlinemodeoctant7_: 
-oct7c:
+.octloop:
+		BLITTER_LINEMODE_READ
+		BLITTER_LINEMODE_PREPARE_A
+		BLITTER_LINEMODE_CHECK_SINGLE_DOT
+		BLITTER_LINEMODE_PREPARE_B
+		BLITTER_LINEMODE_MAKE_D
+		BLITTER_LINEMODE_STORE_D
+		BLITTER_LINEMODE_ROTATE_B
+		BLITTER_LINEMODE_TEST_DECISION .noincrease
+		BLITTER_LINEMODE_DECREASE_Y
+		BLITTER_LINEMODE_ALLOW_DOT
+.noincrease:	BLITTER_LINEMODE_DECREASE_X
+		BLITTER_LINEMODE_ITERATE_LOOP .octloop
 
-		test	dword [bltcon],02000000h
-		jz	oct7u
-		mov	edx,dword [esi]
-		bswap	edx
-oct7u:
-		test	dword [bltcon],2
-		jz	oct7e
-		test	dword [bltlinepointflag],1
-		jnz	oct7f
-		mov	dword [bltlinepointflag],1
-oct7e:
-		push	ebx
-		push	ecx
-		mov	cl,bl
-		mov	ebx,dword [bltadat]
-		shr	bx,cl
-		pop	ecx
-
-
-		call	dword [bltminterm]
-
-		pop	ebx
-
-		mov	byte [edi],ah    ; Store result
-		mov	byte [1 + edi],al
-		or	dword [bltzero],eax
-oct7f:		or	bp,bp			  ; D < 0
-		jns	oct7a		 
-		add	ebp,dword [bltbmod]	   ; D < 0 , D = D + 2*sdelta
-		jmp	oct7b
-oct7a:		mov	eax,dword [bltcmod]	   ; Y decreases
-		add	ebp,dword [bltamod]	   ; D >= 0, D = D + 2*sdelta-2*ldelta
-		sub	edi,eax
-		sub	esi,eax
-		mov	dword [bltlinepointflag],0
-oct7b:
-		dec	ebx
-		jns	oct7d
-		mov	ebx,15
-
-		sub	edi,2
-		sub	esi,2
-oct7d:
-
-		mov	eax,dword [bltbdatline]
-		rol	ax,1
-		mov	dword [bltbdatline],eax
-		xor	ecx,ecx
-		test	eax,1
-		jz	oct7q
-		dec	ecx
-oct7q:
-
-		dec	dword [bltlineheight]
-		jnz	near oct7c
 
 blitterlinemodeend:
-		sub	esi,dword memory_chip
-		sub	edi,dword memory_chip
-		add	esi,2
-		mov	dword [bltdpt],edi
+		mov	dword [bltapt],ebp
 		mov	dword [bltcpt],esi
+		mov	dword [bltdpt],edi
 		mov	edx,08040h
 		mov	ecx,0dff09ch
-		call	wriw
-		ret
-
+		jmp	wriw
 
 
 
@@ -2449,4 +2309,3 @@ FBSSSECTIONSTART
 FBSSSECTIONEND
 
 FASMFILEEND
-
