@@ -132,6 +132,7 @@ static HWND wdbg_hDialog;
 #define WDBG_DISASSEMBLY_Y 96
 #define WDBG_DISASSEMBLY_LINES 20
 #define WDBG_DISASSEMBLY_INDENT 16
+#define WDBG_STRLEN 1024
 
 /*===================================*/
 /* private variables for this module */
@@ -287,7 +288,7 @@ STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
 
 void wdbgUpdateCPUState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -341,7 +342,7 @@ void wdbgUpdateCPUState(HWND hwndDlg)
 
 void wdbgUpdateMemoryState(HWND hwndDlg)
 {
-  STR st[128];
+  STR st[WDBG_STRLEN];
   unsigned char k;
   HDC hDC;
   PAINTSTRUCT paint_struct;
@@ -429,7 +430,7 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 
 void wdbgUpdateCIAState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -531,7 +532,7 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 
 void wdbgUpdateFloppyState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -628,7 +629,7 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
 void wdbgUpdateCopperState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -715,7 +716,7 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
 void wdbgUpdateSpriteState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -787,7 +788,7 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
 void wdbgUpdateScreenState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -873,7 +874,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
 
 void wdbgUpdateEventState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
@@ -961,7 +962,7 @@ void wdbgUpdateEventState(HWND hwndDlg)
 
 void wdbgUpdateSoundState(HWND hwndDlg)
 {
-  STR s[128];
+  STR s[WDBG_STRLEN];
   HDC hDC;
   PAINTSTRUCT paint_struct;
 
