@@ -159,7 +159,7 @@ void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo) {
     wavHeaderWrite();
   }
   wav_FILE = fopen(wav_filename, "r+b");
-  fseek(wav_FILE, 0, SEEK_END);
+  if (wav_FILE != NULL) fseek(wav_FILE, 0, SEEK_END);
 }
 
 
