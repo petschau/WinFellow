@@ -127,7 +127,7 @@ extern char warning_buffer[256];
 #include <windows.h>
 #define O_NDELAY 0
 
-#define DONT_HAVE_POSIX /* I want Mathias' posixemu_ functions! */
+/*#define DONT_HAVE_POSIX*/ /* I want Mathias' posixemu_ functions! */
 
 extern void write_log( const char *, ... );
 extern void gui_message( const char *, ...);
