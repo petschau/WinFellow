@@ -29,7 +29,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDD_MAIN DIALOG DISCARDABLE  0, 0, 265, 103
 STYLE DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
-CAPTION "Fellow Alpha V0.4.1 build 1"
+CAPTION "WinFellow alpha v0.4.1 build 1"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -350,6 +350,16 @@ BEGIN
     PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,457,184,46,14
 END
 
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About WinFellow Amiga Emulator v0.4.1"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,68,74,50,14
+    LTEXT           "WinFellow Amiga Emulator v0.4.1",IDC_STATIC,40,15,106,8
+    LTEXT           "Alpha Version",IDC_STATIC,71,33,44,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -470,6 +480,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 219
     END
+
+    IDD_ABOUT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -529,7 +547,6 @@ END
 //
 
 IDB_FELLOW              BITMAP  DISCARDABLE     "Fellow.bmp"
-IDB_SLPASH              BITMAP  DISCARDABLE     "fellow2.BMP"
 IDB_DEBUG_ARROW         BITMAP  DISCARDABLE     "bitmap1.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -562,52 +579,6 @@ END
 // remains consistent on all systems.
 IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
 #endif    // English (U.S.) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// Norwegian (Bokmal) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
-#ifdef _WIN32
-LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
-#pragma code_page(1252)
-#endif //_WIN32
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
-
-IDD_ABOUT DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About Fellow Amiga Emulator V0.4"
-FONT 8, "MS Sans Serif"
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,68,74,50,14
-    LTEXT           "Fellow Amiga Emulator V0.4",IDC_STATIC,44,15,88,8
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// DESIGNINFO
-//
-
-#ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
-BEGIN
-    IDD_ABOUT, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 179
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 88
-    END
-END
-#endif    // APSTUDIO_INVOKED
-
-#endif    // Norwegian (Bokmal) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
