@@ -157,6 +157,7 @@ _wcopjmp1_:	jmp    _copperLoad1_
 global _rcopjmp1_
 _rcopjmp1_:	call   _copperLoad1_
 		xor    edx, edx
+		mov eax, edx
 		ret
 
 ;========
@@ -176,6 +177,7 @@ _wcopjmp2_:	jmp    _copperLoad2_
 global _rcopjmp2_
 _rcopjmp2_:	call   _copperLoad2_
 		xor    edx, edx
+		mov eax, edx
 		ret
 
 

@@ -103,7 +103,9 @@ _rdmaconr_:	mov	edx, 0
 		test	dword [bltzero], 0ffffh
 		jnz	.l1
 		mov	edx, 2000h	
-.l1:		or	edx, dword [dmaconr]
+.l1:		
+		or	edx, dword [dmaconr]
+		mov eax, edx
 		ret
 
 
@@ -122,7 +124,9 @@ _rvposr_:	mov	edx, dword [lof]
 		test	dword [blitter_ECS], 1
 		jz	.l1
 		or	edx, 02000h
-.l1:		ret
+.l1:	
+		mov eax, edx	
+		ret
 
 
 ;-------------------------------------------------------------------------------
@@ -138,6 +142,7 @@ global _rvhposr_
 _rvhposr_:	mov	edx, dword [graph_raster_x]
 		shr	edx, 1
 		mov	dh, byte [graph_raster_y]
+		mov eax, edx
 		ret
 
 
@@ -151,7 +156,9 @@ _rvhposr_:	mov	edx, dword [graph_raster_x]
 		FALIGN32
 
 global _rid_
-_rid_:		mov	edx, 0ffffh
+_rid_:	
+		mov	edx, 0ffffh
+		mov eax, edx
 		ret
 
 
@@ -828,6 +835,7 @@ _wcolor_:	and	edx, 0fffh
 %endmacro
 
 
+
 ;===============================================================================
 ; Planar to chunky conversion
 ; The assembly routines take parameters line1 and line2, which are assumed to
@@ -835,6 +843,610 @@ _wcolor_:	and	edx, 0fffh
 ;===============================================================================
 
 
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 0 bitplanes
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode0_
+_graphDecode0_:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 1 bitplane lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode1_
+_graphDecode1_:		TEST_HIRES		_graphDecode1Hi_
+			TEST_MMX		_graphDecode1MMX_
+			LOAD_WORDS_TO_DECODE	.d1nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d1oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d1oddloop
+			MODULO1
+.d1nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 1 bitplane lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode1MMX_
+_graphDecode1MMX_:	LOAD_WORDS_TO_DECODE	.d1mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+.d1mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d1mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			MODULO1
+.d1mmxnowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 2 bitplanes lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode2_
+_graphDecode2_:		TEST_HIRES		_graphDecode2Hi_
+			TEST_MMX		_graphDecode2MMX_
+			LOAD_WORDS_TO_DECODE	.d2nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d2equal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d2oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d2oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [4 + esp]
+.d2evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_DECODED_DATA
+			ITERATE_LOOP		.d2evenloop
+			MODULO2
+.d2nowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d2equal:		SETUP_LOOP		evenscroll, [4 + esp]
+.d2equalloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl2pt, graph_deco2
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d2equalloop
+			MODULO2
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 2 bitplanes lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode2MMX_
+_graphDecode2MMX_:	LOAD_WORDS_TO_DECODE	.d2mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d2mmxequal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+.d2mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d2mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+.d2mmxevenloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco2
+			OR_DECODED_DATA_MMX
+			ITERATE_LOOP		.d2mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			MODULO2
+.d2mmxnowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d2mmxequal:		SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl2pt
+.d2mmxequalloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d2mmxequalloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl2pt
+			MODULO2
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 3 bitplanes lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode3_
+_graphDecode3_:		TEST_HIRES		_graphDecode3Hi_
+			TEST_MMX		_graphDecode3MMX_
+			LOAD_WORDS_TO_DECODE	.d3nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d3equal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d3oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d3oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [4 + esp]
+.d3evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_DECODED_DATA
+			ITERATE_LOOP		.d3evenloop
+			MODULO3
+.d3nowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d3equal:		SETUP_LOOP		evenscroll, [4 + esp]
+.d3equalloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d3equalloop
+			MODULO3
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 3 bitplanes lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode3MMX_
+_graphDecode3MMX_:	LOAD_WORDS_TO_DECODE	.d3mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d3mmxequal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+.d3mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d3mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+.d3mmxevenloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco2
+			OR_DECODED_DATA_MMX
+			ITERATE_LOOP		.d3mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			MODULO3
+.d3mmxnowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d3mmxequal:		SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl2pt
+			LOAD_BITPLANE_PTR	edi, bpl3pt
+.d3mmxequalloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edi, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d3mmxequalloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl2pt
+			SAVE_BITPLANE_PTR	edi, bpl3pt
+			MODULO3
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 4 bitplanes lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode4_
+_graphDecode4_:		TEST_HIRES		_graphDecode4Hi_
+			TEST_MMX		_graphDecode4MMX_
+			LOAD_WORDS_TO_DECODE	.d4nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d4equal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d4oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d4oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [4 + esp]
+.d4evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			OR_DECODED_DATA
+			ITERATE_LOOP		.d4evenloop
+			MODULO4
+.d4nowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d4equal:		SETUP_LOOP		evenscroll, [4 + esp]
+.d4equalloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d4equalloop
+			MODULO4
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 4 bitplanes lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode4MMX_
+_graphDecode4MMX_:	LOAD_WORDS_TO_DECODE	.d4mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d4mmxequal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+.d4mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d4mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+.d4mmxevenloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edx, graph_deco4
+			OR_DECODED_DATA_MMX
+			ITERATE_LOOP		.d4mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			MODULO4
+.d4mmxnowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d4mmxequal:		SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl2pt
+			LOAD_BITPLANE_PTR	edi, bpl3pt
+			LOAD_BITPLANE_PTR	ebp, bpl4pt
+.d4mmxequalloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edi, graph_deco3
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco4
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d4mmxequalloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl2pt
+			SAVE_BITPLANE_PTR	edi, bpl3pt
+			SAVE_BITPLANE_PTR	ebp, bpl4pt
+			MODULO4
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 5 bitplanes lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode5_
+_graphDecode5_:		TEST_MMX		_graphDecode5MMX_
+			LOAD_WORDS_TO_DECODE	.d5nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d5equal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d5oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			OR_BITPLANE_WORD	bpl5pt, graph_deco5
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d5oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [4 + esp]
+.d5evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			OR_DECODED_DATA
+			ITERATE_LOOP		.d5evenloop
+			MODULO5
+.d5nowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d5equal:		SETUP_LOOP		evenscroll, [4 + esp]
+.d5equalloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			OR_BITPLANE_WORD	bpl5pt, graph_deco5
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d5equalloop
+			MODULO5
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 5 bitplanes lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode5MMX_
+_graphDecode5MMX_:	LOAD_WORDS_TO_DECODE	.d5mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d5mmxequal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+.d5mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco3
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco5
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d5mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+.d5mmxevenloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edx, graph_deco4
+			OR_DECODED_DATA_MMX
+			ITERATE_LOOP		.d5mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			MODULO5
+.d5mmxnowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d5mmxequal:		SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl2pt
+			LOAD_BITPLANE_PTR	edi, bpl3pt
+.d5mmxequalloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edi, graph_deco3
+			LOAD_BITPLANE_PTR	ebp, bpl4pt
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco4
+			SAVE_BITPLANE_PTR	ebp, bpl4pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco5
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d5mmxequalloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl2pt
+			SAVE_BITPLANE_PTR	edi, bpl3pt
+			MODULO5
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 6 bitplanes lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode6_
+_graphDecode6_:		TEST_MMX		_graphDecode6MMX_
+			LOAD_WORDS_TO_DECODE	.d6nowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d6equal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.d6oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			OR_BITPLANE_WORD	bpl5pt, graph_deco5
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d6oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [4 + esp]
+.d6evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			OR_BITPLANE_WORD	bpl6pt, graph_deco6
+			OR_DECODED_DATA
+			ITERATE_LOOP		.d6evenloop
+			MODULO6
+.d6nowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d6equal:		SETUP_LOOP		evenscroll, [4 + esp]
+.d6equalloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl2pt, graph_deco2
+			OR_BITPLANE_WORD	bpl3pt, graph_deco3
+			OR_BITPLANE_WORD	bpl4pt, graph_deco4
+			OR_BITPLANE_WORD	bpl5pt, graph_deco5
+			OR_BITPLANE_WORD	bpl6pt, graph_deco6
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.d6equalloop
+			MODULO6
+			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 6 bitplanes lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode6MMX_
+_graphDecode6MMX_:	LOAD_WORDS_TO_DECODE	.d6mmxnowork
+			CLEAR_EDGES		oddscroll, evenscroll
+			DECIDE_ODDEVEN_EQUAL	.d6mmxequal, oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+.d6mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco3
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco5
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d6mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+			LOAD_BITPLANE_PTR	edi, bpl6pt
+.d6mmxevenloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edx, graph_deco4
+			OR_BITPLANE_WORD_MMX	edi, graph_deco6
+			OR_DECODED_DATA_MMX
+			ITERATE_LOOP		.d6mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			SAVE_BITPLANE_PTR	edi, bpl6pt
+			MODULO6
+.d6mmxnowork:		ret
+
+
+			FALIGN32
+
+			; Decode odd and even planes, scroll equal
+
+.d6mmxequal:		SETUP_LOOP_MMX		evenscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl2pt
+			LOAD_BITPLANE_PTR	edi, bpl3pt
+.d6mmxequalloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edi, graph_deco3
+			LOAD_BITPLANE_PTR	ebp, bpl4pt
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco4
+			SAVE_BITPLANE_PTR	ebp, bpl4pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco5
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+			LOAD_BITPLANE_PTR	ebp, bpl6pt
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco6
+			SAVE_BITPLANE_PTR	ebp, bpl6pt
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.d6mmxequalloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl2pt
+			SAVE_BITPLANE_PTR	edi, bpl3pt
+			MODULO6
+			ret
 
 
 ;-------------------------------------------------------------------------------
@@ -1185,6 +1797,360 @@ _graphDecode4HiMMX_:	LOAD_WORDS_TO_DECODE	.dh4mmxnowork
 			SAVE_BITPLANE_PTR	ebp, bpl4pt
 			MODULO4
 			ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 2 bitplanes dual lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode2Dual_
+_graphDecode2Dual_:	TEST_HIRES		_graphDecode2HiDual_
+			TEST_MMX		_graphDecode2DualMMX_
+			LOAD_WORDS_TO_DECODE	.dd2nowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.dd2oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd2oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [8 + esp]
+.dd2evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco1
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd2evenloop
+			MODULO2
+.dd2nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 2 bitplanes dual lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode2DualMMX_
+_graphDecode2DualMMX_:
+			LOAD_WORDS_TO_DECODE	.dd2mmxnowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+.dd2mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd2mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [8 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+.dd2mmxevenloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd2mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			MODULO2
+.dd2mmxnowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 3 bitplanes dual lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode3Dual_
+_graphDecode3Dual_:	TEST_HIRES		_graphDecode3HiDual_
+			TEST_MMX		_graphDecode3DualMMX_
+			LOAD_WORDS_TO_DECODE	.dd3nowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.dd3oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco2
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd3oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [8 + esp]
+.dd3evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco1
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd3evenloop
+			MODULO3
+.dd3nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 3 bitplanes dual lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode3DualMMX_
+_graphDecode3DualMMX_:
+			LOAD_WORDS_TO_DECODE	.dd3mmxnowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+.dd3mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd3mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [8 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+.dd3mmxevenloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd3mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			MODULO3
+.dd3mmxnowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 4 bitplanes dual lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode4Dual_
+_graphDecode4Dual_:	TEST_HIRES		_graphDecode4HiDual_
+			TEST_MMX		_graphDecode4DualMMX_
+			LOAD_WORDS_TO_DECODE	.dd4nowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.dd4oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco2
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd4oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [8 + esp]
+.dd4evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco1
+			OR_BITPLANE_WORD	bpl4pt, graph_deco2
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd4evenloop
+			MODULO4
+.dd4nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 4 bitplanes dual lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode4DualMMX_
+_graphDecode4DualMMX_:
+			LOAD_WORDS_TO_DECODE	.dd4mmxnowork
+			CLEAR_EDGES_DUAL        oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+.dd4mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd4mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [8 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+.dd4mmxevenloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd4mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			MODULO4
+.dd4mmxnowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 5 bitplanes dual lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode5Dual_
+_graphDecode5Dual_:	TEST_MMX		_graphDecode5DualMMX_
+			LOAD_WORDS_TO_DECODE	.dd5nowork
+			CLEAR_EDGES_DUAL        oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.dd5oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco2
+			OR_BITPLANE_WORD	bpl5pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd5oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [8 + esp]
+.dd5evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco1
+			OR_BITPLANE_WORD	bpl4pt, graph_deco2
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd5evenloop
+			MODULO5
+.dd5nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 5 bitplanes dual lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode5DualMMX_
+_graphDecode5DualMMX_:
+			LOAD_WORDS_TO_DECODE	.dd5mmxnowork
+			CLEAR_EDGES_DUAL        oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+.dd5mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd5mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [8 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+.dd5mmxevenloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd5mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			MODULO5
+.dd5mmxnowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 6 bitplanes dual lores
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode6Dual_
+_graphDecode6Dual_:	TEST_MMX		_graphDecode6DualMMX_
+			LOAD_WORDS_TO_DECODE	.dd6nowork
+			CLEAR_EDGES_DUAL	oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP		oddscroll, [4 + esp]
+.dd6oddloop:		LOAD_BITPLANE_WORD	bpl1pt, graph_deco1
+			OR_BITPLANE_WORD	bpl3pt, graph_deco2
+			OR_BITPLANE_WORD	bpl5pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd6oddloop
+
+			; Decode even planes
+
+			SETUP_LOOP		evenscroll, [8 + esp]
+.dd6evenloop:		LOAD_BITPLANE_WORD	bpl2pt, graph_deco1
+			OR_BITPLANE_WORD	bpl4pt, graph_deco2
+			OR_BITPLANE_WORD	bpl6pt, graph_deco3
+			STORE_DECODED_DATA
+			ITERATE_LOOP		.dd6evenloop
+			MODULO6
+.dd6nowork:		ret
+
+
+;-------------------------------------------------------------------------------
+; Planar to chunky conversion, 6 bitplanes dual lores MMX
+;-------------------------------------------------------------------------------
+
+
+			FALIGN32
+
+global _graphDecode6DualMMX_
+_graphDecode6DualMMX_:
+			LOAD_WORDS_TO_DECODE	.dd6mmxnowork
+			CLEAR_EDGES_DUAL        oddscroll, evenscroll
+
+			; Decode odd planes
+
+			SETUP_LOOP_MMX		oddscroll, [4 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl1pt
+			LOAD_BITPLANE_PTR	edx, bpl3pt
+			LOAD_BITPLANE_PTR	ebp, bpl5pt
+.dd6mmxoddloop:		LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	ebp, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd6mmxoddloop
+			SAVE_BITPLANE_PTR	ecx, bpl1pt
+			SAVE_BITPLANE_PTR	edx, bpl3pt
+			SAVE_BITPLANE_PTR	ebp, bpl5pt
+
+			; Decode even planes
+
+			SETUP_LOOP_MMX		evenscroll, [8 + esp]
+			LOAD_BITPLANE_PTR	ecx, bpl2pt
+			LOAD_BITPLANE_PTR	edx, bpl4pt
+			LOAD_BITPLANE_PTR	edi, bpl6pt
+.dd6mmxevenloop:	LOAD_BITPLANE_WORD_MMX	ecx, graph_deco1
+			OR_BITPLANE_WORD_MMX	edx, graph_deco2
+			OR_BITPLANE_WORD_MMX	edi, graph_deco3
+			STORE_DECODED_DATA_MMX
+			ITERATE_LOOP		.dd6mmxevenloop
+			SAVE_BITPLANE_PTR	ecx, bpl2pt
+			SAVE_BITPLANE_PTR	edx, bpl4pt
+			SAVE_BITPLANE_PTR	edi, bpl6pt
+			MODULO6
+.dd6mmxnowork:		ret
+
 
 ;-------------------------------------------------------------------------------
 ; Planar to chunky conversion, 2 bitplanes dual hires
@@ -1621,6 +2587,9 @@ _graphDecode4HiDual320_:
 			ITERATE_LOOP		.dd320h4evenloop
 			MODULO4
 .dd320h4nowork:		ret
+
+
+
 
 
 ;-------------------------------------------------------------------------------

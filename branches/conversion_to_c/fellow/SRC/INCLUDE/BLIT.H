@@ -170,6 +170,7 @@ void wbltsizv_C(ULO data, ULO address);
 extern ULO blitend;
 extern ULO blitterstatus;
 extern ULO bltzero;
+extern BOOLE blitter_ECS;
 
 
 /*===========================================================================*/

@@ -689,7 +689,14 @@ global _memoryIOReadByte_
 _memoryIOReadByte_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		test	ecx, 1
 		jnz	rrb1
@@ -704,7 +711,14 @@ global _memoryIOReadWord_
 _memoryIOReadWord_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		ret
 
@@ -716,10 +730,24 @@ _memoryIOReadLong_:
 		push	ecx
 		and	ecx, 01feh
 		push	ecx
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+	
 		pop	ecx
 		push	edx
+
+
+		push eax
 		call	dword [memory_iobank_read + 4 + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		shl	ecx, 16
 		or	edx, ecx
@@ -845,6 +873,7 @@ _rserdatr_:	xor	edx, edx
 
 global _rintenar_
 _rintenar_:	mov	edx, dword [intenar]
+		mov eax, edx
 		ret
 
 ; INTREQR
@@ -852,7 +881,9 @@ _rintenar_:	mov	edx, dword [intenar]
 		FALIGN32
 
 global _rintreqr_
-_rintreqr_:	mov	edx, dword [intreq]
+_rintreqr_:	
+		mov	edx, dword [intreq]
+		mov eax, edx
 		ret
 
 ; To simulate noise, return 0 and -1 every second time.
@@ -871,6 +902,7 @@ _rdefault_:
 		mov	edx, dword [memory_noise_counter]
 		and	edx, 1
 		mov	edx, dword [memory_noise + 4*edx]
+		mov eax, edx
 		ret
 
 
@@ -985,6 +1017,7 @@ _wdefault_:	inc	dword [memory_undefined_io_write_counter]
 global _rdskbytr_
 _rdskbytr_:
 		RDSKBYTR_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1025,6 +1058,7 @@ _wdsksync_:
 global _rjoy0dat_
 _rjoy0dat_:
 		RJOY0DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1033,6 +1067,7 @@ _rjoy0dat_:
 global _rjoy1dat_
 _rjoy1dat_:
 		RJOY1DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1041,6 +1076,7 @@ _rjoy1dat_:
 global _rpot0dat_
 _rpot0dat_:
 		RPOT0DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1049,6 +1085,7 @@ _rpot0dat_:
 global _rpot1dat_
 _rpot1dat_:
 		RPOT1DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1057,6 +1094,7 @@ _rpot1dat_:
 global _rpotgor_
 _rpotgor_:
 		RPOTGOR_CWRAP
+		mov eax, edx
 		ret
 
 

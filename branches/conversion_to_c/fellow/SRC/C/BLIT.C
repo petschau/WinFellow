@@ -1064,6 +1064,9 @@ void wbltsize_C(ULO data, ULO address)
   if ((dmacon & 0x00000040) != 0) 
   {
     blitterCopy();
+  }
+  else
+  {
     blitterdmawaiting = 1;
   }
 }
