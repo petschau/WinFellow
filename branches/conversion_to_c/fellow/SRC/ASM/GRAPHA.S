@@ -40,6 +40,8 @@ FDATASECTIONSTART
 %include "data/bus.inc"
 %include "data/cpu.inc"
 
+CFUNCEXTERN blitFinishBlit
+CFUNCEXTERN blitterCopy
 
 ;-----------------------------------------------------------------------------
 ; Enable this for detailed profiling, log written to drawprofile.txt
@@ -55,6 +57,7 @@ CDATAEXTERN gcc
 CDATAEXTERN gcc_times
 CDATAEXTERN gcc_pixels
 %endif
+
 
 
 FDATASECTIONEND
@@ -575,7 +578,11 @@ snden3:		test	dword [blitterdmawaiting], 1
 		jz	wdmae1
 		test	ecx, 0040h
 		jz	wdmae1
-		call	_blitter_copy_
+		
+		pushad
+		call	blitterCopy
+		popad
+
 wdmae1:		call	_copperUpdateDMA_
 		ret
 
@@ -597,7 +604,7 @@ wdmanormoff:	mov	edx, dword [dmacon]  ; get old dmacon
 		test	dword [blit_started], 0ffh
 		jz	wdmabrag
 		pushad
-		call	_finish_blit_
+		call	blitFinishBlit
 		popad
 wdmabrag:
 ; Do audio stuff when dma turns off
@@ -640,7 +647,7 @@ sndoff3:	test	dword [blitterdmawaiting], 1
 		test	ecx, 0040h
 		jz	wdmae2
 		pushad
-		call	_blitter_copy_
+		call	blitterCopy
 		popad
 wdmae2:		call	_copperUpdateDMA_
 		ret
