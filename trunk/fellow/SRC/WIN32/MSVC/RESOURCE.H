@@ -2,6 +2,14 @@
 // Microsoft Developer Studio generated include file.
 // Used by Script1.rc
 //
+#define IDS_STRING_CLASSNAME_MAIN       1
+#define IDS_APP_TITLE                   2
+#define IDS_FIRSTDAY                    3
+#define IDS_STRING4                     4
+#define IDS_STRING5                     5
+#define IDS_STRING6                     6
+#define IDS_STRING7                     7
+#define IDS_STRING8                     8
 #define IDD_DIALOG1                     101
 #define IDD_MAIN                        101
 #define IDR_FELLOW_GUI_MENU             102
@@ -20,10 +28,18 @@
 #define IDD_FILESYSTEM_ADD              119
 #define IDD_HARDFILE_ADD                120
 #define IDD_SCREEN                      121
+#define IDD_DISPLAY                     121
 #define IDD_DEBUG_CPU                   123
 #define IDB_DEBUG_ARROW                 124
 #define IDD_ABOUT                       125
 #define IDI_ICON_WINFELLOW              128
+#define IDD_NEW_MAIN                    129
+#define IDD_NEW_FLOPPY                  130
+#define IDB_POWER_LED_ON                137
+#define IDB_DISKDRIVE_LED_ON            138
+#define IDB_POWER_LED_OFF               139
+#define IDB_DISKDRIVE_LED_OFF           140
+#define IDB_DISKDRIVE_LED_DISABLED      141
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -154,6 +170,26 @@
 #define IDC_COMBO_SCREEN_RESOLUTION     1071
 #define IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR 1071
 #define IDC_CHECK_SCREEN_VSCALE_INTERLACE 1074
+#define IDC_TAB_CONFIG                  1076
+#define IDC_ANIMATE1                    1077
+#define IDC_TAB1                        1080
+#define IDC_EDIT_DF0_IMAGENAME_MAIN     1081
+#define IDC_EDIT_DF1_IMAGENAME_MAIN     1082
+#define IDC_EDIT_DF2_IMAGENAME_MAIN     1083
+#define IDC_EDIT_DF3_IMAGENAME_MAIN     1084
+#define IDC_BUTTON_DF0_FILEDIALOG_MAIN  1085
+#define IDC_BUTTON_DF0_EJECT_MAIN       1086
+#define IDC_BUTTON_DF1_EJECT_MAIN       1087
+#define IDC_BUTTON_DF1_FILEDIALOG_MAIN  1088
+#define IDC_BUTTON_DF2_EJECT_MAIN       1089
+#define IDC_BUTTON_DF2_FILEDIALOG_MAIN  1090
+#define IDC_BUTTON_DF3_EJECT_MAIN       1091
+#define IDC_BUTTON_DF3_FILEDIALOG_MAIN  1092
+#define IDC_IMAGE_DF3_LED_MAIN          1093
+#define IDC_IMAGE_DF2_LED_MAIN          1094
+#define IDC_IMAGE_DF1_LED_MAIN          1095
+#define IDC_IMAGE_DF0_LED_MAIN          1096
+#define IDC_IMAGE_POWER_LED_MAIN        1097
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_DEBUGGER_START               40003
@@ -165,9 +201,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        129
+#define _APS_NEXT_RESOURCE_VALUE        150
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1076
+#define _APS_NEXT_CONTROL_VALUE         1098
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
