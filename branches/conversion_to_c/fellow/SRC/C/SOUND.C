@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.4 2005-01-09 19:11:53 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.5 2005-01-22 22:43:46 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -438,7 +438,7 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
       audstate[ch](ch);
       if ((!halfscale) || (halfscale && !odd))
       {
-	if (ch == 0 || ch == 2) buffer_left[samples_added++] += (WOR) auddatw[ch];
+	if (ch == 0 || ch == 3) buffer_left[samples_added++] += (WOR) auddatw[ch];
 	else buffer_right[samples_added++] += (WOR) auddatw[ch];
       }
       odd = !odd;
