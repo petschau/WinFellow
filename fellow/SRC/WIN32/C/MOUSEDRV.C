@@ -7,7 +7,14 @@
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
 
+/* ---------------- KNOWN BUGS/FIXLIST ----------------- 
+- nothing is in list
+*/
+
 /* ---------------- CHANGE LOG ----------------- 
+Monday, August 29, 2000
+- added dxver.h include, dx version is decided with USE_DX3 or USE_DX5 macro
+
 Sunday, July 9, 2000
 - couldn't keep the mouse buttons pressed;
 - removed some unuseful logging
@@ -20,9 +27,8 @@ Sunday, July 9, 2000
 #include "mousedrv.h"
 #include "windrv.h"
 
-#define DIRECTINPUT_VERSION 0x0500
 #include <initguid.h>
-#include <dinput.h>
+#include "dxver.h"
 
 #define DINPUT_BUFFERSIZE           16
 
@@ -96,14 +102,12 @@ void mouseDrvDInputAcquire(void) {
 
   if (mouse_drv_in_use) {
     if (mouse_drv_lpDID != NULL) {
-		fellowAddLog("mouse IDirectInputDevice_Acquire()\n");
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
         mouseDrvDInputFailure("mouseDrvDInputAcquire(): ", res);
     }
   }
   else {
     if (mouse_drv_lpDID != NULL) {
-		fellowAddLog("mouse IDirectInputDevice_Unacquire()\n");
       if ((res = IDirectInputDevice_Unacquire(mouse_drv_lpDID)) != DI_OK)
         mouseDrvDInputFailure("mouseDrvDInputUnacquire(): ", res);
     }
@@ -274,84 +278,84 @@ void mouseDrvToggleFocus() {
 /*===========================================================================*/
 
 void mouseDrvMovementHandler() {
-	if (mouse_drv_in_use) {
-		DIMOUSESTATE dims;
-		static LON lx = 0;
-		static LON ly = 0;
-		HRESULT res;
-		
-		DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
-		DWORD itemcount = DINPUT_BUFFERSIZE;
-		
-		do {
-			res = IDirectInputDevice_GetDeviceData(mouse_drv_lpDID,
-				sizeof(DIDEVICEOBJECTDATA),
-				rgod,
-				&itemcount,
-				0);
-			if (res == DIERR_INPUTLOST) mouseDrvDInputAcquire();
-		}
-		while (res == DIERR_INPUTLOST);
-		
-		if (res != DI_OK) {
-			mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData() ", res );
-		}
-		else {
-			ULO i = 0;
-			DWORD oldSequence = 0;
-			
-			/*
-			** Sometimes in a buffered input of a device, some simultaneous events are stored
-			** in different - but contigous - objects in the array. For every event object
-			** there is a sequence number - automatically handled by dinput - stored together
-			** with the event. Simultaneous events are assigned the same sequence number.
-			** Events are always placed in the buffer in chronological order.
-			*/
-			
-			if( itemcount == 0 )	// exit if there are no objects to examine
-				return;
+  if (mouse_drv_in_use) {
+	DIMOUSESTATE dims;
+	static LON lx = 0;
+	static LON ly = 0;
+	HRESULT res;
+	
+	DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
+	DWORD itemcount = DINPUT_BUFFERSIZE;
+	
+	do {
+	  res = IDirectInputDevice_GetDeviceData(mouse_drv_lpDID,
+		sizeof(DIDEVICEOBJECTDATA),
+		rgod,
+		&itemcount,
+		0);
+	  if (res == DIERR_INPUTLOST) mouseDrvDInputAcquire();
+	}
+	while (res == DIERR_INPUTLOST);
+	
+	if (res != DI_OK) {
+	  mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData() ", res );
+	}
+	else {
+	  ULO i = 0;
+	  DWORD oldSequence = 0;
+	  
+	  /*
+	  ** Sometimes in a buffered input of a device, some simultaneous events are stored
+	  ** in different - but contigous - objects in the array. For every event object
+	  ** there is a sequence number - automatically handled by dinput - stored together
+	  ** with the event. Simultaneous events are assigned the same sequence number.
+	  ** Events are always placed in the buffer in chronological order.
+	  */
+	  
+	  if( itemcount == 0 )	// exit if there are no objects to examine
+		return;
+	  
+	  lx = ly = 0;
+	  for (i = 0; i <= itemcount; i++) {
+		if( i != 0 )
+		{
+		  if(( i == itemcount ) ||					// if there are no other objects
+			( rgod[i].dwSequence != oldSequence ))	// or the current objects is a different event
+		  {
+			gameportMouseHandler(GP_MOUSE0,
+			  lx,
+			  ly,
+			  bLeftButton,
+			  FALSE,
+			  bRightButton);
 			
 			lx = ly = 0;
-			for (i = 0; i <= itemcount; i++) {
-				if( i != 0 )
-				{
-					if(( i == itemcount ) ||					// if there are no other objects
-						( rgod[i].dwSequence != oldSequence ))	// or the current objects is a different event
-					{
-						gameportMouseHandler(GP_MOUSE0,
-							lx,
-							ly,
-							bLeftButton,
-							FALSE,
-							bRightButton);
-						
-						lx = ly = 0;
-					}
-					if( i == itemcount )	// no other objects to examine, exit
-						break;
-				}
-				oldSequence = rgod[i].dwSequence;
-
-				switch( rgod[i].dwOfs ) {
-				case DIMOFS_BUTTON0:
-					bLeftButton = (rgod[i].dwData & 0x80);
-					break;
-					
-				case DIMOFS_BUTTON1:
-					bRightButton = (rgod[i].dwData & 0x80);
-					break;
-					
-				case DIMOFS_X:
-					lx += rgod[i].dwData;
-					break;
-					
-				case DIMOFS_Y:
-					ly += rgod[i].dwData;
-					break;
-				}				
-			}
+		  }
+		  if( i == itemcount )	// no other objects to examine, exit
+			break;
 		}
+		oldSequence = rgod[i].dwSequence;
+		
+		switch( rgod[i].dwOfs ) {
+		case DIMOFS_BUTTON0:
+		  bLeftButton = (rgod[i].dwData & 0x80);
+		  break;
+		  
+		case DIMOFS_BUTTON1:
+		  bRightButton = (rgod[i].dwData & 0x80);
+		  break;
+		  
+		case DIMOFS_X:
+		  lx += rgod[i].dwData;
+		  break;
+		  
+		case DIMOFS_Y:
+		  ly += rgod[i].dwData;
+		  break;
+		}				
+	  }
 	}
+  }
 }
 
 
@@ -360,7 +364,7 @@ void mouseDrvMovementHandler() {
 /*===========================================================================*/
 
 void mouseDrvHardReset(void) {
-	fellowAddLog("mouseDrvHardReset\n");
+  fellowAddLog("mouseDrvHardReset\n");
 }
 
 
@@ -369,7 +373,7 @@ void mouseDrvHardReset(void) {
 /*===========================================================================*/
 
 BOOLE mouseDrvEmulationStart(void) {
-	fellowAddLog("mouseDrvEmulationStart\n");
+  fellowAddLog("mouseDrvEmulationStart\n");
   return mouseDrvDInputInitialize();
 }
 
@@ -379,7 +383,7 @@ BOOLE mouseDrvEmulationStart(void) {
 /*===========================================================================*/
 
 void mouseDrvEmulationStop(void) {
-	fellowAddLog("mouseDrvEmulationStop\n");
+  fellowAddLog("mouseDrvEmulationStop\n");
   mouseDrvDInputRelease();
 }
 
@@ -389,11 +393,11 @@ void mouseDrvEmulationStop(void) {
 /*===========================================================================*/
 
 void mouseDrvStartup(void) {
-	fellowAddLog("mouseDrvStartup\n");
+  fellowAddLog("mouseDrvStartup\n");
   mouse_drv_active = FALSE;
   mouse_drv_focus = TRUE;
   mouse_drv_in_use = FALSE;
-	mouse_drv_initialization_failed = TRUE;
+  mouse_drv_initialization_failed = TRUE;
   mouse_drv_lpDI = NULL;
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
@@ -407,6 +411,6 @@ void mouseDrvStartup(void) {
 /*===========================================================================*/
 
 void mouseDrvShutdown(void) {
-	fellowAddLog("mouseDrvShutdown\n");
+  fellowAddLog("mouseDrvShutdown\n");
 }
 
