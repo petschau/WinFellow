@@ -96,6 +96,14 @@ BOOLE cfgGetDiskFast(cfg *config) {
   return config->m_diskfast;
 }
   
+void cfgSetLastUsedDiskDir(cfg *config, STR *directory) {
+  strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
+}
+
+STR *cfgGetLastUsedDiskDir(cfg *config) {
+  return config->m_lastuseddiskdir;
+}
+
 
 /*============================================================================*/
 /* Memory configuration property access                                       */
@@ -514,6 +522,7 @@ void cfgSetDefaults(cfg *config) {
     cfgSetDiskReadOnly(config, i, FALSE);
   }
   cfgSetDiskFast(config, FALSE);
+  cfgSetLastUsedDiskDir(config, "");
 
 
   /*==========================================================================*/
@@ -898,6 +907,9 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if (stricmp(option, "floppy3") == 0) {
       cfgSetDiskImage(config, 3, value);
     }
+	else if (stricmp(option, "fellow.last_used_disk_dir") == 0) {
+      cfgSetLastUsedDiskDir(config, value);
+    }
     else if ((stricmp(option, "fellow.floppy0_enabled") == 0) ||
 	     (stricmp(option, "floppy0_enabled") == 0)) {
       cfgSetDiskEnabled(config, 0, cfgGetBOOLEFromString(value));
@@ -1158,6 +1170,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   }
   fprintf(cfgfile, "fellow.floppy_fast_dma=%s\n", 
 	  cfgGetBOOLEToString(cfgGetDiskFast(config)));
+  fprintf(cfgfile, "fellow.last_used_disk_dir=%s\n", cfgGetLastUsedDiskDir(config));
   fprintf(cfgfile, "joyport0=%s\n", 
 	  cfgGetGameportToString(cfgGetGameport(config, 0)));
   fprintf(cfgfile, "joyport1=%s\n", 
