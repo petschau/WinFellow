@@ -2643,7 +2643,10 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 /*============================================================================*/
 
 BOOL wguiCheckEmulationNecessities(void) {
-	return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
+	if (*cfgGetKickImage(wgui_cfg) != NULL) {
+		return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
+	}
+	else return FALSE;
 }	
 
 BOOLE wguiEnter(void) {
