@@ -1605,9 +1605,9 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 	ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(pwgui_dm_match->colorbits));
 	
 	// add multiple buffer option
-  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS, cfgGetUseMultipleGraphicalBuffers(conf));
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS, cfgGetUseMultipleGraphicalBuffers(conf));
 		
-  // set fullscreen button check
+	// set fullscreen button check
 	if (pwgui_dm_match->windowed) {
 		// windowed 
 		// colorbits can't be selected through WinFellow, desktop setting will be used
@@ -1628,24 +1628,35 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 		ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
 	}
 
-  // add horizontal pixel scale option
-	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE, cfgGetHorizontalScale(conf) == 2);
+	// add horizontal pixel scale option
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE, cfgGetHorizontalScale(conf) == 1);
 
-	// add vertical pixel scale option
-	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VERTICAL_SCALE, cfgGetVerticalScale(conf) == 2);
-	
-	// add scanline option
-	if (cfgGetScanlines(conf)) {
-		ccwButtonSetCheck(hwndDlg, IDC_CHECK_SCANLINES);
-		ccwButtonUncheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE);
-	} else {
-		ccwButtonUncheck(hwndDlg, IDC_CHECK_SCANLINES);
+	// add vertical pixel scale option and scale strategy
+	ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE, cfgGetScanlines(conf));
+	if (cfgGetScanlines(conf) == FALSE)
+	{
+		ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_NORMAL, cfgGetVerticalScale(conf) == 1);
 	}
-
+	ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE, cfgGetVerticalScale(conf) == 2);
+	if (cfgGetVerticalScale(conf) == 2)
+	{
+		// double scaling selected 
+		ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
+		ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
+	}
+	else
+	{
+		// double scaling not selected 
+		ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
+		ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
+	}
+	ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT, cfgGetVerticalScaleStrategy(conf) == 0);
+	ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH, cfgGetVerticalScaleStrategy(conf) == 1);
+	
 	// add interlace compensation option
-  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_INTERLACE, cfgGetDeinterlace(conf));
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_INTERLACE, cfgGetDeinterlace(conf));
 
-  // add screen area 
+	// add screen area 
 	if (pwgui_dm_match->windowed) {
 		// windowed
 		ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));
@@ -1668,8 +1679,8 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
 	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 
-  // add frame skipping rate choices 
-  ccwSliderSetRange(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, 0, 24);
+	// add frame skipping rate choices 
+	ccwSliderSetRange(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, 0, 24);
 	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, cfgGetFrameskipRatio(conf));
 	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
 
@@ -1680,7 +1691,7 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 /* extract display config */
 
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
-  HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
+	HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 
 	// get current colorbits
 	cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
@@ -1692,9 +1703,10 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
 	cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
 	// get scaling
-  cfgSetVerticalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE)) ? 2 : 1);
-  cfgSetHorizontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 2 : 1);
-	cfgSetScanlines(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SCANLINES));
+	cfgSetVerticalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE)) ? 2 : 1);
+	cfgSetVerticalScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT)) ? 0 : 1);
+	cfgSetHorizontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 1 : 2);
+	cfgSetScanlines(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE));
 	cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_INTERLACE));
 
 	// get height and width
@@ -1722,8 +1734,8 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
 		}
 	}
 	
-  // get frame skipping rate choice
-  cfgSetFrameskipRatio(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING));
+	// get frame skipping rate choice
+	cfgSetFrameskipRatio(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING));
 
 	// get blitter selection radio buttons
 	wguiExtractBlitterConfig(hwndDlg, conf);
@@ -1951,22 +1963,41 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 							break;
 					}
 					break;
-				case IDC_CHECK_SCANLINES:
+				case IDC_RADIO_LINEMODE_SCANLINE:
 					switch (HIWORD(wParam)) {
 						case BN_CLICKED:
-							if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_SCANLINES)) {
+							if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE)) {
 								// scanlines was checked
-								ccwButtonUncheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE);
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL);
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE);
+								ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
+								ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
 							} 
 							break;
 					}
 					break;
-				case IDC_CHECK_VERTICAL_SCALE:
+				case IDC_RADIO_LINEMODE_DOUBLE:
 					switch (HIWORD(wParam)) {
 						case BN_CLICKED:
-							if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE)) {
+							if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE)) {
+								// scanlines was checked
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL);
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE);
+								ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
+								ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
+							} 
+							break;
+					}
+					break;
+				case IDC_RADIO_LINEMODE_NORMAL:
+					switch (HIWORD(wParam)) {
+						case BN_CLICKED:
+							if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL)) {
 								// vertical scale was checked
-								ccwButtonUncheck(hwndDlg, IDC_CHECK_SCANLINES);
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE);
+								ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE);
+								ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
+								ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
 							} 
 							break;
 					}

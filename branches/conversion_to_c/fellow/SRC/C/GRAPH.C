@@ -194,7 +194,7 @@ void graphP2C1XInit(void) {
 
 /*===========================================================================*/
 /* Decode tables for horizontal scale                                        */
-/* 2x scaling Lores                                                          */
+/* 1x scaling Lores                                                          */
 /* 1x scaling Hires                                                          */
 /* Called from the draw module                                               */
 /*===========================================================================*/
