@@ -1122,5 +1122,9 @@ SOURCE=.\fellow2.BMP
 
 SOURCE=.\Script1.rc
 # End Source File
+# Begin Source File
+
+SOURCE=.\winfellow.ico
+# End Source File
 # End Target
 # End Project
