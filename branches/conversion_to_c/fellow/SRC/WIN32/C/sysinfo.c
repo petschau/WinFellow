@@ -409,7 +409,7 @@ static void ParseMemoryStatus (void) {
 
 static void fellowVersionInfo (void) {
 
-	fellowAddTimelessLog("WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15");
+	fellowAddTimelessLog(FELLOWVERSION);
 
 	#ifdef USE_DX3
 		fellowAddTimelessLog(" (DirectX 3");

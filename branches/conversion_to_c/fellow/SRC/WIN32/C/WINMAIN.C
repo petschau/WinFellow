@@ -254,7 +254,7 @@ void winDrvSetRegistryKeys(char **argv) {
   char p[1024];
   char *locc;
   p[0] = '\0';
-  winDrvSetKey("Software\\WinFellow", "version", "0.4.3.2");
+  winDrvSetKey("Software\\WinFellow", "version", FELLOWNUMERICVERSION);
   _fullpath(p, argv[0], 1024);
   locc = strrchr(p, '\\');
   if (locc == NULL) p[0] = '\0';
