@@ -90,7 +90,11 @@ static BOOLE ffilesysHasZeroDevices(void) {
   ULO dev_count = 0;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
+	/* warning, ugly check due to ffilesys_devs[i].status not being set
+	   correctly  */
+    //if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
+	if((ffilesys_devs[i].volumename[0] != '\0') &&
+	   (ffilesys_devs[i].rootpath[0] != '\0')) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
@@ -130,7 +134,10 @@ void ffilesysInstall(void) {
   ULO i;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    fellow_add_filesys_unit(ffilesys_devs[i].volumename,
+	/* again ugly check */
+	if((ffilesys_devs[i].volumename[0] != '\0') &&
+	   (ffilesys_devs[i].rootpath[0] != '\0'))
+      fellow_add_filesys_unit(ffilesys_devs[i].volumename,
 			    ffilesys_devs[i].rootpath,
 			    ffilesys_devs[i].readonly,
 			    FALSE);
