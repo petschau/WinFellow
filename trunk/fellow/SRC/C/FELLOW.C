@@ -462,10 +462,15 @@ int main(int argc, char *argv[]) {
   fellowSetLogEnabled(TRUE);
   
   fellowAddLog("WinFellow alpha v0.4.2 build 1");
-#ifdef _DEBUG
-  fellowAddLog(" (Debug Build)");
+#ifdef USE_DX3
+  fellowAddLog(" (DX3");
 #else
-  fellowAddLog(" (Release Build)");
+  fellowAddLog(" (DX5");
+#endif
+#ifdef _DEBUG
+  fellowAddLog(" Debug Build)");
+#else
+  fellowAddLog(" Release Build)");
 #endif
   fellowAddLog(" now starting up...\n");
 
