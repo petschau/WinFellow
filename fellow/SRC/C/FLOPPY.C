@@ -424,7 +424,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
 /*========================*/
 
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
-  sprintf(cmdline, "xdms.exe -q u %s +%s", diskname, tmpnam(gzname));
+  sprintf(cmdline, "xdms.exe -q u \"%s\" +\"%s\"", diskname, tmpnam(gzname));
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
@@ -437,7 +437,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
 /*============================*/
 
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
-  sprintf(cmdline, "gzip -c -d %s > %s", diskname, tmpnam(gzname));
+  sprintf(cmdline, "gzip -c -d \"%s\" > \"%s\"", diskname, tmpnam(gzname));
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
@@ -452,7 +452,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
 void floppyImageCompressedRemove(ULO drive) {
   if (floppy[drive].zipped) {
     floppy[drive].zipped = FALSE;
-    sprintf(cmdline, "del %s", floppy[drive].imagenamereal);
+    sprintf(cmdline, "del \"%s\"", floppy[drive].imagenamereal);
     system(cmdline);
   }
 }
