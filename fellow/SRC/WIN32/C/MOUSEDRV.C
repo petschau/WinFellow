@@ -47,6 +47,8 @@ BOOLE			mouse_drv_initialization_failed;
 static BOOLE	bLeftButton;
 static BOOLE	bRightButton;
 
+int num_mouse_attached = 0;
+
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
@@ -134,6 +136,13 @@ void mouseDrvDInputRelease(void) {
   }
 }
 
+BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, 
+                                  LPVOID pvRef) 
+{ 
+	fellowAddLog( "**** mouse %d ****\n", num_mouse_attached++ );
+
+	return DIENUM_CONTINUE; 
+}
 	
 /*===========================================================================*/
 /* Initialize DirectInput for mouse                                          */
@@ -176,6 +185,13 @@ BOOLE mouseDrvDInputInitialize(void) {
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
+  }
+
+  num_mouse_attached = 0;
+
+  if ((res = IDirectInput_EnumDevices( mouse_drv_lpDI, DIDEVTYPE_MOUSE,
+			  GetMouseInfo, NULL, DIEDFL_ALLDEVICES )) != DI_OK) {
+	  fellowAddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
   }
   
   /* Create Direct Input 1 mouse device */

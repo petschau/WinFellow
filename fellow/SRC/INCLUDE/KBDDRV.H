@@ -1,8 +1,10 @@
 #ifndef KBDDRV_H
 #define KBDDRV_H
 
+extern STR *symbol_pretty_name[106];
 
 extern STR *kbdDrvKeyString(ULO symbolickey);
+extern STR *kbdDrvKeyPrettyString(ULO symbolickey);
 extern ULO kbdDrvCaptureKey(void);
 extern void kbdDrvJoyReplacementSet(kbd_event event, ULO symbolickey);
 extern ULO kbdDrvJoyReplacementGet(kbd_event event);
