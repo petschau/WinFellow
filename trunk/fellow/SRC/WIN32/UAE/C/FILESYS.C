@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.7 2004-05-27 12:30:24 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.8 2004-05-28 09:43:08 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -444,7 +444,7 @@ void write_filesys_config (struct uaedev_mount_info *mountinfo,
 struct uaedev_mount_info *alloc_mountinfo (void)
 {
     struct uaedev_mount_info *info;
-/* FELLOW CHANGE: info = (struct uaedev_mount_info *)malloc (sizeof *info); */
+/* FELLOW BUGFIX: info = (struct uaedev_mount_info *)malloc (sizeof *info); */
     info = (struct uaedev_mount_info *)calloc (1,sizeof *info); /* %%% - BERND, if you don't calloc this structure, we die later! */
     /*    memset (info, 0xaa, sizeof *info);*/
     info->num_units = 0;
@@ -474,7 +474,7 @@ void free_mountinfo (struct uaedev_mount_info *mip)
 {
     int i;
     for (i = 0; i < mip->num_units; i++)
-	close_filesys_unit (mip->ui + i);
+        close_filesys_unit (mip->ui + i);
     free (mip);
 }
 
@@ -765,6 +765,16 @@ static void recycle_aino (Unit *unit, a_inode *new_aino)
 		    i++;
 		}
 	    }
+        /* In the previous loop, we went through all children of one
+	       parent.  Re-arrange the recycled list so that we'll find a
+	       different parent the next time around.  */
+	    do {
+		unit->rootnode.next->prev = unit->rootnode.prev;
+		unit->rootnode.prev->next = unit->rootnode.next;
+		unit->rootnode.next = unit->rootnode.prev;
+		unit->rootnode.prev = unit->rootnode.prev->prev;
+		unit->rootnode.prev->next = unit->rootnode.next->prev = &unit->rootnode;
+	    } while (unit->rootnode.prev->parent == parent);
 	}
 #if 0
 	{
@@ -827,6 +837,25 @@ static void delete_aino (Unit *unit, a_inode *aino)
     aino->dirty = 1;
     aino->deleted = 1;
     de_recycle_aino (unit, aino);
+
+    /* If any ExKeys are currently pointing at us, advance them.  */
+    if (aino->parent->exnext_count > 0) {
+	  int i;
+	  TRACE(("entering exkey validation\n"));
+	  for (i = 0; i < EXKEYS; i++) {
+	    ExamineKey *k = unit->examine_keys + i;
+	    if (k->uniq == 0)
+		continue;
+	    if (k->aino == aino->parent) {
+		TRACE(("Same parent found for %d\n", i));
+		if (k->curr_file == aino) {
+		    k->curr_file = aino->sibling;
+		    TRACE(("Advancing curr_file\n"));
+		}
+	    }
+	}
+    }
+
     aip = &aino->parent->child;
     while (*aip != aino && *aip != 0)
 	aip = &(*aip)->sibling;
@@ -888,6 +917,20 @@ static a_inode *lookup_aino (Unit *unit, uae_u32 uniq)
     return a;
 }
 
+/* FELLOW IN (START)----------------- */
+/* added for malloc debugging purposes */
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+char *my_strcpat(char *p, const char* d, const char *n)
+{
+  char dsep[2] = { FSDB_DIR_SEPARATOR, '\0' };
+  strcpy(p, d);
+  strcat(p, dsep);
+  strcat(p, n);
+  return p;
+}
+#else
+/* FELLOW IN (END)------------------- */
+
 char *build_nname (const char *d, const char *n)
 {
     char dsep[2] = { FSDB_DIR_SEPARATOR, '\0' };
@@ -897,6 +940,9 @@ char *build_nname (const char *d, const char *n)
     strcat (p, n);
     return p;
 }
+/* FELLOW IN (START)----------------- */
+#endif
+/* FELLOW IN (END)------------------- */
 
 char *build_aname (const char *d, const char *n)
 {
@@ -995,6 +1041,15 @@ static void init_child_aino (Unit *unit, a_inode *base, a_inode *aino)
 
     aino->dirty = 0;
     aino->deleted = 0;
+
+    /* For directories - this one isn't being ExNext()ed yet.  */
+    aino->locked_children = 0;
+    aino->exnext_count = 0;
+    /* But the parent might be.  */
+    if (base->exnext_count) {
+	unit->total_locked_ainos++;
+	base->locked_children++;
+    }
 
     /* Update tree structure */
     aino->parent = base;
@@ -1105,7 +1160,7 @@ static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *r
 	return c;
     c = fsdb_lookup_aino_nname (base, rel);
     if (c == 0) {
-	/* FELLOW CHANGE: c = (a_inode *)malloc (sizeof (a_inode)); */
+	/* FELLOW BUGFIX: c = (a_inode *)malloc (sizeof (a_inode)); */
 	c = (a_inode *) xcalloc (sizeof (a_inode), 1);
 	if (c == 0) {
 	    *err = ERROR_NO_FREE_STORE;
@@ -1396,7 +1451,7 @@ static Key *lookup_key (Unit *unit, uae_u32 uniq)
 
 static Key *new_key (Unit *unit)
 {
-    /* FELLOW CHANGE: Key *k = (Key *) xmalloc(sizeof(Key)); */
+    /* FELLOW BUGFIX: Key *k = (Key *) xmalloc(sizeof(Key)); */
 	Key *k = (Key *) xcalloc(sizeof(Key), 1);
 	k->uniq = ++unit->key_uniq;
 	k->fd = -1;

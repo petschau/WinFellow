@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb.c,v 1.6 2004-05-27 12:30:24 carfesh Exp $
+  @(#) $Id: fsdb.c,v 1.7 2004-05-28 09:43:08 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -106,8 +106,12 @@ void fsdb_clean_dir (a_inode *dir)
     FILE *f = fopen (n, "r+b");
     off_t pos1 = 0, pos2 = 0;
 
-    if (f == 0)
-	return;
+    /* FELLOW BUGFIX (START) : if (f == 0) return;*/
+    if(f == 0) {
+      free(n);  /* leak */
+	    return;
+    }
+    /* FELLOW BUGFIX (END) */
     for (;; pos2 += sizeof buf) {
 	if (fread (buf, 1, sizeof buf, f) < sizeof buf)
 	    break;
