@@ -8,7 +8,6 @@
 
 #ifdef WGUI
 
-extern void wguiPreStartup(void);
 extern void wguiStartup(void);
 extern void wguiShutdown(void);
 extern BOOLE wguiEnter(void);
