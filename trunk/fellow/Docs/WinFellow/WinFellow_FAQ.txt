@@ -1,4 +1,4 @@
-WinFellow FAQ (Frequently Asked Questions) v0.105 (2000/10/10)
+WinFellow FAQ (Frequently Asked Questions) v0.106 (2000/12/10)
 ==============================================================
 
                                                                   written by
@@ -281,4 +281,8 @@ For general questions about Amiga emulation you might also want to check the
 Amiga emulation FAQ which can be found at:
 
 http://www.geocities.com/CapeCanaveral/Lab/1473/faq.html
+
+Laurent Clévy runs a detailed FAQ about the Amiga Filesystem you can find at
+
+http://perso.club-internet.fr/lclevy/adflib/faq.html
 
