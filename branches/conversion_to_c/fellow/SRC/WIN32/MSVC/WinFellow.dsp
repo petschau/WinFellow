@@ -1362,5 +1362,9 @@ SOURCE=.\winfellow.ico
 
 SOURCE=.\WinFellow.exe.manifest
 # End Source File
+# Begin Source File
+
+SOURCE=..\icons\winfellow_logo_small.bmp
+# End Source File
 # End Target
 # End Project
