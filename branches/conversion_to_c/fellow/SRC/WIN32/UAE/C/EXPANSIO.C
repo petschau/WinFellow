@@ -294,7 +294,7 @@ addrbank filesys_bank = {
 
 
 /* FELLOW CHANGE: static void expamem_map_filesys (void) */
-void expamem_map_filesys (int mapping)
+void expamem_map_filesys (ULO mapping)
 {
     uaecptr a;
     /* FELLOW IN (START) -------------------*/
