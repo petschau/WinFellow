@@ -1,7 +1,7 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: modrip.c,v 1.22.2.2 2004-05-27 10:05:27 carfesh Exp $          */
+/* @(#) $Id: modrip.c,v 1.22.2.3 2004-05-27 10:06:22 carfesh Exp $         */
 /*                                                                         */
 /* Portable parts of the module ripper                                     */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
