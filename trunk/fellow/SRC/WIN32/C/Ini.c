@@ -119,14 +119,6 @@ void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO e
   iniSetEmulationWindowYPos(initdata, emulationwindowypos);
 }
 
-void iniSetUseMultipleGraphicalBuffers(ini *initdata, BOOLE use_multiple_graphical_buffers) {
-  initdata->m_use_multiple_graphical_buffers = use_multiple_graphical_buffers;
-}
-
-BOOLE iniGetUseMultipleGraphicalBuffers(ini *initdata) {
-  return initdata->m_use_multiple_graphical_buffers;
-}
-
 void iniSetLastUsedKickImageDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
 }
@@ -194,12 +186,6 @@ void iniSetDefaults(ini *initdata) {
   for (i=0; i<4; i++) {
     iniSetConfigurationHistoryFilename(initdata, i, "");
   }
-
-  /*==========================================================================*/
-  /* Default choice for using multiple graphical buffers                      */
-  /*==========================================================================*/
-	
-  iniSetUseMultipleGraphicalBuffers(initdata, FALSE);
 
   /*==========================================================================*/
   /* Default kickimage and key directories                                    */
@@ -297,9 +283,6 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 	else if (stricmp(option, "emu_window_y_pos") == 0) {
 	  iniSetEmulationWindowYPos(initdata, iniGetULOFromString(value));
 	}
-	else if (stricmp(option, "use_multiple_graphical_buffers") == 0) {
-	  iniSetUseMultipleGraphicalBuffers(initdata, iniGetBOOLEFromString(value));
-	}
 	else if (stricmp(option, "config_history_0") == 0) {
 	  iniSetConfigurationHistoryFilename(initdata, 0, value);
 	}
@@ -334,7 +317,6 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "main_window_y_pos=%d\n", iniGetMainWindowYPos(initdata));
   fprintf(inifile, "emu_window_x_pos=%d\n", iniGetEmulationWindowXPos(initdata));
   fprintf(inifile, "emu_window_y_pos=%d\n", iniGetEmulationWindowYPos(initdata));
-  fprintf(inifile, "use_multiple_graphical_buffers=%d\n", iniGetUseMultipleGraphicalBuffers(initdata));
   fprintf(inifile, "config_history_0=%s\n", iniGetConfigurationHistoryFilename(initdata,0));
   fprintf(inifile, "config_history_1=%s\n", iniGetConfigurationHistoryFilename(initdata,1));
   fprintf(inifile, "config_history_2=%s\n", iniGetConfigurationHistoryFilename(initdata,2));
@@ -390,7 +372,6 @@ void iniShutdown(void) {
 }
 
 void iniEmulationStart(void) {
-  drawSetAllowMultipleBuffers(iniGetUseMultipleGraphicalBuffers(iniManagerGetCurrentInitdata(&ini_manager)));
 }
 
 void iniEmulationStop(void) {
