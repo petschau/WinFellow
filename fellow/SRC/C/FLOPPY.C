@@ -424,8 +424,6 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
 /*========================*/
 
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
-  FILE *F;
-  
   sprintf(cmdline, "xdms.exe -q u %s +%s", diskname, tmpnam(gzname));
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
@@ -439,8 +437,6 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
 /*============================*/
 
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
-  FILE *F;
-  
   sprintf(cmdline, "gzip -c -d %s > %s", diskname, tmpnam(gzname));
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
@@ -469,14 +465,16 @@ void floppyImageCompressedRemove(ULO drive) {
 /*============================*/
 
 BOOLE floppyImageCompressedPrepare(STR *diskname, ULO drive) {
-  if((strcmpi(strrchr(diskname, '.'), ".bz2") == 0) ||
-     (strcmpi(strrchr(diskname, '.'), ".bz") == 0))
+  STR *dotptr = strrchr(diskname, '.');
+  if (dotptr == NULL) return FALSE;
+  if((strcmpi(dotptr, ".bz2") == 0) ||
+     (strcmpi(dotptr, ".bz") == 0))
     return floppyImageCompressedBZipPrepare(diskname, drive);
-  else if ((strcmpi(strrchr(diskname, '.'), ".gz") == 0) ||
-	   (strcmpi(strrchr(diskname, '.'), ".z") == 0) ||
-	   (strcmpi(strrchr(diskname, '.'), ".adz") == 0))
+  else if ((strcmpi(dotptr, ".gz") == 0) ||
+	   (strcmpi(dotptr, ".z") == 0) ||
+	   (strcmpi(dotptr, ".adz") == 0))
     return floppyImageCompressedGZipPrepare(diskname, drive);
-  else if (strcmpi(strrchr(diskname, '.'), ".dms") == 0)
+  else if (strcmpi(dotptr, ".dms") == 0)
     return floppyImageCompressedDMSPrepare(diskname, drive);
   return FALSE;
 }
