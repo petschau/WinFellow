@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.1.1.1.2.9 2005-01-01 00:28:10 worfje Exp $ */
+/* @(#) $Id: BUS.C,v 1.1.1.1.2.10 2005-01-07 21:47:46 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -171,7 +171,7 @@ void busScanLevel2(ULO* lvlx_next, buseventfunc* lvlx_ptr)
   if ((*lvlx_next) > copper_next)
   {
     *lvlx_next = copper_next;
-    *lvlx_ptr = copperEmulate;
+    *lvlx_ptr = copperEmulateC;
   }
   lvl2_next = *lvlx_next;
   lvl2_ptr = *lvlx_ptr; 

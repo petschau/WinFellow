@@ -59,8 +59,6 @@ FDATASECTIONSTART
 %include "data/bus.inc"
 %include "data/fmem.inc"
 %include "data/cia.inc"
-%include "data/copper.inc"
-;%include "data/timer.inc"		
 
 CDATAEXTERN blitend
 CDATAEXTERN draw_frame_count;
@@ -82,7 +80,6 @@ _busstart_:	 ; Used to check code alignment
 
 %include "func/fmem.inc"
 %include "func/cpu.inc"
-%include "func/copper.inc"
 %include "func/cia.inc"
 %include "mac/fmem.mac"
 %include "mac/bus.mac"
@@ -284,7 +281,7 @@ _return_from_stop_:
 ;==============================================================================
 
 CFUNCEXTERN drawEndOfFramePreC
-
+CFUNCEXTERN copperEndOfFrame
 
 		FALIGN32
 
@@ -338,7 +335,9 @@ _endOfFrame_:	push	edx
 		; Restart copper
 		;==============================================================
 
-		call	_copperEndOfFrame_		; Restart copper
+		pushad
+		call	copperEndOfFrame		; Restart copper
+		popad
 
 
 		;==============================================================
@@ -466,6 +465,3 @@ FCODESECTIONEND
 FBSSSECTIONSTART
 FBSSSECTIONEND
 FASMFILEEND
-
-
-	
