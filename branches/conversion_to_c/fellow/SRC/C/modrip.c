@@ -1,44 +1,32 @@
-/*============================================================================*/
-/* Fellow Amiga Emulator                                                      */
-/* Portable parts of the module ripper                                        */
-/* Author: Torsten Enderling (carfesh@gmx.net)                                */
-/*                                                                            */
-/* based on information found on Exotica (http://exotica.fix.no), the xmp     */
-/* source code (http://xmp.helllabs.org), Amiga Mod Packers Described         */
-/* (http://www.multimania.com/asle/ampd.html) and too many other web sources  */
-/*                                                                            */
-/* This file is under the GNU Public License (GPL)                            */
-/*============================================================================*/
-/* Changelog:                                                                 */
-/* ----------                                                                 */
-/* 2004/05/26:                                                                */
-/* - fixed a bug in modripChipDump (only run prowiz if memory was actually    */
-/*   dumped); fixed level 3 compiler warnings                                 */
-/* 2000/12/27:                                                                */
-/* - chipmem dump now also saves bogo and fast mem                            */
-/* 2000/12/18:                                                                */
-/* - a detected Pro-Wizard can automatically run over the chipmem file        */
-/* - added a "dump chipmem" routine                                           */
-/* - added ThePlayer 4 support                                                */
-/* - added ProRunner 2.0 support                                              */
-/* - now only the allocated memory areas are scanned instead of the whole mem */
-/* 2000/12/16:                                                                */
-/* - FredEditor support added, defined some useful macros                     */
-/*   and added 2 missing ProTracker clones                                    */
-/* 2000/12/15:                                                                */
-/* - SoundMon support added                                                   */
-/* 2000/12/14:                                                                */
-/* - added support for ripping from floppies; currently this sometimes gives  */
-/*   different results from a memory rip                                      */
-/* - first release; it now features separate ripping and GUI code             */
-/*   as well as the access being done via memory access wrapper functions     */
-/*   formats detected are some ProTracker clones and SoundFX 1.3/2.0          */
-/* ToDo:                                                                      */
-/* -----                                                                      */
-/* - the detection routines do only very rough checks of the values' validity */
-/*   against MODRIP_MAXMODLEN; better look up the really allowed values       */
-/*   somewhere                                                                */
-/*============================================================================*/
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* @(#) $Id: modrip.c,v 1.22.2.2 2004-05-27 10:05:27 carfesh Exp $          */
+/*                                                                         */
+/* Portable parts of the module ripper                                     */
+/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/*                                                                         */
+/* based on information found on Exotica (http://exotica.fix.no), the xmp  */
+/* source code (http://xmp.helllabs.org), Amiga Mod Packers Described      */
+/* (http://www.multimania.com/asle/ampd.html) and too many other web       */
+/* sources                                                                 */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 /* fellow includes */
 #include "defs.h"
