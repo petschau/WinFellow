@@ -55,6 +55,7 @@ STR *iniGetDescription(ini *initdata) {
 
 void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration) {
   strncpy(initdata->m_current_configuration, configuration, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(initdata->m_current_configuration);
 }
 
 STR *iniGetCurrentConfigurationFilename(ini *initdata) {
@@ -63,6 +64,7 @@ STR *iniGetCurrentConfigurationFilename(ini *initdata) {
 
 void iniSetLastUsedCfgDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedconfigurationdir, directory, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(initdata->m_lastusedconfigurationdir);
 }
 
 STR *iniGetLastUsedCfgDir(ini *initdata) {
@@ -71,6 +73,7 @@ STR *iniGetLastUsedCfgDir(ini *initdata) {
 
 void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, STR *cfgfilename) {
   strncpy(initdata->m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(initdata->m_configuration_history[index]);
 }
 
 STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index) {
@@ -121,6 +124,7 @@ void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO e
 
 void iniSetLastUsedKickImageDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(initdata->m_lastusedkickimagedir);
 }
 
 STR *iniGetLastUsedKickImageDir(ini *initdata) {
@@ -129,6 +133,7 @@ STR *iniGetLastUsedKickImageDir(ini *initdata) {
 
 void iniSetLastUsedKeyDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkeydir, directory, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(initdata->m_lastusedkeydir);
 }
 
 STR *iniGetLastUsedKeyDir(ini *initdata) {

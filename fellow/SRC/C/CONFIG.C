@@ -63,9 +63,13 @@ STR *cfgGetDescription(cfg *config) {
 /*============================================================================*/
 
 void cfgSetDiskImage(cfg *config, ULO index, STR *diskimage) {
-  if (index < 4) strncpy(&(config->m_diskimage[index][0]),
+  if (index < 4)
+  {
+    strncpy(&(config->m_diskimage[index][0]),
 			 diskimage,
 			 CFG_FILENAME_LENGTH);
+    fsNavigMakeRelativePath(&config->m_diskimage[index][0]);
+  }
 }
 
 STR *cfgGetDiskImage(cfg *config, ULO index) {
@@ -101,6 +105,7 @@ BOOLE cfgGetDiskFast(cfg *config) {
   
 void cfgSetLastUsedDiskDir(cfg *config, STR *directory) {
   strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(config->m_lastuseddiskdir);
 }
 
 STR *cfgGetLastUsedDiskDir(cfg *config) {
@@ -145,6 +150,7 @@ ULO cfgGetBogoSize(cfg *config) {
 
 void cfgSetKickImage(cfg *config, STR *kickimage) {
   strncpy(config->m_kickimage, kickimage, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(config->m_kickimage);
 }
 
 STR *cfgGetKickImage(cfg *config) {
@@ -153,6 +159,7 @@ STR *cfgGetKickImage(cfg *config) {
 
 void cfgSetKey(cfg *config, STR *key) {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
+  fsNavigMakeRelativePath(config->m_key);
 }
 
 STR *cfgGetKey(cfg *config) {
@@ -401,6 +408,7 @@ ULO cfgGetHardfileCount(cfg *config) {
 
 void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile) {
   cfg_hardfile *hf = (cfg_hardfile *) malloc(sizeof(cfg_hardfile));
+  fsNavigMakeRelativePath(hardfile->filename);
   *hf = *hardfile;
   config->m_hardfiles = listAddLast(config->m_hardfiles, listNew(hf));
 }
@@ -429,6 +437,7 @@ void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile) {
 void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index) {
   felist *node = listIndex(config->m_hardfiles, index);
   cfg_hardfile *hf = (cfg_hardfile *) listNode(node);
+  fsNavigMakeRelativePath(hardfile->filename);
   *hf = *hardfile;
 }
 
@@ -447,6 +456,7 @@ ULO cfgGetFilesystemCount(cfg *config) {
 
 void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem) {
   cfg_filesys *fsys = (cfg_filesys *) malloc(sizeof(cfg_filesys));
+  fsNavigMakeRelativePath(filesystem->rootpath);
   *fsys = *filesystem;
   config->m_filesystems = listAddLast(config->m_filesystems, listNew(fsys));
 }
@@ -471,6 +481,7 @@ void cfgSetFilesystemUnitDefaults(cfg_filesys *unit) {
 void cfgFilesystemChange(cfg *config, cfg_filesys *unit, ULO index) {
   felist *node = listIndex(config->m_filesystems, index);
   cfg_filesys *fsys = (cfg_filesys *) listNode(node);
+  fsNavigMakeRelativePath(unit->rootpath);
   *fsys = *unit;
 }
 
