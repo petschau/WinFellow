@@ -73,8 +73,8 @@ ULO dis05(ULO reg, ULO pcp, STR *st, ULO *pos) {
 
 ULO dis06Brief(ULO reg, ULO pcp, STR *st, ULO *pos, BOOLE pcadr, ULO ext) {
   ULO scale[4] = {1, 2, 4, 8};
-  char indexregtype = (ext & 0x8000) ? 'A' : 'D';
-  char indexsize = (ext & 0x0800) ? 'L' : 'W';
+  char indexregtype = (char) ((ext & 0x8000) ? 'A' : 'D');
+  char indexsize = (char) ((ext & 0x0800) ? 'L' : 'W');
   ULO indexreg = (ext & 0x7000)>>12;
   ULO offset = ext & 0xff;
   ULO scalefactor = (ext & 0x0600)>>9;
@@ -119,8 +119,8 @@ ULO dis06od(ULO pcp, STR *st, ULO *pos, BOOLE wordsize, STR *dispstr) {
 
 ULO dis06Extended(ULO reg, ULO pcp, STR *st, ULO *pos, BOOLE pcadr, ULO ext) {
   ULO scale[4] = {1, 2, 4, 8};
-  char indexregtype = (ext & 0x8000) ? 'A' : 'D';
-  char indexsize = (ext & 0x0800) ? 'L' : 'W';
+  char indexregtype = (char) ((ext & 0x8000) ? 'A' : 'D');
+  char indexsize = (char)((ext & 0x0800) ? 'L' : 'W');
   ULO indexreg = (ext & 0x7000)>>12;
   ULO scalefactor = (ext & 0x0600)>>9;
   ULO iis = ext & 0x0007;
@@ -291,7 +291,7 @@ ULO disl74(ULO reg, ULO pcp, STR *st, ULO *pos) {
 }
 
 void disRegCat(BOOLE datareg, ULO reg, STR *st) {
-  st[0] = (datareg) ? 'D' : 'A';
+  st[0] = (STR) ((datareg) ? 'D' : 'A');
   st[1] = (STR) (reg + 0x30);
   st[2] = '\0';
 }
@@ -334,6 +334,6 @@ ULO disAdrMode(ULO reg, ULO pcp, STR *st, ULO size, ULO mode, ULO *pos) {
 }
 
 ULO disOpcode(ULO disasm_pc, STR *s) {
-  UWO opcode = fetw(disasm_pc);
+  UWO opcode = (UWO) fetw(disasm_pc);
   return cpu_dis_tab[opcode](disasm_pc, opcode, s);
 }
