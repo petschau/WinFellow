@@ -5,7 +5,6 @@
 ; Includes data declared in the C bus module
 ;==============================================================================
 
-CDATAEXTERN debugging
 CDATAEXTERN curcycle
 CDATAEXTERN bus_cycle_to_ypos
 CDATAEXTERN bus_cycle_to_xpos

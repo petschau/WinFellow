@@ -8,7 +8,6 @@
 /*============================================================================*/
 
 
-//#include <dos.h>
 #include "defs.h"
 #include "fellow.h"
 #include "keycodes.h"
@@ -32,7 +31,6 @@ ULO kbd_time_to_wait;
 /* Stuff that later goes other places                                        */
 /*===========================================================================*/
 
-ULO volatile f12pressed;
 UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 
 
@@ -49,38 +47,38 @@ void kbdEventEOFHandler(void) {
     switch (thisev) {
       case EVENT_INSERT_DF0:
 	insert_dfX[0] = 1;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_INSERT_DF1:
 	insert_dfX[1] = 1;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_INSERT_DF2:
 	insert_dfX[2] = 1;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_INSERT_DF3:
 	insert_dfX[3] = 1;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_EJECT_DF0:
 	insert_dfX[0] = 2;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_EJECT_DF1:
 	insert_dfX[1] = 2;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_EJECT_DF2:
 	insert_dfX[2] = 2;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_EJECT_DF3:
 	insert_dfX[3] = 2;
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_EXIT:
-	f12pressed = TRUE;
+	fellowRequestEmulationStop();
 	break;
       case EVENT_SCROLL_UP:
 	draw_view_scroll = 0x48;
@@ -214,6 +212,7 @@ void kbdEventEOLHandler(void) {
 			    (fire0_changed[i]) ? fire0[i] : gameport_fire0[i],
 			    (fire1_changed[i]) ? fire1[i] : gameport_fire1[i]);
 	}
+
 }
 
 
@@ -252,7 +251,6 @@ void kbdHardReset(void) {
   kbd_state.scancodes.buffer[0] = 0xfd; /* Start of keys pressed on reset */
   kbd_state.scancodes.buffer[1] = 0xfe; /* End of keys pressed during reset */
   kbd_time_to_wait = 10;
-  f12pressed = FALSE;
   kbdDrvHardReset();
 }
 
@@ -274,7 +272,6 @@ void kbdStartup(void) {
 void kbdShutdown(void) {
   kbdDrvShutdown();
 }
-
 
 
 

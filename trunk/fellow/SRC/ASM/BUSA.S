@@ -66,8 +66,6 @@ FDATASECTIONSTART
 %include "data/timer.inc"		
 %include "data/graph.inc"
 
-CDATAEXTERN f12pressed	
-
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
 
@@ -78,8 +76,6 @@ FCODESECTIONSTART
 
 global _busstart_
 _busstart_:	 ; Used to check code alignment
-
-extern _gfxDrvEndOfFrame
 
 %include "generic/sound.inc"
 %include "func/fmem.inc"
@@ -173,7 +169,7 @@ bus_loop_events:
 
 bus_loop_cpu_trace:
 
-		test	byte [debugging], 1
+		test	byte [fellow_request_emulation_stop_immediately], 1
 		jnz	bus_exit
 
 bus_cpu_trace_start:
@@ -221,7 +217,7 @@ bus_debug:	SETUP_EXCEPTION_HACK bus_debug_exception_ret, bus_debug_loop_events
 
 bus_debug_loop_cpu:
 
-		test	byte [debugging], 1
+		test	byte [fellow_request_emulation_stop_immediately], 1
 		jnz	near bus_exit
 bus_debug_start:
 
@@ -382,13 +378,6 @@ _endOfFrame_:	push	edx
 
 
 		;==============================================================
-		; Prepare emulation stop of f12 was pressed
-		;==============================================================
-
-		cmp	dword [f12pressed], 0
-		setne	byte [debugging]
-
-		;==============================================================
 		; Reset some aspects of the graphics emulation
 		;==============================================================
 
@@ -508,15 +497,6 @@ _endOfFrame_:	push	edx
 .l16:
 
 		;==============================================================
-		; Perform graphics driver end of frame
-		;==============================================================
-
-		pushad
-		call	_gfxDrvEndOfFrame
-		popad
-
-
-		;==============================================================
 		; Perform graphics end of frame
 		;==============================================================
 
@@ -534,14 +514,14 @@ _endOfFrame_:	push	edx
 		; Bail out of emulation if we're asked to
 		;==============================================================
 
-		test	dword [debugging], 1
+		test	dword [fellow_request_emulation_stop], 1
+		jnz	.l18
+		test	dword [fellow_request_emulation_stop_immediately], 1
 		jz	.l17
-		mov	esp, dword [exceptionstack]
+.l18:		mov	esp, dword [exceptionstack]
 		jmp	bus_exit
 
-.l17:
-
-		pop	ebx
+.l17:		pop	ebx
 		pop	edx
 		ret
 
