@@ -30,7 +30,6 @@ FDATASECTIONSTART
 
 %include "data/fmem.inc"
 %include "data/floppy.inc"
-%include "data/sound.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
 	
@@ -44,7 +43,6 @@ _memorystart_:			; Used to check code alignment
 
 
 %include "func/cpu.inc"
-%include "func/sound.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
 %include "func/floppy.inc"
