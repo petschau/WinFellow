@@ -21,6 +21,14 @@
 #define graphDecode2Hi320 ASMRENAME(graphDecode2Hi320)
 #define graphDecode3Hi320 ASMRENAME(graphDecode3Hi320)
 #define graphDecode4Hi320 ASMRENAME(graphDecode4Hi320)
+
+#define graphDecode0Hi ASMRENAME(graphDecode0Hi)
+#define graphDecode1Hi ASMRENAME(graphDecode1Hi)
+#define graphDecode2Hi ASMRENAME(graphDecode2Hi)
+#define graphDecode3Hi ASMRENAME(graphDecode3Hi)
+#define graphDecode4Hi ASMRENAME(graphDecode4Hi)
+
+
 #define graphDecode2HiDual320 ASMRENAME(graphDecode2HiDual320)
 #define graphDecode3HiDual320 ASMRENAME(graphDecode3HiDual320)
 #define graphDecode4HiDual320 ASMRENAME(graphDecode4HiDual320)
@@ -72,6 +80,13 @@ extern void graphDecode1Hi320(void);
 extern void graphDecode2Hi320(void);
 extern void graphDecode3Hi320(void);
 extern void graphDecode4Hi320(void);
+
+extern void graphDecode0Hi(void);
+extern void graphDecode1Hi(void);
+extern void graphDecode2Hi(void);
+extern void graphDecode3Hi(void);
+extern void graphDecode4Hi(void);
+
 extern void graphDecode2HiDual320(void);
 extern void graphDecode3HiDual320(void);
 extern void graphDecode4HiDual320(void);
@@ -138,6 +153,17 @@ void graphDecode3Dual_C(void);
 void graphDecode4Dual_C(void);
 void graphDecode5Dual_C(void);
 void graphDecode6Dual_C(void);
+void graphDecodeHi0_C(void);
+void graphDecodeHi1_C(void);
+void graphDecodeHi2_C(void);
+void graphDecodeHi3_C(void);
+void graphDecodeHi4_C(void);
+void graphDecodeHi5_C(void);
+void graphDecodeHi6_C(void);
+void graphDecodeHi2Dual_C(void);
+void graphDecodeHi3Dual_C(void);
+void graphDecodeHi4Dual_C(void);
+
 
 ULO rdmaconr_C(ULO address);
 ULO rvposr_C(ULO address);
