@@ -11,7 +11,6 @@ CFUNCEXTERN cpu_pc_in_unmapped_mem
 
 CFUNCEXTERN i320_C
 
-CFUNCEXTERN irqLog
 
 ;==============================================================================
 ; Includes functions declared in the asm CPU module
