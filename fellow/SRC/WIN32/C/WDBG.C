@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/10:                                                                */
+/* - the mod-ripper now works                                                 */
 /* 2000/12/09:                                                                */
 /* - added the clipping variables from graph.c                                */
 /* - floppy, copper, events, screen and sprite state added                    */
@@ -26,7 +28,6 @@
 /* - how to use that PropSheet_CancelToClose(hwndDlg) ?                       */
 /* - why isn't the bg-color updated on initialization of the window ?         */
 /* - verify sound, graph, sprite, copper                                      */
-/* - check the module ripper                                                  */
 /*============================================================================*/
 
 #include "defs.h"
@@ -1037,7 +1038,7 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 static int mods_found = 0;	// no. of mods found
 
 /* Saves mem from address start to address end in file *name */
-static BOOLE save_mem(char *name, ULO start, ULO end)
+static BOOLE wdbgSaveMem(char *name, ULO start, ULO end)
 {
   ULO i;
   FILE *modfile;
@@ -1050,7 +1051,7 @@ static BOOLE save_mem(char *name, ULO start, ULO end)
   return TRUE;
 }
 
-static void scan(char *searchstring, int channels, HWND hWnd)
+static void wdbgScanModules(char *searchstring, int channels, HWND hWnd)
 {
   ULO i, j;
   char file_name[38];		// File name for the module-file
@@ -1121,7 +1122,7 @@ static void scan(char *searchstring, int channels, HWND hWnd)
 	result = MessageBox(hWnd, message, "Module found.", MB_YESNO);
 
 	if (result == IDYES) {
-	  save_mem(file_name, start, end);
+	  wdbgSaveMem(file_name, start, end);
 	}
       }
     }
@@ -1129,19 +1130,26 @@ static void scan(char *searchstring, int channels, HWND hWnd)
 }
 
 /*============================================================================*/
-/* Updates the MOD-Ripper state                                               */
+/* Invokes the mod-ripping                                                    */
 /*============================================================================*/
 
 void wdbgModrip(HWND hwndDlg)
 {
-  scan("M.K.", 4, hwndDlg);
-  scan("4CHN", 4, hwndDlg);
-  scan("6CHN", 6, hwndDlg);
-  scan("8CHN", 8, hwndDlg);
-  scan("FLT4", 4, hwndDlg);
-  scan("FLT8", 8, hwndDlg);
+  HCURSOR BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
+  if(BusyCursor) SetCursor(BusyCursor);
+
+  wdbgScanModules("M.K.", 4, hwndDlg);
+  wdbgScanModules("4CHN", 4, hwndDlg);
+  wdbgScanModules("6CHN", 6, hwndDlg);
+  wdbgScanModules("8CHN", 8, hwndDlg);
+  wdbgScanModules("FLT4", 4, hwndDlg);
+  wdbgScanModules("FLT8", 8, hwndDlg);
+
+  BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+  if(BusyCursor) SetCursor(BusyCursor);
 
   MessageBox(hwndDlg, "Module Ripper finished.", "Finished.", MB_OK);
+
 }
 
 /*============================================================================*/
