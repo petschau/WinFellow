@@ -3,7 +3,7 @@
 /* Configuration file handling                                                */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
-/* Author: Wytze Hoogkamp (worfje@gmx.net)                                    */
+/* Author: Worfje (worfje@gmx.net)                                    */
 /*                                                                            */
 /* Based on an Amiga emulator configuration format specified by Brian King    */
 /*                                                                            */
@@ -1226,7 +1226,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 	  cfgGetBOOLEToString(cfgGetMeasureSpeed(config)));
   fprintf(cfgfile, "win32.map_drives=%s\n", 
 	  cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));
-  for (i = 0; i < cfgGetHardfileCount(config); i++) {
+     for (i = 0; i < cfgGetHardfileCount(config); i++) {
     cfg_hardfile hf = cfgGetHardfile(config, i);
     fprintf(cfgfile, "hardfile=%s,%d,%d,%d,%d,%s\n",
 	    (hf.readonly) ? "ro" : "rw",
@@ -1277,6 +1277,9 @@ BOOLE cfgLoadFromFilename(cfg *config, STR *filename) {
   FILE *cfgfile;
   BOOLE result;
   
+  // remove excisting hardfiles
+  cfgHardfilesFree(config);
+  cfgFilesystemsFree(config);
   cfgfile = fopen(filename, "r");
   result = (cfgfile != NULL);
   if (result) {
