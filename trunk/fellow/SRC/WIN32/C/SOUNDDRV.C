@@ -53,6 +53,8 @@ typedef struct {
   HANDLE thread;
   DWORD thread_id;
   BOOLE notification_supported;
+  ULO mmtimer;
+  ULO mmresolution;
   DWORD lastreadpos;
 } sound_drv_dsound_device;
 
@@ -88,6 +90,18 @@ STR *soundDrvDSoundErrorString(HRESULT hResult) {
     default:				return "Unknown DirectSound Error";
   }
   return "Unknown DirectSound Error";
+}
+
+/* Forward declaration */
+void soundDrvPollBufferPosition(void);
+
+/*==========================================================================*/
+/* Multimedia Callback fnc. Used when DirectSound notification unsupported  */
+/*==========================================================================*/
+
+void CALLBACK timercb(UINT uID, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+{
+  soundDrvPollBufferPosition();
 }
 
 
@@ -415,6 +429,16 @@ void soundDrvDSoundSecondaryBufferRelease(sound_drv_dsound_device *dsound_device
     IDirectSoundNotify_Release(dsound_device->lpDSN);
     dsound_device->lpDSN = NULL;
   }
+  if(!dsound_device->notification_supported)
+  {
+    MMRESULT mmres;
+    mmres = timeKillEvent(dsound_device->mmtimer);
+  
+	mmres = timeEndPeriod(dsound_device->mmresolution);
+	if(mmres != TIMERR_NOERROR) {
+      fellowAddLog("soundDrvDSoundSecondaryBufferRelease(): timeEndPeriod() failed");
+	}
+  }
 }
 
 
@@ -424,6 +448,7 @@ void soundDrvDSoundSecondaryBufferRelease(sound_drv_dsound_device *dsound_device
 /*===========================================================================*/
 
 BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_device) {
+  DSBCAPS dsbcaps;
   DSBUFFERDESC dsbdesc;
   WAVEFORMATEX wfm;
   HRESULT res;
@@ -446,13 +471,6 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
-/*
-  {
-    char s[80];
-    sprintf(s, "Buffer is %d bytes long\n", dsbdesc.dwBufferBytes);
-    fellowAddLog(s);
-  }
-*/
   res = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
                                        &dsbdesc,
 				       &dsound_device->lpDSBS,
@@ -462,38 +480,87 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
     return FALSE;
   }
 
-  /* Get notification interface */
-  
-  res = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
-                                          &IID_IDirectSoundNotify,
-					  (LPVOID * FAR) &dsound_device->lpDSN);
-  dsound_device->notification_supported = (res == DS_OK);
-  if (!dsound_device->notification_supported) {
-    soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): QueryInterface(IID_IDirectSoundNotify), ", res);
-/*    soundDrvDSoundSecondaryBufferRelease(dsound_device);
-    return FALSE;*/
-    /* Notification is not supported, probably running on older W95 or NT 4 */
-    
-    return TRUE;
+  /* Get buffer caps */
+  memset(&dsbcaps, 0, sizeof(dsbcaps));
+  dsbcaps.dwSize = sizeof(dsbcaps);
+  res = IDirectSoundBuffer_GetCaps(dsound_device->lpDSBS, &dsbcaps);
+  if (res != DS_OK) {
+    soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: GetCaps(), ", res);
+    return FALSE;
   }
 
-  /* Attach notification objects to buffer */
-  
-  //fellowAddLog("Place 4\n");
-  rgdscbpn[0].dwOffset = dsound_device->mode_current->buffer_block_align*
-                         (dsound_device->mode_current->buffer_sample_count - 1);
-  rgdscbpn[0].hEventNotify = dsound_device->notifications[0];
-  rgdscbpn[1].dwOffset = dsound_device->mode_current->buffer_block_align*
-                         (dsound_device->mode_current->buffer_sample_count*2 - 1);
-  rgdscbpn[1].hEventNotify = dsound_device->notifications[1];
+  {
+	  char s[80];
+	  sprintf(s, "DirectSoundBuffer caps: 0x%x\n", dsbcaps.dwFlags);
+	  fellowAddLog(s);
+  }
 
-  res = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN,
-                                                    2,
-						    rgdscbpn);
-  if (res != DS_OK) {
-    soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): SetNotificationPositions(), ", res);
-    soundDrvDSoundSecondaryBufferRelease(dsound_device);
-    return FALSE;
+  if(dsound_device->notification_supported = !!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY))
+  {
+    /* Notification supported */
+
+	/* Get notification interface */
+  
+    res = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
+                                          &IID_IDirectSoundNotify,
+										  (LPVOID * FAR) &dsound_device->lpDSN);
+    if (res != DS_OK) {
+      soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): QueryInterface(IID_IDirectSoundNotify), ", res);
+      soundDrvDSoundSecondaryBufferRelease(dsound_device);
+      return FALSE;
+	}
+
+    /* Attach notification objects to buffer */
+  
+    rgdscbpn[0].dwOffset = dsound_device->mode_current->buffer_block_align*
+                           (dsound_device->mode_current->buffer_sample_count - 1);
+    rgdscbpn[0].hEventNotify = dsound_device->notifications[0];
+    rgdscbpn[1].dwOffset = dsound_device->mode_current->buffer_block_align*
+                           (dsound_device->mode_current->buffer_sample_count*2 - 1);
+    rgdscbpn[1].hEventNotify = dsound_device->notifications[1];
+
+    res = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN,
+                                                      2,
+												    rgdscbpn);
+    if (res != DS_OK) {
+      soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): SetNotificationPositions(), ", res);
+      soundDrvDSoundSecondaryBufferRelease(dsound_device);
+      return FALSE;
+	}
+  }
+  else {
+    /* Notification not supported */
+
+	char s[80];
+	TIMECAPS timecaps;
+	MMRESULT mmres;
+
+	mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+	if(mmres != TIMERR_NOERROR) {
+      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeGetDevCaps() failed\n");
+      soundDrvDSoundSecondaryBufferRelease(dsound_device);
+	  return FALSE;
+	}
+
+	sprintf(s, "timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+	fellowAddLog(s);
+
+	dsound_device->mmresolution = timecaps.wPeriodMin;
+
+	mmres = timeBeginPeriod(dsound_device->mmresolution);
+	if(mmres != TIMERR_NOERROR) {
+      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeBeginPeriod() failed\n");
+      soundDrvDSoundSecondaryBufferRelease(dsound_device);
+	  return FALSE;
+	}
+
+	mmres = timeSetEvent(1, 0, timercb, 0, TIME_PERIODIC);
+	if(mmres == 0) {
+      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeSetEvent() failed\n");
+      soundDrvDSoundSecondaryBufferRelease(dsound_device);
+	  return FALSE;
+	}
+	dsound_device->mmtimer = mmres;
   }
 
   /* When we get here, all is well */
