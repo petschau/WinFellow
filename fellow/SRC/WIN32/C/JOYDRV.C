@@ -6,6 +6,26 @@
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
 
+/* ---------------- KNOWN BUGS/FIXLIST ----------------- 
+- autofire support
+- additional button support for other emulator functions
+*/
+
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 05, 2000
+- tried to use the CoCreateInstance also for Dx3
+- added some heavy output to the log with Dx3 in debug mode
+
+Monday, August 29, 2000
+- added dxver.h include, dx version is decided with USE_DX3 or USE_DX5 macro
+
+Monday, July 10, 2000
+- conditional compile for DX5 or DX3
+- use of the couple CoCreateInstance and Initialize instead of DirectInputCreateEx and CreateDeviceEx with DX5
+- added CoInitialize in joyDrvStartup and CoUninitialize in joyDrvShutdown with DX5
+- added some more error explanation in Debug compile into joyDrvDInputErrorString when not a DxError encountered (it leaks some memory)
+*/
+
 #include "defs.h"
 #include <windows.h>
 #include "gameport.h"
@@ -13,8 +33,7 @@
 #include "joydrv.h"
 #include "windrv.h"
 
-#define DIRECTINPUT_VERSION 0x0500
-#include <dinput.h>
+#include "dxver.h"
 
 
 /*===========================================================================*/
@@ -22,9 +41,20 @@
 /*===========================================================================*/
 
 BOOLE			joy_drv_failed;
-IDirectInput		*joy_drv_lpDI;
+
+#if(DIRECTINPUT_VERSION >= 0x0500)
+
+IDirectInput2		*joy_drv_lpDI;
 IDirectInputDevice2	*joy_drv_lpDID;
-BOOLE                   joy_drv_active;
+
+#else
+
+IDirectInput		*joy_drv_lpDI;
+IDirectInputDevice	*joy_drv_lpDID;
+
+#endif
+
+BOOLE			joy_drv_active;
 BOOLE			joy_drv_focus;
 BOOLE			joy_drv_in_use;
 
@@ -71,6 +101,9 @@ BOOLE			joy_drv_in_use;
 /*==========================================================================*/
 
 STR *joyDrvDInputErrorString(HRESULT hResult) {
+#ifdef _DEBUG
+  STR *UnErr = NULL;
+#endif
   switch (hResult) {
     case DI_OK:				return "The operation completed successfully.";
     case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
@@ -94,7 +127,13 @@ STR *joyDrvDInputErrorString(HRESULT hResult) {
     case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
     case E_PENDING:			return "Data is not yet available.";
   }
+#ifdef _DEBUG
+  UnErr = (STR*)malloc( 255 * sizeof( STR ));
+  sprintf( UnErr, "Not a DirectInput Error [%08x]", hResult );
+  return UnErr;
+#else
   return "Not a DirectInput Error";
+#endif
 }
 
 
@@ -126,7 +165,9 @@ void joyDrvDInputSetCooperativeLevel(void) {
 		((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
 	if (res != DI_OK)
 		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): ", res );
-	
+
+#ifdef USE_DX5 // test 001 - 20000905
+
 #define INITDIPROP( diprp, obj, how ) \
 	{ diprp.diph.dwSize = sizeof( diprp ); \
 	diprp.diph.dwHeaderSize = sizeof( diprp.diph ); \
@@ -164,6 +205,8 @@ void joyDrvDInputSetCooperativeLevel(void) {
 		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE Y : ", res );
 
 #undef INITDIPROP
+
+#endif // test 001 - 20000905
 }
 
 
@@ -207,16 +250,89 @@ void joyDrvDInputInitialize(void) {
   fellowAddLog("joyDrvDInputInitialize()\n");
 
   if (!joy_drv_lpDI) {
+#if(DIRECTINPUT_VERSION >= 0x0500)
+    
+	if ((res = CoCreateInstance(&CLSID_DirectInput,
+				 NULL,
+				 CLSCTX_INPROC_SERVER,
+				 &IID_IDirectInput2,
+				 &joy_drv_lpDI)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): InputCoCreateInstance() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+	if ((res = IDirectInput2_Initialize(joy_drv_lpDI,
+				 win_drv_hInstance,
+				 DIRECTINPUT_VERSION)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): InputInitialize() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+	
+#else
+	
+	// test 001 - 20000905
+
+	/*
     if ((res = DirectInputCreate(win_drv_hInstance,
 				 DIRECTINPUT_VERSION,
 				 &joy_drv_lpDI,
 				 NULL )) != DI_OK) {
       joyDrvDInputFailure("joyDrvDInputInitialize(): DirectInputCreate() ", res );
+      joy_drv_failed = TRUE;
       return;
     }
+	*/
+
+	if ((res = CoCreateInstance(&CLSID_DirectInput,
+				 NULL,
+				 CLSCTX_INPROC_SERVER,
+				 &IID_IDirectInput,
+				 &joy_drv_lpDI)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): InputCoCreateInstance() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+	if ((res = IDirectInput_Initialize(joy_drv_lpDI,
+				 win_drv_hInstance,
+				 DIRECTINPUT_VERSION)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): InputInitialize() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+#endif
   }
 
   if (!joy_drv_lpDID) {
+
+#if(DIRECTINPUT_VERSION >= 0x0500)
+
+	if ((res = CoCreateInstance(&CLSID_DirectInputDevice,
+				 NULL,
+				 CLSCTX_INPROC_SERVER,
+				 &IID_IDirectInputDevice2,
+				 &joy_drv_lpDID)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+	if ((res = IDirectInputDevice2_Initialize(joy_drv_lpDID,
+				 win_drv_hInstance,
+				 DIRECTINPUT_VERSION,
+				 &GUID_Joystick )) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+#else
+
+	// test 001 - 20000905
+
+	/*
     res = IDirectInput_CreateDevice(joy_drv_lpDI,
 				    &GUID_Joystick,
 				    &joy_drv_lpDID,
@@ -226,6 +342,27 @@ void joyDrvDInputInitialize(void) {
       joy_drv_failed = TRUE;
       return;
     }
+	*/
+	if ((res = CoCreateInstance(&CLSID_DirectInputDevice,
+				 NULL,
+				 CLSCTX_INPROC_SERVER,
+				 &IID_IDirectInputDevice,
+				 &joy_drv_lpDID)) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+	if ((res = IDirectInputDevice_Initialize(joy_drv_lpDID,
+				 win_drv_hInstance,
+				 DIRECTINPUT_VERSION,
+				 &GUID_Joystick )) != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
+
+#endif
   }
 
   res = IDirectInputDevice_SetDataFormat( joy_drv_lpDID, &c_dfDIJoystick );
@@ -243,17 +380,17 @@ void joyDrvDInputInitialize(void) {
 /*===========================================================================*/
 
 void joyDrvDInputRelease(void) {
-	fellowAddLog("joyDrvDInputRelease()\n");
-	if (joy_drv_lpDID) {
-		joyDrvDInputUnacquire();
-		IDirectInputDevice_Release( joy_drv_lpDID );
-		joy_drv_lpDID = NULL;
-	}
-	
-	if (joy_drv_lpDI) {
-		IDirectInput_Release( joy_drv_lpDI );
-		joy_drv_lpDI = NULL;
-	}
+  fellowAddLog("joyDrvDInputRelease()\n");
+  if (joy_drv_lpDID) {
+	joyDrvDInputUnacquire();
+	IDirectInputDevice_Release( joy_drv_lpDID );
+	joy_drv_lpDID = NULL;
+  }
+  
+  if (joy_drv_lpDI) {
+	IDirectInput_Release( joy_drv_lpDI );
+	joy_drv_lpDI = NULL;
+  }
 }
 
  	
@@ -262,17 +399,17 @@ void joyDrvDInputRelease(void) {
 /*===========================================================================*/
 
 void joyDrvStateHasChanged(BOOLE active) {
-	if( joy_drv_failed )
-		return;
-	
-	joy_drv_active = active;
-	if (joy_drv_active && joy_drv_focus) {
-		joy_drv_in_use = TRUE;
-	}
-	else {
-		joy_drv_in_use = FALSE;
-	}
-	joyDrvDInputAcquire();
+  if( joy_drv_failed )
+	return;
+  
+  joy_drv_active = active;
+  if (joy_drv_active && joy_drv_focus) {
+	joy_drv_in_use = TRUE;
+  }
+  else {
+	joy_drv_in_use = FALSE;
+  }
+  joyDrvDInputAcquire();
 }
 
 
@@ -291,84 +428,100 @@ void joyDrvToggleFocus() {
 /*===========================================================================*/
 
 void joyDrvMovementHandler() {
-	int i;
+  int i;
+  
+  if (!joy_drv_in_use)
+	return;
+
+  if (((gameport_input[0] == GP_ANALOG0) ||
+	(gameport_input[1] == GP_ANALOG0))) {
+	DIJOYSTATE dims;
+	HRESULT res;
+	BOOLE Button1 = FALSE;
+	BOOLE Button2 = FALSE;
+	BOOLE Button3 = FALSE;
+	BOOLE Left;
+	BOOLE Right;
+	BOOLE Up;
+	BOOLE Down;
+#ifdef USE_DX3 // test 001 - 20000905
+	char szMsg[255];
+#endif
 	
-	if (!joy_drv_in_use)
-		return;
-    if (((gameport_input[0] == GP_ANALOG0) ||
-		(gameport_input[1] == GP_ANALOG0))) {
-		DIJOYSTATE dims;
-		HRESULT res;
-		BOOLE Button1 = FALSE;
-		BOOLE Button2 = FALSE;
-		BOOLE Button3 = FALSE;
-		BOOLE Left;
-		BOOLE Right;
-		BOOLE Up;
-		BOOLE Down;
-		
-		Left = Right = Up = Down = FALSE;
-		
-		do {
-			res = IDirectInputDevice2_Poll(joy_drv_lpDID);
-			if(res != DI_OK)
-				joyDrvDInputFailure( "joyDrvMovementHandler(): Poll() ", res );
-
-			res = IDirectInputDevice_GetDeviceState(joy_drv_lpDID,
-				sizeof(DIJOYSTATE),
-				&dims);
-			if (res == DIERR_INPUTLOST) joyDrvDInputAcquire();
-		} while (res == DIERR_INPUTLOST);
-		
-		if (res != DI_OK) {
-			joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState() ", res );
-			return;
-		}
-		
-		if (dims.rgbButtons[0] & 0x80)
-			Button1 = TRUE;
-		
-		if (dims.rgbButtons[1] & 0x80)
-			Button2 = TRUE;
-
-		if( dims.lX != MEDX )
-		{
-			if( dims.lX > MEDX )
-				Right = TRUE;
-			else
-				Left = TRUE;
-		}
-		
-		if( dims.lY != MEDY )
-		{
-			if( dims.lY > MEDY )
-				Down = TRUE;
-			else
-				Up = TRUE;
-		}
-
-		for( i = 0; i < 2; i++ )
-			if(( gameport_input[i] == GP_ANALOG0 )
-				|| ( gameport_input[i] == GP_ANALOG1 ))
-			{
-				if( gameport_left[i] != Left ||
-					gameport_right[i] != Right ||
-					gameport_up[i] != Up ||
-					gameport_down[i] != Down ||
-					gameport_fire0[i] != Button1 ||
-					gameport_fire1[i] != Button2 )
-				{
-					gameportJoystickHandler( gameport_input[i]
-						, Left
-						, Up
-						, Right
-						, Down
-						, Button1
-						, Button2
-					);
-				}
-			}
+	Left = Right = Up = Down = FALSE;
+	
+	do {
+#if(DIRECTINPUT_VERSION >= 0x0500)
+	  res = IDirectInputDevice2_Poll(joy_drv_lpDID);
+	  if(res != DI_OK)
+		joyDrvDInputFailure( "joyDrvMovementHandler(): Poll() ", res );
+#endif
+	  
+	  res = IDirectInputDevice_GetDeviceState(joy_drv_lpDID,
+		sizeof(DIJOYSTATE),
+		&dims);
+	  if (res == DIERR_INPUTLOST) joyDrvDInputAcquire();
+	} while (res == DIERR_INPUTLOST);
+	
+	if (res != DI_OK) {
+	  joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState() ", res );
+	  return;
 	}
+
+#ifdef USE_DX3 // test 001 - 20000905
+	sprintf( szMsg, "%08x %08x %08x %08x\n"
+	  , dims.rgbButtons[0]
+	  , dims.rgbButtons[1]
+	  , dims.lX
+	  , dims.lY
+	);
+	fellowAddLog( szMsg );
+#endif
+
+	if (dims.rgbButtons[0] & 0x80)
+	  Button1 = TRUE;
+	
+	if (dims.rgbButtons[1] & 0x80)
+	  Button2 = TRUE;
+	
+	if( dims.lX != MEDX )
+	{
+	  if( dims.lX > MEDX )
+		Right = TRUE;
+	  else
+		Left = TRUE;
+	}
+	
+	if( dims.lY != MEDY )
+	{
+	  if( dims.lY > MEDY )
+		Down = TRUE;
+	  else
+		Up = TRUE;
+	}
+	
+	for( i = 0; i < 2; i++ )
+	  if(( gameport_input[i] == GP_ANALOG0 )
+		|| ( gameport_input[i] == GP_ANALOG1 ))
+	  {
+		if( gameport_left[i] != Left ||
+		  gameport_right[i] != Right ||
+		  gameport_up[i] != Up ||
+		  gameport_down[i] != Down ||
+		  gameport_fire0[i] != Button1 ||
+		  gameport_fire1[i] != Button2 )
+		{
+		  gameportJoystickHandler( gameport_input[i]
+			, Left
+			, Up
+			, Right
+			, Down
+			, Button1
+			, Button2
+			);
+		}
+	  }
+  }
 }
 
 
@@ -409,6 +562,9 @@ void joyDrvStartup(void) {
   joy_drv_in_use = FALSE;
   joy_drv_lpDI = NULL;
   joy_drv_lpDID = NULL;
+//#if(DIRECTINPUT_VERSION >= 0x0500) // test 001 - 20000905
+  CoInitialize( NULL );
+//#endif // test 001 - 20000905
 }
 
 
@@ -417,5 +573,8 @@ void joyDrvStartup(void) {
 /*===========================================================================*/
 
 void joyDrvShutdown(void) {
+//#if(DIRECTINPUT_VERSION >= 0x0500) // test 001 - 20000905
+  CoUninitialize();
+//#endif // test 001 - 20000905
 }
 
