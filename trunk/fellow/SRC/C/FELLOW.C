@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.19 2004-06-08 14:41:09 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.20 2004-06-12 15:39:19 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /*                                                                         */
@@ -209,6 +209,18 @@ void fellowAddTimelessLog(const char *format,...)
 		fellow_newlogline = FALSE;
     va_end (parms);
 }
+
+char *fellowGetVersionString(void)
+{
+    char *result;
+    
+    if(!(result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4)))
+        return NULL;
+
+    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+    return result;
+}
+
 
 /*============================================================================*/
 /* Runtime Error Check                                                        */

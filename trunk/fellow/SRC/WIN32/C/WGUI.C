@@ -2495,6 +2495,14 @@ BOOL CALLBACK wguiAboutDialogProc(HWND hwndDlg,
 			          LPARAM lParam) {
   switch (uMsg) {
     case WM_INITDIALOG:
+        {
+            char *versionstring = fellowGetVersionString();
+            if(versionstring)
+            {
+                ccwStaticSetText(hwndDlg, IDC_STATIC_ABOUT_VERSION, versionstring);
+                free(versionstring);
+            }
+        }
       return TRUE;
 	case WM_COMMAND:
       switch (LOWORD(wParam)) {
@@ -2536,6 +2544,14 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
   switch (uMsg) {
     case WM_INITDIALOG:
 	  SendMessage(hwndDlg, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
+      {
+          char *versionstring;
+          if(versionstring = fellowGetVersionString()) 
+          {
+              SetWindowText(hwndDlg, versionstring);
+              free(versionstring);
+          }
+      }
       return TRUE;
     case WM_COMMAND:
       if (wgui_action == WGUI_NO_ACTION)
