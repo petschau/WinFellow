@@ -31,7 +31,7 @@
   It can be imported into excel for better viewing
 */
 
-//#define DRAW_TSC_PROFILE
+#define DRAW_TSC_PROFILE
 
 #ifdef DRAW_TSC_PROFILE
 LLO dlsbg1x8_tmp = 0;
@@ -123,6 +123,26 @@ LLO dln2x16mmx_tmp = 0;
 LLO dln2x16mmx = 0;
 LON dln2x16mmx_times = 0;
 LON dln2x16mmx_pixels = 0;
+
+LLO dln1x32_tmp = 0;
+LLO dln1x32 = 0;
+LON dln1x32_times = 0;
+LON dln1x32_pixels = 0;
+
+LLO dln1x32mmx_tmp = 0;
+LLO dln1x32mmx = 0;
+LON dln1x32mmx_times = 0;
+LON dln1x32mmx_pixels = 0;
+
+LLO dln2x32_tmp = 0;
+LLO dln2x32 = 0;
+LON dln2x32_times = 0;
+LON dln2x32_pixels = 0;
+
+LLO dln2x32mmx_tmp = 0;
+LLO dln2x32mmx = 0;
+LON dln2x32mmx_times = 0;
+LON dln2x32mmx_pixels = 0;
 
 LLO dld1x8_tmp = 0;
 LLO dld1x8 = 0;
@@ -359,8 +379,8 @@ draw_line_func draw_line_lores_funcs[2][8] = {drawLineNormal1x8,
 					      drawLineNormal2x16mmx,
 					      drawLineNormal1x24,
 					      drawLineNormal2x24,
-					      drawLineNormal1x32,
-					      drawLineNormal2x32};
+					      drawLineNormal1x32mmx,
+					      drawLineNormal2x32mmx};
 
 draw_line_func draw_line_hires_funcs[2][8] = {drawLineNormal1x8,
 					      drawLineNormal1x8,
@@ -376,8 +396,8 @@ draw_line_func draw_line_hires_funcs[2][8] = {drawLineNormal1x8,
 					      drawLineNormal1x16mmx,
 					      drawLineNormal1x24,
 					      drawLineNormal1x24,
-					      drawLineNormal1x32,
-					      drawLineNormal1x32};
+					      drawLineNormal1x32mmx,
+					      drawLineNormal1x32mmx};
 
 draw_line_func draw_line_dual_lores_funcs[2][8] = {drawLineDual1x8,
 						   drawLineDual2x8,
@@ -430,6 +450,127 @@ draw_line_func draw_line_HAM_lores_funcs[2][8] = {drawLineHAM1x8,
 						  drawLineHAM1x32,
 						  drawLineHAM2x32};
 
+/*
+draw_line_func draw_line_BPL_manage_funcs[2][8] = {drawLineBPL1x8,
+				                   drawLineBPL2x8,
+					           drawLineBPL1x16,
+					           drawLineBPL2x16,
+						   drawLineBPL1x24,
+						   drawLineBPL2x24,
+						   drawLineBPL1x32,
+						   drawLineBPL2x32,
+						   drawLineBPL1x8mmx,
+				                   drawLineBPL2x8mmx,
+					           drawLineBPL1x16mmx,
+					           drawLineBPL2x16mmx,
+						   drawLineBPL1x24mmx,
+						   drawLineBPL2x24mmx,
+						   drawLineBPL1x32mmx,
+						   drawLineBPL2x32mmx};
+
+draw_line_func draw_line_BG_funcs[2][8] = {drawLineBG1x8,
+				           drawLineBG2x8,
+					   drawLineBG1x16,
+					   drawLineBG2x16,
+					   drawLineBG1x24,
+					   drawLineBG2x24,
+					   drawLineBG1x32,
+					   drawLineBG2x32,
+					   drawLineBG1x8,
+					   drawLineBG2x8,
+					   drawLineBG1x16,
+					   drawLineBG2x16,
+					   drawLineBG1x24,
+					   drawLineBG2x24,
+					   drawLineBG1x32,
+					   drawLineBG2x32};
+
+draw_line_func draw_line_lores_funcs[2][8] = {drawLineNormal1x8,
+					      drawLineNormal2x8,
+					      drawLineNormal1x16,
+					      drawLineNormal2x16,
+					      drawLineNormal1x24,
+					      drawLineNormal2x24,
+					      drawLineNormal1x32,
+					      drawLineNormal2x32,
+					      drawLineNormal1x8,
+					      drawLineNormal2x8,
+					      drawLineNormal1x16,
+					      drawLineNormal2x16,
+					      drawLineNormal1x24,
+					      drawLineNormal2x24,
+					      drawLineNormal1x32,
+					      drawLineNormal2x32};
+
+draw_line_func draw_line_hires_funcs[2][8] = {drawLineNormal1x8,
+					      drawLineNormal1x8,
+					      drawLineNormal1x16,
+					      drawLineNormal1x16,
+					      drawLineNormal1x24,
+					      drawLineNormal1x24,
+					      drawLineNormal1x32,
+					      drawLineNormal1x32,
+					      drawLineNormal1x8,
+					      drawLineNormal1x8,
+					      drawLineNormal1x16,
+					      drawLineNormal1x16,
+					      drawLineNormal1x24,
+					      drawLineNormal1x24,
+					      drawLineNormal1x32,
+					      drawLineNormal1x32};
+
+draw_line_func draw_line_dual_lores_funcs[2][8] = {drawLineDual1x8,
+						   drawLineDual2x8,
+						   drawLineDual1x16,
+						   drawLineDual2x16,
+						   drawLineDual1x24,
+						   drawLineDual2x24,
+						   drawLineDual1x32,
+						   drawLineDual2x32,
+						   drawLineDual1x8,
+						   drawLineDual2x8,
+						   drawLineDual1x16,
+						   drawLineDual2x16,
+						   drawLineDual1x24,
+						   drawLineDual2x24,
+						   drawLineDual1x32,
+						   drawLineDual2x32};
+
+draw_line_func draw_line_dual_hires_funcs[2][8] = {drawLineDual1x8,
+						   drawLineDual1x8,
+						   drawLineDual1x16,
+						   drawLineDual1x16,
+						   drawLineDual1x24,
+						   drawLineDual1x24,
+						   drawLineDual1x32,
+						   drawLineDual1x32,
+						   drawLineDual1x8,
+						   drawLineDual1x8,
+						   drawLineDual1x16,
+						   drawLineDual1x16,
+						   drawLineDual1x24,
+						   drawLineDual1x24,
+						   drawLineDual1x32,
+						   drawLineDual1x32};
+
+draw_line_func draw_line_HAM_lores_funcs[2][8] = {drawLineHAM1x8,
+					          drawLineHAM2x8,
+						  drawLineHAM1x16,
+						  drawLineHAM2x16,
+						  drawLineHAM1x24,
+						  drawLineHAM2x24,
+						  drawLineHAM1x32,
+						  drawLineHAM2x32,
+						  drawLineHAM1x8,
+						  drawLineHAM2x8,
+						  drawLineHAM1x16,
+						  drawLineHAM2x16,
+						  drawLineHAM1x24,
+						  drawLineHAM2x24,
+						  drawLineHAM1x32,
+						  drawLineHAM2x32};
+
+*/
 
 /*============================================================================*/
 /* Framebuffer information                                                    */
@@ -886,6 +1027,7 @@ void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers) {
 BOOLE drawGetAllowMultipleBuffers(void) {
   return draw_allow_multiple_buffers;
 }
+
 
 
 /*============================================================================*/
@@ -1397,6 +1539,10 @@ void drawShutdown(void) {
   fprintf(F, "DrawBGLine2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x32mmx, dlsbg2x32mmx_times, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_times), dlsbg2x32mmx_pixels, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx_pixels / dlsbg2x32mmx_times), (dlsbg2x32mmx_pixels == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_pixels));
   fprintf(F, "DrawBPLNormal2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x16, dln2x16_times, (dln2x16_times == 0) ? 0 : (dln2x16 / dln2x16_times), dln2x16_pixels, (dln2x16_times == 0) ? 0 : (dln2x16_pixels / dln2x16_times), (dln2x16_pixels == 0) ? 0 : (dln2x16 / dln2x16_pixels));
   fprintf(F, "DrawBPLNormal2x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x16mmx, dln2x16mmx_times, (dln2x16mmx_times == 0) ? 0 : (dln2x16mmx / dln2x16mmx_times), dln2x16mmx_pixels, (dln2x16mmx_times == 0) ? 0 : (dln2x16mmx_pixels / dln2x16mmx_times), (dln2x16mmx_pixels == 0) ? 0 : (dln2x16mmx / dln2x16mmx_pixels));
+  fprintf(F, "DrawBPLNormal1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x32, dln1x32_times, (dln1x32_times == 0) ? 0 : (dln1x32 / dln1x32_times), dln1x32_pixels, (dln1x32_times == 0) ? 0 : (dln1x32_pixels / dln1x32_times), (dln1x32_pixels == 0) ? 0 : (dln1x32 / dln1x32_pixels));
+  fprintf(F, "DrawBPLNormal1x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x32mmx, dln1x32mmx_times, (dln1x32mmx_times == 0) ? 0 : (dln1x32mmx / dln1x32mmx_times), dln1x32mmx_pixels, (dln1x32mmx_times == 0) ? 0 : (dln1x32mmx_pixels / dln1x32mmx_times), (dln1x32mmx_pixels == 0) ? 0 : (dln1x32mmx / dln1x32mmx_pixels));
+  fprintf(F, "DrawBPLNormal2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x32, dln2x32_times, (dln2x32_times == 0) ? 0 : (dln2x32 / dln2x32_times), dln2x32_pixels, (dln2x32_times == 0) ? 0 : (dln2x32_pixels / dln2x32_times), (dln2x32_pixels == 0) ? 0 : (dln2x32 / dln2x32_pixels));
+  fprintf(F, "DrawBPLNormal2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x32mmx, dln2x32mmx_times, (dln2x32mmx_times == 0) ? 0 : (dln2x32mmx / dln2x32mmx_times), dln2x32mmx_pixels, (dln2x32mmx_times == 0) ? 0 : (dln2x32mmx_pixels / dln2x32mmx_times), (dln2x32mmx_pixels == 0) ? 0 : (dln2x32mmx / dln2x32mmx_pixels));
   fprintf(F, "DrawBPLDual1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x8, dld1x8_times, (dld1x8_times == 0) ? 0 : (dld1x8 / dld1x8_times), dld1x8_pixels, (dld1x8_times == 0) ? 0 : (dld1x8_pixels / dld1x8_times), (dld1x8_pixels == 0) ? 0 : (dld1x8 / dld1x8_pixels));
   fprintf(F, "DrawBPLDual1x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x8mmx, dld1x8mmx_times, (dld1x8mmx_times == 0) ? 0 : (dld1x8mmx / dld1x8mmx_times), dld1x8mmx_pixels, (dld1x8mmx_times == 0) ? 0 : (dld1x8mmx_pixels / dld1x8mmx_times), (dld1x8mmx_pixels == 0) ? 0 : (dld1x8mmx / dld1x8mmx_pixels));
   fprintf(F, "DrawBPLDual2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x8, dld2x8_times, (dld2x8_times == 0) ? 0 : (dld2x8 / dld2x8_times), dld2x8_pixels, (dld2x8_times == 0) ? 0 : (dld2x8_pixels / dld2x8_times), (dld2x8_pixels == 0) ? 0 : (dld2x8 / dld2x8_pixels));
