@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.6 2004-06-03 10:13:51 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.7 2004-06-03 10:43:05 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -40,7 +40,8 @@
 
 #define TRACECAPS 1
 
-static int    capsFlags = DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD;
+/* static int    capsFlags = DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD; */
+static int    capsFlags = DI_LOCK_INDEX | DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD;
 static BOOLE  capsDriveIsLocked [4]= { FALSE, FALSE, FALSE, FALSE };
 static SDWORD capsDriveContainer[4]= { -1,    -1,    -1,    -1    };
 
