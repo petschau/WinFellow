@@ -31,7 +31,6 @@ FDATASECTIONSTART
 %include "data/fmem.inc"
 %include "data/floppy.inc"
 %include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
 	
@@ -46,7 +45,6 @@ _memorystart_:			; Used to check code alignment
 
 %include "func/cpu.inc"
 %include "func/sound.inc"
-%include "func/graph.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
 %include "func/floppy.inc"
@@ -55,7 +53,6 @@ _memorystart_:			; Used to check code alignment
 %include "mac/fmem.mac"
 %include "mac/cia.mac"
 %include "mac/floppy.mac"
-%include "mac/graph.mac"
 %include "mac/gameport.mac"
 		
 		

@@ -11,6 +11,10 @@
 #define graphCompareCopy ASMRENAME(graphCompareCopy)
 #define graphLinedescMakeSmart ASMRENAME(graphLinedescMakeSmart)
 
+#define graphLinedescColorsSmart ASMRENAME(graphLinedescColorsSmart)
+#define graphLinedescGeometrySmart ASMRENAME(graphLinedescGeometrySmart)
+#define graphLinedescRoutinesSmart ASMRENAME(graphLinedescRoutinesSmart)
+
 #define graphemstart ASMRENAME(graphemstart)
 #define graphDecode0 ASMRENAME(graphDecode0)
 #define graphDecode1 ASMRENAME(graphDecode1)
@@ -134,6 +138,10 @@ extern void spritesMerge(void);
 extern void graphCompareCopy(void);
 extern void graphLinedescMakeSmart(void);
 
+extern void graphLinedescColorsSmart(void);
+extern void graphLinedescGeometrySmart(void);
+extern void graphLinedescRoutinesSmart(void);
+
 /* C declarations */
 
 extern void wsprxpos(ULO,ULO);
@@ -217,8 +225,6 @@ void wbpl1mod_C(ULO data, ULO address);
 void wbpl2mod_C(ULO data, ULO address);
 void wcolor_C(ULO data, ULO address);
 
-
-
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];
@@ -259,6 +265,9 @@ extern ULO diwytop;
 extern ULO diwybottom;
 
 extern ULO sprites_online;
+
+extern UBY graph_line1_tmp[1024];
+extern UBY graph_line2_tmp[1024];
 
 extern BOOLE graph_playfield_on;
 
@@ -305,7 +314,18 @@ extern graph_line graph_frame[3][314];
 #define graph_line_reserved1                  2346
 #define graph_line_end                        2348
 
-void graphComposeLineOutputSmart_C(graph_line* current_graph_line);
 
+void graphLinedescRoutines_C(graph_line* current_graph_line);
+void graphLinedescColors_C(graph_line* current_graph_line);
+void graphLinedescGeometry_C(graph_line* current_graph_line);
+void graphComposeLineOutput_C(graph_line* current_graph_line);
+
+BOOLE graphLinedescRoutinesSmart_C(graph_line* current_graph_line);
+BOOLE graphLinedescColorsSmart_C(graph_line* current_graph_line);
+BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line);
+BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line);
+void graphComposeLineOutputSmart_C(graph_line* current_graph_line);
+BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* source_line);
+void graphSpriteHack_C(void);
 
 #endif

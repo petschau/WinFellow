@@ -58,4 +58,11 @@ extern void spriteEmulationStop(void);
 extern void spriteStartup(void);
 extern void spriteShutdown(void);
 
+/* variable declerations */
+
+extern ULO sprite_write_next;
+extern ULO sprite_write_real;
+extern ULO sprite_write_buffer[128][2];
+
+
 #endif /* SPRITE_H */

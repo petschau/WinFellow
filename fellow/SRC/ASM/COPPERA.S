@@ -49,10 +49,15 @@ FDATASECTIONSTART
 %include "data/fmem.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
-%include "data/graph.inc"
+
 
 CDATAEXTERN blit_started
 CDATAEXTERN blitend
+
+
+CDATAEXTERN bplcon0;
+CDATAEXTERN graph_raster_x;
+CDATAEXTERN graph_raster_y;
 
 FDATASECTIONEND
 FCODESECTIONSTART

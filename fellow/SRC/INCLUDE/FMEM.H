@@ -320,4 +320,6 @@ extern ULO potgor;
 
 extern ULO adcon;
 
+extern memoryIOWriteFunc memory_iobank_write[256];
+
 #endif

@@ -25,6 +25,7 @@
 #include "sound.h"
 #include "draw.h"
 #include "graph.h"
+#include "sprite.h"
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -2084,25 +2085,21 @@ void graphEndOfLine_C(void)
 				// visible line, either background or bitplanes
 				if (graph_allow_bpl_line_skip == 0) 
 				{
-				  __asm 
-          {
-					  pushad
-					  push current_graph_line
-					  call graphComposeLineOutput
-					  pop edx
-					  popad
-				  }
+				  graphComposeLineOutput_C(current_graph_line);
 				}
 				else
 				{
-			    __asm 
+  		    graphComposeLineOutputSmart_C(current_graph_line);
+          /*
+          __asm
           {
-				    pushad
-				    push current_graph_line
-				    call graphComposeLineOutputSmart
-				    pop edx
-				    popad
-			    }
+            pushad
+            push current_graph_line
+            call graphComposeLineOutputSmart
+            pop edx
+            popad
+          }
+          */
 				}
 			}
 			else
@@ -2127,11 +2124,7 @@ void graphEndOfLine_C(void)
 	}
 
 	// .skip_frame
-  __asm {
-    pushad
-    call graphSpriteHack
-    popad
-  }
+  graphSpriteHack_C();
 }
 
 /*===========================================================================*/
@@ -2150,17 +2143,8 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
   line_desc_changed = FALSE;
 
   // remember the basic properties of the line
-  __asm {
-    pushad
-    push ebp
-    push current_graph_line
-    call graphLinedescMakeSmart
-    pop edx
-    pop ebp
-    mov line_desc_changed, eax
-    popad
-  }
-
+  line_desc_changed = graphLinedescMakeSmart_C(current_graph_line);
+ 
 	// check if we need to decode bitplane data
   if (draw_line_BG_routine != draw_line_routine)
   {
@@ -2170,50 +2154,12 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
     graph_decode_line_ptr();
    
   	// compare line data to old data  
-    local_DIW_first_draw = current_graph_line->DIW_first_draw;
-    local_DIW_pixel_count = current_graph_line->DIW_pixel_count;
-    local_line1 = current_graph_line->line1;
-    __asm {
-      pushad
-      push ebp
-      push local_DIW_first_draw
-		  push local_DIW_pixel_count
-      push local_line1
-      lea edx, graph_line1_tmp
-      push edx
-      call graphCompareCopy
-      pop edx
-      pop edx
-      pop edx
-      pop edx
-      pop ebp
- 		  or line_desc_changed, eax
-      popad
-    }
+    line_desc_changed |= graphCompareCopy_C(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), (ULO *) (current_graph_line->line1), (ULO *) graph_line1_tmp);
 
-		// if the line is dual playfield, compare second playfield too
+  	// if the line is dual playfield, compare second playfield too
     if ((bplcon0 & 0x0400) != 0x0)
     {
-      local_DIW_first_draw = current_graph_line->DIW_first_draw;
-      local_DIW_pixel_count = current_graph_line->DIW_pixel_count;
-      local_line2 = current_graph_line->line2;
-      __asm {
-        pushad
-        push ebp
-        push local_DIW_first_draw
-		    push local_DIW_pixel_count
-        push local_line2
-		    lea edx, graph_line2_tmp
-        push edx
-        call graphCompareCopy
-        pop edx
-        pop edx
-        pop edx
-        pop edx
-        pop ebp
-		    or line_desc_changed, eax
-        popad
-      }
+      line_desc_changed |= graphCompareCopy_C(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), (ULO *) (current_graph_line->line2), (ULO *) graph_line2_tmp);
     }
   
 		// add sprites to the line image
@@ -2222,13 +2168,15 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
       line_desc_changed = TRUE;
       __asm {
         pushad
+        push current_graph_line
         call spritesMerge
+        pop edx
         popad
       }
 		  sprites_online = 0;
     }
     
-		// final test for line skip
+    // final test for line skip
     if (line_desc_changed == TRUE)
     {
       current_graph_line->linetype = GRAPH_LINE_BPL;
@@ -2238,4 +2186,643 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
       current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
     }
   }
+}
+
+/*-------------------------------------------------------------------------------
+/* Copy color block to line description
+/* [4 + esp] - linedesc struct
+/*-------------------------------------------------------------------------------*/
+
+
+void graphLinedescColors_C(graph_line* current_graph_line)
+{
+  ULO color;
+
+  color = 0;
+  while (color < 64)
+  {
+    current_graph_line->colors[color] = graph_color_shadow[color];
+    color++;
+  }
+}
+
+
+/*-------------------------------------------------------------------------------
+/* Sets line routines for this line
+/* [4 + esp] - linedesc struct
+/*-------------------------------------------------------------------------------*/
+
+void graphLinedescRoutines_C(graph_line* current_graph_line)
+{
+		/*==============================================================
+		/* Set drawing routines
+		/*==============================================================*/
+    current_graph_line->draw_line_routine = draw_line_routine;
+    current_graph_line->draw_line_BPL_res_routine = draw_line_BPL_res_routine;
+}
+  
+/*-------------------------------------------------------------------------------
+/* Sets line geometry data in line description
+/* [4 + esp] - linedesc struct
+/*-------------------------------------------------------------------------------*/
+
+void graphLinedescGeometry_C(graph_line* current_graph_line)
+{
+  ULO local_graph_DIW_first_visible;
+  LON local_graph_DIW_last_visible;
+  ULO local_graph_DDF_start;
+  ULO local_draw_left;
+  ULO local_draw_right;
+  ULO shift;
+
+  local_graph_DIW_first_visible = graph_DIW_first_visible;
+  local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
+  local_graph_DDF_start         = graph_DDF_start;
+  local_draw_left               = draw_left;
+  local_draw_right              = draw_right;
+  shift                         = 0;
+
+  /*===========================================================*/
+	/* Calculate first and last visible DIW and DIW pixel count  */
+  /*===========================================================*/
+
+  if ((bplcon0 & 0x8000) != 0)
+  {
+    // bit 15, HIRES is set
+    local_graph_DIW_first_visible >>= 1;
+    local_graph_DIW_last_visible >>= 1;
+    local_graph_DDF_start >>= 1;
+    if (draw_hscale == 2)
+    {
+      shift = 1;
+    }
+  }
+  if (local_graph_DIW_first_visible < local_draw_left)
+  {
+    local_graph_DIW_first_visible = local_draw_left;
+  }
+  if (local_graph_DIW_last_visible > local_draw_right)
+  {
+    local_graph_DIW_last_visible = (LON) local_draw_right;
+  }
+  local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
+  if (local_graph_DIW_last_visible < 0)
+  {
+    local_graph_DIW_last_visible = 0;
+  }
+  local_graph_DIW_first_visible <<= shift;
+  local_graph_DIW_last_visible <<= shift;
+  current_graph_line->DIW_first_draw = local_graph_DIW_first_visible;
+  current_graph_line->DIW_pixel_count = local_graph_DIW_last_visible;
+  current_graph_line->DDF_start = local_graph_DDF_start;
+  local_graph_DIW_first_visible >>= shift;
+  local_graph_DIW_last_visible >>= shift;
+
+  /*=========================================*/
+	/* Calculate BG front and back pad count   */
+  /*=========================================*/
+
+  local_draw_right -= local_graph_DIW_first_visible;
+  local_graph_DIW_first_visible -= local_draw_left;
+  local_draw_right -= local_graph_DIW_last_visible;
+  current_graph_line->BG_pad_front = local_graph_DIW_first_visible;
+  current_graph_line->BG_pad_back  = local_draw_right;
+
+  /*==========================================================*/
+	/* Need to remember playfield priorities to sort dual pf    */
+  /*==========================================================*/
+
+  current_graph_line->bplcon2 = bplcon2;
+}
+
+/*-------------------------------------------------------------------------------
+/* Makes a description of this line
+/* [4 + esp] - linedesc struct
+/*-------------------------------------------------------------------------------*/
+
+void graphLinedescMake_C(graph_line* current_graph_line)
+{
+  /*==========================================================*/
+	/* Is this a bitplane or background line?                   */
+  /*==========================================================*/
+  if (draw_line_BG_routine != draw_line_routine)
+  {
+    /*===========================================*/
+	  /* This is a bitplane line                   */
+    /*===========================================*/
+    current_graph_line->linetype = GRAPH_LINE_BPL;
+    graphLinedescColors_C(current_graph_line);
+		graphLinedescGeometry_C(current_graph_line);
+		graphLinedescRoutines_C(current_graph_line);
+  }
+  else
+  {
+    /*===========================================*/
+		/* This is a background line                 */
+		/*===========================================*/
+    if (graph_color_shadow[0] == current_graph_line->colors[0])
+    {
+      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
+      {
+        return;
+      }
+      if (current_graph_line->linetype == GRAPH_LINE_BG)
+      {
+        /*==================================================================*/
+    		/* This line was a "background" line during the last drawing of     */
+		    /* this frame buffer,                                               */
+		    /* and it has the same color as last time.                          */
+		    /* We might be able to skip drawing it, we need to check the        */
+		    /* flag that says it has been drawn in all of our buffers.          */
+		    /* The flag is only of importance when "deinterlacing"              */
+		    /*==================================================================*/
+        if (current_graph_line->frames_left_until_BG_skip == 0)
+        {
+          current_graph_line->linetype = GRAPH_LINE_SKIP;
+          return;
+        }
+        else
+        {
+          current_graph_line->frames_left_until_BG_skip--;
+          return;
+        }
+      }
+    }
+    
+    /*==================================================================*/
+		/* This background line is different from the one in the buffer     */
+		/*==================================================================*/
+    current_graph_line->linetype = GRAPH_LINE_BG;
+    current_graph_line->colors[0] = graph_color_shadow[0];
+    if (draw_deinterlace == 0)
+    {
+      // dword [draw_buffer_count]
+      current_graph_line->frames_left_until_BG_skip = 0;
+    }
+    else
+    {
+      current_graph_line->frames_left_until_BG_skip = 1;
+    }
+    graphLinedescRoutines_C(current_graph_line);
+  }
+}
+
+/*-------------------------------------------------------------------------------
+/* Compose the visible layout of the line
+/* [4 + esp] - linedesc struct
+/*-------------------------------------------------------------------------------*/
+
+void graphComposeLineOutput_C(graph_line* current_graph_line)
+{
+  /*==================================================================*/
+	/* Check if we need to decode bitplane data                         */
+  /*==================================================================*/
+  
+  if (draw_line_BG_routine != draw_line_routine) 
+  {
+    /*================================================================*/
+		/* Do the planar to chunky conversion                             */
+    /*================================================================*/
+    graph_decode_line_ptr();
+
+    /*================================================================*/
+		/* Add sprites to the line image                                  */
+    /*================================================================*/
+		if (sprites_online == 1)
+    {
+      __asm 
+      {
+        pushad
+        push current_graph_line
+        call	spritesMerge
+        pop ebx
+        popad
+      }
+      sprites_online = 0;
+    }
+
+    /*================================================================*/
+		/* Remember line geometry for later drawing                       */
+    /*================================================================*/
+  }
+  graphLinedescMake_C(current_graph_line);
+}
+
+/*-------------------------------------------------------------------------------
+/* Smart makes a description of this line
+/* [4 + esp] - linedesc struct
+/* Return 1 if linedesc has changed (eax)
+/*-------------------------------------------------------------------------------*/
+
+BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line)
+{
+  BOOLE line_desc_changed;
+
+  line_desc_changed = FALSE;
+
+  /*==========================================================*/
+	/* Is this a bitplane or background line?                   */
+  /*==========================================================*/
+  if (draw_line_BG_routine != draw_line_routine)
+  {
+    /*===========================================*/
+	  /* This is a bitplane line                   */
+    /*===========================================*/
+    if (current_graph_line->linetype != GRAPH_LINE_BPL)
+    {
+      if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
+      {
+        current_graph_line->linetype = GRAPH_LINE_BPL;
+        graphLinedescColors_C(current_graph_line);
+		    graphLinedescGeometry_C(current_graph_line);
+		    graphLinedescRoutines_C(current_graph_line);
+        line_desc_changed = TRUE;
+        return line_desc_changed;
+      }
+    }
+    line_desc_changed = graphLinedescColorsSmart_C(current_graph_line);
+    line_desc_changed |= graphLinedescGeometrySmart_C(current_graph_line);
+		line_desc_changed |= graphLinedescRoutinesSmart_C(current_graph_line);
+    return line_desc_changed;
+  }
+  else
+  {
+    /*===========================================*/
+		/* This is a background line                 */
+		/*===========================================*/
+    if (graph_color_shadow[0] == current_graph_line->colors[0])
+    {
+      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
+      {
+        line_desc_changed = FALSE;
+        return line_desc_changed;
+      }
+      if (current_graph_line->linetype == GRAPH_LINE_BG)
+      {
+        /*==================================================================*/
+    		/* This line was a "background" line during the last drawing of     */
+		    /* this frame buffer,                                               */
+		    /* and it has the same color as last time.                          */
+		    /* We might be able to skip drawing it, we need to check the        */
+		    /* flag that says it has been drawn in all of our buffers.          */
+		    /* The flag is only of importance when "deinterlacing"              */
+		    /*==================================================================*/
+        if (current_graph_line->frames_left_until_BG_skip == 0)
+        {
+          current_graph_line->linetype = GRAPH_LINE_SKIP;
+          line_desc_changed = FALSE;
+          return line_desc_changed;
+        }
+        else
+        {
+          current_graph_line->frames_left_until_BG_skip--;
+          line_desc_changed = TRUE;
+          return line_desc_changed;
+        }
+      }
+    }
+    
+    /*==================================================================*/
+		/* This background line is different from the one in the buffer     */
+		/*==================================================================*/
+    current_graph_line->linetype = GRAPH_LINE_BG;
+    current_graph_line->colors[0] = graph_color_shadow[0];
+    if (draw_deinterlace == 0)
+    {
+      // dword [draw_buffer_count]
+      current_graph_line->frames_left_until_BG_skip = 0;
+    }
+    else
+    {
+      current_graph_line->frames_left_until_BG_skip = 1;
+    }
+    graphLinedescRoutines_C(current_graph_line);
+    /*
+    __asm {
+      pushad
+      push current_graph_line
+      call graphLinedescRoutines
+      pop edx
+      popad
+    }
+    */
+    line_desc_changed = TRUE;
+  }
+  return line_desc_changed;
+}
+
+/*-------------------------------------------------------------------------------
+/* Smart sets line routines for this line
+/* [4 + esp] - linedesc struct
+/* Return 1 if routines have changed (eax)
+/*-------------------------------------------------------------------------------*/
+BOOLE graphLinedescRoutinesSmart_C(graph_line* current_graph_line)
+{
+  BOOLE result;
+
+  /*==============================================================*/
+	/* Set drawing routines                                         */
+	/*==============================================================*/
+
+  result = FALSE;
+  if (current_graph_line->draw_line_routine != draw_line_routine)
+  {
+    result = TRUE;
+  }
+  current_graph_line->draw_line_routine = draw_line_routine;
+  
+  if (current_graph_line->draw_line_BPL_res_routine != draw_line_BPL_res_routine)
+  {
+    result = TRUE;
+  }
+  current_graph_line->draw_line_BPL_res_routine = draw_line_BPL_res_routine;
+  return result;
+}
+	
+/*-------------------------------------------------------------------------------
+/* Sets line geometry data in line description
+/* [4 + esp] - linedesc struct
+/* Return 1 if geometry has changed (eax)
+/*-------------------------------------------------------------------------------*/
+BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line)
+{
+	ULO local_graph_DIW_first_visible;
+  LON local_graph_DIW_last_visible;
+  ULO local_graph_DDF_start;
+  ULO local_draw_left;
+  ULO local_draw_right;
+  ULO shift;
+  BOOLE line_desc_changed;
+
+  local_graph_DIW_first_visible = graph_DIW_first_visible;
+  local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
+  local_graph_DDF_start         = graph_DDF_start;
+  local_draw_left               = draw_left;
+  local_draw_right              = draw_right;
+  shift                         = 0;
+  line_desc_changed             = FALSE;
+
+  /*===========================================================*/
+	/* Calculate first and last visible DIW and DIW pixel count  */
+  /*===========================================================*/
+
+  if ((bplcon0 & 0x8000) != 0)
+  {
+    // bit 15, HIRES is set
+    local_graph_DIW_first_visible >>= 1;
+    local_graph_DIW_last_visible >>= 1;
+    local_graph_DDF_start >>= 1;
+    if (draw_hscale == 2)
+    {
+      shift = 1;
+    }
+  }
+  if (local_graph_DIW_first_visible < local_draw_left)
+  {
+    local_graph_DIW_first_visible = local_draw_left;
+  }
+  if (local_graph_DIW_last_visible > local_draw_right)
+  {
+    local_graph_DIW_last_visible = (LON) local_draw_right;
+  }
+  local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
+  if (local_graph_DIW_last_visible < 0)
+  {
+    local_graph_DIW_last_visible = 0;
+  }
+  
+  local_graph_DIW_first_visible <<= shift;
+  local_graph_DIW_last_visible <<= shift;
+  if (current_graph_line->DIW_first_draw != local_graph_DIW_first_visible)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->DIW_first_draw = local_graph_DIW_first_visible;
+  if (current_graph_line->DIW_pixel_count != local_graph_DIW_last_visible)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->DIW_pixel_count = local_graph_DIW_last_visible;
+  if (current_graph_line->DDF_start != local_graph_DDF_start)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->DDF_start = local_graph_DDF_start;
+  local_graph_DIW_first_visible >>= shift;
+  local_graph_DIW_last_visible >>= shift;
+
+  /*=========================================*/
+	/* Calculate BG front and back pad count   */
+  /*=========================================*/
+
+  local_draw_right -= local_graph_DIW_first_visible;
+  local_graph_DIW_first_visible -= local_draw_left;
+  local_draw_right -= local_graph_DIW_last_visible;
+  if (current_graph_line->BG_pad_front != local_graph_DIW_first_visible)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->BG_pad_front = local_graph_DIW_first_visible;
+  if (current_graph_line->BG_pad_back != local_draw_right)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->BG_pad_back = local_draw_right;
+
+  /*==========================================================*/
+	/* Need to remember playfield priorities to sort dual pf    */
+  /*==========================================================*/
+
+  if (current_graph_line->bplcon2 != bplcon2)
+  {
+    line_desc_changed = TRUE;
+  }
+  current_graph_line->bplcon2 = bplcon2;
+  return line_desc_changed;
+}
+
+/*-------------------------------------------------------------------------------
+/* Smart copy color block to line description
+/* [4 + esp] - linedesc struct
+/* Return 1 if colors have changed (eax)
+/*-------------------------------------------------------------------------------*/
+
+BOOLE graphLinedescColorsSmart_C(graph_line* current_graph_line)
+{
+  BOOLE result;
+  ULO i;
+
+  result = FALSE;
+
+  // check full brightness colors
+  for (i = 0; i < 32; i++)
+  {
+    if (graph_color_shadow[i] != current_graph_line->colors[i])
+    {
+      result = TRUE;
+    }
+    current_graph_line->colors[i] = graph_color_shadow[i];
+  }
+  if (result == TRUE)
+  {
+    for (i = 32; i < 64; i++)
+    {
+      current_graph_line->colors[i] = graph_color_shadow[i];
+    }
+  }
+  return result;
+}
+
+/*-------------------------------------------------------------------------------
+/* Copy data and compare
+/* [4 + esp] - source playfield
+/* [8 + esp] - destination playfield
+/* [12 + esp] - pixel count
+/* [16 + esp] - first pixel
+/* Return 1 = not equal (eax), 0 = equal
+/*-------------------------------------------------------------------------------*/
+
+BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* source_line)
+{
+  BOOLE result;
+
+  result = FALSE;
+  if (pixel_count > 0)
+  {
+    // align to 4-byte boundary
+    while ((first_pixel & 0x3) != 0)
+    {
+      if (*((UBY *) dest_line + first_pixel) == *((UBY *) source_line + first_pixel))
+      {
+        first_pixel++;
+        pixel_count--;
+        if (pixel_count == 0)
+        {
+          return FALSE;
+        }
+      }
+      else
+      {
+        // line has changed, copy the rest
+        while ((first_pixel & 0x3) != 0)
+        {
+          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
+          first_pixel++;
+          pixel_count--;
+          if (pixel_count == 0)
+          {
+            return TRUE;
+          }
+        }
+
+        while (pixel_count >= 4)
+        {
+          *((ULO *) ((UBY *) dest_line + first_pixel)) = *((ULO *) ((UBY *) source_line + first_pixel));
+          first_pixel += 4;
+          pixel_count -= 4;
+        }
+
+        while (pixel_count >= 0)
+        {
+          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
+          first_pixel++;
+          pixel_count--;
+        }
+        return TRUE;
+      }
+    }
+
+    // compare byte aligned values
+    while (pixel_count >= 4)
+    {
+      if (*((ULO *) ((UBY *) source_line + first_pixel)) == *((ULO *) ((UBY *) dest_line + first_pixel)))
+      {
+        first_pixel += 4;
+        pixel_count -= 4;
+      }
+      else
+      {
+        // line has changed, copy the rest
+        while (pixel_count >= 4)
+        {
+          *((ULO *) ((UBY *) dest_line + first_pixel)) = *((ULO *) ((UBY *) source_line + first_pixel));
+          first_pixel += 4;
+          pixel_count -= 4;
+        }
+
+        while (pixel_count >= 0)
+        {
+          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
+          first_pixel++;
+          pixel_count--;
+        }
+        return TRUE;
+      }
+    }
+    if (pixel_count == 0)
+    {
+      return FALSE;
+    }
+      
+    // compare last couple of bytes
+    while (pixel_count >= 0)
+    {
+      if (*((UBY *) source_line + first_pixel) == *((UBY *) dest_line + first_pixel))
+      {
+        first_pixel++;
+        pixel_count--;
+      }
+      else
+      {
+        result = TRUE;
+        *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
+      }
+    }
+    return result;
+  }
+  return FALSE;
+}
+
+/*-------------------------------------------------------------------------------*/
+/* Sprite hack, try to delay effect of writes to sprxpt                          */
+/*-------------------------------------------------------------------------------*/
+
+void graphSpriteHack_C(void)
+{
+  ULO local_sprite_write_next;
+  ULO i;
+
+  local_sprite_write_next = sprite_write_next;
+  if (sprite_write_next != 0)
+  {
+    sprite_write_next = 0;
+    sprite_write_real = 1;
+    
+    // loop_sprite_hack
+    i = 0;
+    while (i != local_sprite_write_next)
+    {
+      __asm
+      {
+  	    pushad
+        lea ecx, sprite_write_buffer
+        add ecx, i
+	    	lea	edx, sprite_write_buffer 
+        add edx, i 
+        add edx, 4
+        mov ecx, [ecx]
+        mov edx, [edx]
+		    and	ecx, 0x01fe
+        push ecx
+		    push edx
+
+		    call [memory_iobank_write + 2*ecx]
+		    pop edx
+	  	  pop ecx
+  		  popad
+      }
+		  i += 8;
+    }
+  }
+	sprite_write_real = 0;
 }
