@@ -9,6 +9,7 @@
 #ifdef WGUI
 
 extern void wguiStartup(void);
+extern void wguiStartupPost(void);
 extern void wguiShutdown(void);
 extern BOOLE wguiEnter(void);
 extern void wguiRequester(STR *line1, STR *line2, STR *line3);
