@@ -211,8 +211,12 @@ _copperUpdateDMA_:
 		mov	byte [copper_dma], 0
 		push	eax
 		push	ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -244,8 +248,12 @@ _copperUpdateDMA_:
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
+		
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -271,8 +279,12 @@ _copperEndOfFrame_:
 		mov	dword [copper_next], 40
 		push	eax
 		push	ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	ebx
 		pop	eax
 .copper_restart_not:
@@ -297,8 +309,12 @@ _copperLoad1_:	mov	edx, dword [cop1lc]
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -324,8 +340,12 @@ _copperLoad2_:	mov	edx, dword [cop2lc]
 		mov	dword [copper_next], edx
 		push	eax
 		push	ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	ebx
 		pop	eax
 		pop	edx
@@ -392,8 +412,12 @@ _copperEmulate_:
 		pop	ebx
 		ret
 .notokay:	mov	dword [copper_next], -1
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -475,8 +499,12 @@ _copperEmulate_:
 		add	ebx, ecx
 		add	ebx, 4
 .cwaitexit:	mov	dword [copper_next], ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -522,8 +550,12 @@ _copperEmulate_:
 		add	ecx, 4
 .cnofix:
 .fluks:		mov	dword [copper_next], ecx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -535,8 +567,12 @@ _copperEmulate_:
 .ctrueexit:	mov	ebx, dword [curcycle]
 		add	ebx, 4
 		mov	dword [copper_next], ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	edx
 		pop	ecx
 		pop	ebx
@@ -577,8 +613,12 @@ _copperEmulate_:
 .cdontskip:	mov	ebx, dword [curcycle]
 		add	ebx, 4
 		mov	dword [copper_next], ebx
+
+		pushad
 		call busScanEventsLevel2
+		popad
 		;SCAN_EVENTS_LVL2
+
 		pop	edx
 		pop	ecx
 		pop	ebx
