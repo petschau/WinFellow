@@ -12,6 +12,7 @@
 /* Changelog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/18:                                                                */
+/* - added ThePlayer 4.1a support                                             */
 /* - added ProRunner 2.0 support                                              */
 /* - now only the allocated memory areas are scanned instead of the whole mem */
 /* 2000/12/16:                                                                */
@@ -631,6 +632,83 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   }   
 }
 
+/*=========================*/
+/* detect ThePlayer 4.1a   */
+/* games: Colonization,    */
+/* some Alien Breed titles */
+/*=========================*/
+
+static void modripDetectP41A(ULO address, MemoryAccessFunc func)
+{
+  struct ModuleInfo info;
+  ULO pattNo = 0, sampNo = 0, sampSize = 0;
+  ULO sampDataPtr = 0, sampDataCurr = 0;
+  ULO sampSizeCurr, loopSizeCurr;
+  ULO i;
+
+  if(
+      (BYTE(address + 0) != 'P')
+   || (BYTE(address + 1) != '4')
+   || (BYTE(address + 2) != '1')
+   || (BYTE(address + 3) != 'A')
+    ) return;
+
+  RIPLOG1("mod-ripper found possible ThePlayer 4.1a match...\n");
+  modripModuleInfoInitialize(&info);
+  info.start = address;
+  strcpy(info.typesig, "P41A");
+  strcpy(info.typedesc, "ThePlayer 4.1a");
+
+  /* number of patterns */
+  if((pattNo = BYTE(address + 4)) > 0x7f) return;
+  RIPLOG2("number of patterns %u\n", pattNo);
+
+  /* number of samples */
+  sampNo = BYTE(address + 6);
+  if ((sampNo == 0) || (sampNo > 0x1F)) return;
+  RIPLOG2("number of samples %u\n", sampNo);
+
+  /* check sample sizes */
+  for(i = 0; i < sampNo; i++) {
+    if((sampSizeCurr = BEWORD(address + 24) << 1) > 0xffff) return;
+    if((loopSizeCurr = BEWORD(address + 30) << 1) > 0xffff) return;
+    if(sampSizeCurr + 2 < loopSizeCurr) return;
+    sampSize += sampSizeCurr;
+  }
+  if(sampSize < 5) return;
+  RIPLOG2("sample size %u\n", sampSize);
+
+  /* check volume values */
+  for(i = 0; i < sampNo; i++)
+    if(BYTE(address + 33 + 16*i) > 0x40) return;
+
+  sampDataPtr = BEDWORD(address + 16) + 4;
+  RIPLOG2("sample data pointer %u\n", sampDataPtr);
+
+  /* determine real sample size */
+  sampSize = 0;
+  for(i = 0; i < sampNo; i++) {
+    if((sampDataCurr = BEDWORD(address + 20)) > sampSize) {
+      sampSize = sampDataCurr;
+      loopSizeCurr = BEWORD(address + 24);
+    }
+  }
+  RIPLOG2("sample size %u\n", sampSize);
+  RIPLOG2("last loop size %u\n", loopSizeCurr);
+
+  if(sampSize == 0) return;
+
+  info.end = info.start + sampDataPtr + sampSize + (loopSizeCurr << 1);
+
+  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+    sprintf(info.filename, "P41A.Mod%d.cus", modripModsFound++);
+
+    if(modripGuiSaveRequest(&info)) 
+      if(!modripSaveMem(&info, func))
+        modripGuiErrorSave(&info);
+  }   
+}
+
 /*====================================================*/
 /* from here on starts the actual fellow ripping code */
 /*====================================================*/
@@ -639,14 +717,15 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
 /* here we define the formats that are actually used */
 /*===================================================*/
 
-#define MODRIP_KNOWNFORMATS 5
+#define MODRIP_KNOWNFORMATS 6
 
 static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
   modripDetectProTracker,
   modripDetectSoundFX,
   modripDetectSoundMon,
   modripDetectFred,
-  modripDetectProRunner2
+  modripDetectProRunner2,
+  modripDetectP41A
 };
 
 /*==============================================*/
