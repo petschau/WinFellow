@@ -52,8 +52,8 @@ extern ULO hardfile_size;
 /* Access m68k registers  */
 /*------------------------*/
 
-#define m68k_dreg(REGS, NR) (d[NR])
-#define m68k_areg(REGS, NR) (a[NR])
+#define m68k_dreg(REGS, NR) (da_regs[0][NR])
+#define m68k_areg(REGS, NR) (da_regs[1][NR])
 #define m68k_setpc(I) (cpuSetPC(I))
 extern void m68k_do_rts(void);
 

@@ -5,8 +5,7 @@
 ; Includes data declared in the C 68000 module
 ;==============================================================================
 
-CDATAEXTERN a
-CDATAEXTERN d
+CDATAEXTERN da_regs
 CDATAEXTERN stopreturnadr
 CDATAEXTERN irq_changed
 CDATAEXTERN cpu_speed

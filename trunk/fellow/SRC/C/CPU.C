@@ -34,7 +34,7 @@ ULO t[65536][8];
 
 /* M68k registers */
 
-ULO d[8], a[8];
+ULO da_regs[2][8]; /* 0 - data, 1 - address */
 ULO pc, usp, ssp, sr;
 ULO ccr0, ccr1;
 
@@ -340,7 +340,7 @@ ULO modreg(ULO modes, ULO regs) {
 
 /* Return register ptr for mode */
 
-ULO greg(ULO mode, ULO reg) {return reg*4 + (ULO) ((mode == 0) ? d:a);}
+ULO greg(ULO mode, ULO reg) {return reg*4 + (ULO) ((mode == 0) ? &da_regs[0][0]:&da_regs[1][0]);}
 
 /*=============================*/
 /* Common disassembly routines */
@@ -1436,7 +1436,7 @@ void i26ini(void) {
           cpu_dis_tab[ind] = i26dis;
           t[ind][2] = greg(modes, regs);
           t[ind][3] = (ULO) arw[flats];
-          t[ind][4] = regd*4 + (ULO) d;
+          t[ind][4] = (ULO) &da_regs[0][regd];
           }
 }
 
@@ -3892,8 +3892,8 @@ LON i320_C(ULO ext, ULO divisor) {
       return DIV_UNIMPLEMENTED_060;
     sign = (ext>>11) & 1;
     if (sign) {         /* Convert operands to 64 bit */
-      if (size64) q = d[dq] || (((ULL) d[dr])<<32);
-      else q = (LLO) (LON) d[dq];
+      if (size64) q = da_regs[0][dq] || (((ULL) da_regs[0][dr])<<32);
+      else q = (LLO) (LON) da_regs[0][dq];
       dvsor = (LLO) (LON) divisor;
       if (((LLO) dvsor) < 0) {
 	dvsor = -((LLO) dvsor);
@@ -3906,8 +3906,8 @@ LON i320_C(ULO ext, ULO divisor) {
       }	
     }
     else {
-      if (size64) q = d[dq] || (((ULL) d[dr])<<32);
-      else q = (ULL) d[dq];
+      if (size64) q = da_regs[0][dq] || (((ULL) da_regs[0][dr])<<32);
+      else q = (ULL) da_regs[0][dq];
       dvsor = (ULL) divisor;
     }
     if ((dvsor*0xffffffff + dvsor - 1) >= q) {
@@ -3927,8 +3927,8 @@ LON i320_C(ULO ext, ULO divisor) {
 	if (resultsigned && (result != 0)) result = -((LLO) result);
 	if (restsigned) rest = -((LLO) rest);
       }
-      d[dr] = (ULO) rest;
-      d[dq] = (ULO) result;   
+      da_regs[0][dr] = (ULO) rest;
+      da_regs[0][dq] = (ULO) result;   
       sr &= 0xfffffff0;
       if (((LLO) result) < 0) sr |= 8;
       else if (result == 0) sr |= 4;
@@ -5262,11 +5262,12 @@ ULO cpuGetSpeed(void) {
 /*==================================================================*/
 
 void cpuInit(void) {
-  ULO i;
+  ULO i, j;
   
   cpuClearOpcodeTable();
-  for (i = 0; i < 8; i++)
-    d[i] = a[i] = 0;
+  for (j = 0; j < 2; j++)
+    for (i = 0; i < 8; i++)
+      da_regs[j][i] = 0;
 
   if (cpu_major < 2)
     cpuAdrModeTablesInit000();
