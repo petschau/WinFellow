@@ -45,7 +45,7 @@ HANDLE win_drv_emulation_ended;
 
 DWORD WINAPI winDrvFellowRunStart(void* in)
 {
-  winDrvSetThreadName(-1, "WinFellow fellowRun() Thread");
+  winDrvSetThreadName(-1, "fellowRun()");
   fellowRun();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -53,7 +53,7 @@ DWORD WINAPI winDrvFellowRunStart(void* in)
 
 DWORD WINAPI winDrvFellowStepOneStart(void* in)
 {
-  winDrvSetThreadName(-1, "WinFellow fellowStepOne() Thread");
+  winDrvSetThreadName(-1, "fellowStepOne()");
   fellowStepOne();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -61,7 +61,7 @@ DWORD WINAPI winDrvFellowStepOneStart(void* in)
 
 DWORD WINAPI winDrvFellowStepOverStart(void* in)
 {
-  winDrvSetThreadName(-1, "WinFellow fellowStepOver() Thread");
+  winDrvSetThreadName(-1, "fellowStepOver()");
   fellowStepOver();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -69,7 +69,7 @@ DWORD WINAPI winDrvFellowStepOverStart(void* in)
 
 DWORD WINAPI winDrvFellowRunDebugStart(void* in)
 {
-  winDrvSetThreadName(-1, "WinFellow fellowRunDebug() Thread");
+  winDrvSetThreadName(-1, "fellowRunDebug()");
   fellowRunDebug((ULO) in);
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -150,7 +150,6 @@ void winDrvEmulate(void *startfunc, void *param)
 			       param,	            // Thread parameter
 			       0,                   // Creation flags
 			       &dwThreadId);        // ThreadId
-  winDrvSetThreadName(dwThreadId, "WinFellow Main Thread");
   SetTimer(gfx_drv_hwnd, 1, 10, NULL);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
@@ -378,6 +377,7 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   int argc;
   int result;
   
+  winDrvSetThreadName(-1, "WinMain()");
   win_drv_nCmdShow = nCmdShow;
   win_drv_hInstance = hInstance;
   strcpy(cmdline, lpCmdLine);

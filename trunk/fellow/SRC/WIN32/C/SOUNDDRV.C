@@ -952,7 +952,7 @@ DWORD WINAPI soundDrvThreadProc(void *in) {
   BOOLE terminate_thread = FALSE;
   sound_drv_dsound_device *dsound_device = (sound_drv_dsound_device *) in;
 
-  winDrvSetThreadName(-1, "WinFellow soundDrvThreadProc()");
+  winDrvSetThreadName(-1, "soundDrvThreadProc()");
 
 //  fellowAddLog("soundDrvThreadProc()\n");
   while (!terminate_thread) {
@@ -1045,7 +1045,6 @@ BOOLE soundDrvEmulationStart(ULO rate,
 			                 dsound_device,             // Thread parameter
 			                 0,                         // Creation flags
 			                 &dsound_device->thread_id);// ThreadId
-    winDrvSetThreadName(dsound_device->thread_id, "WinFellow Sound Thread");
     result = (dsound_device->thread != NULL);
   }
 
