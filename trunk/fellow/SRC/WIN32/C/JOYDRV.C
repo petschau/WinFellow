@@ -8,10 +8,13 @@
 
 /* ---------------- KNOWN BUGS/FIXLIST ----------------- 
 - additional button support for other emulator functions
-- better autofire support
+- better autofire support trough gameport_autofire arrays
 */
 
 /* ---------------- CHANGE LOG ----------------- 
+Monday, September 18, 2000
+- removed calls to CoInitialize and CoUninitialize in joyDrvStartup with Dx3 because they're not used
+
 Sunday, September 17, 2000
 - removed some distinction between Dx3 and Dx5
 - added multimedia code to use with NT (Nt4 or Nt2k)
@@ -763,8 +766,13 @@ void joyDrvStartup(void) {
 
   joy_drv_lpDI = NULL;
   joy_drv_lpDID = NULL;
+
+#ifdef USE_DX5
+
   if( !isNT )
 	CoInitialize( NULL );
+
+#endif
 
   num_joy_supported = 0;
   num_joy_attached = 0;  
@@ -777,8 +785,12 @@ void joyDrvStartup(void) {
 
 void joyDrvShutdown(void) {
 
+#ifdef USE_DX5
+
   if( !isNT )
 	CoUninitialize();
+
+#endif
 
 }
 
