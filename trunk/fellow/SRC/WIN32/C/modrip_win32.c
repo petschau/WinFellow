@@ -70,7 +70,7 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info)
     sprintf(tempstr, "Location: 0x%06X\n", info->start);
 	strcat(message, tempstr);
 	if(info->end) {
-	  sprintf(tempstr, "Size: %d Bytes\n", info->end - info->start);
+	  sprintf(tempstr, "Size: %u Bytes\n", info->end - info->start);
       strcat(message, tempstr);
 	}
   }
@@ -91,12 +91,12 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info)
   }
 
   if(info->maxpattern) {
-    sprintf(tempstr, "Patterns used: %d\n", info->maxpattern);
+    sprintf(tempstr, "Patterns used: %u\n", info->maxpattern);
     strcat(message, tempstr);
   }
 
   if(info->channels) {
-    sprintf(tempstr, "Channels used: %d\n", info->channels);
+    sprintf(tempstr, "Channels used: %u\n", info->channels);
     strcat(message, tempstr);
   }
   

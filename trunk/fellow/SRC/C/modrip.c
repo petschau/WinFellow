@@ -13,6 +13,11 @@
 /* - first release; it now features separate ripping and GUI code             */
 /*   as well as the access being done via memory access wrapper functions     */
 /*   formats detected are some ProTracker clones and SoundFX 1.3/2.0          */
+/* ToDo:                                                                      */
+/* -----                                                                      */
+/* - the detection routines do only very rough checks of the values' validity */
+/*   against MODRIP_MAXMODLEN; better look up the really allowed values       */
+/*   somewhere                                                                */
 /*============================================================================*/
 
 /* fellow includes */
@@ -32,6 +37,9 @@
 #else
 #include "modrip_linux.h"
 #endif
+
+/* define this to have logfile output */
+#define MODRIP_DEBUG
 
 static unsigned modripModsFound;
 
@@ -86,7 +94,9 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
       && ((*func)(address + 2) == searchstrings[type][2])
       && ((*func)(address + 3) == searchstrings[type][3])
        ) {
-
+#ifdef MODRIP_DEBUG
+      fellowAddLog("mod-ripper ProTracker %s match\n", searchstrings[type]);
+#endif
       modripModuleInfoInitialize(&info);
 
       /* store general info */
@@ -173,12 +183,15 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 {
   BOOLE match = FALSE;
   ULO i, size, offset;
-  int patterns;
+  unsigned patterns;
   struct ModuleInfo info;
     
   if (((*func)(address + 0) == 'S') && ((*func)(address + 1) == 'O')) {
     modripModuleInfoInitialize(&info);
     if (((*func)(address + 2) == 'N') && ((*func)(address + 3) == 'G')) {
+#ifdef MODRIP_DEBUG
+      fellowAddLog("mod-ripper SoundFX 1.3 match\n");
+#endif
       match = TRUE;
       info.start = address - 60;
       info.instruments = 15;
@@ -186,6 +199,9 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
       strcpy(info.typesig, "SONG");
 	}
     if (((*func)(address + 2) == '3') && ((*func)(address + 3) == '1')) {
+#ifdef MODRIP_DEBUG
+      fellowAddLog("mod-ripper SoundFX 2.0 match\n");
+#endif
       match = TRUE;
       info.start = address - 124;
       info.instruments = 31;
@@ -219,12 +235,21 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 	  }
 
       patterns = (*func)(info.start + offset);
+	  if((patterns > MODRIP_MAXMODLEN) || (patterns == 0)) return;
+#ifdef MODRIP_DEBUG
+      fellowAddLog("patterns = %u\n", patterns);
+#endif
 
       offset += 2;
       info.maxpattern = (*func)(info.start + offset);
 
       for (i = 1; i < patterns; i++)
         info.maxpattern = max(info.maxpattern, (*func)(info.start + offset + i));
+
+  	  if(info.maxpattern > MODRIP_MAXMODLEN) return;
+#ifdef MODRIP_DEBUG
+      fellowAddLog("maxpattern = %u\n", info.maxpattern);
+#endif
 
       size += 2 + 128 + ((info.maxpattern + 1) * 1024);
 	  info.end = info.start + size;
@@ -336,12 +361,16 @@ void modripScanFellowFloppies(void)
         memset(cache, 0, MODRIP_FLOPCACHE);
 		Read = FALSE;
         if(*floppy[driveNo].imagenamereal) {
+#ifdef MODRIP_DEBUG
 			fellowAddLog("mod-ripper %s\n", floppy[driveNo].imagenamereal);
+#endif
           if(modripReadFloppyImage(floppy[driveNo].imagenamereal, cache))
             Read = TRUE;
 		}
 		else if(*floppy[driveNo].imagename) {
+#ifdef MODRIP_DEBUG
 			fellowAddLog("mod-ripper %s\n", floppy[driveNo].imagename);
+#endif
           if(modripReadFloppyImage(floppy[driveNo].imagename, cache))
             Read = TRUE;
 		}
