@@ -188,3 +188,20 @@ void modripGuiError(char *message)
   MessageBox(modrip_hWnd, message, "Mod-Ripper Error.", MB_OK |
     MB_ICONSTOP);
 }
+
+/*==============================================*/
+/* ask the user whether to dump the chip memory */
+/*==============================================*/
+
+BOOLE modripGuiDumpChipMem(void)
+{
+  char message[MODRIP_TEMPSTRLEN];
+  int result;
+
+  sprintf(message, "You are about to dump the chip memory into the file \"chip.mem\".");
+  strcat(message, " This feature can be used to run external module rippers over it.");
+  strcat(message, " Do you really want to do that?");
+  result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
+    MB_ICONQUESTION);
+  return(result == IDYES);
+}

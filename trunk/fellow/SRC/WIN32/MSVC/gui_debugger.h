@@ -2,6 +2,7 @@
 // Microsoft Developer Studio generated include file.
 // Used by GUI_debugger.rc
 //
+#define IDD_MAIN2                       101
 #define IDD_DEBUG_CPU                   123
 #define IDB_DEBUG_ARROW                 124
 #define IDC_DEBUG_MEMORY_UP             1000
@@ -9,12 +10,13 @@
 #define IDC_DEBUG_MEMORY_PGUP           1002
 #define IDC_DEBUG_MODRIP                1002
 #define IDC_DEBUG_MEMORY_PGDN           1003
+#define IDC_DEBUG_SAVECHIP              1003
+#define IDC_DEBUG_DUMPCHIP              1003
 #define IDC_DEBUG_MEMORY_ASCII          1004
 #define IDC_DEBUG_MEMORY_HEX            1005
 #define IDC_DEBUG_CPU_STEP              1019
 #define IDC_DEBUG_CPU_STEP_OVER         1020
 #define IDC_DEBUG_CPU_BREAK             1021
-#define IDD_MAIN2                        101
 #define IDC_DEBUG_CPU_RUN               1022
 #define IDD_DEBUG_MEMORY                1125
 #define IDD_DEBUG_CIA                   1126
