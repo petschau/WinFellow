@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.3 2004-12-28 23:54:44 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.4 2005-01-09 19:11:53 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -393,7 +393,7 @@ void soundChannelEnable(ULO ch)
 ; coded by Rainer Sinsch (sinsch@informatik.uni-frankfurt.de)
 ;==============================================================================*/
 
-void soundLowPass(ULO count, WOR *buffer_right, WOR *buffer_left)
+void soundLowPass(ULO count, WOR *buffer_left, WOR *buffer_right)
 {
   ULO i;
   double amplitude_div;
