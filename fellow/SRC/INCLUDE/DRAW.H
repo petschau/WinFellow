@@ -215,7 +215,7 @@ extern ULO draw_left;
 extern ULO draw_right;
 extern ULO draw_top;
 extern ULO draw_bottom;
-
+extern ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 
 /*===========================================================================*/
 /* Module properties                                                         */

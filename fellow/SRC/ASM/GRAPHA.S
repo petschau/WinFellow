@@ -685,14 +685,9 @@ _graphComposeLineOutput_:
 		; Do the planar to chunky conversion
 		;==============================================================
 
-		mov	ebp, dword [esp + 4]
-		mov	esi, dword [esp + 4]
-		add	ebp, graph_line_line2
-		add	esi, graph_line_line1
-		push	ebp
-		push	esi
+		pushad
 		call	dword [graph_decode_line_ptr]
-		add	esp, 8
+		popad
 
 		;==============================================================
 		; Add sprites to the line image
@@ -752,12 +747,9 @@ _graphComposeLineOutputSmart_:
 		; Then copy it and compare
 		;==============================================================
 
-		mov	ebp, dword graph_line2_tmp
-		mov	esi, dword graph_line1_tmp
-		push	ebp
-		push	esi
+		pushad
 		call	dword [graph_decode_line_ptr]
-		add	esp, 8
+		popad
 
 		; Compare line data to old data
 		mov	esi, dword graph_line1_tmp
@@ -918,8 +910,10 @@ _graphEndOfLine_:
 		jz	.no_bpl_skip
 		call	_graphComposeLineOutputSmart_
 		jmp	.after_line
-.no_bpl_skip:	call	_graphComposeLineOutput_
-.after_line:	add	esp, 4
+.no_bpl_skip:	
+		call	_graphComposeLineOutput_
+.after_line:	
+		add	esp, 4
 
 		;==============================================================
 		; If diw state changing from background to bitplane output,
