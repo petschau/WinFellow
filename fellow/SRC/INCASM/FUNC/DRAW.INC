@@ -8,7 +8,7 @@
 
 CFUNCEXTERN drawValidateBufferPointer
 CFUNCEXTERN drawInvalidateBufferPointer
-CFUNCEXTERN drawEndOfFrameC
+CFUNCEXTERN drawEndOfFramePostC
 
 
 ;==============================================================================

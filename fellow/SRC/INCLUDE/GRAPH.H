@@ -267,4 +267,6 @@ typedef struct {
   ULO bplcon2;
 } graph_line;
 
+extern graph_line graph_frame[3][314];
+
 #endif

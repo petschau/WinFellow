@@ -1433,7 +1433,7 @@ void drawHardReset(void) {
 /* Called on every end of frame                                               */
 /*============================================================================*/
 
-void drawEndOfFrameC(void) {
+void drawEndOfFramePostC(void) {
   drawLEDs();
   drawFpsCounter();
   drawViewScroll();
@@ -1576,3 +1576,53 @@ void drawUpdateDrawmode(void)
 		}
 	}
 }
+
+/*==============================================================================*/
+/* Drawing end of frame handler                                                 */
+/*==============================================================================*/
+
+void drawEndOfFramePreC(void)
+{
+  ULO graph_raster_y_local; // esi
+  ULO next_line_offset;
+  LON i;
+  graph_line * graph_frame_ptr;
+  void * draw_line_routine_ptr;
+  UBY* draw_buffer_current_ptr_local;
+
+  if (draw_frame_skip == 0)
+  {
+    graph_raster_y_local = graph_raster_y;
+    graph_raster_y = draw_top;
+    next_line_offset = drawValidateBufferPointer(draw_top);
+    
+    // need to test for error
+    if (draw_buffer_top_ptr != NULL)
+    {
+      draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+      for (i = 0; i <= (draw_bottom - draw_top); i++) {
+        graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
+        if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+        {
+          if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
+          {
+              draw_line_routine_ptr = graph_frame_ptr->draw_line_routine;
+              __asm {
+                pushad
+                push graph_frame_ptr
+                call draw_line_routine_ptr
+                pop eax
+                popad
+              }
+	       }
+        }
+        draw_buffer_current_ptr_local += next_line_offset;
+        draw_buffer_current_ptr = draw_buffer_current_ptr_local;
+      }
+      drawInvalidateBufferPointer();
+      drawEndOfFramePostC();
+    }
+    graph_raster_y = graph_raster_y_local;
+  }
+}
+	
