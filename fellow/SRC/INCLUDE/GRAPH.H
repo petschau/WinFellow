@@ -156,6 +156,7 @@ extern void graphStartup(void);
 extern void graphShutdown(void);
 void graphCalculateWindow_C(void);
 void graphCalculateWindowHires_C(void);
+void graphEndOfLine_C(void);
 
 void graphDecode0_C(void);
 void graphDecode1_C(void);
