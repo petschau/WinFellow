@@ -17,6 +17,7 @@
 #include "graph.h"
 #include "draw.h"
 #include "cpu.h"
+#include "bus.h"
 
 /*#define BLIT_TSC_PROFILE*/
 
@@ -24,9 +25,9 @@
 LLO blit_tsc_tmp = 0;
 LLO blit_tsc = 0;
 LON blit_tsc_times = 0;
+ULO blit_tsc_words = 0;
 #endif
 
-/*ULO blit_tsc_words = 0;*/
 
 /*============================================================================*/
 /* Blitter registers                                                          */
@@ -37,9 +38,17 @@ ULO bltcmod, bltdmod, bltadat, bltbdat, bltbdat_original, bltcdat, bltzero;
 
 /*============================================================================*/
 /* Blitter cycle usage table                                                  */
+/* Unit is bus cycles (3.58MHz)						      */
 /*============================================================================*/
 
-ULO blit_cycletab[16] = {4, 4, 4, 5, 5, 5, 5, 6, 4, 4, 4, 5, 5, 5, 5, 6};
+ULO blit_cyclelength[16] = {2, 2, 2, 3, /* How long it takes for a blit to complete */
+			    3, 3, 3, 4, 
+			    2, 2, 2, 3, 
+			    3, 3, 3, 4};
+ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
+			  2, 1, 1, 1, 
+			  1, 0, 0, 0, 
+			  1, 0, 0, 0};
 
 /*============================================================================*/
 /* Callback table for minterm-calculation functions                           */
@@ -58,13 +67,19 @@ UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data]
 /* Various blitter variables                                                  */
 /*============================================================================*/
 
-ULO blitend, blitterstatus;
+ULO blitend;
 ULO blit_height, blit_width, blitterdmawaiting;
 BOOLE blitter_operation_log, blitter_operation_log_first;
 ULO blit_a_shift_asc, blit_a_shift_desc;
 ULO blit_b_shift_asc, blit_b_shift_desc;
 ULO blit_minterm;
 BOOLE blit_desc;
+BOOLE blit_started;
+
+
+#ifdef BLIT_TSC_PROFILE
+BOOLE blit_minterm_seen[256];
+#endif
 
 /*============================================================================*/
 /* Function tables for different types of blitter emulation                   */
@@ -163,6 +178,7 @@ void blitterOperationLog(void) {
 #define blitterMinterm3c(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ b_dat);                       /* A xor B */
 #define blitterMinterm4a(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | (a_dat & b_dat & ~c_dat)); /* aC + ABc */
 #define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat))); /* bC + B(A xor C) */
+#define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);			    /* AC */
 #define blitterMinterma8(a_dat, b_dat, c_dat, d_dat) d_dat = (((a_dat & ~b_dat) | b_dat) & c_dat);  /* (Ab + B)C */
 #define blitterMintermaa(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat);                               /* C */
 #define blitterMintermac(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~a_dat & b_dat));  /* AC + aB */
@@ -201,6 +217,7 @@ void blitterOperationLog(void) {
 #define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (-1);                                  /* All 1 */
 
 #define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins) \
+  /*blit_minterm_seen[mins] = TRUE;*/ \
   d_dat = 0; \
   if (mins & 0x80) d_dat |= (a_dat & b_dat & c_dat); \
   if (mins & 0x40) d_dat |= (a_dat & b_dat & ~c_dat); \
@@ -248,6 +265,7 @@ void blitterOperationLog(void) {
     case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break; \
+    case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break; \
@@ -531,6 +549,39 @@ void blitterCopyABCD(void)
   }
 }
 
+void blitInitiate(void) {
+  ULO channels = (bltcon >> 24) & 0xf;
+  ULO cycle_length, cycle_free;
+  if (blitter_operation_log) blitterOperationLog();
+  bltzero = 0;
+  if (blitter_fast) {
+    cycle_length = 3;
+    cycle_free = 0;
+  }
+  else {
+    if (bltcon & 1) {
+      cycle_free = 2;
+      if (!(channels & 1)) cycle_free++;
+      if (!(channels & 2)) cycle_free++;
+      cycle_length = 4*blit_height;
+      cycle_free *= blit_height;
+    }
+    else {
+      cycle_length = blit_cyclelength[channels]*blit_width*blit_height;
+      cycle_free = blit_cyclefree[channels]*blit_width*blit_height;
+    }
+  }
+
+  /* If BLTHOG is set, and there are no free cycles,
+  /* CPU is stopped completely, since that is what programs expect. */
+  /* If the blit leaves free cycles for the CPU, it runs at normal speed. */
+
+  if ((dmaconr & 0x400) && (cycle_free == 0)) thiscycle = cycle_length;
+  blitend = cycle_length + curcycle;
+  blit_started = TRUE;
+  dmaconr |= 0x4000; /* Blitter busy bit */
+}
+
 /*============================================================================*/
 /* Fill-table init                                                            */
 /*============================================================================*/
@@ -629,7 +680,6 @@ static void blitterIOHandlersInstall(void) {
 static void blitterIORegistersClear(void) {
   blit_asm_minterm = blit_min_generic;
   blitend = 0xffffffff;             /* Must keep blitend -1 when not blitting */
-  blitterstatus = 0;
   bltapt = 0;
   bltbpt = 0;
   bltcpt = 0;
@@ -654,6 +704,7 @@ static void blitterIORegistersClear(void) {
   blit_b_shift_asc = 0;
   blit_b_shift_desc = 0;
   blit_desc = FALSE;
+  blit_started = FALSE;
 }
 
 
@@ -676,6 +727,7 @@ void blitterEmulationStart(void) {
 
 void blitterEmulationStop(void) {
 }
+
 /*
 ULO optimizedMinterms(UBY minterm, ULO a_dat, ULO b_dat, ULO c_dat)
 {
@@ -695,7 +747,7 @@ void verifyMinterms()
 {
   UBY minterm;
   ULO a_dat, b_dat, c_dat;
-  for (minterm = 0xc0; minterm <= 0xc0; minterm++)
+  for (minterm = 0xa0; minterm <= 0xa0; minterm++)
   {
     BOOLE minterm_had_error = FALSE;
     char s[40];
@@ -714,6 +766,11 @@ void verifyMinterms()
 /*===========================================================================*/
 
 void blitterStartup(void) {
+#ifdef BLIT_TSC_PROFILE
+  ULO i;
+  for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
+#endif
+  
   blitterMinTableInit();
   blitterFillTableInit();
   blitterSetFast(FALSE);
@@ -721,7 +778,7 @@ void blitterStartup(void) {
   blitterIORegistersClear();
   blitterSetOperationLog(FALSE);
   blitter_operation_log_first = TRUE;
-//  verifyMinterms();
+  //verifyMinterms();
 }
 
 void blitterShutdown(void) {
@@ -730,6 +787,7 @@ void blitterShutdown(void) {
   FILE *F = fopen("blitprofile.txt", "w");
   fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tWORDS\tWORDSPERCALL\tCYCLESPERWORD\n");
   fprintf(F, "blitter copy\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", blit_tsc, blit_tsc_times, (blit_tsc_times == 0) ? 0 : (blit_tsc / blit_tsc_times), blit_tsc_words, (blit_tsc_times == 0) ? 0 : (blit_tsc_words / blit_tsc_times), (blit_tsc_words == 0) ? 0 : (blit_tsc / blit_tsc_words));  
+  {ULO i; for (i = 0; i < 256; i++) if (blit_minterm_seen[i]) fprintf(F, "%.2X\n", i);}
   fclose(F);
   }
 #endif
