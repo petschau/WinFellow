@@ -22,9 +22,9 @@
 
 /* own includes */
 #include <stdio.h>
-#include <stdlib.h>
 #include <memory.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "modrip.h"
 #ifdef WIN32
@@ -78,6 +78,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
   int channels[6] = {
 	  4,      4,      6,      8,      4,      8      };
   struct ModuleInfo info;
+  BOOLE ScratchyName;
 
   for(type = 0; type < 6; type++) {
     if ( ((*func)(address + 0) == searchstrings[type][0])
@@ -140,7 +141,11 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 
       /* set filename for the module file */
       if (strlen(info.modname) > 2) {
-        if(!fsdb_name_invalid(info.modname)) {
+        ScratchyName = FALSE;
+        for(i = 0; (i < 20) && (info.modname[i] != 0) ; i++) {
+          if(!isprint(info.modname[i])) ScratchyName = TRUE;
+		 }
+         if(!ScratchyName) {
           strcpy(info.filename, info.modname);
           strcat(info.filename, ".mod");
 		}
@@ -291,30 +296,14 @@ BOOLE modripReadFloppyImage(char *filename, char *cache)
 {
   FILE *f;
   char message[MODRIP_TEMPSTRLEN];
-  char errdesc[MODRIP_TEMPSTRLEN];
   ULO i;
-  int errcode;
   int readbytes;
 
   if(f = fopen(filename, "rb")) {
     if(readbytes = fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE) {
-      fclose(f);
-      sprintf(message, "The disk image %s is of a wrong size (%d bytes).", 
+      fclose(f); 
+      sprintf(message, "The disk image %s is of a wrong size (read %d bytes).", 
         filename, readbytes);
-	  modripGuiError(message);
-      return FALSE;
-	}
-/* damn windows, why is everything done differently here? */
-#ifdef WIN32
-	if((errcode = _doserrno) != 0) {
-#else
-	if((errcode = errno) != 0) {
-#endif
-      fclose(f);
-	  sprintf(message, "An error occurred upon reading file %s:\n", filename);
-	  sprintf(errdesc, strerror(errcode));
-	  strcat(message, errdesc);
-	  strcat(message, ".");
 	  modripGuiError(message);
       return FALSE;
 	}
