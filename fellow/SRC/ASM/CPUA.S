@@ -224,7 +224,7 @@ rIRQ_noprevious:mov	dword [interruptlevel], edx	; Save runlevel
 		mov	dword [interruptaddress], edx
 		mov	eax, dword [curcycle]	; Set time 
 		; Note: Lotus has code that expects a low delay in servicing requested irqs. This used to be 38
-		add	eax, 10
+		add	eax, 12
 		mov	dword [irq_next], eax
 		mov	dword [interruptflag], 1
 
