@@ -75,6 +75,9 @@
 #include "sounddrv.h"
 #include "wgui.h"
 
+ini *gfxdrv_ini; /* GFXDRV copy of initdata */
+
+
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
 /*==========================================================================*/
@@ -225,6 +228,8 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
 				    UINT message, 
                                     WPARAM wParam,
 				    LPARAM lParam) {
+  RECT emulationRect;
+
   BOOLE diacquire_sent = FALSE;
   switch (message) {
   case WM_TIMER:
@@ -333,6 +338,11 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       */
     break;
   case WM_DESTROY:
+	  // save emulation window position only if in windowed mode
+	  if (gfx_drv_ddraw_device_current->mode->windowed) {
+		GetWindowRect(hWnd, &emulationRect);  
+		iniSetEmulationWindowPosition(gfxdrv_ini, emulationRect.left, emulationRect.top);
+	  }
       fellowAddLog("WM_DESTROY\n");
       gfxDrvChangeDInputDeviceStates(FALSE);
       return 0;
@@ -540,14 +550,24 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
   else {
     RECT rc1;
     
-    SetRect(&rc1, 0, 0, ddraw_device->drawmode->width, ddraw_device->drawmode->height);
+    SetRect(&rc1, iniGetEmulationWindowXPos(gfxdrv_ini), iniGetEmulationWindowYPos(gfxdrv_ini), 
+		ddraw_device->drawmode->width + iniGetEmulationWindowXPos(gfxdrv_ini), 
+		ddraw_device->drawmode->height + iniGetEmulationWindowYPos(gfxdrv_ini));
+//    SetRect(&rc1, 0, 0, ddraw_device->drawmode->width, ddraw_device->drawmode->height);
     AdjustWindowRectEx(&rc1,
       GetWindowStyle(gfx_drv_hwnd),
       GetMenu(gfx_drv_hwnd) != NULL,
       GetWindowExStyle(gfx_drv_hwnd));
+/*
     MoveWindow(gfx_drv_hwnd,
-      0, /*CW_USEDEFAULT*/
-      0, /*CW_USEDEFAULT*/
+      0, 
+      0, 
+      rc1.right - rc1.left,
+      rc1.bottom - rc1.top,
+      FALSE);*/
+	MoveWindow(gfx_drv_hwnd,
+      iniGetEmulationWindowXPos(gfxdrv_ini),
+      iniGetEmulationWindowYPos(gfxdrv_ini), 
       rc1.right - rc1.left,
       rc1.bottom - rc1.top,
       FALSE);
@@ -1869,6 +1889,7 @@ void gfxDrvEndOfFrame(void) {
 /*==========================================================================*/
 
 BOOLE gfxDrvStartup(void) {
+  gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
   if (gfxDrvRunEventInitialize())
