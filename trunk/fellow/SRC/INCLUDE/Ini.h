@@ -17,7 +17,7 @@ typedef struct {
   STR  m_current_configuration[CFG_FILENAME_LENGTH];
 
   /*==========================================================================*/
-  /* Window positions (Main Window, Emulation Window and Configuration Window)*/
+  /* Window positions (Main Window, Emulation Window)                         */
   /*==========================================================================*/
 
   ULO  m_mainwindowxposition;
@@ -25,6 +25,12 @@ typedef struct {
   ULO  m_emulationwindowxposition;
   ULO  m_emulationwindowyposition;
 
+  /*==========================================================================*/
+  /* Hold the option for using multiple graphical buffers                     */
+  /*==========================================================================*/
+
+  BOOLE  m_use_multiple_graphical_buffers;
+  
   /*==========================================================================*/
   /* History of used config files                                             */
   /*==========================================================================*/
