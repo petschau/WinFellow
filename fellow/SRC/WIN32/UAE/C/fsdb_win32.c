@@ -44,6 +44,9 @@
 /* FELLOW IN (END)---------------- */
 
 #include "fsdb.h"
+#ifdef WIN32
+#include "filesys_win32.h"
+#endif
 
 
 /* Return nonzero for any name we can't create on the native filesystem.  */
@@ -78,45 +81,17 @@ int fsdb_name_invalid (const char *n)
     return n[1] == '.' && n[2] == '\0';
 }
 
-/* FELLOW IN (START): routine to parse the amiga file mask properly */
-
 uae_u32 filesys_parse_mask(uae_u32 mask)
 {
-    	/* according to the Amiga Guru Book, mask looks as follows
-
-       bit      | 31-24 | 23-8     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0  
-      ----------+-------+----------+---+---+---+---+---+---+---+---
-       function | user  | reserved | H | S | P | A |!R |!W |!E |!D  
-
-       where the flags mean Delete, Execute, Write, Read, Archive,
-	       Pure, Script and Hold
-
-       so to parse the mask more easily, the last 4 bits should be xor'ed */
-
-    uae_u32 result;
-    result = mask  ^ 0xf;
-/*
-    write_log("parse_amiga_mask(\"%s\"): ", fname);
-    write_log((result & (1<<7)) != 0 ? "H" : "-");
-    write_log((result & (1<<6)) != 0 ? "S" : "-");
-    write_log((result & (1<<5)) != 0 ? "P" : "-");
-    write_log((result & (1<<4)) != 0 ? "A" : "-");
-    write_log((result & (1<<3)) != 0 ? "R" : "-");
-    write_log((result & (1<<2)) != 0 ? "W" : "-");
-    write_log((result & (1<<1)) != 0 ? "E" : "-");
-    write_log((result & (1<<0)) != 0 ? "D\n" : "-\n");
-*/
-	return result;
+   
+    return(mask ^ 0xf);
 }
-
-/* FELLOW IN (END): routine to parse the amiga file mask properly */
 
 /* For an a_inode we have newly created based on a filename we found on the
  * native fs, fill in information about this file/directory.  */
 void fsdb_fill_file_attrs (a_inode *aino)
 {
     int mode = 0;
-	DWORD error;
 
 	if((mode = GetFileAttributes(aino->nname)) == 0xFFFFFFFF) return;
 	
