@@ -35,8 +35,8 @@
 #include "wgui.h"
 #include "mmx.h"
 #include "ffilesys.h"
+#include "ini.h"
 #include "cpudis.h"
-
 
 BOOLE fellow_request_emulation_stop;
 BOOLE fellow_request_emulation_stop_immediately;
@@ -371,6 +371,7 @@ static void fellowModulesStartup(int argc, char *argv[]) {
   fhfileStartup();
   ffilesysStartup();
   spriteStartup();
+  iniStartup();
   if (!drawStartup()) fellowDrawFailed();
   kbdStartup();
   gameportStartup();
@@ -407,6 +408,7 @@ static void fellowModulesShutdown(void) {
   gameportShutdown();
   kbdShutdown();
   drawShutdown();
+  iniShutdown();
   spriteShutdown();
   ffilesysShutdown();
   fhfileShutdown();
