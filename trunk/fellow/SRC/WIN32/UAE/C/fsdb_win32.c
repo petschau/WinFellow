@@ -78,47 +78,73 @@ int fsdb_name_invalid (const char *n)
     return n[1] == '.' && n[2] == '\0';
 }
 
+/* FELLOW IN (START): routine to parse the amiga file mask properly */
+
+uae_u32 filesys_parse_mask(uae_u32 mask)
+{
+    	/* according to the Amiga Guru Book, mask looks as follows
+
+       bit      | 31-24 | 23-8     | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0  
+      ----------+-------+----------+---+---+---+---+---+---+---+---
+       function | user  | reserved | H | S | P | A |!R |!W |!E |!D  
+
+       where the flags mean Delete, Execute, Write, Read, Archive,
+	       Pure, Script and Hold
+
+       so to parse the mask more easily, the last 4 bits should be xor'ed */
+
+    uae_u32 result;
+    result = mask  ^ 0xf;
+/*
+    write_log("parse_amiga_mask(\"%s\"): ", fname);
+    write_log((result & (1<<7)) != 0 ? "H" : "-");
+    write_log((result & (1<<6)) != 0 ? "S" : "-");
+    write_log((result & (1<<5)) != 0 ? "P" : "-");
+    write_log((result & (1<<4)) != 0 ? "A" : "-");
+    write_log((result & (1<<3)) != 0 ? "R" : "-");
+    write_log((result & (1<<2)) != 0 ? "W" : "-");
+    write_log((result & (1<<1)) != 0 ? "E" : "-");
+    write_log((result & (1<<0)) != 0 ? "D\n" : "-\n");
+*/
+	return result;
+}
+
+/* FELLOW IN (END): routine to parse the amiga file mask properly */
+
 /* For an a_inode we have newly created based on a filename we found on the
  * native fs, fill in information about this file/directory.  */
 void fsdb_fill_file_attrs (a_inode *aino)
 {
-    struct stat statbuf;
-    /* This really shouldn't happen...  */
-    if (stat (aino->nname, &statbuf) == -1)
-	return;
-    aino->dir = S_ISDIR (statbuf.st_mode) ? 1 : 0;
-    aino->amigaos_mode = ((S_IXUSR & statbuf.st_mode ? 0 : A_FIBF_EXECUTE)
-			  | (S_IWUSR & statbuf.st_mode ? 0 : A_FIBF_WRITE)
-			  | (S_IRUSR & statbuf.st_mode ? 0 : A_FIBF_READ));
+    int mode = 0;
+	DWORD error;
+
+	if((mode = GetFileAttributes(aino->nname)) == 0xFFFFFFFF) return;
+	
+    aino->dir = (mode & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
+    aino->amigaos_mode = (FILE_ATTRIBUTE_ARCHIVE & mode) ? 0 : A_FIBF_ARCHIVE;
+	aino->amigaos_mode = filesys_parse_mask(aino->amigaos_mode);
 }
 
-int fsdb_set_file_attrs (a_inode *aino, int mask)
+int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
 {
     struct stat statbuf;
-    int mode;
+    uae_u32 mode=0, tmpmask;
 
+    tmpmask = filesys_parse_mask(mask);
+	
     if (stat (aino->nname, &statbuf) == -1)
 	return ERROR_OBJECT_NOT_FOUND;
-
-    mode = statbuf.st_mode;
+	
     /* Unix dirs behave differently than AmigaOS ones.  */
+	/* windows dirs go where no dir has gone before...  */
     if (! aino->dir) {
-	if (mask & A_FIBF_READ)
-	    mode &= ~S_IRUSR;
+	
+	if (tmpmask & A_FIBF_ARCHIVE)
+	    mode |= FILE_ATTRIBUTE_ARCHIVE;
 	else
-	    mode |= S_IRUSR;
+	    mode &= ~FILE_ATTRIBUTE_ARCHIVE;
 
-	if (mask & A_FIBF_WRITE)
-	    mode &= ~S_IWUSR;
-	else
-	    mode |= S_IWUSR;
-
-	if (mask & A_FIBF_EXECUTE)
-	    mode &= ~S_IXUSR;
-	else
-	    mode |= S_IXUSR;
-
-	chmod (aino->nname, mode);
+	SetFileAttributes(aino->nname, mode);
     }
 
     aino->amigaos_mode = mask;
@@ -132,8 +158,13 @@ int fsdb_mode_representable_p (const a_inode *aino)
 {
     if (aino->dir)
 	return aino->amigaos_mode == 0;
-    /*return (aino->amigaos_mode & (A_FIBF_DELETE | A_FIBF_SCRIPT | A_FIBF_PURE)) == 0;*/
-	return 0;
+    return (aino->amigaos_mode & (
+		A_FIBF_DELETE | 
+		A_FIBF_SCRIPT | 
+		A_FIBF_PURE | 
+		A_FIBF_EXECUTE |
+		A_FIBF_READ |
+		A_FIBF_WRITE)) == 0;
 }
 
 char *fsdb_create_unique_nname (a_inode *base, const char *suggestion)
