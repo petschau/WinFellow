@@ -12,6 +12,8 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ==========                                                                 */
+/* 06/11/2001: another bug in ffilesysCompareFilesys fixed that occured when  */
+/*             using trailing backslashes                                     */
 /* 09/19/2000: fixed bug in ffilesysInstall that caused chaos when using      */
 /*             trailing backslashs in filesystem root paths                   */
 /* 09/01/2000: removed use of fellow_add_filesys_unit; redesigned to use the  */
@@ -76,8 +78,15 @@ void ffilesysSetFilesys(ffilesys_dev filesys, ULO index)
 
 BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
 {
+  ULO len;
+
   if (index >= FFILESYS_MAX_DEVICES)
     return FALSE;
+
+  len = strlen(filesys.rootpath) - 1;
+  if (filesys.rootpath[len] == '\\')
+	filesys.rootpath[len] = '\0';
+
   return (ffilesys_devs[index].readonly == filesys.readonly) &&
     (strncmp
      (ffilesys_devs[index].volumename, filesys.volumename,
