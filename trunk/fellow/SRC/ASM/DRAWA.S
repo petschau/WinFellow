@@ -1679,12 +1679,12 @@ _drawLineDual1x8_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 4
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 4
 		jl	near .last4
 		test	edx, 3		; Align VGA-pointer
 		jz	.loop
@@ -1782,12 +1782,12 @@ _drawLineDual2x8_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 4
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 4
 		jl	near .last4
 		test	edx, 2		; Align VGA-pointer
 		jz	.loop
@@ -1885,12 +1885,12 @@ _drawLineDual1x16_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 2
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 2
 		jl	.last2
 		test	edx, 2		; Align VGA-pointer
 		jz	.loop
@@ -1975,11 +1975,10 @@ _drawLineDual2x16_:
 		mov	ecx, dword [esi + graph_line_DIW_pixel_count]
 		xor	eax, eax
 		mov	dword [esp], ecx
-		add	esi, graph_line_colors
-		test	dword [bplcon2], 040h
+		test	dword [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:
+.l1:		add	esi, graph_line_colors
 		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
 		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
 
@@ -2085,12 +2084,12 @@ _drawLineDual1x24_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 0
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 0
 		jle	.exit
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
@@ -2152,12 +2151,12 @@ _drawLineDual2x24_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 0
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 0
 		jle	.exit
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
@@ -2221,12 +2220,12 @@ _drawLineDual1x32_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 2
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 2
 		jl	.last2
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
@@ -2299,12 +2298,12 @@ _drawLineDual2x32_:
 		mov	dword [esp], eax
 		xor	ebx, ebx
 		xor	eax, eax
-		add	esi, graph_line_colors
 		lea	edi, [draw_dual_translate]
-		test	byte [bplcon2], 040h
+		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 2
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 2
 		jl	.last2
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
