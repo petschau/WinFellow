@@ -54,13 +54,6 @@ FDATASECTIONSTART
 %include "data/copper.inc"
 %include "data/blit.inc"
 			
-
-;===============================================================================
-; The registers need to be stored on consecutive memory addresses.
-; MOVEM depends on that. Thus, they are defined here to ensure that
-; the C-compiler does not do tricks with them.
-;===============================================================================
-
 upsrtraceset: db 0
 cpu_cycles: dd 0
 
@@ -196,7 +189,14 @@ _cpuGroup2_:
 
 
 ;========================================================================
-; Frame format $0
+; Frame format $0, four word frame
+;
+; Stack words:
+; ------------
+; SR
+; PCHI
+; PCLO
+; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
 ;
 ; 010:	All, except bus and address errors
 ; 020:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
@@ -212,7 +212,7 @@ _cpuGroup2_:
 ;========================================================================
 	
 %macro FRAME0 1		; VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector dword 
+		mov	ecx, dword [da_regs + 60]	; Save Vector word 
 		sub	ecx, 2
 		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
@@ -239,7 +239,14 @@ _cpuFrame0_:	FRAME0	ebx
 
 
 ;========================================================================
-; Frame format $1
+; Frame format $1, 4 word throwaway frame
+;
+; Stack words:
+; ------------
+; SR
+; PCHI
+; PCLO
+; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
 ;
 ; 020:	Irq, second frame created
 ; 030:	Same as for 020
@@ -250,7 +257,7 @@ _cpuFrame0_:	FRAME0	ebx
 ;========================================================================
 	
 %macro FRAME1 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector dword 
+		mov	ecx, dword [da_regs + 60]	; Save Vector word 
 		sub	ecx, 2
 		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
@@ -800,8 +807,6 @@ si_step6:	mov	edx, dword [interruptaddress]; step 6
 %endif
 		test	byte [cpu_stop], 1		; step 7
 		jz	si_nostop
-		cmp	byte [blitterstatus], 2
-		je	si_nostop
 		mov	edx, dword [curcycle]
 		add	edx, 4
 		mov	dword [cpu_next], edx
@@ -9148,7 +9153,10 @@ eac063nosext:	xchg	edx, ecx
 
 		FALIGN32
 
-eac063extended:	push	eax
+eac063extended:
+		; Calculate base register + base displacement
+
+		push	eax
 		test	dl, 80h		; Base register included?
 		jz	eac063a
 		xor	ebx, ebx	; Base register not included!
@@ -9173,7 +9181,11 @@ eac063b:	mov	ecx, esi	; 3 - Long base displacement
 		add	esi, 4
 		add	ebx, edx
 		pop	edx
-eac063c:	xor	eax, eax	; ebx = (An) + bd
+		
+		; Here ebx = (An) + bd (base register + base displacement)
+		; Calculate index next
+
+eac063c:	xor	eax, eax
 		test	edx, 040h	; Find out about index
 		jnz	eac063e
 		mov	al, dh		; Index is included
@@ -9187,13 +9199,18 @@ eac063d:	mov	cl, dh
 		shr	cl, 1
 		and	cl, 3
 		shl	eax, cl		; Multiply index value
-eac063e:	mov	ebp, edx	; eax - (Ri)*scale, ebx - (An) + bd
-		and	ebp, 07h	; Find IS mode
+
+		; Here still ebx = (An) + bd (base register + base displacement)
+		; Here eax = (Ri)*scale (index)
+		; Calulate based on I/IS mode next
+
+eac063e:	mov	ebp, edx
+		and	ebp, 07h	; Find I/IS mode
 		cmp	ebp, 3
 		jbe	eac063f
-		test	edx, 040h	; Test for reserved IS modes
+		test	edx, 040h	; Test for reserved I/IS modes
 		jnz	eac063illegal
-eac063f:	call	dword [eac063istab + 4*ebp] ; Decode IS field
+eac063f:	call	dword [eac063istab + 4*ebp] ; Decode I/IS field
 		pop	eax
 		ret
 

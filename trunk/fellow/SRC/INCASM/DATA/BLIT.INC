@@ -12,7 +12,6 @@ CDATAEXTERN blit_b_shift_asc
 CDATAEXTERN blit_b_shift_desc
 CDATAEXTERN blit_desc
 CDATAEXTERN blit_asm_minterm
-CDATAEXTERN blit_cycletab
 CDATAEXTERN blit_min_functable
 CDATAEXTERN blitend
 CDATAEXTERN bltzero
@@ -30,12 +29,12 @@ CDATAEXTERN bltdmod
 CDATAEXTERN bltadat
 CDATAEXTERN bltbdat
 CDATAEXTERN bltcdat
-CDATAEXTERN blitterstatus
 CDATAEXTERN bltbdat_original
 CDATAEXTERN bltlinesulsudaul
 CDATAEXTERN blitter_fast
 CDATAEXTERN blit_width
 CDATAEXTERN blit_height
+CDATAEXTERN blit_started
 CDATAEXTERN blitterdmawaiting
 CDATAEXTERN blitter_ECS
 CDATAEXTERN blitter_operation_log

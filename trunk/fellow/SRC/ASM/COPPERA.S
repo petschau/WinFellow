@@ -380,7 +380,7 @@ _copperEmulate_:
 .cwait:		and	ecx, 0fffeh
 		test	edx, 08000h
 		jnz	.cnoblit
-		test	byte [blitterstatus], 0ffh
+		test	byte [blit_started], 0ffh
 		jz	.cnoblit
 		sub	dword [copper_ptr], 4
 		mov	ebx, dword [blitend]
