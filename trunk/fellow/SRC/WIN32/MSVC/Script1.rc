@@ -26,18 +26,19 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_MAIN DIALOG DISCARDABLE  0, 0, 264, 102
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Fellow Alpha V0.4 991205"
+IDD_MAIN DIALOG DISCARDABLE  0, 0, 265, 103
+STYLE DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "Fellow Alpha V0.4 991205(?)"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "&Start Emulation",IDC_START_EMULATION,203,7,56,16,
+    PUSHBUTTON      "&Start Emulation",IDC_START_EMULATION,204,7,56,16,
                     WS_GROUP
-    PUSHBUTTON      "&Quit Emulator",IDC_QUIT_EMULATOR,203,79,56,16,WS_GROUP
+    PUSHBUTTON      "&Quit Emulator",IDC_QUIT_EMULATOR,204,80,56,16,WS_GROUP
     CONTROL         106,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,7,194,61
-    DEFPUSHBUTTON   "&Configuration",IDC_CONFIGURATION,203,24,56,16,WS_GROUP
-    PUSHBUTTON      "&Hard Reset",IDC_HARD_RESET,203,61,56,16,WS_GROUP
+    DEFPUSHBUTTON   "&Configuration",IDC_CONFIGURATION,204,24,56,16,WS_GROUP
+    PUSHBUTTON      "&Hard Reset",IDC_HARD_RESET,204,61,56,16,WS_GROUP
 END
 
 IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
@@ -361,9 +362,9 @@ BEGIN
     IDD_MAIN, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 259
+        RIGHTMARGIN, 260
         TOPMARGIN, 7
-        BOTTOMMARGIN, 95
+        BOTTOMMARGIN, 96
     END
 
     IDD_CPU, DIALOG
@@ -508,7 +509,12 @@ IDR_FELLOW_GUI_MENU MENU DISCARDABLE
 BEGIN
     POPUP "&File"
     BEGIN
-        MENUITEM "&Quit",                       ID_FILE_QUIT
+        MENUITEM "Open &Configuration...",      ID_FILE_OPENCONFIGURATION
+        MENUITEM SEPARATOR
+        MENUITEM "&Save Configuration",         ID_FILE_SAVECONFIGURATION
+        MENUITEM "Save Configuration &As...",   ID_FILE_SAVECONFIGURATIONAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_QUIT
     END
     POPUP "&Help"
     BEGIN
@@ -546,6 +552,15 @@ BEGIN
     0
 END
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
