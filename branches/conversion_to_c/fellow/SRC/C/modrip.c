@@ -1,9 +1,10 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: modrip.c,v 1.22.2.3 2004-05-27 10:06:22 carfesh Exp $         */
+/* @(#) $Id: modrip.c,v 1.22.2.4 2004-05-27 10:08:00 carfesh Exp $         */
 /*                                                                         */
 /* Portable parts of the module ripper                                     */
+/*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*                                                                         */
 /* based on information found on Exotica (http://exotica.fix.no), the xmp  */
