@@ -381,8 +381,8 @@ long dos_errno(void)
 {
 	int i;
 	static DWORD errtbl[][2] = {
-	{  ERROR_FILE_NOT_FOUND,         ERROR_OBJECT_NOT_AROUND    },  /* 2 */
-    {  ERROR_PATH_NOT_FOUND,         ERROR_OBJECT_NOT_AROUND    },  /* 3 */
+	{  ERROR_FILE_NOT_FOUND,         ERROR_OBJECT_NOT_FOUND    },  /* 2 */
+    {  ERROR_PATH_NOT_FOUND,         ERROR_OBJECT_NOT_FOUND    },  /* 3 */
 	{  ERROR_SHARING_VIOLATION,		 ERROR_OBJECT_IN_USE    },
     {  ERROR_ACCESS_DENIED,          ERROR_WRITE_PROTECTED    },  /* 5 */
     {  ERROR_ARENA_TRASHED,          ERROR_NO_FREE_STORE    },  /* 7 */
@@ -405,7 +405,7 @@ long dos_errno(void)
     {  ERROR_SEEK_ON_DEVICE,         ERROR_SEEK_ERROR    },  /* 132 */
     {  ERROR_DIR_NOT_EMPTY,          ERROR_DIRECTORY_NOT_EMPTY    },  /* 145 */
     {  ERROR_ALREADY_EXISTS,         ERROR_OBJECT_EXISTS    },  /* 183 */
-    {  ERROR_FILENAME_EXCED_RANGE,   ERROR_OBJECT_NOT_AROUND    },  /* 206 */
+    {  ERROR_FILENAME_EXCED_RANGE,   ERROR_OBJECT_NOT_FOUND    },  /* 206 */
     {  ERROR_NOT_ENOUGH_QUOTA,       ERROR_DISK_IS_FULL    },  /* 1816 */
 	{  ERROR_DIRECTORY,              ERROR_OBJECT_WRONG_TYPE    } };
 
