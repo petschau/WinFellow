@@ -12,6 +12,8 @@
 #include <windows.h>
 #include <winbase.h>
 
+
+
 #include "portable.h"
 #include "defs.h"
 #include "fswrap.h"
@@ -26,15 +28,16 @@ WIN32_FIND_DATA fs_wrap_dirent;
 BOOLE fs_wrap_dirent_open;
 BOOLE fs_wrap_opendir_firsttime;
 
+#include <shlwapi.h>
+
 
 /*===========================================================================*/
 /* Unix has no drives                                                        */
 /*===========================================================================*/
 
 BOOLE fsWrapHasDrives(void) {
-  return FALSE;
+  return TRUE;
 }
-
 
 /*===========================================================================*/
 /* Unix has no drives                                                        */
@@ -44,7 +47,6 @@ BOOLE *fsWrapGetDriveMap(void) {
   return NULL;
 }
 
-
 /*===========================================================================*/
 /* Returns the absolute full path for a filename                             */
 /*===========================================================================*/
@@ -52,6 +54,26 @@ BOOLE *fsWrapGetDriveMap(void) {
 void fsWrapFullPath(STR *dst, STR *src) {
   _fullpath(dst, src, FS_WRAP_MAX_PATH_LENGTH);
 }
+
+/*===========================================================================*/
+/* Make relative path                                                        */
+/*===========================================================================*/
+
+void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
+  STR tmpdst[MAX_PATH];
+  STR tmpsrc[MAX_PATH];
+  if (stricmp(file_path, "") == 0) return;
+  fsWrapFullPath(tmpsrc, file_path);
+  if (PathRelativePathTo(tmpdst,
+		         root_dir,
+		         FILE_ATTRIBUTE_DIRECTORY, 
+		         tmpsrc, 
+		         FILE_ATTRIBUTE_NORMAL))
+  {
+    strcpy(file_path, tmpdst);
+  }
+}
+
 
 /*===========================================================================*/
 /* Fills in file attributes in point structure                               */
