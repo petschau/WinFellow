@@ -31,8 +31,8 @@ BOOLE                   kbd_drv_in_use;
 LPDIRECTINPUT		kbd_drv_lpDI;
 LPDIRECTINPUTDEVICE	kbd_drv_lpDID;
 HANDLE			kbd_drv_DIevent;
-BYTE			keys[MAX_KEYS];
-BYTE			prevkeys[MAX_KEYS];
+BYTE			keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
+BYTE			prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
 BOOLE			kbd_drv_initialization_failed;
 
 
@@ -695,8 +695,8 @@ void kbdDrvStateHasChanged(BOOL active) {
 
 #define map(sym) symbol_to_DIK_kbddrv[(sym)]
 #define symbolickey(scancode) kbddrv_DIK_to_symbol[scancode]
-#define ispressed(sym) ((keys[map(sym)] & 0x80) == 0x80)
-#define waspressed(sym) ((prevkeys[map(sym)] & 0x80) == 0x80)
+#define ispressed(sym) (keys[map(sym)])
+#define waspressed(sym) (prevkeys[map(sym)])
 #define issue_event(the_event) { kbdEventEOFAdd((the_event)); break; }
 #define released(sym) (!ispressed( (sym) ) && waspressed( (sym) ))
 #define pressed(sym) ((ispressed((sym))) && (!waspressed((sym))))
@@ -709,98 +709,98 @@ void kbdDrvStateHasChanged(BOOL active) {
 /*===========================================================================*/
 
 BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
-  ULO eol_evpos = kbd_state.eventsEOL.inpos;
-  ULO eof_evpos = kbd_state.eventsEOF.inpos;
-  
-  for (;;) {
-    if (!kbd_drv_capture) {
-      ULO port, setting;
-      
-      if( released( PCK_PAGE_DOWN ))
-      {
-	if( ispressed(PCK_HOME) )
-	{
-	  issue_event( EVENT_RESOLUTION_NEXT );
-	} else {
-	  if( ispressed(PCK_END) )
-	    issue_event( EVENT_SCALEY_NEXT );
-	}
-      }
-      if( released( PCK_PAGE_UP ))
-      {
-	if( ispressed(PCK_HOME) )
-	{
-	  issue_event( EVENT_RESOLUTION_PREV );
-	} else {
-	  if( ispressed(PCK_END) )
-	    issue_event( EVENT_SCALEY_PREV );
-	}
-      }
-      if( released( PCK_F11 ))
-	issue_event( EVENT_EXIT );
-      
-      if( released( PCK_F12 ))
-      {
-	mouseDrvToggleFocus();
-	joyDrvToggleFocus();
-	break;
-      }
-      
-      if( ispressed(PCK_HOME) )
-      {
-	if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
-	if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
-	if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
-	if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
-      }
-      else if( ispressed(PCK_END) )
-      {
-	if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
-	if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
-	if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
-	if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
-      }
-      /*
-      if( released( PCK_F11 ) && kbd_drv_home_pressed )
-      issue_event( EVENT_BMP_DUMP );
-      */
-      
-      if( ispressed(PCK_HOME) )
-      {
-	if( ispressed( PCK_NUMPAD_2 ))
-	  issue_event( EVENT_SCROLL_DOWN );
-	if( ispressed( PCK_NUMPAD_4 ))
-	  issue_event( EVENT_SCROLL_LEFT );
+	ULO eol_evpos = kbd_state.eventsEOL.inpos;
+	ULO eof_evpos = kbd_state.eventsEOF.inpos;
 	
-	if( ispressed( PCK_NUMPAD_6 ))
-	  issue_event( EVENT_SCROLL_RIGHT );
-	if( ispressed( PCK_NUMPAD_8 ))
-	  issue_event( EVENT_SCROLL_UP );
-      }
-      
-      /* Check joysticks replacements */
-      /* New here: Must remember last value to decide if a change has happened */
-      
-      for( port = 0; port < 2; port++ )
-	for( setting = 0; setting < 2; setting++ )
-	  if( kbd_drv_joykey_enabled[port][setting] )
-	  {
-	    /* Here the gameport is set up for input from the specified set of joykeys  */		
-	    /* Check each key for change */
-	    kbd_drv_joykey_directions direction;
-	    for (direction = JOYKEY_LEFT; direction <= JOYKEY_FIRE1; direction++)
-	      if (symbol_key == kbd_drv_joykey[setting][direction]) {
-		if (pressed(symbol_key) || released(symbol_key))
+	ULO port, setting;
+
+	for (;;) {
+
+		if (kbd_drv_capture)
+			break;
+
+		if( released( PCK_PAGE_DOWN ))
 		{
-		  kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
+			if( ispressed(PCK_HOME) )
+			{
+				issue_event( EVENT_RESOLUTION_NEXT );
+			} else {
+				if( ispressed(PCK_END) )
+					issue_event( EVENT_SCALEY_NEXT );
+			}
 		}
-	      }
-	  }
-    }
-    break;
-  }
-  return (eol_evpos != kbd_state.eventsEOL.inpos) ||
-    (eof_evpos != kbd_state.eventsEOF.inpos);
+		if( released( PCK_PAGE_UP ))
+		{
+			if( ispressed(PCK_HOME) )
+			{
+				issue_event( EVENT_RESOLUTION_PREV );
+			} else {
+				if( ispressed(PCK_END) )
+					issue_event( EVENT_SCALEY_PREV );
+			}
+		}
+		if( released( PCK_F11 ))
+			issue_event( EVENT_EXIT );
+		
+		if( released( PCK_F12 ))
+		{
+			mouseDrvToggleFocus();
+			joyDrvToggleFocus();
+			break;
+		}
+		
+		if( ispressed(PCK_HOME) )
+		{
+			if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
+			if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
+			if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
+			if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
+		}
+		else if( ispressed(PCK_END) )
+		{
+			if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
+			if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
+			if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
+			if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
+		}
+		/*
+		if( released( PCK_F11 ) && kbd_drv_home_pressed )
+		issue_event( EVENT_BMP_DUMP );
+		*/
+		
+		if( ispressed(PCK_HOME) )
+		{
+			if( ispressed( PCK_NUMPAD_2 ))
+				issue_event( EVENT_SCROLL_DOWN );
+			if( ispressed( PCK_NUMPAD_4 ))
+				issue_event( EVENT_SCROLL_LEFT );
+			
+			if( ispressed( PCK_NUMPAD_6 ))
+				issue_event( EVENT_SCROLL_RIGHT );
+			if( ispressed( PCK_NUMPAD_8 ))
+				issue_event( EVENT_SCROLL_UP );
+		}
+		
+		// Check joysticks replacements
+		// New here: Must remember last value to decide if a change has happened
+
+		for( port = 0; port < 2; port++ )
+			for( setting = 0; setting < 2; setting++ )
+				if( kbd_drv_joykey_enabled[port][setting] )
+				{
+					// Here the gameport is set up for input from the specified set of joykeys 
+					// Check each key for change
+					kbd_drv_joykey_directions direction;
+					for (direction = JOYKEY_LEFT; direction <= JOYKEY_FIRE1; direction++)
+						if (symbol_key == kbd_drv_joykey[setting][direction])
+							if( pressed( symbol_key ) || released( symbol_key ))
+								kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
+				}
+		break;
+	}
+
+	return (eol_evpos != kbd_state.eventsEOL.inpos) ||
+		(eof_evpos != kbd_state.eventsEOF.inpos);
 }
 
 
@@ -808,29 +808,39 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 /* Handle one specific keycode change                                        */
 /*===========================================================================*/
     
-void kbdDrvKeypress(ULO keycode) {
-  ULO keycode_stripped = keycode & 0x7f;
-  kbd_drv_pc_symbol symbolic_key_stripped = symbolickey(keycode_stripped); 
-  BOOLE keycode_pressed = !!(keycode & 0x80);
-  BOOLE keycode_was_pressed = !!(prevkeys[keycode_stripped] & 0x80);
-  
-  keys[keycode_stripped] = keycode;
+void kbdDrvKeypress(ULO keycode, BOOL pressed) {
+	kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
+	BOOLE keycode_pressed = pressed;
+	BOOLE keycode_was_pressed = prevkeys[keycode];
 
-  if ((!keycode_pressed) && keycode_was_pressed) {
-    /* If key is not eaten by a Fellow "event", add it to Amiga kbd queue */
-    if (!kbdDrvEventChecker(symbolic_key_stripped)) {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key_stripped];
-      kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key_stripped] | 0x80);
-    }
-  }
-  else if (keycode_pressed && !keycode_was_pressed) {
-    /* If key is not eaten by a Fellow "event", add it to Amiga kbd queue */
-    if (!kbdDrvEventChecker(symbolic_key_stripped)) {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key_stripped];
-      kbdKeyAdd(a_code);
-    }
-  }
-  prevkeys[keycode_stripped] = keycode;
+	/* DEBUG info, not needed now
+	char szMsg[255];
+	sprintf( szMsg, "Keypress %s %s\n"
+		, kbdDrvKeyString( symbolic_key )
+		, ( pressed ? "pressed" : "released" )
+	);
+	fellowAddLog( szMsg );
+	*/
+
+	keys[keycode] = pressed;
+
+	if ((!keycode_pressed) && keycode_was_pressed) {
+		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+		if (!kbdDrvEventChecker(symbolic_key))
+		{
+			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+			kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
+		}
+	}
+	else if (keycode_pressed && !keycode_was_pressed) {
+		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+		if (!kbdDrvEventChecker(symbolic_key))
+		{
+			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+			kbdKeyAdd(a_code);
+		}
+	}
+	prevkeys[keycode] = pressed;
 }
 
 
@@ -846,39 +856,42 @@ void kbdDrvBufferOverflowHandler(void) {
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
 
-void kbdDrvKeypressHandler(void) {
-  HRESULT res;
-  
-  if (kbd_drv_active) {
-    DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
-    DWORD itemcount = DINPUT_BUFFERSIZE;
+void kbdDrvKeypressHandler(void)
+{
+	DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
+	DWORD itemcount = DINPUT_BUFFERSIZE;
+	HRESULT res;
+		
+	if( !kbd_drv_active)
+		return;
 
-    do {
-      res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID,
-	                                     sizeof(DIDEVICEOBJECTDATA),
-	                                     rgod,
-					     &itemcount,
-					     0);
-      if (res == DIERR_INPUTLOST) kbdDrvDInputAcquire();
-    }
-    while (res == DIERR_INPUTLOST);
-    
-    if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW)) {
-      kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
-    }
-    else {
-      ULO i = 0;
-      for (i = 0; i < itemcount; i++) {
-	kbdDrvKeypress(rgod[i].dwOfs | (rgod[i].dwData & 0x80));
-      }
-    }
-  }      
+	do {
+		res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID,
+			sizeof(DIDEVICEOBJECTDATA),
+			rgod,
+			&itemcount,
+			0);
+		if (res == DIERR_INPUTLOST) kbdDrvDInputAcquire();
+	}
+	while (res == DIERR_INPUTLOST);
+	
+	if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
+		kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
+	else {
+		
+		ULO i = 0;
+		
+		for (i = 0; i < itemcount; i++)
+			kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+	}
 }    
     
 
 /*===========================================================================*/
 /* Capture a key and return the symbolic key                                 */
 /*===========================================================================*/
+
+// I think this function is not used anywhere
 
 ULO kbdDrvCaptureKey(void) {
   kbd_drv_capture = TRUE;
