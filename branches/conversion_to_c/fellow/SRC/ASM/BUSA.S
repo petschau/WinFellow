@@ -79,7 +79,6 @@ FCODESECTIONSTART
 global _busstart_
 _busstart_:	 ; Used to check code alignment
 
-%include "generic/sound.inc"
 %include "func/fmem.inc"
 %include "func/cpu.inc"
 %include "func/floppy.inc"
