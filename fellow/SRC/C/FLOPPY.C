@@ -645,6 +645,7 @@ void floppyImageExtendedLoad(ULO drive) {
    /* initial offsets */
   fileoffset = floppy[drive].tracks*8 + 8;
   memoffset = 0;
+  memset(floppy[drive].cache, 0xaa, (FLOPPY_TRACKS*11968)<<1);
 
   /* read the actual track data */
   fseek(floppy[drive].F, SEEK_SET, fileoffset);
@@ -666,8 +667,10 @@ void floppyImageExtendedLoad(ULO drive) {
 	  }
 	  else /* raw MFM tracks */
 	  {
-         floppy[drive].trackinfo[i].length = floppy[drive].trackinfo[i].lengthfile;
-		 if(fread(floppy[drive].trackinfo[i].buffer,
+         floppy[drive].trackinfo[i].length = floppy[drive].trackinfo[i].lengthfile + 2;
+		 floppy[drive].trackinfo[i].buffer[0] = (floppy[drive].trackinfo[i].sync >> 8) & 0xff;
+		 floppy[drive].trackinfo[i].buffer[1] = (floppy[drive].trackinfo[i].sync     ) & 0xff;
+		 if(fread(floppy[drive].trackinfo[i].buffer + 2,
            1, floppy[drive].trackinfo[i].lengthfile, floppy[drive].F)
 		     < floppy[drive].trackinfo[i].lengthfile) floppy[drive].trackinfo[i].valid = FALSE;
 		 
