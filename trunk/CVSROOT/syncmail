@@ -93,7 +93,7 @@ def calculate_diff(filespec, contextlines):
         file, oldrev, newrev = string.split(filespec, ',')
     except ValueError:
         # No diff to report
-        return 'version upgraded from %s to %s' % (oldrev, newrev)
+        return 'version upgraded from,to %s' % newrev
     if oldrev == 'NONE':
         try:
             if os.path.exists(file):
