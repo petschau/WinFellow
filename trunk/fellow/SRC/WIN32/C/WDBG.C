@@ -1320,8 +1320,7 @@ BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
 	  modripRIP();
 	  break;
 	case IDC_DEBUG_DUMPCHIP:
-	  if(modripGuiDumpChipMem())
-        modripSaveChipMem("chip.mem");
+	  modripChipDump();
       break;
 	default:
 	  break;
