@@ -3,7 +3,8 @@
 /* Convert Amiga graphics data to temporary format suitable for fast          */
 /* drawing on a chunky display.                                               */
 /*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
+/* Authors: Petter Schau                                                      */
+/*          Worfje                                                            */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -57,6 +58,8 @@ ULO graph_deco320hi4[256];
 
 ULO graph_decode_tmp;
 
+ULO serper_debug_register_ecx;
+ULO serper_debug_register_edx;
 
 UBY graph_line1_tmp[1024];
 UBY graph_line2_tmp[1024];
@@ -815,6 +818,19 @@ void graphDecode6Dual_C(void)
 	graphDecodeDualGeneric(6);
 }
 
+/*===========================================================================*/
+/* Calculate all variables connected to the screen emulation                 */
+/* First calculate the ddf variables graph_DDF_start and graph_DDF_word_count*/
+/*   Check if stop is bigger than start                                      */
+/*   Check if strt and stop is mod 8 aligned                                 */
+/*   If NOK then set numberofwords and startpos to 0 and                     */
+/*   DIWvisible vars to 128                                                  */
+/*                                                                           */
+/* NOTE: The following is (was? worfje) (sadly) a prime example of spaghetti code.... (PS) */
+/*       Though it somehow works, so just leave it and hope it does not break*/
+/*===========================================================================*/
+
+
 void graphCalculateWindow_C(void) 
 {
 	ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
@@ -986,3 +1002,125 @@ void graphCalculateWindowHires_C(void)
 		}
 	}
 }
+
+void graphPlayfieldOnOff(void)
+{
+	if (graph_playfield_on != 0) 
+	{
+		// Playfield on, check if top has moved below graph_raster_y
+		// Playfield on, check if playfield is turned off at this line
+		if (!(graph_raster_y != diwybottom))
+		{
+			// %%nopfspecial:
+			graph_playfield_on = 0;
+		}
+	} 
+	else 
+	{
+		// Playfield off, Check if playfield is turned on at this line
+		if (!(graph_raster_y != diwytop))
+		{
+			// Don't turn on when top > bottom
+			if (diwytop < diwybottom)
+			{
+				graph_playfield_on = 1;
+			}
+		}
+	}
+	// OK, here the state of the playfield is taken care of
+}
+
+/*===========================================================================*/
+/* End of line handler for graphics                                          */
+/*===========================================================================*/
+
+void graphEndOfLine_C(void)
+{
+  
+}
+
+
+/*
+void graphEndOfLine(void)
+{
+
+	graph_line* current_graph_line;
+
+	// skip this frame?
+	if (draw_frame_skip != 0) 
+	{
+		// update diw state
+		graphPlayfieldOnOff();
+
+		// skip lines before line $12
+		if (graph_raster_y >= 0x12) {
+
+			// make pointer to linedesc for this line
+			current_graph_line = &graph_frame[draw_buffer_draw][graph_raster_y];
+			// (graph_raster_y * graph_line_end) + (graph_line_end * 314 * draw_buffer_draw));
+
+			// decode sprites if DMA is enabled and raster is after line $18
+			if ((dmacon & 0x20) == 0x20)
+			{
+				if (graph_raster_y >= 0x18) 
+				{
+					spritesDecode();
+				}
+			}
+			
+			// sprites decoded, sprites_onlineflag is set if there are any
+			
+			// update pointer to drawing routine
+			update_drawmode();
+
+			// check if we are clipped
+
+			if ((graph_raster_y >= draw_top) || (graph_raster_y < draw_bottom))
+			{
+				// .decode
+				// visible line, either background or bitplanes
+				if (graph_allow_bpl_line_skip == 0) 
+				{
+					_graphComposeLineOutput_
+				}
+				else
+				{
+					_graphComposeLineOutputSmart_
+				}
+				// add	esp, 4 ????????????????
+
+			}
+			else
+			{
+				// .nop_line
+				// do nop decoding, no screen output needed
+		
+				// pop ebp ?????????????????
+				if (draw_line_BG_routine != draw_line_routine)
+				{
+					// push dword .drawend
+					graphDecodeNOP;
+				}
+			}
+
+			// if diw state changing from background to bitplane output,
+		    // set new drawing routine pointer
+
+			// .draw_end
+			if (draw_switch_bg_to_bpl != 0) {
+
+				draw_line_BPL_manage_routine = draw_line_routine;
+				draw_switch_bg_to_bpl = 0
+
+			}
+
+		}
+	}
+	
+
+	// .skip_frame
+	_graphSpriteHack_
+
+		// no return??? or did something get pushed on the stack?
+}
+*/

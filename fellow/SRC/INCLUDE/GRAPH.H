@@ -194,6 +194,8 @@ extern ULO diwxright;
 extern ULO diwytop;
 extern ULO diwybottom;
 
+extern BOOLE graph_playfield_on;
+
 typedef enum {
   GRAPH_LINE_BG = 0,
   GRAPH_LINE_BPL = 1,
