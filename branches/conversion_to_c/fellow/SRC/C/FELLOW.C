@@ -494,6 +494,11 @@ static void fellowModulesShutdown(void) {
 /*============================================================================*/
 
 int main(int argc, char *argv[]) {
+
+  #ifdef _FELLOW_DEBUG_CRT_MALLOC
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+  #endif
+
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);
 
@@ -506,4 +511,3 @@ int main(int argc, char *argv[]) {
   fellowModulesShutdown();
   return EXIT_SUCCESS;
 }
-

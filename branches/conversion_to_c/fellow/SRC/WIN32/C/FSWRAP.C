@@ -12,8 +12,6 @@
 #include <windows.h>
 #include <winbase.h>
 
-
-
 #include "portable.h"
 #include "defs.h"
 #include "fswrap.h"
