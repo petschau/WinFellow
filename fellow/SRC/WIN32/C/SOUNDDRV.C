@@ -272,51 +272,35 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
   sprintf(s, "ddscaps.dwMaxSecondarySampleRate - %d\n", maxrate);
   fellowAddLog(s);
 
-  
   if (stereo) {
     if (bits16) {
-      if (minrate <= 15650 && maxrate >= 15650)
-	soundDrvAddMode(dsound_device, stereo, bits16, 15650);
-      if (minrate <= 22050 && maxrate >= 22050)
-	soundDrvAddMode(dsound_device, stereo, bits16, 22050);
-      if (minrate <= 31300 && maxrate >= 31300)
-	soundDrvAddMode(dsound_device, stereo, bits16, 31300);
-      if (minrate <= 44100 && maxrate >= 44100)
-	soundDrvAddMode(dsound_device, stereo, bits16, 44100);
+		soundDrvAddMode(dsound_device, stereo, bits16, 15650);
+		soundDrvAddMode(dsound_device, stereo, bits16, 22050);
+		soundDrvAddMode(dsound_device, stereo, bits16, 31300);
+		soundDrvAddMode(dsound_device, stereo, bits16, 44100);
     }
     if (bits8) {
-      if (minrate <= 15650 && maxrate >= 15650)
-	soundDrvAddMode(dsound_device, stereo, !bits8, 15650);
-      if (minrate <= 22050 && maxrate >= 22050)
-	soundDrvAddMode(dsound_device, stereo, !bits8, 22050);
-      if (minrate <= 31300 && maxrate >= 31300)
-	soundDrvAddMode(dsound_device, stereo, !bits8, 31300);
-      if (minrate <= 44100 && maxrate >= 44100)
-	soundDrvAddMode(dsound_device, stereo, !bits8, 44100);
+		soundDrvAddMode(dsound_device, stereo, !bits8, 15650);
+		soundDrvAddMode(dsound_device, stereo, !bits8, 22050);
+		soundDrvAddMode(dsound_device, stereo, !bits8, 31300);
+		soundDrvAddMode(dsound_device, stereo, !bits8, 44100);
     }
   }
   if (mono) {
     if (bits16) {
-      if (minrate <= 15650 && maxrate >= 15650)
-	soundDrvAddMode(dsound_device, !mono, bits16, 15650);
-      if (minrate <= 22050 && maxrate >= 22050)
-	soundDrvAddMode(dsound_device, !mono, bits16, 22050);
-      if (minrate <= 31300 && maxrate >= 31300)
-	soundDrvAddMode(dsound_device, !mono, bits16, 31300);
-      if (minrate <= 44100 && maxrate >= 44100)
-	soundDrvAddMode(dsound_device, !mono, bits16, 44100);
+		soundDrvAddMode(dsound_device, !mono, bits16, 15650);
+		soundDrvAddMode(dsound_device, !mono, bits16, 22050);
+		soundDrvAddMode(dsound_device, !mono, bits16, 31300);
+		soundDrvAddMode(dsound_device, !mono, bits16, 44100);
     }
     if (bits8) {
-      if (minrate <= 15650 && maxrate >= 15650)
-	soundDrvAddMode(dsound_device, !mono, !bits8, 15650);
-      if (minrate <= 22050 && maxrate >= 22050)
-	soundDrvAddMode(dsound_device, !mono, !bits8, 22050);
-      if (minrate <= 31300 && maxrate >= 31300)
-	soundDrvAddMode(dsound_device, !mono, !bits8, 31300);
-      if (minrate <= 44100 && maxrate >= 44100)
-	soundDrvAddMode(dsound_device, !mono, !bits8, 44100);
+		soundDrvAddMode(dsound_device, !mono, !bits8, 15650);
+		soundDrvAddMode(dsound_device, !mono, !bits8, 22050);
+		soundDrvAddMode(dsound_device, !mono, !bits8, 31300);
+		soundDrvAddMode(dsound_device, !mono, !bits8, 44100);
     }
   }
+
   return TRUE;
 }
 
