@@ -1358,9 +1358,10 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
 	  ddraw_device->buffercount = trybuffers;
 	}
       }
-      else { /* No backbuffer */
-        gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
-	ddraw_device->buffercount = trybuffers;
+      else { /* No backbuffer, don't clear if we are in a window */
+		  if (!ddraw_device->mode->windowed)
+			  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
+		  ddraw_device->buffercount = trybuffers;
       }
     }
     success = (ddraw_device->buffercount != 0);
@@ -1623,8 +1624,6 @@ void gfxDrvDDrawRelease(void) {
 }
 
 
-
-
 /*==========================================================================*/
 /* Functions below are the actual "graphics driver API"                     */
 /*==========================================================================*/
@@ -1775,8 +1774,7 @@ void gfxDrvEndOfFrame(void) {
 
 /*==========================================================================*/
 /* Collects information about the DirectX capabilities of this computer     */
-/* After this, a DDraw object exists and the window has been created, but   */
-/* not shown.                                                               */
+/* After this, a DDraw object exists.                                       */
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
