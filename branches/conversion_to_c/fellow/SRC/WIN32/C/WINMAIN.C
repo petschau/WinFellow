@@ -93,6 +93,34 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
   return event_count;
 }
 
+
+typedef struct tagTHREADNAME_INFO
+{
+   DWORD dwType; // must be 0x1000
+   LPCSTR szName; // pointer to name (in user addr space)
+   DWORD dwThreadID; // thread ID (-1=caller thread)
+   DWORD dwFlags; // reserved for future use, must be zero
+} THREADNAME_INFO;
+
+/* added setting of thread names for easier debugging */
+
+void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
+{
+   THREADNAME_INFO info;
+   info.dwType = 0x1000;
+   info.szName = szThreadName;
+   info.dwThreadID = dwThreadID;
+   info.dwFlags = 0;
+
+   __try
+   {
+      RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+   }
+   __except(EXCEPTION_CONTINUE_EXECUTION)
+   {
+   }
+}
+
 #ifdef _MSC_VER
 #ifndef _DEBUG
 #pragma optimize("g", off)
@@ -118,6 +146,7 @@ void winDrvEmulate(void *startfunc, void *param)
 			       param,	            // Thread parameter
 			       0,                   // Creation flags
 			       &dwThreadId);        // ThreadId
+  winDrvSetThreadName(dwThreadId, "WinFellow Main Thread");
   SetTimer(gfx_drv_hwnd, 1, 10, NULL);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;

@@ -1043,6 +1043,7 @@ BOOLE soundDrvEmulationStart(ULO rate,
 			                 dsound_device,             // Thread parameter
 			                 0,                         // Creation flags
 			                 &dsound_device->thread_id);// ThreadId
+    winDrvSetThreadName(dsound_device->thread_id, "WinFellow Sound Thread");
     result = (dsound_device->thread != NULL);
   }
 
