@@ -1,6 +1,12 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include "sound.h"
+#include "cpu.h"
+#include "gameport.h"
+#include "listtree.h"
+
+
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -65,7 +71,7 @@ typedef struct {
   ULO   m_screencolorbits;
   ULO   m_screenrefresh;
   BOOLE m_screenwindowed;
-  BOOLE m_screendrawleds;
+	BOOLE m_screendrawleds;
   ULO   m_frameskipratio;
   ULO   m_horisontalscale;
   ULO   m_verticalscale;
@@ -73,6 +79,11 @@ typedef struct {
   BOOLE m_deinterlace;
   BOOLE m_measurespeed;
 
+  /*==========================================================================*/
+  /* Hold the option for using multiple graphical buffers                     */
+  /*==========================================================================*/
+
+  BOOLE  m_use_multiple_graphical_buffers;
 
   /*==========================================================================*/
   /* Sound configuration                                                      */
@@ -197,8 +208,8 @@ extern BOOLE cfgGetScreenDrawLEDs(cfg *config);
 
 extern void cfgSetFrameSkipRatio(cfg *config, ULO frameskipratio);
 extern ULO cfgGetFrameSkipRatio(cfg *config);
-extern void cfgSetHorisontalScale(cfg *config, ULO horisontalscale);
-extern ULO cfgGetHorisontalScale(cfg *config);
+extern void cfgSetHorizontalScale(cfg *config, ULO horisontalscale);
+extern ULO cfgGetHorizontalScale(cfg *config);
 extern void cfgSetVerticalScale(cfg *config, ULO verticalscale);
 extern ULO cfgGetVerticalScale(cfg *config);
 extern void cfgSetScanlines(cfg *config, BOOLE scanlines);
