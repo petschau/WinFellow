@@ -526,7 +526,7 @@ void cfgSetDefaults(cfg *config) {
   /* Default configuration description                                        */
   /*==========================================================================*/
 
-  cfgSetDescription(config, "Fellow Amiga Emulator V0.4 Configuration");
+  cfgSetDescription(config, "WinFellow Amiga Emulator v0.4.2 configuration");
   
 
   /*==========================================================================*/
@@ -558,9 +558,9 @@ void cfgSetDefaults(cfg *config) {
   /* Default screen configuration                                             */
   /*==========================================================================*/
 
-  cfgSetScreenWidth(config, 800);
-  cfgSetScreenHeight(config, 600);
-  cfgSetScreenColorBits(config, 8);
+  cfgSetScreenWidth(config, 640);
+  cfgSetScreenHeight(config, 400);
+  cfgSetScreenColorBits(config, 16);
   cfgSetScreenWindowed(config, FALSE);
   cfgSetScreenRefresh(config, 0);
 
@@ -570,9 +570,9 @@ void cfgSetDefaults(cfg *config) {
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetHorisontalScale(config, 2);
+  cfgSetHorisontalScale(config, 1);
   cfgSetVerticalScale(config, 1);
-  cfgSetDeinterlace(config, TRUE);
+  cfgSetDeinterlace(config, FALSE);
   cfgSetScanlines(config, FALSE);
 
 
@@ -580,14 +580,14 @@ void cfgSetDefaults(cfg *config) {
   /* Default sound configuration                                              */
   /*==========================================================================*/
 
-  cfgSetSoundEmulation(config, SOUND_NONE);
-  cfgSetSoundRate(config, SOUND_31300);
+  cfgSetSoundEmulation(config, SOUND_PLAY);
+  cfgSetSoundRate(config, SOUND_44100);
   cfgSetSoundStereo(config, TRUE);
   cfgSetSound16Bits(config, TRUE);
   cfgSetSoundFilter(config, SOUND_FILTER_ORIGINAL);
   cfgSetSoundWAVDump(config, FALSE);
-  cfgSetSoundNotification(config, TRUE);
-  cfgSetSoundBufferLength(config, 45);
+  cfgSetSoundNotification(config, SOUND_MMTIMER_NOTIFICATION);
+  cfgSetSoundBufferLength(config, 60);
 
 
   /*==========================================================================*/
@@ -729,7 +729,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value) {
 
 static sound_notifications cfgGetSoundNotificationFromString(STR *value) {
 	if (stricmp(value, "directsound") == 0) return SOUND_DSOUND_NOTIFICATION;
-	else if (stricmp(value, "directsound") == 0) return SOUND_MMTIMER_NOTIFICATION;
+	else if (stricmp(value, "mmtimer") == 0) return SOUND_MMTIMER_NOTIFICATION;
 	return SOUND_MMTIMER_NOTIFICATION;
 }
 
