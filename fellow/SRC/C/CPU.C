@@ -34,6 +34,7 @@ ULO t[65536][8];
 
 /* M68k registers */
 
+ULO d[8], a[8];
 ULO pc, usp, ssp, sr;
 ULO ccr0, ccr1;
 
@@ -51,7 +52,7 @@ ULO thiscycle;
 
 UBY bcd2hex[256], hex2bcd[256];
 
-/* Cycle count calculation for MULX, only approximately, but who cares? */
+/* Cycle count calculation for MULX, approximately. */
 
 UBY mulutab[256], mulstab[256];
 
@@ -242,15 +243,6 @@ void cpu_pc_in_unmapped_mem(void) {
 }
 
 #endif
-
-
-void irqLog(void) {
-  char s[80];
-
-  sprintf(s, "IRQ level: %d %X %d\n", interruptlevel, interruptaddress, interruptflag);
-  fellowAddLog(s);
-}
-
 
 /*============================*/
 /* Extract fields from opcode */
@@ -937,9 +929,9 @@ void i08ini(void) {
                          (size == 1) ? 
                             aww[flats]:
                             awl[flats]);
-          }
           cpu_dis_tab[ind] = i08dis;
         }
+      }
 }
 
 /* Instruction ASL/ASR.X #i,<ea>
@@ -1329,9 +1321,9 @@ void i22ini(void) {
                             (flats == 0) ?
                                14:
                                (12 + tarl[flats]);
-          }
           cpu_dis_tab[ind] = i22dis;
         }
+      }
 }
 
 /* Instruction CMPM.X (Ay)+,(Ax)+
@@ -1546,9 +1538,9 @@ void i28ini(void) {
                          (size == 1) ? 
                             aww[flats]:
                             awl[flats]);
-          }
           cpu_dis_tab[ind] = i28dis;
         }
+      }
 }
 
 /* Instruction exg Rx,Ry
@@ -1720,10 +1712,9 @@ void i33ini(void) {
      0-Routinepointer 1-disasm routine  2-reg */
 
 ULO i34dis(ULO prc, ULO opc, STR *st) {
-  ULO j, pos = 13, reg = get_sreg(opc);
+  ULO j, reg = get_sreg(opc);
   j = fetw(prc+2);
-  sprintf(st,"$%.6X %.4X %.4X              LINK    A%1d,#$%.4X",prc,opc,j,reg,j);
-  
+  sprintf(st,"$%.6X %.4X %.4X              LINK    A%1d,#$%.4X",prc,opc,j,reg,j);  
   return prc+4;
 }
 
@@ -2039,7 +2030,7 @@ void i41ini(void) {
                      4-Areg        5-cycle count                   */
 
 ULO i42dis(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, reg = get_sreg(opc), dreg = get_dreg(opc), o = get_bit12(opc),
+  ULO pos = 13, reg = get_sreg(opc), dreg = get_dreg(opc),
       mode = get_smod(opc), size = get_size3(opc);
   mode = modreg(mode, reg);
   sprintf(st,"$%.6X %.4X                   MOVEA.%c ", prc, opc, sizec(size));
@@ -2081,125 +2072,50 @@ void i42ini(void) {
    0-Routinepointer 1-disasm routine 2-eareg 3-earead/write 4-base cycle time
   ===========================================================================*/
 
-ULO i43dis(ULO prc, ULO opc, STR *st) {
-  char tmp[10];
-  ULO i, first, pos = 18, reg = get_sreg(opc), mode = get_smod(opc), size,
-      dir = get_bit10(opc), regmask, next = 1;
+void cpuMovemRegmaskStrCat(ULO regmask, STR *s, BOOLE predec) {
+  ULO i, j;
+  STR tmp[2][16];
+  STR *tmpp;
+  for (j = 0; j < 2; j++) {
+    tmpp = tmp[j];
+    for (i = (8*j); i < (8 + (8*j)); i++)
+      if (regmask & (1<<i)) *tmpp++ = (STR) (0x30 + ((predec) ? ((7 + 8*j) - i) : (i - j*8)));
+    *tmpp = '\0';
+  }
+  if (tmp[0][0] != '\0') {strcat(s, ((predec) ? "A" : "D")); strcat(s, tmp[0]);}
+  if (tmp[1][0] != '\0') {strcat(s, ((predec) ? "D" : "A")); strcat(s, tmp[1]);}
+}
+
+ULO cpuMovemDis(ULO prc, ULO opc, STR *st) {
+  ULO pos = 18, reg = get_sreg(opc), mode = get_smod(opc), size,
+      dir = get_bit10(opc), regmask;
   size = (!get_bit6(opc)) ? 16:32;
   regmask = fetw(prc+2);
   mode = modreg(mode, reg);
 
   if (dir == 0 && mode == 4) {  /* Register to memory, predecrement */
     sprintf(st,"$%.6X %.4X %.4X              MOVEM.%s ",prc,opc,regmask,((size==16)?"W":"L"));
-    first=TRUE;
-    for (i=0;i<8;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"A%d",(7-i));
-          strcat(st,tmp);
-          first = FALSE;
-          }
-        else {
-          sprintf(tmp,"%d",(7-i));
-          strcat(st,tmp);
-          }
-        }
-    for (i=8;i<16;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"D%d",(15-i));
-          strcat(st,tmp);
-          first = FALSE;
-          next = FALSE;
-          }
-        else {
-          if (next)
-            sprintf(tmp,"D%d",(15-i));
-          else
-            sprintf(tmp,"%d",(15-i));
-          next = FALSE;
-          strcat(st,tmp);
-          }
-        }
-      strcat(st,",");
-      prc = disAdrMode(reg,prc+4,st,size,mode,&pos);
+    cpuMovemRegmaskStrCat(regmask, st, TRUE);
+    strcat(st,",");
+    prc = disAdrMode(reg,prc+4,st,size,mode,&pos);
     }     
   else if (dir) { /* Memory to register, any legal adressmode */
     sprintf(st,"$%.6X %.4X %.4X              MOVEM.%s ",prc,opc,regmask,((size==16)?"W":"L"));
 
     prc = disAdrMode(reg,prc+4,st,size,mode,&pos);
     strcat(st,",");
-    first=TRUE;
-    for (i=0;i<8;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"D%d",i);
-          strcat(st,tmp);
-          first = FALSE;
-          }
-        else {
-          sprintf(tmp,"%d",i);
-          strcat(st,tmp);
-          }
-        }
-    for (i=8;i<16;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"A%d",i-8);
-          strcat(st,tmp);
-          first = FALSE;
-          next = FALSE;
-          }
-        else {
-          if (next)
-            sprintf(tmp,"A%d",i-8);
-          else
-            sprintf(tmp,"%d",i-8);
-          next = FALSE;  
-          strcat(st,tmp);
-          }
-        }
-    }     
+    cpuMovemRegmaskStrCat(regmask, st, FALSE);
+  }     
   else {  /* Register to memory, the rest of the adr.modes */
     sprintf(st,"$%.6X %.4X %.4X              MOVEM.%s ",prc,opc,regmask,((size==16)?"W":"L"));
-    first=TRUE;
-    for (i=0;i<8;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"D%d",i);
-          strcat(st,tmp);
-          first = FALSE;
-          }
-        else {
-          sprintf(tmp,"%d",i);
-          strcat(st,tmp);
-          }
-        }
-    for (i=8;i<16;i++) {
-      if ((regmask&(1<<i)) != 0)
-        if (first) {
-          sprintf(tmp,"A%d",(i-8));
-          strcat(st,tmp);
-          first = FALSE;
-          next = FALSE;
-          }
-        else {
-          if (next)
-            sprintf(tmp,"A%d",(i-8));
-          else
-            sprintf(tmp,"%d",(i-8));
-          next = FALSE;
-          strcat(st,tmp);
-          }
-
-        }
+    cpuMovemRegmaskStrCat(regmask, st, FALSE);
     strcat(st,",");
     prc = disAdrMode(reg,prc+4,st,size,mode,&pos);
-    }
+  }
   return prc;
 }
 
-void i43ini(void) {
+void cpuMovemIni(void) {
   ULO op=0x4880,ind,modes,regs,flats,dir,sz;
   for (dir = 0; dir < 2; dir++)
     for (sz = 0; sz < 2; sz++) 
@@ -2211,19 +2127,19 @@ void i43ini(void) {
             t[ind][0] = (sz == 0) ?
                            ((dir == 0) ?
                              ((flats == 4) ?
-                               (ULO) i43_W_PREM:
-                               (ULO) i43_W_CONM):
+                               (ULO) MOVEM_W_PREM:
+                               (ULO) MOVEM_W_CONM):
                              ((flats == 3) ?
-                               (ULO) i43_W_POSTR:
-                               (ULO) i43_W_CONR)):
+                               (ULO) MOVEM_W_POSTR:
+                               (ULO) MOVEM_W_CONR)):
                            ((dir == 0) ?
                              ((flats == 4) ?
-                               (ULO) i43_L_PREM:
-                               (ULO) i43_L_CONM):
+                               (ULO) MOVEM_L_PREM:
+                               (ULO) MOVEM_L_CONM):
                              ((flats == 3) ?
-                               (ULO) i43_L_POSTR:
-                               (ULO) i43_L_CONR));
-            cpu_dis_tab[ind] = i43dis;
+                               (ULO) MOVEM_L_POSTR:
+                               (ULO) MOVEM_L_CONR));
+            cpu_dis_tab[ind] = cpuMovemDis;
             t[ind][2] = greg(1, regs);
             t[ind][3] = (ULO) eac[flats];
             t[ind][4] = (sz == 0) ?
@@ -3622,7 +3538,7 @@ void i311ini(void) {
   ======================================================*/
 
 ULO i312dis(ULO prc,ULO opc,STR *st) {  
-  ULO pos = 18, reg = get_sreg(opc), dreg = get_dreg(opc),
+  ULO pos = 18, reg = get_sreg(opc),
       mode = get_smod(opc), ext = fetw(prc + 2);
   STR stmp[16];
   
@@ -3971,7 +3887,8 @@ LON i320_C(ULO ext, ULO divisor) {
   if (divisor != 0) {
     dq = (ext>>12) & 7; /* Get operand registers, size and sign */
     dr = ext & 7;
-    if ((size64 = (ext>>10) & 1) && (cpu_major == 6))
+    size64 = (ext>>10) & 1;
+    if (size64 && (cpu_major == 6))
       return DIV_UNIMPLEMENTED_060;
     sign = (ext>>11) & 1;
     if (sign) {         /* Convert operands to 64 bit */
@@ -4371,7 +4288,7 @@ ULO i328dis_030(ULO prc, ULO opc, STR *st) {
 /* PFLUSH disassemble on EC040 */
 
 ULO PFLUSHDisEC040(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, reg = get_sreg(opc), opmode;
+  ULO reg = get_sreg(opc), opmode;
   STR namesuff[16];
   
   opmode = (opc & 0x18)>>3;
@@ -4396,7 +4313,7 @@ ULO PFLUSHDisEC040(ULO prc, ULO opc, STR *st) {
 /* PTEST disassemble on EC040 */
 
 ULO PTESTDisEC040(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, reg = get_sreg(opc), rw;
+  ULO reg = get_sreg(opc), rw;
   
   rw = (opc & 0x20)>>5;
   sprintf(st, "$%.6X %.4X                   PTEST%c (A%d)", prc, opc,
@@ -4483,8 +4400,7 @@ void i329ini(void) {
   ===========================================================================*/
 
 ULO i330dis(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, mode = get_smod(opc), reg = get_sreg(opc),
-      bratype = get_branchtype(opc), ext, op;
+  ULO bratype = get_branchtype(opc), ext = 0, op;
   char stmp[16];
   
   op = (opc & 7) - 2;
@@ -4712,7 +4628,7 @@ void CINVGetScopeDesc(ULO scope, STR *scopedesc, STR *cachedesc, ULO reg) {
 }
 
 ULO CINVDis040(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, reg = get_sreg(opc), cache = (opc>>6) & 3, scope =(opc>>3) & 3;
+  ULO reg = get_sreg(opc), cache = (opc>>6) & 3, scope =(opc>>3) & 3;
   STR scopedesc[32];
   STR cachedesc[8];
 
@@ -4754,7 +4670,7 @@ void CINVIni(void) {
 
 
 ULO CPUSHDis040(ULO prc, ULO opc, STR *st) {
-  ULO pos = 13, reg = get_sreg(opc), cache = (opc>>6) & 3, scope =(opc>>3) & 3;
+  ULO reg = get_sreg(opc), cache = (opc>>6) & 3, scope =(opc>>3) & 3;
   STR scopedesc[32];
   STR cachedesc[8];
 
@@ -4890,35 +4806,6 @@ ULO cpuGetPC(ULO address) {
 #else
   return address;
 #endif
-}
-
-
-/*============================================================================*/
-/* CPU instruction log                                                        */
-/*============================================================================*/
-
-BOOLE cpu_log;
-BOOLE cpu_log_first;
-
-void cpuSetLog(BOOLE log) {
-  cpu_log = log;
-}
-
-BOOL cpuGetLog(void) {
-  return cpu_log;
-}
-
-void cpuLog(void) {
-  if (cpu_log) {
-    FILE *F = fopen("cpu.log", (cpu_log_first) ? "w" : "a");
-    cpu_log_first = FALSE;
-    if (F) {
-      char s[256];
-      disOpcode(cpuGetPC(pc), s);
-      fprintf(F, "%s\n", s);
-      fclose(F);
-    }
-  }
 }
 
 
@@ -5426,7 +5313,7 @@ void cpuInit(void) {
   i40ini();
   i41ini();
   i42ini();
-  i43ini();
+  cpuMovemIni();
   i45ini();  /* MOVEQ */
   i46ini();
   i47ini();
@@ -5485,8 +5372,6 @@ void cpuStartup(void) {
   cpuSetType(M68000);
   cpu_opcode_table_is_invalid = TRUE;
   cpu_stop = FALSE;
-  cpuSetLog(FALSE);
-  cpu_log_first = TRUE;
 }
 
 void cpuShutdown(void) {
