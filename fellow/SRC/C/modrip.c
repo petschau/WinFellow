@@ -11,7 +11,10 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/27:                                                                */
+/* - chipmem dump now also saves bogo and fast mem                            */
 /* 2000/12/18:                                                                */
+/* - a detected Pro-Wizard can automatically run over the chipmem file        */
 /* - added a "dump chipmem" routine                                           */
 /* - added ThePlayer 4 support                                                */
 /* - added ProRunner 2.0 support                                              */
@@ -97,7 +100,7 @@ static BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 }
 
 /*============================================*/
-/* saves a chip memory dump 1:1 into a file   */
+/* save a memory dump 1:1 into a file         */
 /* useful for running other rippers over that */
 /* Thanks to Sylvain for the idea :)          */
 /*============================================*/
@@ -111,6 +114,30 @@ static BOOLE modripSaveChipMem(char *filename)
   written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
   fclose(memfile);
   if(written < memoryGetChipSize()) return FALSE;
+  return TRUE;
+}
+
+static BOOLE modripSaveBogoMem(char *filename)
+{
+  FILE *memfile;
+  size_t written;
+  if(!filename || !(*filename)) return FALSE;
+  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  written = fwrite(memory_bogo, 1, memoryGetBogoSize(), memfile);
+  fclose(memfile);
+  if(written < memoryGetBogoSize()) return FALSE;
+  return TRUE;
+}
+
+static BOOLE modripSaveFastMem(char *filename)
+{
+  FILE *memfile;
+  size_t written;
+  if(!filename || !(*filename)) return FALSE;
+  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  written = fwrite(memory_fast, 1, memoryGetFastSize(), memfile);
+  fclose(memfile);
+  if(written < memoryGetFastSize()) return FALSE;
   return TRUE;
 }
 
@@ -903,8 +930,11 @@ void modripChipDump(void)
   BOOLE Saved;
   int result;
 
-  if(modripGuiDumpChipMem())
+  if(modripGuiDumpChipMem()) {
     Saved = modripSaveChipMem("chip.mem");
+    if(memoryGetBogoSize()) modripSaveBogoMem("bogo.mem");
+    if(memoryGetFastSize()) modripSaveFastMem("fast.mem");
+  }
   if(Saved) {
     if(!access("prowiz.exe", 04)) {
       /* prowiz.exe has been found */

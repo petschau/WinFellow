@@ -198,8 +198,9 @@ BOOLE modripGuiDumpChipMem(void)
   char message[MODRIP_TEMPSTRLEN];
   int result;
 
-  sprintf(message, "You are about to dump the chip memory into the file \"chip.mem\".");
-  strcat(message, " This feature can be used to run external module rippers over it.");
+  sprintf(message, "You are about to dump the memory into the files \"chip.mem\",");
+  strcat(message, " \"fast.mem\" and \"bogo.mem\".");
+  strcat(message, " This feature can be used to run external module rippers over them.");
   strcat(message, " Do you really want to do that?");
   result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
     MB_ICONQUESTION);
@@ -215,7 +216,7 @@ BOOLE modripGuiRunProWiz(void)
   int result;
 
   sprintf(message, "You have Pro-Wizard installed in WinFellow's directory.");
-  strcat(message, " Do you want to run it over the saved file?");
+  strcat(message, " Do you want to run it over the saved chip memory file?");
   result = MessageBox(modrip_hWnd, message, "Memory scan.", MB_YESNO |
     MB_ICONQUESTION);
   return(result == IDYES);
