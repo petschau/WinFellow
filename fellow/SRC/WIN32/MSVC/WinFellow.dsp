@@ -1849,23 +1849,7 @@ SOURCE=.\gui_debugger.h
 # Begin Source File
 
 SOURCE=.\GUI_debugger.rc
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
 # PROP Exclude_From_Build 1
-# ADD BASE RSC /l 0x409
-# ADD RSC /l 0x417 /fo"Debug/GUI_debugger.res"
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# PROP Exclude_From_Build 1
-
-!ENDIF 
-
 # End Source File
 # Begin Source File
 
@@ -1877,7 +1861,8 @@ SOURCE=.\GUI_general.rc
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
 
-# PROP Exclude_From_Build 1
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x417
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
 
@@ -1886,9 +1871,13 @@ SOURCE=.\GUI_general.rc
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
 
-# PROP Exclude_From_Build 1
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x417
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x417
 
 !ENDIF 
 
