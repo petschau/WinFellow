@@ -284,11 +284,11 @@ cwdiwerrh:	xor	ecx,ecx
 		FALIGN32
 
 global _rdmaconr_
-_rdmaconr_:	mov	edx, dword [bltzero]
-		and	edx, 1
-		xor	edx, 1
-		shl	edx, 13
-		or	edx, dword [dmaconr]
+_rdmaconr_:	mov	edx, 0
+		test	dword [bltzero], 0ffffh
+		jnz	.l1
+		mov	edx, 2000h	
+.l1:		or	edx, dword [dmaconr]
 		ret
 
 
