@@ -54,6 +54,7 @@
 #include "portable.h"
 
 #include <windowsx.h>
+#include "resource.h"
 #include <ddraw.h>
 #include <dsound.h>
 
@@ -494,7 +495,7 @@ BOOLE gfxDrvWindowClassInitialize(void) {
   wc1.cbClsExtra = 0;
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
-  wc1.hIcon = NULL;
+  wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc1.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);
   wc1.lpszClassName = "FellowWindowClass";
@@ -535,8 +536,8 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
       GetMenu(gfx_drv_hwnd) != NULL,
       GetWindowExStyle(gfx_drv_hwnd));
     MoveWindow(gfx_drv_hwnd,
-      0, /*CW_USEDEFAULT*/,
-      0, /*CW_USEDEFAULT*/,
+      0, /*CW_USEDEFAULT*/
+      0, /*CW_USEDEFAULT*/
       rc1.right - rc1.left,
       rc1.bottom - rc1.top,
       FALSE);
@@ -568,7 +569,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
-      "Fellow Alpha V0.4.1 build 1",
+      "WinFellow alpha v0.4.1 build 1",
       WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
       CW_USEDEFAULT,
       SW_SHOW,
@@ -582,7 +583,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   else {
     gfx_drv_hwnd = CreateWindowEx(WS_EX_TOPMOST,
       "FellowWindowClass",
-      "Fellow Alpha V0.4.1 build 1",
+      "WinFellow alpha v0.4.1 build 1",
       WS_POPUP,
       0,
       0,
