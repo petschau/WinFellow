@@ -101,6 +101,25 @@ extern ULO audvol[4];
 extern ULO audlen[4];
 extern ULO audpercounter[4];
 
+#ifndef soundState1
+#define soundState1 ASMRENAME(soundState1)
+extern void soundState1(ULO channelno);
+#endif
+#ifndef soundState2
+#define soundState2 ASMRENAME(soundState2)
+extern void soundState2(ULO channelno);
+#endif
+#ifndef soundState3
+#define soundState3 ASMRENAME(soundState3)
+extern void soundState3(ULO channelno);
+#endif
+#ifndef soundState5
+#define soundState5 ASMRENAME(soundState5)
+extern void soundState5(ULO channelno);
+#endif
+
+
+
 /*===============================*/
 /* Handle of the main dialog box */
 /*===============================*/
@@ -982,29 +1001,19 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-#ifdef ALIGN_CHECK
-    sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", audiostate0, audiostate1,
-	    audiostate2, audiostate3, audiostate5);
+    sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", soundState0, soundState1,
+	    soundState2, soundState3, soundState5);
     y = wdbgLineOut(hDC, s, x, y);
-#endif
 
     for (i = 0; i < 4; i++) {
-      /* @@@@@ changed register names ? what is that now?
-         sprintf(s, "Ch%i State: %d Lenw: %d Len: %d per: %d Pcnt: %X Vol: %d", i,
-         (audstate[i] == audiostate0) ? 0 :
-         (audstate[i] == audiostate1) ? 1 :
-         (audstate[i] == audiostate2) ? 2 :
-         (audstate[i] == audiostate3) ? 3 :
-         (audstate[i] == audiostate5) ? 5 : -1, audlenw[i], audlen[i],
-         audper[i], audpercounter[i], audvol[i]); */
       sprintf(s,
 	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
 	      i,
-	      /*(audstate[i] == soundState0) ? 0 :
+	      (audstate[i] == soundState0) ? 0 :
 	         (audstate[i] == soundState1) ? 1 :
 	         (audstate[i] == soundState2) ? 2 :
 	         (audstate[i] == soundState3) ? 3 :
-	         (audstate[i] == soundState5) ? 5 : */ -1, audlenw[i],
+	         (audstate[i] == soundState5) ? 5 : -1, audlenw[i],
 	      audlen[i], audper[i], audpercounter[i], audvol[i]);
       y = wdbgLineOut(hDC, s, x, y);
     }
