@@ -69,6 +69,7 @@
 #include "sound.h"
 #include "sprite.h"
 #include "modrip.h"
+#include "modrip_win32.h"
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -1318,6 +1319,10 @@ BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
 	case IDC_DEBUG_MODRIP:
 	  modripRIP();
 	  break;
+	case IDC_DEBUG_DUMPCHIP:
+	  if(modripGuiDumpChipMem())
+        modripSaveChipMem("chip.mem");
+      break;
 	default:
 	  break;
       }

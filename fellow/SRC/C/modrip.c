@@ -12,6 +12,7 @@
 /* Changelog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/18:                                                                */
+/* - added a "dump chipmem" routine                                           */
 /* - added ThePlayer 4 support                                                */
 /* - added ProRunner 2.0 support                                              */
 /* - now only the allocated memory areas are scanned instead of the whole mem */
@@ -85,14 +86,31 @@ static BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 
   RIPLOG3("mod-ripper saving range 0x%06x - 0x%06x\n", info->start, info->end);
 
-  if ((modfile = fopen(info->filename, "w+b")) == NULL)
-    return FALSE;
+  if ((modfile = fopen(info->filename, "w+b")) == NULL) return FALSE;
   for (i = info->start; i <= info->end; i++)
     fputc((*func)(i), modfile);
   fclose(modfile);
 
   RIPLOG2("mod-ripper wrote file %s.\n", info->filename);
 
+  return TRUE;
+}
+
+/*============================================*/
+/* saves a chip memory dump 1:1 into a file   */
+/* useful for running other rippers over that */
+/* Thanks to Sylvain for the idea :)          */
+/*============================================*/
+
+BOOLE modripSaveChipMem(char *filename)
+{
+  FILE *memfile;
+  size_t written;
+  if(!filename || !(*filename)) return FALSE;
+  if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
+  written = fwrite(memory_chip, 1, memoryGetChipSize(), memfile);
+  fclose(memfile);
+  if(written < memoryGetChipSize()) return FALSE;
   return TRUE;
 }
 

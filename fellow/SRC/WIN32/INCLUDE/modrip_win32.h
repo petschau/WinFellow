@@ -24,5 +24,6 @@ extern BOOLE modripGuiRipFloppy(int);
 extern BOOLE modripGuiRipMemory(void);
 extern void modripGuiUnInitialize(void);
 extern void modripGuiError(char *);
+extern BOOLE modripGuiDumpChipMem(void);
 
 #endif
