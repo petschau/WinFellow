@@ -282,7 +282,7 @@ void mouseDrvStateHasChanged(BOOLE active) {
 /* Mouse toggle focus                                                        */
 /*===========================================================================*/
 
-void mouseDrvToggleFocus() {
+void mouseDrvToggleFocus(void) {
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
 }
@@ -292,7 +292,7 @@ void mouseDrvToggleFocus() {
 /* Mouse movement handler                                                    */
 /*===========================================================================*/
 
-void mouseDrvMovementHandler() {
+void mouseDrvMovementHandler(void) {
   if (mouse_drv_in_use) {
 	static LON lx = 0;
 	static LON ly = 0;

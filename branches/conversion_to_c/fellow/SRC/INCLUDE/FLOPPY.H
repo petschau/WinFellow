@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.4.2.3 2004-06-03 10:06:59 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.4.2.4 2004-06-03 14:19:52 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -158,5 +158,7 @@ extern void floppyEmulationStart(void);
 extern void floppyEmulationStop(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
+
+extern void floppyEndOfLineC(void);
 
 #endif

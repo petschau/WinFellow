@@ -243,12 +243,12 @@ ULO cfgGetFrameskipRatio(cfg *config) {
   return config->m_frameskipratio;
 }
 
-void cfgSetHorisontalScale(cfg *config, ULO horisontalscale) {
-  config->m_horisontalscale = horisontalscale;
+void cfgSetHorizontalScale(cfg *config, ULO horizontalscale) {
+  config->m_horizontalscale = horizontalscale;
 }
 
 ULO cfgGetHorizontalScale(cfg *config) {
-  return config->m_horisontalscale;
+  return config->m_horizontalscale;
 }
 
 void cfgSetVerticalScale(cfg *config, ULO verticalscale) {
@@ -581,7 +581,7 @@ void cfgSetDefaults(cfg *config) {
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetHorisontalScale(config, 0);
+  cfgSetHorizontalScale(config, 0);
   cfgSetVerticalScale(config, 1);
   cfgSetDeinterlace(config, FALSE);
   cfgSetScanlines(config, FALSE);
@@ -1087,7 +1087,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
       cfgSetScreenDrawLEDs(config, cfgGetBOOLEFromString(value));
     }
     else if (stricmp(option, "gfx_lores") == 0) {
-      cfgSetHorisontalScale(config, cfgGetHorizontalScaleFromString(value));
+      cfgSetHorizontalScale(config, cfgGetHorizontalScaleFromString(value));
     }
     else if (stricmp(option, "gfx_linemode") == 0) {
       cfgSetScanlines(config, cfgGetScanlinesFromString(value));

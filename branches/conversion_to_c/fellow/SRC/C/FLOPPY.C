@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.8 2004-06-03 10:06:58 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.9 2004-06-03 14:19:51 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -690,7 +690,6 @@ void floppyImageIPFLoad(ULO drive) {
 
     for (i = 0; i < floppy[drive].tracks; i++) {
         floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
-        //capsLoadRevolution(drive, i, floppy[drive].trackinfo[i].mfm_data, &floppy[drive].trackinfo[i].mfm_length);
         capsLoadTrack(drive,
             i,
             floppy[drive].trackinfo[i].mfm_data,

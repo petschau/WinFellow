@@ -30,6 +30,7 @@ Tuesday, September 05, 2000: nova
 #include "defs.h"
 #include "keycodes.h"
 #include "kbdparser.h"
+#include "fellow.h"
 #include <stdio.h>
 
 
@@ -417,7 +418,7 @@ BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
-	int AmigaIndex, PcIndex, ReplIndex;
+	int AmigaIndex, PcIndex;
 
 	f = fopen( szFilename, "w" );
 	if( !f )

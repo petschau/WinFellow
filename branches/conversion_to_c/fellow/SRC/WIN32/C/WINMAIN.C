@@ -263,7 +263,6 @@ void winDrvSetRegistryKeys(char **argv) {
     *locc = '\0';
     if (p[1] == ':' && p[2] == '\\')
     {
-      UINT drivetype;
       char p2[8];
       p2[0] = p[0];
       p2[1] = ':';
