@@ -1,7 +1,9 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* uaesupp.c -- UAE support                                                */
+/* @(#) $Id: UAESUPP.C,v 1.1.1.1.2.2 2004-05-27 09:44:38 carfesh Exp $         */
+/*                                                                         */
+/* UAE support                                                             */
 /*                                                                         */
 /* Stuff that Fellow does not have, and the UAE filesystem-hander needs    */
 /*                                                                         */
