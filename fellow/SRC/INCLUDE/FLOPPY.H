@@ -24,6 +24,7 @@ void wdsksync(ULO, ULO);
 typedef struct {
   ULO sync;       /* Sync word */
   ULO length;     /* Track length */
+  ULO lengthfile; /* length of track in file */
   BOOLE valid;    /* Data found in data is valid (ie. loaded from disk) */
   ULO fileoffset; /* Track starts at this offset in image file */
   UBY *buffer;    /* Pointer to MFM data for track */

@@ -629,46 +629,54 @@ void floppyImageNormalLoad(ULO drive) {
 /*========================*/
 
 void floppyImageExtendedLoad(ULO drive) {
-  ULO i, j, offset;
+  ULO i, j;
+  ULO fileoffset; /* position of current track in the image file */
+  ULO memoffset;  /* position of current track in the floppy cache */
   UBY tinfo[4];
-  
-#ifdef _DEBUG
-  fellowAddLog("Now reading EXT1 image.\n");
-#endif
+
+  /* read table from header containing sync and length words */
   fseek(floppy[drive].F, SEEK_SET, 8);
   for (i = 0; i < floppy[drive].tracks*2; i++) {
     fread(tinfo, 1, 4, floppy[drive].F);
-    floppy[drive].trackinfo[i].sync =   (ULO) ((tinfo[0] <<8) | tinfo[1]);
-    floppy[drive].trackinfo[i].length = (ULO) ((tinfo[2] <<8) | tinfo[3]);
+    floppy[drive].trackinfo[i].sync       = (ULO) ((tinfo[0] << 8) | tinfo[1]);
+    floppy[drive].trackinfo[i].lengthfile = (ULO) ((tinfo[2] << 8) | tinfo[3]);
   }
-  offset = floppy[drive].tracks*8 + 8;
-#ifdef _DEBUG
-  fellowAddLog("First offset: %u\n", offset);
-#endif
-  fseek(floppy[drive].F, SEEK_SET, offset);
+
+   /* initial offsets */
+  fileoffset = floppy[drive].tracks*8 + 8;
+  memoffset = 0;
+
+  /* read the actual track data */
+  fseek(floppy[drive].F, SEEK_SET, fileoffset);
   for (i = 0; i < floppy[drive].tracks*2; i++) {
-    floppy[drive].trackinfo[i].fileoffset = offset;
     if (floppy[drive].cached) {
-      fread(tmptrack, 1, floppy[drive].trackinfo[i].length, floppy[drive].F);
-      floppy[drive].trackinfo[i].buffer = floppy[drive].cache + offset - 
-		  floppy[drive].tracks*8 - 8;
-      floppy[drive].trackinfo[i].valid = TRUE;
+      floppy[drive].trackinfo[i].buffer = floppy[drive].cache + memoffset;
+	  floppy[drive].trackinfo[i].fileoffset = fileoffset;
+	  floppy[drive].trackinfo[i].valid = TRUE;
+	  
+	  /* encode/copy the data */
 	  if(!floppy[drive].trackinfo[i].sync) /* AmigaDOS tracks */
-	  {
-        floppy[drive].trackinfo[i].sync = 0x4489;
-		floppy[drive].trackinfo[i].length = 11*1088;
+	  { 
+		floppy[drive].trackinfo[i].length = floppy[drive].trackinfo[i].lengthfile/512*1088;
+		if(fread(tmptrack, 1, floppy[drive].trackinfo[i].lengthfile, floppy[drive].F)
+			< floppy[drive].trackinfo[i].lengthfile) floppy[drive].trackinfo[i].valid = FALSE;
+		floppy[drive].trackinfo[i].sync = 0x4489;
         floppyTrackMFMEncode(i, tmptrack, floppy[drive].trackinfo[i].buffer,
 			floppy[drive].trackinfo[i].sync);
 	  }
 	  else /* raw MFM tracks */
 	  {
-         memcpy(floppy[drive].trackinfo[i].buffer, tmptrack, 
-           floppy[drive].trackinfo[i].length);
-		 for(j = 0; j < floppy[drive].trackinfo[i].length; j+=2)
+         floppy[drive].trackinfo[i].length = floppy[drive].trackinfo[i].lengthfile;
+		 if(fread(floppy[drive].trackinfo[i].buffer,
+           1, floppy[drive].trackinfo[i].lengthfile, floppy[drive].F)
+		     < floppy[drive].trackinfo[i].lengthfile) floppy[drive].trackinfo[i].valid = FALSE;
+		 
+		 for(j = 0; j < floppy[drive].trackinfo[i].length/2; j++)
 		 {
-			 UBY tmp = floppy[drive].trackinfo[i].buffer[j];
-			 floppy[drive].trackinfo[i].buffer[j] = floppy[drive].trackinfo[i].buffer[j+1];
-			 floppy[drive].trackinfo[i].buffer[j+1] = tmp;
+            /* swap big endian to little endian; only do this on little endian systems */
+            UWO *mfm = ((UWO *)floppy[drive].trackinfo[i].buffer) + j;
+            UBY *data = (UBY *) mfm;
+            *mfm = ((*data) << 8) | *(data + 1);
 		 }
 	  }
     }
@@ -676,14 +684,9 @@ void floppyImageExtendedLoad(ULO drive) {
       floppy[drive].trackinfo[i].buffer = floppy[drive].cache;
       floppy[drive].trackinfo[i].valid = FALSE;
     }
-#ifdef _DEBUG
-	fellowAddLog("offset track %u: %u\n", i, offset);
-#endif
-    offset += floppy[drive].trackinfo[i].length;
+	memoffset  += floppy[drive].trackinfo[i].length;
+    fileoffset += floppy[drive].trackinfo[i].lengthfile;
   }     
-#ifdef _DEBUG
-  fellowAddLog("last offset: %u\n", offset);
-#endif
   floppy[drive].inserted = TRUE;
   floppy[drive].insertedframe = draw_frame_count;
 }
