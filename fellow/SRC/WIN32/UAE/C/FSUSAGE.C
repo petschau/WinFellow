@@ -74,8 +74,6 @@ get_fs_usage (path, disk, fsp)
     DWORD NumberOfFreeClusters;
     DWORD TotalNumberOfClusters;
 
-    fname_atow (path, buf1, sizeof buf1);
-
     GetFullPathName (buf1, sizeof buf2, buf2, NULL);
 
     buf2[3] = 0;
@@ -83,7 +81,7 @@ get_fs_usage (path, disk, fsp)
     if (!GetDiskFreeSpace (buf2, &SectorsPerCluster, &BytesPerSector,
 			   &NumberOfFreeClusters, &TotalNumberOfClusters))
     {
-	/* lasterror = GetLastError ();*/
+	/*lasterror = GetLastError ();*/
 	return -1;
     }
 
