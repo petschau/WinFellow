@@ -3,7 +3,7 @@
 /*===========================================================================*/
 
 #include <windows.h>
-#include "resource.h"
+#include "gui_general.h"
 #include "defs.h"
 #include "wgui.h"
 #include "wdbg.h"
