@@ -553,9 +553,9 @@ void cfgSetDefaults(cfg *config) {
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetHorisontalScale(config, 1);
+  cfgSetHorisontalScale(config, 2);
   cfgSetVerticalScale(config, 1);
-  cfgSetDeinterlace(config, FALSE);
+  cfgSetDeinterlace(config, TRUE);
   cfgSetScanlines(config, FALSE);
 
 
