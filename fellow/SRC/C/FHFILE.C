@@ -234,7 +234,7 @@ void fhfileDiag(void) {
   fhfile_configdev = a[3];
   memoryDmemSetLongNoCounter(FHFILE_MAX_DEVICES, 4088);
   memoryDmemSetLongNoCounter(fhfile_configdev, 4092);
-  d[0] = 0;
+  d[0] = 1;
 }
 
 
