@@ -51,6 +51,98 @@ FDATASECTIONSTART
 %include "data/graph.inc"
 %include "data/draw.inc"
 
+
+;-----------------------------------------------------------------------------
+; Enable this for detailed profiling, log written to drawprofile.txt
+; It can be imported into excel for better viewing
+;
+;%define DRAW_TSC_PROFILE
+;
+;-----------------------------------------------------------------------------
+
+%ifdef DRAW_TSC_PROFILE
+CDATAEXTERN dlsbg1x8_tmp
+CDATAEXTERN dlsbg1x8
+CDATAEXTERN dlsbg1x8_times
+CDATAEXTERN dlsbg1x8_pixels
+
+CDATAEXTERN dlsbg1x8mmx_tmp
+CDATAEXTERN dlsbg1x8mmx
+CDATAEXTERN dlsbg1x8mmx_times
+CDATAEXTERN dlsbg1x8mmx_pixels
+
+CDATAEXTERN dlsbg2x8_tmp
+CDATAEXTERN dlsbg2x8
+CDATAEXTERN dlsbg2x8_times
+CDATAEXTERN dlsbg2x8_pixels
+
+CDATAEXTERN dlsbg2x8mmx_tmp
+CDATAEXTERN dlsbg2x8mmx
+CDATAEXTERN dlsbg2x8mmx_times
+CDATAEXTERN dlsbg2x8mmx_pixels
+
+CDATAEXTERN dlsbg1x16_tmp
+CDATAEXTERN dlsbg1x16
+CDATAEXTERN dlsbg1x16_times
+CDATAEXTERN dlsbg1x16_pixels
+
+CDATAEXTERN dlsbg1x16mmx_tmp
+CDATAEXTERN dlsbg1x16mmx
+CDATAEXTERN dlsbg1x16mmx_times
+CDATAEXTERN dlsbg1x16mmx_pixels
+
+CDATAEXTERN dlsbg2x16_tmp
+CDATAEXTERN dlsbg2x16
+CDATAEXTERN dlsbg2x16_times
+CDATAEXTERN dlsbg2x16_pixels
+
+CDATAEXTERN dlsbg2x16mmx_tmp
+CDATAEXTERN dlsbg2x16mmx
+CDATAEXTERN dlsbg2x16mmx_times
+CDATAEXTERN dlsbg2x16mmx_pixels
+
+CDATAEXTERN dlsbg1x24_tmp
+CDATAEXTERN dlsbg1x24
+CDATAEXTERN dlsbg1x24_times
+CDATAEXTERN dlsbg1x24_pixels
+
+CDATAEXTERN dlsbg1x24mmx_tmp
+CDATAEXTERN dlsbg1x24mmx
+CDATAEXTERN dlsbg1x24mmx_times
+CDATAEXTERN dlsbg1x24mmx_pixels
+
+CDATAEXTERN dlsbg2x24_tmp
+CDATAEXTERN dlsbg2x24
+CDATAEXTERN dlsbg2x24_times
+CDATAEXTERN dlsbg2x24_pixels
+
+CDATAEXTERN dlsbg2x24mmx_tmp
+CDATAEXTERN dlsbg2x24mmx
+CDATAEXTERN dlsbg2x24mmx_times
+CDATAEXTERN dlsbg2x24mmx_pixels
+
+CDATAEXTERN dlsbg1x32_tmp
+CDATAEXTERN dlsbg1x32
+CDATAEXTERN dlsbg1x32_times
+CDATAEXTERN dlsbg1x32_pixels
+
+CDATAEXTERN dlsbg1x32mmx_tmp
+CDATAEXTERN dlsbg1x32mmx
+CDATAEXTERN dlsbg1x32mmx_times
+CDATAEXTERN dlsbg1x32mmx_pixels
+
+CDATAEXTERN dlsbg2x32_tmp
+CDATAEXTERN dlsbg2x32
+CDATAEXTERN dlsbg2x32_times
+CDATAEXTERN dlsbg2x32_pixels
+
+CDATAEXTERN dlsbg2x32mmx_tmp
+CDATAEXTERN dlsbg2x32mmx
+CDATAEXTERN dlsbg2x32mmx_times
+CDATAEXTERN dlsbg2x32mmx_pixels
+%endif
+
+
 FDATASECTIONEND
 FCODESECTIONSTART
 
@@ -83,6 +175,18 @@ _drawstart_:				; Used to check code alignment
 		mov	esi, dword [draw_buffer_current_ptr]
 		cmp	ebx, 4
 		jb	%%l1
+		test	esi, 1
+		jz	%%l7
+		mov	byte [esi], al
+		inc	esi
+		dec	ebx
+%%l7:		test	esi, 2
+		jz	%%l5
+		mov	word [esi], ax
+		add	esi, 2
+		sub	ebx, 2
+%%l5:		cmp	ebx, 4
+		jb	%%l1
 %%l2:		mov	dword [esi], eax
 		sub	ebx, 4
 		add	esi, 4
@@ -102,6 +206,65 @@ _drawstart_:				; Used to check code alignment
 
 _drawLineSegmentBG1x8_:
 		DRAWLINESEGMENTBG1x8
+		ret
+
+
+;==============================================================================
+; Draw one line segment using background color using MMX instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG1x8MMX 0
+		mov	esi, dword [draw_buffer_current_ptr]
+		cmp	ebx, 8
+		jb	%%l1
+		test	esi, 1
+		jz	%%l7
+		mov	byte [esi], al
+		inc	esi
+		dec	ebx
+%%l7:		test	esi, 2
+		jz	%%l5
+		mov	word [esi], ax
+		add	esi, 2
+		sub	ebx, 2
+%%l5:		test	esi, 4
+		jz	%%l6
+		mov	dword [esi], eax
+		sub	ebx, 4
+		add	esi, 4
+%%l6:		cmp	ebx, 8
+		jb	%%l1
+		movd	mm0, eax
+		movd	mm1, eax
+		psllq	mm1, 32
+		por	mm0, mm1
+%%l2:		movq	[esi], mm0
+		sub	ebx, 8
+		add	esi, 8
+		cmp	ebx, 8
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l3
+%%l4:		mov	byte [esi], al
+		inc	esi
+		dec	ebx
+		jnz	%%l4
+%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG1x8mmx_:
+		DRAWLINESEGMENTBG1x8MMX
 		ret
 
 
@@ -140,6 +303,61 @@ _drawLineSegmentBG1x8_:
 
 _drawLineSegmentBG2x8_:
 		DRAWLINESEGMENTBG2x8
+		ret
+
+
+;==============================================================================
+; Draw one line segment using background color using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG2x8MMX 0
+		mov	esi, dword [draw_buffer_current_ptr]
+		cmp	ebx, 8
+		jb	%%l1
+		test	esi, 2
+		jz	%%l5
+		mov	word [esi], ax
+		add	esi, 2
+		dec	ebx
+%%l5:		test	esi, 4
+		jz	%%l6
+		mov	dword [esi], eax
+		sub	ebx, 2
+		add	esi, 4
+%%l6:		cmp	ebx, 8
+		jb	%%l1
+		movd	mm0, eax
+		movd	mm1, eax
+		psllq	mm1, 32
+		por	mm0, mm1
+%%l2:		movq	[esi], mm0
+		movq	[esi + 8], mm0
+		sub	ebx, 8
+		add	esi, 16
+		cmp	ebx, 8
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l3
+%%l4:		mov	word [esi], ax
+		add	esi, 2
+		dec	ebx
+		jnz	%%l4
+%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG2x8mmx_:
+		DRAWLINESEGMENTBG2x8MMX
 		ret
 
 
@@ -186,6 +404,61 @@ _drawLineSegmentBG2x8_:
 
 _drawLineSegmentBG1x16_:
 		DRAWLINESEGMENTBG1x16
+		ret
+
+
+;==============================================================================
+; Draw one line segment using background color with MMX instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		16 bit RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG1x16MMX 0
+		mov	esi, dword [draw_buffer_current_ptr]
+		cmp	ebx, 8
+		jl	%%l1
+		test	esi, 2
+		jz	%%l5
+		mov	word [esi], ax
+		dec	ebx
+		add	esi, 2
+%%l5:		test	esi, 4
+		jz	%%l6
+		mov	dword [esi], eax
+		sub	ebx, 2
+		add	esi, 4
+%%l6:		cmp	ebx, 8
+		jb	%%l1
+		movd	mm0, eax
+		movd	mm1, eax
+		psllq	mm1, 32
+		por	mm0, mm1
+%%l2:		movq	[esi], mm0
+		movq	[esi + 8], mm0
+		sub	ebx, 8
+		add	esi, 16
+		cmp	ebx, 8
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l4
+%%l3:		mov	word [esi], ax
+		add	esi, 2
+		dec	ebx
+		jnz	%%l3
+%%l4:		mov	dword [draw_buffer_current_ptr], esi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG1x16mmx_:
+		DRAWLINESEGMENTBG1x16MMX
 		ret
 
 
@@ -292,44 +565,47 @@ _drawLineSegmentBG2x16mmx_:
 ; ebx - Number of lores pixels to draw
 ; eax - Color
 ;==============================================================================
-; Terrible piece of code, please optimize....
 
 
 %macro DRAWLINESEGMENTBG1x24 0
 		push	ecx
 		mov	esi, dword [draw_buffer_current_ptr]
+		; eax + ecx + edx is 4 1x pixels (12 bytes)
+		; edi has the fourth byte set to zero for single pixel drawing
+		mov	edi, eax
 		mov	ecx, eax
-		shr	ecx, 16
-		cmp	ebx, 4
+		mov	edx, eax
+		shl	ecx, 8
+		shl	edx, 8
+		mov	cx, ax
+		rol	eax, 8
+		ror	ecx, 16   ; ecx done
+		mov	al, ah
+		mov	dl, ch	  ; edx done
+		ror	eax, 8	  ; eax done
+		cmp	ebx, 8
 		jb	%%l1
 		test	esi, 3
 		jz	%%l2
-		mov	word [esi], ax
-		mov	byte [esi + 2], cl
+%%l5:		mov	dword [esi], edi
 		dec	ebx
 		add	esi, 3
-		cmp	ebx, 4
-		jb	%%l1
-%%l2:		mov	word [esi], ax
-		mov	byte [esi + 2], cl
-		mov	word [esi + 3], ax
-		mov	byte [esi + 5], cl
-		mov	word [esi + 6], ax
-		mov	byte [esi + 8], cl
-		mov	word [esi + 9], ax
-		mov	byte [esi + 11], cl
+		test	esi, 3
+		jnz	%%l5
+%%l2:		mov	dword [esi], eax
+		mov	dword [esi + 4], ecx
+		mov	dword [esi + 8], edx
 		sub	ebx, 4
 		add	esi, 12
 		cmp	ebx, 4
 		jae	%%l2
 %%l1:		test	ebx, ebx
-		jz	%%l3
-%%l4:		mov	word [esi], ax
-		mov	byte [esi + 2], cl
+		jz	%%l4
+%%l3:		mov	dword [esi], edi
 		add	esi, 3
 		dec	ebx
-		jnz	%%l4
-%%l3:		pop	ecx
+		jnz	%%l3
+%%l4:		pop	ecx
 		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
 
@@ -338,6 +614,95 @@ _drawLineSegmentBG2x16mmx_:
 
 _drawLineSegmentBG1x24_:
 		DRAWLINESEGMENTBG1x24
+		ret
+
+
+;==============================================================================
+; Draw one line segment using background color using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		24 bit RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG1x24MMX 0
+		push	ecx
+		mov	esi, dword [draw_buffer_current_ptr]
+
+		mov	edx, eax
+		mov	ecx, eax
+		ror	edx, 8
+		and	edx, 0ff000000h
+		or	eax, edx
+
+		cmp	ebx, 8
+		jb	near %%l1
+
+		; Single pixels until framepointer is aligned by 8
+		; It takes maximum 7 pixels and we have at least 8 here
+
+		test	esi, 7
+		jz	%%l6
+
+%%l7:		mov	dword [esi], ecx
+		dec	ebx
+		add	esi, 3
+		test	esi, 7
+		jnz	%%l7
+
+%%l5:		cmp	ebx, 8
+		jb	%%l1
+
+		; Prepares 24 bytes of color data containing 8 full pixels
+%%l6:		movd	mm0, ecx
+		movd	mm1, ecx
+		movd	mm2, ecx
+		movd	mm3, ecx
+		movd	mm4, ecx
+		psllq	mm1, 8
+		psllq	mm2, 16
+		psllq	mm3, 24
+		por	mm0, mm3
+		psllq	mm3, 8
+		por	mm1, mm3
+		psllq	mm3, 8
+		por	mm2, mm3
+		psllq	mm3, 8
+		por	mm0, mm3
+		psllq	mm3, 8
+		por	mm1, mm3
+		psrlq	mm4, 8
+		por	mm2, mm4
+		psrlq	mm4, 8
+		por	mm1, mm4
+
+%%l2:
+		movq	[esi], mm0
+		movq	[esi + 8], mm1
+		movq	[esi + 16], mm2
+		sub	ebx, 8
+		add	esi, 24
+		cmp	ebx, 8
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l4
+%%l3:		mov	dword [esi], ecx
+		add	esi, 3
+		dec	ebx
+		jnz	%%l3
+%%l4:		pop	ecx
+		mov	dword [draw_buffer_current_ptr], esi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG1x24mmx_:
+		DRAWLINESEGMENTBG1x24MMX
 		ret
 
 
@@ -351,34 +716,43 @@ _drawLineSegmentBG1x24_:
 ; ebx - Number of lores pixels to draw
 ; eax - Color
 ;==============================================================================
-; Terrible piece of code, please optimize....
 
 
 %macro DRAWLINESEGMENTBG2x24 0
 		push	ecx
 		mov	esi, dword [draw_buffer_current_ptr]
+		; eax + ecx + edx is 2 2x pixels (12 bytes)
 		mov	ecx, eax
-		shr	ecx, 16
-		cmp	ebx, 2
+		mov	edx, eax
+		shl	ecx, 8
+		shl	edx, 8
+		mov	cx, ax
+		rol	eax, 8
+		ror	ecx, 16   ; ecx done
+		mov	al, ah
+		mov	dl, ch	  ; edx done
+		ror	eax, 8	  ; eax done
+		cmp	ebx, 4
 		jb	%%l1
-%%l2:		mov	word [esi], ax
-		mov	byte [esi + 2], cl
-		mov	word [esi + 3], ax
-		mov	byte [esi + 5], cl
-		mov	word [esi + 6], ax
-		mov	byte [esi + 8], cl
-		mov	word [esi + 9], ax
-		mov	byte [esi + 11], cl
-		add	esi, 12
+		test	esi, 2
+		jz	%%l2
+%%l5:		mov	dword [esi], eax
+		mov	word [esi + 4], cx
+		dec	ebx
+		add	esi, 6
+		test	esi, 2
+		jnz	%%l5
+%%l2:		mov	dword [esi], eax
+		mov	dword [esi + 4], ecx
+		mov	dword [esi + 8], edx
 		sub	ebx, 2
+		add	esi, 12
 		cmp	ebx, 2
 		jae	%%l2
 %%l1:		test	ebx, ebx
 		jz	%%l4
-%%l3:		mov	word [esi], ax
-		mov	byte [esi + 2], cl
-		mov	word [esi + 3], ax
-		mov	byte [esi + 5], cl
+%%l3:		mov	dword [esi], eax
+		mov	word [esi + 4], cx
 		add	esi, 6
 		dec	ebx
 		jnz	%%l3
@@ -395,6 +769,99 @@ _drawLineSegmentBG2x24_:
 
 
 ;==============================================================================
+; Draw one line segment using background color using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		24 bit RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG2x24MMX 0
+		push	ecx
+		mov	esi, dword [draw_buffer_current_ptr]
+
+		; eax + cx is one 2x pixel (6 bytes)
+		mov	edx, eax
+		mov	ecx, eax
+		ror	edx, 8
+		shr	ecx, 8
+		and	edx, 0ff000000h
+		or	eax, edx
+
+		cmp	ebx, 4
+		jb	near %%l1
+
+		; Single pixels until framepointer is aligned by 8
+		; It takes maximum 3 pixels and we have at least 4 here
+
+		test	esi, 6
+		jz	%%l6
+
+%%l7:		mov	dword [esi], eax
+		mov	word [esi + 4], cx
+		dec	ebx
+		add	esi, 6
+		test	esi, 6
+		jnz	%%l7
+
+%%l5:		cmp	ebx, 4
+		jb	%%l1
+
+		; Prepares 24 bytes of color data containing 4 full 2x pixels
+%%l6:		movd	mm0, eax
+		movd	mm1, eax
+		movd	mm2, eax
+		movd	mm3, eax
+		movd	mm4, eax
+		psllq	mm1, 8
+		psllq	mm2, 16
+		psllq	mm3, 24
+		por	mm0, mm3
+		psllq	mm3, 8
+		por	mm1, mm3
+		psllq	mm3, 8
+		por	mm2, mm3
+		psllq	mm3, 8
+		por	mm0, mm3
+		psllq	mm3, 8
+		por	mm1, mm3
+		psrlq	mm4, 8
+		por	mm2, mm4
+		psrlq	mm4, 8
+		por	mm1, mm4
+
+%%l2:
+		movq	[esi], mm0
+		movq	[esi + 8], mm1
+		movq	[esi + 16], mm2
+		sub	ebx, 4
+		add	esi, 24
+		cmp	ebx, 4
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l4
+%%l3:		mov	dword [esi], eax
+		mov	word [esi + 4], cx
+		add	esi, 6
+		dec	ebx
+		jnz	%%l3
+%%l4:		pop	ecx
+		mov	dword [draw_buffer_current_ptr], esi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG2x24mmx_:
+		DRAWLINESEGMENTBG2x24MMX
+		ret
+
+
+;==============================================================================
 ; Draw one line segment using background color
 ;
 ; Horisontal Scale:	1x
@@ -407,31 +874,31 @@ _drawLineSegmentBG2x24_:
 
 
 %macro DRAWLINESEGMENTBG1x32 0
-		mov	esi, dword [draw_buffer_current_ptr]
+		mov	edi, dword [draw_buffer_current_ptr]
 		cmp	ebx, 4
 		jb	%%l1
-		test	esi, 3
+		test	edi, 3
 		jz	%%l2
-		mov	dword [esi], eax
+		mov	dword [edi], eax
 		dec	ebx
-		add	esi, 4
+		add	edi, 4
 		cmp	ebx, 4
 		jb	%%l1
-%%l2:		mov	dword [esi], eax
-		mov	dword [4 + esi], eax
-		mov	dword [8 + esi], eax
-		mov	dword [12 + esi], eax
+%%l2:		mov	dword [edi], eax
+		mov	dword [4 + edi], eax
+		mov	dword [8 + edi], eax
+		mov	dword [12 + edi], eax
 		sub	ebx, 4
-		add	esi, 16
+		add	edi, 16
 		cmp	ebx, 4
 		jae	%%l2
 %%l1:		test	ebx, ebx
 		jz	%%l3
-%%l4:		mov	dword [esi], eax
-		add	esi, 4
+%%l4:		mov	dword [edi], eax
+		add	edi, 4
 		dec	ebx
 		jnz	%%l4
-%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%%l3:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
 
 
@@ -439,6 +906,56 @@ _drawLineSegmentBG2x24_:
 
 _drawLineSegmentBG1x32_:
 		DRAWLINESEGMENTBG1x32
+		ret
+
+
+;==============================================================================
+; Draw one line segment using background color using MMX instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG1x32MMX 0
+		mov	edi, dword [draw_buffer_current_ptr]
+		cmp	ebx, 4
+		jb	%%l1
+		test	edi, 3
+		jz	%%l5
+		mov	dword [edi], eax
+		dec	ebx
+		add	edi, 4
+		cmp	ebx, 4
+		jb	%%l1
+%%l5:		movd	mm0, eax
+		movd	mm1, eax
+		psllq	mm1, 32
+		por	mm0, mm1
+%%l2:		movq	[edi], mm0
+		movq	[8 + edi], mm0
+		sub	ebx, 4
+		add	edi, 16
+		cmp	ebx, 4
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l3
+%%l4:		mov	dword [edi], eax
+		add	edi, 4
+		dec	ebx
+		jnz	%%l4
+%%l3:		mov	dword [draw_buffer_current_ptr], edi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG1x32mmx_:
+		DRAWLINESEGMENTBG1x32MMX
 		ret
 
 
@@ -451,33 +968,35 @@ _drawLineSegmentBG1x32_:
 ; Input:
 ; ebx - Number of lores pixels to draw
 ; eax - Color
+;
+; Performance: (AMD K6-2 500mhz, Geforce2 AGP 95.9 cycles per pixel
 ;==============================================================================
 
 
 %macro DRAWLINESEGMENTBG2x32 0
-		mov	esi, dword [draw_buffer_current_ptr]
+		mov	edi, dword [draw_buffer_current_ptr]
 		cmp	ebx, 4
 		jb	%%l1
-%%l2:		mov	[esi], eax
-		mov	[4 + esi], eax
-		mov	[8 + esi], eax
-		mov	[12 + esi], eax
-		mov	[16 + esi], eax
-		mov	[20 + esi], eax
-		mov	[24 + esi], eax
-		mov	[28 + esi], eax
-		add	esi, 32
+%%l2:		mov	[edi], eax
+		mov	[4 + edi], eax
+		mov	[8 + edi], eax
+		mov	[12 + edi], eax
+		mov	[16 + edi], eax
+		mov	[20 + edi], eax
+		mov	[24 + edi], eax
 		sub	ebx, 4
+		mov	[28 + edi], eax
+		add	edi, 32
 		cmp	ebx, 4
 		jae	%%l2
 %%l1:		test	ebx, ebx
 		jz	%%l4
-%%l3:		mov	dword [esi], eax
-		mov	dword [4 + esi], eax
-		add	esi, 8
+%%l3:		mov	dword [edi], eax
+		mov	dword [4 + edi], eax
+		add	edi, 8
 		dec	ebx
 		jnz	%%l3
-%%l4:		mov	dword [draw_buffer_current_ptr], esi
+%%l4:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
 
 
@@ -489,15 +1008,61 @@ _drawLineSegmentBG2x32_:
 
 
 ;==============================================================================
+; Draw one line segment using background color using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ebx - Number of lores pixels to draw
+; eax - Color
+;
+; Performance: (AMD K6-2 500mhz, Geforce2 AGP 75.3 cycles per pixel (21.5% better)
+;==============================================================================
+
+
+%macro DRAWLINESEGMENTBG2x32MMX 0
+		mov	edi, dword [draw_buffer_current_ptr]
+		cmp	ebx, 4
+		jb	%%l1
+		movd	mm0, eax
+		movd	mm1, eax
+		psllq	mm1, 32
+		por	mm0, mm1
+%%l2:		movq	[edi], mm0
+		movq	[8 + edi], mm0
+		movq	[16 + edi], mm0
+		sub	ebx, 4
+		movq	[24 + edi], mm0
+		add	edi, 32
+		cmp	ebx, 4
+		jae	%%l2
+%%l1:		test	ebx, ebx
+		jz	%%l4
+%%l3:		mov	dword [edi], eax
+		mov	dword [4 + edi], eax
+		add	edi, 8
+		dec	ebx
+		jnz	%%l3
+%%l4:		mov	dword [draw_buffer_current_ptr], edi
+%endmacro
+
+
+		FALIGN32
+
+_drawLineSegmentBG2x32mmx_:
+		DRAWLINESEGMENTBG2x32MMX
+		ret
+
+
+;==============================================================================
 ; Draw one background line macro template
 ;==============================================================================
 
 %macro drawLineBG 1
 		mov	ebp, dword [4 + esp]
 		mov	eax, dword [ebp + graph_line_colors]
-		mov	ebx, dword [draw_width_amiga]
 		%1
-		ret
 %endmacro
 
 
@@ -516,7 +1081,43 @@ _drawLineSegmentBG2x32_:
 
 global _drawLineBG1x8_
 _drawLineBG1x8_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x8_pixels], ebx
+		TSC_BEFORE dlsbg1x8_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG1x8
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x8_tmp, dlsbg1x8, dlsbg1x8_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG1x8mmx_
+_drawLineBG1x8mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x8mmx_pixels], ebx
+		TSC_BEFORE dlsbg1x8mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG1x8MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x8mmx_tmp, dlsbg1x8mmx, dlsbg1x8mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -534,7 +1135,43 @@ _drawLineBG1x8_:
 
 global _drawLineBG2x8_
 _drawLineBG2x8_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x8_pixels], ebx
+		TSC_BEFORE dlsbg2x8_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG2x8
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x8_tmp, dlsbg2x8, dlsbg2x8_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG2x8mmx_
+_drawLineBG2x8mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x8mmx_pixels], ebx
+		TSC_BEFORE dlsbg2x8mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG2x8MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x8mmx_tmp, dlsbg2x8mmx, dlsbg2x8mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -552,7 +1189,43 @@ _drawLineBG2x8_:
 
 global _drawLineBG1x16_
 _drawLineBG1x16_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x16_pixels], ebx
+		TSC_BEFORE dlsbg1x16_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG1x16
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x16_tmp, dlsbg1x16, dlsbg1x16_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using MMX instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		16 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG1x16mmx_
+_drawLineBG1x16mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x16mmx_pixels], ebx
+		TSC_BEFORE dlsbg1x16mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG1x16MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x16mmx_tmp, dlsbg1x16mmx, dlsbg1x16mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -570,7 +1243,16 @@ _drawLineBG1x16_:
 
 global _drawLineBG2x16_
 _drawLineBG2x16_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x16_pixels], ebx
+		TSC_BEFORE dlsbg2x16_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG2x16
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x16_tmp, dlsbg2x16, dlsbg2x16_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -588,7 +1270,16 @@ _drawLineBG2x16_:
 
 global _drawLineBG2x16mmx_
 _drawLineBG2x16mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x16mmx_pixels], ebx
+		TSC_BEFORE dlsbg2x16mmx_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG2x16MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x16mmx_tmp, dlsbg2x16mmx, dlsbg2x16mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -606,7 +1297,43 @@ _drawLineBG2x16mmx_:
 
 global _drawLineBG1x24_
 _drawLineBG1x24_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x24_pixels], ebx
+		TSC_BEFORE dlsbg1x24_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG1x24
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x24_tmp, dlsbg1x24, dlsbg1x24_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		24 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG1x24mmx_
+_drawLineBG1x24mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x24mmx_pixels], ebx
+		TSC_BEFORE dlsbg1x24mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG1x24MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x24mmx_tmp, dlsbg1x24mmx, dlsbg1x24mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -624,7 +1351,43 @@ _drawLineBG1x24_:
 
 global _drawLineBG2x24_
 _drawLineBG2x24_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x24_pixels], ebx
+		TSC_BEFORE dlsbg2x24_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG2x24
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x24_tmp, dlsbg2x24, dlsbg2x24_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		24 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG2x24mmx_
+_drawLineBG2x24mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x24mmx_pixels], ebx
+		TSC_BEFORE dlsbg2x24mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG2x24MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x24mmx_tmp, dlsbg2x24mmx, dlsbg2x24mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -642,7 +1405,43 @@ _drawLineBG2x24_:
 
 global _drawLineBG1x32_
 _drawLineBG1x32_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x32_pixels], ebx
+		TSC_BEFORE dlsbg1x32_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG1x32
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x32_tmp, dlsbg1x32, dlsbg1x32_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using MMX instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		32 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG1x32mmx_
+_drawLineBG1x32mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg1x32mmx_pixels], ebx
+		TSC_BEFORE dlsbg1x32mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG1x32MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg1x32mmx_tmp, dlsbg1x32mmx, dlsbg1x32mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -660,7 +1459,43 @@ _drawLineBG1x32_:
 
 global _drawLineBG2x32_
 _drawLineBG2x32_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x32_pixels], ebx
+		TSC_BEFORE dlsbg2x32_tmp
+%endif
 		drawLineBG	DRAWLINESEGMENTBG2x32
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x32_tmp, dlsbg2x32, dlsbg2x32_times
+%endif
+		ret
+
+
+;==============================================================================
+; Draw one background line using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		32 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBG2x32mmx_
+_drawLineBG2x32mmx_:
+		mov	ebx, dword [draw_width_amiga]
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dlsbg2x32mmx_pixels], ebx
+		TSC_BEFORE dlsbg2x32mmx_tmp
+%endif
+		drawLineBG	DRAWLINESEGMENTBG2x32MMX
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dlsbg2x32mmx_tmp, dlsbg2x32mmx, dlsbg2x32mmx_times
+%endif
+		ret
 
 
 ;==============================================================================
@@ -702,6 +1537,24 @@ _drawLineBPL1x8_:
 
 
 ;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBPL1x8mmx_
+_drawLineBPL1x8mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG1x8MMX
+
+
+;==============================================================================
 ; Draw one bitplane line
 ;
 ; Horisontal Scale:	2x
@@ -720,6 +1573,24 @@ _drawLineBPL2x8_:
 
 
 ;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineBPL2x8mmx_
+_drawLineBPL2x8mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG2x8MMX
+
+
+;==============================================================================
 ; Draw one bitplane line
 ;
 ; Horisontal Scale:	1x
@@ -735,6 +1606,24 @@ _drawLineBPL2x8_:
 global _drawLineBPL1x16_
 _drawLineBPL1x16_:
 		drawLineBPL	DRAWLINESEGMENTBG1x16
+
+
+;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		16 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+		
+		FALIGN32
+
+global _drawLineBPL1x16mmx_
+_drawLineBPL1x16mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG1x16MMX
 
 
 ;==============================================================================
@@ -792,6 +1681,24 @@ _drawLineBPL1x24_:
 
 
 ;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		24 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+		
+		FALIGN32
+
+global _drawLineBPL1x24mmx_
+_drawLineBPL1x24mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG1x24MMX
+
+
+;==============================================================================
 ; Draw one bitplane line
 ;
 ; Horisontal Scale:	2x
@@ -807,6 +1714,24 @@ _drawLineBPL1x24_:
 global _drawLineBPL2x24_
 _drawLineBPL2x24_:
 		drawLineBPL	DRAWLINESEGMENTBG2x24
+
+
+;==============================================================================
+; Draw one bitplane line using MMX instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		24 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+		
+		FALIGN32
+
+global _drawLineBPL2x24mmx_
+_drawLineBPL2x24mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG2x24MMX
 
 
 ;==============================================================================
@@ -828,6 +1753,24 @@ _drawLineBPL1x32_:
 
 
 ;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		32 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+		
+		FALIGN32
+
+global _drawLineBPL1x32mmx_
+_drawLineBPL1x32mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG1x32MMX
+
+
+;==============================================================================
 ; Draw one bitplane line
 ;
 ; Horisontal Scale:	2x
@@ -843,6 +1786,24 @@ _drawLineBPL1x32_:
 global _drawLineBPL2x32_
 _drawLineBPL2x32_:
 		drawLineBPL	DRAWLINESEGMENTBG2x32
+
+
+;==============================================================================
+; Draw one bitplane line using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		32 bit
+;
+; Input:
+; Line description - [4 + esp]
+;==============================================================================
+
+		
+		FALIGN32
+
+global _drawLineBPL2x32mmx_
+_drawLineBPL2x32mmx_:
+		drawLineBPL	DRAWLINESEGMENTBG2x32MMX
 
 
 ;==============================================================================
@@ -3314,7 +4275,7 @@ _drawLineHAM2x32_:
 
 global _drawEndOfFrame_
 _drawEndOfFrame_:
-		test	dword [draw_frame_skip], -1	; Frame drawn?
+		test	dword [draw_frame_skip], -1	; Maybe skip frame
 		jnz	near .l3
 		mov	esi, dword [graph_raster_y]
 		push	esi
@@ -3337,6 +4298,8 @@ _drawEndOfFrame_:
 		lea	ebp, [ebp + eax + graph_frame]
 		pop	eax
 .l1:		cmp	dword [ebp + graph_line_type], GRAPH_LINE_SKIP
+		je	.l2
+		cmp	dword [ebp + graph_line_type], GRAPH_LINE_BPL_SKIP
 		je	.l2
 		push	eax
 		push	edx

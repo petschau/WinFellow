@@ -16,24 +16,38 @@
 #define drawStart ASMRENAME(drawStart)         /* Code alignment check label */
 
 #define drawLineBG1x8     ASMRENAME(drawLineBG1x8)
+#define drawLineBG1x8mmx  ASMRENAME(drawLineBG1x8mmx)
 #define drawLineBG2x8     ASMRENAME(drawLineBG2x8)
+#define drawLineBG2x8mmx  ASMRENAME(drawLineBG2x8mmx)
 #define drawLineBG1x16    ASMRENAME(drawLineBG1x16)
+#define drawLineBG1x16mmx ASMRENAME(drawLineBG1x16mmx)
 #define drawLineBG2x16    ASMRENAME(drawLineBG2x16)
 #define drawLineBG2x16mmx ASMRENAME(drawLineBG2x16mmx)
 #define drawLineBG1x24	  ASMRENAME(drawLineBG1x24)
+#define drawLineBG1x24mmx ASMRENAME(drawLineBG1x24mmx)
 #define drawLineBG2x24    ASMRENAME(drawLineBG2x24)
+#define drawLineBG2x24mmx ASMRENAME(drawLineBG2x24mmx)
 #define drawLineBG1x32    ASMRENAME(drawLineBG1x32)
+#define drawLineBG1x32mmx ASMRENAME(drawLineBG1x32mmx)
 #define drawLineBG2x32    ASMRENAME(drawLineBG2x32)
+#define drawLineBG2x32mmx ASMRENAME(drawLineBG2x32mmx)
 
 #define drawLineBPL1x8     ASMRENAME(drawLineBPL1x8)
+#define drawLineBPL1x8mmx  ASMRENAME(drawLineBPL1x8mmx)
 #define drawLineBPL2x8     ASMRENAME(drawLineBPL2x8)
+#define drawLineBPL2x8mmx  ASMRENAME(drawLineBPL2x8mmx)
 #define drawLineBPL1x16    ASMRENAME(drawLineBPL1x16)
+#define drawLineBPL1x16mmx ASMRENAME(drawLineBPL1x16mmx)
 #define drawLineBPL2x16	   ASMRENAME(drawLineBPL2x16)
 #define drawLineBPL2x16mmx ASMRENAME(drawLineBPL2x16mmx)
 #define drawLineBPL1x24    ASMRENAME(drawLineBPL1x24)
+#define drawLineBPL1x24mmx ASMRENAME(drawLineBPL1x24mmx)
 #define drawLineBPL2x24    ASMRENAME(drawLineBPL2x24)
+#define drawLineBPL2x24mmx ASMRENAME(drawLineBPL2x24mmx)
 #define drawLineBPL1x32    ASMRENAME(drawLineBPL1x32)
+#define drawLineBPL1x32mmx ASMRENAME(drawLineBPL1x32mmx)
 #define drawLineBPL2x32	   ASMRENAME(drawLineBPL2x32)
+#define drawLineBPL2x32mmx ASMRENAME(drawLineBPL2x32mmx)
 
 #define drawLineNormal1x8     ASMRENAME(drawLineNormal1x8)
 #define drawLineNormal2x8     ASMRENAME(drawLineNormal2x8)
@@ -73,24 +87,38 @@
 extern void drawStart(void);                   /* Code alignment check label */
 
 extern void drawLineBG1x8(graph_line *linedesc);
+extern void drawLineBG1x8mmx(graph_line *linedesc);
 extern void drawLineBG2x8(graph_line *linedesc);
+extern void drawLineBG2x8mmx(graph_line *linedesc);
 extern void drawLineBG1x16(graph_line *linedesc);
+extern void drawLineBG1x16mmx(graph_line *linedesc);
 extern void drawLineBG2x16(graph_line *linedesc);
 extern void drawLineBG2x16mmx(graph_line *linedesc);
 extern void drawLineBG1x24(graph_line *linedesc);
+extern void drawLineBG1x24mmx(graph_line *linedesc);
 extern void drawLineBG2x24(graph_line *linedesc);
+extern void drawLineBG2x24mmx(graph_line *linedesc);
 extern void drawLineBG1x32(graph_line *linedesc);
+extern void drawLineBG1x32mmx(graph_line *linedesc);
 extern void drawLineBG2x32(graph_line *linedesc);
+extern void drawLineBG2x32mmx(graph_line *linedesc);
 
 extern void drawLineBPL1x8(graph_line *linedesc);
+extern void drawLineBPL1x8mmx(graph_line *linedesc);
 extern void drawLineBPL2x8(graph_line *linedesc);
+extern void drawLineBPL2x8mmx(graph_line *linedesc);
 extern void drawLineBPL1x16(graph_line *linedesc);
+extern void drawLineBPL1x16mmx(graph_line *linedesc);
 extern void drawLineBPL2x16(graph_line *linedesc);
 extern void drawLineBPL2x16mmx(graph_line *linedesc);
 extern void drawLineBPL1x24(graph_line *linedesc);
+extern void drawLineBPL1x24mmx(graph_line *linedesc);
 extern void drawLineBPL2x24(graph_line *linedesc);
+extern void drawLineBPL2x24mmx(graph_line *linedesc);
 extern void drawLineBPL1x32(graph_line *linedesc);
+extern void drawLineBPL1x32mmx(graph_line *linedesc);
 extern void drawLineBPL2x32(graph_line *linedesc);
+extern void drawLineBPL2x32mmx(graph_line *linedesc);
 
 extern void drawLineNormal1x8(graph_line *linedesc);
 extern void drawLineNormal2x8(graph_line *linedesc);

@@ -126,6 +126,9 @@ extern void wsprxctl(ULO,ULO);
 extern void wsprxdata(ULO,ULO);
 extern void wsprxdatb(ULO,ULO);
 
+extern void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip);
+extern BOOLE graphGetAllowBplLineSkip(void);
+
 extern void graphP2C1XInit(void);
 extern void graphP2C2XInit(void);
 extern void graphLineDescClear(void);
@@ -178,7 +181,8 @@ extern ULO diwybottom;
 typedef enum {
   GRAPH_LINE_BG = 0,
   GRAPH_LINE_BPL = 1,
-  GRAPH_LINE_SKIP = 2
+  GRAPH_LINE_SKIP = 2,
+  GRAPH_LINE_BPL_SKIP = 3
 } graph_linetypes;
 
 typedef struct {

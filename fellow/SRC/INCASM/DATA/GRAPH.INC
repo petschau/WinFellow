@@ -58,6 +58,10 @@ CDATAEXTERN diwstop
 CDATAEXTERN graph_decode_tmp
 %endif
 
+CDATAEXTERN graph_line1_tmp
+CDATAEXTERN graph_line2_tmp
+CDATAEXTERN graph_allow_bpl_line_skip
+
 CDATAEXTERN graph_frame
 
 ; graph_line types
@@ -65,6 +69,7 @@ CDATAEXTERN graph_frame
 GRAPH_LINE_BG   equ 0
 GRAPH_LINE_BPL  equ 1
 GRAPH_LINE_SKIP equ 2
+GRAPH_LINE_BPL_SKIP equ 3
 
 ; Offsets into the graph_line struct
 

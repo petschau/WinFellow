@@ -25,6 +25,97 @@
 #include "wgui.h"
 
 
+
+/* 
+  Enable this for detailed profiling, log written to drawprofile.txt
+  It can be imported into excel for better viewing
+*/
+/*
+#define DRAW_TSC_PROFILE
+*/
+
+#ifdef DRAW_TSC_PROFILE
+LLO dlsbg1x8_tmp = 0;
+LLO dlsbg1x8 = 0;
+LON dlsbg1x8_times = 0;
+LON dlsbg1x8_pixels = 0;
+
+LLO dlsbg1x8mmx_tmp = 0;
+LLO dlsbg1x8mmx = 0;
+LON dlsbg1x8mmx_times = 0;
+LON dlsbg1x8mmx_pixels = 0;
+
+LLO dlsbg2x8_tmp = 0;
+LLO dlsbg2x8 = 0;
+LON dlsbg2x8_times = 0;
+LON dlsbg2x8_pixels = 0;
+
+LLO dlsbg2x8mmx_tmp = 0;
+LLO dlsbg2x8mmx = 0;
+LON dlsbg2x8mmx_times = 0;
+LON dlsbg2x8mmx_pixels = 0;
+
+LLO dlsbg1x16_tmp = 0;
+LLO dlsbg1x16 = 0;
+LON dlsbg1x16_times = 0;
+LON dlsbg1x16_pixels = 0;
+
+LLO dlsbg1x16mmx_tmp = 0;
+LLO dlsbg1x16mmx = 0;
+LON dlsbg1x16mmx_times = 0;
+LON dlsbg1x16mmx_pixels = 0;
+
+LLO dlsbg2x16_tmp = 0;
+LLO dlsbg2x16 = 0;
+LON dlsbg2x16_times = 0;
+LON dlsbg2x16_pixels = 0;
+
+LLO dlsbg2x16mmx_tmp = 0;
+LLO dlsbg2x16mmx = 0;
+LON dlsbg2x16mmx_times = 0;
+LON dlsbg2x16mmx_pixels = 0;
+
+LLO dlsbg1x24_tmp = 0;
+LLO dlsbg1x24 = 0;
+LON dlsbg1x24_times = 0;
+LON dlsbg1x24_pixels = 0;
+
+LLO dlsbg1x24mmx_tmp = 0;
+LLO dlsbg1x24mmx = 0;
+LON dlsbg1x24mmx_times = 0;
+LON dlsbg1x24mmx_pixels = 0;
+
+LLO dlsbg2x24_tmp = 0;
+LLO dlsbg2x24 = 0;
+LON dlsbg2x24_times = 0;
+LON dlsbg2x24_pixels = 0;
+
+LLO dlsbg2x24mmx_tmp = 0;
+LLO dlsbg2x24mmx = 0;
+LON dlsbg2x24mmx_times = 0;
+LON dlsbg2x24mmx_pixels = 0;
+
+LLO dlsbg1x32_tmp = 0;
+LLO dlsbg1x32 = 0;
+LON dlsbg1x32_times = 0;
+LON dlsbg1x32_pixels = 0;
+
+LLO dlsbg1x32mmx_tmp = 0;
+LLO dlsbg1x32mmx = 0;
+LON dlsbg1x32mmx_times = 0;
+LON dlsbg1x32mmx_pixels = 0;
+
+LLO dlsbg2x32_tmp = 0;
+LLO dlsbg2x32 = 0;
+LON dlsbg2x32_times = 0;
+LON dlsbg2x32_pixels = 0;
+
+LLO dlsbg2x32mmx_tmp = 0;
+LLO dlsbg2x32mmx = 0;
+LON dlsbg2x32mmx_times = 0;
+LON dlsbg2x32mmx_pixels = 0;
+#endif
+
 /*============================================================================*/
 /* Mode list, nodes created by the graphics driver, and pointer to the mode   */
 /* that is current                                                            */
@@ -158,14 +249,14 @@ draw_line_func draw_line_BPL_manage_funcs[2][8] = {drawLineBPL1x8,
 						   drawLineBPL2x24,
 						   drawLineBPL1x32,
 						   drawLineBPL2x32,
-						   drawLineBPL1x8,
-				                   drawLineBPL2x8,
-					           drawLineBPL1x16,
+						   drawLineBPL1x8mmx,
+				                   drawLineBPL2x8mmx,
+					           drawLineBPL1x16mmx,
 					           drawLineBPL2x16mmx,
-						   drawLineBPL1x24,
-						   drawLineBPL2x24,
-						   drawLineBPL1x32,
-						   drawLineBPL2x32};
+						   drawLineBPL1x24mmx,
+						   drawLineBPL2x24mmx,
+						   drawLineBPL1x32mmx,
+						   drawLineBPL2x32mmx};
 
 draw_line_func draw_line_BG_funcs[2][8] = {drawLineBG1x8,
 				           drawLineBG2x8,
@@ -175,14 +266,14 @@ draw_line_func draw_line_BG_funcs[2][8] = {drawLineBG1x8,
 					   drawLineBG2x24,
 					   drawLineBG1x32,
 					   drawLineBG2x32,
-					   drawLineBG1x8,
-					   drawLineBG2x8,
-					   drawLineBG1x16,
+					   drawLineBG1x8mmx,
+					   drawLineBG2x8mmx,
+					   drawLineBG1x16mmx,
 					   drawLineBG2x16mmx,
-					   drawLineBG1x24,
-					   drawLineBG2x24,
-					   drawLineBG1x32,
-					   drawLineBG2x32};
+					   drawLineBG1x24mmx,
+					   drawLineBG2x24mmx,
+					   drawLineBG1x32mmx,
+					   drawLineBG2x32mmx};
 
 draw_line_func draw_line_lores_funcs[2][8] = {drawLineNormal1x8,
 					      drawLineNormal2x8,
@@ -950,6 +1041,7 @@ static void drawModeTablesInitialize(draw_mode *dm) {
   draw_buffer_draw = draw_buffer_show = 0;
   for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor);
   funcindex = (draw_hscale == 1) ? 0 : 1;
+
   if (dm->bits == 32) funcindex += 6;
   else if (dm->bits == 24) funcindex += 4;
   else if (dm->bits >= 15) funcindex += 2;
@@ -1213,5 +1305,28 @@ BOOLE drawStartup(void) {
 void drawShutdown(void) {
   drawModesFree();
   gfxDrvShutdown();
+#ifdef DRAW_TSC_PROFILE
+  {
+  FILE *F = fopen("drawprofile.txt", "w");
+  fprintf(F, "FUNCTION TOTALCYCLES CALLEDCOUNT AVGCYCLESPERCALL TOTALPIXELS PIXELSPERCALL CYCLESPERPIXEL\n");
+  fprintf(F, "DrawBGLine1x8 %I64d %d %I64d %d %d %d\n", dlsbg1x8, dlsbg1x8_times, (dlsbg1x8_times == 0) ? 0 : (dlsbg1x8 / dlsbg1x8_times), dlsbg1x8_pixels, (dlsbg1x8_times == 0) ? 0 : (dlsbg1x8_pixels / dlsbg1x8_times), (dlsbg1x8_pixels == 0) ? 0 : (dlsbg1x8 / dlsbg1x8_pixels));
+  fprintf(F, "DrawBGLine1x8mmx %I64d %d %I64d %d %d %d\n", dlsbg1x8mmx, dlsbg1x8mmx_times, (dlsbg1x8mmx_times == 0) ? 0 : (dlsbg1x8mmx / dlsbg1x8mmx_times), dlsbg1x8mmx_pixels, (dlsbg1x8mmx_times == 0) ? 0 : (dlsbg1x8mmx_pixels / dlsbg1x8mmx_times), (dlsbg1x8mmx_pixels == 0) ? 0 : (dlsbg1x8mmx / dlsbg1x8mmx_pixels));
+  fprintf(F, "DrawBGLine2x8 %I64d %d %I64d %d %d %d\n", dlsbg2x8, dlsbg2x8_times, (dlsbg2x8_times == 0) ? 0 : (dlsbg2x8 / dlsbg2x8_times), dlsbg2x8_pixels, (dlsbg2x8_times == 0) ? 0 : (dlsbg2x8_pixels / dlsbg2x8_times), (dlsbg2x8_pixels == 0) ? 0 : (dlsbg2x8 / dlsbg2x8_pixels));
+  fprintf(F, "DrawBGLine2x8mmx %I64d %d %I64d %d %d %d\n", dlsbg2x8mmx, dlsbg2x8mmx_times, (dlsbg2x8mmx_times == 0) ? 0 : (dlsbg2x8mmx / dlsbg2x8mmx_times), dlsbg2x8mmx_pixels, (dlsbg2x8mmx_times == 0) ? 0 : (dlsbg2x8mmx_pixels / dlsbg2x8mmx_times), (dlsbg2x8mmx_pixels == 0) ? 0 : (dlsbg2x8mmx / dlsbg2x8mmx_pixels));
+  fprintf(F, "DrawBGLine1x16 %I64d %d %I64d %d %d %d\n", dlsbg1x16, dlsbg1x16_times, (dlsbg1x16_times == 0) ? 0 : (dlsbg1x16 / dlsbg1x16_times), dlsbg1x16_pixels, (dlsbg1x16_times == 0) ? 0 : (dlsbg1x16_pixels / dlsbg1x16_times), (dlsbg1x16_pixels == 0) ? 0 : (dlsbg1x16 / dlsbg1x16_pixels));
+  fprintf(F, "DrawBGLine1x16mmx %I64d %d %I64d %d %d %d\n", dlsbg1x16mmx, dlsbg1x16mmx_times, (dlsbg1x16mmx_times == 0) ? 0 : (dlsbg1x16mmx / dlsbg1x16mmx_times), dlsbg1x16mmx_pixels, (dlsbg1x16mmx_times == 0) ? 0 : (dlsbg1x16mmx_pixels / dlsbg1x16mmx_times), (dlsbg1x16mmx_pixels == 0) ? 0 : (dlsbg1x16mmx / dlsbg1x16mmx_pixels));
+  fprintf(F, "DrawBGLine2x16 %I64d %d %I64d %d %d %d\n", dlsbg2x16, dlsbg2x16_times, (dlsbg2x16_times == 0) ? 0 : (dlsbg2x16 / dlsbg2x16_times), dlsbg2x16_pixels, (dlsbg2x16_times == 0) ? 0 : (dlsbg2x16_pixels / dlsbg2x16_times), (dlsbg2x16_pixels == 0) ? 0 : (dlsbg2x16 / dlsbg2x16_pixels));
+  fprintf(F, "DrawBGLine2x16mmx %I64d %d %I64d %d %d %d\n", dlsbg2x16mmx, dlsbg2x16mmx_times, (dlsbg2x16mmx_times == 0) ? 0 : (dlsbg2x16mmx / dlsbg2x16mmx_times), dlsbg2x16mmx_pixels, (dlsbg2x16mmx_times == 0) ? 0 : (dlsbg2x16mmx_pixels / dlsbg2x16mmx_times), (dlsbg2x16mmx_pixels == 0) ? 0 : (dlsbg2x16mmx / dlsbg2x16mmx_pixels));
+  fprintf(F, "DrawBGLine1x24 %I64d %d %I64d %d %d %d\n", dlsbg1x24, dlsbg1x24_times, (dlsbg1x24_times == 0) ? 0 : (dlsbg1x24 / dlsbg1x24_times), dlsbg1x24_pixels, (dlsbg1x24_times == 0) ? 0 : (dlsbg1x24_pixels / dlsbg1x24_times), (dlsbg1x24_pixels == 0) ? 0 : (dlsbg1x24 / dlsbg1x24_pixels));
+  fprintf(F, "DrawBGLine1x24mmx %I64d %d %I64d %d %d %d\n", dlsbg1x24mmx, dlsbg1x24mmx_times, (dlsbg1x24mmx_times == 0) ? 0 : (dlsbg1x24mmx / dlsbg1x24mmx_times), dlsbg1x24mmx_pixels, (dlsbg1x24mmx_times == 0) ? 0 : (dlsbg1x24mmx_pixels / dlsbg1x24mmx_times), (dlsbg1x24mmx_pixels == 0) ? 0 : (dlsbg1x24mmx / dlsbg1x24mmx_pixels));
+  fprintf(F, "DrawBGLine2x24 %I64d %d %I64d %d %d %d\n", dlsbg2x24, dlsbg2x24_times, (dlsbg2x24_times == 0) ? 0 : (dlsbg2x24 / dlsbg2x24_times), dlsbg2x24_pixels, (dlsbg2x24_times == 0) ? 0 : (dlsbg2x24_pixels / dlsbg2x24_times), (dlsbg2x24_pixels == 0) ? 0 : (dlsbg2x24 / dlsbg2x24_pixels));
+  fprintf(F, "DrawBGLine2x24mmx %I64d %d %I64d %d %d %d\n", dlsbg2x24mmx, dlsbg2x24mmx_times, (dlsbg2x24mmx_times == 0) ? 0 : (dlsbg2x24mmx / dlsbg2x24mmx_times), dlsbg2x24mmx_pixels, (dlsbg2x24mmx_times == 0) ? 0 : (dlsbg2x24mmx_pixels / dlsbg2x24mmx_times), (dlsbg2x24mmx_pixels == 0) ? 0 : (dlsbg2x24mmx / dlsbg2x24mmx_pixels));
+  fprintf(F, "DrawBGLine1x32 %I64d %d %I64d %d %d %d\n", dlsbg1x32, dlsbg1x32_times, (dlsbg1x32_times == 0) ? 0 : (dlsbg1x32 / dlsbg1x32_times), dlsbg1x32_pixels, (dlsbg1x32_times == 0) ? 0 : (dlsbg1x32_pixels / dlsbg1x32_times), (dlsbg1x32_pixels == 0) ? 0 : (dlsbg1x32 / dlsbg1x32_pixels));
+  fprintf(F, "DrawBGLine1x32mmx %I64d %d %I64d %d %d %d\n", dlsbg1x32mmx, dlsbg1x32mmx_times, (dlsbg1x32mmx_times == 0) ? 0 : (dlsbg1x32mmx / dlsbg1x32mmx_times), dlsbg1x32mmx_pixels, (dlsbg1x32mmx_times == 0) ? 0 : (dlsbg1x32mmx_pixels / dlsbg1x32mmx_times), (dlsbg1x32mmx_pixels == 0) ? 0 : (dlsbg1x32mmx / dlsbg1x32mmx_pixels));
+  fprintf(F, "DrawBGLine2x32 %I64d %d %I64d %d %d %d\n", dlsbg2x32, dlsbg2x32_times, (dlsbg2x32_times == 0) ? 0 : (dlsbg2x32 / dlsbg2x32_times), dlsbg2x32_pixels, (dlsbg2x32_times == 0) ? 0 : (dlsbg2x32_pixels / dlsbg2x32_times), (dlsbg2x32_pixels == 0) ? 0 : (dlsbg2x32 / dlsbg2x32_pixels));
+  fprintf(F, "DrawBGLine2x32mmx %I64d %d %I64d %d %d %d\n", dlsbg2x32mmx, dlsbg2x32mmx_times, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_times), dlsbg2x32mmx_pixels, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx_pixels / dlsbg2x32mmx_times), (dlsbg2x32mmx_pixels == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_pixels));
+  fclose(F);
+  }
+#endif
 }
 
