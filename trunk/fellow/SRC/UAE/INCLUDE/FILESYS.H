@@ -36,7 +36,7 @@
 #define ERROR_OBJECT_IN_USE		  202
 #define ERROR_OBJECT_EXISTS		  203
 #define ERROR_DIR_NOT_FOUND		  204
-#define ERROR_OBJECT_NOT_AROUND		  205
+#define ERROR_OBJECT_NOT_FOUND		  205
 #define ERROR_BAD_STREAM_NAME		  206
 #define ERROR_OBJECT_TOO_LARGE		  207
 #define ERROR_ACTION_NOT_KNOWN		  209
@@ -74,7 +74,7 @@
 #define ERROR_OBJECT_IN_USE	        202
 #define ERROR_OBJECT_EXISTS	        203
 #define ERROR_DIR_NOT_FOUND	        204
-#define ERROR_OBJECT_NOT_AROUND	    205
+#define ERROR_OBJECT_NOT_FOUND	    205
 #define ERROR_ACTION_NOT_KNOWN	    209
 #define ERROR_INVALID_LOCK          211
 #define ERROR_OBJECT_WRONG_TYPE	    212
@@ -105,9 +105,35 @@ struct uaedev_mount_info;
 
 extern struct hardfiledata *get_hardfile_data (int nr);
 
-/* FELLOW IN: -----------*/
 
-void filesys_init( int automount_drives );
+/* FELLOW IN (START): moved from filesys.c because other modules need it */
 
-/* FELLOW IN END ---------------*/
+#include "penguin.h"
 
+typedef struct {
+    char *devname; /* device name, e.g. UAE0: */
+    uaecptr devname_amiga;
+    uaecptr startup;
+    char *volname; /* volume name, e.g. CDROM, WORK, etc. */
+    char *rootdir; /* root unix directory */
+    int readonly; /* disallow write access? */
+    int devno;
+    
+    struct hardfiledata hf;
+
+    /* Threading stuff */
+    smp_comm_pipe *unit_pipe, *back_pipe;
+    penguin_id tid;
+    struct _unit *volatile self;
+    /* Reset handling */
+    uae_sem_t reset_sync_sem;
+    int reset_state;
+} UnitInfo;
+
+#define MAX_UNITS 20
+
+struct uaedev_mount_info {
+    int num_units;
+    UnitInfo ui[MAX_UNITS];
+};
+/* FELLOW IN (END): moved from filesys.c because other modules need it */
