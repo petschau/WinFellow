@@ -137,6 +137,7 @@ static a_inode *aino_from_buf (a_inode *base, char *buf)
 
 a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 {
+	a_inode *result;
     FILE *f = get_fsdb (base, "rb");
     if (f == 0)
 	return 0;
@@ -148,7 +149,11 @@ a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 	    continue;
 	if (same_aname (buf + 5, aname)) {
 	    fclose (f);
-	    return aino_from_buf (base, buf);
+	    result = aino_from_buf (base, buf);
+		if (result && (access(result->nname, R_OK) != -1))
+			return(result);
+		else
+			return(NULL);
 	}
     }
     fclose (f);
@@ -157,6 +162,7 @@ a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 
 a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
 {
+	a_inode *result;
     char buf[1 + 4 + 257 + 257 + 81];
     FILE *f = get_fsdb (base, "rb");
     if (f == 0)
@@ -168,7 +174,11 @@ a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
 	    continue;
 	if (strcmp (buf + 5 + 257, nname) == 0) {
 	    fclose (f);
-	    return aino_from_buf (base, buf);
+	    result = aino_from_buf (base, buf);
+		if (result && (access(result->nname, R_OK) != -1))
+			return(result);
+		else
+			return(NULL);
 	}
     }
     fclose (f);
@@ -188,7 +198,10 @@ int fsdb_used_as_nname (a_inode *base, const char *nname)
 	    continue;
 	if (strcmp (buf + 5 + 257, nname) == 0) {
 	    fclose (f);
-	    return 1;
+		if(access(nname, R_OK) != -1)
+			return 1;
+		else
+			return 0;
 	}
     }
     fclose (f);
