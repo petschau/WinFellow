@@ -79,7 +79,7 @@ typedef struct a_inode_struct {
     /* AmigaOS file comment, or NULL if file has none.  */
     char *comment;
     /* AmigaOS protection bits.  */
-    int amigaos_mode;
+    uae_u32 amigaos_mode;
     /* Unique number for identification.  */
     uae_u32 uniq;
     /* AmigaOS locking bits.  */
@@ -123,6 +123,6 @@ static int same_aname (const char *an1, const char *an2)
 /* Filesystem-dependent functions.  */
 extern int fsdb_name_invalid (const char *n);
 extern void fsdb_fill_file_attrs (a_inode *);
-extern int fsdb_set_file_attrs (a_inode *, int);
+extern int fsdb_set_file_attrs (a_inode *, uae_u32);
 extern int fsdb_mode_representable_p (const a_inode *);
 extern char *fsdb_create_unique_nname (a_inode *base, const char *);
