@@ -21,7 +21,14 @@
 #include "copper.h"
 #include "blit.h"
 #include "graph.h"
+#include "bus.h"
+#include "sound.h"
 
+/*=======================================================*/
+/* external references not exported by the include files */
+/*=======================================================*/
+
+extern ULO sprite_ddf_kill;
 
 /*===========================================================================*/
 /* Lookup-tables for planar to chunky routines                               */
@@ -334,34 +341,34 @@ BOOLE graphGetAllowBplLineSkip(void) {
 void graphIOHandlersInstall(void) {
   ULO i;
 
-  memorySetIOReadStub(0x002, rdmaconr);
-  memorySetIOReadStub(0x004, rvposr);
-  memorySetIOReadStub(0x006, rvhposr);
-  memorySetIOReadStub(0x07c, rid);
-  memorySetIOWriteStub(0x02a, wvpos);
-  memorySetIOWriteStub(0x08e, wdiwstrt);
-  memorySetIOWriteStub(0x090, wdiwstop);
-  memorySetIOWriteStub(0x092, wddfstrt);
-  memorySetIOWriteStub(0x094, wddfstop);
-  memorySetIOWriteStub(0x096, wdmacon);
-  memorySetIOWriteStub(0x0e0, wbpl1pth);
-  memorySetIOWriteStub(0x0e2, wbpl1ptl);
-  memorySetIOWriteStub(0x0e4, wbpl2pth);
-  memorySetIOWriteStub(0x0e6, wbpl2ptl);
-  memorySetIOWriteStub(0x0e8, wbpl3pth);
-  memorySetIOWriteStub(0x0ea, wbpl3ptl);
-  memorySetIOWriteStub(0x0ec, wbpl4pth);
-  memorySetIOWriteStub(0x0ee, wbpl4ptl);
-  memorySetIOWriteStub(0x0f0, wbpl5pth);
-  memorySetIOWriteStub(0x0f2, wbpl5ptl);
-  memorySetIOWriteStub(0x0f4, wbpl6pth);
-  memorySetIOWriteStub(0x0f6, wbpl6ptl);
-  memorySetIOWriteStub(0x100, wbplcon0);
-  memorySetIOWriteStub(0x102, wbplcon1);
-  memorySetIOWriteStub(0x104, wbplcon2);
-  memorySetIOWriteStub(0x108, wbpl1mod);
-  memorySetIOWriteStub(0x10a, wbpl2mod);
-  for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor);
+  memorySetIOReadStub(0x002, rdmaconr_C);
+  memorySetIOReadStub(0x004, rvposr_C);
+  memorySetIOReadStub(0x006, rvhposr_C);
+  memorySetIOReadStub(0x07c, rid_C);
+  memorySetIOWriteStub(0x02a, wvpos_C);
+  memorySetIOWriteStub(0x08e, wdiwstrt_C);
+  memorySetIOWriteStub(0x090, wdiwstop_C);
+  memorySetIOWriteStub(0x092, wddfstrt_C);
+  memorySetIOWriteStub(0x094, wddfstop_C);
+  memorySetIOWriteStub(0x096, wdmacon_C);
+  memorySetIOWriteStub(0x0e0, wbpl1pth_C);
+  memorySetIOWriteStub(0x0e2, wbpl1ptl_C);
+  memorySetIOWriteStub(0x0e4, wbpl2pth_C);
+  memorySetIOWriteStub(0x0e6, wbpl2ptl_C);
+  memorySetIOWriteStub(0x0e8, wbpl3pth_C);
+  memorySetIOWriteStub(0x0ea, wbpl3ptl_C);
+  memorySetIOWriteStub(0x0ec, wbpl4pth_C);
+  memorySetIOWriteStub(0x0ee, wbpl4ptl_C);
+  memorySetIOWriteStub(0x0f0, wbpl5pth_C);
+  memorySetIOWriteStub(0x0f2, wbpl5ptl_C);
+  memorySetIOWriteStub(0x0f4, wbpl6pth_C);
+  memorySetIOWriteStub(0x0f6, wbpl6ptl_C);
+  memorySetIOWriteStub(0x100, wbplcon0_C);
+  memorySetIOWriteStub(0x102, wbplcon1_C);
+  memorySetIOWriteStub(0x104, wbplcon2_C);
+  memorySetIOWriteStub(0x108, wbpl1mod_C);
+  memorySetIOWriteStub(0x10a, wbpl2mod_C);
+  for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor_C);
 }
 
 
@@ -475,8 +482,6 @@ void wdiwstrt_C(ULO data, ULO address)
 
 /*===========================================================================*/
 /* DIWSTOP - $dff090 Write                                                   */
-/*                                                                           */
-/*                                                                           */
 /*===========================================================================*/
 
 void wdiwstop_C(ULO data, ULO address)
@@ -504,533 +509,486 @@ void wdiwstop_C(ULO data, ULO address)
   graphCalculateWindow_C();
 }
 
-/*
+/*==============================================================================*/
+/* DDFSTRT - $dff092 Write                                                      */
+/*                                                                              */
+/* When this value is written, the scroll (BPLCON1) also need to be reevaluated */
+/* for _reversal_ of the scroll values.                                         */
+/* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */                                                           
+/*==============================================================================*/
 
+void wddfstrt_C(ULO data, ULO address)
+{
+  if ((data & 0xfc) < 0x18)
+  {
+    ddfstrt = 0x18;
+  }
+  else
+  {
+    ddfstrt = data & 0xfc;
+  }
+  sprite_ddf_kill = (data & 0xfc) - 0x14;
+  wbplcon1_C(bplcon1, address);
+}
 
+/*==============================================================================*/
+/* DDFSTOP - $dff094 Write                                                      */
+/*                                                                              */
+/* These registers control the horizontal timing of the                         */
+/* beginning and end of the bitplane DMA display data fetch.                    */
+/* (quote from 'Amiga Hardware Reference Manual')                               */
+/*==============================================================================*/
+
+void wddfstop_C(ULO data, ULO address)
+{
+  if ((data & 0xfc) > 0xd8)
+  {
+    ddfstop = 0xd8;
+  }
+  else
+  {
+    ddfstop = data & 0xfc;
+  }
+  graphCalculateWindow_C();
+}
+
+/*===========================================================================*/
+/* DMACON - $dff096 Write                                                    */
+/*                                                                           */
+/* $dff096  - Read from $dff002                                              */
+/* dmacon - zero if master dma bit is off                                    */
+/* dmaconr - is always correct.                                              */
+/*===========================================================================*/
+
+void wdmacon_C(ULO data, ULO address)
+{
+  ULO local_data;
+  ULO prev_dmacon;
+  ULO i;
+
+  // check SET/CLR bit is 1 or 0
+  if ((data & 0x8000) != 0x0)
+  {
+    // SET/CLR bit is 1 (bits set to 1 will set bits)
+    local_data = data & 0x7ff; // zero bits 15 to 11 (readonly bits and set/clr bit)
+    // test if BLTPRI got turned on (blitter DMA priority)
+    if ((local_data & 0x0400) != 0x0) 
+    {
+      // BLTPRI bit is on now
+      if ((dmaconr & 0x0400) == 0x0)
+      {
+        // BLTPRI was turned off before and therefor
+        // BLTPRI got turned on, stop CPU until a blit is 
+        // finished if this is a blit that uses all cycles
+        if (blitend != -1)
+        {
+          if (blit_cycle_free == 0x0)
+          {
+            // below delays CPU additionally cycles
+            thiscycle = thiscycle + (blitend - curcycle);
+          }
+        }
+      }
+    }
+    //.bhogend:
+
+    dmaconr |= local_data;
+    prev_dmacon = dmacon; // stored in edx
+    if ((dmaconr & 0x0200) == 0x0)
+    {
+      dmacon = 0;
+    }
+    else
+    {
+      dmacon = dmaconr;
+    }
+
+    // enable audio channel X ?
+    for (i = 0; i < 4; i++) 
+    {
+      if (((dmacon & (1 << i))) != 0x0)
+      {
+        // audio channel 0 DMA enable bit is set now
+        if ((prev_dmacon & (1 << i)) == 0x0)
+        {
+          // audio channel 0 DMA enable bit was clear previously
+          __asm {
+            push edx
+            push ecx
+            mov edx, 4
+            imul edx, i
+            push eax
+            call soundState0
+            pop eax
+            pop ecx
+            pop edx
+          }
+        }
+      }
+    }    
+
+    // check if already a call to wbltsize was executed 
+    // before the blitter DMA channel was activated
+    if ((blitterdmawaiting & 0x0001) != 0x0)
+    {
+      if ((dmacon & 0x0040) != 0x0)
+      {
+        blitterCopy();
+      }
+    }
+
+    // update Copper DMA
+    __asm {
+      pushad
+    }
+    copperUpdateDMA(); // assembly function, takes care of registers on its own
+     __asm{
+      popad
+    }
+  }
+  else
+  {
+    // SET/CLR bit is 0 (bits set to 1 will clear bits)
+    // in Norwegian this translates to 'slett' bits
+    dmaconr = (~(data & 0x07ff)) & dmaconr;
+    prev_dmacon = dmacon;
+    if ((dmaconr & 0x0200) == 0x0)
+    {
+      dmacon = 0;
+    }
+    else
+    {
+      dmacon = dmaconr;
+    }
+
+    // if a blitter DMA is turned off in the middle of the blit action
+    // we finish the blit
+    if ((dmacon & 0x0040) == 0x0)
+    {
+      if ((blit_started & 0xff) != 0x0)
+      {
+        blitFinishBlit();
+      }
+    }
+    
+    // disable audio channel X ?
+    for (i = 0; i < 4; i++) 
+    {
+      if ((dmacon & (1 << i)) == 0x0)
+      {
+        if ((prev_dmacon & (1 << i)) != 0x0)
+        {
+          __asm {
+            push ecx
+            mov ecx, i
+            call soundChannelKill
+            pop ecx
+          }
+        }
+      }
+    }
+
+    // check if already a call to wbltsize was executed 
+    // before the blitter DMA channel was activated
+    if ((blitterdmawaiting & 0x0001) != 0x0)
+    {
+      if ((dmacon & 0x0040) != 0x0)
+      {
+        blitterCopy();
+      }
+    }
+
+    // update Copper DMA
+    copperUpdateDMA(); // assembly function, takes care of registers on its own
+  }
+}
+
+/*===========================================================================*/
+/* BPL1PTH - $dff0e0 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl1pth_C(ULO data, ULO address)
+{
+  bpl1pt = (bpl1pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL1PTL - $dff0e2 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl1ptl_C(ULO data, ULO address)
+{
+  bpl1pt = (bpl1pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPL2PTH - $dff0e4 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl2pth_C(ULO data, ULO address)
+{
+  bpl2pt = (bpl2pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL2PTL - $dff0e6 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl2ptl_C(ULO data, ULO address)
+{
+  bpl2pt = (bpl2pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPL3PTH - $dff0e8 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl3pth_C(ULO data, ULO address)
+{
+  bpl3pt = (bpl3pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL3PTL - $dff0eA Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl3ptl_C(ULO data, ULO address)
+{
+  bpl3pt = (bpl3pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPL4PTH - $dff0e8 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl4pth_C(ULO data, ULO address)
+{
+  bpl4pt = (bpl4pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL4PTL - $dff0eA Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl4ptl_C(ULO data, ULO address)
+{
+  bpl4pt = (bpl4pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPL5PTH - $dff0e8 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl5pth_C(ULO data, ULO address)
+{
+  bpl5pt = (bpl5pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL5PTL - $dff0eA Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl5ptl_C(ULO data, ULO address)
+{
+  bpl5pt = (bpl5pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPL3PTH - $dff0e8 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl6pth_C(ULO data, ULO address)
+{
+  bpl6pt = (bpl6pt & 0x0000ffff) | (data & 0x01f) << 16;
+}
+
+/*===========================================================================*/
+/* BPL6PTL - $dff0eA Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl6ptl_C(ULO data, ULO address)
+{
+  bpl6pt = (bpl6pt & 0xffff0000) | (data & 0x0fffe);
+}
+
+/*===========================================================================*/
+/* BPLCON0 - $dff100 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbplcon0_C(ULO data, ULO address)
+{
+  ULO local_data;
+
+  bplcon0 = data;
+  local_data = (data >> 12) & 0x0f;
+
+  // check if DBLPF bit is set 
+  if ((bplcon0 & 0x0400) != 0)
+  {
+    // double playfield, select a decoding function 
+    // depending on hires and playfield priority
+    graph_decode_line_ptr = graph_decode_line_dual_tab[local_data];
+  }
+  else
+  {
+    graph_decode_line_ptr = graph_decode_line_tab[local_data];
+  }
+  
+  // check if HOMOD bit is set 
+  if ((bplcon0 & 0x0800) != 0)
+  {
+    // hold-and-modify mode
+    draw_line_BPL_res_routine = draw_line_HAM_lores_routine;
+  }
+  else
+  {
+    // check if DBLPF bit is set
+    if ((bplcon0 & 0x0400) != 0)
+    {
+      // check if HIRES is set
+      if ((bplcon0 & 0x8000) != 0)
+      {
+        draw_line_BPL_res_routine = draw_line_dual_hires_routine;
+      }
+      else
+      {
+        draw_line_BPL_res_routine = draw_line_dual_lores_routine;
+      }
+    }
+    else
+    {
+      // check if HIRES is set
+      if ((bplcon0 & 0x8000) != 0)
+      {
+        draw_line_BPL_res_routine = draw_line_hires_routine;
+      }
+      else
+      {
+        draw_line_BPL_res_routine = draw_line_lores_routine;
+      }
+    }
+  }
+  graphCalculateWindow_C();
+}
+
+// when ddfstrt is (mod 8)+4, shift order is 8-f,0-7 (lores) (Example: New Zealand Story)
+// when ddfstrt is (mod 8)+2, shift order is 4-7,0-3 (hires)
+
+/*===========================================================================*/
+/* BPLCON1 - $dff102 Write                                                   */
+/*                                                                           */
+/* extra variables                                                           */
+/* oddscroll - dword with the odd lores scrollvalue                          */
+/* evenscroll - dword with the even lores scrollvalue                         */
+/*                                                                           */
+/* oddhiscroll - dword with the odd hires scrollvalue                        */
+/* evenhiscroll - dword with the even hires scrollvalue                      */
+/*===========================================================================*/
+
+void wbplcon1_C(ULO data, ULO address)
+{
+  bplcon1 = data & 0xff;
+
+  // check for reverse shift order
+  if ((ddfstrt & 0x04) != 0)
+  {
+    oddscroll = ((bplcon1 & 0x0f) + 8) & 0x0f;
+  }
+  else
+  {
+    oddscroll = bplcon1 & 0x0f;
+  }
+
+  // check for ?
+  if ((ddfstrt & 0x02) != 0)
+  {
+    oddhiscroll = (((oddscroll & 0x07) + 4) & 0x07) << 1;
+  }
+  else
+  {
+    oddhiscroll = (oddscroll & 0x07) << 1;
+  }
+
+  // check for reverse shift order
+  if ((ddfstrt & 0x04) != 0)
+  {
+    evenscroll = (((bplcon1 & 0xf0) >> 4) + 8) & 0x0f;
+  }
+  else
+  {
+    evenscroll = (bplcon1 & 0xf0) >> 4;
+  }
+  
+  // check for ?
+  if ((ddfstrt & 0x02) != 0)
+  {
+    evenhiscroll = (((evenscroll & 0x07) + 4) & 0x07) << 1;
+  }
+  else
+  {
+    evenhiscroll = (evenscroll & 0x07) << 1;
+  }
+
+  graphCalculateWindow_C();
+}
 	
-;-------------------------------------------------------------------------------
-; DDFSTRT - $dff092 Write
-; When this value is written, the scroll (BPLCON1) also need to be reevaluated
-; for _reversal_ of the scroll values.
-; _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wddfstrt_
-_wddfstrt_:	and	edx, 0fch
-		cmp	edx, 018h
-		jae	.l1
-		mov	edx, 018h
-.l1:		mov	dword [ddfstrt], edx
-		sub	edx, 014h
-		mov	dword [sprite_ddf_kill], edx
-		mov	edx, dword [bplcon1]
-		jmp	_wbplcon1_
-
-
-;-------------------------------------------------------------------------------
-; DDFSTOP - $dff094 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wddfstop_
-_wddfstop_:	and	edx, 0fch
-		cmp	edx, 0d8h
-		jbe	.l1
-		mov	edx, 0d8h
-.l1:		mov	dword [ddfstop], edx
-		pushad
-		call graphCalculateWindow_C
-		popad
-		ret
-
-
-
-;-------------------------------------------------------------------------------
-; DMACON
-;-------------------------------------------------------------------------------
-; $dff096  - Read from $dff002
-; dmacon - zero if master dma bit is off
-; dmaconr - is always correct.
-
-
-		FALIGN32
-
-global _wdmacon_
-_wdmacon_:	mov	ecx, dword [dmaconr]
-		test	edx, 08000h
-		jz	near wdma1
-		and	edx, 7ffh		; Set bits - Readonly bits
-
-; Test if BLTHOG got turned on
-		test	edx, 0400h		; Is BLTHOG on now?
-		jz	.bhogend
-		test	ecx, 0400h		; Was BLTHOG off before?
-		jnz	.bhogend
-		; BLTHOG got turned on, stop CPU until a blit is finished if
-		; this is a blit that uses all cycles.
-		cmp	dword [blitend], -1
-		je	.bhogend
-		cmp	dword [blit_cycle_free], 0
-		jne	.bhogend
-		push	edx
-		mov	edx, dword [blitend]
-		sub	edx, dword [curcycle]
-		add	dword [thiscycle], edx	; Delays CPU additionally edx cycles
-		pop	edx
-.bhogend:
-
-		or	ecx, edx			; ecx is new dmaconr
-		mov	dword [dmaconr], ecx
-		test	ecx, 0200h
-		jnz	wdmanorm
-		xor	ecx, ecx
-wdmanorm:	mov	edx, dword [dmacon]	; get old dmacon (master dma adjusted)
-		mov	dword [dmacon], ecx	; Store new dmacon --------"---------
-
-		
-
-
-; Do audio stuff
-		test	ecx, 1			; Channel 0 turned on?
-		jz	snden0
-		test	edx, 1			; Already on?
-		jnz	snden0
-		push	edx
-		push	ecx
-		mov	edx, 0
-		push	eax
-		call	_soundState0_
-		pop	eax
-		pop	ecx
-		pop	edx
-snden0:		test	ecx, 2
-		jz	snden1
-		test	edx, 2
-		jnz	snden1
-		push	edx
-		push	ecx
-%ifndef SOUND_C
-		mov	edx, 4
-%else
-		mov	edx, 1
-%endif
-		push	eax
-		call	_soundState0_
-		pop	eax
-		pop	ecx
-		pop	edx
-snden1:		test	ecx, 4
-		jz	snden2
-		test	edx, 4
-		jnz	snden2
-		push	edx
-		push	ecx
-%ifndef SOUND_C
-		mov	edx, 8
-%else
-		mov	edx, 2
-%endif
-		push	eax
-		call	_soundState0_
-		pop	eax
-		pop	ecx
-		pop	edx
-snden2:
-		test	ecx, 8
-		jz	snden3
-		test	edx, 8
-		jnz	snden3
-		push	edx
-		push	ecx
-%ifndef SOUND_C
-		mov	edx, 12
-%else
-		mov	edx, 3
-%endif
-		push	eax
-		call	_soundState0_
-		pop	eax
-		pop	ecx
-		pop	edx
-snden3:		test	dword [blitterdmawaiting], 1
-		jz	wdmae1
-		test	ecx, 0040h
-		jz	wdmae1
-		
-		pushad
-		call	blitterCopy
-		popad
-
-wdmae1:		call	_copperUpdateDMA_
-		ret
-
-wdma1:		and	edx, 7ffh		; Get rid of readonly bits
-		not	edx
-		and	ecx, edx			  ; Slett bits
-		mov	dword [dmaconr], ecx
-		test	ecx, 0200h
-		jnz	wdmanormoff
-		xor	ecx, ecx
-wdmanormoff:	mov	edx, dword [dmacon]  ; get old dmacon
-		mov	dword [dmacon], ecx  ; store new dmacon
-
-; IF blitter dma is turned off in the middle of a blit
-; finish the blit
-
-		test	ecx, 040h
-		jnz	wdmabrag
-		test	dword [blit_started], 0ffh
-		jz	wdmabrag
-		pushad
-		call	blitFinishBlit
-		popad
-wdmabrag:
-; Do audio stuff when dma turns off
-; Simply set state 0, (state not set if state = 3??)
-
-		test	ecx, 1			; Channel 0 turned off?
-		jnz	sndoff0
-		test	edx, 1			; Already off?
-		jz	sndoff0
-		push	ecx
-		mov	ecx, 0
-		call	_soundChannelKill_
-		pop	ecx
-sndoff0:	test	ecx, 2
-		jnz	sndoff1
-		test	edx, 2
-		jz	sndoff1
-		push	ecx
-		mov	ecx, 1
-		call	_soundChannelKill_
-		pop	ecx
-sndoff1:	test	ecx, 4
-		jnz	sndoff2
-		test	edx, 4
-		jz	sndoff2
-		push	ecx
-		mov	ecx, 2
-		call	_soundChannelKill_
-		pop	ecx
-sndoff2:	test	ecx, 8
-		jnz	sndoff3
-		test	edx, 8
-		jz	sndoff3
-		push	ecx
-		mov	ecx, 3
-		call	_soundChannelKill_
-		pop	ecx
-sndoff3:	test	dword [blitterdmawaiting], 1
-		jz	wdmae2
-		test	ecx, 0040h
-		jz	wdmae2
-		pushad
-		call	blitterCopy
-		popad
-wdmae2:		call	_copperUpdateDMA_
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL1PT - $dff0e0 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl1pth_
-_wbpl1pth_:	and	edx, 01fh
-		mov	word [bpl1pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl1ptl_
-_wbpl1ptl_:	and	edx, 0fffeh
-  		mov	word [bpl1pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL2PT - $dff0e4 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl2pth_
-_wbpl2pth_:	and	edx, 01fh
-		mov	word [bpl2pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl2ptl_
-_wbpl2ptl_:	and	edx, 0fffeh
-  		mov	word [bpl2pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL3PT - $dff0e8 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl3pth_
-_wbpl3pth_:	and	edx, 01fh
-		mov	word [bpl3pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl3ptl_
-_wbpl3ptl_:	and	edx, 0fffeh
-  		mov	word [bpl3pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL4PT - $dff0ec Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl4pth_
-_wbpl4pth_:	and	edx, 01fh
-		mov	word [bpl4pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl4ptl_
-_wbpl4ptl_:	and	edx, 0fffeh
-		mov	word [bpl4pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL5PT - $dff0f0 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl5pth_
-_wbpl5pth_:	and	edx, 01fh
-		mov	word [bpl5pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl5ptl_
-_wbpl5ptl_:	and	edx, 0fffeh
-		mov	word [bpl5pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL6PT - $dff0f4 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-	
-global _wbpl6pth_
-_wbpl6pth_:	and	edx, 01fh
-		mov	word [bpl6pt + 2], dx
-		ret
-
-
-		FALIGN32
-
-global _wbpl6ptl_
-_wbpl6ptl_:	and	edx, 0fffeh
-		mov	word [bpl6pt], dx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPLCON0 - $dff100 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wbplcon0_
-_wbplcon0_:
-		push	ecx
-		mov	dword [bplcon0], edx
-		shr	edx, 12
-		and	edx, 0fh
-		test	byte [bplcon0 + 1], 04h
-		jz	.l1
-		mov	ecx, dword [graph_decode_line_dual_tab + edx*4]
-		jmp	.l2
-.l1:		mov	ecx, dword [graph_decode_line_tab + edx*4]
-.l2:		mov	dword [graph_decode_line_ptr], ecx
-		test	byte [bplcon0 + 1], 08h
-		jz	.l3
-		mov	ecx, dword [draw_line_HAM_lores_routine]
-		jmp	.lend
-.l3:		test	byte [bplcon0 + 1], 04h
-		jz	.l4
-		cmp	edx, 1
-		je	.l4
-		cmp	edx, 9
-		je	.l4
-		mov	ecx, dword [draw_line_dual_lores_routine]
-		cmp	edx, 7
-		jb	.lend
-		mov	ecx, dword [draw_line_dual_hires_routine]
-		jmp	.lend
-.l4:		mov	ecx, dword [draw_line_lores_routine]
-		test	edx, 08h
-		jz	.lend
-		mov	ecx, dword [draw_line_hires_routine]
-.lend:		mov	dword [draw_line_BPL_res_routine], ecx
-		pushad
-		call graphCalculateWindow_C
-		popad
-		pop	ecx
-		ret
-
-
-; When ddfstrt is (mod 8)+4, shift order is 8-f,0-7 (lores) (Example: New Zealand Story)
-; When ddfstrt is (mod 8)+2, shift order is 4-7,0-3 (hires)
-
-
-;-------------------------------------------------------------------------------
-; BPLCON1 - $dff102 Write
-;-------------------------------------------------------------------------------
-
-; Extra variables
-; oddscroll - dword with the odd lores scrollvalue
-; evenscroll -dword with the even lores scrollvalue
-
-; oddhiscroll - dword with the odd hires scrollvalue
-; evenhiscroll - dword with the even hires scrollvalue
-
-
-		FALIGN32
-
-global _wbplcon1_
-_wbplcon1_:	and	edx, 0ffh
-		mov	dword [bplcon1], edx
-		mov	ecx, edx
-		and	edx, 0fh
-
-		test	dword [ddfstrt], 4h	; Reverse shift order?
-		jz	.bpc1normal3
-		add	edx, 8
-		and	edx, 0fh
-
-.bpc1normal3:	mov	dword [oddscroll], edx
-
-		and	edx, 7h
-		test	dword [ddfstrt], 2h
-		jz	.bpc1normal1
-		add	edx, 4h
-		and	edx, 7h
-.bpc1normal1:	shl	edx, 1
-		mov	dword [oddhiscroll], edx
-		and	ecx, 0f0h
-		shr	ecx, 4
-
-		test	dword [ddfstrt], 4h	; Reverse shift order?
-		jz	.bpc1normal4
-		add	ecx, 8
-		and	ecx, 15
-
-.bpc1normal4:	mov	dword [evenscroll], ecx
-		and	ecx, 7h
-		test	dword [ddfstrt], 2h
-		jz	.bpc1normal2
-		add	ecx, 4h
-		and	ecx, 7h
-.bpc1normal2:	shl	ecx, 1
-		mov	dword [evenhiscroll], ecx
-		pushad
-		call graphCalculateWindow_C
-		popad
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPLCON2 - $dff104 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wbplcon2_
-_wbplcon2_:	mov	dword [bplcon2], edx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL1MOD - $dff108 Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wbpl1mod_
-_wbpl1mod_:	and	edx, 0fffeh
-		movsx	edx, dx
-		mov	dword [bpl1mod], edx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; BPL2MOD - $dff10a Write
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wbpl2mod_
-_wbpl2mod_:	and	edx, 0fffeh
-		movsx	edx, dx
-		mov	dword [bpl2mod], edx
-		ret
-
-
-;-------------------------------------------------------------------------------
-; COLOR - $dff180 to $dff1be
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _wcolor_
-_wcolor_:	and	edx, 0fffh
-		mov	word [graph_color - 0180h + ecx], dx
-		push	edx
-		mov	edx, dword [draw_color_table + edx*4] ; Translate color
-		mov	dword [graph_color_shadow - 0300h + ecx*2], edx
-		pop	edx
-		and	edx, 0eeeh                             ; Halfbrite color
-		shr	edx, 1
-		mov	word [graph_color - 0180h + 64 + ecx], dx
-		mov	edx, dword [draw_color_table + edx*4] ; Translate color
-		mov	dword [graph_color_shadow - 0300h + 128 + ecx*2], edx
-		ret
-
-
-  */
+/*===========================================================================*/
+/* BPLCON2 - $dff104 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbplcon2_C(ULO data, ULO address)
+{
+  bplcon2 = data;
+}
+
+/*===========================================================================*/
+/* BPL1MOD - $dff108 Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl1mod_C(ULO data, ULO address)
+{
+  bpl1mod = (ULO)(LON)(WOR)(data & 0x0000fffe);
+}
+
+/*===========================================================================*/
+/* BPL2MOD - $dff10a Write                                                   */
+/*                                                                           */
+/*===========================================================================*/
+
+void wbpl2mod_C(ULO data, ULO address)
+{
+  bpl2mod = (ULO)(LON)(WOR)(data & 0x0000fffe);
+}
+
+/*===========================================================================*/
+/* COLOR - $dff180 to $dff1be                                                */
+/*                                                                           */
+/*===========================================================================*/
+
+void wcolor_C(ULO data, ULO address)
+{
+  // normal mode
+  graph_color[((address & 0x1ff) - 0x180) >> 1] = (UWO) (data & 0x0fff);
+  graph_color_shadow[((address & 0x1ff) - 0x180) >> 1] = draw_color_table[data & 0xfff];
+  // half bright mode
+  graph_color[(((address & 0x1ff) - 0x180) >> 1) + 32] = (UWO) (((data & 0xfff) & 0xeee) >> 1);
+  graph_color_shadow[(((address & 0x1ff) - 0x180) >> 1) + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
+}
 
 
 /*===========================================================================*/

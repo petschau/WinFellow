@@ -24,7 +24,7 @@
 #define graphDecode2HiDual320 ASMRENAME(graphDecode2HiDual320)
 #define graphDecode3HiDual320 ASMRENAME(graphDecode3HiDual320)
 #define graphDecode4HiDual320 ASMRENAME(graphDecode4HiDual320)
-#define wcolor ASMRENAME(wcolor)
+//#define wcolor ASMRENAME(wcolor)
 #define wdiwstrt ASMRENAME(wdiwstrt)
 #define wdiwstop ASMRENAME(wdiwstop)
 #define wddfstrt ASMRENAME(wddfstrt)
@@ -75,7 +75,7 @@ extern void graphDecode4Hi320(void);
 extern void graphDecode2HiDual320(void);
 extern void graphDecode3HiDual320(void);
 extern void graphDecode4HiDual320(void);
-extern void wcolor(ULO data, ULO address);
+//extern void wcolor(ULO data, ULO address);
 extern void wdiwstrt(ULO,ULO);
 extern void wdiwstop(ULO,ULO);
 extern void wddfstrt(ULO,ULO);
@@ -145,11 +145,36 @@ ULO rvhposr_C(ULO address);
 ULO rid_C(ULO address);
 
 
+
 void wvpos_C(ULO data, ULO address);
 void wdiwstrt_C(ULO data, ULO address);
 void wdiwstop_C(ULO data, ULO address);
 void wserdat_C(ULO data, ULO address);
 void wserper_C(ULO data, ULO address);
+void wddfstrt_C(ULO data, ULO address);
+void wddfstop_C(ULO data, ULO address);
+void wdmacon_C(ULO data, ULO address);
+
+void wbpl1pth_C(ULO data, ULO address);
+void wbpl1ptl_C(ULO data, ULO address);
+void wbpl2pth_C(ULO data, ULO address);
+void wbpl2ptl_C(ULO data, ULO address);
+void wbpl3pth_C(ULO data, ULO address);
+void wbpl3ptl_C(ULO data, ULO address);
+void wbpl4pth_C(ULO data, ULO address);
+void wbpl4ptl_C(ULO data, ULO address);
+void wbpl5pth_C(ULO data, ULO address);
+void wbpl5ptl_C(ULO data, ULO address);
+void wbpl6pth_C(ULO data, ULO address);
+void wbpl6ptl_C(ULO data, ULO address);
+void wbplcon0_C(ULO data, ULO address);
+void wbplcon1_C(ULO data, ULO address);
+void wbplcon2_C(ULO data, ULO address);
+void wbpl1mod_C(ULO data, ULO address);
+void wbpl2mod_C(ULO data, ULO address);
+void wcolor_C(ULO data, ULO address);
+
+
 
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
