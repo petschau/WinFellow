@@ -6733,18 +6733,8 @@ _i55_:		mov	eax,dword [edi+12]
 		FALIGN32
 
 global _i56_
-_i56_:
-
-;		mov	ecx,0f80004h
-;		fetchl
-;		mov	esi,edx
-;		PC_TO_PTR esi
-;%ifdef PREFETCH
-;		mov	edx, esi
-;		call	prefetch_fillASM
-;%endif
-		pushad
-		call	fellowHardReset
+_i56_:		pushad
+		call	fellowSoftReset
 		popad
 		mov	eax,132
 		ret
