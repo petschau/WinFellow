@@ -633,13 +633,7 @@ void wdmacon_C(ULO data, ULO address)
     }
 
     // update Copper DMA
-    __asm {
-      pushad
-    }
-    copperUpdateDMA(); // assembly function, takes care of registers on its own
-     __asm{
-      popad
-    }
+    copperUpdateDMA(); 
   }
   else
   {
@@ -689,7 +683,7 @@ void wdmacon_C(ULO data, ULO address)
     }
 
     // update Copper DMA
-    copperUpdateDMA(); // assembly function, takes care of registers on its own
+    copperUpdateDMA(); 
   }
 }
 
@@ -2745,3 +2739,6 @@ BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* 
   }
   return FALSE;
 }
+
+
+		

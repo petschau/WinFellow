@@ -42,7 +42,6 @@ _memorystart_:			; Used to check code alignment
 
 
 %include "func/cpu.inc"
-%include "func/copper.inc"
 %include "func/cia.inc"
 %include "func/fmem.inc"
 %include "mac/fmem.mac"

@@ -51,7 +51,6 @@ FDATASECTIONSTART
 
 %include "data/cpu.inc"
 %include "data/bus.inc"
-%include "data/copper.inc"
 
 			
 upsrtraceset: db 0
@@ -70,7 +69,6 @@ _m68000start_:
 	
 %include "func/fmem.inc"
 %include "func/bus.inc"
-%include "func/copper.inc"
 %include "func/cpu.inc"
 ;%include "func/fellow.inc"
 
