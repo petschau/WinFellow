@@ -47,11 +47,11 @@ extern int is_hardfile (struct uaedev_mount_info *mountinfo, int unit_no);
 extern char *set_filesys_unit (struct uaedev_mount_info *mountinfo, int,
 			       char *volname, char *rootdir, int readonly,
 			       int secs, int surfaces, int reserved,
-			       int blocksize, int removable);
+			       int blocksize);
 extern char *add_filesys_unit (struct uaedev_mount_info *mountinfo,
 			       char *volname, char *rootdir, int readonly,
 			       int secs, int surfaces, int reserved,
-			       int blocksize, int removable);
+			       int blocksize);
 extern char *get_filesys_unit (struct uaedev_mount_info *mountinfo, int nr,
 			       char **volname, char **rootdir, int *readonly,
 			       int *secspertrack, int *surfaces, int *reserved,
