@@ -378,14 +378,15 @@ BEGIN
     PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,457,184,46,14
 END
 
-IDD_ABOUT DIALOG DISCARDABLE  0, 0, 186, 95
+IDD_ABOUT DIALOG DISCARDABLE  0, 0, 212, 95
 STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "About WinFellow Amiga Emulator v0.4.1"
+CAPTION "About WinFellow Amiga Emulator "
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,68,74,50,14
-    LTEXT           "WinFellow Amiga Emulator v0.4.1",IDC_STATIC,40,15,106,8
-    LTEXT           "Alpha Version",IDC_STATIC,71,33,44,8
+    DEFPUSHBUTTON   "OK",IDOK,80,74,50,14
+    LTEXT           "WinFellow Amiga Emulator v0.4.1 build 1",IDC_STATIC,41,
+                    15,129,8
+    LTEXT           "Alpha Version",IDC_STATIC,83,33,44,8
 END
 
 
@@ -512,7 +513,7 @@ BEGIN
     IDD_ABOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
+        RIGHTMARGIN, 205
         TOPMARGIN, 7
         BOTTOMMARGIN, 88
     END
@@ -607,7 +608,7 @@ IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
 IDB_DISKDRIVE_LED_DISABLED BITMAP  DISCARDABLE     "disk_led_disabled_cool.bmp"
 IDB_DISKDRIVE_LED_OFF   BITMAP  DISCARDABLE     "disk_led_off_cool.bmp"
 IDB_DISKDRIVE_LED_ON    BITMAP  DISCARDABLE     "disk_led_on_cool.bmp"
-IDB_POWER_LED_OFF       BITMAP  DISCARDABLE     "bitmap1.bmp"
+IDB_POWER_LED_OFF       BITMAP  DISCARDABLE     "power_led_off_cool.bmp"
 IDB_POWER_LED_ON        BITMAP  DISCARDABLE     "power_led_on_cool.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
