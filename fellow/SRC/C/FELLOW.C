@@ -331,7 +331,7 @@ void fellowRun(void) {
   fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_debug();
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_run();
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
