@@ -1,0 +1,2622 @@
+<!-- saved from url=(0022)http://internet.e-mail -->
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<html>
+<head>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="Author" content="Andreas Eibach">
+   <meta name="GENERATOR" content="Mozilla/4.6 [en] (Win98; I) [Netscape]">
+   <title>Fellow-Benutzerhandbuch</title>
+</head>
+<body text="#000000" bgcolor="#FFFFFF" link="#77AAFF" vlink="#77AAFF" alink="#FF0000">
+
+<hr WIDTH="100%">
+<center><font size=+1>F E L L O W</font>
+<br><font size=+1>COMMODORE AMIGA-EMULATOR</font>
+<br><font size=+1>von Petter Schau (<a href=mailto:pschau@online.no">pschau@online.no</a>)</font>
+<br><font size=+1>Original-Dokumentation und FAQ von Brett Eden (<a href="mailto:revere@sub.net.au">revere@sub.net.au</a>)</font>
+<br><font size=+1>Deutsche &Uuml;bersetzung von Andreas Eibach (<a href="mailto:a.eibach@gmx.net">a.eibach@gmx.net</a>)</font></center>
+
+<hr WIDTH="100%">
+<center><b>&nbsp;&nbsp;&nbsp;&nbsp; BITTE DIESE ANLEITUNG UNBEDINGT LESEN,
+BEVOR SIE FELLOW BENUTZEN.</b>
+<br>
+ Diese Anleitung beinhaltet Information &uuml;ber Fellow v0.3.4 f&uuml;r DOS.
+</center>
+
+<p><br>
+<h2>
+Credits</h2>
+<u>Der Emulator wurde geschrieben von:</u>
+<p><b>(C) Petter Schau 1996/1997/1998/1999.&nbsp; (<a href="mailto:pschau@online.no">pschau@online.no</a>)</b>
+<p><u>Programmtechnische Beitr&auml;ge au&szlig;erdem von:</u>
+<p><b>(C) Roman Dolejsi 1997&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<a href="../../WINNT/Profiles/ei88bue/Desktop/roman@sorry.vse.cz">roman@sorry.vse.cz</a>)</b>
+<br><b>(C) David Voracek 1997&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<a href="../../WINNT/Profiles/ei88bue/Desktop/assassin@paru.cas.cz">assassin@paru.cas.cz</a>)</b>
+<br><b>(C) Rainer Sinsch 1998&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(<a href="../../WINNT/Profiles/ei88bue/Desktop/sinsch@stud.uni-frankfurt.de">sinsch@stud.uni-frankfurt.de</a>)</b>
+<p>Bitte auf die <a href="../../WINNT/Profiles/ei88bue/Desktop/Credits.txt">Credits</a>-Seite
+gehen, um Details &uuml;ber Personen zu erfahren, die anderweitig an diesem
+Projekt beteiligt waren.
+<h2>
+Lizenz</h2>
+<u>Benutzung und Vertrieb dieses Emulators</u>
+<p>Die Rechte dieses Programms liegen alleine bei Petter Schau und am Projekt
+beteiligten Personen.
+<p>Sie d&uuml;rfen dieses Programm frei nutzen.
+<p>Unter Beachtung aller folgenden Beschr&auml;nkungen darf dieses Programm
+auch frei vertrieben werden:
+<br>&nbsp;*) Der Inhalt dieses ZIP-Archivs muss intakt und absolut unver&auml;ndert
+sein.
+<br>&nbsp;*) Es darf kein Profit gemacht werden, der den Preis dieses Programmes
+&uuml;bersteigt, d. h. ist das Programm kostenlos, darf es&nbsp; auch nicht
+f&uuml;r Geld vertrieben werden.
+<br>&nbsp;*) Eine Redistribution dieses Produkts &auml;ndert in keinem
+Verh&auml;ltnis die Bedingungen, unter denen dieses Programm benutzt und
+vertrieben wird.
+<br>&nbsp;*) Das Programm darf auf CDs vertrieben werden, die auch andere
+Freeware-Programme enthalten.
+<br>&nbsp;*) Ein Abweichen von der Beschr&auml;nkung, diese Software kostenlos
+zu vertreiben, erfordert die Erlaubnis der Autoren.
+<br>&nbsp;*) Der Emulator wird 1:1 vertrieben - sie benutzen diese Software
+also auf Ihr eigenes Risiko. Es besteht dar&uuml;berhinaus weder Anspruch
+auf irgendeine Art von Support noch ein Anspruch darauf, dass der Autor
+etwaige Fehler in der Software umgehend ausbessern muss.
+<br>&nbsp;*) Sie stimmen bei Nutzung dieser Software der Bedingung zu,
+dass der Autor f&uuml;r keinerlei Probleme, die bei Benutzung des Programms
+auftreten k&ouml;nnen, haftbar gemacht werden kann.
+<br>&nbsp;*) Die o. a. Beschr&auml;nkungen gelten auch f&uuml;r das Source-Code-Archiv
+des Fellow-Emulators.
+<p><u>F&uuml;r das Source-Code-Archiv des Emulators gelten noch die folgenden
+zus&auml;tzlichen Beschr&auml;nkungen:</u>
+<p>Sie d&uuml;rfen - f&uuml;r den pers&ouml;nlichen Gebrauch - diese Software
+in jeder erdenklichen Weise modifizieren und/oder erweitern.
+<p>Sollten Sie eine Ver&auml;nderung/Erweiterung vornehmen, die m&ouml;glicherweise
+f&uuml;r die Allgemeinheit interessant sein kann (z. B. wenn Sie eine zus&auml;tzliche
+Funktion hinzuf&uuml;gen), freuen wir uns, wenn wir von Ihnen h&ouml;ren,
+damit wir die Ver&auml;nderung und/oder Erweiterung ins Source-Code-Archiv
+aufnehmen k&ouml;nnen.
+<br>Das Einbinden von Teilen des Source-Codes in andere frei vertriebliche
+Software ist gestattet, solange die Autoren zuerst benachrichtigt und -
+zur W&uuml;rdigung ihrer Arbeit - namentlich erw&auml;hnt werden.
+<br>&nbsp;
+<p><font size=-1>"AMIGA", "AmigaOS", "Kickstart" und "Workbench" sind <i>eingetragene
+Warenzeichen</i> von Amiga International.&nbsp; Andere Namen, die hier
+erw&auml;hnt werden, sind <i>Warenzeichen</i> der entsprechenden Warenzeicheninhaber.</font>
+<br>&nbsp;
+<h2>
+Contents</h2>
+
+<table WIDTH="100%" BGCOLOR="#2B2C33" >
+<tr>
+<td><b><font color="#FFFFFF">1.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#1.">Einf&uuml;hrung</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">2.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#2.">Systemanforderungen</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.&nbsp;</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.">Was Sie unbedingt brauchen, bevor
+Sie Fellow einsetzen</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.1">Kickstart-Image&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.1.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.1.1">TransROM&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.2">Disk-Image&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.2.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.2.1">Transdisk&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">3.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#3.3">Dateien vom PC auf den Amiga kopieren
+und umgekehrt&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">4.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#4.">Starten von Fellow</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.">Konfiguration und Men&uuml;system-Referenz&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.1">Men&uuml;system-Grundlagen</a></font></td>
+</tr>
+
+<tr>
+<td BGCOLOR="#2F2E41"><b><font color="#FFFFFF">5.1.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.1.1">Das Men&uuml;system</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.1.2</font></b></td>
+
+<td><a href="#5.1.2">Die Konfigurations-Men&uuml;s</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.1.3</font></b></td>
+
+<td><a href="#5.1.3">Der Datei-Browser</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.2">Das Hauptmen&uuml;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.1</font></b></td>
+
+<td><a href="#5.2.1">Die Men&uuml;-Option&nbsp; "Start"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.2</font></b></td>
+
+<td><a href="#5.2.2">Das Men&uuml; "Configuration"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.3</font></b></td>
+
+<td><a href="#5.2.3">Das Men&uuml; "Utilities"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.4</font></b></td>
+
+<td><a href="#5.2.4">Die Men&uuml;-Option "Hard Reset"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.5</font></b></td>
+
+<td><a href="#5.2.5">Das Men&uuml; "Debugger"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.6</font></b></td>
+
+<td><a href="#5.2.6">Die Men&uuml;-Option "About"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.2.7</font></b></td>
+
+<td><a href="#5.2.7">Die Men&uuml;-Option "Quit"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.3</font></b></td>
+
+<td><a href="#5.3">Das Untermen&uuml; "Configuration" (Konfiguration)</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.4">Das Untermen&uuml; "Floppy-Konfiguration"
+(Floppy-Disk-Konfiguration)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.4.1</font></b></td>
+
+<td><a href="#5.4.1">Ein Disk-Image in DF(x) "einlegen"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.4.2</font></b></td>
+
+<td><a href="#5.4.2">Status von Laufwerk (x) abfragen</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.4.3</font></b></td>
+
+<td><a href="#5.4.3">Geschwindigkeit der Disketten-DMA bestimmen</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.4.4</font></b></td>
+
+<td><a href="#5.4.4">Laufwerk-"Cycling" mit Alt-N</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5</font></b></td>
+
+<td><a href="#5.5">Das Untermen&uuml; "File System" (Dateisystem)</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.5.1">Der Men&uuml;punkt "Add VFS
+filesystem" (VFS-Filesystem hinzuf&uuml;gen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.5.2">Der Men&uuml;punkt "Add readonly
+VFS"&nbsp;</a><a href="#5.5.1"> (VFS-Filesystem [schreibgesch&uuml;tzt]
+hinzuf&uuml;gen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.5.3">Der Men&uuml;punkt "Add normal
+filesystem" (Normales Filesystem hinzuf&uuml;gen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.5.4">Der Men&uuml;punkt "Add readonly
+normal filesystem" (Normales Filesystem [schreibgesch&uuml;tzt] hinzuf&uuml;gen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.5.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.5.5">Der Men&uuml;punkt "Remove filesystem"
+(Filesystem entfernen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6</font></b></td>
+
+<td><a href="#5.6">Das Untermen&uuml; "Screen Configuration" (Bildschirmeinstellungen)</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.1</font></b></td>
+
+<td><a href="#5.6.1">Die Option "Screen resolution" (Bildschirmaufl&ouml;sung
+einstellen)</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.6.2">Die Option "Frame-skip ratio"
+(Verh&auml;ltnis beim &Uuml;berspringen von Bild-Frames)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.6.3">Die Option "Maximum
+frame-rate" (Maximale Frame-Rate: unbegrenzt/50 Hz/mit VGA Karte synchronisieren)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.6.4">Die Option "Flicker-free interlace"
+(flimmerfreier Interlace-Modus)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.6.5">Die Option "Cycle-exact drawing"
+(zyklengenaues Zeichen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.6.6</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.6.6">Die Option "Scale Y" (Vertikalskalierung:
+keine S./Zeilenverdoppelung (Grafikkarte)/schwarze Zeilen einsetzen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7">Das Untermen&uuml; "Memory" ([AMIGA-]Speicher)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.1</font></b></td>
+
+<td><a href="#5.7.1">Die Option "Chip memory"</a></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7.2">Die Option "Fast memory"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7.3">Die Option "Bogo memory" (auch
+als Slow-Mem bekannt - Emulation der alten A500-512k-Speichererweiterung!)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7.4">Der Men&uuml;punkt "Kickstart-Image"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7.5">Die Option "Keyfile"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.7.6</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.7.6">Die Option "Memory space size"
+(Art der Speicheradressierung : 24bit/32bit)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.8">Das Untermen&uuml; "Sound"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.8.1">Die Option "Sound emulation"
+(kein S./emuliert aber aus/Normal, mit Emulation synchronisiert/dto. in
+Echtzeit [nur Fellow &lt;=0.3.2a!])</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.8.2">Die Option "Output rate" (kHz-Rate
+des Sample-Streams der Soundausgabe)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.8.3">Die Option "Output channels"
+(Ausgabekan&auml;le: Mono / Stereo)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.8.4.">Die Option "Output bits" (Bitrate
+der Ausgabe : 8bit / 16bit)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#7.1">Die Option "Low-pass filter" (Tiefpassfilter:
+original / immer / nie)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.6</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#7.1.1">Die Option "Sound buffer depth"
+(Tiefe des Soundausgabe-Puffers)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.8.7</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#7.1.2">Die Option "Send sound ouput
+to WAV-file" (Soundausgabe an WAV-Datei senden)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.9</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.9">Das Untermen&uuml; "CPU and Blitter"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.9.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.9.1">Die Option "Virtual CPU instruction
+set" (Befehlssatz der virtuellen CPU (68xxx))</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.9.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.9.2">Die Option "Virtual CPU speed"
+(Geschwindigkeit der virtuellen CPU in MHz)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.9.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.9.3">Die Option "Virtual Blitter
+speed"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.9.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.9.4">Die Option "Long Blits" (lange
+Blits)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.10</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.10">Das Untermen&uuml; "Hardfile
+Configuration" (Hardfile=[AMIGA-]Festplatten-Image)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.10.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.10.1">Der Men&uuml;punkt "fhfile.device
+state" (Status des virtuellen Ger&auml;tes "fhfile.device")</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.10.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.10.2">Der Men&uuml;punkt "FELLOWX
+hardfiles"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11">Das Untermen&uuml; "Various"
+(Verschiedenes)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11.1">Die Option "Joystick Port 1
+&amp; 2"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11.2">Die Option "Power/Floppy LEDs"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11.3">Die Option "Performance displayed
+on-screen" (Ausgabe der Rechnerauslastung auf dem Bildschirm)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11.4">Die Option "Menu-position saved
+on exit" (Beim Verlassen Men&uuml;positionen merken)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">5.11.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#5.11.5">Die Option "Autorun after some
+commands" (bei bestimmten Befehlen automatisch hochlaufen)</a></font></td>
+</tr>
+
+<tr BGCOLOR="#FFFFFF">
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.">Der Debugger&nbsp;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.1">Der Befehl&nbsp; "Step" (schrittweise)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.2">Der Befehl "Step Over" (schrittweise)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.3</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.3">Die Option "Breakpoint"</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.4</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.4">Die Option "Memory" (Speicher
+"belauschen")</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.5</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.5">Die Option "CIA" (hat nix mit
+dem gleichnamigen Geheimdienst zu tun ;-))</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.6</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.6">Die Option "IO" (Eingabe/Ausgabe)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.7</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.7">Der Befehl&nbsp; "Trace on" (Abarbeitung
+schrittweise AN)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.8</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.8">Der Befehl "Trace off" (Abarbeitung
+schrittweise AUS)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.9</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.9">Der Befehl "Show Trace" (zeigen)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.10</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.10">Die Option "Trace to file" (Trace
+in Datei schreiben)</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.11</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.11">Der Men&uuml;punkt "Event log
+configuration" (Konfiguration f&uuml;r das Mitschreiben von Ereignissen
+(Events))</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">6.12</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#6.12">Der Befehl "Show event log" (Ereignis-Logfile
+anzeigen)</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">7.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#7.">Kommandozeilenoptionen beim Start
+von Fellow</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">8.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#8.">Eine Einf&uuml;hrung f&uuml;r Fellow-Neulinge</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">9.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#9.">Tastatur-Shortcuts</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">9.1</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#9.1">Tastatur-Shortcuts im Benutzermen&uuml;</a></font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">9.2</font></b></td>
+
+<td><font color="#FFFFFF"><a href="#9.2">Tastatur-Shortcuts w&auml;hrend
+der Emulation</a></font></td>
+</tr>
+
+<tr>
+<td></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFFFF">10.</font></b></td>
+
+<td><font color="#FFFFFF"><a href="../../WINNT/Profiles/ei88bue/Desktop/10.">Kontakt
+zu den Autoren</a></font></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<h2>
+<a NAME="1."></a>1. Einf&uuml;hrung</h2>
+Herzlich willkommen beim Amiga-Emulator "Fellow", eine softwarem&auml;&szlig;ige
+Emulation des Commodore Amiga Computers.
+<br>Fellow stellt Ihnen eine virtuelle Amiga-Umgebung zur Verf&uuml;gung,
+mit der sie Amiga-Software laufenlassen k&ouml;nnen.
+<br>Der Emulator ist lauff&auml;hig auf jedem IBM-kompatiblen PC, auf dem
+eine DOS-Version installiert ist (z. B. MS-DOS
+<br>6.x und 7.x). Erfolgreich wurde der Emulator u. a. getestet unter reinem
+MS-DOS, unter dem DOS-Emulator f&uuml;r Linux und
+<br>in der DOS-Box unter Windows 95/98 bzw. NT.
+<p>[Anm. d. &Uuml;bers.: Auf dem DOS-Emulator hatte ich mit Fellow noch
+einige Probleme; z. B. war nur der Grafik-Modus
+<br>320x200 verf&uuml;gbar und Fellow h&auml;ngte sich ziemlich oft auf.
+Die Maus funktionierte nur dann, wenn man den Maustreiber "MSCMOUSE" verwendete.]
+<p>W&auml;hrend der Entstehungsphase von Fellow wurde stets der Commodore
+Amiga 500 als Referenzmodell des Amiga
+<br>benutzt, daher zielt eine Standardkonfiguration von Fellow auch gerade
+darauf ab, die Geschwindigkeit und das Feeling
+<br>dieses besonderen Amigas auf Ihrem PC m&ouml;glichst realit&auml;tsnah
+nachzubilden.
+<p>Fellow l&auml;sst sich auch sehr gut auf spezielle Bed&uuml;rfnisse
+anpassen; es k&ouml;nnen erweiterte Optionen aktiviert werden, um
+<br>Amigas zu emulieren, die einer h&ouml;heren Klasse der Amiga-Familie
+angeh&ouml;ren als der des Amiga 500. Es ist in h&ouml;chstem
+<br>Ma&szlig;e ratsam, sich &uuml;ber die Gesamtheit an Einstellm&ouml;glichkeiten
+zu informieren, um Ihnen die St&auml;rken des Emulators demonstrieren und
+Grenzen aufzeigen zu k&ouml;nnen.
+<p>Der Amiga 500 wurde erstmals 1987 vorgestellt als ein Nachfolger des
+Amiga 1000. Er bot sich auf Jahre hinweg als <i>der</i>
+<br>Computer f&uuml;r Einsteiger an und war der popul&auml;rste Vertreter
+der Amiga-Familie.
+<br>Schnell wurde der Amiga 500 eine beliebter Computer f&uuml;r Spiele
+und Demos. Dank seiner zahlreichen, der gestiegenen
+<br>Nachfrage nach schnellerer Grafikabarbeitung angepassten Coprozessoren
+gl&auml;nzte er durch vielf&auml;ltige F&auml;higkeiten im Multi-
+<br>media-Bereich und bestach durch 4-kanaligen, samplebasierten Stereosound.
+<p>Einerseits durch seine erh&ouml;hten grafischen F&auml;higkeiten, andererseits
+durch ein fensterbasiertes Multitasking-Betriebssystem, war der Amiga -
+stellte man ihn damaligen Home-Computern gegen&uuml;ber -, seiner Zeit
+weit voraus.
+<p>Obwohl es jetzt weit &uuml;ber 10 Jahre her ist, seitdem der Amiga erstmals
+der &Ouml;ffentlichkeit vorgestellt wurde, verlangt er
+<br>heutigen PCs immer noch einiges an Rechenzeit ab: es ist daher mindestens
+ein Pentium-Prozessor erforderlich, um einen <br>"Amiga" in Originalgeschwindigkeit
+laufenlassen zu k&ouml;nnen.
+<br>Besonders die erkleckliche Menge an Grafikprozessen sowie die Steuerung
+des Zusammenspiels der vielen einzelnen
+<br>Ger&auml;te und Hardwarekomponenten verbrauchen den gr&ouml;&szlig;ten
+Teil an CPU-Zeit.
+<p>Der Amiga-Emulator "Fellow" wurde von Petter Schau "geboren" - die erste
+der &Ouml;ffentlichkeit zug&auml;ngliche Version kam
+<br>im Dezember 1996 heraus. Es vergingen einige Jahre, in denen
+mit v&ouml;llig verschiedenen Methoden herumexperi-
+<br>mentiert wurde, mit dem Ziel, eine schnelle Emulation ausgew&auml;hlter
+Teile der Amiga-Hardware zu erm&ouml;glichen.
+<br>Heute ist Fellow ein nahezu vollst&auml;ndiger softwarem&auml;&szlig;iger
+Emulator eines Amiga 500 und mehr, nicht zuletzt dank der
+<br>Arbeit einiger weiterer Personen, die programmiertechnisch dazu beitrugen.
+<p><a NAME="2."></a>2. Ihre Hardware <b>muss</b>, um Fellow benutzen zu
+k&ouml;nnen, folgende Mindestanforderungen erf&uuml;llen:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (am besten sollte sie sie
+nat&uuml;rlich &uuml;bertreffen!)
+<ul>
+<li>
+IBM-kompatibler Computer mit Prozessor (486er-Befehlssatz) und FPU (math.
+Coprozessor)</li>
+
+<li>
+MS-DOS 5.00 oder h&ouml;her</li>
+
+<li>
+11 MB&nbsp; physikalischer RAM-Speicher</li>
+
+<li>
+Eine VGA-kompatible Grafikkarte</li>
+
+<li>
+Maus</li>
+
+<li>
+Tastatur</li>
+</ul>
+EMPFOHLEN ist es, mindestens mit der folgende Konfiguration zu arbeiten,
+sofern sie alles aus Fellow herauskitzeln
+<br>wollen:
+<ul>
+<li>
+IBM-kompatibler Computer mindestens mit einem 486er, 100 Mhz oder schneller,
+<u>besser:</u>
+Pentium (MMX ist von Vorteil)</li>
+
+<li>
+MS-DOS 5.00 oder h&ouml;her</li>
+
+<li>
+16-20 MB physikalischer RAM-Speicher (Fellow benutzt maximal 32 MB, wenn
+m&ouml;glich)</li>
+
+<li>
+Eine PCI- oder AGP-Grafikkarte ([S]VGA-kompatibel), die VBE-2.0 unterst&uuml;tzt</li>
+
+<li>
+Soundkarte (echte Soundblaster oder Soundblaster-kompatibel)</li>
+</ul>
+Unterst&uuml;tzt Ihre Grafikkarte <b>nicht</b> die VESA-BIOS-Erweiterungen
+Version 2.0, besorgen Sie sich entweder einen VBE-2.0-
+<br>Treiber f&uuml;r DOS (der speziell auf Ihre Grafikkarte zugeschnitten
+ist; schauen Sie mal auf die Homepage des Herstellers),
+<br>oder Sie downloaden sich <i>Scitech Display Doctor</i> (gibt's <a href="http://www.scitechsoft.com/consumer.html">hier</a> im Internet).
+<p>Ohne VBE-2.0-Unterst&uuml;tzung stehen Ihnen die meisten Grafikmodi
+nicht zur Verf&uuml;gung, wenn Sie Fellow benutzen!
+<p>Fellow ist ganz sch&ouml;n CPU-intensiv; also falls Sie den unb&auml;ndigen
+Wunsch haben sollten, grafikintensive Amiga-Program-
+<br>me in der Geschwindigkeit eines echten Amiga ablaufen lassen zu k&ouml;nnen,
+werden Sie um einen Prozessor in der Klasse
+<br>Pentium 133...166 und eine schnelle PCI/AGP-Grafikkarte nicht herumkommen
+- au&szlig;erdem werden auch andere Faktoren wie RAM-Zugriffsgeschwindigkeit
+sicher Ihre Resultate beeinflussen (beachten Sie dass ein DIMM [SDRAM]
+eine Zu- griffszeit von 10 ns [Nanosekunden] hat, w&auml;hrend ein Standard-EDO-RAM
+bei 60 ns ~ 70 ns arbeitet!)
+<br>&nbsp;
+<h2>
+<a NAME="3."></a>3. Bevor Sie loslegen - Was Sie unbedingt vorher brauchen</h2>
+Bevor Sie Fellow einsetzen k&ouml;nnen. werden Sie sicher zwei Dinge ben&ouml;tigen::
+<br>&nbsp;
+<h3>
+<a NAME="3.1"></a>3.1 Kickstart-Image</h3>
+
+<p><br>Ein Abbild eines AmigaDOS-Kickstart-ROMs, das von dem Kickstart-ROM
+eines ECHTEN Amiga gemacht wird.
+<br>Sie k&ouml;nnen die Datei erzeugen, indem Sie TransROM benutzen (finden
+Sie im Fellow-Package). Der Kickstart ist
+<br><i>copyright-gesch&uuml;tzte</i> Software, die deswegen aus ersichtlichen
+Gr&uuml;nden dem Emulator selbstverst&auml;ndlich nicht
+<br>beiliegen darf.
+<p>Die beste Methode, diese Image-Datei zu bekommen, ist, entweder die
+Kickstart-Software von einem Amiga, den Sie besitzen, zu kopieren, oder
+die "<a href="http://www.cloanto.com/amiga/forever/">Amiga Forever"-CD</a>
+von <a href="http://www.cloanto.com">Cloanto</a> zu kaufen, welche lizensierte
+Kickstart-ROM-Images
+<br>sowie Workbench-Software (angefangen von V1.0 bis hoch zu V3.0) enth&auml;lt,
+die bereits f&uuml;r sofortigen Einsatz in einem Emulator vorbereitet ist.
+<br>&nbsp;
+<h4>
+<a NAME="3.1.1"></a>3.1.1 TransROM</h4>
+TransROM muss auf einen echten Amiga kopiert werden, um ein Abbild eines
+Kickstart-ROMs zu erstellen und die Infor-
+<br>mationen in eine Datei zu schreiben.
+<p><tt>CLI> transrom >RAM:kick.rom</tt>
+<p>Dies kopiert den Kickstart-ROM-Chip (das Kickstart-ROM befindet sich
+auf einem Chip) und schreibt diesen in eine
+<br>Datei in die RAM-Disk "RAM:" unter dem Namen "kick.rom". Diese Datei
+muss dann auf den PC kopiert werden und
+<br>sich im Fellow-Verzeichnis befinden (es kann allerdings auch aus einem
+anderen Verzeichnis geladen werden).
+<br>&nbsp;
+<h3>
+<a NAME="3.2"></a>3.2 Disk-Image</h3>
+Auch werden Sie ein Abbild einer echten Amiga-Floppy-Disk (880KB) ben&ouml;tigen,
+die das Programm enth&auml;lt, das sie
+<br>unter Fellow ausf&uuml;hren m&ouml;chten. Dies realisieren Sie, indem
+Sie "transdisk", benutzen (ebenfalls im Fellow-Package
+<br>enthalten).
+<p>Ein Disk-Image ist eine Datei, in der die Daten enthalten sind, die
+sich normalerweise auf einer Diskette befinden.
+<p><b>Ein PC-Diskettenlaufwerk kann keine Amiga-Floppy-Disk lesen.</b>
+<p><b><font size=-1>[Anm. d. &Uuml;bers.:]</font></b>
+<br><b><font size=-1>Diese Frage wird sehr h&auml;ufig gestellt, deswegen
+erkl&auml;re ich es hier kurz:</font></b>
+<br><b><font size=-1>Es liegt am <u>Controller</u> des PC-Diskettenlaufwerks,
+der keine Informationen aus Amiga-Disketten verarbeiten</font></b>
+<br><b><font size=-1>kann. Die einzige M&ouml;glichkeit besteht darin,
+einen (externen) anderen Controller zu verwenden: zur Zeit ist</font></b>
+<br><b><font size=-1>der "<a href="http://www.jschoenfeld.com/">Catweasel</a>"
+in aller Munde, der auch andere Fremdformate lesen kann (z. B. C64, Atari).</font></b>
+<p>Daran liegt es auch, dass Sie, um Fellow benutzen zu k&ouml;nnen, <b>zwingend</b>
+ein Image irgendeiner Amiga-Diskette ben&ouml;tigen.
+<h4>
+<a NAME="3.2.1"></a>3.2.1 Transdisk</h4>
+Genau wie TransROM muss Transdisk auf einen echten Amiga kopiert werden
+- andernfalls ist es nutzlos.
+<p>Transdisk wird vom AmigaDOS-Prompt aufgerufen und kopiert eine Floppy-Disk,
+Track f&uuml;r Track ("raw"), in eine
+<br>Datei (die f&uuml;r Fellow lesbar ist).
+<p><tt>CLI> transdisk >RAM:df0.adf</tt>
+<p>Dies erzeugt ein Image von irgendeiner Diskette die sich gerade in DF0:
+befindet. Die Diskette muss nicht unbedingt
+<br>"df0.adf" genannt werden -&nbsp; Sie k&ouml;nnen jeden Namen verwenden,
+den Sie m&ouml;gen.
+<br>&nbsp;
+<h4>
+<a NAME="3.3"></a>3.3 Kopieren von Dateien vom PC zum Amiga und umgekehrt</h4>
+
+<ol>Mit einem Nullmodem-Kabel k&ouml;nnen Sie einen Zmodem-Transfer zwischen
+einem Amiga und einem PC realisieren. Stecken Sie einfach das Kabel in
+die seriellen Ports von beiden Computern, fahren Sie irgendeine Terminalsoftware
+<br>(z. B. Terminus, NComm, Term) auf dem Amiga und auf dem PC entsprechend
+dasselbe (Terminate, Telemate,
+<br>Telix ... oder HyperTerminal auf Windows 95, wenn Sie so darauf bestehen)
+und initiieren Sie einen Zmodem-Transfer
+<br>am Amiga.(also gemeint ist: Sender=Amiga Empf&auml;nger=PC)
+<br>Wenn Sie alles richtig eingestellt haben (es sollte am Empf&auml;ngerende
+(also in unserem Beispiel auf PC-Seite) der
+<br>"automatische ZModem-Download [vom Sender]" aktiviert sein), wird der
+PC den Upload auf sich automatisch
+<br>akzeptieren, und kann die Software vom Amiga auf Ihre PC-Festplatte
+downloaden.
+<p>Um optimale Ergebnisse zu erzielen, sollten Sie sich den Treiber "BaudBandit.device"
+besorgen, der das Standard-
+<br>"serial.device" auf dem Amiga ersetzt, au&szlig;erdem sollten Sie bei
+<u>beiden</u>
+Terminalprogrammen eine &Uuml;bertragungsrate von 57600 bps einstellen.
+BaudBandit sollte eine Daten&uuml;bertragung von bis zu 5500cps (Zeichen
+pro Sekunde) zu/von einem 68000er-Amiga erm&ouml;glichen! BaudBandit.device
+gibt es im Aminet.
+<p>Wenn Sie einer von denen sind, die Amiga OS 1.2/1.3 haben und einen
+A500 ihr eigen nennen, der zudem mit nur einem Laufwerk ausgestattet ist,
+dann k&ouml;nnten Sie in Schwierigkeiten geraten.
+<br>Sofern Sie keine Terminalsoftware haben, die sich auf einer echten
+880KB Floppy-Disk befindet und die Sie in einem
+<br>zweiten Laufwerk booten k&ouml;nnen, gibt es keine M&ouml;glichkeit,
+&uuml;bers Nullmodem-Kabel mit dem PC zu kommunizieren.
+<br><P>
+[Anm. d. &Uuml;bers.: gibt es doch! Der &Ouml;sterreicher Wolfgang
+St&ouml;ggl hat ADF Sender Terminal entwickelt, mit dem
+<br>genau dies m&ouml;glich ist! Schauen Sie auch
+unbedingt mal auf <a href=http://homepage.uibk.ac.at/homepage/c725/c72578/amiga/index_de.html>seiner Seite</a>
+vorbei - es lohnt sich!]
+<P></P>
+<br>Die schlaueste Idee w&auml;re es, sich einer Amiga-User-Group anzuschliessen,
+die Ihnen m&ouml;glicherweise mit so einer
+<br>"kostbaren" Diskette aushelfen kann, oder ein Amiga-Shareware-H&auml;ndler
+in Ihrer N&auml;he.
+<p>
+<hr WIDTH="100%">Anmerkung: Manche Amigas erlauben sogar auch 115.200 bps.
+Das h&auml;ngt in gro&szlig;em Ma&szlig;e vom verwendeten Sys-
+<br>tem ab, der Revisionsversion des Motherboards, und dem Prozessor. Wenn
+es ihnen gelingt, eine stabile Daten&uuml;ber-
+<br>tragung mit 115.200 bps hinzubekommen, k&ouml;nnen Sie effektiv Dateien
+mit 10000 Zeichen / Sekunde &uuml;bertragen!
+<br>
+<hr WIDTH="100%">
+<p>Wenn Sie kein Nullmodem-Kabel haben, oder sich nicht extra eins anschaffen
+wollen, [Anm. d. &Uuml;bers.: gibt's bei
+<br>Conrad f&uuml;r weniger als 10 DM], k&ouml;nnen Sie Amiga-Software
+zum PC unter Verwendung einer 720KB PC-Diskette &uuml;bertragen&nbsp; [Anm.
+d. &Uuml;bers.: diese haben Double Density (DD) (=doppelte Dichte)]
+<br>Die Workbench-Versionen 2.1 (und h&ouml;her) werden standardm&auml;&szlig;ig
+mit CrossDOS ausgeliefert: mit dieser Software
+<br>k&ouml;nnen Sie 720KB-PC-Disketten in Ihrem Amiga-Laufwerk lesen und
+beschreiben!
+<br>Wenn Sie kein CrossDOS haben, Ihnen also keine Workbench in der Version
+2.0 oder h&ouml;her zur Verf&uuml;gung steht, k&ouml;nnen Sie auch MessyDOS
+verwenden (gibt's im <a href="http://de.aminet.net/aminetbin/find">Aminet</a>).
+<br>Hier wird Ihnen nun Schritt f&uuml;r Schritt erkl&auml;rt, wie Sie
+per Diskette Software &uuml;bertragen k&ouml;nnen:
+<p>i) Besorgen Sie sich eine 720KB PC-Diskette (Double Density [DD]).
+<br>&nbsp;&nbsp; Formatieren Sie diese entweder auf Ihrem PC, oder auf
+dem Amiga mit Hilfe von CrossDOS.
+<p>ii) Erzeugen Sie mit obiger Methode entweder ein Kickstart-Image oder
+ein Disketten-Image.
+<p>iii) Archivieren Sie diese Datei mit Hilfe von LhA oder Zip (Stellen
+Sie sicher, dass Sie diese Datei auf Ihrem PC
+<br>haben, so dass Sie sie auspacken k&ouml;nnen wenn Sie die Diskette
+vom Amiga in den PC stecken).
+<p>iv) Kopieren Sie das Archiv mit Hilfe von CrossDOS oder MessyDOS auf
+die Diskette im Amiga.
+<p>v) Nehmen Sie die Diskette aus dem Amiga und stecken Sie sie in den
+PC, kopieren Sie das Archiv auf die
+<br>Festplatte, und packen Sie es wieder aus. Kopieren Sie das Kickstart-ROM-Image
+oder die ADF-Datei ins
+<br>Fellow-Verzeichnis und es kann losgehen!</ol>
+
+<h2>
+<a NAME="4."></a>4. Starten von Fellow</h2>
+Fellow wird einfach gestartet, indem man in der DOS-Eingabeaufforderung
+FELLOW.EXE aufruft. Damit gelangen Sie
+<br>in das Benutzermen&uuml;. In der Mitte wird angezeigt, welche "Disketten"
+gerade Laufwerken zugeordnet sind, und ob das
+<br>Kickstart-ROM-Image gefunden werden konnte oder nicht.
+<br>&nbsp;
+<h2>
+<a NAME="5."></a>5. Konfiguration und Men&uuml;system-Referenz</h2>
+
+<h3>
+<a NAME="5.1"></a>5.1 Men&uuml;system-Grundlagen</h3>
+Dieser Abschnitt befasst sich mit der Benutzeroberfl&auml;che <i>vor</i>
+dem Starten der Emulation.
+<h4>
+<a NAME="5.1.1"></a>5.1.1 Das Men&uuml;system</h4>
+Im Fenster rechts unten befindet sich ein Men&uuml;system. Benutzen Sie
+die Pfeiltasten um sich in den Men&uuml;s zu bewegen.
+<br>Die RETURN-Taste w&auml;hlt ein Men&uuml; aus. Tastatur-Abk&uuml;rzungen
+[Shortcuts] (gr&uuml;n hervorgehobene Anfangsbuchstaben) k&ouml;nnen ebenfalls
+verwendet werden wie auch globale Tastatur-Shortcuts f&uuml;r die gebr&auml;uchlichsten
+Optionen.
+<br>Das Dr&uuml;cken der ESC-Taste bringt Sie in der Men&uuml;hierarchie
+eine Stufe h&ouml;her.
+<h4>
+<a NAME="5.1.2"></a>5.1.2 Konfigurationsmen&uuml;s</h4>
+Die Konfigurations-Einstellungen werden in den Konfigurationsmen&uuml;s
+vorgenommen, welche dann im Hauptfenster sichtbar
+<br>werden, wenn Sie eines der Konfigurationsmen&uuml;s anw&auml;hlen.
+Die Namen der Men&uuml;punkte und Optionen sind auf der linken
+<br>Seite aufgef&uuml;hrt, wobei das Feld mit den m&ouml;glichen Optionen
+des ausgew&auml;hlten Parameters hervorgehoben erscheint.
+<br>Mit den Pfeiltasten k&ouml;nnen Sie sich im Men&uuml;feld bewegen:
+hierbei k&ouml;nnen Sie mit der rechten und linken Pfeiltaste die gerade
+<br>gew&auml;hlte Option &auml;ndern. Einige Optionen erfordern die Auswahl
+einer Datei;&nbsp; in diesen F&auml;llen gelangen Sie nach Dr&uuml;cken
+von "RETURN" in einen Datei-Browser.
+<h4>
+<a NAME="5.1.3"></a>5.1.3 Der Datei-Browser</h4>
+Der Datei-Browser erscheint im Hauptfenster. Bewegen Sie sich im Browser
+umher, bis Sie die Datei finden, die Sie aus-
+<br>w&auml;hlen m&ouml;chten. Mit "RETURN" k&ouml;nnen Sie eine Datei oder
+ein Verzeichnis ausw&auml;hlen. Wenn Sie den Datei-Browser
+<br>ohne Dateiauswahl verlassen m&ouml;chten, dr&uuml;cken Sie dazu "ESC".
+<p>Sie k&ouml;nnen sich, indem Sie den bzw. die Anfangsbuchstaben des Dateinamens
+eingeben, automatisch zu einer bestimmten Datei bewegen.
+<p>Es ist auch eine "Merker-Option" implementiert, die Sie dazu benutzen
+k&ouml;nnen, sich einen Dateinamen zu merken und ihn dann sp&auml;ter direkt
+in ein Konfigurationsmen&uuml; einzuf&uuml;gen. N&auml;here Informationen
+dazu finden Sie in der Shortcut-Liste f&uuml;r den Datei- Browser.
+<br>&nbsp;
+<h3>
+<a NAME="5.2"></a>5.2 Hauptmen&uuml;</h3>
+<img SRC="images/topmenu.jpeg" NOSAVE   height=156 width=151>
+<h4>
+<a NAME="5.2.1"></a>5.2.1 Start Option</h4>
+Sobald Sie diese Option ausw&auml;hlen, wird die Amiga-Emulation gestartet.
+Wenn Sie alles korrekt eingestellt haben, wird der
+<br>Emulator danach wie ein richtiger Amiga hochfahren. Denken Sie daran,
+da&szlig; sowohl ein Disketten-Image als auch ein Kick- start-ROM-Image
+"eingelegt" haben.
+<p>Falls der Emulator zeitweise angehalten wurde, bringt Sie diese Option
+wieder in den Emulations-Modus zur&uuml;ck.
+<h4>
+<a NAME="5.2.2"></a>5.2.2 Der Men&uuml;punkt "Configuration" (Konfiguration)</h4>
+Das Untermen&uuml; "Configuration" bietet Zugang zu einer gro&szlig;en
+Anzahl Einstellungen, die dazu verwendet werden k&ouml;nnen,
+<br>Feineinstellungen am Systemverhalten und an der Performance des Emulators
+vorzunehmen.
+<h4>
+<a NAME="5.2.3"></a>5.2.3 Der Men&uuml;punkt "Utilities"</h4>
+Das Untermen&uuml; "Utilities" bietet Tools, mit denen Sie ADF-Disk-Images
+und Hardfiles erstellen k&ouml;nnen, sowie einen
+<br>MOD-Ripper. <font size=-1>[Anm.: MOD war und ist auf dem Amiga <i>das</i>
+gebr&auml;uchlichste Format f&uuml;r Musikdaten. Mit einem MOD-Ripper k&ouml;nnen</font>
+<br><font size=-1>Sie also im Hauptspeicher sich befindliche Musikdaten,
+z. B. von einem Spiel, als MOD-Datei abspeichern.]</font>
+<h4>
+<a NAME="5.2.4"></a>5.2.4 Die Option "Hard Reset"&acute;</h4>
+Die Option "Hard Reset" f&uuml;hrt einen Kaltstart des virtuellen Amiga
+aus. Ein Hard Reset wird auch immer dann automa-
+<br>tisch ausgef&uuml;hrt, wenn Sie eine oder mehrere Konfigurationseinstellungen
+&auml;ndern.
+<p>Falls kein Kickstart-Image geladen wurde, wird durch einen Hard Reset
+ein einfacher Spezial-Loader aufgerufen, der dazu
+<br>in der Lage ist, Programme zu laden, die nicht auf Datenaustausch mit
+dem Amiga-OS angewiesen sind.
+<br>Dazu muss das Disk-Image, von dem Sie booten wollen, zuerst in DF0:
+"eingelegt" werden. Einige Demos und Spiele mit
+<br>Track-Loadern geh&ouml;ren zu der Programmkategorie, mit denen dieser
+Loader umgehen kann.
+<br><font size=-1>(<u>ANMERKUNG: Diese Spezial-Loader-Option gibt es nur bei Fellow 0.3.2a
+und fr&uuml;heren Versionen.</u>)</font>
+<h4>
+&nbsp;5.2.5 Der Men&uuml;punkt "Debugger"</h4>
+Der Debugger ist ein Programmwerkzeug, das beobachtet, was sich genau im
+(emulierten) Amiga abspielt.
+<br>Er wurde zur Fehlererkennung in der Emulation entwickelt und bietet
+einerseits eine M&ouml;glichkeit, die Amiga-Programme
+<br>ausserhalb der virtuellen Maschine zu debuggen, andererseits auch eine
+M&ouml;glichkeit, den momentanen Status der emulierten Hardware an jedem
+Punkt der Programmausf&uuml;hrung abzufragen.
+<h4>
+<a NAME="5.2.6"></a>5.2.6 Der Men&uuml;punkt "About"</h4>
+Dieser gibt die Credits-Liste aus (alle Personen, welche irgendwie ins
+Fellow-Projekt involviert sind bzw. waren).
+<h4>
+<br>
+<a NAME="5.2.7"></a>5.2.7 Der Men&uuml;punkt "Quit"</h4>
+Hiermit beenden Sie den Emulator und kehren zur&uuml;ck auf die DOS-Ebene.
+<br>&nbsp;
+<h3>
+<a NAME="5.3"></a>5.3 Das Men&uuml; "Configuration" (Konfiguration)</h3>
+<img SRC="images/configurationmenu.jpeg" height=169 width=146>
+<p>Das Men&uuml; "Configuration" beinhaltet eine Anzahl Men&uuml;s, mit
+welchen Sie das Systemverhalten des Emulators konfigurieren
+<br>k&ouml;nnen. Die verschiedenen Men&uuml;s werden im folgenden erkl&auml;rt.
+<h3>
+<a NAME="5.4"></a>5.4 Das Men&uuml; "Floppy Configuration" (Floppy-Disk-Configuration)</h3>
+<img SRC="images/floppydiskmenu.jpeg" height=241 width=316>
+<p>Dieses Men&uuml; bietet eine Anzahl von Einstellungen, die Disk-Images
+und die Hardware-Emulation des Amiga-Floppy-
+<br>Laufwerks betreffen.
+<h4>
+<a NAME="5.4.1"></a>5.4.1 Disk-Image in DF(x)</h4>
+Diese Optionen - "x" steht hier entweder f&uuml;r 0, 1, 2 oder 3 - geben
+Ihnen die M&ouml;glichkeit, jedem der 4 Floppy-Disk-
+<br>Laufwerke des Amigas je ein virtuelles Diskfile-Image zuzuordnen.
+<br>Wenn Sie den Emulator starten und Sie von einem Disk-Image booten wollen,
+ist es erforderlich, dass Sie ein
+<br>Disk-Image in DF0: haben. (ODER in einem anderen Laufwerk, <u>sofern
+Sie unter Kickstart 2.0 oder h&ouml;her arbeiten</u>.)
+<p>Durch Dr&uuml;cken der ENTF-Taste k&ouml;nnen Sie das "eingelegte" Disk-Image
+aus dem virtuellen Laufwerk "auswerfen".
+<p>Dr&uuml;cken Sie an dieser Stelle eine der Tastenkombinationen ALT-0
+bis ALT-9, wird das jeweilige Disk-Image "eingelegt",
+<br>dessen Name auf einem dieser 10 Speicherpl&auml;tze abgespeichert ist.
+<p>Disk-Images, die mit gzip oder bzip komprimiert sind, werden in das
+Verzeichnis entpackt, das mittels TEMP- oder
+<br>TMP-Umgebungsvariable eingestellt wurde. Es sind <u>keine &Auml;nderungen
+an diesen komprimierten Images m&ouml;glich.</u>.
+<br>(Nur unkomprimierte Images k&ouml;nnen ver&auml;ndert werden.)
+<h4>
+<a NAME="5.4.2"></a>5.4.2 Status von Laufwerk DF (x)</h4>
+Diese Optionen - "x" steht hier wiederum f&uuml;r 0, 1, 2 oder 3 - geben
+Ihnen die M&ouml;glichkeit, jedes Laufwerk individuell
+<br>zu deaktivieren, so dass der "Amiga" das Laufwerk nicht erkennen kann.
+N&uuml;tzlich ist das deshalb, weil das Amiga-OS dann keinen Puffer-Speicherbereich
+f&uuml;r das Laufwerk reserviert, und somit ein paar KB zus&auml;tzlicher
+Speicher f&uuml;r andere Dinge verf&uuml;gbar werden.
+<p>Eigentlich ist dies daf&uuml;r gedacht, um alte Demos lauff&auml;hig
+zu machen, die mit schlecht programmierten Cruncher-Programmen gepackt
+wurden. Im Normalfall lassen Sie die Laufwerke einfach alle aktiviert.
+<br>&nbsp;
+<h4>
+<a NAME="5.4.3"></a>5.4.3 Disk-DMA-Geschwindigkeit</h4>
+Damit k&ouml;nnen Sie die Geschwindigkeit w&auml;hlen, bei welcher die
+virtuellen Disketten-Files vom Floppy-Laufwerk in den
+<br>Amiga-Speicher gelesen werden. Auf echten Amigas ist der Disketten-Zugriff
+im Normalfall ziemlich langsam, der Emulator jedoch bietet Ihnen schnelleren
+Zugriff.
+<p>W&auml;hlbare Parameter sind "Original" (original) und "Fast" (schnell).
+<p>Beachten Sie bitte, dass ein paar Programme nicht starten werden, wenn
+die Geschwindigkeit nicht auf "Original" eingestellt ist.
+<br>&nbsp;
+<h4>
+<a NAME="5.4.4"></a>5.4.4 Alt-N-"Cycling"</h4>
+Legt fest, wie weit der Cursor springt: entweder dann, wenn ENTF gedr&uuml;ckt
+oder wenn ein Name eines Disk-Images von einem der 10 Speicherpl&auml;tze
+geladen wird.
+<br>&nbsp;
+<h3>
+<a NAME="5.5"></a>5.5 Men&uuml; "Filesystem" (Dateisystem)</h3>
+<img SRC="images/filesystemmenu.jpeg" height=118 width=227>
+<br>&nbsp;
+<p>Dieses Men&uuml; beinhaltet eine Anzahl Einstellm&ouml;glichkeiten,
+um&nbsp; Dateisysteme in Ihrer Konfiguration zu definieren und zu kontrollieren.
+Ein Dateisystem ist eine festgelegte Stelle in Ihrem realen Dateisystem
+(auf Ihrer Festplatte), welches dann
+<br>im Emulator als Ger&auml;t (Device) erscheint.
+<h4>
+<a NAME="5.5.1"></a>5.5.1 Das Men&uuml; "Add VFS filesystem" (virtuelles
+Dateisystem hinzuf&uuml;gen)</h4>
+Hiermit k&ouml;nnen Sie Ihrer Konfiguration ein virtuelles Dateisystem
+hinzuf&uuml;gen. Ein virtuelles Dateisystem wandelt Dateinamen
+<br>der DOS-8.3-Konvention in lange Dateinamen um, die dann vom Amiga verwendet
+werden. Es setzt jedoch voraus, dass sich die Amiga-Software auch von Anfang an auf 
+denjenigen Spuren befindet, die für die Aktualisierung der Translation-Tables f&uuml;r 
+<br>die Dateinamen zuständig sind - andernfalls sind die
+Dateinamen nur in ihrer 8.3-Form sichtbar; u. U. kann
+es dann vorkommen, dass Programme ihre ben&ouml;tigten Dateien nicht
+mehr finden.
+<br>Installieren Sie oder packen Sie Software innerhalb des Emulators auf
+VFS-"Datentr&auml;gern" aus.
+<p>Geben Sie, wenn sie diese Option ausw&auml;hlen, zuerst den Datentr&auml;gernamen
+an, unter dem dieses Dateisystem nachher dem
+Amiga bekannt sein soll, dann den Mountpoint im realen Dateisystem.
+Die dritte Option legt die maximale zul&auml;ssige Dateinamenl&auml;nge
+vor der Umwandlung in lange Dateinamen fest. Normalerweise braucht die
+Standardeinstellung dieser Option
+<i>nicht</i> ge&auml;ndert zu werden..
+<h4>
+<a NAME="5.5.2"></a>5.5.2 Das Men&uuml; "Add readonly VFS"</h4>
+Diese Option is inhaltlich analog zu 5.5.1, lediglich das Dateisystem ist
+auf "nur-Lesen" gemountet.
+<br>&nbsp;
+<h4>
+<a NAME="5.5.3"></a>5.5.3 "Add normal filesystem" (Normales Dateisystem
+hinzuf&uuml;gen)</h4>
+Analog zu oben, lediglich sind DOS-8.3-Dateinamen sichtbar und es wird
+keine Umwandlung in lange Dateinamen vorge-
+<br>nommen..
+<h4>
+<a NAME="5.5.4"></a>5.5.4 "Add readonly normal" (Normales Dateisystem [nur-Lesen]
+hinzuf&uuml;gen)</h4>
+Analog zu oben, lediglich sind DOS-8.3-Dateinamen sichtbar und das Dateisystem
+ist auf "nur-Lesen" gemountet..
+<h4>
+<a NAME="5.5.5"></a>5.5.5 "Remove Filesystem" (Dateisystem entfernen)</h4>
+Wenn Sie dies ausw&auml;hlen, bekommen Sie eine Liste mit momentan definierten
+Dateisystemen angezeigt.
+<br>Das ausgew&auml;hlte Dateisystem wird dann gel&ouml;scht.
+<br>&nbsp;
+<h3>
+<a NAME="5.6"></a>5.6 Men&uuml; "Screen Configuration" (Bildschirmeinstellung)</h3>
+<img SRC="images/screenmenu.jpeg" height=171 width=582>
+<p>Dieses Untermen&uuml; bestimmt Parameter, die mit der Grafikemulation
+und der visuellen Darstellung auf dem Amiga-
+<br>Bildschirm zu tun haben.
+<h4>
+<a NAME="5.6.1"></a><font size=+0>5.6.1 Screen resolution</font></h4>
+Diese Einstellung legt fest, welche Aufl&ouml;sung der Emulator zur Darstellung
+des Amiga-Bildschirms verwenden soll.
+<br>Die Anzahl der Ihnen zur Verf&uuml;gung stehenden Aufl&ouml;sungen
+h&auml;ngt von Ihrem VESA-Treiber ab.
+<br>Sofern Ihre Hardware diese unterst&uuml;tzt, k&ouml;nnen Sie zwischen
+einer der folgenden Aufl&ouml;sungen w&auml;hlen:
+<br>&nbsp;
+<br>&nbsp;
+<center><table BORDER COLS=1 WIDTH="220" >
+<caption><b>Unterst&uuml;tzte Aufl&ouml;sungen:</b></caption>
+
+<tr>
+<td>800x600x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>800x600x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x480x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x480x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x400x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x400x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x350x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>640x350x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>400x300x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>400x300x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>400x300x8 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x480x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x480x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x480x8 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x400x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x400x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x400x8 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x240x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x240x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x240x8 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x200x16 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x200x15 bit Farbtiefe</td>
+</tr>
+
+<tr>
+<td>320x200x8 bit F. (Std. VGA)</td>
+</tr>
+</table></center>
+
+<p>Werden bei einer Aufl&ouml;sung sowohl die 15- als auch die 16bit-Variante
+gefunden, w&auml;hlt der Emulator nur eine davon aus.
+<br>Normalerweise unterst&uuml;tzen eigentlich alle Karten die Standard-VGA-Aufl&ouml;sung
+320x200x8. Fehlt der VESA-Treiber,
+<br>oder unterst&uuml;tzt dieser nicht die &uuml;brigen Aufl&ouml;sungen,
+ist nur die 320x200x8-Aufl&ouml;sung anw&auml;hlbar.
+<p><b>ANMERKUNG:</b>
+<br>Die Nicht-VGA-Aufl&ouml;sungen k&ouml;nnen nur dann gew&auml;hlt werden,
+wenn der VESA-Treiber den "Linear Framebuffer"-Modus unterst&uuml;tzt.
+<p>Der Emulator &uuml;berwacht das Erscheinungsbild des gesamten Amiga-Grafikplayfields,
+dessen Gr&ouml;&szlig;e etwa 768x520 Pixel
+<br>umfasst. Viele der unterst&uuml;tzten Aufl&ouml;sungen sind nicht hoch
+genug, um ein Bild dieser Gr&ouml;&szlig;e darstellen zu k&ouml;nnen.
+<br>Um dennoch auf den Emulator-Bildschirm zu passen, wird es etwas abgeschnitten.
+Bei niedrigen Aufl&ouml;sungen werden Grafiken in hoher Aufl&ouml;sung entsprechend konvertiert: zulasten der Bildqualit&auml;t,
+da jeder zweite Pixel verlorengeht.
+<h4>
+<a NAME="5.6.2"></a>5.6.2 Die Option "Frame-skip ratio" (Verh&auml;ltnis
+beim &Uuml;berspringen von Bild-Frames)</h4>
+Die "Frame-Skip-Ratio" legt fest, wie oft der Emulator in der Sekunde das
+Display aktualisiert: 1/1 aktualisiert es so
+<br>h&auml;ufig wie irgend m&ouml;glich.
+<p>Niedrigere &Uuml;bersprungraten haben ruckelige Animationen zur Folge
+- sparen andererseits aber eine Menge an Zeit ein,
+<br>die dann wieder f&uuml;r andere Bereiche der Emulation verwendet werden
+kann.
+<br>Im allgemeinen ist die Einstellung der "Frame-Skip-Ratio" diejenige
+Einstellung, auf die das Augenmerk an erster Stelle <br>gerichtet ist, wenn eine Feineinstellung am Emulator vorgenommen wird.
+<h4>
+<a NAME="5.6.3"></a>5.6.3 Maximum frame-rate (maximale Frame-Rate)</h4>
+Diese Einstellung legt die Timing-Limits beim Emulator fest.
+<p>Sie k&ouml;nnen zwischen "Unlimited" (unbegrenzt), "50 Hz" und "Synch
+with VGA-card" (Synchronisation mit Grafikkarte)
+<br>w&auml;hlen.
+<p>"Unlimited" setzt alles Timing au&szlig;er Kraft, und erlaubt dem Emulator,
+so schnell als irgend m&ouml;glich zu laufen. Das betrifft
+<br>einerseits auch die Wiederholrate der Tasten, genauso wie es das Timing-Konzept
+im Emulator zunichte macht.
+<br>Es kann vorkommen, da&szlig; sie die Tastatur &uuml;berhaupt nicht
+benutzen k&ouml;nnen, wenn Ihr "Amiga" zu schnell l&auml;uft.
+<p>"50 Hz" begrenzt die Geschwindigkeit auf die eines Standard-Amiga 500
+mit PAL-Monitor.
+<p>"Synch with VGA-card" versucht, es das Display mit der Refresh-Rate
+der Grafikkarte zu synchronisieren.
+<br>In einigen F&auml;llen erm&ouml;glicht es dadurch absolut butterweiche
+Animationen. Da aber die normale PAL-Refreshrate nicht
+<br>unbedingt gleich der des VGA-Modus sein muss, bringt dies oft sowohl
+die Sound-Abspielgeschwindigkeit als auch die
+<br>Gesamtgeschwindigkeit der Anwendung v&ouml;llig durcheinander.
+<p><b>ANMERKUNG:</b>
+<br>Wenn Sie die Sound-Emulation auf "Synchronized with emulation" eingestellt
+haben, wird diese Einstellung <u>ignoriert</u> -
+<br>es sei denn, Sie haben "Synch with VGA-Card" eingestellt, welche selbst
+<i>mit
+</i>Sound
+benutzt wird.
+<br>Ber&uuml;cksichtigen Sie jedoch bitte, dass die Kombination "Synch
+mit VGA-Card" und Sound nicht sehr sinnvoll ist.
+<h4>
+<a NAME="5.6.4"></a>5.6.4 Flicker-free interlace (flimmerfreier Interlace-Modus
+[Interlace = Zwischenzeilen-Abtastung])</h4>
+Ist diese Option eingestellt, versucht diese, das Flimmern eines im Interlace-Modus
+befindlichen Amiga-Grafikbildschirms
+<br>zu reduzieren, allerdings <u>nur dann, wenn eine 800x600-Aufl&ouml;sung
+benutzt wird</u>.
+<h4>
+<a NAME="5.6.5"></a>5.6.5 Cycle exact drawing (Zyklen-genaues Zeichnen)</h4>
+Eine sich noch stark in der Experimentierphase befindliche Option. Ist
+sie aktiviert, werden Plasmaeffekte korrekt emuliert.
+<br>(Zumindest ist das die Idealvorstellung :-)) Zur Zeit werden nur Farb&auml;nderungen
+in der Zeilenmitte erkannt. Zum gr&ouml;&szlig;ten
+<br>Teil ist diese Option ein Test daf&uuml;r, wie man so etwas realisieren
+k&ouml;nnte, ohne das gesamte Grafiksystem neu entwerfen zu m&uuml;ssen
+(!)
+<br>Diese Routinen funktionieren zur Zeit nur bei der Aufl&ouml;sung 800x600.
+<p><b>ANMERKUNG 1:</b>
+<br>Der Gedanke, diese Option permanent aktiviert zu lassen, f&uuml;hrt
+wohl in eine Sackgasse. Sie braucht noch mehr Feinab- stimmung, und es
+ist mehr Arbeit n&ouml;tig, damit sie korrekt und stabil l&auml;uft. Empfohlen
+ist es, die Option dann anzuschalten,
+<br>wenn man einen besonderen Effekt beobachten m&ouml;chte.
+<p><b>ANMERKUNG 2:</b>
+<br>Bei Fellow v0.3.4 ist diese Option in der grafischen Benutzeroberfl&auml;che <i>nicht</i>
+mehr anw&auml;hlbar..
+<br>F&uuml;r die experimentierfreudigen Anwender ist sie nach wie vor als
+Kommandozeilen-Option enthalten.
+<h4>
+<a NAME="5.6.6"></a>5.6.6 Scale Y (Skalierung in Y-Richtung)</h4>
+Diese Option stellt Methoden der Skalierung zur Verf&uuml;gung, die daf&uuml;r
+gedacht sind, um m&ouml;glichen Problemen beim
+<br>Bildverh&auml;ltnis entgegenzuwirken. Sie hat nur bei hohen Aufl&ouml;sungen
+einen Effekt.
+<p>Zur Verf&uuml;gung stehen Ihnen 3 Optionen: "No Scaling" (keine vertikale
+Skalierung), "Hardware VGA Line Doubling"
+<br>(vertikale Verdoppelung der Zeilen mittels Hardware [Grafikkarte])
+sowie "Insert black lines" (f&uuml;ge schwarze Zwischen-
+<br>zeilen ein).
+<p>"Hardware VGA Line Doubling" macht von einigen Speicherregistern der
+Grafikkarte Gebrauch, um doppelte Scanlinien
+<br>in der Hardware zu erzeugen. HVLD funktioniert nur dann, wenn Sie eine
+VGA-Register-kompatible Grafikkarte besitzen,
+<br>die auch im SVGA-Modus hardwareseitige Anfragen der VGA-Register verarbeiten
+kann. (Nicht alle k&ouml;nnen das.)
+<br>&nbsp;
+<p>"Insert black lines" ist eine rein softwaretechnische Methode, die schwarze
+Zeilen ins Bild einf&uuml;gt, um das Amiga-Display
+<br>mit einem korrekteren Bildverh&auml;ltnis darzustellen.
+<br>&nbsp;
+<h3>
+<a NAME="5.7"></a>5.7 Das Men&uuml; "Memory" (Speicherkonfiguration)</h3>
+<img SRC="images/memorymenu.jpeg" height=170 width=442>
+<p>Dieses Untermen&uuml; legt fest, welchen Speichertyp und wieviel Speicher
+der emulierte Amiga zur Verf&uuml;gung hat.
+<br>&nbsp;
+<h4>
+<a NAME="5.7.1"></a>5.7.1 Chip-memory</h4>
+Hier k&ouml;nnen Sie entscheiden, wieviel Chip-RAM emuliert werden soll.
+Zul&auml;ssig sind Werte von 256 KB bis 2 MB.
+<h4>
+<a NAME="5.7.2"></a>5.7.2 Fast-memory</h4>
+Legen Sie hier fest, wieviel Fast-RAM sie emulieren m&ouml;chten.
+<br>Die zul&auml;ssigen Werte sind: 0 (kein Fast-RAM), 1, 2, 4 und 8 MB.
+<h4>
+<a NAME="5.7.3"></a>5.7.3 Bogo-memory</h4>
+Hier k&ouml;nnen Sie schlie&szlig;lich die Menge an Bogo-RAM (auch <u>Slow-RAM</u>
+genannt) bestimmen. Das ist der dritte im Bunde
+<br>der Speichertypen - genau <i>der</i> Speichertyp, der immer auf den Speichererweiterungskarten Verwendung fand,
+die man <br>damals in die Bodenöffnung des Amiga 500 einbaute.
+<br>Zul&auml;ssige Werte liegen im Bereich von 0 KB bis 1792 KB.
+<h4>
+<a NAME="5.7.4"></a>5.7.4 Kickstart-Image</h4>
+Sie k&ouml;nen hier festlegen, von wo Ihr AmigaOS-ROM-Image (das unbedingt
+vonn&ouml;ten ist, wenn Sie Programme laden
+<br>wollen, die die Workbench mitladen, oder, um die Workbench selbst zu
+laden) geladen werden soll.
+<br>Bei Auswahl dieser Option gelangen Sie in einen einfachen File-Requester,
+womit sie das ROM-File ausw&auml;hlen k&ouml;nnen.
+<br>Defaultm&auml;&szlig;ig sucht Fellow nach dem File "kick.rom" im Fellow-Verzeichnis.
+<p>Diese Dateien <u>m&uuml;ssen</u> die Dateierweiterung ".ROM" haben;
+sie k&ouml;nnen aber auch zus&auml;tzlich eine "Kickdisk" im ADF-
+<br>Format verwenden. (damals bekannt durch die des Amiga 1000)
+<p>Der Emulator findet automatisch heraus, in welchen Speicherbereich das
+ROM geladen werden muss. Bei ROM-Images,
+<br>dessen Startadresse $F00000 ist, <u>kann ein <i>zweites</i> ROM-File
+mittels der Kommandozeilenoption -r2 an die Adresse</u>
+<br><u>$F80000 oder $FC0000 geladen werden</u>. Beispielsweise, wenn man
+die Boot-Animation von CDTV anschauen m&ouml;chte,
+<br>ist diese Option sehr n&uuml;tzlich. (Allerdings wird die Hardware,
+die zum eigentlichen Booten von CDTV ben&ouml;tigt wird,
+<br><i>nicht</i> emuliert.)
+<h4>
+<a NAME="5.7.5"></a>5.7.5 Keyfile</h4>
+Diese Option spezifiziert eine Keyfile, die zum Entschl&uuml;sseln verschl&uuml;sselter
+Kickstarts verwendet wird - solche Kickstarts
+<br>findet man z. B. auf Cloantos "Amiga Forever" CD.
+<h4>
+<a NAME="5.7.6"></a>5.7.6 Die Option "Memory Space Size" (Gr&ouml;sse des
+Speicher-Bus)</h4>
+Diese Option legt die Breite des Speicherbus fest. Sie k&ouml;nnen hier
+zwischen "24 Bit" und "32 Bit" w&auml;hlen. "24 bit" ist
+<br>die Standard-Busbreite beim Motorola 68000 und 68010 und einigen Versionen
+des 68020, die 16MB adressierbaren
+<br>Speichers zulassen. "32 bit" erlaubt einen Adressraum von 4GB, wie
+er in Medium-End- und High-End-M68k-CPUs
+<br>Verwendung findet.
+<br>[Anm. d. &Uuml;bers.: Manche Versionen des <b>Kick 3.1.40070</b> laufen
+NUR mit "32bit" Speicherbus-Breite, sonst st&uuml;rzt
+<br>&nbsp;Fellow ab!!]
+<h3>
+<a NAME="5.8"></a>5.8 Das Untermenü "Sound"</h3>
+<img SRC="images/soundmenu.jpeg" height=187 width=674>
+<p>Dieses Untermen&uuml; ist f&uuml;r die soundtechnischen Angelegenheiten
+zust&auml;ndig.
+<h4>
+<a NAME="5.8.1"></a>5.8.1 Sound-Emulation</h4>
+Hier k&ouml;nnen Sie den Typ der Soundemulation w&auml;hlen.
+<br>Die Optionen, die stets anw&auml;hlbar sind, sind: "No Sound" (kein
+Sound), und "Emulated, not played" (emulierter Sound,
+<br>aber keine Soundausgabe)
+<p>Die Option[en], die nur dann zur Verf&uuml;gung steht [stehen], wenn
+eine Soundkarte (Soundblaster) gefunden wurde,
+<br>ist [sind]:
+<br>"Normal" (<i>bei Fellow 0.3.4</i>)
+<br>"Normal, synchronized with emulation" (normal, mit Emulation synchronisiert)
+(<i>bei Fellow 0.3.3</i>)
+<p>"Normal, synchronized with emulation" und
+<br>"Normal, synchronized with real-time" (normal, mit Echtzeit-Synchronisation)&nbsp;
+(<i>bei Fellow 0.3.2a und &auml;lter</i>)
+<p>Hinter diesen merkw&uuml;rdig anmutenden Namen verbergen sich zwei [bei
+0.3.3: eine] Timing-Methode[n] f&uuml;r Soundwieder- gabe.
+<p>&nbsp;"Normal"  (<i>bei Fellow 0.3.4</i>) bzw. "Normal, synchronized mit emulation"  (<i>bei Fellow 0.3.3 und älter </i>) stimmt die Sample-Erzeugung
+auf die Abarbeitungsgeschwindigkeit der Emulation genau ab. L&auml;uft die Emulation zu langsam, gibt es "schwarze
+L&ouml;cher" oder Aussetzer bei der Soundwiedergabe.
+<br>Auf richtig schnellen PCs sorgt diese Methode allerdings f&uuml;r eine
+gute Soundwiedergabe.
+<p>[<i>Der folgende Text betrifft nur die Versionen Fellow 0.3.2a und &auml;lter.]</i>
+<p>"Normal, synchronized with real-time" spaltet die Soundemulation von
+der &uuml;brigen Emulation v&ouml;llig ab, wobei diese <br>Methode
+sicherstellt, dass immer genug Samples vorhanden sind, um eine fl&uuml;ssige
+Soundwiedergabe zu gew&auml;hrleisten. <br>Das &Uuml;ble wiederum daran
+ist, dass Sie ziemlich wahrscheinlich Tempoverzerrungen bekommen. Tja - von so einem 
+<br>langsamen Rechner k&ouml;nnen Sie nun ja nicht <i>alles</i> erwarten. Ein zweiter Nachteil ist, dass diese
+Timing-Methode auf einem PC mit Pentium II nicht so gut funktioniert
+- ist jedoch kein derart gro&szlig;er Nachteil, da Sie ja die Methode "synchronized
+with emulation" verwenden k&ouml;nnen, die erfahrungsgem&auml;&szlig; auf
+diesen PCs&nbsp; <i>sehr</i> gute Resultate liefert.
+
+<P>
+<font size="2">[<b>Anm. d. Übers.: Ich rate Ihnen, sofern Sie Fellow 0.3.2a und älter unter Windows verwenden, strikt von dieser Methode der <br>Echtzeit-Synchronisation
+ ab, da Fellow hier oft völlig verrückt spielt! Allerdings läuft diese unter reinem DOS problemlos.</b></font>]
+</P>
+<h4>
+<a NAME="5.8.2"></a>5.8.2 Output-rate (Frequenz des ausgegebenen Sample-Streams)</h4>
+Hiermit k&ouml;nnen Sie die Frequenz des Sample-Streams w&auml;hlen, der
+vom Emulator erzeugt wird. Zugelassene Werte sind
+<br>15650 Hz, 22050 Hz, 31300 Hz und 44100 Hz.
+<h4>
+<a NAME="5.8.3"></a>5.8.3 Output-channels (Ausgabekan&auml;le)</h4>
+Sie k&ouml;nnen hier die Anzahl der Ausgabekan&auml;le im Sample-Stream
+bestimmen, den der Emulator erzeugt.
+<br>W&auml;hlen k&ouml;nnen Sie zwischen "Mono"-Modus und "Stereo"-Modus.
+<h4>
+<a NAME="5.8.4"></a>5.8.4 Output-bits (Ausgabe-Bitrate)</h4>
+Mit dieser Option bestimmen Sie die Anzahl der Bits, die im vom Emulator
+erzeugten Sample-Stream verwendet werden.
+<br>W&auml;hlen Sie zwischen "8 bits" (8 bit) und "16 bits" (16 bit).
+<p><b>NOTE:</b>
+<br>Nicht alle Soundkarten unterst&uuml;tzen alle m&ouml;glichen Einstellungen
+bei der Soundausgabe. Haben Sie eine f&uuml;r Ihre Karte
+<br>unzul&auml;ssige Einstellung gew&auml;hlt, erzwingt der Emulator beim
+Start wieder die Minimaleinstellungen. Allerdings stehen Ihnen mit der
+<br>Option "Emulated, no playback" (emuliert, aber nicht wiedergegeben)
+alle Einstellungen zur Verf&uuml;gung,
+<br>damit Sie auch dort die M&ouml;glichkeit haben, Sound mit <i>beliebiger</i> Qualit&auml;t
+als WAV-File abzuspeichern.
+<p><b>ANMERKUNG bez&uuml;glich Performance:</b>
+<br>Die Einstellung "44100 Hz" ist unn&ouml;tig und f&uuml;r die CPU ein
+extremer "Klotz am Bein". Ein guter Kompromiss zwischen
+<br>Geschwindigkeit und Qualit&auml;t ist 31300 Hz.
+<br>Mono oder Stereo bzw. 8 oder 16 bit machen, was die Geschwindigkeit
+angeht, nur einen kleinen Teil aus.
+<h4>
+<a NAME="5.8.5"></a>5.8.5 Low Pass Filter (Tiefpassfilter)</h4>
+Mit dieser Einstellung kann ein 7kHz-Tiefpassfilter zugeschaltet werden.
+Der "Filter" wandelt den Sound leicht um, was einen
+<br>"bassigeren" Sound ergibt, er kann auch dazu verwendet werden, bei
+Samples hochfrequentes Rauschen zu unterdr&uuml;cken.
+<br>&nbsp;
+<h4>
+<a NAME="5.8.6"></a>5.8.6 Sound buffer depth (Tiefe des Sound-Puffers [in ms])</h4>
+Die Tiefe des Sound-Puffers beeinflusst die Sound-Verz&ouml;gerung (Delay),
+neben einer Anzahl anderer Nebeneffekte.
+<br>Auf langsameren PCs werden Sie mit Sicherheit auf einen gr&ouml;&szlig;eren
+Sound-Puffer zur&uuml;ckgreifen, um damit "Clicks" (Nebenger&auml;usche)
+und "Popping" (unterbrochener Sound) zu vermeiden.
+<br>Einer der wichtigen Nebeneffekte bei der Einstellung der Sound-Puffer-Tiefe
+ist die Synchronisations-Genauigkeit.
+<br>Bei einer schnellen Maschine (Pentium II-CPU) sollte man einen kleinen
+Puffer w&auml;hlen, um eine gleichm&auml;&szlig;igen Output
+<br>an Grafik-Frames sicherzustellen.
+<h4>
+<a NAME="5.8.7"></a>5.8.7 Send sound output to WAV-file (Soundausgabe an
+WAV-Datei senden)</h4>
+Aktivieren Sie diese Option zusammen mit einer Methode der Soundemulation,
+k&ouml;nnen Sie die Soundausgabe zu einer
+<br>WAV-Datei senden, wobei die eingestellte Sound-Qualit&auml;t verwendet
+wird.
+<br>&nbsp;
+<h4>
+<a NAME="5.9"></a>5.9 CPU- und Blitterkonfiguration</h4>
+<img SRC="images/cpumenu.jpeg" height=133 width=469>
+<p>Dieses Untermen&uuml; befasst sich mit Einstellungen, die mit der CPU-
+und Blitteremulation zu tun haben.
+<h4>
+<a NAME="5.9.1"></a>5.9.1 Virtual CPU instruction set (Typ der virtuellen
+CPU)</h4>
+Hiermit wird der Prozessortyp (und damit der Befehlssatz) der emulierten
+CPU festgelegt. W&auml;hlen k&ouml;nnen Sie zwischen
+<br>"68000[er]", "68010[er]", "68020[er]" und "68030[er]". Mit "68020"
+und "68030" sind der 68EC20 bzw. 68EC30 gemeint,
+also 68020er bzw. 68030er <u>ohne FPU und MMU</u>.
+<h4>
+<a NAME="5.9.2"></a>5.9.2 Virtual CPU speed (Geschwindigkeit der virtuellen
+CPU)</h4>
+Hiermit stellen sie die Geschwindigkeit der emulierten CPU ein. (Diese
+sollte nicht mit der realen Performance verwechselt
+<br>werden!)
+<p>Sie k&ouml;nnen zwischen "3.5 MHz", "7 MHz", "14 MHz" und "28 MHz" ausw&auml;hlen.
+Diese Clock-Werte werden relativ,
+<br>vom Timing des Standard-A500 (7 MHz, 68000er) ausgehend, errechnet
+und m&uuml;ssen nicht unbedingt ein Pendant in
+<br>der realen CPU-Welt haben. (Das ist eben so eines der Dinge, die man
+mit Emulation anstellen kann :))
+<h4>
+<a NAME="5.9.3"></a>5.9.3 Virtual Blitter Speed (Geschwindigkeit des virtuellen
+Blitters)</h4>
+Diese Option bestimmt, mit welcher Blittergeschwindigkeit die Amiga-Programme
+arbeiten sollen.
+<br>Sie haben zwei Optionen zur Auswahl: "Normal OCS Speed" (normale OCS-Geschwindigkeit)
+und "Finish instantly"
+<br>(in etwa: Blitter vollf&uuml;hrt seine Berechnungen, ohne zus&auml;tzliche
+Zeit daf&uuml;r zu beanspruchen)
+<p>"Normal OCS Speed" versucht, das Verhalten des [emulierten] Blitters
+dem eines echten OCS-Blitters m&ouml;glichst original- getreu anzugleichen
+- mit R&uuml;cksichtnahme auf die Geschwindigkeit. Durch diese Einstellung
+ben&ouml;tigen Blits Zeit, und vermutlich werden es die meisten Programme genauso wollen.
+<p>"Finish instantly" stellt hingegen einen Blitter zur Verf&uuml;gung,
+der den Anschein hat, quasi keine Zeit zu ben&ouml;tigen, um seine
+<br>Berechnungen zu vollenden. In einigen F&auml;llen kann dies dazu f&uuml;hren,
+dass der Emulator mit Blitterberechnungen "bombar-
+<br>diert" wird, und die Echtzeit-Performance dann entsprechend rapide
+nach unten geht. Jedoch kann es auch Gutes bei Programmen bewirken, die
+mit Synchronisationsproblemen des Puffers zu k&auml;mpfen haben, z. B.
+wenn deutlich sichtbare Ri&szlig;linien bei Vektor- oder bewegten Grafiken
+in Erscheinung treten, welche dann wie "halb gezeichnet" aussehen, wenn
+das Amiga-Programm sie darstellt.
+<h4>
+<a NAME="5.9.4"></a>5.9.4 Long blits (lange Blits)</h4>
+"Long blits" ist eine ECS-Spezialit&auml;t. Es gibt ein paar Programme,
+die sie brauchen werden, wie z. B. einige Doom-Versionen.
+<br>&nbsp;
+<h3>
+<a NAME="5.10"></a>5.10 Hardfile configuration</h3>
+<img SRC="images/hardfilemenu.jpeg" height=261 width=462>
+<p>Dieses Untermen&uuml; befasst sich mit Hardfiles.
+<p>Ein Hardfile ist eine M&ouml;glichkeit, Massenspeicher dem emulierten
+Amiga zur Verf&uuml;gung zu stellen. Das Hardfile ist eine
+<br>riesige Datei die als eine "Festplatte" verwendet wird. Das Hardfile
+kann beliebig gross sein.
+<p><u>Hardfiles k&ouml;nnen nur dann verwendet werden, wenn sie ein Kickstart
+in der Version 2.0 oder h&ouml;her besitzen.</u>
+<p>Vergessen Sie nicht, ein neues Hardfile erst zu <b>formatieren</b>.
+<p>Sie k&ouml;nnen von jedem Hardfile booten.
+<br>Hardfiles haben eine niedrigere Boot-Priorit&auml;t als DF0:, aber
+eine h&ouml;here als DF1:.
+<p>Sie k&ouml;nnen auch unkomprimierte ADF-Dateien anstelle von echten
+Hardfiles verwenden.
+<p>Die Hardfile-Devices beim "Amiga" hei&szlig;en FELLOWx: (erstes Hardfile:
+x=0, zweites: x=1 usw.)
+<p><b>ANMERKUNG:</b> Ein &Auml;ndern der Hardfile-Einstellungen erzwingt
+automatisch einen Hard Reset des emulierten Amiga.
+<br>&nbsp;
+<h4>
+<a NAME="5.10.1"></a>5.10.1 fhfile.device state (Status des fhfile.device)</h4>
+Das Hardfile wird durch einen Software-Ger&auml;tetreiber bereitgestellt,
+der entweder aktiviert oder deaktiviert sein kann.
+<br>&nbsp;
+<h4>
+<a NAME="5.10.2"></a>5.10.2 FELLOWx-Hardfiles</h4>
+Je nachdem, mit wie vielen Hardfile-Slots die Fellow-Programmdatei (FELLOW.EXE)
+kompiliert worden ist, k&ouml;nnen Sie ihrer Konfiguration eine Anzahl
+Hardfiles hinzuf&uuml;gen. Durch Selektieren dieser Optionen gelangen Sie
+wieder in einen Datei-Browser, mit dessen Hilfe Sie
+<br>die Datei ausw&auml;hlen k&ouml;nnen, mit der Sie Massenspeicher emulieren
+m&ouml;chten.
+<br>Sie k&ouml;nnen auch unkomprimierte ADF-Images mit dem Hardfile-Device
+verwenden.
+<br>&nbsp;
+<h3>
+<a NAME="5.11"></a>5.11 Das Men&uuml; "Various" (Verschiedenes)</h3>
+<img SRC="images/variousmenu.jpeg" height=191 width=717>
+<p>In diesem Men&uuml; sind Optionen zusammengestellt, die woanders nicht
+hereingepasst h&auml;tten.
+<br>&nbsp;
+<h4>
+<a NAME="5.11.1"></a>5.11.1 "Joystick Port 1 &amp; 2"</h4>
+Hiermit werden die Amiga-Joystick-Ports konfiguriert.
+<p><u>M&ouml;gliche Einstellungen sind:</u>
+<p>"Disabled" (deaktiviert)
+<br>"Mouse" (Maus)
+<br>"Analog Joystick" (analoger Joystick)
+<br>"Keyboard Joystick Replacement 1" (Joystickemulation durch Tastatur,
+<u>Typ
+A</u>)
+<br>"Keyboard Joystick Replacement 2" (Joystickemulation durch Tastatur,
+<u>Typ
+B</u>)
+<p><u>Der Joystick kann wie folgt durch die Tastatur emuliert werden:</u>
+<p><u>Typ A</u>: Pfeiltasten mit der rechten <b>Strg</b>-Taste als <u>Feuerknopf
+1</u> und der <b>AltGr</b>-Taste als <u>Feuerknopf 2</u>.
+<p><u>Typ B</u>: 'D' = links, 'G' = rechts, 'R' = hoch, 'F' = runter, linke
+<b>Strg</b>-Taste
+ist <u>Feuerknopf 1</u> und <b>Alt</b>-Taste ist <u>Feuerknopf 2.</u>
+<br>&nbsp;
+<p>Die Handhabung des analogen Joysticks ist ganz sch&ouml;n umst&auml;ndlich.
+Um den Joystick zu kalibrieren, bewegen Sie
+<br>ihn w&auml;hrend der Emulation einmal im Kreis.
+<p>Sollte Ihnen die Funktionalit&auml;t des eingebauten Analog-Joysticks
+nicht ausreichen, bietet Ihnen das <b>Joyemu</b>-Utility [DOS]
+<br>eine weit bessere Handhabung des Analog-Joysticks.
+<br>(Suchen Sie im Internet mit einer geeigneten Suchmaschine danach.)
+<br>&nbsp;
+<h4>
+<a NAME="5.11.2"></a>5.11.2 Power Floppy Leds (LEDs f&uuml;r Ein-/Aus und
+Floppy)</h4>
+Sie k&ouml;nnen hier festlegen, wo die zahlreichen LEDs, Power-LED (Ein-/Aus)
+und Floppy-LEDs (DF0: bis DF3:)
+<br>angezeigt werden sollen.
+<p>Es ist auch Unterst&uuml;tzung f&uuml;r ein "LED-Board" vorhanden (danke
+an Roman Dolejsi).
+<br>Schauen Sie dazu in  ledboard_deutsch.txt (<a href="ledOEMde.txt">[OEM Version]</a> bzw. <a href="ledANSde.txt">[ANSI Version]</a>)
+nach.
+<p>Die Einstellung "Keyboard LED order" dient dazu, dem Emulator die Reihenfolge
+der LEDs auf Ihrer Tastatur mitzuteilen.
+<br>&nbsp;
+<h4>
+<a NAME="5.11.3"></a>5.11.3 Performance displayed on-screen (Leistungsmessung
+auf dem Bildschirm anzeigen)</h4>
+Hiermit k&ouml;nnen Sie einen frames-per-second-Z&auml;hler in der oberen
+rechten Ecke des Bildschirms anzeigen lassen.
+<p><i>Diese Zahl liefert nur ungef&auml;hre Werte.</i>
+<br>&nbsp;
+<h4>
+<a NAME="5.11.4"></a>5.11.4 Menu-position saving on exit (Men&uuml;position
+beim Verlassen des Emulators merken)</h4>
+Dies ist eine Option, die sich im Experimentierstadium befindet. Ist sie
+aktiviert, werden die Men&uuml;bewegungen beim Ver-
+<br>lassen des Emulators abgespeichert, und beim n&auml;chsten Start des
+Emulators wieder ausgef&uuml;hrt.
+<br>&nbsp;
+<h4>
+<a NAME="5.11.5"></a>5.11.5 Automatic run after commands (Nach Befehlen
+automatisch ausf&uuml;hren)</h4>
+Einige Befehle unterst&uuml;tzen diese Option.
+<br>&nbsp;
+<h2>
+<a NAME="6."></a>6. Der Debugger</h2>
+<img SRC="images/debugmenu.jpeg" NOSAVE   height=248 width=148>
+<p>Um es gleich vorwegzunehmen: ein "normaler" Anwender wird wahrscheinlich
+nie irgendeinen Nutzen am Debugger finden -
+<br>also, wenn Ihnen das hier Gesagte unverst&auml;ndlich erscheint, <a href="#7.">&uuml;berspringen</a>
+Sie dieses Kapitel einfach.
+<p>Der Debugger ist eine einfache Umgebung, mit der Sie u. a. den momentanen
+Status des emulierten Amiga abfragen k&ouml;nnen.
+<br>Er beinhaltet einen einfachen Disassembler, der den Code in der N&auml;he
+des Programm-Counter und den Status des emulier-
+<br>ten Motorola 680x0-Prozessors anzeigt. Die CPU kann im Einzelschritt-Verfahren
+(<i>single step</i>) oder bis zum Erreichen eines&nbsp; bestimmten Abbruchpunktes
+(<i>Breakpoint</i>) betrieben werden. Es kann der Speicher und einige der
+Register in den Amiga-
+<br>Customchips eingesehen werden. M&ouml;glich ist es auch, Ausnahmen
+(<i>Exceptions</i>) und IRQs sowie Prozessorbefehle auf-
+<br>zuzeichnen (<i>Logging</i>), sofern diese Optionen beim Erstellen von
+FELLOW.EXE mit einkompiliert wurden. (*)
+<br><u>Im Normalfall m&uuml;ssen Sie den Emulator selbst kompilieren, um
+die Logging-Optionen im Debugger verf&uuml;gbar zu machen.</u>
+<h4>
+<a NAME="6.1"></a>6.1 "Step"-Befehl</h4>
+F&uuml;hrt die n&auml;chste Instruktion aus (eine Instruktion nach vorne
+gehen)
+<br>&nbsp;
+<h4>
+<a NAME="6.2"></a>6.2 "Step over"-Befehl</h4>
+Setzt einen <i>Breakpoint</i> bei der n&auml;chsten Instruktion; der Emulator
+l&auml;uft, bis diese Instruktion erreicht ist.
+<br>(Dies ist n&uuml;tzlich, um &uuml;ber Schleifen (<i>loops)</i> hinwegzuspringen
+sowie bei JSR/BSR-Instruktionen.)
+<h4>
+<a NAME="6.3"></a>6.3 "Breakpoint"-Option</h4>
+Mit dieser Option kommen Sie in ein weiteres Untermen&uuml;, das Sie eine
+Breakpoint-Bedingung spezifizieren l&auml;sst.
+<br>Sie k&ouml;nnen eine Breakpoint-Adresse spezifizieren, den Emulator
+laufen lassen: entweder bis eine bestimmte Zeile
+<br>erreicht ist oder - im Falle (*) -, bis eine aufgezeichnete <i>Exception</i>
+oder Interruptanfrage (IRQ) auftritt.
+<h4>
+<a NAME="6.4"></a>6.4 "Memory"-Men&uuml; (Speicher&uuml;berwachung)</h4>
+Hiermit gelangen Sie in eine Art Speichermanager, in dem Sie durch 'Bild
+auf'/'Bild ab' oder Pfeiltasten rauf/runter navi-
+<br>gieren k&ouml;nnen. Durch 'h' bzw. 'a' wird hexadezimales bzw. ASCII-Format
+eingestellt.
+<br>&nbsp;
+<h4>
+<a NAME="6.5"></a>6.5 "CIA"-Option</h4>
+Mit dieser Option wird der Status der Register in den emulierten CIA-Chips
+ausgegeben.
+<br>&nbsp;
+<h4>
+<a NAME="6.6"></a>6.6 "IO"- Men&uuml;</h4>
+Hierdurch kommen Sie in ein Untermen&uuml;, das Ihnen die M&ouml;glichkeit
+bietet, Einsicht in verschiedene Register und
+<br>Register-Stati der Custom-Chips zu nehmen.
+<h4>
+<a NAME="6.7"></a>6.7 "Trace On"-Option (*)</h4>
+Aktiviert die CPU-Befehlsaufzeichnung. Die letzten 500000 Instruktionen
+werden aufgezeichnet.
+<h4>
+<a NAME="6.8"></a>6.8 "Trace Off"-Option (*)</h4>
+Deaktiviert die CPU-Befehlsaufzeichnung.
+<h4>
+<a NAME="6.9"></a>6.9&nbsp; "Show Trace"-Option (*)</h4>
+Durch Auswahl dieser Option gelangen Sie in einen Browser f&uuml;r die
+CPU-Befehlshistory. Navigieren k&ouml;nnen Sie dabei
+<br>mit den Pfeiltasten hoch/runter, Bild auf/Bild ab, Pos1/Ende und Einfg/Entf
+(&plusmn; 1000 Instruktionen)
+<h4>
+<a NAME="6.10"></a>6.10 "Trace To File"-Option (*)</h4>
+Mit dieser Option wird die momentane CPU-Befehlshistory in eine Datei mit
+dem Namen "mytrace.cpu" geschrieben.
+<br>&nbsp;
+<h4>
+<a NAME="6.11"></a>6.11 "Evlog Config"-Option (*)</h4>
+Durch Auswahl dieser Option gelangen Sie in einen Bildschirm, in dem Sie
+das Logging bestimmter <i>Exceptions</i> und
+<br>IRQs an- und abschalten k&ouml;nnen.
+<br>&nbsp;
+<h4>
+<a NAME="6.12"></a>6.12 "Show Evlog"-Option (*)</h4>
+Mit dieser Option kommen Sie in einen Logfile-Viewer, in dem die gesammelten
+aufgezeichneten Informationen eingesehen
+<br>werden k&ouml;nnen.
+<br>&nbsp;
+<h2>
+<a NAME="7."></a>7. Die Optionen an der Kommandozeile</h2>
+&nbsp;
+<table BORDER=1 COLS=2 WIDTH="100%" BGCOLOR="#000000" bordercolor="#444444" cellspacing="0" cellpadding="5" >
+  <caption><b><font size=+1>Gesamt&uuml;bersicht aller Kommandozeilenoptionen:</font></b></caption>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen (Verschiedenes):</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-h</font></td>
+
+<td><font color="#FFFFFF">listet Gesamt&uuml;bersicht der Kommandozeilenoptionen
+auf</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-log</font></td>
+
+<td><font color="#FFFFFF">Erzeugt Logfile "fellow.log" beim Initialisieren
+des Emulators. Benutzen Sie sie, um festzustellen, welche Daten der Emulator
+&uuml;ber ihre Hardware erhalten hat. (Standardm&auml;&szlig;ig: Kein Logging)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-nogui</font></td>
+
+<td><font color="#FFFFFF">Fellow ohne grafische Startoberfl&auml;che starten</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-f12exit</font></td>
+
+<td><font color="#FFFFFF">mit F12 den Emulator ganz verlassen (Standardeinstellung:</font>
+<br><font color="#FFFFFF">Fellow kehrt zur Start-Benutzeroberfl&auml;che
+zur&uuml;ck)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-config &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Konfigurationsdatei &lt;datei> verwenden&nbsp;&nbsp;
+(Standardeinstellung:&nbsp; "fellow.cfg"&nbsp; verwenden)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-ns</font></td>
+
+<td><font color="#FFFFFF">Keine Einstellungen beim Verlassen des Emulators
+speichern</font>
+<br><font color="#FFFFFF">(Standardeinstellung: Einstellungen speichern)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-nommx</font></td>
+
+<td><font color="#FFFFFF">Keine MMX-Instruktionen verwenden, selbst wenn
+MMX-Befehlssatz vorhanden ist (Standardeinstellung:</font>
+<br><font color="#FFFFFF">MMX verwenden, wenn es erkannt wurde)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-p on | off</font></td>
+
+<td><font color="#FFFFFF">Geschwindigkeitsmessung am Bildschirm anzeigen
+(Standard: abgeschaltet)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-l scr|kb?|lp?|lp?m|off</font></td>
+
+<td><font color="#FFFFFF">Festlegung, wo LEDs angezeigt werden:</font>
+<p><font color="#FFFFFF">scr - direkt am Bildschirm</font>
+<br><font color="#FFFFFF">kb1 - Tastatur-LEDs verwenden (DF0: bis DF2:)</font>
+<br><font color="#FFFFFF">kb2 - Tastatur-LEDs verwenden (Power, DF0:, DF1:)</font>
+<br><font color="#FFFFFF">kb3 - Tastatur-LEDs verwenden (Power, DF0: +
+DF1:,</font>
+<br><font color="#FFFFFF">DF2: + DF3:)</font>
+<p><font color="#FFFFFF">lp1/2/3 - am Hardware-LED-Board (Parallelport)</font>
+<br><font color="#FFFFFF">lp1/2/3m - am Hardware-LED-Board (Parallelport,
+gespiegelt)</font>
+<br><font color="#FFFFFF">(Standardeinstellung: am Bildschirm ['scr'])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-lk ncs | nsc ...</font></td>
+
+<td><font color="#FFFFFF">LEDs auf PC-Tastatur in spezieller Reihenfolge
+verwenden:</font>
+<br><font color="#FFFFFF">(N = Num Lock, C = Feststelltaste, S = Scroll Lock)</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r Disketten:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-0 &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Disk-Image &lt;datei> in DF0: verwenden (Standard:
+Kein Disk-Image)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-1 &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Disk-Image &lt;datei> in DF1: verwenden (Standard:
+Kein Disk-Image)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-2 &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Disk-Image &lt;datei> in DF2: verwenden (Standard:
+Kein Disk-Image)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-3 &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Disk-Image &lt;datei> in DF3: verwenden (Standard:
+Kein Disk-Image)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-0e +|-</font></td>
+
+<td><font color="#FFFFFF">DF0: aktivieren (+)/ deaktivieren (-) (Standard:
+Aktiviert)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-1e +|-</font></td>
+
+<td><font color="#FFFFFF">DF1: aktivieren (+)/ deaktivieren (-) (Standard:
+Aktiviert)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-2e +|-</font></td>
+
+<td><font color="#FFFFFF">DF2: aktivieren (+)/ deaktivieren (-) (Standard:
+Aktiviert)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-3e +|-</font></td>
+
+<td><font color="#FFFFFF">DF3: aktivieren (+)/ deaktivieren (-) (Standard:
+Aktiviert)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-ds +|-</font></td>
+
+<td><font color="#FFFFFF">Schnellen Floppy-Zugriff aktivieren (Standard:
+langsamer [=originaler] Floppy-Zugriff)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-dmX &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Speicherinhalt X (X=0..9) des File-Requesters</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-dpath &lt;verzeichnis/datei></font></td>
+
+<td><font color="#FFFFFF">aktives Element im File-Requester festlegen</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r Hardfiles:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-hfX &lt;datei></font></td>
+
+<td><font color="#FFFFFF">Datei &lt;datei> als Hardfile Nr. X verwenden,
+wobei X eine Ziffer zwischen 0 und 9 ist. (Standard: Keine Hardfile)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-he +|-</font></td>
+
+<td><font color="#FFFFFF">Hardfile-Device aktivieren (+) oder deaktivieren
+(-).</font>
+<br><font color="#FFFFFF">(Standardm&auml;&szlig;ig ist es aktiviert, wenn
+Kickstart 2.0 oder h&ouml;her verwendet wird)</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r Speicher:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-c &lt;cgr&ouml;&szlig;e></font></td>
+
+<td><font color="#FFFFFF">Chip-Memory der Gr&ouml;&szlig;e &lt;cgr&ouml;&szlig;e>
+(in Kilobyte) setzen, wobei &lt;cgr&ouml;&szlig;e> entweder 256, 512, 768,
+1024, 1280,&nbsp;</font>
+<br><font color="#FFFFFF">1536, 1792 oder&nbsp; 2048 sein kann. (2048 KB
+ist Standard)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-fm &lt;fgr&ouml;&szlig;e></font></td>
+
+<td><font color="#FFFFFF">Fast-Memory der Gr&ouml;&szlig;e &lt;fgr&ouml;&szlig;e>
+(in Megabyte) setzen, wobei &lt;fgr&ouml;&szlig;e> entweder Werte von 0,
+1, 2, 4 oder 8 MB</font>
+<br><font color="#FFFFFF">annehmen kann. (Standard: kein Fast-Memory [0
+MB])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-b &lt;bgr&ouml;&szlig;e></font></td>
+
+<td><font color="#FFFFFF">"Bogo-Memory" (s. o.) der Gr&ouml;&szlig;e &lt;bgr&ouml;&szlig;e>
+(in Kilobyte) setzen, wobei &lt;bgr&ouml;&szlig;e> Werte von 0, 256, 512,
+1024, 1280, 1536 oder 1792 KB annehmen kann. (Standard: kein Bogo-Memory
+[0 KB])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-r &lt;kick></font></td>
+
+<td><font color="#FFFFFF">Datei &lt;kick> entweder als Kickstart-Image
+oder Kickdisk verwenden. (Standarddatei: kick.rom)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-ms &lt;24 | 32></font></td>
+
+<td><font color="#FFFFFF">Speicherbusbreite von 24 oder 32 Bit setzen (Standard:
+24bit)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-r2 &lt;kick2></font></td>
+
+<td><font color="#FFFFFF">Datei &lt;kick2> entweder als zweites Kickstart-Image
+oder zweite Kickdisk verwenden. (standardmäßig: kein zweites Kickstart-Image)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-K &lt;keydatei></font></td>
+
+<td><font color="#FFFFFF">Datei &lt;keydatei> als Key-Datei f&uuml;r codierte
+Kickstart-Images verwenden. (Standard: rom.key)</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r die Gameports:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-j1 n|a|m|k1|k2&nbsp;</font></td>
+
+<td><font color="#FFFFFF">Hardware-Typ in Gameport 1 bestimmen:</font>
+<br><font color="#FFFFFF">n - keine Hardware (Gameport 1 deaktiviert)</font>
+<br><font color="#FFFFFF">a - analoger Joystick&nbsp;</font>
+<br><font color="#FFFFFF">m - Maus&nbsp;</font>
+<br><font color="#FFFFFF">k1 - Joystickemulation durch Tastatur (Typ A)&nbsp;</font>
+<br><font color="#FFFFFF">k2 - Joystickemulation durch Tastatur (Typ B)</font>
+<br><font color="#FFFFFF">(Standard: 'm' [Maus])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-j2 n|a|m|k1|k2&nbsp;</font></td>
+
+<td><font color="#FFFFFF">Hardware-Typ in Gameport 2 bestimmen:</font>
+<br><font color="#FFFFFF">n - keine Hardware (Gameport 2 deaktiviert)</font>
+<br><font color="#FFFFFF">a - analoger Joystick&nbsp;</font>
+<br><font color="#FFFFFF">m - Maus&nbsp;</font>
+<br><font color="#FFFFFF">k1 - Joystickemulation durch Tastatur (Typ A)&nbsp;</font>
+<br><font color="#FFFFFF">k2 - Joystickemulation durch Tastatur (Typ B)</font>
+<br><font color="#FFFFFF">(Standard: 'n' [keine Hardware])</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r Sound:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-s d|n|c|e</font></td>
+
+<td><font color="#FFFFFF">Art der Soundemulation bestimmen:</font>
+<br><font color="#FFFFFF">d - deaktiviert</font>
+<br><font color="#FFFFFF">n - Normal, mit Emulation synchronisiert&nbsp;</font>
+<br><font color="#FFFFFF">c - Normal, Echtzeit-Synchronisation</font>
+<br><font color="#FFFFFF"><font size=-2>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(</font><font size=-1>diese Option gibt es nur bei Fellow 0.3.2a und &auml;lter)</font></font>
+<br><font color="#FFFFFF">e - emuliert, keine Soundwiedergabe&nbsp;</font>
+<br><font color="#FFFFFF">(Standardeinstellung: 'd' (deaktiviert))</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-sf &lt;freq></font></td>
+
+<td><font color="#FFFFFF">Soundausgabe-Frequenz in Hz, wobei bei &lt;freq>
+zwischen 15650, 22050, 31300 oder <i>44100 Hz (nicht empfohlen)</i></font>
+<br><font color="#FFFFFF">gew&auml;hlt werden kann.</font>
+<br><font color="#FFFFFF">(Standard: 15650 Hz)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-ss on|off</font></td>
+
+<td><font color="#FFFFFF">Stereo-Wiedergabe an/aus (Standard: aus)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-sb &lt;bit></font></td>
+
+<td><font color="#FFFFFF">Bitrate der Soundwiedergabe (8 oder 16 bit, Standard:
+8 bit)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-sd &lt;50Hz-Frame></font></td>
+
+<td><font color="#FFFFFF">Sound-Puffer-Tiefe in Millisekunden, von 1 -
+9 w&auml;hlbar.</font>
+<br><font color="#FFFFFF">(Standard: '5'))</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-sw +|-</font></td>
+
+<td><font color="#FFFFFF">Senden der Soundausgabe an eine WAV-Datei aktivieren/&nbsp;&nbsp;
+deaktivieren (Standard: deaktiviert)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-sl 0|1|2</font></td>
+
+<td><font color="#FFFFFF">Verwendung des Tiefpassfilters:</font>
+<br><font color="#FFFFFF">0 - Original&nbsp;</font>
+<br><font color="#FFFFFF">1 - Immer&nbsp;</font>
+<br><font color="#FFFFFF">2 - Nie&nbsp;</font>
+<br><font color="#FFFFFF">(Standard: Original)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-s1</font></td>
+
+<td><font color="#FFFFFF">Verwendung der Soundblaster (V1.0)-Routinen erzwingen</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r&nbsp; <br>Bildschirm
+&amp; Grafik:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-res 800600 | 640480 | 640400 | 640350 | 400300
+| 400300b | 320480 | 320480b | 320400 | 320400b | 320240 | 320240b | 320200
+| 320200b</font></td>
+
+<td><font color="#FFFFFF">Aufl&ouml;sung des emulierten Amiga einstellen
+(Standard:</font>
+<br><font color="#FFFFFF">800600, sonst 320200b [ohne VESA])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-fl none|50|vga</font></td>
+
+<td><font color="#FFFFFF">Frame-Timing-Methode (keine / 50Hz / Grafikkarte)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-f &lt;zahl></font></td>
+
+<td><font color="#FFFFFF">Verh&auml;ltnis beim &Uuml;berspringen von Bild-Frames
+(1/zahl)</font>
+<br><font color="#FFFFFF">(Standard: keine Frames &uuml;berspringen [1/1])</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-i on|off</font></td>
+
+<td><font color="#FFFFFF">"Flickerfixer" in 800x600er Aufl&ouml;sung (Standard:
+aus)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-gc on|off</font></td>
+
+<td><font color="#FFFFFF">Zyklen-genaues Zeichnen bei 800x600 (Standard:
+aus)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-y n|h|b</font></td>
+
+<td><font color="#FFFFFF">vertikale Skalierung einstellen:&nbsp;</font>
+<br><font color="#FFFFFF">n - keine Skalierung</font>
+<br><font color="#FFFFFF">h - Skalierung unter Verwendung der Grafikkarte&nbsp;</font>
+<br><font color="#FFFFFF">b - Einf&uuml;gen von schwarzen Zeilen ins Bild</font></td>
+</tr>
+
+<tr>
+<td><b><font color="#FFFF00">Kommandozeilenoptionen f&uuml;r CPU/Prozessor:</font></b></td>
+
+<td></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-cpu 0 | 1 | 2 | 3</font></td>
+
+<td><font color="#FFFFFF">Prozessortyp 680x0 (x = 0, 1, 2, 3) (Standard:
+68000er)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">-cs 3.5 | 7 | 14 | 28</font></td>
+
+<td><font color="#FFFFFF">Taktfrequenz der CPU-Clock in MHz (Standard:
+7 MHz)</font></td>
+</tr>
+</table>
+
+<h2>
+<a NAME="8."></a>8. Erste Schritte mit Fellow - Eine Einf&uuml;hrung</h2>
+Haben Sie von einer Amiga-Diskette eine ADF-Datei erzeugt und diese auf
+Ihren PC &uuml;bertragen, k&ouml;nnen Sie nun
+<br>Fellow starten und dieses ADF-Image dem Laufwerk DF0:, dem eingebauten
+Laufwerk des [echten] Amiga500,
+<br>zuweisen.
+<p>Falls dies eine Workbench-Diskette sein sollte, stellen Sie sicher,
+dass Sie aus Ihrem Kickstart-ROM eine Datei erzeugt,
+<br>diese im Fellow-Verzeichnis platziert und ihr entweder den Namen "kick.rom"
+gegeben oder im Konfigurationsmen&uuml; ein
+<br>anderes Verzeichis angegeben haben.
+<p>Wurde das Kickstart-Image nicht gefunden, versucht Fellow die Standard-Bootstrap-Routinen
+des Amiga zu umgehen und
+<br>trotzdem zu booten. Bei einigen Demos und Spielen klappt das auch,
+und zwar bei denen, die die Kickstart-Routinen igno-
+<br>rieren und alles selbst "in die Hand nehmen". Es kann vorkommen, dass
+Sie "RESET" aufrufen m&uuml;ssen, um dies nach
+<br>"Einlegen" eines Disk-Images zu aktivieren.
+<p>Legen Sie fest, wieviel RAM Sie verwenden m&ouml;chten, stellen Sie
+die Soundemulation passend zu Ihrer Sound-Hardware ein,
+<br>und rufen Sie aus dem Hauptmen&uuml; "RUN" auf.
+<p>Wenn alles "paletti" ist, sollte Fellow ohne irgendwelche Sperenzchen
+zu machen, Ihr Disk-Image booten!
+<br>&nbsp;
+<h2>
+<a NAME="9."></a>9. Shortcuts &uuml;ber die Tastatur</h2>
+Es k&ouml;nnen einige Tastaturabk&uuml;rzungen (<i>Shortcuts</i>) verwendet
+werden, sowohl in der Benutzerschnittstelle (GUI), als auch einige w&auml;hrend
+die Emulation l&auml;uft.
+<br>Diese werden nachfolgend in der untenstehenden Tabelle beschrieben.
+<br>&nbsp;
+<h3>
+<a NAME="9.1"></a>9.1 Shortcuts in der Benutzerschnittstelle (GUI)</h3>
+&nbsp;
+<table BORDER=0 COLS=2 WIDTH="100%" BGCOLOR="#000000" >
+<tr>
+<td><font color="#FFFF00">Tastenkombination:</font></td>
+
+<td><font color="#FFFF00">Beschreibung:</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-X, Strg-Q</font></td>
+
+<td><font color="#FFFFFF">Emulator verlassen</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F1</font></td>
+
+<td><font color="#FFFFFF">Men&uuml; "Configuration"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F3</font></td>
+
+<td><font color="#FFFFFF">Men&uuml; "Utilities"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F5</font></td>
+
+<td><font color="#FFFFFF">Hard-Reset</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F7</font></td>
+
+<td><font color="#FFFFFF">Debugger-Men&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F9</font></td>
+
+<td><font color="#FFFFFF">"Start" (Emulation starten)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F11</font></td>
+
+<td><font color="#FFFFFF">"About" (Informationen &uuml;ber das Fellow-Projekt)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-D</font></td>
+
+<td><font color="#FFFFFF">"Disk-Image"-Men&uuml;&nbsp;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-F</font></td>
+
+<td><font color="#FFFFFF">"Filesystem"-Men&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-M</font></td>
+
+<td><font color="#FFFFFF">"Memory"-Men&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-O</font></td>
+
+<td><font color="#FFFFFF">"Sound"-Men&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-C</font></td>
+
+<td><font color="#FFFFFF">"CPU and Blitter"-Men&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-H</font></td>
+
+<td><font color="#FFFFFF">"Hardfile"-Konfigurationsmen&uuml;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-V</font></td>
+
+<td><font color="#FFFFFF">"Various"-Men&uuml; (Verschiedenes)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-A</font></td>
+
+<td><font color="#FFFFFF">"Add VFS Filesystem" (VFS-Dateisystem hinzuf&uuml;gen)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Alt-R</font></td>
+
+<td><font color="#FFFFFF">"Remove Filesystem" (VFS-Dateisystem entfernen)</font></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<h3>
+<a NAME="9.2"></a>9.2 Shortcuts <u>w&auml;hrend</u> der Emulation</h3>
+
+<table BORDER=0 COLS=2 WIDTH="100%" BGCOLOR="#000000" >
+<tr>
+<td><font color="#FFFF00">Tastenkombination:</font></td>
+
+<td><font color="#FFFF00">Beschreibung:</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">F12</font></td>
+
+<td><font color="#FFFFFF">zum Men&uuml;system zur&uuml;ckkehren und dabei
+die Emulation&nbsp; unterbrechen (mit "Start" kann die Emulation wieder
+fortgesetzt werden!)</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-Bild auf</font></td>
+
+<td><font color="#FFFFFF">zur n&auml;chsten verf&uuml;gbaren Bildschirmaufl&ouml;sung
+umschalten</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-Bild ab</font></td>
+
+<td><font color="#FFFFFF">zur vorherigen verf&uuml;gbaren Bildschirmaufl&ouml;sung
+umschalten</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-Bild auf</font></td>
+
+<td><font color="#FFFFFF">N&auml;chste Skalierungsmethode verwenden</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-Bild ab</font></td>
+
+<td><font color="#FFFFFF">Vorherige Skalierungsmethode verwenden</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-"8"/nach oben [Zehnertastatur])</font></td>
+
+<td><font color="#FFFFFF">Virtuelles Amiga-Playfield nach oben scrollen</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-"4"/nach links&nbsp; [Zehnertastatur])</font></td>
+
+<td><font color="#FFFFFF">Virtuelles Amiga-Playfield nach links scrollen</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-"6"/nach rechts [Zehnertastatur])</font></td>
+
+<td><font color="#FFFFFF">Virtuelles Amiga-Playfield nach rechts scrollen</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-"2"/nach unten [Zehnertastatur])</font></td>
+
+<td><font color="#FFFFFF">Virtuelles Amiga-Playfield nach unten scrollen</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-F11</font></td>
+
+<td><font color="#FFFFFF">Gesamten aktuellen Bildschirminhalt als BMP-Datei
+abspeichern&nbsp;</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-F1</font></td>
+
+<td><font color="#FFFFFF">Disk-Image in DF0: "einlegen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-F2</font></td>
+
+<td><font color="#FFFFFF">Disk-Image in DF1: "einlegen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-F3</font></td>
+
+<td><font color="#FFFFFF">Disk-Image in DF2: "einlegen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Pos1-F4</font></td>
+
+<td><font color="#FFFFFF">Disk-Image in DF3: "einlegen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-F1</font></td>
+
+<td><font color="#FFFFFF">Disk-Image aus DF0: "auswerfen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-F2</font></td>
+
+<td><font color="#FFFFFF">Disk-Image aus DF1: "auswerfen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-F3</font></td>
+
+<td><font color="#FFFFFF">Disk-Image aus DF2: "auswerfen"</font></td>
+</tr>
+
+<tr>
+<td><font color="#FFFFFF">Ende-F4</font></td>
+
+<td><font color="#FFFFFF">Disk-Image aus DF3: "auswerfen"</font></td>
+</tr>
+</table>
+
+<br>&nbsp;
+<h2>
+<a NAME="10."></a>10. Kontakt zu den Autoren</h2>
+Am einfachsten kontaktieren Sie Petter Schau &uuml;ber das Internet durch
+E-Mail: <a href="mailto:pschau@online.no">pschau@online.no</a>.
+<p>Beachten Sie bitte, dass E-Mails, die Fragen wie "Wann kommt die n&auml;chste
+Version raus?" oder "Was ist in der n&auml;chsten
+<br>Version enthalten?" - sowie Anwendersupport bei dokumentierten Funktionen
+- umfassen, in der Regel ignoriert werden.
+<br>Dies betrifft auch Dinge, &uuml;ber die sich die Anwender im Normalfall
+ganz einfach - &uuml;ber andere Wege - selbst informieren sollten, z. B.
+wie man einen Amiga bedient oder technische Dinge, z. B. wie man Daten
+vom Amiga zum PC &uuml;bertr&auml;gt.
+<p>Meine Postadresse (der etwas unmoderne Weg :)):
+<p>Petter Schau
+<br>Ravnkollbakken 83
+<br>N-0971 Oslo
+<br>Norwegen
+<p>In der "Credits"-Datei finden Sie die E-Mail-Adressen der anderen Personen,
+die zu Fellow beigetragen haben.
+<p><font size=-1>[Noch eine Anm. von mir [dem &Uuml;bersetzer] :</font>
+<br><font size=-1>&nbsp;Ich nehme nat&uuml;rlich an, dass weder Petter
+Schau noch Brett Eden (s. u.) deutsch sprechen, deswegen sollten Sie, falls
+Sie etwas zu Fellow &auml;u&szlig;ern wollen, besser auf einen der deutschen
+Fellow-"Mitarbeiter" zur&uuml;ckgreifen.]</font>
+<br>&nbsp;
+<p>
+<hr WIDTH="100%">
+<p><font size=-1>Den Grundstein zu diesem Dokument legte Brett Eden. Es
+wurde zuletzt von Petter Schau am 6.6.1999 aktualisiert.&nbsp; Wenden Sie
+sich bei allen
+<br>Fragen, Kommentaren oder Vorschl&auml;gen an Brett Eden
+unter <a href="mailto:revere@subnet.au">revere@sub.net.au</a>.
+<br>&nbsp;
+<p>Noch ein paar Anmerkungen zum Schluss :
+<p>&nbsp;- Was hat mich eigentlich dazu bewogen, dieses Dokument
+neu aufzusetzen?
+<p>&nbsp;Nun, ich wusste ja, dass es bereits von Christian
+Schaefers eine deutsche Anleitung gab, diese war mir allerdings im
+Laufe der Zeit etwas
+<br>zu sehr "out of date" - schliesslich war sie seit Fellow
+0.3.2a nicht mehr aktualisiert worden. Ausserdem wollte ich einerseits
+nicht mehr diese
+<br>mir etwas zu wenig distanziert erscheinende "Du"-Anrede verwenden,
+andererseits wollte ich eine Dokumentation in HTML-Format erstellen,<br>
+da es heutzutage auch hervorragende DOS-HTML-Browser gibt, die z. T. sogar
+Freeware sind (z. B. <a href="http://home.arachne.cz/">Arachne</a>).
+<br>Somit verwendete ich viel Zeit (im Zeitraum von 10 Wochen
+ungef&auml;hr zusammengerechnet 2 volle Wochen), um - peu à peu - eine einigermassen<br>
+passable deutsche &Uuml;bersetzung auf die Beine zu stellen. Es stellte sich heraus, dass das gar nicht
+so einfach war, wie es zu Anfang schien: es kann<br>ganz schön knifflig sein, Englisch von einem "native speaker" zu übersetzen.
+
+<p></p>Ich habe - neben zahlreichen Layout-Erweiterungen - auch noch einige Dinge hinzugef&uuml;gt, die
+von Interesse sein k&ouml;nnten (z. B. ADF-Transfer auf<br>einem Amiga500
+mit 1 MB RAM und nur einem Laufwerk, also genau die Konfiguration, die
+ich auch benutze, sowie ein paar Links) - dies aber eher<br>sporadisch, also
+keine unn&ouml;tigen Dinge "hinzugedichtet", die Petter Schau bzw. Brett Eden
+auch nicht geschrieben h&auml;tten.<br>
+<br>So w&uuml;nsche ich Ihnen viel Spa&szlig; mit FELLOW
+- <i>dem</i> Amiga-Emulator f&uuml;r DOS (und vielleicht bald schon f&uuml;r
+Win32).</font>
+<p><font size=-2><a href="mailto:a.eibach@gmx.net">Andreas Eibach</a>, im
+November 1999</font>
+<font size="1"><br></font>
+<font size=-2>Letzte Änderung : Freitag, 4. Februar 2000.</font>
+<br>
+<hr WIDTH="100%">
+<br>&nbsp;
+</body>
+</html>

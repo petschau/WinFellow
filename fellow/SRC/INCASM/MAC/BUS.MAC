@@ -1,0 +1,145 @@
+%ifndef MAC_BUS_MAC
+%define MAC_BUS_MAC
+
+%macro SCAN_LVL6 0
+		cmp	eax, dword [cia_next_event_time]
+		jbe	%%lset6
+		mov	eax, dword [cia_next_event_time]
+		mov	ebx, dword _ciaHandleEventWrapper_
+%%lset6:	mov	dword [lvl6_next], eax
+		mov	dword [lvl6_ptr], ebx
+%endmacro
+
+%macro SCAN_LVL5 0
+		cmp	eax, dword [irq_next]
+		jbe	%%lset5
+		mov	eax, dword [irq_next]
+		mov	ebx, dword _cpuSetUpInterrupt_
+%%lset5:	mov	dword [lvl5_next], eax
+		mov	dword [lvl5_ptr], ebx
+%endmacro
+
+%macro SCAN_LVL4 0
+		cmp	eax, dword [blitend]
+		jbe	%%lset4
+		mov	eax, dword [blitend]
+		mov	ebx, dword _finish_blit_
+%%lset4:	mov	dword [lvl4_next], eax
+		mov	dword [lvl4_ptr], ebx
+%endmacro
+
+%macro SCAN_LVL3 0
+		cmp	eax, dword [eol_next]
+		jbe	%%lset3
+		mov	eax, dword [eol_next]
+		mov	ebx, dword _endOfLine_
+%%lset3:	mov	dword [lvl3_next], eax
+		mov	dword [lvl3_ptr], ebx
+%endmacro
+
+%macro SCAN_LVL2 0
+		cmp	eax, dword [copper_next]
+		jbe	%%lset2
+		mov	eax, dword [copper_next]
+		mov	ebx, dword _copperEmulate_
+%%lset2:	mov	dword [lvl2_next], eax
+		mov	dword [lvl2_ptr], ebx
+%endmacro
+
+%macro SCAN_EVENTS_LVL2 0
+		mov	eax, dword [lvl3_next]
+		mov	ebx, dword [lvl3_ptr]
+		SCAN_LVL2
+%endmacro
+
+%macro SCAN_EVENTS_LVL3 0
+		mov	eax, dword [lvl4_next]
+		mov	ebx, dword [lvl4_ptr]
+		SCAN_LVL3
+		SCAN_LVL2
+%endmacro
+
+%macro SCAN_EVENTS_LVL4 0
+		mov	eax, dword [lvl5_next]
+		mov	ebx, dword [lvl5_ptr]
+		SCAN_LVL4
+		SCAN_LVL3
+		SCAN_LVL2
+%endmacro
+
+%macro SCAN_EVENTS_LVL5 0
+		mov	eax, dword [lvl6_next]
+		mov	ebx, dword [lvl6_ptr]
+		SCAN_LVL5
+		SCAN_LVL4
+		SCAN_LVL3
+		SCAN_LVL2
+%endmacro
+
+%macro SCAN_EVENTS_LVL6 0
+		mov	eax, CYCLESPERFRAME
+		mov	ebx, dword _endOfFrame_
+		SCAN_LVL6
+		SCAN_LVL5
+		SCAN_LVL4
+		SCAN_LVL3
+		SCAN_LVL2
+%endmacro
+
+%macro NEXT_EVENT 1 ; CPU_LOOP_LABEL
+%%nxt:		mov	eax, dword [lvl2_next]
+		mov	ebx, dword [cpu_next]		
+		cmp	ebx, eax
+		jb	near %1
+		
+		mov	dword [curcycle], eax
+		push	dword %%nxt
+
+		mov	ebx, dword [bus_cycle_to_xpos + eax]
+		shr	eax, 2
+		mov	ecx, dword [bus_cycle_to_ypos + 2*eax]
+		
+		and	ebx, 0ffh
+		and	ecx, 01ffh
+
+		mov	dword [graph_raster_x], ebx
+		mov	dword [graph_raster_y], ecx
+		
+		jmp	dword [lvl2_ptr]
+%endmacro
+
+%macro NEXT_EVENT_AFTER_CPU 2 ; CPU_LOOP_LABEL, OTHER_EVENTS_LABEL
+		mov	ebx, dword [lvl2_next]
+		cmp	eax, ebx
+		jb	near %1
+        	
+		mov	eax, dword [lvl2_next]
+		push	dword %2
+        	
+		mov	dword [curcycle], eax
+		lea	edi, [lvl2_ptr]
+
+        	mov	ebx, dword [bus_cycle_to_xpos + eax]
+		shr	eax, 2
+        	mov	ecx, dword [bus_cycle_to_ypos + 2*eax]
+
+		and	ebx, 0ffh
+		and	ecx, 01ffh
+
+        	mov	dword [graph_raster_x], ebx
+        	mov	dword [graph_raster_y], ecx
+		
+		jmp	dword [lvl2_ptr]
+%endmacro
+
+%macro SETUP_EXCEPTION_HACK 2 ; EXCEPTION_RET, STOP_RET
+		mov	dword [exceptionstack], esp
+		lea	ecx, [%1]
+		mov	dword [exceptionbackdooraddress], ecx
+		lea	ecx, [%2]
+		mov	dword [stopreturnadr], ecx
+%endmacro
+
+
+%endif
+

@@ -1,0 +1,12 @@
+%ifndef GAMEPORT_FUNC_INC
+%define GAMEPORT_FUNC_INC
+
+CFUNCEXTERN rjoy0datC
+CFUNCEXTERN rjoy1datC
+CFUNCEXTERN rpot0datC
+CFUNCEXTERN rpot1datC
+CFUNCEXTERN rpotgorC
+CFUNCEXTERN wjoytestC
+
+
+%endif

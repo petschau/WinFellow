@@ -1,0 +1,57 @@
+%ifndef FLOPPY_MAC
+%define FLOPPY_MAC
+
+
+;==============================================================================
+; Macros to call C functions from assembly
+;==============================================================================
+
+;==============================================================================
+; Floppy IO-register read access wrappers
+;
+; Assembly calling convention:
+; In:  ecx - Address
+; Out: edx - Data
+;==============================================================================
+
+%macro RDSKBYTR_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rdskbytrC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+;==============================================================================
+; Floppy IO-register write access wrappers
+;
+; Assembly calling convention:
+; In:  ecx - Address, edx - data
+; Out: Nothing
+;==============================================================================
+
+%macro WDSKPTH_CWRAP 0
+		CCALLCONV_IN_EDXECX
+		call	wdskpthC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro WDSKPTL_CWRAP 0
+		CCALLCONV_IN_EDXECX
+		call	wdskptlC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro WDSKLEN_CWRAP 0
+		CCALLCONV_IN_EDXECX
+		call	wdsklenC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro WDSKSYNC_CWRAP 0
+		CCALLCONV_IN_EDXECX
+		call	wdsksyncC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+%endif
