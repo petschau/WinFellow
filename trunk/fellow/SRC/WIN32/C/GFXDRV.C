@@ -69,8 +69,11 @@
 #include "kbddrv.h"
 #include "listtree.h"
 #include "windrv.h"
-
-
+#include "gameport.h"
+#include "mousedrv.h"
+#include "joydrv.h"
+#include "sounddrv.h"
+#include "wgui.h"
 
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
@@ -115,6 +118,8 @@ typedef struct {
   draw_mode            *drawmode;
   BOOLE		       use_blitter;
   ULO		       vertical_scale;
+  BOOLE		       can_stretch_y;
+  BOOLE		       stretch_warning_shutup;
 } gfx_drv_ddraw_device;
 
 gfx_drv_ddraw_device *gfx_drv_ddraw_device_current;
@@ -722,7 +727,6 @@ void gfxDrvDDrawPaletteRelease(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 BOOLE gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device *ddraw_device) {
-  ULO i;
   HRESULT err;
   
   if (!ddraw_device->PaletteInitialized) {
@@ -867,6 +871,24 @@ BOOLE gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device) {
     (LPVOID *) &(ddraw_device->lpDD2))) != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDraw2ObjectInitialize(): ", err);
     return FALSE;
+  }
+  else
+  {
+    DDCAPS caps;
+    HRESULT res;
+    memset(&caps, 0, sizeof(caps));
+    caps.dwSize = sizeof(caps);
+    res = IDirectDraw_GetCaps(ddraw_device->lpDD2, &caps, NULL);
+    if (res != DD_OK) gfxDrvDDrawFailure("GetCaps()", res);
+    else
+    {
+      ddraw_device->can_stretch_y = (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHY) ||
+				    (caps.dwFXCaps & DDFXCAPS_BLTARITHSTRETCHYN) ||
+				    (caps.dwFXCaps & DDFXCAPS_BLTSTRETCHY) ||
+				    (caps.dwFXCaps & DDFXCAPS_BLTSHRINKYN);
+      ddraw_device->stretch_warning_shutup = FALSE;
+      if (!ddraw_device->can_stretch_y) fellowAddLog("WARNING: No hardware stretch\n");
+    }
   }
   return TRUE;
 }
@@ -1256,7 +1278,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
       if (ddraw_device->buffercount == 3)
         if ((err = IDirectDrawSurface_Flip(surface,
                                            NULL,
-                                           0)) != DD_OK)
+                                           DDFLIP_WAIT)) != DD_OK)
           gfxDrvDDrawFailure("gfxDrvDDrawSurfaceRestore(), Flip(): ", err);
 	else
 	  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
@@ -1280,23 +1302,30 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
   memset(&bltfx, 0, sizeof(DDBLTFX));
   bltfx.dwSize = sizeof(DDBLTFX);
 
-  /* Source surface is always the secondary off-screen buffer */
+  /* When using the blitter to show our buffer, */
+  /* source surface is always the secondary off-screen buffer */
 
   /* Srcwin is used when we do vertical scaling */
   /* Prevent horisontal scaling of the offscreen buffer */
-  srcwin.left = 0;
-  srcwin.right = ddraw_device->mode->width;
-  srcwin.top = draw_voffset;
-  /* Want to maximize the likelyhood of hardware acceleration by keeping heights
-     integer aligned */
   if (ddraw_device->mode->windowed)
-    srcwin.bottom = draw_voffset + (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+  {
+    srcwin.left = 0;
+    srcwin.right = ddraw_device->mode->width;
+    srcwin.top = 0;
+    srcwin.bottom = (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+  }
   else
+  {
+    srcwin.left = draw_hoffset;
+    srcwin.right = draw_hoffset + draw_width_amiga_real;
+    srcwin.top = draw_voffset;
     srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
-
+  }
   /* Destination is always the primary or one the backbuffers attached to it */
   gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
+  /* Destination window, in windowed mode we use the clientrect */
   if (!ddraw_device->mode->windowed) {
+    /* In full-screen mode we blit centered to the screen */
     dstwin.left = draw_hoffset;
     dstwin.top = draw_voffset;
     dstwin.right = draw_hoffset + draw_width_amiga_real;
@@ -1398,7 +1427,7 @@ gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device) {
 
 ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
   HRESULT err;
-  ULO buffercountactual, buffer_count_want;
+  ULO buffer_count_want;
   DDSCAPS ddscaps;
   BOOLE success = TRUE;
 
@@ -1446,7 +1475,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
 	  if (buffer_count_want > 2)
             if ((err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary,
                                                NULL,
-                                               0)) != DD_OK) {
+                                               DDFLIP_WAIT)) != DD_OK) {
 	      gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(), Flip(): ", err);
               success = FALSE;
 	    }
@@ -1524,7 +1553,6 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
   HRESULT err;
   LPDIRECTDRAWSURFACE lpDDS;
   LPDDSURFACEDESC lpDDSD;
-  ULO buffer;
   
   gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
   err = IDirectDrawSurface_Lock(lpDDS,
@@ -1689,9 +1717,9 @@ void gfxDrvDDrawRelease(void) {
 /*==========================================================================*/
 
 void gfxDrvSet8BitColor(ULO col, ULO r, ULO g, ULO b) {
-  gfx_drv_palette[col].peRed = r;
-  gfx_drv_palette[col].peGreen = g;
-  gfx_drv_palette[col].peBlue = b;
+  gfx_drv_palette[col].peRed = (UBY) r;
+  gfx_drv_palette[col].peGreen = (UBY) g;
+  gfx_drv_palette[col].peBlue = (UBY) b;
   gfx_drv_palette[col].peFlags = PC_RESERVED;
 }
 
@@ -1788,6 +1816,15 @@ BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
   gfx_drv_win_minimized_original = FALSE;
   gfx_drv_syskey_down = FALSE;
   gfx_drv_displaychange = FALSE;
+  if ((gfx_drv_ddraw_device_current->vertical_scale != 1) &&
+      (!gfx_drv_ddraw_device_current->can_stretch_y))
+    if (!gfx_drv_ddraw_device_current->stretch_warning_shutup)
+    {
+      gfx_drv_ddraw_device_current->stretch_warning_shutup = TRUE;
+      wguiRequester("Double Lines were selected.",
+		    "Hardware assisted scaling is not supported by this computer",
+		    "Use scanlines instead if performance is poor");
+    }
   if (!gfxDrvWindowInitialize(gfx_drv_ddraw_device_current)) {
     fellowAddLog("gfxDrvEmulationStart(): Failed to create window\n");
     return FALSE;
