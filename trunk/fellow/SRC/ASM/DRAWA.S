@@ -5582,9 +5582,11 @@ _drawEndOfFrame_:
 		pop	eax
 .l1:		cmp	dword [ebp + graph_line_type], GRAPH_LINE_SKIP
 		je	.l2
+		cmp	dword [draw_deinterlace], 0
+		jnz	.dontskip
 		cmp	dword [ebp + graph_line_type], GRAPH_LINE_BPL_SKIP
 		je	.l2
-		push	eax
+.dontskip:	push	eax
 		push	edx
 		push	edi
 		push	ebp
