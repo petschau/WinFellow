@@ -998,7 +998,7 @@ ULO drawValidateBufferPointer(ULO amiga_line_number) {
     fellowAddLog("Buffer ptr is NULL\n");
     return 0;
   }
-  scale = drawGetVerticalScale();
+  scale = 1;  /* Soild scaling is handled by the graphics driver */
   if (drawGetScanlines()) scale *= 2;
   if (drawGetDeinterlace()) scale *= 2;
 
@@ -1050,8 +1050,9 @@ void drawEndOfFrameC(void) {
 void drawEmulationStart(void) {
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;
-  gfxDrvSetMode(draw_mode_current);
-  gfxDrvEmulationStart(draw_mode_current, 3);
+  gfxDrvSetMode(draw_mode_current, drawGetVerticalScale());
+  /* Use 1 buffer when deinterlacing, else 3 */
+  gfxDrvEmulationStart((drawGetDeinterlace()) ? 1 : 3);
   draw_fps_time_last = timerTimeGet();
 }
 
