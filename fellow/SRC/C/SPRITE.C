@@ -1595,9 +1595,10 @@ void spritesDMASpriteHandler(void) {
 
     case 1: 
 			// waiting for (graph_raster_y == spry)
-			if (graph_raster_y == spry[sprnr])
+			if ((graph_raster_y >= spry[sprnr]) && (graph_raster_y < sprly[sprnr]))
 			{
-				if (graph_raster_y != sprly[sprnr])
+				//if (graph_raster_y != sprly[sprnr])
+				if (TRUE)
 				{
 					// we can start to display the first line of the sprite
    
@@ -1752,7 +1753,7 @@ void spritesDMASpriteHandler(void) {
             local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
 						local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
 
-						if (((local_spry < local_sprly) ) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+						if (((local_spry < local_sprly) ))
             //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
 						{
 							// insert a write to sprxpos at time raster_x
@@ -1786,8 +1787,10 @@ void spritesDMASpriteHandler(void) {
             }
             else
             {
-              sprite_state[sprnr] = 1;
+           		sprite_state[sprnr] = 1;
             }
+						
+						
           }
 
           // check if item is a write to register sprxpth
