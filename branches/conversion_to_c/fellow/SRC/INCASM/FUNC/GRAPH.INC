@@ -9,9 +9,6 @@ CFUNCEXTERN graphEndOfFrame
 ;==============================================================================
 
 
-extern _graphEndOfLine_
-
-
 
 %endif
 

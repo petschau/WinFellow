@@ -89,6 +89,7 @@ _graphemstart_:				; Used to check code alignment
 ; Sprite hack, try to delay effect of writes to sprxpt
 ;-------------------------------------------------------------------------------
 
+global _graphSpriteHack_
 _graphSpriteHack_:
 		mov	ebx, dword [sprite_write_next]
 		test	ebx, ebx
@@ -133,6 +134,7 @@ _graphSpriteHack_:
 
 		FALIGN32
 
+global _graphCompareCopy_
 _graphCompareCopy_:
 %ifdef GRAPH_TSC_PROFILE
 		mov	ebx, dword [esp + 12]
@@ -574,6 +576,7 @@ _graphLinedescMake_:
 
 		FALIGN32
 
+global _graphLinedescMakeSmart_
 _graphLinedescMakeSmart_:
 
 		;==============================================================
@@ -671,6 +674,7 @@ _graphLinedescMakeSmart_:
 		FALIGN32
 
 
+global _graphComposeLineOutput_
 _graphComposeLineOutput_:
 
 		;==============================================================
@@ -721,6 +725,7 @@ _graphComposeLineOutput_:
 		FALIGN32
 
 
+global _graphComposeLineOutputSmart_
 _graphComposeLineOutputSmart_:
 
 		;==============================================================
@@ -800,139 +805,6 @@ _graphComposeLineOutputSmart_:
 .no_bpl_skip:   mov	ebp, dword [esp]
 		mov	dword [ebp + graph_line_type], eax
 .done:		add	esp, 8
-		ret
-
-
-
-;-------------------------------------------------------------------------------
-; End of line handler for graphics
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _graphEndOfLine_
-_graphEndOfLine_:
-
-		pushad
-
-		;==============================================================
-		; Skip this frame?
-		;==============================================================
-
-		test	dword [draw_frame_skip], 0ffffffffh
-		jnz	near .skip_frame
-
-		;==============================================================
-		; Update diw state
-		;==============================================================
-
-		pushad
-		call graphPlayfieldOnOff
-		popad
-
-		;==============================================================
-		; Skip lines before line $12
-		;==============================================================
-
-		cmp	dword [graph_raster_y], 12h
-		jb	near .skip_frame
-
-		;==============================================================
-		; Make pointer to linedesc for this line
-		;==============================================================
-
-		mov	ebp, dword [graph_raster_y]
-		mov	eax, graph_line_end
-		imul	ebp, eax
-		imul	eax, 314
-		imul	eax, dword [draw_buffer_draw]
-		lea	ebp, [ebp + eax + graph_frame]
-		push	ebp
-
-		;==============================================================
-		; Decode sprites if DMA is enabled and raster is after line $18
-		;==============================================================
-
-		test	byte [dmacon], 20h
-		jz	.skip_sprites
-		cmp	dword [graph_raster_y], 18h
-		jb	.skip_sprites
-		call	_spritesDecode_
-	
-		;==============================================================
-		; Sprites decoded, sprites_onlineflag is set if there are any
-		;==============================================================
-
-.skip_sprites:
-
-		;==============================================================
-		; Update pointer to drawing routine
-		;==============================================================
-
-		pushad
-		call drawUpdateDrawmode
-		popad
-
-		;==============================================================
-		; Check if we are clipped
-		;==============================================================
-		
-		mov	ebp, dword [graph_raster_y]
-		cmp	ebp, dword [draw_top]
-		jb	near .nop_line
-		cmp	ebp, dword [draw_bottom]
-		jb	near .decode
-		
-		;==============================================================
-		; Do nop decoding, no screen output needed
-		;==============================================================
-
-.nop_line:
-
-		mov	eax, dword [draw_line_BG_routine]
-		pop	ebp
-		cmp	eax, dword [draw_line_routine]
-		je	.draw_end
-		push	dword .draw_end
-		pushad
-		call graphDecodeNOP_C
-		popad
-		ret
-
-		;==============================================================
-		; Visible line, either background or bitplanes
-		;==============================================================
-
-.decode:
-
-		test	dword [graph_allow_bpl_line_skip], 0ffffffffh
-		jz	.no_bpl_skip
-		call	_graphComposeLineOutputSmart_
-		jmp	.after_line
-.no_bpl_skip:	
-		call	_graphComposeLineOutput_
-.after_line:	
-		add	esp, 4
-
-		;==============================================================
-		; If diw state changing from background to bitplane output,
-		; set new drawing routine pointer
-		;==============================================================
-
-.draw_end:
-		
-		test	byte [draw_switch_bg_to_bpl], 1
-		jz	.skip_frame
-		mov	edx, dword [draw_line_BPL_manage_routine]
-		mov	dword [draw_line_routine], edx
-		mov	byte [draw_switch_bg_to_bpl], 0
-
-.skip_frame:
-
-		call	_graphSpriteHack_
-
-		popad		
 		ret
 
 		FALIGN32
