@@ -79,12 +79,16 @@ static ULO rjoydat(ULO i) {
 
     if (gameport_right[i])
       retval |= 3;
+
     if (gameport_left[i])
       retval |= 0x300;
+
     if (gameport_up[i])
       retval ^= 0x100;
+
     if (gameport_down[i])
       retval ^= 1;
+
     return retval;
   }
 }
@@ -155,6 +159,11 @@ void gameportMouseHandler(gameport_inputs mousedev,
 			  BOOLE button3) {
   ULO i;
 
+  char szMsg[255];
+
+  sprintf( szMsg, "mouse %d %d\n", x, y );
+  fellowAddLog( szMsg );
+
   for (i = 0; i < 2; i++) {
     if (gameport_input[i] == mousedev) {
       if ((!gameport_fire1[i]) && button3)
@@ -167,10 +176,14 @@ void gameportMouseHandler(gameport_inputs mousedev,
   }
 }
 
+// it is not used by anyone, it should be called to emulate an analog joystick
+// but we have decided to not support them anymore
+// so it will be commented out
 
+/*
 void gameportJoyHandler(LON dx, LON dy, BOOLE button1, BOOLE button2, BOOLE button3) {
   ULO i;
-  
+
   for (i = 0; i < 2; i++) {
 	switch(gameport_input[i])
 	{
@@ -188,6 +201,7 @@ void gameportJoyHandler(LON dx, LON dy, BOOLE button1, BOOLE button2, BOOLE butt
     }
   }
 }
+*/
 
 /*===========================================================================*/
 /* Joystick movement handler                                                 */
@@ -205,20 +219,21 @@ void gameportJoystickHandler(gameport_inputs joydev,
 			     BOOLE down,
 			     BOOLE button1,
 			     BOOLE button2) {
-  ULO i;
-  
-  for (i = 0; i < 2; i++) {
-    if (gameport_input[i] == joydev) {
-      if ((!gameport_fire1[i]) && button2)
-	potdat[i] = (potdat[i] + 0x100) & 0xffff; 
-      gameport_fire0[i] = button1;
-      gameport_fire1[i] = button2;
-      gameport_left[i] = left;
-      gameport_up[i] = up;
-      gameport_right[i] = right;
-      gameport_down[i] = down;
-    }
-  }
+	ULO i;
+	
+	for (i = 0; i < 2; i++)
+		if (gameport_input[i] == joydev)
+		{
+			if ((!gameport_fire1[i]) && button2)
+				potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+			
+			gameport_fire0[i] = button1;
+			gameport_fire1[i] = button2;
+			gameport_left[i] = left;
+			gameport_up[i] = up;
+			gameport_right[i] = right;
+			gameport_down[i] = down;
+		}
 }
 
 
@@ -289,6 +304,11 @@ void gameportStartup(void) {
   gameportIORegistersClear(TRUE);
   mouseDrvStartup();
   joyDrvStartup();
+
+  // -- nova --
+  // this is only an initial settings, they will be overrided
+  // by the Game port configuration section of cfgManagerConfigurationActivate
+
   gameportSetInput(0, GP_MOUSE0);
   gameportSetInput(1, GP_NONE);
 }
