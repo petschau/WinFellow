@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.4.2.4 2004-06-03 14:19:52 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.4.2.5 2004-06-06 13:56:00 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -101,7 +101,7 @@ typedef struct {
   STR imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
 #ifdef FELLOW_SUPPORT_CAPS
   BOOLE flakey;  /* introduced for CAPS support */
-  ULO *tracktiming;        /* dito */
+  ULO *timebuf;        /* dito */
 #endif
 } floppyinfostruct;
   
