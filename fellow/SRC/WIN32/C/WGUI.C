@@ -1163,7 +1163,7 @@ void wguiExtractVariousConfig(HWND DlgHWND, cfg *conf) {
 						IDC_CHECK_VARIOUS_SPEED)));
   cfgSetScreenDrawLEDs(conf, 
 		       Button_GetCheck(GetDlgItem(DlgHWND,
-						  IDC_CHECK_VARIOUS_SPEED)));
+						  IDC_CHECK_VARIOUS_LED)));
   cfgSetUseAutoconfig(conf,
 		      !Button_GetCheck(GetDlgItem(DlgHWND,
 						  IDC_CHECK_AUTOCONFIG_DISABLE)));
