@@ -45,6 +45,7 @@ HANDLE win_drv_emulation_ended;
 
 DWORD WINAPI winDrvFellowRunStart(void* in)
 {
+  winDrvSetThreadName(-1, "WinFellow fellowRun() Thread");
   fellowRun();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -52,6 +53,7 @@ DWORD WINAPI winDrvFellowRunStart(void* in)
 
 DWORD WINAPI winDrvFellowStepOneStart(void* in)
 {
+  winDrvSetThreadName(-1, "WinFellow fellowStepOne() Thread");
   fellowStepOne();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -59,6 +61,7 @@ DWORD WINAPI winDrvFellowStepOneStart(void* in)
 
 DWORD WINAPI winDrvFellowStepOverStart(void* in)
 {
+  winDrvSetThreadName(-1, "WinFellow fellowStepOver() Thread");
   fellowStepOver();
   SetEvent(win_drv_emulation_ended);
   return 0;
@@ -66,6 +69,7 @@ DWORD WINAPI winDrvFellowStepOverStart(void* in)
 
 DWORD WINAPI winDrvFellowRunDebugStart(void* in)
 {
+  winDrvSetThreadName(-1, "WinFellow fellowRunDebug() Thread");
   fellowRunDebug((ULO) in);
   SetEvent(win_drv_emulation_ended);
   return 0;
