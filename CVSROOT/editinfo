@@ -6,6 +6,7 @@
 # process to catalog the differences that were code reviewed, the
 # following test can be applied to the code:
 #
+#
 #   Making sure that the entered bug-id number is correct.
 #   Validating that the code that was reviewed is indeed the code being
 #       checked in (using the bug-id number or a seperate review
