@@ -23,10 +23,47 @@
 
 BOOLE			joy_drv_failed;
 IDirectInput		*joy_drv_lpDI;
-IDirectInputDevice	*joy_drv_lpDID;
+IDirectInputDevice2	*joy_drv_lpDID;
 BOOLE                   joy_drv_active;
 BOOLE			joy_drv_focus;
 BOOLE			joy_drv_in_use;
+
+
+// min and max values for the axis
+// -------------------------------
+//
+// these min values are the values that the driver will return when
+// the lever of the joystick is at the extreme left (x) or the extreme top (y)
+// the max values are the same but for the extreme right (x) and the extreme bottom (y)
+
+#define MINX		0
+#define MINY		0
+#define MAXX		8000
+#define MAXY		8000
+
+
+// med values for both axis
+// ------------------------
+//
+// the med values are used to determine if the stick is in the center or has been moved
+// they should be calculated with MEDX = (MAXX-MINX) / 2 and MINY = (MAXY-MINY) / 2
+// but they are precalculated for a very very little speed increase (why should we bother
+// with runtime division when we already know the results?)
+
+#define MEDX		4000  // precalculated value should be MAXX / 2
+#define MEDY		4000  // precalculated value should be MAXY / 2
+
+
+// dead zone
+// ---------
+//
+// the dead zone is the zone that will not be evaluated as a joy movement
+// it is automatically handled by DirectX and it is calculated around the
+// center and it based on min and max values previously setuped
+
+#define DEADX		1000  // 10%
+#define DEADY		1000  // 10%
+
 
 
 /*==========================================================================*/
@@ -77,13 +114,56 @@ void joyDrvDInputFailure(STR *header, HRESULT err) {
 /*===========================================================================*/
 
 void joyDrvDInputSetCooperativeLevel(void) {
-  if (!joy_drv_failed) {
-    HRESULT res = IDirectInputDevice_SetCooperativeLevel(joy_drv_lpDID,
-							 gfx_drv_hwnd,
-							 ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
-    if (res != DI_OK)
-      joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): ", res );
-  }
+	DIPROPRANGE diprg; 
+	DIPROPDWORD dipdw;
+	HRESULT res;
+	
+	if (joy_drv_failed)
+		return;
+
+	res = IDirectInputDevice_SetCooperativeLevel(joy_drv_lpDID,
+		gfx_drv_hwnd,
+		((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
+	if (res != DI_OK)
+		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): ", res );
+	
+#define INITDIPROP( diprp, obj, how ) \
+	{ diprp.diph.dwSize = sizeof( diprp ); \
+	diprp.diph.dwHeaderSize = sizeof( diprp.diph ); \
+	diprp.diph.dwObj        = obj; \
+	diprp.diph.dwHow        = how; }
+	
+	INITDIPROP( diprg, DIJOFS_X, DIPH_BYOFFSET )
+	diprg.lMin              = MINX; 
+	diprg.lMax              = MAXX;
+
+	res = IDirectInputDevice_SetProperty(joy_drv_lpDID, DIPROP_RANGE, &diprg.diph );
+	if( res != DI_OK ) 
+		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE X : ", res );
+
+	INITDIPROP( diprg, DIJOFS_Y, DIPH_BYOFFSET )
+	diprg.lMin              = MINY; 
+	diprg.lMax              = MAXY;
+
+	res = IDirectInputDevice_SetProperty(joy_drv_lpDID, DIPROP_RANGE, &diprg.diph );
+	if( res != DI_OK ) 
+		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE Y : ", res );
+
+	INITDIPROP( dipdw, DIJOFS_X, DIPH_BYOFFSET )
+	dipdw.dwData = DEADX;
+
+	res = IDirectInputDevice_SetProperty(joy_drv_lpDID, DIPROP_DEADZONE, &dipdw.diph );
+	if( res != DI_OK ) 
+		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE X : ", res );
+
+	INITDIPROP( dipdw, DIJOFS_Y, DIPH_BYOFFSET )
+	dipdw.dwData = DEADY;
+
+	res = IDirectInputDevice_SetProperty(joy_drv_lpDID, DIPROP_DEADZONE, &dipdw.diph );
+	if( res != DI_OK ) 
+		joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE Y : ", res );
+
+#undef INITDIPROP
 }
 
 
@@ -163,17 +243,17 @@ void joyDrvDInputInitialize(void) {
 /*===========================================================================*/
 
 void joyDrvDInputRelease(void) {
-  fellowAddLog("joyDrvDInputRelease()\n");
-  if (joy_drv_lpDID) {
-    joyDrvDInputUnacquire();
-    IDirectInputDevice_Release( joy_drv_lpDID );
-    joy_drv_lpDID = NULL;
-  }
-
-  if (joy_drv_lpDI) {
-    IDirectInput_Release( joy_drv_lpDI );
-    joy_drv_lpDI = NULL;
-  }
+	fellowAddLog("joyDrvDInputRelease()\n");
+	if (joy_drv_lpDID) {
+		joyDrvDInputUnacquire();
+		IDirectInputDevice_Release( joy_drv_lpDID );
+		joy_drv_lpDID = NULL;
+	}
+	
+	if (joy_drv_lpDI) {
+		IDirectInput_Release( joy_drv_lpDI );
+		joy_drv_lpDI = NULL;
+	}
 }
 
  	
@@ -182,14 +262,17 @@ void joyDrvDInputRelease(void) {
 /*===========================================================================*/
 
 void joyDrvStateHasChanged(BOOLE active) {
-  joy_drv_active = active;
-  if (joy_drv_active && joy_drv_focus) {
-    joy_drv_in_use = TRUE;
-  }
-  else {
-    joy_drv_in_use = FALSE;
-  }
-  joyDrvDInputAcquire();
+	if( joy_drv_failed )
+		return;
+	
+	joy_drv_active = active;
+	if (joy_drv_active && joy_drv_focus) {
+		joy_drv_in_use = TRUE;
+	}
+	else {
+		joy_drv_in_use = FALSE;
+	}
+	joyDrvDInputAcquire();
 }
 
 
@@ -208,44 +291,84 @@ void joyDrvToggleFocus() {
 /*===========================================================================*/
 
 void joyDrvMovementHandler() {
-  if (joy_drv_in_use)
+	int i;
+	
+	if (!joy_drv_in_use)
+		return;
     if (((gameport_input[0] == GP_ANALOG0) ||
-	 (gameport_input[1] == GP_ANALOG0))) {
-      DIJOYSTATE dims;
-      BOOLE Button1 = FALSE;
-      BOOLE Button2 = FALSE;
-      BOOLE Button3 = FALSE;
-      HRESULT res;
+		(gameport_input[1] == GP_ANALOG0))) {
+		DIJOYSTATE dims;
+		HRESULT res;
+		BOOLE Button1 = FALSE;
+		BOOLE Button2 = FALSE;
+		BOOLE Button3 = FALSE;
+		BOOLE Left;
+		BOOLE Right;
+		BOOLE Up;
+		BOOLE Down;
+		
+		Left = Right = Up = Down = FALSE;
+		
+		do {
+			res = IDirectInputDevice2_Poll(joy_drv_lpDID);
+			if(res != DI_OK)
+				joyDrvDInputFailure( "joyDrvMovementHandler(): Poll() ", res );
 
-      do {
-        res = IDirectInputDevice_GetDeviceState(joy_drv_lpDID,
-						sizeof(DIJOYSTATE),
-						&dims);
-	if (res == DIERR_INPUTLOST) joyDrvDInputAcquire();
-      } while (res == DIERR_INPUTLOST);
+			res = IDirectInputDevice_GetDeviceState(joy_drv_lpDID,
+				sizeof(DIJOYSTATE),
+				&dims);
+			if (res == DIERR_INPUTLOST) joyDrvDInputAcquire();
+		} while (res == DIERR_INPUTLOST);
+		
+		if (res != DI_OK) {
+			joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState() ", res );
+			return;
+		}
+		
+		if (dims.rgbButtons[0] & 0x80)
+			Button1 = TRUE;
+		
+		if (dims.rgbButtons[1] & 0x80)
+			Button2 = TRUE;
 
-      if (res != DI_OK) {
-	joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState() ", res );
-	return;
-      }
+		if( dims.lX != MEDX )
+		{
+			if( dims.lX > MEDX )
+				Right = TRUE;
+			else
+				Left = TRUE;
+		}
+		
+		if( dims.lY != MEDY )
+		{
+			if( dims.lY > MEDY )
+				Down = TRUE;
+			else
+				Up = TRUE;
+		}
 
-      if (dims.rgbButtons[0] & 0x80) {
-	fellowAddLog("Button1\n");
-	Button1 = TRUE;
-      }
-
-      if (dims.rgbButtons[1] & 0x80) {
-        fellowAddLog( "Button2\n");
-	Button2 = TRUE;
-      }
-
-      if (dims.rgbButtons[2] & 0x80) {
-	fellowAddLog( "Button3\n");
-	Button3 = TRUE;
-      }
-
-      gameportJoyHandler( dims.lX, dims.lY, Button1, Button2, Button3 );
-    }
+		for( i = 0; i < 2; i++ )
+			if(( gameport_input[i] == GP_ANALOG0 )
+				|| ( gameport_input[i] == GP_ANALOG1 ))
+			{
+				if( gameport_left[i] != Left ||
+					gameport_right[i] != Right ||
+					gameport_up[i] != Up ||
+					gameport_down[i] != Down ||
+					gameport_fire0[i] != Button1 ||
+					gameport_fire1[i] != Button2 )
+				{
+					gameportJoystickHandler( gameport_input[i]
+						, Left
+						, Up
+						, Right
+						, Down
+						, Button1
+						, Button2
+					);
+				}
+			}
+	}
 }
 
 
