@@ -733,8 +733,8 @@ BOOLE wguiSelectDirectory(HWND hwndDlg,
 		szTitle,								// lpszTitle
 		BIF_RETURNONLYFSDIRS,					// ulFlags
 		NULL,									// lpfn
-		NULL,									// lParam
-		NULL									// iImage
+		0,										// lParam
+		0										// iImage
 	};
 		
 	LPITEMIDLIST pidlTarget;

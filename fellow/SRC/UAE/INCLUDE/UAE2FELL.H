@@ -98,7 +98,7 @@ extern void m68k_do_rts(void);
 #define allocated_chipmem memory_chipsize
 extern uae_u8 filesysory[65536];
 extern void expamem_init_filesys (void);
-extern void expamem_map_filesys (int mapping);
+extern void expamem_map_filesys (ULO mapping);
 
 /*===========================================*/
 /* These access memory with a direct pointer */
