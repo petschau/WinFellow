@@ -211,6 +211,7 @@ extern void memoryEmemMirror(ULO emem_offset, UBY *src, ULO size);
 
 /* Module management functions */
 
+extern void memorySoftReset(void);
 extern void memoryHardReset(void);
 extern void memoryHardResetPost(void);
 extern void memoryEmulationStart(void);
