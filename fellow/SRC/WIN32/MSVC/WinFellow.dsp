@@ -156,61 +156,6 @@ LINK32=link.exe
 # PROP Default_Filter "*.s"
 # Begin Source File
 
-SOURCE=..\..\asm\blita.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\asm\busa.s
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
@@ -878,10 +823,6 @@ InputPath=..\..\Asm\Sse.s
 # PROP Default_Filter "*.mac"
 # Begin Source File
 
-SOURCE=..\..\incasm\mac\blit.mac
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\mac\bus.mac
 # End Source File
 # Begin Source File
@@ -942,10 +883,6 @@ SOURCE=..\..\incasm\mac\sprite.mac
 # PROP Default_Filter "*.inc"
 # Begin Source File
 
-SOURCE=..\..\incasm\func\blit.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\func\bus.inc
 # End Source File
 # Begin Source File
@@ -1000,10 +937,6 @@ SOURCE=..\..\incasm\func\sprite.inc
 # Begin Group "Data"
 
 # PROP Default_Filter "*.inc"
-# Begin Source File
-
-SOURCE=..\..\incasm\data\blit.inc
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\data\bus.inc
