@@ -13,4 +13,4 @@
 # comment lines begin with '#'
 
 # execute python script for automatic commit emails
-syncmail
+ syncmail
