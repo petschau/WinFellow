@@ -20,6 +20,8 @@ extern void fellowPreStartReset(BOOLE reset);
 extern BOOLE fellowGetPreStartReset(void);
 extern void fellowEmulationStart(void);
 extern void fellowEmulationStop(void);
+extern void fellowRequestEmulationStop(void);
+void fellowRequestEmulationStopImmediately(void);
 
 #endif
 
