@@ -1,11 +1,11 @@
-/* @(#) $Id: caps_win32.h,v 1.1.2.4 2004-06-06 10:58:10 carfesh Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.1.2.5 2004-06-08 13:20:17 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
 /* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
 /* http://www.caps-project.org                                             */
 /*                                                                         */
-/* (w)1994 by Torsten Enderling (carfesh@gmx.net)                          */
+/* (w)2004 by Torsten Enderling (carfesh@gmx.net)                          */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
