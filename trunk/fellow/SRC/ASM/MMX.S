@@ -24,6 +24,16 @@ FCODESECTIONSTART
 ; Detect MMX                            
 ; Taken from the AMD K6 manual for their MMX implementation 
 ; Returns TRUE (1) or FALSE (0), prepared for use from C.
+;
+; This procedure first checks if CPU supports the CPUID instruction by checking
+; bit 21 in the EFLAGS register (32-bit wide). Bit 21 holds the Identification 
+; (ID) flag. The ability of a program to set or clear this flag indicates 
+; support for the CPUID instruction.
+;
+; If supported, we execute the CPUID instruction and this places the processor 
+; features info into the EDX register. We check if bit 23 is set and this 
+; bit will be set to 1 if MMX is supported.
+;
 ;===============================================================================
 
 
