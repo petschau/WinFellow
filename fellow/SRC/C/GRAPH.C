@@ -2065,12 +2065,7 @@ void graphEndOfLine_C(void)
 			{
 				if (graph_raster_y >= 0x18) 
 				{
-				  __asm 
-          {
-					pushad
-					call spritesDecode
-					popad
-				  }
+          spritesDecode_C();
 				}
 			}
 			
@@ -2090,16 +2085,6 @@ void graphEndOfLine_C(void)
 				else
 				{
   		    graphComposeLineOutputSmart_C(current_graph_line);
-          /*
-          __asm
-          {
-            pushad
-            push current_graph_line
-            call graphComposeLineOutputSmart
-            pop edx
-            popad
-          }
-          */
 				}
 			}
 			else

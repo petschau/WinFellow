@@ -8,17 +8,12 @@
 %ifndef SPRITE_ASM
 
 extern _spritesMerge_
-extern _spritesDecode_
 
 %endif
 
 CFUNCEXTERN spriteEndOfFrame
 CFUNCEXTERN spriteLogActiveSprites
 CFUNCEXTERN spritesLog
-CFUNCEXTERN wsprxposC
-CFUNCEXTERN wsprxctlC
-CFUNCEXTERN wsprxdataC
-CFUNCEXTERN wsprxdatbC
 CFUNCEXTERN spriteMergeHAM
 CFUNCEXTERN spriteMergeHAM1x8
 CFUNCEXTERN spriteMergeHAM2x8

@@ -49,6 +49,23 @@ extern void wsprxdatb(ULO data, ULO address);
 
 /* C-declarations */
 
+void wspr0pth_C(ULO data, ULO address);
+void wspr0ptl_C(ULO data, ULO address);
+void wspr1pth_C(ULO data, ULO address);
+void wspr1ptl_C(ULO data, ULO address);
+void wspr2pth_C(ULO data, ULO address);
+void wspr2ptl_C(ULO data, ULO address);
+void wspr3pth_C(ULO data, ULO address);
+void wspr3ptl_C(ULO data, ULO address);
+void wspr4pth_C(ULO data, ULO address);
+void wspr4ptl_C(ULO data, ULO address);
+void wspr5pth_C(ULO data, ULO address);
+void wspr5ptl_C(ULO data, ULO address);
+void wspr6pth_C(ULO data, ULO address);
+void wspr6ptl_C(ULO data, ULO address);
+void wspr7pth_C(ULO data, ULO address);
+void wspr7ptl_C(ULO data, ULO address);
+
 extern void spriteSetDelay(ULO delay);
 extern void spriteEndOfLine(void);
 extern void spriteEndOfFrame(void);
