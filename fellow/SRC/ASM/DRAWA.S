@@ -292,32 +292,45 @@ _drawLineSegmentBG2x16mmx_:
 ; ebx - Number of lores pixels to draw
 ; eax - Color
 ;==============================================================================
+; Terrible piece of code, please optimize....
 
 
 %macro DRAWLINESEGMENTBG1x24 0
+		push	ecx
 		mov	esi, dword [draw_buffer_current_ptr]
+		mov	ecx, eax
+		shr	ecx, 16
 		cmp	ebx, 4
 		jb	%%l1
 		test	esi, 3
 		jz	%%l2
 		mov	word [esi], ax
+		mov	byte [esi + 2], cl
 		dec	ebx
-		add	esi, 2
+		add	esi, 3
 		cmp	ebx, 4
 		jb	%%l1
-%%l2:		mov	dword [esi], eax
-		mov	dword [4 + esi], eax
+%%l2:		mov	word [esi], ax
+		mov	byte [esi + 2], cl
+		mov	word [esi + 3], ax
+		mov	byte [esi + 5], cl
+		mov	word [esi + 6], ax
+		mov	byte [esi + 8], cl
+		mov	word [esi + 9], ax
+		mov	byte [esi + 11], cl
 		sub	ebx, 4
-		add	esi, 8
+		add	esi, 12
 		cmp	ebx, 4
 		jae	%%l2
 %%l1:		test	ebx, ebx
 		jz	%%l3
 %%l4:		mov	word [esi], ax
-		add	esi, 2
+		mov	byte [esi + 2], cl
+		add	esi, 3
 		dec	ebx
 		jnz	%%l4
-%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%%l3:		pop	ecx
+		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
 
 
@@ -338,27 +351,39 @@ _drawLineSegmentBG1x24_:
 ; ebx - Number of lores pixels to draw
 ; eax - Color
 ;==============================================================================
+; Terrible piece of code, please optimize....
 
 
 %macro DRAWLINESEGMENTBG2x24 0
+		push	ecx
 		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 4
+		mov	ecx, eax
+		shr	ecx, 16
+		cmp	ebx, 2
 		jb	%%l1
-%%l2:		mov	[esi], eax
-		mov	[4 + esi], eax
-		mov	[8 + esi], eax
-		mov	[12 + esi], eax
-		add	esi, 16
-		sub	ebx, 4
-		cmp	ebx, 4
+%%l2:		mov	word [esi], ax
+		mov	byte [esi + 2], cl
+		mov	word [esi + 3], ax
+		mov	byte [esi + 5], cl
+		mov	word [esi + 6], ax
+		mov	byte [esi + 8], cl
+		mov	word [esi + 9], ax
+		mov	byte [esi + 11], cl
+		add	esi, 12
+		sub	ebx, 2
+		cmp	ebx, 2
 		jae	%%l2
 %%l1:		test	ebx, ebx
 		jz	%%l4
-%%l3:		mov	dword [esi], eax
-		add	esi, 4
+%%l3:		mov	word [esi], ax
+		mov	byte [esi + 2], cl
+		mov	word [esi + 3], ax
+		mov	byte [esi + 5], cl
+		add	esi, 6
 		dec	ebx
 		jnz	%%l3
-%%l4:		mov	dword [draw_buffer_current_ptr], esi
+%%l4:		pop	ecx
+		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
 
 
@@ -472,7 +497,6 @@ _drawLineSegmentBG2x32_:
 		mov	eax, dword [ebp + graph_line_colors]
 		mov	ebx, dword [draw_width_amiga]
 		%1
-;		call	%1
 		ret
 %endmacro
 
@@ -1373,6 +1397,7 @@ _drawLineNormal2x16mmx_:
 ; --------
 ; Nothing
 ;==============================================================================
+; Terrible piece of code, please optimize....
 
 
 		FALIGN32
@@ -1383,47 +1408,18 @@ _drawLineNormal1x24_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
 		xor	eax, eax
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
-		cmp	ebp, 4
-		jl	.last4
-		test	edx, 2
-		jz	.loop
-		mov	bl, byte [edi]
+.loop:		mov	al, byte [edi]
+		mov	ecx, dword [esi + eax]
+		mov	word [edx], cx
+		shr	ecx, 16
+		mov	byte [edx + 2], cl
+		add	edx, 3
 		inc	edi
 		dec	ebp
-		mov	cx, word [esi + ebx]
-		mov	word [edx], cx
-		add	edx, 2
-		cmp	ebp, 4
-		jl	.last4
-.loop:		mov	bl, byte [edi + 1]
-		sub	ebp, 4
-		mov	al, byte [edi]
-		mov	ecx, dword [esi + ebx]
-		
-		mov	bl, byte [edi + 3]
-		mov	cx, word [esi + eax]
-		mov	al, byte [edi + 2]
-		mov	dword [edx], ecx
-		mov	ecx, dword [esi + ebx]
-		add	edi, 4
-		mov	cx, word [esi + eax]
-		mov	dword [4 + edx], ecx
-		add	edx, 8
-		cmp	ebp, 4
-		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
-.lastloop:	mov	bl, byte [edi]
-		mov	ecx, dword [esi + ebx]
-		mov	word [edx], cx
-		inc	edi
-		add	edx, 2
-		dec	ebp
-		jnz	.lastloop
+		jnz	.loop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
 		ret
 
@@ -1466,38 +1462,23 @@ _drawLineNormal2x24_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
 		xor	eax, eax
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
-		cmp	ebp, 4
-		jl	.last4
+		cmp	ebp, 0
+		jle	.exit
 .loop:		mov	al, byte [edi]
-		mov	bl, byte [edi + 1]
 		mov	ecx, dword [esi + eax]
-		mov	dword [edx], ecx
-		mov	al, byte [edi + 2]
-		mov	ecx, dword [esi + ebx]
-		mov	dword [4 + edx], ecx
-		mov	bl, byte [edi + 3]
-		mov	ecx, dword [esi + eax]
-		mov	dword [8 + edx], ecx
-		add	edi, 4
-		mov	ecx, dword [esi + ebx]
-		sub	ebp, 4
-		mov	dword [12 + edx], ecx
-		add	edx, 16
-		cmp	ebp, 4
-		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
-.lastloop:	mov	bl, byte [edi]
+		mov	ebx, ecx
+		shr	ebx, 16
+		mov	word [edx], cx
+		mov	byte [edx + 2], bl
+		mov	word [edx + 3], cx
+		mov	byte [edx + 5], bl
 		inc	edi
-		mov	ecx, dword [esi + ebx]
-		mov	dword [edx], ecx
-		add	edx, 4
+		add	edx, 6
 		dec	ebp
-		jnz	.lastloop
+		jnz	.loop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
 		ret
 
@@ -2109,41 +2090,20 @@ _drawLineDual1x24_:
 		test	byte [bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 2
-		jl	.last2
-		test	edx, 2		; Align VGA-pointer
-		jz	.loop
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+.l1:		cmp	dword [esp], 0
+		jle	.exit
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
 		mov	al, byte [edi + ebx]
-		mov	ecx, dword [esi + eax]
+		mov	ecx, dword [esi + eax]	  
+		mov	ebx, ecx
+		shr	ebx, 16
 		mov	word [edx], cx
-		add	edx, 2
+		mov	byte [edx + 2], bl
+		add	edx, 3
 		inc	ebp
 		dec	dword [esp]
-		cmp	dword [esp], 2
-		jl	.last2
-.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
-		mov	al, byte [edi + ebx]
-		mov	ecx, dword [esi + eax]	  
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
-		mov	al, byte [edi + ebx]
-		mov	cx, word [esi + eax]	  
-		mov	dword [edx], ecx 
-		add	ebp, 2
-		add	edx, 4
-		sub	dword [esp], 2
-		cmp	dword [esp], 2
-		jae	.loop
-.last2:		cmp	dword [esp], 0
-		jle	.exit
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
-		mov	al, byte [edi + ebx]
-		mov	ecx, dword [esi + eax]	  
-		mov	word [edx], cx 
+		jnz	.loop
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
 		ret
@@ -2197,30 +2157,22 @@ _drawLineDual2x24_:
 		test	byte [bplcon2], 040h
 		jnz	.l1
 		add	edi, 010000h
-.l1:		cmp	dword [esp], 2
-		jl	.last2
+.l1:		cmp	dword [esp], 0
+		jle	.exit
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
 		mov	al, byte [edi + ebx]
 		mov	ecx, dword [esi + eax]	  
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
-		mov	dword [edx], ecx 
-		mov	al, byte [edi + ebx]
-		mov	ecx, dword [esi + eax]	  
-		add	ebp, 2
-		mov	dword [edx + 4], ecx 
-		add	edx, 8
-		sub	dword [esp], 2
-		cmp	dword [esp], 2
-		jae	.loop
-.last2:		cmp	dword [esp], 0
-		jle	.exit
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
-		mov	al, byte [edi + ebx]
-		mov	ecx, dword [esi + eax]	  
-		mov	dword [edx], ecx 
+		mov	ebx, ecx
+		shr	ebx, 16
+		mov	word [edx], cx
+		mov	byte [edx + 2], bl
+		mov	word [edx + 3], cx
+		mov	byte [edx + 5], bl
+		add	edx, 6
+		inc	ebp
+		dec	dword [esp]
+		jnz	.loop
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
 		ret
@@ -2974,9 +2926,13 @@ _drawLineHAM1x24_:
 		mov	ebx, dword [ebx + draw_HAM_modify_table_holdmask]
 		and	ecx, ebx
 		or	ecx, eax
-.draw:		mov	word [edx], cx
+.draw:		push	ecx
+		mov	word [edx], cx
+		shr 	ecx, 16
+		mov	byte [edx + 2], cl
+		pop	ecx
 		inc	edi
-		add	edx, 2
+		add	edx, 3
 		dec	ebp
 		jnz	.loop
 		mov	dword [draw_buffer_current_ptr], edx
@@ -3097,9 +3053,18 @@ _drawLineHAM2x24_:
 		mov	ebx, dword [ebx + draw_HAM_modify_table_holdmask]
 		and	ecx, ebx
 		or	ecx, eax
-.draw:		mov	dword [edx], ecx
+.draw:		push	ecx
+		push	ebx
+		mov	ebx, ecx
+		shr	ebx, 16
+		mov	word [edx], cx
+		mov	byte [edx + 2], bl
+		mov	word [edx + 3], cx
+		mov	byte [edx + 5], bl
+		pop	ebx
+		pop	ecx
 		inc	edi
-		add	edx, 4
+		add	edx, 6
 		dec	ebp
 		jnz	.loop
 		mov	dword [draw_buffer_current_ptr], edx
