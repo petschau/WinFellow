@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/09:                                                                */
+/* - floppy, copper, events, screen and sprite state added                    */
 /* 2000/12/08:                                                                */
 /* - CIA state added                                                          */
 /* - memory dump added                                                        */
@@ -22,8 +24,9 @@
 /* -----                                                                      */
 /* - how to use that PropSheet_CancelToClose(hwndDlg) ?                       */
 /* - why isn't the bg-color updated on initialization of the window ?         */
+/* verify sound, graph, sprite, copper                                        */
 /* DOS Fellow debugger functions still missing:                               */
-/* io, floppy, sound, copper, sprites, screen, events                         */
+/* io                                                                         */
 /*============================================================================*/
 
 #include "defs.h"
@@ -33,12 +36,11 @@
 #include <windef.h>
 #include <windows.h>
 #include <windowsx.h>
+#include <commctrl.h>
+#include <prsht.h>
 
 #include "gui_general.h"
 #include "gui_debugger.h"
-
-#include <commctrl.h>
-#include <prsht.h>
 
 #include "windrv.h"
 #include "sound.h"
@@ -53,6 +55,48 @@
 #include "fmem.h"
 #include "cia.h"
 #include "floppy.h"
+#include "blit.h"
+#include "bus.h"
+#include "copper.h"
+#include "graph.h"
+#include "sound.h"
+#include "sprite.h"
+
+/*=======================================================*/
+/* external references not exported by the include files */
+/*=======================================================*/
+
+/* copper.c */
+extern ULO copcon, cop1lc, cop2lc;
+extern ULO copper_ptr, copper_next;
+
+/* floppy.c */
+extern ULO dsklen, dsksync, dskpt;
+
+/* sprite.c */
+extern ULO sprpt[8];
+extern ULO sprite_ddf_kill;
+extern ULO sprx[8];
+extern ULO spry[8];
+extern ULO sprly[8];
+extern ULO spratt[8];
+extern ULO sprite_state[8];
+
+/* graph.c */
+extern ULO ddfstrt, ddfstop;
+extern ULO diwxleft, diwxright, diwytop, diwybottom;
+extern ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
+extern ULO graph_DIW_first_visible;
+extern ULO graph_DIW_last_visible;
+extern ULO graph_DDF_start;
+
+/* sound.c */
+extern soundStateFunc audstate[4];
+extern ULO audlenw[4];
+extern ULO audper[4];
+extern ULO audvol[4];
+extern ULO audlen[4];
+extern ULO audpercounter[4];
 
 /*===============================*/
 /* Handle of the main dialog box */
@@ -64,7 +108,7 @@ static HWND wdbg_hDialog;
 #define WDBG_CPU_REGISTERS_Y 26
 #define WDBG_DISASSEMBLY_X 16
 #define WDBG_DISASSEMBLY_Y 96
-#define WDBG_DISASSEMBLY_LINES 17
+#define WDBG_DISASSEMBLY_LINES 20
 #define WDBG_DISASSEMBLY_INDENT 16
 
 /*===================================*/
@@ -87,22 +131,35 @@ BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgScreenDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgEventDialogProc(HWND hwndDlg, UINT uMsg,
+				  WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg,
+				  WPARAM wParam, LPARAM lParam);
 
 /*==============================================================*/
 /* the various sheets of the main dialog and their dialog procs */
 /*==============================================================*/
 
-#define DEBUG_PROP_SHEETS 4
+#define DEBUG_PROP_SHEETS 9
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY
+  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY,
+  IDD_DEBUG_COPPER, IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN,
+  IDD_DEBUG_EVENTS, IDD_DEBUG_SOUND
 };
 
 typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
   wdbgCPUDialogProc, wdbgMemoryDialogProc, wdbgCIADialogProc,
-  wdbgFloppyDialogProc
+  wdbgFloppyDialogProc, wdbgCopperDialogProc, wdbgSpriteDialogProc,
+  wdbgScreenDialogProc, wdbgEventDialogProc, wdbgSoundDialogProc
 };
 
 /*===========================*/
@@ -359,7 +416,7 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 
     ULO y = WDBG_CPU_REGISTERS_Y;
     ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i, txt_y;
+    ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -449,8 +506,6 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 /*============================================================================*/
 /* Updates the floppy state                                                   */
 /*============================================================================*/
-
-extern ULO dsklen, dsksync, dskpt;
 
 void wdbgUpdateFloppyState(HWND hwndDlg)
 {
@@ -543,6 +598,539 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     DeleteObject(myfont);
     EndPaint(hwndDlg, &paint_struct);
   }
+}
+
+/*============================================================================*/
+/* Updates the copper state                                                   */
+/*============================================================================*/
+
+void wdbgUpdateCopperState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i, list1, list2, atpc;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    list1 = (cop1lc & 0xfffffe);
+    list2 = (cop2lc & 0xfffffe);
+
+    /* @@@@@ changed register names ?
+       atpc  = (curcopptr & 0xfffffe); */
+    atpc = (copper_ptr & 0xfffffe);	/* Make sure debug doesn't trap odd ex */
+
+    /* @@@@@ changed register names ?
+       sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%d Copper PC - %.6X", cop1lc, cop2lc, copcon, curcopptr); */
+    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%d Copper PC - %.6X", cop1lc,
+	    cop2lc, copcon, copper_ptr);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    /* @@@@@ changed register names ? 
+       sprintf(s, "Next cycle - %d  Y - %d  X - %d", nxtcopaccess, (nxtcopaccess != -1) ? (nxtcopaccess/228) : 0, (nxtcopaccess != -1) ? (nxtcopaccess % 228) : 0); */
+    sprintf(s, "Next cycle - %d  Y - %d  X - %d", copper_next,
+	    (copper_next != -1) ? (copper_next / 228) : 0,
+	    (copper_next != -1) ? (copper_next % 228) : 0);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "List 1:        List 2:        At PC:");
+    y = wdbgLineOut(hDC, s, x, y);
+
+    for (i = 0; i < 16; i++) {
+      sprintf(s, "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X",
+	      fetw(list1),
+	      fetw(list1 + 2),
+	      fetw(list2), fetw(list2 + 2), fetw(atpc), fetw(atpc + 2));
+      y = wdbgLineOut(hDC, s, x, y);
+      list1 += 4;
+      list2 += 4;
+      atpc += 4;
+    }
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* Updates the sprite state                                                   */
+/*============================================================================*/
+
+void wdbgUpdateSpriteState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprpt[0],
+	    sprpt[1], sprpt[2], sprpt[3]);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprpt[4],
+	    sprpt[5], sprpt[6], sprpt[7]);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "SpriteDDFkill-%X", sprite_ddf_kill);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    for (i = 0; i < 8; i++) {
+      sprintf(s,
+	      "Spr%dX-%d Spr%dStartY-%d Spr%dStopY-%d Spr%dAttached-%d Spr%dstate-%d",
+	      i, sprx[i], i, spry[i], i, sprly[i], i, spratt[i], i,
+	      sprite_state[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+    }
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* Updates the screen state                                                   */
+/*============================================================================*/
+
+void wdbgUpdateScreenState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    /* @@@@@ variables gone unknown !
+       sprintf(s,
+       "clipleftx-%.3d   cliprightx-%.3d         cliptop-%.3d           clipbot-%d",
+       clipleftx,
+       cliprightx,
+       cliptop,
+       clipbot);
+       y = wdbgLineOut(hDC, s, x, y); */
+
+    /* @@@@@ changed register names ?
+       sprintf(s,
+       "DDFStartpos-%.3d DIWfirstvisiblepos-%.3d DIWlastvisiblepos-%.3d",
+       DDFstartpos, DIWfirstvisiblepos, DIWlastvisiblepos); */
+    sprintf(s,
+	    "DDFStartpos-%.3d DIWfirstvisiblepos-%.3d DIWlastvisiblepos-%.3d",
+	    graph_DDF_start, graph_DIW_first_visible, graph_DIW_last_visible);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s,
+	    "diwxleft-%.3d    diwxright-%.3d          diwytop-%.3d           diwybot-%.3d",
+	    diwxleft, diwxright, diwytop, diwybottom);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "ddfstrt-%.3d     ddfstop-%.3d", ddfstrt, ddfstop);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s,
+	    "oddscroll-%.3d   oddhiscroll-%.3d        evenscroll-%.3d        evenhiscroll-%.3d",
+	    oddscroll, oddhiscroll, evenscroll, evenhiscroll);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "intena-%.4X     intreq-%.4X", intena, intreq);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* Updates the event state                                                    */
+/*============================================================================*/
+
+void wdbgUpdateEventState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    sprintf(s, "Next Cpu      - %d", cpu_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    /* @@@@@ changed register name ?
+       sprintf(s, "Next Copper   - %d", nxtcopaccess); */
+    sprintf(s, "Next Copper   - %d", copper_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Next EOL      - %d", eol_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Next Blitter  - %d", blitend);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Next IRQ      - %d", irq_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Next EOF      - %d", eof_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Lvl2 - %d", lvl2_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Lvl3 - %d", lvl3_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Lvl4 - %d", lvl4_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Lvl5 - %d", lvl5_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Lvl6 - %d", lvl6_next);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* Updates the sound state                                                    */
+/*============================================================================*/
+
+void wdbgUpdateSoundState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+#ifdef ALIGN_CHECK
+    sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", audiostate0, audiostate1,
+	    audiostate2, audiostate3, audiostate5);
+    y = wdbgLineOut(hDC, s, x, y);
+#endif
+
+    for (i = 0; i < 4; i++) {
+      /* @@@@@ changed register names ? what is that now?
+         sprintf(s, "Ch%i State: %d Lenw: %d Len: %d per: %d Pcnt: %X Vol: %d", i,
+         (audstate[i] == audiostate0) ? 0 :
+         (audstate[i] == audiostate1) ? 1 :
+         (audstate[i] == audiostate2) ? 2 :
+         (audstate[i] == audiostate3) ? 3 :
+         (audstate[i] == audiostate5) ? 5 : -1, audlenw[i], audlen[i],
+         audper[i], audpercounter[i], audvol[i]); */
+      sprintf(s,
+	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
+	      i,
+	      /*(audstate[i] == soundState0) ? 0 :
+	         (audstate[i] == soundState0) ? 1 :
+	         (audstate[i] == soundState0) ? 2 :
+	         (audstate[i] == soundState0) ? 3 :
+	         (audstate[i] == soundState0) ? 5 : */ -1, audlenw[i],
+	      audlen[i], audper[i], audpercounter[i], audvol[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+    }
+
+    sprintf(s, "dmacon: %X", dmacon);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============*/
+/* MOD Ripper */
+/*============*/
+
+/* Module-Ripper functions */
+static int mods_found = 0;	// no. of mods found
+
+/* Saves mem from address start to address end in file *name */
+static BOOLE save_mem(char *name, ULO start, ULO end)
+{
+  ULO i;
+  FILE *modfile;
+
+  if ((modfile = fopen(name, "w+b")) == NULL)
+    return FALSE;
+  for (i = start; i <= end; i++)
+    fputc(memoryChipReadByte(i), modfile);
+  fclose(modfile);
+  return TRUE;
+}
+
+static void scan(char *searchstring, int channels, HWND hWnd)
+{
+  ULO i, j;
+  char file_name[38];		// File name for the module-file
+  char dummy_string[80];
+  char message[2048];
+  char module_name[34];		// Name of the module
+  int result;
+  ULO start;			// address where the module starts
+  ULO end;			// address where the module ends
+  int sample_size;		// no. of all sample-data used in bytes
+  int pattern_size;		// no. of all pattern-data used in bytes
+  int song_length;		// how many patterns does the song play?
+  int max_pattern;		// highest pattern used
+
+  fellowAddLog("%s\n", searchstring);
+
+  for (i = 0; i <= memoryGetChipSize(); i++) {
+    if ((memoryChipReadByte(i + 0) == searchstring[0])
+	&& (memoryChipReadByte(i + 1) == searchstring[1])
+	&& (memoryChipReadByte(i + 2) == searchstring[2])
+	&& (memoryChipReadByte(i + 3) == searchstring[3])
+      ) {
+      /* Searchstring found, now calc size */
+      start = i - 0x438;
+
+      sample_size = 0;		/* Get SampleSize */
+      for (j = 0; j <= 30; j++) {
+	sample_size += (256 * memoryChipReadByte(start + 0x2a + j * 0x1e)
+			+ memoryChipReadByte(start + 0x2b + j * 0x1e)) * 2;
+      }
+
+      song_length = memoryChipReadByte(start + 0x3b6);
+
+      max_pattern = 0;		/* Scan for max. ammount of patterns */
+
+      for (j = 0; j <= song_length; j++) {
+	if (max_pattern < memoryChipReadByte(start + 0x3b8 + j)) {
+	  max_pattern = memoryChipReadByte(start + 0x3b8 + j);
+	}
+      }
+
+      pattern_size = (max_pattern + 1) * 64 * 4 * channels;
+      end = start + sample_size + pattern_size + 0x43b;
+
+      if ((end <= memoryGetChipSize()) && (end - start < 1000000)) {
+	for (j = 0; j < 20; j++) {
+	  module_name[j] = memoryChipReadByte(start + j);
+	}
+	module_name[20] = 0;	/* Get module name */
+
+	/* Set filename for the module-file */
+	if (strlen(module_name) > 2) {
+	  strcpy(file_name, module_name);
+	  strcat(file_name, ".mod");
+	}
+	else {
+	  sprintf(file_name, "mod%d.mod", mods_found++);
+	}
+
+	sprintf(message, "Module found at $%X\n", start);
+	sprintf(dummy_string, "Module name: %s\n", module_name);
+	strcat(message, dummy_string);
+	sprintf(dummy_string, "Module size: %d Bytes\n", end - start);
+	strcat(message, dummy_string);
+	sprintf(dummy_string, "Patterns used: %d\n", max_pattern);
+	strcat(message, dummy_string);
+	sprintf(dummy_string, "Save module as %s?", file_name);
+	strcat(message, dummy_string);
+	result = MessageBox(hWnd, message, "Module found.", MB_YESNO);
+
+	if (result == IDYES) {
+	  save_mem(file_name, start, end);
+	}
+      }
+    }
+  }
+}
+
+/*============================================================================*/
+/* Updates the MOD-Ripper state                                               */
+/*============================================================================*/
+
+void wdbgModrip(HWND hwndDlg)
+{
+  scan("M.K.", 4, hwndDlg);
+  scan("4CHN", 4, hwndDlg);
+  scan("6CHN", 6, hwndDlg);
+  scan("8CHN", 8, hwndDlg);
+  scan("FLT4", 4, hwndDlg);
+  scan("FLT8", 8, hwndDlg);
+
+  MessageBox(hwndDlg, "Module Ripper finished.", "Finished.", MB_OK);
 }
 
 /*============================================================================*/
@@ -692,6 +1280,142 @@ BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
 	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our copper dialog                                           */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateCopperState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our sprite dialog                                           */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateSpriteState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our screen dialog                                           */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgScreenDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateScreenState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our event dialog                                            */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgEventDialogProc(HWND hwndDlg,
+				  UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateEventState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our sound dialog                                            */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
+				  UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateSoundState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MODRIP:
+	  wdbgModrip(hwndDlg);
 	  break;
 	default:
 	  break;
