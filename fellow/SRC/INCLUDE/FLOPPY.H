@@ -19,6 +19,27 @@ void wdsksync(ULO, ULO);
 
 #define FLOPPY_TRACKS 164
 
+/* Status symbols */
+
+typedef enum {
+    FLOPPY_STATUS_NORMAL_OK,
+    FLOPPY_STATUS_EXTENDED_OK,
+#ifdef FELLOW_SUPPORT_CAPS
+    FLOPPY_STATUS_IPF_OK,
+#endif
+    FLOPPY_STATUS_ERROR,
+    FLOPPY_STATUS_NONE
+} FLOPPY_STATUS_CODE;
+
+typedef enum {
+    FLOPPY_ERROR_EXISTS_NOT,
+    FLOPPY_ERROR_COMPRESS,
+    FLOPPY_ERROR_COMPRESS_NOTMP,
+    FLOPPY_ERROR_COMPRESS_TMPFILEOPEN,
+    FLOPPY_ERROR_FILE,
+    FLOPPY_ERROR_SIZE
+} FLOPPY_ERROR_CODE;
+
 /* Info about a track */
 
 typedef struct {
@@ -45,15 +66,19 @@ typedef struct {
   BOOLE changed;          /* Disk has been changed */
   BOOLE idmode;           /* Drive is in ID-mode */
   BOOLE inserted;         /* Disk is inserted */
-  ULO motor_ticks;	  /* EOLs since motor was started */
+  ULO motor_ticks;	      /* EOLs since motor was started */
   ULO insertedframe;      /* Will not be detected until some time after this */
   ULO idcount;            /* Number of times ID has been read */
   UBY *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
-  ULO imagestatus;        /* Status of drive (kind of image inserted) */
+  FLOPPY_STATUS_CODE imagestatus; /* Status of drive (kind of image inserted) */
   ULO imageerror;         /* What kind of error if status reports error */
-  STR imagename[CFG_FILENAME_LENGTH];  /* Image name presented to user */
-  STR imagenamereal[CFG_FILENAME_LENGTH];/* Image name used internally */
+  STR imagename[CFG_FILENAME_LENGTH];     /* Image name presented to user */
+  STR imagenamereal[CFG_FILENAME_LENGTH]; /* Image name used internally */
+#ifdef FELLOW_SUPPORT_CAPS
+  BOOLE multirevolution;  /* introduced for CAPS support */
+  ULO *tracktiming;        /* dito */
+#endif
 } floppyinfostruct;
   
 /* Info about a started disk transfer */
@@ -66,20 +91,6 @@ typedef struct {
   BOOLE sync_found;
   BOOLE dont_use_gap;
 } floppyDMAinfostruct;
-
-/* Status symbols */
-
-#define FLOPPY_STATUS_NORMAL_OK   0
-#define FLOPPY_STATUS_EXTENDED_OK 1
-#define FLOPPY_STATUS_ERROR       2
-#define FLOPPY_STATUS_NONE        3
-
-#define FLOPPY_ERROR_EXISTS_NOT           0
-#define FLOPPY_ERROR_COMPRESS             1
-#define FLOPPY_ERROR_COMPRESS_NOTMP       2
-#define FLOPPY_ERROR_COMPRESS_TMPFILEOPEN 3
-#define FLOPPY_ERROR_FILE                 4
-#define FLOPPY_ERROR_SIZE                 5
 
 /* Config */
 

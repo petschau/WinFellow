@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.5 2004-05-28 13:29:48 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.6 2004-06-02 11:27:40 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -24,6 +24,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#include <io.h>
 
 #include "portable.h"
 #include "renaming.h"
@@ -40,6 +41,10 @@
 
 #include "xdms.h"
 #include "zlibwrap.h"
+
+#ifdef FELLOW_SUPPORT_CAPS
+#include "caps_win32.h"
+#endif
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
@@ -551,6 +556,11 @@ void floppyImageRemove(ULO drive) {
     if (floppy[drive].zipped)
       floppyImageCompressedRemove(drive);
   }
+#ifdef FELLOW_SUPPORT_CAPS
+  else if(floppy[drive].imagestatus == FLOPPY_STATUS_IPF_OK) {
+    capsUnloadImage(drive);
+  }
+#endif
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
   floppy[drive].inserted = FALSE;
   floppy[drive].changed = TRUE;
@@ -581,6 +591,12 @@ ULO floppyImageGeometryCheck(fs_navig_point *fsnp, ULO drive) {
     floppy[drive].imagestatus = FLOPPY_STATUS_EXTENDED_OK;
     floppy[drive].tracks = 80;
   }
+#ifdef FELLOW_SUPPORT_CAPS
+  else if (strncmp(head, "CAPS", 4) == 0) {
+    floppy[drive].imagestatus = FLOPPY_STATUS_IPF_OK;
+    floppy[drive].tracks = 80;
+  }
+#endif
   else {
     floppy[drive].tracks = fsnp->size / 11264;
     if ((floppy[drive].tracks*11264) != (ULO) fsnp->size)
@@ -657,58 +673,96 @@ void floppyImageExtendedLoad(ULO drive) {
   floppy[drive].insertedframe = draw_frame_count;
 }
 
+#ifdef FELLOW_SUPPORT_CAPS
+/*=======================*/
+/* Load a CAPS IPF Image */
+/*=======================*/
+
+void floppyImageIPFLoad(ULO drive) {
+    ULO i;
+    UBY *LastTrackMFMData = floppy[drive].mfm_data;
+
+    if(!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
+    {
+        fellowAddLog("Unable to load CAPS IPF Image.\n");
+        return;
+    }
+
+    for (i = 0; i < floppy[drive].tracks; i++) {
+        floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
+        //capsLoadRevolution(drive, i, floppy[drive].trackinfo[i].mfm_data, &floppy[drive].trackinfo[i].mfm_length);
+        capsLoadTrack(drive,
+            i,
+            floppy[drive].trackinfo[i].mfm_data,
+            &floppy[drive].trackinfo[i].mfm_length, 
+            floppy[drive].tracktiming,
+            &floppy[drive].multirevolution);
+        LastTrackMFMData += floppy[drive].trackinfo[i].mfm_length;
+    }
+
+    floppy[drive].writeprot = TRUE;
+    floppy[drive].inserted = TRUE;
+    floppy[drive].insertedframe = draw_frame_count;
+}
+#endif
+
 /*==============================*/
 /* Insert an image into a drive */
 /*==============================*/
 
 void floppySetDiskImage(ULO drive, STR *diskname) {
-  fs_navig_point *fsnp;
-  if (strcmp(diskname, floppy[drive].imagename) == 0) return; /* Same image */
-  floppyImageRemove(drive);
-  if (strcmp(diskname, "") == 0) {
-    floppy[drive].inserted = FALSE;
-    floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
-    strcpy(floppy[drive].imagename, "");
-  }
-  else {
-    if ((fsnp = fsWrapMakePoint(diskname)) == NULL)
-      floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
-    else {
-      if (fsnp->type != FS_NAVIG_FILE)
-	floppyError(drive, FLOPPY_ERROR_FILE);
-      else {
-	floppyImagePrepare(diskname, drive);
-	if (floppy[drive].zipped) {
-	  free(fsnp);
-	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
-	    floppyError(drive, FLOPPY_ERROR_COMPRESS);
-	}
-	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
-	  floppy[drive].writeprot = !fsnp->writeable;
-	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-			  (floppy[drive].writeprot ? "rb" : "r+b")))
-		  == NULL)
-	    floppyError(drive, (floppy[drive].zipped) ?
-				   FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-	  else {
-	    strcpy(floppy[drive].imagename, diskname);
-	    switch (floppyImageGeometryCheck(fsnp, drive)) {
-	      case FLOPPY_STATUS_NORMAL_OK:
-		floppyImageNormalLoad(drive);
-		break;
-	      case FLOPPY_STATUS_EXTENDED_OK:
-		floppyImageExtendedLoad(drive);
-		break;
-	      default:
-		/* Error already set by floppyImageGeometryCheck() */
-		break;
-	    }
-	  }
-	}
-      }
-    free(fsnp);
+    fs_navig_point *fsnp;
+    if (strcmp(diskname, floppy[drive].imagename) == 0) 
+        return; /* Same image */
+    floppyImageRemove(drive);
+    if (strcmp(diskname, "") == 0) {
+        floppy[drive].inserted = FALSE;
+        floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
+        strcpy(floppy[drive].imagename, "");
     }
-  }
+    else {
+        if ((fsnp = fsWrapMakePoint(diskname)) == NULL)
+            floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
+        else {
+            if (fsnp->type != FS_NAVIG_FILE)
+	            floppyError(drive, FLOPPY_ERROR_FILE);
+             else {
+	            floppyImagePrepare(diskname, drive);
+	            if (floppy[drive].zipped) {
+	                free(fsnp);
+	                if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
+	                    floppyError(drive, FLOPPY_ERROR_COMPRESS);
+	            }
+	            if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
+	                floppy[drive].writeprot = !fsnp->writeable;
+	                if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
+			            (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
+	                    floppyError(drive, (floppy[drive].zipped) ?
+				        FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+	                else {
+	                    strcpy(floppy[drive].imagename, diskname);
+	                    switch (floppyImageGeometryCheck(fsnp, drive)) {
+	                        case FLOPPY_STATUS_NORMAL_OK:
+		                        floppyImageNormalLoad(drive);
+		                        break;
+	                        case FLOPPY_STATUS_EXTENDED_OK:
+		                        floppyImageExtendedLoad(drive);
+		                        break;
+#ifdef FELLOW_SUPPORT_CAPS
+                            case FLOPPY_STATUS_IPF_OK:
+                                floppyImageIPFLoad(drive);
+                                break;
+#endif
+	                        default:
+		                        /* Error already set by floppyImageGeometryCheck() */
+		                        break;
+                        }
+                    }	
+                }
+             }
+             free(fsnp);
+        }
+    }
 }
 
 /*============================================================================*/
@@ -761,6 +815,10 @@ void floppyDriveTableInit(void) {
     floppy[i].changed = TRUE;
     /* Need to be large enough to hold UAE--ADF encoded tracks */
     floppy[i].mfm_data = (UBY *) malloc(FLOPPY_TRACKS*25000);
+#ifdef FELLOW_SUPPORT_CAPS
+    floppy[i].multirevolution = FALSE;
+    floppy[i].tracktiming = (ULO *) malloc(FLOPPY_TRACKS*25000);
+#endif
   }
 }
 
@@ -791,6 +849,15 @@ void floppyMfmDataFree(void) {
     if (floppy[i].mfm_data != NULL)
       free(floppy[i].mfm_data);
 }
+
+#ifdef FELLOW_SUPPORT_CAPS
+void floppyTrackTimingDataFree(void) {
+  ULO i;
+  for (i = 0; i < 4; i++)
+    if (floppy[i].tracktiming != NULL)
+      free(floppy[i].tracktiming);
+}
+#endif
 
 /*============================*/
 /* Install IO register stubs  */
@@ -1013,7 +1080,14 @@ void floppyStartup(void) {
 }
 
 void floppyShutdown(void) {
-  ULO i;
-  for (i = 0; i < 4; i++) if (floppy[i].zipped) floppyImageRemove(i);
-  floppyMfmDataFree();
+    ULO i;
+  
+    for (i = 0; i < 4; i++)
+        floppyImageRemove(i);
+    floppyMfmDataFree();
+#ifdef FELLOW_SUPPORT_CAPS
+    floppyTrackTimingDataFree();
+    fellowAddLog("Unloading CAPS Image library...\n");
+    capsShutdown();
+#endif
 }

@@ -29,8 +29,8 @@
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="win32/include,../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
@@ -45,10 +45,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
@@ -93,8 +95,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,.,../include/msvc"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX3"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Dx3Debug/WinFellow.pch"
 				AssemblerOutput="2"
@@ -110,10 +112,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib dsound.lib ddraw.lib dinput.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib dsound.lib ddraw.lib dinput.lib CAPSImg.lib"
 				OutputFile=".\Dx3Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Dx3Debug/WinFellow.pdb"
 				GenerateMapFile="TRUE"
@@ -162,8 +166,8 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="win32/include,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,.,../include/msvc"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX3"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
@@ -178,10 +182,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib ddraw.lib dinput.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib ddraw.lib dinput.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Dx3Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Dx3Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
@@ -226,10 +232,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
 				PrecompiledHeaderFile=".\Debug/WinFellow.pch"
 				AssemblerOutput="2"
 				AssemblerListingLocation=".\Debug/"
@@ -245,10 +252,12 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/PROFILE"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/WinFellow.pdb"
 				GenerateMapFile="TRUE"
@@ -298,28 +307,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\busa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\busa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\busa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\busa.obj"/>
 				</FileConfiguration>
 			</File>
@@ -329,28 +342,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\ciaa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\ciaa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\ciaa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\ciaa.obj"/>
 				</FileConfiguration>
 			</File>
@@ -360,28 +377,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\coppera.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\coppera.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\coppera.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\coppera.obj"/>
 				</FileConfiguration>
 			</File>
@@ -391,28 +412,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\cpua.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\cpua.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\cpua.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\cpua.obj"/>
 				</FileConfiguration>
 			</File>
@@ -422,28 +447,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\drawa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\drawa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\drawa.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\drawa.obj"/>
 				</FileConfiguration>
 			</File>
@@ -453,28 +482,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fhfilea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fhfilea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fhfilea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fhfilea.obj"/>
 				</FileConfiguration>
 			</File>
@@ -484,28 +517,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fmema.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fmema.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fmema.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\fmema.obj"/>
 				</FileConfiguration>
 			</File>
@@ -515,28 +552,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\grapha.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\grapha.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\grapha.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\grapha.obj"/>
 				</FileConfiguration>
 			</File>
@@ -546,28 +587,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\mmx.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\mmx.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\mmx.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\mmx.obj"/>
 				</FileConfiguration>
 			</File>
@@ -577,28 +622,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sounda.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sounda.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sounda.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sounda.obj"/>
 				</FileConfiguration>
 			</File>
@@ -608,28 +657,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\spritea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\spritea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\spritea.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\spritea.obj"/>
 				</FileConfiguration>
 			</File>
@@ -639,28 +692,32 @@
 					Name="Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sse.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sse.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sse.obj"/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32">
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)"
+						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
+"
 						Outputs="$(IntDir)\sse.obj"/>
 				</FileConfiguration>
 			</File>
@@ -1854,6 +1911,9 @@
 			Name="Win32 C Header Files"
 			Filter="">
 			<File
+				RelativePath="..\Caps\include\caps_win32.h">
+			</File>
+			<File
 				RelativePath="..\Include\commoncontrol_wrap.h">
 			</File>
 			<File
@@ -1916,6 +1976,33 @@
 		<Filter
 			Name="Win32 C Files"
 			Filter="">
+			<File
+				RelativePath="..\Caps\C\caps_win32.c">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="..\C\commoncontrol_wrap.c">
 				<FileConfiguration
@@ -2812,28 +2899,32 @@
 						Name="Release|Win32">
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)"
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
+"
 							Outputs="$(IntDir)\uaesuppa.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Dx3 Debug|Win32">
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)"
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
+"
 							Outputs="$(IntDir)\uaesuppa.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Dx3 Release|Win32">
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)"
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
+"
 							Outputs="$(IntDir)\uaesuppa.obj"/>
 					</FileConfiguration>
 					<FileConfiguration
 						Name="Debug|Win32">
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)"
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
+"
 							Outputs="$(IntDir)\uaesuppa.obj"/>
 					</FileConfiguration>
 				</File>
@@ -4013,6 +4104,22 @@
 			</File>
 			<File
 				RelativePath="winfellow.ico">
+			</File>
+		</Filter>
+		<Filter
+			Name="CAPS Header Files"
+			Filter="">
+			<File
+				RelativePath="..\Caps\include\CapsAPI.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\CapsLib.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\Comlib.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\Comtype.h">
 			</File>
 		</Filter>
 	</Files>

@@ -149,8 +149,7 @@ BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst,
 /*===========================================================================*/
 
 BOOLE mouseDrvDInputInitialize(void) {
-  HRESULT res;
-	DIPROPRANGE diprg; 
+  HRESULT res; 
 
 #define INITDIPROP( diprp, obj, how ) \
 	{ diprp.diph.dwSize = sizeof( diprp ); \
@@ -295,7 +294,6 @@ void mouseDrvToggleFocus() {
 
 void mouseDrvMovementHandler() {
   if (mouse_drv_in_use) {
-	DIMOUSESTATE dims;
 	static LON lx = 0;
 	static LON ly = 0;
 	HRESULT res;

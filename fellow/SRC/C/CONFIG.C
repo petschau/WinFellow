@@ -1450,7 +1450,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   for (i = 0; i < 4; i++) {
     floppySetDiskImage(i, cfgGetDiskImage(config, i));
     floppySetEnabled(i, cfgGetDiskEnabled(config, i));
-    floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
+    if(!floppyIsWriteProtected(i))  /* IPF images are marked read-only by the floppy module itself */
+        floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
   }
   floppySetFastDMA(cfgGetDiskFast(config));
   

@@ -44,6 +44,7 @@
 #include "ini.h"
 #include "kbd.h"
 #include "kbddrv.h"
+#include "caps_win32.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -576,7 +577,11 @@ static STR *wguiGetBOOLEToString(BOOLE value) {
 
 static STR FileType[6][CFG_FILENAME_LENGTH] = {
 	"ROM Images (.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+#ifndef FELLOW_SUPPORT_CAPS
     "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+#else
+    "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0CAPS IPF Images (.ipf)\0*.ipf\0\0\0",
+#endif
     "Key Files (.key)\0*.key\0\0\0", 
     "Hard Files (.hdf)\0*.hdf\0\0\0",
     "Configuration Files (.wfc)\0*.wfc\0\0\0",
@@ -935,7 +940,7 @@ void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
 /* install floppy config */
 
 void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
-	ULO i,j;
+	ULO i;
 
   /* set floppy image names */
 		
@@ -1243,7 +1248,6 @@ void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
 /* Extract gameport config */
 
 void wguiExtractGameportConfig(HWND hwndDlg, cfg *conf) {
-  ULO i;
 	
   /* get current gameport inputs */
 	cfgSetGameport(conf, 0, ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT1));
@@ -1528,8 +1532,6 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
   HWND colorBitsComboboxHWND				= GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 	
 	ULO comboboxid;
-  LON resindex, i;
-  STR stmp[32];
 
 	// match available resolutions with configuration
 	pwgui_dm_match = wguiMatchResolution();
@@ -1627,10 +1629,6 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
   HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
-		
-	ULO comboboxid;
-  LON resindex, i;
-  STR stmp[32];
 
 	// get current colorbits
 	cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
@@ -1854,11 +1852,8 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 				   UINT uMsg,
 				   WPARAM wParam,
 				   LPARAM lParam) {
-	STR buffer[255];
-	ULO position;
 	ULO comboboxIndexColorBits;
 	ULO selectedColorBits;
-	ULO availableScreenAreas;
 
   switch (uMsg) {
     case WM_INITDIALOG:
@@ -2001,7 +1996,6 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
   switch (uMsg) {
     case WM_INITDIALOG:
       {
-	STR stmp[16];
 	ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
 	ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
 	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY,	wgui_current_filesystem_edit->readonly);
@@ -2150,7 +2144,6 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 			{
 				STR stmp[32];
 				fhfile_dev hfile;
-				BYT *strpointer;
 				STR fname[CFG_FILENAME_LENGTH];
 				
 				ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, hfile.filename, 256);
@@ -2381,7 +2374,6 @@ BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
 				     WPARAM wParam,
 				     LPARAM lParam) {
   HWND gpChoice[2];
-  int i;
 
   gpChoice[0] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT1);
   gpChoice[1] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT2);
