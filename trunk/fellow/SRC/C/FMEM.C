@@ -1398,7 +1398,7 @@ void memoryIOHandlersInstall(void) {
 /* Generic init */
 /*==============*/
 
-void memoryEmulationStart(void) {
+void memoryEmulationStartOld(void) {
   memoryBankClearAll();
   memoryIOClear();
   memoryChipMap();
@@ -1411,6 +1411,11 @@ void memoryEmulationStart(void) {
   memoryIOHandlersInstall();
 }
 
+void memoryEmulationStart(void) {
+  memoryIOClear();
+  memoryIOHandlersInstall();
+}
+
 void memoryEmulationStop(void) {
 }
 
@@ -1418,11 +1423,19 @@ void memoryHardReset(void) {
   memoryChipClear(),
   memoryFastClear();
   memoryBogoClear();
-  memoryEmemClear();
   memoryDmemClear();
+  memoryEmemClear();
   memoryEmemCardsRemove();
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
+  memoryBankClearAll();
+  memoryChipMap();
+  memoryBogoMap();
+  memoryIOMap();
+  memoryEmemMap();
+  memoryDmemMap();
+  memoryMysteryMap();
+  memoryKickMap();
 }
 
 void memoryHardResetPost(void) {
