@@ -31,6 +31,7 @@ later (we'll have to see the demand):
 - SoundMon 1.0, 2.0 and 2.2
 - FredEditor
 - ProRunner 2.0
+- ThePlayer 4.1a
 
 Note that while Protracker files play fine  in  many  music  replayers  like
 Winamp this isn't the case for the other more exotic formats. When you  look
