@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.h,v 1.1.2.1 2004-06-08 14:38:11 carfesh Exp $ */
+/* @(#) $Id: sysinfo.h,v 1.1.2.2 2005-01-01 00:28:12 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -33,5 +33,7 @@
 #define _SYSINFO_H_
 
 void sysinfoLogSysInfo(void);
+BOOL sysinfoDetectMMX(void);
+BOOL sysinfoDetectSSE(void);
 
 #endif

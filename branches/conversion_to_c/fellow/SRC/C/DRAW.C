@@ -1635,7 +1635,7 @@ static void drawStatTimestamp(void)
 ULO drawStatLast50FramesFps(void)
 {
   if (draw_stat_last_50_ms == 0) return 0;
-  return 50000 / (draw_stat_last_50_ms + 14);
+  return 50000 / (draw_stat_last_50_ms);
 }
 
 ULO drawStatLastFrameFps(void)

@@ -13,7 +13,6 @@
 #define bus_run ASMRENAME(bus_run)
 #define bus_debug ASMRENAME(bus_debug)
 
-#define ciaHandleEventWrapper ASMRENAME(ciaHandleEventWrapper)
 #define cpuSetUpInterrupt ASMRENAME(cpuSetUpInterrupt)
 #define finish_blit ASMRENAME(finish_blit)
 #define endOfLine ASMRENAME(endOfLine)
@@ -34,7 +33,6 @@ extern void endOfLine(void);
 extern void endOfFrame(void);
 extern void busstart(void);  /* Code alignment label */
 
-extern void ciaHandleEventWrapper(void);
 extern void cpuSetUpInterrupt(void);
 extern void finish_blit(void);
 extern void endOfLine(void);

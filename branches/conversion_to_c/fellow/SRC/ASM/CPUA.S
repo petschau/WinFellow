@@ -72,7 +72,9 @@ _m68000start_:
 %include "func/bus.inc"
 %include "func/copper.inc"
 %include "func/cpu.inc"
-%include "func/fellow.inc"
+;%include "func/fellow.inc"
+
+CFUNCEXTERN fellowSoftReset;
 
 %include "mac/fmem.mac"
 %include "mac/bus.mac"

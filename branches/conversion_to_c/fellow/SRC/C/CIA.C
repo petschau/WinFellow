@@ -222,7 +222,7 @@ void ciaSetupNextEvent(void) {
   }  
   cia_next_event_time = nextevtime;
   cia_next_event_type = nextevtype;
-  ciaSetupEventWrapper();
+  busScanEventsLevel6();
 }
 
 void ciaHandleEventC(void) {

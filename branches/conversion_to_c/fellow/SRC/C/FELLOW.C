@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.7 2004-08-07 15:45:18 worfje Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.8 2005-01-01 00:28:10 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -533,7 +533,7 @@ int main(int argc, char *argv[]) {
 
   sysinfoLogSysInfo();
   fellowPreStartReset(TRUE);
-  fellowSetMMXDetected(detectMMX());
+  fellowSetMMXDetected(sysinfoDetectMMX());
   fellowModulesStartup(argc, argv);
   while (!wguiEnter())
     fellowRun();

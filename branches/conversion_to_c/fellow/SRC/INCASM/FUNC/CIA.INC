@@ -22,8 +22,6 @@ CFUNCEXTERN ciaWriteLongC
 
 %ifndef CIA_ASM
 
-extern _ciaHandleEventWrapper_
-extern _ciaSetupEventWrapper_
 
 %endif
 
