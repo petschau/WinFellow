@@ -32,13 +32,13 @@ CAPTION "WinFellow alpha v0.4.2 build 1"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
-    DEFPUSHBUTTON   "&Start Emulation",IDC_START_EMULATION,250,10,56,20,
+    DEFPUSHBUTTON   "&start emulation",IDC_START_EMULATION,250,10,56,20,
                     WS_GROUP
-    PUSHBUTTON      "&Quit Emulator",IDC_QUIT_EMULATOR,250,147,56,16,
+    PUSHBUTTON      "&quit emulator",IDC_QUIT_EMULATOR,250,147,56,16,
                     WS_GROUP
-    PUSHBUTTON      "&Configuration",IDC_CONFIGURATION,250,120,56,22,
+    PUSHBUTTON      "&configuration",IDC_CONFIGURATION,250,120,56,22,
                     WS_GROUP
-    PUSHBUTTON      "Hard &Reset",IDC_HARD_RESET,250,100,56,15,WS_GROUP
+    PUSHBUTTON      "hard &reset",IDC_HARD_RESET,250,100,56,15,WS_GROUP
     LTEXT           "DF0:",IDC_STATIC,15,20,16,8
     LTEXT           "DF1:",IDC_STATIC,15,57,16,8
     LTEXT           "DF2:",IDC_STATIC,15,92,16,8
@@ -51,11 +51,11 @@ BEGIN
     PUSHBUTTON      "...",IDC_BUTTON_DF1_FILEDIALOG_MAIN,175,70,30,15
     PUSHBUTTON      "...",IDC_BUTTON_DF2_FILEDIALOG_MAIN,175,105,30,15
     PUSHBUTTON      "...",IDC_BUTTON_DF3_FILEDIALOG_MAIN,175,140,30,15
-    GROUPBOX        "Disk Images:",IDC_STATIC,7,7,238,155
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF0_EJECT_MAIN,35,35,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF1_EJECT_MAIN,35,70,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF2_EJECT_MAIN,35,105,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF3_EJECT_MAIN,35,140,25,12
+    GROUPBOX        "disk images",IDC_STATIC,7,7,238,155
+    PUSHBUTTON      "eject",IDC_BUTTON_DF0_EJECT_MAIN,35,35,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF1_EJECT_MAIN,35,70,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF2_EJECT_MAIN,35,105,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT_MAIN,35,140,25,12
     CONTROL         139,IDC_IMAGE_POWER_LED_MAIN,"Static",SS_BITMAP | 
                     SS_SUNKEN,285,35,21,7
     CONTROL         140,IDC_IMAGE_DF0_LED_MAIN,"Static",SS_BITMAP | 
@@ -66,7 +66,7 @@ BEGIN
                     SS_SUNKEN,215,90,21,7
     CONTROL         140,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | 
                     SS_SUNKEN,215,125,21,7
-    PUSHBUTTON      "&Debug",ID_DEBUGGER_START,257,79,50,14
+    PUSHBUTTON      "&debug",ID_DEBUGGER_START,257,79,50,14
 END
 
 IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
@@ -76,7 +76,7 @@ FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "Slider1",IDC_SLIDER_CPU_SPEED,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_VERT | WS_TABSTOP,115,15,25,46
-    GROUPBOX        "Instruction Set:",IDC_STATIC,7,5,98,65
+    GROUPBOX        "instruction set",IDC_STATIC,7,5,98,65
     CONTROL         "68000",IDC_RADIO_68000,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,15,20,36,10
     CONTROL         "68010",IDC_RADIO_68010,"Button",BS_AUTORADIOBUTTON | 
@@ -89,7 +89,7 @@ BEGIN
                     WS_TABSTOP,55,40,41,10
     CONTROL         "68EC30",IDC_RADIO_68EC30,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,55,50,41,10
-    GROUPBOX        "A500 Relative Speed:",IDC_STATIC,110,5,85,65
+    GROUPBOX        "A500 relative speed",IDC_STATIC,110,5,85,65
     LTEXT           "3.5 MHz",IDC_STATIC,145,19,28,8
     LTEXT           "7 MHz",IDC_STATIC,145,28,22,8
     LTEXT           "14 MHz",IDC_STATIC,145,38,26,8
@@ -98,7 +98,7 @@ END
 
 IDD_FLOPPY DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Floppy"
+CAPTION "floppy"
 FONT 8, "MS Sans Serif"
 BEGIN
     LTEXT           "DF0:",IDC_STATIC,15,22,16,8
@@ -121,9 +121,9 @@ BEGIN
                     WS_GROUP | WS_TABSTOP,170,50,15,12
     CONTROL         "",IDC_CHECK_DF3_ENABLED,"Button",BS_AUTOCHECKBOX | 
                     WS_GROUP | WS_TABSTOP,170,65,15,12
-    GROUPBOX        "Disk Images:",IDC_STATIC,5,5,223,90
-    CONTROL         "Fast Disk-DMA",IDC_CHECK_FAST_DMA,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,15,82,63,10
+    GROUPBOX        "disk images",IDC_STATIC,5,5,223,90
+    CONTROL         "fast disk-DMA",IDC_CHECK_FAST_DMA,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,15,82,60,10
     CONTROL         "",IDC_CHECK_DF1_READONLY,"Button",BS_AUTOCHECKBOX | 
                     WS_GROUP | WS_TABSTOP,200,35,15,12
     CONTROL         "",IDC_CHECK_DF2_READONLY,"Button",BS_AUTOCHECKBOX | 
@@ -132,25 +132,25 @@ BEGIN
                     WS_GROUP | WS_TABSTOP,200,65,15,12
     CONTROL         "",IDC_CHECK_DF0_READONLY,"Button",BS_AUTOCHECKBOX | 
                     WS_GROUP | WS_TABSTOP,200,20,15,12
-    LTEXT           "Enabled:",IDC_STATIC,160,10,29,8
-    LTEXT           "Read-only:",IDC_STATIC,190,10,35,8
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF0_EJECT,135,20,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF1_EJECT,135,35,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF2_EJECT,135,50,25,12
-    PUSHBUTTON      "Eject",IDC_BUTTON_DF3_EJECT,135,65,25,12
+    LTEXT           "enabled",IDC_STATIC,160,10,26,8
+    LTEXT           "read-only",IDC_STATIC,190,10,30,8
+    PUSHBUTTON      "eject",IDC_BUTTON_DF0_EJECT,135,20,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF1_EJECT,135,35,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF2_EJECT,135,50,25,12
+    PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT,135,65,25,12
 END
 
 IDD_BLITTER DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Blitter"
+CAPTION "blitter"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Blitter Execution:",IDC_STATIC,5,5,80,50
-    GROUPBOX        "Blitter Version:",IDC_STATIC,90,5,60,50
-    CONTROL         "Normal, delayed",IDC_RADIO_BLITTER_NORMAL,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,20,67,10
-    CONTROL         "Immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,15,35,48,10
+    GROUPBOX        "blitter execution",IDC_STATIC,5,5,80,50
+    GROUPBOX        "blitter version",IDC_STATIC,90,5,60,50
+    CONTROL         "normal, delayed",IDC_RADIO_BLITTER_NORMAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,15,20,65,10
+    CONTROL         "immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,15,35,47,10
     CONTROL         "OCS",IDC_RADIO_BLITTER_OCS,"Button",BS_AUTORADIOBUTTON | 
                     WS_GROUP | WS_TABSTOP,100,20,31,10
     CONTROL         "ECS",IDC_RADIO_BLITTER_ECS,"Button",BS_AUTORADIOBUTTON | 
@@ -159,7 +159,7 @@ END
 
 IDD_SOUND DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Sound"
+CAPTION "sound"
 FONT 8, "MS Sans Serif"
 BEGIN
     GROUPBOX        "sound emulation",IDC_STATIC,5,5,70,60
@@ -210,7 +210,7 @@ END
 
 IDD_FILESYSTEM DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Filesystem"
+CAPTION "filesystem"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_LIST_FILESYSTEMS,"SysListView32",LVS_REPORT | 
@@ -227,7 +227,7 @@ END
 
 IDD_HARDFILE DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Hardfile"
+CAPTION "hardfile"
 FONT 8, "MS Sans Serif"
 BEGIN
     CONTROL         "List1",IDC_LIST_HARDFILES,"SysListView32",LVS_REPORT | 
@@ -241,22 +241,22 @@ END
 
 IDD_MEMORY DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Memory"
+CAPTION "memory"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Memory Size:",IDC_STATIC,10,10,90,65
-    LTEXT           "Chip:",IDC_STATIC,15,25,17,8
-    LTEXT           "Fast:",IDC_STATIC,15,40,16,8
-    LTEXT           "Bogo:",IDC_STATIC,15,55,20,8
+    GROUPBOX        "memory size",IDC_STATIC,10,10,90,65
+    LTEXT           "Chip",IDC_STATIC,15,25,15,8
+    LTEXT           "Fast",IDC_STATIC,15,40,14,8
+    LTEXT           "bogo",IDC_STATIC,15,55,17,8
     COMBOBOX        IDC_COMBO_CHIP,40,26,55,49,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     COMBOBOX        IDC_COMBO_FAST,40,40,55,47,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
     COMBOBOX        IDC_COMBO_BOGO,40,55,55,52,CBS_DROPDOWNLIST | WS_VSCROLL | 
                     WS_TABSTOP
-    GROUPBOX        "Kickstart:",IDC_STATIC,10,80,215,55
-    LTEXT           "Image:",IDC_STATIC,15,95,22,8
-    LTEXT           "Key:",IDC_STATIC,15,110,15,8
+    GROUPBOX        "kickstart",IDC_STATIC,10,80,215,55
+    LTEXT           "image",IDC_STATIC,15,95,20,8
+    LTEXT           "key",IDC_STATIC,15,110,12,8
     EDITTEXT        IDC_EDIT_KICKSTART,40,95,155,12,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_KEYFILE,40,110,155,12,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BUTTON_KICKSTART_FILEDIALOG,200,95,15,12
@@ -265,52 +265,52 @@ END
 
 IDD_GAMEPORT DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Gameport"
+CAPTION "gameport"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Gameport Equipment:",IDC_STATIC,10,5,135,50
-    LTEXT           "Gameport 1:",IDC_STATIC,15,22,40,8
-    LTEXT           "Gameport 2:",IDC_STATIC,15,37,40,8
+    GROUPBOX        "gameport equipment",IDC_STATIC,10,5,135,50
+    LTEXT           "gameport 1",IDC_STATIC,15,22,36,8
+    LTEXT           "gameport 2",IDC_STATIC,15,37,36,8
     COMBOBOX        IDC_COMBO_GAMEPORT1,55,20,80,66,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_GAMEPORT2,55,35,80,63,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Keyboard 1",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
-                    WS_GROUP,75,70,37,8
+    CONTROL         "keyboard 1",IDC_STATIC,"Static",SS_LEFTNOWORDWRAP | 
+                    WS_GROUP,75,70,36,8
     LTEXT           "up",IDC_STATIC,25,85,9,8
     LTEXT           "down",IDC_STATIC,25,95,18,8
     LTEXT           "left",IDC_STATIC,25,105,10,8
     LTEXT           "right",IDC_STATIC,25,115,14,8
-    GROUPBOX        "Keys",IDC_STATIC,10,60,215,90
-    LTEXT           "Keyboard 2",IDC_STATIC,150,70,37,8
-    CONTROL         "none",IDC_GAMEPORT0_UP,"Static",SS_LEFTNOWORDWRAP | 
+    GROUPBOX        "keys",IDC_STATIC,10,60,215,90
+    LTEXT           "keyboard 2",IDC_STATIC,150,70,36,8
+    CONTROL         "not set",IDC_GAMEPORT0_UP,"Static",SS_LEFTNOWORDWRAP | 
                     WS_GROUP,75,85,69,8
-    LTEXT           "none",IDC_GAMEPORT0_DOWN,75,95,69,8
-    LTEXT           "none",IDC_GAMEPORT0_LEFT,75,105,69,8
-    LTEXT           "none",IDC_GAMEPORT0_RIGHT,75,115,69,8
-    LTEXT           "none",IDC_GAMEPORT1_UP,150,85,70,8
-    LTEXT           "none",IDC_GAMEPORT1_DOWN,150,95,70,8
-    LTEXT           "none",IDC_GAMEPORT1_LEFT,150,105,70,8
-    LTEXT           "none",IDC_GAMEPORT1_RIGHT,150,115,70,8
+    LTEXT           "not set",IDC_GAMEPORT0_DOWN,75,95,69,8
+    LTEXT           "not set",IDC_GAMEPORT0_LEFT,75,105,69,8
+    LTEXT           "not set",IDC_GAMEPORT0_RIGHT,75,115,69,8
+    LTEXT           "not set",IDC_GAMEPORT1_UP,150,85,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_DOWN,150,95,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_LEFT,150,105,70,8
+    LTEXT           "not set",IDC_GAMEPORT1_RIGHT,150,115,70,8
     LTEXT           "fire 0",IDC_STATIC,25,125,16,8
     LTEXT           "fire 1",IDC_STATIC,25,135,16,8
-    LTEXT           "none",IDC_GAMEPORT0_FIRE0,75,125,69,8
-    LTEXT           "none",IDC_GAMEPORT0_FIRE1,75,135,69,8
-    LTEXT           "none",IDC_GAMEPORT1_FIRE0,150,125,69,8
-    LTEXT           "none",IDC_GAMEPORT1_FIRE1,150,135,69,8
+    LTEXT           "not set",IDC_GAMEPORT0_FIRE0,75,125,69,8
+    LTEXT           "not set",IDC_GAMEPORT0_FIRE1,75,135,69,8
+    LTEXT           "not set",IDC_GAMEPORT1_FIRE0,150,125,69,8
+    LTEXT           "not set",IDC_GAMEPORT1_FIRE1,150,135,69,8
 END
 
 IDD_VARIOUS DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Various"
+CAPTION "various"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Show FPS in windowed emulation mode",
+    CONTROL         "show FPS in windowed emulation mode",
                     IDC_CHECK_VARIOUS_SPEED,"Button",BS_AUTOCHECKBOX | 
-                    WS_GROUP | WS_TABSTOP,10,10,142,10
-    CONTROL         "Show LEDs in emulation window",IDC_CHECK_VARIOUS_LED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,25,119,10
-    CONTROL         "Disable Autoconfig-devices",
+                    WS_GROUP | WS_TABSTOP,10,10,141,10
+    CONTROL         "show LEDs in emulation window",IDC_CHECK_VARIOUS_LED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,25,117,10
+    CONTROL         "disable Autoconfig-devices",
                     IDC_CHECK_AUTOCONFIG_DISABLE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,40,135,10
 END
@@ -364,30 +364,30 @@ END
 
 IDD_SCREEN DIALOG DISCARDABLE  0, 0, 235, 156
 STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
-CAPTION "Screen"
+CAPTION "screen"
 FONT 8, "MS Sans Serif"
 BEGIN
     COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,65,14,139,135,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    LTEXT           "Resolution:",IDC_STATIC,7,16,36,8
-    GROUPBOX        "Horizontal Scale:",IDC_STATIC,110,50,80,35
-    CONTROL         "Single Pixels",IDC_RADIO_SCREEN_HSCALE_SINGLE,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,115,60,55,10
-    CONTROL         "Double Pixels",IDC_RADIO_SCREEN_HSCALE_DOUBLE,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,115,70,59,10
-    GROUPBOX        "Vertical Scale:",IDC_STATIC,5,50,100,55
-    LTEXT           "Frameskip Ratio:",IDC_STATIC,7,32,54,8
+    LTEXT           "resolution",IDC_STATIC,7,16,31,8
+    GROUPBOX        "horizontal scale",IDC_STATIC,110,50,80,35
+    CONTROL         "single pixels",IDC_RADIO_SCREEN_HSCALE_SINGLE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,115,60,53,10
+    CONTROL         "double pixels",IDC_RADIO_SCREEN_HSCALE_DOUBLE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,115,70,57,10
+    GROUPBOX        "vertical scale",IDC_STATIC,5,50,100,55
+    LTEXT           "frameskip ratio",IDC_STATIC,7,32,46,8
     COMBOBOX        IDC_COMBO_SCREEN_FRAMESKIP,65,30,75,119,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    CONTROL         "Single Lines",IDC_RADIO_SCREEN_VSCALE_SINGLE,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,60,54,10
-    CONTROL         "Double Lines",IDC_RADIO_SCREEN_VSCALE_DOUBLE,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,70,57,10
-    CONTROL         "Scanlines",IDC_RADIO_SCREEN_VSCALE_SCANLINES,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,80,47,10
-    CONTROL         "Interlace Compensation",
+    CONTROL         "single lines",IDC_RADIO_SCREEN_VSCALE_SINGLE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,60,50,10
+    CONTROL         "double lines",IDC_RADIO_SCREEN_VSCALE_DOUBLE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,70,53,10
+    CONTROL         "scanlines",IDC_RADIO_SCREEN_VSCALE_SCANLINES,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,80,45,10
+    CONTROL         "interlace compensation",
                     IDC_CHECK_SCREEN_VSCALE_INTERLACE,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,10,90,90,10
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,10,90,89,10
 END
 
 IDD_ABOUT DIALOG DISCARDABLE  0, 0, 215, 137
@@ -420,51 +420,51 @@ BEGIN
     EDITTEXT        IDC_CREATE_HARDFILE_NAME,60,10,78,12,ES_AUTOHSCROLL
 END
 
-IDD_DISPLAY DIALOG DISCARDABLE  0, 0, 247, 161
+IDD_DISPLAY DIALOG DISCARDABLE  0, 0, 242, 161
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Display"
+CAPTION "display"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "chipset",IDC_STATIC,5,55,65,100
+    GROUPBOX        "Agnus blitter",IDC_STATIC,175,60,60,45
     CONTROL         "original",IDC_RADIO_BLITTER_NORMAL,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,80,70,38,10
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,180,124,38,10
     CONTROL         "immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,80,85,47,10
-    CONTROL         "OCS Agnus",IDC_RADIO_BLITTER_OCS,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,70,53,10
-    CONTROL         "ECS Agnus",IDC_RADIO_BLITTER_ECS,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,85,52,10
-    CONTROL         "ECS Denise",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON | 
-                    WS_DISABLED,10,100,54,10
-    CONTROL         "Full ECS",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON | 
-                    WS_DISABLED,10,115,43,10
-    GROUPBOX        "Agnus blitter",IDC_STATIC,75,55,65,50
-    GROUPBOX        "options",IDC_STATIC,145,45,95,60
-    CONTROL         "interlace compensation",
-                    IDC_CHECK_SCREEN_VSCALE_INTERLACE,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,150,75,89,10
-    GROUPBOX        "screen area",IDC_STATIC,5,5,135,45
-    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,30,20,80,15
-    LTEXT           "less",IDC_STATIC,15,20,13,8
-    LTEXT           "more",IDC_STATIC,115,20,16,8
-    LTEXT           "640 by 400 pixels",IDC_STATIC,45,35,56,8,SS_CENTERIMAGE
-    COMBOBOX        IDC_COMBO5,150,20,85,15,CBS_DROPDOWN | CBS_SORT | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "full screen",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,150,60,48,10
-    GROUPBOX        "color",IDC_STATIC,145,5,95,35
-    CONTROL         "2x vertical",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,80,120,48,10
-    CONTROL         "2x horizontal",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,80,135,55,10
-    GROUPBOX        "pixel scaling",IDC_STATIC,75,110,65,45
-    CONTROL         "Slider2",IDC_SLIDER2,"msctls_trackbar32",TBS_AUTOTICKS | 
-                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,126,85,15
-    LTEXT           "1/1",IDC_STATIC,185,140,12,8,SS_CENTERIMAGE
-    CONTROL         "triple buffers",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,150,90,54,10
-    GROUPBOX        "frame skipping",IDC_STATIC,145,111,95,45
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,180,140,47,10
+    CONTROL         "OCS",IDC_RADIO_BLITTER_OCS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,180,76,31,10
+    CONTROL         "ECS",IDC_RADIO_BLITTER_ECS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,180,90,30,10
+    GROUPBOX        "blitter speed",IDC_STATIC,175,111,60,45
+    GROUPBOX        "options",IDC_STATIC,5,60,95,45
+    CONTROL         "interlace compensation",IDC_CHECK_INTERLACE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,10,75,89,10
+    CONTROL         "Slider1",IDC_SLIDER_SCREEN_AREA,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,120,
+                    20,85,15
+    LTEXT           "less",IDC_STATIC,105,20,13,8
+    LTEXT           "more",IDC_STATIC,210,20,16,8
+    CTEXT           "not set",IDC_STATIC_SCREEN_AREA,120,35,85,8,
+                    SS_CENTERIMAGE
+    CONTROL         "full screen",IDC_CHECK_FULLSCREEN,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,40,48,10
+    GROUPBOX        "resolution",IDC_STATIC,5,5,230,50
+    CONTROL         "2x vertical",IDC_CHECK_VERTICAL_SCALE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,110,90,48,10
+    CONTROL         "2x horizontal",IDC_CHECK_HORIZONTAL_SCALE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,110,106,55,10
+    GROUPBOX        "pixel scaling",IDC_STATIC,105,60,65,60
+    CONTROL         "Slider2",IDC_SLIDER_FRAME_SKIPPING,"msctls_trackbar32",
+                    TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,10,
+                    125,85,15
+    CTEXT           "not set",IDC_STATIC_FRAME_SKIPPING,15,140,75,8,
+                    SS_CENTERIMAGE
+    CONTROL         "multiple buffers",IDC_CHECK_MULTIPLE_BUFFERS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,90,63,10
+    GROUPBOX        "frame skipping",IDC_STATIC,5,110,95,45
+    CONTROL         "scanlines",IDC_CHECK_SCANLINES,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,110,76,45,10
+    COMBOBOX        IDC_COMBO_COLOR_BITS,10,20,85,135,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_GROUP | WS_TABSTOP
 END
 
 
@@ -599,7 +599,7 @@ BEGIN
     IDD_DISPLAY, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 240
+        RIGHTMARGIN, 235
         TOPMARGIN, 7
         BOTTOMMARGIN, 154
     END
@@ -650,11 +650,6 @@ BEGIN
         MENUITEM "E&xit",                       ID_FILE_QUIT
         MENUITEM SEPARATOR
     END
-    POPUP "&Options"
-    BEGIN
-        MENUITEM "&Multiple buffers",           ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS
-
-    END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About",                      ID_HELP_ABOUT
@@ -682,19 +677,6 @@ BEGIN
     0
 END
 
-IDD_DISPLAY DLGINIT
-BEGIN
-    IDC_COMBO5, 0x403, 20, 0
-0x7274, 0x6575, 0x6320, 0x6c6f, 0x726f, 0x2820, 0x3233, 0x6220, 0x7469, 
-0x0029, 
-    IDC_COMBO5, 0x403, 20, 0
-0x6968, 0x6867, 0x6320, 0x6c6f, 0x726f, 0x2820, 0x3631, 0x6220, 0x7469, 
-0x0029, 
-    IDC_COMBO5, 0x403, 11, 0
-0x3532, 0x2036, 0x6f63, 0x6f6c, 0x7372, "\000" 
-    0
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -704,6 +686,12 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
+IDI_ICON_DISPLAY        ICON    DISCARDABLE     "..\\icons\\display.ico"
+IDI_ICON_SOUND          ICON    DISCARDABLE     "..\\icons\\sound.ico"
+IDI_ICON_FLOPPY         ICON    DISCARDABLE     "..\\icons\\floppy.ico"
+IDI_ICON_HARDFILE       ICON    DISCARDABLE     "..\\icons\\harddrives.ico"
+IDI_ICON_FILESYSTEM     ICON    DISCARDABLE     "..\\icons\\filesystem.ico"
+IDI_ICON_CPU            ICON    DISCARDABLE     "..\\icons\\cpu.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
