@@ -102,7 +102,7 @@ static BOOLE modripSaveMem(struct ModuleInfo *info, MemoryAccessFunc func)
 /* Thanks to Sylvain for the idea :)          */
 /*============================================*/
 
-BOOLE modripSaveChipMem(char *filename)
+static BOOLE modripSaveChipMem(char *filename)
 {
   FILE *memfile;
   size_t written;
@@ -767,7 +767,7 @@ static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
 /* scan the emulated amiga's memory for modules */
 /*==============================================*/
 
-void modripScanFellowMemory(void)
+static void modripScanFellowMemory(void)
 {
   ULO i, j;
   ULO ChipSize = 0, BogoSize = 0, FastSize = 0;
@@ -821,7 +821,7 @@ void modripScanFellowMemory(void)
 /* meant to hold the read floppy cache */
 static char *modripCurrentFloppyCache = NULL;
 
-ULO modripFloppyCacheRead(ULO address)
+static ULO modripFloppyCacheRead(ULO address)
 {
   return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }
@@ -830,7 +830,7 @@ ULO modripFloppyCacheRead(ULO address)
 /* read a floppy image into a given cache */
 /*========================================*/
 
-BOOLE modripReadFloppyImage(char *filename, char *cache)
+static BOOLE modripReadFloppyImage(char *filename, char *cache)
 {
   FILE *f;
   char message[MODRIP_TEMPSTRLEN];
@@ -859,7 +859,7 @@ BOOLE modripReadFloppyImage(char *filename, char *cache)
 /* scan inserted floppies for modules */
 /*====================================*/
 
-void modripScanFellowFloppies(void)
+static void modripScanFellowFloppies(void)
 {
   int driveNo, j;
   ULO i;
@@ -892,6 +892,16 @@ void modripScanFellowFloppies(void)
 	  }
 	}
   }
+}
+
+/*===================*/
+/* do a chipmem dump */
+/*===================*/
+
+void modripChipDump(void)
+{
+  if(modripGuiDumpChipMem())
+    modripSaveChipMem("chip.mem");
 }
 
 /*============================================================================*/
