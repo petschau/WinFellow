@@ -235,6 +235,7 @@
 #define IDC_CHECK_INTERLACE             1133
 #define IDC_STATIC_SCREEN_AREA          1134
 #define IDC_STATIC_FRAME_SKIPPING       1135
+#define IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG 1136
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_FILE_OPENCONFIGURATION       40004
@@ -253,7 +254,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40011
-#define _APS_NEXT_CONTROL_VALUE         1136
+#define _APS_NEXT_CONTROL_VALUE         1137
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

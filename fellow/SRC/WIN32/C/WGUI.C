@@ -2187,7 +2187,16 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 		  case IDCANCEL:
 			EndDialog(hwndDlg, LOWORD(wParam));
 			return TRUE;
-		}
+
+		  case IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG:
+				if (wguiSaveFile(hwndDlg, wgui_current_hardfile_edit->filename, 
+					CFG_FILENAME_LENGTH, "Select Hardfile Name", FSEL_HDF)) {
+					ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, wgui_current_hardfile_edit->filename);
+					iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+                    }
+	    break;
+
+        }
 		break;
     }
   return FALSE;
@@ -2218,7 +2227,7 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 					CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF)) {
 					ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
 					iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
-				}
+                    }
 	    break;
 	  case IDOK:
 	  {
