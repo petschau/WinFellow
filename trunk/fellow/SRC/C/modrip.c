@@ -86,29 +86,35 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 {
   ULO i;
   int type;
-  char *searchstrings[6] = {
-	  "M.K.", "4CHN", "6CHN", "8CHN", "FLT4", "FLT8" };
-  int channels[6] = {
-	  4,      4,      6,      8,      4,      8      };
+  struct { char *ID; int channels; } formats[8] = {
+	  {"M.K.", 4},  /* Standard ProTracker */
+      {"M!K!", 4},  /* ProTracker w. more than 64 patterns */
+	  {"4CHN", 4},  /* 4 channels */
+	  {"6CHN", 6},  /* 6 channel ProTracker */
+	  {"8CHN", 8},  /* 8 channels */
+	  {"FLT4", 4},	/* Startrekker 4 channel */
+	  {"FLT8", 8},  /* Startrekker 8 channel */
+	  {"M&K!", 4}   /* Noisetracker */
+  };
   struct ModuleInfo info;
   BOOLE ScratchyName;
 
-  for(type = 0; type < 6; type++) {
-    if ( ((*func)(address + 0) == searchstrings[type][0])
-      && ((*func)(address + 1) == searchstrings[type][1])
-      && ((*func)(address + 2) == searchstrings[type][2])
-      && ((*func)(address + 3) == searchstrings[type][3])
+  for(type = 0; type < 8; type++) {
+    if ( ((*func)(address + 0) == formats[type].ID[0])
+      && ((*func)(address + 1) == formats[type].ID[1])
+      && ((*func)(address + 2) == formats[type].ID[2])
+      && ((*func)(address + 3) == formats[type].ID[3])
        ) {
 #ifdef MODRIP_DEBUG
-      fellowAddLog("mod-ripper ProTracker %s match\n", searchstrings[type]);
+      fellowAddLog("mod-ripper ProTracker %s match\n", formats[type].ID);
 #endif
       modripModuleInfoInitialize(&info);
 
       /* store general info */
       strcpy(info.typedesc, "ProTracker and clones");
-      strncpy(info.typesig, searchstrings[type], 4);
+      strncpy(info.typesig, formats[type].ID, 4);
       info.typesig[4] = '\0';
-      info.channels = channels[type];
+      info.channels = formats[type].channels;
 
       /* searchstring found, now calc size */
       info.start = address - 0x438;
@@ -148,7 +154,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 #endif
 	  if(info.maxpattern > 127) return;		/* @@@@@ is this value correct ? */
 
-      info.patternsize = (info.maxpattern + 1) * 64 * 4 * channels[type];
+      info.patternsize = (info.maxpattern + 1) * 64 * 4 * info.channels;
 
 #ifdef MODRIP_DEBUG
 	  fellowAddLog("patternsize = %u\n", info.patternsize);
