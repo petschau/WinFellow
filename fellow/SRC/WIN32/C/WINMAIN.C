@@ -32,9 +32,32 @@ int win_drv_nCmdShow;
 
 HANDLE win_drv_emulation_ended;
 
-DWORD WINAPI winDrvFellowStart(void* in)
+/* Thread entry points */
+
+DWORD WINAPI winDrvFellowRunStart(void* in)
 {
   fellowRun();
+  SetEvent(win_drv_emulation_ended);
+  return 0;
+}
+
+DWORD WINAPI winDrvFellowStepOneStart(void* in)
+{
+  fellowStepOne();
+  SetEvent(win_drv_emulation_ended);
+  return 0;
+}
+
+DWORD WINAPI winDrvFellowStepOverStart(void* in)
+{
+  fellowStepOver();
+  SetEvent(win_drv_emulation_ended);
+  return 0;
+}
+
+DWORD WINAPI winDrvFellowRunDebugStart(void* in)
+{
+  fellowRunDebug((ULO) in);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -76,7 +99,7 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
 #endif
 #endif
 
-void winDrvEmulate(void)
+void winDrvEmulate(void *startfunc, void *param)
 {
   DWORD dwThreadId;
   MSG myMsg;
@@ -91,8 +114,8 @@ void winDrvEmulate(void)
   fellowAddLog("fellowEmulationStart() finished\n");
   FellowThread = CreateThread(NULL,     // Security attr
 			       0,                   // Stack Size
-			       winDrvFellowStart,   // Thread procedure
-			       NULL,	            // Thread parameter
+			       startfunc,   // Thread procedure
+			       param,	            // Thread parameter
 			       0,                   // Creation flags
 			       &dwThreadId);        // ThreadId
   SetTimer(gfx_drv_hwnd, 1, 10, NULL);
@@ -113,17 +136,14 @@ void winDrvEmulate(void)
 	  break;
         case met_mouse_data:
 	  /* Deal with mouse input */
-//          fellowAddLog("met_mouse_data\n");
           mouseDrvMovementHandler();
 	  break;
         case met_kbd_data:
 	  /* Deal with kbd input */
-//          fellowAddLog("met_kbd_data\n");
           kbdDrvKeypressHandler();
 	  break;
         case met_messages:
 	  /* Deal with windows messages */
-//          fellowAddLog("met_messages\n");
           while (PeekMessage(&myMsg,
 		             NULL,
 		             0,
@@ -146,7 +166,7 @@ void winDrvEmulate(void)
 #endif
 
 void winDrvEmulationStart(void) {
-  if (fellowEmulationStart()) winDrvEmulate();
+  if (fellowEmulationStart()) winDrvEmulate(winDrvFellowRunStart, 0);
   else wguiRequester("Emulation session failed to start up", "", "");
   fellowEmulationStop();
 }
@@ -158,7 +178,7 @@ void winDrvEmulationStart(void) {
 
 DWORD WINAPI winDrvFellowStepOne(void* in)
 {
-  fellowStepOne();
+  winDrvEmulate(winDrvFellowStepOneStart, NULL);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -166,14 +186,14 @@ DWORD WINAPI winDrvFellowStepOne(void* in)
 
 DWORD WINAPI winDrvFellowStepOver(void* in)
 {
-  fellowStepOver();
+  winDrvEmulate(winDrvFellowStepOverStart, NULL);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
 
 DWORD WINAPI winDrvFellowRunDebug(void* in)
 {
-  fellowRunDebug(0);
+  winDrvEmulate(winDrvFellowRunDebugStart, in);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
@@ -184,7 +204,7 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) {
   switch (operation) {
     case DBG_STEP:      winDrvFellowStepOne((void*) 1); break;
     case DBG_STEP_OVER: winDrvFellowStepOver((void*) 1); break;
-    case DBG_RUN:       winDrvFellowRunDebug((void*) 1); break;
+    case DBG_RUN:       winDrvFellowRunDebug((void*) 0); break;
     default:            return FALSE;
   }
   return TRUE;
