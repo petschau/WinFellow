@@ -1403,6 +1403,7 @@ _drawLineNormal1x24_:
 		sub	ebp, 4
 		mov	al, byte [edi]
 		mov	ecx, dword [esi + ebx]
+		
 		mov	bl, byte [edi + 3]
 		mov	cx, word [esi + eax]
 		mov	al, byte [edi + 2]
@@ -2275,12 +2276,12 @@ _drawLineDual1x32_:
 		add	edi, 010000h
 .l1:		cmp	dword [esp], 2
 		jl	.last2
-.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
 		mov	al, byte [edi + ebx]
 		mov	ecx, dword [esi + eax]	  
-		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
-		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
 		mov	al, byte [edi + ebx]
 		mov	dword [edx], ecx 
 		mov	ecx, dword [esi + eax]	  
