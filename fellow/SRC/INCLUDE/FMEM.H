@@ -17,6 +17,13 @@
 #define memoryChipWriteWord ASMRENAME(memoryChipWriteWord)
 #define memoryChipWriteLong ASMRENAME(memoryChipWriteLong)
 
+#define memoryOVLReadByte ASMRENAME(memoryOVLReadByte)
+#define memoryOVLReadWord ASMRENAME(memoryOVLReadWord)
+#define memoryOVLReadLong ASMRENAME(memoryOVLReadLong)
+#define memoryOVLWriteByte ASMRENAME(memoryOVLWriteByte)
+#define memoryOVLWriteWord ASMRENAME(memoryOVLWriteWord)
+#define memoryOVLWriteLong ASMRENAME(memoryOVLWriteLong)
+
 #define memoryFastReadByte ASMRENAME(memoryFastReadByte)
 #define memoryFastReadWord ASMRENAME(memoryFastReadWord)
 #define memoryFastReadLong ASMRENAME(memoryFastReadLong)
@@ -71,18 +78,8 @@
 #define memoryDmemReadLong ASMRENAME(memoryDmemReadLong)
 #define memoryDmemWriteLongASM ASMRENAME(memoryDmemWriteLongASM)
 
-#define rserdatr ASMRENAME(rserdatr)
-#define rintenar ASMRENAME(rintenar)
-#define rintreqr ASMRENAME(rintreqr)
-#define rdefault ASMRENAME(rdefault)
-
-#define wdmacon ASMRENAME(wdmacon)
-#define wintena ASMRENAME(wintena)
-#define wintreq ASMRENAME(wintreq)
-#define wadcon ASMRENAME(wadcon)
-#define wdefault ASMRENAME(wdefault)
-
 #define fmemstart ASMRENAME(fmemstart)
+#define cpuRaiseInterrupt ASMRENAME(cpuRaiseInterrupt)
 
 /* Declare exported functions from assembly */
 
@@ -101,6 +98,15 @@ extern ULO memoryChipReadLong(ULO ea);
 extern void memoryChipWriteByte(ULO data, ULO ea);
 extern void memoryChipWriteWord(ULO data, ULO ea);
 extern void memoryChipWriteLong(ULO data, ULO ea);
+
+/* KICKSTART OVERLAY INTERFACE */
+
+extern ULO memoryOVLReadByte(ULO ea);
+extern ULO memoryOVLReadWord(ULO ea);
+extern ULO memoryOVLReadLong(ULO ea);
+extern void memoryOVLWriteByte(ULO data, ULO ea);
+extern void memoryOVLWriteWord(ULO data, ULO ea);
+extern void memoryOVLWriteLong(ULO data, ULO ea);
 
 /* FAST RAM INTERFACE */
 
@@ -158,6 +164,17 @@ extern void memoryNAWriteLong(ULO data, ULO ea);
 
 /* Mystery (SCSI..?) INTERFACE */
 
+
+ULO memoryNAReadByteC(ULO address);
+ULO memoryDmemReadByteC(ULO address);
+ULO memoryOVLReadByteC(ULO address);
+ULO memoryChipReadByteC(ULO address);
+ULO memoryFastReadByteC(ULO address);
+ULO memoryBogoReadByteC(ULO address);
+ULO memoryMysteryReadByteC(ULO address);
+ULO memoryIOReadByteC(ULO address);
+ULO memoryKickReadByteC(ULO address);
+
 extern ULO memoryMysteryReadByte(ULO ea);
 extern ULO memoryMysteryReadWord(ULO ea);
 extern ULO memoryMysteryReadLong(ULO ea);
@@ -174,17 +191,20 @@ extern void memoryDmemWriteLongASM(ULO data, ULO ea);
 
 /* IO-Register access functions */
 
-extern ULO rserdatr(ULO address);
-extern ULO rintenar(ULO address);
-extern ULO rintreqr(ULO address);
-extern ULO rdefault(ULO address);
-extern void wdmacon(ULO data, ULO address);
-extern void wintena(ULO data, ULO address);
-extern void wintreq(ULO data, ULO address);
-extern void wadcon(ULO data, ULO address);
-extern void wdefault(ULO data, ULO address);
+ULO rserdatr_C(ULO address);
+ULO rintenar_C(ULO address);
+ULO rintreqr_C(ULO address);
+ULO rdefault_C(ULO address);
+void wserdat_C(ULO data, ULO address);
+void wserper_C(ULO data, ULO address);
+void wdmacon(ULO data, ULO address);
+void wintena_C(ULO data, ULO address);
+void wintreq_C(ULO data, ULO address);
+void wadcon_C(ULO data, ULO address);
+void wdefault_C(ULO data, ULO address);
 
 extern void fmemstart(void);  /* Code alignment label */
+extern void cpuRaiseInterrupt(void);
 
 /* End of assembly function declarations */
 
@@ -257,6 +277,7 @@ extern void memoryBankSet(memoryReadFunc rb,
 			  ULO basebank,
 			  BOOLE datadirect);
 extern UBY *memoryAddressToPtr(ULO address);
+extern void memoryChipMap(BOOLE overlay);
 
 /* Memory configuration properties */
 
@@ -309,11 +330,13 @@ extern UBY memory_bogo[];
 extern UBY memory_kick[];
 extern ULO memory_chipsize;
 extern UBY memory_emem[];
-
+//extern memoryIOReadFunc memory_iobank_write[];
 
 extern ULO intenar,intena,intreq;
 extern ULO potgor;
 
 extern ULO adcon;
+
+extern memoryIOWriteFunc memory_iobank_write[256];
 
 #endif

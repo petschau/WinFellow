@@ -100,6 +100,15 @@
 		pop	ebp
 %endmacro
 
+%macro CCALLCONV_OUT_ECX	1
+		add	esp, 4*%1
+		mov	ecx, eax
+		pop	eax
+		pop	ebx
+		pop	edi
+		pop	esi
+		pop	ebp
+%endmacro
 
 %macro CCALLCONV_OUT_EAX	1
 		add	esp, 4*%1

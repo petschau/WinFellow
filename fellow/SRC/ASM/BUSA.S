@@ -52,19 +52,20 @@
 FASMFILESTART
 FDATASECTIONSTART
 
+
+
 %include "data/fellow.inc"
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/fmem.inc"
-%include "data/draw.inc"
-%include "data/floppy.inc"
-%include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/cia.inc"
-%include "data/copper.inc"
-%include "data/blit.inc"
-%include "data/timer.inc"		
-%include "data/graph.inc"
+
+CDATAEXTERN blitend
+CDATAEXTERN draw_frame_count;
+CDATAEXTERN draw_frame_skip;
+CDATAEXTERN draw_frame_skip_factor;
+
+CFUNCEXTERN kbdEventEOFHandlerC;
 
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
@@ -77,30 +78,26 @@ FCODESECTIONSTART
 global _busstart_
 _busstart_:	 ; Used to check code alignment
 
-%include "generic/sound.inc"
 %include "func/fmem.inc"
 %include "func/cpu.inc"
-%include "func/floppy.inc"
-%include "func/sound.inc"
-%include "func/gameport.inc"
-%include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/draw.inc"
-%include "func/blit.inc"
-%include "func/graph.inc"
-%include "func/sprite.inc"
-%include "func/kbd.inc"
 %include "mac/fmem.mac"
-%include "mac/drawmode.mac"
-%include "mac/kbd.mac"
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
-%include "mac/draw.mac"
-%include "mac/sound.mac"
-%include "mac/sprite.mac"
 
 CFUNCEXTERN timerEndOfFrame
+CFUNCEXTERN blitFinishBlit
+CFUNCEXTERN busScanEventsLevel3
+CFUNCEXTERN busScanEventsLevel4
+CFUNCEXTERN busScanEventsLevel6
+CFUNCEXTERN graphEndOfFrame
+CFUNCEXTERN spriteEndOfFrame
+
+CDATAEXTERN graph_raster_x;
+CDATAEXTERN graph_raster_y;
+CDATAEXTERN lof;
+CDATAEXTERN graph_playfield_on;
 
 ;===========================================================
 ; bus_run_
@@ -129,6 +126,7 @@ bus_run:	SETUP_EXCEPTION_HACK bus_exception_ret, bus_loop_events
 
 		FALIGN32
 
+
 global _checkadr_
 _checkadr_:
 bus_loop_cpu:
@@ -151,7 +149,8 @@ bus_exception_ret:
 		add	eax, dword [curcycle]
 		mov	dword [cpu_next], eax
 		NEXT_EVENT_AFTER_CPU bus_loop_cpu, bus_loop_events
-bus_exit:	ret
+bus_exit:	
+		ret
 
 		FALIGN32
 bus_loop_events:
@@ -257,9 +256,6 @@ tracebit_handler:
 		mov	ebx, 024h
 		jmp	_cpuPrepareException_
 
-
-
-
 ;===========================================================
 ; Clean up after STOP was executed and enter bus_loop again 
 ; Called from 68000.asm only
@@ -276,200 +272,10 @@ _return_from_stop_:
 		jmp	dword [stopreturnadr]
 
 
-;==============================================================================
-; Global end of line handler
-;==============================================================================
+global _endOfFrameASM_
+_endOfFrameASM_:
 
-
-		FALIGN32
-
-global _endOfLine_
-_endOfLine_:	push	edx
-		push	ecx
-		push	ebx
-
-
-		;==============================================================
-		; Handles graphics planar to chunky conversion
-		; and updates the graphics emulation for a new line
-		;==============================================================
-
-		call	_graphEndOfLine_
-
-
-		;==============================================================
-		; Update the CIA B event counter
-		;==============================================================
-
-		mov	eax, 1
-		CIA_UPDATE_EVENTCOUNTER_CWRAP
-
-
-		;==============================================================
-		; Handles disk DMA if it is running
-		;==============================================================
-
-		call	floppyEndOfLineC
-
-
-		;==============================================================
-		; Update the sound emulation
-		;==============================================================
-
-		SOUND_END_OF_LINE_CWRAP
-
-
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
-
-		KBDQUEUEHANDLER_CWRAP
-		KBDEVENTEOLHANDLER_CWRAP
-
-
-		;==============================================================
-		; Set up the next end of line event
-		;==============================================================
-
-		add	dword [eol_next], CYCLESPERLINE
-		SCAN_EVENTS_LVL3
-
-		pop	ebx
-		pop	ecx
-		pop	edx
-		ret
-
-
-;==============================================================================
-; Global end of frame handler
-;==============================================================================
-
-
-		FALIGN32
-
-global _endOfFrame_
-_endOfFrame_:	push	edx
-		push	ebx
-
-
-		;==============================================================
-		; Draw the frame in the host buffer
-		;==============================================================
-
-		call	_drawEndOfFrame_
-
-
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
-
-		KBDEVENTEOFHANDLER_CWRAP
-
-
-		;==============================================================
-		; Reset some aspects of the graphics emulation
-		;==============================================================
-
-		xor	dword [lof], 08000h		; Short/long frame 
-		xor	edx, edx
-		mov	ecx, 0102h			; Zero scroll
-		call	dword [memory_iobank_write + 2*ecx]
-
-
-		;==============================================================
-		; Restart copper
-		;==============================================================
-
-		call	_copperEndOfFrame_		; Restart copper
-
-
-		;==============================================================
-		; Update frame counters
-		;==============================================================
-
-		inc	dword [draw_frame_count]	; Count frames
-		dec	dword [draw_frame_skip]		; Frame skipping
-		jns	.l6
-		mov	edx, dword [draw_frame_skip_factor]
-		mov	dword [draw_frame_skip], edx
-.l6:
-
-		;==============================================================
-		; Update CIA timer counters
-		;==============================================================
-
-		CIA_UPDATE_TIMERS_EOF_CWRAP
-
-
-		;==============================================================
-		; Sprite end of frame updates
-		;==============================================================
-
-		SPRITE_EOF_CWRAP
-
-
-		;==============================================================
-		; Recalculate blitter finished time
-		;==============================================================
-
-		mov	dword [graph_playfield_on], ecx
-		test	dword [blitend], 0ffffffffh
-		js	.l14
-		sub	dword [blitend], CYCLESPERFRAME
-		setns	byte [blitend]
-.l14:
-
-		;==============================================================
-		; Flag vertical refresh IRQ
-		;==============================================================
-
-		mov	edx, 08020h
-		call	dword [memory_iobank_write + 0138h]
-
-
-		;==============================================================
-		; Set up next end of line event
-		;==============================================================
-
-		mov	dword [eol_next], CYCLESPERLINE
-		dec	dword [eol_next]
-
-
-		;==============================================================
-		; Update next CPU instruction time
-		;==============================================================
-
-		mov	ebx, dword [cpu_next]
-		test	ebx, ebx
-		js	.l15
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [cpu_next], ebx
-.l15:
-
-		;==============================================================
-		; Update next IRQ time
-		;==============================================================
-
-		mov	ebx, dword [irq_next]
-		test	ebx, ebx
-		js	.l16
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [irq_next], ebx
-.l16:
-
-		;==============================================================
-		; Perform graphics end of frame
-		;==============================================================
-
-		call	graphEndOfFrame
-		call	timerEndOfFrame
-
-		;==============================================================
-		; Recalculate the entire event queue
-		;==============================================================
-
-		SCAN_EVENTS_LVL6
-
+;		pushad
 
 		;==============================================================
 		; Bail out of emulation if we're asked to
@@ -479,13 +285,12 @@ _endOfFrame_:	push	edx
 		jnz	.l18
 		test	dword [fellow_request_emulation_stop_immediately], 1
 		jz	.l17
-.l18:		mov	esp, dword [exceptionstack]
-		jmp	bus_exit
-
-.l17:		pop	ebx
-		pop	edx
+.l18:		
+		mov	esp, dword [exceptionstack]
 		ret
-
+.l17:		
+;		popad
+		ret
 
 		FALIGN32
 
@@ -493,5 +298,3 @@ FCODESECTIONEND
 FBSSSECTIONSTART
 FBSSSECTIONEND
 FASMFILEEND
-
-

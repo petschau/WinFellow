@@ -226,15 +226,49 @@ void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device);
 BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
 
-long FAR PASCAL EmulationWindowProc(HWND hWnd,
-				    UINT message, 
-                                    WPARAM wParam,
-				    LPARAM lParam) {
-  RECT emulationRect;
+long FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	RECT emulationRect;
+	BOOLE diacquire_sent = FALSE;
+/*
+	switch (message)
+	{
+	case 15:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");
+		break;
+	case 20:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");
+		break;
+	case 70:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING");
+		break;
+	case 71:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");
+		break;
+	case 133:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");
+		break;
+	case 256:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");
+		break;		
+	case 257:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");
+		break;		
+	case 275:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");
+		break;		
+	default:
+  		fellowAddLog("EmulationWindowProc got message %Xh\n", message);
+	}
+*/
 
-  BOOLE diacquire_sent = FALSE;
-  switch (message) {
-  case WM_TIMER:
+	switch (message) 
+	{
+	case WM_ERASEBKGND:
+	case WM_NCPAINT:
+	case WM_PAINT:
+		graph_buffer_lost = TRUE;
+		break;
+	case WM_TIMER:
     if (wParam == 1) {
       winDrvHandleInputDevices();
       soundDrvPollBufferPosition();
@@ -246,7 +280,12 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     {
       int vkey = (int) wParam;
       gfx_drv_syskey_down = (vkey != VK_F10);
-      gfxDrvEvaluateActiveStatus();
+
+      // below is the hack to remove the problem with the ALT key
+      // this is not a nice solution, but it moreless works
+      // we really need Mnd back for some proper work on this
+
+      //gfxDrvEvaluateActiveStatus();
     }
     break;
   case WM_SYSKEYUP:
@@ -604,7 +643,7 @@ void gfxDrvWindowHide(gfx_drv_ddraw_device *ddraw_device) {
 BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
     char *versionstring = fellowGetVersionString();
     
-  if (ddraw_device->mode->windowed) {
+    if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
       versionstring,
@@ -781,9 +820,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 				       LPSTR lpDriverName,
 				       LPVOID lpContext) {
   gfx_drv_ddraw_device *tmpdev;
-  
-  winDrvSetThreadName(-1, "gfxDrvDDrawDeviceEnumerate()");
-  
+
   tmpdev = (gfx_drv_ddraw_device *) malloc(sizeof(gfx_drv_ddraw_device));
   memset(tmpdev, 0, sizeof(gfx_drv_ddraw_device));
   if (lpGUID == NULL) {
@@ -1150,7 +1187,6 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeNew(ULO width,
 
 BOOL WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
 				     LPVOID lpContext) {
-  winDrvSetThreadName(-1, "gfxDrvDDrawModeEnumerate()");
   if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) &&
     ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) ||
     (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
@@ -1318,7 +1354,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
 	else
 	  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
     }
-    graphLineDescClearSkips();
+    graphLineDescClear();
   }
   return err;
 }
@@ -1971,6 +2007,7 @@ BOOLE gfxDrvStartup(void) {
   gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
+  graph_buffer_lost = FALSE;
   if (gfxDrvRunEventInitialize())
     if (gfxDrvWindowClassInitialize())
       gfx_drv_initialized = gfxDrvDDrawInitialize();
@@ -1990,4 +2027,9 @@ void gfxDrvShutdown(void) {
     gfxDrvWindowRelease(gfx_drv_ddraw_device_current);
   }
   gfxDrvRunEventRelease();
+}
+
+void gfxDrvDebugging(void)
+{
+
 }

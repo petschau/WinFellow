@@ -61,6 +61,11 @@ wgui_drawmodes wgui_dm;								// data structure for resolution data
 wgui_drawmodes* pwgui_dm = &wgui_dm;
 wgui_drawmode *pwgui_dm_match;
 BOOLE wgui_emulation_state = FALSE;
+HBITMAP power_led_on_bitmap = 0;
+HBITMAP power_led_off_bitmap = 0;
+HBITMAP diskdrive_led_disabled_bitmap = 0;
+HBITMAP diskdrive_led_off_bitmap = 0;
+
 
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
@@ -294,6 +299,38 @@ wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
 	wguiGameportDialogProc,
 	wguiVariousDialogProc
 };
+
+void wguiLoadBitmaps(void)
+{
+	if (power_led_on_bitmap == 0)
+	{
+	  power_led_on_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_POWER_LED_ON));
+	}
+	if (power_led_off_bitmap == 0)
+	{
+	  power_led_off_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_POWER_LED_OFF));
+	}
+	if (diskdrive_led_off_bitmap == 0)
+	{
+	  diskdrive_led_off_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF));
+	}
+	if (diskdrive_led_disabled_bitmap == 0)
+	{
+	  diskdrive_led_disabled_bitmap = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED));
+	}
+}
+
+void wguiReleaseBitmaps(void)
+{
+  if (power_led_on_bitmap != 0) DeleteObject(power_led_on_bitmap);
+  if (power_led_off_bitmap != 0) DeleteObject(power_led_off_bitmap);
+  if (diskdrive_led_disabled_bitmap != 0) DeleteObject(diskdrive_led_disabled_bitmap);
+  if (diskdrive_led_off_bitmap != 0) DeleteObject(diskdrive_led_off_bitmap);
+}
+
+
+
+
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
 
@@ -755,10 +792,18 @@ BOOLE wguiSelectDirectory(HWND hwndDlg,
 /*============================================================================*/
 
 void wguiRemoveAllHistory(void) {
-	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION0, MF_BYCOMMAND);
-	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION1, MF_BYCOMMAND);
-	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION2, MF_BYCOMMAND);
-	RemoveMenu(GetSubMenu(GetMenu(wgui_hDialog),0), ID_FILE_HISTORYCONFIGURATION3, MF_BYCOMMAND);
+	HMENU menu = GetMenu(wgui_hDialog);
+	if (menu != 0)
+	{
+	  HMENU submenu = GetSubMenu(menu, 0);
+	  if (submenu != 0)
+	  {
+	    RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION0, MF_BYCOMMAND);
+	    RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION1, MF_BYCOMMAND);
+	    RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION2, MF_BYCOMMAND);
+	    RemoveMenu(submenu, ID_FILE_HISTORYCONFIGURATION3, MF_BYCOMMAND);
+	  }
+	}
 }
 
 void wguiInstallHistoryIntoMenu(void) {
@@ -964,12 +1009,13 @@ void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
 void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
   ULO i;
 
+	wguiLoadBitmaps();
 	for (i=0; i<MAX_DISKDRIVES; i++) {
 		ccwEditSetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskImage(conf, i));
 		ccwEditEnableConditional(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskEnabled(conf, i));
 		ccwButtonEnableConditional(hwndDlg, diskimage_data_main[i][DID_EJECT_MAIN], cfgGetDiskEnabled(conf,i));
 		ccwButtonEnableConditional(hwndDlg, diskimage_data_main[i][DID_FILEDIALOG_MAIN], cfgGetDiskEnabled(conf,i));
-		ccwSetImageConditional(hwndDlg, diskimage_data_main[i][DID_LED_MAIN], IDB_DISKDRIVE_LED_OFF, IDB_DISKDRIVE_LED_DISABLED, cfgGetDiskEnabled(conf,i));
+		ccwSetImageConditional(hwndDlg, diskimage_data_main[i][DID_LED_MAIN], diskdrive_led_off_bitmap, diskdrive_led_disabled_bitmap, cfgGetDiskEnabled(conf,i));
 	}
 }
 
@@ -1565,7 +1611,11 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
 	if (pwgui_dm_match->windowed) {
 		// windowed 
 		// colorbits can't be selected through WinFellow, desktop setting will be used
-		ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
+		HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
+		int desktopwindow_bitspixel = GetDeviceCaps(desktopwindow_DC, BITSPIXEL);
+		ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
+
+		ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(desktopwindow_bitspixel));
 		ComboBox_Enable(colorBitsComboboxHWND, FALSE);
 		ccwButtonUncheck(hwndDlg, IDC_CHECK_FULLSCREEN);
 		// disable multiplebuffers
@@ -2375,17 +2425,18 @@ BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
 				     UINT uMsg,
 				     WPARAM wParam,
 				     LPARAM lParam) {
-  HWND gpChoice[2];
-
-  gpChoice[0] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT1);
-  gpChoice[1] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT2);
-    
   switch (uMsg) {
     case WM_INITDIALOG:
       wguiInstallGameportConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
             if (wgui_action == WGUI_NO_ACTION)
+	    {
+	      HWND gpChoice[2];
+
+	      gpChoice[0] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT1);
+	      gpChoice[1] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT2);
+    
 		switch (LOWORD(wParam)) {
 			case IDC_COMBO_GAMEPORT1:
 				if (HIWORD(wParam) == CBN_SELCHANGE) {
@@ -2401,7 +2452,8 @@ BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
 					}
 				}
 			break;
-	  }
+		}
+	    }
 	break;
     case WM_DESTROY:
       wguiExtractGameportConfig(hwndDlg, wgui_cfg);
@@ -2450,12 +2502,13 @@ int wguiConfigurationDialog()
     propertysheets[i].dwSize = sizeof(PROPSHEETPAGE);
     		if (wgui_propsheetICON[i] != 0) {
 			propertysheets[i].dwFlags = PSP_USEHICON;
+			propertysheets[i].hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(wgui_propsheetICON[i]));
 		} else {
 			propertysheets[i].dwFlags = PSP_DEFAULT;
+			propertysheets[i].hIcon = 0;
 		}
     propertysheets[i].hInstance = win_drv_hInstance;
     propertysheets[i].pszTemplate = MAKEINTRESOURCE(wgui_propsheetRID[i]);
-    propertysheets[i].hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(wgui_propsheetICON[i]));
     propertysheets[i].pszTitle = NULL;
     propertysheets[i].pfnDlgProc = wgui_propsheetDialogProc[i];
     propertysheets[i].lParam = 0;
@@ -2541,107 +2594,140 @@ void wguiAbout(HWND hwndDlg) {
 
 BOOL CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
-  switch (uMsg) {
-    case WM_INITDIALOG:
-	  SendMessage(hwndDlg, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
-      {
-          char *versionstring;
-          if(versionstring = fellowGetVersionString()) 
-          {
-              SetWindowText(hwndDlg, versionstring);
-              free(versionstring);
-          }
-      }
-      return TRUE;
-    case WM_COMMAND:
-      if (wgui_action == WGUI_NO_ACTION)
-	switch (LOWORD(wParam)) {
-	  case IDC_START_EMULATION:
-			wgui_emulation_state = TRUE;
-	    wgui_action = WGUI_START_EMULATION;
-	    break;
-	  case IDCANCEL:
-	  case ID_FILE_QUIT:
-	  case IDC_QUIT_EMULATOR:
-	    wgui_action = WGUI_QUIT_EMULATOR;
-	    break;
-	  case ID_FILE_OPENCONFIGURATION:
-		wgui_action = WGUI_OPEN_CONFIGURATION;
-		break;
-	  case ID_FILE_SAVECONFIGURATION:
-		wgui_action = WGUI_SAVE_CONFIGURATION;
-		break;
-	  case ID_FILE_SAVECONFIGURATIONAS:
-		wgui_action = WGUI_SAVE_CONFIGURATION_AS;
-		break;
-	  case ID_FILE_HISTORYCONFIGURATION0:   
-		wgui_action = WGUI_LOAD_HISTORY0;
-		break;
-	  case ID_FILE_HISTORYCONFIGURATION1:
-		wgui_action = WGUI_LOAD_HISTORY1;
-		break;
-      case ID_FILE_HISTORYCONFIGURATION2:   
-		wgui_action = WGUI_LOAD_HISTORY2;
-		break;
-      case ID_FILE_HISTORYCONFIGURATION3:   
-		wgui_action = WGUI_LOAD_HISTORY3;
-		break;
-	  case IDC_CONFIGURATION:
-			wguiConfigurationDialog();
-	    break;
-	  case IDC_HARD_RESET:
-	    fellowPreStartReset(TRUE);
-			SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
-				STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-				MAKEINTRESOURCE(IDB_POWER_LED_OFF)));
-			wgui_emulation_state = FALSE;
-	    break;
-	  case ID_DEBUGGER_START:
-	    wgui_action = WGUI_DEBUGGER_START;
-	    break;
-	  case ID_HELP_ABOUT:
-	    wgui_action = WGUI_ABOUT;
-	    wguiAbout(hwndDlg);
-	    wgui_action = WGUI_NO_ACTION;
-	    break;
-	  default:
-	    break;
+	STR l_diskimage[CFG_FILENAME_LENGTH];
+	char *versionstring;
+
+	switch (uMsg) {
+	case WM_INITDIALOG:
+		SendMessage(hwndDlg, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
+
+		if(versionstring = fellowGetVersionString()) 
+		{
+			SetWindowText(hwndDlg, versionstring);
+			free(versionstring);
+		}
+		return TRUE;
+
+	case WM_COMMAND:
+		if (wgui_action == WGUI_NO_ACTION)
+			switch (LOWORD(wParam)) {
+			case IDC_START_EMULATION:
+				wgui_emulation_state = TRUE;
+				wgui_action = WGUI_START_EMULATION;
+				break;
+			case IDCANCEL:
+			case ID_FILE_QUIT:
+			case IDC_QUIT_EMULATOR:
+				wgui_action = WGUI_QUIT_EMULATOR;
+				break;
+			case ID_FILE_OPENCONFIGURATION:
+				wgui_action = WGUI_OPEN_CONFIGURATION;
+				break;
+			case ID_FILE_SAVECONFIGURATION:
+				wgui_action = WGUI_SAVE_CONFIGURATION;
+				break;
+			case ID_FILE_SAVECONFIGURATIONAS:
+				wgui_action = WGUI_SAVE_CONFIGURATION_AS;
+				break;
+			case ID_FILE_HISTORYCONFIGURATION0:   
+				wgui_action = WGUI_LOAD_HISTORY0;
+				break;
+			case ID_FILE_HISTORYCONFIGURATION1:
+				wgui_action = WGUI_LOAD_HISTORY1;
+				break;
+			case ID_FILE_HISTORYCONFIGURATION2:   
+				wgui_action = WGUI_LOAD_HISTORY2;
+				break;
+			case ID_FILE_HISTORYCONFIGURATION3:   
+				wgui_action = WGUI_LOAD_HISTORY3;
+				break;
+			case IDC_CONFIGURATION:
+				wguiConfigurationDialog();
+				break;
+			case IDC_HARD_RESET:
+				fellowPreStartReset(TRUE);
+				wguiLoadBitmaps();
+				SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
+				STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_off_bitmap);
+				wgui_emulation_state = FALSE;
+				break;
+			case ID_DEBUGGER_START:
+				wgui_action = WGUI_DEBUGGER_START;
+				break;
+			case ID_HELP_ABOUT:
+				wgui_action = WGUI_ABOUT;
+				wguiAbout(hwndDlg);
+				wgui_action = WGUI_NO_ACTION;
+				break;
+			default:
+				break;
+			}
+			if (HIWORD(wParam) == BN_CLICKED)
+			switch (LOWORD(wParam)) {
+				case IDC_BUTTON_DF0_FILEDIALOG_MAIN:
+				wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, 0);
+				break;
+			case IDC_BUTTON_DF1_FILEDIALOG_MAIN:
+				wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN,	1);
+				break;
+			case IDC_BUTTON_DF2_FILEDIALOG_MAIN:
+				wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN,	2);
+				break;
+			case IDC_BUTTON_DF3_FILEDIALOG_MAIN:
+				wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, 3);
+				break;
+			case IDC_BUTTON_DF0_EJECT_MAIN:
+				cfgSetDiskImage(wgui_cfg, 0, "");
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
+				break;
+			case IDC_BUTTON_DF1_EJECT_MAIN:
+				cfgSetDiskImage(wgui_cfg, 1, "");
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 1));
+				break;
+			case IDC_BUTTON_DF2_EJECT_MAIN:
+				cfgSetDiskImage(wgui_cfg, 2, "");
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 2));
+				break;
+			case IDC_BUTTON_DF3_EJECT_MAIN:
+				cfgSetDiskImage(wgui_cfg, 3, "");
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 3));
+				break;
+			case IDC_BUTTON_DF1_SWAP:
+				strcpy(l_diskimage, cfgGetDiskImage(wgui_cfg, 0));
+				cfgSetDiskImage(wgui_cfg, 0, cfgGetDiskImage(wgui_cfg, 1));
+				cfgSetDiskImage(wgui_cfg, 1, l_diskimage);
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 1));
+				break;	
+			case IDC_BUTTON_DF2_SWAP:
+				strcpy(l_diskimage, cfgGetDiskImage(wgui_cfg, 0));
+				cfgSetDiskImage(wgui_cfg, 0, cfgGetDiskImage(wgui_cfg, 2));
+				cfgSetDiskImage(wgui_cfg, 2, l_diskimage);
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 2));
+				break;	
+			case IDC_BUTTON_DF3_SWAP:
+				strcpy(l_diskimage, cfgGetDiskImage(wgui_cfg, 0));
+				cfgSetDiskImage(wgui_cfg, 0, cfgGetDiskImage(wgui_cfg, 3));
+				cfgSetDiskImage(wgui_cfg, 3, l_diskimage);
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
+				ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 3));
+				break;
+			case IDC_BUTTON_TURBO_LOAD:
+				if (cfgGetSoundEmulation(wgui_cfg) != 1)
+				{
+					cfgSetSoundEmulation(wgui_cfg, 1);
+				}
+				else
+				{
+					cfgSetSoundEmulation(wgui_cfg, 0);
+				}
+				break;
+			default:
+				break;
+		}
 	}
-	if (HIWORD(wParam) == BN_CLICKED)
-	switch (LOWORD(wParam)) {
-	  case IDC_BUTTON_DF0_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, 0);
-	    break;
-	  case IDC_BUTTON_DF1_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN,	1);
-	    break;
-	  case IDC_BUTTON_DF2_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN,	2);
-	    break;
-	  case IDC_BUTTON_DF3_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, 3);
-	    break;
-	  case IDC_BUTTON_DF0_EJECT_MAIN:
-	    cfgSetDiskImage(wgui_cfg, 0, "");
-	    ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
-	    break;
-	  case IDC_BUTTON_DF1_EJECT_MAIN:
-	    cfgSetDiskImage(wgui_cfg, 1, "");
-	    ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 1));
-	    break;
-	  case IDC_BUTTON_DF2_EJECT_MAIN:
-	    cfgSetDiskImage(wgui_cfg, 2, "");
-	    ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 2));
-	    break;
-	  case IDC_BUTTON_DF3_EJECT_MAIN:
-	    cfgSetDiskImage(wgui_cfg, 3, "");
-	    ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 3));
-	    break;
-	  default:
-	    break;
-	}
-  }
-  return FALSE;
+	return FALSE;
 }
  
 
@@ -2668,7 +2754,13 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 
 BOOLE wguiCheckEmulationNecessities(void) {
 	if(strcmp(cfgGetKickImage(wgui_cfg), "") != 0) {
-		return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
+	  FILE *F = fopen(cfgGetKickImage(wgui_cfg), "rb");
+	  if (F != NULL)
+	  {
+	    fclose(F);
+	    return TRUE;
+	  }
+	  return FALSE;
 	}
 	else return FALSE;
 }	
@@ -2824,15 +2916,14 @@ void wguiStartup(void) {
 }
 
 void wguiStartupPost(void) {
-
+	wguiLoadBitmaps();
+  
 	if (wgui_emulation_state) {
 		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
-			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-			MAKEINTRESOURCE(IDB_POWER_LED_ON)));
+			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_on_bitmap);
 	} else {
 		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
-			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-			MAKEINTRESOURCE(IDB_POWER_LED_OFF)));
+			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_off_bitmap);
 	}
 }
 
@@ -2841,6 +2932,7 @@ void wguiStartupPost(void) {
 /*============================================================================*/
 
 void wguiShutdown(void) {
+  wguiReleaseBitmaps();
   wguiFreeGuiDrawModesList(pwgui_dm);
 }
 

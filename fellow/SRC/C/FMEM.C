@@ -137,136 +137,138 @@ void memoryLogUndefinedIOReads(void) {
 /* Table of register read/write functions                                     */
 /*============================================================================*/
 
-memoryIOReadFunc memory_iobank_read[256] = {rdefault,rdmaconr,rvposr,rvhposr,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rserdatr,rdefault,rintenar,rintreqr,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rid,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rcopjmp1,rcopjmp2,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rdefault,rdefault
+memoryIOReadFunc memory_iobank_read[256] = {
+	rdefault_C,rdmaconr_C,rvposr_C,rvhposr_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rserdatr_C,rdefault_C,rintenar_C,rintreqr_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rid_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rcopjmp1_C,rcopjmp2_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
+	rdefault_C,rdefault_C,rdefault_C,rdefault_C
 };
 
-memoryIOWriteFunc memory_iobank_write[256]={wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wvpos   ,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wbltcdat,wbltbdat,wbltadat,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wcop1lch,wcop1lcl,wcop2lch,wcop2lcl,
-					    wcopjmp1,wcopjmp2,wdefault,wdiwstrt,
-					    wdiwstop,wddfstrt,wddfstop,wdmacon,
-					    wdefault,wintena,wintreq,wadcon,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wbpl1pth,wbpl1ptl,wbpl2pth,wbpl2ptl,
-					    wbpl3pth,wbpl3ptl,wbpl4pth,wbpl4ptl,
-					    wbpl5pth,wbpl5ptl,wbpl6pth,wbpl6ptl,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wbplcon0,wbplcon1,wbplcon2,wdefault,
-					    wbpl1mod,wbpl2mod,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault
+memoryIOWriteFunc memory_iobank_write[256]={
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wvpos_C ,wdefault_C,
+	wdefault_C,wserdat_C,wserper_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wbltcdat_C,wbltbdat_C,wbltadat_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wcop1lch_C,wcop1lcl_C,wcop2lch_C,wcop2lcl_C,
+	wcopjmp1_C,wcopjmp2_C,wdefault_C,wdiwstrt_C,
+	wdiwstop_C,wddfstrt_C,wddfstop_C,wdmacon_C,
+	wdefault_C,wintena_C,wintreq_C,wadcon_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wbpl1pth_C,wbpl1ptl_C,wbpl2pth_C,wbpl2ptl_C,
+	wbpl3pth_C,wbpl3ptl_C,wbpl4pth_C,wbpl4ptl_C,
+	wbpl5pth_C,wbpl5ptl_C,wbpl6pth_C,wbpl6ptl_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wbplcon0_C,wbplcon1_C,wbplcon2_C,wdefault_C,
+	wbpl1mod_C,wbpl2mod_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C,
+	wdefault_C,wdefault_C,wdefault_C,wdefault_C
 };
 
 
@@ -652,12 +654,30 @@ void memoryChipClear(void) {
   memset(memory_chip, 0, memoryGetChipSize());
 }
 
-void memoryChipMap(void) {
+void memoryChipMap(BOOLE overlay) {
   ULO bank, lastbank;
+
+  if (overlay)
+  {
+    for (bank = 0;
+	 bank < 8;
+	 bank++)
+      memoryBankSet(memoryOVLReadByte,
+		    memoryOVLReadWord,
+		    memoryOVLReadLong,
+		    memoryOVLWriteByte,
+		    memoryOVLWriteWord,
+		    memoryOVLWriteLong,
+		    memory_kick,
+		    bank,
+		    0, 
+		    FALSE);
+  }
 
   if (memoryGetChipSize() > 0x200000) lastbank = 0x200000>>16;
   else lastbank = memoryGetChipSize()>>16;
-  for (bank = 0; bank < lastbank; bank++)
+
+  for (bank = (overlay) ? 8 : 0; bank < lastbank; bank++)
     memoryBankSet(memoryChipReadByte,
 		  memoryChipReadWord, 
 		  memoryChipReadLong,
@@ -856,8 +876,8 @@ void memoryIOClear(void) {
   ULO i;
 
   for (i = 0; i < 512; i += 2) {
-    memorySetIOReadStub(i, rdefault);
-    memorySetIOWriteStub(i, wdefault);
+    memorySetIOReadStub(i, rdefault_C);
+    memorySetIOWriteStub(i, wdefault_C);
   }
 }
 
@@ -1387,17 +1407,18 @@ void memoryBankSettingsClear(void) {
 }
 
 void memoryIOHandlersInstall(void) {
-  memorySetIOReadStub(0x01c, rintenar);
-  memorySetIOReadStub(0x01e, rintreqr);
-  memorySetIOWriteStub(0x09a, wintena);
-  memorySetIOWriteStub(0x09c, wintreq);
+  memorySetIOReadStub(0x018, rserdatr_C);
+  memorySetIOReadStub(0x01c, rintenar_C);
+  memorySetIOReadStub(0x01e, rintreqr_C);
+  memorySetIOWriteStub(0x09a, wintena_C);
+  memorySetIOWriteStub(0x09c, wintreq_C);
 }
 
 
 /*==============*/
 /* Generic init */
 /*==============*/
-
+/*
 void memoryEmulationStartOld(void) {
   memoryBankClearAll();
   memoryIOClear();
@@ -1410,7 +1431,7 @@ void memoryEmulationStartOld(void) {
   memoryKickMap();
   memoryIOHandlersInstall();
 }
-
+*/
 void memoryEmulationStart(void) {
   memoryIOClear();
   memoryIOHandlersInstall();
@@ -1426,7 +1447,7 @@ void memorySoftReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();
@@ -1445,7 +1466,7 @@ void memoryHardReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();
@@ -1478,3 +1499,267 @@ void memoryShutdown(void) {
 }
 
 
+
+/*----------------------------
+/* Chip read register functions	
+/*---------------------------- 
+
+*/
+ULO rintreqr_C(ULO address)
+{
+	return intreq;
+}
+
+/* SERDATR
+/* $dff018 */
+
+ULO rserdatr_C(ULO address)
+{
+	return 0;
+}
+
+/*; INTENAR
+; $dff01c*/
+
+ULO rintenar_C(ULO address)
+{
+	return intenar;
+}
+
+// To simulate noise, return 0 and -1 every second time.
+// Why? Bugged demos test write-only registers for various bit-values
+// and to break out of loops, both 0 and 1 values must be returned.
+
+ULO rdefault_C(ULO address)
+{
+	//memory_wriorgadr = address;
+	//memoryLogUndefinedIOReads();
+	memory_noise_counter++;
+	return memory_noise[memory_noise_counter & 0x1];
+}
+
+void wdefault_C(ULO data, ULO address)
+{
+	memory_undefined_io_write_counter++;
+	//memory_wriorgadr = address;
+	//memoryLogUndefinedIOWrites();
+}
+
+/*========
+; ADCON
+;========
+
+; $dff09e  - Leses fra $dff010
+*/
+
+void wadcon_C(ULO data, ULO address)
+{
+	if ((address & 0x8000) == 0x8000)
+	{
+		adcon = (~(data & 0x7fff)) & adcon; 
+	}
+	else
+	{
+		adcon = (data & 0x7fff) | adcon;
+	}
+}
+
+/*========
+; INTREQ
+;========*/
+
+void wintreq_C(ULO data, ULO address)
+{
+	if ((data & 0x8000) == 0x0000)
+	{
+		intreq = (~(data & 0x7fff)) & intreq; 
+	}
+	else
+	{
+		intreq = (data & 0x7fff) | intreq;
+		__asm 
+		{
+			pushad
+			call cpuRaiseInterrupt
+			popad
+		}
+	}
+}
+
+//$dff09a  - Leses fra $dff01c
+// If master bit is off, then INTENA is 0, else INTENA = INTENAR
+// The master bit can not be read, the memory test in the kickstart
+// depends on this.
+
+void wintena_C(ULO data, ULO address)
+{
+	if ((data & 0x8000) == 0x0000)
+	{
+		intenar = (~(data & 0x7fff)) & intenar; 
+	}
+	else
+	{
+		intenar = (data & 0x7fff) | intenar;
+	}
+
+	if ((intenar & 0x00004000) == 0x00004000)
+	{
+		intena = intenar;
+		__asm 
+		{
+			pushad
+			call cpuRaiseInterrupt
+			popad
+		}
+	}
+	else
+	{
+		intena = 0;
+	}
+/*
+		mov	ecx, dword [intenar]	   ; Les inn status
+		test	edx, 08000h
+		jz	wine1
+		and	edx, 7fffh		 ; Sett bits
+		or	ecx, edx
+		mov	dword [intenar], ecx
+		test	ecx, 00004000h
+		jnz	wintenanorm
+		xor	ecx, ecx
+		mov	dword [intena], ecx
+		ret
+wintenanorm:	mov	dword [intena], ecx
+		call	_cpuRaiseInterrupt_
+		ret
+wine1:		and	edx, 7fffh		 ; Slett bits
+		not	edx
+		and	ecx, edx			  ; Slett bits
+		mov	dword [intenar], ecx
+		test	ecx, 00004000h
+		jnz	wintenanorm
+		xor	ecx, ecx
+		mov	dword [intena], ecx
+		ret
+		*/
+}
+
+ULO fetb_C(ULO address)
+{
+	return (memory_bank_readbyte[(address >> 16)*4](address));
+}
+
+ULO fetw_C(ULO address)
+{
+	if ((address & 0x1) == 0x1)
+	{
+
+	}
+	return (memory_bank_readword[(address >> 16)*4](address));
+}
+
+/*==============================================================================
+; These raises exception 3 when reading an odd address
+; and the CPU is < 020
+;==============================================================================*/
+
+void memoryOddRead(ULO address, ULO pcPtr)
+{
+	if ((address & 0x1) == 0x1)
+	{
+		if (cpu_major < 2)
+		{
+			memory_fault_read = TRUE;
+			memory_fault_address = address;
+			cpuPrepareExceptionC(0x0c, pcPtr);
+		}
+	}
+}
+
+
+/*=============================
+; Common memory access macros
+;=============================*/
+
+UBY memoryFetchB(ULO address)
+{
+	UBY* dataPointer;
+
+	dataPointer = memory_bank_datapointer[(address >> 16)*4];
+	if (dataPointer == NULL)
+	{
+		return (UBY) memory_bank_readbyte[(address >> 16)];
+	}
+	else
+	{
+		return *(dataPointer + address);
+	}
+}
+
+		
+/*
+
+global oddwrite
+oddwrite:	cmp	dword [cpu_major], 2
+		jl	.ex3
+		ret
+.ex3:		mov	dword [memory_fault_read] , 0
+		mov	ecx, dword [memory_wriorgadr]
+		mov	dword [memory_fault_address], ecx
+		mov	ebx, 0ch
+		mov	eax, 44
+		jmp	_cpuPrepareException_
+*/
+
+ULO memoryNAReadByteC(ULO address)
+{
+	memory_mystery_value = !memory_mystery_value;
+	return memory_mystery_value;
+}
+
+ULO memoryDmemReadByteC(ULO address)
+{
+	return memory_dmem[address & 0xffff];
+}
+
+ULO memoryOVLReadByteC(ULO address)
+{
+	return memory_kick[address & 0xffffff];
+}
+
+ULO memoryChipReadByteC(ULO address)
+{
+	return memory_chip[address & 0xffffff];
+}
+
+ULO memoryFastReadByteC(ULO address)
+{
+	return memory_fast[(address & 0xffffff) - 0x200000];
+}
+
+ULO memoryBogoReadByteC(ULO address)
+{
+	return memory_bogo[(address & 0xffffff) - 0xc00000];
+}
+
+ULO memoryMysteryReadByteC(ULO address)
+{
+	memory_mystery_value = !memory_mystery_value;
+	return memory_mystery_value;
+}
+
+ULO memoryIOReadByteC(ULO address)
+{
+	if (((address & 0x1fe) & 0x1) == 0x0)
+	{
+		return ((memory_iobank_read[(address & 0x1fe) << 1](address & 0x1fe)) >> 8) & 0xff;
+	}
+	else
+	{
+		return memory_iobank_read[(address & 0x1fe) << 1](address & 0x1fe) & 0xff;
+	}
+}
+
+ULO memoryKickReadByteC(ULO address)
+{
+	return memory_kick[(address & 0xffffff) - 0xf80000];
+}

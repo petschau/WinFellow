@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.28 2004-06-08 11:09:48 carfesh Exp $ */
+/* @(#) $Id: WDBG.C,v 1.26.2.5 2004-08-22 17:58:04 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -93,23 +93,6 @@ extern ULO audper[4];
 extern ULO audvol[4];
 extern ULO audlen[4];
 extern ULO audpercounter[4];
-
-#ifndef soundState1
-#define soundState1 ASMRENAME(soundState1)
-extern void soundState1(ULO channelno);
-#endif
-#ifndef soundState2
-#define soundState2 ASMRENAME(soundState2)
-extern void soundState2(ULO channelno);
-#endif
-#ifndef soundState3
-#define soundState3 ASMRENAME(soundState3)
-extern void soundState3(ULO channelno);
-#endif
-#ifndef soundState5
-#define soundState5 ASMRENAME(soundState5)
-extern void soundState5(ULO channelno);
-#endif
 
 /*===============================*/
 /* Handle of the main dialog box */

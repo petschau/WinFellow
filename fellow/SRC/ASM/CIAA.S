@@ -30,8 +30,6 @@ FDATASECTIONSTART
 
 %include "data/fmem.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
-%include "data/copper.inc"
 %include "data/cia.inc"
 %include "data/cpu.inc"
 
@@ -40,14 +38,11 @@ FCODESECTIONSTART
 
 
 %include "func/cia.inc"
-%include "func/copper.inc"
 %include "func/bus.inc"
-%include "func/blit.inc"
 %include "func/cpu.inc"
 
 %include "mac/cia.mac"
 %include "mac/bus.mac"
-
 
 ;==============================================================================
 ; CIA memory access wrappers, calls routines in cia.c
@@ -101,33 +96,6 @@ _ciaReadLong_:
 		CIAREADLONG_CWRAP
 		ret
 
-
-;==============================================================================
-; Event scheduling for CIA
-;==============================================================================
-
-
-		FALIGN32
-
-global _ciaHandleEventWrapper_
-_ciaHandleEventWrapper_:
-		CIA_HANDLE_EVENT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _ciaSetupEventWrapper_
-_ciaSetupEventWrapper_:
-		push	ebx
-		push	eax
-		SCAN_EVENTS_LVL6
-		pop	eax
-		pop	ebx
-		ret
-
-
-		FALIGN32
 
 FCODESECTIONEND
 FBSSSECTIONSTART

@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
+// Microsoft Developer Studio generated include file.
 // Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
@@ -72,12 +72,16 @@
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1019
 #define IDC_BUTTON_HARDFILE_CREATE      1019
 #define IDC_RADIO_68EC60                1019
+#define IDC_BUTTON_DF1_SWAP             1019
 #define IDC_BUTTON2                     1020
 #define IDC_BUTTON_KEYFILE_FILEDIALOG   1020
+#define IDC_BUTTON_DF2_SWAP             1020
 #define IDC_BUTTON3                     1021
 #define IDC_BUTTON_DF2_FILEDIALOG       1021
+#define IDC_BUTTON_DF3_SWAP             1021
 #define IDC_BUTTON4                     1022
 #define IDC_BUTTON_DF3_FILEDIALOG       1022
+#define IDC_BUTTON_TURBO_LOAD           1022
 #define IDC_CHECK1                      1023
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 1023
 #define IDC_CHECK_VARIOUS_LED           1023
@@ -254,7 +258,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        172
+#define _APS_NEXT_RESOURCE_VALUE        178
 #define _APS_NEXT_COMMAND_VALUE         40011
 #define _APS_NEXT_CONTROL_VALUE         1139
 #define _APS_NEXT_SYMED_VALUE           101
