@@ -26,6 +26,7 @@ extern HWND wdbg_hDialog;
 BOOLE modripGuiInitialize(void)
 {
 	modrip_hWnd = wdbg_hDialog;
+	return TRUE;
 }
 
 /*==================================================*/
