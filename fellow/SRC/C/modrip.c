@@ -673,7 +673,6 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   RIPLOG2("mod-ripper found possible ThePlayer 4 (%s) match...\n", info.typesig);
   modripModuleInfoInitialize(&info);
   info.start = address;
-  strcpy(info.typesig, "P41A");
   strcpy(info.typedesc, "ThePlayer 4");
 
   /* number of patterns */
