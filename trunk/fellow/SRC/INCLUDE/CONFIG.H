@@ -234,8 +234,8 @@ extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
 extern sound_filters cfgGetSoundFilter(cfg *config);
 extern void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump);
 extern BOOLE cfgGetSoundWAVDump(cfg *config);
-extern void cfgSetSoundNotification(cfg *config, BOOLE notification);
-extern BOOLE cfgGetSoundNotification(cfg *config);
+extern void cfgSetSoundNotification(cfg *config, sound_notifications soundnotification);
+extern sound_notifications cfgGetSoundNotification(cfg *config);
 extern void cfgSetSoundBufferLength(cfg *config, ULO buffer_length);
 extern ULO cfgGetSoundBufferLength(cfg *config);
 
@@ -341,8 +341,7 @@ typedef struct {
 /* struct cfgManager property access functions                                */
 /*============================================================================*/
 
-extern void cfgManagerSetCurrentConfig(cfgManager *configmanager,
-				       cfg *currentconfig);
+extern void cfgManagerSetCurrentConfig(cfgManager *configmanager, cfg *currentconfig);
 extern cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager);
 extern void cfgManagerSetDefaultConfig(cfgManager *configmanager);
 
@@ -351,12 +350,10 @@ extern void cfgManagerSetDefaultConfig(cfgManager *configmanager);
 /* struct cfgManager utility functions                                        */
 /*============================================================================*/
 
-extern BOOLE cfgManagerConfigActivate(cfgManager *configmanager);
+extern BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager);
 extern cfg *cfgManagerGetNewConfig(cfgManager *configmanager);
 extern void cfgManagerFreeConfig(cfgManager *configmanager, cfg *config);
-extern void cfgManagerStartup(cfgManager *configmanager,
-			       int argc, 
-			       char *argv[]);
+extern void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[]);
 extern void cfgManagerShutdown(cfgManager *configmanager);
 
 
