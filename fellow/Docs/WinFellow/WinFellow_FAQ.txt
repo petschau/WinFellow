@@ -1,4 +1,4 @@
-WinFellow FAQ (Frequently Asked Questions) v0.106 (2000/12/10)
+WinFellow FAQ (Frequently Asked Questions) v0.107 (2001/04/20)
 ==============================================================
 
                                                                   written by
@@ -13,6 +13,7 @@ Contents
 
 1.1. I can't get <put your favourite game or demo here> working.
 1.2. Where can I find/download the Kickstart ROM file?
+1.3. I installed Workbench, but it refuses to load up.
 
 2.   Floppy disk images
 
@@ -35,7 +36,12 @@ Contents
 5.1. How can I play a game that has more than one disk /
      How can I switch a disk(image)?
 
-6.   I still have questions!
+6.   Known Bugs
+
+6.1. The player is invisible in <insert your favourite game here>
+6.2. The player doesn't collide with other game objects
+
+7.   I still have questions!
 
 
 
@@ -76,6 +82,12 @@ thing or such) it's possibly a WinFellow problem.
 ------------------------------------------------------
 
 You can buy the Kickstart ROM at: http://www.cloanto.com
+
+1.3 I installed Workbench, but it refuses to load up.
+-----------------------------------------------------
+
+Though it is possible to install Workbench into a directory  you  must  make
+sure that you install it into your hardfile or filesystem root directory.
 
 
 2. Floppy disk images
@@ -269,7 +281,26 @@ disk(images).  By clicking the "Start Emulation" button you can continue the
 emulation at the point you pressed the function key.
 
 
-6. I still have questions!
+6. Known Bugs
+-------------
+
+6.1. The player is invisible in <insert your favourite game here>
+-----------------------------------------------------------------
+
+There  are  certain  games  in  which  sprites  aren't  rendered  correctly,
+resulting  in  invisible  objects.  Known  games  having  this  problem  are
+Stardust, SuperFrog, Robocop 2, Zool, Alien Breed and Fire And Ice.
+
+6.2. The player doesn't collide with other game objects
+-------------------------------------------------------
+
+Not all collision types are properly implemented in WinFellow;  for  example
+in  Transplant  the  spacecraft never collides with the rocks flying around.
+Known to have this problem is Transplant, but there probably are  much  more
+titles having this problem.
+
+
+7. I still have questions!
 --------------------------
 
 If you have questions not covered in this FAQ, find problems  not  mentioned
