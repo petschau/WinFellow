@@ -103,6 +103,12 @@ extern char warning_buffer[256];
 
 #define xmalloc malloc
 
+/*===================*/
+/* UAE random define */
+/*===================*/
+
+#define random rand
+
 /*==========*/
 /* Prefetch */
 /*==========*/
