@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.2 2004-08-22 17:24:06 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.3 2004-12-28 23:54:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -195,7 +195,7 @@ void waudXvol(ULO data, ULO address)
   ULO ch = soundGetChannelNumber(address);
   /*Replay routines sometimes access volume as a byte register at $dff0X9...*/
   if (((data & 0xff) == 0) && ((data & 0xff00) != 0)) data = (data >> 8) & 0xff;
-  if ((data & 0xff) == 64) data = 63;
+  if ((data & 64) == 64) data = 63;
   audvol[ch] = data & 0x3f;
 }
 
@@ -305,8 +305,8 @@ void soundState3(ULO ch)
     audvolw[ch] = audvol[ch];
     audstate[ch] = soundState2;
     auddatw[ch] = volumes[auddat[ch] & 0xff][audvolw[ch]];
-    audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
     auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
+    audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
     if (audlenw[ch] != 1) audlenw[ch]--;
     else
     {
@@ -349,8 +349,8 @@ void soundState5(ULO ch)
 
   audvolw[ch] = audvol[ch];
   audpercounter[ch] = 0;
-  audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
   auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
+  audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
   audstate[ch] = soundState2;
   if (audlenw[ch] != 1) audlenw[ch]--;
   else
