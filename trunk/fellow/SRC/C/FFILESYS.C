@@ -167,6 +167,7 @@ void ffilesysHardReset(void)
 #ifdef UAE_FILESYS
   if ((!ffilesysHasZeroDevices()) &&
       ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
+	rtarea_setup();		/* Maps the trap memory area into memory */
     rtarea_init();		/* Sets up a lot of traps */
     hardfile_install();
     filesys_install();		/* Sets some traps and information in the trap memory area */
@@ -187,9 +188,6 @@ void ffilesysHardReset(void)
 void ffilesysEmulationStart(void)
 {
   ffilesysDumpConfig();
-  if ((!ffilesysHasZeroDevices()) &&
-      ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36))
-    rtarea_setup();		/* Maps the trap memory area into memory */
 }
 
 /*============================================================================*/
