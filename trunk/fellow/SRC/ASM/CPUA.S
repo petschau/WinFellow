@@ -61,19 +61,6 @@ FDATASECTIONSTART
 ; the C-compiler does not do tricks with them.
 ;===============================================================================
 
-global d
-global a
-global aend
-
-d: dd 0,0,0,0,0,0,0,0
-a: dd 0,0,0,0,0,0,0,0
-aend:
-
-;%define a _a
-;%define d _d
-;%define aend _aend
-
-
 upsrtraceset: db 0
 cpu_cycles: dd 0
 
@@ -5684,205 +5671,232 @@ _i42_L_:	mov	eax, dword [edi + 12]
 ;==============================================================================
 
 
+; MOVEM.W regs, -(Ax)
 ; Predecrement, to memory
 ; Order: d0-d7,a0-a7   a7 first
 
-
 		FALIGN32
 
-global _i43_W_PREM_
-_i43_W_PREM_:	mov	ecx,esi			  ; get register mask word
+global _MOVEM_W_PREM_
+_MOVEM_W_PREM_:	mov	ecx, esi		; get register mask word
 		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx			  ; Register mask in ebx
-		xor	ebp,ebp			  ; count cycles in ebp
-		mov	eax,dword aend	   ; pointer to A7
-i43wpm2:	sub	eax,4			  ; Point to 1 register less
-		shr	ebx,1
-		jnc	i43wpm1			  ; Skip this register
-		mov	edx,[eax]		  ; get register content
-		mov	ecx,[edi+8]		  ; register to predecrement
-		sub	dword [ecx],2	 ; Decrement register
-		mov	ecx,dword [ecx]	 ; get ea
-		add	ebp,4			  ; 4 cycles each register
-		writew				  ; store word
-i43wpm1:	cmp	eax,dword d
-		jne	i43wpm2
-		lea	eax,[8 + ebp]
-		ret
-
-; Predecrement, to memory
-; Order: d0-d7,a0-a7   a7 first
-
-
-		FALIGN32
-
-global _i43_L_PREM_
-_i43_L_PREM_:	mov	ecx,esi				; get register mask word
-		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword aend		 ; pointer to A7
-i43lpm2:	sub	eax,4
-		shr	ebx,1
-		jnc	i43lpm1				; Skip this register
-		mov	edx,dword [eax]	       ; get register content
-		mov	ecx,dword [edi+8]	       ; register to predecrement
-		sub	dword [ecx],4	       ; Decrement register
-		mov	ecx,dword [ecx]	       ; get ea
-		add	ebp,8				; 4 cycles for each register
-		writel					; store word
-i43lpm1:	cmp	eax,dword d
-		jne	i43lpm2
-		lea	eax,[8 + ebp]
-		ret
-
-; Postincrement, to registers
-; Order: a7-a0,d7-d0   d0 first
-
-
-		FALIGN32
-
-global _i43_W_POSTR_
-_i43_W_POSTR_:	mov	ecx,esi				; get register mask word
-		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to A7
-i43wpr2:	shr	ebx,1
-		jnc	i43wpr1				; Skip this register
-		mov	edx,dword [edi+8]	       ; register to postincrement
-		add	ebp,4				; 4 cycles for each register
-		mov	ecx,dword [edx]	       ; get ea
-		add	dword [edx],2	       ; increment register
-		fetchw					; get memory content
-		movsx	edx,dx
-		mov	dword [eax],edx	       ; store to register
-i43wpr1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43wpr2
-		lea	eax,[8 + ebp]
-		ret
-
-; Postincrement, to registers
-; Order: a7-a0,d7-d0   d0 first
-
-
-		FALIGN32
-
-global _i43_L_POSTR_
-_i43_L_POSTR_:	mov	ecx,esi				; get register mask word
-		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to A7
-i43lpr2:	shr	ebx,1
-		jnc	i43lpr1				; Skip this register
-		mov	edx,dword [edi+8]	       ; register to postincrement
-		add	ebp,8				; 4 cycles for each register
-		mov	ecx,dword [edx]	       ; get ea
-		add	dword [edx],4	       ; increment register
-		fetchl				  ; get memory content
-		mov	dword [eax],edx	       ; store to register
-i43lpr1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43lpr2
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword a + 32	; pointer to A7
+.l1:		sub	eax, 4			; Point to 1 register less
+		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		mov	edx, dword [eax]	; get register content
+		mov	ecx, dword [edi + 8]	; register to predecrement
+		sub	dword [ecx], 2		; Decrement register
+		mov	ecx, dword [ecx]	; get ea
+		add	ebp, 4			; 4 cycles each register
+		writew				; store word
+.l2:		cmp	eax, dword a
+		jne	.l3
+		mov	eax, dword d + 32
+.l3:		cmp	eax, dword d
+		jne	.l1
 		lea	eax, [8 + ebp]
 		ret
 
+; MOVEM.L regs, -(Ax)
+; Predecrement, to memory
+; Order: d0-d7,a0-a7   a7 first
+
+
+		FALIGN32
+
+global _MOVEM_L_PREM_
+_MOVEM_L_PREM_:	mov	ecx, esi		; get register mask word
+		fetchwopcode_inc_pos
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword a + 32	; pointer to A7
+.l1:		sub	eax, 4
+		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		mov	edx, dword [eax]	; get register content
+		mov	ecx, dword [edi + 8]	; register to predecrement
+		sub	dword [ecx], 4	        ; Decrement register
+		mov	ecx, dword [ecx]	; get ea
+		add	ebp, 8			; 8 cycles for each register
+		writel				; store word
+.l2:		cmp	eax, dword a
+		jne	.l3
+		mov	eax, dword d + 32
+.l3:		cmp	eax, dword d
+		jne	.l1
+		lea	eax, [8 + ebp]
+		ret
+
+; MOVEM.W (Ax)+, regs
+; Postincrement, to registers
+; Order: a7-a0,d7-d0   d0 first
+
+
+		FALIGN32
+
+global _MOVEM_W_POSTR_
+_MOVEM_W_POSTR_:mov	ecx, esi		; get register mask word
+		fetchwopcode_inc_pos
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to A7
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		mov	edx, dword [edi + 8]	; register to postincrement
+		add	ebp, 4			; 4 cycles for each register
+		mov	ecx, dword [edx]	; get ea
+		add	dword [edx], 2		; increment register
+		fetchw				; get memory content
+		movsx	edx, dx
+		mov	dword [eax], edx	; store to register
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		lea	eax, [8 + ebp]
+		ret
+
+; MOVEM.L (Ax)+, regs
+; Postincrement, to registers
+; Order: a7-a0,d7-d0   d0 first
+
+
+		FALIGN32
+
+global _MOVEM_L_POSTR_
+_MOVEM_L_POSTR_:mov	ecx, esi		; get register mask word
+		fetchwopcode_inc_pos
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to A7
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		mov	edx, dword [edi + 8]	; register to postincrement
+		add	ebp, 8			; 8 cycles for each register
+		mov	ecx, dword [edx]	; get ea
+		add	dword [edx], 4	        ; increment register
+		fetchl				; get memory content
+		mov	dword [eax], edx	; store to register
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		lea	eax, [8 + ebp]
+		ret
+
+; MOVEM.W <control ea>, regs
 ; Control, to registers
 ; Order: a7-a0,d7-d0   d0 first
 
 
 		FALIGN32
 
-global _i43_W_CONR_
-_i43_W_CONR_:	mov	ecx,esi				; get register mask word
+global _MOVEM_W_CONR_
+_MOVEM_W_CONR_:	mov	ecx, esi		; get register mask word
 		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		mov	edx,dword [edi+8]
-		mov	ecx,dword [edi+12]	       ; calculate first ea
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		mov	edx, dword [edi + 8]
+		mov	ecx, dword [edi + 12]	; calculate first ea
 		call	ecx
-		mov	ecx,edx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to A7
-i43wcr2:	shr	ebx,1
-		jnc	i43wcr1				; Skip this register
-		add	ebp,4				; 4 cycles for each register
-		fetchw				  ; get memory content
-		add	ecx,2				; increment ea 
-		movsx	edx,dx
-		mov	dword [eax],edx	       ; store to register
-i43wcr1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43wcr2
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		mov	ecx, edx		; Source address in ecx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to D0
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		add	ebp, 4			; 4 cycles for each register
+		fetchw				; get memory content
+		add	ecx, 2			; increment ea 
+		movsx	edx, dx
+		mov	dword [eax], edx	; store to register
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		mov	eax,dword [edi + 16]
+		add	eax, ebp
 		ret
 
+; MOVEM.L <control ea>, regs
 ; Control, to registers
 ; Order: a7-a0,d7-d0   d0 first
 
 
 		FALIGN32
 
-global _i43_L_CONR_
-_i43_L_CONR_:	mov	ecx,esi				; get register mask word
+global _MOVEM_L_CONR_
+_MOVEM_L_CONR_:	mov	ecx, esi		; get register mask word
 		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		mov	edx,dword [edi+8]
-		mov	ecx,dword [edi+12]	       ; calculate first ea
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		mov	edx, dword [edi + 8]
+		mov	ecx, dword [edi + 12]	; calculate first ea
 		call	ecx
-		mov	ecx,edx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to A7
-i43lcr2:	shr	ebx,1
-		jnc	i43lcr1				; Skip this register
-		fetchl				  ; get memory content
-		add	ebp,8				; 8 cycles for each register
-		add	ecx,4				; increment ea 
-		mov	dword [eax],edx	       ; store to register
-i43lcr1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43lcr2
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		mov	ecx, edx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to D0
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		fetchl				; get memory content
+		add	ebp, 8			; 8 cycles for each register
+		add	ecx, 4			; increment ea 
+		mov	dword [eax], edx	; store to register
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
 
+; MOVEM.W regs, <control ea>
 ; Control, to memory
 ; Order: a7-a0,d7-d0   d0 first
 
 
 		FALIGN32
 
-global _i43_W_CONM_
-_i43_W_CONM_:	mov	ecx,esi				; get register mask word
+global _MOVEM_W_CONM_
+_MOVEM_W_CONM_:	mov	ecx, esi		; get register mask word
 		fetchwopcode_inc_pos
-		add	esi,2
+		add	esi, 2
 		push	edx
-		mov	edx,dword [edi+8]
-		mov	ecx,dword [edi+12]	       ; calculate first ea
+		mov	edx, dword [edi + 8]
+		mov	ecx, dword [edi + 12]	; calculate first ea
 		call	ecx
-		mov	ecx,edx				; ecx is ea
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to d0
+		mov	ecx, edx		; ecx is ea
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to d0
 		pop	ebx
-i43wcm2:	shr	ebx,1
-		jnc	i43wcm1				; Skip this register
-		add	ebp,4				; 4 cycles for each register
-		mov	edx,dword [eax]
-		writew				  ; get memory content
-		add	ecx,2				; increment ea 
-i43wcm1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43wcm2
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		add	ebp, 4			; 4 cycles for each register
+		mov	edx, dword [eax]
+		writew				; get memory content
+		add	ecx, 2			; increment ea 
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
 
 ; Control, to memory
@@ -5891,28 +5905,31 @@ i43wcm1:	add	eax,4				; Point to 1 register more
 
 		FALIGN32
 
-global _i43_L_CONM_
-_i43_L_CONM_:	mov	ecx,esi				; get register mask word
+global _MOVEM_L_CONM_
+_MOVEM_L_CONM_:	mov	ecx, esi		; get register mask word
 		fetchwopcode_inc_pos
-		add	esi,2
-		mov	ebx,edx				; Register mask in ebx
-		mov	edx,dword [edi+8]
-		mov	ecx,dword [edi+12]	       ; calculate first ea
+		add	esi, 2
+		mov	ebx, edx		; Register mask in ebx
+		mov	edx, dword [edi + 8]
+		mov	ecx, dword [edi + 12]	; calculate first ea
 		call	ecx
-		mov	ecx,edx
-		xor	ebp,ebp				; count cycles in ebp
-		mov	eax,dword d			 ; pointer to d0
-i43lcm2:	shr	ebx,1
-		jnc	i43lcm1				; Skip this register
-		add	ebp,8				; 4 cycles for each register
-		mov	edx,dword [eax]
-		writel				  ; store memory content
-		add	ecx,4				; increment ea 
-i43lcm1:	add	eax,4				; Point to 1 register more
-		cmp	eax,dword aend
-		jne	i43lcm2
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		mov	ecx, edx
+		xor	ebp, ebp		; count cycles in ebp
+		mov	eax, dword d		; pointer to d0
+.l1:		shr	ebx, 1
+		jnc	.l2			; Skip this register
+		add	ebp, 8			; 8 cycles for each register
+		mov	edx, dword [eax]
+		writel				; store memory content
+		add	ecx, 4			; increment ea 
+.l2:		add	eax, 4			; Point to 1 register more
+		cmp	eax, dword d + 32
+		jne	.l3
+		mov	eax, dword a
+.l3:		cmp	eax, dword a + 32
+		jne	.l1
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
 
 ;==============================================================================
