@@ -2,7 +2,7 @@
 /* Fellow Amiga Emulator                                                      */
 /* Windows GUI code                                                           */
 /* Author: Petter Schau (peschau@online.no)                                   */
-/* Author: Wytze Hoogkamp (worfje@gmx.net)                                    */
+/* Author: Worfje (worfje@gmx.net)                                    */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -28,6 +28,7 @@
 #include "config.h"
 #include "draw.h"
 #include "wdbg.h"
+#include "fhfile.h"
 #include "ini.h"
 
 
@@ -90,6 +91,10 @@ BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
 				       UINT uMsg,
 				       WPARAM wParam,
 				       LPARAM lParam);
+BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
+					UINT uMsg,
+					WPARAM wParam,
+					LPARAM lParam);
 BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 					UINT uMsg,
 					WPARAM wParam,
@@ -156,6 +161,14 @@ STR *wguiExtractFilename(STR *fullpathname) {
   strpointer = strrchr(fullpathname, '\\');
   strncpy(extractedfilename, fullpathname + strlen(fullpathname) - strlen(strpointer) + 1, strlen(fullpathname) - strlen(strpointer) - 1);
   return extractedfilename;
+}
+
+/*============================================================================*/
+/* Convert bool to string                                                     */
+/*============================================================================*/
+
+static STR *wguiGetBOOLEToString(BOOLE value) {
+  return (value) ? "yes" : "no";
 }
 
 /*============================================================================*/
@@ -1276,6 +1289,18 @@ BOOLE wguiHardfileAdd(HWND DlgHWND,
 		   wguiHardfileAddDialogProc) == IDOK;
 }
 
+BOOLE wguiHardfileCreate(HWND DlgHWND,
+						 cfg *conf,
+						 ULO index,
+						 cfg_hardfile *target) {
+  wgui_current_hardfile_edit = target;
+  wgui_current_hardfile_edit_index = index;
+  cfgSetHardfileUnitDefaults(target);
+  return DialogBox(win_drv_hInstance,
+		   MAKEINTRESOURCE(IDD_HARDFILE_CREATE),
+		   DlgHWND,
+		   wguiHardfileCreateDialogProc) == IDOK;
+}
 
 /*============================================================================*/
 /* Filesystem config                                                          */
@@ -1900,6 +1925,69 @@ BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
 /*============================================================================*/
 /* Dialog Procedure for the hardfile property sheet                           */
 /*============================================================================*/
+
+BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
+					UINT uMsg,
+					WPARAM wParam,
+					LPARAM lParam) {
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      {
+		Edit_SetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_NAME), "");
+		Edit_SetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_SIZE), "0");
+	  }
+	return TRUE;
+    case WM_COMMAND:
+      if (HIWORD(wParam) == BN_CLICKED)
+		switch (LOWORD(wParam)) {
+		  case IDOK:
+			{
+				STR stmp[32];
+				fhfile_dev hfile;
+				BYT *strpointer;
+				STR fname[CFG_FILENAME_LENGTH];
+				
+				Edit_GetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_NAME),
+					hfile.filename, 256);
+
+				strncpy(fname, hfile.filename, CFG_FILENAME_LENGTH);
+				strupr(fname);
+				if (strrchr(fname, '.HDF') == NULL) {
+					if (strlen(hfile.filename) > 252) {
+						MessageBox(hwndDlg, "Hardfile name too long, maximum is 252 characters", "Create Hardfile", 0);
+						break;
+					}
+					strncat(hfile.filename, ".hdf",4);
+				}
+  
+				
+				if (hfile.filename[0] == '\0') {
+					MessageBox(hwndDlg, "You must specify a hardfile name", "Create Hardfile", 0);
+					break;
+				}
+				Edit_GetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_SIZE),
+					stmp, 32);
+				hfile.size = atoi(stmp);
+
+				if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES)) == TRUE) {
+					hfile.size = hfile.size * 1024 * 1024;
+				}
+  				if ((hfile.size < 1) && (hfile.size > 4294967295)) {
+					MessageBox(hwndDlg, "Size must be between 1 byte and 4294967295 bytes", "Create Hardfile", 0);
+					break;
+				}
+				// creates the HDF file 
+				fhfileCreate(hfile);
+				strncpy(wgui_current_hardfile_edit->filename, hfile.filename, CFG_FILENAME_LENGTH);
+			}
+		  case IDCANCEL:
+			EndDialog(hwndDlg, LOWORD(wParam));
+			return TRUE;
+		}
+		break;
+    }
+  return FALSE;
+}
 	
 BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 					UINT uMsg,
@@ -2011,7 +2099,19 @@ BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
     case WM_COMMAND:
       if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
-	  case IDC_BUTTON_HARDFILE_ADD:
+	  case  IDC_BUTTON_HARDFILE_CREATE:
+	    {  
+	      cfg_hardfile fhd;
+	      if (wguiHardfileCreate(hwndDlg, wgui_cfg, cfgGetHardfileCount(wgui_cfg), &fhd) == IDOK) {
+			wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), 
+				   &fhd,
+				   cfgGetHardfileCount(wgui_cfg), 
+				   TRUE);
+			cfgHardfileAdd(wgui_cfg, &fhd);
+	      }
+	    }
+	    break;
+	case IDC_BUTTON_HARDFILE_ADD:
 	    {  
 	      cfg_hardfile fhd;
 	      if (wguiHardfileAdd(hwndDlg,
@@ -2019,7 +2119,7 @@ BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
 				  TRUE,
 				  cfgGetHardfileCount(wgui_cfg),
 				  &fhd) == IDOK) {
-		wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), 
+			wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), 
 				   &fhd,
 				   cfgGetHardfileCount(wgui_cfg), 
 				   TRUE);
