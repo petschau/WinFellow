@@ -23,6 +23,7 @@
 #define MFM_FILLL 0xaaaaaaaa
 #define FLOPPY_INSERTED_DELAY 200   
 
+
 /*---------------*/
 /* Configuration */
 /*---------------*/
@@ -440,7 +441,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
   FILE *F;
   
-  sprintf(cmdline, "gzip -c %s > %s", diskname, tmpnam(gzname));
+  sprintf(cmdline, "gzip -c -d %s > %s", diskname, tmpnam(gzname));
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
@@ -647,6 +648,9 @@ void floppySetDiskImage(ULO drive, STR *diskname) {
 		break;
 	      case FLOPPY_STATUS_EXTENDED_OK:
 		floppyImageExtendedLoad(drive);
+		break;
+	      default:
+		/* Error already set by floppyImageGeometryCheck() */
 		break;
 	    }
 	  }
