@@ -26,5 +26,4 @@
 #
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
 #
-#
 CVSROOT $CVSROOT/CVSROOT/syncmail %{Vv} worfje@gmx.net
