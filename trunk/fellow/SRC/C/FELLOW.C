@@ -8,7 +8,7 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-
+#include <time.h>
 #include "portable.h"
 #include "renaming.h"
 
@@ -108,8 +108,11 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 /* The run-time log                                                           */
 /*============================================================================*/
 
+#define WRITE_LOG_BUF_SIZE 128
+
 static BOOLE fellow_log_first_time = TRUE;
 static BOOLE fellow_log_enabled;
+static BOOLE fellow_newlogline = TRUE;
 
 static void fellowSetLogEnabled(BOOLE enabled) {
   fellow_log_enabled = enabled;
@@ -127,7 +130,7 @@ static BOOLE fellowGetLogFirstTime(void) {
   return fellow_log_first_time;
 }
 
-void fellowAddLog(STR *msg) {
+static void fellowAddLog2(STR *msg) {
   FILE *F;
 
   if (!fellowGetLogEnabled()) return;
@@ -141,6 +144,38 @@ void fellowAddLog(STR *msg) {
     fflush(F);
     fclose(F);
   }
+}
+
+static void fellowLogDateTime(void)
+{
+	char tmp[255];
+	time_t thetime;
+	struct tm *timedata;
+
+	thetime = time(NULL);
+	timedata = localtime(&thetime);
+
+	strftime(tmp, 255, "%c: ", timedata);
+	fellowAddLog2(tmp);
+}
+
+void fellowAddLog(const char *format,...)
+{
+    DWORD numwritten;
+    char buffer[WRITE_LOG_BUF_SIZE];
+    va_list parms;
+    int count = 0;
+
+    va_start (parms, format);
+    count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
+	if(fellow_newlogline)
+		fellowLogDateTime();
+	fellowAddLog2(buffer);
+	if(buffer[strlen(buffer)-1] == '\n')
+		fellow_newlogline = TRUE;
+	else
+		fellow_newlogline = FALSE;
+    va_end (parms);
 }
 
 
@@ -423,9 +458,18 @@ static void fellowModulesShutdown(void) {
 /*============================================================================*/
 
 int main(int argc, char *argv[]) {
-  fellowPreStartReset(TRUE);
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);
+  
+  fellowAddLog("WinFellow alpha v0.4.2 build 1");
+#ifdef _DEBUG
+  fellowAddLog(" (Debug Build)");
+#else
+  fellowAddLog(" (Release Build)");
+#endif
+  fellowAddLog(" now starting up...\n");
+
+  fellowPreStartReset(TRUE);
   fellowSetMMXDetected(detectMMX());
   fellowModulesStartup(argc, argv);
   while (!wguiEnter())

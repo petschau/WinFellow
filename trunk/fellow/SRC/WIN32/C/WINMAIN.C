@@ -70,6 +70,12 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
   return event_count;
 }
 
+#ifdef _MSC_VER
+#ifndef _DEBUG
+#pragma optimize("g", off)
+#endif
+#endif
+
 void winDrvEmulate(void)
 {
   DWORD dwThreadId;
@@ -132,6 +138,12 @@ void winDrvEmulate(void)
   CloseHandle(FellowThread);
   CloseHandle(win_drv_emulation_ended);
 }
+
+#ifdef _MSC_VER
+#ifndef _DEBUG
+#pragma optimize("g", on)
+#endif
+#endif
 
 void winDrvEmulationStart(void) {
   if (fellowEmulationStart()) winDrvEmulate();
