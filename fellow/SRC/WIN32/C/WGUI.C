@@ -15,12 +15,12 @@
 #include <windowsx.h>
 #include <windef.h>
 #include <stdlib.h>
-#include "gui_general.h"
-#include "gui_debugger.h"
 #include <process.h>
 #include <commctrl.h>
 #include <prsht.h>
-
+#include "gui_general.h"
+#include "gui_debugger.h"
+#include "commoncontrol_wrap.h"
 #include "wgui.h"
 #include "windrv.h"
 #include "sound.h"
@@ -49,6 +49,7 @@ BOOLE wgui_emulation_state = FALSE;
 
 #define MAX_JOYKEY_VALUE 6
 #define MAX_JOYKEY_PORT 2
+#define MAX_DISKDRIVES 4
 
 	kbd_event gameport_keys_events[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
     {
@@ -78,11 +79,121 @@ BOOLE wgui_emulation_state = FALSE;
   };
 
   int gameport_keys_labels[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
-    { IDC_GAMEPORT0_UP, IDC_GAMEPORT0_DOWN, IDC_GAMEPORT0_LEFT, IDC_GAMEPORT0_RIGHT,
-      IDC_GAMEPORT0_FIRE0, IDC_GAMEPORT0_FIRE1 },
-    { IDC_GAMEPORT1_UP, IDC_GAMEPORT1_DOWN, IDC_GAMEPORT1_LEFT, IDC_GAMEPORT1_RIGHT,
-      IDC_GAMEPORT1_FIRE0, IDC_GAMEPORT1_FIRE1 }
+    { IDC_GAMEPORT0_UP, IDC_GAMEPORT0_DOWN, IDC_GAMEPORT0_LEFT, IDC_GAMEPORT0_RIGHT, IDC_GAMEPORT0_FIRE0, IDC_GAMEPORT0_FIRE1 },
+    { IDC_GAMEPORT1_UP, IDC_GAMEPORT1_DOWN, IDC_GAMEPORT1_LEFT, IDC_GAMEPORT1_RIGHT, IDC_GAMEPORT1_FIRE0, IDC_GAMEPORT1_FIRE1 }
   };
+
+
+	#define DISKDRIVE_PROPERTIES 3
+	#define DISKDRIVE_PROPERTIES_MAIN 4
+
+	int diskimage_data[MAX_DISKDRIVES][DISKDRIVE_PROPERTIES] = {
+		{IDC_EDIT_DF0_IMAGENAME, IDC_CHECK_DF0_ENABLED, IDC_CHECK_DF0_READONLY},
+		{IDC_EDIT_DF1_IMAGENAME, IDC_CHECK_DF1_ENABLED, IDC_CHECK_DF1_READONLY},
+		{IDC_EDIT_DF2_IMAGENAME, IDC_CHECK_DF2_ENABLED, IDC_CHECK_DF2_READONLY},
+		{IDC_EDIT_DF3_IMAGENAME, IDC_CHECK_DF3_ENABLED, IDC_CHECK_DF3_READONLY}
+	};
+
+	enum {DID_IMAGENAME, DID_ENABLED, DID_READONLY};
+
+	int diskimage_data_main[MAX_DISKDRIVES][DISKDRIVE_PROPERTIES_MAIN] = {
+		{IDC_EDIT_DF0_IMAGENAME_MAIN, IDC_BUTTON_DF0_EJECT_MAIN, IDC_BUTTON_DF0_FILEDIALOG_MAIN, IDC_IMAGE_DF0_LED_MAIN},
+		{IDC_EDIT_DF1_IMAGENAME_MAIN, IDC_BUTTON_DF1_EJECT_MAIN, IDC_BUTTON_DF1_FILEDIALOG_MAIN, IDC_IMAGE_DF1_LED_MAIN},
+		{IDC_EDIT_DF2_IMAGENAME_MAIN, IDC_BUTTON_DF2_EJECT_MAIN, IDC_BUTTON_DF2_FILEDIALOG_MAIN, IDC_IMAGE_DF2_LED_MAIN},
+		{IDC_EDIT_DF3_IMAGENAME_MAIN, IDC_BUTTON_DF3_EJECT_MAIN, IDC_BUTTON_DF3_FILEDIALOG_MAIN, IDC_IMAGE_DF3_LED_MAIN}
+	};
+
+	enum {DID_IMAGENAME_MAIN, DID_EJECT_MAIN, DID_FILEDIALOG_MAIN, DID_LED_MAIN};
+
+	#define NUMBER_OF_CHIPRAM_SIZES 8
+
+	STR *wgui_chipram_strings[NUMBER_OF_CHIPRAM_SIZES] = {
+		"256 KB", 
+		"512 KB", 
+		"768 KB", 
+		"1024 KB", 
+		"1280 KB", 
+		"1536 KB", 
+		"1792 KB", 
+		"2048 KB"
+	};
+
+	#define NUMBER_OF_FASTRAM_SIZES 5
+
+	STR *wgui_fastram_strings[NUMBER_OF_FASTRAM_SIZES] = {
+		"0 MB", 
+		"1 MB", 
+		"2 MB", 
+		"4 MB", 
+		"8 MB"
+	};
+
+	#define NUMBER_OF_BOGORAM_SIZES 8
+
+	STR *wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {
+		"0 KB", 
+		"256 KB", 
+		"512 KB", 
+		"768 KB", 
+		"1024 KB", 
+		"1280 KB", 
+		"1536 KB", 
+		"1792 KB"
+	};
+
+
+	//from sound.h: typedef enum {SOUND_NONE, SOUND_PLAY, SOUND_EMULATE} sound_emulations;
+	#define NUMBER_OF_SOUND_EMULATIONS 3
+	int wgui_sound_emulation_cci[NUMBER_OF_SOUND_EMULATIONS] = {
+		IDC_RADIO_SOUND_NO_EMULATION,
+		IDC_RADIO_SOUND_PLAY,
+		IDC_RADIO_SOUND_SILENT_EMULATION
+	};
+
+	//from sound.h: typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
+	#define NUMBER_OF_SOUND_RATES 4
+
+	int wgui_sound_rates_cci[NUMBER_OF_SOUND_RATES] = {
+		IDC_RADIO_SOUND_15650, 
+		IDC_RADIO_SOUND_22050, 
+		IDC_RADIO_SOUND_31300, 
+		IDC_RADIO_SOUND_44100
+	};
+
+	//from sound.h: typedef enum {SOUND_FILTER_ORIGINAL, SOUND_FILTER_ALWAYS, SOUND_FILTER_NEVER} sound_filters;
+	#define NUMBER_OF_SOUND_FILTERS 3
+	int wgui_sound_filters_cci[NUMBER_OF_SOUND_FILTERS] = {
+		IDC_RADIO_SOUND_FILTER_ORIGINAL, 
+		IDC_RADIO_SOUND_FILTER_ALWAYS, 
+		IDC_RADIO_SOUND_FILTER_NEVER
+  };
+
+
+	//from cpu.h: typedef enum {M68000  = 0, M68010  = 1, M68020  = 2, M68030  = 3, M68EC30 = 4, M68040  = 5, M68EC40 = 6, M68060  = 7, M68EC60 = 8, M68EC20 = 9} cpu_types;
+	#define NUMBER_OF_CPUS 10
+	int wgui_cpus_cci[NUMBER_OF_CPUS] = {
+		IDC_RADIO_68000,
+		IDC_RADIO_68010,
+		IDC_RADIO_68020,
+		IDC_RADIO_68030,
+		IDC_RADIO_68EC30,
+		IDC_RADIO_68040,
+		IDC_RADIO_68EC40, 
+		IDC_RADIO_68060,
+		IDC_RADIO_68EC60, 
+		IDC_RADIO_68EC20
+	};
+
+	//from gameport.h: typedef enum {GP_NONE, GP_JOYKEY0, GP_JOYKEY1, GP_ANALOG0, GP_ANALOG1, GP_MOUSE0, GP_MOUSE1} gameport_inputs;
+	#define NUMBER_OF_GAMEPORT_STRINGS 6
+	STR *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
+		"none",
+		"keyboard layout 1",
+		"keyboard layout 2",
+    "joystick 1",
+		"joystick 2",
+    "mouse"
+	};
 
 /*============================================================================*/
 /* Flags for various global events                                            */
@@ -110,63 +221,18 @@ wguiActions wgui_action;
 /* Forward declarations for each property sheet dialog procedure              */
 /*============================================================================*/
 
-BOOL CALLBACK wguiCPUDialogProc(HWND hwndDlg,
-				UINT uMsg,
-				WPARAM wParam,
-				LPARAM lParam);
-BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg,
-				   UINT uMsg,
-				   WPARAM wParam,
-				   LPARAM lParam);
-BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
-				   UINT uMsg,
-				   WPARAM wParam,
-				   LPARAM lParam);
-BOOL CALLBACK wguiBlitterDialogProc(HWND hwndDlg,
-				    UINT uMsg,
-				    WPARAM wParam,
-				    LPARAM lParam);
-BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
-				    UINT uMsg,
-				    WPARAM wParam,
-				    LPARAM lParam);
-BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg,
-				  UINT uMsg,
-				  WPARAM wParam,
-				  LPARAM lParam);
-BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg,
-					  UINT uMsg,
-					  WPARAM wParam,
-					  LPARAM lParam);
-BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
-				       UINT uMsg,
-				       WPARAM wParam,
-				       LPARAM lParam);
-BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
-					UINT uMsg,
-					WPARAM wParam,
-					LPARAM lParam);
-BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
-					UINT uMsg,
-					WPARAM wParam,
-					LPARAM lParam);
-BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
-				     UINT uMsg,
-				     WPARAM wParam,
-				     LPARAM lParam);
-BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
-				     UINT uMsg,
-				     WPARAM wParam,
-				     LPARAM lParam);
-BOOL CALLBACK wguiVariousDialogProc(HWND hwndDlg,
-				    UINT uMsg,
-				    WPARAM wParam,
-				    LPARAM lParam);
-BOOL CALLBACK wguiScreenDialogProc(HWND hwndDlg,
-				   UINT uMsg,
-				   WPARAM wParam,
-				   LPARAM lParam);
-
+BOOL CALLBACK wguiCPUDialogProc			(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiFloppyDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiMemoryDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiDisplayDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiSoundDialogProc		(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wguiVariousDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*============================================================================*/
 /* The following tables defines the data needed to create the property        */
@@ -207,41 +273,17 @@ UINT wgui_propsheetICON[PROP_SHEETS] = {
 
 typedef BOOL (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
-wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {wguiCPUDialogProc,
-						     wguiFloppyDialogProc,
-						     wguiMemoryDialogProc,
-						     wguiDisplayDialogProc,
-						     wguiSoundDialogProc,
-						     wguiFilesystemDialogProc,
-						     wguiHardfileDialogProc,
-						     wguiGameportDialogProc,
-						     wguiVariousDialogProc};
-
-
-void wguiSetSliderRange(HWND sliderHWND, ULO minPos, ULO maxPos) {
-
-	SendMessage(sliderHWND, TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(minPos, maxPos));
-}
-
-ULO wguiGetComboboxCurrentSelection(HWND comboboxHWND) {
-	
-	return ComboBox_GetCurSel(comboboxHWND);
-}
-
-void wguiSetComboboxCurrentSelection(HWND comboboxHWND, ULO index) {
-	
-	ComboBox_SetCurSel(comboboxHWND, index);
-}
-
-ULO wguiGetSliderPosition(HWND sliderHWND) {
-
-	return SendMessage(sliderHWND, TBM_GETPOS, 0, 0);
-}
-
-void wguiSetSliderPosition(HWND sliderHWND, LONG position) {
-
-	SendMessage(sliderHWND, TBM_SETPOS, TRUE, (LPARAM) position);
-}
+wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
+	wguiCPUDialogProc,
+	wguiFloppyDialogProc,
+	wguiMemoryDialogProc,
+	wguiDisplayDialogProc,
+	wguiSoundDialogProc,
+	wguiFilesystemDialogProc,
+	wguiHardfileDialogProc,
+	wguiGameportDialogProc,
+	wguiVariousDialogProc
+};
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
 
@@ -290,13 +332,13 @@ void wguiGetFrameSkippingStrWithIndex(LONG index, char char_buffer[]) {
 	}
 }
 
-void wguiSetSliderTextAccordingToPosition(HWND sliderHWND, HWND sliderTextHWND, void (*getSliderStrWithIndex)(LONG, char[])) {
+void wguiSetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, void (*getSliderStrWithIndex)(LONG, char[])) {
 	char buffer[255];
 	ULO pos;
 
-	pos = wguiGetSliderPosition(sliderHWND);
+	pos = ccwSliderGetPosition(windowHandle, sliderIdentifier);
 	getSliderStrWithIndex(pos, buffer);
-	Static_SetText(sliderTextHWND, buffer);
+	ccwStaticSetText(windowHandle, sliderTextIdentifier, buffer);
 }
 
 ULO wguiGetColorBitsFromComboboxIndex(LONG index) {
@@ -329,8 +371,26 @@ wgui_drawmode *wguiConvertDrawModeNodeToGuiDrawNode(draw_mode *dm, wgui_drawmode
 	return wdm;
 }
 
-void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
+int wguiCompareScreenArea(wgui_drawmode *lineup_dm, wgui_drawmode *insert_dm) {
 
+	if (insert_dm->width < lineup_dm->width) {
+		return 0;
+	} else {
+		if (insert_dm->width == lineup_dm->width) {
+			if (insert_dm->height < lineup_dm->height) {
+				return 0;
+			} else {
+				return -1;
+			}
+		} else {
+			//dm1->width > dm2->width
+			return -1;
+		}
+	}
+}
+
+void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
+	ULO i;
   felist* reslist;
   draw_mode * dm;
   wgui_drawmode* pwdm;
@@ -355,33 +415,33 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
 		wguiConvertDrawModeNodeToGuiDrawNode(dm, pwdm);
 		if (dm->windowed) {
 			// windowed
-			pwdm->id = idw;
-			wdms->reswindowed = listAddLast(wdms->reswindowed, listNew(pwdm));
+			//pwdm->id = idw;
+			wdms->reswindowed = listAddSorted(wdms->reswindowed, listNew(pwdm), &wguiCompareScreenArea);
 			idw++;
 		} else {
 			// fullscreen
 			switch(dm->bits) {
 				case 8:
-					pwdm->id = id8bit;
-					wdms->res8bit = listAddLast(wdms->res8bit, listNew(pwdm));
+					//pwdm->id = id8bit;
+					wdms->res8bit = listAddSorted(wdms->res8bit, listNew(pwdm), &wguiCompareScreenArea);
 					id8bit++;
 					break;
 
 				case 16:
-					pwdm->id = id16bit;
-					wdms->res16bit = listAddLast(wdms->res16bit, listNew(pwdm));
+					//pwdm->id = id16bit;
+					wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), &wguiCompareScreenArea);
 					id16bit++;
 					break;
 
 				case 24:
-					pwdm->id = id24bit;
-					wdms->res24bit = listAddLast(wdms->res24bit, listNew(pwdm));
+					//pwdm->id = id24bit;
+					wdms->res24bit = listAddSorted(wdms->res24bit, listNew(pwdm), &wguiCompareScreenArea);
 					id24bit++;
 					break;
 
 				case 32:
-					pwdm->id = id32bit;
-					wdms->res32bit = listAddLast(wdms->res32bit, listNew(pwdm));
+					//pwdm->id = id32bit;
+					wdms->res32bit = listAddSorted(wdms->res32bit, listNew(pwdm), &wguiCompareScreenArea);
 					id32bit++;
 					break;
 			}
@@ -392,6 +452,31 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
 	wdms->numberof16bit			= id16bit;
 	wdms->numberof24bit			= id24bit;
 	wdms->numberof32bit			= id32bit;
+	i=0;
+	for (reslist=wdms->reswindowed; reslist!=NULL; reslist=listNext(reslist)) {
+		((wgui_drawmode *) listNode(reslist))->id = i;
+		i++;
+	}
+	i=0;
+	for (reslist=wdms->res8bit; reslist!=NULL; reslist=listNext(reslist)) {
+		((wgui_drawmode *) listNode(reslist))->id = i;
+		i++;
+	}
+	i=0;
+	for (reslist=wdms->res16bit; reslist!=NULL; reslist=listNext(reslist)) {
+		((wgui_drawmode *) listNode(reslist))->id = i;
+		i++;
+	}
+	i=0;
+	for (reslist=wdms->res24bit; reslist!=NULL; reslist=listNext(reslist)) {
+		((wgui_drawmode *) listNode(reslist))->id = i;
+		i++;
+	}
+	i=0;
+	for (reslist=wdms->res32bit; reslist!=NULL; reslist=listNext(reslist)) {
+		((wgui_drawmode *) listNode(reslist))->id = i;
+		i++;
+	}
 }
 
 void wguiFreeGuiDrawModesList(wgui_drawmodes *wdms) {
@@ -484,7 +569,7 @@ static STR FileType[5][CFG_FILENAME_LENGTH] = {
     "Hard Files (.hdf)\0*.hdf\0\0\0",
     "Configuration Files (.wfc)\0*.wfc\0\0\0"};
 
-BOOLE wguiSelectFile(HWND DlgHWND,
+BOOLE wguiSelectFile(HWND hwndDlg,
 		     STR *filename, 
 		     ULO filenamesize,
 		     STR *title,
@@ -497,7 +582,7 @@ BOOLE wguiSelectFile(HWND DlgHWND,
   pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = DlgHWND;                            /* the possibilities... */
+  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = pfilters;
   ofn.lpstrCustomFilter = NULL;
@@ -542,7 +627,7 @@ BOOLE wguiSelectFile(HWND DlgHWND,
   return GetOpenFileName(&ofn);
 }
 
-BOOLE wguiSaveFile(HWND DlgHWND,
+BOOLE wguiSaveFile(HWND hwndDlg,
 		     STR *filename, 
 		     ULO filenamesize,
 		     STR *title,
@@ -555,7 +640,7 @@ BOOLE wguiSaveFile(HWND DlgHWND,
   pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = DlgHWND;                            /* the possibilities... */
+  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = pfilters;
   ofn.lpstrCustomFilter = NULL;
@@ -580,7 +665,7 @@ BOOLE wguiSaveFile(HWND DlgHWND,
   return GetSaveFileName(&ofn);
 }
 
-BOOLE wguiSelectDirectory(HWND DlgHWND,
+BOOLE wguiSelectDirectory(HWND hwndDlg,
 			  STR *filename, 
 			  ULO filenamesize,
 			  STR *title) {
@@ -588,7 +673,7 @@ BOOLE wguiSelectDirectory(HWND DlgHWND,
   STR *filters = NULL;
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = DlgHWND;                            /* the possibilities... */
+  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = filters;
   ofn.lpstrCustomFilter = NULL;
@@ -703,29 +788,20 @@ void wguiPutCfgInHistoryOnTop(ULO cfgtotop) {
 /*============================================================================*/
 
 void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
-  STR filename[CFG_FILENAME_LENGTH];
+	STR filename[CFG_FILENAME_LENGTH];
   
-  if (wguiSaveFile(hwndDlg,
-		     filename, 
-		     CFG_FILENAME_LENGTH, 
-		     "Save As", 
-		     FSEL_WFC)) {
+	if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save As", FSEL_WFC)) {
     cfgSaveToFilename(wgui_cfg, filename);
-	iniSetCurrentConfigurationFilename(wgui_ini, filename);
+		iniSetCurrentConfigurationFilename(wgui_ini, filename);
   }
 }
-
 
 void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
   STR filename[CFG_FILENAME_LENGTH];
   STR pathname[CFG_FILENAME_LENGTH];
   BYT *strpointer;
   
-  if (wguiSelectFile(hwndDlg,
-		     filename, 
-		     CFG_FILENAME_LENGTH, 
-		     "Open", 
-		     FSEL_WFC)) {
+  if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", FSEL_WFC)) {
     cfgLoadFromFilename(wgui_cfg, filename);
 	iniSetCurrentConfigurationFilename(wgui_ini, filename);
 	
@@ -743,40 +819,16 @@ void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
 /* CPU config                                                                 */
 /*============================================================================*/
 
-/* Install CPU config */
+/* install CPU config */
 
-void wguiInstallCPUConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
   int slidervalue;
-  HWND sliderHWND;
-
-  /* Set CPU type */
-
-  switch (cfgGetCPUType(conf)) {
-    default:
-    case M68000:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68000), TRUE);
-      break;
-    case M68010:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68010), TRUE);
-      break;
-    case M68020:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68020), TRUE);
-      break;
-    case M68030:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68030), TRUE);
-      break;
-    case M68EC20:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68EC20), TRUE);
-      break;
-    case M68EC30:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68EC30), TRUE);
-      break;
-  }
+  
+  /* set CPU type */
+	ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[cfgGetCPUType(conf)]);
 
   /* Set CPU speed */
-
-  sliderHWND = GetDlgItem(DlgHWND, IDC_SLIDER_CPU_SPEED);
-  SendMessage(sliderHWND, TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(0, 3));
+  ccwSliderSetRange(hwndDlg, IDC_SLIDER_CPU_SPEED, 0, 3);
   switch (cfgGetCPUSpeed(conf)) {
     case 8:
       slidervalue = 0;
@@ -792,38 +844,21 @@ void wguiInstallCPUConfig(HWND DlgHWND, cfg *conf) {
       slidervalue = 3;
       break;
   }
-  SendMessage(sliderHWND, TBM_SETPOS, TRUE, (LPARAM) slidervalue);
+	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_CPU_SPEED, (LPARAM) slidervalue);
 }
 
 /* Extract CPU config */
 
-void wguiExtractCPUConfig(HWND DlgHWND, cfg *conf) {
-  int slidervalue;
-	
-  /* Get CPU type */
+void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
+	ULO i;
 
-  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68000)))
-    cfgSetCPUType(conf, M68000);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68010)))
-    cfgSetCPUType(conf, M68010);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68020)))
-    cfgSetCPUType(conf, M68020);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68030)))
-    cfgSetCPUType(conf, M68030);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68EC20)))
-    cfgSetCPUType(conf, M68EC20);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_68EC30)))
-    cfgSetCPUType(conf, M68EC30);
-  else
-    cfgSetCPUType(conf, M68000);
+  /* get CPU type */
+	for (i=0; i<NUMBER_OF_CPUS; i++) {
+		if (ccwButtonGetCheck(hwndDlg, wgui_cpus_cci[i])) { cfgSetCPUType(conf, i); }
+	}	
 
-  /* Get CPU speed */
-
-  slidervalue = SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_CPU_SPEED),
-			    TBM_GETPOS, 
-			    0, 
-			    0);  
-  switch (slidervalue) {
+  /* get CPU speed */
+  switch (ccwSliderGetPosition(hwndDlg, IDC_SLIDER_CPU_SPEED)) {
     case 0:
       cfgSetCPUSpeed(conf, 8);
       break;
@@ -844,227 +879,72 @@ void wguiExtractCPUConfig(HWND DlgHWND, cfg *conf) {
 /* Floppy config                                                              */
 /*============================================================================*/
 
-/* Install floppy config */
+/* install floppy config */
 
-void wguiInstallFloppyConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallFloppyConfig(HWND hwndDlg, cfg *conf) {
+	ULO i,j;
 
-  /* Set floppy image names */
+  /* set floppy image names */
+		
+	for (i=0; i<MAX_DISKDRIVES; i++) {
+		ccwEditSetText(hwndDlg, diskimage_data[i][DID_IMAGENAME], cfgGetDiskImage(conf, i));
+	  ccwButtonCheckConditional(hwndDlg, diskimage_data[i][DID_ENABLED], cfgGetDiskEnabled(conf, i));
+		ccwButtonCheckConditional(hwndDlg, diskimage_data[i][DID_READONLY], cfgGetDiskReadOnly(conf, i));
+	}
 
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME),
-	       cfgGetDiskImage(conf, 0));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME),
-	       cfgGetDiskImage(conf, 1));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME),
-	       cfgGetDiskImage(conf, 2));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME),
-	       cfgGetDiskImage(conf, 3));
+  /* set fast DMA check box */
 
-  /* Set drive enabled check boxes */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF0_ENABLED),
-		  cfgGetDiskEnabled(conf, 0));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF1_ENABLED),
-		  cfgGetDiskEnabled(conf, 1));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF2_ENABLED),
-		  cfgGetDiskEnabled(conf, 2));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF3_ENABLED),
-		  cfgGetDiskEnabled(conf, 3));
-
-  /* Set drive readonly check boxes */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF0_READONLY),
-		  cfgGetDiskReadOnly(conf, 0));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF1_READONLY),
-		  cfgGetDiskReadOnly(conf, 1));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF2_READONLY),
-		  cfgGetDiskReadOnly(conf, 2));
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_DF3_READONLY),
-		  cfgGetDiskReadOnly(conf, 3));
-
-  /* Set fast DMA check box */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_FAST_DMA),
-		  cfgGetDiskFast(conf));
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_FAST_DMA, cfgGetDiskFast(conf));
 }
 
 /* set floppy images in main window */
 
-void wguiInstallFloppyMain(HWND DlgHWND, cfg *conf) {
+void wguiInstallFloppyMain(HWND hwndDlg, cfg *conf) {
+  ULO i;
 
-  int i;
-
-  /* Set floppy image names */
-
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
-	       cfgGetDiskImage(conf, 0));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
-	       cfgGetDiskImage(conf, 1));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
-	       cfgGetDiskImage(conf, 2));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
-	       cfgGetDiskImage(conf, 3));
-
-  /* Enable or Disable disk drive boxes */
-
-  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
-			cfgGetDiskEnabled(conf,0) == TRUE);
-  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
-			cfgGetDiskEnabled(conf,1) == TRUE);
-  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
-			cfgGetDiskEnabled(conf,2) == TRUE);
-  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
-			cfgGetDiskEnabled(conf,3) == TRUE);
-	
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF0_EJECT_MAIN),
-			cfgGetDiskEnabled(conf,0) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF1_EJECT_MAIN),
-			cfgGetDiskEnabled(conf,1) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF2_EJECT_MAIN),
-			cfgGetDiskEnabled(conf,2) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF3_EJECT_MAIN),
-			cfgGetDiskEnabled(conf,3) == TRUE);
-
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF0_FILEDIALOG_MAIN),
-			cfgGetDiskEnabled(conf,0) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF1_FILEDIALOG_MAIN),
-			cfgGetDiskEnabled(conf,1) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF2_FILEDIALOG_MAIN),
-			cfgGetDiskEnabled(conf,2) == TRUE);
-  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF3_FILEDIALOG_MAIN),
-			cfgGetDiskEnabled(conf,3) == TRUE); 
-
-  if (cfgGetDiskEnabled(conf,0) == TRUE) {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF0_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
-  } else {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF0_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
-  }
-
-  if (cfgGetDiskEnabled(conf,1) == TRUE) {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF1_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
-  } else {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF1_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
-  }
-
-  if (cfgGetDiskEnabled(conf,2) == TRUE) {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF2_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
-  } else {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF2_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
-  }
-
-  if (cfgGetDiskEnabled(conf,3) == TRUE) {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF3_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
-  } else {
-    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF3_LED_MAIN), 
-		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
-		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
-  }
+	for (i=0; i<MAX_DISKDRIVES; i++) {
+		ccwEditSetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskImage(conf, i));
+		ccwEditEnableConditional(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], cfgGetDiskEnabled(conf, i));
+		ccwButtonEnableConditional(hwndDlg, diskimage_data_main[i][DID_EJECT_MAIN], cfgGetDiskEnabled(conf,i));
+		ccwButtonEnableConditional(hwndDlg, diskimage_data_main[i][DID_FILEDIALOG_MAIN], cfgGetDiskEnabled(conf,i));
+		ccwSetImageConditional(hwndDlg, diskimage_data_main[i][DID_LED_MAIN], IDB_DISKDRIVE_LED_OFF, IDB_DISKDRIVE_LED_DISABLED, cfgGetDiskEnabled(conf,i));
+	}
 }
 
 /* Extract floppy config */
 
-void wguiExtractFloppyConfig(HWND DlgHWND, cfg *conf) {
+void wguiExtractFloppyConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
+	ULO i;
 
   /* Get floppy disk image names */
 
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
-  cfgSetDiskImage(conf, 0, tmp);
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
-  cfgSetDiskImage(conf, 1, tmp);
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
-  cfgSetDiskImage(conf, 2, tmp);
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
-  cfgSetDiskImage(conf, 3, tmp);
-
-  /* Get drives enabled */
-
-  cfgSetDiskEnabled(conf,
-		    0,
-		    Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF0_ENABLED)));
-  cfgSetDiskEnabled(conf,
-		    1,
-		    Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF1_ENABLED)));
-  cfgSetDiskEnabled(conf,
-		    2,
-		    Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF2_ENABLED)));
-  cfgSetDiskEnabled(conf,
-		    3,
-		    Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF3_ENABLED)));
-
-  /* Get drives readonly */
-
-  cfgSetDiskReadOnly(conf,
-		     0,
-		   Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF0_READONLY)));
-  cfgSetDiskReadOnly(conf,
-		     1,
-		   Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF1_READONLY)));
-  cfgSetDiskReadOnly(conf,
-		     2,
-		   Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF2_READONLY)));
-  cfgSetDiskReadOnly(conf,
-		     3,
-		   Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_DF3_READONLY)));
+	for (i=0; i<MAX_DISKDRIVES; i++) {
+		ccwEditGetText(hwndDlg, diskimage_data[i][DID_IMAGENAME], tmp, CFG_FILENAME_LENGTH);
+		cfgSetDiskImage(conf, i, tmp);
+		cfgSetDiskEnabled(conf, i, ccwButtonGetCheck(hwndDlg, diskimage_data[i][DID_ENABLED]));
+	  cfgSetDiskReadOnly(conf, i, ccwButtonGetCheck(hwndDlg,diskimage_data[i][DID_READONLY]));
+	}
 
   /* Get fast DMA */
 
-  cfgSetDiskFast(conf,
-		 Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_FAST_DMA)));
+  cfgSetDiskFast(conf, ccwButtonGetCheck(hwndDlg,IDC_CHECK_FAST_DMA));
 }
 
 /* Extract floppy config from main window */
 
-void wguiExtractFloppyMain(HWND DlgHWND, cfg *conf) {
+void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
+	ULO i;
 
   /* Get floppy disk image names */
 
-  if (cfgGetDiskEnabled(conf, 0) == FALSE) {
-	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
-		tmp, CFG_FILENAME_LENGTH);
-	cfgSetDiskImage(conf, 0, tmp);
+	for (i=0; i<MAX_DISKDRIVES; i++) {
+		if (cfgGetDiskEnabled(conf, i) == FALSE) {
+			ccwEditGetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], tmp, CFG_FILENAME_LENGTH);
+			cfgSetDiskImage(conf, i, tmp);
+		}
   }
-  if (cfgGetDiskEnabled(conf, 1) == FALSE) {
-	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
-		tmp,
-	    CFG_FILENAME_LENGTH);
-	cfgSetDiskImage(conf, 1, tmp);
-  }
-  if (cfgGetDiskEnabled(conf, 2) == FALSE) {
-    Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
-	    tmp,
-	    CFG_FILENAME_LENGTH);
-	cfgSetDiskImage(conf, 2, tmp);
-  }
-  if (cfgGetDiskEnabled(conf, 3) == FALSE) {
-	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
-	    tmp,
-	    CFG_FILENAME_LENGTH);
-	cfgSetDiskImage(conf, 3, tmp);
-  }
- 
 }
 
 
@@ -1075,37 +955,23 @@ void wguiExtractFloppyMain(HWND DlgHWND, cfg *conf) {
 
 /* Install memory config */
 
-void wguiInstallMemoryConfig(HWND DlgHWND, cfg *conf) {
-  HWND ChipChoice = GetDlgItem(DlgHWND, IDC_COMBO_CHIP);
-  HWND FastChoice = GetDlgItem(DlgHWND, IDC_COMBO_FAST);
-  HWND BogoChoice = GetDlgItem(DlgHWND, IDC_COMBO_BOGO);
+void wguiInstallMemoryConfig(HWND hwndDlg, cfg *conf) {
   ULO fastindex;
+	ULO i;
 	
   /* Add choice choices */
 
-  ComboBox_AddString(ChipChoice, "256 KB");
-  ComboBox_AddString(ChipChoice, "512 KB");
-  ComboBox_AddString(ChipChoice, "768 KB");
-  ComboBox_AddString(ChipChoice, "1024 KB");
-  ComboBox_AddString(ChipChoice, "1280 KB");
-  ComboBox_AddString(ChipChoice, "1536 KB");
-  ComboBox_AddString(ChipChoice, "1792 KB");
-  ComboBox_AddString(ChipChoice, "2048 KB");
-  
-  ComboBox_AddString(FastChoice, "0 MB");
-  ComboBox_AddString(FastChoice, "1 MB");
-  ComboBox_AddString(FastChoice, "2 MB");
-  ComboBox_AddString(FastChoice, "4 MB");
-  ComboBox_AddString(FastChoice, "8 MB");
+	for (i=0; i<NUMBER_OF_CHIPRAM_SIZES; i++) {
+		ccwComboBoxAddString(hwndDlg, IDC_COMBO_CHIP, wgui_chipram_strings[i]);
+	}  
 
-  ComboBox_AddString(BogoChoice, "0 KB");
-  ComboBox_AddString(BogoChoice, "256 KB");
-  ComboBox_AddString(BogoChoice, "512 KB");
-  ComboBox_AddString(BogoChoice, "768 KB");
-  ComboBox_AddString(BogoChoice, "1024 KB");
-  ComboBox_AddString(BogoChoice, "1280 KB");
-  ComboBox_AddString(BogoChoice, "1536 KB");
-  ComboBox_AddString(BogoChoice, "1792 KB");
+	for (i=0; i<NUMBER_OF_FASTRAM_SIZES; i++) {
+		ccwComboBoxAddString(hwndDlg, IDC_COMBO_FAST, wgui_fastram_strings[i]);
+	}
+
+	for (i=0; i<NUMBER_OF_BOGORAM_SIZES; i++) {
+		ccwComboBoxAddString(hwndDlg, IDC_COMBO_BOGO, wgui_bogoram_strings[i]);
+	}
 
   /* Set current memory size selection */
 
@@ -1126,21 +992,19 @@ void wguiInstallMemoryConfig(HWND DlgHWND, cfg *conf) {
       fastindex = 4;
       break;
   }
-  ComboBox_SetCurSel(ChipChoice, (cfgGetChipSize(conf) / 0x40000) - 1);
-  ComboBox_SetCurSel(FastChoice, fastindex);
-  ComboBox_SetCurSel(BogoChoice, cfgGetBogoSize(conf) / 0x40000);
+  ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_CHIP, (cfgGetChipSize(conf) / 0x40000) - 1);
+  ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_FAST, fastindex);
+  ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_BOGO, cfgGetBogoSize(conf) / 0x40000);
 
   /* Set current ROM and key file names */
 
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_KICKSTART),
-	       cfgGetKickImage(conf));
-  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_KEYFILE),
-	       cfgGetKey(conf));
+  ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART, cfgGetKickImage(conf));
+  ccwEditSetText(hwndDlg, IDC_EDIT_KEYFILE, cfgGetKey(conf));
 }
 
 /* Extract memory config */
 
-void wguiExtractMemoryConfig(HWND DlgHWND, cfg *conf) {
+void wguiExtractMemoryConfig(HWND hwndDlg, cfg *conf) {
   char tmp[CFG_FILENAME_LENGTH];
   ULO cursel;
   ULO sizes1[9] = {0,
@@ -1160,27 +1024,23 @@ void wguiExtractMemoryConfig(HWND DlgHWND, cfg *conf) {
 
   /* Get current memory sizes */
 
-  cursel = ComboBox_GetCurSel(GetDlgItem(DlgHWND, IDC_COMBO_CHIP));
+  cursel = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_CHIP);
   if (cursel > 7) cursel = 7;
   cfgSetChipSize(conf, sizes1[cursel + 1]);
 
-  cursel = ComboBox_GetCurSel(GetDlgItem(DlgHWND, IDC_COMBO_BOGO));
+  cursel = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_BOGO);
   if (cursel > 7) cursel = 7;
   cfgSetBogoSize(conf, sizes1[cursel]);
 
-  cursel = ComboBox_GetCurSel(GetDlgItem(DlgHWND, IDC_COMBO_FAST));
+  cursel = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_FAST);
   if (cursel > 4) cursel = 4;
   cfgSetFastSize(conf, sizes2[cursel]);
 
   /* Get current kickstart image and keyfile */
       
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_KICKSTART),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
+  ccwEditGetText(hwndDlg, IDC_EDIT_KICKSTART, tmp, CFG_FILENAME_LENGTH);
   cfgSetKickImage(conf, tmp);
-  Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_KEYFILE),
-	       tmp,
-	       CFG_FILENAME_LENGTH);
+  ccwEditGetText(hwndDlg, IDC_EDIT_KEYFILE, tmp, CFG_FILENAME_LENGTH);
   cfgSetKey(conf, tmp);
 }
 
@@ -1190,38 +1050,33 @@ void wguiExtractMemoryConfig(HWND DlgHWND, cfg *conf) {
 
 /* Install Blitter config */
 
-void wguiInstallBlitterConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallBlitterConfig(HWND hwndDlg, cfg *conf) {
 
   /* Set blitter operation type */
 
   if (cfgGetBlitterFast(conf))
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_BLITTER_IMMEDIATE), TRUE);
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE);
   else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_BLITTER_NORMAL), TRUE);
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_NORMAL);
 
   /* Set blitter chipset type */
 
   if (cfgGetECSBlitter(conf))
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_BLITTER_ECS), TRUE);
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_ECS);
   else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_BLITTER_OCS), TRUE);
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_OCS);
 }
 
 /* Extract Blitter config */
 
-void wguiExtractBlitterConfig(HWND DlgHWND, cfg *conf) {
+void wguiExtractBlitterConfig(HWND hwndDlg, cfg *conf) {
   int slidervalue;
 	
-  /* Get current blitter operation type */
-
-  cfgSetBlitterFast(conf, 
-		    Button_GetCheck(GetDlgItem(DlgHWND,
-					       IDC_RADIO_BLITTER_IMMEDIATE)));
-  /* Get current blitter chipset type */
-
-  cfgSetECSBlitter(conf, 
-		   Button_GetCheck(GetDlgItem(DlgHWND,
-					      IDC_RADIO_BLITTER_ECS)));
+	/* get current blitter operation type */
+  cfgSetBlitterFast(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE));
+  
+	/* get current blitter chipset type */
+  cfgSetECSBlitter(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_BLITTER_ECS));
 }
 
 
@@ -1231,150 +1086,77 @@ void wguiExtractBlitterConfig(HWND DlgHWND, cfg *conf) {
 
 /* Install sound config */
 
-void wguiInstallSoundConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf) {
 
   /* Set sound emulation type */
-
-  switch (cfgGetSoundEmulation(conf)) {
-    case SOUND_NONE:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_NO_EMULATION), TRUE);
-      break;
-    case SOUND_PLAY:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_PLAY), TRUE);
-      break;
-    case SOUND_EMULATE:
-      Button_SetCheck(GetDlgItem(DlgHWND,
-				 IDC_RADIO_SOUND_SILENT_EMULATION),
-		      TRUE);
-      break;
-  }
+  ccwButtonSetCheck(hwndDlg, wgui_sound_emulation_cci[cfgGetSoundEmulation(conf)]);
 
   /* Set sound rate */
-
-  switch (cfgGetSoundRate(conf)) {
-    case SOUND_44100:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_44100), TRUE);
-      break;
-    case SOUND_31300:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_31300), TRUE);
-      break;
-    case SOUND_22050:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_22050), TRUE);
-      break;
-    case SOUND_15650:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_15650), TRUE);
-      break;
-  }
-
-  /* Set sound channels */
-
-  if (cfgGetSoundStereo(conf))
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_STEREO), TRUE);
-  else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_MONO), TRUE);
-
-  /* Set sound bits */
-
-  if (cfgGetSound16Bits(conf))
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_16BITS), TRUE);
-  else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_8BITS), TRUE);
-
-  /* Set sound filter */
-
-  switch (cfgGetSoundFilter(conf)) {
-    case SOUND_FILTER_ORIGINAL:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_ORIGINAL), 
-		      TRUE);
-      break;
-    case SOUND_FILTER_ALWAYS:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_ALWAYS), 
-		      TRUE);
-      break;
-    case SOUND_FILTER_NEVER:
-      Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_NEVER),
-		      TRUE);
-      break;
-  }
-
-   /* Set sound WAV dump */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_WAV),
-		  cfgGetSoundWAVDump(conf));
+	ccwButtonSetCheck(hwndDlg, wgui_sound_rates_cci[cfgGetSoundRate(conf)]);
 
   /* set sound hardware notification */
-  switch (cfgGetSoundNotification(conf)) {
-    case SOUND_DSOUND_NOTIFICATION:
-	  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION), TRUE);
-	  break;
-    case SOUND_MMTIMER_NOTIFICATION:
-	  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION), FALSE);
-	  break;
-  }
-  
-  /* set slider of buffer length */
-  SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_SETRANGE, 0, MAKELONG(10,80));
-  SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_SETPOS, 1, cfgGetSoundBufferLength(conf));
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION, cfgGetSoundNotification(conf) == SOUND_DSOUND_NOTIFICATION); 
 
+  /* Set sound channels */
+  if (cfgGetSoundStereo(conf))
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_SOUND_STEREO);
+  else
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_SOUND_MONO);
+
+  /* Set sound bits */
+  if (cfgGetSound16Bits(conf))
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_SOUND_16BITS);
+  else
+    ccwButtonSetCheck(hwndDlg, IDC_RADIO_SOUND_8BITS);
+
+  /* Set sound filter */
+  ccwButtonSetCheck(hwndDlg, wgui_sound_filters_cci[cfgGetSoundFilter(conf)]);
+
+  /* Set sound WAV dump */
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_WAV, cfgGetSoundWAVDump(conf));
+
+  /* set slider of buffer length */
+	ccwSliderSetRange(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH, 10, 80);
+	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH, cfgGetSoundBufferLength(conf));
 }
 
 /* Extract sound config */
 
-void wguiExtractSoundConfig(HWND DlgHWND, cfg *conf) {
+void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf) {
+	ULO i;
 	
-  /* Get current sound emulation type */
+  /* get current sound emulation type */
+	for (i=0; i<NUMBER_OF_SOUND_EMULATIONS; i++) {
+		if (ccwButtonGetCheck(hwndDlg, wgui_sound_emulation_cci[i])) { cfgSetSoundEmulation(conf, i); }
+	}
 
-  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_NO_EMULATION)))
-    cfgSetSoundEmulation(conf, SOUND_NONE);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_PLAY)))
-    cfgSetSoundEmulation(conf, SOUND_PLAY);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND,
-				      IDC_RADIO_SOUND_SILENT_EMULATION)))
-    cfgSetSoundEmulation(conf, SOUND_EMULATE);
+  /* get current sound rate */
+	for (i=0; i<NUMBER_OF_SOUND_RATES; i++) {
+		if (ccwButtonGetCheck(hwndDlg, wgui_sound_rates_cci[i])) { cfgSetSoundRate(conf, i); }
+	}
 
-  /* Get current sound rate */
+  /* get current sound channels */
+  cfgSetSoundStereo(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_STEREO));
 
-  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_44100)))
-    cfgSetSoundRate(conf, SOUND_44100);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_31300)))
-    cfgSetSoundRate(conf, SOUND_31300);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_22050)))
-    cfgSetSoundRate(conf, SOUND_22050);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_15650)))
-    cfgSetSoundRate(conf, SOUND_15650);
+  /* get current sound bits */
+  cfgSetSound16Bits(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_16BITS));
 
-  /* Get current sound channels */
-
-  cfgSetSoundStereo(conf,
-		    Button_GetCheck(GetDlgItem(DlgHWND,
-					       IDC_RADIO_SOUND_STEREO)));
-
-  /* Get current sound bits */
-
-  cfgSetSound16Bits(conf,
-		    Button_GetCheck(GetDlgItem(DlgHWND,
-					       IDC_RADIO_SOUND_16BITS)));
-
-  /* Get current sound filter */
-
-  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_ORIGINAL)))
-    cfgSetSoundFilter(conf, SOUND_FILTER_ORIGINAL);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_ALWAYS)))
-    cfgSetSoundFilter(conf, SOUND_FILTER_ALWAYS);
-  else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_NEVER)))
-    cfgSetSoundFilter(conf, SOUND_FILTER_NEVER);
-
-  /* Get current sound WAV dump */
-  cfgSetSoundWAVDump(conf, Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_WAV)));
+  /* get current sound filter */
+	for (i=0; i<NUMBER_OF_SOUND_FILTERS; i++) {
+		if (ccwButtonGetCheck(hwndDlg, wgui_sound_filters_cci[i])) { cfgSetSoundFilter(conf, i); }
+	}
+  
+  /* get current sound WAV dump */
+  cfgSetSoundWAVDump(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_WAV));
 
   /* get notify option */
-  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)))
+	if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION))
     cfgSetSoundNotification(conf, SOUND_DSOUND_NOTIFICATION);
-  else if (!Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)))
+  else if (!ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_NOTIFICATION))
     cfgSetSoundNotification(conf, SOUND_MMTIMER_NOTIFICATION);
 
   /* get slider of buffer length */
-  cfgSetSoundBufferLength(conf, SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0));
+  cfgSetSoundBufferLength(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH));
 }
 
 
@@ -1384,116 +1166,68 @@ void wguiExtractSoundConfig(HWND DlgHWND, cfg *conf) {
 
 /* Install gameport config */
 
-void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
-  HWND gpChoice[2];
-  ULO gpindex, i;
-  HWND st;
-  int setting, port;
+void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
+  ULO i, j;
 
-  gpChoice[0] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT1);
-  gpChoice[1] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT2);
+	/* fill comboboxes with choices */
+	for (i=0; i<NUMBER_OF_GAMEPORT_STRINGS; i++) {
+		ccwComboBoxAddString(hwndDlg, IDC_COMBO_GAMEPORT1, wgui_gameport_strings[i]);
+		ccwComboBoxAddString(hwndDlg, IDC_COMBO_GAMEPORT2, wgui_gameport_strings[i]);
+	}
 
-  /* Set current gameport selections */
+	/* set current selection */
+	ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT1, cfgGetGameport(conf, 0));
+	ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT2, cfgGetGameport(conf, 1));
 
-  for (i = 0; i < 2; i++) {
-    ComboBox_AddString(gpChoice[i], "None");
-    ComboBox_AddString(gpChoice[i], "Keyboard Layout 1");
-    ComboBox_AddString(gpChoice[i], "Keyboard Layout 2");
-    ComboBox_AddString(gpChoice[i], "Mouse");
-    ComboBox_AddString(gpChoice[i], "Joystick 1");
-	ComboBox_AddString(gpChoice[i], "Joystick 2");
-  
-    switch (cfgGetGameport(conf, i)) {
-      case GP_NONE:
-	gpindex = 0;
-	break;
-      case GP_JOYKEY0:
-	gpindex = 1;
-	break;
-      case GP_JOYKEY1:
-	gpindex = 2;
-	break;
-      case GP_MOUSE0:
-	gpindex = 3;
-	break;
-      case GP_ANALOG0:
-	gpindex = 4;
-	break;
-		case GP_ANALOG1:
-	gpindex = 5;
-	break;
+	/* set current used keys for keyboard layout replacements */
+  for( i=0; i<MAX_JOYKEY_PORT; i++ ) {
+    for ( j=0; j<MAX_JOYKEY_VALUE; j++) {
+      ccwStaticSetText(hwndDlg, gameport_keys_labels[i][j], kbdDrvKeyPrettyString(kbdDrvJoystickReplacementGet(gameport_keys_events[i][j])));
     }
-    ComboBox_SetCurSel(gpChoice[i], gpindex);
-  }
-
-  for( port = 0; port < MAX_JOYKEY_PORT; port ++ )
-    for ( setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
-      st = GetDlgItem(DlgHWND, gameport_keys_labels[port][setting]);
-      SetWindowText( st, kbdDrvKeyPrettyString( kbdDrvJoystickReplacementGet( gameport_keys_events[port][setting] )));
-    }
+	}
 }
 
 /* Extract gameport config */
 
-void wguiExtractGameportConfig(HWND DlgHWND, cfg *conf) {
-  HWND gpChoice[2];
-  ULO gpsel, i;
-  gameport_inputs gpt[6] = {GP_NONE,
-			    GP_JOYKEY0,
-			    GP_JOYKEY1,
-			    GP_MOUSE0,
-			    GP_ANALOG0,
-				GP_ANALOG1};
-
-  gpChoice[0] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT1);
-  gpChoice[1] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT2);
-
-  /* Get current gameport inputs */
-
-  for (i = 0; i < 2; i++) {
-    gpsel = ComboBox_GetCurSel(gpChoice[i]);
-    if (gpsel > 5) gpsel = 0;
-    cfgSetGameport(conf, i, gpt[gpsel]);
-  }
+void wguiExtractGameportConfig(HWND hwndDlg, cfg *conf) {
+  ULO i;
+	
+  /* get current gameport inputs */
+	cfgSetGameport(conf, 0, ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT1));
+  cfgSetGameport(conf, 1, ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT2));
 }
 
 
 /*============================================================================*/
-/* Various config                                                             */
+/* various config                                                             */
 /*============================================================================*/
 
-/* Install various config */
+/* install various config */
 
-void wguiInstallVariousConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallVariousConfig(HWND hwndDlg, cfg *conf) {
 
-  /* Set measure speed */
+  /* set measure speed */
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VARIOUS_SPEED, cfgGetMeasureSpeed(conf));
 
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_VARIOUS_SPEED),
-		  cfgGetMeasureSpeed(conf));
+  /* set draw LED */
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VARIOUS_LED, cfgGetScreenDrawLEDs(conf));
 
-  /* Set draw LED */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_VARIOUS_LED),
-		  cfgGetScreenDrawLEDs(conf));
-
-  /* Set autoconfig disable */
-
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_AUTOCONFIG_DISABLE),
-		  !cfgGetUseAutoconfig(conf));
+  /* set autoconfig disable */
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE, !cfgGetUseAutoconfig(conf));
 }
 
-/* Extract various config */
+/* extract various config */
 
-void wguiExtractVariousConfig(HWND DlgHWND, cfg *conf) {
-  cfgSetMeasureSpeed(conf, 
-		     Button_GetCheck(GetDlgItem(DlgHWND,
-						IDC_CHECK_VARIOUS_SPEED)));
-  cfgSetScreenDrawLEDs(conf, 
-		       Button_GetCheck(GetDlgItem(DlgHWND,
-						  IDC_CHECK_VARIOUS_LED)));
-  cfgSetUseAutoconfig(conf,
-		      !Button_GetCheck(GetDlgItem(DlgHWND,
-						  IDC_CHECK_AUTOCONFIG_DISABLE)));
+void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
+  
+	/* get measure speed */
+	cfgSetMeasureSpeed(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_SPEED));
+	
+	/* get draw LED */
+  cfgSetScreenDrawLEDs(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_LED));  
+
+	/* get autoconfig disable */
+	cfgSetUseAutoconfig(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE));
 }
 
 
@@ -1550,9 +1284,9 @@ void wguiHardfileUpdate(HWND lvHWND, cfg_hardfile *hf, ULO i, BOOL add) {
 /* Install hardfile config */
 
 #define HARDFILE_COLS 7
-void wguiInstallHardfileConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallHardfileConfig(HWND hwndDlg, cfg *conf) {
   LV_COLUMN lvc;
-  HWND lvHWND = GetDlgItem(DlgHWND, IDC_LIST_HARDFILES);
+  HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_HARDFILES);
   ULO i, hfcount;
   STR *colheads[HARDFILE_COLS] = {"Unit",
 				  "File",
@@ -1591,7 +1325,7 @@ void wguiInstallHardfileConfig(HWND DlgHWND, cfg *conf) {
 
 /* Extract hardfile config */
 
-void wguiExtractHardfileConfig(HWND DlgHWND, cfg *conf) {
+void wguiExtractHardfileConfig(HWND hwndDlg, cfg *conf) {
 }
 
 
@@ -1602,7 +1336,7 @@ ULO wgui_current_hardfile_edit_index = 0;
 
 /* Run a hardfile edit or add dialog */
 
-BOOLE wguiHardfileAdd(HWND DlgHWND, 
+BOOLE wguiHardfileAdd(HWND hwndDlg, 
 		      cfg *conf, 
 		      BOOLE add, 
 		      ULO index,
@@ -1612,11 +1346,11 @@ BOOLE wguiHardfileAdd(HWND DlgHWND,
   if (add) cfgSetHardfileUnitDefaults(target);
   return DialogBox(win_drv_hInstance,
 		   MAKEINTRESOURCE(IDD_HARDFILE_ADD),
-		   DlgHWND,
+		   hwndDlg,
 		   wguiHardfileAddDialogProc) == IDOK;
 }
 
-BOOLE wguiHardfileCreate(HWND DlgHWND,
+BOOLE wguiHardfileCreate(HWND hwndDlg,
 						 cfg *conf,
 						 ULO index,
 						 cfg_hardfile *target) {
@@ -1625,7 +1359,7 @@ BOOLE wguiHardfileCreate(HWND DlgHWND,
   cfgSetHardfileUnitDefaults(target);
   return DialogBox(win_drv_hInstance,
 		   MAKEINTRESOURCE(IDD_HARDFILE_CREATE),
-		   DlgHWND,
+		   hwndDlg,
 		   wguiHardfileCreateDialogProc) == IDOK;
 }
 
@@ -1666,9 +1400,9 @@ void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add) {
 /* Install filesystem config */
 
 #define FILESYSTEM_COLS 4
-void wguiInstallFilesystemConfig(HWND DlgHWND, cfg *conf) {
+void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf) {
   LV_COLUMN lvc;
-  HWND lvHWND = GetDlgItem(DlgHWND, IDC_LIST_FILESYSTEMS);
+  HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS);
   ULO i, fscount;
   STR *colheads[FILESYSTEM_COLS] = {"Unit",
 				    "Volume",
@@ -1700,16 +1434,13 @@ void wguiInstallFilesystemConfig(HWND DlgHWND, cfg *conf) {
     wguiFilesystemUpdate(lvHWND, &fs, i, TRUE);
   }
   ListView_SetExtendedListViewStyle(lvHWND, LVS_EX_FULLROWSELECT);
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_AUTOMOUNT_FILESYSTEMS),
-		  cfgGetFilesystemAutomountDrives(conf));
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS, cfgGetFilesystemAutomountDrives(conf));
 }
 
 /* Extract filesystem config */
 
-void wguiExtractFilesystemConfig(HWND DlgHWND, cfg *conf) {
-  cfgSetFilesystemAutomountDrives(conf,
-				  Button_GetCheck(GetDlgItem(DlgHWND,
-							     IDC_CHECK_AUTOMOUNT_FILESYSTEMS)));
+void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf) {
+  cfgSetFilesystemAutomountDrives(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS));
 }
 
 
@@ -1720,7 +1451,7 @@ ULO wgui_current_filesystem_edit_index = 0;
 
 /* Run a filesystem edit or add dialog */
 
-BOOLE wguiFilesystemAdd(HWND DlgHWND, 
+BOOLE wguiFilesystemAdd(HWND hwndDlg, 
 			cfg *conf, 
 			BOOLE add, 
 			ULO index,
@@ -1730,7 +1461,7 @@ BOOLE wguiFilesystemAdd(HWND DlgHWND,
   wgui_current_filesystem_edit_index = index;
   return DialogBox(win_drv_hInstance,
 		   MAKEINTRESOURCE(IDD_FILESYSTEM_ADD),
-		   DlgHWND,
+		   hwndDlg,
 		   wguiFilesystemAddDialogProc) == IDOK;
 }
 
@@ -1740,19 +1471,8 @@ BOOLE wguiFilesystemAdd(HWND DlgHWND,
 
 /* install display config */
 
-void wguiInstallDisplayConfig(HWND DlgHWND, cfg *conf) {
-  HWND screenAreaSliderHWND					= GetDlgItem(DlgHWND, IDC_SLIDER_SCREEN_AREA);
-	HWND screenAreaSliderTextHWND			= GetDlgItem(DlgHWND, IDC_STATIC_SCREEN_AREA);
-  HWND frameSkippingSliderHWND			= GetDlgItem(DlgHWND, IDC_SLIDER_FRAME_SKIPPING);
-  HWND colorBitsComboboxHWND				= GetDlgItem(DlgHWND, IDC_COMBO_COLOR_BITS);
-	HWND fullscreenHWND								= GetDlgItem(DlgHWND, IDC_CHECK_FULLSCREEN);
-	HWND verticalscalingHWND					= GetDlgItem(DlgHWND, IDC_CHECK_VERTICAL_SCALE);
-	HWND horizontalscalingHWND				= GetDlgItem(DlgHWND, IDC_CHECK_HORIZONTAL_SCALE);
-	HWND scanlinesHWND								= GetDlgItem(DlgHWND, IDC_CHECK_SCANLINES);
-	HWND interlaceHWND								= GetDlgItem(DlgHWND, IDC_CHECK_INTERLACE);
-	HWND multiplebuffersHWND					= GetDlgItem(DlgHWND, IDC_CHECK_MULTIPLE_BUFFERS);
-	HWND frameSkippingSliderTextHWND	= GetDlgItem(DlgHWND, IDC_STATIC_FRAME_SKIPPING);
-	
+void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
+  HWND colorBitsComboboxHWND				= GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 	
 	ULO comboboxid;
   LON resindex, i;
@@ -1782,7 +1502,7 @@ void wguiInstallDisplayConfig(HWND DlgHWND, cfg *conf) {
 	ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(pwgui_dm_match->colorbits));
 	
 	// add multiple buffer option
-  Button_SetCheck(multiplebuffersHWND, cfgGetUseMultipleGraphicalBuffers(conf));
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS, cfgGetUseMultipleGraphicalBuffers(conf));
 		
   // set fullscreen button check
 	if (pwgui_dm_match->windowed) {
@@ -1790,249 +1510,121 @@ void wguiInstallDisplayConfig(HWND DlgHWND, cfg *conf) {
 		// colorbits can't be selected through WinFellow, desktop setting will be used
 		ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
 		ComboBox_Enable(colorBitsComboboxHWND, FALSE);
-		Button_SetCheck(fullscreenHWND, FALSE);
+		ccwButtonUncheck(hwndDlg, IDC_CHECK_FULLSCREEN);
 		// disable multiplebuffers
-		Button_Enable(multiplebuffersHWND, FALSE);
+		ccwButtonDisable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
 	} else {
 		// fullscreen
 		ComboBox_Enable(colorBitsComboboxHWND, TRUE);
-		Button_SetCheck(fullscreenHWND, TRUE);
+		ccwButtonSetCheck(hwndDlg, IDC_CHECK_FULLSCREEN);
 		// enable the checkbox for multiplebuffers
-		Button_Enable(multiplebuffersHWND, TRUE);
+		ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
 	}
 
   // add horizontal pixel scale option
-	Button_SetCheck(horizontalscalingHWND, cfgGetHorizontalScale(conf) == 2);
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE, cfgGetHorizontalScale(conf) == 2);
 
 	// add vertical pixel scale option
-	Button_SetCheck(verticalscalingHWND, cfgGetVerticalScale(conf) == 2);
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VERTICAL_SCALE, cfgGetVerticalScale(conf) == 2);
 	
 	// add scanline option
 	if (cfgGetScanlines(conf)) {
-		Button_SetCheck(scanlinesHWND, TRUE);
-		Button_SetCheck(verticalscalingHWND, FALSE);
+		ccwButtonSetCheck(hwndDlg, IDC_CHECK_SCANLINES);
+		ccwButtonUncheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE);
 	} else {
-		Button_SetCheck(scanlinesHWND, FALSE);
+		ccwButtonUncheck(hwndDlg, IDC_CHECK_SCANLINES);
 	}
 
 	// add interlace compensation option
-  Button_SetCheck(interlaceHWND, cfgGetDeinterlace(conf));
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_INTERLACE, cfgGetDeinterlace(conf));
 
   // add screen area 
 	if (pwgui_dm_match->windowed) {
 		// windowed
-		wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberofwindowed - 1));
+		ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));
 	} else {
 		switch (pwgui_dm_match->colorbits) {
 			case 8:
-				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof8bit - 1));
+				ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof8bit - 1));
 				break;
 			case 16:
-				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof16bit - 1));
+				ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof16bit - 1));
 				break;
 			case 24:
-				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof24bit - 1));
+				ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof24bit - 1));
 				break;
 			case 32:
-				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof32bit - 1));
+				ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof32bit - 1));
 				break;
 		}
 	}
-	wguiSetSliderPosition(screenAreaSliderHWND, pwgui_dm_match->id);
-	wguiSetSliderTextAccordingToPosition(screenAreaSliderHWND, screenAreaSliderTextHWND, &wguiGetResolutionStrWithIndex);
+	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
+	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 
   // add frame skipping rate choices 
-  wguiSetSliderRange(frameSkippingSliderHWND, 0, 24);
-	wguiSetSliderPosition(frameSkippingSliderHWND, cfgGetFrameskipRatio(conf));
-	wguiSetSliderTextAccordingToPosition(frameSkippingSliderHWND, frameSkippingSliderTextHWND, &wguiGetFrameSkippingStrWithIndex);
+  ccwSliderSetRange(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, 0, 24);
+	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, cfgGetFrameskipRatio(conf));
+	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
 
 	// add blitter selection radio buttons
-	wguiInstallBlitterConfig(DlgHWND, conf);
+	wguiInstallBlitterConfig(hwndDlg, conf);
 }
 
 /* extract display config */
 
-void wguiExtractDisplayConfig(HWND DlgHWND, cfg *conf) {
-  HWND screenAreaSliderHWND					= GetDlgItem(DlgHWND, IDC_SLIDER_SCREEN_AREA);
-	HWND screenAreaSliderTextHWND			= GetDlgItem(DlgHWND, IDC_STATIC_SCREEN_AREA);
-  HWND frameSkippingSliderHWND			= GetDlgItem(DlgHWND, IDC_SLIDER_FRAME_SKIPPING);
-  HWND colorBitsComboboxHWND				= GetDlgItem(DlgHWND, IDC_COMBO_COLOR_BITS);
-	HWND fullscreenHWND								= GetDlgItem(DlgHWND, IDC_CHECK_FULLSCREEN);
-	HWND verticalscalingHWND					= GetDlgItem(DlgHWND, IDC_CHECK_VERTICAL_SCALE);
-	HWND horizontalscalingHWND				= GetDlgItem(DlgHWND, IDC_CHECK_HORIZONTAL_SCALE);
-	HWND scanlinesHWND								= GetDlgItem(DlgHWND, IDC_CHECK_SCANLINES);
-	HWND interlaceHWND								= GetDlgItem(DlgHWND, IDC_CHECK_INTERLACE);
-	HWND multiplebuffersHWND					= GetDlgItem(DlgHWND, IDC_CHECK_MULTIPLE_BUFFERS);
-	HWND frameSkippingSliderTextHWND	= GetDlgItem(DlgHWND, IDC_STATIC_FRAME_SKIPPING);
+void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
+  HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 		
 	ULO comboboxid;
   LON resindex, i;
   STR stmp[32];
 
 	// get current colorbits
-	cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(wguiGetComboboxCurrentSelection(colorBitsComboboxHWND)));
+	cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
 	
 	// get multiplebuffer check
-	cfgSetUseMultipleGraphicalBuffers(conf, Button_GetCheck(multiplebuffersHWND));
+	cfgSetUseMultipleGraphicalBuffers(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS));
 
 	// get fullscreen check
-	cfgSetScreenWindowed(conf, !Button_GetCheck(fullscreenHWND));
+	cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
 	// get scaling
-  cfgSetVerticalScale(conf, (Button_GetCheck(verticalscalingHWND)) ? 2 : 1);
-  cfgSetHorisontalScale(conf, (Button_GetCheck(horizontalscalingHWND)) ? 2 : 1);
-	cfgSetScanlines(conf, Button_GetCheck(scanlinesHWND));
-	cfgSetDeinterlace(conf, Button_GetCheck(interlaceHWND));
+  cfgSetVerticalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE)) ? 2 : 1);
+  cfgSetHorisontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 2 : 1);
+	cfgSetScanlines(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SCANLINES));
+	cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_INTERLACE));
 
 	// get height and width
 	if (cfgGetScreenWindowed(conf)) {
-		cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
-		cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+		cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+		cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
 	} else {
 		switch(cfgGetScreenColorBits(conf)) {
 			case 8:
-				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
-				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
 				break;
 			case 16:
-				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
-				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
 				break;
 			case 24:
-				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
-				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
 				break;
 			case 32:
-				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
-				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
 				break;
 		}
 	}
 	
   // get frame skipping rate choice
-  cfgSetFrameskipRatio(conf, wguiGetSliderPosition(frameSkippingSliderHWND));
+  cfgSetFrameskipRatio(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING));
 
 	// get blitter selection radio buttons
-	wguiExtractBlitterConfig(DlgHWND, conf);
+	wguiExtractBlitterConfig(hwndDlg, conf);
 }
-
-/*============================================================================*/
-/* Screen config                                                              */
-/*============================================================================*/
-
-/* Install screen config */
-
-void wguiInstallScreenConfig(HWND DlgHWND, cfg *conf) {
-  HWND ResChoice = GetDlgItem(DlgHWND, IDC_COMBO_SCREEN_RESOLUTION);
-  HWND SkipChoice = GetDlgItem(DlgHWND, IDC_COMBO_SCREEN_FRAMESKIP);
-  felist *reslist;
-  LON resindex, i;
-  STR stmp[32];
-
-  /* Add resolution choices */
-
-  resindex = -1;
-  i = 0;
-  for (reslist = drawGetModes();
-       reslist != NULL; 
-       reslist = listNext(reslist)) {
-    draw_mode *dm = listNode(reslist);
-    ComboBox_AddString(ResChoice, dm->name);
-    if ((dm->width == cfgGetScreenWidth(conf)) &&
-	(dm->height == cfgGetScreenHeight(conf)) &&
-	(dm->windowed == cfgGetScreenWindowed(conf)) &&
-	((dm->windowed) ||
-	 ((!dm->windowed) &&
-	  ((dm->bits == cfgGetScreenColorBits(conf)) &&
-	   ((cfgGetScreenRefresh(conf) == 0) ||
-	    (dm->refresh == cfgGetScreenRefresh(conf)))))))
-      resindex = i;
-    i++;
-  }
-  if (resindex == -1) resindex = 0;
-  ComboBox_SetCurSel(ResChoice, resindex);
-
-  /* Add frameskip rate choices */
-
-  for (i = 1; i <= 25; i++) {
-    sprintf(stmp, "1 / %d", i);
-    ComboBox_AddString(SkipChoice, stmp);
-  }
-  ComboBox_SetCurSel(SkipChoice, cfgGetFrameskipRatio(conf));
-
-  /* Add horisontal scale options */
-
-  if (cfgGetHorizontalScale(conf) == 1)
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_HSCALE_SINGLE), TRUE);
-  else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_HSCALE_DOUBLE), TRUE);
-
-  /* Add vertical scale options */
-
-  if (cfgGetScanlines(conf))
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_VSCALE_SCANLINES),
-		    TRUE);
-  else if (cfgGetVerticalScale(conf) == 1)
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_VSCALE_SINGLE), TRUE);
-  else
-    Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_VSCALE_DOUBLE), TRUE);
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SCREEN_VSCALE_INTERLACE),
-		  cfgGetDeinterlace(conf));
-}
-
-/* Extract screen config */
-
-void wguiExtractScreenConfig(HWND DlgHWND, cfg *conf) {
-  ULO resindex;
-  draw_mode *resmode;
-  BOOLE check;
-
-  /* Get current resolution */
-
-  resindex = ComboBox_GetCurSel(GetDlgItem(DlgHWND,
-					   IDC_COMBO_SCREEN_RESOLUTION));
-  resmode = (draw_mode *) listNode(listIndex(drawGetModes(), resindex));
-  cfgSetScreenWidth(conf, resmode->width);
-  cfgSetScreenHeight(conf, resmode->height);
-  cfgSetScreenWindowed(conf, resmode->windowed);
-  if (resmode->windowed) {
-    cfgSetScreenRefresh(conf, 0);
-    cfgSetScreenColorBits(conf, 0);
-  }
-  else {
-    cfgSetScreenRefresh(conf, resmode->refresh);
-    cfgSetScreenColorBits(conf, resmode->bits);
-  }
-
-  /* Get current frameskip */
-
-  cfgSetFrameskipRatio(conf,
-		       ComboBox_GetCurSel(GetDlgItem(DlgHWND,
-					      IDC_COMBO_SCREEN_FRAMESKIP)));
-
-  /* Get current horisontal scale */
-
-  check = Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_HSCALE_SINGLE));
-  cfgSetHorisontalScale(conf, (check) ? 1 : 2);
-
-  /* Get current vertical scale */
-
-  check = Button_GetCheck(GetDlgItem(DlgHWND,
-				     IDC_RADIO_SCREEN_VSCALE_SCANLINES));
-  if (check) {
-    cfgSetVerticalScale(conf, 1);
-    cfgSetScanlines(conf, TRUE);
-  }
-  else {
-    check = Button_GetCheck(GetDlgItem(DlgHWND,
-				       IDC_RADIO_SCREEN_VSCALE_SINGLE));
-    cfgSetScanlines(conf, FALSE);
-    cfgSetVerticalScale(conf, (check) ? 1 : 2);
-  }
-  cfgSetDeinterlace(conf, Button_GetCheck(GetDlgItem(DlgHWND,
-					   IDC_CHECK_SCREEN_VSCALE_INTERLACE)));
-}
-
 
 /*============================================================================*/
 /* List view selection investigate                                            */
@@ -2076,7 +1668,7 @@ BOOL CALLBACK wguiCPUDialogProc(HWND hwndDlg,
 /* Dialog Procedure for the floppy property sheet                             */
 /*============================================================================*/
 
-void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, HWND hwndEdit, ULO index) {
+void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, int editIdentifier, ULO index) {
   STR filename[CFG_FILENAME_LENGTH];
   STR pathname[CFG_FILENAME_LENGTH];
   BYT *strpointer;
@@ -2094,7 +1686,7 @@ void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, HWND hwndEdit, ULO index) {
 	pathname[strlen(filename) - strlen(strpointer)] = '\0';
 	cfgSetLastUsedDiskDir(conf, pathname);
 	
-    Edit_SetText(hwndEdit, cfgGetDiskImage(conf, index));
+    ccwEditSetText(hwndDlg, editIdentifier, cfgGetDiskImage(conf, index));
   }
 }
 
@@ -2111,48 +1703,32 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg,
       if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
 	  case IDC_BUTTON_DF0_FILEDIALOG:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME),
-				0);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF0_IMAGENAME, 0);
 	    break;
 	  case IDC_BUTTON_DF1_FILEDIALOG:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME),
-				1);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF1_IMAGENAME, 1);
 	    break;
 	  case IDC_BUTTON_DF2_FILEDIALOG:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME),
-				2);
+	    wguiSelectDiskImage(wgui_cfg, hwndDlg, IDC_EDIT_DF2_IMAGENAME, 2);
 	    break;
 	  case IDC_BUTTON_DF3_FILEDIALOG:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME),
-				3);
+	    wguiSelectDiskImage(wgui_cfg, hwndDlg, IDC_EDIT_DF3_IMAGENAME, 3);
 	    break;
 	  case IDC_BUTTON_DF0_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 0, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME),
-		         cfgGetDiskImage(wgui_cfg, 0));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME, cfgGetDiskImage(wgui_cfg, 0));
 	    break;
 	  case IDC_BUTTON_DF1_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 1, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME),
-		         cfgGetDiskImage(wgui_cfg, 1));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME, cfgGetDiskImage(wgui_cfg, 1));
 	    break;
 	  case IDC_BUTTON_DF2_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 2, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME),
-		         cfgGetDiskImage(wgui_cfg, 2));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME, cfgGetDiskImage(wgui_cfg, 2));
 	    break;
 	  case IDC_BUTTON_DF3_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 3, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME),
-		         cfgGetDiskImage(wgui_cfg, 3));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME, cfgGetDiskImage(wgui_cfg, 3));
 	    break;
 	  default:
 	    break;
@@ -2200,7 +1776,7 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 		  pathname[strlen(filename) - strlen(strpointer)] = '\0';
 		  iniSetLastUsedKickImageDir(wgui_ini, pathname);
 
-		  Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_KICKSTART), cfgGetKickImage(wgui_cfg));
+		  ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART, cfgGetKickImage(wgui_cfg));
 	    }
 	    break;
 	  case IDC_BUTTON_KEYFILE_FILEDIALOG:
@@ -2217,8 +1793,7 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 		  pathname[strlen(filename) - strlen(strpointer)] = '\0';
 		  iniSetLastUsedKeyDir(wgui_ini, pathname);
 
-	      Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_KEYFILE),
-			   cfgGetKey(wgui_cfg));
+	      ccwEditSetText(hwndDlg, IDC_EDIT_KEYFILE, cfgGetKey(wgui_cfg));
 	    }
 	    break;
 	  default:
@@ -2270,23 +1845,23 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 				case IDC_CHECK_FULLSCREEN:
 					switch (HIWORD(wParam)) {
 						case BN_CLICKED:
-							if (!Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_FULLSCREEN))) {
+							if (!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN)) {
 								// the checkbox was unchecked - going to windowed
-								wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (pwgui_dm->numberofwindowed - 1));					
-								wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
+								ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));					
+								ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
 								pwgui_dm_match = listNode(pwgui_dm->reswindowed);
-								wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+								wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 								ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
 								ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
 								Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
 							} else {
 								// the checkbox was checked 
-								comboboxIndexColorBits = wguiGetComboboxCurrentSelection(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS));
+								comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
 								selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
-								wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
-								wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+								ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+								ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
 								pwgui_dm_match = listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
-								wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+								wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 								ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
 								Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
 							}
@@ -2296,22 +1871,21 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 				case IDC_COMBO_COLOR_BITS:
 					switch (HIWORD(wParam)) {
 						case CBN_SELCHANGE:
-							comboboxIndexColorBits = wguiGetComboboxCurrentSelection(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS));
+							comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
 							selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
-							wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
-							wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-							pwgui_dm_match = listNode(wguiGetMatchingList(!Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_FULLSCREEN)), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
-							wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+							ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+							ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+							pwgui_dm_match = listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+							wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 							break;
 					}
 					break;
 				case IDC_CHECK_SCANLINES:
 					switch (HIWORD(wParam)) {
 						case BN_CLICKED:
-							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES))) {
+							if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_SCANLINES)) {
 								// scanlines was checked
-								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_VERTICAL_SCALE), FALSE);
-								//Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE), FALSE);
+								ccwButtonUncheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE);
 							} 
 							break;
 					}
@@ -2319,19 +1893,9 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 				case IDC_CHECK_VERTICAL_SCALE:
 					switch (HIWORD(wParam)) {
 						case BN_CLICKED:
-							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_VERTICAL_SCALE))) {
+							if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE)) {
 								// vertical scale was checked
-								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
-							} 
-							break;
-					}
-					break;
-				case IDC_CHECK_HORIZONTAL_SCALE:
-					switch (HIWORD(wParam)) {
-						case BN_CLICKED:
-							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE))) {
-								// horizontal scale was checked
-								//Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
+								ccwButtonUncheck(hwndDlg, IDC_CHECK_SCANLINES);
 							} 
 							break;
 					}
@@ -2341,10 +1905,10 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 		case WM_NOTIFY:
 			switch ((int) wParam) {
 			case IDC_SLIDER_SCREEN_AREA:
-				wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+				wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 				break;
 			case IDC_SLIDER_FRAME_SKIPPING:
-				wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_FRAME_SKIPPING), GetDlgItem(hwndDlg, IDC_STATIC_FRAME_SKIPPING), &wguiGetFrameSkippingStrWithIndex);
+				wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
 				break;
 			}
 			break;
@@ -2400,7 +1964,7 @@ BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg,
 	case WM_NOTIFY:
 	  buffer_length = SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0);
 	  sprintf(buffer, "%d", buffer_length);
-	  Static_SetText(GetDlgItem(hwndDlg, IDC_STATIC_BUFFER_LENGTH), buffer);
+	  ccwStaticSetText(hwndDlg, IDC_STATIC_BUFFER_LENGTH, buffer);
 	  break;
   }
   return FALSE;
@@ -2419,12 +1983,9 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg,
     case WM_INITDIALOG:
       {
 	STR stmp[16];
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME),
-		     wgui_current_filesystem_edit->volumename);
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH),
-		     wgui_current_filesystem_edit->rootpath);
-	Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY),
-			wgui_current_filesystem_edit->readonly);
+	ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
+	ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
+	ccwButtonCheckConditional(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY,	wgui_current_filesystem_edit->readonly);
       }
       return TRUE;
     case WM_COMMAND:
@@ -2435,17 +1996,12 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg,
 				    wgui_current_filesystem_edit->rootpath, 
 				    CFG_FILENAME_LENGTH,
 				    "Select Filesystem Root")) {
-	      Edit_SetText(GetDlgItem(hwndDlg,
-				      IDC_EDIT_FILESYSTEM_ADD_ROOTPATH),
-			   wgui_current_filesystem_edit->rootpath);
+	      ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
 	    }
 	    break;
 	  case IDOK:
 	  {
-	    Edit_GetText(GetDlgItem(hwndDlg,
-				    IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME),
-			 wgui_current_filesystem_edit->volumename,
-			 64);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename, 64);
 	    if (wgui_current_filesystem_edit->volumename[0] == '\0') {
 	      MessageBox(hwndDlg,
 			 "You must specify a volume name",
@@ -2453,10 +2009,7 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg,
 			 0);
 	      break;
 	    }
-	    Edit_GetText(GetDlgItem(hwndDlg,
-				    IDC_EDIT_FILESYSTEM_ADD_ROOTPATH),
-			 wgui_current_filesystem_edit->rootpath,
-			 CFG_FILENAME_LENGTH);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath, CFG_FILENAME_LENGTH);
 	    if (wgui_current_filesystem_edit->rootpath[0] == '\0') {
 	      MessageBox(hwndDlg,
 			 "You must specify a root path",
@@ -2464,9 +2017,7 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg,
 			 0);
 	      break;
 	    }
-	    wgui_current_filesystem_edit->readonly =
-	            Button_GetCheck(GetDlgItem(hwndDlg,
-					    IDC_CHECK_FILESYSTEM_ADD_READONLY));
+	    wgui_current_filesystem_edit->readonly = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY);
 	  }
 	  case IDCANCEL:
 	    EndDialog(hwndDlg, LOWORD(wParam));
@@ -2570,11 +2121,9 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 					LPARAM lParam) {
   switch (uMsg) {
     case WM_INITDIALOG:
-      {
-		Edit_SetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_NAME), "");
-		Edit_SetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_SIZE), "0");
-	  }
-	return TRUE;
+      ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, "");
+			ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE, "0");
+	  	return TRUE;
     case WM_COMMAND:
       if (HIWORD(wParam) == BN_CLICKED)
 		switch (LOWORD(wParam)) {
@@ -2585,8 +2134,7 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 				BYT *strpointer;
 				STR fname[CFG_FILENAME_LENGTH];
 				
-				Edit_GetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_NAME),
-					hfile.filename, 256);
+				ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, hfile.filename, 256);
 
 				strncpy(fname, hfile.filename, CFG_FILENAME_LENGTH);
 				strupr(fname);
@@ -2603,11 +2151,10 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 					MessageBox(hwndDlg, "You must specify a hardfile name", "Create Hardfile", 0);
 					break;
 				}
-				Edit_GetText(GetDlgItem(hwndDlg, IDC_CREATE_HARDFILE_SIZE),
-					stmp, 32);
+				ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE,	stmp, 32);
 				hfile.size = atoi(stmp);
 
-				if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES)) == TRUE) {
+				if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES) == TRUE) {
 					hfile.size = hfile.size * 1024 * 1024;
 				}
   				if ((hfile.size < 1) && (hfile.size > 4294967295)) {
@@ -2631,25 +2178,21 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 					UINT uMsg,
 					WPARAM wParam,
 					LPARAM lParam) {
+  STR stmp[16];
+
   switch (uMsg) {
     case WM_INITDIALOG:
-      {
-	STR stmp[16];
-	sprintf(stmp, "%d", wgui_current_hardfile_edit_index);
-	Static_SetText(GetDlgItem(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT), stmp);
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME),
-		     wgui_current_hardfile_edit->filename);
-	sprintf(stmp, "%d", wgui_current_hardfile_edit->sectorspertrack);
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS), stmp);
-	sprintf(stmp, "%d", wgui_current_hardfile_edit->surfaces);
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES), stmp);
-	sprintf(stmp, "%d", wgui_current_hardfile_edit->reservedblocks);
-	Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED), stmp);
-	sprintf(stmp, "%d", wgui_current_hardfile_edit->bytespersector);
-	Edit_SetText(GetDlgItem(hwndDlg, 
-				IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR),
-		     stmp);
-      }
+			sprintf(stmp, "%d", wgui_current_hardfile_edit_index);
+			ccwStaticSetText(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT, stmp);
+			ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
+			sprintf(stmp, "%d", wgui_current_hardfile_edit->sectorspertrack);
+			ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp);
+			sprintf(stmp, "%d", wgui_current_hardfile_edit->surfaces);
+			ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp);
+			sprintf(stmp, "%d", wgui_current_hardfile_edit->reservedblocks);
+			ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp);
+			sprintf(stmp, "%d", wgui_current_hardfile_edit->bytespersector);
+			ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp);
       return TRUE;
     case WM_COMMAND:
       if (HIWORD(wParam) == BN_CLICKED)
@@ -2660,16 +2203,13 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 			       CFG_FILENAME_LENGTH,
 			       "Select Hardfile", 
 			       FSEL_HDF)) {
-	      Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME),
-			   wgui_current_hardfile_edit->filename);
+	      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
 	    }
 	    break;
 	  case IDOK:
 	  {
 	    STR stmp[32];
-	    Edit_GetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME),
-			 wgui_current_hardfile_edit->filename,
-			 256);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename, 256);
 	    if (wgui_current_hardfile_edit->filename[0] == '\0') {
 	      MessageBox(hwndDlg,
 			 "You must specify a hardfile name",
@@ -2677,9 +2217,7 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 			 0);
 	      break;
 	    }
-	    Edit_GetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS),
-			 stmp,
-			 32);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp, 32);
 	    if (atoi(stmp) < 1) {
 	      MessageBox(hwndDlg,
 			 "Sectors Per Track must be 1 or higher",
@@ -2688,9 +2226,7 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 	      break;
 	    }
 	    wgui_current_hardfile_edit->sectorspertrack = atoi(stmp);
-	    Edit_GetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES),
-			 stmp,
-			 32);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp, 32);
 	    if (atoi(stmp) < 1) {
 	      MessageBox(hwndDlg,
 			 "The number of surfaces must be 1 or higher",
@@ -2699,9 +2235,7 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 	      break;
 	    }
 	    wgui_current_hardfile_edit->surfaces = atoi(stmp);
-	    Edit_GetText(GetDlgItem(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED),
-			 stmp,
-			 32);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp, 32);
 	    if (atoi(stmp) < 1) {
 	      MessageBox(hwndDlg,
 			 "The number of reserved blocks must be 1 or higher",
@@ -2710,10 +2244,7 @@ BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg,
 	      break;
 	    }
 	    wgui_current_hardfile_edit->reservedblocks = atoi((char *) stmp);
-	    Edit_GetText(GetDlgItem(hwndDlg,
-				    IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR),
-			 stmp,
-			 32);
+	    ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp, 32);
 	    wgui_current_hardfile_edit->bytespersector = atoi((char *) stmp);
 	  }
 	  case IDCANCEL:
@@ -2885,29 +2416,6 @@ BOOL CALLBACK wguiVariousDialogProc(HWND hwndDlg,
   return FALSE;
 }
 
-
-/*============================================================================*/
-/* Dialog Procedure for the screen property sheet                             */
-/*============================================================================*/
-
-BOOL CALLBACK wguiScreenDialogProc(HWND hwndDlg,
-				   UINT uMsg,
-				   WPARAM wParam,
-				   LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      wguiInstallScreenConfig(hwndDlg, wgui_cfg);
-      return TRUE;
-    case WM_COMMAND:
-      break;
-    case WM_DESTROY:
-      wguiExtractScreenConfig(hwndDlg, wgui_cfg);
-      break;
-  }
-  return FALSE;
-}
-
-
 /*============================================================================*/
 /* Creates the configuration dialog                                           */
 /* Does this by first initializing the array of PROPSHEETPAGE structs to      */
@@ -2993,10 +2501,10 @@ BOOL CALLBACK wguiAboutDialogProc(HWND hwndDlg,
 /* About box                                                                  */
 /*============================================================================*/
 
-void wguiAbout(HWND DlgHWND) {
+void wguiAbout(HWND hwndDlg) {
   DialogBox(win_drv_hInstance,
             MAKEINTRESOURCE(IDD_ABOUT),
-            DlgHWND,
+            hwndDlg,
 	    wguiAboutDialogProc);
 }
 
@@ -3070,48 +2578,32 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
 	  case IDC_BUTTON_DF0_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN),
-				0);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, 0);
 	    break;
 	  case IDC_BUTTON_DF1_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN),
-				1);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN,	1);
 	    break;
 	  case IDC_BUTTON_DF2_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN),
-				2);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN,	2);
 	    break;
 	  case IDC_BUTTON_DF3_FILEDIALOG_MAIN:
-	    wguiSelectDiskImage(wgui_cfg,
-				hwndDlg,
-				GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN),
-				3);
+	    wguiSelectDiskImage(wgui_cfg,	hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, 3);
 	    break;
 	  case IDC_BUTTON_DF0_EJECT_MAIN:
 	    cfgSetDiskImage(wgui_cfg, 0, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN),
-		         cfgGetDiskImage(wgui_cfg, 0));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 0));
 	    break;
 	  case IDC_BUTTON_DF1_EJECT_MAIN:
 	    cfgSetDiskImage(wgui_cfg, 1, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN),
-		         cfgGetDiskImage(wgui_cfg, 1));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 1));
 	    break;
 	  case IDC_BUTTON_DF2_EJECT_MAIN:
 	    cfgSetDiskImage(wgui_cfg, 2, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN),
-		         cfgGetDiskImage(wgui_cfg, 2));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 2));
 	    break;
 	  case IDC_BUTTON_DF3_EJECT_MAIN:
 	    cfgSetDiskImage(wgui_cfg, 3, "");
-	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN),
-		         cfgGetDiskImage(wgui_cfg, 3));
+	    ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN, cfgGetDiskImage(wgui_cfg, 3));
 	    break;
 	  default:
 	    break;
@@ -3162,7 +2654,7 @@ BOOLE wguiEnter(void) {
 			        NULL,
 			        wguiDialogProc); 
 	SetWindowPos(wgui_hDialog, NULL, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), -1, -1, SWP_NOSIZE);
-    wguiStartupPost();
+  wguiStartupPost();
 	wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	
 
@@ -3289,7 +2781,6 @@ void wguiStartup(void) {
 
 void wguiStartupPost(void) {
 
-	wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	if (wgui_emulation_state) {
 		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
 			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
@@ -3299,7 +2790,6 @@ void wguiStartupPost(void) {
 			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
 			MAKEINTRESOURCE(IDB_POWER_LED_OFF)));
 	}
-
 }
 
 /*============================================================================*/
