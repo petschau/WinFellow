@@ -23,6 +23,7 @@
 #include "graph.h"
 #include "bus.h"
 #include "sound.h"
+#include "draw.h"
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -1265,13 +1266,27 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
   	int maxscroll;
   	ULO temp = 0;
+    UBY *line1;
+    UBY *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
+    // make function compatible for no line skipping
+    if (graph_allow_bpl_line_skip)
+    {
+      line1 = graph_line1_tmp;
+      line2 = graph_line2_tmp;
+    }
+    else
+    {
+      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
+      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
+    }
+
 	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 	  {
 		  // high resolution
-		  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddhiscroll);		
+		  dest_odd = (ULO*) (line1 + graph_DDF_start + oddhiscroll);		
 
 		  // Find out how many pixels the bitplane is scrolled
 		  // the first pixels must then be zeroed to avoid garbage.
@@ -1279,7 +1294,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
 	  } 
 	  else 
 	  {
-		  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
+		  dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
 
 		  // Find out how many pixels the bitplane is scrolled
 		  // the first pixels must then be zeroed to avoid garbage.
@@ -1289,8 +1304,8 @@ static __inline void graphDecodeGeneric(int bitplanes)
     // clear edges
 	  while (maxscroll > 0)
 	  {
-	    graph_line1_tmp[graph_DDF_start + temp] = 0;
-	    graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+	    line1[graph_DDF_start + temp] = 0;
+	    line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
 	    maxscroll--;
 	    temp++;
 	  }
@@ -1303,12 +1318,12 @@ static __inline void graphDecodeGeneric(int bitplanes)
 		  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 		  {
 			  // high resolution
-			  dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenhiscroll);
+			  dest_even = (ULO*) (line1 + graph_DDF_start + evenhiscroll);
 		  }
 		  else
 		  {
 			  // low resolution
-			  dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenscroll);
+			  dest_even = (ULO*) (line1 + graph_DDF_start + evenscroll);
 		  }
 		  end_even = dest_even + bpl_length_in_bytes * 2; 
     }
@@ -1363,30 +1378,44 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
   
 	  int maxscroll;
 	  ULO temp;
+    UBY *line1;
+    UBY *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
+
+    // make function compatible for no line skipping
+    if (graph_allow_bpl_line_skip)
+    {
+      line1 = graph_line1_tmp;
+      line2 = graph_line2_tmp;
+    }
+    else
+    {
+      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
+      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
+    }
 
 	  // clear edges
     maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 
 	  temp = 0;
 	  while (maxscroll > 0) {
-		  graph_line1_tmp[graph_DDF_start + temp] = 0;
-		  graph_line2_tmp[graph_DDF_start + temp] = 0;
-		  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		  graph_line2_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+		  line1[graph_DDF_start + temp] = 0;
+		  line2[graph_DDF_start + temp] = 0;
+		  line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+		  line2[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
 		  maxscroll--;
 		  temp++;
 	  }
 	  
 	  // setup loop
-	  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
+	  dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
 	  if (bitplanes > 1)
     {
 		  // low resolution
-		  dest_even = (ULO*) (graph_line2_tmp + graph_DDF_start + evenscroll);
+		  dest_even = (ULO*) (line2 + graph_DDF_start + evenscroll);
 		  end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
@@ -1438,13 +1467,27 @@ static __inline void graphDecodeHi320Generic(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+    UBY *line1;
+    UBY *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
+    // make function compatible for no line skipping
+    if (graph_allow_bpl_line_skip)
+    {
+      line1 = graph_line1_tmp;
+      line2 = graph_line2_tmp;
+    }
+    else
+    {
+      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
+      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
+    }
+
 	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 	  {
 		  // high resolution
-		  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
+		  dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
 	   
       // setup loop
       end_odd = dest_odd + bpl_length_in_bytes; 
@@ -1452,7 +1495,7 @@ static __inline void graphDecodeHi320Generic(int bitplanes)
 	    if (bitplanes > 1)
       {
 		    // high resolution
-			  dest_even = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
+			  dest_even = (ULO*) (line1 + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
 		    end_even = dest_even + bpl_length_in_bytes; 
       }
 
@@ -1503,17 +1546,31 @@ static __inline void graphDecodeDualHi320Generic(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-  
+    UBY *line1;
+    UBY *line2;
+    
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
+    // make function compatible for no line skipping
+    if (graph_allow_bpl_line_skip)
+    {
+      line1 = graph_line1_tmp;
+      line2 = graph_line2_tmp;
+    }
+    else
+    {
+      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
+      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
+    }
+
 	  // setup loop
-	  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddscroll >> 1));			
+	  dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddscroll >> 1));			
     end_odd = dest_odd + bpl_length_in_bytes; 
     
 	  if (bitplanes > 1)
     {
 		  // low resolution
-		  dest_even = (ULO*) (graph_line2_tmp + (graph_DDF_start >> 1)+ (evenscroll >> 1));
+		  dest_even = (ULO*) (line2 + (graph_DDF_start >> 1)+ (evenscroll >> 1));
 		  end_even = dest_even + bpl_length_in_bytes; 
     }
 
@@ -1774,6 +1831,7 @@ void graphCalculateWindow_C(void)
 		{
 			graph_DDF_start = graph_DDF_word_count = 0;
 			graph_DIW_first_visible = graph_DIW_last_visible = 256;
+      return;
 		}
 		
 		ddfstop_aligned = ddfstop & 0x07;
