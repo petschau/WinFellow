@@ -25,6 +25,7 @@
 
 #include <process.h>
 #include <commctrl.h>
+#include <shlobj.h>
 #include <prsht.h>
 #include "gui_general.h"
 #include "gui_debugger.h"
@@ -720,37 +721,31 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
 }
 
 BOOLE wguiSelectDirectory(HWND hwndDlg,
-			  STR *filename, 
+			  STR *szPath, 
+			  STR *szDescription,
 			  ULO filenamesize,
-			  STR *title) {
-  OPENFILENAME ofn;
-  STR *filters = NULL;
+			  STR *szTitle) {
+	
+	BROWSEINFO bi = {
+		hwndDlg,								// hwndOwner
+		NULL,									// pidlRoot
+		szPath,									// pszDisplayName
+		szTitle,								// lpszTitle
+		BIF_RETURNONLYFSDIRS,					// ulFlags
+		NULL,									// lpfn
+		NULL,									// lParam
+		NULL									// iImage
+	};
+		
+	LPITEMIDLIST pidlTarget;
 
-  ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
-  ofn.hInstance = win_drv_hInstance;
-  ofn.lpstrFilter = filters;
-  ofn.lpstrCustomFilter = NULL;
-  ofn.nMaxCustFilter = 0;
-  ofn.nFilterIndex = 1;
-  filename[0] = '\0';
-  ofn.lpstrFile = filename;
-  ofn.nMaxFile = filenamesize;
-  ofn.lpstrFileTitle = NULL;
-  ofn.nMaxFileTitle = 0;
-  ofn.lpstrInitialDir = NULL;
-  ofn.lpstrTitle = title;
-  ofn.Flags = OFN_EXPLORER |
-              OFN_FILEMUSTEXIST |
-              OFN_NOCHANGEDIR;
-  ofn.nFileOffset = 0;
-  ofn.nFileExtension = 0;
-  ofn.lpstrDefExt = NULL;
-  ofn.lCustData = (long) NULL;
-  ofn.lpfnHook = NULL;
-  ofn.lpTemplateName = NULL;
-  return GetOpenFileName(&ofn);
+	if(pidlTarget = SHBrowseForFolder(&bi)) {
+		strcpy(szDescription, bi.pszDisplayName);
+		SHGetPathFromIDList(pidlTarget, szPath);   // Make sure it is a path
+		CoTaskMemFree(pidlTarget);
+	}
 }
+
 
 /*============================================================================*/
 /* Install history of configuration files into window menu                    */
@@ -2020,9 +2015,11 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
       if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
           case IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG:
-	    if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath, 
-			CFG_FILENAME_LENGTH, "Select Filesystem Root")) {
+	    if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath,
+			wgui_current_filesystem_edit->volumename, CFG_FILENAME_LENGTH, 
+			"Select Filesystem Root Directory:")) {
 	      ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
+		  ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
 	    }
 	    break;
 	  case IDOK:

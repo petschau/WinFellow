@@ -308,13 +308,13 @@ BEGIN
                     WS_TABSTOP,10,40,135,10
 END
 
-IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 186, 95
+IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 190, 94
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Filesystem Configuration"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,7,74,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,7,73,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,133,73,50,14
     LTEXT           "Volume Name:",IDC_STATIC,7,14,47,8
     LTEXT           "Root Path:",IDC_STATIC,7,30,35,8
     CONTROL         "Read-only",IDC_CHECK_FILESYSTEM_ADD_READONLY,"Button",
@@ -322,8 +322,7 @@ BEGIN
                     WS_EX_RIGHT
     EDITTEXT        IDC_EDIT_FILESYSTEM_ADD_ROOTPATH,55,28,115,12,
                     ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG,169,28,10,12,
-                    NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "...",IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG,173,28,10,12
     EDITTEXT        IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME,55,13,115,12,
                     ES_AUTOHSCROLL
 END
@@ -362,8 +361,7 @@ CAPTION "About WinFellow"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    LTEXT           "WinFellow alpha v0.4.3.2 - CVS",
-                    IDC_STATIC,67,50,80,8
+    LTEXT           "WinFellow alpha v0.4.3.2 - CVS",IDC_STATIC,67,50,80,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,
                     94,8,SS_NOTIFY
@@ -518,9 +516,9 @@ BEGIN
     IDD_FILESYSTEM_ADD, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
+        RIGHTMARGIN, 183
         TOPMARGIN, 7
-        BOTTOMMARGIN, 88
+        BOTTOMMARGIN, 87
     END
 
     IDD_HARDFILE_ADD, DIALOG
