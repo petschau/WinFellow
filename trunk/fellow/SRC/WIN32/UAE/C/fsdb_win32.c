@@ -107,12 +107,21 @@ uae_u32 filesys_parse_mask(uae_u32 mask)
 void fsdb_fill_file_attrs (a_inode *aino)
 {
     int mode;
+	int drivetype;
+	char drivename[3];
 
 	if((mode = GetFileAttributes(aino->nname)) == 0xFFFFFFFF) return;
 	
     aino->dir = (mode & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
     aino->amigaos_mode = (FILE_ATTRIBUTE_ARCHIVE & mode) ? 0 : A_FIBF_ARCHIVE;
-	aino->amigaos_mode = filesys_parse_mask(aino->amigaos_mode);
+
+	strncpy(drivename, aino->nname,2);
+	drivename[2] = '\0';
+    drivetype = GetDriveType(drivename);
+     
+	/* always toggle exec, read, write, delete on CD-ROMs */
+	if (drivetype != DRIVE_CDROM) 
+		aino->amigaos_mode = filesys_parse_mask(aino->amigaos_mode);
 }
 
 int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
