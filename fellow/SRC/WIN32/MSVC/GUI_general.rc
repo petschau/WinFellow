@@ -162,41 +162,50 @@ STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Sound"
 FONT 8, "MS Sans Serif"
 BEGIN
-    GROUPBOX        "Sound Emulation:",IDC_STATIC,5,5,75,60
-    GROUPBOX        "Sample Rate:",IDC_STATIC,85,5,55,60
-    GROUPBOX        "Channels:",IDC_STATIC,145,5,45,35
-    GROUPBOX        "Bits:",IDC_STATIC,145,40,45,35
-    GROUPBOX        "Filter:",IDC_STATIC,5,70,50,45
-    CONTROL         "Stream to WAV-file",IDC_CHECK_SOUND_WAV,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,5,140,75,10
-    CONTROL         "No Emulation",IDC_RADIO_SOUND_NO_EMULATION,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,20,58,10
-    CONTROL         "Play Sound",IDC_RADIO_SOUND_PLAY,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,35,52,10
-    CONTROL         "Silent Emulation",IDC_RADIO_SOUND_SILENT_EMULATION,
-                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,10,50,66,10
-    CONTROL         "31300 hz",IDC_RADIO_SOUND_31300,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,90,30,45,10
-    CONTROL         "44100 hz",IDC_RADIO_SOUND_44100,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,90,20,45,10
-    CONTROL         "22050 hz",IDC_RADIO_SOUND_22050,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,90,40,45,10
-    CONTROL         "15650 hz",IDC_RADIO_SOUND_15650,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,90,50,45,10
-    CONTROL         "Stereo",IDC_RADIO_SOUND_STEREO,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,150,15,37,10
-    CONTROL         "Mono",IDC_RADIO_SOUND_MONO,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,150,25,34,10
-    CONTROL         "16 Bits",IDC_RADIO_SOUND_16BITS,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,150,50,37,10
-    CONTROL         "8 Bits",IDC_RADIO_SOUND_8BITS,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,150,60,33,10
-    CONTROL         "Original",IDC_RADIO_SOUND_FILTER_ORIGINAL,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,80,39,10
-    CONTROL         "Always",IDC_RADIO_SOUND_FILTER_ALWAYS,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,90,38,10
-    CONTROL         "Never",IDC_RADIO_SOUND_FILTER_NEVER,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,100,35,10
+    GROUPBOX        "sound emulation",IDC_STATIC,5,5,70,60
+    GROUPBOX        "sample rate",IDC_STATIC,5,75,70,75
+    GROUPBOX        "channels",IDC_STATIC,185,5,45,45
+    GROUPBOX        "precision",IDC_STATIC,185,55,45,45
+    GROUPBOX        "filter",IDC_STATIC,80,90,45,60
+    CONTROL         "stream to WAV",IDC_CHECK_SOUND_WAV,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,90,35,63,10
+    CONTROL         "no sound",IDC_RADIO_SOUND_NO_EMULATION,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,20,45,10
+    CONTROL         "play sound",IDC_RADIO_SOUND_PLAY,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,35,50,10
+    CONTROL         "silent emulation",IDC_RADIO_SOUND_SILENT_EMULATION,
+                    "Button",BS_AUTORADIOBUTTON | WS_TABSTOP,10,50,64,10
+    CONTROL         "31300 Hz",IDC_RADIO_SOUND_31300,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,105,47,10
+    CONTROL         "44100 Hz",IDC_RADIO_SOUND_44100,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,91,47,10
+    CONTROL         "22050 Hz",IDC_RADIO_SOUND_22050,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,120,47,10
+    CONTROL         "15650 Hz",IDC_RADIO_SOUND_15650,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,10,135,47,10
+    CONTROL         "stereo",IDC_RADIO_SOUND_STEREO,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,190,20,35,10
+    CONTROL         "mono",IDC_RADIO_SOUND_MONO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,190,35,33,10
+    CONTROL         "16 bit",IDC_RADIO_SOUND_16BITS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,190,70,33,10
+    CONTROL         "8 bit",IDC_RADIO_SOUND_8BITS,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,190,85,29,10
+    CONTROL         "original",IDC_RADIO_SOUND_FILTER_ORIGINAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,85,105,38,10
+    CONTROL         "always",IDC_RADIO_SOUND_FILTER_ALWAYS,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,85,135,37,10
+    CONTROL         "never",IDC_RADIO_SOUND_FILTER_NEVER,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,85,120,34,10
+    GROUPBOX        "buffer length",IDC_STATIC,130,100,100,50
+    CONTROL         "Slider1",IDC_SLIDER_SOUND_BUFFER_LENGTH,
+                    "msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,
+                    135,115,90,15
+    GROUPBOX        "options",IDC_STATIC,80,5,100,60
+    CONTROL         "hardware notification",IDC_CHECK_SOUND_NOTIFICATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,20,81,10
+    LTEXT           "10",IDC_STATIC_BUFFER_LENGTH,170,130,9,8
+    LTEXT           "ms",IDC_STATIC,180,130,10,8
 END
 
 IDD_FILESYSTEM DIALOG DISCARDABLE  0, 0, 235, 156
@@ -411,6 +420,53 @@ BEGIN
     EDITTEXT        IDC_CREATE_HARDFILE_NAME,60,10,78,12,ES_AUTOHSCROLL
 END
 
+IDD_DISPLAY DIALOG DISCARDABLE  0, 0, 247, 161
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Display"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "chipset",IDC_STATIC,5,55,65,100
+    CONTROL         "original",IDC_RADIO_BLITTER_NORMAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,80,70,38,10
+    CONTROL         "immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,80,85,47,10
+    CONTROL         "OCS Agnus",IDC_RADIO_BLITTER_OCS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,70,53,10
+    CONTROL         "ECS Agnus",IDC_RADIO_BLITTER_ECS,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,85,52,10
+    CONTROL         "ECS Denise",IDC_RADIO2,"Button",BS_AUTORADIOBUTTON | 
+                    WS_DISABLED,10,100,54,10
+    CONTROL         "Full ECS",IDC_RADIO3,"Button",BS_AUTORADIOBUTTON | 
+                    WS_DISABLED,10,115,43,10
+    GROUPBOX        "Agnus blitter",IDC_STATIC,75,55,65,50
+    GROUPBOX        "options",IDC_STATIC,145,45,95,60
+    CONTROL         "interlace compensation",
+                    IDC_CHECK_SCREEN_VSCALE_INTERLACE,"Button",
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,150,75,89,10
+    GROUPBOX        "screen area",IDC_STATIC,5,5,135,45
+    CONTROL         "Slider1",IDC_SLIDER1,"msctls_trackbar32",TBS_AUTOTICKS | 
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,30,20,80,15
+    LTEXT           "less",IDC_STATIC,15,20,13,8
+    LTEXT           "more",IDC_STATIC,115,20,16,8
+    LTEXT           "640 by 400 pixels",IDC_STATIC,45,35,56,8,SS_CENTERIMAGE
+    COMBOBOX        IDC_COMBO5,150,20,85,15,CBS_DROPDOWN | CBS_SORT | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "full screen",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,150,60,48,10
+    GROUPBOX        "color",IDC_STATIC,145,5,95,35
+    CONTROL         "2x vertical",IDC_CHECK2,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,80,120,48,10
+    CONTROL         "2x horizontal",IDC_CHECK5,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,80,135,55,10
+    GROUPBOX        "pixel scaling",IDC_STATIC,75,110,65,45
+    CONTROL         "Slider2",IDC_SLIDER2,"msctls_trackbar32",TBS_AUTOTICKS | 
+                    TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,150,126,85,15
+    LTEXT           "1/1",IDC_STATIC,185,140,12,8,SS_CENTERIMAGE
+    CONTROL         "triple buffers",IDC_CHECK7,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,150,90,54,10
+    GROUPBOX        "frame skipping",IDC_STATIC,145,111,95,45
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -539,6 +595,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 91
     END
+
+    IDD_DISPLAY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 240
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 154
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -590,6 +654,12 @@ BEGIN
     BEGIN
         MENUITEM "&Multiple buffers",           ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS
 
+        POPUP "&Emulation speed"
+        BEGIN
+            MENUITEM "Original A500",               65535
+            MENUITEM "Fastest Possible (no sound)", ID_OPTIONS_EMULATIONSPEED_FASTESTPOSSIBLENOSOUND
+
+        END
     END
     POPUP "&Help"
     BEGIN
@@ -615,6 +685,19 @@ BEGIN
 0x2034, 0x424d, "\000" 
     IDC_COMBO_FAST, 0x403, 5, 0
 0x2038, 0x424d, "\000" 
+    0
+END
+
+IDD_DISPLAY DLGINIT
+BEGIN
+    IDC_COMBO5, 0x403, 20, 0
+0x7274, 0x6575, 0x6320, 0x6c6f, 0x726f, 0x2820, 0x3233, 0x6220, 0x7469, 
+0x0029, 
+    IDC_COMBO5, 0x403, 20, 0
+0x6968, 0x6867, 0x6320, 0x6c6f, 0x726f, 0x2820, 0x3631, 0x6220, 0x7469, 
+0x0029, 
+    IDC_COMBO5, 0x403, 11, 0
+0x3532, 0x2036, 0x6f63, 0x6f6c, 0x7372, "\000" 
     0
 END
 
