@@ -130,6 +130,7 @@ BOOLE soundDrvDSoundInitialize(void) {
   HRESULT res;
   ULO i;
 
+  fellowAddLog("Setting lpDSB to NULL\n");
   sound_drv_dsound_device_current.modes = NULL;
   sound_drv_dsound_device_current.lpDS = NULL;
   sound_drv_dsound_device_current.lpDSB = NULL;
@@ -334,6 +335,7 @@ void soundDrvDSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device) 
   if (dsound_device->lpDSB != NULL) {
     IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, 0);
     IDirectSoundBuffer_Release(dsound_device->lpDSB);
+    fellowAddLog("soundDrvDSoundPrimaryBufferRelease(), setting lpDSB to NULL");
     dsound_device->lpDSB = NULL;
   }
 }
@@ -678,7 +680,9 @@ BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device) {
   DWORD evt;
 
   if (WaitForSingleObject(dsound_device->data_available, 0) == WAIT_OBJECT_0)
+  {
     return TRUE;
+  }
   fellowAddLog("Data was not available\n");
   IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
   multi_events[0] = dsound_device->data_available;
@@ -874,11 +878,11 @@ BOOLE soundDrvEmulationStart(ULO rate,
 
 void soundDrvEmulationStop(void) {
   soundDrvAcquireMutex(&sound_drv_dsound_device_current);
-  soundDrvDSoundPlaybackStop(&sound_drv_dsound_device_current);
   SetEvent(sound_drv_dsound_device_current.notifications[2]);
   WaitForSingleObject(sound_drv_dsound_device_current.thread, INFINITE);
   CloseHandle(sound_drv_dsound_device_current.thread);
   sound_drv_dsound_device_current.thread = NULL;
+  soundDrvDSoundPlaybackStop(&sound_drv_dsound_device_current);
   soundDrvReleaseMutex(&sound_drv_dsound_device_current);
 }
 
