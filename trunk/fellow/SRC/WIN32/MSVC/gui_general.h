@@ -40,6 +40,12 @@
 #define IDD_HARDFILE_CREATE             150
 #define IDB_WINFELLOW_LOGO              154
 #define IDD_DIALOG1                     155
+#define IDI_ICON_DISPLAY                159
+#define IDI_ICON_SOUND                  167
+#define IDI_ICON_FLOPPY                 168
+#define IDI_ICON_HARDFILE               169
+#define IDI_ICON_FILESYSTEM             170
+#define IDI_ICON_CPU                    171
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -72,18 +78,21 @@
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 1023
 #define IDC_CHECK_VARIOUS_LED           1023
 #define IDC_CHECK_CREATE_HARDFILE_MEGABYTES 1023
+#define IDC_CHECK_FULLSCREEN            1023
 #define IDC_CHECK2                      1024
 #define IDC_RADIO1                      1024
 #define IDC_CHECK_DF1_ENABLED           1024
 #define IDC_RADIO_SOUND_NO_EMULATION    1024
 #define IDC_RADIO_SCREEN_HSCALE_SINGLE  1024
 #define IDC_CHECK_AUTOCONFIG_DISABLE    1024
+#define IDC_CHECK_VERTICAL_SCALE        1024
 #define IDC_CHECK3                      1025
 #define IDC_RADIO2                      1025
 #define IDC_CHECK_DF2_ENABLED           1025
 #define IDC_RADIO_SOUND_PLAY            1025
 #define IDC_RADIO_SCREEN_HSCALE_DOUBLE  1025
 #define IDC_CHECK_AUTOMOUNT_FILESYSTEMS 1025
+#define IDC_CHECK_SCANLINES             1025
 #define IDC_CHECK4                      1026
 #define IDC_RADIO3                      1026
 #define IDC_CHECK_DF3_ENABLED           1026
@@ -203,14 +212,17 @@
 #define IDC_GAMEPORT1_FIRE0             1119
 #define IDC_GAMEPORT1_FIRE1             1120
 #define IDC_GAMEPORT1_DOWN              1121
-#define IDC_SLIDER1                     1123
-#define IDC_COMBO5                      1124
-#define IDC_CHECK5                      1125
-#define IDC_SLIDER2                     1127
-#define IDC_CHECK7                      1128
+#define IDC_SLIDER_SCREEN_AREA          1123
+#define IDC_CHECK_HORIZONTAL_SCALE      1125
+#define IDC_SLIDER_FRAME_SKIPPING       1127
+#define IDC_CHECK_MULTIPLE_BUFFERS      1128
 #define IDC_CHECK_SOUND_NOTIFICATION    1129
 #define IDC_SLIDER_SOUND_BUFFER_LENGTH  1130
 #define IDC_STATIC_BUFFER_LENGTH        1131
+#define IDC_COMBO_COLOR_BITS            1132
+#define IDC_CHECK_INTERLACE             1133
+#define IDC_STATIC_SCREEN_AREA          1134
+#define IDC_STATIC_FRAME_SKIPPING       1135
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_FILE_OPENCONFIGURATION       40004
@@ -227,9 +239,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        157
+#define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40011
-#define _APS_NEXT_CONTROL_VALUE         1132
+#define _APS_NEXT_CONTROL_VALUE         1136
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
