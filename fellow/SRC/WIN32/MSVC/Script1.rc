@@ -26,19 +26,47 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_MAIN DIALOG DISCARDABLE  0, 0, 265, 103
+IDD_MAIN DIALOG DISCARDABLE  0, 0, 273, 170
 STYLE DS_MODALFRAME | DS_CENTER | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | 
     WS_SYSMENU
 CAPTION "WinFellow alpha v0.4.1 build 1"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
-    PUSHBUTTON      "&Start Emulation",IDC_START_EMULATION,204,7,56,16,
+    DEFPUSHBUTTON   "&Start Emulation",IDC_START_EMULATION,212,10,56,20,
                     WS_GROUP
-    PUSHBUTTON      "&Quit Emulator",IDC_QUIT_EMULATOR,204,80,56,16,WS_GROUP
-    CONTROL         106,IDC_STATIC,"Static",SS_BITMAP | SS_SUNKEN,7,7,194,61
-    DEFPUSHBUTTON   "&Configuration",IDC_CONFIGURATION,204,24,56,16,WS_GROUP
-    PUSHBUTTON      "&Hard Reset",IDC_HARD_RESET,204,61,56,16,WS_GROUP
+    PUSHBUTTON      "&Quit Emulator",IDC_QUIT_EMULATOR,212,147,56,16,
+                    WS_GROUP
+    PUSHBUTTON      "&Configuration",IDC_CONFIGURATION,212,120,56,22,
+                    WS_GROUP
+    PUSHBUTTON      "&Hard Reset",IDC_HARD_RESET,212,100,56,15,WS_GROUP
+    LTEXT           "DF0:",IDC_STATIC,15,20,16,8
+    LTEXT           "DF1:",IDC_STATIC,15,57,16,8
+    LTEXT           "DF2:",IDC_STATIC,15,92,16,8
+    LTEXT           "DF3:",IDC_STATIC,15,127,16,8
+    EDITTEXT        IDC_EDIT_DF0_IMAGENAME_MAIN,35,20,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DF1_IMAGENAME_MAIN,35,55,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DF2_IMAGENAME_MAIN,35,90,120,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_DF3_IMAGENAME_MAIN,35,125,120,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_DF0_FILEDIALOG_MAIN,125,35,30,15
+    PUSHBUTTON      "...",IDC_BUTTON_DF1_FILEDIALOG_MAIN,125,70,30,15
+    PUSHBUTTON      "...",IDC_BUTTON_DF2_FILEDIALOG_MAIN,125,105,30,15
+    PUSHBUTTON      "...",IDC_BUTTON_DF3_FILEDIALOG_MAIN,125,140,30,15
+    GROUPBOX        "Disk Images:",IDC_STATIC,7,7,193,155
+    PUSHBUTTON      "Eject",IDC_BUTTON_DF0_EJECT_MAIN,35,35,25,12
+    PUSHBUTTON      "Eject",IDC_BUTTON_DF1_EJECT_MAIN,35,70,25,12
+    PUSHBUTTON      "Eject",IDC_BUTTON_DF2_EJECT_MAIN,35,105,25,12
+    PUSHBUTTON      "Eject",IDC_BUTTON_DF3_EJECT_MAIN,35,140,25,12
+    CONTROL         139,IDC_IMAGE_POWER_LED_MAIN,"Static",SS_BITMAP | 
+                    SS_SUNKEN,247,35,21,14
+    CONTROL         140,IDC_IMAGE_DF0_LED_MAIN,"Static",SS_BITMAP | 
+                    SS_SUNKEN,165,20,21,14
+    CONTROL         140,IDC_IMAGE_DF1_LED_MAIN,"Static",SS_BITMAP | 
+                    SS_SUNKEN,165,55,21,14
+    CONTROL         140,IDC_IMAGE_DF2_LED_MAIN,"Static",SS_BITMAP | 
+                    SS_SUNKEN,165,90,21,14
+    CONTROL         140,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | 
+                    SS_SUNKEN,165,125,21,14
 END
 
 IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
@@ -316,11 +344,11 @@ BEGIN
     COMBOBOX        IDC_COMBO_SCREEN_RESOLUTION,65,14,139,135,
                     CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     LTEXT           "Resolution:",IDC_STATIC,7,16,36,8
-    GROUPBOX        "Horisontal Scale:",IDC_STATIC,110,50,65,35
+    GROUPBOX        "Horisontal Scale:",IDC_STATIC,110,50,80,35
     CONTROL         "Single Pixels",IDC_RADIO_SCREEN_HSCALE_SINGLE,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,115,60,55,10
-    CONTROL         "Doble Pixels",IDC_RADIO_SCREEN_HSCALE_DOUBLE,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,115,70,55,10
+    CONTROL         "Double Pixels",IDC_RADIO_SCREEN_HSCALE_DOUBLE,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,115,70,59,10
     GROUPBOX        "Vertical Scale:",IDC_STATIC,5,50,100,55
     LTEXT           "Frameskip Ratio:",IDC_STATIC,7,32,54,8
     COMBOBOX        IDC_COMBO_SCREEN_FRAMESKIP,65,30,75,119,CBS_DROPDOWNLIST | 
@@ -351,7 +379,7 @@ BEGIN
 END
 
 IDD_ABOUT DIALOG DISCARDABLE  0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinFellow Amiga Emulator v0.4.1"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -372,9 +400,9 @@ BEGIN
     IDD_MAIN, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 260
+        RIGHTMARGIN, 268
         TOPMARGIN, 7
-        BOTTOMMARGIN, 96
+        BOTTOMMARGIN, 163
     END
 
     IDD_CPU, DIALOG
@@ -543,14 +571,6 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Bitmap
-//
-
-IDB_FELLOW              BITMAP  DISCARDABLE     "Fellow.bmp"
-IDB_DEBUG_ARROW         BITMAP  DISCARDABLE     "bitmap1.bmp"
-
-/////////////////////////////////////////////////////////////////////////////
-//
 // Dialog Info
 //
 
@@ -578,6 +598,17 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_DISKDRIVE_LED_DISABLED BITMAP  DISCARDABLE     "disk_led_disabled_cool.bmp"
+IDB_DISKDRIVE_LED_OFF   BITMAP  DISCARDABLE     "disk_led_off_cool.bmp"
+IDB_DISKDRIVE_LED_ON    BITMAP  DISCARDABLE     "disk_led_on_cool.bmp"
+IDB_POWER_LED_OFF       BITMAP  DISCARDABLE     "bitmap1.bmp"
+IDB_POWER_LED_ON        BITMAP  DISCARDABLE     "power_led_on_cool.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
