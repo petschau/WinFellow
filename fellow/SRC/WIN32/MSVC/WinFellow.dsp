@@ -541,61 +541,6 @@ InputPath=..\..\asm\mmx.s
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\asm\sounda.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Asm\Sse.s
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
@@ -688,14 +633,6 @@ SOURCE=..\..\incasm\mac\kbd.mac
 
 SOURCE=..\..\incasm\mac\nasm.mac
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\plan2c.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\sound.mac
-# End Source File
 # End Group
 # Begin Group "Functions"
 
@@ -735,10 +672,6 @@ SOURCE=..\..\incasm\func\gameport.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\func\kbd.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\sound.inc
 # End Source File
 # End Group
 # Begin Group "Data"
@@ -782,10 +715,6 @@ SOURCE=..\..\incasm\data\gameport.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\data\sound.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\data\timer.inc
 # End Source File
 # End Group
@@ -795,10 +724,6 @@ SOURCE=..\..\incasm\data\timer.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\generic\defs.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\generic\sound.inc
 # End Source File
 # End Group
 # End Group
