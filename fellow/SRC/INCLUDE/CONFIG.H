@@ -84,6 +84,8 @@ typedef struct {
   BOOLE            m_sound16bits;
   sound_filters    m_soundfilter;
   BOOLE            m_soundWAVdump;
+  BOOLE            m_notification;
+  ULO              m_bufferlength;
 
 
   /*==========================================================================*/
@@ -221,6 +223,10 @@ extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
 extern sound_filters cfgGetSoundFilter(cfg *config);
 extern void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump);
 extern BOOLE cfgGetSoundWAVDump(cfg *config);
+extern void cfgSetSoundNotification(cfg *config, BOOLE notification);
+extern BOOLE cfgGetSoundNotification(cfg *config);
+extern void cfgSetSoundBufferLength(cfg *config, ULO buffer_length);
+extern ULO cfgGetSoundBufferLength(cfg *config);
 
 
 /*============================================================================*/
