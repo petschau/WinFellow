@@ -23,6 +23,7 @@
 #define MFM_FILLL 0xaaaaaaaa
 #define FLOPPY_INSERTED_DELAY 200   
 
+#define WIN_SHORTPATHNAMES
 
 /*---------------*/
 /* Configuration */
@@ -378,6 +379,9 @@ void floppyTrackLoad(ULO drive, ULO track) {
 static UBY gzbuff[512];
 static STR gzname[L_tmpnam];
 static STR cmdline[512];
+#ifdef WIN_SHORTPATHNAMES
+static STR gzshortname[512];
+#endif
 
 
 /*======================*/
@@ -424,7 +428,14 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
 /*========================*/
 
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
+#ifdef WIN_SHORTPATHNAMES
+  HRESULT res;
+  res = GetShortPathName(diskname, gzshortname, 512);
+  if(!res) return FALSE;
+  sprintf(cmdline, "xdms.exe -q u \"%s\" +\"%s\"", gzshortname, tmpnam(gzname));
+#else
   sprintf(cmdline, "xdms.exe -q u \"%s\" +\"%s\"", diskname, tmpnam(gzname));
+#endif
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
@@ -437,7 +448,14 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
 /*============================*/
 
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
+#ifdef WIN_SHORTPATHNAMES
+  HRESULT res;
+  res = GetShortPathName(diskname, gzshortname, 512);
+  if(!res) return FALSE;
+  sprintf(cmdline, "gzip -c -d \"%s\" > \"%s\"", gzshortname, tmpnam(gzname));
+#else
   sprintf(cmdline, "gzip -c -d \"%s\" > \"%s\"", diskname, tmpnam(gzname));
+#endif
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
