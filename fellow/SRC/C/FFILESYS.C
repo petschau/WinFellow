@@ -3,10 +3,15 @@
 /* Filesystem wrapper                                                         */
 /*                                                                            */
 /* Authors: Petter Schau (peschau@online.no)                                  */
+/*          Torsten Enderling (carfesh@gmx.net)                               */
 /*          (Wraps code that originates in the UAE project.)                  */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
+
+/* Changelog:                                                                 */
+/* ==========                                                                 */
+/* 07/11/2000: fixed up checks using filesys device status                    */
 
 #include "portable.h"
 #include "renaming.h"
@@ -90,11 +95,7 @@ static BOOLE ffilesysHasZeroDevices(void) {
   ULO dev_count = 0;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
-	/* warning, ugly check due to ffilesys_devs[i].status not being set
-	   correctly  */
-    //if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
-	if((ffilesys_devs[i].volumename[0] != '\0') &&
-	   (ffilesys_devs[i].rootpath[0] != '\0')) dev_count++;
+    if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
@@ -134,9 +135,7 @@ void ffilesysInstall(void) {
   ULO i;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
-	/* again ugly check */
-	if((ffilesys_devs[i].volumename[0] != '\0') &&
-	   (ffilesys_devs[i].rootpath[0] != '\0'))
+	if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fellow_add_filesys_unit(ffilesys_devs[i].volumename,
 			    ffilesys_devs[i].rootpath,
 			    ffilesys_devs[i].readonly,
