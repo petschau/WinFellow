@@ -120,7 +120,9 @@ static a_inode *aino_from_buf (a_inode *base, char *buf)
 {
     uae_u32 mode;
     a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode));
+	if(aino == NULL) return NULL;
 
+	memset(aino, 0, sizeof(a_inode));
     mode = do_get_mem_long ((uae_u32 *)(buf + 1));
     buf += 5;
     aino->aname = my_strdup (buf);

@@ -990,11 +990,10 @@ static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
 	aino = (a_inode *) xmalloc (sizeof (a_inode));
 	if (aino == 0)
 	    return 0;
+	memset(aino, 0, sizeof(a_inode));
+
 	aino->aname = modified_rel ? modified_rel : my_strdup (rel);
 	aino->nname = nn;
-
-	aino->comment = 0;
-	aino->has_dbentry = 0;
 
 	fsdb_fill_file_attrs (aino);
 	if (aino->dir)
@@ -1012,16 +1011,15 @@ static a_inode *create_child_aino (Unit *unit, a_inode *base, char *rel, int isd
     a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode));
     if (aino == 0)
 	return 0;
+	memset(aino, 0, sizeof(a_inode));
 
     aino->aname = my_strdup (rel);
     aino->nname = create_nname (unit, base, rel);
+	aino->sibling = 0;
 
     init_child_aino (unit, base, aino);
-    aino->amigaos_mode = 0;
     aino->dir = isdir;
 
-    aino->comment = 0;
-    aino->has_dbentry = 0;
     aino->dirty = 1;
 
     recycle_aino (unit, aino);
@@ -1079,10 +1077,10 @@ static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *r
 	    return 0;
 	}
 
+	memset(c, 0, sizeof(a_inode));
 	c->nname = build_nname (base->nname, rel);
 	c->aname = get_aname (unit, base, rel);
-	c->comment = 0;
-	c->has_dbentry = 0;
+	
 	fsdb_fill_file_attrs (c);
 	if (c->dir)
 	    fsdb_clean_dir (c);
