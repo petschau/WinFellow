@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.4 2004-06-08 14:27:30 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.5 2004-06-08 14:37:57 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -53,6 +53,7 @@
 #include "ffilesys.h"
 #include "ini.h"
 #include "cpudis.h"
+#include "sysinfo.h"
 
 BOOLE fellow_request_emulation_stop;
 BOOLE fellow_request_emulation_stop_immediately;
