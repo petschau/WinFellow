@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.6 2004-06-12 15:36:02 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.7 2004-08-07 15:45:18 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -147,7 +147,7 @@ static BOOLE fellowGetLogFirstTime(void) {
   return fellow_log_first_time;
 }
 
-static void fellowAddLog2(STR *msg) {
+void fellowAddLog2(STR *msg) {
   FILE *F;
 
   if (!fellowGetLogEnabled()) return;

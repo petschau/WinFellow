@@ -429,8 +429,10 @@ _endOfFrame_:	push	edx
 		; Perform graphics end of frame
 		;==============================================================
 
+		pushad
 		call	graphEndOfFrame
 		call	timerEndOfFrame
+		popad
 
 		;==============================================================
 		; Recalculate the entire event queue

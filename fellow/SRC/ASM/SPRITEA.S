@@ -392,6 +392,7 @@ mergehires320loop:
 		test	dword [sprite_online + esi], 1
 		jz	near mergehires320skipsprite
 		mov	edi, dword [sprx + esi]
+		inc edi
 		mov	eax, dword [graph_DIW_last_visible]
 		shr	eax, 1
 		cmp	edi, eax	       ;  dword _graph_DIW_last_visible
@@ -506,6 +507,7 @@ mergeloresloop:
 		test	dword [sprite_online + esi], 1
 		jz	near mergeloresskipsprite
 		mov	edi, dword [sprx + esi]
+		inc edi
 		cmp	edi, dword [graph_DIW_last_visible]
 		ja	near mergeloresskipsprite
 		mov	ebp, dword [esp + 4]
@@ -617,6 +619,7 @@ mergehiresnewloop:
 		test	dword [sprite_online + esi], 1
 		jz	near mergehiresnewskipsprite
 		mov	edi, dword [sprx + esi]
+		inc edi
 		add	edi, edi
 		cmp	edi, dword [graph_DIW_last_visible]
 		ja	near mergehiresnewskipsprite
@@ -796,6 +799,7 @@ mergedualloresloop:
 		test	dword [sprite_online + esi], 1
 		jz	near mergedualloresloopend
 		mov	edi, dword [sprx + esi]
+		inc edi
 		cmp	edi, dword [graph_DIW_last_visible]
 		ja	near mergedualloresloopend
 		mov	ebp, dword [esp + 4]
