@@ -297,6 +297,7 @@ typedef struct {
 } graph_line;
 
 extern graph_line graph_frame[3][314];
+extern BOOLE graph_buffer_lost;
 
 #define graph_line_type                          0
 #define graph_line_line1                         4
