@@ -1,30 +1,33 @@
 # Microsoft Developer Studio Project File - Name="WinFellow" - Package Owner=<4>
-# Microsoft Developer Studio Generated Build File, Format Version 6.00
-# ** DO NOT EDIT **
+# Microsoft Developer Studio Generated Build File, Format Version 5.00
+# ** NICHT BEARBEITEN **
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
 CFG=WinFellow - Win32 Dx3 Debug
-!MESSAGE This is not a valid makefile. To build this project using NMAKE,
-!MESSAGE use the Export Makefile command and run
+!MESSAGE Dies ist kein gültiges Makefile. Zum Erstellen dieses Projekts mit\
+ NMAKE
+!MESSAGE verwenden Sie den Befehl "Makefile exportieren" und führen Sie den\
+ Befehl
 !MESSAGE 
 !MESSAGE NMAKE /f "WinFellow.mak".
 !MESSAGE 
-!MESSAGE You can specify a configuration when running NMAKE
-!MESSAGE by defining the macro CFG on the command line. For example:
+!MESSAGE Sie können beim Ausführen von NMAKE eine Konfiguration angeben
+!MESSAGE durch Definieren des Makros CFG in der Befehlszeile. Zum Beispiel:
 !MESSAGE 
 !MESSAGE NMAKE /f "WinFellow.mak" CFG="WinFellow - Win32 Dx3 Debug"
 !MESSAGE 
-!MESSAGE Possible choices for configuration are:
+!MESSAGE Für die Konfiguration stehen zur Auswahl:
 !MESSAGE 
-!MESSAGE "WinFellow - Win32 Release" (based on "Win32 (x86) Application")
-!MESSAGE "WinFellow - Win32 Debug" (based on "Win32 (x86) Application")
-!MESSAGE "WinFellow - Win32 Dx3 Debug" (based on "Win32 (x86) Application")
-!MESSAGE "WinFellow - Win32 Dx3 Release" (based on "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Release" (basierend auf  "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Debug" (basierend auf  "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Dx3 Debug" (basierend auf\
+  "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Dx3 Release" (basierend auf\
+  "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
-# PROP AllowPerConfigDependencies 0
 # PROP Scc_ProjName ""
 # PROP Scc_LocalPath ""
 CPP=cl.exe
@@ -45,7 +48,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
@@ -72,7 +75,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
+# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
@@ -101,7 +104,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX3" /FAcs /FR /FD /c
+# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX3" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
@@ -130,7 +133,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX3" /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX3" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
@@ -166,7 +169,8 @@ ProjDir=.
 InputPath=..\..\asm\blita.s
 
 "$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -178,7 +182,8 @@ ProjDir=.
 InputPath=..\..\asm\blita.s
 
 "$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -190,7 +195,8 @@ ProjDir=.
 InputPath=..\..\asm\blita.s
 
 "$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -202,7 +208,8 @@ ProjDir=.
 InputPath=..\..\asm\blita.s
 
 "$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -221,7 +228,8 @@ ProjDir=.
 InputPath=..\..\asm\busa.s
 
 "$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -233,7 +241,8 @@ ProjDir=.
 InputPath=..\..\asm\busa.s
 
 "$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -245,7 +254,8 @@ ProjDir=.
 InputPath=..\..\asm\busa.s
 
 "$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -257,7 +267,8 @@ ProjDir=.
 InputPath=..\..\asm\busa.s
 
 "$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -276,7 +287,8 @@ ProjDir=.
 InputPath=..\..\asm\ciaa.s
 
 "$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -288,7 +300,8 @@ ProjDir=.
 InputPath=..\..\asm\ciaa.s
 
 "$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -300,7 +313,8 @@ ProjDir=.
 InputPath=..\..\asm\ciaa.s
 
 "$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -312,7 +326,8 @@ ProjDir=.
 InputPath=..\..\asm\ciaa.s
 
 "$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -331,7 +346,8 @@ ProjDir=.
 InputPath=..\..\asm\coppera.s
 
 "$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -343,7 +359,8 @@ ProjDir=.
 InputPath=..\..\asm\coppera.s
 
 "$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -355,7 +372,8 @@ ProjDir=.
 InputPath=..\..\asm\coppera.s
 
 "$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -367,7 +385,8 @@ ProjDir=.
 InputPath=..\..\asm\coppera.s
 
 "$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -386,7 +405,8 @@ ProjDir=.
 InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -398,7 +418,8 @@ ProjDir=.
 InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -410,7 +431,8 @@ ProjDir=.
 InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -422,7 +444,8 @@ ProjDir=.
 InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -441,7 +464,8 @@ ProjDir=.
 InputPath=..\..\asm\drawa.s
 
 "$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -453,7 +477,8 @@ ProjDir=.
 InputPath=..\..\asm\drawa.s
 
 "$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -465,7 +490,8 @@ ProjDir=.
 InputPath=..\..\asm\drawa.s
 
 "$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -477,7 +503,8 @@ ProjDir=.
 InputPath=..\..\asm\drawa.s
 
 "$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -496,7 +523,8 @@ ProjDir=.
 InputPath=..\..\asm\fhfilea.s
 
 "$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -508,7 +536,8 @@ ProjDir=.
 InputPath=..\..\asm\fhfilea.s
 
 "$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -520,7 +549,8 @@ ProjDir=.
 InputPath=..\..\asm\fhfilea.s
 
 "$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -532,7 +562,8 @@ ProjDir=.
 InputPath=..\..\asm\fhfilea.s
 
 "$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -551,7 +582,8 @@ ProjDir=.
 InputPath=..\..\asm\fmema.s
 
 "$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -563,7 +595,8 @@ ProjDir=.
 InputPath=..\..\asm\fmema.s
 
 "$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -575,7 +608,8 @@ ProjDir=.
 InputPath=..\..\asm\fmema.s
 
 "$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -587,7 +621,8 @@ ProjDir=.
 InputPath=..\..\asm\fmema.s
 
 "$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -606,7 +641,8 @@ ProjDir=.
 InputPath=..\..\asm\grapha.s
 
 "$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -618,7 +654,8 @@ ProjDir=.
 InputPath=..\..\asm\grapha.s
 
 "$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -630,7 +667,8 @@ ProjDir=.
 InputPath=..\..\asm\grapha.s
 
 "$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -642,7 +680,8 @@ ProjDir=.
 InputPath=..\..\asm\grapha.s
 
 "$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -661,7 +700,8 @@ ProjDir=.
 InputPath=..\..\asm\mmx.s
 
 "$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -673,7 +713,8 @@ ProjDir=.
 InputPath=..\..\asm\mmx.s
 
 "$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -685,7 +726,8 @@ ProjDir=.
 InputPath=..\..\asm\mmx.s
 
 "$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -697,7 +739,8 @@ ProjDir=.
 InputPath=..\..\asm\mmx.s
 
 "$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -716,7 +759,8 @@ ProjDir=.
 InputPath=..\..\asm\sounda.s
 
 "$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -728,7 +772,8 @@ ProjDir=.
 InputPath=..\..\asm\sounda.s
 
 "$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -740,7 +785,8 @@ ProjDir=.
 InputPath=..\..\asm\sounda.s
 
 "$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -752,7 +798,8 @@ ProjDir=.
 InputPath=..\..\asm\sounda.s
 
 "$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -771,7 +818,8 @@ ProjDir=.
 InputPath=..\..\asm\spritea.s
 
 "$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -783,7 +831,8 @@ ProjDir=.
 InputPath=..\..\asm\spritea.s
 
 "$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -795,7 +844,8 @@ ProjDir=.
 InputPath=..\..\asm\spritea.s
 
 "$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -807,7 +857,8 @@ ProjDir=.
 InputPath=..\..\asm\spritea.s
 
 "$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -1112,6 +1163,10 @@ SOURCE=..\..\c\sprite.c
 
 SOURCE=..\..\c\wav.c
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\C\zlibwrap.c
+# End Source File
 # End Group
 # Begin Group "C Header Files"
 
@@ -1259,6 +1314,10 @@ SOURCE=..\..\include\wav.h
 # Begin Source File
 
 SOURCE=..\..\include\wgui.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Include\zlibwrap.h
 # End Source File
 # End Group
 # Begin Group "Win32 C Header Files"
@@ -1440,7 +1499,8 @@ ProjDir=.
 InputPath=..\..\uae\asm\uaesuppa.s
 
 "$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -1452,7 +1512,8 @@ ProjDir=.
 InputPath=..\..\uae\asm\uaesuppa.s
 
 "$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -1464,7 +1525,8 @@ ProjDir=.
 InputPath=..\..\uae\asm\uaesuppa.s
 
 "$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -1476,7 +1538,8 @@ ProjDir=.
 InputPath=..\..\uae\asm\uaesuppa.s
 
 "$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\\
+          -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -1502,6 +1565,236 @@ SOURCE=..\include\msvc\portable.h
 # Begin Source File
 
 SOURCE=..\include\msvc\renaming.h
+# End Source File
+# End Group
+# Begin Group "xDMS C Files"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\xdms\C\crc_csum.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\getbits.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\maketbl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\pfile.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\tables.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_deep.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_heavy.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_init.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_medium.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_quick.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\u_rle.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\C\xdms.c
+# End Source File
+# End Group
+# Begin Group "xDMS Header Files"
+
+# PROP Default_Filter ".h"
+# Begin Source File
+
+SOURCE=..\..\xdms\include\cdata.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\crc_csum.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\getbits.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\maketbl.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\pfile.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\tables.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_deep.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_heavy.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_init.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_medium.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_quick.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\u_rle.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\xdms\include\xdms.h
+# End Source File
+# End Group
+# Begin Group "zlib C Files"
+
+# PROP Default_Filter ".c"
+# Begin Source File
+
+SOURCE=..\..\zlib\C\adler32.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\compress.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\crc32.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\deflate.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\gzio.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\infblock.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\infcodes.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\inffast.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\inflate.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\inftrees.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\infutil.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\trees.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\uncompr.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\C\zutil.c
+# ADD CPP /I "../../xdms/include" /I "../../zlib/include"
+# End Source File
+# End Group
+# Begin Group "zlib Header Files"
+
+# PROP Default_Filter ".h"
+# Begin Source File
+
+SOURCE=..\..\zlib\include\deflate.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\infblock.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\infcodes.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\inffast.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\inffixed.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\inftrees.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\infutil.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\trees.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\zconf.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\zlib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\zlib\include\zutil.h
 # End Source File
 # End Group
 # Begin Source File
