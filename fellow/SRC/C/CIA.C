@@ -126,6 +126,7 @@ void ciaRaiseIRQC(ULO i, ULO req) {
 
 void ciaHandleTBTimeout(ULO i) {
   cia_tb[i] = cia_tblatch[i];      /* Reload from latch */
+  if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
   if (cia_crb[i] & 8) {            /* One Shot Mode */
     cia_crb[i] &= 0xfe;            /* Stop timer */
     cia_tbleft[i] = 0xffffffff;
@@ -137,6 +138,7 @@ void ciaHandleTBTimeout(ULO i) {
 
 void ciaHandleTATimeout(ULO i) {
   cia_ta[i] = cia_talatch[i];      /* Reload from latch */
+  if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
   if ((cia_crb[i] & 0x41) == 0x41){/* Timer B attached and started */
     cia_tb[i] = (cia_tb[i] - 1) & 0xffff;
     if (cia_tb[i] == 0)
@@ -349,6 +351,7 @@ void ciaWritetahi(ULO i, ULO data) {
   if (!(cia_cra[i] & 1)) {
     ciaStabilize(i);
     cia_ta[i] = cia_talatch[i];
+    if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     if (cia_cra[i] & 8)
       cia_cra[i] |= 1;
     ciaUnstabilize(i);
@@ -379,6 +382,7 @@ void ciaWritetbhi(ULO i, ULO data) {
   if (!(cia_crb[i] & 1)) {
     ciaStabilize(i);
     cia_tb[i] = cia_tblatch[i];
+    if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     if (cia_crb[i] & 8)
       cia_crb[i] |= 1;
     ciaUnstabilize(i);
@@ -459,6 +463,7 @@ void ciaWritecra(ULO i, ULO data) {
   ciaStabilize(i);
   if (data & 0x10) {
     cia_ta[i] = cia_talatch[i];
+    if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
   cia_cra[i] = data & 0xff;
@@ -476,6 +481,7 @@ void ciaWritecrb(ULO i, ULO data) {
   ciaStabilize(i);
   if (data & 0x10) {
     cia_tb[i] = cia_tblatch[i];
+    if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
   cia_crb[i] = data & 0xff;
@@ -606,7 +612,6 @@ void ciaStateClear(void) {
 /*============================================================================*/
 
 void ciaEmulationStart(void) {
-  ciaMemoryMap();
 }
 
 void ciaEmulationStop(void) {
@@ -614,6 +619,7 @@ void ciaEmulationStop(void) {
 
 void ciaHardReset(void) {
   ciaStateClear();
+  ciaMemoryMap();
 }
 
 void ciaStartup(void) {
