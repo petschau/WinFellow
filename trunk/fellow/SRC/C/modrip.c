@@ -653,6 +653,8 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
    && (BYTE(address + 1) == '4')
    ) {
     RIPLOG1("mod-ripper found possible ThePlayer 4 match...\n");
+	
+	modripModuleInfoInitialize(&info);
 
 	if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A') ) {
 	  match = TRUE;
@@ -671,7 +673,6 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   if(!match) return;
 
   RIPLOG2("mod-ripper found possible ThePlayer 4 (%s) match...\n", info.typesig);
-  modripModuleInfoInitialize(&info);
   info.start = address;
   strcpy(info.typedesc, "ThePlayer 4");
 
