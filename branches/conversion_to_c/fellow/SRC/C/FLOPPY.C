@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.6 2004-06-02 11:27:40 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.7 2004-06-02 12:09:45 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -684,7 +684,7 @@ void floppyImageIPFLoad(ULO drive) {
 
     if(!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
     {
-        fellowAddLog("Unable to load CAPS IPF Image.\n");
+        fellowAddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
         return;
     }
 

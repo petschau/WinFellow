@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.1 2004-06-02 11:26:07 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.2 2004-06-02 12:09:46 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -44,9 +44,9 @@ static int    capsFlags = DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_
 static BOOLE  capsDriveIsLocked [4]= { FALSE, FALSE, FALSE, FALSE };
 static SDWORD capsDriveContainer[4]= { -1,    -1,    -1,    -1    };
 
-static HMODULE capshModule = NULL;
-static BOOLE capsIsInitialized = FALSE;
-static BOOLE capsUserIsNotified = FALSE;
+static HMODULE capshModule = NULL;          /* handle for the library */
+static BOOLE capsIsInitialized = FALSE;     /* is the module initialized? */
+static BOOLE capsUserIsNotified = FALSE;    /* if the library is missing, did we already notify the user? */
 
 BOOLE capsStartup(void)
 {
@@ -64,9 +64,9 @@ BOOLE capsStartup(void)
         {
             wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.caps-project.org/download.shtml");
             capsUserIsNotified = TRUE;
+            fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
 	        return FALSE;
         }
-        fellowAddLog("CAPS IPF Image library could not be loaded.\n");
     }
 
     if(!GetProcAddress(capshModule, "CAPSLockImageMemory")) 
@@ -77,16 +77,16 @@ BOOLE capsStartup(void)
         {
 	        wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.caps-project.org/download.shtml");
 	        capsUserIsNotified = TRUE;
+            fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
 	        return FALSE;
         }
-        fellowAddLog("CAPS IPF Image library could not be loaded.\n");
     }
 
     for(i = 0; i < 4; i++)
 	    capsDriveContainer[i] = CAPSAddImage();
 
     capsIsInitialized = TRUE;
-    fellowAddLog("CAPS IPF Image library loaded.\n");
+    fellowAddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
 
     return TRUE;
 }
@@ -99,7 +99,7 @@ BOOLE capsShutdown(void)
         capshModule = NULL;
     }
     capsIsInitialized = FALSE;
-    fellowAddLog("CAPS IPF Image library unloaded.\n");
+    fellowAddLog("capsShutdown(): CAPS IPF Image library unloaded.\n");
 
     return TRUE;
 }
