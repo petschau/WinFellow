@@ -11,3 +11,6 @@
 #	[<whitespace>]<filename><whitespace><error message><end-of-line>
 #
 # comment lines begin with '#'
+
+# execute python script for automatic commit emails
+syncmail
