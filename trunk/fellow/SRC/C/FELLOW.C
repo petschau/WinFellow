@@ -177,6 +177,21 @@ void fellowAddLog(const char *format,...)
     va_end (parms);
 }
 
+void fellowAddTimelessLog(const char *format,...)
+{
+    char buffer[WRITE_LOG_BUF_SIZE];
+    va_list parms;
+    int count = 0;
+
+    va_start (parms, format);
+    count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
+	fellowAddLog2(buffer);
+	if(buffer[strlen(buffer)-1] == '\n')
+		fellow_newlogline = TRUE;
+	else
+		fellow_newlogline = FALSE;
+    va_end (parms);
+}
 
 /*============================================================================*/
 /* Runtime Error Check                                                        */
