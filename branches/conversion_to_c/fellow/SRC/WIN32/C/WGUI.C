@@ -743,7 +743,9 @@ BOOLE wguiSelectDirectory(HWND hwndDlg,
 		strcpy(szDescription, bi.pszDisplayName);
 		SHGetPathFromIDList(pidlTarget, szPath);   // Make sure it is a path
 		CoTaskMemFree(pidlTarget);
+		return TRUE;
 	}
+	return FALSE;
 }
 
 
