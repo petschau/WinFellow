@@ -36,6 +36,8 @@ Tuesday, September 19, 2000
 #define CIA_KBD_IRQ   8
 #define CIA_FLAG_IRQ  16
 
+#define CIA_BUS_CYCLE_RATIO 5
+
 LON cia_next_event_time; /* Cycle for cia-event, measured from sof */
 ULO cia_next_event_type; /* What type of event */
 
@@ -43,6 +45,8 @@ ULO cia_next_event_type; /* What type of event */
 
 ULO cia_ta[2];
 ULO cia_tb[2];              
+ULO cia_ta_rem[2]; /* Preserves remainder when downsizing from bus cycles */
+ULO cia_tb_rem[2];              
 ULO cia_talatch[2];
 ULO cia_tblatch[2];          
 LON cia_taleft[2];
@@ -67,25 +71,33 @@ ULO cia_sp[2];
 
 /* Translate timer -> cycles until timeout from current sof, start of frame */
 
-ULO ciaUnstabilizeValue(ULO value) {
-  return (value*5) + curcycle;
+ULO ciaUnstabilizeValue(ULO value, ULO remainder) {
+  return (value*CIA_BUS_CYCLE_RATIO) + curcycle + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
 ULO ciaStabilizeValue(ULO value) {
-  return (value - curcycle)/5;
+  return (value - curcycle) / CIA_BUS_CYCLE_RATIO;
+}
+
+ULO ciaStabilizeValueRemainder(ULO value) {
+  return (value - curcycle) % CIA_BUS_CYCLE_RATIO;
 }
 
 void ciaTAStabilize(ULO i) {
-  if (cia_cra[i] & 1)
+  if (cia_cra[i] & 1) {
     cia_ta[i] = ciaStabilizeValue(cia_taleft[i]);
+    cia_ta_rem[i] = ciaStabilizeValueRemainder(cia_taleft[i]);
+  }
   cia_taleft[i] = -1;
 }
 
 void ciaTBStabilize(ULO i) {
-  if ((cia_crb[i] & 0x41) == 1)
+  if ((cia_crb[i] & 0x41) == 1) {
     cia_tb[i] = ciaStabilizeValue(cia_tbleft[i]);
+    cia_tb_rem[i] = ciaStabilizeValueRemainder(cia_tbleft[i]);
+  }
   cia_tbleft[i] = 0xffffffff;
 }
 
@@ -95,13 +107,13 @@ void ciaStabilize(ULO i) {
 }
 
 void ciaTAUnstabilize(ULO i) {
-  if (cia_cra[i] & 1) cia_taleft[i] =
-    ciaUnstabilizeValue(cia_ta[i]);
+  if (cia_cra[i] & 1)
+    cia_taleft[i] = ciaUnstabilizeValue(cia_ta[i], cia_ta_rem[i]);
 }
 
 void ciaTBUnstabilize(ULO i) {
   if ((cia_crb[i] & 0x41) == 1)
-    cia_tbleft[i] = ciaUnstabilizeValue(cia_tb[i]);
+    cia_tbleft[i] = ciaUnstabilizeValue(cia_tb[i], cia_tb_rem[i]);
 }
 
 void ciaUnstabilize(ULO i) {
@@ -109,13 +121,19 @@ void ciaUnstabilize(ULO i) {
   ciaTBUnstabilize(i);
 }  
 
+/* This used to clear the corresponding bit in INTREQ when
+/* no CIA IRQs were waiting (anymore), according to the HRM it will take */
+/* the irq line from the CIA high (off), but the bit in INTREQ */
+/* should probably remain set until it is cleared by other means. */
+
 void ciaUpdateIRQ(ULO i) {
   if (cia_icrreq[i] & cia_icrmsk[i]) {
     cia_icrreq[i] |= 0x80;
     wriw((i == 0) ? 0x8008 : 0xa000, 0xdff09c);
   }
-  else
+  else { /* Spaceballs State of the Art requires this. */
     wriw((i == 0) ? 8 : 0x2000, 0xdff09c);
+  }
 }  
 
 void ciaRaiseIRQC(ULO i, ULO req) {
@@ -139,7 +157,7 @@ void ciaHandleTBTimeout(ULO i) {
     cia_tbleft[i] = 0xffffffff;
   }
   else if (!(cia_crb[i] & 0x40))   /* Continuous mode, no attach */
-    cia_tbleft[i] = ciaUnstabilizeValue(cia_tb[i]);
+    cia_tbleft[i] = ciaUnstabilizeValue(cia_tb[i], 0);
   ciaRaiseIRQC(i, CIA_TB_IRQ);     /* Raise irq */
 }
 
@@ -156,7 +174,7 @@ void ciaHandleTATimeout(ULO i) {
     cia_taleft[i] = -1;
   }
   else                             /* Continuous mode */
-    cia_taleft[i] = ciaUnstabilizeValue(cia_ta[i]);
+    cia_taleft[i] = ciaUnstabilizeValue(cia_ta[i], 0);
   ciaRaiseIRQC(i, CIA_TA_IRQ);    /* Raise irq */
 }
 
@@ -355,12 +373,12 @@ void ciaWritetalo(ULO i, ULO data) {
 
 void ciaWritetahi(ULO i, ULO data) {
   cia_talatch[i] = (cia_talatch[i] & 0xff) | ((data & 0xff)<<8);
-  if (!(cia_cra[i] & 1)) {
+  if ((cia_cra[i] & 8) || !(cia_cra[i] & 1)) {
     ciaStabilize(i);
     cia_ta[i] = cia_talatch[i];
+    cia_ta_rem[i] = 0;
     if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
-    if (cia_cra[i] & 8)
-      cia_cra[i] |= 1;
+    if (cia_cra[i] & 8) cia_cra[i] |= 1;
     ciaUnstabilize(i);
     ciaSetupNextEvent();
   }
@@ -386,9 +404,10 @@ void ciaWritetblo(ULO i, ULO data) {
 
 void ciaWritetbhi(ULO i, ULO data) {
   cia_tblatch[i] = (cia_tblatch[i] & 0xff) | ((data & 0xff)<<8);
-  if (!(cia_crb[i] & 1)) {
+  if ((cia_crb[i] & 8) || !(cia_crb[i] & 1)) {
     ciaStabilize(i);
     cia_tb[i] = cia_tblatch[i];
+    cia_tb_rem[i] = 0;
     if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     if (cia_crb[i] & 8)
       cia_crb[i] |= 1;
@@ -470,6 +489,7 @@ void ciaWritecra(ULO i, ULO data) {
   ciaStabilize(i);
   if (data & 0x10) {
     cia_ta[i] = cia_talatch[i];
+    cia_ta_rem[i] = 0;
     if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
@@ -488,6 +508,7 @@ void ciaWritecrb(ULO i, ULO data) {
   ciaStabilize(i);
   if (data & 0x10) {
     cia_tb[i] = cia_tblatch[i];
+    cia_tb_rem[i] = 0;
     if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
