@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.16 2004-06-07 22:10:27 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.17 2004-07-25 01:01:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -46,16 +46,16 @@
 #include "caps_win32.h"
 #endif
 
-#define FLOPPY_TEST_BYTE_ALIGNMENT 1
+//#define FLOPPY_TEST_BYTE_ALIGNMENT 0
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
 #define MFM_MASK  0x55555555
 #define FLOPPY_INSERTED_DELAY 150
-/* Andromeda Sequential assumes at least 640 bytes of gap,
-   Bernd uses 720 */
+
+/* Andromeda Sequential assumes at least 640 bytes of gap */
 #define FLOPPY_GAP_BYTES 720
-#define FLOPPY_FAST_WORDS 128
+#define FLOPPY_FAST_WORDS 32
 
 /*---------------*/
 /* Configuration */
@@ -75,6 +75,24 @@ BOOLE floppy_has_sync;
 
 ULO dsklen, dsksync, dskpt, adcon;       /* Registers */
 ULO diskDMAen;                           /* Write counter for dsklen */
+
+/*
+void floppyLog(ULO drive, ULO track, ULO side, ULO length)
+{
+  FILE *F = fopen("floppy.log", "a");
+  if (F == 0) return;
+  fprintf(F, "DMA Read: drive %d track %d side %d length %d\n", drive, track, side, length);
+  fclose(F);
+}
+
+void floppyLogStep(ULO drive, ULO from, ULO to)
+{
+  FILE *F = fopen("floppy.log", "a");
+  if (F == 0) return;
+  fprintf(F, "Step: drive %d from %d to %d\n", drive, from, to);
+  fclose(F);
+}
+*/
 
 /*=======================*/
 /* Register access stubs */
@@ -217,12 +235,17 @@ void floppyStepSet(BOOLE stp) {
 	  ((draw_frame_count - floppy[i].insertedframe) > FLOPPY_INSERTED_DELAY))
 	floppy[i].changed = FALSE;
       if (!floppy[i].step && !stp) {
-        if (!floppy[i].dir) {
-          if ((floppy[i].track + 1) < floppy[i].tracks)
-	    floppy[i].track++;
-          }
+        if (!floppy[i].dir) 
+	{
+//	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+	  floppy[i].track++;
+        }
         else {
-          if (floppy[i].track > 0) floppy[i].track--;
+          if (floppy[i].track > 0) 
+	  {
+//	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
+	    floppy[i].track--;
+	  }
         }
       }
       floppy[i].step = !stp;
@@ -936,9 +959,12 @@ void floppyDMAReadInit(ULO drive) {
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt & 0x1ffffe;
-  floppy_DMA.wait_for_sync = (dsksync != 0);
+  // Workaround for North and south: Require disksync = 0x4489 for normal adf images
+  floppy_DMA.wait_for_sync = (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
+			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC(pc) & 0xf80000) == 0xf80000);
+//  floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft);
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
     floppy[drive].motor_ticks = 0;
 }
@@ -1041,7 +1067,8 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
 
 UWO floppyGetByteUnderHead(ULO sel_drv, ULO track)
 {
-	return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
+  if ((track/2) >= floppy[sel_drv].tracks) return 0x72; /* What is correct? Noise? */
+  else return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
 }
 
 void floppyNextByte(ULO sel_drv, ULO track) {
@@ -1071,6 +1098,7 @@ void floppyNextByte(ULO sel_drv, ULO track) {
             }
 #endif
 }
+
 /* Note: Inside FLOPPY_TEST_BYTE_ALIGNMENT */
 UWO prev_byte_under_head = 0;
 void floppyEndOfLineC(void) {
@@ -1091,6 +1119,7 @@ void floppyEndOfLineC(void) {
         ULO i;
         ULO track = floppyGetLinearTrack(sel_drv);
         ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+	if (words > floppy_DMA.wordsleft) words = floppy_DMA.wordsleft;
         for (i = 0; i < words; i++) 
         {
 			UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
@@ -1120,7 +1149,8 @@ void floppyEndOfLineC(void) {
 #else
 
 UWO floppyGetWordUnderHead(ULO sel_drv, ULO track) {
-	return ((floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks] << 8) |
+  if ((track/2) >= floppy[sel_drv].tracks) return 0x7272; /* What is correct? Noise? */
+  else return ((floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks] << 8) |
           floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks + 1]);
 }
 
@@ -1168,6 +1198,7 @@ void floppyEndOfLineC(void) {
         ULO i;
         ULO track = floppyGetLinearTrack(sel_drv);
         ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+	if (words > floppy_DMA.wordsleft) words = floppy_DMA.wordsleft;
         for (i = 0; i < words; i++) 
         {
             UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
