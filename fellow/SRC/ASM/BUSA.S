@@ -56,7 +56,6 @@ FDATASECTIONSTART
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/fmem.inc"
-%include "data/draw.inc"
 %include "data/floppy.inc"
 %include "data/sound.inc"
 %include "data/graph.inc"
@@ -66,6 +65,9 @@ FDATASECTIONSTART
 %include "data/graph.inc"
 
 CDATAEXTERN blitend
+CDATAEXTERN draw_frame_count;
+CDATAEXTERN draw_frame_skip;
+CDATAEXTERN draw_frame_skip_factor;
 
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
@@ -86,7 +88,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/draw.inc"
 %include "func/graph.inc"
 %include "func/sprite.inc"
 %include "func/kbd.inc"
@@ -95,7 +96,6 @@ _busstart_:	 ; Used to check code alignment
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
-%include "mac/draw.mac"
 %include "mac/sound.mac"
 %include "mac/sprite.mac"
 

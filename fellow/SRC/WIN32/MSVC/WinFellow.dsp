@@ -45,8 +45,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G5 /MT /W1 /GX /O2 /Ob2 /I "../CAPS/include" /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
-# SUBTRACT CPP /Z<none> /Fr /YX
+# ADD CPP /nologo /G5 /MT /GX /O2 /Ob2 /I "../CAPS/include" /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
+# SUBTRACT CPP /Fr /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD BASE RSC /l 0x414 /d "NDEBUG"
@@ -368,61 +368,6 @@ InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\drawa.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -835,10 +780,6 @@ SOURCE=..\..\incasm\mac\cpu.mac
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\mac\draw.mac
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\mac\floppy.mac
 # End Source File
 # Begin Source File
@@ -895,10 +836,6 @@ SOURCE=..\..\incasm\func\cpu.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\func\draw.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\func\fellow.inc
 # End Source File
 # Begin Source File
@@ -948,10 +885,6 @@ SOURCE=..\..\incasm\data\copper.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\data\cpu.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\draw.inc
 # End Source File
 # Begin Source File
 

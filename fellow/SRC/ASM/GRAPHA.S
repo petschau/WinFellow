@@ -34,7 +34,6 @@ FDATASECTIONSTART
 %include "data/fellow.inc"
 %include "data/graph.inc"
 %include "data/copper.inc"
-%include "data/draw.inc"
 %include "data/sprite.inc"
 %include "data/bus.inc"
 %include "data/cpu.inc"
@@ -45,6 +44,14 @@ CFUNCEXTERN graphCalculateWindow_C
 CFUNCEXTERN graphPlayfieldOnOff
 CFUNCEXTERN drawUpdateDrawmode
 CFUNCEXTERN graphDecodeNOP_C
+
+CDATAEXTERN draw_left;
+CDATAEXTERN draw_right;
+CDATAEXTERN draw_hscale;
+CDATAEXTERN draw_line_routine;
+CDATAEXTERN draw_line_BPL_res_routine;
+CDATAEXTERN draw_line_BG_routine;
+CDATAEXTERN draw_deinterlace;
 
 ;-----------------------------------------------------------------------------
 ; Enable this for detailed profiling, log written to drawprofile.txt

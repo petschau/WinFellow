@@ -240,6 +240,15 @@ void drawLineBG2x24_C(graph_line *linedesc);
 void drawLineBG1x32_C(graph_line *linedesc);
 void drawLineBG2x32_C(graph_line *linedesc);
 
+void drawLineHAM1x8_C(graph_line *linedesc);
+void drawLineHAM2x8_C(graph_line *linedesc);
+void drawLineHAM1x16_C(graph_line *linedesc);
+void drawLineHAM2x16_C(graph_line *linedesc);
+void drawLineHAM1x24_C(graph_line *linedesc);
+void drawLineHAM2x24_C(graph_line *linedesc);
+void drawLineHAM1x32_C(graph_line *linedesc);
+void drawLineHAM2x32_C(graph_line *linedesc);
+
 /*===========================================================================*/
 /* Mode handling, describes the geometry of the host screen                  */
 /*===========================================================================*/
@@ -306,7 +315,7 @@ extern BOOLE drawSetMode(ULO width,
 			 BOOLE windowed);
 extern felist *drawGetModes(void);
 extern void drawSetDeinterlace(BOOLE deinterlace);
-extern void drawSetHorisontalScale(ULO horisontalscale);
+extern void drawSetHorizontalScale(ULO horisontalscale);
 extern void drawSetVerticalScale(ULO verticalscale);
 extern void drawSetScanlines(BOOLE scanlines);
 extern void drawSetFrameskipRatio(ULO frameskipratio);

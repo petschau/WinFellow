@@ -1481,7 +1481,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetHorisontalScale(cfgGetHorizontalScale(config));
+  drawSetHorizontalScale(cfgGetHorizontalScale(config));
   drawSetVerticalScale(cfgGetVerticalScale(config));
   drawSetScanlines(cfgGetScanlines(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
