@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.8 2005-01-01 00:28:10 worfje Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.9 2005-02-18 17:26:32 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -217,7 +217,8 @@ char *fellowGetVersionString(void)
     if(!(result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4)))
         return NULL;
 
-    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+    //sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+	sprintf(result, "%s", FELLOWVERSION);
     return result;
 }
 
