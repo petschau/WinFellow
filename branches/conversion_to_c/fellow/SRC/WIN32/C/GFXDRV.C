@@ -226,15 +226,49 @@ void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device);
 BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
 
-long FAR PASCAL EmulationWindowProc(HWND hWnd,
-				    UINT message, 
-                                    WPARAM wParam,
-				    LPARAM lParam) {
-  RECT emulationRect;
+long FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+	RECT emulationRect;
+	BOOLE diacquire_sent = FALSE;
+/*
+	switch (message)
+	{
+	case 15:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");
+		break;
+	case 20:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");
+		break;
+	case 70:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING");
+		break;
+	case 71:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");
+		break;
+	case 133:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");
+		break;
+	case 256:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");
+		break;		
+	case 257:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");
+		break;		
+	case 275:
+		fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");
+		break;		
+	default:
+  		fellowAddLog("EmulationWindowProc got message %Xh\n", message);
+	}
+*/
 
-  BOOLE diacquire_sent = FALSE;
-  switch (message) {
-  case WM_TIMER:
+	switch (message) 
+	{
+	case WM_ERASEBKGND:
+	case WM_NCPAINT:
+	case WM_PAINT:
+		graph_buffer_lost = TRUE;
+		break;
+	case WM_TIMER:
     if (wParam == 1) {
       winDrvHandleInputDevices();
       soundDrvPollBufferPosition();
@@ -1976,6 +2010,7 @@ BOOLE gfxDrvStartup(void) {
   gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
+  graph_buffer_lost = FALSE;
   if (gfxDrvRunEventInitialize())
     if (gfxDrvWindowClassInitialize())
       gfx_drv_initialized = gfxDrvDDrawInitialize();
@@ -1995,4 +2030,9 @@ void gfxDrvShutdown(void) {
     gfxDrvWindowRelease(gfx_drv_ddraw_device_current);
   }
   gfxDrvRunEventRelease();
+}
+
+void gfxDrvDebugging(void)
+{
+
 }

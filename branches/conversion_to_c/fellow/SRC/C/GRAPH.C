@@ -33,6 +33,12 @@
 
 extern ULO sprite_ddf_kill;
 
+/*======================================================================*/
+/* flag that handles loss of surface content due to DirectX malfunction */
+/*======================================================================*/
+
+BOOLE graph_buffer_lost;
+
 /*===========================================================================*/
 /* Lookup-tables for planar to chunky routines                               */
 /*===========================================================================*/
@@ -989,6 +995,12 @@ void wcolor_C(ULO data, ULO address)
 
 void graphEndOfFrame(void) {
   graph_playfield_on = FALSE;
+  if (graph_buffer_lost == TRUE)
+  {
+	graphLineDescClear();
+	graph_buffer_lost = FALSE;
+  }
+  gfxDrvDebugging();
 }
 
 /*===========================================================================*/
@@ -1006,6 +1018,7 @@ void graphHardReset(void) {
 /*===========================================================================*/
 
 void graphEmulationStart(void) {
+  graph_buffer_lost = FALSE;
   graphLineDescClear();
   graphIOHandlersInstall();
 }
