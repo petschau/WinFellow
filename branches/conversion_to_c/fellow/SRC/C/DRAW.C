@@ -1155,11 +1155,11 @@ static void drawFpsToFramebuffer24(void) {
   bufb = draw_buffer_top_ptr;
   bufb += (draw_mode_current->width - 20)*3;
   for (y = 0; y < 5; y++) {
-    for (x = 0; x < 60; x += 3) {
+    for (x = 0; x < 20; x++) {
       UBY color = draw_fps_buffer[y][x] ? 0xff : 0;
-      *(bufb + x) = color;
-      *(bufb + x + 1) = color;
-      *(bufb + x + 2) = color;
+      *(bufb + x*3) = color;
+      *(bufb + x*3 + 1) = color;
+      *(bufb + x*3 + 2) = color;
     }
     bufb += draw_mode_current->pitch;
   }
@@ -2735,17 +2735,16 @@ void drawLineDual1x24_C(graph_line *linedescription)
     // write results in draw_dual_translate[1], instead of draw_dual_translate[0]
     draw_dual_translate_ptr += 0x10000;
   }
-  while (pixels_left_to_draw >= 0)
+  while (pixels_left_to_draw-- > 0)
   {
     *((UWO *) draw_buffer_current_ptr) = 
       (UWO) *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
+      (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
 
     *((UBY *) draw_buffer_current_ptr + 2) = 
       (UBY) (*((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr))))) >> 16);
+      (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr))))) >> 16);
     
-    pixels_left_to_draw--;
     source_line1_ptr++;
     source_line2_ptr++;
     draw_buffer_current_ptr += 3;
@@ -2790,7 +2789,7 @@ void drawLineDual2x24_C(graph_line *linedescription)
     // write results in draw_dual_translate[1], instead of draw_dual_translate[0]
     draw_dual_translate_ptr += 0x10000;
   }
-  while (pixels_left_to_draw >= 0)
+  while (pixels_left_to_draw-- > 0)
   {
     *((UWO *) draw_buffer_current_ptr) = 
       (UWO) *((ULO *) ((UBY *) linedescription->colors + 
@@ -2808,7 +2807,6 @@ void drawLineDual2x24_C(graph_line *linedescription)
       (UBY) (*((ULO *) ((UBY *) linedescription->colors + 
       (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr))))) >> 16);
     
-    pixels_left_to_draw--;
     source_line1_ptr++;
     source_line2_ptr++;
     draw_buffer_current_ptr += 6;
@@ -3198,7 +3196,7 @@ static __inline void drawLineSegmentBG2x16(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG1x24(ULO topad, ULO bgcolor)
 {
-  ULO bgcolor_a = (bgcolor & 0xFFFFFF) | (bgcolor << 24);
+  ULO bgcolor_a = (bgcolor & 0xffffff) | (bgcolor << 24);
   ULO bgcolor_b = (bgcolor_a >> 8) | ((bgcolor >> 8) << 24);
   ULO bgcolor_c = (bgcolor_b >> 8) | ((bgcolor >> 16) << 24);
 
@@ -3240,16 +3238,16 @@ static __inline void drawLineSegmentBG1x24(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG2x24(ULO topad, ULO bgcolor)
 {
-  ULO bgcolor_a = (bgcolor & 0xFFFFFF) | (bgcolor << 24);      // [0;2;1;0] re-arrange 12 bytes to hold four 24-bit pixels
+  ULO bgcolor_a = (bgcolor & 0xffffff) | (bgcolor << 24);      // [0;2;1;0] re-arrange 12 bytes to hold four 24-bit pixels
   ULO bgcolor_b = (bgcolor_a >> 8) | ((bgcolor >> 8) << 24);   // [1;0;2;1]
   ULO bgcolor_c = (bgcolor_b >> 8) | ((bgcolor >> 16) << 24);  // [2;1;0;2]
 
-  if (topad >= 4)
+  if (topad >= 2)
   {
     while (((ULO) draw_buffer_current_ptr & 0x2) != 0)
     {
       *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
+      *((ULO *) ((UBY *) draw_buffer_current_ptr + 3)) = bgcolor;
       topad--;
       draw_buffer_current_ptr += 6;
     }
@@ -3264,8 +3262,8 @@ static __inline void drawLineSegmentBG2x24(ULO topad, ULO bgcolor)
   }
   while (topad > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = bgcolor_a;
-    *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor_b;
+    *((ULO *) draw_buffer_current_ptr) = bgcolor;
+    *((ULO *) ((UBY *) draw_buffer_current_ptr + 3)) = bgcolor;
     topad--;
     draw_buffer_current_ptr += 6;
   }
