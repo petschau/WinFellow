@@ -285,6 +285,8 @@ _return_from_stop_:
 ; Global end of frame handler
 ;==============================================================================
 
+CFUNCEXTERN drawEndOfFramePreC
+
 
 		FALIGN32
 
@@ -297,7 +299,15 @@ _endOfFrame_:	push	edx
 		; Draw the frame in the host buffer
 		;==============================================================
 
-		call	_drawEndOfFrame_
+		pushad
+		push edx
+		push ebx
+		;call	_drawEndOfFrame_
+		
+		call drawEndOfFramePreC
+		pop ebx
+		pop edx
+		popad
 
 
 		;==============================================================

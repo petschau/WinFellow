@@ -16,7 +16,7 @@
 
 %macro DRAWENDOFFRAME_CWRAP 0
 		CCALLCONV_IN_NONE
-		call	drawEndOfFrameC
+		call	drawEndOfFramePostC
 		CCALLCONV_OUT_NONE	0
 %endmacro
 
