@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "ini.h"
 #include "draw.h"
+#include "fellow.h"
 
 /*============================================================================*/
 /* The actual iniManager instance                                             */
@@ -164,6 +165,14 @@ void iniSetLastUsedHdfDir(ini *initdata, STR *directory) {
 
 STR *iniGetLastUsedHdfDir(ini *initdata) {
   return initdata->m_lastusedhdfdir;
+}
+
+void iniSetLastUsedModDir(ini *initdata, STR *directory) {
+  strncpy(initdata->m_lastusedmoddir, directory, CFG_FILENAME_LENGTH);
+}
+
+STR *iniGetLastUsedModDir(ini *initdata) {
+  return initdata->m_lastusedmoddir;
 }
 
 /*============================================================================*/
@@ -347,6 +356,9 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 	else if (stricmp(option, "last_used_hdf_dir") == 0) {
       iniSetLastUsedHdfDir(initdata, value);
     }
+	else if (stricmp(option, "last_used_mod_dir") == 0) {
+      iniSetLastUsedModDir(initdata, value);
+    }
 	else if (stricmp(option, "last_used_cfg_tab") == 0) {
       iniSetLastUsedCfgTab(initdata, iniGetULOFromString(value));
     }
@@ -357,8 +369,6 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 }
 
 BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
-  ULO i;
-
   fprintf(inifile, "ini_description=%s\n", iniGetDescription(initdata));
   fprintf(inifile, "main_window_x_pos=%d\n", iniGetMainWindowXPos(initdata));
   fprintf(inifile, "main_window_y_pos=%d\n", iniGetMainWindowYPos(initdata));
@@ -375,6 +385,7 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "last_used_key_dir=%s\n", iniGetLastUsedKeyDir(initdata));
   fprintf(inifile, "last_used_global_disk_dir=%s\n", iniGetLastUsedGlobalDiskDir(initdata));
   fprintf(inifile, "last_used_hdf_dir=%s\n", iniGetLastUsedHdfDir(initdata));
+  fprintf(inifile, "last_used_mod_dir=%s\n", iniGetLastUsedModDir(initdata));
   return TRUE;
 }
 

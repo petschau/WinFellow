@@ -579,20 +579,13 @@ static STR *wguiGetBOOLEToString(BOOLE value) {
 /* Runs a session in the file requester                                       */
 /*============================================================================*/
 
-typedef enum {
-  FSEL_ROM = 0,
-  FSEL_ADF = 1,
-  FSEL_KEY = 2,
-  FSEL_HDF = 3,
-  FSEL_WFC = 4
-} SelectFileFlags;
-
-static STR FileType[5][CFG_FILENAME_LENGTH] = {
+static STR FileType[6][CFG_FILENAME_LENGTH] = {
 	"ROM Images (.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
     "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
     "Key Files (.key)\0*.key\0\0\0", 
     "Hard Files (.hdf)\0*.hdf\0\0\0",
-    "Configuration Files (.wfc)\0*.wfc\0\0\0"};
+    "Configuration Files (.wfc)\0*.wfc\0\0\0",
+	"Amiga Modules (.amod)\0*.amod\0\0\0"};
 
 BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize, 
 					 STR *title, SelectFileFlags SelectFileType) {
@@ -673,7 +666,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.lpstrCustomFilter = NULL;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
-  filename[0] = '\0';
+  // filename[0] = '\0';
   ofn.lpstrFile = filename;
   ofn.nMaxFile = filenamesize;
   ofn.lpstrFileTitle = NULL;
@@ -703,6 +696,9 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
 		case FSEL_WFC:
 			ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
 			break;
+		case FSEL_MOD:
+			ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini);
+			break;
 		default:
 			ofn.lpstrInitialDir = NULL;
 	}
@@ -710,7 +706,8 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.lpstrTitle = title;
   ofn.Flags = OFN_EXPLORER |
 			  OFN_HIDEREADONLY |
-			  OFN_OVERWRITEPROMPT;
+			  OFN_OVERWRITEPROMPT |
+        OFN_NOCHANGEDIR;
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = &".wfc";
@@ -856,7 +853,9 @@ void wguiSwapCfgsInHistory(ULO itemA, ULO itemB) {
 void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
 	STR filename[CFG_FILENAME_LENGTH];
 
-	if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save As", FSEL_WFC)) {
+	strcpy(filename, "");
+
+	if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", FSEL_WFC)) {
 		cfgSaveToFilename(wgui_cfg, filename);
 		iniSetCurrentConfigurationFilename(wgui_ini, filename);
 		iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
