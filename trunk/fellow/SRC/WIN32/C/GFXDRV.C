@@ -570,7 +570,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
-      "Fellow Alpha V0.4 WinNT 991205",
+      "Fellow Alpha V0.4.1 build 1",
       WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
       CW_USEDEFAULT,
       SW_SHOW,
@@ -584,7 +584,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   else {
     gfx_drv_hwnd = CreateWindowEx(WS_EX_TOPMOST,
       "FellowWindowClass",
-      "Fellow Alpha V0.4 WinNT 991205",
+      "Fellow Alpha V0.4.1 build 1",
       WS_POPUP,
       0,
       0,
