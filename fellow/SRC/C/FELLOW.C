@@ -502,7 +502,7 @@ int main(int argc, char *argv[]) {
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);
 
-  fellowLogSysInfo();
+  sysinfoLogSysInfo();
   fellowPreStartReset(TRUE);
   fellowSetMMXDetected(detectMMX());
   fellowModulesStartup(argc, argv);
