@@ -116,7 +116,7 @@ static long dos_errno(void)
      case ENOMEM:	return ERROR_NO_FREE_STORE;
      case EEXIST:	return ERROR_OBJECT_EXISTS;
      case EACCES:	return ERROR_WRITE_PROTECTED;
-     case ENOENT:	return ERROR_OBJECT_NOT_FOUND;
+     case ENOENT:	return ERROR_OBJECT_NOT_AROUND;
      case ENOTDIR:	return ERROR_OBJECT_WRONG_TYPE;
      case ENOSPC:	return ERROR_DISK_IS_FULL;
      case EBUSY:       	return ERROR_OBJECT_IN_USE;
@@ -1047,7 +1047,7 @@ static a_inode *lookup_child_aino (Unit *unit, a_inode *base, char *rel, uae_u32
 	return c;
     c = new_child_aino (unit, base, rel);
     if (c == 0)
-	*err = ERROR_OBJECT_NOT_FOUND;
+	*err = ERROR_OBJECT_NOT_AROUND;
     return c;
 }
 
@@ -1128,7 +1128,7 @@ static a_inode *get_aino (Unit *unit, a_inode *base, const char *rel, uae_u32 *e
 	    next = lookup_child_aino (unit, curr, p, err);
 	    if (next == 0) {
 		/* if only last component not found, return parent dir. */
-		if (*err != ERROR_OBJECT_NOT_FOUND || component_end != 0)
+		if (*err != ERROR_OBJECT_NOT_AROUND || component_end != 0)
 		    curr = 0;
 		/* ? what error is appropriate? */
 		break;
@@ -1507,7 +1507,7 @@ static void action_free_lock (Unit *unit, dpacket packet)
     a = lookup_aino (unit, get_long (lock + 4));
     if (a == 0) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_FOUND);
+	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_AROUND);
 	return;
     }
     if (a->elock)
@@ -1535,7 +1535,7 @@ action_dup_lock (Unit *unit, dpacket packet)
     a = lookup_aino (unit, get_long (lock + 4));
     if (a == 0) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_FOUND);
+	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_AROUND);
 	return;
     }
     /* DupLock()ing exclusive locks isn't possible, says the Autodoc, but
@@ -1822,7 +1822,7 @@ static void do_find (Unit *unit, dpacket packet, int mode, int create, int fallb
 
     aino = find_aino (unit, lock, bstr (unit, name), &err);
 
-    if (aino == 0 || (err != 0 && err != ERROR_OBJECT_NOT_FOUND)) {
+    if (aino == 0 || (err != 0 && err != ERROR_OBJECT_NOT_AROUND)) {
 	/* Whatever it is, we can't handle it. */
 	PUT_PCK_RES1 (packet, DOS_FALSE);
 	PUT_PCK_RES2 (packet, err);
@@ -2289,7 +2289,7 @@ action_change_mode (Unit *unit, dpacket packet)
 	Key *k = lookup_key (unit, object);
 	if (!k) {
 	    PUT_PCK_RES1 (packet, DOS_FALSE);
-	    PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_FOUND);
+	    PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_AROUND);
 	    return;
 	}
         uniq = k->aino->uniq;
@@ -2353,7 +2353,7 @@ action_parent_fh (Unit *unit, dpacket packet)
     Key *k = lookup_key (unit, GET_PCK_ARG1 (packet));
     if (!k) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_FOUND);
+	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_AROUND);
 	return;
     }
     action_parent_common (unit, packet, k->aino->uniq);
@@ -2391,7 +2391,7 @@ action_create_dir (Unit *unit, dpacket packet)
     }
 
     aino = find_aino (unit, lock, bstr (unit, name), &err);
-    if (aino == 0 || (err != 0 && err != ERROR_OBJECT_NOT_FOUND)) {
+    if (aino == 0 || (err != 0 && err != ERROR_OBJECT_NOT_AROUND)) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
 	PUT_PCK_RES2 (packet, err);
 	return;
@@ -2463,7 +2463,7 @@ action_set_file_size (Unit *unit, dpacket packet)
     k = lookup_key (unit, GET_PCK_ARG1 (packet));
     if (k == 0) {
 	PUT_PCK_RES1 (packet, DOS_TRUE);
-	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_FOUND);
+	PUT_PCK_RES2 (packet, ERROR_OBJECT_NOT_AROUND);
 	return;
     }
 
@@ -2616,7 +2616,7 @@ action_rename_object (Unit *unit, dpacket packet)
 	    return;
 	}
 	a2 = a2->parent;
-    } else if (a2 == 0 || err2 != ERROR_OBJECT_NOT_FOUND) {
+    } else if (a2 == 0 || err2 != ERROR_OBJECT_NOT_AROUND) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
 	PUT_PCK_RES2 (packet, err2 == 0 ? ERROR_OBJECT_EXISTS : err2);
 	return;
