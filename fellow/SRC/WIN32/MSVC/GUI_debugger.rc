@@ -1,0 +1,102 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "gui_debugger.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "gui_debugger.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DEBUG_CPU DIALOG DISCARDABLE  0, 0, 516, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Fellow CPU Debugger"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Step",IDC_DEBUG_CPU_STEP,457,17,46,14
+    PUSHBUTTON      "Step Over",IDC_DEBUG_CPU_STEP_OVER,457,32,46,14
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,212
+    GROUPBOX        "Disassembly:",IDC_STATIC,7,49,440,170
+    PUSHBUTTON      "Break",IDC_DEBUG_CPU_BREAK,457,199,46,14
+    PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,457,184,46,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DEBUG_CPU, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
