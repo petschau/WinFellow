@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.5 2004-06-03 10:06:59 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.6 2004-06-03 10:13:51 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -220,18 +220,16 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
 BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *tracktiming, BOOLE *flakey)
 {
     ULO i, len, type;
-    UBY *current_mfm_data;
     struct CapsTrackInfo capsTrackInfo;
 
     *tracktiming = 0;
     CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
-    current_mfm_data = mfm_data;
     *flakey = (capsTrackInfo.type & CTIT_FLAG_FLAKEY) ? TRUE : FALSE;
     type = capsTrackInfo.type & CTIT_MASK_TYPE;
     len = capsTrackInfo.tracksize[0];
     *tracklength = len;
-    for (i = 0; i < len; i++)
-        *current_mfm_data++ = *(capsTrackInfo.trackdata[0]+ i);
+    memcpy(mfm_data, capsTrackInfo.trackdata[0], len);
+
 #if TRACECAPS
     {
 	    FILE *f = fopen("CAPSDump.txt","wb");
@@ -252,14 +250,14 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
         capsTrackInfo.timelen, 
         type);
 #endif
+
     return TRUE;
 }
 
 BOOLE capsLoadRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
 {
-    static int revolutioncount = 0;
-    ULO revolution, len, i;
-    UBY *current_mfm_data;
+    static ULO revolutioncount = 0;
+    ULO revolution, len;
     struct CapsTrackInfo capsTrackInfo;
 
     revolutioncount++;
@@ -267,9 +265,8 @@ BOOLE capsLoadRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
     revolution = revolutioncount % capsTrackInfo.trackcnt;
     len = capsTrackInfo.tracksize[revolution];
     *tracklength = len;
-    current_mfm_data = mfm_data;
-    for (i = 0; i < len; i++)
-        *current_mfm_data++ = *(capsTrackInfo.trackdata[revolution] + i);
+    memcpy(mfm_data, capsTrackInfo.trackdata[revolution], len);
+
     return TRUE;
 }
 
