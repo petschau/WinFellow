@@ -295,11 +295,11 @@ STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "Various"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "On-Screen Speed per Frame (in ms)",
+    CONTROL         "Show FPS in windowed emulation mode",
                     IDC_CHECK_VARIOUS_SPEED,"Button",BS_AUTOCHECKBOX | 
-                    WS_GROUP | WS_TABSTOP,10,10,128,10
-    CONTROL         "Enable LED-Symbols",IDC_CHECK_VARIOUS_LED,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,10,25,82,10
+                    WS_GROUP | WS_TABSTOP,10,10,142,10
+    CONTROL         "Show LEDs in emulation window",IDC_CHECK_VARIOUS_LED,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,25,119,10
     CONTROL         "Disable Autoconfig-devices",
                     IDC_CHECK_AUTOCONFIG_DISABLE,"Button",BS_AUTOCHECKBOX | 
                     WS_TABSTOP,10,40,135,10
