@@ -40,6 +40,7 @@
 #define IDB_POWER_LED_OFF               139
 #define IDB_DISKDRIVE_LED_OFF           140
 #define IDB_DISKDRIVE_LED_DISABLED      141
+#define IDD_HARDFILE_CREATE             150
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -62,6 +63,7 @@
 #define IDC_BUTTON1                     1019
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1019
 #define IDC_DEBUG_CPU_STEP              1019
+#define IDC_BUTTON_HARDFILE_CREATE      1019
 #define IDC_BUTTON2                     1020
 #define IDC_BUTTON_KEYFILE_FILEDIALOG   1020
 #define IDC_DEBUG_CPU_STEP_OVER         1020
@@ -74,6 +76,7 @@
 #define IDC_CHECK1                      1023
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 1023
 #define IDC_CHECK_VARIOUS_LED           1023
+#define IDC_CHECK_CREATE_HARDFILE_MEGABYTES 1023
 #define IDC_CHECK2                      1024
 #define IDC_RADIO1                      1024
 #define IDC_CHECK_DF1_ENABLED           1024
@@ -191,6 +194,8 @@
 #define IDC_IMAGE_DF0_LED_MAIN          1096
 #define IDC_IMAGE_POWER_LED_MAIN        1097
 #define IDC_STATIC_LINK                 1098
+#define IDC_CREATE_HARDFILE_SIZE        1100
+#define IDC_CREATE_HARDFILE_NAME        1106
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_DEBUGGER_START               40003
@@ -202,14 +207,13 @@
 #define ID_FILE_HISTORYCONFIGURATION2   40009
 #define ID_FILE_HISTORYCONFIGURATION3   40010
 
-
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_RESOURCE_VALUE        151
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1099
+#define _APS_NEXT_CONTROL_VALUE         1109
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
