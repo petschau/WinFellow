@@ -478,6 +478,8 @@ size441:	add	eax, dword [sound_scale]
 		mov	dword [sound_right + 2*eax], 0
 		mov	dword [sound_right + 2 + 2*eax], 0
 
+		; Channel 0
+
 		test	byte [dmacon], 1	  ; Channel on?
 		jz	channel0441off		  ; No, No sound 
 chan0441l:	xor	edx, edx
@@ -668,8 +670,10 @@ channel0313:	xor	edx, edx
 
 		mov	dword [sound_left + 2*eax], edx
 		mov	dword [sound_right + 2*eax], edx
+
 		test	dword [dmacon], 1	  ; Channel on?
 		jz	channel0313off		  ; No sound if dma is off
+
 		call	dword [audstate + edx]
 		mov	ecx, dword [auddatw] 
 		mov	word [sound_left + 2*eax], cx
@@ -810,9 +814,9 @@ filter_off33:	add	dword [sound_buffer_sample_count], ebx
 
 global _soundLowPass22_
 _soundLowPass22_:
-		xor	eax, eax
+		mov	eax, dword [sound_buffer_sample_count]
 		fninit					; Init FPU, no wait
-		
+		push	ebx
 More_FilteringL22:
 		fld	dword [last_left]
 
@@ -824,10 +828,11 @@ More_FilteringL22:
 		fistp	word [sound_left + 2*eax]	;  = new sample
 
 		inc	eax
-		cmp	eax, ebx
+		dec	ebx
 		jne	More_FilteringL22
 
-		xor	eax, eax
+		mov	eax, dword [sound_buffer_sample_count]
+		pop	ebx
 More_FilteringR22:
 		fld	dword [last_right]
 
@@ -839,8 +844,10 @@ More_FilteringR22:
 		fistp	word [sound_right + 2*eax]	;  = new sample
 
 		inc	eax
-		cmp	eax, ebx
+		dec	ebx
 		jne	More_FilteringR22
+
+		mov	dword [sound_buffer_sample_count], eax
 		ret
 
 
@@ -883,22 +890,22 @@ size220:	add	eax, dword [sound_scale]
 
 		test	byte [dmacon], 1	  ; Channel on?
 		jz	channel0220off		  ; No, No sound 
-		mov	dl, byte [audioodd]
-		push	edx
 chan0220l:	xor	edx, edx
 		call	dword [audstate + edx]
-		inc	byte [audioodd]
-		test	byte [audioodd], 1
-		jnz	chan0220dont
+		xor	byte [audioodd], 1
+		jz	chan0220dont
 		mov	ecx, dword [auddatw]
 		mov	word [sound_left + 2*eax], cx
 		inc	eax
-chan0220dont:	inc	bh
-		cmp	bh, bl
-		jne	chan0220l
-		pop	edx
-		mov	byte [audioodd], dl
+chan0220dont:
+		dec	ebx
+		jnz	chan0220l
+		jmp	channel1220
 channel0220off:
+		test	dword [esp], 1
+		jz chan0220even
+		xor byte [audioodd], 1
+chan0220even:
 		; According to docs an IRQ is posted after every word output when DMA is off
 		; We try to stimulate programs by at least setting the IRQ bits accordingly
 
@@ -918,24 +925,24 @@ channel1220:	test	dword [dmacon], 2	  ; Channel on?
 		jz	channel1220off		  ; No sound if dma is off
 
 		mov	eax, dword [sound_buffer_sample_count]
+		mov	ebx, dword [esp]
 
-		xor	bh, bh
-		mov	dl, byte [audioodd]
-		push	edx
 chan1220l:	mov	edx, 4
 		call	dword [audstate + edx]
-		inc	byte [audioodd]
-		test	byte [audioodd], 1
-		jnz	chan1220dont
+		xor	byte [audioodd+1], 1
+		jz	chan1220dont
 		mov	ecx, dword [auddatw + 4]
 		mov	word [sound_right + 2*eax], cx
 		inc	eax
-chan1220dont:	inc	bh
-		cmp	bh, bl
-		jne	chan1220l
-		pop	edx
-		mov	byte [audioodd], dl
+chan1220dont:
+		dec ebx
+		jnz	chan1220l
+		jmp	channel2220
 channel1220off:
+		test	dword [esp], 1
+		jz chan1220even
+		xor byte [audioodd+1], 1
+chan1220even:
 		; According to docs an IRQ is posted after every word output when DMA is off
 		; We try to stimulate programs by at least setting the IRQ bits accordingly
 
@@ -955,24 +962,24 @@ channel2220:	test	dword [dmacon], 4	  ; Channel on?
 		jz	channel2220off		  ; No sound if dma is off
 
 		mov	eax, dword [sound_buffer_sample_count]
+		mov	ebx, dword [esp]
 
-		xor	bh, bh
-		mov	dl, byte [audioodd]
-		push	edx
 chan2220l:	mov	edx, 8
 		call	dword [audstate + edx]
-		inc	byte [audioodd]
-		test	byte [audioodd], 1
-		jnz	chan2220dont
+		xor	byte [audioodd+2], 1
+		jz	chan2220dont
 		mov	ecx, dword [auddatw + 8]
 		add	word [sound_right + 2*eax], cx
 		inc	eax
-chan2220dont:	inc	bh
-		cmp	bh, bl
-		jne	chan2220l
-		pop	edx
-		mov	byte [audioodd], dl
+chan2220dont:
+		dec ebx
+		jnz	chan2220l
+		jmp	channel3220
 channel2220off:
+		test	dword [esp], 1
+		jz chan2220even
+		xor byte [audioodd+2], 1
+chan2220even:
 		; According to docs an IRQ is posted after every word output when DMA is off
 		; We try to stimulate programs by at least setting the IRQ bits accordingly
 
@@ -992,25 +999,24 @@ channel3220:	test	dword [dmacon], 8	  ; Channel on?
 		jz	channel3220off		  ; No sound if dma is off
 
 		mov	eax, dword [sound_buffer_sample_count]
+		mov	ebx, dword [esp]
 
-		xor	bh, bh
-		xor	eax, eax
-		mov	dl, byte [audioodd]
-		push	edx
 chan3220l:	mov	edx, 12
 		call	dword [audstate + edx]
-		inc	byte [audioodd]
-		test	byte [audioodd], 1
-		jnz	chan3220dont
+		xor	byte [audioodd+3], 1
+		jz	chan3220dont
 		mov	ecx, dword [auddatw + 12]
 		add	word [sound_left + 2*eax], cx
 		inc	eax
-chan3220dont:	inc	bh
-		cmp	bh, bl
-		jne	chan3220l
-		pop	edx
-		mov	byte [audioodd], dl
+chan3220dont:
+		dec ebx
+		jnz	chan3220l
+		jmp	channel4220
 channel3220off:
+		test	dword [esp], 1
+		jz chan3220even
+		xor byte [audioodd+3], 1
+chan3220even:
 		; According to docs an IRQ is posted after every word output when DMA is off
 		; We try to stimulate programs by at least setting the IRQ bits accordingly
 
@@ -1023,25 +1029,21 @@ channel3220off:
 		call	dword [memory_iobank_write + ecx]
 		pop	eax
 
-channel4220:	mov	ebx, dword [esp]	; restore number of samples
-		push	eax
-		mov	al, bl
-		mov	ah, byte [audioodd]
-		and	ah, 1
-		xor	byte [audioodd], al
-		add	al, ah
-		shr	al, 1
-		mov	bl, al
-		pop	eax
+channel4220:
 		pop	ebx
-
+		test	dword [audioodd],01111h
+		jz	chan4222notodd
+		add ebx,1
+chan4222notodd:
+		sar ebx,1
 		cmp	byte [sound_filter], SOUND_FILTER_NEVER
 		je	filter_off22
 		cmp	byte [sound_filter], SOUND_FILTER_ALWAYS
 		je	near _soundLowPass22_
 		test	dword [cia_pra], 2
 		jz	near _soundLowPass22_
-filter_off22:	ret
+filter_off22:	add	dword [sound_buffer_sample_count], ebx
+		ret
 
 
 ; 15650
@@ -1060,26 +1062,31 @@ filter_off22:	ret
 
 global _soundLowPass15_
 _soundLowPass15_:
+		mov	eax, dword [sound_buffer_sample_count]
+		add	ebx, eax
 		fninit					; Init FPU, no wait
 		
 		fld	dword [last_left]
 
 		fmul	dword [filter_value15]		; 0.844*Last_left
-		fiadd	word [sound_left]		;   + _left
+		fiadd	word [sound_left + 2*eax]	;   + _left
 		fst	dword [last_left]		;   = Last_Left
 
 		fdiv	dword [amplitude_div15]		;   div by 3
-		fistp	word [sound_left]		;  = new sample
+		fistp	word [sound_left + 2*eax]	;  = new sample
+
+		mov	eax, dword [sound_buffer_sample_count]
 
 		fld	dword [last_right]
 
 		fmul	dword [filter_value15]		; 0.844*Last_left
-		fiadd	word [sound_right]		;   + _left
+		fiadd	word [sound_right + 2*eax]	;   + _left
 		fst	dword [last_right]		;   = Last_Left
 
 		fdiv	dword [amplitude_div15]		;   div by 3
-		fistp	word [sound_right]		;  = new sample
+		fistp	word [sound_right + 2*eax]	;  = new sample
 
+		mov	dword [sound_buffer_sample_count], ebx
 		ret
 
 
@@ -1097,15 +1104,24 @@ _soundLowPass15_:
 global _soundFrequencyHandler15650_
 _soundFrequencyHandler15650_:
 channel0156:	xor	edx, edx
-		mov	dword [sound_left], edx
-		mov	dword [sound_right], edx
+
+		; Here eax is the position in the buffer where the new samples must be put
+
+		mov	eax, dword [sound_buffer_sample_count]
+
+		mov	dword [sound_left + 2*eax], edx
+		mov	dword [sound_right + 2*eax], edx
+
 		test	dword [dmacon], 1	  ; Channel on?
 		jz	channel0156off		  ; No sound if dma is off
+
 		call	dword [audstate + edx]
-		mov	eax, dword [auddatw] 
-		mov	word [sound_left], ax
+		mov	ecx, dword [auddatw] 
+		mov	word [sound_left + 2*eax], cx
 		xor	edx, edx
 		call	dword [audstate + edx]
+;		mov	ecx, dword [auddatw]
+;		add	word [sound_left + 2*eax], cx
 		jmp	channel1156
 channel0156off:
 		; According to docs an IRQ is posted after every word output when DMA is off
@@ -1122,12 +1138,19 @@ channel0156off:
 
 channel1156:	test	dword [dmacon], 2	  ; Channel on?
 		jz	channel1156off		  ; No sound if dma is off
+
+		; Here eax is the position in the buffer where the new samples must be put
+
+		mov	eax, dword [sound_buffer_sample_count]
+
 		mov	edx, 4
 		call	dword [audstate + edx]
-		mov	eax, dword [auddatw + 4] 
-		mov	word [sound_right], ax
+		mov	ecx, dword [auddatw + 4]
+		mov	word [sound_right + 2*eax], cx
 		mov	edx, 4
 		call	dword [audstate + edx]
+;		mov	ecx, dword [auddatw + 4]
+;		add	word [sound_right + 2*eax], cx
 		jmp	channel2156
 channel1156off:
 		; According to docs an IRQ is posted after every word output when DMA is off
@@ -1144,14 +1167,21 @@ channel1156off:
 
 channel2156:	test	dword [dmacon], 4	  ; Channel on?
 		jz	channel2156off		  ; No sound if dma is off
+
+		; Here eax is the position in the buffer where the new samples must be put
+
+		mov	eax, dword [sound_buffer_sample_count]
+
 		mov	edx, 8
 		call	dword [audstate + edx]
 
-		mov	eax, dword [auddatw + 8]
-		add	word [sound_right], ax
+		mov	ecx, dword [auddatw + 8]
+		add	word [sound_right + 2*eax], cx
 
 		mov	edx, 8
 		call	dword [audstate + edx]
+;		mov	ecx, dword [auddatw + 8]
+;		add	word [sound_right + 2*eax], cx
 
 		jmp	channel3156
 channel2156off:
@@ -1169,12 +1199,19 @@ channel2156off:
 
 channel3156:	test	dword [dmacon], 8	  ; Channel on?
 		jz	channel3156off		  ; No sound if dma is off
+
+		; Here eax is the position in the buffer where the new samples must be put
+
+		mov	eax, dword [sound_buffer_sample_count]
+
 		mov	edx, 12
 		call	dword [audstate + edx]
-		mov	eax,dword [auddatw + 12] 
-		add	word [sound_left], ax
+		mov	ecx,dword [auddatw + 12] 
+		add	word [sound_left + 2*eax], cx
 		mov	edx, 12
 		call	dword [audstate + edx]
+;		mov	ecx, dword [auddatw + 12]
+;		add	word [sound_left + 2*eax], cx
 		jmp	channel4156
 channel3156off:
 		; According to docs an IRQ is posted after every word output when DMA is off
@@ -1196,7 +1233,8 @@ channel4156:	mov	ebx, 1
 		je	near _soundLowPass15_
 		test	dword [cia_pra], 2
 		jz	near _soundLowPass15_
-filter_off15:	ret
+filter_off15:	add	dword [sound_buffer_sample_count], ebx
+		ret
 
 
 		FALIGN32
