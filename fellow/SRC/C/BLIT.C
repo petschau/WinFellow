@@ -14,6 +14,9 @@
 #include "fellow.h"
 #include "blit.h"
 #include "fmem.h"
+#include "graph.h"
+#include "draw.h"
+#include "cpu.h"
 
 
 /*============================================================================*/
@@ -65,6 +68,7 @@ ULO bltadatoriginal, bltbdatoriginal;
 ULO bltbdatline, bltlineheight, bltlinepointflag, bltfillbltconsave;
 ULO bltlinedecision;
 ULO linenum,linecount,linelength,blitterdmawaiting;
+BOOLE blitter_operation_log, blitter_operation_log_first;
 
 
 /*============================================================================*/
@@ -118,6 +122,33 @@ void blitterSetECS(BOOLE ECS) {
 
 BOOLE blitterGetECS(void) {
   return blitter_ECS;
+}
+
+/*============================================================================*/
+/* Blitter operation log                                                      */
+/*============================================================================*/
+
+void blitterSetOperationLog(BOOLE operation_log) {
+  blitter_operation_log = operation_log;
+}
+
+BOOLE blitterGetOperationLog(void) {
+  return blitter_operation_log;
+}
+
+void blitterOperationLog(void) {
+  if (blitter_operation_log) {
+    FILE *F = fopen("blitterops.log", (blitter_operation_log_first) ? "w" : "a");
+    if (blitter_operation_log_first) {
+      blitter_operation_log_first = FALSE;
+      fprintf(F, "FRAME\tY\tX\tPC\tBLTCON0\tBLTCON1\tBLTAFWM\tBLTALWM\tBLTAPT\tBLTBPT\tBLTCPT\tBLTDPT\tBLTAMOD\tBLTBMOD\tBLTCMOD\tBLTDMOD\tBLTADAT\tBLTBDAT\tBLTCDAT\tHEIGHT\tWIDTH\n");
+    }
+    if (F) {
+      fprintf(F, "%.7d\t%.3d\t%.3d\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n",
+	      draw_frame_count, graph_raster_y, graph_raster_x, cpuGetPC(pc), (bltcon >> 16) & 0xffff, bltcon & 0xffff, bltafwm & 0xffff, bltalwm & 0xffff, bltapt, bltbpt, bltcpt, bltdpt, bltamod & 0xffff, bltbmod & 0xffff, bltcmod & 0xffff, bltdmod & 0xffff, bltadat & 0xffff, bltbdat & 0xffff, bltcdat & 0xffff, linenum, linelength);
+      fclose(F);
+    }
+  }
 }
 
 
@@ -326,6 +357,8 @@ void blitterStartup(void) {
   blitterSetFast(FALSE);
   blitterSetECS(FALSE);
   blitterIORegistersClear();
+  blitterSetOperationLog(FALSE);
+  blitter_operation_log_first = TRUE;
 }
 
 void blitterShutdown(void) {
