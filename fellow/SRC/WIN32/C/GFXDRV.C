@@ -1290,6 +1290,7 @@ void gfxDrvDDrawSurfaceClear(LPDIRECTDRAWSURFACE surface) {
 HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
 				  LPDIRECTDRAWSURFACE surface) {
   HRESULT err;
+  if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST) return DD_OK;
 
   if ((err = IDirectDrawSurface_Restore(surface)) == DD_OK) {
     gfxDrvDDrawSurfaceClear(surface);
@@ -1368,7 +1369,12 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
       /* gets better later */
       if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSPrimary)) != DD_OK) {
 	/* Here we are in deep trouble, we can not provide a buffer pointer */
-	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore failed) ", err);
+	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore primary surface failed) ", err);
+	return;
+      }
+      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSSecondary)) != DD_OK) {
+	/* Here we are in deep trouble, we can not provide a buffer pointer */
+	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore secondary surface failed) ", err);
 	return;
       }
       /* Restore was successful, do the blit */
@@ -1408,10 +1414,8 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device) {
     if ((err = IDirectDrawSurface_Release(ddraw_device->lpDDSSecondary)) != DD_OK)
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesRelease(): ", err);
     ddraw_device->lpDDSSecondary = NULL;
-  }
-  
+  }  
 }
-
 
 /*==========================================================================*/
 /* Create a second offscreen buffer                                         */
@@ -1439,7 +1443,6 @@ gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device) {
     gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
   return result;
 }
-
 
 /*==========================================================================*/
 /* Create the surfaces                                                      */
@@ -1588,9 +1591,10 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): ", err);
     if (err == DDERR_SURFACELOST) {
       /* Here we have lost the surface, restore it */
-      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed) ? lpDDS : ddraw_device->lpDDSPrimary)) != DD_OK) {
+      /* Unlike when blitting, we only use 1 surface here */
+      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed || (ddraw_device->vertical_scale > 1)) ? lpDDS : ddraw_device->lpDDSPrimary)) != DD_OK) {
 	/* Here we are in deep trouble, we can not provide a buffer pointer */
-	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Mega problem 1) ", err);
+	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Failed to restore surface 1) ", err);
 	return NULL;
       }
       else { /* Try again to lock the surface */
@@ -1600,7 +1604,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
 	                                   DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT,
 	                                   NULL)) != DD_OK) {
 	  /* Here we are in deep trouble, we can not provide a buffer pointer */
-	  gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Mega problem 2) ", err);
+	  gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Lock failed after restore) ", err);
 	  return NULL;
 	}
       }      
