@@ -75,6 +75,7 @@ ULO blit_b_shift_asc, blit_b_shift_desc;
 ULO blit_minterm;
 BOOLE blit_desc;
 BOOLE blit_started;
+ULO blit_cycle_length, blit_cycle_free;
 
 
 #ifdef BLIT_TSC_PROFILE
@@ -572,11 +573,22 @@ void blitInitiate(void) {
     }
   }
 
-  /* If BLTHOG is set, and there are no free cycles,
+  /* If BLTHOG is set, and there are no free cycles, */
   /* CPU is stopped completely, since that is what programs expect. */
-  /* If the blit leaves free cycles for the CPU, it runs at normal speed. */
+  /* If the blit leaves free cycles for the CPU, the CPU is left alone. */
+  /* If BLTHOG is not set, and there are no free cycles, */
+  /* the CPU will have to wait until the 4th cycle every time it wants the bus. */
+  /* The CPU does not use the bus all the time, so the added blit time or CPU slowdown is not */
+  /* a full cycle_length/4. Give some impression of */
+  /* added time, but the way the core operates, we can't compensate in detail for bpl and actual */
+  /* CPU cycles. */
 
-  if ((dmaconr & 0x400) && (cycle_free == 0)) thiscycle = cycle_length;
+  if (cycle_free == 0) {
+    if ((dmaconr & 0x400)) thiscycle = cycle_length;
+    else cycle_length += (cycle_length/5);
+  }
+  blit_cycle_length = cycle_length;
+  blit_cycle_free = cycle_free;
   blitend = cycle_length + curcycle;
   blit_started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
