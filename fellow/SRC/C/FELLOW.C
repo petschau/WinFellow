@@ -195,10 +195,31 @@ static void fellowRuntimeErrorCheck(void) {
 
 
 /*============================================================================*/
-/* Hardreset                                                                  */
+/* Softreset                                                                  */
 /*============================================================================*/
 
-static BOOLE fellow_reset_firsttime = TRUE;
+void fellowSoftReset(void) {
+  memorySoftReset();
+  fhfileHardReset();
+  spriteHardReset();
+  drawHardReset();
+  kbdHardReset();
+  gameportHardReset();
+  busHardReset();
+  soundHardReset();
+  blitterHardReset();
+  copperHardReset();
+  floppyHardReset();
+  ciaHardReset();
+  graphHardReset();
+  ffilesysHardReset();
+  memoryHardResetPost();
+  fellowPreStartReset(FALSE);
+}
+
+/*============================================================================*/
+/* Hardreset                                                                  */
+/*============================================================================*/
 
 void fellowHardReset(void) {
   memoryHardReset();
