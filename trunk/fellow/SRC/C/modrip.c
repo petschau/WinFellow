@@ -12,7 +12,7 @@
 /* Changelog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/18:                                                                */
-/* - added ThePlayer 4.1a support                                             */
+/* - added ThePlayer 4 support                                                */
 /* - added ProRunner 2.0 support                                              */
 /* - now only the allocated memory areas are scanned instead of the whole mem */
 /* 2000/12/16:                                                                */
@@ -114,8 +114,9 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 {
   ULO i;
   int type;
-  struct { char *ID; char *Desc; int channels; } formats[8] = {
+  struct { char *ID; char *Desc; int channels; } formats[9] = {
 	  {"M.K.", "Noisetracker",  4},
+      {"N.T.", "Noisetracker",  4},
       {"M!K!", "Protracker",    4},
 	  {"4CHN", "4 channel",     4},
 	  {"6CHN", "6 channel",     6},
@@ -127,7 +128,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
   struct ModuleInfo info;
   BOOLE ScratchyName;
 
-  for(type = 0; type < 8; type++) {
+  for(type = 0; type < 9; type++) {
     if ( ((*func)(address + 0) == formats[type].ID[0])
       && ((*func)(address + 1) == formats[type].ID[1])
       && ((*func)(address + 2) == formats[type].ID[2])
@@ -633,31 +634,47 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
 }
 
 /*=========================*/
-/* detect ThePlayer 4.1a   */
+/* detect ThePlayer 4      */
 /* games: Colonization,    */
 /* some Alien Breed titles */
 /*=========================*/
 
-static void modripDetectP41A(ULO address, MemoryAccessFunc func)
+static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
 {
   struct ModuleInfo info;
   ULO pattNo = 0, sampNo = 0, sampSize = 0;
   ULO sampDataPtr = 0, sampDataCurr = 0;
   ULO sampSizeCurr, loopSizeCurr;
   ULO i;
+  BOOLE match = FALSE;;
 
   if(
-      (BYTE(address + 0) != 'P')
-   || (BYTE(address + 1) != '4')
-   || (BYTE(address + 2) != '1')
-   || (BYTE(address + 3) != 'A')
-    ) return;
+      (BYTE(address + 0) == 'P') 
+   && (BYTE(address + 1) == '4')
+   ) {
+    RIPLOG1("mod-ripper found possible ThePlayer 4 match...\n");
 
-  RIPLOG1("mod-ripper found possible ThePlayer 4.1a match...\n");
+	if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A') ) {
+	  match = TRUE;
+	  strcpy(info.typesig, "P40A");
+	}
+	if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'B') ) {
+      match = TRUE;
+	  strcpy(info.typesig, "P40B");
+	}
+	if( (BYTE(address + 2) == '1') && (BYTE(address + 3) == 'A') ) {
+	  match = TRUE;
+	  strcpy(info.typesig, "P41A");
+	}
+  }
+  
+  if(!match) return;
+
+  RIPLOG2("mod-ripper found possible ThePlayer 4 (%s) match...\n", info.typesig);
   modripModuleInfoInitialize(&info);
   info.start = address;
   strcpy(info.typesig, "P41A");
-  strcpy(info.typedesc, "ThePlayer 4.1a");
+  strcpy(info.typedesc, "ThePlayer 4");
 
   /* number of patterns */
   if((pattNo = BYTE(address + 4)) > 0x7f) return;
@@ -701,7 +718,7 @@ static void modripDetectP41A(ULO address, MemoryAccessFunc func)
   info.end = info.start + sampDataPtr + sampSize + (loopSizeCurr << 1);
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "P41A.Mod%d.cus", modripModsFound++);
+    sprintf(info.filename, "%s.Mod%d.cus", info.typesig, modripModsFound++);
 
     if(modripGuiSaveRequest(&info)) 
       if(!modripSaveMem(&info, func))
@@ -725,7 +742,7 @@ static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
   modripDetectSoundMon,
   modripDetectFred,
   modripDetectProRunner2,
-  modripDetectP41A
+  modripDetectThePlayer4
 };
 
 /*==============================================*/
