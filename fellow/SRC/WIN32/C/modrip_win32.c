@@ -177,3 +177,13 @@ void modripGuiUnInitialize(void)
   MessageBox(modrip_hWnd, "Module Ripper finished.", "Finished.", 
     MB_OK | MB_ICONINFORMATION);
 }
+
+/*==========================*/
+/* Display an error message */
+/*==========================*/
+
+void modripGuiError(char *message)
+{
+  MessageBox(modrip_hWnd, message, "Mod-Ripper Error.", MB_OK |
+    MB_ICONSTOP);
+}

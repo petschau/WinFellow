@@ -22,7 +22,10 @@
 
 /* own includes */
 #include <stdio.h>
+#include <stdlib.h>
 #include <memory.h>
+#include <string.h>
+
 #include "modrip.h"
 #ifdef WIN32
 #include "modrip_win32.h"
@@ -280,29 +283,54 @@ ULO modripFloppyCacheRead(ULO address)
   return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }
 
-/*==========================================*/
-/* scan iserted cached floppies for modules */
-/*==========================================*/
+/*========================================*/
+/* read a floppy image into a given cache */
+/*========================================*/
 
 BOOLE modripReadFloppyImage(char *filename, char *cache)
 {
   FILE *f;
+  char message[MODRIP_TEMPSTRLEN];
+  char errdesc[MODRIP_TEMPSTRLEN];
   ULO i;
+  int errcode;
+  int readbytes;
 
   if(f = fopen(filename, "rb")) {
-    if(fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE) {
+    if(readbytes = fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE) {
+      fclose(f);
+      sprintf(message, "The disk image %s is of a wrong size (%d bytes).", 
+        filename, readbytes);
+	  modripGuiError(message);
       return FALSE;
 	}
-	if(errno != 0) {
+/* damn windows, why is everything done differently here? */
+#ifdef WIN32
+	if((errcode = _doserrno) != 0) {
+#else
+	if((errcode = errno) != 0) {
+#endif
+      fclose(f);
+	  sprintf(message, "An error occurred upon reading file %s:\n", filename);
+	  sprintf(errdesc, strerror(errcode));
+	  strcat(message, errdesc);
+	  strcat(message, ".");
+	  modripGuiError(message);
       return FALSE;
 	}
+	fclose(f);
     return TRUE;
   }
   else {
+    sprintf(message, "Couldn't open file %s for reading.", filename);
+    modripGuiError(message);
     return FALSE;
   }
-  fclose(f);
 }
+
+/*====================================*/
+/* scan inserted floppies for modules */
+/*====================================*/
 
 void modripScanFellowFloppies(void)
 {
