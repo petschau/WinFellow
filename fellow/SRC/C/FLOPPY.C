@@ -7,6 +7,13 @@
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
+/*============================================================================*/
+/* Changelog                                                                  */
+/* ---------                                                                  */
+/* 02/14/2001:                                                                */
+/* - added re-zipping of gzip'ed disk images upon removing the disk           */
+/* - experimental work on extended adf image support                          */
+/*============================================================================*/
 
 #include "portable.h"
 #include "renaming.h"
@@ -25,6 +32,7 @@
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
+#define MFM_MASK  0x55555555
 #define FLOPPY_INSERTED_DELAY 200   
 
 /*---------------*/
@@ -33,7 +41,7 @@
 
 floppyinfostruct floppy[4];              /* Info about drives */ 
 BOOLE floppy_fast;                       /* Select fast floppy transfer */
-UBY tmptrack[512*11];                    /* Temporary track buffer */
+UBY tmptrack[20*1024*11];                /* Temporary track buffer */
 floppyDMAinfostruct floppy_DMA;          /* Info about a DMA transfer */
 BOOLE floppy_DMA_started;                /* Disk DMA started */
 BOOLE floppy_DMA_read;                   /* DMA read or write */
@@ -237,8 +245,8 @@ void floppySectorMFMEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
   /* Track and sector info */
 
   tmp = 0xff000000 | (tra<<16) | (sec<<8) | (11 - sec);
-  odd = tmp & 0x55555555;
-  even = (tmp>>1) & 0x55555555;
+  odd = tmp & MFM_MASK;
+  even = (tmp>>1) & MFM_MASK;
   *(dest +  8) = (UBY) ((even & 0xff000000)>>24);
   *(dest +  9) = (UBY) ((even & 0xff0000)>>16);
   *(dest + 10) = (UBY) ((even & 0xff00)>>8);
@@ -312,8 +320,8 @@ ULO floppySectorMFMDecode(UBY *src, UBY *dst) {
 
   odd = (src[0]<<24) | (src[1]<<16) | (src[2]<<8) | src[3];
   even = (src[4]<<24) | (src[5]<<16) | (src[6]<<8) | src[7];
-  even &= 0x55555555;
-  odd  = (odd & 0x55555555) << 1;
+  even &= MFM_MASK;
+  odd  = (odd & MFM_MASK) << 1;
   even |= odd;
   sector = (even & 0xff00)>>8;
   src += (48 + 8);
@@ -471,6 +479,8 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
 
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
+  if((access(diskname, 2 )) == -1 )
+    floppy[drive].writeprot = TRUE;
   return TRUE;
 }
 
@@ -481,11 +491,26 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
 
 void floppyImageCompressedRemove(ULO drive) {
   if (floppy[drive].zipped) {
-    floppy[drive].zipped = FALSE;
+	if( (!floppy[drive].writeprot) && 
+        ((access(floppy[drive].imagename, 2 )) != -1 )) {
+      STR *dotptr = strrchr(floppy[drive].imagename, '.');
+      if (dotptr != NULL) {
+        if ((strcmpi(dotptr, ".gz") == 0) ||
+	       (strcmpi(dotptr, ".z") == 0) ||
+		   (strcmpi(dotptr, ".adz") == 0)) {
+          if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
+		    fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
+              floppy[drive].imagename);
+          else
+            fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
+		    floppy[drive].imagename);
+		}
+	  }
+	}
+	floppy[drive].zipped = FALSE;
 	remove(floppy[drive].imagenamereal);
   }
 }
-
 
 /*============================*/
 /* Uncompress an image to TMP */
@@ -604,35 +629,64 @@ void floppyImageNormalLoad(ULO drive) {
 /*========================*/
 
 void floppyImageExtendedLoad(ULO drive) {
-  ULO i, offset;
+  ULO i, j, offset;
   UBY tinfo[4];
   
+#ifdef _DEBUG
+  fellowAddLog("Now reading EXT1 image.\n");
+#endif
   fseek(floppy[drive].F, SEEK_SET, 8);
   for (i = 0; i < floppy[drive].tracks*2; i++) {
     fread(tinfo, 1, 4, floppy[drive].F);
-    floppy[drive].trackinfo[i].sync = (((ULO) tinfo[0])<<8) | tinfo[1];
-    floppy[drive].trackinfo[i].length = (((ULO) tinfo[2])<<8) | tinfo[3];
+    floppy[drive].trackinfo[i].sync =   (ULO) ((tinfo[0] <<8) | tinfo[1]);
+    floppy[drive].trackinfo[i].length = (ULO) ((tinfo[2] <<8) | tinfo[3]);
   }
-  offset = 160*8 + 8;
+  offset = floppy[drive].tracks*8 + 8;
+#ifdef _DEBUG
+  fellowAddLog("First offset: %u\n", offset);
+#endif
   fseek(floppy[drive].F, SEEK_SET, offset);
   for (i = 0; i < floppy[drive].tracks*2; i++) {
     floppy[drive].trackinfo[i].fileoffset = offset;
     if (floppy[drive].cached) {
       fread(tmptrack, 1, floppy[drive].trackinfo[i].length, floppy[drive].F);
-      floppy[drive].trackinfo[i].buffer = floppy[drive].cache + offset -
-	160*8 - 8;
+      floppy[drive].trackinfo[i].buffer = floppy[drive].cache + offset - 
+		  floppy[drive].tracks*8 - 8;
       floppy[drive].trackinfo[i].valid = TRUE;
-      floppyTrackMFMEncode(i, tmptrack, floppy[drive].trackinfo[i].buffer,
-			   floppy[drive].trackinfo[i].sync);
+	  if(!floppy[drive].trackinfo[i].sync) /* AmigaDOS tracks */
+	  {
+        floppy[drive].trackinfo[i].sync = 0x4489;
+		floppy[drive].trackinfo[i].length = 11*1088;
+        floppyTrackMFMEncode(i, tmptrack, floppy[drive].trackinfo[i].buffer,
+			floppy[drive].trackinfo[i].sync);
+	  }
+	  else /* raw MFM tracks */
+	  {
+         memcpy(floppy[drive].trackinfo[i].buffer, tmptrack, 
+           floppy[drive].trackinfo[i].length);
+		 for(j = 0; j < floppy[drive].trackinfo[i].length; j+=2)
+		 {
+			 UBY tmp = floppy[drive].trackinfo[i].buffer[j];
+			 floppy[drive].trackinfo[i].buffer[j] = floppy[drive].trackinfo[i].buffer[j+1];
+			 floppy[drive].trackinfo[i].buffer[j+1] = tmp;
+		 }
+	  }
     }
     else {
       floppy[drive].trackinfo[i].buffer = floppy[drive].cache;
       floppy[drive].trackinfo[i].valid = FALSE;
     }
+#ifdef _DEBUG
+	fellowAddLog("offset track %u: %u\n", i, offset);
+#endif
     offset += floppy[drive].trackinfo[i].length;
-  }      
+  }     
+#ifdef _DEBUG
+  fellowAddLog("last offset: %u\n", offset);
+#endif
+  floppy[drive].inserted = TRUE;
+  floppy[drive].insertedframe = draw_frame_count;
 }
-
 
 /*==============================*/
 /* Insert an image into a drive */
@@ -948,7 +1002,8 @@ void floppyCacheAllocate(void) {
 
   for (i = 0; i < 4; i++) {
     floppy[i].cache = NULL;
-    floppy[i].cache = (UBY *) malloc(FLOPPY_TRACKS*11968);
+    /* floppy[i].cache = (UBY *) malloc(FLOPPY_TRACKS*11968); */
+	floppy[i].cache = (UBY *) malloc((FLOPPY_TRACKS*11968)<<1);
     floppy[i].cached = (floppy[i].cache != NULL);
     if (!floppy[i].cached)
       floppy[i].cache = (UBY *) malloc(11968);

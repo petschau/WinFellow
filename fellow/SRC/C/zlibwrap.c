@@ -11,6 +11,7 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ==========                                                                 */
+/* 02/14/2001: added compression of files                                     */
 /* 10/03/2000: first version.                                                 */
 /*============================================================================*/
 
@@ -29,10 +30,11 @@ BOOLE gzUnpack(const char *src, const char *dest)
     char	buffer[1<<14];
     int		length;
 
-    if( (output = fopen(dest, "wb")) == NULL) return FALSE;
-    if( (input = gzopen(src, "rb")) == NULL) return FALSE;
+    if((output = fopen(dest, "wb")) == NULL) return FALSE;
+    if((input  = gzopen(src, "rb")) == NULL) return FALSE;
 
-	for(;;){
+	for(;;)
+	{
         length = gzread(input, buffer, sizeof(buffer));
         if(length < 0) return FALSE;
         if(length == 0) break;
@@ -41,5 +43,39 @@ BOOLE gzUnpack(const char *src, const char *dest)
 
     if(fclose(output)) return FALSE;
     if(gzclose(input) != Z_OK) return FALSE;
+	return TRUE;
+}
+
+/*======================================================*/
+/* Compress the file named src into the file named dest */
+/* with standard compression and ratio 9                */
+/* return TRUE if succesful, FALSE on failure           */
+/*======================================================*/
+
+BOOLE gzPack(const char *src, const char *dest)
+{
+	FILE *input;
+	gzFile output;
+	char outmode[20];
+	char buffer[1<<14];
+    int length;
+    int error;
+
+    strcpy(outmode, "wb9 ");
+
+	if((input  = fopen(src, "rb"))      == NULL) return FALSE;
+    if((output = gzopen(dest, outmode)) == NULL) return FALSE;;
+
+    for(;;) 
+	{
+        length = fread(buffer, 1, sizeof(buffer), input);
+        if(ferror(input)) return FALSE;
+        if(length == 0) break;
+        if(gzwrite(output, buffer, (unsigned)length) != length) return FALSE;
+    }
+	
+	if(fclose(input)) return FALSE;
+	if(gzclose(output) != Z_OK) return FALSE;
+
 	return TRUE;
 }
