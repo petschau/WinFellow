@@ -28,7 +28,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 
 IDD_MAIN DIALOG DISCARDABLE  0, 0, 312, 170
 STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "WinFellow alpha v0.4.2 build 1"
+CAPTION "WinFellow alpha v0.4.3 build 1"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -359,7 +359,7 @@ CAPTION "About WinFellow"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    LTEXT           "WinFellow v0.4.2 build 1",IDC_STATIC,67,50,80,8
+    LTEXT           "WinFellow v0.4.3 build 1",IDC_STATIC,67,50,80,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,
                     94,8,SS_NOTIFY
