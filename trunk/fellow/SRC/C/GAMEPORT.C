@@ -3,6 +3,7 @@
 /* Joystick and Mouse                                                         */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
+/*         Marco Nova (novamarco@hotmail.com) some small changes              */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -71,7 +72,7 @@ static ULO rjoydat(ULO i) {
       diffy = -127;
     gameport_x_last_read[i] += diffx;
     gameport_y_last_read[i] += diffy;
-    
+
     return ((gameport_y_last_read[i] & 0xff)<<8) | (gameport_x_last_read[i] & 0xff);
   }
   else { /* Gameport input is of joystick type */
@@ -82,8 +83,8 @@ static ULO rjoydat(ULO i) {
 
     if (gameport_left[i])
       retval |= 0x300;
-
-    if (gameport_up[i])
+    
+	if (gameport_up[i])
       retval ^= 0x100;
 
     if (gameport_down[i])
@@ -147,7 +148,7 @@ void wjoytestC(ULO data, ULO address) {
 /*                                                                           */
 /* Parameters:                                                               */
 /* mouseno                   - mouse 0 or mouse 1                            */
-/* x, y                      - New absolute position of mouse                */
+/* x, y                      - New relative position of mouse                */
 /* button1, button2, button3 - State of the mouse buttons, button2 not used  */
 /*===========================================================================*/
 
@@ -159,15 +160,10 @@ void gameportMouseHandler(gameport_inputs mousedev,
 			  BOOLE button3) {
   ULO i;
 
-  char szMsg[255];
-
-  sprintf( szMsg, "mouse %d %d\n", x, y );
-  fellowAddLog( szMsg );
-
   for (i = 0; i < 2; i++) {
     if (gameport_input[i] == mousedev) {
       if ((!gameport_fire1[i]) && button3)
-  	potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+		  potdat[i] = (potdat[i] + 0x100) & 0xffff; 
       gameport_fire0[i] = button1;
       gameport_fire1[i] = button3;
       gameport_x[i] += x;
@@ -175,33 +171,6 @@ void gameportMouseHandler(gameport_inputs mousedev,
     }
   }
 }
-
-// it is not used by anyone, it should be called to emulate an analog joystick
-// but we have decided to not support them anymore
-// so it will be commented out
-
-/*
-void gameportJoyHandler(LON dx, LON dy, BOOLE button1, BOOLE button2, BOOLE button3) {
-  ULO i;
-
-  for (i = 0; i < 2; i++) {
-	switch(gameport_input[i])
-	{
-	case GP_JOYKEY0:
-	case GP_JOYKEY1:
-	case GP_ANALOG0:
-	case GP_ANALOG1:
-      if ((!gameport_fire1[i]) && button2)
-  	    potdat[i] = (potdat[i] + 0x100) & 0xffff; 
-      gameport_fire0[i] = button1;
-      gameport_fire1[i] = button2;
-      gameport_x[i] += dx;
-      gameport_y[i] += dy;
-	  break;
-    }
-  }
-}
-*/
 
 /*===========================================================================*/
 /* Joystick movement handler                                                 */
@@ -220,13 +189,13 @@ void gameportJoystickHandler(gameport_inputs joydev,
 			     BOOLE button1,
 			     BOOLE button2) {
 	ULO i;
-	
+
 	for (i = 0; i < 2; i++)
 		if (gameport_input[i] == joydev)
 		{
 			if ((!gameport_fire1[i]) && button2)
 				potdat[i] = (potdat[i] + 0x100) & 0xffff; 
-			
+
 			gameport_fire0[i] = button1;
 			gameport_fire1[i] = button2;
 			gameport_left[i] = left;
@@ -269,7 +238,7 @@ void gameportIORegistersClear(BOOLE clear_pot) {
     gameport_down[i] = FALSE;
     gameport_x[i] = 0;
     gameport_y[i] = 0;
-    gameport_y_last_read[i] = 0;
+    gameport_x_last_read[i] = 0;
     gameport_y_last_read[i] = 0;
     gameport_mouse_first_time[i] = FALSE;
   }
