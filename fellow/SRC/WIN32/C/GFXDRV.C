@@ -1420,28 +1420,64 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 /* Create a second offscreen buffer                                         */
 /* A second buffer is needed when the blitter is used for displaying data   */
+/* It is acceptable for this buffer to be a software buffer, but normally   */
+/* it will drain performance, anywhere from 1/2 the framerate down to a     */
+/* near full stop depending on the card and driver.                         */
 /*==========================================================================*/
+
+char *gfxDrvDDrawVideomemLocationStr(ULO pass) {
+  switch (pass) {
+    case 0: return "local videomemory (on card)";
+    case 1: return "non-local videomemory (AGA shared mem)";
+    case 2: return "system memory";
+  }
+  return "unknown memory";
+}
+
+ULO gfxDrvDDrawVideomemLocationFlags(ULO pass) {
+  switch (pass) {
+    case 0: return DDSCAPS_VIDEOMEMORY; /* Local videomemory (default oncard) */
+    case 1: return DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY; /* Shared videomemory */
+    case 2: return DDSCAPS_SYSTEMMEMORY; /* Plain memory */
+  }
+  return 0;
+}
 
 BOOLE
 gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device) {
+  ULO pass;
+  BOOLE buffer_allocated;
   BOOLE result = TRUE;
   HRESULT err;
-  ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
-  ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-  ddraw_device->ddsdSecondary.ddsCaps.dwCaps = DDSCAPS_VIDEOMEMORY |
-                                               DDSCAPS_OFFSCREENPLAIN;
-  ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
-  ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
-  if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
-                                        &(ddraw_device->ddsdSecondary),
-                                        &(ddraw_device->lpDDSSecondary),
-                                        NULL)) != DD_OK) {
-    gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() ", err);
-    result = FALSE;
+
+  pass = 0;
+  buffer_allocated = FALSE;
+  while ((pass < 3) && !buffer_allocated) {
+    ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
+    ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
+    ddraw_device->ddsdSecondary.ddsCaps.dwCaps = gfxDrvDDrawVideomemLocationFlags(pass)
+						 | DDSCAPS_OFFSCREENPLAIN;
+    ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
+    ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
+    if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
+                                          &(ddraw_device->ddsdSecondary),
+                                          &(ddraw_device->lpDDSSecondary),
+                                          NULL)) != DD_OK) {
+      gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() ", err);
+      fellowAddLog("gfxdrv: Failed in allocate secondary offscreen surface in %s\n",
+		   gfxDrvDDrawVideomemLocationStr(pass));
+      result = FALSE;
+    }
+    else
+    {
+      buffer_allocated = TRUE;
+      fellowAddLog("gfxdrv: Allocated secondary offscreen surface in %s\n",
+		   gfxDrvDDrawVideomemLocationStr(pass));
+      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
+    }
+    pass++;
   }
-  else
-    gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
-  return result;
+  return result && buffer_allocated;
 }
 
 /*==========================================================================*/
