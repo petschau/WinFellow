@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.17 2004-07-25 01:01:44 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.18 2004-07-25 18:23:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -1081,6 +1081,7 @@ void floppyNextByte(ULO sel_drv, ULO track) {
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
 								     floppy[sel_drv].trackinfo[track].mfm_length;
+    if (modulo == 0) modulo = 1;
     floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 1) % modulo;
 	if (floppyHasIndex(sel_drv)) ciaRaiseIndexIRQ();
 
@@ -1119,7 +1120,6 @@ void floppyEndOfLineC(void) {
         ULO i;
         ULO track = floppyGetLinearTrack(sel_drv);
         ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-	if (words > floppy_DMA.wordsleft) words = floppy_DMA.wordsleft;
         for (i = 0; i < words; i++) 
         {
 			UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
@@ -1164,6 +1164,7 @@ void floppyNextTick(ULO sel_drv, ULO track) {
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
      floppy[sel_drv].trackinfo[track].mfm_length;
+    if (modulo == 0) modulo = 1;
     floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 #ifdef FELLOW_SUPPORT_CAPS
     if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
@@ -1198,7 +1199,6 @@ void floppyEndOfLineC(void) {
         ULO i;
         ULO track = floppyGetLinearTrack(sel_drv);
         ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-	if (words > floppy_DMA.wordsleft) words = floppy_DMA.wordsleft;
         for (i = 0; i < words; i++) 
         {
             UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
