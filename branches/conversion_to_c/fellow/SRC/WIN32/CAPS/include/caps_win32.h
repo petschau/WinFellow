@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.h,v 1.1.2.3 2004-06-04 19:12:58 carfesh Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.1.2.4 2004-06-06 10:58:10 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -41,7 +41,7 @@ extern BOOLE capsStartup(void);
 extern BOOLE capsShutdown(void);
 extern BOOLE capsLoadImage(ULO, FILE *, ULO *);
 extern BOOLE capsUnloadImage(ULO);
-extern BOOLE capsLoadRevolution(ULO, ULO, UBY *, ULO *);
+extern BOOLE capsLoadNextRevolution(ULO, ULO, UBY *, ULO *);
 extern BOOLE capsLoadTrack(ULO, ULO, UBY *, ULO *, ULO *, ULO *, BOOLE *);
 
 #endif
