@@ -1,9 +1,10 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: WDBG.C,v 1.26.2.2 2004-05-27 09:58:13 carfesh Exp $           */
+/* @(#) $Id: WDBG.C,v 1.26.2.3 2004-05-27 10:15:22 carfesh Exp $           */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
+/*                                                                         */
 /* Authors: Torsten Enderling (carfesh@gmx.net)                            */
 /*          Petter Schau (peschau@online.no)                               */
 /*                                                                         */
@@ -22,39 +23,6 @@
 /* You should have received a copy of the GNU General Public License       */
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
-/*=========================================================================*/
-/*=========================================================================*/
-/* ChangeLog:                                                              */
-/* ----------                                                              */
-/* 2001/01/03:                                                             */
-/* - added missing emulation necessity check                               */
-/* 2000/12/30:                                                             */
-/* - blitter operations log toggle                                         */
-/* 2000/12/17:                                                             */
-/* - screen state updated witn information provided by Petter              */
-/* 2000/12/14:                                                             */
-/* - moved module ripper into it's own module                              */
-/* 2000/12/13:                                                             */
-/* - module types SoundFX 1.3 and 2.0 added to module-ripper               */
-/* 2000/12/10:                                                             */
-/* - the mod-ripper now works                                              */
-/* 2000/12/09:                                                             */
-/* - added the clipping variables from graph.c                             */
-/* - floppy, copper, events, screen and sprite state added                 */
-/* 2000/12/08:                                                             */
-/* - CIA state added                                                       */
-/* - memory dump added                                                     */
-/* - fixed a bug which hung property sheets when launched the second time  */
-/*   (the dialog procs must not destroy the dialog)                        */
-/* - made the debugger a property sheet; it should use register            */
-/*   tabs, but I think for the beginning they are too complicated to use;  */
-/*   shall be fixed later                                                  */
-/*                                                                         */
-/* TODO:                                                                   */
-/* -----                                                                   */
-/* - how to use that PropSheet_CancelToClose(hwndDlg) ?                    */
-/* - why isn't the bg-color updated on initialization of the window ?      */
-/* - verify sound, graph, sprite, copper                                   */
 /*=========================================================================*/
 
 #include "defs.h"
