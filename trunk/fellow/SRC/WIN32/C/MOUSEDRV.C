@@ -7,6 +7,12 @@
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
 
+/* ---------------- CHANGE LOG ----------------- 
+Sunday, July 9, 2000
+- couldn't keep the mouse buttons pressed;
+- removed some unuseful logging
+*/
+
 #include "defs.h"
 #include <windows.h>
 #include "gameport.h"
@@ -32,6 +38,8 @@ BOOLE			mouse_drv_focus;
 BOOLE			mouse_drv_active;
 BOOLE			mouse_drv_in_use;
 BOOLE			mouse_drv_initialization_failed;
+static BOOLE	bLeftButton;
+static BOOLE	bRightButton;
 
 
 /*==========================================================================*/
@@ -268,8 +276,6 @@ void mouseDrvToggleFocus() {
 void mouseDrvMovementHandler() {
 	if (mouse_drv_in_use) {
 		DIMOUSESTATE dims;
-		static BOOLE bLeftButton;
-		static BOOLE bRightButton;
 		static LON lx = 0;
 		static LON ly = 0;
 		HRESULT res;
@@ -305,7 +311,6 @@ void mouseDrvMovementHandler() {
 			if( itemcount == 0 )	// exit if there are no objects to examine
 				return;
 			
-			bLeftButton = bRightButton = FALSE;
 			lx = ly = 0;
 			for (i = 0; i <= itemcount; i++) {
 				if( i != 0 )
@@ -320,14 +325,13 @@ void mouseDrvMovementHandler() {
 							FALSE,
 							bRightButton);
 						
-						bLeftButton = bRightButton = FALSE;
 						lx = ly = 0;
 					}
 					if( i == itemcount )	// no other objects to examine, exit
 						break;
 				}
 				oldSequence = rgod[i].dwSequence;
-				
+
 				switch( rgod[i].dwOfs ) {
 				case DIMOFS_BUTTON0:
 					bLeftButton = (rgod[i].dwData & 0x80);
@@ -393,6 +397,8 @@ void mouseDrvStartup(void) {
   mouse_drv_lpDI = NULL;
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
+  bLeftButton = FALSE;
+  bRightButton = FALSE;
 }
 
 
