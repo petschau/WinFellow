@@ -25,4 +25,4 @@
 # or
 #
 #DEFAULT (echo ""; id; echo %{sVv}; date; cat) >> $CVSROOT/CVSROOT/commitlog
-CVSROOT $CVSROOT/CVSROOT/syncmail -u %{sVv} worfje@gmx.net
+CVSROOT $CVSROOT/CVSROOT/syncmail -u worfje@gmx.net
