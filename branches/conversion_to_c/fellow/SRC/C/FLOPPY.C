@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.12 2004-06-06 12:58:54 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.13 2004-06-06 13:26:32 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -1037,16 +1037,16 @@ void floppyNextTick(ULO sel_drv, ULO track) {
     ULO modulo;
 #ifdef FELLOW_SUPPORT_CAPS
     ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
-    /*if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
-        modulo = floppy[sel_drv].trackinfo[track].mfm_length;
-    else*/
+    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
+        modulo = ((floppy[sel_drv].trackinfo[track].mfm_length + 1) / 2) * 2;
+    else
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
 								     floppy[sel_drv].trackinfo[track].mfm_length;
     floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 #ifdef FELLOW_SUPPORT_CAPS
-    if((previous_motor_ticks > floppy[sel_drv].motor_ticks) 
-        && floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
+    if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
+        if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
         && floppy[sel_drv].flakey)
             {
                 ULO track = floppy[sel_drv].track;    
