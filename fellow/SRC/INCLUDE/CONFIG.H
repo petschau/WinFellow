@@ -78,14 +78,14 @@ typedef struct {
   /* Sound configuration                                                      */
   /*==========================================================================*/
 
-  sound_emulations m_soundemulation;
-  sound_rates      m_soundrate;
-  BOOLE            m_soundstereo;
-  BOOLE            m_sound16bits;
-  sound_filters    m_soundfilter;
-  BOOLE            m_soundWAVdump;
-  BOOLE            m_notification;
-  ULO              m_bufferlength;
+  sound_emulations     m_soundemulation;
+  sound_rates          m_soundrate;
+  BOOLE                m_soundstereo;
+  BOOLE                m_sound16bits;
+  sound_filters        m_soundfilter;
+  BOOLE                m_soundWAVdump;
+  sound_notifications  m_notification;
+  ULO                  m_bufferlength;
 
 
   /*==========================================================================*/

@@ -322,11 +322,11 @@ BOOLE cfgGetSoundWAVDump(cfg *config) {
   return config->m_soundWAVdump;
 }
 
-void cfgSetSoundNotification(cfg *config, BOOLE notification) {
-  config->m_notification = notification;
+void cfgSetSoundNotification(cfg *config, sound_notifications soundnotification) {
+  config->m_notification = soundnotification;
 }
 
-BOOLE cfgGetSoundNotification(cfg *config) {
+sound_notifications cfgGetSoundNotification(cfg *config) {
   return config->m_notification;
 }
 
@@ -727,6 +727,20 @@ static ULO cfgGetCPUSpeedFromString(STR *value) {
   return speed;
 }
 
+static sound_notifications cfgGetSoundNotificationFromString(STR *value) {
+	if (stricmp(value, "directsound") == 0) return SOUND_DSOUND_NOTIFICATION;
+	else if (stricmp(value, "directsound") == 0) return SOUND_MMTIMER_NOTIFICATION;
+	return SOUND_MMTIMER_NOTIFICATION;
+}
+
+static STR *cfgGetSoundNotificationToString(sound_notifications soundnotification) {
+  switch (soundnotification) {
+    case SOUND_DSOUND_NOTIFICATION:  return "directsound";
+    case SOUND_MMTIMER_NOTIFICATION: return "mmtimer";
+  }
+  return "mmtimer";
+}
+
 static sound_emulations cfgGetSoundEmulationFromString(STR *value) {
   if (stricmp(value, "none") == 0) return SOUND_NONE;
   else if (stricmp(value, "interrupts") == 0) return SOUND_EMULATE;
@@ -1013,7 +1027,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
       cfgSetSoundFilter(config, cfgGetSoundFilterFromString(value));
     }
     else if (stricmp(option, "sound_notification") == 0) {
-      cfgSetSoundNotification(config, cfgGetBOOLEFromString(value));
+      cfgSetSoundNotification(config, cfgGetSoundNotificationFromString(value));
     }
     else if (stricmp(option, "sound_buffer_length") == 0) {
       cfgSetSoundBufferLength(config, cfgGetBufferLengthFromString(value));
@@ -1228,7 +1242,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 	  cfgGetBOOLEToString(cfgGetSoundWAVDump(config)));
   fprintf(cfgfile, "fellow.sound_filter=%s\n", 
 	  cfgGetSoundFilterToString(cfgGetSoundFilter(config)));
-  fprintf(cfgfile, "sound_notification=%s\n", cfgGetBOOLEToString(cfgGetSoundNotification(config)));
+  fprintf(cfgfile, "sound_notification=%s\n", cfgGetSoundNotificationToString(cfgGetSoundNotification(config)));
   fprintf(cfgfile, "sound_buffer_length=%d\n", cfgGetSoundBufferLength(config));
   fprintf(cfgfile, "chipmem_size=%d\n", cfgGetChipSize(config) / 262144);
   fprintf(cfgfile, "fastmem_size=%d\n", cfgGetFastSize(config) / 1048576);
