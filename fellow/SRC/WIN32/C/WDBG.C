@@ -1,7 +1,7 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: WDBG.C,v 1.26.2.1 2004-05-27 09:57:30 carfesh Exp $        */
+/* @(#) $Id: WDBG.C,v 1.26.2.2 2004-05-27 09:58:13 carfesh Exp $           */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /* Authors: Torsten Enderling (carfesh@gmx.net)                            */
