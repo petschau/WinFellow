@@ -9,7 +9,7 @@ typedef enum {
 extern void fellowRun(void);
 extern void fellowStepOne(void);
 extern void fellowStepOver(void);
-extern void fellowRunDebug(void);
+extern void fellowRunDebug(ULO breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit(void);
 extern void fellowAddLog(const char *,...);
