@@ -1,0 +1,68 @@
+%ifndef GAMEPORT_MAC
+%define GAMEPORT_MAC
+
+
+;==============================================================================
+; Macros to call C functions from assembly
+;==============================================================================
+
+;==============================================================================
+; Gameport IO-register read access wrappers
+;
+; Assembly calling convention:
+; In:  ecx - Address
+; Out: edx - Data
+;==============================================================================
+
+%macro RJOY0DAT_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rjoy0datC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+%macro RJOY1DAT_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rjoy1datC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+%macro RPOT0DAT_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rpot0datC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+%macro RPOT1DAT_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rpot1datC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+%macro RPOTGOR_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	rpotgorC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+;==============================================================================
+; Gameport IO-register write access wrappers
+;
+; Assembly calling convention:
+; In:  ecx - Address, edx - data
+; Out: Nothing
+;==============================================================================
+
+%macro WJOYTEST_CWRAP 0
+		CCALLCONV_IN_EDXECX
+		call	wjoytestC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+
+%endif

@@ -1,0 +1,66 @@
+%ifndef MAC_BUS_MAC
+%define MAC_BUS_MAC
+
+%macro NEXT_EVENT 1 ; CPU_LOOP_LABEL
+%%nxt:		mov	eax, dword [lvl2_next]
+		mov	ebx, dword [cpu_next]		
+		cmp	ebx, eax
+		jb	near %1
+		
+		mov	dword [curcycle], eax
+		;push	dword %%nxt
+
+		mov	ebx, dword [bus_cycle_to_xpos + eax]
+		shr	eax, 2
+		mov	ecx, dword [bus_cycle_to_ypos + 2*eax]
+		
+		and	ebx, 0ffh
+		and	ecx, 01ffh
+
+		mov	dword [graph_raster_x], ebx
+		mov	dword [graph_raster_y], ecx
+		
+		pushad
+		call dword [lvl2_ptr]
+		popad
+		jmp dword %%nxt
+%endmacro
+
+%macro NEXT_EVENT_AFTER_CPU 2 ; CPU_LOOP_LABEL, OTHER_EVENTS_LABEL
+		mov	ebx, dword [lvl2_next]
+		cmp	eax, ebx
+		jb	near %1
+        	
+		mov	eax, dword [lvl2_next]
+		;push	dword %2
+        	
+		mov	dword [curcycle], eax
+		lea	edi, [lvl2_ptr]
+
+        	mov	ebx, dword [bus_cycle_to_xpos + eax]
+		shr	eax, 2
+        	mov	ecx, dword [bus_cycle_to_ypos + 2*eax]
+
+		and	ebx, 0ffh
+		and	ecx, 01ffh
+
+        	mov	dword [graph_raster_x], ebx
+        	mov	dword [graph_raster_y], ecx
+		
+		pushad
+		call	dword [lvl2_ptr]
+		popad
+		jmp dword %2
+%endmacro
+
+%macro SETUP_EXCEPTION_HACK 2 ; EXCEPTION_RET, STOP_RET
+		mov	dword [exceptionstack], esp
+		lea	ecx, [%1]
+		mov	dword [exceptionbackdooraddress], ecx
+		lea	ecx, [%2]
+		mov	dword [stopreturnadr], ecx
+%endmacro
+
+
+%endif
+

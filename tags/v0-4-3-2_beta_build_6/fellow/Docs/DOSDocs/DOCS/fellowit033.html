@@ -1,0 +1,2796 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Manuale di Fellow 0.33</title>
+</head>
+
+<body bgcolor="#FFFFFF">
+
+<hr>
+
+<dl>
+    <div align="center"><center>
+    <dt><font color="#000000" size="4">F E L L O W COMMODORE
+        AMIGA EMULATOR di Petter Shau(</font><a
+        href="pschau@online.no"><font color="#0000FF" size="4">pschau@online.no</font></a><font
+        color="#000000" size="4">)</font></dt>
+    </center></div><div align="center"><center>
+    <dt><font color="#000000" size="4">Documentazione e FAQ di
+        Brett Eden (</font><a href="mailto:revere@sub.net.au"><font
+        color="#0000FF" size="4">revere@sub.net.au</font></a><font
+        color="#000000" size="4">)</font></dt>
+    </center></div><div align="center"><center>
+    <dt><font color="#000000" size="4">Traduzione in Italiano di
+        Roberto Gasparrini (</font><a
+        href="mailto:r.gasparrini@fastnet.it"><font
+        color="#0000FF" size="4">r.gasparrini@fastnet.it</font></a><font
+        color="#000000" size="4">)</font></dt>
+    </center></div>
+</dl>
+
+<hr>
+
+<dl>
+    <div align="center"><center>
+    <dt><font color="#000000" size="4">LEGGI ATTENTAMENTE LE
+        ISTRUZIONI PRIMA DI UTILIZZARE FELLOW</font><font
+        color="#000000"> Questo archivio contiene Fellow V0.33,
+        per DOS.</font></dt>
+    </center></div>
+    <dt>&nbsp;</dt>
+    <dt><font size="5">Autori</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><u>L'emulatore e' stato scritto da:
+        </u></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><strong>(C) Petter Schau nel
+        1996/1997/1998.</strong> (</font><a
+        href="mailto:pettersc@ifi.uio.no"><font color="#0000FF">pettersc@ifi.uio.no</font></a><font
+        color="#000000">) </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Con il contributo di: </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><strong>(C) Dolejsi Romano 1997</strong>
+        (</font><a href="mailto:roman@sorry.vse.cz"><font
+        color="#0000FF">roman@sorry.vse.cz</font></a><font
+        color="#000000">) </font></dt>
+    <dt><font color="#000000"><strong>(C) David Voracek 1997</strong>
+        (</font><a href="mailto:assassin@paru.cas.cz"><font
+        color="#0000FF">assassin@paru.cas.cz</font></a><font
+        color="#000000">) </font></dt>
+    <dt><font color="#000000"><strong>(C) Rainer Sinsch 1998</strong>
+        (</font><a href="mailto:sinsch@stud.uni-frankfurt.de"><font
+        color="#0000FF">sinsch@stud.uni-frankfurt.de</font></a><font
+        color="#000000">)</font></dt>
+</dl>
+
+<p>Vai alla sezione <a href="Credits.html">credits</a> per una
+dettagliata descrizione dei collaboratori</p>
+
+<p><font color="#000000" size="5"><b>Licenza</b></font></p>
+
+<dl>
+    <dt><font color="#000000"><u>Le condizioni per usare e
+        distribuire questo emulatore: </u></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">I diritti su questo programma sono
+        tenuti da Petter Schau e da chi ha dato un contributo per
+        migliorare il prodotto.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Si ha il permesso di usare
+        gratuitamente questo programma.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">La distribuzione gratis e' permessa
+        con delle restrizioni.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Esso e' liberamente distribuibile
+        finche' il contenuto di questo archivio rimane intatto,
+        non viene modificato, e non si ha nessuno scopo di lucro
+        fuorche' il prezzo del media usato per la distribuzione.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">La redistribuzione non cambiera' le
+        condizioni di come il software deve essere utilizzato e
+        distribuito.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'inclusione in raccolte su CD-ROM
+        con altro software liberamente distribuibile e' permesso.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">La distribuzione che viola il
+        principio del nessun-profitto richiede il permesso degli
+        autori del programma.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'emulatore e' provvisto cosi' come
+        e', e viene utilizzato a proprio rischio. L'autore non e'
+        tenuto al supporto e non si prende alcuna responsabilita'
+        per danni a cose o persone.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Usando questo programma, l'autore
+        non e' responsabile per qualsiasi problema che sorga
+        nell'uso del programma. Questo software e' sperimentale e
+        quindi utilizzato a proprio rischio.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Le condizioni si applicano anche
+        all'archivio del codice dell'emulatore. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><u>Condizioni supplementari per il
+        codice dell'emulatore sono: </u></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">E' possibile cambiarlo quanto si
+        vuole purche' sia per uso personale. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se vengono fatti cambi o aggiunte
+        di qualsiasi cosa che sara' utile per gli altri, sarebbe
+        utile mandare una patch al fine di essere inclusa nel
+        codice ufficiale. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Inclusione di parti del codice in
+        altro software liberamente distribuibile e' permesso
+        purche' gli autori vengano menzionati per la propria
+        opera. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;AMIGA&quot;,&quot;AmigaOS&quot;,&quot;Kickstart&quot;
+        e &quot;Workbench&quot; sono marchi di fabbrica
+        registrati da Amiga International. Gli altri marchi di
+        fabbrica menzionati sono registrati dai rispettivi
+        proprietari. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="5"><b>Contenuti</b></font></dt>
+</dl>
+
+<table border="0" width="100%" bgcolor="#000000"
+bordercolor="#000000" bordercolordark="#000000"
+bordercolorlight="#000000">
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>1.</b>&nbsp;</font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#1."><font color="#FFFFFF">Introduzione&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>2.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#2."><font color="#FFFFFF">Requisiti di sistema</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.&nbsp;</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3."><font color="#FFFFFF">Requisiti essenziali</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3.1"><font color="#FFFFFF">Immagine del Kickstart</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.1.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3.1.1"><font color="#FFFFFF">Usare Transrom</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.2</b>&nbsp;</font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3.2"><font color="#FFFFFF">Disco-Immagine</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.2.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3.2.1"><font color="#FFFFFF">Usare Transdisk</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>3.3</b>&nbsp;</font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#3.3"><font color="#FFFFFF" size="3">Copiare file
+        da PC -&gt; AMIGA &amp; AMIGA -&gt; PC</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>4.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#4."><font color="#FFFFFF">Avviare Fellow</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5."><font color="#FFFFFF" size="3">Configurazione
+        e Menu di Sistema </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.1"><font color="#FFFFFF" size="3">Menu di
+        sistema</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.1.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.1.1"><font color="#FFFFFF" size="3">Menu di
+        sistema ad albero</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.1.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.1.2"><font color="#FFFFFF">Menu di
+        configurazione</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.1.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.1.3"><font color="#FFFFFF">Navigare nei file</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2"><font color="#FFFFFF" size="3">Menu
+        principale</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.1"><font color="#FFFFFF">Option</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.2"><font color="#FFFFFF">Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.3"><font color="#FFFFFF">Utilities</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.4"><font color="#FFFFFF">Hard Reset</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.5"><font color="#FFFFFF">Debugger</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.6"><font color="#FFFFFF">About </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.2.7</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.2.7"><font color="#FFFFFF">Quit</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.3"><font color="#FFFFFF" size="3">Menu
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.4"><font color="#FFFFFF" size="3">Menu Floppy
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.4.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.4.1"><font color="#FFFFFF">Diskimage in DF(x)</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.4.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.4.2"><font color="#FFFFFF">Drive (x) status</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.4.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.4.3"><font color="#FFFFFF">Disk-DMA speed</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.4.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.4.4"><font color="#FFFFFF">Alt-N cycling</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5"><font color="#FFFFFF" size="3">Menu
+        Filesystem Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5.1"><font color="#FFFFFF">Add VFS filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5.2"><font color="#FFFFFF">Add readonly VFS</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5.3"><font color="#FFFFFF">Add normal filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5.4"><font color="#FFFFFF">Add readonly normal
+        filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.5.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.5.5"><font color="#FFFFFF">Remove filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6"><font color="#FFFFFF" size="3">Menu Screen
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.1"><font color="#FFFFFF">Screen resolution</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.2"><font color="#FFFFFF">Frame-skip ratio</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.3</b>&nbsp;</font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.3"><font color="#FFFFFF">Maximum frame-rate</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.4"><font color="#FFFFFF">Flicker-free
+        interlace</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.5"><font color="#FFFFFF">Cycle-exact drawing</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.6.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.6.6"><font color="#FFFFFF">Scale Y</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7"><font color="#FFFFFF" size="3">Menu Memory
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.1"><font color="#FFFFFF">Chip memory</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.2"><font color="#FFFFFF">Fast memory</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.3"><font color="#FFFFFF">Bogo memory&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.4"><font color="#FFFFFF">Kickstart-image</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.5"><font color="#FFFFFF">Keyfile</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.7.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.7.6"><font color="#FFFFFF">Memory space size</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8"><font color="#FFFFFF" size="3">Menu Sound
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.1"><font color="#FFFFFF">Sound emulation</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.2"><font color="#FFFFFF">Output rate</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.3"><font color="#FFFFFF">Output channels</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.4"><font color="#FFFFFF">Output bits</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.5"><font color="#FFFFFF">Low-pass filter</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.6"><font color="#FFFFFF">Sound buffer depth</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.8.7</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.8.7"><font color="#FFFFFF">Send sound ouput to
+        WAV-file</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.9</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.9"><font color="#FFFFFF" size="3">Menu CPU and
+        Blitter configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.9.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.9.1"><font color="#FFFFFF">Virtual CPU
+        instruction set</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.9.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.9.2"><font color="#FFFFFF">Virtual CPU speed</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.9.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.9.3"><font color="#FFFFFF">Virtual Blitter
+        speed&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.9.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.9.4"><font color="#FFFFFF">Long Blits</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.10</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.10"><font color="#FFFFFF" size="3">Menu Hardfile
+        configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.10.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.10.1"><font color="#FFFFFF">fhfile.device state</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.10.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.10.2"><font color="#FFFFFF">FELLOWX hardfiles</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11"><font color="#FFFFFF" size="3">Menu Various
+        Configuration</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11.1"><font color="#FFFFFF">Joystick Port 1
+        &amp; 2</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11.2"><font color="#FFFFFF">Power/floppy LEDs</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11.3"><font color="#FFFFFF">Performance
+        displayed on-screen&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11.4"><font color="#FFFFFF">Menu-position saved
+        on exit</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>5.11.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#5.11.5"><font color="#FFFFFF">Autorun after some
+        commands</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6."><font color="#FFFFFF">Debugger&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.1"><font color="#FFFFFF">Step</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.2"><font color="#FFFFFF">Step Over&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.3</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.3"><font color="#FFFFFF">Breakpoint&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.4</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.4"><font color="#FFFFFF">Memory&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.5</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.5"><font color="#FFFFFF">CIA</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.6</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.6"><font color="#FFFFFF">IO&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.7</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.7"><font color="#FFFFFF">Trace on</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.8</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.8"><font color="#FFFFFF">Trace off</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.9</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.9"><font color="#FFFFFF">Show Trace</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.10</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.10"><font color="#FFFFFF">Trace to file</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.11</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.11"><font color="#FFFFFF">Event log
+        configuration&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>6.12</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#6.12"><font color="#FFFFFF">Show event log&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>7.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#7."><font color="#FFFFFF" size="3">Interfaccia Dos
+        </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>8.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#8."><font color="#FFFFFF" size="3">Come Iniziare -
+        Guida Base</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>9.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#9."><font color="#FFFFFF" size="3">Scorciatoie con
+        i tasti </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>9.1</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#9.1"><font color="#FFFFFF" size="3">Scorciatoie
+        con i tasti nell' interfaccia-utente </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>9.2</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#9.2"><font color="#FFFFFF" size="3">Scorciatoie
+        con i tasti durante emulazione </font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><font
+        color="#FFFFFF"><b>10.</b></font></td>
+        <td bgcolor="#000000" bordercolor="#000000"
+        bordercolordark="#000000" bordercolorlight="#000000"><a
+        href="#10."><font color="#FFFFFF" size="3">Informazioni
+        su come contattare l'autore</font></a></td>
+    </tr>
+</table>
+
+<dl>
+    <dt>&nbsp;</dt>
+    <dt><a name="1."></a><font color="#000000" size="5"><strong>1.
+        Introduzione </strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Benvenuto nel &quot;Fellow Amiga
+        Emulator&quot;, un programma di emulazione del Commodore
+        Amiga. Fellow crea un ambiente Amiga virtuale sul tuo PC
+        nel quale si può utilizzare il suo software. L'emulatore
+        funziona su un IBM PC compatibile con DOS installato.
+        Possono essere utilizzati diversi ambienti DOS anche se
+        l'emulatore è stato testato con successo sotto MS-DOS,
+        DosEmu per Linux e in sessioni DOS sotto Windows 95 e NT.
+        </font></dt>
+    <dt><font color="#000000">Il Commodore Amiga 500 è il
+        modello usato come riferimento per la creazione di
+        &quot;Fellow Amiga Emulator&quot;, e la configurazione
+        dell'emulatore mira a ricreare sul tuo PC questo
+        computer.</font></dt>
+    <dt><font color="#000000">Fellow è anche estremamente
+        configurabile, con caratteristiche avanzate che possono
+        essere abilitate surclassando di fatto le capacità di un
+        semplice Amiga 500. È fortemente consigliato leggere il
+        sommario della caratteristiche, così da avere un'idea
+        dei punti di forza e delle limitazioni del programma..</font></dt>
+    <dt><font color="#000000">L'Amiga 500 fu messo in vendita nel
+        1987 come successore dell' Amiga 1000. Fu per molti anni
+        il modello entry-level e il più popolare della famiglia.
+        Con le sue capacità multimediali ricche, grazie ad una
+        serie di co-processori dedicati alla gestione della
+        grafica così come i 4 canali stereofonici basati su
+        sample, divenne presto una piattaforma popolare per
+        giochi e demos. Le avanzate capacità multimediali
+        combinate un sistema operativo a finestre con un
+        eccezionale multi-tasking fu il successo dell'Amiga che
+        fu considerato per molti anni il perfetto sistema
+        casalingo.</font></dt>
+    <dt><font color="#000000">Anche se ora sono passati piu' di
+        10 anni dal commercio del primo Amiga, </font>l'emulazione
+        dei primi Amiga e' sempre molto esigente (in termini di
+        risorse) sui computer attuali, e occorre almeno una CPU
+        Pentium<font color="#000000">.La parte piu' complicata è
+        naturalamente la simulazione dei chip-custom e in
+        generale l'architettura hardware dell' Amiga che porta
+        via la maggior parte del tempo.</font></dt>
+    <dt><font color="#000000">&quot;Fellow Amiga Emulator&quot;
+        è stato creato da Petter Schau e la prima versione
+        pubblica è stata rilasciata nel Dicembre del 1996. A
+        monte di quella prima release c'erano stati molti anni di
+        preparazione con curiose sperimentazioni sulle diverse
+        parti hardware dell'Amiga. Oggi si puo' considerare un
+        lavoro completo sotto molti punti di vista anche grazie
+        agli aiuti offerti da molte altre persone. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="2."></a><font color="#000000" size="5"><strong>2.
+        Requisiti di sistema </strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Per avviare Fellow, il tuo sistema
+        deve uguagliare, o eccedere, le seguenti caratteristiche:
+        </font></dt>
+    <dt>&nbsp;</dt>
+</dl>
+
+<ul>
+    <li><font color="#000000">Un IBM compatibile con un 486 o
+        superiore </font></li>
+    <li><font color="#000000">MS-DOS Versione 5.00 o superiore </font></li>
+    <li><font color="#000000">11 Megabytes di RAM </font></li>
+    <li><font color="#000000">Una scheda video VGA </font></li>
+    <li><font color="#000000">Un mouse </font></li>
+    <li>Una tastiera</li>
+</ul>
+
+<dl>
+    <dt><font color="#000000">Si RACCOMANDA di avere almeno la
+        seguente configurazione per ottenere prestazioni decenti
+        in Fellow: </font></dt>
+</dl>
+
+<ul>
+    <li><font color="#000000">Un IBM Compatibile con un 486 a
+        100MHz o un Pentium, meglio ancora MMX che se presente
+        verra' sfruttato</font></li>
+    <li><font color="#000000">MS-DOS Versione 5.00 o superiore </font></li>
+    <li><font color="#000000">16-20 Megabytes di RAM (usera' fino
+        a 32 MB se disponibile). </font></li>
+    <li><font color="#000000">Una scheda video (S)VGA su bus PCI
+        o AGP, con supporto VBE 2.0 </font></li>
+    <li><font color="#000000">Soundblaster o scheda sonora
+        compatibile </font></li>
+</ul>
+
+<dl>
+    <dt><font color="#000000">Se la tua scheda video non supporta
+        le VESA BIOS Extensions 2.0, avrai bisogno di un driver
+        DOS VBE 2.0 (prova a vedere la Home Page del produttore),
+        o Scitech Display Doctor, disponibile sulla rete.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Senza il supporto VBE 2.0, non
+        tutte le risoluzioni dello schermo saranno disponibili
+        per Fellow! </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Fellow e' un software che utilizza
+        intensamente la CPU , e se vuoi far lavorare l' Amiga con
+        programmi che utilizzano in modo massiccio la grafica
+        avrai bisogno di un Pentium 133 -&gt; 166 e una scheda di
+        video PCI/AGP veloce cosi' come gli altri fattori come la
+        velocita' della RAM (tieni a mente che la RAM DIMM e' di
+        10ns a confronto con le SIMM EDO e FPM che operano
+        rispettivamente a 60ns e 70ns). </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3."></a><font color="#000000" size="5"><strong>3.
+        Prima di iniziare - Requisiti essenziali</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Prima di poter usare Fellow, avrai
+        bisogno di due cose: </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3.1"></a><font color="#000000" size="4"><strong>3.1
+        Immagine del Kickstart </strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Una copia della Rom Kickstart di
+        AmigaDOS prelevata da un VERO Amiga. Questo file si
+        ottiene grazie ad un programma chiamato TransROM che e'
+        incluso con Fellow. Il Kickstart e' tutelato in base ai
+        diritti d'autore del software da Amiga International e
+        non e' chiaramente possibile includerlo con l'emulatore.
+        Il modo piu' corretto per ottenere questo file e' quello
+        di copiarlo dal proprio Amiga.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">La soluzione migliore per ottenere
+        questo file è copiarlo da Amiga, oppure comprare della </font><a
+        href="http://www.cloanto.com/amiga/forever/"><font
+        color="#000000">Amiga Forever CD</font></a><font
+        color="#000000"> </font><a href="http://www.cloanto.com"><font
+        color="#000000">Cloanto</font></a><font color="#000000">
+        che ha ottenuto la licenza delle rom Kickstart e dei
+        Workbench dalla versione 1.0 alla 3.0 insieme ad altro
+        software pronto all'uso</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3.1.1"></a><font color="#000000" size="3"><strong>3.1.1
+        Usare transrom</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">TransROM deve essere copiato su un
+        vero Amiga per estrarre una copia della ROM e metterla su
+        un file. </font></dt>
+    <dt><font color="#000000">CLI&gt; il transrom
+        &gt;RAM:kick.rom </font></dt>
+    <dt><font color="#000000">Copia il Kickstart e lo scrive in
+        un file in RAM: chiamandolo kick.rom. Esso deve essere
+        poi copiato sul PC nella directory di Fellow (sebbene
+        possa essere posto in una directory diversa). </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3.2"></a><font color="#000000" size="4"><strong>3.2
+        Disco-Immagine </strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Avrai bisogno anche di un'
+        &quot;immagine&quot; di un vero floppy disk Amiga
+        contenente il gioco/demo che desideri utilizzare su
+        Fellow. Cio' si ottiene usando un programma chiamato
+        &quot;Transdisk&quot; incluso anch'esso con Fellow.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Un disco-immagine e' un file nel
+        quale sono presenti i file normalmente immagazzinati su
+        un floppy disk.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Il disk drive di un PC non puo' leggere un floppy in
+        formato Amiga, ma OCCORRE un'immagine disco di un vero
+        floppy Amiga.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3.2.1"></a><font color="#000000" size="3"><b>3.2.1
+        Usare transdisk</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Come TransROM, TransDisk deve
+        essere copiato su un vero Amiga per usarlo.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Transdisk si avvia con la shell di
+        AmigaDOS, e copia un floppy disk, traccia x traccia, in
+        un file (che puo' essere letto da Fellow). </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">CLI&gt; transdisk &gt;RAM:df0.adf </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Fa un'immagine di un qualsiasi
+        disco nel DF0:. Questo non deve essere chiamato per forza
+        df0.adf, ma puo' avere qualsiasi altro nome. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="3.3"></a><font color="#000000" size="3"><b>3.3
+        Copiare file da PC -&gt; AMIGA &amp; AMIGA -&gt; PC</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">1.Usando un cavo null-modem, puoi
+        fare un trasferimento con Zmodem tra un Amiga e un PC,
+        semplicemente collegando il cavo in una porta seriale su
+        ciascuna macchina e caricando un qualsiasi programma come
+        Terminus, Ncomm o Term sull'Amiga e Terminate, Telemate,
+        Telix (o HyperTerminal per Win 95 se proprio insisti) sul
+        PC e iniziando poi un upload con Zmodem sull'Amiga. Se
+        l'hai correttamente configurato (download con ZModem
+        automatico ), il PC accettera' automaticamente questo
+        upload, e copiara' il software sul tuo Hard Disk.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">2. Se vuoi il meglio, prendi una
+        copia del serial.device BaudBandit per l'Amiga, e setta
+        entrambi i computer a 57,600 Baud. Baud Bandit permette
+        trasferimenti a 5500cps verso/da un Amiga con 68000. Il
+        programma e' disponibile su AmiNET.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se sei una di quelle persone con un
+        AmigaOS 1.2/1.3 e A500, con solamente un floppy-drive
+        potresti essere nei guai. A meno che tu non abbia un
+        programma di emulazione terminale su un floppy-disk
+        avviabile o la possibilita' di usare un secondo drive non
+        c'e' modo per </font></dt>
+    <dt><font color="#000000">usare un cavo null-modem per
+        dialogare col PC (che e' attualmente indispensabile per
+        ottenere software come transdisk o transrom su un drive
+        Amiga). La cosa migliore sarebbe contattare un user-group
+        Amiga che puo' farti ottenere tale disco o se sei
+        fortunato, un distributore di shareware Amiga nella tua
+        zona. </font></dt>
+</dl>
+
+<hr>
+
+<dl>
+    <dt><font color="#000000">Nota: Alcuni Amiga permettono di
+        impostare la seriale a 115,200 baud. Questo dipende
+        soprattutto dalla macchina e cioe' dalla revisione della
+        motherboard e del microprocessore. Settando a 115,200
+        baud sull'Amiga e sul PC, puoi trasferire velocemente
+        file alla velocita' di 10,100cps. </font></dt>
+</dl>
+
+<hr>
+
+<dl>
+    <dt><font color="#000000">3. Se non hai un cavo null-modem, o
+        non vuoi comprarne uno, puoi trasferire il software Amiga
+        sul PC </font>usando un floppy disk formattato a 720k<font
+        color="#000000">. Workbench 2.1+ viene venduto con
+        CrossDOS che e' un software che permette di leggere i
+        dischi da 720k del PC sull' Amiga. Se non hai CrossDOS (</font>ovvero
+        non hai Workbench 2.1 o superiore)<font color="#000000">),
+        puoi usare anche MessyDOS che e' presente su Aminet. Qui
+        sotto e' riportato passo passo come trasferire il
+        software. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">4. i) Prendi un floppy PC da 720k,
+        formattalo su Pc o Amiga usando CrossDOS. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">ii) Crea un file .ADF o un'immagine
+        del Kickstart usando il metodo sopra-descritto. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">iii) Archivia questo file usando
+        LhA o Zip, (assicurati di averli entrambi sul PC, cosi'
+        potrai decomprimerli). </font></dt>
+</dl>
+
+<dl>
+    <dt><font color="#000000">iv) Copia l'archivio sul disco da
+        720k usando CrossDOS o MessyDOS. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">v) Metti il disco sul PC, copia
+        l'archivio sull'Hard Disk e decomprimilo. Copia i il
+        Kickstart o i file .ADF nella directory di Fellow e via!</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="4."></a><font color="#000000" size="5"><strong>4
+        Avviare FELLOW </strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Fellow si avvia semplicemente
+        usando FELLOW.EXE dal prompt di MS-DOS. Dopo avere fatto
+        cosi', ti sara' presentato lo schermo del menu con la
+        situazione circa i dischi (file .ADF) che sono inseriti
+        al momento, e se la ROM Kickstart e' presente o meno. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5."></a><font color="#000000" size="5"><b>5
+        Configurazione e Menu di Sistema </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.1"></a><font color="#000000" size="4"><strong>5.1
+        Menu di sistema</strong></font></dt>
+</dl>
+
+<p><font color="#000000">Questa sezione si riferisce all' utente
+iniziale.</font></p>
+
+<dl>
+    <dt><a name="5.1.1"></a><font color="#000000"><strong>5.1.1
+        Menu di sistema ad albero</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Nella parte in basso a destra dello
+        schermo vi e' il menu di sistema. Usa i tasti freccia per
+        muoverti tra i vari menu, e premi return per selezionare.
+        </font>scorciatoie segnalate in verde sono disponibili,
+        cosi' come scorciatoie globali per alcune delle opzioni
+        utilizzate<font color="#000000">. Il tasto ESC vi fa
+        muovere al livello direttamente superiore.</font></dt>
+</dl>
+
+<p><a name="5.1.2"></a><strong>5.1.2 Menu di configurazione</strong></p>
+
+<p>I settaggi di configurazione sono cambiati nel menu di
+configurazione. Appaiono nella finestra principale quando uno
+degli argomenti è stato selezionato. Il nome dell'opzione è
+visualizzato sulla sinistra evidenziata a destra di ciascuna
+opzione. Per muoversi usare i tasti UP e DOWN. I tasti LEFT e
+RIGHT cambiano i settaggi di ciascuna opzione. Alcune di esse
+richiedono la selezione di un file e la visualizzazione di una
+navigatore che consente di selezionare cio' che si desidera. Per
+confermare premere il tasto RETURN.</p>
+
+<p><a name="5.1.3"></a><font color="#000000"><b>5.1.3 Navigare
+nei file</b></font></p>
+
+<p><font color="#000000">Il navigatore dei file appare nella
+finestra principale. Muoviti con i tasti freccia finchè non hai
+trovato cio' che desideri e seleziona con il tasto RETURN. Per
+uscire senza modificare nulla premere il tasto ESC.</font></p>
+
+<p>Puoi arrivare direttamente al file scrivendo le prime lettere
+di esso.</p>
+
+<p><font color="#000000">E' possibile utilizzare un'opzione che
+ricordi il file inserito. Consulta la parte riguardante le
+scorciatoie con i tasti da utilizzare nella navigazione tra i
+file.</font></p>
+
+<dl>
+    <dt><a name="5.2"></a><font color="#000000" size="4"><b>5.2
+        Menu principale</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b><img src="images/TopMenu.jpeg"
+        width="151" height="156"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.2.1"></a><font color="#000000"><b>5.2.1 Start </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Selezionando questa opzione
+        inizierai l'emulazione di Amiga. Se tutto è corretto
+        l'emulatore tentera'di fare il boot come un normale
+        Amiga. Ricordati di inserire </font>sia l'immagine disco
+        che la ROM Kickstart.</dt>
+</dl>
+
+<p><font color="#000000">Se interrompi l'emulazione questa
+opzione ti da' la possibilità di riprenderla.</font></p>
+
+<dl>
+    <dt><a name="5.2.2"></a><font color="#000000"><b>5.2.2
+        Configuration </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il menu della Configurazione e'
+        articolato su un certo numero di sottomenu che permettono
+        di abilitare ed alterare i vari aspetti dell'emulazione. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.2.3"></a><font color="#000000"><b>5.2.3
+        Utilities</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il seguente sotto-menu comprende
+        dei tools per creare gli ADF, gli Hard-Disk e rippare i
+        MOD</font></dt>
+</dl>
+
+<dl>
+    <dt><a name="5.2.4"></a><font color="#000000"><b>5.2.4 Hard
+        Reset </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione resetta e
+        re-inizializza l'Amiga. Questa funzione viene, tra
+        l'altro, automaticamente avviata nel caso in cui si
+        cambino alcune opzioni di configurazione .</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se nessun Kickstart e' stato
+        caricato, Fellow cerchera' di far partire quei programmi
+        che non richiedono una stretta interazione con l'Amiga
+        OS.Il disco-immagine inserito deve comunque essere
+        inserito nel DF0. Puo' in alcuni casi avviare programmi
+        che non facciano uso delle routine del Kickstart. (Nota:
+        questa caratteristica è tipica delle prime versioni fino
+        alla 0.3.2a.)</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.2.5"></a><font color="#000000"><b>5.2.5
+        Debugger </b></font></dt>
+    <dt>Questo tool viene utilizzato per analizzare che cosa
+        succede nell'Amiga emulato. E' stato sviluppato per
+        cercare errori nell'emulazione e include un metodo per
+        correggere i bug dei programmi Amiga, così come
+        l'analisi dello stato corrente dell' hardware emulato, da
+        qualsiasi punto dell' esecuzione del programma. </dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.2.6"></a><strong>5.2.6 About</strong></dt>
+    <dt><font color="#000000">Questa opzione visualizza chi ha
+        collaborato alla programmazione di Fellow</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.2.7"></a><font color="#000000"><b>5.2.7 Quit</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Con questa opzione si esce
+        dall'emulatore e si ritorna in DOS</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.3"></a><font color="#000000" size="4"><b>5.3
+        Menu Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b><img
+        src="images/ConfigurationMenu.jpeg" width="146"
+        height="169"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il menu 'Configuration' contiene
+        una serie di opzioni che consentono di configurare al
+        meglio l'emulatore, come meglio spiegato qui di seguito.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.4"></a><font color="#000000" size="4"><b>5.4
+        Menu Floppy Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b><img
+        src="images/FloppyDiskMenu.jpeg" width="316" height="241"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questo menu controlla i settaggi relativi alle immagini
+        disco e all'emulazione dell'hardware dei drives Amiga.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.4.1"></a><font color="#000000"><b>5.4.1
+        Diskimage in DF(x) </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Dove (x) e' 0, 1, 2 o 3 e queste
+        scelte permettono di assegnare il disco virtuale in
+        ciascuno dei 4 floppy disk dell'Amiga. Quando si lancia
+        l'emulatore, verra' richiesto che l'immagine del disco
+        sia assegnato a DF0:</font> (o qualunque disk drive
+        usando Kickstart 2.0</dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Premendo Del si espelle il
+        disco-immagine dal floppy.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Con ALT-0 a 9 si scegliera' a
+        rotazione uno dei file-immagine tra i 10 memorizzati.
+        (ALT-0 a 9 e' descritto meglio nel paragrafo che parla
+        del file-requester.)</font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Le immagini disco compresse con gzip o bzip saranno
+        decompresse nella directory di sistema TEMP o TMP.
+        Cambiamenti (es. salvataggio di giochi) alle immagini
+        disco compresse saranno ignorati (solamente l'immagine
+        disco decompressa in TEMP e' cambiata)</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.4.2"></a><font color="#000000"><b>5.4.2 Drive
+        (x) status</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Dove (x) e' uno 0, 1, 2 o 3. Queste
+        scelte permettono di disabilitare il drive per non farlo
+        riconoscere all'Amiga. L'utilita' di questo e' che l'
+        AmigaOS non utilizza il buffer del drive, e cosi' si
+        risparmia un paio di K memoria che risulteranno cosi'
+        disponibili all'utente.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'uso intenzionale di questa
+        funzione e' che alcuni vecchi demos potrebbero non
+        funzionare. Per i normali usi, lascia i disk-drive
+        abilitati. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.4.3"></a><font color="#000000"><b>5.4.3
+        Disk-DMA Speed </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Permette di selezionare la
+        velocita' con la quale i file dei dischi virtuali
+        verranno letti dal drive. L'accesso al disco originale e'
+        lento, ma l'emulazione provvede ad effettuare un accesso
+        piu' veloce.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">I valori Permessi sono
+        &quot;Original&quot; e &quot;Fast&quot;.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Bisogna ricordarsi pero' che
+        parecchi programmi potrebbero avere bisogno del 'Disk-DMA
+        speed' settato ad Original per poter funzionare bene. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.4.4"></a><font color="#000000"><b>5.4.4 Alt-N
+        cycling</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Controlla quanto lontano il cursore
+        deve saltare se Del e' pigiato, o se un disco-immagine e'
+        settato in memoria. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5"></a><font color="#000000" size="4"><b>5.5
+        Menu Filesystem Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b><img
+        src="images/FilesystemMenu.jpeg" width="227" height="118"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questo menu contiene un certo
+        numero di selezioni che </font>controllano e definiscono
+        i filesystem nella tua configurazione<font
+        color="#000000">. Il filesystems è una directory o altro
+        sito che l'emulatore rende visibile all'Amiga come se
+        fosse un proprio device</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5.1"></a><font color="#000000"><b>5.5.1 Add
+        VFS filesystem</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa opzione aggiunge un filesystem virtuale alla
+        configurazione generale. Il filesystem virtuale traduce
+        il formato DOS 8.3 nel normale formato usato dall'Amiga.
+        E' quindi richiesto che il software Amiga sia installato
+        da zero nello spazio disco usato per mantenere aggiornata
+        la tabella di conversione dei files, altrimenti saranno
+        visibili solamente quelli in formato DOS 8+3 e il
+        software potrebbe non trovare i files richiesti.</dt>
+    <dt>&nbsp;</dt>
+    <dt>Quindi decomprimi o installa il software nell'emulatore
+        con il formato VFS gia' impostato.</dt>
+    <dt>&nbsp;</dt>
+    <dt>Quando si seleziona questa opzione, prima inserisci il
+        nome del volume cosi' come vuoi che appaia su Amiga,
+        quindi il path della directory nel filesystem nativo del
+        PC. Infine bisogna impostare la lunghezza massima dei
+        file permessa dopo che un file lungo. Normalmente lascia
+        come default questa opzione.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5.2"></a><strong>5.5.2 Add readonly VFS</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa opzione è simile alla 5.5.1, eccetto per il
+        filesystem che è a sola lettura</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5.3"></a><strong>5.5.3 Add normal filesystem</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Simile alla precedente, eccetto che vengono visualizzati
+        solo i nomi file DOS 8+3 e non viene effettuata una
+        traslazione per i nomi file lunghi.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5.4"></a><strong>5.5.4 Add readonly normal</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Simile alla precedente, eccetto per i file DOS 8.3 e per
+        il filesystem che è a sola lettura.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.5.5"></a><strong>5.5.5 Remove filesystem</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Selezionando questa opzione vi viene visualizzato un
+        menu' con il filesystem da rimuovere.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6"></a><font color="#000000" size="4"><b>5.6
+        Menu Screen Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="4"><b><img
+        src="images/ScreenMenu.jpeg" width="582" height="171"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="3">Questo sotto-menu
+        controlla gli aspetti dell'emulazione grafica e della
+        visualizzazione sullo schermo</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6.1"></a><font color="#000000"><b>5.6.1
+        Resolution</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Controlla quale risoluzione
+        l'emulatore usera' quando si utilizza l'emulatore.Le
+        risoluzioni disponibili dipendono da quale driver VESA si
+        ha disponibile. Le seguenti risoluzioni sono presenti
+        nell'emulatore </font>se il tuo driver VESA le supporta:</dt>
+    <dt>&nbsp;</dt>
+    <div align="center"><center>
+    <dt><strong>Risoluzioni supportate:</strong></dt>
+    </center></div>
+</dl>
+<div align="center"><center>
+
+<table border="1" width="220" cols="1">
+    <tr>
+        <td>800x600x16 bit color</td>
+    </tr>
+    <tr>
+        <td>800x600x15 bit color</td>
+    </tr>
+    <tr>
+        <td>640x480x16 bit color</td>
+    </tr>
+    <tr>
+        <td>640x480x15 bit color</td>
+    </tr>
+    <tr>
+        <td>640x400x16 bit color</td>
+    </tr>
+    <tr>
+        <td>640x400x15 bit color</td>
+    </tr>
+    <tr>
+        <td>640x350x16 bit color</td>
+    </tr>
+    <tr>
+        <td>640x350x15 bit color</td>
+    </tr>
+    <tr>
+        <td>400x300x16 bit color</td>
+    </tr>
+    <tr>
+        <td>400x300x15 bit color</td>
+    </tr>
+    <tr>
+        <td>400x300x8 bit color</td>
+    </tr>
+    <tr>
+        <td>320x480x16 bit color</td>
+    </tr>
+    <tr>
+        <td>320x480x15 bit color</td>
+    </tr>
+    <tr>
+        <td>320x480x8 bit color</td>
+    </tr>
+    <tr>
+        <td>320x400x16 bit color</td>
+    </tr>
+    <tr>
+        <td>320x400x15 bit color</td>
+    </tr>
+    <tr>
+        <td>320x400x8 bit color</td>
+    </tr>
+    <tr>
+        <td>320x240x16 bit color</td>
+    </tr>
+    <tr>
+        <td>320x240x15 bit color</td>
+    </tr>
+    <tr>
+        <td>320x240x8 bit color</td>
+    </tr>
+    <tr>
+        <td>320x200x16 bit color</td>
+    </tr>
+    <tr>
+        <td>320x200x15 bit color</td>
+    </tr>
+    <tr>
+        <td>320x200x8 bit color (Std. VGA)</td>
+    </tr>
+</table>
+</center></div>
+
+<dl>
+    <dt>L'emulatore seleziona solo una delle risoluzioni a 15/16
+        bit se entrambe sono disponibili. La risoluzione VGA
+        320x200x8 è implicito che sia presente in tutte le
+        schede grafiche. Se un driver Vesa non è disponibile o
+        non è supportato, la risoluzione 320x200x8 è l'unica
+        disponibile e selezionabile.</dt>
+    <dt>&nbsp;</dt>
+    <dt><strong>NOTA:</strong></dt>
+    <dt>Le risoluzioni Non-VGA possono essere usate solamente con
+        il supporto del liner framebuffer da parte del driver
+        VESA.</dt>
+    <dt>&nbsp;</dt>
+    <dt>L'emulatore costruisce le immagini di un Amiga avendo
+        presente che esso ha un campo grafico di 768x580. Molte
+        risoluzioni, quiandi, non possono essere abbastanza
+        grandi da visualizzare l'intero schermo. La schermata
+        risultante e' tagliata per farla entrare nello schermo, e
+        con le basse risoluzioni nell'emulatore le schermate
+        Amiga in alta risoluzione subiscono una conversione a
+        perdita, perdendo ciascun secondo pixel.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6.2"></a><font color="#000000"><b>5.6.2
+        Frame-skip ratio </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il Frame-skip ratio controlla
+        l'aggiornamento video dell'emulatore. 1/1 consente un
+        aggiornamento continuo.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Rapporti piu' bassi produrranno
+        animazioni a scatti, ma permettera' l'emulazione di altre
+        componenti in modo piu' veloce.</font></dt>
+    <dt>Aggiustare questo valore e' generalmente la prima cosa da
+        fare per migliorare la performance dell'emulatore.</dt>
+</dl>
+
+<dl>
+    <dt><a name="5.6.3"></a><font color="#000000"><b>5.6.3
+        Maximum frame-rate </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Controlla il limite massimo di
+        frame che deve generare l'emulatore.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Le opzioni disponibili sono
+        &quot;Unlimited&quot;, &quot;50 Hz&quot; e &quot;Synch
+        with VGA-card&quot;.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">La funzione &quot;Unlimited&quot;
+        disabilitera' ogni limite massimo, e permette di far
+        funzionare il tutto nel modo piu' veloce possibile. </font></dt>
+    <dt><font color="#000000">Cio' porta ad una alterazioni della
+        velocità di ripetizione dei tasti ed in generale ad una
+        alterzione del timing dell'emulatore. Potrebbe, su alcune
+        macchine molto veloci risultare impossibile utilizzare la
+        tastiera.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;50 hz&quot; limita la
+        velocita' ad un Amiga A500 PAL.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;Synch with VGA-card&quot;
+        tentera' di sincronizzare lo schermo col refresh della
+        VGA usata. Puo' in alcuni casi creare immagini
+        fluidissime. Rispetto al normale refresh Pal il modo
+        VGA-card provochera' spesso degli errori nella velocita'
+        del suono e nelle applicazioni in generale. Il settaggio
+        viene ignorato quando l'emulazione del suono e' su
+        &quot;Sychronized with emulation&quot;.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><strong>NOTA:</strong></font></dt>
+    <dt><font color="#000000">Questo settaggio è ignorato se
+        l'emulazione sonora è settata su &quot;Synchronized with
+        emulation&quot;. Fa eccezione l'opzione &quot;Synch with
+        VGA-card&quot; che verra' comunque usata insieme al
+        sonoro. Da notare che &quot;Synch with VGA-card&quot; e
+        sonoro non è una buona combinazione.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6.4"></a><font color="#000000"><b>5.6.4
+        Flicker-free interlace </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Quando abilitato, esso tentera' di
+        de-interlacciare uno schermo Amiga interlacciato. Questo
+        e' utile solamente quando l'emulatore usa uno schermo a
+        800x600. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6.5"></a><font color="#000000"><b>5.6.5. Cycle
+        exact drawing</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa e' un'opzione molto
+        sperimentale. Se abilitata permette la corretta
+        emulazione degli effetti plasma, ecc.( </font>o
+        perlomeno, questa e' l'intenzione<font color="#000000">:-))</font></dt>
+    <dt>Questa opzione per ora emula soltanto i cambi di colore
+        nelle linee intermedie<font color="#000000">. </font>E'
+        piu' che altro un test per vedere<br>
+        se funziona senza dover riprogrammare tutta la parte
+        relativa alla grafica<font color="#000000">. Per ora
+        questa funzione lavora solo a 800x600</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b>NOTA:</b></font></dt>
+    <dt><font color="#000000">Tenere l'opzione permanentemente
+        abilitata puo' creare problemi dato che ha bisogno ancora
+        di molto lavoro, quindi utilizzala solo per vedere
+        particolari effetti.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.6.6"></a><font color="#000000"><b>5.6.6 Scale
+        Y</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Quando abilitata l'opzione consente
+        la correzione dell'immagine rispetto alla risoluzione
+        adottata. E' applicabile solo </font>con le alte
+        risoluzioni dell'emulatore.</dt>
+    <dt><font color="#000000"></font>&nbsp;</dt>
+    <dt><font color="#000000">Sono possibili tre scelte: &quot;No
+        Scaling&quot;, &quot;Hardware VGA Line Doubling&quot; e
+        &quot;Insert black lines&quot;</font></dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;No scaling&quot; non effettua alcun
+        ridimensionamento verticale</dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;Hardware VGA Line Doubling&quot; utilizza alcuni
+        registri VGA per scalare le immagini. Funziona solamente
+        con le schede grafiche compatibili con i registri VGA e
+        che utilizzano tali registri anche nelle risoluzioni SVGA
+        (Non tutte sono così).</dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;Insert black lines&quot; è un metodo software che
+        inserisce linee nere nell'immagine per mostrare lo
+        schermo Amiga con un aspect ratio piu' corretto.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7"></a><font color="#000000" size="4"><b>5.7
+        Menu Memory Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="4"><b><img
+        src="images/MemoryMenu.jpeg" width="442" height="170"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="3">Questo sotto-menu
+        controlla quale tipo e la quantità di memoria debba
+        emulare l'Amiga</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7.1"></a><font color="#000000"><b>5.7.1
+        'Chip-memory' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Permette di decidere quanta
+        chip-ram sara' emulata. I valori permessi sono tra 256KB
+        e 2048KB. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7.2"></a><font color="#000000"><b>5.7.2
+        'Fast-memory' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Permette di decidere quanta
+        fast-ram sara' emulata. I valori permessi sono 0, 1, 2, 4
+        e 8 MB. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7.3"></a><font color="#000000"><b>5.7.3
+        'Bogo-memory' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Permette di decidere quanta Bogo
+        Ram (talvolta chiamata Slow-ram) sara' emulata. Questo e'
+        un terzo tipo di memoria uguale a quella usate nelle
+        schede di espansione che venivano installate
+        nell'apertura sotto l' Amiga 500. I valori permessi sono
+        tra 0KB e 1792KB. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7.4"></a><font color="#000000"><b>5.7.4
+        'Kickstart-image' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Permette di scegliere l'ubicazione
+        dell'immagine della ROM (che e' indispensabile per
+        lavorare con Workbench, o in generale per avviare i
+        programmi). Scegliendo questa opzione si presentera' un
+        semplice file-requester con cui selezionare la ROM.
+        Fellow cerchera' il file &quot;kick.rom&quot; come
+        default.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il suffisso .rom e' indispensabile.
+        E' possibile utilizzare anche un kickstart su disco ADF.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'emulatore cercherà
+        automaticamente la locazione di memoria dove la Rom deve
+        essere inserita. Per ROM locate all' indirizzo $F000000,
+        è possibile caricare una seconda ROM da $F80000 or
+        $FC0000 con il comando -r2. E' utilizzabile per vedere
+        l'animazione di boot del CDTV. (Al momento l'emulazione
+        CDTV non è pero' possibile)</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.7.5"></a><font color="#000000"><b>5.7.5
+        'Keyfile'</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione specifica il keyfile
+        usato per accedere ai kickstart criptati che sono su
+        Cloanto 'Amiga Forever'</font></dt>
+</dl>
+
+<p><a name="5.7.6"></a><strong>5.7.6 Memory Space Size</strong></p>
+
+<p>Questa opzione controlla la larghezza del bus della memoria.
+Le opzioni permesse sono &quot;24 bit&quot; o &quot;32 bit&quot;.
+&quot;24&quot; bit è lo standard utilizzato nel Motorola 68000 e
+68010 ed in alcune versioni del 68020 che possono indirizzare al
+massimo 16MB di memoria. &quot;32 bit&quot; permette invece
+l'indirizzamento di uno spazio di memoria massimo di 4GB ed è
+utilizzato nelle CPU 68K medium e high end.</p>
+
+<dl>
+    <dt><a name="5.8"></a><font color="#000000" size="4"><b>5.8
+        Menu Sound Configuration</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="4"><b><img
+        src="images/SoundMenu.jpeg" width="674" height="187"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000" size="3">Questo sotto-menu
+        controlla gli aspetti dell'emulazione sonora</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.1"></a><font color="#000000"><b>5.8.1
+        Sound-emulation </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Seleziona il tipo di emulazione. Le
+        scelte possibili sono: &quot;No sound&quot; and
+        &quot;Emulated, not played&quot;</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;No sound&quot; - Disabilita
+        l'emulazione sonora dell'Amiga</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;Emulated, not played&quot; -
+        Il suono e' emulato, ma non viene riprodotto. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Le opzioni disponibili se e'
+        presente una scheda sonora compatibile (Soundblaster)
+        sono: &quot;Normal, synchronized with emulation&quot; e
+        &quot;Normal, synchronized with real-time&quot;</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Ci sono quindi tue tipi diversi di
+        timing per l'emulazione sonora. &quot;Normal,
+        synchronized with emulation&quot; produce una uscita
+        audio sincronizzata con l'emulazione in generale. Se
+        l'emulazione è troppo lenta, ci saranno dei buchi o
+        interruzioni nell'esecuzione. In una macchina abbastanza
+        veloce questo metodo consente una buona qualità audio.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">&quot;Normal, synchronized with
+        real-time&quot; </font>separa l'emulazione del suono dal
+        resto dell'emulazione<font color="#000000">. Lo
+        svantaggio è una sensibile distorsione audio. Ebbene,
+        non utilizzatela su macchine troppo lente. Un'altro
+        svantaggio è che il metodo utilizzato non permette buone
+        prestazioni in CPU Pentium 2, ma non ci dovrebbero essere
+        problemi con il &quot;Normal, synchronize with
+        emulation&quot; che lavora bene con tutte le CPU.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><strong>NOTA:</strong></dt>
+    <dt>L'opzione &quot;Normal,synchronized with real-time&quot;
+        non è stata inclusa nella versione 0.3.3, e cosi' le
+        informazioni si riferiscono alle precedenti versioni.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.2"></a><font color="#000000"><b>5.8.2
+        Output-rate</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione seleziona la
+        qualità del sonoro emulato. I valori disponibili sono:
+        15650 Hz, 22050 Hz, 31300 Hz, 44100 Hz</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.3"></a><font color="#000000"><strong>5.8.3
+        Output-channels</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa opzione seleziona il numero di canali da
+        utilizzare nell'emulazione. I valori sono
+        &quot;Mono&quot; o &quot;Stereo&quot;</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.4"></a><strong>5.8.4 Output-bits</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Seleziona il numero di bits da usare per l'emulazione. I
+        valori sono &quot;8 bits&quot; o &quot;16 bits&quot;</dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b>NOTA:</b></font></dt>
+    <dt><font color="#000000">Non tutte le schede audio
+        supportano tutti i settaggi. Se hai settato dei valori
+        errati per la tua scheda i settaggi saranno modificati al
+        minimo dell'emulazione possibile. Si puo' comunque
+        utilizzare l'opzione &quot;Emulated, no playback&quot;.
+        Esso permette il salvataggio in qualsiasi qualità audio
+        in formato WAV</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><strong>PERFORMACE NOTE:</strong></font></dt>
+    <dt><font color="#000000">Utilizzare 44100 Hz non è
+        necessario e, tra l'altro appesantisce ancora di piu' la
+        CPU. Un buon compromesso tra velocità e qualità è
+        31300 Hz. 8/16 bits e mono/stereo fanno poca differenza
+        in termini di velocità.</font></dt>
+</dl>
+
+<dl>
+    <dt><a name="5.8.5"></a><font color="#000000"><b>5.8.5
+        Low-pass filter</b></font></dt>
+</dl>
+
+<dl>
+    <dt>Con questa opzione puo' essere abiitato Un filtro
+        passa-basso da 7Khz. Esso modifica il suono e lo rende
+        piu' ricco di bassi permettendo, almeno presumibilmente
+        rimuovendo il rumore ad alta ferquenza dai samples.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.6"></a><font color="#000000"><b>5.8.6 Sound
+        buffer depth</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>La lunghezza del buffer sonoro influenza il ritardo del
+        suono, oltre ad avere altri due effetti.<font
+        color="#000000"> Su macchine lente, è possibile
+        utilizzare questa opzione per avere un buffer maggiore e
+        quindi evitare rumori fastidiosi ed interruzioni sonore.</font></dt>
+    <dt><font color="#000000">Un' importante caratteristica di
+        questa opzione </font>e' di rendere piu' stringente la
+        sincronizzazione<font color="#000000">. Su macchine
+        veloci (Pentium 2) la migliore soluzione è un buffer
+        corto per ottenere uno frame-rate costante</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.8.7"></a><font color="#000000"><b>5.8.7 Send
+        sound output to WAV-File</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Abilitando questa opzione durante
+        l'emulazione si avra' l'uscita audio su un file WAV della
+        qualità audio selezionata</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.9"></a><font color="#000000" size="4"><strong>5.9
+        Menu CPU and Blitter configuration</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><img src="images/CPUMenu.jpeg" width="469" height="133"></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questo sotto-menu controlla alcuni aspetti
+        dell'emulazione della CPU e del Blitter.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.9.1"></a><font color="#000000"><b>5.9.1
+        Virtual CPU instruction set</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione seleziona il set di
+        istruzioni della CPU da emulare. I modelli disponibili
+        sono &quot;68000&quot;, &quot;68010&quot;,
+        &quot;68020&quot;, &quot;68030&quot;. Il 68020 e il 68030
+        corrispondono al tipo EC senza FPU ed MMU</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.9.2"></a><font color="#000000"><b>5.9.1
+        Virtual CPU speed </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Controlla la velocita' virtuale
+        della cpu emulata. Da non confondere pero' con le vere
+        performance in real-time.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Le scelte sono &quot;3.5 Mhz&quot;,
+        &quot;7 Mhz&quot;, &quot;14 Mhz&quot; e &quot;28
+        Mhz&quot;. Il clock è riferito alla temporizzazione di
+        un A500 con 68000 a 7Mhz e non è quindi riferibile a
+        nessuna CPU reale. (</font>E' una delle cose che si
+        possono fare con l'emulazione<font color="#000000">)</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.9.3"></a><strong>5.9.3 Virtual Blitter Speed</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa opzione controlla come i programmi Amiga debbano
+        vedere la velocità del blitter. Le scelte sono:
+        &quot;Normal OCS Speed&quot; e &quot;Finish
+        Instantly&quot;.</dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;Normal OCS Speed&quot; prevede un Blitter allineato
+        con la temporizzazione di un normale chipset OCS e ne
+        rispetta la velocità. Alcune operazioni infatti
+        richiedono delle attese e la maggior parte dei programmi
+        usano questa caratteristica.</dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;Finish instantly&quot; prevede un Blitter che non
+        aspetta alcuna operazione e termina le proprie operazioni
+        subito. In alcuni casi cio' potrebbe sovraccaricare
+        l'emulatore di operazioni del Blitter e degradare le
+        performace in real-time. D'altro canto è possibile con
+        alcuni programmi che soffrono di problemi di
+        sincronizzazione, rendere come visibili scattosita' in
+        animazioni o grafica vettoriale</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.9.4"></a><strong>5.9.4 Long blits</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>&quot;Long blits&quot; è una caratteristica del chipset
+        ECS. Alcuni programmi lo richiedono come ad esempio il
+        port di Doom.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.10"></a><font size="4"><strong>5.10 Menu
+        Hardfile configuration</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font size="4"><strong><img
+        src="images/HardfileMenu.jpeg" width="462" height="261"></strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questo sotto-menu controlla l'
+        hardfile.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Un hardfile e' un modo per fornire
+        un hard-disk all'Amiga emulato. Esso è un enorme file
+        che è usato come un Hard Disk.Essi possono essere di
+        qualsiasi grandezza.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'Hardfile puo' essere usato
+        solamente con il kickstart 2.0 o superiore.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Ricordati di formattare ogni nuovo
+        hardfile.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">E' possibile fare il boot da
+        qualsiasi Hard-disk che hanno quindi la priorità sul
+        DF0: ma non sul DF1:</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">E' possibile utilizzare i file ADF
+        non compressi al posto degli hardfiles.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questi ultimi sono numerati come
+        FELLOW con accanto un numero crescente.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><strong>NOTA:</strong> Cambiare
+        Hardfile significa fare automaticamente un reset hardware
+        dell'Amiga. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.10.1"></a><font color="#000000"><b>5.10.1
+        fhfile.device state</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>L'hardfile e' implementato tramite un device -driver
+        software che puo' essere abilitato (Enabled) o
+        disabilitato (Disabled)</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.10.2"></a><font color="#000000"><b>5.10.2
+        FELLOW(X) hardfiles</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'opzione riguarda quanti hardfile
+        l'eseguibile deve avviare e si puo' aggiungere un certo
+        numero di questi alla configurazione. Selezionando questa
+        opzione si presenterà un navigatore di file che consente
+        di selezionare la memoria di massa da emulare.</font></dt>
+    <dt><font color="#000000">E' possibile utilizzare degli ADF
+        scompressi come hardfile</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11"></a><font size="4"><strong>5.11 Menu
+        Various Configuration</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><strong><img src="images/VariousMenu.jpeg" width="717"
+        height="191"></strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questo sotto-menu è una serie di opzioni che controllano
+        diversi aspetti.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11.1"></a><font color="#000000"><b>5.11.1
+        Joystick Port 1 &amp; 2 </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione controlla le porte
+        joystick dell'Amiga. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><u>I settaggi possibili sono: </u></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Disabled, Mouse, Analog Joystick,
+        Keyboard Joystick Replacement 1 &amp; 2 </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><u>L'opzione Keyboard Joystick
+        Replacements consente di usare:</u></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">I tasti Freccia, CTRL come
+        firebutton 1 e ALT come firebutton 2. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">oppure </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">' D' sinistra, ' F' giu', ' G'
+        destra, ' R' su, 'CTRL Sinistro' come firebutton 1 e 'ALT
+        sinistro' come firebutton 2. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il Joystick Analogico non e'
+        consigliabile. Per calibrarlo ruota lo stick durante
+        l'emulazione. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se si hanno problemi si puo'
+        provare ad utilizzare l'utilita' Joyemu che permette una
+        miglior gestione.(Cercala con qualunque Search-engine) </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11.2"></a><font color="#000000"><b>5.11.2
+        'Power Floppy Leds' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Controlla dove visualizzare i vari
+        leds dei floppy e del power.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">E' possibile utilizzare anche un
+        apposito circuito hardware (inventato da Roman Dolejsi )
+        e si trova su ledboard.txt.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Il settaggio per l'ordine dei LED
+        sulla tastiera </font>comunica all'emulatore la
+        disposizione dei LED sulla tua tastiera.</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11.3"></a><font color="#000000"><b>5.11.3
+        Performance displayed on-screen</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa opzione abilita la
+        visualizzazione dei frame per secondo nella parte alta
+        destra dello schermo.<em>La percentuale e' comunque molto
+        approssimativa.</em> </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11.4"></a><font color="#000000"><b>5.11.4
+        'Menu-position saving on exit' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Questa e' un'opzione sperimentale.
+        Quando e' abilitata, i movimenti nei vari menu saranno
+        salvati in uscita, e eseguiti la prossima volta che
+        l'emulatore sara' avviato. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="5.11.5"></a><font color="#000000"><b>5.11.5
+        Automatic run after commands </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">L'avvio automatico puo' essere
+        abilitato dopo alcuni comandi. </font></dt>
+</dl>
+
+<dl>
+    <dt><a name="6."></a><font color="#000000" size="5"><b>6.
+        Debugger</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000"><b><img src="images/DebugMenu.jpeg"
+        width="148" height="248"></b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa scelta ti fa entrare in un sotto-menu, e
+        l'emulatore procedera' fino a che la condizione
+        selezionata non verra' incontrata. E' possibile
+        specificare un indirizzo, oppure una fine ad uno
+        specifico punto se si verifica un caso(*), ed è
+        possibile continuare fino ad al verificarsi di una
+        eccezione o di un evento irq. <br>
+        </dt>
+    <dt><a name="6.1"></a><font color="#000000"><b>6.1 Step</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Esegue la prossima istruzione
+        (passo 1) </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.2"></a><font color="#000000"><b>6.2 Step over </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Setta un punto d'arresto alla
+        prossima istruzione, e l'emulatore continuera' fino a che
+        l'istruzione non viene raggiunta. (Utile per saltare
+        alcuni loops e le istruzioni jsr/bsr) </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.3"></a><font color="#000000"><b>6.3 Breakpoint
+        </b></font></dt>
+    <dt><font color="#000000"></font>&nbsp;</dt>
+    <dt><font color="#000000">Questa scelta ti fa entrare in un
+        sotto-menu, e l'emulatore procedera' fino a che la
+        condizione selezionata non verra' incontrata. E'
+        possibile specificare un indirizzo, oppure una fine ad
+        uno specifico punto se si verifica un caso(*), ed è
+        possibile continuare fino ad al verificarsi di una
+        eccezione o di un evento irq.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.4"></a><font color="#000000"><b>6.4 'Memory' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Visualizza lo stato della memoria.
+        Frecce su e in giu' e Page Up/Down per muoversi,
+        &quot;h&quot; e &quot;a&quot; per settare i caratteri
+        ascii o esadecimali. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.5"></a><font color="#000000"><b>6.5 'Cia' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Visualizza lo stato dei registri
+        nel chip CIA. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.6"></a><font color="#000000"><b>6.6 'IO' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Visualizza lo stato dei
+        Chip-custom. Questo ti permette di entrare in un
+        sottomenu dove e' possibile selezionare vari registri. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.7"></a><font color="#000000"><b>6.7 Trace on
+        (*)</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Abilita la storia delle istruzioni
+        della cpu. L'ultimo mezzo milione di istruzioni verranno
+        ricordate. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.8"></a><font color="#000000"><b>6.8 Trace off </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Disabilita la storia delle
+        istruzioni della cpu. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.9"></a><font color="#000000"><b>6.9 Show Trace
+        </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Mostra la storia delle istruzioni
+        della cpu. E' possibile muoversi con i tasti freccia
+        UP/DOWN, PGUP/PGDOWN, HOME/END e INSERT/DELETE (+- 1000
+        istruzioni).</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.10"></a><strong>6.10 Trace To File</strong></dt>
+    <dt>&nbsp;</dt>
+    <dt>Questa opzione scrive la presente storia delle istruzioni
+        della CPU in un file chiamato &quot;mytrace.cpu&quot;</dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.11"></a><font color="#000000"><b>6.11 'Evlog
+        config' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Configura gli eventi registrati,
+        irq e eccezioni che possono abilitati e disabilitati. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="6.12"></a><font color="#000000"><b>6.12 'Show
+        evlog' </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Selezionando questa opzione si
+        entra in un navigatore che mostra gli eventi registrati. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="7."></a><font color="#000000" size="5"><b>7
+        Interfaccia Dos </b></font></dt>
+</dl>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Various
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-h</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Sommario
+        delle opzioni </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-log</font></td>
+        <td bgcolor="#000000"><dl>
+            <dt><font color="#FFFFFF">Genera un log-file
+                dell'inizializzazione.</font></dt>
+            <dt><font color="#FFFFFF">Usa questa opzione per
+                vedere quello che </font></dt>
+            <dt><font color="#FFFFFF">l'emulatore scopre del tuo
+                hardware. (Default è nessun log)</font></dt>
+        </dl>
+        </td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-nogui</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Bypassa
+        l'interfaccia GUI. (Default: GUI abilitata)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-f12exit</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">F12 esce
+        dall'emulatore (Default: F12 returns alla GUI)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-config
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa un file
+        diverso da fellow.cfg per la configurazione. (Default:
+        Usa fellow.cfg)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-noconfig</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Non usa il
+        file config (Default: Usa il config file)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-ns</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Non salva i
+        settaggi all'uscita (Default: Salva settaggi)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-nommx</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Non usa le
+        istrzioni MMX instructions se è presente. (Default: Usa
+        l' MMX se presente)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Floppy
+        disk command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-0
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Disco-immagine
+        nel DF0 (Default: Nessuna immagine)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-1
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Disco-immagine
+        nel DF1 (Default: Nessuna immagine)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-2
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Disco-immagine
+        nel DF2 (Default: Nessuna immagine)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-3
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Disco-immagine
+        nel DF3 (Default: Nessuna immagine)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-0e +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) DF0 (Default: Abilitato)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-1e +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) DF1 (Default: Abilitato)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-2e +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) DF2 (Default: Abilitato)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-3e +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) DF3 (Default: Abilitato)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-ds +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) l'accesso veloce al disco (Default:
+        Accesso lento)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-dmX
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Contenuto dei
+        Dischi in memoria X (0 ..9)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-dpath
+        &lt;dir/file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Attiva la
+        path per il disco.</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Hardfile
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-hfX
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Use il file
+        come X hardfile dove X è un numero tra 0 e 9. (Default:
+        Nessun hardfile)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-he +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) l' hardfile device. (Default: Abilitato
+        quando si usa un Kickstart V2.0++)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Memory
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-c
+        &lt;size&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        &lt;size&gt; KB di memoria chip, dove size è 256, 512,
+        768, 1024, 1280, 1536, 1792 o 2048. (Default: 2048 KB)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-fm
+        &lt;size&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        &lt;size&gt; MB di memoria fast, dove size è 0, 1, 2, 4,
+        or 8. (Default: 0MB)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-b
+        &lt;size&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        &lt;size&gt; KB di memoria bogo (slow-fast), dove size è
+        0, 256, 512, 768, 1024, 1280, 1536 or 1792. (Default: 0
+        KB)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-r
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa il
+        &lt;file&gt; come Kickstart o kickdisk (Default:
+        kick.rom)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-r2
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        &lt;file&gt; come secondo Kickstart o kickdisk. (Default:
+        Nessun Kickstart)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-K
+        &lt;file&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        &lt;file&gt; come keyfile per Kickstart criptati.
+        (Default: rom.key)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Joystick
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-j1
+        n|a|m|k1|k2&nbsp;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Specifica
+        l'interfaccia nella porta game 1:&nbsp;&nbsp; <br>
+        n - Nessuna<br>
+        a - Joystick&nbsp;Analogico&nbsp; <br>
+        m - Mouse&nbsp;&nbsp; <br>
+        k1 - Rimpiazza il Joystick con la Tastiera 1&nbsp;&nbsp; <br>
+        k2 - Rimpiazza il Joystick con la Tastiera 2&nbsp;&nbsp; <br>
+        (Default: Mouse)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-j2
+        n|a|m|k1|k2&nbsp;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Specifica
+        l'interfaccia nella porta game 1:&nbsp;&nbsp; <br>
+        n - Nessuna<br>
+        a - Joystick&nbsp;Analogico&nbsp; <br>
+        m - Mouse&nbsp;&nbsp; <br>
+        k1 - Rimpiazza il Joystick con la Tastiera 1&nbsp;&nbsp; <br>
+        k2 - Rimpiazza il Joystick con la Tastiera 2&nbsp;<br>
+        (Default: Nessuna)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Sound
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-s d|n|c|e</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Specifica il
+        metodo di emulazione del sonoro&nbsp;&nbsp; <br>
+        d - Disabilitato<br>
+        n - Normal, synchronized with emulation&nbsp;&nbsp; <br>
+        c - Normal, synchronized with real-time&nbsp;&nbsp; <br>
+        e - Emulated, no playback&nbsp;&nbsp; <br>
+        (Default: Disabilitato)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-sf
+        &lt;rate&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">L'uscita
+        audio in &lt;rate&gt; HZ, dove rate è 15650, 22050,
+        31300 o 44100&nbsp;&nbsp; <br>
+        (Default: 15650)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-ss on|off</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Uscita stereo
+        on o off (Default: off)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-sb
+        &lt;bits&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Qualità
+        audio in bits, dove bits è 8 o 16 (Default: 8)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-sd
+        &lt;frames&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Sound buffer
+        in 50 hz frames, dove frames range è un numero tra 1 e
+        9. (Default: 5)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-sw +|-</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Abilita (+) o
+        Disabilita (-) la cattura su wav del sonoro. (Default:
+        Disabilita)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-sl 0|1|2</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Uso del
+        Low-pass filter:&nbsp;&nbsp; <br>
+        0 - Original&nbsp;&nbsp; <br>
+        1 - Always&nbsp;&nbsp; <br>
+        2 - Never&nbsp;&nbsp; <br>
+        (Default: Original)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-s1</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Forza
+        l'utilizzo delle routines Soundblaster V1</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00"><b>Screen
+        command line options:</b></font></td>
+        <td bgcolor="#000000">&nbsp;</td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-res 800600w
+        | 640480w | 640400w | 640350w | 400300w | 400300b |
+        320480w | 320480b | 320400w | 320400b | 320240w | 320240b
+        | 320200w | 320200b</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Specifica la
+        risoluzione da adottare (Default:800600w, o in
+        alternativa 320200b)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-fl
+        none|50|vga</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Limite di
+        frame per secondo</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-f
+        &lt;number&gt;</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Salta
+        1/numero di frame. (Default: 1/1)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-i on|off</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Deinterlaccia
+        in 800600 (Default: off)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-gc on|off</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa
+        cycle-exact graphics in 800600 (Default: off)</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">-y n|h|b</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Specifica il
+        tipo di scalatura verticale:&nbsp;&nbsp; <br>
+        n - No scaling&nbsp;&nbsp; <br>
+        h - Hardware VGA Scaling&nbsp;&nbsp; <br>
+        b - Blank line interleave</font></td>
+    </tr>
+</table>
+
+<dl>
+    <dt><a name="8."></a><font color="#000000" size="5"><b>8.
+        Come Iniziare - Guida Base</b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Una volta che hai copiato un disco
+        Amiga in un archivio .adf, e lo trasferisci sul tuo PC,
+        avvia Fellow e assegna a questo disco-immagine il DF0: </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se e' un disco Workbench,
+        assicurati di aver copiato la Rom Kickstart in un file
+        situato nella stessa directory di Fellow, e averlo
+        chiamato kick.rom, oppure selezionandone uno diverso con
+        il menu di configurazione. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se il Kickstart non e' presente,
+        Fellow bypassera' il bootstrap dell' Amiga e tentera' di
+        avviarlo in un altro modo. Questo sistema funziona con i
+        demo e giochi i quali ignorano le routine del Kickstart e
+        fanno tutto a modo loro. Devi selezionare
+        &quot;RESET&quot; per abilitare questo sistema dopo avere
+        inserito un disco-immagine. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Seleziona l'ammontare della Ram che
+        devi usare, configura l'emulazione del suono e scegli
+        &quot;RUN&quot; dal menu principale. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Se tutte le cose verranno fatte
+        come si deve,Fellow avviera' il disco.</font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="9."></a><font color="#000000" size="5"><b>9.
+        Scorciatoie con i tasti </b></font></dt>
+    <dt>&nbsp;</dt>
+    <dt><font color="#000000">Alcune scorciatoie sono disponibili
+        nell' interfaccia-utente, e alcuni anche durante
+        l'emulazione. </font></dt>
+    <dt>&nbsp;</dt>
+    <dt><a name="9.1"></a><font color="#000000" size="4"><b>9.1
+        Scorciatoie con i tasti nell' interfaccia-utente </b></font></dt>
+</dl>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00">Keypress:</font></td>
+        <td bgcolor="#000000"><font color="#FFFF00">Description:</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-X</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Esci</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">CTRL-q</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Esci</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F1</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Configuration
+        Menu</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F3</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Utilities
+        Menu</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F5</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Hard Reset</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F7</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Debugger Menu</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F9</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Start</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F11</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">About</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-d</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Disk-Image
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-f</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Filesystem
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-m</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Memory
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-o</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Sound
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-c</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">CPU and
+        Blitter Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-h</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Hardfile
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-v</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Various
+        Configuration </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-a</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Add VFS
+        Filesystem</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">ALT-r</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Remove
+        Filesystem</font></td>
+    </tr>
+</table>
+
+<dl>
+    <dt><a name="9.2"></a><font color="#000000" size="4"><b>9.2
+        Scorciatoie con i tasti durante emulazione </b></font></dt>
+</dl>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFF00">Keypress:</font></td>
+        <td bgcolor="#000000"><font color="#FFFF00">Description:</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">F12</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Ritorna nell'
+        interfaccia-utente</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-PGUP</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Cambia la
+        risoluzione video alla prossima</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-PGDOWN</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Cambia la
+        risoluzione video alla precedente</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-PGUP</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa il
+        prossimo metodo di scalatura verticale</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-PGDOWN</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Usa il
+        precedente metodo di scalatura verticale</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-KEYPAD
+        ARROW UP</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Scrolla lo
+        schermo Amiga in su</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-KEYPAD
+        ARROW LEFT</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Scrolla lo
+        schermo Amiga in giu'</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-KEYPAD
+        ARROW RIGHT</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Scrolla lo
+        schermo Amiga a destra</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-KEYPAD
+        ARROW DOWN</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Scrolla lo
+        schermo Amiga a sinistra</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-F11</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Cattura
+        l'immagine su schermo come file BMP </font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-F1</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Inserisci il
+        disco-immagine nel drive DF0</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-F2</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Inserisci il
+        disco-immagine nel drive DF1</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-F3</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Inserisci il
+        disco-immagine nel drive DF2</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">HOME-F4</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Inserisci il
+        disco-immagine nel drive DF3</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-F1</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Togli il
+        disco-immagine nel drive DF0</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-F2</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Togli il
+        disco-immagine nel drive DF1</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-F3</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Togli il
+        disco-immagine nel drive DF2</font></td>
+    </tr>
+    <tr>
+        <td bgcolor="#000000"><font color="#FFFFFF">END-F4</font></td>
+        <td bgcolor="#000000"><font color="#FFFFFF">Togli il
+        disco-immagine nel driveDF3</font></td>
+    </tr>
+</table>
+
+<dl>
+    <dt><a name="10."></a><font size="5"><strong>10. Informazioni
+        su come contattare l'autore</strong></font></dt>
+    <dt>&nbsp;</dt>
+    <dt>Contattare Petter Shau è facile e basta inviare una
+        e-mail a <a href="mailto:pschau@online.no">pschau@online.no</a>
+    </dt>
+    <dt>Tenete presente che io (Petter Shau) con ho tempo di
+        rispondere a tutta la posta. Richieste sulle prossime
+        versioni o sui bug saranno perentoriamente ignorate cosi'
+        come il supporto agli utenti visto che potete fare
+        riferimento alla documentazione. Queste vanno inviate
+        alle persone che normalmente danno aiuti e risposte agli
+        utenti come ad esempio usare un Amiga o come trasferire
+        file da Amiga a PC.</dt>
+    <dt>&nbsp;</dt>
+    <dt>Per gli affezionati ecco il mio indirizzo vecchio-stile:</dt>
+    <dt>Petter Schau </dt>
+    <dt>Ravnkollbakken 83 </dt>
+    <dt>N-0971 Oslo</dt>
+    <dt>Norway </dt>
+    <dt>&nbsp;</dt>
+    <dt>Le e-mail degli altri autori o di chi ha contribuito sono
+        nel file di credits.</dt>
+</dl>
+
+<hr>
+
+<dl>
+    <dt><font color="#000000">Il seguente testo e' stato redatto
+        da Gasparrini Roberto (</font><a
+        href="r.gasparrini@fastnet.it"><font color="#FF0000">r.gasparrini@fastnet.it</font></a><font
+        color="#000000">) e revisionato da James Ossi (</font><a
+        href="mailto:j.ossi@fi.flashnet.it"><font color="#000000">j.ossi@fi.flashnet.it</font></a><font
+        color="#000000">), dopo una estenuante traduzione del
+        documento principale redatto da Brett Eden e Petter Shau.
+        Il sottoscritto mantiene anche una pagina Web dedicata
+        esclusivamente a questo emulatore e puo' essere raggiunta
+        con:</font></dt>
+    <dt><a href="http://www.tdm.italia.tm/fellowtheamiga/"><font
+        color="#FF0000">http://www.tdm.italia.tm/fellowtheamiga/</font></a></dt>
+    <dt><font color="#000000">N.B.</font></dt>
+    <dt><font color="#000000">Per eventuali consigli o
+        precisazioni sulla documentazione scrivetemi.</font></dt>
+    <dt>&nbsp;</dt>
+</dl>
+
+<hr>
+
+<dl>
+    <dt>&nbsp;</dt>
+    <dt>&nbsp;</dt>
+</dl>
+</body>
+</html>
