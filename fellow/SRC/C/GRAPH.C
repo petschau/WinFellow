@@ -571,8 +571,8 @@ static __inline void graphDecodeGeneric(int bitplanes)
 	{
 	  graph_line1_tmp[graph_DDF_start + temp] = 0;
 	  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-	  maxscroll -= 4;
-	  temp += 4;
+	  maxscroll--;
+	  temp++;
 	}
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
@@ -653,8 +653,8 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 		  graph_line2_tmp[graph_DDF_start + temp] = 0;
 		  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
 		  graph_line2_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		  maxscroll -= 4;
-		  temp += 4;
+		  maxscroll--;
+		  temp++;
 	  }
 	  
 	  // setup loop
