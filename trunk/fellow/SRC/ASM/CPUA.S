@@ -113,6 +113,13 @@ _m68000start_:
 
 global prefetch_fillASM
 prefetch_fillASM:
+%ifdef PC_PTR
+		push	ecx
+		mov	ch, byte [edx]
+		mov	cl, byte [edx + 1]
+		mov	word [prefetch_word], cx
+		pop	ecx
+%else
 		push	ecx
 		push	edx
 		mov	ecx, edx
@@ -120,8 +127,8 @@ prefetch_fillASM:
 		mov	word [prefetch_word], dx
 		pop	edx
 		pop	ecx
+%endif
 		ret
-
 %endif
 
 ;========================================================================
@@ -3284,7 +3291,7 @@ _i08_W_SR_:	test	byte [sr + 1], 020h
 ; Tableusage:(reg) 0-rut 1-disrut 2-shcountreg 3-dreg 4-cyclecount
 ; Tableusage:(mem) 0-rut 1-disrut 2-eareg 3-earead 4-eawrite 5-cyclecount
 ; Flags: ALL, XC unaffected if shift count is zero, only happens with shiftcount
-;	  in Dx, V set if sign bit changes, only happes during ASL 
+;	  in Dx, V set if sign bit changes ANYTIME during shift, only happes during ASL 
 ;==============================================================================
 
 
@@ -3453,364 +3460,306 @@ i09rirlz:	test	eax, eax
 		FALIGN32
 
 global _i09_LE_I_B_
-_i09_LE_I_B_:	mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	ecx,dword [edi+8]	       ; get shcount
-		mov	eax,dword [ebx]	       ; get dreg content
-		movsx	eax,al
-
-		mov	edx,eax
-		sal	dl,cl
+_i09_LE_I_B_:	mov	ebx, dword [edi + 12]	       ; get dreg ptr
+		mov	ecx, dword [edi + 8]	       ; get shcount
+		mov	eax, dword [ebx]	       ; get dreg content
+		movsx	eax, al
+		mov	edx, eax
+		sal	dl, cl
 		pushfd
-		sal	ax,cl
+		sal	eax, cl
 		pop	ecx
-		and	ecx,07ffh
-		mov	byte [ebx],al
-		mov	bl,byte [statustab+ecx]
-
-; New
-		mov	ecx,eax
-		and	ecx,8080h
-		cmp	ch,cl
-		je	i09leibnb
-		or	bl,2h
-i09leibnb:	or	ah,ah
-		jz	i09leibna
-		xor	ah,-1
-		jz	i09leibna
-		or	bl,2h
-i09leibna:
-	
-; New end
-
-		mov	byte [sr],bl
-		mov	eax,dword [edi+16]
+		and	ecx, 07ffh
+		mov	byte [ebx], al
+		mov	bl, byte [statustab + 4*ecx]
+		; eax has original sign since we can only shift 31 positions
+		; so if sign was not changed, eax>>7 is now either 0 or -1
+		; O is already cleared, so we only need to set it
+		sar	eax, 7
+		cmp	eax, -1
+		je	.no_o
+		test	eax, eax
+		jz	.no_o
+		or	bl, 2
+.no_o:		mov	byte [sr], bl
+		mov	eax, dword [edi + 16]
 		ret
 
 
 		FALIGN32
 
 global _i09_LE_I_W_
-_i09_LE_I_W_:	mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	ecx,dword [edi+8]	       ; get shcount
-		mov	ax,word [ebx]	     ; get dreg content
-
-		movsx	eax,ax
-		mov	edx,eax
-		sal	dx,cl
+_i09_LE_I_W_:	mov	ebx, dword [edi + 12]	       ; get dreg ptr
+		mov	ecx, dword [edi + 8]	       ; get shcount
+		mov	ax, word [ebx]		       ; get dreg content
+		movsx	eax, ax
+		mov	edx, eax
+		sal	dx, cl
 		pushfd
-		sal	eax,cl
+		sal	eax, cl
 		pop	ecx
-		and	ecx,07ffh
-		mov	word [ebx],ax
-
-		mov	ebx,dword [statustab+4*ecx]
-
-
-; New
-		mov	ecx,eax
-		and	ecx,80008000h
-		mov	edx,ecx
-		shr	edx,16
-		cmp	dx,cx
-		je	i09leiwnb
-		or	bl,2h
-i09leiwnb:
-		and	eax,0ffff0000h
-		jz	i09leibna
-		cmp	eax,0ffff0000h
-		je	i09leiwna
-		or	bl,2h
-i09leiwna:
-	
-; New end
-
-
-
-		mov	eax,dword [edi+16]
-
-		mov	byte [sr],bl
+		and	ecx, 07ffh
+		mov	word [ebx], ax
+		mov	ebx, dword [statustab + 4*ecx]
+		; eax has original sign since we can only shift 31 positions
+		; so if sign was not changed, eax>>15 is now either 0 or -1
+		; O is already cleared, so we only need to set it
+		sar	eax, 15
+		cmp	eax, -1
+		je	.no_o
+		test	eax, eax
+		jz	.no_o
+		or	bl, 2
+.no_o:		mov	eax,dword [edi + 16]
+		mov	byte [sr], bl
 		ret
 
+; Overflow detection here is as follows
+; Mask out the bits that gets shifted out + 1 (31 ... (31 - shiftcount)), we can only shift 8 bits
+; Check for all zeros (and mask), or all ones (xor mask) for no overflow
 
 		FALIGN32
 
 global _i09_LE_I_L_
-_i09_LE_I_L_:	mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	eax,dword [ebx]	       ; get dreg content
-	
-		mov	edx,-1				; Create mask
-		mov	ecx,31				; edx is zero if sign change 
-		sub	ecx,dword [edi+8]
-		shl	edx,cl
-		mov	ebp,eax
-		and	ebp,edx
-		jnz	i09leilns
-		xor	ebp,edx
-		jnz	i09leilns
-		xor	edx,edx
-i09leilns:
+_i09_LE_I_L_:	mov	ebx, dword [edi + 12]		; get dreg ptr
+		mov	eax, dword [ebx]		; get dreg content
 
-		mov	ecx,dword [edi+8]	       ; get shcount
-
-
-		sal	eax,cl
+		; Overflow detection
+		mov	edx, -1				; Create mask
+		mov	ecx, 31				; edx is zero if sign change 
+		sub	ecx, dword [edi + 8]
+		shl	edx, cl
+		mov	ebp, eax
+		and	ebp, edx
+		jz	.no_o
+		xor	ebp, edx
+		jz	.no_o
+		mov	edx, 0
+.no_o:		mov	ecx, dword [edi+8]		; get shcount
+		sal	eax, cl
 		pushfd
 		pop	ecx
-		and	ecx,07ffh
-		mov	dword [ebx],eax
-		mov	ebx,dword [statustab+4*ecx]
-
-
-; New
-		or	edx,edx
-		jnz	i09leilnb
+		and	ecx, 07ffh
+		mov	dword [ebx], eax
+		mov	ebx, dword [statustab + 4*ecx]
+		test	edx, edx
+		jnz	.no_o2
 		or	bl,2h
-i09leilnb:
-	
-; New end
-
-		mov	eax,dword [edi+16]
-		mov	byte [sr],bl
+.no_o2:		mov	eax, dword [edi + 16]
+		mov	byte [sr], bl
 		ret
 
 
 		FALIGN32
 
 global _i09_LE_R_B_
-_i09_LE_R_B_:	mov	ecx,dword [edi+8]	       ; get shcount reg ptr
-		mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	ecx,dword [ecx]	       ; get shcount reg content
-		and	ecx,3fh				; modulo 64
-		jz	i09lerbz
-		mov	eax,dword [ebx]	       ; get dreg content
-		cmp	ecx,8
-		jae	i09lerbtoobig
-	
-		movsx	eax,al
-		mov	edx,eax
-		sal	dl,cl
+_i09_LE_R_B_:	mov	ecx, dword [edi + 8]		; get shcount reg ptr
+		mov	ebx, dword [edi + 12]		; get dreg ptr
+		mov	ecx, dword [ecx]		; get shcount reg content
+		mov	eax, dword [ebx]		; get dreg content
+		and	ecx, 3fh			; modulo 64
+		jz	.zero_shift
+		cmp	ecx, 8
+		jae	.too_big_shift
+		movsx	eax, al
+		mov	edx, eax
+		sal	dl, cl
 		pushfd
-		sal	ax,cl
-		mov	byte [ebx],al
-		mov	ebp,ecx
-		add	ebp,ebp				; Calculate cyclecount
+		sal	eax, cl
+		mov	byte [ebx], al
+		mov	ebp, ecx
+		add	ebp, ebp			; Calculate cyclecount
 		pop	ecx
-		and	ecx,07ffh
-		mov	ebx,dword [statustab+4*ecx]
-; New
-		mov	ecx,eax
-		and	ecx,8080h
-		cmp	ch,cl
-		je	i09lerbnb
-		or	bl,2h
-i09lerbnb:
-		or	ah,ah
-		jz	i09lerbna
-		cmp	ah,-1
-		je	i09lerbna
-		or	bl,2h
-i09lerbna:
-	
-; New end
-		mov	byte [sr],bl
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		and	ecx, 07ffh
+		mov	ebx, dword [statustab + 4*ecx]
+		; eax has original sign since we can only shift 31 positions
+		; so if sign was not changed, eax>>7 is now either 0 or -1
+		; O is already cleared, so we only need to set it
+		sar	eax, 7
+		cmp	eax, -1
+		je	.no_o
+		test	eax, eax
+		jz	.no_o
+		or	ebx, 2
+.no_o:		mov	byte [sr], bl
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
-i09lerbz:
-		or	al,al
+
+; Need to clear CV and set NZ
+.zero_shift:	test	al, al
 		pushfd
 		pop	ebx
-		and	ebx,0c0h		; We want sign and zero
-		shr	ebx,4
-		mov	bh,byte [sr]
-		and	bh,010h		; preserve XC
-		or	bh,bl
-	
-
-		mov	byte [sr],bh
-		mov	eax,dword [edi+16]
+		and	ebx, 0c0h		; We want sign and zero
+		shr	ebx, 4
+		mov	bh, byte [sr]
+		and	bh, 010h		; preserve X
+		or	bh, bl
+		mov	byte [sr], bh
+		mov	eax, dword [edi + 16]
 		ret
-; here, set zero as result, Set Z flag, if count == size then
-; set xc to sign bit and set V flag if original isnt zero 
-i09lerbtoobig:
-		mov	byte [ebx],0
-		mov	bl,4h
-		or	al,al
-		jz	i09lerbtbz
-		or	bl,2
-i09lerbtbz:
-		cmp	cl,8
-		jne	i09lerbtbs
-		test	al,80h
-		jns	i09lerbtbs
-		or	bl,11h
-i09lerbtbs:
-		mov	byte [sr],bl
-		mov	edx,ecx
-		add	edx,edx				; Calculate cyclecount
-		mov	eax,dword [edi+16]
-		add	eax,edx
-		ret	
+
+; Set zero result, set Z flag, if count == size then
+; set xc to sign of original and set V flag if original was not zero
+.too_big_shift:
+		mov	byte [ebx], 0
+		mov	bl, 4h
+		test	al, al
+		jz	.no_o2
+		or	bl, 2
+.no_o2:		cmp	cl, 8
+		jne	.no_xc
+		test	al, 80h
+		jz	.no_xc
+		or	bl, 11h
+.no_xc:		mov	byte [sr], bl
+		mov	edx, ecx
+		add	edx, edx			; Calculate cyclecount
+		mov	eax, dword [edi + 16]
+		add	eax, edx
+		ret
 
 
 		FALIGN32
 
 global _i09_LE_R_W_
-_i09_LE_R_W_:	mov	ecx,dword [edi+8]	       ; get shcount reg ptr
-		mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	ecx,dword [ecx]	       ; get shcount reg content
-		and	ecx,3fh				; modulo 64
-		jz	i09lerwz
-		mov	eax,dword [ebx]	       ; get dreg content
-		cmp	ecx,16
-		jae	i09lerwtoobig
-		movsx	eax,ax
-		mov	edx,eax
-		sal	dx,cl
+_i09_LE_R_W_:	mov	ecx, dword [edi + 8]		; get shcount reg ptr
+		mov	ebx, dword [edi + 12]		; get dreg ptr
+		mov	ecx, dword [ecx]		; get shcount reg content
+		mov	eax, dword [ebx]		; get dreg content
+		and	ecx, 3fh			; modulo 64
+		jz	.zero_shift
+		cmp	ecx, 16
+		jae	.too_big_shift
+		movsx	eax, ax
+		mov	edx, eax
+		sal	dx, cl
 		pushfd
-		sal	eax,cl
-		mov	word [ebx],ax
-		mov	ebp,ecx
-		add	ebp,ebp				; Calculate cyclecount
+		sal	eax, cl
+		mov	word [ebx], ax
+		mov	ebp, ecx
+		add	ebp, ebp			; Calculate cyclecount
 		pop	ecx
-		and	ecx,07ffh
-		mov	ebx,dword [statustab+4*ecx]
-; New
-		mov	ecx,eax
-		and	ecx,80008000h
-		mov	edx,ecx
-		shr	edx,16
-		cmp	dx,cx
-		je	i09lerwnb
-		or	bl,2h
-i09lerwnb:
-		and	eax,0ffff0000h
-		jz	i09lerwna
-		cmp	eax,0ffff0000h
-		je	i09lerwna
-		or	bl,2h
-i09lerwna:
-	
-; New end
-	
-		mov	byte [sr],bl
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		and	ecx, 07ffh
+		mov	ebx, dword [statustab + 4*ecx]
+		; eax has original sign since we can only shift 31 positions
+		; so if sign was not changed, eax>>15 is now either 0 or -1
+		; O is already cleared, so we only need to set it
+		sar	eax, 7
+		cmp	eax, -1
+		je	.no_o
+		test	eax, eax
+		jz	.no_o
+		or	ebx, 2
+.no_o:		mov	byte [sr], bl
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
-i09lerwz:
-		or	ax,ax
+.zero_shift:
+		test	ax, ax
 		pushfd
 		pop	ebx
-		and	ebx,0c0h		; We want sign and zero
-		shr	ebx,4
+		and	ebx, 0c0h		; We want sign and zero
+		shr	ebx, 4
 		mov	bh, byte [sr]
-		and	bh,010h		; preserve XC
-		or	bh,bl
-		mov	byte [sr],bh
-		mov	eax,dword [edi+16]
+		and	bh, 010h		; preserve X
+		or	bh, bl
+		mov	byte [sr], bh
+		mov	eax, dword [edi + 16]
 		ret
 
-; here, set zero as result, Set Z flag, if count == size then
+; Set zero as result, set Z flag, if count == size then
 ; set xc to sign bit and set V flag if original isnt zero 
-i09lerwtoobig:
-		mov	word [ebx],0
-		mov	bl,4h
-		or	al,al
-		jz	i09lerwtbz
-		or	bl,2
-i09lerwtbz:
-		cmp	cl,16
-		jne	i09lerwtbs
-		test	ah,80h
-		jns	i09lerwtbs
-		or	bl,11h
-i09lerwtbs:
-		mov	byte [sr],bl
-		mov	edx,ecx
-		add	edx,edx				; Calculate cyclecount
-		mov	eax,dword [edi+16]
-		add	eax,edx
-		ret	
+.too_big_shift:
+		mov	word [ebx], 0
+		mov	bl, 4h
+		test	ax, ax
+		jz	.no_o2
+		or	bl, 2
+.no_o2:		cmp	cl, 16
+		jne	.no_xc
+		test	eax, 00008000h
+		jz	.no_xc
+		or	bl, 11h
+.no_xc:		mov	byte [sr], bl
+		mov	edx, ecx
+		add	edx, edx			; Calculate cyclecount
+		mov	eax, dword [edi + 16]
+		add	eax, edx
+		ret
 
 
 		FALIGN32
 
 global _i09_LE_R_L_
-_i09_LE_R_L_:	mov	ecx,dword [edi+8]	       ; get shcount reg ptr
-		mov	ebx,dword [edi+12]	       ; get dreg ptr
-		mov	ecx,dword [ecx]	       ; get shcount reg content
-		and	ecx,3fh				; modulo 64
-		jz	i09lerlz
-		mov	eax,dword [ebx]	       ; get dreg content
-		cmp	ecx,32
-		jae	i09lerltoobig
-	
+_i09_LE_R_L_:	mov	ecx, dword [edi + 8]		; get shcount reg ptr
+		mov	ebx, dword [edi + 12]		; get dreg ptr
+		mov	ecx, dword [ecx]		; get shcount reg content
+		mov	eax, dword [ebx]		; get dreg content
+		and	ecx, 3fh			; modulo 64
+		jz	.zero_shift
+		cmp	ecx, 32
+		jae	.too_big_shift
 		push	ecx
-		mov	ebp,ecx
-		mov	edx,-1				; Create mask
-		mov	ecx,31				; edx is zero if sign change 
-		sub	ecx,ebp
-		shl	edx,cl
-		mov	ebp,eax
-		and	ebp,edx
-		jnz	i09lerlns
-		xor	ebp,edx
-		jnz	i09lerlns
-		xor	edx,edx
-i09lerlns:
+		mov	ebp, ecx
+		mov	edx, -1				; Create mask
+		mov	ecx, 31				; edx is zero if sign change 
+		sub	ecx, ebp
+		shl	edx, cl
+		mov	ebp, eax
+		and	ebp, edx
+		jz	.no_o
+		xor	ebp, edx
+		jz	.no_o
+		mov	edx, 0
+.no_o:
 		pop	ecx
-		sal	eax,cl
+		sal	eax, cl
 		pushfd
-		mov	dword [ebx],eax
-		mov	ebp,ecx
-		add	ebp,ebp				; Calculate cyclecount
+		mov	dword [ebx], eax
+		mov	ebp, ecx
+		add	ebp, ebp			; Calculate cyclecount
 		pop	ecx
-		and	ecx,07ffh
-		mov	ebx,dword [statustab+4*ecx]
-; New
-		or	edx,edx
-		jnz	i09lerlnb
-		or	bl,2h
-i09lerlnb:
-	
-; New end
-		mov	byte [sr],bl
-		mov	eax,dword [edi+16]
-		add	eax,ebp
+		and	ecx, 07ffh
+		mov	ebx, dword [statustab + 4*ecx]
+		test	edx, edx
+		jnz	.no_o2
+		or	bl, 2h
+.no_o2:		mov	byte [sr], bl
+		mov	eax, dword [edi + 16]
+		add	eax, ebp
 		ret
-i09lerlz:
-		or	eax,eax
+.zero_shift:
+		test	eax, eax
 		pushfd
 		pop	ebx
-		and	ebx,0c0h		; We want sign and zero
-		shr	ebx,4
-		mov	bh,byte [sr]
-		and	bh,010h		; preserve XC
-		or	bh,bl
-		mov	byte [sr],bh
-		mov	eax,dword [edi+16]
+		and	ebx, 0c0h			  ; We want sign and zero
+		shr	ebx, 4
+		mov	bh, byte [sr]
+		and	bh, 010h			  ; preserve X
+		or	bh, bl
+		mov	byte [sr], bh
+		mov	eax, dword [edi + 16]
 		ret
+
 ; here, set zero as result, Set Z flag, if count == size then
 ; set xc to sign bit and set V flag if original isnt zero 
-i09lerltoobig:
-		mov	dword [ebx],0
-		mov	bl,4h
-		or	al,al
-		jz	i09lerltbz
-		or	bl,2
-i09lerltbz:
-		cmp	cl,32
-		jne	i09lerltbs
-		test	eax,eax		  ;80000000h
-		jns	i09lerltbs
-		or	bl,11h
-i09lerltbs:
-		mov	byte [sr],bl
-		mov	edx,ecx
-		add	edx,edx				; Calculate cyclecount
-		mov	eax,dword [edi+16]
-		add	eax,edx
-		ret	
+.too_big_shift:	mov	dword [ebx], 0
+		mov	bl, 4h
+		test	eax, eax
+		jz	.no_o3
+		or	bl, 2
+.no_o3:		cmp	cl, 32
+		jne	.no_xc
+		test	eax, eax
+		jns	.no_xc
+		or	bl, 11h
+.no_xc:		mov	byte [sr], bl
+		mov	edx, ecx
+		add	edx, edx			; Calculate cyclecount
+		mov	eax, dword [edi + 16]
+		add	eax, edx
+		ret
 
 ; Here, shift count always 1.  Things to care about:
 ; 1. Sign change during shift, done in hardware when count is 1
@@ -3819,38 +3768,38 @@ i09lerltbs:
 		FALIGN32
 
 global _i09_RI_M_W_
-_i09_RI_M_W_:	mov	ebx,dword [edi+8]	       ; get ea reg ptr
-		mov	edx,ebx
-		mov	eax,dword [edi+12]	       ; get ea read rut
+_i09_RI_M_W_:	mov	ebx, dword [edi + 8]		; get ea reg ptr
+		mov	edx, ebx
+		mov	eax, dword [edi + 12]		; get ea read rut
 		call	eax
-		sar	dx,1
+		sar	dx, 1
 		pushfd
 		pop	ecx
-		and	ecx,0fffh		; Overflow defined here!
-		mov	eax,dword [edi+16]	       ; get dest rut ptr.
-		mov	ecx,dword [statustab+4*ecx]
-		mov	byte [sr],cl
+		and	ecx, 0fffh			; Overflow defined here!
+		mov	eax, dword [edi + 16]		; get dest rut ptr.
+		mov	ecx, dword [statustab + 4*ecx]
+		mov	byte [sr], cl
 		call	eax	
-		mov	eax,dword [edi+20]
+		mov	eax, dword [edi + 20]
 		ret
 
 
 		FALIGN32
 
 global _i09_LE_M_W_
-_i09_LE_M_W_:	mov	ebx,dword [edi+8]	       ; get ea reg ptr
-		mov	edx,ebx
-		mov	eax,dword [edi+12]	       ; get ea read rut
+_i09_LE_M_W_:	mov	ebx, dword [edi + 8]		; get ea reg ptr
+		mov	edx, ebx
+		mov	eax, dword [edi + 12]		; get ea read rut
 		call	eax
-		sal	dx,1
+		sal	dx, 1
 		pushfd
 		pop	ecx
-		and	ecx,0fffh		; OF defined here
-		mov	eax,dword [edi+16]	       ; get dest rut ptr.
-		mov	ecx,dword [statustab+4*ecx]
-		mov	byte [sr],cl
+		and	ecx, 0fffh			; OF defined here
+		mov	eax, dword [edi + 16]		; get dest rut ptr.
+		mov	ecx, dword [statustab + 4*ecx]
+		mov	byte [sr], cl
 		call	eax	
-		mov	eax,dword [edi+20]
+		mov	eax, dword [edi + 20]
 		ret
 
 
@@ -5079,6 +5028,7 @@ _i31_:		mov	eax,dword [edi+12]
 		mov	esi,edx
 		PC_TO_PTR esi
 %ifdef PREFETCH
+		mov	edx, esi
 		call	prefetch_fillASM
 %endif
 		mov	eax,dword [edi+16]
@@ -6790,13 +6740,16 @@ _i55_:		mov	eax,dword [edi+12]
 		FALIGN32
 
 global _i56_
-_i56_:		mov	ecx,0f80004h
-		fetchl
-		mov	esi,edx
-		PC_TO_PTR esi
-%ifdef PREFETCH
-		call	prefetch_fillASM
-%endif
+_i56_:
+
+;		mov	ecx,0f80004h
+;		fetchl
+;		mov	esi,edx
+;		PC_TO_PTR esi
+;%ifdef PREFETCH
+;		mov	edx, esi
+;		call	prefetch_fillASM
+;%endif
 		pushad
 		call	fellowHardReset
 		popad
@@ -7975,11 +7928,12 @@ i61_redo:	mov	ecx, dword [a + 28]	; Get SR, step 1
 		mov	ecx, dword [a + 28]
 		add	ecx, 4
 		mov	dword [a + 28], ecx
-%ifdef PREFETCH
-		call	prefetch_fill_
-%endif
 		mov	esi, edx
 		PC_TO_PTR esi
+%ifdef PREFETCH
+		mov	edx, esi
+		call	prefetch_fillASM
+%endif
 
 		cmp	dword [cpu_type], 0	; step 3 
 		je	near i61_000
@@ -8023,11 +7977,12 @@ _i62_:		mov	ecx,dword [a+28]
 		mov	dword [a+28],ecx
 		fetchl
 		mov	ecx,dword [a+28]
-%ifdef PREFETCH
-		call	prefetch_fill_
-%endif
 		mov	esi,edx
 		PC_TO_PTR esi
+%ifdef PREFETCH
+		mov	edx, esi
+		call	prefetch_fillASM
+%endif
 		add	ecx,4
 		mov	dword [a+28],ecx
 		mov	eax,20
@@ -8046,11 +8001,12 @@ _i62_:		mov	ecx,dword [a+28]
 global _i63_
 _i63_:		mov	ecx,dword [a+28]
 		fetchl
-%ifdef PREFETCH
-		call	prefetch_fill_
-%endif
 		mov	esi,edx
 		PC_TO_PTR esi
+%ifdef PREFETCH
+		mov	edx, esi
+		call	prefetch_fillASM
+%endif
 		add	ecx,4
 		mov	dword [a+28],ecx
 		mov	eax,16
@@ -10911,11 +10867,12 @@ _i329_:		mov	ecx, esi
 		movsx	eax, dx
 		mov	ecx, dword [a + 28]
 		fetchl
-%ifdef PREFETCH
-		call	prefetch_fillASM
-%endif
 		mov	esi, edx
 		PC_TO_PTR esi
+%ifdef PREFETCH
+		mov	edx, esi
+		call	prefetch_fillASM
+%endif
 		add	ecx, 4
 		add	ecx, eax
 		mov	dword [a + 28], ecx
@@ -11066,11 +11023,12 @@ _i333_:		mov	eax, dword [edi + 4]	 ; Module data area ptr
 		mov	ecx, ebx		  ; Get saved PC
 		add	ecx, 12
 		fetchl
-%ifdef PREFETCH
-		call	prefetch_fillASM
-%endif
 		mov	esi, edx
 		PC_TO_PTR esi
+%ifdef PREFETCH
+		mov	edx, esi
+		call	prefetch_fillASM
+%endif
 		mov	ecx, ebx		  ; Get saved stack ptr 
 		add	ecx, 20
 		fetchl
@@ -11114,7 +11072,7 @@ i334_1_a:	lea	ecx, [ebx + ebp]
 		lea	ecx, [eax + ebp]
 		writel
 		sub	ebp, 4
-		jns	i334_1_a
+		jns	near i334_1_a
 		mov	eax, 4
 		ret
 
@@ -11137,7 +11095,7 @@ i334_2_00_a:	lea	ecx, [ebx + ebp]
 		lea	ecx, [eax + ebp]
 		writel
 		sub	ebp, 4
-		jns	i334_2_00_a
+		jns	near i334_2_00_a
 		mov	eax, 4
 		ret
 
@@ -11161,7 +11119,7 @@ i334_2_01_a:	lea	ecx, [ebx + ebp]
 		lea	ecx, [eax + ebp]
 		writel
 		sub	ebp, 4
-		jns	i334_2_01_a
+		jns	near i334_2_01_a
 		mov	eax, 4
 		ret
 
@@ -11184,7 +11142,7 @@ i334_2_10_a:	lea	ecx, [ebx + ebp]
 		lea	ecx, [eax + ebp]
 		writel
 		sub	ebp, 4
-		jns	i334_2_10_a
+		jns	near i334_2_10_a
 		mov	eax, 4
 		ret
 
@@ -11207,7 +11165,7 @@ i334_2_11_a:	lea	ecx, [ebx + ebp]
 		lea	ecx, [eax + ebp]
 		writel
 		sub	ebp, 4
-		jns	i334_2_11_a
+		jns	near i334_2_11_a
 		mov	eax, 4
 		ret
 

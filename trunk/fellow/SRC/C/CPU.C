@@ -1047,7 +1047,7 @@ ULO i11dis(ULO prc, ULO opc, STR *st) {
     st[17] = ' ';
     adr = (j > 32767) ? (prc + j - 65536) : (prc + j);
     }
-  else if (disp == -1 && cpuGetType() >= 2) {
+  else if (disp == -1 && cpu_major >= 2) {
     prc += 2;
     j = fetl(prc);
     sprintf(&st[13], "%8.8X", j);
@@ -1069,7 +1069,7 @@ void i11ini(void) {
   for (c = 0; c < 16; c++)
     for (di = -128; di < 128; di++) {
       ind = op | (di & 0xff) | (c<<8);
-	if (cpuGetType() >= 2) {
+	if (cpu_major >= 2) {
 	  t[ind][0] = (ULO) ((di == 0) ? i11_W:((di == -1) ? i11_L:i11_B));
 	  t[ind][3] = (ULO) ((di == 0) ? 2:((di == -1) ? 4:0));
 	}
@@ -1309,7 +1309,7 @@ void i22ini(void) {
       for (regs = 0; regs < 8; regs++) {
         flats = modreg(modes, regs);
         if ((data[flats] && alterable[flats]) ||
-	    ((cpuGetType() >= 2) && (flats == 9 || flats == 10))) {
+	    ((cpu_major >= 2) && (flats == 9 || flats == 10))) {
           ind = op | (size<<6) | (modes<<3) | regs;
           t[ind][0] = (size == 0) ?
                          (ULO) i22_B:
@@ -3377,8 +3377,8 @@ void cpuTstIni(void) {
       for (reg = 0; reg < 8; reg++) {
         flat = modreg(mode, reg);
         if ((data[flat] && alterable[flat]) ||
-	    ((cpuGetType() >= 2) && (size >= 1) && (flat == 1)) ||
-	    ((cpuGetType() >= 2) && (flat >= 9))) {
+	    ((cpu_major >= 2) && (size >= 1) && (flat == 1)) ||
+	    ((cpu_major >= 2) && (flat >= 9))) {
           ind = op | (size<<6) | (mode<<3) | reg;
           t[ind][0] = (size == 0) ?
                        (ULO) cpuTstB:
@@ -3674,7 +3674,7 @@ ULO i313dis(ULO prc, ULO opc, STR *st) {
 void i313ini(void) {
   ULO op = 0xf080, ind, cpnum, cpnumstart, cond, siz;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (siz = 0; siz < 2; siz++)
     for (cpnum = cpnumstart; cpnum < 8; cpnum++)
       for (cond = 0; cond < 64; cond++) {
@@ -3708,7 +3708,7 @@ ULO i314dis(ULO prc,ULO opc,STR *st) {
 void i314ini(void) {
   ULO op = 0xf048, ind, cpnum, cpnumstart, reg;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for (reg = 0; reg < 8; reg++) {
       ind = op | cpnum<<9 | reg;
@@ -3742,7 +3742,7 @@ ULO i315dis(ULO prc,ULO opc,STR *st) {
 void i315ini(void) {
   ULO op = 0xf000, ind, cpnum, cpnumstart, modes, regs, flats;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for (modes = 0; modes < 8; modes++)
       for (regs = 0; regs < 8; regs++)
@@ -3779,7 +3779,7 @@ ULO i316dis(ULO prc,ULO opc,STR *st) {
 void i316ini(void) {
   ULO op = 0xf140, ind, cpnum, cpnumstart, modes, regs, flats;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for (modes = 0; modes < 8; modes++)
       for (regs = 0; regs < 8; regs++) {
@@ -3817,7 +3817,7 @@ ULO i317dis(ULO prc,ULO opc,STR *st) {
 void i317ini(void) {
   ULO op = 0xf100, ind, cpnum, cpnumstart, modes, regs, flats;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for (modes = 0; modes < 8; modes++)
       for (regs = 0; regs < 8; regs++) {
@@ -3856,7 +3856,7 @@ ULO i318dis(ULO prc,ULO opc,STR *st) {
 void i318ini(void) {
   ULO op = 0xf040, ind, cpnum, cpnumstart, modes, regs, flats;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for (modes = 0; modes < 8; modes++)
       for (regs = 0; regs < 8; regs++) {
@@ -3895,7 +3895,7 @@ ULO i319dis(ULO prc,ULO opc,STR *st) {
 void i319ini(void) {
   ULO op = 0xf078, ind, cpnum, cpnumstart, optype;
 
-  cpnumstart = (cpuGetType() == 3) ? 1 : 0;
+  cpnumstart = (cpu_major == 3) ? 1 : 0;
   for (cpnum = cpnumstart; cpnum < 8; cpnum++)
     for( optype = 2; optype < 5; optype++) {
       ind = op|cpnum<<9|optype;
@@ -3971,7 +3971,7 @@ LON i320_C(ULO ext, ULO divisor) {
   if (divisor != 0) {
     dq = (ext>>12) & 7; /* Get operand registers, size and sign */
     dr = ext & 7;
-    if ((size64 = (ext>>10) & 1) && (cpuGetType() == 6))
+    if ((size64 = (ext>>10) & 1) && (cpu_major == 6))
       return DIV_UNIMPLEMENTED_060;
     sign = (ext>>11) & 1;
     if (sign) {         /* Convert operands to 64 bit */
@@ -4122,7 +4122,7 @@ ULO i324dis(ULO prc, ULO opc, STR *st) {
     strcat(st, stmp);
   }
   creg = extw & 0xfff;
-  if (cpuGetType() == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
+  if (cpu_major == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
 			       (creg != 0x801))) creg = 0xfff;
   switch (creg) {
     case 0x000:    /* SFC, Source function code X12346*/
@@ -4725,7 +4725,7 @@ ULO CINVDis040(ULO prc, ULO opc, STR *st) {
 void CINVIni(void) {
   ULO op, ind, cache, regs, scope;
 
-  if (cpuGetType() == 4) {
+  if (cpu_major == 4) {
     op = 0xf400;
     for (cache = 0; cache < 4; cache++)
       for (scope = 1; scope < 4; scope++)
@@ -4767,7 +4767,7 @@ ULO CPUSHDis040(ULO prc, ULO opc, STR *st) {
 void CPUSHIni(void) {
   ULO op, ind, cache, regs, scope;
 
-  if (cpuGetType() == 4) {
+  if (cpu_major == 4) {
     op = 0xf420;
     for (cache = 0; cache < 4; cache++)
       for (scope = 1; scope < 4; scope++)
@@ -4789,7 +4789,7 @@ void CPUSHIni(void) {
 /* X is set to the same as C since Intel doesn't have X                      */
 /*===========================================================================*/
 
-void createstatustab(void) {
+void cpuCreateStatusTable(void) {
   ULO i;
 
   for (i = 0; i < 4096; i++)
@@ -4799,7 +4799,7 @@ void createstatustab(void) {
 
 /* Make muls and mulu tables for clock calculations */
 
-void makemultab(void) {
+void cpuMakeMulTable(void) {
   ULO i, j, k;
 
   for (i = 0; i < 256; i++) {
@@ -4818,7 +4818,7 @@ void makemultab(void) {
 
 /* Sets the opcode table to illegal (i00) and similar disasm routine */
 
-void clear_opcode_table(void) {
+void cpuClearOpcodeTable(void) {
   ULO i, j;
 
   for (i = 0; i <= 65535; i++) {
@@ -4833,7 +4833,7 @@ void clear_opcode_table(void) {
 /* NBCD can generate result 255, which must translate to 0x99 */
 /* If the input is not a bcd number, the result is unpredictable.... */
 
-void cpu_makebcdtabs(void) {
+void cpuMakeBCDTables(void) {
   ULO x;
 
   for (x = 0; x < 100; x++) hex2bcd[x] = (UBY) (x % 10 | (x / 10) << 4);
@@ -4845,7 +4845,7 @@ void cpu_makebcdtabs(void) {
 
 /* Irq table initialization */
 
-static UBY cpu_irq_table_decide(ULO runlevel, ULO req) {
+static UBY cpuIRQTableDecide(ULO runlevel, ULO req) {
   LON actualrunlevel = -1;
   ULO i;
 
@@ -4857,12 +4857,12 @@ static UBY cpu_irq_table_decide(ULO runlevel, ULO req) {
   return (UBY) actualrunlevel;
 }	
   
-void cpu_irq_table_init(void) {
+void cpuIRQTableInit(void) {
   ULO runlevel, req;
   
   for (runlevel = 0; runlevel < 8; runlevel++)
     for (req = 0; req < 0x4000; req++)
-      irq_table[req | (runlevel<<14)] = cpu_irq_table_decide(runlevel, req);
+      irq_table[req | (runlevel<<14)] = cpuIRQTableDecide(runlevel, req);
 }      
 
 
@@ -4890,6 +4890,35 @@ ULO cpuGetPC(ULO address) {
 #else
   return address;
 #endif
+}
+
+
+/*============================================================================*/
+/* CPU instruction log                                                        */
+/*============================================================================*/
+
+BOOLE cpu_log;
+BOOLE cpu_log_first;
+
+void cpuSetLog(BOOLE log) {
+  cpu_log = log;
+}
+
+BOOL cpuGetLog(void) {
+  return cpu_log;
+}
+
+void cpuLog(void) {
+  if (cpu_log) {
+    FILE *F = fopen("cpu.log", (cpu_log_first) ? "w" : "a");
+    cpu_log_first = FALSE;
+    if (F) {
+      char s[256];
+      disOpcode(cpuGetPC(pc), s);
+      fprintf(F, "%s\n", s);
+      fclose(F);
+    }
+  }
 }
 
 
@@ -4979,7 +5008,7 @@ void cpuStackFrameInit060(void) {
 }
 
 void cpuStackFrameInit(void) {
-  switch (cpuGetType()) {
+  switch (cpu_major) {
     case 0:
       cpuStackFrameInit000();
       break;
@@ -5059,11 +5088,11 @@ void cpuAdrModeTablesInit020(void) {
 void cpuReset000(void) {
   sr &= 0x271f;         /* T = 0 */
   sr |= 0x2700;         /* S = 1, ilvl = 7 */
-  
+  vbr = 0;  
   ssp = memoryInitialSP();        /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5074,7 +5103,7 @@ void cpuReset010(void) {
   ssp = memoryInitialSP();        /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5087,7 +5116,7 @@ void cpuReset020(void) {
   ssp = memoryInitialSP();  /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5100,7 +5129,7 @@ void cpuReset030(void) {
   ssp = memoryInitialSP();        /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5115,7 +5144,7 @@ void cpuReset040(void) {
   ssp = memoryInitialSP();        /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5134,7 +5163,7 @@ void cpuReset060(void) {
   ssp = memoryInitialSP();        /* ssp = fake vector 0 */
   cpuSetPC(memoryInitialPC()); /* pc = fake vector 1 */
 #ifdef PREFETCH
-  cpuPrefetchFill(pc);
+  cpuPrefetchFill(cpuGetPC(pc));
 #endif
 }
 
@@ -5310,7 +5339,7 @@ void cpuHardReset(void) {
 /*===========================================================================*/
 
 BOOLE cpuSetType(cpu_types type) {
-  BOOLE needreset = (cpu_type != type);
+   BOOLE needreset = (cpu_type != type);
   cpu_type = type;
   switch (type) {
     case M68000: cpu_major = 0; cpu_minor = 0; break;
@@ -5348,17 +5377,17 @@ ULO cpuGetSpeed(void) {
 void cpuInit(void) {
   ULO i;
   
-  clear_opcode_table();
+  cpuClearOpcodeTable();
   for (i = 0; i < 8; i++)
     d[i] = a[i] = 0;
 
-  if (cpuGetType() < 2)
+  if (cpu_major < 2)
     cpuAdrModeTablesInit000();
   else
     cpuAdrModeTablesInit020();
-  cpu_makebcdtabs();
-  createstatustab();
-  cpu_irq_table_init();  
+  cpuMakeBCDTables();
+  cpuCreateStatusTable();
+  cpuIRQTableInit();  
 
   /* Common opcodes for all CPUs */
   
@@ -5431,13 +5460,13 @@ void cpuInit(void) {
   cpuUnlkIni();
   cpuBkptIni();
 
-  if (cpuGetType() == 0) cpuInit000();
-  else if (cpuGetType() == 1) cpuInit010();
-  else if (cpuGetType() == 2) cpuInit020();
-  else if (cpuGetType() == 3) cpuInit030();
-  else if (cpuGetType() == 4) cpuInit040();
-  else if (cpuGetType() == 6) cpuInit060();
-  makemultab();  
+  if (cpu_major == 0) cpuInit000();
+  else if (cpu_major == 1) cpuInit010();
+  else if (cpu_major == 2) cpuInit020();
+  else if (cpu_major == 3) cpuInit030();
+  else if (cpu_major == 4) cpuInit040();
+  else if (cpu_major == 6) cpuInit060();
+  cpuMakeMulTable();  
   cpuStackFrameInit();
   cpu_opcode_table_is_invalid = FALSE;
 }
@@ -5456,6 +5485,8 @@ void cpuStartup(void) {
   cpuSetType(M68000);
   cpu_opcode_table_is_invalid = TRUE;
   cpu_stop = FALSE;
+  cpuSetLog(FALSE);
+  cpu_log_first = TRUE;
 }
 
 void cpuShutdown(void) {
