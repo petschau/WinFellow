@@ -31,12 +31,52 @@
 #include "wdbg.h"
 #include "fhfile.h"
 #include "ini.h"
+#include "kbd.h"
+#include "kbddrv.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
 cfg *wgui_cfg;                               /* GUI copy of configuration */
 ini *wgui_ini;								 /* GUI copy of initdata */
 STR extractedfilename[CFG_FILENAME_LENGTH];
+
+
+#define MAX_JOYKEY_VALUE 6
+#define MAX_JOYKEY_PORT 2
+
+	kbd_event gameport_keys_events[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
+    {
+	    EVENT_JOY0_UP_ACTIVE,
+      EVENT_JOY0_DOWN_ACTIVE,
+      EVENT_JOY0_LEFT_ACTIVE,
+      EVENT_JOY0_RIGHT_ACTIVE,
+      EVENT_JOY0_FIRE0_ACTIVE,
+      EVENT_JOY0_FIRE1_ACTIVE
+      /*
+      EVENT_JOY0_AUTOFIRE0_ACTIVE,
+      EVENT_JOY0_AUTOFIRE1_ACTIVE
+      */
+    },
+    {
+	    EVENT_JOY1_UP_ACTIVE,
+      EVENT_JOY1_DOWN_ACTIVE,
+      EVENT_JOY1_LEFT_ACTIVE,
+      EVENT_JOY1_RIGHT_ACTIVE,
+      EVENT_JOY1_FIRE0_ACTIVE,
+      EVENT_JOY1_FIRE1_ACTIVE
+      /*
+      EVENT_JOY1_AUTOFIRE0_ACTIVE,
+      EVENT_JOY1_AUTOFIRE1_ACTIVE
+      */
+    }
+  };
+
+  int gameport_keys_labels[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
+    { IDC_GAMEPORT0_UP, IDC_GAMEPORT0_DOWN, IDC_GAMEPORT0_LEFT, IDC_GAMEPORT0_RIGHT,
+      IDC_GAMEPORT0_FIRE0, IDC_GAMEPORT0_FIRE1 },
+    { IDC_GAMEPORT1_UP, IDC_GAMEPORT1_DOWN, IDC_GAMEPORT1_LEFT, IDC_GAMEPORT1_RIGHT,
+      IDC_GAMEPORT1_FIRE0, IDC_GAMEPORT1_FIRE1 }
+  };
 
 /*============================================================================*/
 /* Flags for various global events                                            */
@@ -1074,6 +1114,8 @@ void wguiExtractSoundConfig(HWND DlgHWND, cfg *conf) {
 void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
   HWND gpChoice[2];
   ULO gpindex, i;
+  HWND st;
+  int setting, port;
 
   gpChoice[0] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT1);
   gpChoice[1] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT2);
@@ -1085,7 +1127,8 @@ void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
     ComboBox_AddString(gpChoice[i], "Keyboard Layout 1");
     ComboBox_AddString(gpChoice[i], "Keyboard Layout 2");
     ComboBox_AddString(gpChoice[i], "Mouse");
-    ComboBox_AddString(gpChoice[i], "Joystick");
+    ComboBox_AddString(gpChoice[i], "Joystick 1");
+	ComboBox_AddString(gpChoice[i], "Joystick 2");
   
     switch (cfgGetGameport(conf, i)) {
       case GP_NONE:
@@ -1103,9 +1146,18 @@ void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
       case GP_ANALOG0:
 	gpindex = 4;
 	break;
+		case GP_ANALOG1:
+	gpindex = 5;
+	break;
     }
     ComboBox_SetCurSel(gpChoice[i], gpindex);
   }
+
+  for( port = 0; port < MAX_JOYKEY_PORT; port ++ )
+    for ( setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
+      st = GetDlgItem(DlgHWND, gameport_keys_labels[port][setting]);
+      SetWindowText( st, kbdDrvKeyPrettyString( kbdDrvJoystickReplacementGet( gameport_keys_events[port][setting] )));
+    }
 }
 
 /* Extract gameport config */
@@ -1113,11 +1165,12 @@ void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
 void wguiExtractGameportConfig(HWND DlgHWND, cfg *conf) {
   HWND gpChoice[2];
   ULO gpsel, i;
-  gameport_inputs gpt[5] = {GP_NONE,
+  gameport_inputs gpt[6] = {GP_NONE,
 			    GP_JOYKEY0,
 			    GP_JOYKEY1,
 			    GP_MOUSE0,
-			    GP_ANALOG0};
+			    GP_ANALOG0,
+				GP_ANALOG1};
 
   gpChoice[0] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT1);
   gpChoice[1] = GetDlgItem(DlgHWND, IDC_COMBO_GAMEPORT2);
@@ -1126,7 +1179,7 @@ void wguiExtractGameportConfig(HWND DlgHWND, cfg *conf) {
 
   for (i = 0; i < 2; i++) {
     gpsel = ComboBox_GetCurSel(gpChoice[i]);
-    if (gpsel > 4) gpsel = 0;
+    if (gpsel > 5) gpsel = 0;
     cfgSetGameport(conf, i, gpt[gpsel]);
   }
 }
