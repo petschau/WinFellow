@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.h,v 1.1.2.1 2004-06-02 11:26:07 carfesh Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.1.2.2 2004-06-03 14:19:52 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -46,12 +46,4 @@ extern BOOLE capsLoadTrack(ULO, ULO, UBY *, ULO *, ULO *, BOOLE *);
 
 #endif
 
-#endif
-
-#if 0
-int caps_init (void);
-void caps_unloadimage (int drv);
-int caps_loadimage (struct zfile *zf, int drv, int *num_tracks);
-int caps_loadtrack (uae_u16 *mfmbuf, uae_u16 *tracktiming, int drv, int track, int *tracklength, int *multirev);
-int caps_loadrevolution (uae_u16 *mfmbuf, int drv, int track, int *tracklength);
 #endif

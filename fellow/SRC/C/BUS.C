@@ -18,6 +18,7 @@
 #include "blit.h"
 #include "bus.h"
 #include "graph.h"
+#include "floppy.h"
 
 
 ULO debugging;

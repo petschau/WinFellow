@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.5.2.6 2004-05-28 06:41:12 carfesh Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.5.2.7 2004-06-03 14:19:52 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -281,14 +281,27 @@ extern long dos_errno (void);
 
 #endif
 
+/* fix some compiler warnings */
+
+/* filesys.c exports */
+extern char *add_filesys_unit(struct uaedev_mount_info *,
+			char *, char *, int, int, int, int,	int);
+void filesys_install(void);
+void filesys_prepare_reset(void);
+void filesys_reset(void);
+void filesys_start_threads(void);
+
+/* autoconf.c exports */
+extern void rtarea_init(void);
+extern void rtarea_setup(void);
+
+/* hardfile.c exports */
+void hardfile_install(void);
+
+/* fsysamnt.c exports (moved from filesys.c) */
+extern BOOLE CheckRM(char *);
+static int get_volume_name(struct uaedev_mount_info *, char *, char *, int, int, int, int);
+extern int valid_volumename(struct uaedev_mount_info *, char *, int);
+extern void filesys_init(int);
+
 #endif
-
-
-
-
-
-
-
-
-
-

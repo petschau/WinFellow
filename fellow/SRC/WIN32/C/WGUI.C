@@ -45,6 +45,8 @@
 #include "kbd.h"
 #include "kbddrv.h"
 #include "caps_win32.h"
+#include "floppy.h"
+#include "fellow.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -295,7 +297,7 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
 
 	felist *listnode;
 	wgui_drawmode *pwguicfgwdm;
-	ULO i;
+	LONG i;
 	
 	pwguicfgwdm = NULL;
 	if (pwgui_dm_match->windowed) {
@@ -1128,8 +1130,6 @@ void wguiInstallBlitterConfig(HWND hwndDlg, cfg *conf) {
 /* Extract Blitter config */
 
 void wguiExtractBlitterConfig(HWND hwndDlg, cfg *conf) {
-  int slidervalue;
-	
 	/* get current blitter operation type */
   cfgSetBlitterFast(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE));
   
@@ -1641,7 +1641,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
 
 	// get scaling
   cfgSetVerticalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_VERTICAL_SCALE)) ? 2 : 1);
-  cfgSetHorisontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 2 : 1);
+  cfgSetHorizontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 2 : 1);
 	cfgSetScanlines(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SCANLINES));
 	cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_INTERLACE));
 
@@ -2097,7 +2097,7 @@ BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
 	      while ((sel = wguiListViewNext(GetDlgItem(hwndDlg,
 							IDC_LIST_FILESYSTEMS),
 					     sel)) != -1) {
-		int i;
+		ULO i;
 		cfgFilesystemRemove(wgui_cfg, sel);
 		ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 
 				    sel);
@@ -2339,7 +2339,7 @@ BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
 	      while ((sel = wguiListViewNext(GetDlgItem(hwndDlg,
 							IDC_LIST_HARDFILES),
 					     sel)) != -1) {
-		int i;
+		ULO i;
 		cfgHardfileRemove(wgui_cfg, sel);
 		ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), 
 				    sel);
@@ -2648,7 +2648,7 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 /* Runs the GUI                                                               */
 /*============================================================================*/
 
-BOOL wguiCheckEmulationNecessities(void) {
+BOOLE wguiCheckEmulationNecessities(void) {
 	if(strcmp(cfgGetKickImage(wgui_cfg), "") != 0) {
 		return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
 	}

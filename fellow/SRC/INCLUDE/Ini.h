@@ -51,6 +51,11 @@ extern ini* wgui_ini;
 /* struct ini property access functions                                       */
 /*============================================================================*/
 
+extern ULO iniGetMainWindowXPos(ini *);
+extern ULO iniGetMainWindowYPos(ini *);
+extern ULO iniGetEmulationWindowXPos(ini *);
+extern ULO iniGetEmulationWindowYPos(ini *);
+ 
 extern void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos);
 extern void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos);
 extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);

@@ -1,11 +1,28 @@
-/*===========================================================================*/
-/* Fellow Amiga Emulator                                                     */
-/* Filesys autmount functionality; moved here from WinUAE 0.8.8 filesys.c    */
-/* to keep the UAE filesys.c as original as possible                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                               */
-/*                                                                           */
-/* This file is under the GNU Public License (GPL)                           */
-/*===========================================================================*/
+/* @(#) $Id: fsysamnt.c,v 1.1.2.2 2004-06-03 14:19:52 carfesh Exp $ */
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* Filesys autmount functionality; moved here from WinUAE 0.8.8 filesys.c  */
+/* to keep the UAE filesys.c as original as possible                       */ 
+/*                                                                         */
+/* (w)1994 by Torsten Enderling (carfesh@gmx.net)                          */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #include <windows.h>
 #include <stdio.h>
@@ -41,7 +58,7 @@ extern struct uaedev_mount_info mountinfo;
 /* automount drives if wanted                                                */
 /*===========================================================================*/
 
-void filesys_init( int automount_drives )
+void filesys_init(int automount_drives)
 {
     int drive, drivetype, readonly, removable;
     UINT errormode = SetErrorMode( SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX );
@@ -82,7 +99,7 @@ void filesys_init( int automount_drives )
     SetErrorMode( errormode );
 }
 
-static int get_volume_name( struct uaedev_mount_info *mtinf, char *volumepath, char *volumename, int size, int drive, int drivetype, int fullcheck )
+static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, char *volumename, int size, int drive, int drivetype, int fullcheck)
 {
     int result = -1;
 
@@ -120,7 +137,7 @@ static int get_volume_name( struct uaedev_mount_info *mtinf, char *volumepath, c
     return result;
 }
 
-BOOL CheckRM( char *DriveName )
+BOOLE CheckRM(char *DriveName)
 {
     char filename[ MAX_PATH ];
     DWORD dwHold;

@@ -1,7 +1,6 @@
+/* @(#) $Id: WDBG.C,v 1.26.2.4 2004-06-03 14:19:52 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: WDBG.C,v 1.26.2.3 2004-05-27 10:15:22 carfesh Exp $           */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /*                                                                         */
@@ -60,6 +59,7 @@
 #include "sprite.h"
 #include "modrip.h"
 #include "blit.h"
+#include "wgui.h"
 
 
 /*=======================================================*/

@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.7 2004-06-03 10:43:05 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.8 2004-06-03 14:19:52 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -24,6 +24,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#include <assert.h>
 #include "caps_win32.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
@@ -265,6 +266,12 @@ BOOLE capsLoadRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
     CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
     revolution = revolutioncount % capsTrackInfo.trackcnt;
     len = capsTrackInfo.tracksize[revolution];
+    if(*tracklength != len)
+    {
+        fellowAddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
+        /* capsLoadRevolution() is only to be called after a track has been capsLoadTrack()ed once initially */
+        assert(0);
+    }
     *tracklength = len;
     memcpy(mfm_data, capsTrackInfo.trackdata[revolution], len);
 

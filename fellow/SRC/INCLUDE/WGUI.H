@@ -47,9 +47,13 @@ typedef struct {
 
 #ifdef WGUI
 
+extern BOOLE wguiSaveFile(HWND, STR *, ULO, STR *, SelectFileFlags);
+extern STR *wguiExtractPath(STR *);
+
 extern void wguiStartup(void);
 extern void wguiStartupPost(void);
 extern void wguiShutdown(void);
+extern BOOLE wguiCheckEmulationNecessities(void);
 extern BOOLE wguiEnter(void);
 extern void wguiRequester(STR *line1, STR *line2, STR *line3);
 extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
