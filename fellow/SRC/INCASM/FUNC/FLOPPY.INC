@@ -5,8 +5,7 @@
 ; Includes functions declared in the C floppy module
 ;==============================================================================
 
-CFUNCEXTERN floppyDMARead
-CFUNCEXTERN floppyDMAWrite
+CFUNCEXTERN floppyEndOfLineC
 CFUNCEXTERN rdskbytrC
 CFUNCEXTERN wdskpthC
 CFUNCEXTERN wdskptlC

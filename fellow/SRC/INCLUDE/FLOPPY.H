@@ -22,12 +22,9 @@ void wdsksync(ULO, ULO);
 /* Info about a track */
 
 typedef struct {
-  ULO sync;       /* Sync word */
-  ULO length;     /* Track length */
-  ULO lengthfile; /* length of track in file */
-  BOOLE valid;    /* Data found in data is valid (ie. loaded from disk) */
-  ULO fileoffset; /* Track starts at this offset in image file */
-  UBY *buffer;    /* Pointer to MFM data for track */
+  ULO file_offset;/* Track starts at this offset in image file, used for writing back */
+  ULO mfm_length; /* Length of mfm data in bytes */
+  UBY *mfm_data;  /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
 } floppytrackinfostruct;
 
 /* Info about a drive */
@@ -48,12 +45,10 @@ typedef struct {
   BOOLE changed;          /* Disk has been changed */
   BOOLE idmode;           /* Drive is in ID-mode */
   BOOLE inserted;         /* Disk is inserted */
+  ULO motor_ticks;	  /* EOLs since motor was started */
   ULO insertedframe;      /* Will not be detected until some time after this */
   ULO idcount;            /* Number of times ID has been read */
-  ULO lasttrack;          /* Last track accessed on drive */
-  ULO lasttrackcount;     /* Number of consecutive reads of the same track */
-  BOOLE cached;           /* This image is fully cached in memory */
-  UBY *cache;             /* Memory allocated to hold data on this drive */
+  UBY *mfm_data;          /* Memory allocated to hold mfm data for the entire drive */
   floppytrackinfostruct trackinfo[FLOPPY_TRACKS]; /* Info about each track */
   ULO imagestatus;        /* Status of drive (kind of image inserted) */
   ULO imageerror;         /* What kind of error if status reports error */
@@ -64,13 +59,11 @@ typedef struct {
 /* Info about a started disk transfer */
 
 typedef struct {
-  UBY *src;              /* Source data ptr */
-  UBY *dst;              /* Destination ptr */
-  ULO offset;            /* Current index into source data */
-  ULO wordsleft;         /* Words left to transfer */
-  ULO drive;             /* Drive from which data is transfered */
-  ULO wait;              /* Lines to wait before starting transfer */ 
-  ULO tracklength;       /* Length of track */
+  ULO dskpt;			/* Amiga memory pt */
+  ULO wordsleft;		/* Words left to transfer */
+  ULO wait;			/* Used to delay irq for writes */
+  BOOLE wait_for_sync;
+  BOOLE sync_found;
 } floppyDMAinfostruct;
 
 /* Status symbols */
