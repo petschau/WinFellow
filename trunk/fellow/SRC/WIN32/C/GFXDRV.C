@@ -113,6 +113,7 @@ typedef struct {
   RECT		       hwnd_clientrect_win;
   draw_mode            *drawmode;
   BOOLE		       use_blitter;
+  ULO		       vertical_scale;
 } gfx_drv_ddraw_device;
 
 gfx_drv_ddraw_device *gfx_drv_ddraw_device_current;
@@ -202,8 +203,6 @@ void gfxDrvEvaluateActiveStatus(void) {
     fellowAddLog("\n");
     gfxDrvRunEventReset();
   }
-//  if (old_active != gfx_drv_win_active)
-//    PostMessage(gfx_drv_hwnd, WM_DIACQUIRE, 0, 0L);
 }
 
 
@@ -284,9 +283,9 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     }
     switch (GET_WM_COMMAND_ID(wParam, lParam)) {
-//        case IDC_ABOUT:
-//          MessageBox(hwnd, "Fellow Amiga Emulator V0.4", "Fellow Amiga Emulator", MB_OK);
-//	  return 0;
+/*        case IDC_ABOUT:
+            MessageBox(hwnd, "Fellow Amiga Emulator V0.4", "Fellow Amiga Emulator", MB_OK);
+	  return 0; */
         case SC_SCREENSAVE:
 	  return 0;
         default:
@@ -327,7 +326,6 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       }
       */
     break;
-//      return 0;
   case WM_DESTROY:
       fellowAddLog("Window is dead!\n");
       gfxDrvChangeDInputDeviceStates(FALSE);
@@ -342,7 +340,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
 			      gfx_drv_ddraw_device_current->mode->windowed;
       break;
     case WM_PALETTECHANGED:	/* Palette has changed, sometimes we did it */
-      //if (((HWND) wParam) == gfx_drv_hwnd)
+      /*if (((HWND) wParam) == gfx_drv_hwnd)*/
 	break;
       /* else run code in WM_PALETTECHANGED to claim whatever colors are left for us */
     case WM_QUERYNEWPALETTE:	/* We are activated and are allowed to realise our palette */
@@ -537,8 +535,8 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
       GetMenu(gfx_drv_hwnd) != NULL,
       GetWindowExStyle(gfx_drv_hwnd));
     MoveWindow(gfx_drv_hwnd,
-      0, //CW_USEDEFAULT,
-      0, //CW_USEDEFAULT,
+      0, /*CW_USEDEFAULT*/,
+      0, /*CW_USEDEFAULT*/,
       rc1.right - rc1.left,
       rc1.bottom - rc1.top,
       FALSE);
@@ -612,6 +610,35 @@ void gfxDrvWindowRelease(gfx_drv_ddraw_device *ddraw_device) {
   }
 }
 
+
+/*==========================================================================*/
+/* Select the correct drawing surface for a draw operation                  */
+/*==========================================================================*/
+
+void gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device,
+				        LPDIRECTDRAWSURFACE *lpDDS,
+				        LPDDSURFACEDESC *lpDDSD) {
+  if (ddraw_device->mode->windowed || (ddraw_device->vertical_scale > 1)) {
+    *lpDDS = ddraw_device->lpDDSSecondary;
+    *lpDDSD = &(ddraw_device->ddsdSecondary);
+  }
+  else {
+    *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
+                                                ddraw_device->lpDDSBack;
+    *lpDDSD = (ddraw_device->buffercount == 1) ? &(ddraw_device->ddsdPrimary) :
+                                                 &(ddraw_device->ddsdBack);
+  }
+}
+
+/*==========================================================================*/
+/* Select the correct target surface for a blit operation                   */ 
+/*==========================================================================*/
+
+void gfxDrvDDrawBlitTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device,
+				        LPDIRECTDRAWSURFACE *lpDDS) {
+  *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
+                                              ddraw_device->lpDDSBack;
+}
 
 /*==========================================================================*/
 /* Release clipper                                                          */
@@ -940,18 +967,23 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device) {
     mode->bluesize = ddmode->bluesize;
     mode->pitch = ddmode->pitch;
     mode->id = id;
-    if (!ddmode->windowed)
+    if (!ddmode->windowed) {
+      char hz[16];
+      if (ddmode->refresh != 0) sprintf(hz, "%dHZ", ddmode->refresh);
+      else hz[0] = 0;
       sprintf(mode->name,
-      "%dWx%dHx%dBPPx%dHZ",
+      "%dWx%dHx%dBPPx%s",
       ddmode->width,
       ddmode->height,
       ddmode->depth,
-      ddmode->refresh);
-    else
+      hz);
+    }
+    else {
       sprintf(mode->name,
       "%dWx%dHxWindow",
       ddmode->width,
       ddmode->height);
+    }
     drawModeAdd(mode);
     id++;
   }
@@ -1236,22 +1268,31 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
   HRESULT err;
   RECT srcwin;
   RECT dstwin;
+  LPDIRECTDRAWSURFACE lpDDSDestination;
   
-  
+  /* Source surface is always the secondary off-screen buffer  
+     Select the part of it that has been drawn to */
   srcwin.left = draw_hoffset;
   srcwin.top = draw_voffset;
   srcwin.right = draw_hoffset + draw_width_amiga_real;
-  srcwin.bottom = draw_voffset + draw_height_amiga_real;
-  dstwin.left = ddraw_device->hwnd_clientrect_screen.left;
-  dstwin.top = ddraw_device->hwnd_clientrect_screen.top;
-  dstwin.right = ddraw_device->hwnd_clientrect_screen.left + draw_width_amiga_real;
-  dstwin.bottom = ddraw_device->hwnd_clientrect_screen.top + draw_width_amiga_real;
+  srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
   
+  /* Destination is always the primary or one the backbuffers attached to it */
+  gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
+  if (!ddraw_device->mode->windowed) {
+    dstwin.left = draw_hoffset;
+    dstwin.top = draw_voffset;
+    dstwin.right = draw_hoffset + draw_width_amiga_real;
+    dstwin.bottom = draw_voffset + draw_height_amiga_real;
+  }
+
   /* This can fail when we lose the surface */
-  if ((err = IDirectDrawSurface_Blt(ddraw_device->lpDDSPrimary,
-                                    &ddraw_device->hwnd_clientrect_screen,
+  if ((err = IDirectDrawSurface_Blt(lpDDSDestination,
+                                    (ddraw_device->mode->windowed) ?
+				      &ddraw_device->hwnd_clientrect_screen :
+		                      &dstwin,
                                     ddraw_device->lpDDSSecondary,
-                                    NULL,
+                                    &srcwin,
                                     0,
                                     NULL)) != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
@@ -1264,10 +1305,12 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 	return;
       }
       /* Restore was successful, do the blit */
-      if ((err = IDirectDrawSurface_Blt(ddraw_device->lpDDSPrimary,
-                                        &ddraw_device->hwnd_clientrect_screen,
+      if ((err = IDirectDrawSurface_Blt(lpDDSDestination,
+                                        (ddraw_device->mode->windowed) ?
+				          &ddraw_device->hwnd_clientrect_screen :
+		                          0,
                                         ddraw_device->lpDDSSecondary,
-                                        NULL,
+                                        &srcwin,
                                         0,
                                         NULL)) != DD_OK) {
 	/* Failed second time, pass over */
@@ -1314,7 +1357,8 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
   DDSCAPS ddscaps;
   BOOLE success = FALSE;
   
-  trybuffers = (ddraw_device->mode->windowed) ? 1 : ddraw_device->maxbuffercount;
+  trybuffers = (ddraw_device->mode->windowed ||
+	        (ddraw_device->vertical_scale > 1)) ? 1 : ddraw_device->maxbuffercount;
   while (trybuffers != 0 && !success) {
     if (ddraw_device->lpDDSPrimary != NULL)
       gfxDrvDDrawSurfacesRelease(ddraw_device);
@@ -1443,7 +1487,6 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
   return ddraw_device->buffercount;
 }
 
-
 /*==========================================================================*/
 /* Lock the current drawing surface                                         */
 /*==========================================================================*/
@@ -1454,16 +1497,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
   LPDDSURFACEDESC lpDDSD;
   ULO buffer;
   
-  if (ddraw_device->mode->windowed) {
-    lpDDS = ddraw_device->lpDDSSecondary;
-    lpDDSD = &(ddraw_device->ddsdSecondary);
-  }
-  else {
-    lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
-                                               ddraw_device->lpDDSBack;
-    lpDDSD = (ddraw_device->buffercount == 1) ? &(ddraw_device->ddsdPrimary) :
-                                                &(ddraw_device->ddsdBack);
-  }
+  gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
   err = IDirectDrawSurface_Lock(lpDDS,
 				NULL,
 				lpDDSD,
@@ -1475,7 +1509,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): ", err);
     if (err == DDERR_SURFACELOST) {
-      // Here we have lost the surface, restore it
+      /* Here we have lost the surface, restore it */
       if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed) ? lpDDS : ddraw_device->lpDDSPrimary)) != DD_OK) {
 	/* Here we are in deep trouble, we can not provide a buffer pointer */
 	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Mega problem 1) ", err);
@@ -1514,18 +1548,9 @@ void gfxDrvDDrawSurfaceUnlock(gfx_drv_ddraw_device *ddraw_device) {
   LPDIRECTDRAWSURFACE lpDDS;
   LPDDSURFACEDESC lpDDSD;
   
-  if (ddraw_device->mode->windowed) {
-    lpDDS = ddraw_device->lpDDSSecondary;
-    lpDDSD = &(ddraw_device->ddsdSecondary);
-  }
-  else {
-    lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
-  ddraw_device->lpDDSBack;
-  lpDDSD = (ddraw_device->buffercount == 1) ? &(ddraw_device->ddsdPrimary) :
-  &(ddraw_device->ddsdBack);
-  }
+  gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
   if ((err = IDirectDrawSurface_Unlock(lpDDS,
-    lpDDSD->lpSurface)) != DD_OK)
+				       lpDDSD->lpSurface)) != DD_OK)
     gfxDrvDDrawFailure("gfxDrvSurfaceUnlock(): ", err);
 }
 
@@ -1559,7 +1584,8 @@ ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
   ULO buffers = 0;
   
   if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) {
-    ddraw_device->use_blitter = (ddraw_device->mode->windowed);
+    ddraw_device->use_blitter = ((ddraw_device->mode->windowed) ||
+			         (ddraw_device->vertical_scale > 1));
     if (!ddraw_device->mode->windowed) {
       gfx_drv_ddraw_mode *mode;
       HRESULT err;
@@ -1705,8 +1731,9 @@ void gfxDrvBufferFlip(void) {
 /* Returns the number of available buffers, zero is error                   */
 /*==========================================================================*/
 
-void gfxDrvSetMode(draw_mode *dm) {
+void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale) {
   gfx_drv_ddraw_device_current->drawmode = dm;  
+  gfx_drv_ddraw_device_current->vertical_scale = vertical_scale;
   gfx_drv_ddraw_device_current->mode = (gfx_drv_ddraw_mode *) listNode(listIndex(gfx_drv_ddraw_device_current->modes, dm->id));
 }
 
@@ -1724,29 +1751,26 @@ void gfxDrvSetMode(draw_mode *dm) {
 /* That is why the gfxDrvEmulationStart is split in two.                    */
 /*==========================================================================*/
 
-void gfxDrvEmulationStart(draw_mode *dm, ULO maxbuffercount) {
-  gfx_drv_ddraw_mode *mode;
-  
+BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
   gfxDrvRunEventReset();                    /* At this point, app is paused */
+  gfx_drv_ddraw_device_current->maxbuffercount = maxbuffercount;
   gfx_drv_win_active = FALSE;
   gfx_drv_win_active_original = FALSE;
   gfx_drv_win_minimized_original = FALSE;
   gfx_drv_syskey_down = FALSE;
   gfx_drv_displaychange = FALSE;
-  gfx_drv_ddraw_device_current->maxbuffercount = maxbuffercount;
   if (!gfxDrvWindowInitialize(gfx_drv_ddraw_device_current)) {
     fellowAddLog("gfxDrvEmulationStart(): Failed to create window\n");
+    return FALSE;
   }
-  fellowAddLog("End of gfxDrvEmulationStart()\n");
+  return TRUE;
 }
 
 ULO gfxDrvEmulationStartPost(void) {
   ULO buffers;
 
-  fellowAddLog("Before call to gfxDrvDDrawSetMode()\n");
   if ((buffers = gfxDrvDDrawSetMode(gfx_drv_ddraw_device_current)) == 0)
     fellowAddLog("gfxDrvEmulationStart(): Zero buffers, gfxDrvDDSetMode() failed\n");
-  fellowAddLog("End of call to gfxDrvDDrawSetMode()\n");
   if (gfx_drv_hwnd != NULL)
     gfxDrvWindowShow(gfx_drv_ddraw_device_current);
   return buffers;
