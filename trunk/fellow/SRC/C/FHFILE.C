@@ -790,7 +790,7 @@ void fhfileShutdown(void) {
 /* Create hardfile          */
 /*==========================*/
 
-static BOOLE fhfileCreate(fhfile_dev hfile)
+BOOLE fhfileCreate(fhfile_dev hfile)
 {
     HANDLE hf;
     int i = 0;
