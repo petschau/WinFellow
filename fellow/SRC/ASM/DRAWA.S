@@ -56,7 +56,7 @@ FDATASECTIONSTART
 ; Enable this for detailed profiling, log written to drawprofile.txt
 ; It can be imported into excel for better viewing
 ;
-%define DRAW_TSC_PROFILE
+;%define DRAW_TSC_PROFILE
 ;
 ;-----------------------------------------------------------------------------
 
