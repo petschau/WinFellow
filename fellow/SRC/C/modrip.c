@@ -4,7 +4,8 @@
 /* Author: Torsten Enderling (carfesh@gmx.net)                                */
 /*                                                                            */
 /* based on information found on Exotica (http://exotica.fix.no), the xmp     */
-/* source code (http://xmp.helllabs.org) and too many other web sources       */
+/* source code (http://xmp.helllabs.org), Amiga Mod Packers Described         */
+/* (www.multimania.com/asle/ampd.html) and too many other web sources         */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
