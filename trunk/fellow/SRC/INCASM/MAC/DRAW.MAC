@@ -1,0 +1,56 @@
+%ifndef DRAW_MAC
+%define DRAW_MAC
+
+
+;==============================================================================
+; Macros to call C functions from assembly
+;==============================================================================
+
+;==============================================================================
+; Draw LEDs
+;
+; Assembly calling convention:
+; In:  Nothing
+; Out: Nothing
+;==============================================================================
+
+%macro DRAWENDOFFRAME_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	drawEndOfFrameC
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+;==============================================================================
+; Validates the framebuffer pointer
+; For systems that do not need locking, make a blank macro
+;
+; Assembly calling convention:
+; In:  ebp - Current amiga line number
+; Out: eax - The number of bytes in a host buffer line
+;==============================================================================
+
+%macro DRAWVALIDATEBUFFERPOINTER_CWRAP 0
+		CCALLCONV_IN_EBP
+		call	drawValidateBufferPointer
+		CCALLCONV_OUT_EAX	1
+%endmacro
+
+
+;==============================================================================
+; Invalidates the framebuffer pointer
+; For systems that do not need locking, make a blank macro
+;
+; Assembly calling convention:
+; In:  Nothing
+; Out: Nothing
+;==============================================================================
+
+%macro DRAWINVALIDATEBUFFERPOINTER_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	drawInvalidateBufferPointer
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+%endif

@@ -1,0 +1,77 @@
+Developers:
+-----------
+
+Created and programmed by Petter Schau (pschau@online.no)
+
+With programming contributions from:
+
+Roman Dolejsi (roman@sorry.vse.cz) and
+David Voracek (assassin@paru.cas.cz)
+                 Various improvements in GUI,
+		 KBD-led code,
+                 Main design and partial implementation of
+		 68010/20/30 instruction set emulation,
+                 makeadf (David),
+                 Generalized BMP dump code + various other improvements
+
+Rainer Sinsch (sinsh@stud.uni-frankfurt.de)
+		 MOD-ripper,
+		 Low-pass filter,
+		 Wav-capture patch
+
+
+Various support:
+----------------
+
+Brett Eden        - Testing, documentation and extensive general support.
+Hetz Ben Hamo     - Various help.
+Masashi Yamaguchi - Found numerous bugs in the M68k-emulation source.
+Jeremy Crawford   - Provided information about Kickdisks.
+
+And numerous others for taking interest in the emulator.
+
+
+Documentation translations:
+---------------------------
+
+Italian translation:   Roberto Gasparrini
+French translation:    Laurent Dugois
+German translation:    Andreas Eibach
+Spanish translation:   Lou C. Fer
+Danish translation:    Kenneth Vestergaard Schmidt
+Polish translation:    Pawel Jedrak
+Dutch translation:     Peter Stolk
+Portugese translation: Marcelo Gurgacz
+
+
+Libraries used:
+---------------
+
+zlib:  	      Copyright (C) 1995-1996 Jean-loup Gailly and Mark Adler
+Scitech SDK:  Copyright (C) 1994 SciTech Software.
+
+
+Other sources used:
+-------------------
+
+Virtual Filesystem handler:
+
+  Copyright (C) 1996-1998 Bernd Schmidt, Ed Hanway, Gustavo Goedert
+                          and other UAE contributors.
+  Virtual filesystem sources are under GNU GPL
+  Used with permission.
+
+
+Dos-extender:
+-------------
+
+"PMODE/W is Copyright (c) 1994-1997, Charles Scheffold
+ and Thomas Pytel. All rights reserved."
+
+
+
+
+
+
+
+

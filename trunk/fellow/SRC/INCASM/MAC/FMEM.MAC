@@ -1,0 +1,211 @@
+%ifndef MAC_FMEM_MAC
+%define MAC_FMEM_MAC
+
+;============================
+; Test for odd memory access
+;============================
+
+%macro TEST_ODD_ACCESS 1 ; HANDLER
+%ifndef MEMORY_ALLOW_ODD_ACCESS
+		test	cl, 1
+		jnz	near %1
+%endif
+%endmacro
+
+
+;=============================
+; Common memory access macros
+;=============================
+
+%macro fetchb 0
+		mov	edx, ecx
+		shr	edx, 16
+		test	dword [memory_bank_datapointer + 4*edx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_readbyte + 4*edx]
+%%mok:		mov	edx, dword [memory_bank_datapointer + 4*edx]
+		movzx	edx, byte [edx + ecx]
+%%mend:
+%endmacro
+
+%macro fetchw 0
+		mov	edx, ecx
+		shr	edx, 16
+		TEST_ODD_ACCESS oddread
+		test	dword [memory_bank_datapointer + 4*edx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_readword + 4*edx]
+%%mok:		mov	edx, dword [memory_bank_datapointer + 4*edx]
+		mov	edx, dword [-2 + edx + ecx]
+		bswap	edx
+		and	edx, 0ffffh
+%%mend:
+%endmacro
+
+%macro fetchl 0
+		mov	edx, ecx
+		shr	edx, 16
+		TEST_ODD_ACCESS oddread
+		test	dword [memory_bank_datapointer + 4*edx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_readlong + 4*edx]
+%%mok:		mov	edx, dword [memory_bank_datapointer + 4*edx]
+		mov	edx, dword [edx + ecx]
+		bswap	edx
+%%mend:
+%endmacro
+
+%macro writeb 0
+		mov	dword [memory_wriorgadr], ecx
+		shr	ecx, 16
+		test	dword [memory_bank_datapointer + 4*ecx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_writebyte + 4*ecx]
+%%mok:		mov	ecx, dword [memory_bank_datapointer + 4*ecx]
+		add	ecx, dword [memory_wriorgadr]
+		mov	byte [ecx], dl
+		mov	ecx, dword [memory_wriorgadr]
+%%mend:
+%endmacro
+
+%macro writew 0
+		TEST_ODD_ACCESS oddwrite
+		mov	dword [memory_wriorgadr], ecx
+		shr	ecx, 16
+		test	dword [memory_bank_datapointer + 4*ecx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_writeword + 4*ecx]
+%%mok:		mov	ecx, dword [memory_bank_datapointer + 4*ecx]
+		add	ecx, dword [memory_wriorgadr]
+		mov	byte [ecx], dh
+		mov	byte [1 + ecx], dl
+		mov	ecx, dword [memory_wriorgadr]
+%%mend:
+%endmacro
+
+%macro writel 0
+		TEST_ODD_ACCESS oddwrite
+		mov	dword [memory_wriorgadr], ecx
+		shr	ecx, 16
+		test	dword [memory_bank_datapointer + 4*ecx], -1
+		jnz	near %%mok
+		push	dword %%mend
+		jmp	dword [memory_bank_writelong + 4*ecx]
+%%mok:		mov	ecx, dword [memory_bank_datapointer + 4*ecx]
+		add	ecx, dword [memory_wriorgadr]
+		bswap	edx
+		mov	dword [ecx], edx
+		mov	ecx, dword [memory_wriorgadr]
+%%mend:
+%endmacro
+
+%macro fetchbret 0
+		fetchb
+		ret
+%endmacro
+
+%macro fetchwret 0
+		fetchw
+		ret
+%endmacro
+
+%macro fetchlret 0
+		fetchl
+		ret
+%endmacro
+	
+%macro writebret 0
+		writeb
+		ret
+%endmacro
+	
+%macro writewret 0
+		writew
+		ret
+%endmacro
+	
+%macro writelret 0
+		writel
+		ret
+%endmacro
+
+
+;==============================================================================
+; Write data to autoconfig memory
+;
+; Assembly calling convention:
+; In:  edx - Data, ecx - Address
+; Out: Nothing
+;==============================================================================
+
+%macro EMEMWRITEBYTE_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	memoryEmemWriteByteC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro EMEMWRITEWORD_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	memoryEmemWriteWordC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro EMEMWRITELONG_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	memoryEmemWriteLongC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+;==============================================================================
+; Read data from autoconfig memory
+;
+; Assembly calling convention:
+; In:  ecx - Address
+; Out: edx - data
+;==============================================================================
+
+%macro EMEMREADBYTE_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	memoryEmemReadByteC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+%macro EMEMREADWORD_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	memoryEmemReadWordC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+%macro EMEMREADLONG_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	memoryEmemReadLongC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+;==============================================================================
+; Write data to native trap memory
+;
+; Assembly calling convention:
+; In:  edx - Data, ecx - Address
+; Out: Nothing
+;==============================================================================
+
+%macro DMEMWRITELONG_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	memoryDmemWriteLongC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+%endif
