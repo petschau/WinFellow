@@ -47,6 +47,9 @@ felist * spr_dma_action_list[8] = {
 	NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
+felist * spr_merge_list[8] = {
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
 
 spr_register_func sprxptl_functions[8] =
 {
@@ -1386,13 +1389,21 @@ void spriteShutdown(void) {
 
 void spriteDecode4Sprite_C(UBY sprnr)
 {
+	//pr_merge_list_item * item;
   ULO sprite_class = sprnr >> 1;
   ULO* chunky_dest = (ULO *) (&sprite[sprnr][0]);
+	//ULO* chunky_dest;
   UBY* word[2] = {
     (UBY *) &sprdat[sprnr][0], 
     (UBY *) &sprdat[sprnr][1]
   };
   ULO planardata;
+
+	//item = (spr_merge_list_item *) malloc(sizeof(spr_merge_list_item));
+	//item->sprx = sprx[sprnr];
+	//spr_merge_list[sprnr] = listAddLast(spr_merge_list[sprnr], listNew(item));
+
+	//chunky_dest = (ULO *) (item->sprite_data);
 
   planardata = *word[0]++;
   chunky_dest[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
@@ -1413,17 +1424,20 @@ void spriteDecode4Sprite_C(UBY sprnr)
 
 void spriteDecode16Sprite_C(ULO sprnr)
 {
+	//spr_merge_list_item * item;
   ULO *chunky_dest = (ULO *) (&sprite[sprnr][0]);
+	//ULO *chunky_dest;
   UBY *word[4] = {(UBY*) &sprdat[sprnr & 0xfe][0], (UBY*) &sprdat[sprnr & 0xfe][1],
                   (UBY*) &sprdat[sprnr][0], (UBY*)&sprdat[sprnr][1]};
   ULO planardata;
   UBY bpl;
 
-  if (sprnr == 7)
-  {
-    sprnr = sprnr;
-  }
+	//item = (spr_merge_list_item *) malloc(sizeof(spr_merge_list_item));
+	//item->sprx = sprx[sprnr];
+	//spr_merge_list[sprnr] = listAddLast(spr_merge_list[sprnr], listNew(item));
 
+	//chunky_dest = (ULO *) (item->sprite_data);
+  
   planardata = *word[0]++;
   chunky_dest[2] = sprite_deco16[0][planardata].i32[0];
   chunky_dest[3] = sprite_deco16[0][planardata].i32[1];
@@ -1441,61 +1455,6 @@ void spriteDecode16Sprite_C(ULO sprnr)
     planardata = *word[bpl];
     chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
     chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
-  }
-}
-
-void spritesDecode_C_CopperOnly(void) {
-  UBY sprnr;
-
-  sprites_online = FALSE;
-  sprnr = 0;
-
-  while (sprnr < 8) 
-  {
-    sprite_online[sprnr] = FALSE;
-    sprite_16col[sprnr] = FALSE;
-    
-    switch(sprite_state[sprnr]) 
-    {
-    case 0: // state 0, inactive
-
-      break;
-
-    case 1: // state 1, handling data from SPRxDATA and SPRxDATB
-
-      if ((sprnr & 0x01) == 0)
-      {
-        // even sprite 
-        if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
-        {
-          // even sprite not attached to next odd sprite -> 3 color decode 
-          spriteDecode4Sprite_C(sprnr);
-          sprites_online = TRUE;
-          sprite_online[sprnr] = TRUE;
-        }
-      }
-      else
-      {
-        // odd sprite 
-        if (spratt[sprnr] == 0) 
-        {
-          // odd sprite not attached to previous even sprite -> 3 color decode 
-          spriteDecode4Sprite_C(sprnr);
-          sprites_online = TRUE;
-          sprite_online[sprnr] = TRUE;
-        }
-        else
-        {
-          // odd sprite is attached to even sprite 
-          spriteDecode16Sprite_C(sprnr);
-          sprites_online = TRUE;
-          sprite_online[sprnr] = TRUE;
-          sprite_16col[sprnr] = TRUE;
-        }
-      }
-      break;
-    }
-    sprnr++;
   }
 }
 
@@ -1981,4 +1940,571 @@ void spriteSetDebugging()
     output_sprite_log = TRUE;
     output_action_sprite_log = TRUE;
   }
+}
+
+// current sprite is in front of playfield 2, and thus also in front of playfield 1
+static void spriteMergeDualLoresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr)
+{
+	ULO i;
+	UBY *line2; 
+	UBY *sprite_data; 
+	UBY line2_buildup[4];
+
+	line2 = ((current_graph_line->line2) + sprx[sprnr] + 1);
+	sprite_data = sprite[sprnr];
+
+	for (i = 0; i < 4; i++)
+	{
+		*((ULO *) line2_buildup) = *((ULO *) line2);
+		if ((UBY) (*((ULO *) sprite_data)) != 0)
+		{
+			//cl = dl; 
+			line2_buildup[0] = (UBY) *((ULO *) sprite_data);
+		}
+
+		// mdlpf21:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+		{
+			//ch = dh; 
+			line2_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+		}
+
+		// mdlph22:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+		{
+			//cl = dl; 
+			line2_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+		}
+
+		// mdlpf23:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+		{
+			//ch = dh; 
+			line2_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+		}
+
+		// mdlpf24:
+		*((ULO *) line2) = *((ULO *) line2_buildup);
+		sprite_data += 4;
+		line2 += 4;
+	}
+}
+
+// current sprite is behind of playfield 2, but in front of playfield 1
+static void spriteMergeDualLoresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr)
+{
+	ULO i;
+	UBY *line1; 
+	UBY *sprite_data; 
+	UBY line_buildup[4];
+
+	line1 = ((current_graph_line->line1) + sprx[sprnr] + 1);
+	sprite_data = sprite[sprnr];
+
+	for (i = 0; i < 4; i++)
+	{
+		*((ULO *) line_buildup) = *((ULO *) line1);
+		if ((UBY) (*((ULO *) sprite_data)) != 0)
+		{
+			//cl = dl; 
+			line_buildup[0] = (UBY) *((ULO *) sprite_data);
+		}
+
+		// mdlpf21:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+		{
+			//ch = dh; 
+			line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+		}
+
+		// mdlph22:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+		{
+			//cl = dl; 
+			line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+		}
+
+		// mdlpf23:
+		if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+		{
+			//ch = dh; 
+			line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+		}
+
+		// mdlpf24:
+		*((ULO *) line1) = *((ULO *) line_buildup);
+		sprite_data += 4;
+		line1 += 4;
+	}
+}
+
+// current sprite is behind of playfield 2, and also behind playfield 1
+static void spriteMergeDualLoresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr)
+{
+	ULO i;
+	UBY *line1;
+	UBY *sprite_data; 
+	UBY line_buildup[4];
+
+	line1 = ((current_graph_line->line1) + sprx[sprnr] + 1);
+	sprite_data = sprite[sprnr];
+
+	for (i = 0; i < 4; i++)
+	{
+		*((ULO *) line_buildup) = *((ULO *) line1);
+		if ((UBY) (*((ULO *) line1)) == 0)
+		{
+			if ((UBY) (*((ULO *) sprite_data)) != 0)
+			{
+				line_buildup[0] = (UBY) *((ULO *) sprite_data);
+			}
+		}
+
+		// mdlb1:
+		if ((UBY) ((*((ULO *) line1)) >> 8) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+			{
+				//ch = dh; 
+				line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+			}
+		}
+
+		// mdlb2:
+		if ((UBY) ((*((ULO *) line1)) >> 16) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+			{
+				//cl = dl; 
+				line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+			}
+		}
+
+		// mdlb3:
+		if ((UBY) ((*((ULO *) line1)) >> 24) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+			{
+				//ch = dh; 
+				line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+			}
+		}
+
+		// mdlb4:
+		*((ULO *) line1) = *((ULO *) line_buildup);
+		sprite_data += 4;
+		line1 += 4;
+	}
+}
+
+// current sprite is in behind of playfield 2, and thus also behind playfield 1
+static void spriteMergeDualLoresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr)
+{
+	ULO i;
+	UBY *line2;
+	UBY *sprite_data; 
+	UBY line_buildup[4];
+
+	line2 = ((current_graph_line->line2) + sprx[sprnr] + 1);
+	sprite_data = sprite[sprnr];
+
+	for (i = 0; i < 4; i++)
+	{
+		*((ULO *) line_buildup) = *((ULO *) line2);
+		if ((UBY) (*((ULO *) line2)) == 0)
+		{
+			if ((UBY) (*((ULO *) sprite_data)) != 0)
+			{
+				line_buildup[0] = (UBY) *((ULO *) sprite_data);
+			}
+		}
+
+		// mdlpfb1:
+		if ((UBY) ((*((ULO *) line2)) >> 8) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+			{
+				//ch = dh; 
+				line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+			}
+		}
+
+		// mdlpfb2:
+		if ((UBY) ((*((ULO *) line2)) >> 16) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+			{
+				//cl = dl; 
+				line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+			}
+		}
+
+		// mdlpfb3:
+		if ((UBY) ((*((ULO *) line2)) >> 24) == 0)
+		{
+			if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+			{
+				//ch = dh; 
+				line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+			}
+		}
+
+		// mdlpfb4:
+		*((ULO *) line2) = *((ULO *) line_buildup);
+		sprite_data += 4;
+		line2 += 4;
+	}
+}
+
+static void spriteMergeDualPlayfield(graph_line* current_graph_line)
+{
+	ULO sprnr;
+	UBY *line1;
+	UBY *sprite_data;
+	UBY line1_buildup[4];
+
+	for (sprnr = 0; sprnr < 8; sprnr++)
+	{
+		if (sprite_online[sprnr] == TRUE)
+		{
+			// there is sprite data waiting within this line
+			if (sprx[sprnr] <= graph_DIW_last_visible)
+			{
+				// set destination and source 
+				line1 = ((current_graph_line->line1) + sprx[sprnr]);
+				sprite_data = sprite[sprnr];
+
+				// determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
+				if ((bplcon2 & 0x40) == 0x40)
+				{
+					// playfield 2 is in front of playfield 1
+					if ((bplcon2 & 0x38) > sprnr*4)
+					{
+						// current sprite is in front of playfield 2, and thus also in front of playfield 1
+						spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
+					}
+					else
+					{
+						// current sprite is behind of playfield 2
+						if (((bplcon2 & 0x7) << 1) > sprnr)
+						{
+							// current sprite is behind of playfield 2, but in front of playfield 1
+							spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
+						}
+						else
+						{
+							// current sprite is behind of playfield 2, and also behind playfield 1
+							spriteMergeDualLoresPF1loopbehind2(current_graph_line, sprnr);
+						}
+					}
+				} 
+				else
+				{
+					// playfield 1 is in front of playfield 2
+					if (((bplcon2 & 0x7) << 1) > sprnr)
+					{
+						// current sprite is in front of playfield 1, and thus also in front of playfield 2
+						spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
+					}
+					else
+					{
+						if ((bplcon2 & 0x38) > sprnr*4)
+						{
+							// current sprite is in front of playfield 2, but behind playfield 1 (in between)
+							spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
+						}
+						else
+						{
+							// current sprite is in behind of playfield 2, and thus also behind playfield 1
+							spriteMergeDualLoresPF2loopbehind2(current_graph_line, sprnr);
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+static void spriteMergeHires(graph_line* current_graph_line)
+{
+	ULO sprnr;
+	UBY *line1;
+	UBY *sprite_data;
+	UBY line1_buildup[4];
+
+	for (sprnr = 0; sprnr < 8; sprnr++)
+	{
+		if (sprite_online[sprnr] == TRUE)
+		{
+			// there is sprite data waiting within this line
+			if (sprx[sprnr] <= graph_DIW_last_visible)
+			{
+				// set destination and source 
+				line1 = ((current_graph_line->line1) + 2*(sprx[sprnr] + 1));
+				sprite_data = sprite[sprnr];
+
+				// determine whetever this sprite is in front or behind the playfield
+				if ((bplcon2 & 0x38) > (4 * sprnr))
+				{
+					// sprite must be drawn in back of playfield
+
+					// merge sprite data within the line
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+					
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+				}
+				else
+				{
+					// merge sprite data within the line
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+					
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+				}
+			}
+		}
+	}
+}
+
+static void spriteMergeHires320(graph_line* current_graph_line)
+{
+	spriteMergeLores(current_graph_line);
+}
+
+static void spriteMergeLores(graph_line* current_graph_line)
+{
+	ULO sprnr;
+	UBY *line1;
+	UBY *sprite_data;
+	UBY line1_buildup[4];
+
+	for (sprnr = 0; sprnr < 8; sprnr++)
+	{
+		if (sprite_online[sprnr] == TRUE)
+		{
+			// there is sprite data waiting within this line
+			if (sprx[sprnr] <= graph_DIW_last_visible)
+			{
+				// set destination and source 
+				line1 = ((current_graph_line->line1) + sprx[sprnr] + 1);
+				sprite_data = sprite[sprnr];
+
+				// determine whetever this sprite is in front or behind the playfield
+				if ((bplcon2 & 0x38) > (4 * sprnr))
+				{
+					// sprite must be drawn in back of playfield
+
+					// merge sprite data within the line
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+				}
+				else
+				{
+					// merge sprite data within the line
+					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+
+					line1 += 4;
+					sprite_data += 4;
+					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
+					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
+					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
+					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
+					*((ULO *) line1) = *((ULO *) line1_buildup);
+				}
+			}
+		}
+	}
+}
+
+void spritesMerge_C(graph_line* current_graph_line)
+{
+	sprites_online = 0;
+	
+	if ((bplcon0 & 0x800) == 0x800)
+	{
+		// HAM mode bit is set
+		spriteMergeHAM(current_graph_line);
+		return;
+	}
+
+	if ((bplcon0 & 0x400) == 0x400)
+	{
+		// dual playfield bit is set
+		spriteMergeDualPlayfield(current_graph_line);
+		return;
+	}
+
+	if ((bplcon0 & 0x8000) == 0x8000)
+	{
+		// hires bit is set
+		if (draw_hscale == 2)
+		{
+			// scaling set to two times			
+			spriteMergeHires(current_graph_line);
+		}
+		else
+		{
+			// no scaling
+			spriteMergeHires320(current_graph_line);
+		}
+	}
+	else
+	{
+		// lores 
+		spriteMergeLores(current_graph_line);
+	}
 }

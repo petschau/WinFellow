@@ -17,6 +17,12 @@ typedef struct {
   ULO address;
 } spr_action_list_item;
 
+typedef struct {
+	UBY sprite_data[16];
+	ULO sprx;
+} spr_merge_list_item;
+
+
 /* Assembly declarations */
 
 #define wspr0pth ASMRENAME(wspr0pth)
@@ -86,6 +92,13 @@ int spriteCompareRasterX(spr_action_list_item *item_from_list, spr_action_list_i
 void spriteDMAActionListClear(ULO sprnr);
 void spriteActionListsClear();
 void spriteActionListClear(ULO sprnr);
+
+void spriteMergeDualPlayfield(graph_line* current_graph_line);
+void spriteMergeHires(graph_line* current_graph_line);
+void spriteMergeHires320(graph_line* current_graph_line);
+void spriteMergeLores(graph_line* current_graph_line);
+
+
 
 extern void spriteSetDelay(ULO delay);
 extern void spriteEndOfLine(void);

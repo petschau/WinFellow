@@ -86,7 +86,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/sprite.inc"
 %include "func/kbd.inc"
 %include "mac/fmem.mac"
 %include "mac/kbd.mac"
@@ -94,7 +93,6 @@ _busstart_:	 ; Used to check code alignment
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
 %include "mac/sound.mac"
-%include "mac/sprite.mac"
 
 CFUNCEXTERN timerEndOfFrame
 CFUNCEXTERN blitFinishBlit
@@ -102,6 +100,7 @@ CFUNCEXTERN busScanEventsLevel3
 CFUNCEXTERN busScanEventsLevel4
 CFUNCEXTERN busScanEventsLevel6
 CFUNCEXTERN graphEndOfFrame
+CFUNCEXTERN spriteEndOfFrame
 
 CDATAEXTERN graph_raster_x;
 CDATAEXTERN graph_raster_y;
@@ -365,8 +364,11 @@ _endOfFrame_:	push	edx
 		;==============================================================
 		; Sprite end of frame updates
 		;==============================================================
-
-		SPRITE_EOF_CWRAP
+	
+		pushad
+		call spriteEndOfFrame
+		popad
+		;SPRITE_EOF_CWRAP
 
 
 		;==============================================================
