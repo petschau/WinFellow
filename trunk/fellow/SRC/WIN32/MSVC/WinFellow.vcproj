@@ -17,7 +17,8 @@
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="FALSE"
+			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
@@ -28,8 +29,8 @@
 				FavorSizeOrSpeed="1"
 				OptimizeForProcessor="2"
 				OptimizeForWindowsApplication="TRUE"
-				AdditionalIncludeDirectories="win32/include,../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
@@ -44,10 +45,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
@@ -92,8 +95,8 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,.,../include/msvc"
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX3"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Dx3Debug/WinFellow.pch"
 				AssemblerOutput="2"
@@ -109,10 +112,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib dsound.lib ddraw.lib dinput.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib dsound.lib ddraw.lib dinput.lib CAPSImg.lib"
 				OutputFile=".\Dx3Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Dx3Debug/WinFellow.pdb"
 				GenerateMapFile="TRUE"
@@ -161,8 +166,8 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="win32/include,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,.,../include/msvc"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX3"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="TRUE"
@@ -177,10 +182,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib ddraw.lib dinput.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib ddraw.lib dinput.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Dx3Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Dx3Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
@@ -225,10 +232,11 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC"
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
+				BufferSecurityCheck="TRUE"
 				PrecompiledHeaderFile=".\Debug/WinFellow.pch"
 				AssemblerOutput="2"
 				AssemblerListingLocation=".\Debug/"
@@ -243,10 +251,12 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib shlwapi.lib"
+				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				DelayLoadDLLs="CAPSImg.dll"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/WinFellow.pdb"
 				GenerateMapFile="TRUE"
@@ -1947,6 +1957,9 @@
 			Name="Win32 C Header Files"
 			Filter="">
 			<File
+				RelativePath="..\Caps\include\caps_win32.h">
+			</File>
+			<File
 				RelativePath="..\Include\commoncontrol_wrap.h">
 			</File>
 			<File
@@ -2009,6 +2022,33 @@
 		<Filter
 			Name="Win32 C Files"
 			Filter="">
+			<File
+				RelativePath="..\Caps\C\caps_win32.c">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
 			<File
 				RelativePath="..\C\commoncontrol_wrap.c">
 				<FileConfiguration
@@ -2895,9 +2935,6 @@
 				<File
 					RelativePath="..\..\uae\include\uae2fell.h">
 				</File>
-				<File
-					RelativePath="..\..\uae\include\uaefsys.h">
-				</File>
 			</Filter>
 			<Filter
 				Name="UAE Filesystem Assembly Files"
@@ -3629,80 +3666,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\infblock.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\zlib\C\infcodes.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\zlib\C\inffast.c">
 					<FileConfiguration
 						Name="Release|Win32">
@@ -3778,43 +3741,6 @@
 				</File>
 				<File
 					RelativePath="..\..\zlib\C\inftrees.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\zlib\C\infutil.c">
 					<FileConfiguration
 						Name="Release|Win32">
 						<Tool
@@ -3966,13 +3892,10 @@
 				Name="zlib Header Files"
 				Filter=".h">
 				<File
+					RelativePath="..\..\zlib\include\crc32.h">
+				</File>
+				<File
 					RelativePath="..\..\zlib\include\deflate.h">
-				</File>
-				<File
-					RelativePath="..\..\zlib\include\infblock.h">
-				</File>
-				<File
-					RelativePath="..\..\zlib\include\infcodes.h">
 				</File>
 				<File
 					RelativePath="..\..\zlib\include\inffast.h">
@@ -3981,10 +3904,10 @@
 					RelativePath="..\..\zlib\include\inffixed.h">
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inftrees.h">
+					RelativePath="..\..\zlib\include\inflate.h">
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\infutil.h">
+					RelativePath="..\..\zlib\include\inftrees.h">
 				</File>
 				<File
 					RelativePath="..\..\zlib\include\trees.h">
@@ -4113,6 +4036,22 @@
 			</File>
 			<File
 				RelativePath="winfellow.ico">
+			</File>
+		</Filter>
+		<Filter
+			Name="CAPS Header Files"
+			Filter="">
+			<File
+				RelativePath="..\Caps\include\CapsAPI.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\CapsLib.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\Comlib.h">
+			</File>
+			<File
+				RelativePath="..\Caps\include\Comtype.h">
 			</File>
 		</Filter>
 	</Files>
