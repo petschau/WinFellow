@@ -166,13 +166,13 @@ void iniSetDefaults(ini *initdata) {
   /* Default ini-file description                                             */
   /*==========================================================================*/
 
-  iniSetDescription(initdata, "WinFellow Amiga Emulator v0.4.2 build 1 ini-file");
+  iniSetDescription(initdata, "winfellow amiga emulator v0.4.3 build 1 ini-file");
   
   /*==========================================================================*/
   /* Default configuration filename                                           */
   /*==========================================================================*/ 
 
-  iniSetCurrentConfigurationFilename(initdata, "default.wfc");
+  iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
   iniSetLastUsedCfgDir(initdata, "");
 
   /*==========================================================================*/
@@ -252,6 +252,7 @@ BOOLE iniSaveToFilename(ini *initdata, STR *filename) {
 BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
   STR *option, *value;
   BOOLE result;
+  struct stat bla; 
 
   value = strchr(initoptionstr, '=');
   result = (value != NULL);
@@ -263,9 +264,15 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 
     if (stricmp(option, "last_used_configuration") == 0) {
 		if (strcmp(value, "") == 0) {
-			iniSetCurrentConfigurationFilename(initdata, "default.wfc");
+			iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
+			_mkdir("./configurations");
 		} else {
-			iniSetCurrentConfigurationFilename(initdata, value);
+			if (stat(value,&bla) != 0) {
+				iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
+				_mkdir("./configurations");
+			} else {
+				iniSetCurrentConfigurationFilename(initdata, value);
+			}
 		}
     }
 	else if (stricmp(option, "last_used_cfg_dir") == 0) {
