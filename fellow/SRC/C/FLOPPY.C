@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.13 2004-06-06 13:26:32 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.14 2004-06-06 13:56:00 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -697,7 +697,7 @@ void floppyImageIPFLoad(ULO drive) {
             floppy[drive].trackinfo[i].mfm_data,
             &floppy[drive].trackinfo[i].mfm_length, 
             &maxtracklength,
-            floppy[drive].tracktiming,
+            floppy[drive].timebuf,
             &floppy[drive].flakey);
         LastTrackMFMData += maxtracklength;
         floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
@@ -820,7 +820,7 @@ void floppyDriveTableInit(void) {
     floppy[i].mfm_data = (UBY *) malloc(FLOPPY_TRACKS*25000);
 #ifdef FELLOW_SUPPORT_CAPS
     floppy[i].flakey = FALSE;
-    floppy[i].tracktiming = (ULO *) malloc(FLOPPY_TRACKS*25000);
+    floppy[i].timebuf = (ULO *) malloc(FLOPPY_TRACKS*25000);
 #endif
   }
 }
@@ -853,11 +853,11 @@ void floppyMfmDataFree(void) {
 }
 
 #ifdef FELLOW_SUPPORT_CAPS
-void floppyTrackTimingDataFree(void) {
+void floppyTimeBufDataFree(void) {
   ULO i;
   for (i = 0; i < 4; i++)
-    if (floppy[i].tracktiming != NULL)
-      free(floppy[i].tracktiming);
+    if (floppy[i].timebuf != NULL)
+      free(floppy[i].timebuf);
 }
 #endif
 
@@ -1121,7 +1121,7 @@ void floppyShutdown(void) {
         floppyImageRemove(i);
     floppyMfmDataFree();
 #ifdef FELLOW_SUPPORT_CAPS
-    floppyTrackTimingDataFree();
+    floppyTimeBufDataFree();
     fellowAddLog("Unloading CAPS Image library...\n");
     capsShutdown();
 #endif

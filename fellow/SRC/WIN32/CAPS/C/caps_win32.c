@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.11 2004-06-06 13:47:22 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.12 2004-06-06 13:56:00 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -219,12 +219,12 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
     return TRUE;
 }
 
-BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *tracktiming, BOOLE *flakey)
+BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *timebuf, BOOLE *flakey)
 {
     ULO i, len, type;
     struct CapsTrackInfo capsTrackInfo;
 
-    *tracktiming = 0;
+    *timebuf = 0;
     CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
     *flakey = (capsTrackInfo.type & CTIT_FLAG_FLAKEY) ? TRUE : FALSE;
     type = capsTrackInfo.type & CTIT_MASK_TYPE;
@@ -255,7 +255,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 #endif
     if (capsTrackInfo.timelen > 0) {
 	for (i = 0; i < capsTrackInfo.timelen; i++)
-	    tracktiming[i] = (ULO) capsTrackInfo.timebuf[i];
+	    timebuf[i] = (ULO) capsTrackInfo.timebuf[i];
     }
 #if TRACECAPS
     fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
