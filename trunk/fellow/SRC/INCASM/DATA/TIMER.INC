@@ -5,7 +5,4 @@
 ; Includes data declared in the C timer module
 ;==============================================================================
 
-CDATAEXTERN tick
-
-
 %endif

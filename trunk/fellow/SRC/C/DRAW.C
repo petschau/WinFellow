@@ -38,7 +38,6 @@ draw_mode *draw_mode_current;
 /*============================================================================*/
 
 BOOLE draw_fps_counter_enabled;
-ULO draw_fps_counter_value;
 
 
 /*============================================================================*/
@@ -110,7 +109,6 @@ ULO draw_bottom;
 /*============================================================================*/
 
 BOOLE draw_fps_buffer[5][20];
-ULO draw_fps_time_last;
 
 
 /*============================================================================*/
@@ -620,14 +618,9 @@ static void drawFpsToFramebuffer32(void) {
 
 static void drawFpsCounter(void) {
   if (draw_fps_counter_enabled) {
-    ULO fps;
-    ULO fps_time;
     STR s[16];
 
-    fps_time = timerTimeGet();
-    fps = (fps_time - draw_fps_time_last);
-    draw_fps_time_last = fps_time;
-    sprintf(s, "%d", fps);
+    sprintf(s, "%d", drawStatLast50FramesFps());
     drawFpsText(s);
     switch (draw_mode_current->bits) {
       case 8:
@@ -971,16 +964,103 @@ void drawSetFPSCounterEnabled(BOOLE enabled) {
   draw_fps_counter_enabled = enabled;
 }
 
-void drawSetFPSCounter(ULO value) {
-  draw_fps_counter_value = value;
-}
-
 void drawSetLEDsEnabled(BOOLE enabled) {
   draw_LEDs_enabled = enabled;
 }
 
 void drawSetLED(ULO index, BOOLE state) {
   if (index < DRAW_LED_COUNT) draw_LEDs_state[index] = state;
+}
+
+/*============================================================================*/
+/* Performance statistics interface					      */
+/*============================================================================*/
+
+/* Background, make it possible to make a simple report with key-numbers about*/
+/* the frames per seconds performance. */
+
+/* The statistics measure time in ms for one frame, the last 50 frames, and */
+/* the current session */
+
+/* The statistic getters return 0 if a division by zero is detected. */
+/* The stats are cleared every time emulation is started. */
+
+/*
+   The interface for getting stats are: 
+
+   ULO drawStatLast50FramesFps(void);
+   ULO drawStatLastFrameFps(void);
+   ULO drawStatSessionFps(void);
+*/
+
+/* The fps number drawn in the top right corner of the emulation screen now use
+   drawStatLast50FramesFps()
+*/
+
+/* The stats functions use timerGetTimeMs() in the timer.c module.
+   There is a potential problem, on Win32 this function has a
+   accuracy of around 7 ms. This is very close to the time it takes to emulate
+   a single frame, which means that drawLastFrameFps() can report inaccurate
+   values. */
+
+ULO draw_stat_first_frame_timestamp;
+ULO draw_stat_last_frame_timestamp;
+ULO draw_stat_last_50_timestamp;
+ULO draw_stat_last_frame_ms;
+ULO draw_stat_last_50_ms;
+ULO draw_stat_frame_count;
+
+/* Clear all statistics data */
+void drawStatClear(void)
+{
+  draw_stat_last_50_ms = 0;
+  draw_stat_last_frame_ms = 0;
+  draw_stat_frame_count = 0;
+}
+
+/* New frame, take timestamp */
+static void drawStatTimestamp(void)
+{
+  ULO timestamp = timerGetTimeMs(); /* Get current time */
+  if (draw_stat_frame_count == 0)
+  {
+    draw_stat_first_frame_timestamp = timerGetTimeMs();
+    draw_stat_last_frame_timestamp = draw_stat_first_frame_timestamp;
+    draw_stat_last_50_timestamp = draw_stat_first_frame_timestamp;
+  }
+  else
+  {
+    /* Time for last frame */
+    draw_stat_last_frame_ms = timestamp - draw_stat_last_frame_timestamp;
+    draw_stat_last_frame_timestamp = timestamp;
+
+    /* Update stats for last 50 frames, 1 Amiga 500 PAL second */
+    if ((draw_stat_frame_count % 50) == 0)
+    {
+      draw_stat_last_50_ms = timestamp - draw_stat_last_50_timestamp;
+      draw_stat_last_50_timestamp = timestamp;
+    }
+  }
+  draw_stat_frame_count++;
+}
+
+ULO drawStatLast50FramesFps(void)
+{
+  if (draw_stat_last_50_ms == 0) return 0;
+  return 50000 / (draw_stat_last_50_ms + 14);
+}
+
+ULO drawStatLastFrameFps(void)
+{
+  if (draw_stat_last_frame_ms == 0) return 0;
+  return 1000 / draw_stat_last_frame_ms;
+}
+
+ULO drawStatSessionFps(void)
+{
+  ULO session_time = draw_stat_last_frame_timestamp - draw_stat_first_frame_timestamp;
+  if (session_time == 0) return 0;
+  return (draw_frame_count*20) / (session_time + 14);
 }
 
 
@@ -1039,6 +1119,7 @@ void drawEndOfFrameC(void) {
   drawLEDs();
   drawFpsCounter();
   drawViewScroll();
+  drawStatTimestamp();
   drawBufferFlip();
 }
 
@@ -1053,7 +1134,7 @@ void drawEmulationStart(void) {
   gfxDrvSetMode(draw_mode_current, drawGetVerticalScale());
   /* Use 1 buffer when deinterlacing, else 3 */
   gfxDrvEmulationStart((drawGetDeinterlace()) ? 1 : 3);
-  draw_fps_time_last = timerTimeGet();
+  drawStatClear();
 }
 
 BOOLE drawEmulationStartPost(void) {
@@ -1103,7 +1184,6 @@ BOOLE drawStartup(void) {
   drawSetScanlines(FALSE);
   drawSetFrameskipRatio(1);
   drawSetFPSCounterEnabled(FALSE);
-  drawSetFPSCounter(0);
   drawSetLEDsEnabled(FALSE);
   for (i = 0; i < DRAW_LED_COUNT; i++) drawSetLED(i, FALSE);
   return TRUE;
