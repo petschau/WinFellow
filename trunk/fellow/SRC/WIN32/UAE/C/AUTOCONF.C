@@ -250,7 +250,7 @@ int get_new_device(char **devname, uaecptr *devname_amiga)
 {
     char buffer[80];
 
-    sprintf(buffer,"UAE%d", current_deviceno);
+    sprintf(buffer,"DH%d", current_deviceno);
 
     *devname_amiga = ds(*devname = my_strdup(buffer));
     return current_deviceno++;

@@ -59,9 +59,10 @@ int fsdb_name_invalid (const char *n)
     char a = n[0];
     char b = (a == '\0' ? a : n[1]);
     char c = (b == '\0' ? b : n[2]);
-	char d = (c == '\0' ? c : n[3]);
+    char d = (c == '\0' ? c : n[3]);
+    char e = (d == '\0' ? d : n[4]);
 
-	if (a >= 'a' && a <= 'z')
+    if (a >= 'a' && a <= 'z')
         a -= 32;
     if (b >= 'a' && b <= 'z')
         b -= 32;
@@ -69,32 +70,36 @@ int fsdb_name_invalid (const char *n)
         c -= 32;
 
     /* reserved dos devices */
-    if ((a == 'A' && b == 'U' && c == 'X')                                  /* AUX  */
-        || (a == 'C' && b == 'O' && c == 'N')                               /* CON  */
-        || (a == 'P' && b == 'R' && c == 'N')                               /* PRN  */
-        || (a == 'N' && b == 'U' && c == 'L')                               /* NUL  */
-        || (a == 'L' && b == 'P' && c == 'T'  && (d >= '0' && d <= '9'))    /* LPT# */
-        || (a == 'C' && b == 'O' && c == 'M'  && (d >= '0' && d <= '9')))   /* COM# */
-	return 1;
+    if (d == '\0') {
+        if ((a == 'A' && b == 'U' && c == 'X')                               /* AUX  */
+         || (a == 'C' && b == 'O' && c == 'N')                               /* CON  */
+         || (a == 'P' && b == 'R' && c == 'N')                               /* PRN  */
+         || (a == 'N' && b == 'U' && c == 'L'))                              /* NUL  */
+            return 1;
+    } else if (e == '\0') {
+        if ((a == 'L' && b == 'P' && c == 'T'  && (d >= '0' && d <= '9'))    /* LPT# */
+         || (a == 'C' && b == 'O' && c == 'M'  && (d >= '0' && d <= '9')))   /* COM# */
+            return 1;
+    }
 
     /* spaces and periods at the beginning or the end are a no-no */
     if(n[0] == '.' || n[0] == ' ')
-	    return 1;
+        return 1;
 
     i = strlen(n) - 1;
     if(n[i] == '.' || n[i] == ' ')
-	    return 1;
+        return 1;
 
     /* these characters are *never* allowed */
     for (i=0; i < NUM_EVILCHARS; i++) {
         if (strchr (n, evilchars[i]) != 0)
             return 1;
-	}
+    }
 
     /* the reserved fsdb filename */
     if (strcmp (n, FSDB_FILE) == 0)
-	    return 1;
-	return 0; /* the filename passed all checks, now it should be ok */
+        return 1;
+    return 0; /* the filename passed all checks, now it should be ok */
 }
 
 uae_u32 filesys_parse_mask(uae_u32 mask)
