@@ -9,6 +9,9 @@
 /*============================================================================*/
 
 /* ---------------- CHANGE LOG ----------------- 
+Friday, January 05, 2001: nova
+- removed initialization of port 0 to GP_MOUSE0 in gameportEmulationStart
+
 Tuesday, September 19, 2000
 - added autofire support
 */
@@ -270,7 +273,6 @@ void gameportHardReset(void) {
 
 void gameportEmulationStart(void) {
   gameportIOHandlersInstall();
-  gameport_input[0] = GP_MOUSE0;
   fellowAddLog("gameportEmulationStart()\n");
   mouseDrvEmulationStart();
   joyDrvEmulationStart();

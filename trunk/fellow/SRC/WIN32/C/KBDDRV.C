@@ -11,6 +11,10 @@
 */
 
 /* ---------------- CHANGE LOG ----------------- 
+Friday, January 05, 2001: nova
+- fixed CaptureKey
+- added kbdDrvKeyPrettyString used to display a more pretty name of a key
+
 Tuesday, September 19, 2000: nova
 - added autofire support
 
@@ -161,7 +165,115 @@ STR *kbd_drv_pc_symbol_to_string[106] = {
   "RIGHT",
   "NUMPAD_0",
   "NUMPAD_DOT"};
-    
+
+STR *symbol_pretty_name[106] = {
+  "none",
+  "Escape",
+  "F1",
+  "F2",
+  "F3",
+  "F4",
+  "F5",
+  "F6",
+  "F7",
+  "F8",
+  "F9",
+  "F10",
+  "F11",
+  "F12",
+  "Print screen",
+  "Scroll lock",
+  "Pause",
+  "Grave",
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "0",
+  "-",
+  "=",
+  "Backspace",
+  "Insert",
+  "Home",
+  "Page up",
+  "Num lock",
+  "/ (numpad)",
+  "* (numpad)",
+  "- (numpad)",
+  "Tab",
+  "Q",
+  "W",
+  "E",
+  "R",
+  "T",
+  "Y",
+  "U",
+  "I",
+  "O",
+  "P",
+  "[",
+  "]",
+  "Return",
+  "Delete",
+  "End",
+  "Page down",
+  "7 (numpad)",
+  "8 (numpad)",
+  "9 (numpad)",
+  "+ (numpad)",
+  "Caps lock",
+  "A",
+  "S",
+  "D",
+  "F",
+  "G",
+  "H",
+  "J",
+  "K",
+  "L",
+  ";",
+  "'",
+  "\\,
+  "4 (numpad)",
+  "5 (numpad)",
+  "6 (numpad)",
+  "Left shift",
+  "<",
+  "Z",
+  "X",
+  "C",
+  "V",
+  "B",
+  "N",
+  "M",
+  ",",
+  ".",
+  "/",
+  "Right shift",
+  "Arrow up",
+  "1 (numpad)",
+  "2 (numpad)",
+  "3 (numpad)",
+  "Enter (numpad)",
+  "Left ctrl",
+  "Left win",
+  "Left alt",
+  " ",
+  "Right alt",
+  "Right win",
+  "Right menu",
+  "Right ctrl",
+  "Arrow left",
+  "Arrow down",
+  "Arrow right",
+  "0 (numpad)",
+  ". (numpad)"};
+
     
 /*===========================================================================*/
 /* Map windows virtual key to intermediate key symbol                        */
@@ -736,8 +848,15 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
   
   for (;;) {
 	
-	if (kbd_drv_capture)
-	  break;
+	if (kbd_drv_capture) {
+
+#ifdef _DEBUG
+		fellowAddLog( "Key captured: %s\n", kbdDrvKeyString( symbol_key ));
+#endif
+
+		kbd_drv_captured_key = symbol_key;
+		return TRUE;
+	}
 	
 	if( released( PCK_PAGE_DOWN ))
 	{
@@ -829,38 +948,38 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 /*===========================================================================*/
     
 void kbdDrvKeypress(ULO keycode, BOOL pressed) {
-  kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
-  BOOLE keycode_pressed = pressed;
-  BOOLE keycode_was_pressed = prevkeys[keycode];
-  
-  /* DEBUG info, not needed now
-  char szMsg[255];
-  sprintf( szMsg, "Keypress %s %s\n"
-		, kbdDrvKeyString( symbolic_key )
-		, ( pressed ? "pressed" : "released" )
-		);
-		fellowAddLog( szMsg );
-  */
-  
-  keys[keycode] = pressed;
-  
-  if ((!keycode_pressed) && keycode_was_pressed) {
-	// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-	if (!kbdDrvEventChecker(symbolic_key))
-	{
-	  UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-	  kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
+	kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
+	BOOLE keycode_pressed = pressed;
+	BOOLE keycode_was_pressed = prevkeys[keycode];
+
+	/* DEBUG info, not needed now
+	char szMsg[255];
+	sprintf( szMsg, "Keypress %s %s\n"
+	, kbdDrvKeyString( symbolic_key )
+	, ( pressed ? "pressed" : "released" )
+	);
+	fellowAddLog( szMsg );
+	*/
+
+	keys[keycode] = pressed;
+
+	if ((!keycode_pressed) && keycode_was_pressed) {
+		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+		if (!kbdDrvEventChecker(symbolic_key))
+		{
+			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+			kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
+		}
 	}
-  }
-  else if (keycode_pressed && !keycode_was_pressed) {
-	// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-	if (!kbdDrvEventChecker(symbolic_key))
-	{
-	  UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-	  kbdKeyAdd(a_code);
+	else if (keycode_pressed && !keycode_was_pressed) {
+		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+		if (!kbdDrvEventChecker(symbolic_key))
+		{
+			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+			kbdKeyAdd(a_code);
+		}
 	}
-  }
-  prevkeys[keycode] = pressed;
+	prevkeys[keycode] = pressed;
 }
 
 
@@ -896,13 +1015,13 @@ void kbdDrvKeypressHandler(void)
   while (res == DIERR_INPUTLOST);
   
   if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
-	kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
+		kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
   else {
 	
-	ULO i = 0;
-	
-	for (i = 0; i < itemcount; i++)
-	  kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+		ULO i = 0;
+		
+		for (i = 0; i < itemcount; i++)
+			kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
   }
 }    
     
@@ -917,7 +1036,11 @@ ULO kbdDrvCaptureKey(void) {
   kbd_drv_capture = TRUE;
   kbd_drv_captured_key = PCK_NONE;
   kbdDrvEmulationStart();
-  while (kbd_drv_captured_key == PCK_NONE);  /* Busy loop.... :-( */
+	kbdDrvStateHasChanged( TRUE );
+  while (kbd_drv_captured_key == PCK_NONE) {
+		kbdDrvKeypressHandler();  /* Busy loop.... :-( */
+		Sleep( 200 );							/* just not to waste 100% cpu % */
+	}
   kbdDrvEmulationStop();
   kbd_drv_capture = FALSE;
   return kbd_drv_captured_key;
@@ -934,16 +1057,21 @@ STR *kbdDrvKeyString(ULO symbolickey) {
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
+STR *kbdDrvKeyPrettyString(ULO symbolickey) {
+  if (symbolickey >= 106)
+    symbolickey = PCK_NONE;
+  return symbol_pretty_name[symbolickey];
+}
+
 STR *DikKeyString(int dikkey)
 {
   int j;
 
-  for( j = 0; j < PCK_LAST_KEY; j++ )
-  {
-	if( dikkey == symbol_to_DIK_kbddrv[j] )
-	  return kbdDrvKeyString(j);
-  }
-  return "UNKNOWN";
+	for( j = 0; j < PCK_LAST_KEY; j++ )	{
+		if( dikkey == symbol_to_DIK_kbddrv[j] )
+			return kbdDrvKeyString(j);
+	}
+	return "UNKNOWN";
 }
 
 
@@ -1084,7 +1212,6 @@ void kbdDrvEmulationStart(void) {
 void kbdDrvEmulationStop(void) {
   kbdDrvDInputRelease();
 }
-
 
 /*===========================================================================*/
 /* Emulation Startup                                                         */
@@ -1267,25 +1394,21 @@ void kbdDrvStartup(void) {
   prsReadFile( "mapping.key", kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 
   for (port = 0; port < 2; port++)
-    for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++)
-	{
+    for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
+
+			kbd_drv_joykey[port][setting] = kbddrv_DIK_to_symbol[kbd_drv_joykey[port][setting]];
+
 #ifdef _DEBUG
-	  char szMsg[255];
+			fellowAddLog( "keyplacement port %d direction %d: %s\n", port, setting, kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
 #endif
 
-	  kbd_drv_joykey[port][setting] = kbddrv_DIK_to_symbol[kbd_drv_joykey[port][setting]];
-	  
-#ifdef _DEBUG
-	  sprintf( szMsg, "keyplacement port %d direction %d: %s\n", port, setting, kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
-	  fellowAddLog( szMsg );
-#endif
-	}
+			//fellowAddLog( "keyrep: %s\n", kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
+		}
 
   kbd_drv_active = FALSE;
   kbd_drv_lpDI = NULL;
   kbd_drv_lpDID = NULL;
 }
-
 
 /*===========================================================================*/
 /* Emulation Shutdown                                                        */
