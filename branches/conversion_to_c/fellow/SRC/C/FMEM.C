@@ -155,7 +155,7 @@ memoryIOReadFunc memory_iobank_read[256] = {
 	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
 	rdefault_C,rdefault_C,rid_C,rdefault_C,
 	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
-	rcopjmp1,rcopjmp2,rdefault_C,rdefault_C,
+	rcopjmp1_C,rcopjmp2_C,rdefault_C,rdefault_C,
 	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
 	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
 	rdefault_C,rdefault_C,rdefault_C,rdefault_C,
@@ -1641,4 +1641,125 @@ wine1:		and	edx, 7fffh		 ; Slett bits
 		mov	dword [intena], ecx
 		ret
 		*/
+}
+
+ULO fetb_C(ULO address)
+{
+	return (memory_bank_readbyte[(address >> 16)*4](address));
+}
+
+ULO fetw_C(ULO address)
+{
+	if ((address & 0x1) == 0x1)
+	{
+
+	}
+	return (memory_bank_readword[(address >> 16)*4](address));
+}
+
+/*==============================================================================
+; These raises exception 3 when reading an odd address
+; and the CPU is < 020
+;==============================================================================*/
+
+void memoryOddRead(ULO address, ULO pcPtr)
+{
+	if ((address & 0x1) == 0x1)
+	{
+		if (cpu_major < 2)
+		{
+			memory_fault_read = TRUE;
+			memory_fault_address = address;
+			cpuPrepareExceptionC(0x0c, pcPtr);
+		}
+	}
+}
+
+
+/*=============================
+; Common memory access macros
+;=============================*/
+
+UBY memoryFetchB(ULO address)
+{
+	UBY* dataPointer;
+
+	dataPointer = memory_bank_datapointer[(address >> 16)*4];
+	if (dataPointer == NULL)
+	{
+		return (UBY) memory_bank_readbyte[(address >> 16)];
+	}
+	else
+	{
+		return *(dataPointer + address);
+	}
+}
+
+		
+/*
+
+global oddwrite
+oddwrite:	cmp	dword [cpu_major], 2
+		jl	.ex3
+		ret
+.ex3:		mov	dword [memory_fault_read] , 0
+		mov	ecx, dword [memory_wriorgadr]
+		mov	dword [memory_fault_address], ecx
+		mov	ebx, 0ch
+		mov	eax, 44
+		jmp	_cpuPrepareException_
+*/
+
+ULO memoryNAReadByteC(ULO address)
+{
+	memory_mystery_value = !memory_mystery_value;
+	return memory_mystery_value;
+}
+
+ULO memoryDmemReadByteC(ULO address)
+{
+	return memory_dmem[address & 0xffff];
+}
+
+ULO memoryOVLReadByteC(ULO address)
+{
+	return memory_kick[address & 0xffffff];
+}
+
+ULO memoryChipReadByteC(ULO address)
+{
+	return memory_chip[address & 0xffffff];
+}
+
+ULO memoryFastReadByteC(ULO address)
+{
+	return memory_fast[(address & 0xffffff) - 0x200000];
+}
+
+ULO memoryBogoReadByteC(ULO address)
+{
+	return memory_bogo[(address & 0xffffff) - 0xc00000];
+}
+
+ULO memoryMysteryReadByteC(ULO address)
+{
+	memory_mystery_value = !memory_mystery_value;
+	return memory_mystery_value;
+}
+
+ULO memoryIOReadByteC(ULO address)
+{
+	if (((address & 0x1fe) & 0x1) == 0x0)
+	{
+		return ((memory_iobank_read[(address & 0x1fe) << 1](address & 0x1fe)) >> 8) & 0xff;
+	}
+	else
+	{
+		return memory_iobank_read[(address & 0x1fe) << 1](address & 0x1fe) & 0xff;
+	}
+}
+
+ULO memoryKickReadByteC(ULO address)
+{
+	return memory_kick[(address & 0xffffff) - 0xf80000];
 }

@@ -78,19 +78,6 @@
 #define memoryDmemReadLong ASMRENAME(memoryDmemReadLong)
 #define memoryDmemWriteLongASM ASMRENAME(memoryDmemWriteLongASM)
 
-//#define rserdatr ASMRENAME(rserdatr)
-//#define wserdat ASMRENAME(wserdat)
-//#define wserper ASMRENAME(wserper)
-//#define rintenar ASMRENAME(rintenar)
-//#define rintreqr ASMRENAME(rintreqr)
-//#define rdefault ASMRENAME(rdefault)
-
-#define wdmacon ASMRENAME(wdmacon)
-//#define wintena ASMRENAME(wintena)
-//#define wintreq ASMRENAME(wintreq)
-//#define wadcon ASMRENAME(wadcon)
-//#define wdefault ASMRENAME(wdefault)
-
 #define fmemstart ASMRENAME(fmemstart)
 #define cpuRaiseInterrupt ASMRENAME(cpuRaiseInterrupt)
 
@@ -177,6 +164,17 @@ extern void memoryNAWriteLong(ULO data, ULO ea);
 
 /* Mystery (SCSI..?) INTERFACE */
 
+
+ULO memoryNAReadByteC(ULO address);
+ULO memoryDmemReadByteC(ULO address);
+ULO memoryOVLReadByteC(ULO address);
+ULO memoryChipReadByteC(ULO address);
+ULO memoryFastReadByteC(ULO address);
+ULO memoryBogoReadByteC(ULO address);
+ULO memoryMysteryReadByteC(ULO address);
+ULO memoryIOReadByteC(ULO address);
+ULO memoryKickReadByteC(ULO address);
+
 extern ULO memoryMysteryReadByte(ULO ea);
 extern ULO memoryMysteryReadWord(ULO ea);
 extern ULO memoryMysteryReadLong(ULO ea);
@@ -199,7 +197,7 @@ ULO rintreqr_C(ULO address);
 ULO rdefault_C(ULO address);
 void wserdat_C(ULO data, ULO address);
 void wserper_C(ULO data, ULO address);
-extern void wdmacon(ULO data, ULO address);
+void wdmacon(ULO data, ULO address);
 void wintena_C(ULO data, ULO address);
 void wintreq_C(ULO data, ULO address);
 void wadcon_C(ULO data, ULO address);

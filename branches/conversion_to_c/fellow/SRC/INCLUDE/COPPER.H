@@ -3,8 +3,6 @@
 
 /* Rename assembly functions */
 
-#define rcopjmp1 ASMRENAME(rcopjmp1)
-#define rcopjmp2 ASMRENAME(rcopjmp2)
 #define wcopcon ASMRENAME(wcopcon)
 #define wcop1lch ASMRENAME(wcop1lch)
 #define wcop1lcl ASMRENAME(wcop1lcl)
@@ -17,8 +15,6 @@
 
 /* Declare exported functions from assembly */
 
-extern ULO rcopjmp1(ULO address);
-extern ULO rcopjmp2(ULO address);
 extern void wcopcon(ULO data, ULO address);
 extern void wcop1lch(ULO data, ULO address);
 extern void wcop1lcl(ULO data, ULO address);
@@ -28,15 +24,18 @@ extern void wcopjmp1(ULO data, ULO address);
 extern void wcopjmp2(ULO data, ULO address);
 extern void copperUpdateDMA(void);
 
-
+ULO rcopjmp1_C(ULO address);
+ULO rcopjmp2_C(ULO address);
 
 /* C-declarations */
-
 
 extern void copperHardReset(void);
 extern void copperEmulationStart(void);
 extern void copperEmulationStop(void);
 extern void copperStartup(void);
 extern void copperShutdown(void);
+
+void copperLoad1C(void);
+void copperLoad2C(void);
 
 #endif

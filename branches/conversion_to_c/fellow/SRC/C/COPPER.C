@@ -15,7 +15,7 @@
 #include "copper.h"
 #include "sprite.h"
 #include "fmem.h"
-
+#include "bus.h"
 
 /*============================================================================*/
 /* Not exactly correct, but a good average...?                                */
@@ -75,8 +75,8 @@ void copperIOHandlersInstall(void) {
   memorySetIOWriteStub(0x086, wcop2lcl);
   memorySetIOWriteStub(0x088, wcopjmp1);
   memorySetIOWriteStub(0x08a, wcopjmp2);
-  memorySetIOReadStub(0x088, rcopjmp1);
-  memorySetIOReadStub(0x08a, rcopjmp2);
+  memorySetIOReadStub(0x088, rcopjmp1_C);
+  memorySetIOReadStub(0x08a, rcopjmp2_C);
 }
 
 void copperEmulationStart(void) {
@@ -102,4 +102,55 @@ void copperStartup(void) {
 void copperShutdown(void) {
 }
 
+/*----------------------------
+/* Chip read register functions	
+/*---------------------------- */
 
+/*========
+; COPJMP1
+;========
+; $dff088 - word*/
+
+ULO rcopjmp1_C(ULO address)
+{
+	copperLoad1C();
+	return 0;
+}
+
+
+/*========
+; COPJMP2
+;========
+; $dff08A - word*/
+
+ULO rcopjmp2_C(ULO address)
+{
+	copperLoad2C();
+	return 0;
+}
+
+/*-------------------------------------------------------------------------------
+; Initializes the copper from ptr 1
+;-------------------------------------------------------------------------------*/
+
+void copperLoad1C(void)
+{
+	copper_ptr = cop1lc;
+
+	if (copper_dma == TRUE)
+	{
+		copper_next = curcycle + 4;
+		busScanEventsLevel2();
+	}
+}
+	
+void copperLoad2C(void)
+{
+	copper_ptr = cop2lc;
+
+	if (copper_dma == TRUE)
+	{
+		copper_next = curcycle + 4;
+		busScanEventsLevel2();
+	}
+}
