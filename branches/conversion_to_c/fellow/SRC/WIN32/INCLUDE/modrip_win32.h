@@ -18,7 +18,7 @@
 extern BOOLE modripGuiInitialize(void);
 extern void modripGuiSetBusy(void);
 extern void modripGuiUnSetBusy(void);
-extern BOOLE modripGuiSaveRequest(struct ModuleInfo *);
+extern BOOLE modripGuiSaveRequest(struct ModuleInfo *, MemoryAccessFunc);
 extern void modripGuiErrorSave(struct ModuleInfo *);
 extern BOOLE modripGuiRipFloppy(int);
 extern BOOLE modripGuiRipMemory(void);

@@ -4,6 +4,15 @@
 // 
 #include "listtree.h"
 
+typedef enum {
+  FSEL_ROM = 0,
+  FSEL_ADF = 1,
+  FSEL_KEY = 2,
+  FSEL_HDF = 3,
+  FSEL_WFC = 4,
+  FSEL_MOD = 5
+} SelectFileFlags;
+
 typedef struct {
   ULO id;
   ULO width;
