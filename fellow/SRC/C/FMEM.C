@@ -653,12 +653,30 @@ void memoryChipClear(void) {
   memset(memory_chip, 0, memoryGetChipSize());
 }
 
-void memoryChipMap(void) {
+void memoryChipMap(BOOLE overlay) {
   ULO bank, lastbank;
+
+  if (overlay)
+  {
+    for (bank = 0;
+	 bank < 8;
+	 bank++)
+      memoryBankSet(memoryOVLReadByte,
+		    memoryOVLReadWord,
+		    memoryOVLReadLong,
+		    memoryOVLWriteByte,
+		    memoryOVLWriteWord,
+		    memoryOVLWriteLong,
+		    memory_kick,
+		    bank,
+		    0, 
+		    FALSE);
+  }
 
   if (memoryGetChipSize() > 0x200000) lastbank = 0x200000>>16;
   else lastbank = memoryGetChipSize()>>16;
-  for (bank = 0; bank < lastbank; bank++)
+
+  for (bank = (overlay) ? 8 : 0; bank < lastbank; bank++)
     memoryBankSet(memoryChipReadByte,
 		  memoryChipReadWord, 
 		  memoryChipReadLong,
@@ -1388,6 +1406,7 @@ void memoryBankSettingsClear(void) {
 }
 
 void memoryIOHandlersInstall(void) {
+  memorySetIOReadStub(0x018, rserdatr);
   memorySetIOReadStub(0x01c, rintenar);
   memorySetIOReadStub(0x01e, rintreqr);
   memorySetIOWriteStub(0x09a, wintena);
@@ -1398,7 +1417,7 @@ void memoryIOHandlersInstall(void) {
 /*==============*/
 /* Generic init */
 /*==============*/
-
+/*
 void memoryEmulationStartOld(void) {
   memoryBankClearAll();
   memoryIOClear();
@@ -1411,7 +1430,7 @@ void memoryEmulationStartOld(void) {
   memoryKickMap();
   memoryIOHandlersInstall();
 }
-
+*/
 void memoryEmulationStart(void) {
   memoryIOClear();
   memoryIOHandlersInstall();
@@ -1427,7 +1446,7 @@ void memorySoftReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();
@@ -1446,7 +1465,7 @@ void memoryHardReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();
