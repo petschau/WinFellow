@@ -655,6 +655,7 @@ void floppySetDiskImage(ULO drive, STR *diskname) {
   if (strcmp(diskname, "") == 0) {
     floppy[drive].inserted = FALSE;
     floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
+    strcpy(floppy[drive].imagename, "");
   }
   else {
     if ((fsnp = fsWrapMakePoint(diskname)) == NULL)

@@ -1766,18 +1766,22 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 	    break;
 	  case IDC_BUTTON_DF0_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 0, "");
+      floppySetDiskImage(0, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME, cfgGetDiskImage(wgui_cfg, 0));
 	    break;
 	  case IDC_BUTTON_DF1_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 1, "");
+      floppySetDiskImage(1, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME, cfgGetDiskImage(wgui_cfg, 1));
 	    break;
 	  case IDC_BUTTON_DF2_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 2, "");
+      floppySetDiskImage(2, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME, cfgGetDiskImage(wgui_cfg, 2));
 	    break;
 	  case IDC_BUTTON_DF3_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 3, "");
+      floppySetDiskImage(3, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME, cfgGetDiskImage(wgui_cfg, 3));
 	    break;
 	  default:
@@ -2714,43 +2718,55 @@ BOOLE wguiEnter(void) {
 		  break;
 		case WGUI_LOAD_HISTORY0:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) {
-			wguiDeleteCfgFromHistory(0);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+      if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(0);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
 		  }
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY1:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) {
-			wguiDeleteCfgFromHistory(1);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-			wguiPutCfgInHistoryOnTop(1);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(1);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+			  wguiPutCfgInHistoryOnTop(1);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY2:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) {
-			wguiDeleteCfgFromHistory(2);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-			wguiPutCfgInHistoryOnTop(2);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(2);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+			  wguiPutCfgInHistoryOnTop(2);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY3:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) {
-			wguiDeleteCfgFromHistory(3);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-			wguiPutCfgInHistoryOnTop(3);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(3);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+			  wguiPutCfgInHistoryOnTop(3);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;

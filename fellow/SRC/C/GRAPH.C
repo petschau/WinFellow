@@ -156,11 +156,11 @@ void graphP2C1XInit(void) {
   graph_decode_line_tab[15] = graphDecode0_C;
   graph_decode_line_dual_tab[0] = graphDecode0_C;
   graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual;
   graph_decode_line_dual_tab[7] = graphDecode0_C;
   graph_decode_line_dual_tab[8] = graphDecode0_C;
   graph_decode_line_dual_tab[9] = graphDecode1Hi320;
@@ -198,17 +198,17 @@ void graphP2C2XInit(void) {
   graph_decode_line_tab[15] = graphDecode0_C;
   graph_decode_line_dual_tab[0] = graphDecode0_C;
   graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual;
   graph_decode_line_dual_tab[7] = graphDecode0_C;
   graph_decode_line_dual_tab[8] = graphDecode0_C;
   graph_decode_line_dual_tab[9] = graphDecode1_C;
-  graph_decode_line_dual_tab[10] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[11] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[12] = graphDecode4Dual_C;
+  graph_decode_line_dual_tab[10] = graphDecode2Dual;
+  graph_decode_line_dual_tab[11] = graphDecode3Dual;
+  graph_decode_line_dual_tab[12] = graphDecode4Dual;
   graph_decode_line_dual_tab[13] = graphDecode0_C;
   graph_decode_line_dual_tab[14] = graphDecode0_C;
   graph_decode_line_dual_tab[15] = graphDecode0_C;
@@ -363,6 +363,674 @@ void graphIOHandlersInstall(void) {
   memorySetIOWriteStub(0x10a, wbpl2mod);
   for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor);
 }
+
+
+/*===========================================================================*/
+/* Graphics Register Access routines                                         */
+/*===========================================================================*/
+
+/*===========================================================================*/
+/* DMACONR - $dff002 Read                                                    */
+/*                                                                           */
+/* return dmaconr | ((!((WOR)bltzero))<<13);                                 */
+/*===========================================================================*/
+
+ULO rdmaconr_C(ULO address)
+{
+  if ((bltzero & 0x0000FFFF) != 0x00000000)
+  {
+    return dmaconr;
+  }
+  return (dmaconr | 0x00002000);
+}
+
+/*===========================================================================*/
+/* VPOSR - $dff004 Read vpos and chipset ID bits                             */
+/*                                                                           */
+/* return lof | (graph_raster_y>>8);                                         */
+/*===========================================================================*/
+
+ULO rvposr_C(ULO address)
+{
+  if (blitter_ECS == 1)
+  {
+    return (lof | (graph_raster_y  >> 8)) | 0x2000;
+  }
+  return (lof | (graph_raster_y >> 8));  
+}
+
+/*===========================================================================*/
+/* VHPOSR - $dff006 Read                                                     */
+/*                                                                           */
+/* return (graph_raster_x>>1) | ((graph_raster_y & 0xff)<<8);                */
+/*===========================================================================*/
+
+ULO rvhposr_C(ULO address)
+{
+  return (graph_raster_x >> 1) | ((graph_raster_y & 0x000000FF) << 8);
+}
+
+/*===========================================================================*/
+/* ID - $dff07c Read                                                         */
+/*                                                                           */
+/* return 0xffff                                                             */
+/*===========================================================================*/
+
+ULO rid_C(ULO address)
+{
+  return 0x0000FFFF;
+}
+
+/*===========================================================================*/
+/* VPOS - $dff02a Write                                                      */
+/*                                                                           */
+/* lof = data & 0x8000;                                                      */
+/*===========================================================================*/
+
+void wvpos_C(ULO data, ULO address)
+{
+  lof = data & 0x00008000;
+}
+
+/*===========================================================================*/
+/* SERDAT - $dff030 Write                                                    */
+/*                                                                           */
+/*                                                                           */
+/*===========================================================================*/
+
+void wserdat_C(ULO data, ULO address)
+{
+}
+
+/*===========================================================================*/
+/* SERPER - $dff032 Write                                                    */
+/*                                                                           */
+/*                                                                           */
+/*===========================================================================*/
+
+void wserper_C(ULO data, ULO address)
+{
+}
+
+/*===========================================================================*/
+/* DIWSTRT - $dff08e Write                                                   */
+/*                                                                           */
+/*                                                                           */
+/*===========================================================================*/
+
+void wdiwstrt_C(ULO data, ULO address)
+{
+  diwstrt = data;
+  diwytop = (data >> 8) & 0x000000FF;
+  if (diwxright == 472)
+  {
+    diwxleft = 88;
+  }
+  else
+  {
+    diwxleft = data & 0x000000FF;
+  }
+  graphCalculateWindow_C();
+}
+
+/*===========================================================================*/
+/* DIWSTOP - $dff090 Write                                                   */
+/*                                                                           */
+/*                                                                           */
+/*===========================================================================*/
+
+void wdiwstop_C(ULO data, ULO address)
+{
+  diwstop = data;
+  if ((((data >> 8) & 0xff) & 0x80) == 0x0)
+  {
+    diwybottom = ((data >> 8) & 0xff) + 256;  
+  }
+  else
+  {
+    diwybottom = (data >> 8) & 0xff;
+  }
+
+  if (((data & 0xff) ^ 0x100) < 457)
+  {
+    diwxleft = diwstrt & 0xff;
+    diwxright = (data & 0xff) ^ 0x100;
+  }
+  else
+  {
+    diwxleft = 88;
+    diwxright = 472;
+  }
+  graphCalculateWindow_C();
+}
+
+/*
+
+
+	
+;-------------------------------------------------------------------------------
+; DDFSTRT - $dff092 Write
+; When this value is written, the scroll (BPLCON1) also need to be reevaluated
+; for _reversal_ of the scroll values.
+; _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wddfstrt_
+_wddfstrt_:	and	edx, 0fch
+		cmp	edx, 018h
+		jae	.l1
+		mov	edx, 018h
+.l1:		mov	dword [ddfstrt], edx
+		sub	edx, 014h
+		mov	dword [sprite_ddf_kill], edx
+		mov	edx, dword [bplcon1]
+		jmp	_wbplcon1_
+
+
+;-------------------------------------------------------------------------------
+; DDFSTOP - $dff094 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wddfstop_
+_wddfstop_:	and	edx, 0fch
+		cmp	edx, 0d8h
+		jbe	.l1
+		mov	edx, 0d8h
+.l1:		mov	dword [ddfstop], edx
+		pushad
+		call graphCalculateWindow_C
+		popad
+		ret
+
+
+
+;-------------------------------------------------------------------------------
+; DMACON
+;-------------------------------------------------------------------------------
+; $dff096  - Read from $dff002
+; dmacon - zero if master dma bit is off
+; dmaconr - is always correct.
+
+
+		FALIGN32
+
+global _wdmacon_
+_wdmacon_:	mov	ecx, dword [dmaconr]
+		test	edx, 08000h
+		jz	near wdma1
+		and	edx, 7ffh		; Set bits - Readonly bits
+
+; Test if BLTHOG got turned on
+		test	edx, 0400h		; Is BLTHOG on now?
+		jz	.bhogend
+		test	ecx, 0400h		; Was BLTHOG off before?
+		jnz	.bhogend
+		; BLTHOG got turned on, stop CPU until a blit is finished if
+		; this is a blit that uses all cycles.
+		cmp	dword [blitend], -1
+		je	.bhogend
+		cmp	dword [blit_cycle_free], 0
+		jne	.bhogend
+		push	edx
+		mov	edx, dword [blitend]
+		sub	edx, dword [curcycle]
+		add	dword [thiscycle], edx	; Delays CPU additionally edx cycles
+		pop	edx
+.bhogend:
+
+		or	ecx, edx			; ecx is new dmaconr
+		mov	dword [dmaconr], ecx
+		test	ecx, 0200h
+		jnz	wdmanorm
+		xor	ecx, ecx
+wdmanorm:	mov	edx, dword [dmacon]	; get old dmacon (master dma adjusted)
+		mov	dword [dmacon], ecx	; Store new dmacon --------"---------
+
+		
+
+
+; Do audio stuff
+		test	ecx, 1			; Channel 0 turned on?
+		jz	snden0
+		test	edx, 1			; Already on?
+		jnz	snden0
+		push	edx
+		push	ecx
+		mov	edx, 0
+		push	eax
+		call	_soundState0_
+		pop	eax
+		pop	ecx
+		pop	edx
+snden0:		test	ecx, 2
+		jz	snden1
+		test	edx, 2
+		jnz	snden1
+		push	edx
+		push	ecx
+%ifndef SOUND_C
+		mov	edx, 4
+%else
+		mov	edx, 1
+%endif
+		push	eax
+		call	_soundState0_
+		pop	eax
+		pop	ecx
+		pop	edx
+snden1:		test	ecx, 4
+		jz	snden2
+		test	edx, 4
+		jnz	snden2
+		push	edx
+		push	ecx
+%ifndef SOUND_C
+		mov	edx, 8
+%else
+		mov	edx, 2
+%endif
+		push	eax
+		call	_soundState0_
+		pop	eax
+		pop	ecx
+		pop	edx
+snden2:
+		test	ecx, 8
+		jz	snden3
+		test	edx, 8
+		jnz	snden3
+		push	edx
+		push	ecx
+%ifndef SOUND_C
+		mov	edx, 12
+%else
+		mov	edx, 3
+%endif
+		push	eax
+		call	_soundState0_
+		pop	eax
+		pop	ecx
+		pop	edx
+snden3:		test	dword [blitterdmawaiting], 1
+		jz	wdmae1
+		test	ecx, 0040h
+		jz	wdmae1
+		
+		pushad
+		call	blitterCopy
+		popad
+
+wdmae1:		call	_copperUpdateDMA_
+		ret
+
+wdma1:		and	edx, 7ffh		; Get rid of readonly bits
+		not	edx
+		and	ecx, edx			  ; Slett bits
+		mov	dword [dmaconr], ecx
+		test	ecx, 0200h
+		jnz	wdmanormoff
+		xor	ecx, ecx
+wdmanormoff:	mov	edx, dword [dmacon]  ; get old dmacon
+		mov	dword [dmacon], ecx  ; store new dmacon
+
+; IF blitter dma is turned off in the middle of a blit
+; finish the blit
+
+		test	ecx, 040h
+		jnz	wdmabrag
+		test	dword [blit_started], 0ffh
+		jz	wdmabrag
+		pushad
+		call	blitFinishBlit
+		popad
+wdmabrag:
+; Do audio stuff when dma turns off
+; Simply set state 0, (state not set if state = 3??)
+
+		test	ecx, 1			; Channel 0 turned off?
+		jnz	sndoff0
+		test	edx, 1			; Already off?
+		jz	sndoff0
+		push	ecx
+		mov	ecx, 0
+		call	_soundChannelKill_
+		pop	ecx
+sndoff0:	test	ecx, 2
+		jnz	sndoff1
+		test	edx, 2
+		jz	sndoff1
+		push	ecx
+		mov	ecx, 1
+		call	_soundChannelKill_
+		pop	ecx
+sndoff1:	test	ecx, 4
+		jnz	sndoff2
+		test	edx, 4
+		jz	sndoff2
+		push	ecx
+		mov	ecx, 2
+		call	_soundChannelKill_
+		pop	ecx
+sndoff2:	test	ecx, 8
+		jnz	sndoff3
+		test	edx, 8
+		jz	sndoff3
+		push	ecx
+		mov	ecx, 3
+		call	_soundChannelKill_
+		pop	ecx
+sndoff3:	test	dword [blitterdmawaiting], 1
+		jz	wdmae2
+		test	ecx, 0040h
+		jz	wdmae2
+		pushad
+		call	blitterCopy
+		popad
+wdmae2:		call	_copperUpdateDMA_
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL1PT - $dff0e0 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl1pth_
+_wbpl1pth_:	and	edx, 01fh
+		mov	word [bpl1pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl1ptl_
+_wbpl1ptl_:	and	edx, 0fffeh
+  		mov	word [bpl1pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL2PT - $dff0e4 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl2pth_
+_wbpl2pth_:	and	edx, 01fh
+		mov	word [bpl2pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl2ptl_
+_wbpl2ptl_:	and	edx, 0fffeh
+  		mov	word [bpl2pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL3PT - $dff0e8 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl3pth_
+_wbpl3pth_:	and	edx, 01fh
+		mov	word [bpl3pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl3ptl_
+_wbpl3ptl_:	and	edx, 0fffeh
+  		mov	word [bpl3pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL4PT - $dff0ec Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl4pth_
+_wbpl4pth_:	and	edx, 01fh
+		mov	word [bpl4pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl4ptl_
+_wbpl4ptl_:	and	edx, 0fffeh
+		mov	word [bpl4pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL5PT - $dff0f0 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl5pth_
+_wbpl5pth_:	and	edx, 01fh
+		mov	word [bpl5pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl5ptl_
+_wbpl5ptl_:	and	edx, 0fffeh
+		mov	word [bpl5pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL6PT - $dff0f4 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+	
+global _wbpl6pth_
+_wbpl6pth_:	and	edx, 01fh
+		mov	word [bpl6pt + 2], dx
+		ret
+
+
+		FALIGN32
+
+global _wbpl6ptl_
+_wbpl6ptl_:	and	edx, 0fffeh
+		mov	word [bpl6pt], dx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPLCON0 - $dff100 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wbplcon0_
+_wbplcon0_:
+		push	ecx
+		mov	dword [bplcon0], edx
+		shr	edx, 12
+		and	edx, 0fh
+		test	byte [bplcon0 + 1], 04h
+		jz	.l1
+		mov	ecx, dword [graph_decode_line_dual_tab + edx*4]
+		jmp	.l2
+.l1:		mov	ecx, dword [graph_decode_line_tab + edx*4]
+.l2:		mov	dword [graph_decode_line_ptr], ecx
+		test	byte [bplcon0 + 1], 08h
+		jz	.l3
+		mov	ecx, dword [draw_line_HAM_lores_routine]
+		jmp	.lend
+.l3:		test	byte [bplcon0 + 1], 04h
+		jz	.l4
+		cmp	edx, 1
+		je	.l4
+		cmp	edx, 9
+		je	.l4
+		mov	ecx, dword [draw_line_dual_lores_routine]
+		cmp	edx, 7
+		jb	.lend
+		mov	ecx, dword [draw_line_dual_hires_routine]
+		jmp	.lend
+.l4:		mov	ecx, dword [draw_line_lores_routine]
+		test	edx, 08h
+		jz	.lend
+		mov	ecx, dword [draw_line_hires_routine]
+.lend:		mov	dword [draw_line_BPL_res_routine], ecx
+		pushad
+		call graphCalculateWindow_C
+		popad
+		pop	ecx
+		ret
+
+
+; When ddfstrt is (mod 8)+4, shift order is 8-f,0-7 (lores) (Example: New Zealand Story)
+; When ddfstrt is (mod 8)+2, shift order is 4-7,0-3 (hires)
+
+
+;-------------------------------------------------------------------------------
+; BPLCON1 - $dff102 Write
+;-------------------------------------------------------------------------------
+
+; Extra variables
+; oddscroll - dword with the odd lores scrollvalue
+; evenscroll -dword with the even lores scrollvalue
+
+; oddhiscroll - dword with the odd hires scrollvalue
+; evenhiscroll - dword with the even hires scrollvalue
+
+
+		FALIGN32
+
+global _wbplcon1_
+_wbplcon1_:	and	edx, 0ffh
+		mov	dword [bplcon1], edx
+		mov	ecx, edx
+		and	edx, 0fh
+
+		test	dword [ddfstrt], 4h	; Reverse shift order?
+		jz	.bpc1normal3
+		add	edx, 8
+		and	edx, 0fh
+
+.bpc1normal3:	mov	dword [oddscroll], edx
+
+		and	edx, 7h
+		test	dword [ddfstrt], 2h
+		jz	.bpc1normal1
+		add	edx, 4h
+		and	edx, 7h
+.bpc1normal1:	shl	edx, 1
+		mov	dword [oddhiscroll], edx
+		and	ecx, 0f0h
+		shr	ecx, 4
+
+		test	dword [ddfstrt], 4h	; Reverse shift order?
+		jz	.bpc1normal4
+		add	ecx, 8
+		and	ecx, 15
+
+.bpc1normal4:	mov	dword [evenscroll], ecx
+		and	ecx, 7h
+		test	dword [ddfstrt], 2h
+		jz	.bpc1normal2
+		add	ecx, 4h
+		and	ecx, 7h
+.bpc1normal2:	shl	ecx, 1
+		mov	dword [evenhiscroll], ecx
+		pushad
+		call graphCalculateWindow_C
+		popad
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPLCON2 - $dff104 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wbplcon2_
+_wbplcon2_:	mov	dword [bplcon2], edx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL1MOD - $dff108 Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wbpl1mod_
+_wbpl1mod_:	and	edx, 0fffeh
+		movsx	edx, dx
+		mov	dword [bpl1mod], edx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; BPL2MOD - $dff10a Write
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wbpl2mod_
+_wbpl2mod_:	and	edx, 0fffeh
+		movsx	edx, dx
+		mov	dword [bpl2mod], edx
+		ret
+
+
+;-------------------------------------------------------------------------------
+; COLOR - $dff180 to $dff1be
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wcolor_
+_wcolor_:	and	edx, 0fffh
+		mov	word [graph_color - 0180h + ecx], dx
+		push	edx
+		mov	edx, dword [draw_color_table + edx*4] ; Translate color
+		mov	dword [graph_color_shadow - 0300h + ecx*2], edx
+		pop	edx
+		and	edx, 0eeeh                             ; Halfbrite color
+		shr	edx, 1
+		mov	word [graph_color - 0180h + 64 + ecx], dx
+		mov	edx, dword [draw_color_table + edx*4] ; Translate color
+		mov	dword [graph_color_shadow - 0300h + 128 + ecx*2], edx
+		ret
+
+
+  */
 
 
 /*===========================================================================*/

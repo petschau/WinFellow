@@ -139,6 +139,18 @@ void graphDecode4Dual_C(void);
 void graphDecode5Dual_C(void);
 void graphDecode6Dual_C(void);
 
+ULO rdmaconr_C(ULO address);
+ULO rvposr_C(ULO address);
+ULO rvhposr_C(ULO address);
+ULO rid_C(ULO address);
+
+
+void wvpos_C(ULO data, ULO address);
+void wdiwstrt_C(ULO data, ULO address);
+void wdiwstop_C(ULO data, ULO address);
+void wserdat_C(ULO data, ULO address);
+void wserper_C(ULO data, ULO address);
+
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];
