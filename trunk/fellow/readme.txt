@@ -1,4 +1,4 @@
-Fellow V0.4.2 Alpha Version Dated 2000.09.15 (Source code archive)
+Fellow V0.4.3 Alpha Version Dated 2001/11/15 (Source code archive)
 ----------------------------------------------------------------
 
 This is a readme file describing the contents of this archive.
