@@ -211,7 +211,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
     modripModuleInfoInitialize(&info);
     if (((*func)(address + 2) == 'N') && ((*func)(address + 3) == 'G')) {
 #ifdef MODRIP_DEBUG
-      fellowAddLog("mod-ripper SoundFX 1.3 match\n");
+      fellowAddLog("mod-ripper SoundFX 1.3 (SONG) match\n");
 #endif
       match = TRUE;
       info.start = address - 60;
@@ -221,7 +221,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 	}
     if (((*func)(address + 2) == '3') && ((*func)(address + 3) == '1')) {
 #ifdef MODRIP_DEBUG
-      fellowAddLog("mod-ripper SoundFX 2.0 match\n");
+      fellowAddLog("mod-ripper SoundFX 2.0 (SO31) match\n");
 #endif
       match = TRUE;
       info.start = address - 124;
@@ -232,13 +232,14 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
     if (match) {
       offset = 0; size = 0;
 
+	  /* add instrument lengths to size */
       for (i = 0; i < info.instruments; i++)
         size += (*func)(info.start + i*4 + 0) << 8     
               | (*func)(info.start + i*4 + 1)
               | (*func)(info.start + i*4 + 2) << 8 
               | (*func)(info.start + i*4 + 3);
 
-      /* calculate real instruments */
+      /* move to instrument table */
       if (info.instruments == 15) {
         /* SoundFX 1.3 */
 	    offset += 80;
@@ -250,6 +251,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
         size += 144;
 	  }
 
+	  /* walk over instrument table */
       for (i = 0; i < info.instruments; i++) {
         offset += 30;
         size += 30;
@@ -263,9 +265,10 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 #endif
 
       offset += 2;
-      info.maxpattern = (*func)(info.start + offset);
+	  size += 2;
 
-      for (i = 1; i < patterns; i++)
+      /* pattern table */
+      for (i = 0; i < patterns; i++)
         info.maxpattern = max(info.maxpattern, (*func)(info.start + offset + i));
 
   	  if((info.maxpattern > MODRIP_MAXMODLEN) ||
@@ -273,10 +276,12 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 #ifdef MODRIP_DEBUG
       fellowAddLog("maxpattern = %u\n", info.maxpattern);
 #endif
-
-      size += 2 + 128 + ((info.maxpattern + 1) * 1024);
+      size += 128 + ((info.maxpattern + 1) * 1024);
 	  info.end = info.start + size;
 
+#ifdef MODRIP_DEBUG
+	  fellowAddLog("calculated range 0x%06x - 0x%06x\n", info.start, info.end);
+#endif
 	  if(info.end < info.start) return;
 		
       if (size < MODRIP_MAXMODLEN) {
