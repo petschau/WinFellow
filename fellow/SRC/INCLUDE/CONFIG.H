@@ -132,7 +132,6 @@ typedef struct {
 
 } cfg;
 
-
 /*============================================================================*/
 /* struct cfg property access functions                                       */
 /*============================================================================*/
@@ -300,7 +299,6 @@ extern BOOLE cfgGetUseGUI(cfg *config);
 extern void cfgSetMeasureSpeed(cfg *config, BOOLE measurespeed);
 extern BOOLE cfgGetMeasureSpeed(cfg *config);
 
-
 /*============================================================================*/
 /* cfg Utility Functions                                                      */
 /*============================================================================*/
@@ -311,7 +309,6 @@ extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
 extern BOOLE cfgLoadFromFilename(cfg *config, STR *filename);
 extern BOOLE cfgSaveToFilename(cfg *config, STR *filename);
 extern void cfgSynopsis(cfg *config);
-
 
 /*============================================================================*/
 /* struct cfgManager                                                          */
