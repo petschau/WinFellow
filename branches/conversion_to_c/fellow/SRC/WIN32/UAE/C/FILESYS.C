@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.5.2.4 2004-05-28 09:42:23 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.5.2.5 2004-05-28 11:46:22 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -265,12 +265,18 @@ static char *set_filesys_unit_1 (struct uaedev_mount_info *mountinfo, int nr,
     if (nr >= mountinfo->num_units)
 	return "No slot allocated for this unit";
 
-    ui->hf.fd = 0;
+    /* FELLOW IN (START): BUGFIX */
+    close_filesys_unit(ui);
+    /* FELLOW BUGFIX (END) */
+    /* FELLOW OUT (START)----------------
+    : ui->hf.fd = 0;
+    
     ui->devname = 0;
     ui->volname = 0;
     ui->rootdir = 0;
     ui->unit_pipe = 0;
     ui->back_pipe = 0;
+       FELLOW OUT (END)------------------ */
 
     if (volname != 0) {
 	ui->volname = my_strdup (volname);
@@ -1103,6 +1109,10 @@ static a_inode *create_child_aino (Unit *unit, a_inode *base, char *rel, int isd
     aino->aname = my_strdup (rel);
     aino->nname = create_nname (unit, base, rel);
 
+    if(!aino->nname) {
+        aino->nname = aino->nname;
+    }
+
     init_child_aino (unit, base, aino);
 	aino->amigaos_mode = 0;
     aino->dir = isdir;
@@ -1161,7 +1171,7 @@ static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *r
     c = fsdb_lookup_aino_nname (base, rel);
     if (c == 0) {
 	/* FELLOW BUGFIX: c = (a_inode *)malloc (sizeof (a_inode)); */
-	c = (a_inode *) xcalloc (sizeof (a_inode), 1);
+	c = (a_inode *) calloc (sizeof (a_inode), 1);
 	if (c == 0) {
 	    *err = ERROR_NO_FREE_STORE;
 	    return 0;
@@ -2024,7 +2034,8 @@ static void do_find (Unit *unit, dpacket packet, int mode, int create, int fallb
 	return;
     } else {
 	/* Object does not exist. aino points to containing directory. */
-	aino = create_child_aino (unit, aino, my_strdup (bstr_cut (unit, name)), 0);
+	/* FELLOW BUGFIX (START):  aino = create_child_aino (unit, aino, my_strdup (bstr_cut (unit, name)), 0); */
+    aino = create_child_aino (unit, aino, bstr_cut (unit, name), 0); /* already creates a copy of the string!!! */
 	if (aino == 0) {
 	    PUT_PCK_RES1 (packet, DOS_FALSE);
 	    PUT_PCK_RES2 (packet, ERROR_DISK_IS_FULL); /* best we can do */
@@ -2567,7 +2578,8 @@ action_create_dir (Unit *unit, dpacket packet)
 	return;
     }
     /* Object does not exist. aino points to containing directory. */
-    aino = create_child_aino (unit, aino, my_strdup (bstr_cut (unit, name)), 1);
+    /* FELLOW BUGFIX:  aino = create_child_aino (unit, aino, my_strdup (bstr_cut (unit, name)), 1); */
+    aino = create_child_aino (unit, aino, bstr_cut (unit, name), 1); /* already creates a copy of the string!!! */
     if (aino == 0) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
 	PUT_PCK_RES2 (packet, ERROR_DISK_IS_FULL); /* best we can do */
