@@ -48,42 +48,57 @@
 #include "filesys_win32.h"
 #endif
 
+/* these are deadly (but I think allowed on the Amiga): */
+#define NUM_EVILCHARS 7
+char evilchars[NUM_EVILCHARS] = { '\\', '*', '?', '\"', '<', '>', '|' };
 
 /* Return nonzero for any name we can't create on the native filesystem.  */
 int fsdb_name_invalid (const char *n)
 {
+    int i;
     char a = n[0];
     char b = (a == '\0' ? a : n[1]);
     char c = (b == '\0' ? b : n[2]);
+	char d = (c == '\0' ? c : n[3]);
 
-    if (a >= 'a' && a <= 'z')
-	a -= 32;
+	if (a >= 'a' && a <= 'z')
+        a -= 32;
     if (b >= 'a' && b <= 'z')
-	b -= 32;
+        b -= 32;
     if (c >= 'a' && c <= 'z')
-	c -= 32;
+        c -= 32;
 
-    if ((a == 'A' && b == 'U' && c == 'X')
-	|| (a == 'C' && b == 'O' && c == 'N')
-	|| (a == 'P' && b == 'R' && c == 'N')
-	|| (a == 'N' && b == 'U' && c == 'L'))
+    /* reserved dos devices */
+    if ((a == 'A' && b == 'U' && c == 'X')                                  /* AUX  */
+        || (a == 'C' && b == 'O' && c == 'N')                               /* CON  */
+        || (a == 'P' && b == 'R' && c == 'N')                               /* PRN  */
+        || (a == 'N' && b == 'U' && c == 'L')                               /* NUL  */
+        || (a == 'L' && b == 'P' && c == 'T'  && (d >= '0' && d <= '9'))    /* LPT# */
+        || (a == 'C' && b == 'O' && c == 'M'  && (d >= '0' && d <= '9')))   /* COM# */
 	return 1;
 
-    if (strchr (n, '\\') != 0)
-	return 1;
+    /* spaces and periods at the beginning or the end are a no-no */
+    if(n[0] == '.' || n[0] == ' ')
+	    return 1;
 
+    i = strlen(n) - 1;
+    if(n[i] == '.' || n[i] == ' ')
+	    return 1;
+
+    /* these characters are *never* allowed */
+    for (i=0; i < NUM_EVILCHARS; i++) {
+        if (strchr (n, evilchars[i]) != 0)
+            return 1;
+	}
+
+    /* the reserved fsdb filename */
     if (strcmp (n, FSDB_FILE) == 0)
-	return 1;
-    if (n[0] != '.')
-	return 0;
-    if (n[1] == '\0')
-	return 1;
-    return n[1] == '.' && n[2] == '\0';
+	    return 1;
+	return 0; /* the filename passed all checks, now it should be ok */
 }
 
 uae_u32 filesys_parse_mask(uae_u32 mask)
 {
-   
     return(mask ^ 0xf);
 }
 
@@ -91,7 +106,7 @@ uae_u32 filesys_parse_mask(uae_u32 mask)
  * native fs, fill in information about this file/directory.  */
 void fsdb_fill_file_attrs (a_inode *aino)
 {
-    int mode = 0;
+    int mode;
 
 	if((mode = GetFileAttributes(aino->nname)) == 0xFFFFFFFF) return;
 	
@@ -146,19 +161,24 @@ char *fsdb_create_unique_nname (a_inode *base, const char *suggestion)
 {
     char *c;
     char tmp[256] = "__uae___";
-    strncat (tmp, suggestion, 240);
+    int i;
 
-    /* @@@ Brian... this may or may not need fixing.  */
-    while ((c = strchr (tmp, '\\')) != 0)
-	*c = '_';
+	strncat (tmp, suggestion, 240);
+	
+    /* replace the evil ones... */
+    for (i=0; i < NUM_EVILCHARS; i++)
+        while ((c = strchr (tmp, evilchars[i])) != 0)
+            *c = '_';
+	
     while ((c = strchr (tmp, '.')) != 0)
-	*c = '_';
+        *c = '_';
+	while ((c = strchr (tmp, ' ')) != 0)
+        *c = '_';
 
     for (;;) {
-	int i;
 	char *p = build_nname (base->nname, tmp);
 	if (access (p, R_OK) < 0 && errno == ENOENT) {
-	    printf ("unique name: %s\n", p);
+	    write_log ("unique name: %s\n", p);
 	    return p;
 	}
 	free (p);
@@ -166,7 +186,7 @@ char *fsdb_create_unique_nname (a_inode *base, const char *suggestion)
 	/* tmpnam isn't reentrant and I don't really want to hack configure
 	 * right now to see whether tmpnam_r is available...  */
 	for (i = 0; i < 8; i++) {
-	    tmp[i] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[random () % 63];
+	    tmp[i+8] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[random () % 63];
 	}
     }
 }
