@@ -1,10 +1,29 @@
-/*======================================================================*/
-/* Fellow Amiga Emulator                                                */
-/* UAE support                                                          */
-/* Stuff that Fellow does not have, and the UAE filesystem-hander needs */
-/* (C) 1997 Petter Schau                                                */
-/*======================================================================*/
-
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* uaesupp.c -- UAE support                                                */
+/*                                                                         */
+/* Stuff that Fellow does not have, and the UAE filesystem-hander needs    */
+/*                                                                         */
+/* (w)1997 Petter Schau                                                    */
+/* (w)2004 by Torsten Enderling <carfesh@gmx.net>                          */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #include <stdio.h>
 #include "uae2fell.h"
@@ -40,7 +59,7 @@ void do_put_mem_long(uae_u32 *address, uae_u32 data) {
 void do_put_mem_word(uae_u16 *address, uae_u16 data) {
   unsigned char *addr = (unsigned char *) address;
   *(addr) = data>>8;
-  *(addr + 1) = data;
+  *(addr + 1) = (unsigned char)data;
 }
 
 void do_put_mem_byte(uae_u8 *address, uae_u8 data) {
@@ -61,10 +80,10 @@ void m68k_do_rts(void)
 {
     m68k_setpc(get_long(m68k_areg(regs, 7)));
     m68k_areg(regs, 7) += 4;
-    /* FELLOW OUT (START)------------
+    /* FELLOW OUT (START)----------------
        if (jsr_num > 0)
 	jsr_num--;
-       FELLOW OUT (END)------------------*/
+	   FELLOW OUT (END)------------------ */
 }
 
 /* This was taken from wuae 088 and modified */
@@ -73,11 +92,11 @@ void m68k_do_rts(void)
 
 void write_log (const char *format,...)
 {
-    DWORD numwritten;
+    /* DWORD numwritten; */
     char buffer[WRITE_LOG_BUF_SIZE];
     va_list parms;
     int count = 0;
-    int *blah = (int *)0xdeadbeef;
+    /* FELLOW REMOVE: int *blah = (int *)0xdeadbeef; */
 
     va_start (parms, format);
     count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );

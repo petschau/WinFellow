@@ -35,5 +35,6 @@ struct ModuleInfo {
 
 extern void modripRIP(void);
 extern void modripChipDump(void);
+extern BOOLE modripSaveMem(struct ModuleInfo *, MemoryAccessFunc);
 
 #endif

@@ -12,7 +12,9 @@
 /* own includes */
 #include <windows.h>
 #include "modrip.h"
-
+#include "modrip_win32.h"
+#include "wgui.h"
+#include "ini.h"
 
 static HWND modrip_hWnd;
 extern HWND wdbg_hDialog;
@@ -57,14 +59,13 @@ void modripGuiUnSetBusy(void)
 /* decision whether to save it or not                      */
 /*=========================================================*/
 
-BOOLE modripGuiSaveRequest(struct ModuleInfo *info)
+BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
 {
   char message[MODRIP_TEMPSTRLEN];
   char tempstr[MODRIP_TEMPSTRLEN];
-  int result;
-
+  
   if(!info) return FALSE;
-
+  
   sprintf(message, "Module found:\n");
   
   if(info->start) {
@@ -110,9 +111,20 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info)
 	strcat(message, "Please contact the developers.");
   }
 	
-  result = MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO |
-    MB_ICONQUESTION);
-  return(result == IDYES);
+  if(MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO | MB_ICONQUESTION) == IDYES) {
+    if(wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", FSEL_MOD)) {
+      if(!modripSaveMem(info, func)) {
+        modripGuiErrorSave(info);
+		    return FALSE;
+   	  }
+      else {
+        iniSetLastUsedModDir(wgui_ini, (STR*) wguiExtractPath(info->filename));
+        return TRUE;
+	    }
+    }
+    else return FALSE;
+  } 
+  return TRUE;
 }
 
 /*=====================================================*/

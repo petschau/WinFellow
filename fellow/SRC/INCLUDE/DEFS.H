@@ -166,4 +166,8 @@ typedef void (*buseventfunc)(void);
 #define CYCLESPERFRAME 71364
 #define LINESPERFRAME    313
 
+#define FELLOWVERSION        "WinFellow alpha v0.4.3.2 - CVS"
+#define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.4.3.2 - CVS" 
+#define FELLOWNUMERICVERSION "0.4.3.2"
+
 #endif

@@ -7,40 +7,39 @@
   * Copyright 1996 Ed Hanway
   */
 
+/* FELLOW IN (START)-----------------
 
-/* FELLOW OUT (START)----------------------- 
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
+
+/* FELLOW OUT (START)----------------
 #include "sysconfig.h"
 #include "sysdeps.h"
 
 #include "config.h"
 #include "options.h"
-#include "machdep/m68k.h"
 #include "uae.h"
 #include "memory.h"
 #include "custom.h"
-#include "readcpu.h"
 #include "newcpu.h"
 #include "compiler.h"
 #include "autoconf.h"
 #include "osdep/exectasks.h"
-  FELLOW OUT (END)---------------------*/
-
-
-/* FELLOW IN (START)------------------ */
-
+   FELLOW OUT (END)------------------ */
+/* FELLOW IN (START)----------------- */
 #include <stdio.h>
 #include <setjmp.h>
-
 #include "uae2fell.h"
 #include "autoconf.h"
-
 #include "fmem.h"
 
 /* To support memory get/set in C, assembly stubs are in uaesupp.s */
 
-
-/* FELLOW IN (END)-------------------- */
-
+/* FELLOW IN (END)------------------- */
 
 /* We'll need a lot of these. */
 #define MAX_TRAPS 4096
@@ -66,9 +65,9 @@ int lasttrap;
  *   setjmp saves current context [1]
  *  longjmp back to execute_fn_on_extra_stack [0]
  * pointer to new stack is saved on m68k stack. m68k return address set
- * to 0xF0FF00. m68k PC set to called function
+ * to RTAREA_BASE + 0xFF00. m68k PC set to called function
  * m68k function executes, stack is main
- * m68k function returns to 0xF0FF00
+ * m68k function returns to RTAREA_BASE + 0xFF00
  * calltrap to m68k_mode_return
  * do_stack_magic is called again
  * current context is saved again with setjmp [0]
@@ -129,16 +128,16 @@ static void do_stack_magic(TrapFunction f, void *s, int has_retval)
 	/* Returning directly */
 	current_extra_stack = s;
 	if (has_retval == -1) {
-	    write_log ("finishing m68k mode return\n");
+	    /*write_log ("finishing m68k mode return\n");*/
 	    longjmp(j[1], 1);
 	}
-	write_log ("calling native function\n");
+	/*write_log ("calling native function\n");*/
 	transfer_control (s, EXTRA_STACK_SIZE, stack_stub, f, has_retval);
 	/* not reached */
 	abort();
 
      case 1:
-	write_log ("native function complete\n");
+	/*write_log ("native function complete\n");*/
 	/* Returning normally. */
 	if (stack_has_retval (s, EXTRA_STACK_SIZE))
 	    m68k_dreg (regs, 0) = get_retval_from_stack (s, EXTRA_STACK_SIZE);
@@ -152,10 +151,10 @@ static void do_stack_magic(TrapFunction f, void *s, int has_retval)
 	*((void **)get_real_address (a7 + 4)) = s;
 	/* Save special return address: this address contains a
 	 * calltrap that will longjmp to the right stack. */
-	put_long (m68k_areg (regs, 7), 0xF0FF00);
+	put_long (m68k_areg (regs, 7), RTAREA_BASE + 0xFF00);
 	m68k_setpc (m68k_calladdr);
 	fill_prefetch_0 ();
-	write_log ("native function calls m68k\n");
+	/*write_log ("native function calls m68k\n");*/
 	break;
     }
     current_extra_stack = 0;
@@ -164,7 +163,6 @@ static void do_stack_magic(TrapFunction f, void *s, int has_retval)
 
 static uae_u32 execute_fn_on_extra_stack(TrapFunction f, int has_retval)
 {
-    uae_u32 retval = 0;
 #ifdef CAN_DO_STACK_MAGIC
     void *s = get_extra_stack();
     do_stack_magic (f, s, has_retval);
@@ -218,7 +216,7 @@ static uae_u32 call_m68k(uaecptr addr, int saveregs)
 
 uae_u32 CallLib(uaecptr base, uae_s16 offset)
 {
-    int i;
+    /* FELLOW REMOVE (unreferenced): int i; */
     uaecptr olda6 = m68k_areg(regs, 6);
     uae_u32 retval;
 #if 0
@@ -234,36 +232,19 @@ uae_u32 CallLib(uaecptr base, uae_s16 offset)
 }
 
 /* Commonly used autoconfig strings */
-
 uaecptr EXPANSION_explibname, EXPANSION_doslibname, EXPANSION_uaeversion;
 uaecptr EXPANSION_uaedevname, EXPANSION_explibbase = 0, EXPANSION_haveV36;
 uaecptr EXPANSION_bootcode, EXPANSION_nullfunc;
-
-static int current_deviceno = 0;
-
-void reset_uaedevices (void)
-{
-    current_deviceno = 0;
-}
-
-int get_new_device(char **devname, uaecptr *devname_amiga)
-{
-    char buffer[80];
-
-    sprintf(buffer,"DH%d", current_deviceno);
-
-    *devname_amiga = ds(*devname = my_strdup(buffer));
-    return current_deviceno++;
-}
+/* FELLOW OUT (START)----------------
+uaecptr EXPANSION_cddevice;
+   FELLOW OUT (END)------------------ */
 
 /* ROM tag area memory access */
 
-/* static FELLOW OUT */
+/* FELLOW CHANGE: static uae_u8 *rtarea; */
 uae_u8 rtarea[65536];
 
-
 /* FELLOW OUT (START)-----------------------------------
-
 static uae_u32 rtarea_lget(uaecptr) REGPARAM;
 static uae_u32 rtarea_wget(uaecptr) REGPARAM;
 static uae_u32 rtarea_bget(uaecptr) REGPARAM;
@@ -275,7 +256,7 @@ static uae_u8 *rtarea_xlate(uaecptr) REGPARAM;
 addrbank rtarea_bank = {
     rtarea_lget, rtarea_wget, rtarea_bget,
     rtarea_lput, rtarea_wput, rtarea_bput,
-    rtarea_xlate, default_check
+    rtarea_xlate, default_check, NULL
 };
 
 uae_u8 REGPARAM2 *rtarea_xlate(uaecptr addr)
@@ -286,26 +267,39 @@ uae_u8 REGPARAM2 *rtarea_xlate(uaecptr addr)
 
 uae_u32 REGPARAM2 rtarea_lget(uaecptr addr)
 {
+	special_mem |= S_READ;
     addr &= 0xFFFF;
     return (uae_u32)(rtarea_wget(addr) << 16) + rtarea_wget(addr+2);
 }
 
 uae_u32 REGPARAM2 rtarea_wget(uaecptr addr)
 {
+	special_mem |= S_READ;
     addr &= 0xFFFF;
     return (rtarea[addr]<<8) + rtarea[addr+1];
 }
 
 uae_u32 REGPARAM2 rtarea_bget(uaecptr addr)
 {
-    uae_u16 data;
+	special_mem |= S_READ;
     addr &= 0xFFFF;
     return rtarea[addr];
 }
 
-void REGPARAM2 rtarea_lput(uaecptr addr, uae_u32 value) { }
-void REGPARAM2 rtarea_wput(uaecptr addr, uae_u32 value) { }
-void REGPARAM2 rtarea_bput(uaecptr addr, uae_u32 value) { }
+void REGPARAM2 rtarea_lput (uaecptr addr, uae_u32 value)
+{
+    special_mem |= S_WRITE;
+}
+
+void REGPARAM2 rtarea_wput (uaecptr addr, uae_u32 value)
+{
+    special_mem |= S_WRITE;
+}
+
+void REGPARAM2 rtarea_bput (uaecptr addr, uae_u32 value)
+{
+    special_mem |= S_WRITE;
+}
 
 FELLOW OUT (END)-------------------------------------*/
 
@@ -317,26 +311,27 @@ FELLOW OUT (END)-------------------------------------*/
 
 ULO rtarea_wgetC(ULO addr)
 {
-  return (ULO) (rtarea[addr - 0xf00000]<<8) + rtarea[addr-0xf00000+1];
+  return (ULO) (rtarea[addr - RTAREA_BASE]<<8) + rtarea[addr-RTAREA_BASE+1];
 }
 
 
 ULO rtarea_lgetC(ULO addr)
 {
-    return (ULO) (rtarea[(addr & 0xffffff) - 0xf00000]<<24) |
-           (rtarea[(addr & 0xffffff) -0xf00000+1]<<16) |
-           (rtarea[(addr & 0xffffff) -0xf00000+2]<<8) |
-           rtarea[(addr & 0xffffff) -0xf00000+3];
+    return (ULO) (rtarea[(addr & 0xffffff) - RTAREA_BASE]<<24) |
+           (rtarea[(addr & 0xffffff) -RTAREA_BASE+1]<<16) |
+           (rtarea[(addr & 0xffffff) -RTAREA_BASE+2]<<8) |
+           rtarea[(addr & 0xffffff) -RTAREA_BASE+3];
 }
 
 ULO rtarea_bgetC(ULO addr)
 {
-    return rtarea[addr-0xf00000];
+    return rtarea[addr-RTAREA_BASE];
 }
 
 /* Swapped parameter order */
 
 void rtarea_lputC(ULO value, ULO addr) { }
+void rtarea_wputC(ULO value, ULO addr) { }
 void rtarea_bputC(ULO value, ULO addr) { }
 
 /* FELLOW IN (END)---------------------------------*/
@@ -350,10 +345,8 @@ void REGPARAM2 call_calltrap(int func)
     int has_retval = (trapmode[func] & TRAPFLAG_NO_RETVAL) == 0;
     int implicit_rts = (trapmode[func] & TRAPFLAG_DORET) != 0;
 
-    if (*trapstr[func] != 0 && trace_traps) {
-	sprintf (warning_buffer, "TRAP: %s\n", trapstr[func]);
-	write_log (warning_buffer);
-    }
+    if (*trapstr[func] != 0 && trace_traps)
+	write_log ("TRAP: %s\n", trapstr[func]);
 
     /* For monitoring only? */
     if (traps[func] == NULL) {
@@ -368,9 +361,9 @@ void REGPARAM2 call_calltrap(int func)
 	    return;
 	}
 	retval = (*traps[func])();
-    } else {
-	fprintf(stderr, "illegal emulator trap\n");
-    }
+    } else
+	write_log ("illegal emulator trap\n");
+
     if (has_retval)
 	m68k_dreg(regs, 0) = retval;
     if (implicit_rts) {
@@ -385,7 +378,7 @@ static volatile int four = 4;
 uaecptr libemu_InstallFunctionFlags(TrapFunction f, uaecptr libbase, int offset,
 				    int flags, const char *tracename)
 {
-    int i;
+    /* FELLOW REMOVE (unreferenced): int i; */
     uaecptr retval;
     uaecptr execbase = get_long(four);
     int trnum;
@@ -425,7 +418,7 @@ static int rt_straddr = 0xFF00 - 2;
 
 uae_u32 addr(int ptr)
 {
-    return (uae_u32)ptr + 0x00F00000;
+    return (uae_u32)ptr + RTAREA_BASE;
 }
 
 void db(uae_u8 data)
@@ -436,7 +429,8 @@ void db(uae_u8 data)
 void dw(uae_u16 data)
 {
     rtarea[rt_addr++] = data >> 8;
-    rtarea[rt_addr++] = data;
+    /* FELLOW CHANGE (warning): rtarea[rt_addr++] = data; */
+	rtarea[rt_addr++] = (unsigned char)data;
 }
 
 void dl(uae_u32 data)
@@ -463,12 +457,12 @@ uae_u32 ds(char *str)
 
 void calltrap(uae_u32 n)
 {
-    dw((UWO) (0xA000 + n));
+    dw (0xA000 + n);
 }
 
 void org(uae_u32 a)
 {
-    rt_addr = a - 0x00F00000;
+    rt_addr = a - RTAREA_BASE;
 }
 
 uae_u32 here(void)
@@ -492,25 +486,47 @@ int deftrap(TrapFunction func)
 
 void align(int b)
 {
-    rt_addr = (rt_addr + (b-1)) & ~(b-1);
+    rt_addr = (rt_addr + b - 1) & ~(b - 1);
 }
 
 static uae_u32 nullfunc(void)
 {
-    fprintf(stderr, "Null function called\n");
+    write_log ("Null function called\n");
     return 0;
 }
 
 static uae_u32 getchipmemsize (void)
 {
-    return chipmem_size;
+    return allocated_chipmem;
 }
 
-void rtarea_init()
+static uae_u32 uae_puts (void)
+{
+    puts (get_real_address (m68k_areg (regs, 0)));
+    return 0;
+}
+
+/* FELLOW OUT (START)----------------
+static void rtarea_init_mem (void)
+{
+    rtarea = mapped_malloc (0x10000, "rtarea");
+    if (!rtarea) {
+	write_log ("virtual memory exhausted (rtarea)!\n");
+	abort ();
+    }
+    rtarea_bank.baseaddr = rtarea;
+}
+   FELLOW OUT (END)------------------ */
+
+void rtarea_init (void)
 {
     uae_u32 a;
     char uaever[100];
-    sprintf(uaever, "uae-%d.%d.%d", (version / 100) % 10, (version / 10) % 10, (version / 1) % 10);
+
+	/* FELLOW REMOVE: rtarea_init_mem (); */
+
+	/* FELLOW CHANGE: sprintf (uaever, "uae-%d.%d.%d", UAEMAJOR, UAEMINOR, UAESUBREV);*/
+	sprintf (uaever, "fellow-%d.%d.%d", UAEMAJOR, UAEMINOR, UAESUBREV);
 
     EXPANSION_uaeversion = ds(uaever);
     EXPANSION_explibname = ds("expansion.library");
@@ -526,12 +542,17 @@ void rtarea_init()
 
     a = here();
     /* Standard "return from 68k mode" trap */
-    org(0xF0FF00);
+    org (RTAREA_BASE + 0xFF00);
     calltrap (deftrap2 (m68k_mode_return, TRAPFLAG_NO_RETVAL, ""));
 
-    org (0xF0FF80);
+    org (RTAREA_BASE + 0xFF80);
     calltrap (deftrap2 (getchipmemsize, TRAPFLAG_DORET, ""));
-    org(a);
+
+	org (RTAREA_BASE + 0xFF10);
+    calltrap (deftrap2 (uae_puts, TRAPFLAG_NO_RETVAL, ""));
+    dw (RTS);
+
+	org(a);
 
     filesys_install_code ();
 }
@@ -547,7 +568,7 @@ void rtarea_setup(void)
 {
   /* FELLOW IN (START)------------------- */
   if (memoryGetKickImageBaseBank() >= 0xf8) {
-    int bank = 0xf00000>>16;
+    int bank = RTAREA_BASE >> 16;
 
     memoryBankSet(rtarea_bgetASM, rtarea_wgetASM, rtarea_lgetASM, rtarea_bputASM,
 		  rtarea_lputASM, rtarea_lputASM, rtarea, bank, bank, FALSE);

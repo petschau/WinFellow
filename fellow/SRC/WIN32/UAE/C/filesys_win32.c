@@ -1,18 +1,34 @@
- /*
-  * UAE - The Un*x Amiga Emulator
-  *
-  * Unix file system handler for AmigaDOS
-  * Windows related functions
-  *
-  * Copyright 2000 Torsten Enderling
-  * Based on posixemu.c (Copyright 1997 Mathias Ortmann)
-  *
-  * Version 0.1: 9A0903
-  *
-  * This file only contains functions required to compile filesys.c
-  * and fsdb* on the win32 platform; posixemu.c should be regarded obsolete 
-  * through the functionality implemented in the fsdb and here
-  */
+/*=========================================================================*/
+/* UAE - The Un*x Amiga Emulator                                           */
+/*                                                                         */
+/* Unix file system handler for AmigaDOS                                   */
+/* Windows related functions                                               */
+/*                                                                         */
+/* (w)2004 by Torsten Enderling <carfesh@gmx.net>                          */
+/* based on posixemu.c (Copyright 1997 Mathias Ortmann)                    */
+/*                                                                         */
+/* Version 0.1: 9A0903                                                     */
+/*                                                                         */
+/* This file only contains functions required to compile filesys.c and     */
+/* fsdb* on the win32 platform; posixemu.c should be regarded obsolete     */
+/* through the functionality implemented in the fsdb and here.             */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #undef __ENV_UAE__
 #undef __ENV_FELLOW__
@@ -25,7 +41,7 @@
 #include "sysdeps.h"
 
 #include "config.h"
-#include "threaddep/penguin.h"
+#include "threaddep/thread.h"
 #include "options.h"
 #include "uae.h"
 #include "memory.h"
@@ -46,6 +62,7 @@
 /* common includes */
 #include <windows.h>
 #include "filesys.h"
+#include "fsdb.h"
 
 static DWORD lasterror; /* parse this using FormatMessage... later. */
 
@@ -85,6 +102,9 @@ DIR *win32_opendir(const char *path)
 
 struct dirent *win32_readdir(DIR *dir)
 {
+	if (dir == NULL)
+		return NULL;
+
 	if (dir->getnext)
 	{
 		if (!FindNextFile(dir->hDir,&dir->finddata))
@@ -100,14 +120,17 @@ struct dirent *win32_readdir(DIR *dir)
 
 void win32_closedir(DIR *dir)
 {
+	if(dir == NULL)
+		return;
+
 	FindClose(dir->hDir);
 	GlobalFree(dir);
 }
 
 int win32_mkdir(const char *name, int mode)
 {
-
-	if (CreateDirectory(name, NULL)) return 0;
+	if (CreateDirectory(name, NULL)) 
+		return 0;
 
 	lasterror = GetLastError();
 

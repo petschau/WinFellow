@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "gui_general.h"
 
@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -26,11 +26,13 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_MAIN DIALOG DISCARDABLE  0, 0, 312, 170
-STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15"
+IDD_MAIN DIALOGEX 0, 0, 312, 170
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_NOPARENTNOTIFY
+CAPTION "WinFellow alpha v0.4.3.2 - CVS"
 MENU IDR_FELLOW_GUI_MENU
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     DEFPUSHBUTTON   "&start emulation",IDC_START_EMULATION,250,10,56,20,
                     WS_GROUP
@@ -69,8 +71,8 @@ BEGIN
     PUSHBUTTON      "&debug",ID_DEBUGGER_START,257,79,50,14
 END
 
-IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_CPU DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "CPU"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -104,8 +106,8 @@ BEGIN
                     NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,55,85,41,10
 END
 
-IDD_FLOPPY DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FLOPPY DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "floppy"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -148,8 +150,8 @@ BEGIN
     PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT,135,65,25,12
 END
 
-IDD_SOUND DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_SOUND DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "sound"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -199,8 +201,8 @@ BEGIN
     LTEXT           "ms",IDC_STATIC,180,130,10,8
 END
 
-IDD_FILESYSTEM DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FILESYSTEM DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "filesystem"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -216,8 +218,8 @@ BEGIN
                     WS_TABSTOP,126,7,102,10
 END
 
-IDD_HARDFILE DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_HARDFILE DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "hardfile"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -230,8 +232,8 @@ BEGIN
     PUSHBUTTON      "&Create",IDC_BUTTON_HARDFILE_CREATE,7,134,54,15
 END
 
-IDD_MEMORY DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_MEMORY DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "memory"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -254,8 +256,8 @@ BEGIN
     PUSHBUTTON      "...",IDC_BUTTON_KEYFILE_FILEDIALOG,200,110,15,12
 END
 
-IDD_GAMEPORT DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_GAMEPORT DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "gameport"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -291,8 +293,8 @@ BEGIN
     LTEXT           "not set",IDC_GAMEPORT1_FIRE1,150,135,69,8
 END
 
-IDD_VARIOUS DIALOG DISCARDABLE  0, 0, 235, 156
-STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_VARIOUS DIALOG  0, 0, 235, 156
+STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "various"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -306,13 +308,13 @@ BEGIN
                     WS_TABSTOP,10,40,135,10
 END
 
-IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 186, 95
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 190, 94
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Filesystem Configuration"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,7,74,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,129,74,50,14
+    DEFPUSHBUTTON   "OK",IDOK,7,73,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,133,73,50,14
     LTEXT           "Volume Name:",IDC_STATIC,7,14,47,8
     LTEXT           "Root Path:",IDC_STATIC,7,30,35,8
     CONTROL         "Read-only",IDC_CHECK_FILESYSTEM_ADD_READONLY,"Button",
@@ -320,14 +322,13 @@ BEGIN
                     WS_EX_RIGHT
     EDITTEXT        IDC_EDIT_FILESYSTEM_ADD_ROOTPATH,55,28,115,12,
                     ES_AUTOHSCROLL
-    PUSHBUTTON      "...",IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG,169,28,10,12,
-                    NOT WS_VISIBLE | WS_DISABLED
+    PUSHBUTTON      "...",IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG,173,28,10,12
     EDITTEXT        IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME,55,13,115,12,
                     ES_AUTOHSCROLL
 END
 
-IDD_HARDFILE_ADD DIALOG DISCARDABLE  0, 0, 186, 130
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_HARDFILE_ADD DIALOG  0, 0, 186, 130
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Hardfile Configuration"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -353,13 +354,14 @@ BEGIN
                     ES_AUTOHSCROLL
 END
 
-IDD_ABOUT DIALOG DISCARDABLE  0, 0, 215, 137
-STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUT DIALOG  0, 0, 215, 137
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
 CAPTION "About WinFellow"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    LTEXT           "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15",IDC_STATIC,67,50,80,8
+    LTEXT           "WinFellow alpha v0.4.3.2 - CVS",IDC_STATIC,67,50,80,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,
                     94,8,SS_NOTIFY
@@ -367,8 +369,8 @@ BEGIN
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 
-IDD_HARDFILE_CREATE DIALOG DISCARDABLE  0, 0, 186, 98
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_HARDFILE_CREATE DIALOG  0, 0, 186, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create Hardfile Configuration"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -383,8 +385,8 @@ BEGIN
     EDITTEXT        IDC_CREATE_HARDFILE_NAME,60,10,78,12,ES_AUTOHSCROLL
 END
 
-IDD_DISPLAY DIALOG DISCARDABLE  0, 0, 242, 161
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DISPLAY DIALOG  0, 0, 242, 161
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "display"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -437,7 +439,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO 
 BEGIN
     IDD_MAIN, DIALOG
     BEGIN
@@ -514,9 +516,9 @@ BEGIN
     IDD_FILESYSTEM_ADD, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 179
+        RIGHTMARGIN, 183
         TOPMARGIN, 7
-        BOTTOMMARGIN, 88
+        BOTTOMMARGIN, 87
     END
 
     IDD_HARDFILE_ADD, DIALOG
@@ -560,18 +562,18 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "gui_general.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "#include ""gui_debugger.h""\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#include ""gui_debugger.rc""\r\n"
     "\0"
@@ -585,7 +587,7 @@ END
 // Menu
 //
 
-IDR_FELLOW_GUI_MENU MENU DISCARDABLE 
+IDR_FELLOW_GUI_MENU MENU 
 BEGIN
     POPUP "&File"
     BEGIN
@@ -632,37 +634,37 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
-IDI_ICON_DISPLAY        ICON    DISCARDABLE     "..\\icons\\display.ico"
-IDI_ICON_SOUND          ICON    DISCARDABLE     "..\\icons\\sound.ico"
-IDI_ICON_FLOPPY         ICON    DISCARDABLE     "..\\icons\\floppy.ico"
-IDI_ICON_HARDFILE       ICON    DISCARDABLE     "..\\icons\\harddrives.ico"
-IDI_ICON_FILESYSTEM     ICON    DISCARDABLE     "..\\icons\\filesystem.ico"
-IDI_ICON_CPU            ICON    DISCARDABLE     "..\\icons\\cpu.ico"
+IDI_ICON_WINFELLOW      ICON                    "winfellow.ico"
+IDI_ICON_DISPLAY        ICON                    "..\\icons\\display.ico"
+IDI_ICON_SOUND          ICON                    "..\\icons\\sound.ico"
+IDI_ICON_FLOPPY         ICON                    "..\\icons\\floppy.ico"
+IDI_ICON_HARDFILE       ICON                    "..\\icons\\harddrives.ico"
+IDI_ICON_FILESYSTEM     ICON                    "..\\icons\\filesystem.ico"
+IDI_ICON_CPU            ICON                    "..\\icons\\cpu.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_DISKDRIVE_LED_DISABLED BITMAP  DISCARDABLE     "disk_led_disabled_cool.bmp"
-IDB_DISKDRIVE_LED_OFF   BITMAP  DISCARDABLE     "disk_led_off_cool.bmp"
-IDB_DISKDRIVE_LED_ON    BITMAP  DISCARDABLE     "disk_led_on_cool.bmp"
-IDB_POWER_LED_OFF       BITMAP  DISCARDABLE     "power_led_off_cool.bmp"
-IDB_POWER_LED_ON        BITMAP  DISCARDABLE     "power_led_on_cool.bmp"
-IDB_WINFELLOW_LOGO      BITMAP  DISCARDABLE     "winfellow_logo_small.bmp"
+IDB_DISKDRIVE_LED_DISABLED BITMAP                  "disk_led_disabled_cool.bmp"
+IDB_DISKDRIVE_LED_OFF   BITMAP                  "disk_led_off_cool.bmp"
+IDB_DISKDRIVE_LED_ON    BITMAP                  "disk_led_on_cool.bmp"
+IDB_POWER_LED_OFF       BITMAP                  "power_led_off_cool.bmp"
+IDB_POWER_LED_ON        BITMAP                  "power_led_on_cool.bmp"
+IDB_WINFELLOW_LOGO      BITMAP                  "winfellow_logo_small.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE 
 BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // English (U.S.) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

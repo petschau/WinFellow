@@ -24,26 +24,26 @@
   * modified at the same time by another process while UAE is running.
   */
 
-/* FELLOW IN (START)
+/* FELLOW IN (START)-----------------
 
-  This file is somewhat adapted to suit Fellow's way of controlling its modules.
-  It originates from the UAE 0.8.15 source code distribution.
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
-  Torsten Enderling (carfesh@gmx.net) 2000
-  original adaption done by Petter Schau (peschau@online.no) 1999
+  Torsten Enderling (carfesh@gmx.net) 2004
 
-  FELLOW IN (END) */
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)-------------------
 #include "sysconfig.h"
 #include "sysdeps.h"
 
 #include "config.h"
-#include "threaddep/penguin.h"
+#include "threaddep/thread.h"
 #include "options.h"
 #include "uae.h"
 #include "memory.h"
 #include "custom.h"
+#include "events.h"
 #include "newcpu.h"
 #include "filesys.h"
 #include "autoconf.h"
@@ -56,7 +56,15 @@
 /* FELLOW IN (START)---------------- */
 #include <windows.h>
 #include <stdio.h>
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#endif
 #include <stdlib.h>
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <crtdbg.h>
+#endif
+
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -99,8 +107,11 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 #include "filesys_win32.h"
 #endif
 
-/*#define TRACING_ENABLED*/
-#ifdef TRACING_ENABLED
+#ifdef _DEBUG
+#define TRACING_ENABLED 0
+#endif 
+
+#if TRACING_ENABLED
 #define TRACE(x)	do { write_log x; } while(0)
 #define DUMPLOCK(u,x)	dumplock(u,x)
 #else
@@ -419,12 +430,10 @@ void write_filesys_config (struct uaedev_mount_info *mountinfo,
 		fprintf (f, "filesystem=%s,%s:%s\n", uip[i].readonly ? "ro" : "rw",
 		     uip[i].volname, str);
 	} else {
-/* FELLOW CHANGE: changed to fit fellow's config file format
-	    fprintf (f, "hardfile=%s,%d,%d,%d,%d,%s\n", uip[i].hf.secspertrack,
-		     uip[i].hf.surfaces, uip[i].hf.reservedblocks, 512, str);
-*/
-	    fprintf (f, "hardfile=%s,%d,%d,%d,%d,%s\n", uip[i].readonly ? "ro":"rw", uip[i].hf.secspertrack,
-		     uip[i].hf.surfaces, uip[i].hf.reservedblocks, uip[i].hf.blocksize, str);
+		fprintf (f, "hardfile=%s,%d,%d,%d,%d,%s\n",
+		     uip[i].readonly ? "ro" : "rw", uip[i].hf.secspertrack,
+		     uip[i].hf.surfaces, uip[i].hf.reservedblocks,
+		     uip[i].hf.blocksize, str);
 	}
 	free (str);
     }
@@ -433,10 +442,7 @@ void write_filesys_config (struct uaedev_mount_info *mountinfo,
 struct uaedev_mount_info *alloc_mountinfo (void)
 {
     struct uaedev_mount_info *info;
-
-/* FELLOW CHANGE:
-	info = (struct uaedev_mount_info *)malloc (sizeof *info);
-*/
+/* FELLOW CHANGE: info = (struct uaedev_mount_info *)malloc (sizeof *info); */
     info = (struct uaedev_mount_info *)calloc (1,sizeof *info); /* %%% - BERND, if you don't calloc this structure, we die later! */
     /*    memset (info, 0xaa, sizeof *info);*/
     info->num_units = 0;
@@ -493,6 +499,12 @@ struct hardfiledata *get_hardfile_data (int nr)
 #define DOS_TRUE ((unsigned long)-1L)
 #define DOS_FALSE (0L)
 
+/* Passed as type to Lock() */
+#define SHARED_LOCK         -2     /* File is readable by others */
+#define ACCESS_READ         -2     /* Synonym */
+#define EXCLUSIVE_LOCK      -1     /* No other access allowed    */
+#define ACCESS_WRITE        -1     /* Synonym */
+
 /* packet types */
 #define ACTION_CURRENT_VOLUME	7
 #define ACTION_LOCATE_OBJECT	8
@@ -543,8 +555,10 @@ struct hardfiledata *get_hardfile_data (int nr)
 
 typedef struct {
     uae_u32 uniq;
+	/* The directory we're going through.  */
     a_inode *aino;
-    DIR* dir;
+    /* The file we're going to look up next.  */
+    a_inode *curr_file;
 } ExamineKey;
 
 typedef struct key {
@@ -587,6 +601,7 @@ typedef struct _unit {
     /* ExKeys */
     ExamineKey	examine_keys[EXKEYS];
     int next_exkey;
+	unsigned long total_locked_ainos;
 
     /* Keys */
     struct key *keys;
@@ -718,17 +733,25 @@ static void recycle_aino (Unit *unit, a_inode *new_aino)
 	/* Still in use */
 	return;
 
-    if (unit->aino_cache_size > 500) {
+    TRACE (("Recycling; cache size %d, total_locked %d\n",
+	unit->aino_cache_size, unit->total_locked_ainos));
+    if (unit->aino_cache_size > 500 + unit->total_locked_ainos) {
 	/* Reap a few. */
 	int i = 0;
 	while (i < 50) {
+		a_inode *parent = unit->rootnode.prev->parent;
 	    a_inode **aip;
-	    aip = &unit->rootnode.prev->parent->child;
+	    aip = &parent->child;
+
+	    if (! parent->locked_children)
 	    for (;;) {
 		a_inode *aino = *aip;
 		if (aino == 0)
 		    break;
 
+		/* Not recyclable if next == 0 (i.e., not chained into
+		       recyclable list), or if parent directory is being
+		       ExNext()ed.  */
 		if (aino->next == 0)
 		    aip = &aino->sibling;
 		else {
@@ -745,7 +768,7 @@ static void recycle_aino (Unit *unit, a_inode *new_aino)
 	{
 	    char buffer[40];
 	    sprintf (buffer, "%d ainos reaped.\n", i);
-	    write_log (buffer);
+	    TRACE ((buffer));
 	}
 #endif
     }
@@ -765,16 +788,17 @@ static void update_child_names (Unit *unit, a_inode *a, a_inode *parent)
     while (a != 0) {
 	char *name_start;
 	char *new_name;
+	char dirsep[2] = { FSDB_DIR_SEPARATOR, '\0' };
 
 	a->parent = parent;
-	name_start = strrchr (a->nname, '/');
+	name_start = strrchr (a->nname, FSDB_DIR_SEPARATOR);
 	if (name_start == 0) {
 	    write_log ("malformed file name");
 	}
 	name_start++;
 	new_name = (char *)xmalloc (strlen (name_start) + l0);
 	strcpy (new_name, parent->nname);
-	strcat (new_name, "/");
+	strcat (new_name, dirsep);
 	strcat (new_name, name_start);
 	free (a->nname);
 	a->nname = new_name;
@@ -794,7 +818,7 @@ static void move_aino_children (Unit *unit, a_inode *from, a_inode *to)
 static void delete_aino (Unit *unit, a_inode *aino)
 {
     a_inode **aip;
-    int hash;
+    /* FELLOW REMOVE (unreferenced): int hash; */
 
     TRACE(("deleting aino %x\n", aino->uniq));
 
@@ -833,10 +857,15 @@ static a_inode *lookup_sub (a_inode *dir, uae_u32 uniq)
 	    }
 	}
 	cp = &c->sibling;
-    }
+    } 
+	if (! dir->locked_children) {
+	/* Move to the front to speed up repeated lookups.  Don't do this if
+	   an ExNext is going on in this directory, or we'll terminally
+	   confuse it.  */
     *cp = c->sibling;
     c->sibling = dir->child;
     dir->child = c;
+	}
     return retval;
 }
 
@@ -987,13 +1016,15 @@ static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
 	if (nn == 0)
 	    return 0;
 
-	aino = (a_inode *) xmalloc (sizeof (a_inode));
+	aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
 	if (aino == 0)
 	    return 0;
-	memset(aino, 0, sizeof(a_inode));
 
 	aino->aname = modified_rel ? modified_rel : my_strdup (rel);
 	aino->nname = nn;
+
+	aino->comment = 0;
+	aino->has_dbentry = 0;
 
 	fsdb_fill_file_attrs (aino);
 	if (aino->dir)
@@ -1002,24 +1033,25 @@ static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
     init_child_aino (unit, base, aino);
 
     recycle_aino (unit, aino);
-    TRACE(("created aino %x, lookup\n", aino->uniq));
+    TRACE(("created aino %x, lookup, amigaos_mode %d\n", aino->uniq, aino->amigaos_mode));
     return aino;
 }
 
 static a_inode *create_child_aino (Unit *unit, a_inode *base, char *rel, int isdir)
 {
-    a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode));
+    a_inode *aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
     if (aino == 0)
 	return 0;
-	memset(aino, 0, sizeof(a_inode));
 
     aino->aname = my_strdup (rel);
     aino->nname = create_nname (unit, base, rel);
-	aino->sibling = 0;
 
     init_child_aino (unit, base, aino);
+	aino->amigaos_mode = 0;
     aino->dir = isdir;
 
+	aino->comment = 0;
+    aino->has_dbentry = 0;
     aino->dirty = 1;
 
     recycle_aino (unit, aino);
@@ -1071,16 +1103,17 @@ static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *r
 	return c;
     c = fsdb_lookup_aino_nname (base, rel);
     if (c == 0) {
-	c = (a_inode *)malloc (sizeof (a_inode));
+	/* FELLOW CHANGE: c = (a_inode *)malloc (sizeof (a_inode)); */
+	c = (a_inode *) xcalloc (sizeof (a_inode), 1);
 	if (c == 0) {
 	    *err = ERROR_NO_FREE_STORE;
 	    return 0;
 	}
 
-	memset(c, 0, sizeof(a_inode));
 	c->nname = build_nname (base->nname, rel);
 	c->aname = get_aname (unit, base, rel);
-	
+	c->comment = 0;
+	c->has_dbentry = 0;
 	fsdb_fill_file_attrs (c);
 	if (c->dir)
 	    fsdb_clean_dir (c);
@@ -1178,18 +1211,15 @@ static uae_u32 startup_handler (void)
     if (i == current_mountinfo->num_units
 	|| access (current_mountinfo->ui[i].rootdir, R_OK) != 0)
     {
-
-/* FELLOW CHANGE: to fit the logfile routine
-	write_log ("Failed attempt to mount device\n", devname);
-*/
-	write_log ("Failed attempt to mount Amiga device %s with filesys root %s\n", devname, current_mountinfo->ui[i].rootdir);
+/* FELLOW CHANGE: write_log ("Failed attempt to mount device\n", devname); */
+	write_log ("Failed attempt to mount Amiga device %s with filesys root %s\n", devname, current_mountinfo->ui[i].rootdir); /* changed to fit the logfile routine */
 	put_long (pkt + dp_Res1, DOS_FALSE);
 	put_long (pkt + dp_Res2, ERROR_DEVICE_NOT_MOUNTED);
 	return 1;
     }
     uinfo = current_mountinfo->ui + i;
 
-    unit = (Unit *) xmalloc (sizeof (Unit));
+    unit = (Unit *) xcalloc (sizeof (Unit), 1);
     unit->next = units;
     units = unit;
     uinfo->self = unit;
@@ -1209,20 +1239,16 @@ static uae_u32 startup_handler (void)
     unit->cmds_acked = 0;
     for (i = 0; i < EXKEYS; i++) {
 	unit->examine_keys[i].aino = 0;
-	unit->examine_keys[i].dir = 0;
+	unit->examine_keys[i].curr_file = 0;
 	unit->examine_keys[i].uniq = 0;
     }
+	unit->total_locked_ainos = 0;
     unit->next_exkey = 1;
     unit->keys = 0;
     unit->a_uniq = unit->key_uniq = 0;
 
     unit->rootnode.aname = uinfo->volname;
     unit->rootnode.nname = uinfo->rootdir;
-/* FELLOW BUGFIX (START): needs to be initialized */
-	unit->rootnode.comment = 0;
-	unit->rootnode.has_dbentry = 0;
-	unit->rootnode.needs_dbentry = 0;
-/* FELLOW BUGFIX (END): needs to be initialized */
     unit->rootnode.sibling = 0;
     unit->rootnode.next = unit->rootnode.prev = &unit->rootnode;
     unit->rootnode.uniq = 0;
@@ -1232,6 +1258,11 @@ static uae_u32 startup_handler (void)
     unit->rootnode.amigaos_mode = 0;
     unit->rootnode.shlock = 0;
     unit->rootnode.elock = 0;
+	unit->rootnode.comment = 0;
+    unit->rootnode.has_dbentry = 0;
+/* FELLOW BUGFIX (START): needs to be initialized */
+	unit->rootnode.needs_dbentry = 0;
+/* FELLOW BUGFIX (END): needs to be initialized */
     unit->aino_cache_size = 0;
     for (i = 0; i < MAX_AINO_HASH; i++)
 	unit->aino_hash[i] = 0;
@@ -1363,7 +1394,8 @@ static Key *lookup_key (Unit *unit, uae_u32 uniq)
 
 static Key *new_key (Unit *unit)
 {
-    Key *k = (Key *) xmalloc(sizeof(Key));
+    /* FELLOW CHANGE: Key *k = (Key *) xmalloc(sizeof(Key)); */
+	Key *k = (Key *) xcalloc(sizeof(Key), 1);
 	k->uniq = ++unit->key_uniq;
 	k->fd = -1;
 	k->file_pos = 0;
@@ -1472,16 +1504,16 @@ action_lock (Unit *unit, dpacket packet)
     a_inode *a;
     uae_u32 err;
 
-    if (mode != -2 && mode != -1) {
+    if (mode != SHARED_LOCK && mode != EXCLUSIVE_LOCK) {
 	TRACE(("Bad mode.\n"));
-	mode = -2;
+	mode = SHARED_LOCK;
     }
 
     TRACE(("ACTION_LOCK(0x%lx, \"%s\", %d)\n", lock, bstr (unit, name), mode));
     DUMPLOCK(unit, lock);
 
     a = find_aino (unit, lock, bstr (unit, name), &err);
-    if (err == 0 && (a->elock || (mode != -2 && a->shlock > 0))) {
+    if (err == 0 && (a->elock || (mode != SHARED_LOCK && a->shlock > 0))) {
 	err = ERROR_OBJECT_IN_USE;
     }
     /* Lock() doesn't do access checks. */
@@ -1490,7 +1522,7 @@ action_lock (Unit *unit, dpacket packet)
 	PUT_PCK_RES2 (packet, err);
 	return;
     }
-    if (mode == -2)
+    if (mode == SHARED_LOCK)
 	a->shlock++;
     else
 	a->elock = 1;
@@ -1584,19 +1616,38 @@ put_time (long days, long mins, long ticks)
     return t;
 }
 
-static void free_exkey (ExamineKey *ek)
+static void free_exkey (Unit *unit, ExamineKey *ek)
 {
+    if (--ek->aino->exnext_count == 0) {
+	TRACE (("Freeing ExKey and reducing total_locked from %d by %d\n",
+		unit->total_locked_ainos, ek->aino->locked_children));
+	unit->total_locked_ainos -= ek->aino->locked_children;
+	ek->aino->locked_children = 0;
+    }
     ek->aino = 0;
     ek->uniq = 0;
-    if (ek->dir)
-	closedir (ek->dir);
+}
+
+static ExamineKey *lookup_exkey (Unit *unit, uae_u32 uniq)
+{
+    ExamineKey *ek;
+    int i;
+
+    ek = unit->examine_keys;
+    for (i = 0; i < EXKEYS; i++, ek++) {
+	/* Did we find a free one? */
+	if (ek->uniq == uniq)
+	    return ek;
+    }
+    write_log ("Houston, we have a BIG problem.\n");
+    return 0;
 }
 
 /* This is so sick... who invented ACTION_EXAMINE_NEXT? What did he THINK??? */
 static ExamineKey *new_exkey (Unit *unit, a_inode *aino)
 {
     uae_u32 uniq;
-    uae_u32 oldest = 0xFFFFFFFF;
+    uae_u32 oldest = 0xFFFFFFFE;
     ExamineKey *ek, *oldest_ek = 0;
     int i;
 
@@ -1616,36 +1667,42 @@ static ExamineKey *new_exkey (Unit *unit, a_inode *aino)
     }
     /* This message should usually be harmless. */
     write_log ("Houston, we have a problem.\n");
-    free_exkey (oldest_ek);
+    free_exkey (unit, oldest_ek);
     ek = oldest_ek;
     found:
 
     uniq = unit->next_exkey;
-    if (uniq == 0xFFFFFFFF) {
+    if (uniq >= 0xFFFFFFFE) {
 	/* Things will probably go wrong, but most likely the Amiga will crash
 	 * before this happens because of something else. */
 	uniq = 1;
     }
     unit->next_exkey = uniq+1;
     ek->aino = aino;
-    ek->dir = 0;
+    ek->curr_file = 0;
     ek->uniq = uniq;
     return ek;
 }
 
-static ExamineKey *lookup_exkey (Unit *unit, uae_u32 uniq)
+static void move_exkeys (Unit *unit, a_inode *from, a_inode *to)
 {
-    ExamineKey *ek;
     int i;
-
-    ek = unit->examine_keys;
-    for (i = 0; i < EXKEYS; i++, ek++) {
-	/* Did we find a free one? */
-	if (ek->uniq == uniq)
-	    return ek;
+    unsigned long tmp = 0;
+    for (i = 0; i < EXKEYS; i++) {
+	ExamineKey *k = unit->examine_keys + i;
+	if (k->uniq == 0)
+	    continue;
+	if (k->aino == from) {
+	    k->aino = to;
+	    tmp++;
+	}
     }
-    write_log ("Houston, we have a BIG problem.\n");
-    return 0;
+    if (tmp != from->exnext_count)
+	write_log ("filesys.c: Bug in ExNext bookkeeping.  BAD.\n");
+    to->exnext_count = from->exnext_count;
+    to->locked_children = from->locked_children;
+    from->exnext_count = 0;
+    from->locked_children = 0;
 }
 
 static void
@@ -1696,7 +1753,10 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
     else {
 	TRACE(("comment=\"%s\"\n", aino->comment));
 	i = 144;
-	n = strlen (x = aino->comment);
+	x = aino->comment;
+	if (! x)
+	    x = "";
+	n = strlen (x);
 	if (n > 78)
 	    n = 78;
 	put_byte (info + i, n); i++;
@@ -1706,47 +1766,6 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
 	    put_byte (info + i, 0), i++;
     }
     PUT_PCK_RES1 (packet, DOS_TRUE);
-}
-
-static void do_examine (Unit *unit, dpacket packet, ExamineKey *ek, uaecptr info)
-{
-    struct dirent de_space;
-    struct dirent* de;
-    a_inode *aino;
-    uae_u32 err;
-
-    if (!ek->dir) {
-	ek->dir = opendir (ek->aino->nname);
-    }
-    if (!ek->dir) {
-	free_exkey (ek);
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
-	return;
-    }
-
-    do {
-	de = my_readdir (ek->dir, &de_space);
-    } while (de && fsdb_name_invalid (de->d_name));
-
-    if (!de) {
-	TRACE(("no more entries\n"));
-	free_exkey (ek);
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
-	return;
-    }
-
-    TRACE(("entry=\"%s\"\n", de->d_name));
-    aino = lookup_child_aino_for_exnext (unit, ek->aino, de->d_name, &err);
-    if (err != 0) {
-	write_log ("Severe problem in ExNext.\n");
-	free_exkey (ek);
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, err);
-	return;
-    }
-    get_fileinfo (unit, packet, info, aino);
 }
 
 static void action_examine_object (Unit *unit, dpacket packet)
@@ -1770,6 +1789,63 @@ static void action_examine_object (Unit *unit, dpacket packet)
 	put_long (info, 0);
 }
 
+/* Read a directory's contents, create a_inodes for each file, and
+   mark them as locked in memory so that recycle_aino will not reap
+   them.
+   We do this to avoid problems with the host OS: we don't want to
+   leave the directory open on the host side until all ExNext()s have
+   finished - they may never finish!  */
+
+static void populate_directory (Unit *unit, a_inode *base)
+{
+    DIR *d = opendir (base->nname);
+    a_inode *aino;
+
+    for (aino = base->child; aino; aino = aino->sibling) {
+	base->locked_children++;
+	unit->total_locked_ainos++;
+    }
+    TRACE(("Populating directory, child %p, locked_children %d\n",
+	   base->child, base->locked_children));
+    for (;;) {
+	/* FELLOW REMOVE (unreferenced): struct dirent de_space; */
+	struct dirent *de;
+	uae_u32 err;
+
+	/* Find next file that belongs to the Amiga fs (skipping things
+	   like "..", "." etc.  */
+	do {
+	    de = my_readdir (d, &de_space);
+	} while (de && fsdb_name_invalid (de->d_name));
+	if (! de)
+	    break;
+	/* This calls init_child_aino, which will notice that the parent is
+	   being ExNext()ed, and it will increment the locked counts.  */
+	aino = lookup_child_aino_for_exnext (unit, base, de->d_name, &err);
+    }
+    closedir (d);
+}
+
+static void do_examine (Unit *unit, dpacket packet, ExamineKey *ek, uaecptr info)
+{
+    /* FELLOW REMOVE (unreferenced): a_inode *aino; */
+
+    if (ek->curr_file == 0)
+	goto no_more_entries;
+
+    get_fileinfo (unit, packet, info, ek->curr_file);
+    ek->curr_file = ek->curr_file->sibling;
+    TRACE (("curr_file set to %p %s\n", ek->curr_file,
+	    ek->curr_file ? ek->curr_file->aname : "NULL"));
+    return;
+
+  no_more_entries:
+    TRACE(("no more entries\n"));
+    free_exkey (unit, ek);
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
+}
+
 static void action_examine_next (Unit *unit, dpacket packet)
 {
     uaecptr lock = GET_PCK_ARG1 (packet) << 2;
@@ -1789,21 +1865,34 @@ static void action_examine_next (Unit *unit, dpacket packet)
     uniq = get_long (info);
     if (uniq == 0) {
 	write_log ("ExNext called for a file! (Houston?)\n");
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
-	return;
-    } else if (uniq == 0xFFFFFFFF) {
+	goto no_more_entries;
+    } else if (uniq == 0xFFFFFFFE)
+	goto no_more_entries;
+    else if (uniq == 0xFFFFFFFF) {
+	TRACE(("Creating new ExKey\n"));
 	ek = new_exkey(unit, aino);
-    } else
+    if (ek) {
+	    if (aino->exnext_count++ == 0)
+		populate_directory (unit, aino);
+	}
+	ek->curr_file = aino->child;
+	TRACE(("Initial curr_file: %p %s\n", ek->curr_file,
+	       ek->curr_file ? ek->curr_file->aname : "NULL"));
+    } else {
+	TRACE(("Looking up ExKey\n"));
 	ek = lookup_exkey (unit, get_long (info));
+	}
     if (ek == 0) {
 	write_log ("Couldn't find a matching ExKey. Prepare for trouble.\n");
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
-	return;
+	goto no_more_entries;
     }
     put_long (info, ek->uniq);
     do_examine (unit, packet, ek, info);
+	return;
+
+  no_more_entries:
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, ERROR_NO_MORE_ENTRIES);
 }
 
 static void do_find (Unit *unit, dpacket packet, int mode, int create, int fallback)
@@ -1943,9 +2032,9 @@ action_fh_from_lock (Unit *unit, dpacket packet)
     mode = aino->amigaos_mode; /* Use same mode for opened filehandle as existing Lock() */
 
     prepare_for_open (aino->nname);
-
-    openmode = (((mode & A_FIBF_READ) == 0 ? O_WRONLY
-		 : (mode & A_FIBF_WRITE) == 0 ? O_RDONLY
+	TRACE (("  mode is %d\n", mode));
+    openmode = (((mode & A_FIBF_READ) ? O_WRONLY
+		 : (mode & A_FIBF_WRITE) ? O_RDONLY
 		 : O_RDWR));
 
    /* the files on CD really can have the write-bit set.  */
@@ -2064,7 +2153,8 @@ action_read (Unit *unit, dpacket packet)
 	}
     } else {
 	char *buf;
-	write_log ("unixfs warning: Bad pointer passed for read: %08x\n", addr);
+	/* FELLOW CHANGE: write_log ("unixfs warning: Bad pointer passed for read: %08x\n", addr); */
+	write_log ("fellowfs warning: Bad pointer passed for read: %08x\n", addr);
 	/* ugh this is inefficient but easy */
 	buf = (char *)malloc(size);
 	if (!buf) {
@@ -2152,7 +2242,23 @@ action_seek (Unit *unit, dpacket packet)
 
     TRACE(("ACTION_SEEK(%s,%d,%d)\n", k->aino->nname, pos, mode));
 
-    old = lseek (k->fd, 0, SEEK_CUR);
+	old = lseek (k->fd, 0, SEEK_CUR);
+	{      
+	uae_s32 temppos;
+	long filesize = lseek (k->fd, 0, SEEK_END);
+	lseek (k->fd, old, SEEK_SET);
+
+	if (whence == SEEK_CUR) temppos = old + pos;
+	if (whence == SEEK_SET) temppos = pos;
+	if (whence == SEEK_END) temppos = filesize + pos;
+	if (filesize < temppos) {
+	    res = -1;
+	    PUT_PCK_RES1 (packet,res);
+	    PUT_PCK_RES2 (packet, ERROR_SEEK_ERROR);
+	    return;
+	}
+    }
+
     res = lseek (k->fd, pos, whence);
 
     if (-1 == res) {
@@ -2204,7 +2310,7 @@ static void action_set_comment (Unit * unit, dpacket packet)
     char *commented;
     a_inode *a;
     uae_u32 err;
-    long res1, res2;
+    /* FELLOW REMOVE (unreferenced): long res1, res2; */
 
     if (unit->ui.readonly) {
 	PUT_PCK_RES1 (packet, DOS_FALSE);
@@ -2532,6 +2638,8 @@ action_delete_object (Unit *unit, dpacket packet)
 	return;
     }
     if (a->dir) {
+	/* This should take care of removing the fsdb if no files remain.  */
+	fsdb_dir_writeback (a);
 	if (rmdir (a->nname) == -1) {
 	    PUT_PCK_RES1 (packet, DOS_FALSE);
 	    PUT_PCK_RES2 (packet, dos_errno());
@@ -2639,6 +2747,8 @@ action_rename_object (Unit *unit, dpacket packet)
     a2->comment = a1->comment;
     a1->comment = 0;
     a2->amigaos_mode = a1->amigaos_mode;
+	a2->uniq = a1->uniq;
+    move_exkeys (unit, a1, a2);
     move_aino_children (unit, a1, a2);
     delete_aino (unit, a1);
     PUT_PCK_RES1 (packet, DOS_TRUE);
@@ -2868,7 +2978,7 @@ static int handle_packet (Unit *unit, dpacket pck)
 }
 
 #ifdef UAE_FILESYS_THREADS
-static void *filesys_penguin (void *unit_v)
+static void *filesys_thread (void *unit_v)
 {
     UnitInfo *ui = (UnitInfo *)unit_v;
     for (;;) {
@@ -2969,22 +3079,46 @@ static uae_u32 filesys_handler (void)
     return 0;
 }
 
+static int current_deviceno = 0;
+static int current_cdrom = 0;
+
+static void reset_uaedevices (void)
+{
+    current_deviceno = 0;
+    current_cdrom = 0;
+}
+
+static int get_new_device (char **devname, uaecptr *devname_amiga, int cdrom)
+{
+    int result;
+    char buffer[80];
+
+    if (cdrom) {
+	sprintf (buffer, "CD%d", current_cdrom);
+	result = current_cdrom++;
+    } else {
+	sprintf (buffer, "DH%d", current_deviceno);
+	result = current_deviceno++;
+    }
+
+    *devname_amiga = ds (*devname = my_strdup (buffer));
+    return result;
+}
+
 void filesys_start_threads (void)
 {
     UnitInfo *uip;
     int i;
 
-/* FELLOW CHANGE: to fit fellow's declaration
-	current_mountinfo = dup_mountinfo (currprefs.mountinfo);
-*/
-    current_mountinfo = dup_mountinfo (&mountinfo);
+/* FELLOW CHANGE: current_mountinfo = dup_mountinfo (currprefs.mountinfo); */
+    current_mountinfo = dup_mountinfo (&mountinfo); /* to fit fellow's declaration */
 
     reset_uaedevices ();
     
     uip = current_mountinfo->ui;
     for (i = 0; i < current_mountinfo->num_units; i++) {
 	uip[i].unit_pipe = 0;
-	uip[i].devno = get_new_device (&uip[i].devname, &uip[i].devname_amiga);
+	uip[i].devno = get_new_device (&uip[i].devname, &uip[i].devname_amiga, 0);
 
 #ifdef UAE_FILESYS_THREADS
 	if (! is_hardfile (current_mountinfo, i)) {
@@ -2992,7 +3126,7 @@ void filesys_start_threads (void)
 	    uip[i].back_pipe = (smp_comm_pipe *)xmalloc (sizeof (smp_comm_pipe));
 	    init_comm_pipe (uip[i].unit_pipe, 50, 3);
 	    init_comm_pipe (uip[i].back_pipe, 50, 1);
-	    start_penguin (filesys_penguin, (void *)(uip + i), &uip[i].tid);
+	    uae_start_thread (filesys_thread, (void *)(uip + i), &uip[i].tid);
 	}
 #endif
     }
@@ -3001,7 +3135,6 @@ void filesys_start_threads (void)
 void filesys_reset (void)
 {
     Unit *u, *u1;
-    int i;
 
     /* We get called once from customreset at the beginning of the program
      * before filesys_start_threads has been called. Survive that.  */
@@ -3019,11 +3152,22 @@ void filesys_reset (void)
     current_mountinfo = 0;
 }
 
+static void free_all_ainos (Unit *u, a_inode *parent)
+{
+  a_inode *a;
+  while (a = parent->child)
+    {
+      free_all_ainos (u, a);
+      dispose_aino (u, &parent->child, a);
+    }
+}
+
+
 void filesys_prepare_reset (void)
 {
     UnitInfo *uip = current_mountinfo->ui;
     Unit *u;
-    int i;
+    /* FELLOW REMOVE (unreferenced): int i; */
 
 #ifdef UAE_FILESYS_THREADS
     for (i = 0; i < current_mountinfo->num_units; i++) {
@@ -3040,15 +3184,9 @@ void filesys_prepare_reset (void)
 #endif
     u = units;
     while (u != 0) {
-	while (u->rootnode.next != &u->rootnode) {
-	    a_inode *a = u->rootnode.next;
-	    u->rootnode.next = a->next;
-	    if (a->dirty && a->parent)
-		fsdb_dir_writeback (a->parent);
-	    free (a->nname);
-	    free (a->aname);
-	    free (a);
-	}
+	free_all_ainos (u, &u->rootnode);
+	u->rootnode.next = u->rootnode.prev = &u->rootnode;
+	u->aino_cache_size = 0;
 	u = u->next;
     }
 }
@@ -3114,6 +3252,7 @@ static uae_u32 filesys_diagentry (void)
     }
     put_word (resaddr, 0x7001); /* moveq.l #1,d0 */
     put_word (resaddr + 2, RTS);
+	/* @@@@@ FELLOW TODO: new 68k code here */
 
     m68k_areg (regs, 0) = residents;
     return 1;
@@ -3165,15 +3304,18 @@ static uae_u32 filesys_dev_storeinfo (void)
 
 void filesys_install (void)
 {
-    int i;
+    /* FELLOW REMOVE (unreferenced): int i; */
     uaecptr loop;
 
     TRACE (("Installing filesystem\n"));
 
-    ROM_filesys_resname = ds("UAEunixfs.resource");
-    ROM_filesys_resid = ds("UAE unixfs 0.4");
+    /* FELLOW CHANGE: ROM_filesys_resname = ds("UAEunixfs.resource"); */
+	ROM_filesys_resname = ds("FELLOWfs.resource");
+    /* FELLOW CHANGE: ROM_filesys_resid = ds("UAE unixfs 0.4"); */
+	ROM_filesys_resid = ds("Fellow fs 0.4");
 
-    fsdevname = ds ("uae.device"); /* does not really exist */
+    /* FELLOW CHANGE: fsdevname = ds ("uae.device"); */
+	fsdevname = ds ("fellow.device"); /* does not really exist */
 
     ROM_filesys_diagentry = here();
     calltrap (deftrap(filesys_diagentry));
@@ -3181,23 +3323,23 @@ void filesys_install (void)
 
     loop = here ();
     /* Special trap for the assembly make_dev routine */
-    org (0xF0FF20);
+    org (RTAREA_BASE + 0xFF20);
     calltrap (deftrap (filesys_dev_remember));
     dw (RTS);
 
-    org (0xF0FF28);
+    org (RTAREA_BASE + 0xFF28);
     calltrap (deftrap (filesys_dev_storeinfo));
     dw (RTS);
 
-    org (0xF0FF30);
+    org (RTAREA_BASE + 0xFF30);
     calltrap (deftrap (filesys_handler));
     dw (RTS);
 
-    org (0xF0FF40);
+    org (RTAREA_BASE + 0xFF40);
     calltrap (deftrap (startup_handler));
     dw (RTS);
 
-    org (0xF0FF50);
+    org (RTAREA_BASE + 0xFF50);
     calltrap (deftrap (exter_int_helper));
     dw (RTS);
 
@@ -3208,6 +3350,7 @@ void filesys_install_code (void)
 {
     align(4);
 
+	/* @@@@@ FELLOW TODO: new 68k code here */
     /* The last offset comes from the code itself, look for it near the top. */
     EXPANSION_bootcode = here () + 8 + 0x14;
     /* Ouch. Make sure this is _always_ a multiple of two bytes. */

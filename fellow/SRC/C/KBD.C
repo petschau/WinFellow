@@ -128,93 +128,93 @@ void kbdEventEOLHandler(void) {
       case EVENT_JOY0_UP_INACTIVE:
 	up[0] = (thisev == EVENT_JOY0_UP_ACTIVE);
 	up_changed[0] = TRUE;
-	fellowAddLog(up[0] ? "Up0 - pressed\n" : "Up0 - released\n");
+	//fellowAddLog(up[0] ? "Up0 - pressed\n" : "Up0 - released\n");
 	break;
       case EVENT_JOY0_DOWN_ACTIVE:
       case EVENT_JOY0_DOWN_INACTIVE:
 	down[0] = (thisev == EVENT_JOY0_DOWN_ACTIVE);
 	down_changed[0] = TRUE;
-	fellowAddLog(down[0] ? "Down0 - pressed\n" : "Down0 - released\n");
+	//fellowAddLog(down[0] ? "Down0 - pressed\n" : "Down0 - released\n");
 	break;
       case EVENT_JOY0_LEFT_ACTIVE:
       case EVENT_JOY0_LEFT_INACTIVE:
 	left[0] = (thisev == EVENT_JOY0_LEFT_ACTIVE);
 	left_changed[0] = TRUE;
-	fellowAddLog(left[0] ? "Left0 - pressed\n" : "Left0 - released\n");
+	//fellowAddLog(left[0] ? "Left0 - pressed\n" : "Left0 - released\n");
 	break;
       case EVENT_JOY0_RIGHT_ACTIVE:
       case EVENT_JOY0_RIGHT_INACTIVE:
 	right[0] = (thisev == EVENT_JOY0_RIGHT_ACTIVE);
 	right_changed[0] = TRUE;
-	fellowAddLog(right[0] ? "Right0 - pressed\n" : "Right0 - released\n");
+	//fellowAddLog(right[0] ? "Right0 - pressed\n" : "Right0 - released\n");
 	break;
       case EVENT_JOY0_FIRE0_ACTIVE:
       case EVENT_JOY0_FIRE0_INACTIVE:
 	fire0[0] = (thisev == EVENT_JOY0_FIRE0_ACTIVE);
 	fire0_changed[0] = TRUE;
-	fellowAddLog(fire0[0] ? "Fire00 - pressed\n" : "Fire00 - released\n");
+	//fellowAddLog(fire0[0] ? "Fire00 - pressed\n" : "Fire00 - released\n");
 	break;
       case EVENT_JOY0_FIRE1_ACTIVE:
       case EVENT_JOY0_FIRE1_INACTIVE:
 	fire1[0] = (thisev == EVENT_JOY0_FIRE1_ACTIVE);
 	fire1_changed[0] = TRUE;
-	fellowAddLog(fire1[0] ? "Fire10 - pressed\n" : "Fire10 - released\n");
+	//fellowAddLog(fire1[0] ? "Fire10 - pressed\n" : "Fire10 - released\n");
 	break;
       case EVENT_JOY0_AUTOFIRE0_ACTIVE:
       case EVENT_JOY0_AUTOFIRE0_INACTIVE:
 	gameport_autofire0[0] = (thisev == EVENT_JOY0_AUTOFIRE0_ACTIVE);
-	fellowAddLog(gameport_autofire0[0] ? "AutoFire00 - pressed\n" : "AutoFire00 - released\n");
+	//fellowAddLog(gameport_autofire0[0] ? "AutoFire00 - pressed\n" : "AutoFire00 - released\n");
 	break;
       case EVENT_JOY0_AUTOFIRE1_ACTIVE:
       case EVENT_JOY0_AUTOFIRE1_INACTIVE:
 	gameport_autofire1[0] = (thisev == EVENT_JOY0_AUTOFIRE1_ACTIVE);
-	fellowAddLog(gameport_autofire1[0] ? "AutoFire10 - pressed\n" : "AutoFire10 - released\n");
+	//fellowAddLog(gameport_autofire1[0] ? "AutoFire10 - pressed\n" : "AutoFire10 - released\n");
 	break;
       case EVENT_JOY1_UP_ACTIVE:
       case EVENT_JOY1_UP_INACTIVE:
 	up[1] = (thisev == EVENT_JOY1_UP_ACTIVE);
 	up_changed[1] = TRUE;
-	fellowAddLog(up[1] ? "Up1 - pressed\n" : "Up1 - released\n");
+	//fellowAddLog(up[1] ? "Up1 - pressed\n" : "Up1 - released\n");
 	break;
       case EVENT_JOY1_DOWN_ACTIVE:
       case EVENT_JOY1_DOWN_INACTIVE:
 	down[1] = (thisev == EVENT_JOY1_DOWN_ACTIVE);
 	down_changed[1] = TRUE;
-	fellowAddLog(down[1] ? "Down1 - pressed\n" : "Down1 - released\n");
+	//fellowAddLog(down[1] ? "Down1 - pressed\n" : "Down1 - released\n");
 	break;
       case EVENT_JOY1_LEFT_ACTIVE:
       case EVENT_JOY1_LEFT_INACTIVE:
 	left[1] = (thisev == EVENT_JOY1_LEFT_ACTIVE);
 	left_changed[1] = TRUE;
-	fellowAddLog(left[1] ? "Left1 - pressed\n" : "Left1 - released\n");
+	//fellowAddLog(left[1] ? "Left1 - pressed\n" : "Left1 - released\n");
 	break;
       case EVENT_JOY1_RIGHT_ACTIVE:
       case EVENT_JOY1_RIGHT_INACTIVE:
 	right[1] = (thisev == EVENT_JOY1_RIGHT_ACTIVE);
 	right_changed[1] = TRUE;
-	fellowAddLog(right[1] ? "Right1 - pressed\n" : "Right1 - released\n");
+	//fellowAddLog(right[1] ? "Right1 - pressed\n" : "Right1 - released\n");
 	break;
       case EVENT_JOY1_FIRE0_ACTIVE:
       case EVENT_JOY1_FIRE0_INACTIVE:
 	fire0[1] = (thisev == EVENT_JOY1_FIRE0_ACTIVE);
 	fire0_changed[1] = TRUE;
-	fellowAddLog(fire0[1] ? "Fire01 - pressed\n" : "Fire01 - released\n");
+	//fellowAddLog(fire0[1] ? "Fire01 - pressed\n" : "Fire01 - released\n");
 	break;
       case EVENT_JOY1_FIRE1_ACTIVE:
       case EVENT_JOY1_FIRE1_INACTIVE:
 	fire1[1] = (thisev == EVENT_JOY1_FIRE1_ACTIVE);
 	fire1_changed[1] = TRUE;
-	fellowAddLog(fire1[1] ? "Fire11 - pressed\n" : "Fire11 - released\n");
+	//fellowAddLog(fire1[1] ? "Fire11 - pressed\n" : "Fire11 - released\n");
 	break;
       case EVENT_JOY1_AUTOFIRE0_ACTIVE:
       case EVENT_JOY1_AUTOFIRE0_INACTIVE:
 	gameport_autofire0[1] = (thisev == EVENT_JOY1_AUTOFIRE0_ACTIVE);
-	fellowAddLog(gameport_autofire0[1] ? "AutoFire01 - pressed\n" : "AutoFire01 - released\n");
+	//fellowAddLog(gameport_autofire0[1] ? "AutoFire01 - pressed\n" : "AutoFire01 - released\n");
 	break;
       case EVENT_JOY1_AUTOFIRE1_ACTIVE:
       case EVENT_JOY1_AUTOFIRE1_INACTIVE:
 	gameport_autofire1[1] = (thisev == EVENT_JOY1_AUTOFIRE1_ACTIVE);
-	fellowAddLog(gameport_autofire1[1] ? "AutoFire11 - pressed\n" : "AutoFire11 - released\n");
+	//fellowAddLog(gameport_autofire1[1] ? "AutoFire11 - pressed\n" : "AutoFire11 - released\n");
 	break;
     }
     kbd_state.eventsEOL.outpos++;

@@ -14,9 +14,18 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#endif
 #include <stdlib.h>
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <crtdbg.h>
+#endif
+
 #include <process.h>
 #include <commctrl.h>
+#include <shlobj.h>
 #include <prsht.h>
 #include "gui_general.h"
 #include "gui_debugger.h"
@@ -570,20 +579,13 @@ static STR *wguiGetBOOLEToString(BOOLE value) {
 /* Runs a session in the file requester                                       */
 /*============================================================================*/
 
-typedef enum {
-  FSEL_ROM = 0,
-  FSEL_ADF = 1,
-  FSEL_KEY = 2,
-  FSEL_HDF = 3,
-  FSEL_WFC = 4
-} SelectFileFlags;
-
-static STR FileType[5][CFG_FILENAME_LENGTH] = {
+static STR FileType[6][CFG_FILENAME_LENGTH] = {
 	"ROM Images (.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
     "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
     "Key Files (.key)\0*.key\0\0\0", 
     "Hard Files (.hdf)\0*.hdf\0\0\0",
-    "Configuration Files (.wfc)\0*.wfc\0\0\0"};
+    "Configuration Files (.wfc)\0*.wfc\0\0\0",
+	"Amiga Modules (.amod)\0*.amod\0\0\0"};
 
 BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize, 
 					 STR *title, SelectFileFlags SelectFileType) {
@@ -664,7 +666,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.lpstrCustomFilter = NULL;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
-  filename[0] = '\0';
+  // filename[0] = '\0';
   ofn.lpstrFile = filename;
   ofn.nMaxFile = filenamesize;
   ofn.lpstrFileTitle = NULL;
@@ -694,6 +696,9 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
 		case FSEL_WFC:
 			ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
 			break;
+		case FSEL_MOD:
+			ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini);
+			break;
 		default:
 			ofn.lpstrInitialDir = NULL;
 	}
@@ -701,7 +706,8 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.lpstrTitle = title;
   ofn.Flags = OFN_EXPLORER |
 			  OFN_HIDEREADONLY |
-			  OFN_OVERWRITEPROMPT;
+			  OFN_OVERWRITEPROMPT |
+        OFN_NOCHANGEDIR;
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = &".wfc";
@@ -712,37 +718,33 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
 }
 
 BOOLE wguiSelectDirectory(HWND hwndDlg,
-			  STR *filename, 
+			  STR *szPath, 
+			  STR *szDescription,
 			  ULO filenamesize,
-			  STR *title) {
-  OPENFILENAME ofn;
-  STR *filters = NULL;
+			  STR *szTitle) {
+	
+	BROWSEINFO bi = {
+		hwndDlg,								// hwndOwner
+		NULL,									// pidlRoot
+		szPath,									// pszDisplayName
+		szTitle,								// lpszTitle
+		BIF_RETURNONLYFSDIRS,					// ulFlags
+		NULL,									// lpfn
+		0,										// lParam
+		0										// iImage
+	};
+		
+	LPITEMIDLIST pidlTarget;
 
-  ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
-  ofn.hInstance = win_drv_hInstance;
-  ofn.lpstrFilter = filters;
-  ofn.lpstrCustomFilter = NULL;
-  ofn.nMaxCustFilter = 0;
-  ofn.nFilterIndex = 1;
-  filename[0] = '\0';
-  ofn.lpstrFile = filename;
-  ofn.nMaxFile = filenamesize;
-  ofn.lpstrFileTitle = NULL;
-  ofn.nMaxFileTitle = 0;
-  ofn.lpstrInitialDir = NULL;
-  ofn.lpstrTitle = title;
-  ofn.Flags = OFN_EXPLORER |
-              OFN_FILEMUSTEXIST |
-              OFN_NOCHANGEDIR;
-  ofn.nFileOffset = 0;
-  ofn.nFileExtension = 0;
-  ofn.lpstrDefExt = NULL;
-  ofn.lCustData = (long) NULL;
-  ofn.lpfnHook = NULL;
-  ofn.lpTemplateName = NULL;
-  return GetOpenFileName(&ofn);
+	if(pidlTarget = SHBrowseForFolder(&bi)) {
+		strcpy(szDescription, bi.pszDisplayName);
+		SHGetPathFromIDList(pidlTarget, szPath);   // Make sure it is a path
+		CoTaskMemFree(pidlTarget);
+		return TRUE;
+	}
+	return FALSE;
 }
+
 
 /*============================================================================*/
 /* Install history of configuration files into window menu                    */
@@ -851,7 +853,9 @@ void wguiSwapCfgsInHistory(ULO itemA, ULO itemB) {
 void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
 	STR filename[CFG_FILENAME_LENGTH];
 
-	if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save As", FSEL_WFC)) {
+	strcpy(filename, "");
+
+	if (wguiSaveFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Save Configuration As:", FSEL_WFC)) {
 		cfgSaveToFilename(wgui_cfg, filename);
 		iniSetCurrentConfigurationFilename(wgui_ini, filename);
 		iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
@@ -1758,18 +1762,22 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARA
 	    break;
 	  case IDC_BUTTON_DF0_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 0, "");
+      floppySetDiskImage(0, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME, cfgGetDiskImage(wgui_cfg, 0));
 	    break;
 	  case IDC_BUTTON_DF1_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 1, "");
+      floppySetDiskImage(1, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME, cfgGetDiskImage(wgui_cfg, 1));
 	    break;
 	  case IDC_BUTTON_DF2_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 2, "");
+      floppySetDiskImage(2, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME, cfgGetDiskImage(wgui_cfg, 2));
 	    break;
 	  case IDC_BUTTON_DF3_EJECT:
 	    cfgSetDiskImage(wgui_cfg, 3, "");
+      floppySetDiskImage(3, "");
 	    ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME, cfgGetDiskImage(wgui_cfg, 3));
 	    break;
 	  default:
@@ -2008,9 +2016,11 @@ BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
       if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
           case IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG:
-	    if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath, 
-			CFG_FILENAME_LENGTH, "Select Filesystem Root")) {
+	    if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath,
+			wgui_current_filesystem_edit->volumename, CFG_FILENAME_LENGTH, 
+			"Select Filesystem Root Directory:")) {
 	      ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
+		  ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
 	    }
 	    break;
 	  case IDOK:
@@ -2706,43 +2716,55 @@ BOOLE wguiEnter(void) {
 		  break;
 		case WGUI_LOAD_HISTORY0:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-          if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) {
-			wguiDeleteCfgFromHistory(0);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+      if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(0);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
 		  }
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY1:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) {
-			wguiDeleteCfgFromHistory(1);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-			wguiPutCfgInHistoryOnTop(1);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(1);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+			  wguiPutCfgInHistoryOnTop(1);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY2:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) {
-			wguiDeleteCfgFromHistory(2);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-			wguiPutCfgInHistoryOnTop(2);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(2);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+			  wguiPutCfgInHistoryOnTop(2);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_LOAD_HISTORY3:
 		  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) {
-			wguiDeleteCfgFromHistory(3);
-		  } else {
-			iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-			wguiPutCfgInHistoryOnTop(3);
+		  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) 
+      {
+			  wguiDeleteCfgFromHistory(3);
+		  } 
+      else 
+      {
+			  iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+			  wguiPutCfgInHistoryOnTop(3);
 		  } 
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
@@ -2805,6 +2827,7 @@ void wguiStartupPost(void) {
 /*============================================================================*/
 
 void wguiShutdown(void) {
+  wguiFreeGuiDrawModesList(pwgui_dm);
 }
 
 
