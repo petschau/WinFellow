@@ -6,11 +6,23 @@
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
 
+/* ---------------- KNOWN BUGS/FIXLIST ----------------- 
+- translation from keynames to DX keys should be perfectioned
+- autofire support
+- possibilty to specify only the changed keys
+- conflicts in the keys choosen by the user
+*/
+
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 05, 2000
+- added parsing of replacement keys for the gameport
+- added a third parameter to prsReadFile for the array of joy replacement ** internal **
+*/
 
 
 #include "defs.h"
 #include "keycodes.h"
-//#include "keymaps.h"
+#include "kbdparser.h"
 #include <stdio.h>
 
 extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
@@ -23,6 +35,8 @@ extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 extern STR* kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
 #define pc_keys kbd_drv_pc_symbol_to_string
+
+extern int symbol_to_DIK_kbddrv[PCK_LAST_KEY];
 
 
 /*===========================================================================*/
@@ -233,6 +247,33 @@ UBY amiga_scancode[MAX_AMIGA_NAMES] = {
 	A_RIGHT
 };
 
+
+//#define MAX_KEY_REPLACEMENT		16
+#define MAX_KEY_REPLACEMENT		12
+
+
+// the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
+
+STR *replacement_keys[MAX_KEY_REPLACEMENT] = {
+	"JOYKEY1_LEFT",
+	"JOYKEY1_RIGHT",
+	"JOYKEY1_UP",
+	"JOYKEY1_DOWN",
+	"JOYKEY1_FIRE0",
+	"JOYKEY1_FIRE1",
+	//"JOYKEY1_AUTOFIRE0",
+	//"JOYKEY1_AUTOFIRE1",
+	"JOYKEY2_LEFT",
+	"JOYKEY2_RIGHT",
+	"JOYKEY2_UP",
+	"JOYKEY2_DOWN",
+	"JOYKEY2_FIRE0",
+	"JOYKEY2_FIRE1"
+	//"JOYKEY2_AUTOFIRE0",
+	//"JOYKEY2_AUTOFIRE1"
+};
+
+
 /*===========================================================================*/
 /* Get index of the key														 */
 /*===========================================================================*/
@@ -303,11 +344,11 @@ BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 /* read the mapping file and set the map array								 */
 /*===========================================================================*/
 
-BOOLE prsReadFile( char *szFilename, UBY *pc_to_am )
+BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][6] )
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
-	int AmigaIndex, PcIndex;
+	int AmigaIndex, PcIndex, ReplIndex;
 
 	f = fopen( szFilename, "r" );
 	if( !f )
@@ -338,10 +379,14 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am )
 		if( prsGetAmigaName( line, &pAmigaName, &pWinName ))
 			continue;
 
+		ReplIndex = -1;
 		AmigaIndex = prsGetKeyIndex( pAmigaName, amiga_keys, MAX_AMIGA_NAMES );
 		PcIndex = prsGetKeyIndex( pWinName, pc_keys, MAX_PC_NAMES );
 
 		if( AmigaIndex < 0 )
+			ReplIndex = prsGetKeyIndex( pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT );
+
+		if(( AmigaIndex < 0 ) && ( ReplIndex < 0 ))
 		{
 			fellowAddLog( "Amiga key: " );
 			fellowAddLog( pAmigaName );
@@ -357,7 +402,15 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am )
 			continue;
 		}
 
-		pc_to_am[PcIndex] = amiga_scancode[AmigaIndex];
+		if( AmigaIndex >= 0 )
+			pc_to_am[PcIndex] = amiga_scancode[AmigaIndex];
+		else
+		{
+			if( ReplIndex < 7 )
+				key_repl[0][ReplIndex] = symbol_to_DIK_kbddrv[ PcIndex ];
+			else
+				key_repl[1][ReplIndex - 7] = symbol_to_DIK_kbddrv[ PcIndex ];
+		}
 	}
 	fclose( f );
 
