@@ -155,6 +155,46 @@ LLO dld2x32 = 0;
 LON dld2x32_times = 0;
 LON dld2x32_pixels = 0;
 
+LLO dlh1x8_tmp = 0;
+LLO dlh1x8 = 0;
+LON dlh1x8_times = 0;
+LON dlh1x8_pixels = 0;
+
+LLO dlh2x8_tmp = 0;
+LLO dlh2x8 = 0;
+LON dlh2x8_times = 0;
+LON dlh2x8_pixels = 0;
+
+LLO dlh1x16_tmp = 0;
+LLO dlh1x16 = 0;
+LON dlh1x16_times = 0;
+LON dlh1x16_pixels = 0;
+
+LLO dlh2x16_tmp = 0;
+LLO dlh2x16 = 0;
+LON dlh2x16_times = 0;
+LON dlh2x16_pixels = 0;
+
+LLO dlh1x24_tmp = 0;
+LLO dlh1x24 = 0;
+LON dlh1x24_times = 0;
+LON dlh1x24_pixels = 0;
+
+LLO dlh2x24_tmp = 0;
+LLO dlh2x24 = 0;
+LON dlh2x24_times = 0;
+LON dlh2x24_pixels = 0;
+
+LLO dlh1x32_tmp = 0;
+LLO dlh1x32 = 0;
+LON dlh1x32_times = 0;
+LON dlh1x32_pixels = 0;
+
+LLO dlh2x32_tmp = 0;
+LLO dlh2x32 = 0;
+LON dlh2x32_times = 0;
+LON dlh2x32_pixels = 0;
+
 // MMX
 
 LLO dlsbg1x8mmx_tmp = 0;
@@ -482,6 +522,25 @@ draw_line_func draw_line_dual_hires_funcs[2][8] = {
   drawLineDual1x32mmx,  drawLineDual1x32mmx
 };
 
+draw_line_func draw_line_HAM_lores_funcs[2][8] = {
+  drawLineHAM1x8,
+  drawLineHAM2x8,
+  drawLineHAM1x16,
+  drawLineHAM2x16,
+  drawLineHAM1x24,
+  drawLineHAM2x24,
+	drawLineHAM1x32,
+	drawLineHAM2x32,
+	drawLineHAM1x8,
+	drawLineHAM2x8,
+	drawLineHAM1x16,
+	drawLineHAM2x16,
+	drawLineHAM1x24,
+	drawLineHAM2x24,
+	drawLineHAM1x32,
+	drawLineHAM2x32
+};
+
 #endif
 
 #ifdef FORCE_C_CONVERSION
@@ -550,6 +609,25 @@ draw_line_func draw_line_dual_hires_funcs[2][8] = {
   drawLineDual1x16_C,  drawLineDual1x16_C,
   drawLineDual1x24_C,  drawLineDual1x24_C,
   drawLineDual1x32_C,  drawLineDual1x32_C
+};
+
+draw_line_func draw_line_HAM_lores_funcs[2][8] = {
+  drawLineHAM1x8_C,
+  drawLineHAM2x8_C,
+  drawLineHAM1x16_C,
+  drawLineHAM2x16_C,
+  drawLineHAM1x24_C,
+  drawLineHAM2x24_C,
+	drawLineHAM1x32_C,
+	drawLineHAM2x32_C,
+	drawLineHAM1x8_C,
+	drawLineHAM2x8_C,
+	drawLineHAM1x16_C,
+	drawLineHAM2x16_C,
+	drawLineHAM1x24_C,
+	drawLineHAM2x24_C,
+	drawLineHAM1x32_C,
+	drawLineHAM2x32_C
 };
 
 #endif
@@ -692,26 +770,27 @@ draw_line_func draw_line_dual_hires_funcs[2][8] = {
   drawLineDual1x32,  drawLineDual1x32
 };
 
-#endif
-
 draw_line_func draw_line_HAM_lores_funcs[2][8] = {
-  drawLineHAM1x8_C,
-  drawLineHAM2x8_C,
-  drawLineHAM1x16_C,
-  drawLineHAM2x16_C,
-  drawLineHAM1x24_C,
-  drawLineHAM2x24_C,
-	drawLineHAM1x32_C,
-	drawLineHAM2x32_C,
-	drawLineHAM1x8_C,
-	drawLineHAM2x8_C,
-	drawLineHAM1x16_C,
-	drawLineHAM2x16_C,
-	drawLineHAM1x24_C,
-	drawLineHAM2x24_C,
-	drawLineHAM1x32_C,
-	drawLineHAM2x32_C
+  drawLineHAM1x8,
+  drawLineHAM2x8,
+  drawLineHAM1x16,
+  drawLineHAM2x16,
+  drawLineHAM1x24,
+  drawLineHAM2x24,
+	drawLineHAM1x32,
+	drawLineHAM2x32,
+	drawLineHAM1x8,
+	drawLineHAM2x8,
+	drawLineHAM1x16,
+	drawLineHAM2x16,
+	drawLineHAM1x24,
+	drawLineHAM2x24,
+	drawLineHAM1x32,
+	drawLineHAM2x32
 };
+
+
+#endif
 
 /*============================================================================*/
 /* Framebuffer information                                                    */
@@ -1771,6 +1850,19 @@ void drawShutdown(void) {
   fprintf(F, "DrawDual1x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x32mmx, dld1x32mmx_times, (dld1x32mmx_times == 0) ? 0 : (dld1x32mmx / dld1x32mmx_times), dld1x32mmx_pixels, (dld1x32mmx_times == 0) ? 0 : (dld1x32mmx_pixels / dld1x32mmx_times), (dld1x32mmx_pixels == 0) ? 0 : (dld1x32mmx / dld1x32mmx_pixels));
   fprintf(F, "DrawDual2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x32, dld2x32_times, (dld2x32_times == 0) ? 0 : (dld2x32 / dld2x32_times), dld2x32_pixels, (dld2x32_times == 0) ? 0 : (dld2x32_pixels / dld2x32_times), (dld2x32_pixels == 0) ? 0 : (dld2x32 / dld2x32_pixels));
   fprintf(F, "DrawDual2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x32mmx, dld2x32mmx_times, (dld2x32mmx_times == 0) ? 0 : (dld2x32mmx / dld2x32mmx_times), dld2x32mmx_pixels, (dld2x32mmx_times == 0) ? 0 : (dld2x32mmx_pixels / dld2x32mmx_times), (dld2x32mmx_pixels == 0) ? 0 : (dld2x32mmx / dld2x32mmx_pixels));
+
+  fprintf(F, "DrawHAM1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x8, dlh1x8_times, (dlh1x8_times == 0) ? 0 : (dlh1x8 / dlh1x8_times), dlh1x8_pixels, (dlh1x8_times == 0) ? 0 : (dlh1x8_pixels / dlh1x8_times), (dlh1x8_pixels == 0) ? 0 : (dlh1x8 / dlh1x8_pixels));
+  fprintf(F, "DrawHAM2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x8, dlh2x8_times, (dlh2x8_times == 0) ? 0 : (dlh2x8 / dlh2x8_times), dlh2x8_pixels, (dlh2x8_times == 0) ? 0 : (dlh2x8_pixels / dlh2x8_times), (dlh2x8_pixels == 0) ? 0 : (dlh2x8 / dlh2x8_pixels));
+  
+  fprintf(F, "DrawHAM1x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x16, dlh1x16_times, (dlh1x16_times == 0) ? 0 : (dlh1x16 / dlh1x16_times), dlh1x16_pixels, (dlh1x16_times == 0) ? 0 : (dlh1x16_pixels / dlh1x16_times), (dlh1x16_pixels == 0) ? 0 : (dlh1x16 / dlh1x16_pixels));
+  fprintf(F, "DrawHAM2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x16, dlh2x16_times, (dlh2x16_times == 0) ? 0 : (dlh2x16 / dlh2x16_times), dlh2x16_pixels, (dlh2x16_times == 0) ? 0 : (dlh2x16_pixels / dlh2x16_times), (dlh2x16_pixels == 0) ? 0 : (dlh2x16 / dlh2x16_pixels));
+  
+  fprintf(F, "DrawHAM1x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x24, dlh1x24_times, (dlh1x24_times == 0) ? 0 : (dlh1x24 / dlh1x24_times), dlh1x24_pixels, (dlh1x24_times == 0) ? 0 : (dlh1x24_pixels / dlh1x24_times), (dlh1x24_pixels == 0) ? 0 : (dlh1x24 / dlh1x24_pixels));
+  fprintf(F, "DrawHAM2x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x24, dlh2x24_times, (dlh2x24_times == 0) ? 0 : (dlh2x24 / dlh2x24_times), dlh2x24_pixels, (dlh2x24_times == 0) ? 0 : (dlh2x24_pixels / dlh2x24_times), (dlh2x24_pixels == 0) ? 0 : (dlh2x24 / dlh2x24_pixels));
+
+  fprintf(F, "DrawHAM1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x32, dlh1x32_times, (dlh1x32_times == 0) ? 0 : (dlh1x32 / dlh1x32_times), dlh1x32_pixels, (dlh1x32_times == 0) ? 0 : (dlh1x32_pixels / dlh1x32_times), (dlh1x32_pixels == 0) ? 0 : (dlh1x32 / dlh1x32_pixels));
+  fprintf(F, "DrawHAM2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x32, dlh2x32_times, (dlh2x32_times == 0) ? 0 : (dlh2x32 / dlh2x32_times), dlh2x32_pixels, (dlh2x32_times == 0) ? 0 : (dlh2x32_pixels / dlh2x32_times), (dlh2x32_pixels == 0) ? 0 : (dlh2x32 / dlh2x32_pixels));
+
   fclose(F);
   }
 #endif
@@ -1855,49 +1947,44 @@ void drawEndOfFramePreC(void)
 
 void drawLineNormal1x8_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_ptr;
-  
-  source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  UBY *framebuffer = draw_buffer_current_ptr;
 
   #ifdef DRAW_TSC_PROFILE
-		dln1x8_pixels += pixels_left_to_draw;
-		drawTscBefore(&dln1x8_tmp);
+  dln1x8_pixels += pixels_left_to_draw;
+  drawTscBefore(&dln1x8_tmp);
   #endif
 
   if (pixels_left_to_draw >= 4)
   {
     // align to 32-bit data
-    while ((((ULO) draw_buffer_current_ptr) & 0x03) != 0)
+    while ((((ULO) framebuffer) & 0x03) != 0)
     {
       pixels_left_to_draw--;
-      *((UBY *) draw_buffer_current_ptr) = *((UBY *) linedescription->colors + *source_ptr);
-      source_ptr++;
-      draw_buffer_current_ptr++;
+      *framebuffer++ = *((UBY *) linedescription->colors + *source_ptr++);
     }
     while (pixels_left_to_draw >= 4)
     {
-      *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
-      *((UBY *) draw_buffer_current_ptr + 1) = *((UBY *) linedescription->colors + *(source_ptr + 1));
+      *framebuffer = *((UBY *) linedescription->colors + *(source_ptr));
+      *(framebuffer + 1) = *((UBY *) linedescription->colors + *(source_ptr + 1));
+      *(framebuffer + 2) = *((UBY *) linedescription->colors + *(source_ptr + 2));
+      *(framebuffer + 3) = *((UBY *) linedescription->colors + *(source_ptr + 3));
       pixels_left_to_draw -= 4;
-      *((UBY *) draw_buffer_current_ptr + 2) = *((UBY *) linedescription->colors + *(source_ptr + 2));
-      *((UBY *) draw_buffer_current_ptr + 3) = *((UBY *) linedescription->colors + *(source_ptr + 3));
       source_ptr += 4;
-      draw_buffer_current_ptr += 4;
+      framebuffer += 4;
     }
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UBY *) draw_buffer_current_ptr) = *((UBY *) linedescription->colors + *source_ptr);
-    source_ptr++;
+    *framebuffer++ = *((UBY *) linedescription->colors + *source_ptr++);
     pixels_left_to_draw--;
-    draw_buffer_current_ptr++;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dln1x8_tmp, &dln1x8, &dln1x8_times);
+  drawTscAfter(&dln1x8_tmp, &dln1x8, &dln1x8_times);
   #endif
+  draw_buffer_current_ptr = framebuffer;
 }
 
 /*==============================================================================*/
@@ -1913,49 +2000,45 @@ void drawLineNormal1x8_C(graph_line *linedescription)
 
 void drawLineNormal2x8_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_ptr;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  UWO *framebuffer = (UWO*) draw_buffer_current_ptr;
   
-  source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
-
   #ifdef DRAW_TSC_PROFILE
-		dln2x8_pixels += pixels_left_to_draw;
-		drawTscBefore(&dln2x8_tmp);
+  dln2x8_pixels += pixels_left_to_draw;
+  drawTscBefore(&dln2x8_tmp);
   #endif
 
   if (pixels_left_to_draw >= 4)
   {
     // align to 32-bit data
-    if ((((ULO) draw_buffer_current_ptr) & 0x02) != 0)
+    if ((((ULO) framebuffer) & 0x02) != 0)
     {
       pixels_left_to_draw--;
-      *((UWO *) draw_buffer_current_ptr) = *((UWO *) ((UBY *) linedescription->colors + *source_ptr));
-      source_ptr++;
-      draw_buffer_current_ptr += 2;
+      *framebuffer++ = *((UWO *) ((UBY *) linedescription->colors + *source_ptr++));
     }
     while (pixels_left_to_draw >= 4)
     {
-      *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
-      *((UWO *) draw_buffer_current_ptr) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr)));
+      *framebuffer = *((UWO *) ((UBY *) linedescription->colors + *source_ptr));
+      *(framebuffer + 1) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
+      *(framebuffer + 2) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
+      *(framebuffer + 3) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
       pixels_left_to_draw -= 4;
-      *((ULO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
-      *((UWO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
       source_ptr += 4;
-      draw_buffer_current_ptr += 8;
+      framebuffer += 4;
     }
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UWO *) draw_buffer_current_ptr) = (UWO) (*((ULO *) ((UBY *) linedescription->colors + *source_ptr)));
-    source_ptr++;
+    *framebuffer++ = *((UWO *) ((UBY *) linedescription->colors + *source_ptr++));
     pixels_left_to_draw--;
-    draw_buffer_current_ptr += 2;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dln2x8_tmp, &dln2x8, &dln2x8_times);
+  drawTscAfter(&dln2x8_tmp, &dln2x8, &dln2x8_times);
   #endif
+
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -1973,6 +2056,7 @@ void drawLineNormal1x16_C(graph_line *linedescription)
 {
   ULO pixels_left_to_draw;
   UBY *source_ptr;
+  UWO *framebuffer = (UWO *) draw_buffer_current_ptr;
   
   source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   pixels_left_to_draw = linedescription->DIW_pixel_count;
@@ -1985,35 +2069,32 @@ void drawLineNormal1x16_C(graph_line *linedescription)
   if (pixels_left_to_draw >= 4)
   {
     // align to 32-bit data
-    if ((((ULO) draw_buffer_current_ptr) & 0x02) != 0)
+    if ((((ULO) framebuffer) & 0x02) != 0)
     {
       pixels_left_to_draw--;
-      *((UWO *) draw_buffer_current_ptr) = *((UWO *) ((UBY *) linedescription->colors + *source_ptr));
-      source_ptr++;
-      draw_buffer_current_ptr += 2;
+      *framebuffer++ = *((UWO *) ((UBY *) linedescription->colors + *source_ptr++));
     }
     while (pixels_left_to_draw >= 4)
     {
-      *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
-      *((UWO *) draw_buffer_current_ptr) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr)));
+      *framebuffer = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr)));
+      *(framebuffer + 1) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
+      *(framebuffer + 2) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
+      *(framebuffer + 3) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
       pixels_left_to_draw -= 4;
-      *((ULO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
-      *((UWO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((UWO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
       source_ptr += 4;
-      draw_buffer_current_ptr += 8;
+      framebuffer += 4;
     }
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UWO *) draw_buffer_current_ptr) = *((UWO *) ((UBY *) linedescription->colors + *source_ptr));
-    source_ptr++;
+    *framebuffer++ = *((UWO *) ((UBY *) linedescription->colors + *source_ptr++));
     pixels_left_to_draw--;
-    draw_buffer_current_ptr += 2;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dln1x16_tmp, &dln1x16, &dln1x16_times);
+  drawTscAfter(&dln1x16_tmp, &dln1x16, &dln1x16_times);
   #endif
+  draw_buffer_current_ptr = (UBY *) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2031,6 +2112,7 @@ void drawLineNormal2x16_C(graph_line *linedescription)
 {
   ULO pixels_left_to_draw;
   UBY *source_ptr;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
   source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   pixels_left_to_draw = linedescription->DIW_pixel_count;
@@ -2042,25 +2124,24 @@ void drawLineNormal2x16_C(graph_line *linedescription)
 
   while (pixels_left_to_draw >= 4)
   {
-    *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
+    *framebuffer = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
+    *(framebuffer + 1) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
     pixels_left_to_draw -= 4;
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 8)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 12)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
+    *(framebuffer + 2) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
+    *(framebuffer + 3) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
     source_ptr += 4;
-    draw_buffer_current_ptr += 16;
+    framebuffer += 4;
   }
   while (pixels_left_to_draw > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
-    source_ptr++;
+    *framebuffer++ = *((ULO *) ((UBY *) linedescription->colors + *source_ptr++));
     pixels_left_to_draw--;
-    draw_buffer_current_ptr += 4;
   }
 
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dln2x16_tmp, &dln2x16, &dln2x16_times);
   #endif
+  draw_buffer_current_ptr = (UBY *) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2256,6 +2337,7 @@ void drawLineDual1x8_C(graph_line *linedescription)
   UBY *source_line1_ptr;
   UBY *source_line2_ptr;
   UBY *draw_dual_translate_ptr;
+  UBY *framebuffer = draw_buffer_current_ptr;
   
   source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
@@ -2274,59 +2356,42 @@ void drawLineDual1x8_C(graph_line *linedescription)
     draw_dual_translate_ptr += 0x10000;
   }
 
-  if (pixels_left_to_draw >= 4)
+  while (pixels_left_to_draw >= 4)
   {
-    // align to 32-bit data
-    while ((((ULO) draw_buffer_current_ptr) & 0x03) != 0)
-    {
-      *((UBY *) draw_buffer_current_ptr) = 
-        (UBY) *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
-
-      pixels_left_to_draw--;
-      source_line1_ptr++;
-      source_line2_ptr++;
-      draw_buffer_current_ptr++;
-    }
-    while (pixels_left_to_draw >= 4)
-    {
-     *((ULO *) draw_buffer_current_ptr) = 
-        *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 3) << 8) + *(source_line2_ptr + 3))))));
+    *framebuffer = 
+      *(((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
       
-      *((UBY *) draw_buffer_current_ptr + 2) = 
-        *(((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 2) << 8) + *(source_line2_ptr + 2))))));
+    *(framebuffer + 1) = 
+      *(((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
 
-      *((UBY *) draw_buffer_current_ptr + 1) = 
-        *(((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
+    *(framebuffer + 2) = 
+      *(((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 2) << 8) + *(source_line2_ptr + 2))))));
 
-      *((UBY *) draw_buffer_current_ptr + 0) = 
-        *(((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
-
-      pixels_left_to_draw -= 4;
-      source_line1_ptr += 4;
-      source_line2_ptr += 4;
-      draw_buffer_current_ptr += 4;
-    }
+    *(framebuffer + 3) = 
+      *(((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 3) << 8) + *(source_line2_ptr + 3))))));
+      
+    pixels_left_to_draw -= 4;
+    source_line1_ptr += 4;
+    source_line2_ptr += 4;
+    framebuffer += 4;
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UBY *) draw_buffer_current_ptr) = 
-      (UBY) *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
+    *framebuffer++ = 
+      *(((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + (((*source_line1_ptr++) << 8) + *source_line2_ptr++)))));
 
     pixels_left_to_draw--;
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr++;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dld1x8_tmp, &dld1x8, &dld1x8_times);
+  drawTscAfter(&dld1x8_tmp, &dld1x8, &dld1x8_times);
   #endif
+  draw_buffer_current_ptr = framebuffer;
 }
 
 /*==============================================================================*/
@@ -2346,14 +2411,15 @@ void drawLineDual2x8_C(graph_line *linedescription)
   UBY *source_line1_ptr;
   UBY *source_line2_ptr;
   UBY *draw_dual_translate_ptr;
+  UWO *framebuffer = (UWO*) draw_buffer_current_ptr;
   
   source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   pixels_left_to_draw = linedescription->DIW_pixel_count;
 
   #ifdef DRAW_TSC_PROFILE
-		dld2x8_pixels += pixels_left_to_draw;
-		drawTscBefore(&dld2x8_tmp);
+  dld2x8_pixels += pixels_left_to_draw;
+  drawTscBefore(&dld2x8_tmp);
   #endif
 
   draw_dual_translate_ptr = (UBY *) draw_dual_translate;
@@ -2364,59 +2430,43 @@ void drawLineDual2x8_C(graph_line *linedescription)
     draw_dual_translate_ptr += 0x10000;
   }
   
-  if (pixels_left_to_draw >= 4)
+  while (pixels_left_to_draw >= 4)
   {
-    // align to 32-bit data
-    while ((((ULO) draw_buffer_current_ptr) & 0x02) != 0)
-    {
-      *((UWO *) draw_buffer_current_ptr) = 
-        (UWO) *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
+    *framebuffer = 
+      *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
 
-      pixels_left_to_draw--;
-      source_line1_ptr++;
-      source_line2_ptr++;
-      draw_buffer_current_ptr += 2;
-    }
-    while (pixels_left_to_draw >= 4)
-    {
-      *((ULO *) draw_buffer_current_ptr) = 
-        *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
+    *(framebuffer + 1) = 
+      *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
       
-      *((UWO *) draw_buffer_current_ptr) = 
-        *((UWO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
+    *(framebuffer + 2) = 
+      *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 2) << 8) + *(source_line2_ptr + 2))))));
 
-      *((ULO *) draw_buffer_current_ptr + 1) = 
-        *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 3) << 8) + *(source_line2_ptr + 3))))));
+    *(framebuffer + 3) = 
+      *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 3) << 8) + *(source_line2_ptr + 3))))));
 
-      *((UWO *) draw_buffer_current_ptr + 2) = 
-        *((UWO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 2) << 8) + *(source_line2_ptr + 2))))));
-
-      pixels_left_to_draw -= 4;
-      source_line1_ptr += 4;
-      source_line2_ptr += 4;
-      draw_buffer_current_ptr += 8;
-    }
+    pixels_left_to_draw -= 4;
+    source_line1_ptr += 4;
+    source_line2_ptr += 4;
+    framebuffer += 4;
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UWO *) draw_buffer_current_ptr) = 
-      (UWO) *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
+    *framebuffer++ = 
+      *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + (((*source_line1_ptr++) << 8) + *source_line2_ptr++)))));
 
     pixels_left_to_draw--;
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 2;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dld2x8_tmp, &dld2x8, &dld2x8_times);
+  drawTscAfter(&dld2x8_tmp, &dld2x8, &dld2x8_times);
   #endif
+
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2436,6 +2486,7 @@ void drawLineDual1x16_C(graph_line *linedescription)
   UBY *source_line1_ptr;
   UBY *source_line2_ptr;
   UBY *draw_dual_translate_ptr;
+  UWO *framebuffer = (UWO *) draw_buffer_current_ptr;
 
   source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
   source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
@@ -2454,51 +2505,44 @@ void drawLineDual1x16_C(graph_line *linedescription)
     draw_dual_translate_ptr += 0x10000;
   }
 
-  if (pixels_left_to_draw >= 4)
+  if (pixels_left_to_draw >= 2)
   {
     // align to 32-bit data
-    if ((((ULO) draw_buffer_current_ptr) & 0x02) != 0)
+    if ((((ULO) framebuffer) & 0x02) != 0)
     {
-      *((UWO *) draw_buffer_current_ptr) = 
-        (UWO) *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
-
+      *framebuffer++ = 
+        *((UWO *) ((UBY *) linedescription->colors + 
+        (*(draw_dual_translate_ptr + (((*source_line1_ptr++) << 8) + *source_line2_ptr++)))));
       pixels_left_to_draw--;
-      source_line1_ptr++;
-      source_line2_ptr++;
-      draw_buffer_current_ptr += 2;
     }
-    while (pixels_left_to_draw >= 4)
+    while (pixels_left_to_draw >= 2)
     {
-      *((ULO *) draw_buffer_current_ptr) = 
-        (ULO) *((ULO *) ((UBY *) linedescription->colors + 
-        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
-      
-      *((UWO *) draw_buffer_current_ptr) = 
-        (UWO) *((UWO *) ((UBY *) linedescription->colors + 
+      *framebuffer = 
+        *((UWO *) ((UBY *) linedescription->colors + 
         (*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
 
+      *(framebuffer + 1) = 
+        *((UWO *) ((UBY *) linedescription->colors + 
+        (*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
+      
       pixels_left_to_draw -= 2;
       source_line1_ptr += 2;
       source_line2_ptr += 2;
-      draw_buffer_current_ptr += 4;
+      framebuffer += 2;
     }
   }
   while (pixels_left_to_draw > 0)
   {
-    *((UWO *) draw_buffer_current_ptr) = 
-      (UWO) *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
-
+    *framebuffer++ = 
+      (UWO) *((UWO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + (((*source_line1_ptr++) << 8) + *source_line2_ptr++)))));
     pixels_left_to_draw--;
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 2;
   }
 
   #ifdef DRAW_TSC_PROFILE
-		drawTscAfter(&dld1x16_tmp, &dld1x16, &dld1x16_times);
+  drawTscAfter(&dld1x16_tmp, &dld1x16, &dld1x16_times);
   #endif
+  draw_buffer_current_ptr = (UBY *) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2604,14 +2648,15 @@ void drawLineDual2x16_C(graph_line *linedescription)
   UBY *draw_dual_translate_ptr;
   ULO draw_dual_translate_index_a;
   ULO draw_dual_translate_index_b;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
   source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw - 1;
   source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   pixels_left_to_draw = linedescription->DIW_pixel_count;
 
   #ifdef DRAW_TSC_PROFILE
-  	dld2x16_pixels += pixels_left_to_draw;
-	  drawTscBefore(&dld2x16_tmp);
+  dld2x16_pixels += pixels_left_to_draw;
+  drawTscBefore(&dld2x16_tmp);
   #endif
 
   draw_dual_translate_ptr = (UBY *) draw_dual_translate;
@@ -2630,7 +2675,7 @@ void drawLineDual2x16_C(graph_line *linedescription)
     
     draw_dual_translate_index_b = (*((ULO *) source_line2_ptr) & 0xff) | (*((ULO *) source_line1_ptr) & 0xff00);
     
-    *((ULO *) draw_buffer_current_ptr) = 
+    *framebuffer = 
       *((ULO *) ((UBY *) linedescription->colors + (*((ULO *) ((UBY *) draw_dual_translate_ptr + draw_dual_translate_index_a)) & 0xff)));
     
     source_line1_ptr++;
@@ -2638,23 +2683,22 @@ void drawLineDual2x16_C(graph_line *linedescription)
 
     draw_dual_translate_index_a = (*((ULO *) source_line2_ptr) & 0xff) | (*((ULO *) source_line1_ptr) & 0xff00);
 
-    *((ULO *) draw_buffer_current_ptr + 1) = 
+    *(framebuffer + 1) = 
       *((ULO *) ((UBY *) linedescription->colors + (*((ULO *) ((UBY *) draw_dual_translate_ptr + draw_dual_translate_index_b)) & 0xff)));
     
     pixels_left_to_draw -= 2;
-    draw_buffer_current_ptr += 8;
+    framebuffer += 2;
   }
   if (pixels_left_to_draw > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = 
+    *framebuffer++ = 
       *((ULO *) ((UBY *) linedescription->colors + (*((ULO *) ((UBY *) draw_dual_translate_ptr + draw_dual_translate_index_a)) & 0xff)));
-    
-    draw_buffer_current_ptr += 4;
   }
 
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dld2x16_tmp, &dld2x16, &dld2x16_times);
   #endif
+  draw_buffer_current_ptr = (UBY *) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2861,6 +2905,9 @@ void drawLineDual2x32_C(graph_line *linedescription)
   draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
+
+
+
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
@@ -3018,33 +3065,36 @@ void drawLineBPL2x32_C(graph_line *linedesc)
 
 static __inline void drawLineSegmentBG1x8(ULO topad, ULO bgcolor)
 {
+  UBY *framebuffer = draw_buffer_current_ptr;
+  ULO i;
+
   if (topad >= 4)
   {
-    if (((ULO) draw_buffer_current_ptr & 0x1) != 0)
+    ULO count;
+    ULO *fb_l;
+    /* Align framebuffer to 16-bit */
+    if (((ULO) framebuffer & 0x1) != 0)
     {
-      *((UBY *) draw_buffer_current_ptr) = (UBY) bgcolor;
+      *framebuffer++ = (UBY) bgcolor;
       topad--;
-      draw_buffer_current_ptr++;
     }
-    if (((ULO) draw_buffer_current_ptr & 0x2) != 0)
+    /* Align framebuffer to 32-bit */
+    if (((ULO) framebuffer & 0x2) != 0)
     {
-      *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor;
-      topad--;
-      draw_buffer_current_ptr++;
+      *((UWO *) framebuffer) = (UWO) bgcolor;
+      topad -= 2;
+      framebuffer += 2;
     }
-    while (topad >= 4)
-    {
-      *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      topad -= 4;
-      draw_buffer_current_ptr += 4;
-    }
+    /* Set four pixels at a time */
+    count = topad / 4;
+    fb_l = (ULO*) framebuffer;
+    for (i = 0; i < count; i++) fb_l[i] = bgcolor;
+    topad -= count*4;
+    framebuffer = (UBY*) (fb_l + count);
   }
-  while (topad > 0)
-  {
-    *((UBY *) draw_buffer_current_ptr) = (UBY) bgcolor;
-    topad--;
-    draw_buffer_current_ptr++;
-  }
+  /* Set the remaining pixels */
+  for (i = topad; i > 0; i--) *framebuffer++ = (UBY) bgcolor;
+  draw_buffer_current_ptr = framebuffer;
 }
 
 /*==============================================================================*/
@@ -3060,28 +3110,26 @@ static __inline void drawLineSegmentBG1x8(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG2x8(ULO topad, ULO bgcolor)
 {
-  if (topad >= 4)
+  UWO *framebuffer = (UWO*) draw_buffer_current_ptr;
+  ULO count;
+  ULO i;
+  ULO *fb_l;
+  if (topad == 0) return;
+  /* Align framebuffer to 32-bit */
+  if (((ULO) framebuffer & 0x2) != 0)
   {
-    if (((ULO) draw_buffer_current_ptr & 0x2) != 0)
-    {
-      *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor;
-      topad--;
-      draw_buffer_current_ptr += 2;
-    }
-    while (topad >= 4)
-    {
-      *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
-      topad -= 4;
-      draw_buffer_current_ptr += 8;
-    }
-  }
-  while (topad > 0)
-  {
-    *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor;
+    *framebuffer++ = (UWO) bgcolor;
     topad--;
-    draw_buffer_current_ptr += 2;
   }
+  /* Set two pixels at a time */
+  count = topad / 2;
+  fb_l = (ULO*) framebuffer;
+  for (i = 0; i < count; i++) fb_l[i] = bgcolor;
+  topad -= count*2;
+  framebuffer = (UWO*) (fb_l + count);
+  /* One pixel might be left */
+  if (topad > 0) *framebuffer++ = (UWO) bgcolor;
+  draw_buffer_current_ptr = (UBY *) framebuffer;
 }
 
 /*==============================================================================*/
@@ -3097,28 +3145,25 @@ static __inline void drawLineSegmentBG2x8(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG1x16(ULO topad, ULO bgcolor)
 {
-  if (topad >= 4)
+  UWO *framebuffer = (UWO *) draw_buffer_current_ptr;
+  ULO *fb_l;
+  ULO i;
+  ULO count;
+  if (topad == 0) return;
+  /* Align framebuffer to 32-bit */
+  if (((ULO) framebuffer & 0x2) != 0)
   {
-    if (((ULO) draw_buffer_current_ptr & 0x3) != 0)
-    {
-      *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor;
-      topad--;
-      draw_buffer_current_ptr += 2;
-    }
-    while (topad >= 4)
-    {
-      *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
-      topad -= 4;
-      draw_buffer_current_ptr += 8;
-    }
-  }
-  while (topad > 0)
-  {
-    *((UWO *) draw_buffer_current_ptr) = (UWO) bgcolor;
+    *framebuffer++ = (UWO) bgcolor;
     topad--;
-    draw_buffer_current_ptr += 2;
   }
+  /* Set two pixels at a time */
+  count = topad / 2;
+  fb_l = (ULO*) framebuffer;
+  for (i = 0; i < count; i++) fb_l[i] = bgcolor;
+  framebuffer = (UWO*) (fb_l + count);
+  /* One pixel might be left */
+  if (topad & 1) *framebuffer++ = (UWO) bgcolor;
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -3134,21 +3179,10 @@ static __inline void drawLineSegmentBG1x16(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG2x16(ULO topad, ULO bgcolor)
 {
-  while (topad >= 4)
-  {
-    *((ULO *) draw_buffer_current_ptr) = bgcolor;
-    *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
-    *((ULO *) draw_buffer_current_ptr + 2) = bgcolor;
-    *((ULO *) draw_buffer_current_ptr + 3) = bgcolor;
-    topad -= 4;
-    draw_buffer_current_ptr += 16;
-  }
-  while (topad > 0)
-  {
-    *((ULO *) draw_buffer_current_ptr) = bgcolor;
-    topad--;
-    draw_buffer_current_ptr += 4;
-  }
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
+  ULO i;
+  for (i = 0; i < topad; i++) framebuffer[i] = bgcolor;
+  draw_buffer_current_ptr = (UBY*) (framebuffer + topad);
 }
 
 /*==============================================================================*/
@@ -3251,20 +3285,9 @@ static __inline void drawLineSegmentBG2x24(ULO topad, ULO bgcolor)
 static __inline void drawLineSegmentBG1x32(ULO topad, ULO bgcolor)
 {
   ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
-  while (topad >= 4)
-  {
-    *framebuffer = bgcolor; 
-    *(framebuffer + 1) = bgcolor;
-    *(framebuffer + 2) = bgcolor;
-    *(framebuffer + 3) = bgcolor;
-    topad -= 4;
-    framebuffer += 4;
-  }
-  while (topad-- > 0)
-  {
-    *framebuffer++ = bgcolor;
-  }
-  draw_buffer_current_ptr = (UBY*) framebuffer;
+  ULO i;
+  for (i = 0; i < topad; i++) framebuffer[i] = bgcolor;
+  draw_buffer_current_ptr = (UBY*) (framebuffer + topad);
 }
 
 /*==============================================================================*/
@@ -3281,26 +3304,10 @@ static __inline void drawLineSegmentBG1x32(ULO topad, ULO bgcolor)
 static __inline void drawLineSegmentBG2x32(ULO topad, ULO bgcolor)
 {
   ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
-  while (topad >= 4)
-  {
-    *(framebuffer) =  bgcolor;
-    *(framebuffer + 1) = bgcolor;
-    *(framebuffer + 2) = bgcolor;
-    *(framebuffer + 3) = bgcolor;
-    *(framebuffer + 4) = bgcolor;
-    *(framebuffer + 5) = bgcolor;
-    *(framebuffer + 6) = bgcolor;
-    *(framebuffer + 7) = bgcolor;
-    topad -= 4;
-    framebuffer += 8;
-  }
-  while (topad-- > 0)
-  {
-    *(framebuffer) = bgcolor;
-    *(framebuffer + 1) = bgcolor;
-    framebuffer += 2;
-  }
-  draw_buffer_current_ptr = (UBY*) framebuffer;
+  ULO i;
+  ULO count = topad*2;
+  for (i = 0; i < count; i++) framebuffer[i] = bgcolor;
+  draw_buffer_current_ptr = (UBY*) (framebuffer + count);
 }
 
 /*==============================================================================*/
@@ -3430,8 +3437,15 @@ void drawLineHAM1x8_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh1x8_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x8_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
+
 
   if (nonvisible > 0)
   {
@@ -3481,6 +3495,11 @@ void drawLineHAM1x8_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr++;
   }
+
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh1x8_tmp, &dlh1x8, &dlh1x8_times);
+  #endif
+
   spriteMergeHAM1x8(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3508,6 +3527,12 @@ void drawLineHAM2x8_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh2x8_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x8_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -3559,6 +3584,9 @@ void drawLineHAM2x8_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 2;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh2x8_tmp, &dlh2x8, &dlh2x8_times);
+  #endif
   spriteMergeHAM2x8(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3586,6 +3614,12 @@ void drawLineHAM1x16_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh1x16_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x16_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -3637,6 +3671,9 @@ void drawLineHAM1x16_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 2;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh1x16_tmp, &dlh1x16, &dlh1x16_times);
+  #endif
   spriteMergeHAM1x16(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3664,6 +3701,12 @@ void drawLineHAM2x16_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh2x16_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+  drawTscBefore(&dlh2x16_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -3715,6 +3758,9 @@ void drawLineHAM2x16_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 4;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh2x16_tmp, &dlh2x16, &dlh2x16_times);
+  #endif
   spriteMergeHAM2x16(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3742,6 +3788,12 @@ void drawLineHAM1x32_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh1x32_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+  drawTscBefore(&dlh1x32_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -3793,6 +3845,9 @@ void drawLineHAM1x32_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 4;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh1x32_tmp, &dlh1x32, &dlh1x32_times);
+  #endif
   spriteMergeHAM1x32(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3899,6 +3954,12 @@ void drawLineHAM1x24_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh1x24_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+  drawTscBefore(&dlh1x24_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -3951,6 +4012,9 @@ void drawLineHAM1x24_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 3;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh1x24_tmp, &dlh1x24, &dlh1x24_times);
+  #endif
   spriteMergeHAM1x24(draw_buffer_current_ptr_local, linedesc);
 }
 
@@ -3978,6 +4042,12 @@ void drawLineHAM2x24_C(graph_line *linedesc)
   ULO pixels_left_to_draw;
 
   nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+
+  #ifdef DRAW_TSC_PROFILE
+  dlh2x24_pixels += linedesc->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+  drawTscBefore(&dlh2x24_tmp);
+  #endif
+
   draw_buffer_current_ptr_local = draw_buffer_current_ptr;
   hampixel = 0;
 
@@ -4033,5 +4103,8 @@ void drawLineHAM2x24_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 3;
   }
+  #ifdef DRAW_TSC_PROFILE
+  drawTscAfter(&dlh2x24_tmp, &dlh2x24, &dlh2x24_times);
+  #endif
   spriteMergeHAM2x24(draw_buffer_current_ptr_local, linedesc);
 }
