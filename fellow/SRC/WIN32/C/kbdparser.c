@@ -11,10 +11,14 @@
 - autofire support
 - possibilty to specify only the changed keys
 - conflicts in the keys choosen by the user
+- problem if the last line is not an empty line
 */
 
 /* ---------------- CHANGE LOG ----------------- 
-Tuesday, September 05, 2000
+Tuesday, September 19, 2000: nova
+- added autofire support
+
+Tuesday, September 05, 2000: nova
 - added parsing of replacement keys for the gameport
 - added a third parameter to prsReadFile for the array of joy replacement ** internal **
 */
@@ -248,8 +252,8 @@ UBY amiga_scancode[MAX_AMIGA_NAMES] = {
 };
 
 
-//#define MAX_KEY_REPLACEMENT		16
-#define MAX_KEY_REPLACEMENT		12
+#define MAX_KEY_REPLACEMENT		15
+#define FIRST_KEY2_REPLACEMENT	9		// MAX_KEY_REPLACEMENT / 2
 
 
 // the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
@@ -261,16 +265,16 @@ STR *replacement_keys[MAX_KEY_REPLACEMENT] = {
 	"JOYKEY1_DOWN",
 	"JOYKEY1_FIRE0",
 	"JOYKEY1_FIRE1",
-	//"JOYKEY1_AUTOFIRE0",
-	//"JOYKEY1_AUTOFIRE1",
+	"JOYKEY1_AUTOFIRE0",
+	"JOYKEY1_AUTOFIRE1",
 	"JOYKEY2_LEFT",
 	"JOYKEY2_RIGHT",
 	"JOYKEY2_UP",
 	"JOYKEY2_DOWN",
 	"JOYKEY2_FIRE0",
 	"JOYKEY2_FIRE1"
-	//"JOYKEY2_AUTOFIRE0",
-	//"JOYKEY2_AUTOFIRE1"
+	"JOYKEY2_AUTOFIRE0",
+	"JOYKEY2_AUTOFIRE1"
 };
 
 
@@ -344,7 +348,7 @@ BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 /* read the mapping file and set the map array								 */
 /*===========================================================================*/
 
-BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][6] )
+BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
@@ -406,10 +410,10 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 			pc_to_am[PcIndex] = amiga_scancode[AmigaIndex];
 		else
 		{
-			if( ReplIndex < 7 )
+			if( ReplIndex < FIRST_KEY2_REPLACEMENT )
 				key_repl[0][ReplIndex] = symbol_to_DIK_kbddrv[ PcIndex ];
 			else
-				key_repl[1][ReplIndex - 7] = symbol_to_DIK_kbddrv[ PcIndex ];
+				key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = symbol_to_DIK_kbddrv[ PcIndex ];
 		}
 	}
 	fclose( f );
