@@ -203,13 +203,17 @@ void kbdEventEOLHandler(void) {
 	down_changed[i] ||
 	fire0_changed[i] ||
 	fire1_changed[i])
-      gameportJoystickHandler((i == 0) ? GP_JOYKEY0 : GP_JOYKEY1,
+	{
+		if(( gameport_input[i] == GP_JOYKEY0 )
+			|| ( gameport_input[i] == GP_JOYKEY1 ))
+			gameportJoystickHandler( gameport_input[i],
 			    (left_changed[i]) ? left[i] : gameport_left[i],
 			    (up_changed[i]) ? up[i] : gameport_up[i],
 			    (right_changed[i]) ? right[i] : gameport_right[i],
 			    (down_changed[i]) ? down[i] : gameport_down[i],
 			    (fire0_changed[i]) ? fire0[i] : gameport_fire0[i],
 			    (fire1_changed[i]) ? fire1[i] : gameport_fire1[i]);
+	}
 }
 
 
