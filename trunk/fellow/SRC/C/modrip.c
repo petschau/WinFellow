@@ -3,10 +3,16 @@
 /* Portable parts of the module ripper                                        */
 /* Author: Torsten Enderling (carfesh@gmx.net)                                */
 /*                                                                            */
+/* based on information found on Exotica (http://exotica.fix.no), the xmp     */
+/* source code (http://xmp.helllabs.org) and too many other web sources       */
+/*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/16:                                                                */
+/* - FredEditor support added, defined some useful macros                     */
+/*   and added 2 missing ProTracker clones                                    */
 /* 2000/12/15:                                                                */
 /* - SoundMon support added                                                   */
 /* 2000/12/14:                                                                */
@@ -43,7 +49,15 @@
 /* define this to have logfile output */
 #define MODRIP_DEBUG
 
-static unsigned modripModsFound;
+static ULO modripModsFound;
+
+/*==============================================*/
+/* macros for accessing big endian style values */
+/*==============================================*/
+
+#define BYTE(x)    ((*func)((x)))
+#define BEWORD(x)  ((*func)((x)) << 8 | (*func)((x)+1))
+#define BEDWORD(x) ((*func)((x)) << 24 | (*func)((x)+1) << 16 | (*func)((x)+2) << 8 | (*func)((x)+3))
 
 /*===============================================================*/
 /* saves mem for a detect module with a filled ModuleInfo struct */
@@ -123,8 +137,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
       info.samplesize = 0;		
 
       for (i = 0; i <= 30; i++) {
-        info.samplesize += (256 * (*func)(info.start + 0x2a + i * 0x1e)
-                        +         (*func)(info.start + 0x2b + i * 0x1e)) * 2;
+        info.samplesize += BEWORD(info.start + 0x2a + i*0x1e) * 2;
 	  }
 
 	  /* some disks like messing around :) */
@@ -240,10 +253,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 
 	  /* add instrument lengths to size */
       for (i = 0; i < info.instruments; i++)
-        size += (*func)(info.start + i*4 + 0) << 8     
-              | (*func)(info.start + i*4 + 1)
-              | (*func)(info.start + i*4 + 2) << 8 
-              | (*func)(info.start + i*4 + 3);
+        size += BEDWORD(info.start + i*4);
 
       /* move to instrument table */
       if (info.instruments == 15) {
@@ -292,7 +302,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 		
       if (size < MODRIP_MAXMODLEN) {
         /* set filename for the module file */
-        sprintf(info.filename, "mod%d.cus", modripModsFound++);
+        sprintf(info.filename, "SFX.Mod%d.cus", modripModsFound++);
 
       if(modripGuiSaveRequest(&info)) 
         if(!modripSaveMem(&info, func))
@@ -357,7 +367,8 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   if(version > 1) info.instruments = (*func)(info.start + 29);
 
   /* get patterns */
-  patterns = (((*func)(info.start + 30)) << 8) | ((*func)(info.start + 31));
+  patterns = BEWORD(info.start + 30);
+
 #ifdef MODRIP_DEBUG
   fellowAddLog("patterns = %u\n", patterns);
 #endif
@@ -367,8 +378,7 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   offset += 32;
   for(i = 0; i < 15; i++) {
     if( (*func)(info.start + offset) != 255 ) {
-      temp = (  (*func)(info.start + offset + 24) << 8 
-              | (*func)(info.start + offset + 25)      ) * 2;
+	  temp = BEWORD(info.start + offset + 24) * 2;
       if(temp > 0)
         info.end += temp;
 	}
@@ -377,8 +387,7 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   info.end += 512;
 
   for(i = 0; i < patterns * 4; i++) {
-    temp = (*func)(info.start + offset + (i*4)) << 8
-         | (*func)(info.start + offset + (i*4) + 1);
+    temp = BEWORD(info.start + offset + i*4);
     info.maxpattern = max(info.maxpattern, temp);
   }
 #ifdef MODRIP_DEBUG
@@ -415,20 +424,162 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
 		  info.modname[i] = tolower(info.modname[i]);
 	  }
       if(!ScratchyName) {
-        strcpy(info.filename, info.modname);
+		sprintf(info.filename, "BP.");
+        strcat(info.filename, info.modname);
         strcat(info.filename, ".cus");
 	  }
 	  else
-        sprintf(info.filename, "mod%d.cus", modripModsFound++);
+        sprintf(info.filename, "BP.Mod%d.cus", modripModsFound++);
 	  }
      else {
-      sprintf(info.filename, "mod%d.cus", modripModsFound++);
+      sprintf(info.filename, "BP.Mod%d.cus", modripModsFound++);
 	 }
 
     if(modripGuiSaveRequest(&info)) 
       if(!modripSaveMem(&info, func))
         modripGuiErrorSave(&info);
   }     
+}
+
+/*==================================*/
+/* detect FredEditor                */
+/* games: Fuzzball                  */
+/*==================================*/
+
+static void modripDetectFred(ULO address, MemoryAccessFunc func)
+{
+  ULO offset = 0, i, j;
+  BOOLE match = FALSE;
+  struct ModuleInfo info;
+  long instData = 0, instDataOffset = 0, instNo = 0, instMax = 0;
+  long songData = 0, songDataOffset = 0, songNo = 0;
+  long sampSize = 0, sampDataOffset = 0,             sampMax = 0;
+  long ModuleStart = 0;
+
+  /* 68k instructions to search for in the header */
+  const ULO jmp_68k = 0x4efa; 
+  const ULO mov_68k = 0x123a; 
+  const ULO cmp_68k = 0xb0016200;
+
+  /* Fred files start with a jump table */
+  if(
+        (BEWORD(address +  0) == jmp_68k)
+	 && (BEWORD(address +  4) == jmp_68k)
+	 && (BEWORD(address +  8) == jmp_68k) 
+	 && (BEWORD(address + 12) == jmp_68k)
+    ) {
+
+#ifdef MODRIP_DEBUG
+    fellowAddLog("mod-ripper possible match for FredEditor.\n");
+#endif
+    offset = 2;
+
+	/* search for beginning of init block */
+    for(i = 0; i < 64; i++) {
+      if(
+            (BEWORD (address + offset + 0) == mov_68k)
+         && (BEDWORD(address + offset + 4) == cmp_68k)
+        ) {
+			match = TRUE;
+			break;
+	  }
+      offset += 2;
+    }
+  }
+
+  if(!match) return;
+
+#ifdef MODRIP_DEBUG
+  fellowAddLog("mod-ripper match for FredEditor.\n");
+#endif
+  modripModuleInfoInitialize(&info);
+
+  strcpy(info.typedesc, "FredEditor");
+
+  info.start = address;
+  info.end = address;
+
+  for(i = 0; 
+     (i < 512) 
+       && (BEWORD(address + i + 0) != 0x4bfa) 
+	   && (BEWORD(address + i + 4) != 0xdbfa);
+	  i+=2) ;
+
+#ifdef MODRIP_DEBUG
+  fellowAddLog("mod-ripper checkpoint i (%u)\n", i);
+#endif
+  if(i == 512) return;
+
+  offset = i + 2;
+
+  ModuleStart = -(0x10000 - BEWORD(address + offset)) + offset;
+  instDataOffset = BEWORD(address + offset + 4) + offset + 4;
+
+  for(j = 0;
+      (j < 254) 
+        && (BEWORD(address + i + j + 0) != 0x47fa)
+		&& (BEWORD(address + i + j + 4) != 0xd7fa);
+	  j+=2) ;
+
+#ifdef MODRIP_DEBUG
+  fellowAddLog("mod-ripper checkpoint j (%u)\n", j);
+#endif
+  if(j == 254) return;
+
+  offset += j;
+
+#ifdef MODRIP_DEBUG
+  fellowAddLog("mod-ripper checkpoint ModuleStart (%d)\n", ModuleStart);
+#endif
+  if((-(0x10000 - BEWORD(address + offset)) + offset) != ModuleStart) return;
+
+  songDataOffset = BEWORD(address + offset + 4) + offset + 4;
+
+  if(ModuleStart < 0) {
+    instData = BEDWORD(address + instDataOffset) + ModuleStart;
+    songData = BEDWORD(address + songDataOffset) + ModuleStart;
+  }
+  else {
+    instData = BEDWORD(address + instDataOffset);
+    songData = BEDWORD(address + songDataOffset);
+  }
+
+  songNo = (*func)(address + instDataOffset - 13) + 1;
+
+  for (i = songData; i < instData; i++) {
+    if ((*func)(address + i) == 0x83)
+      instMax = max((*func)(address + i + 1), instMax);
+  }
+  instMax++;
+ 
+  for(i = 0; i < instMax; i++) {
+    sampDataOffset = BEDWORD(address + instData + i*64);
+    if (
+        (BEWORD(address + instData + i*64 + 4) == 0)
+     && (sampDataOffset != 0) 
+     && (sampDataOffset < 0x2ffff) 
+       ) {
+            sampSize = BEWORD(address + instData + i*64 + 6);
+            sampMax = max(sampMax, (sampSize*2 + sampDataOffset));
+            instNo++;
+    }
+  }
+
+  if(sampMax)
+    info.end += sampMax;
+  else
+    info.end += instData + instMax * 64;
+
+#ifdef MODRIP_DEBUG
+  fellowAddLog("calculated range 0x%06x - 0x%06x\n", info.start, info.end);
+#endif
+  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+    sprintf(info.filename, "FRED.Mod%d.cus", modripModsFound++);
+
+    if(modripGuiSaveRequest(&info)) 
+      if(!modripSaveMem(&info, func))
+        modripGuiErrorSave(&info);
+  }   
 }
 
 /*====================================================*/
@@ -439,12 +590,13 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
 /* here we define the formats that are actually used */
 /*===================================================*/
 
-#define MODRIP_KNOWNFORMATS 3
+#define MODRIP_KNOWNFORMATS 4
 
 static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
   modripDetectProTracker,
   modripDetectSoundFX,
-  modripDetectSoundMon
+  modripDetectSoundMon,
+  modripDetectFred
 };
 
 /*==============================================*/
