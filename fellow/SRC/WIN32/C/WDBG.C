@@ -10,13 +10,13 @@
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/08:                                                                */
+/* - CIA state added                                                          */
 /* - memory dump added                                                        */
 /* - fixed a bug which hung property sheets when launched the second time     */
 /*   (the dialog procs must not destroy the dialog)                           */
 /* - made the debugger a property sheet; it should use register               */
 /*   tabs, but I think for the beginning they are too complicated to use;     */
 /*   shall be fixed later                                                     */
-/*                                                                            */
 /*                                                                            */
 /* TODO:                                                                      */
 /* -----                                                                      */
@@ -51,6 +51,7 @@
 #include "cpudis.h"
 #include "kbd.h"
 #include "fmem.h"
+#include "cia.h"
 
 /*===============================*/
 /* Handle of the main dialog box */
@@ -58,14 +59,12 @@
 
 static HWND wdbg_hDialog;
 
-
 #define WDBG_CPU_REGISTERS_X 24
 #define WDBG_CPU_REGISTERS_Y 26
 #define WDBG_DISASSEMBLY_X 16
 #define WDBG_DISASSEMBLY_Y 96
 #define WDBG_DISASSEMBLY_LINES 17
 #define WDBG_DISASSEMBLY_INDENT 16
-
 
 /*===================================*/
 /* private variables for this module */
@@ -75,7 +74,6 @@ static ULO memory_padd = WDBG_DISASSEMBLY_LINES * 32;
 static ULO memory_adress = 0;
 static BOOLE memory_ascii = FALSE;
 
-
 /*============*/
 /* Prototypes */
 /*============*/
@@ -84,22 +82,24 @@ BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
+				WPARAM wParam, LPARAM lParam);
 
 /*==============================================================*/
 /* the various sheets of the main dialog and their dialog procs */
 /*==============================================================*/
 
-#define DEBUG_PROP_SHEETS 2
+#define DEBUG_PROP_SHEETS 3
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY
+  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA
     /*, IDD_..., */
 };
 
 typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
-  wdbgCPUDialogProc, wdbgMemoryDialogProc
+  wdbgCPUDialogProc, wdbgMemoryDialogProc, wdbgCIADialogProc
 };
 
 /*===========================*/
@@ -288,46 +288,45 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     SelectObject(hDC, myfont);
     SetBkMode(hDC, TRANSPARENT);
     SetBkMode(hDC_image, TRANSPARENT);
-	y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(st), x, y);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(st), x, y);
     x = WDBG_DISASSEMBLY_X;
     y = WDBG_DISASSEMBLY_Y;
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
-    
-	for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++) {
+
+    for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++) {
       if (memory_ascii) {
-	    sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
-		  (memory_adress + i * 16) & 0xffffff,
-		  fetl(memory_adress + i * 16 + 0),
-		  fetl(memory_adress + i * 16 + 4),
-		  fetl(memory_adress + i * 16 + 8),
-		  fetl(memory_adress + i * 16 + 12));
-		
-	    for (j = 0; j < 16; j++) {
-	      k = fetb(memory_adress + i * 16 + j) & 0xff;
-	      if (k < 32)
-	        st[j+41] = '.';
-	      else
-	        st[j+41] = k;
-		}
-	    st[16+41] = '\0';
-	    y = wdbgLineOut(hDC, st, x, y);
+	sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
+		(memory_adress + i * 16) & 0xffffff,
+		fetl(memory_adress + i * 16 + 0),
+		fetl(memory_adress + i * 16 + 4),
+		fetl(memory_adress + i * 16 + 8),
+		fetl(memory_adress + i * 16 + 12));
+
+	for (j = 0; j < 16; j++) {
+	  k = fetb(memory_adress + i * 16 + j) & 0xff;
+	  if (k < 32)
+	    st[j + 41] = '.';
+	  else
+	    st[j + 41] = k;
+	}
+	st[16 + 41] = '\0';
+	y = wdbgLineOut(hDC, st, x, y);
       }
-      else			
-      {
-	    sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
-		  (memory_adress + i * 32) & 0xffffff,
-		  fetl(memory_adress + i * 32),
-		  fetl(memory_adress + i * 32 + 4),
-		  fetl(memory_adress + i * 32 + 8),
-		  fetl(memory_adress + i * 32 + 12),
-		  fetl(memory_adress + i * 32 + 16),
-		  fetl(memory_adress + i * 32 + 20),
-		  fetl(memory_adress + i * 32 + 24), 
-		  fetl(memory_adress + i * 32 + 28));
-	    y = wdbgLineOut(hDC, st, x, y);
+      else {
+	sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
+		(memory_adress + i * 32) & 0xffffff,
+		fetl(memory_adress + i * 32),
+		fetl(memory_adress + i * 32 + 4),
+		fetl(memory_adress + i * 32 + 8),
+		fetl(memory_adress + i * 32 + 12),
+		fetl(memory_adress + i * 32 + 16),
+		fetl(memory_adress + i * 32 + 20),
+		fetl(memory_adress + i * 32 + 24),
+		fetl(memory_adress + i * 32 + 28));
+	y = wdbgLineOut(hDC, st, x, y);
       }
     }
 
@@ -338,6 +337,107 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
   }
 }
 
+/*============================================================================*/
+/* Updates the CIA state                                                      */
+/*============================================================================*/
+
+void wdbgUpdateCIAState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i, txt_y;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    intena &= 0xffdf;
+    intenar &= 0xffdf;
+
+    for (i = 0; i < 2; i++) {
+      sprintf(s, "Cia %s Registers:", (i == 0) ? "A" : "B");
+      y = wdbgLineOut(hDC, s, x, y);
+
+      sprintf(s, "CRA-%.2X CRB-%.2X IREQ-%.2X IMSK-%.2X SP-%.2X",
+	      cia_cra[i], cia_crb[i], cia_icrreq[i], cia_icrmsk[i], cia_sp[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+
+      sprintf(s, "EV-%.8X ALARM-%.8X", cia_ev[i], cia_evalarm[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+
+      sprintf(s, "TA-%.4X TAHELP-%.8X TB-%.4X TBHELP-%.8X", cia_ta[i],
+	      cia_taleft[i], cia_tb[i], cia_tbleft[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+
+      sprintf(s, "TALATCH-%.4X TBLATCH-%.4X", cia_talatch[i], cia_tblatch[i]);
+      y = wdbgLineOut(hDC, s, x, y);
+
+      strcpy(s, "");
+      y = wdbgLineOut(hDC, s, x, y);
+    }
+
+    if (cia_cra[i] & 1)
+      strcpy(s, "Timer A started, ");
+    else
+      strcpy(s, "Timer A stopped, ");
+
+    if (cia_cra[i] & 8)
+      strcat(s, "One-shot mode");
+    else
+      strcat(s, "Continuous");
+
+    y = wdbgLineOut(hDC, s, x, y);
+
+    if (cia_crb[i] & 1)
+      strcpy(s, "Timer B started, ");
+    else
+      strcpy(s, "Timer B stopped, ");
+
+    if (cia_crb[i] & 8)
+      strcat(s, "One-shot mode");
+    else
+      strcat(s, "Continuous");
+
+    y = wdbgLineOut(hDC, s, x, y);
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
 
 /*============================================================================*/
 /* DialogProc for our cpu dialog                                             */
@@ -432,6 +532,33 @@ BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg,
 	  memory_padd = WDBG_DISASSEMBLY_LINES * 32;
 	  InvalidateRect(hwndDlg, NULL, FALSE);
 	  SetFocus(hwndDlg);
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our CIA dialog                                              */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg,
+				UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateCIAState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
 	  break;
 	default:
 	  break;
