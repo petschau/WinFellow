@@ -582,12 +582,12 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
       sprintf(s, "DF%d:", i);
       y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "Track-%d Sel-%d Motor-%d Side-%d WP-%d Cached-%s",
+      sprintf(s, "Track-%d Sel-%d Motor-%d Side-%d WP-%d",
 	      floppy[i].track,
 	      floppy[i].sel,
 	      floppy[i].motor,
 	      floppy[i].side,
-	      floppy[i].writeprot, floppy[i].cached ? "Yes" : "No ");
+	      floppy[i].writeprot);
       y = wdbgLineOut(hDC, s, x, y);
     }
 
@@ -603,9 +603,8 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     strcpy(s, "Transfer settings:");
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Drive: %d  Wordsleft: %d  Wait: %d  Dst: %X",
-	    floppy_DMA.drive,
-	    floppy_DMA.wordsleft, floppy_DMA.wait, floppy_DMA.dst);
+    sprintf(s, "Wordsleft: %d  Wait: %d  Dst: %X",
+	    floppy_DMA.wordsleft, floppy_DMA.wait, floppy_DMA.dskpt);
     y = wdbgLineOut(hDC, s, x, y);
 
 #ifdef ALIGN_CHECK
