@@ -14,6 +14,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
+#include <stdlib.h>
 #include "gui_general.h"
 #include "gui_debugger.h"
 #include <process.h>
@@ -1051,6 +1052,15 @@ void wguiInstallSoundConfig(HWND DlgHWND, cfg *conf) {
 
   Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_WAV),
 		  cfgGetSoundWAVDump(conf));
+
+  /* set sound hardware notification */
+  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION),
+		  cfgGetSoundNotification(conf));
+  
+  /* set slider of buffer length */
+  SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_SETRANGE, 0, MAKELONG(10,80));
+  SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_SETPOS, 1, cfgGetSoundBufferLength(conf));
+
 }
 
 /* Extract sound config */
@@ -1099,11 +1109,14 @@ void wguiExtractSoundConfig(HWND DlgHWND, cfg *conf) {
   else if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SOUND_FILTER_NEVER)))
     cfgSetSoundFilter(conf, SOUND_FILTER_NEVER);
 
-   /* Get current sound WAV dump */
+  /* Get current sound WAV dump */
+  cfgSetSoundWAVDump(conf, Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_WAV)));
 
-  cfgSetSoundWAVDump(conf,
-		     Button_GetCheck(GetDlgItem(DlgHWND,
-						IDC_CHECK_SOUND_WAV)));
+  /* get notify option */
+  cfgSetSoundNotification(conf, Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)));
+
+  /* get slider of buffer length */
+  cfgSetSoundBufferLength(conf, SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0));
 }
 
 
@@ -1811,6 +1824,9 @@ BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg,
 				  UINT uMsg,
 				  WPARAM wParam,
 				  LPARAM lParam) {
+  long buffer_length;
+  STR buffer[16];
+
   switch (uMsg) {
     case WM_INITDIALOG:
       wguiInstallSoundConfig(hwndDlg, wgui_cfg);
@@ -1820,6 +1836,11 @@ BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg,
     case WM_DESTROY:
       wguiExtractSoundConfig(hwndDlg, wgui_cfg);
       break;
+	case WM_NOTIFY:
+	  buffer_length = SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0);
+	  sprintf(buffer, "%d", buffer_length);
+	  Static_SetText(GetDlgItem(hwndDlg, IDC_STATIC_BUFFER_LENGTH), buffer);
+	  break;
   }
   return FALSE;
 }
