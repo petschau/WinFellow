@@ -54,8 +54,7 @@ cpu_id;
 /* handle error messages */
 /*=======================*/
 void
-LogErrorMessageFromSystem (void)
-{
+LogErrorMessageFromSystem (void) {
   CHAR szTemp[MYREGBUFFERSIZE * 2];
   DWORD cMsgLen;
   DWORD dwError;
@@ -68,11 +67,10 @@ LogErrorMessageFromSystem (void)
     FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER
 		   | 40, NULL, dwError, MAKELANGID (0, SUBLANG_ENGLISH_US),
 		   (LPTSTR) & msgBuf, MYREGBUFFERSIZE, NULL);
-  if (cMsgLen)
-    {
+  if (cMsgLen) {
       strcat (szTemp, msgBuf);
-      fellowAddLog ("%s\n", szTemp);
-    }
+      fellowAddTimelessLog ("%s\n", szTemp);
+  }
 }
 
 /*===================================*/
@@ -84,8 +82,7 @@ LogErrorMessageFromSystem (void)
 /* is returned, if failed it returns NULL                                      */
 /*=============================================================================*/
 static char *
-RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName)
-{
+RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
   HKEY hKey;
   TCHAR szBuffer[MYREGBUFFERSIZE];
   DWORD dwBufLen = MYREGBUFFERSIZE;
@@ -147,9 +144,7 @@ RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName)
 /* walk through a given registry hardware enumeration tree    */
 /* warning: this may cause serious damage to your health.. ;) */
 /*============================================================*/
-static void
-EnumHardwareTree (LPCTSTR SubKey)
-{
+static void EnumHardwareTree (LPCTSTR SubKey) {
   HKEY hKey, hKey2;
   DWORD dwNoSubkeys, dwNoSubkeys2;
   DWORD CurrentSubKey, CurrentSubKey2;
@@ -158,21 +153,18 @@ EnumHardwareTree (LPCTSTR SubKey)
   char *szClass, *szDevice, *szDriver;
 
   /* get handle to specified key tree */
-  if (RegOpenKeyEx
-      (HKEY_LOCAL_MACHINE, SubKey, 0,
-       KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS)
-    {
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SubKey, 0,
+       KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS) {
       /* LogErrorMessageFromSystem (); */
       return;
-    }
+  }
 
   /* retrieve information about that key (no. of subkeys) */
   if (RegQueryInfoKey (hKey, NULL, NULL, NULL, &dwNoSubkeys, NULL,
-		       NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
-    {
+		       NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
       /* LogErrorMessageFromSystem (); */
       return;
-    }
+  }
 
   for (CurrentSubKey = 0; CurrentSubKey < dwNoSubkeys; CurrentSubKey++)
     {
@@ -228,14 +220,11 @@ EnumHardwareTree (LPCTSTR SubKey)
 		      (stricmp (szClass, "media"  ) == 0) ||
 			  (stricmp (szClass, "unknown") == 0))
 		{
-		  szDevice = RegistryQueryStringValue (hKey2,
-						       szSubKeyName2,
-						       TEXT ("DeviceDesc"));
-		  if (szDevice)
-		    {
-		      fellowAddLog ("%s: %s\n", szClass, szDevice);
+		  szDevice = RegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("DeviceDesc"));
+		  if (szDevice) {
+		      fellowAddTimelessLog("\t%s: %s\n", strlwr(szClass), szDevice);
 		      free (szDevice);
-		    }
+		  }
 		}
 	      free (szClass);
 	    }
@@ -245,10 +234,9 @@ EnumHardwareTree (LPCTSTR SubKey)
   RegCloseKey (hKey);
 }
 
-static void
-EnumRegistry (void)
-{
+static void EnumRegistry (void) {
   OSVERSIONINFO osInfo;
+
   ZeroMemory (&osInfo, sizeof (OSVERSIONINFO));
   osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
   if (!GetVersionEx (&osInfo))
@@ -260,9 +248,9 @@ EnumRegistry (void)
   if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
       /* this seems to be the right place in Win2k and NT */
-      EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
-      EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
-	  EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
+      EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
+      EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
+	  EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
     }
   else
     {
@@ -280,142 +268,163 @@ static void
 ParseSystemInfo (void)
 {
   SYSTEM_INFO SystemInfo;
-  GetSystemInfo (&SystemInfo);
-  fellowAddLog
-    ("Number of processors: %d\n", SystemInfo.dwNumberOfProcessors);
-  fellowAddLog ("Processor Type: %d\n", SystemInfo.dwProcessorType);
-  fellowAddLog ("Architecture: %d\n", SystemInfo.wProcessorArchitecture);
-  /*fellowAddLog("Processor level: %d\n", wProcessorLevel);
-     fellowAddLog("Processor revision: %d\n", wProcessorRevision; */
+  GetSystemInfo(&SystemInfo);
+  fellowAddTimelessLog("\tnumber of processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
+  fellowAddTimelessLog("\tprocessor type: \t%d\n", SystemInfo.dwProcessorType);
+  fellowAddTimelessLog("\tarchitecture: \t\t%d\n", SystemInfo.wProcessorArchitecture);
+  // fellowAddTimelessLog("Processor level: %d\n", wProcessorLevel);
+  // fellowAddTimelessLog("Processor revision: %d\n", wProcessorRevision; 
 }
 
-static void
-ParseOSVersionInfo (void)
-{
-  OSVERSIONINFO osInfo;
-  ZeroMemory (&osInfo, sizeof (OSVERSIONINFO));
-  osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
-  if (!GetVersionEx (&osInfo))
-    {
-      LogErrorMessageFromSystem ();
-      return;
-    }
+static void ParseOSVersionInfo(void) {
+	OSVERSIONINFOEX osInfo;
+	BOOL osVersionInfoEx;
 
-  if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
-    {
-      char *tempstr = NULL;
-      fellowAddLog ("We seem to be running on NT.");
-      tempstr =
-	RegistryQueryStringValue
-	(HKEY_LOCAL_MACHINE,
-	 TEXT
-	 ("SYSTEM\\CurrentControlSet\\Control\\ProductOptions"),
-	 TEXT ("ProductType")); if (tempstr)
-	{
-	  fellowAddLog (" It identifies itself as %s.\n", tempstr);
-	  free (tempstr);
+	ZeroMemory(&osInfo, sizeof(OSVERSIONINFOEX));
+	osInfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFOEX);
+
+	if(!(osVersionInfoEx = GetVersionEx((OSVERSIONINFO *) &osInfo))) {
+      
+		// OSVERSIONINFOEX didn't work, we try OSVERSIONINFO.
+		osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
+		if (!GetVersionEx((OSVERSIONINFO *) &osInfo)) {
+			LogErrorMessageFromSystem();
+			return;  
+		}
 	}
-      else
-	fellowAddLog ("\n");
-    }
-  if (osInfo.dwMajorVersion == 5)
-    fellowAddLog ("This should be Windows 2000\n");
 
-  fellowAddLog
-    ("OS %d.%d build %d desc %s, platform %d\n",
-     osInfo.dwMajorVersion,
-     osInfo.dwMinorVersion,
-     osInfo.dwBuildNumber,
-     (osInfo.szCSDVersion ? osInfo.szCSDVersion : "--"), osInfo.dwPlatformId);}
+	switch (osInfo.dwPlatformId) {
+	case VER_PLATFORM_WIN32s:
+		fellowAddTimelessLog("\toperating system: \tWindows %d.%d\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion);
+		break;
+	case VER_PLATFORM_WIN32_WINDOWS:
 
-static void
-ParseRegistry (void)
-{
+		if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 0)) {
+			fellowAddTimelessLog("\toperating system: \tWindows 95 ");
+			if (osInfo.szCSDVersion[1] == 'C' || osInfo.szCSDVersion[1] == 'B' ) {
+				fellowAddTimelessLog("OSR2\n");
+			} else {
+				fellowAddTimelessLog("\n");
+			}
+		}
+
+		if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 10)) {
+			fellowAddTimelessLog("\toperating system: \tWindows 98 ");
+			if ( osInfo.szCSDVersion[1] == 'A' ) {
+                fellowAddTimelessLog("SE\n" );
+			} else {
+				fellowAddTimelessLog("\n");
+			}
+		} 
+
+		if ((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 90)) {
+			fellowAddTimelessLog("\toperating system: \tWindows ME\n");
+		}
+		break;
+	case VER_PLATFORM_WIN32_NT: 
+		switch (osInfo.dwMajorVersion) {
+		case 0:
+		case 1:
+		case 2:
+		case 3:
+			fellowAddTimelessLog("\toperating system: \tWindows NT 3\n");
+			break;
+		case 4:
+			fellowAddTimelessLog("\toperating system: \tWindows NT 4\n");
+			break;
+		case 5:
+			switch (osInfo.dwMinorVersion) {
+			case 0:
+				fellowAddTimelessLog("\toperating system: \tWindows 2000\n");
+				break;
+			case 1:
+				fellowAddTimelessLog("\toperating system: \tWindows XP\n");
+				break;
+			default:
+				fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
+			}
+			break;
+		default:
+			fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
+		}
+		break;
+	default:
+		fellowAddTimelessLog("\toperating system: \tunknown\n");
+	}
+
+  fellowAddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", osInfo.dwMajorVersion,
+	  osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+	  (osInfo.szCSDVersion ? osInfo.szCSDVersion : "--"));
+}
+
+static void ParseRegistry(void) {
   char *tempstr = NULL;
   DWORD *dwTemp = NULL;
-  fellowAddLog ("Querying registry for processor information:\n");
-  tempstr =
-    RegistryQueryStringValue
-    (HKEY_LOCAL_MACHINE,
-     TEXT
+
+  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
      TEXT ("VendorIdentifier"));
-  if (tempstr)
-    {
-      fellowAddLog ("CPU Vendor: %s\n", tempstr);
-      free (tempstr);
-    }
+  if (tempstr) {
+    fellowAddTimelessLog("\tCPU vendor: \t\t%s\n", tempstr);
+    free(tempstr);
+  }
 
-  tempstr =
-    RegistryQueryStringValue
-    (HKEY_LOCAL_MACHINE,
-     TEXT
+  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
-     TEXT ("Identifier")); if (tempstr)
-    {
-      fellowAddLog ("CPU Identifier: %s\n", tempstr);
+     TEXT ("ProcessorNameString"));
+  if (tempstr) {
+    fellowAddTimelessLog("\tCPU type: \t\t%s\n", tempstr);
+    free(tempstr);
+  }
+
+  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
+     ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
+     TEXT ("Identifier")); 
+  if (tempstr) {
+      fellowAddTimelessLog("\tCPU identifier: \t%s\n", tempstr);
       free (tempstr);
-    }
+  }
 
   /* clock speed seems to be only available on NT systems here */
-  dwTemp =
-    RegistryQueryDWORDValue
-    (HKEY_LOCAL_MACHINE,
-     TEXT
+  dwTemp = RegistryQueryDWORDValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), TEXT ("~MHz"));
-  if (dwTemp)
-    {
-      fellowAddLog ("CPU clock: %d MHz\n", *dwTemp);
-      free (dwTemp);
-    }
+  if (dwTemp) {
+      fellowAddTimelessLog("\tCPU clock: \t\t%d MHz\n", *dwTemp);
+      free(dwTemp);
+  }
 }
 
-static void
-ParseMemoryStatus (void)
-{
+static void ParseMemoryStatus (void) {
   MEMORYSTATUS MemoryStatus;
-  ZeroMemory (&MemoryStatus, sizeof (MemoryStatus));
+
+  ZeroMemory(&MemoryStatus, sizeof (MemoryStatus));
   MemoryStatus.dwLength = sizeof (MEMORYSTATUS);
-  GlobalMemoryStatus (&MemoryStatus);
-  fellowAddLog ("Memory information:\n");
-  fellowAddLog
-    ("Total physical memory: %u MB (%u Bytes)\n",
-     MemoryStatus.dwTotalPhys / 1024 / 1024, MemoryStatus.dwTotalPhys);
-  fellowAddLog
-    ("Free physical memory: %u MB (%u Bytes)\n",
-     MemoryStatus.dwAvailPhys / 1024 / 1024, MemoryStatus.dwAvailPhys);
-  fellowAddLog ("Memory load (percent): %u\n", MemoryStatus.dwMemoryLoad);
-  fellowAddLog
-    ("Total size of pagefile: %u MB (%u Bytes)\n",
-     MemoryStatus.dwTotalPageFile / 1024 /
-     1024, MemoryStatus.dwTotalPageFile);
-  fellowAddLog
-    ("Free size of pagefile: %u MB (%u Bytes)\n",
-     MemoryStatus.dwAvailPageFile / 1024 /
-     1024, MemoryStatus.dwAvailPageFile);
-  fellowAddLog
-    ("Total virtual address space: %u MB (%u Bytes)\n",
-     MemoryStatus.dwTotalVirtual / 1024 / 1024, MemoryStatus.dwTotalVirtual);
-  fellowAddLog
-    ("Free virtual address space: %u MB (%u Bytes)\n",
-     MemoryStatus.dwAvailVirtual / 1024 / 1024, MemoryStatus.dwAvailVirtual);
+  GlobalMemoryStatus(&MemoryStatus);
+
+  fellowAddTimelessLog("\ttotal physical memory: \t%u MB\n", MemoryStatus.dwTotalPhys / 1024 / 1024);
+  fellowAddTimelessLog("\tfree physical memory: \t%u MB\n", MemoryStatus.dwAvailPhys / 1024 / 1024);
+  fellowAddTimelessLog("\tmemory in use: \t\t%u%%\n", MemoryStatus.dwMemoryLoad);
+  fellowAddTimelessLog("\ttotal size of pagefile: \t%u MB\n", MemoryStatus.dwTotalPageFile / 1024 / 1024);
+  fellowAddTimelessLog("\tfree size of pagefile: \t\t%u MB\n", MemoryStatus.dwAvailPageFile / 1024 / 1024);
+  fellowAddTimelessLog("\ttotal virtual address space: \t%u MB\n", MemoryStatus.dwTotalVirtual / 1024 / 1024);
+  fellowAddTimelessLog("\tfree virtual address space: \t%u MB\n", MemoryStatus.dwAvailVirtual / 1024 / 1024);
 }
 
-static void
-fellowVersionInfo (void)
-{
-  fellowAddLog ("WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15");
-#ifdef USE_DX3
-  fellowAddLog (" (DX3");
-#else
-  fellowAddLog (" (DX5");
-#endif
-#ifdef _DEBUG
-  fellowAddLog (" Debug Build)");
-#else
-  fellowAddLog (" Release Build)");
-#endif
-  fellowAddLog (" now starting up...\n");
+static void fellowVersionInfo (void) {
+
+	fellowAddTimelessLog("WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15");
+
+	#ifdef USE_DX3
+		fellowAddTimelessLog(" (DirectX 3");
+	#else
+		fellowAddTimelessLog(" (DirectX 5");
+	#endif
+
+	#ifdef _DEBUG
+		fellowAddTimelessLog(" debug build)\n");
+	#else
+		fellowAddTimelessLog(" release build)\n");
+	#endif
 }
 
 /*============================================================================*/
@@ -426,9 +435,8 @@ fellowVersionInfo (void)
 /*                                                                            */
 /* lines marked with @@@@@ differ from the original source                    */
 /*============================================================================*/
-static void
-cpu_get_features (void)
-{
+static void cpu_get_features (void) {
+
   /* initialization */
   memset (&cpu_id, 0, sizeof (cpu_id));
 
@@ -653,20 +661,19 @@ cpu_speed (void)
 /*============================================*/
 /* parse the contents of the cpu_id structure */
 /*============================================*/
-static void
-DetectCPU (void)
-{
+static void DetectCPU (void) {
   int i, off = 0;
 
   int l1_cache = 0, l2_cache = 0;
   float speed;
   char vendor[13];
+  BOOL exception;
 
-  cpu_get_features ();
+  cpu_get_features();
 
-  fellowAddLog ("Processor detection attempt: ");
   strncpy (vendor, cpu_id.vend_id, 12);
-  fellowAddLog ("%s ", vendor);
+  fellowAddTimelessLog("\tCPU vendor: \t%s\n", vendor);
+  fellowAddTimelessLog("\tCPU type: \t");
 
   /* If the CPUID instruction is not supported then this is */
   /* a 386, 486 or one of the early Cyrix CPU's */
@@ -684,37 +691,37 @@ DetectCPU (void)
 	     switch(i) {
 	     case 0:
 	     case 1:
-	     fellowAddLog("Cyrix Cx486");
+	     fellowAddTimelessLog("Cyrix Cx486");
 	     break;
 	     case 2:
-	     fellowAddLog("Cyrix 5x86");
+	     fellowAddTimelessLog("Cyrix 5x86");
 	     break;
 	     case 3:
-	     fellowAddLog("Cyrix 6x86");
+	     fellowAddTimelessLog("Cyrix 6x86");
 	     break;
 	     case 4:
-	     fellowAddLog("Cyrix MediaGX");
+	     fellowAddTimelessLog("Cyrix MediaGX");
 	     break;
 	     case 5:
-	     fellowAddLog("Cyrix 6x86MX");
+	     fellowAddTimelessLog("Cyrix 6x86MX");
 	     break;
 	     case 6:
-	     fellowAddLog("Cyrix MII");
+	     fellowAddTimelessLog("Cyrix MII");
 	     break;
 	     default:
-	     fellowAddLog("Cyrix ???");
+	     fellowAddTimelessLog("Cyrix ???");
 	     break;
 	     }
 	   */
-	  fellowAddLog ("Cyrix - buhbuh...");
+	  fellowAddTimelessLog ("Cyrix - buhbuh...");
 	  break;
 
 	case 3:
-	  fellowAddLog ("386");
+	  fellowAddTimelessLog("386");
 	  break;
 
 	case 4:
-	  fellowAddLog ("486");
+	  fellowAddTimelessLog("486");
 	  l1_cache = 8;
 	  break;
 	}
@@ -731,19 +738,19 @@ DetectCPU (void)
 	  switch (cpu_id.model)
 	    {
 	    case 3:
-	      fellowAddLog ("AMD 486DX2");
+	      fellowAddTimelessLog("AMD 486DX2");
 	      break;
 	    case 7:
-	      fellowAddLog ("AMD 486DX2-WB");
+	      fellowAddTimelessLog("AMD 486DX2-WB");
 	      break;
 	    case 8:
-	      fellowAddLog ("AMD 486DX4");
+	      fellowAddTimelessLog("AMD 486DX4");
 	      break;
 	    case 9:
-	      fellowAddLog ("AMD 486DX4-WB");
+	      fellowAddTimelessLog("AMD 486DX4-WB");
 	      break;
 	    case 14:
-	      fellowAddLog ("AMD 5x86-WT");
+	      fellowAddTimelessLog("AMD 5x86-WT");
 	      break;
 	    }
 	  /* Since we can't get CPU speed or cache info return */
@@ -755,24 +762,24 @@ DetectCPU (void)
 	    case 1:
 	    case 2:
 	    case 3:
-	      fellowAddLog ("AMD K5");
+	      fellowAddTimelessLog("AMD K5");
 	      off = 6;
 	      break;
 	    case 6:
 	    case 7:
-	      fellowAddLog ("AMD K6");
+	      fellowAddTimelessLog("AMD K6");
 	      off = 6;
 	      l1_cache = cpu_id.cache_info[3];
 	      l1_cache += cpu_id.cache_info[7];
 	      break;
 	    case 8:
-	      fellowAddLog ("AMD K6-2");
+	      fellowAddTimelessLog("AMD K6-2");
 	      off = 8;
 	      l1_cache = cpu_id.cache_info[3];
 	      l1_cache += cpu_id.cache_info[7];
 	      break;
 	    case 9:
-	      fellowAddLog ("AMD K6-III");
+	      fellowAddTimelessLog("AMD K6-III");
 	      off = 10;
 	      l1_cache = cpu_id.cache_info[3];
 	      l1_cache += cpu_id.cache_info[7];
@@ -787,11 +794,11 @@ DetectCPU (void)
 	    case 1:
 	    case 2:
 	    case 4:
-	      fellowAddLog ("AMD Athlon");
+	      fellowAddTimelessLog("AMD Athlon");
 	      off = 10;
 	      break;
 	    case 3:
-	      fellowAddLog ("AMD Duron");
+	      fellowAddTimelessLog("AMD Duron");
 	      off = 9;
 	      break;
 	    }
@@ -810,35 +817,35 @@ DetectCPU (void)
 	    {
 	    case 0:
 	    case 1:
-	      fellowAddLog ("Intel 486DX");
+	      fellowAddTimelessLog("Intel 486DX");
 	      off = 11;
 	      break;
 	    case 2:
-	      fellowAddLog ("Intel 486SX");
+	      fellowAddTimelessLog("Intel 486SX");
 	      off = 11;
 	      break;
 	    case 3:
-	      fellowAddLog ("Intel 486DX2");
+	      fellowAddTimelessLog("Intel 486DX2");
 	      off = 12;
 	      break;
 	    case 4:
-	      fellowAddLog ("Intel 486SL");
+	      fellowAddTimelessLog("Intel 486SL");
 	      off = 11;
 	      break;
 	    case 5:
-	      fellowAddLog ("Intel 486SX2");
+	      fellowAddTimelessLog("Intel 486SX2");
 	      off = 12;
 	      break;
 	    case 7:
-	      fellowAddLog ("Intel 486DX2-WB");
+	      fellowAddTimelessLog("Intel 486DX2-WB");
 	      off = 15;
 	      break;
 	    case 8:
-	      fellowAddLog ("Intel 486DX4");
+	      fellowAddTimelessLog("Intel 486DX4");
 	      off = 12;
 	      break;
 	    case 9:
-	      fellowAddLog ("Intel 486DX4-WB");
+	      fellowAddTimelessLog("Intel 486DX4-WB");
 	      off = 15;
 	      break;
 	    }
@@ -847,8 +854,7 @@ DetectCPU (void)
 	}
 
       /* Get the cache info */
-      for (i = 0; i < 16; i++)
-	{
+      for (i = 0; i < 16; i++) {
 	  switch (cpu_id.cache_info[i])
 	    {
 	    case 0x6:
@@ -897,7 +903,7 @@ DetectCPU (void)
 	    case 2:
 	    case 3:
 	    case 7:
-	      fellowAddLog ("Pentium");
+	      fellowAddTimelessLog("Pentium");
 	      if (l1_cache == 0)
 		{
 		  l1_cache = 8;
@@ -906,7 +912,7 @@ DetectCPU (void)
 	      break;
 	    case 4:
 	    case 8:
-	      fellowAddLog ("Pentium-MMX");
+	      fellowAddTimelessLog("Pentium-MMX");
 	      if (l1_cache == 0)
 		{
 		  l1_cache = 16;
@@ -920,40 +926,40 @@ DetectCPU (void)
 	    {
 	    case 0:
 	    case 1:
-	      fellowAddLog ("Pentium Pro");
+	      fellowAddTimelessLog("Pentium Pro");
 	      off = 11;
 	      break;
 	    case 3:
-	      fellowAddLog ("Pentium II");
+	      fellowAddTimelessLog("Pentium II");
 	      off = 10;
 	      break;
 	    case 5:
 	      if (l2_cache == 0)
 		{
-		  fellowAddLog ("Celeron");
+		  fellowAddTimelessLog("Celeron");
 		  off = 7;
 		}
 	      else
 		{
-		  fellowAddLog ("Pentium II");
+		  fellowAddTimelessLog("Pentium II");
 		  off = 10;
 		}
 	      break;
 	    case 6:
 	      if (l2_cache == 128)
 		{
-		  fellowAddLog ("Celeron");
+		  fellowAddTimelessLog("Celeron");
 		  off = 7;
 		}
 	      else
 		{
-		  fellowAddLog ("Pentium II");
+		  fellowAddTimelessLog("Pentium II");
 		  off = 10;
 		}
 	      break;
 	    case 7:
 	    case 8:
-	      fellowAddLog ("Pentium III");
+	      fellowAddTimelessLog("Pentium III");
 	      off = 11;
 	      break;
 	    }
@@ -965,11 +971,11 @@ DetectCPU (void)
       switch (cpu_id.model)
 	{
 	case 0:
-	  fellowAddLog ("Cyrix 6x86MX/MII");
+	  fellowAddTimelessLog("Cyrix 6x86MX/MII");
 	  off = 16;
 	  break;
 	case 4:
-	  fellowAddLog ("Cyrix GXm");
+	  fellowAddTimelessLog("Cyrix GXm");
 	  off = 9;
 	  break;
 	}
@@ -983,33 +989,49 @@ DetectCPU (void)
       switch (cpu_id.type)
 	{
 	case 5:
-	  fellowAddLog ("586");
+	  fellowAddTimelessLog("586");
 	  return;
 	case 6:
-	  fellowAddLog ("686");
+	  fellowAddTimelessLog("686");
 	  return;
 	}
     }
-  fellowAddLog ("; L1 Cache: %d KB; L2 Cache: %d KB", l1_cache, l2_cache);
-  fellowAddLog ("\n");
+
+  fellowAddTimelessLog("\n");
+  fellowAddTimelessLog("\tlevel 1 cache: \t%d KB\n", l1_cache);
+  fellowAddTimelessLog("\tlevel 2 cache: \t%d KB\n", l2_cache);
 
   __try
   {
-    speed = cpu_speed ();
-    fellowAddLog ("Calculated CPU speed: %f MHz\n", speed);
+    speed = cpu_speed();
+	exception = FALSE;
   }
   __except (EXCEPTION_EXECUTE_HANDLER)
   {
-    fellowAddLog
-      ("Can't calculate CPU speed: processor doesn't support the RDTSC instruction.\n");
+	  exception = TRUE;
   }
 
+  if (exception == FALSE) {
+	fellowAddTimelessLog("\tCPU clock: \t%3.0f MHz\n", speed);
+  }
+  
   if (detectMMX() == 1) {
-	fellowAddLog("CPU supports MMX.\n");
+	fellowAddTimelessLog("\tCPU supports: \tMMX instruction set\n");
   }
   if (detectSSE() == 1) {
-	fellowAddLog("CPU supports SSE.\n");
+	fellowAddTimelessLog("\tCPU supports: \tSSE instruction set\n");
   }
+
+  /*
+  if (detect3DNow() == 1) {
+	fellowAddTimelessLog("CPU supports 3DNow! instruction set\n");
+  }
+
+  if (detect3DNow2() == 1) {
+	fellowAddTimele("CPU supports 3DNow2! instruction set\n");
+  }
+  */
+
 }
 
 /*===============*/
@@ -1018,11 +1040,18 @@ DetectCPU (void)
 void
 fellowLogSysInfo (void)
 {
-  fellowVersionInfo ();
-  ParseRegistry ();
-  ParseOSVersionInfo ();
-  ParseSystemInfo ();
-  ParseMemoryStatus ();
-  EnumRegistry ();
-  DetectCPU ();
+  fellowVersionInfo();
+  fellowAddTimelessLog("\ninformation retrieved from registry:\n\n");
+  ParseRegistry();
+  fellowAddTimelessLog("\n");
+  ParseOSVersionInfo();
+  fellowAddTimelessLog("\n");
+  ParseSystemInfo();
+  fellowAddTimelessLog("\n");
+  ParseMemoryStatus();
+  fellowAddTimelessLog("\n");
+  EnumRegistry();
+  fellowAddTimelessLog("\n\ninformation retrieved from hardware detection:\n\n");
+  DetectCPU();
+  fellowAddTimelessLog("\n\ndebug information:\n\n");
 }
