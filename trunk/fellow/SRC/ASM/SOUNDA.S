@@ -489,6 +489,18 @@ chan0441l:	xor	edx, edx
 		jne	chan0441l
 		jmp	channel1441
 channel0441off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 0]
+		test	dword [intreq], edx
+		jnz	short channel1441
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel1441:	test	dword [dmacon], 2	  ; Channel on?
 		jz	channel1441off		  ; No sound if dma is off
 
@@ -505,6 +517,18 @@ chan1441l:	mov	edx, 4
 		jne	chan1441l
 		jmp	channel2441
 channel1441off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 4]
+		test	dword [intreq], edx
+		jnz	short channel2441
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel2441:	test	dword [dmacon], 4	  ; Channel on?
 		jz	channel2441off		  ; No sound if dma is off
 
@@ -521,6 +545,18 @@ chan2441l:	mov	edx, 8
 		jne	chan2441l
 		jmp	channel3441
 channel2441off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 8]
+		test	dword [intreq], edx
+		jnz	short channel3441
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel3441:	test	dword [dmacon], 8	  ; Channel on?
 		jz	channel3441off		  ; No sound if dma is off
 
@@ -537,6 +573,18 @@ chan3441l:	mov	edx, 12
 		jne	chan3441l
 		jmp	channel4441
 channel3441off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 12]
+		test	dword [intreq], edx
+		jnz	short channel4441
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel4441:	
 		cmp	byte [sound_filter], SOUND_FILTER_NEVER
 		je	filter_off45
@@ -631,6 +679,18 @@ channel0313:	xor	edx, edx
 		mov	word [sound_left + 2 + 2*eax], cx
 		jmp	channel1313
 channel0313off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 0]
+		test	dword [intreq], edx
+		jnz	short channel1313
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel1313:	test	dword [dmacon], 2	  ; Channel on?
 		jz	channel1313off		  ; No sound if dma is off
 
@@ -648,6 +708,18 @@ channel1313:	test	dword [dmacon], 2	  ; Channel on?
 		mov	word [sound_right + 2 + 2*eax], cx
 		jmp	channel2313
 channel1313off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 4]
+		test	dword [intreq], edx
+		jnz	short channel2313
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel2313:	test	dword [dmacon], 4	  ; Channel on?
 		jz	channel2313off		  ; No sound if dma is off
 
@@ -668,6 +740,18 @@ channel2313:	test	dword [dmacon], 4	  ; Channel on?
 		add	word [sound_right + 2 + 2*eax], cx
 		jmp	channel3313
 channel2313off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 8]
+		test	dword [intreq], edx
+		jnz	short channel3313
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel3313:	test	dword [dmacon], 8	  ; Channel on?
 		jz	channel3313off		  ; No sound if dma is off
 
@@ -685,6 +769,18 @@ channel3313:	test	dword [dmacon], 8	  ; Channel on?
 		add	word [sound_left + 2 + 2*eax], cx
 		jmp	channel4313
 channel3313off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 12]
+		test	dword [intreq], edx
+		jnz	short channel4313
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel4313:
 		mov	ebx, 2
 		cmp	byte [sound_filter], SOUND_FILTER_NEVER
@@ -803,6 +899,18 @@ chan0220dont:	inc	bh
 		pop	edx
 		mov	byte [audioodd], dl
 channel0220off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 0]
+		test	dword [intreq], edx
+		jnz	short channel1220
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 
 		; Channel 1
 
@@ -828,6 +936,18 @@ chan1220dont:	inc	bh
 		pop	edx
 		mov	byte [audioodd], dl
 channel1220off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 4]
+		test	dword [intreq], edx
+		jnz	short channel2220
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 
 		; Channel 2
 
@@ -853,6 +973,18 @@ chan2220dont:	inc	bh
 		pop	edx
 		mov	byte [audioodd], dl
 channel2220off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 8]
+		test	dword [intreq], edx
+		jnz	short channel3220
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 
 		; Channel 3
 
@@ -879,6 +1011,18 @@ chan3220dont:	inc	bh
 		pop	edx
 		mov	byte [audioodd], dl
 channel3220off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 12]
+		test	dword [intreq], edx
+		jnz	short channel4220
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel4220:	mov	ebx, dword [esp]	; restore number of samples
 		push	eax
 		mov	al, bl
@@ -964,6 +1108,18 @@ channel0156:	xor	edx, edx
 		call	dword [audstate + edx]
 		jmp	channel1156
 channel0156off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 0]
+		test	dword [intreq], edx
+		jnz	short channel1156
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel1156:	test	dword [dmacon], 2	  ; Channel on?
 		jz	channel1156off		  ; No sound if dma is off
 		mov	edx, 4
@@ -974,6 +1130,18 @@ channel1156:	test	dword [dmacon], 2	  ; Channel on?
 		call	dword [audstate + edx]
 		jmp	channel2156
 channel1156off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 4]
+		test	dword [intreq], edx
+		jnz	short channel2156
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel2156:	test	dword [dmacon], 4	  ; Channel on?
 		jz	channel2156off		  ; No sound if dma is off
 		mov	edx, 8
@@ -987,6 +1155,18 @@ channel2156:	test	dword [dmacon], 4	  ; Channel on?
 
 		jmp	channel3156
 channel2156off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 8]
+		test	dword [intreq], edx
+		jnz	short channel3156
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel3156:	test	dword [dmacon], 8	  ; Channel on?
 		jz	channel3156off		  ; No sound if dma is off
 		mov	edx, 12
@@ -997,6 +1177,18 @@ channel3156:	test	dword [dmacon], 8	  ; Channel on?
 		call	dword [audstate + edx]
 		jmp	channel4156
 channel3156off:
+		; According to docs an IRQ is posted after every word output when DMA is off
+		; We try to stimulate programs by at least setting the IRQ bits accordingly
+
+		mov	edx, dword [audioirqmask + 12]
+		test	dword [intreq], edx
+		jnz	short channel4156
+		push	eax
+		mov	ecx, 0138h				; 9c*2
+		or	dh, 080h
+		call	dword [memory_iobank_write + ecx]
+		pop	eax
+
 channel4156:	mov	ebx, 1
 		cmp	byte [sound_filter], SOUND_FILTER_NEVER
 		je	filter_off15
