@@ -7,11 +7,12 @@
 /* Rename assembly functions */
 
 #define endOfLine ASMRENAME(endOfLine)
-#define endOfFrame ASMRENAME(endOfFrame)
 #define busstart ASMRENAME(busstart)
 #define cia_setup_event_wrapper ASMRENAME(cia_setup_event_wrapper)
 #define bus_run ASMRENAME(bus_run)
 #define bus_debug ASMRENAME(bus_debug)
+
+#define endOfFrameASM ASMRENAME(endOfFrameASM)
 
 #define cpuSetUpInterrupt ASMRENAME(cpuSetUpInterrupt)
 //#define finish_blit ASMRENAME(finish_blit)
@@ -30,15 +31,15 @@ extern void bus_debug(void);
 /* Functions that have their address taken in C */
 
 extern void endOfLine(void);
-extern void endOfFrame(void);
 extern void busstart(void);  /* Code alignment label */
 
 extern void cpuSetUpInterrupt(void);
 //extern void finish_blit(void);
 extern void endOfLine(void);
 //extern void copperEmulate(void);
-extern void endOfFrame(void);
 //extern void graphEndOfLine(void);
+
+extern void endOfFrameASM(void);
 
 
 
@@ -66,9 +67,10 @@ void busScanEventsLevel5(void);
 void busScanEventsLevel6(void);
 
 void endOfLineC(void);
+void endOfFrameC(void);
 
-extern ULO eol_next, eof_next, cpu_next;
-extern ULO irq_next;
+extern ULO eol_next, eof_next;
+extern LON irq_next, cpu_next;
 
 extern ULO lvl2_next, lvl3_next;
 extern ULO lvl4_next, lvl5_next;

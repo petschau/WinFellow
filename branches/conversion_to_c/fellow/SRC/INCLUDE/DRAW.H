@@ -300,7 +300,7 @@ extern ULO draw_top;
 extern ULO draw_bottom;
 extern ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 
-extern ULO draw_frame_skip;
+extern LON draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
 
 extern ULO draw_hscale;

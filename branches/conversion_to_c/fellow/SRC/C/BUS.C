@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.1.1.1.2.10 2005-01-07 21:47:46 worfje Exp $ */
+/* @(#) $Id: BUS.C,v 1.1.1.1.2.11 2005-01-23 18:23:57 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -54,7 +54,9 @@ buseventfunc lvl2_ptr, lvl3_ptr, lvl4_ptr, lvl5_ptr, lvl6_ptr, lvl7_ptr;
 UWO bus_cycle_to_ypos[0x20000];
 UBY bus_cycle_to_xpos[0x20000];
 
-extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip, draw_frame_skip_factor, fellow_request_emulation_stop;
+extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip_factor;
+extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
+extern LON draw_frame_skip;
 
 /*===========================================================================*/
 /* Cycle counter to raster beam position table                               */
@@ -76,13 +78,13 @@ void busCycleToRasterPosTableInit(void) {
 
 void busEventlistClear(void) {
   lvl7_next = CYCLESPERFRAME;
-  lvl7_ptr = endOfFrame;
+  lvl7_ptr = endOfFrameC;
   lvl6_next = CYCLESPERFRAME;
-  lvl6_ptr = endOfFrame;
+  lvl6_ptr = endOfFrameC;
   lvl5_next = CYCLESPERFRAME;
-  lvl5_ptr = endOfFrame;
+  lvl5_ptr = endOfFrameC;
   lvl4_next = CYCLESPERFRAME;
-  lvl4_ptr = endOfFrame;
+  lvl4_ptr = endOfFrameC;
   lvl3_next = CYCLESPERLINE - 1;
   lvl3_ptr = endOfLineC;
   lvl2_next = CYCLESPERLINE - 1;
@@ -233,7 +235,7 @@ void busScanEventsLevel6(void)
   buseventfunc lvlx_ptr;
 
   lvlx_next = CYCLESPERFRAME;
-  lvlx_ptr = endOfFrame;
+  lvlx_ptr = endOfFrameC;
 
   busScanLevel6(&lvlx_next, &lvlx_ptr);
   busScanLevel5(&lvlx_next, &lvlx_ptr);
@@ -250,43 +252,37 @@ void busScanEventsLevel6(void)
 void endOfLineC(void)
 {
 
-  /*==============================================================*/
+	/*==============================================================*/
 	/* Handles graphics planar to chunky conversion                 */
 	/* and updates the graphics emulation for a new line            */
 	/*==============================================================*/
-  
-  graphEndOfLine_C(); 
-  spriteEndOfLine();
+	graphEndOfLine_C(); 
+	spriteEndOfLine();
 
 	/*==============================================================*/
 	/* Update the CIA B event counter                               */
 	/*==============================================================*/
-
-  ciaUpdateEventCounterC(1);
+	ciaUpdateEventCounterC(1);
 
 	/*==============================================================*/
 	/* Handles disk DMA if it is running                            */
 	/*==============================================================*/
-
 	floppyEndOfLineC();
 
 	/*==============================================================*/
 	/* Update the sound emulation                                   */
 	/*==============================================================*/
-
-  soundEndOfLine();
+	soundEndOfLine();
 
 	/*==============================================================*/
 	/* Handle keyboard events                                       */
 	/*==============================================================*/
-
-  kbdQueueHandlerC();
-  kbdEventEOLHandlerC();
+	kbdQueueHandlerC();
+	kbdEventEOLHandlerC();
 
 	/*==============================================================*/
 	/* Set up the next end of line event                            */
 	/*==============================================================*/
-
 	eol_next += CYCLESPERLINE;
 	busScanEventsLevel3();
 }
@@ -295,153 +291,120 @@ void endOfLineC(void)
 /* Global end of frame handler                                                  */
 /*==============================================================================*/
 
+void endOfFrameC(void)
+{
+	/*==============================================================*/
+	/* Draw the frame in the host buffer                            */
+	/*==============================================================*/
+	drawEndOfFramePreC();
 
-/*
-		FALIGN32
+	/*==============================================================*/
+	/* Handle keyboard events                                       */
+	/*==============================================================*/
+	kbdEventEOFHandlerC();
 
-global _endOfFrame_
-_endOfFrame_:	push	edx
-		push	ebx
+	/*==============================================================*/
+	/* Reset some aspects of the graphics emulation                 */
+	/*==============================================================*/
+	lof = lof ^ 0x8000;	// short/long frame
+	
 
+	/*==============================================================*/
+	/* Restart copper                                               */
+	/*==============================================================*/
+	copperEndOfFrame();
 
-		;==============================================================
-		; Draw the frame in the host buffer
-		;==============================================================
+	/*==============================================================*/
+	/* Update frame counters                                        */
+	/*==============================================================*/
+	draw_frame_count++; // count frames
+	draw_frame_skip--;  // frame skipping
 
-		call	_drawEndOfFrame_
+	if (draw_frame_skip < 0) 
+	{
+		draw_frame_skip = draw_frame_skip_factor;
+	}
 
+	/*==============================================================*/
+	/* Update CIA timer counters                                    */
+	/*==============================================================*/
+	ciaUpdateTimersEOFC();
 
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
+	/*==============================================================*/
+	/* Sprite end of frame updates                                  */
+	/*==============================================================*/
+	spriteEndOfFrame();
 
-		KBDEVENTEOFHANDLER_CWRAP
+	/*==============================================================*/
+	/* Recalculate blitter finished time                            */
+	/*==============================================================*/
+	//graph_playfield_on = FALSE;
+	if (blitend >= 0)
+	{
+		blitend -= CYCLESPERFRAME;
+	}
+	
 
-
-		;==============================================================
-		; Reset some aspects of the graphics emulation
-		;==============================================================
-
-		xor	dword [lof], 08000h		; Short/long frame 
-		xor	edx, edx
-		mov	ecx, 0102h			; Zero scroll
-
-		pushad
-		call	dword [memory_iobank_write + 2*ecx]
-		popad
-
-
-		;==============================================================
-		; Restart copper
-		;==============================================================
-
-		call	_copperEndOfFrame_		; Restart copper
-
-
-		;==============================================================
-		; Update frame counters
-		;==============================================================
-
-		inc	dword [draw_frame_count]	; Count frames
-		dec	dword [draw_frame_skip]		; Frame skipping
-		jns	.l6
-		mov	edx, dword [draw_frame_skip_factor]
-		mov	dword [draw_frame_skip], edx
-.l6:
-
-		;==============================================================
-		; Update CIA timer counters
-		;==============================================================
-
-		CIA_UPDATE_TIMERS_EOF_CWRAP
-
-
-		;==============================================================
-		; Sprite end of frame updates
-		;==============================================================
-
-		SPRITE_EOF_CWRAP
+	/*==============================================================*/
+	/* Flag vertical refresh IRQ                                    */
+	/*==============================================================*/
+	memory_iobank_write[78](0x8020, 0);
 
 
-		;==============================================================
-		; Recalculate blitter finished time
-		;==============================================================
+	/*==============================================================*/
+	/* Set up next end of line event                                */
+	/*==============================================================*/
+	eol_next = CYCLESPERLINE - 1;
 
-		mov	dword [graph_playfield_on], ecx
-		test	dword [blitend], 0ffffffffh
-		js	.l14
-		sub	dword [blitend], CYCLESPERFRAME
-		setns	byte [blitend]
-.l14:
+	/*==============================================================*/
+	/* Update next CPU instruction time                             */
+	/*==============================================================*/
+	if (cpu_next >= 0)
+	{
+		cpu_next -= CYCLESPERFRAME;
+	}
 
-		;==============================================================
-		; Flag vertical refresh IRQ
-		;==============================================================
+	/*==============================================================*/
+	/* Update next IRQ time                                         */
+	/*==============================================================*/
+	if (irq_next >= 0)
+	{
+		irq_next -= CYCLESPERFRAME;
+	}
 
-		mov	edx, 08020h
+	/*==============================================================*/
+	/* Perform graphics end of frame                                */
+	/*==============================================================*/
+	graphEndOfFrame();
+	timerEndOfFrame();
 
-		pushad
-		call	dword [memory_iobank_write + 0138h]
-		popad
+	/*==============================================================*/
+	/* Recalculate the entire event queue                           */
+	/*==============================================================*/
+	busScanEventsLevel6();
+		
+	/*==============================================================*/
+	/* Bail out of emulation if we're asked to                      */
+	/*==============================================================*/
 
-
-		;==============================================================
-		; Set up next end of line event
-		;==============================================================
-
-		mov	dword [eol_next], CYCLESPERLINE
-		dec	dword [eol_next]
-
-
-		;==============================================================
-		; Update next CPU instruction time
-		;==============================================================
-
-		mov	ebx, dword [cpu_next]
-		test	ebx, ebx
-		js	.l15
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [cpu_next], ebx
-.l15:
-
-		;==============================================================
-		; Update next IRQ time
-		;==============================================================
-
-		mov	ebx, dword [irq_next]
-		test	ebx, ebx
-		js	.l16
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [irq_next], ebx
-.l16:
-
-		;==============================================================
-		; Perform graphics end of frame
-		;==============================================================
-
-		call	graphEndOfFrame
-		call	timerEndOfFrame
-
-		;==============================================================
-		; Recalculate the entire event queue
-		;==============================================================
-
-		call busScanEventsLevel6
-		;SCAN_EVENTS_LVL6
-
-
-		;==============================================================
-		; Bail out of emulation if we're asked to
-		;==============================================================
-
-		test	dword [fellow_request_emulation_stop], 1
-		jnz	.l18
-		test	dword [fellow_request_emulation_stop_immediately], 1
-		jz	.l17
-.l18:		mov	esp, dword [exceptionstack]
-		jmp	bus_exit
-
-.l17:		pop	ebx
-		pop	edx
-		ret
-*/
+	/*
+	if (fellow_request_emulation_stop == TRUE)
+	{
+		_asm
+		{
+			mov	esp, exceptionstack
+		}
+	}
+	else
+	{
+		if (fellow_request_emulation_stop_immediately == TRUE)
+		{
+			_asm
+			{
+				mov	esp, exceptionstack
+			}	
+		}
+	}
+	*/
+	endOfFrameASM();
+}
