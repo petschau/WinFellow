@@ -792,12 +792,13 @@ void fhfileShutdown(void) {
 
 BOOLE fhfileCreate(fhfile_dev hfile)
 {
-    HANDLE hf;
-    int i = 0;
     BOOLE result = FALSE;
+
+#ifdef WIN32
+	HANDLE hf;
         
-    if(*hfile.filename && hfile.size) 
-    {
+	if(*hfile.filename && hfile.size) 
+    {   
 	    if((hf = CreateFile(hfile.filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
         {
             if( SetFilePointer(hf, hfile.size, NULL, FILE_BEGIN) == hfile.size )
@@ -810,4 +811,45 @@ BOOLE fhfileCreate(fhfile_dev hfile)
             fellowAddLog("CreateFile() failed.\n");
     }
     return result;
+#else	/* os independent implementation */
+#define BUFSIZE 32768
+	ULO tobewritten;
+	char buffer[BUFSIZE];
+	FILE *hf;
+
+	tobewritten = hfile.size;
+	errno = 0;
+
+	if(*hfile.filename && hfile.size) 
+    {   
+		if(hf = fopen(hfile.filename, "wb"))
+		{
+			memset(buffer, 0, sizeof(buffer));
+
+			while(tobewritten >= BUFSIZE)
+			{
+				fwrite(buffer, sizeof(char), BUFSIZE, hf);
+				if (errno != 0)
+				{
+					fellowAddLog("Creating hardfile failed. Check the available space.\n");
+					fclose(hf);
+					return result;
+				}
+				tobewritten -= BUFSIZE;
+			}
+			fwrite(buffer, sizeof(char), tobewritten, hf);
+			if (errno != 0)
+			{
+				fellowAddLog("Creating hardfile failed. Check the available space.\n");
+				fclose(hf);
+				return result;
+			}
+			fclose(hf);
+			result = TRUE;
+		}
+		else
+			fellowAddLog("fhfileCreate is unable to open output file.\n");
+	}
+	return result;
+#endif
 }
