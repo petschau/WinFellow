@@ -586,6 +586,11 @@ BEGIN
         MENUITEM "E&xit",                       ID_FILE_QUIT
         MENUITEM SEPARATOR
     END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Multiple buffers",           ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS
+
+    END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About",                      ID_HELP_ABOUT
@@ -634,6 +639,17 @@ IDB_DISKDRIVE_LED_ON    BITMAP  DISCARDABLE     "disk_led_on_cool.bmp"
 IDB_POWER_LED_OFF       BITMAP  DISCARDABLE     "power_led_off_cool.bmp"
 IDB_POWER_LED_ON        BITMAP  DISCARDABLE     "power_led_on_cool.bmp"
 IDB_WINFELLOW_LOGO      BITMAP  DISCARDABLE     "winfellow_logo_small.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
+END
+
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
