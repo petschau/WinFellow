@@ -29,7 +29,7 @@
 #include "ffilesys.h"
 
 #ifdef UAE_FILESYS
-#include "uaefsys.h"
+#include "filesys.h"
 #endif
 
 /*============================================================================*/
@@ -207,6 +207,10 @@ void ffilesysEmulationStart(void)
 
 void ffilesysEmulationStop(void)
 {
+	/*
+	filesys_prepare_reset();
+	filesys_reset();	
+	*/
 }
 
 /*============================================================================*/
@@ -226,4 +230,5 @@ void ffilesysStartup(void)
 void ffilesysShutdown(void)
 {
   filesys_prepare_reset();
+  filesys_reset();
 }

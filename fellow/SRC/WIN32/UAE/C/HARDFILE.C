@@ -1,11 +1,19 @@
  /*
   * UAE - The Un*x Amiga Emulator
   *
-  * AutoConfig devices
   * Hardfile emulation
   *
   * Copyright 1995 Bernd Schmidt
   */
+
+/* FELLOW IN (START)-----------------
+
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)--------------------
 #include "sysconfig.h"
@@ -15,7 +23,6 @@
 #include "options.h"
 #include "memory.h"
 #include "custom.h"
-#include "readcpu.h"
 #include "newcpu.h"
 #include "disk.h"
 #include "autoconf.h"
@@ -146,12 +153,12 @@ static uae_u32 hardfile_beginio (void)
 	break;
 
      case 18: /* GetDriveType */
-	write_log( "GetDriveType - Shouldn't happen\n" );
+	printf ("Shouldn't happen\n");
 	put_long (tmp1 + 32, 1); /* not exactly a 3.5" drive, but... */
 	break;
 
      case 19: /* GetNumTracks */
-	write_log( "GetNumTracks - Shouldn't happen\n" );
+	printf ("Shouldn't happen 2\n");
 	put_long (tmp1 + 32, 0);
 	break;
 

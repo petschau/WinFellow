@@ -15,6 +15,15 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+/* FELLOW IN (START)-----------------
+
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
+
 /* Space usage statistics for a filesystem.  Blocks are 512-byte. */
 struct fs_usage
 {

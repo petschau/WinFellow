@@ -15,6 +15,14 @@
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
 
+/* FELLOW IN (START)-----------------
+
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT START -----------------------
 #include "sysconfig.h"
@@ -60,6 +68,7 @@ adjust_blocks (blocks, fromsize, tosize)
 /* FELLOW OUT START -----------------------
 #include "sysdeps.h"
    FELLOW OUT END   -----------------------*/
+#include <windows.h>
 
 int
 get_fs_usage (path, disk, fsp)
@@ -67,14 +76,16 @@ get_fs_usage (path, disk, fsp)
      const char *disk;
      struct fs_usage *fsp;
 {
-    /*char buf1[1024];*/
+	/* FELLOW REMOVE: char buf1[1024]; */
     char buf2[1024];
     DWORD SectorsPerCluster;
     DWORD BytesPerSector;
     DWORD NumberOfFreeClusters;
     DWORD TotalNumberOfClusters;
 
-    GetFullPathName (path, sizeof buf2, buf2, NULL);
+    /* FELLOW CHANGE: fname_atow (path, buf1, sizeof buf1);
+    GetFullPathName (buf1, sizeof buf2, buf2, NULL); */
+	GetFullPathName (path, sizeof buf2, buf2, NULL);
 
     buf2[3] = 0;
 

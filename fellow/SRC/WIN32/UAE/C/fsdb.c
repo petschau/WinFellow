@@ -7,21 +7,21 @@
   * Copyright 1999 Bernd Schmidt
   */
 
-/* FELLOW IN (START)
+/* FELLOW IN (START)-----------------
 
-  This file is somewhat adapted to suit Fellow's way of controlling its modules.
-  It originates from the UAE 0.8.15 source code distribution.
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
-  Torsten Enderling (carfesh@gmx.net) 2000
-  
-  FELLOW IN (END) */
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)-------------------
 #include "sysconfig.h"
 #include "sysdeps.h"
 
 #include "config.h"
-#include "threaddep/penguin.h"
+#include "threaddep/thread.h"
 #include "options.h"
 #include "uae.h"
 #include "memory.h"
@@ -89,6 +89,13 @@ static FILE *get_fsdb (a_inode *dir, const char *mode)
     return f;
 }
 
+static void kill_fsdb (a_inode *dir)
+{
+    char *n = build_nname (dir->nname, FSDB_FILE);
+    unlink (n);
+    free (n);
+}
+
 /* Prune the db file the first time this directory is opened in a session.  */
 void fsdb_clean_dir (a_inode *dir)
 {
@@ -116,13 +123,16 @@ void fsdb_clean_dir (a_inode *dir)
     free (n);
 }
 
-static a_inode *aino_from_buf (a_inode *base, char *buf)
+static a_inode *aino_from_buf (a_inode *base, char *buf, long off)
 {
     uae_u32 mode;
-    a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode));
-	if(aino == NULL) return NULL;
+    /* FELLOW CHANGE: a_inode *aino = (a_inode *) xmalloc (sizeof (a_inode)); */
+	a_inode *aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
+	/* FELLOW BUGFIX (START) */
+	if(aino == NULL) 
+		return NULL;
+	/* FELLOW BUGFIX (END) */
 
-	memset(aino, 0, sizeof(a_inode));
     mode = do_get_mem_long ((uae_u32 *)(buf + 1));
     buf += 5;
     aino->aname = my_strdup (buf);
@@ -134,12 +144,83 @@ static a_inode *aino_from_buf (a_inode *base, char *buf)
     aino->amigaos_mode = mode;
     aino->has_dbentry = 1;
     aino->dirty = 0;
+	aino->db_offset = off;
     return aino;
 }
 
 a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 {
+	/* FELLOW BUGFIX (START) */
 	a_inode *result;
+	/* FELLOW BUGFIX (END) */
+    FILE *f = get_fsdb (base, "rb");
+	long off = 0;
+
+    if (f == 0)
+	return 0;
+
+    for (;;) {
+	char buf[1 + 4 + 257 + 257 + 81];
+	if (fread (buf, 1, sizeof buf, f) < sizeof buf)
+	    break;
+	/* FELLOW CHANGE (START): if (buf[0] != 0 && same_aname (buf + 5, aname)) { */
+	/* the compiler's behaviour in the line above is undefined, that may work, that may not */
+	if (buf[0] == 0)
+	    continue;
+	if (same_aname (buf + 5, aname)) {
+	/* FELLOW CHANGE (END) */
+	    fclose (f);
+		/* FELLOW BUGFIX (START):  return aino_from_buf (base, buf, off); */
+		/* try to access the file */
+	    result = aino_from_buf (base, buf, off);
+		if (result && (access(result->nname, R_OK) != -1))
+			return(result);
+		else
+			return(NULL);
+		/* FELLOW BUGFIX (END) */
+	}
+	off += sizeof buf;
+    }
+    fclose (f);
+    return 0;
+}
+
+a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
+{
+	/* FELLOW BUGFIX */
+	a_inode *result;
+	/* FELLOW BUGFIX */
+    FILE *f = get_fsdb (base, "rb");
+	long off = 0;
+
+    if (f == 0)
+	return 0;
+
+    for (;;) {
+	char buf[1 + 4 + 257 + 257 + 81];
+	if (fread (buf, 1, sizeof buf, f) < sizeof buf)
+	    break;
+	/* FELLOW CHANGE (START): if (buf[0] != 0 && strcmp (buf + 5 + 257, nname) == 0) { */
+	if (buf[0] == 0)
+	    continue;
+	if (strcmp (buf + 5 + 257, nname) == 0) {
+	/* FELLOW CHANGE (END) */
+	    fclose (f);
+		/* FELLOW CHANGE (START): return aino_from_buf (base, buf, off); */
+	    result = aino_from_buf (base, buf, off);
+		if (result && (access(result->nname, R_OK) != -1))
+			return(result);
+		else
+			return(NULL);
+		/* FELLOW CHANGE (END) */
+	}
+    }
+    fclose (f);
+    return 0;
+}
+
+int fsdb_used_as_nname (a_inode *base, const char *nname)
+{
     FILE *f = get_fsdb (base, "rb");
     if (f == 0)
 	return 0;
@@ -149,61 +230,14 @@ a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *aname)
 	    break;
 	if (buf[0] == 0)
 	    continue;
-	if (same_aname (buf + 5, aname)) {
-	    fclose (f);
-	    result = aino_from_buf (base, buf);
-		if (result && (access(result->nname, R_OK) != -1))
-			return(result);
-		else
-			return(NULL);
-	}
-    }
-    fclose (f);
-    return 0;
-}
-
-a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *nname)
-{
-	a_inode *result;
-    char buf[1 + 4 + 257 + 257 + 81];
-    FILE *f = get_fsdb (base, "rb");
-    if (f == 0)
-	return 0;
-    for (;;) {
-	if (fread (buf, 1, sizeof buf, f) < sizeof buf)
-	    break;
-	if (buf[0] == 0)
-	    continue;
 	if (strcmp (buf + 5 + 257, nname) == 0) {
 	    fclose (f);
-	    result = aino_from_buf (base, buf);
-		if (result && (access(result->nname, R_OK) != -1))
-			return(result);
-		else
-			return(NULL);
-	}
-    }
-    fclose (f);
-    return 0;
-}
-
-int fsdb_used_as_nname (a_inode *base, const char *nname)
-{
-    char buf[1 + 4 + 257 + 257 + 81];
-    FILE *f = get_fsdb (base, "rb");
-    if (f == 0)
-	return 0;
-    for (;;) {
-	if (fread (buf, 1, sizeof buf, f) < sizeof buf)
-	    break;
-	if (buf[0] == 0)
-	    continue;
-	if (strcmp (buf + 5 + 257, nname) == 0) {
-	    fclose (f);
+		/* FELLOW CHANGE (START): return 1; */
 		if(access(nname, R_OK) != -1)
 			return 1;
 		else
 			return 0;
+		/* FELLOW CHANGE (END) */
 	}
     }
     fclose (f);
@@ -212,7 +246,8 @@ int fsdb_used_as_nname (a_inode *base, const char *nname)
 
 static int needs_dbentry (a_inode *aino)
 {
-    const char *an_begin, *nn_begin;
+    /* FELLOW CHANGE: const char *an_begin, *nn_begin; */
+	const char *nn_begin; /* an_begin was not referenced */
 
     if (aino->deleted)
 	return 0;
@@ -239,23 +274,34 @@ static void write_aino (FILE *f, a_inode *aino)
     aino->has_dbentry = aino->needs_dbentry;
 }
 
+/* Write back the db file for a directory.  */
+
 void fsdb_dir_writeback (a_inode *dir)
 {
     FILE *f;
     int changes_needed = 0;
+	int entries_needed = 0;
     a_inode *aino;
 
     /* First pass: clear dirty bits where unnecessary, and see if any work
      * needs to be done.  */
     for (aino = dir->child; aino; aino = aino->sibling) {
+	int old_needs_dbentry = aino->needs_dbentry;
+	aino->needs_dbentry = old_needs_dbentry;
 	if (! aino->dirty)
 	    continue;
 	aino->needs_dbentry = needs_dbentry (aino);
-	if (! aino->needs_dbentry)
+	entries_needed |= aino->needs_dbentry;
+	if (! aino->needs_dbentry && ! old_needs_dbentry)
 	    aino->dirty = 0;
 	else
 	    changes_needed = 1;
     }
+	if (! entries_needed) {
+	kill_fsdb (dir);
+	return;
+    }
+
     if (! changes_needed)
 	return;
 
@@ -268,31 +314,19 @@ void fsdb_dir_writeback (a_inode *dir)
     }
 
     for (aino = dir->child; aino; aino = aino->sibling) {
-	off_t pos;
+	/* FELLOW REMOVE (unreferenced): off_t pos; */
 
 	if (! aino->dirty)
 	    continue;
 	aino->dirty = 0;
-	if (! aino->has_dbentry) {
-	    fseek (f, 0, SEEK_END);
-	    write_aino (f, aino);
-	    continue;
-	}
 
-	fseek (f, 0, SEEK_SET);
-	pos = 0;
-	for (;;) {
-	    char buf[1 + 4 + 257 + 257 + 81];
-	    if (fread (buf, 1, sizeof buf, f) < sizeof buf)
-		/* Can't happen... */
-		break;
-	    if (strcmp (buf + 5, aino->aname) == 0) {
-		fseek (f, pos, SEEK_SET);
-		write_aino (f, aino);
-		break;
-	    }
-	    pos += sizeof buf;
-	}
+	if (! aino->has_dbentry) {
+	    aino->db_offset = fseek (f, 0, SEEK_END);
+	    aino->has_dbentry = 1;
+	} else
+	    fseek (f, aino->db_offset, SEEK_SET);
+
+	write_aino (f, aino);
     }
     fclose (f);
 }

@@ -31,11 +31,6 @@
 #include "ffilesys.h"
 #include "ini.h"
 
-
-#ifdef UAE_FILESYS
-#include "uaefsys.h"
-#endif
-
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
 /*============================================================================*/

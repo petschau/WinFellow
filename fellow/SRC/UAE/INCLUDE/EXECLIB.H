@@ -6,6 +6,15 @@
   * Copyright 1996 Bernd Schmidt
   */
 
+/* FELLOW IN (START)-----------------
+
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
+
 #define CMD_INVALID 0
 #define CMD_RESET   1
 #define CMD_READ    2
@@ -27,6 +36,7 @@
 #define NT_LIBRARY  9
 #define NT_SIGNALSEM 15
 
+#ifndef MEMF_PUBLIC /* protection for AmigaDOS */
 #define MEMF_PUBLIC 1
 #define MEMF_CHIP 2
 #define MEMF_FAST 4
@@ -36,3 +46,4 @@
 #define MEMF_LARGEST (1<<17)
 #define MEMF_REVERSE (1<<18)
 #define MEMF_TOTAL (1<<19)
+#endif
