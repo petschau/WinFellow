@@ -168,7 +168,7 @@ BEGIN
     GROUPBOX        "precision",IDC_STATIC,185,55,45,45
     GROUPBOX        "filter",IDC_STATIC,80,90,45,60
     CONTROL         "stream to WAV",IDC_CHECK_SOUND_WAV,"Button",
-                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,90,35,63,10
+                    BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,85,35,63,10
     CONTROL         "no sound",IDC_RADIO_SOUND_NO_EMULATION,"Button",
                     BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,10,20,45,10
     CONTROL         "play sound",IDC_RADIO_SOUND_PLAY,"Button",
@@ -202,8 +202,8 @@ BEGIN
                     "msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,
                     135,115,90,15
     GROUPBOX        "options",IDC_STATIC,80,5,100,60
-    CONTROL         "hardware notification",IDC_CHECK_SOUND_NOTIFICATION,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,20,81,10
+    CONTROL         "Directsound notification",IDC_CHECK_SOUND_NOTIFICATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,85,20,90,10
     LTEXT           "10",IDC_STATIC_BUFFER_LENGTH,170,130,9,8
     LTEXT           "ms",IDC_STATIC,180,130,10,8
 END
@@ -654,12 +654,6 @@ BEGIN
     BEGIN
         MENUITEM "&Multiple buffers",           ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS
 
-        POPUP "&Emulation speed"
-        BEGIN
-            MENUITEM "Original A500",               65535
-            MENUITEM "Fastest Possible (no sound)", ID_OPTIONS_EMULATIONSPEED_FASTESTPOSSIBLENOSOUND
-
-        END
     END
     POPUP "&Help"
     BEGIN
