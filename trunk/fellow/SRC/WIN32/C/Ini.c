@@ -171,7 +171,7 @@ void iniSetDefaults(ini *initdata) {
   /* Default ini-file description                                             */
   /*==========================================================================*/
 
-  iniSetDescription(initdata, "winfellow amiga emulator v0.4.3 build 1 ini-file");
+  iniSetDescription(initdata, "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15 ini-file");
   
   /*==========================================================================*/
   /* Default configuration filename                                           */

@@ -404,7 +404,7 @@ ParseMemoryStatus (void)
 static void
 fellowVersionInfo (void)
 {
-  fellowAddLog ("WinFellow alpha v0.4.3 build 1");
+  fellowAddLog ("WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15");
 #ifdef USE_DX3
   fellowAddLog (" (DX3");
 #else
