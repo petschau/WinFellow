@@ -3,6 +3,7 @@
 /* Configuration file handling                                                */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
+/* Author: Wytze Hoogkamp (worfje@gmx.net)                                    */
 /*                                                                            */
 /* Based on an Amiga emulator configuration format specified by Brian King    */
 /*                                                                            */
@@ -28,12 +29,14 @@
 #include "config.h"
 #include "fhfile.h"
 #include "ffilesys.h"
+#include "ini.h"
 
 
 #ifdef UAE_FILESYS
 #include "uaefsys.h"
 #endif
 
+ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
 /*============================================================================*/
 /* The actual cfgManager instance                                             */
@@ -495,7 +498,6 @@ void cfgSetMeasureSpeed(cfg *config, BOOLE measurespeed) {
 BOOLE cfgGetMeasureSpeed(cfg *config) {
   return config->m_measurespeed;
 }
-
 
 /*============================================================================*/
 /* Sets all options to default values                                         */
@@ -1150,7 +1152,6 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
   return result;
 }
 
-
 /*============================================================================*/
 /* Save options supported by this class to file                               */
 /*============================================================================*/
@@ -1306,7 +1307,6 @@ BOOLE cfgSaveToFilename(cfg *config, STR *filename) {
   }
   return result;
 }
-
 
 /*============================================================================*/
 /* Parse command line                                                         */
@@ -1542,6 +1542,11 @@ void cfgManagerFreeConfig(cfgManager *configmanager, cfg *config) {
 void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[]) {
   cfg *config = cfgManagerGetNewConfig(configmanager);
   configmanager->m_original_config = config;
+
+  // load configuration that the initdata contains
+  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
+  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata));
+
   cfgManagerSetCurrentConfig(configmanager, config);
   cfgParseCommandLine(config, argc, argv);
 }
