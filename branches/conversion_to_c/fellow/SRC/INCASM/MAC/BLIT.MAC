@@ -1,0 +1,27 @@
+%ifndef MAC_BLIT_MAC
+%define MAC_BLIT_MAC
+
+;=============================================================
+; Macro that finishes an ongoing blit if registers are changed
+;=============================================================
+
+%macro BLIT_FINISH 0
+		test	byte [blit_started], 0ffh
+		jz	%%l1
+		pushad
+		call	_finish_blit_
+		popad
+%%l1:
+%endmacro
+
+
+%macro BLITTEROPERATIONLOG_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	blitterOperationLog
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+
+%endif
+

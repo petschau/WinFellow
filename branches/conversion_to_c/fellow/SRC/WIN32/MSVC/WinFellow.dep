@@ -1,0 +1,631 @@
+# Microsoft Developer Studio Generated Dependency File, included by WinFellow.mak
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+..\..\c\blit.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\bus.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\bus.h"\
+	"..\..\include\cia.h"\
+	"..\..\include\copper.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fmem.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\cia.c : \
+	"..\..\include\bus.h"\
+	"..\..\include\cia.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\floppy.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\gameport.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\config.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\config.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\eventid.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\ffilesys.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\floppy.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\..\uae\include\uaefsys.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\copper.c : \
+	"..\..\include\copper.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\sprite.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\cpu.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\cpudis.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\cpudis.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fmem.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\draw.c : \
+	"..\..\include\copper.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fonts.h"\
+	"..\..\include\gfxdrv.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\timer.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\fellow.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\bus.h"\
+	"..\..\include\cia.h"\
+	"..\..\include\config.h"\
+	"..\..\include\copper.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\eventid.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\ffilesys.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\floppy.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\mmx.h"\
+	"..\..\include\sound.h"\
+	"..\..\include\sprite.h"\
+	"..\..\include\timer.h"\
+	"..\..\include\wgui.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\ffilesys.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\ffilesys.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\..\uae\include\uaefsys.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\fhfile.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\floppy.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\floppy.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\fmem.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\cia.h"\
+	"..\..\include\copper.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\floppy.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\memorya.h"\
+	"..\..\include\wgui.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\fsnavig.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\listtree.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\gameport.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\mousedrv.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\graph.c : \
+	"..\..\include\blit.h"\
+	"..\..\include\copper.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\graphm.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\listtree.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\kbd.c : \
+	"..\..\include\cia.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\kbddrv.h"\
+	"..\..\include\keycodes.h"\
+	"..\..\include\listtree.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\listtree.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\listtree.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\sound.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\sound.h"\
+	"..\..\include\wav.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\sprite.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sprite.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\c\wav.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\fswrap.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fsnavig.h"\
+	"..\..\include\listtree.h"\
+	"..\include\fswrap.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\gfxdrv.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\gfxdrv.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\kbddrv.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\joydrv.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\joydrv.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\kbddrv.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\kbddrv.h"\
+	"..\..\include\keycodes.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\kbdparser.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\keycodes.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\mousedrv.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\mousedrv.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\C\sounddrv.c : \
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\..\include\sounddrv.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\c\timer.c : \
+	"..\..\include\defs.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\c\wdbg.c : \
+	"..\..\include\config.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\cpudis.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\kbd.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\c\wgui.c : \
+	"..\..\include\config.h"\
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\draw.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\gameport.h"\
+	"..\..\include\graph.h"\
+	"..\..\include\listtree.h"\
+	"..\..\include\sound.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\c\winmain.c : \
+	"..\..\include\bus.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fellow.h"\
+	"..\..\include\wgui.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"..\include\wdbg.h"\
+	"..\include\windrv.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\autoconf.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\expansio.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\filesys.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\filesys.h"\
+	"..\..\uae\include\fsusage.h"\
+	"..\..\uae\include\penguin.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\fsusage.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\fsusage.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\hardfile.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\autoconf.h"\
+	"..\..\uae\include\execlib.h"\
+	"..\..\uae\include\filesys.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\posixemu.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\filesys.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+..\..\uae\c\uaesupp.c : \
+	"..\..\include\cpu.h"\
+	"..\..\include\defs.h"\
+	"..\..\include\fhfile.h"\
+	"..\..\include\fmem.h"\
+	"..\..\uae\include\posixemu.h"\
+	"..\..\uae\include\uae2fell.h"\
+	"..\include\msvc\portable.h"\
+	"..\include\msvc\renaming.h"\
+	"f:\program files\microsoft visual studio\vc98\include\basetsd.h"\
+	
+
+!IF  "$(CFG)" == "WinFellow - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
+
+!ENDIF 
+
+.\Script1.rc : \
+	".\bitmap1.bmp"\
+	".\Fellow.bmp"\
+	".\fellow2.BMP"\
+	

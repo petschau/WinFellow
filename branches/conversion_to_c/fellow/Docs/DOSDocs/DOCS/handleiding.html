@@ -1,0 +1,2299 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=iso-8859-1">
+<meta name="Author" content="Brett Eden">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Fellow User Manual</title>
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#3366FF"
+vlink="#CC0000">
+
+
+
+<HR WIDTH="100%">
+
+<CENTER><FONT SIZE=+1>F E L L O W</FONT></CENTER>
+
+<CENTER><FONT SIZE=+1>COMMODORE AMIGA EMULATOR</FONT></CENTER>
+
+<CENTER><FONT SIZE=+1>Door Petter Schau (<A HREF="pschau@online.no">pschau@online.no</A>)</FONT></CENTER>
+
+<CENTER><FONT SIZE=+1>Documentatie en FAQ door Brett Eden (<A HREF="revere@sub.net.au">revere@sub.net.au</A>)</FONT></CENTER>
+
+<CENTER><FONT SIZE=+1>Vertaling in het Nederlands door Peter Stolk</FONT></CENTER>
+
+<HR WIDTH="100%">
+
+
+<CENTER><p align="center"><b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; LEES DE
+HANDLEIDING AANDACHTIG DOOR VOORDAT U MET FELLOW BEGINT </b></CENTER>Dit
+document bevat informatie betreffende Fellow V0.3.3 voor DOS.
+&nbsp; </p>
+
+<h2>Credits</h2>
+
+<p><u>De emulator is geschreven door:</u> </p>
+
+<p><b>(C) Petter Schau in 1996/1997/1998.&nbsp; (</b><a
+href="mailto:pschau@online.no"><b>pschau@online.no</b></a><b>)</b>
+</p>
+
+<p><u>Bijdragen aan het programma ook door:</u> </p>
+
+<p><b>(C) Roman Dolejsi
+1997&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (</b><a
+href="roman@sorry.vse.cz"><b>roman@sorry.vse.cz</b></a><b>)</b> <br>
+<b>(C) David Voracek
+1997&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (</b><a
+href="assassin@paru.cas.cz"><b>assassin@paru.cas.cz</b></a><b>)</b>
+<br>
+<b>(C) Rainer Sinsch
+1998&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+(</b><a href="sinsch@stud.uni-frankfurt.de"><b>sinsch@stud.uni-frankfurt.de</b></a><b>)</b>
+<br>
+&nbsp; <br>
+Lees de <a href="Credits.html">credits.txt</a> file voor een
+volledige omschrijving van de bijdragen aan de emulator. </p>
+
+<h2>Licentie</h2>
+
+<p><u>De voorwaarden voor het gebruik en verspreiding van deze
+emulator</u> <br>
+&nbsp; <br>
+De rechten van dit programma zijn in handen van Petter Schau en
+medewerkers. </p>
+
+<p>Het is u toegestaan om dit programma vrij te gebruiken. </p>
+
+<p>Onder enkele beperkingen, die hieronder staan beschreven, is
+vrije verspreiding toegestaan. </p>
+
+<p>Dit programma&nbsp; is vrij verspreidbaar zolang de inhoud van
+dit archief intact blijft en ongewijzigd. Tevens mag er niet meer
+geld gevraagd worden dan de kostprijs van de gegevensdrager
+waarmee deze emulator verspreid wordt. </p>
+
+<p>Het is toegestaan om de emulator tezamen met andere vrij
+verspreidbare software op CD-ROM te zetten. </p>
+
+<p>Distributie in strijd met het non-profit principe benodigd
+toestemming van de auteurs van dit programma. </p>
+
+<p>De emulator wordt geleverd &quot;als zijnde&quot;, te
+gebruiken voor eigen risico.&nbsp; Er is geen uitdrukkelijke of
+speciale bruikbaarheid voor dit programma en geen verplichting
+voor de auteur om support te geven of reparaties uit te voeren,
+op welke manier dan, als zich onverhoopt problemen voordoen. </p>
+
+<p>Doordat u het programma gebruikt, accepteert u dat de auteur
+niet verantwoorderlijk gesteld kan worden als er problemen
+ontstaan door gebruikt van dit programma.Dit is experimentele
+software die u voor geheel eigen risco gebruikt.</p>
+
+<p>De bovengenoemde voorwaarden hebben ook betrekking op de
+source-code van de emulator. <br>
+&nbsp; </p>
+
+<p><u>Aanvullende voorwaarden voor de source-code van de emulator
+zijn:</u> </p>
+
+<p>Voor persoonlijk gebruik kunt u de source-code zo vaak als u
+maar wilt wijzigen. </p>
+
+<p>Als u iets veranderd of toevoegd dat bruikbaar is voor
+anderen, zouden wij het appreciëren als u ons een patch
+toestuurt zodat het bij de officiële source-tree gevoegd kan
+worden. </p>
+
+<p>Gebruik van delen van de&nbsp; source-code in ander vrij
+verspreidbare software is toegestaan zolang de auteurs eerst
+verwittigd en genoemd worden. </p>
+
+<p>&quot;AMIGA&quot;, &quot;AmigaOS&quot;, &quot;Kickstart&quot;
+en&quot;Workbench&quot; zijn geregistreerde handelsmerken van
+Amiga International.&nbsp; Andere handelsmerken die genoemd
+worden zijn in handen van de respectievelijke eigenaars. <br>
+&nbsp; </p>
+
+<h2>Inhoud</h2>
+
+<TABLE WIDTH="100%" BGCOLOR="#2F2E41" >
+<TR>
+<TD><FONT COLOR="#FFFFFF"><B>1.</B></FONT></TD>
+
+        <td><a href="#1."><font color="#FFFFFF">Introductie</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>2.</b></font></td>
+        <td><a href="#2."><font color="#FFFFFF">Systeem-eisen</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.&nbsp;</b></font></td>
+        <td><a href="#3."><font color="#FFFFFF">Voordat u begint
+        - Noodzakelijke benodigdheden</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.1</b></font></td>
+        <td><a href="#3.1"><font color="#FFFFFF">Kickstart-image&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.1.1</b></font></td>
+        <td><a href="#3.1.1"><font color="#FFFFFF">Gebruik van
+        TransROM&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.2</b>&nbsp;</font></td>
+        <td><a href="#3.2"><font color="#FFFFFF">Disk-image&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.2.1</b></font></td>
+        <td><a href="#3.2.1"><font color="#FFFFFF">Gebruik van
+        Transdisk&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>3.3</b>&nbsp;</font></td>
+        <td><a href="#3.3"><font color="#FFFFFF">Het kopiëren
+        van files van PC naar Amiga &amp; Amiga naar PC&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>4.</b></font></td>
+        <td><a href="#4."><font color="#FFFFFF">Het werken met
+        Fellow&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.</b></font></td>
+        <td><a href="#5."><font color="#FFFFFF">Het configureren
+        van het systeem</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.1</b></font></td>
+        <td><a href="#5.1"><font color="#FFFFFF">Wat u moet weten over het menu systeem&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td bgcolor="#2F2E41"><font color="#FFFFFF"><b>5.1.1</b></font></td>
+        <td><a href="#5.1.1"><font color="#FFFFFF">Sectie systeem
+        menu</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.1.2</b></font></td>
+        <td><a href="#5.1.2"><font color="#FFFFFF">Configuratie Menu's</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.1.3</b></font></td>
+        <td><a href="#5.1.3"><font color="#FFFFFF">File-system browser</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2</b></font></td>
+        <td><a href="#5.2"><font color="#FFFFFF">Hoofd Menu&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.1</b></font></td>
+        <td><a href="#5.2.1"><font color="#FFFFFF"><u>Start</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.2</b></font></td>
+        <td><a href="#5.2.2"><font color="#FFFFFF"><u>Configuration</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.3</b></font></td>
+        <td><a href="#5.2.3"><font color="#FFFFFF"><u>Utilities</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.4</b></font></td>
+        <td><a href="#5.2.4"><font color="#FFFFFF"><u>Hard Reset</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.5</b></font></td>
+        <td><a href="#5.2.5"><font color="#FFFFFF"><u>Debugger</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.6</b></font></td>
+        <td><a href="#5.2.6"><font color="#FFFFFF"><u>About</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.2.7</b></font></td>
+        <td><a href="#5.2.7"><font color="#FFFFFF"><u>Quit</u> optie</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.3</b></font></td>
+        <td><a href="#5.3"><font color="#FFFFFF"><u>Configuration</u> menu</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.4</b></font></td>
+        <td><a href="#5.4"><font color="#FFFFFF"><u>Floppy
+        Configuration</u> menu</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.4.1</b></font></td>
+        <td><a href="#5.4.1"><font color="#FFFFFF">Diskimage in DF(x)</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.4.2</b></font></td>
+        <td><a href="#5.4.2"><font color="#FFFFFF">Drive (x) status</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.4.3</b></font></td>
+        <td><a href="#5.4.3"><font color="#FFFFFF">Disk-DMA speed</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.4.4</b></font></td>
+        <td><a href="#5.4.4"><font color="#FFFFFF">Alt-N cycling</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5</b></font></td>
+        <td><a href="#5.5"><font color="#FFFFFF"><u>Filesystem Configuration</u> menu</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5.1</b></font></td>
+        <td><a href="#5.5.1"><font color="#FFFFFF">Add VFS
+        filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5.2</b></font></td>
+        <td><a href="#5.5.2"><font color="#FFFFFF">Add readonly
+        VFS</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5.3</b></font></td>
+        <td><a href="#5.5.3"><font color="#FFFFFF">Add normal
+        filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5.4</b></font></td>
+        <td><a href="#5.5.4"><font color="#FFFFFF">Add readonly
+        normal filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.5.5</b></font></td>
+        <td><a href="#5.5.5"><font color="#FFFFFF">Delete
+        filesystem</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6</b></font></td>
+        <td><a href="#5.6"><font color="#FFFFFF">Screen Configuration menu</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.1</b></font></td>
+        <td><a href="#5.6.1"><font color="#FFFFFF">Screen resolution</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.2</b></font></td>
+        <td><a href="#5.6.2"><font color="#FFFFFF">Frame-skip
+        ratio</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.3</b>&nbsp;</font></td>
+        <td><a href="#5.6.3"><font color="#FFFFFF">Maximum
+        frame-rate</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.4</b></font></td>
+        <td><a href="#5.6.4"><font color="#FFFFFF">Flicker-free
+        interlace</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.5</b></font></td>
+        <td><a href="#5.6.5"><font color="#FFFFFF">Cycle-exact
+        drawing</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.6.6</b></font></td>
+        <td><a href="#5.6.6"><font color="#FFFFFF">Scale Y</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7</b></font></td>
+        <td><a href="#5.7"><font color="#FFFFFF">Geheugen
+        Configuratie Menu</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.1</b></font></td>
+        <td><a href="#5.7.1"><font color="#FFFFFF">Chip memory</a></font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.2</b></font></td>
+        <td><a href="#5.7.2"><font color="#FFFFFF">Fast memory</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.3</b></font></td>
+        <td><a href="#5.7.3"><font color="#FFFFFF">Bogo
+        memory&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.4</b></font></td>
+        <td><a href="#5.7.4"><font color="#FFFFFF">Kickstart-image</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.5</b></font></td>
+        <td><a href="#5.7.5"><font color="#FFFFFF">Keyfile</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.7.6</b></font></td>
+        <td><a href="#5.7.6"><font color="#FFFFFF">Memory space
+        size</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8</b></font></td>
+        <td><a href="#5.8"><font color="#FFFFFF"><u>Sound
+        Configuration</u> menu</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.1</b></font></td>
+        <td><a href="#5.8.1"><font color="#FFFFFF">Sound-emulation
+        </font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.2</b></font></td>
+        <td><a href="#5.8.2"><font color="#FFFFFF">Output rate</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.3</b></font></td>
+        <td><a href="#5.8.3"><font color="#FFFFFF">Output
+        channels</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.4</b></font></td>
+        <td><a href="#5.8.4"><font color="#FFFFFF">Output bits</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.5</b></font></td>
+        <td><a href="#5.8.5"><font color="#FFFFFF">Low-pass
+        filter</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.6</b></font></td>
+        <td><a href="#5.8.6"><font color="#FFFFFF">Sound buffer
+        depth</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.8.7</b></font></td>
+        <td><a href="#5.8.7"><font color="#FFFFFF">Send sound
+        ouput to WAV-file</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.9</b></font></td>
+        <td><a href="#5.9"><font color="#FFFFFF"><u>CPU en
+        Blitter Configuration</u> menu&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.9.1</b></font></td>
+        <td><a href="#5.9.1"><font color="#FFFFFF">Virtual CPU
+        instruction set</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.9.2</b></font></td>
+        <td><a href="#5.9.2"><font color="#FFFFFF">Virtual CPU speed</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.9.3</b></font></td>
+        <td><a href="#5.9.3"><font color="#FFFFFF">Virtual
+        Blitter speed&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.9.4</b></font></td>
+        <td><a href="#5.9.4"><font color="#FFFFFF">Long Blits</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.10</b></font></td>
+        <td><a href="#5.10"><font color="#FFFFFF">Hardfile
+        Configuratie Menu</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.10.1</b></font></td>
+        <td><a href="#5.10.1"><font color="#FFFFFF">fhfile.device
+        status</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.10.2</b></font></td>
+        <td><a href="#5.10.2"><font color="#FFFFFF">FELLOWX
+        hardfiles</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11</b></font></td>
+        <td><a href="#5.11"><font color="#FFFFFF"><u>Various
+        Configuration</u> menu</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11.1</b></font></td>
+        <td><a href="#5.11.1"><font color="#FFFFFF">Joystick Port
+        1 &amp; 2</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11.2</b></font></td>
+        <td><a href="#5.11.2"><font color="#FFFFFF">Power/floppy
+        LEDs</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11.3</b></font></td>
+        <td><a href="#5.11.3"><font color="#FFFFFF">Prestatie op
+        scherm getoond&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11.4</b></font></td>
+        <td><a href="#5.11.4"><font color="#FFFFFF">Menu-positie
+        weggeschreven bij einde</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>5.11.5</b></font></td>
+        <td><a href="#5.11.5"><font color="#FFFFFF">Autorun na
+        sommige commando's </font></a></td>
+    </tr>
+   <TR BGCOLOR="#FFFFFF">
+<TD></TD>
+
+<TD></TD>
+</TR>
+
+<TR>
+     <td><font color="#FFFFFF"><b>6.</b></font></td>
+        <td><a href="#6."><font color="#FFFFFF">Debugger&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.1</b></font></td>
+        <td><a href="#6.1"><font
+        color="#FFFFFF">Step</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.2</b></font></td>
+        <td><a href="#6.2"><font
+        color="#FFFFFF">Step Over&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.3</b></font></td>
+        <td><a href="#6.3"><font
+        color="#FFFFFF">Breakpoint&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.4</b></font></td>
+        <td><a href="#6.4"><font
+        color="#FFFFFF">Memory&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.5</b></font></td>
+        <td><a href="#6.5"><font
+        color="#FFFFFF">CIA</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.6</b></font></td>
+        <td><a href="#6.6"><font
+        color="#FFFFFF">IO&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.7</b></font></td>
+        <td><a href="#6.7"><font
+        color="#FFFFFF">Trace on</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.8</b></font></td>
+        <td><a href="#6.8"><font
+        color="#FFFFFF">Trace off</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.9</b></font></td>
+        <td><a href="#6.9"><font
+        color="#FFFFFF">Show Trace</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.10</b></font></td>
+        <td><a href="#6.10"><font
+        color="#FFFFFF">Trace to file</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.11</b></font></td>
+        <td><a href="#6.11"><font
+        color="#FFFFFF">Event log configuratie&nbsp;</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>6.12</b></font></td>
+        <td><a href="#6.12"><font
+        color="#FFFFFF">Laat event log zien</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>7.</b></font></td>
+        <td><a href="#7."><font color="#FFFFFF">Command
+        Line Interface</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>8.</b></font></td>
+        <td><a href="#8."><font color="#FFFFFF">We
+        gaan beginnen&nbsp; - Een basisgids</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>9.</b></font></td>
+        <td><a href="#9."><font color="#FFFFFF">Sneltoetsen</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>9.1</b></font></td>
+        <td><a href="#9.1"><font
+        color="#FFFFFF">Sneltoetsen in de user interface</font></a></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>9.2</b></font></td>
+        <td><a href="#9.2"><font
+        color="#FFFFFF">Sneltoetsen gedurende de emulatie</font></a></td>
+    </tr>
+    <tr>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF"><b>10.</b></font></td>
+        <td><a href="#10."><font color="#FFFFFF">Contact
+        Informatie</font></a></td>
+    </tr>
+</TBODY></table>
+
+<p>&nbsp; <br>
+&nbsp; </p>
+
+<h2><a name="1."></a>1. Introductie</h2>
+
+<p>Welkom bij de Fellow Amiga Emulator, een software-emulatie van
+de Commodore Amiga. Fellow geeft u een virtuele Amiga omgeving op
+uw PC in welke u Amiga software kunt draaien. The emulator werkt
+op een IBM compatible PC met een DOS operation system
+geïnstalleerd. Verschillende DOS omgevingen kunnen gebruikt
+worden. De emulator is met succes op de volgende systemen getest:
+alleen MS-DOS, DosEmu voor Linux en in DOS-boxen onder Windows 95
+en NT. </p>
+
+<p>De Commodore Amiga 500 werd als model werd gebruikt toen de
+Fellow Amiga Emulator gemaakt werd. De standaard configuratie van
+deze emulator levert de snelheid en het gevoel van dit specifiek
+Amiga systeem op uw PC. </p>
+
+<p>Fellow is tevens op allerlei manieren configureerbaar.
+Geavanceerde opties kunnen worden ingesteld om de emulator
+krachtigere prestaties te laten leveren dan waartoe een standaard
+Amiga 500 in staat is. We raden u sterk aan om de samenvatting
+van de opties te lezen zodat u bekend wordt met de kracht en
+beperkingen van de emulator. </p>
+
+<p>De Amiga 500 computer werd in 1987 uitgebracht als de opvolger
+van de Amiga 1000. Het deed vele jaren dienst als instap-model en
+meest populaire lid van de Amiga familie. Met zijn vele
+multimedia capaciteiten, dankzij de vele co-processoren die
+toegewijd zijn aan de generatie van snelle graphics en natuurlijk
+de 4-kanaals sample-based stereogeluid, werd het snel een
+populaire machine voor spellen en demo's. De geavanceerde
+multimedia capaciteiten gecombineerd met een multi-tasking,
+window gebaseerde operating systeem maakte dat de Amiga zijn tijd
+ver vooruit was voor een thuiscomputer. </p>
+
+<p>Hoewel het nu 10 jaar geleden is toen de eerste werd
+uitgebracht, vraagt emulatie van de eerste Amiga's nog steeds
+veel processorkracht van de hedendaagse computers. Er is
+tenminste een Pentium processor nodig om op originele snelheid te
+kunnen werken. Het zijn vooral het vele grafische werk en het
+simpele managen van de interactie tussen de vele bronnen van
+activiteit in de Amiga hardware architectuur, die het grootste
+gedeelte van de processortijd opeisen. </p>
+
+<p>De Fellow Amiga Emulator is gemaakt door Petter Schau. De
+eerste publieke versie werd in december 1996 uitgebracht. Aan de
+datum van uitgave gingen verschillende jaren, van experimenten
+met methoden om bepaalde gedeelten van de Amiga hardware snel te
+emuleren, vooraf. Vandaag de dag is het de meest complete
+software emulatie van een Amiga 500 en hoger, ook dankzij de
+contributies van verschillende mensen. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h2><a name="2."></a>2. Systeem-eisen</h2>
+
+<p>Om Fellow te kunnen starten moet uw systeem minimaal aan de
+volgende technische specificaties voldoen: </p>
+
+<ul>
+    <li>Een IBM compatible computer met een 486 instructieset,
+        CPU en FPU </li>
+    <li>MS-DOS Versie 5.00 of later </li>
+    <li>11 MB RAM-geheugen </li>
+    <li>Een VGA Compatible videokaart </li>
+    <li>Een Muis </li>
+    <li>Een Toetsenbord </li>
+</ul>
+
+<p>Het is AANBEVOLEN om tenminste de volgende configuratie te
+bezitten om het beste uit Fellow te krijgen: </p>
+
+<ul>
+    <li>Een IBM Compatible computer met een 100MHz 486 of
+        snellere Pentium CPU. Nog beter is Pentium met MMX
+        instructieset is. </li>
+    <li>MS-DOS Versie 5.00 of later </li>
+    <li>16-20 MB RAM-geheugen (gebruikt tot 32 MB mits aanwezig) </li>
+    <li>Een PCI of AGP (S)VGA compatible videokaart met VBE 2.0
+        ondersteuning </li>
+    <li>Soundblaster of compatible geluidskaart</li>
+</ul>
+
+<p>Als uw videokaart geen VESA BIOS extensies 2.0 ondersteunt,
+dan zult u moeten proberen om een DOS VBE 2.0 driver speciaal
+voor uw videokaart (probeer de homepage van de fabrikant) of
+Scitech Display Doctor die via Internet beschikbaar is, te
+bemachtigen. </p>
+
+<p>Zonder VBE 2.0 ondersteuning, zult u de meeste
+schermresoluties niet kunnen gebruiken wanneer u Fellow gebruikt!
+</p>
+
+<p>Fellow is nogal CPU intensief.&nbsp; Wilt u
+grafisch-intensieve programma's draaien op &quot;echte
+Amiga&quot; snelheid dan heeft u een Pentium 133 -&gt; 166 CPU en
+een snelle PCI/AGP videokaart nodig. Andere factoren zoals de RAM
+snelheid zullen de resultaten ook beïnvloeden (houd in gedachten
+dat DIMM RAM 10ns is, vergeleken met standaard EDO/FP SIMMd die
+respectievelijk op 60ns en 70ns werken). <br>
+&nbsp; </p>
+
+<h2><a name="3."></a>3. Voordat u begint - Minimale benodigdheden</h2>
+
+<p>Voordat u Fellow kunt gebruiken, heeft u de volgende twee
+dingen nodig: <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h3><a name="3.1"></a>3.1 Kickstart-image</h3>
+
+<p>&nbsp; <br>
+Een kopie van een AmigaDOS Kickstart ROM, die van een ECHTE Amiga
+komt .&nbsp; Deze file kunt u maken met het programma
+&quot;TransROM&quot;, die tezamen met Fellow geleverd wordt. De
+Kickstart is copyrighted software door Amiga International. Het
+is daarom natuurlijk niet mogelijk om de kickstart-image bij deze
+emulator te voegen. </p>
+
+<p>De juiste wijze om deze file te verkrijgen is of de software
+van uw eigen Amiga te kopiëren of de <a
+href="http://www.cloanto.com/amiga/forever/">Amiga Forever CD</a>
+van <a href="http://www.cloanto.com">Cloanto</a> te kopen waarop
+gelicenseerde Kickstart ROM images en Workbench software staan
+die variëren van V1.0 tot V3.0. Deze software is voorbereid op
+directe werking met de emulator.<br>
+&nbsp; </p>
+
+<h4><a name="3.1.1"></a>3.1.1 Het gebruik van transrom</h4>
+
+<p>TransROM moet naar een echte Amiga gekopiëerd worden, zodat
+een kopie van de Kickstart ROM chip kan worden gemaakt. Deze
+kopie wordt dan als een file weggeschreven. </p>
+
+<p><tt>CLI&gt; transrom &gt;RAM:kick.rom</tt> </p>
+
+<p>Kopiëert de Kickstart ROM chip en schrijft het naar een file
+in RAM: dat &quot;kick.rom&quot; heet.&nbsp; Deze file moet dan
+naar de PC en in de Fellow directory gekopiëerd worden. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h3><a name="3.2"></a>3.2 Disk-image</h3>
+
+<p>U heeft ook een &quot;image&quot; van een echte Amiga floppy
+disk nodig, dat het programma bevat dat u onder Fellow wilt
+draaien. Deze image kunt u maken met het programma
+&quot;transdisk&quot;, en zit ook bij het archief Fellow. </p>
+
+<p>Een disk-image is een file waar de data in staat die normaal
+op een floppy-disk is verzameld. </p>
+
+<p>Een PC's floppy drive kan geen Amiga floppy disk lezen. Om
+Fellow toch te kunnen gebruiken HEEFT u dus een image van een
+echte Amiga diskette NODIG. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h4><a name="3.2.1"></a>3.2.1 Het gebruik van transdisk</h4>
+
+<p>Zoals TransROM moet ook Transdisk naar een ECHTE Amiga
+gekopiëerd worden om nuttig te zijn. </p>
+
+<p>Transdisk moet u vanuit de AmigaDOS shell prompt starten. Het
+programma kopiëert een een floppy disk, track na track, naar een
+file (die door Fellow gelezen kan worden).. </p>
+
+<p><tt>CLI&gt; transdisk &gt;RAM:df0.adf</tt> </p>
+
+<p>Maakt een image van iedere diskette die op dat moment in DF0:
+zit. De diskette hoeft niet persé &quot;df0.adf&quot; te heten.
+U kunt iedere naam gebruiken die u wilt. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h4><a name="3.3"></a>3.3 Het kopiëren van files van PC naar
+Amiga &amp; Amiga naar PC</h4>
+
+<ol>
+    <li>Door gebruik te maken van een null-modem kabel, kunt u
+        data uitwisselen tussen de Amiga en de PC via het
+        Zmodem-protocol. Sluit de kabel op de seriële poort van
+        beide machines aan en start een terminalpakket zoals
+        bijv. Terminus, NComm of Term op de Amiga en Terminate,
+        Telemate, Telix (of HyperTerminal voor Windows 95 als u
+        dat wilt) op de PC. Initialiseer nu een Zmodem upload op
+        de Amiga. Als u alles correct geconfigureerd heeft
+        (automatische ZModem download aan de ontvangende kant
+        moet aangezet zijn) zal de PC automatisch deze upload
+        accepteren en de software op uw PC's harde schijf zetten.
+        <p>Voor de beste resultaten kunt u aan een BaudBandit
+        serial.device vervanger voor de Amiga zien te komen. Zet
+        beide kanten op 57.600 baud. BaudBandit is in staat tot
+        5500cps van/naar een 68000-Amiga te transfereren en is
+        verkrijgbaar bij AmiNET. </p>
+        <p>Als u één van de mensen bent met een AmigaOS 1.2/1.3
+        A500 met alleen een enkele floppy drive, heeft u
+        waarschijnlijk een probleem. Als u geen Terminal pakket
+        op een diskette, waarvan u kunt opstarten of te gebruiken
+        via een tweede drive, heeft is er geen enkele manier om
+        een null-modem kabel, die de Amiga met de PC verbindt, te
+        gebruiken. U kunt proberen om via een Amiga
+        gebruikersgroep of, als u geluk heeft, een lokale Amiga
+        shareware verkoper/distributeur aan deze diskette te
+        komen. <br>
+        </p>
+        <hr>
+        <p>Opmerking: Sommige Amiga's staan toe de seriële poort
+        op 115.200 baud te zetten. Dit is afhankelijk van de
+        machine, de moederbord revisie en de processor.&nbsp;
+        Door het zetten van de seriële poort op 115.200 baud aan
+        zowel de Amiga- als de PC-zijde kunt u files
+        transporteren over de null-modem kabel met een snelheid
+        die ongeveer op 10.100cps ligt. </p>
+        <hr>
+    </li>
+    <li>Als u geen null-modem kabel heeft kunt u de Amiga
+        software naar de PC transfereren via een 720k PC
+        diskette. Workbench 2.1+ wordt geleverd met CrossDOS. Dit
+        programma kan PC-720k diskettes lezen op uw Amiga's
+        floppy drive.&nbsp; Als u geen CrossDOS heeft (bijv. als
+        u een Workbench beneden versie 2.1 gebruikt) kunt u ook
+        MessyDOS, dat bij Aminet verkrijgbaar is, gebruiken. Hier
+        is een stap voor stap gids die verteld hoe u software via
+        een diskette kunt overzetten: <p>i) Zorg dat u een 720k
+        PC bij de hand heeft. Formatteer deze of via de PC of op
+        een Amiga door gebruik te maken van CrossDOS. </p>
+        <p>ii) Maak een .ADF file of Kickstart ROM image via de
+        methode die hierboven wordt beschreven. </p>
+        <p>iii) Pak deze file met LhA of Zip in (Zorg ervoor dat
+        deze op de PC staan zodat u ze uit kunt pakken zodra u
+        deze overgezet heeft). </p>
+        <p>iv) Kopiëer het archief naar de 720k diskette d.m.v.
+        CrossDOS of MessyDOS. </p>
+        <p>v) Zet de diskette over op de PC, kopiëer het archief
+        naar de harde schijf en pak het uit. Kopiëer de
+        Kickstart ROM image of .ADF file naar de Fellow directory
+        en u kunt beginnen!</p>
+    </li>
+</ol>
+
+<p>&nbsp; </p>
+
+<h2><a name="4."></a>4. Het werken met Fellow</h2>
+
+<p>Fellow wordt opgestart door FELLOW.EXE vanuit de DOS-prompt in
+te tikken.&nbsp; Nadat u dit heeft gedaan krijgt een een
+menu-scherm te zien. De middelste sectie laat de diskettes zien
+die op dat moment aan de floppy-drives gekoppeld zijn. Tevens
+wordt er aangegeven of er een Kickstart ROM aanwezig is. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h2><a name="5."></a>5. Het configureren van het systeem</h2>
+
+<h3><a name="5.1"></a>5.1 Wat u moet weten over het menu systeem</h3>
+
+<p>Deze sectie heeft betrekking op het initiële GUI menu. </p>
+
+<h4><a name="2."></a>5.1.1 Sectie Menu systeem</h4>
+
+<p>In het scherm rechts beneden staan de verschillende
+systeemopties. Gebruik de pijltjestoetsen om door de menu's te
+lopen. De RETURN-toets selecteert een menu.&nbsp; U kunt ook de
+groene sneltoetsen, evenals algemene sneltoetsen die voor de
+meeste opties gelden, gebruiken. De ESC toets brengt u een niveau
+hoger in het systeem-menu. </p>
+
+<h4><a name="5.1.2"></a>5.1.2 Configuratie menu's</h4>
+
+<p>De configuratie-instellingen kunt u veranderen in de
+configuratie menu's. Deze verschijnen als u één van de
+configuratie menu's selecteert. De namen van de verschillende
+configuratie-opties staan in een lijst aan de linker kant met de
+huidige instellingen geaccentueerd aan de rechter kant van het
+scherm. Met pijltjestoetsen OMHOOG en NAAR ONDER kunt door de
+lijst wandelen. Met de pijltjestoetsen LINKS en RECHTS kunt u de
+geselecteerde optie een andere instelling geven. Sommige opties
+verlangen de selectie van een file en laten daarom een
+file-system browser zien wanneer u met de ENTER toets selecteert.
+</p>
+
+<h4><a name="5.1.3"></a>5.1.3 File-System browser</h4>
+
+<p>De file-system browser verschijnt in het hoofdscherm. Zoek met
+de pijltjestoetsen totdat u de file gevonden heeft die u wilt
+kiezen. De ENTER toets selecteert een file of directory. U kunt
+de file-system browser, zonder iets te kiezen, te beëindigen
+door op de ESC-toets te drukken. </p>
+
+<p>U kunt automatisch naar een specifieke file gaan door de naam
+van de fille in te typen. </p>
+
+<p>Een geheugen optie kan gebruikt worden om een file-naam te
+herinneren en het later direct in het configuratiemenu te
+gebruiken. Druk op de file-system browser sneltoets om dit te
+selecteren.. <br>
+&nbsp; </p>
+
+<h3><a name="5.2"></a>5.2 Hoofd menu</h3>
+
+<p><img src="images/TopMenu.jpeg"
+width="151" height="156" ></p>
+
+<h4><a name="5.2.1"></a>5.2.1 <u>Start</u> optie</h4>
+
+<p>Als u deze optie selecteert wordt de Amiga emulatie gestart.
+Als de juiste voorbereidingen zijn getroffen zal de emulator als
+een echte Amiga opstarten. Vergeet niet om zowel een disk-image
+als een Kickstart ROM image te selecteren. </p>
+
+<p>Als de emulator tijdelijk gestopt is, zal deze terugkeren en
+verder gaan waar deze gebleven was. </p>
+
+<h4><a name="5.2.2"></a>5.2.2 <u>Configuration</u> optie</h4>
+
+<p>De configuratie submenu geeft toegang tot een groot aantal
+opties dat gebruikt kan worden om de werking en snelheid van de
+emulator te beïnvloeden. </p>
+
+<h4><a name="5.2.3"></a>5.2.3 <u>Utilities</u> optie</h4>
+
+<p>In het utilities submenu staan diverse programma's om ADF
+disk-images en hardfiles te maken als ook een MOD-ripper. <br>
+&nbsp; </p>
+
+<h4><a name="5.2.4"></a>5.2.4 <u>Hard reset</u> optie</h4>
+
+<p>De hard reset optie zal de virtuele Amiga compleet opnieuw
+starten. Een harde reset wordt eveneens automatisch uitgevoerd
+als u iets veranderd in de configuratie-opties. </p>
+
+<p>Als geen Kickstart-image geselecteerd is, zal hard reset een
+simpele vervangende lader activeren dat in staat is om sommige
+programma's op te starten die niet van het Amiga OperatingSystem
+afhankelijk zijn. De disk-image waarvan opgestart moet worden
+moet wel bij DF0: geselecteerd zijn. Sommige demo's en spellen
+met zogenaamde &quot;trackloaders&quot; vallen in de categorie
+programma's die op deze manier opgestart kunnen worden.
+(OPMERKING: Dit heeft alleen betrekking op Fellow V0.3.2a en
+eerdere versies.) </p>
+
+<h4><a name="5.2.5"></a>5.2.5 <u>Debugger</u> optie</h4>
+
+<p>De debugger is een programma dat inspecteert hoe de Amiga
+geëmuleerd wordt. Het programma is ontwikkeld om fouten in de
+emulatie te kunnen opsporen en kan gebruikt worden om Amiga
+programma's vanaf buiten de virtuele machine te
+&quot;de-buggen&quot;. Tevens kan het dienen als een
+inspectiemiddel om op ieder moment van programma-executie de op
+dan geldende staat van hardware emulatie te laten zien. </p>
+
+<h4><a name="5.2.6"></a>5.2.6 <u>About</u> optie</h4>
+
+<p>Als u deze optie selecteert dan worden de makers van de
+emulator gepresenteerd en krijgt u informatie over de emulator te
+zien. </p>
+
+<h4><a name="5.2.7"></a>5.2.7 <u>Quit</u> optie</h4>
+
+<p>Deze selectie zal de emulator beëindigen en terug gaan naar
+DOS. <br>
+&nbsp; </p>
+
+<h3><a name="5.3"></a>5.3 <u>Configuration</u> menu</h3>
+
+<p>Het configuratiemenu bevat een collectie van menu's die u in
+staat stelt om de werkwijze van de emulator te beïnvloeden. De
+verschillende menu's worden hieronder verklaard. </p>
+
+<h3><a name="5.4"></a>5.4 <u>Floppy Configuration</u> menu</h3>
+
+<p><img
+src="images/FloppyDiskMenu.jpeg"
+width="316" height="241"> </p>
+
+<p>Dit configuratiemenu controleert een aantal instellingen
+betreffende disk-images en Amiga floppy hardware emulatie. <br>
+&nbsp; </p>
+
+<h4><a name="5.4.1"></a>5.4.1 Diskimage in DF(x)</h4>
+
+<p>(x) staat voor 0, 1, 2 of 3. Deze opties geven u de
+mogelijkheid om virtuele disk-files aan te sluiten op één of
+meerdere van de 4 Amiga disk drives.&nbsp; Als u de emulator
+start dan moet er een disk image, die aan DF0: gekoppeld wordt,
+geselecteerd zijn, als u hier vanaf wilt opstarten. (Of&nbsp;
+iedere andere disk-drive onder Kickstart V2.0 of hoger.) </p>
+
+<p>Als u op de DEL-toets drukt zal de virtuele disk-drive de
+disk-image &quot;uitwerpen&quot;. </p>
+
+<p>Het drukken op ALT-0 tot 9 zal een disk-image
+&quot;invoeren&quot; wiens naam in 1 van de 10 geheugenplaatsen
+opgeslagen is. </p>
+
+<p>Disk-images die ingepakt zijn met gzip or bzip zullen
+uitgepakt worden in TEMP-directory die in AUTOEXEC.BAT staat
+beschreven (bijv. SET TEMP=C:\TEMP). Veranderingen in deze
+gecomprimeerde bestanden worden niet opgeslagen (Alleen het
+tijdelijk uitgepakt bestand wordt veranderd). <br>
+&nbsp; </p>
+
+<h4><a name="5.4.2"></a>5.4.2 Drive (x) status</h4>
+
+<p>De (x) staat voor 0, 1, 2 of 3.&nbsp; Deze optie maakt het u
+mogelijk om de drive op inactief te zetten zodat de Amiga de
+drive niet detecteert..&nbsp; Het nut hiervan ligt in het feit
+dat de Amiga OperatingSystem geen buffer aan hoeft te maken en
+zodoende wat meer geheugen voor andere zaken beschikbaar is. </p>
+
+<p>Dit is vooral bedoeld om oude demo's die gecomprimeerd zijn
+met kapotte inpakkers, toch op te kunnen starten. In alle andere
+gevallen kunt de drives gewoon op actief laten. <br>
+&nbsp; </p>
+
+<h4><a name="5.4.3"></a>5.4.3 Disk-DMA speed</h4>
+
+<p>Maakt het u mogelijk om de snelheid, waarmee de virtuele
+diskfiles door de disk-drive gelezen wordt, te selecteren. De
+diskettetoegang is normaal gesproken langzaam op echte Amiga's,
+maar de emulator kan u veel snellere toegang verschaffen. </p>
+
+<p>Toegestane waarden zijn &quot;Original&quot; en
+&quot;Fast&quot;. </p>
+
+<p>Houd wel in gedachte dat er nogal wat programma's zijn die
+niet willen starten als u de waarde niet op &quot;Original&quot;
+heeft staan. <br>
+&nbsp; </p>
+
+<h4><a name="5.4.4"></a>5.4.4 Alt-N cycling</h4>
+
+<p>Controleert hoe ver de cursor verspringt wanneer de DEL-toets
+wordt ingedrukt of wanneer een disk-image wordt
+&quot;ingevoerd&quot; vanuit het (ALT-0 tot 9).. <br>
+&nbsp; </p>
+
+<h3><a name="5.5"></a>5.5 <u>Filesystem Configuration</u> menu</h3>
+
+<p><img
+src="images/FilesystemMenu.jpeg"
+width="227" height="118"> </p>
+
+<p>Dit menu bevat een aantal opties om &quot;filesystems&quot; te
+definiëren en te controleren. Een &quot;filesystem&quot; is de
+locatie in de standaard &quot;filesystem&quot; dat als een device
+binnen de emulator zichtbaar wordt </p>
+
+<h4><a name="5.5.1"></a>5.5.1 Add VFS filesystem</h4>
+
+<p>Deze optie zal een virtuele &quot;filesystem&quot; aan uw
+configuratie toevoegen. Een virtuele &quot;filesystem&quot; zal
+DOS 8.3 file-namen naar lange file-namen, die gebruikt worden
+door de Amiga, vertalen. Het is nodig om Amiga software vanaf het
+begin te installeren zodat de filename vertalingstabellen
+up-to-date blijven. Anders zijn alleen de DOS 8.3 file-namen
+zichtbaar en zal de software de files, die nodig zijn, mogelijk
+niet kunnen vinden. Uitpakken of installeren van software dient
+vanuit de emulatie op VFS volumes te geschieden. </p>
+
+<p>Wanneer u deze optie selecteert moet u eerst de volumenaam
+voor deze &quot;filesystem&quot;, zoals deze in de Amiga-mode zou
+moeten verschijnen, opgeven.Ook moet u de directory invoeren
+waarvandaan opgestart moet worden. De derde optie definiëert de
+maximum toegestane lengte van de filename voordat deze
+geconverteerd wordt. Gewoonlijk kunt u de derde optie op de
+standaardwaarde laten staan. </p>
+
+<h4><a name="5.5.2"></a>5.5.2 Add readonly VFS</h4>
+
+<p>Deze optie is gelijk aan <a href="#5.5.1">5.5.1</a>, met de
+uitzondering dat deze nu op alleen lezen staat.</p>
+
+<h4><a name="5.5.3"></a>5.5.3 Add normal filesystem</h4>
+
+<p>Gelijk aan <a href="#5.5.1">5.5.1</a>,
+met de uitzondering dat de DOS 8.3 file-namen zichtbaar zijn en
+niet niet langer worden geconverteerd.</p>
+
+<h4><a name="5.5.4"></a>5.5.4 Add readonly normal</h4>
+
+<p>Gelijk aan <a href="#5.5.1">5.5.1</a>,
+met de uitzondering van de DOS 8.3 file-namen en dat deze alleen
+te lezen zijn</p>
+
+<h4><a name="5.5.5"></a>5.5.5 Remove Filesystem</h4>
+
+<p>Wanneer u deze optie selecteert wordt er een pop-up menu
+getoond met de op dat moment gedefiniëerde
+&quot;filesystems&quot;. De &quot;filesystem&quot; die u kiest
+wordt verwijderd.</p>
+
+<h3><a name="5.6"></a>5.6 <u>Screen Configuration</u> menu</h3>
+
+<p>Dit submenu controleert aspecten van de grafische emulatie en
+visualisatie op het scherm waarop de Amiga geëmuleerd wordt. </p>
+
+<h4><a name="5.6.1"></a>5.6.1 Screen resolution</h4>
+
+<p align="left">Deze optie controleert welke resolutie de
+emulator zal gebruiken om het Amiga scherm te tekenen. De exact
+beschikbare resoluties hangt van uw VESA driver af. De volgende
+resoluties zijn beschikbaar in de emulator, tenminste als uw VESA
+driver ze ondersteund: <br>
+&nbsp; <br>
+&nbsp; </p>
+<div align="center"><center>
+
+<table border="1" width="220" cols="1">
+    <caption align="top"><b>Ondersteunde resoluties:</b></caption>
+<TBODY>    <tr>
+        <td>800x600x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>800x600x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x480x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x480x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x400x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x400x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x350x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>640x350x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>400x300x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>400x300x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>400x300x8 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x480x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x480x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x480x8 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x400x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x400x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x400x8 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x240x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x240x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x240x8 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x200x16 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x200x15 bit kleur</td>
+    </tr>
+    <tr>
+        <td>320x200x8 bit kleur (Std. VGA)</td>
+    </tr>
+</TBODY></table>
+</center></div>
+
+<p>De emulator zal alleen één van de 15/16 bit resoluties
+kiezen wanneer beiden worden gevonden. Aangenomen wordt dat de
+standaard VGA 320x200x8 resolutie op iedere videokaart
+beschikbaar is. Als de VESA driver niet aanwezig is of andere
+resoluties niet ondersteund, is 320x200x8 de enige resolutie die
+beschikbaar in de de configuratie-selectie.</p>
+
+<p><strong>OPMERKING: </strong>Niet-VGA resoluties zullen alleen
+door VESA-drivers met lineaire framebuffer ondersteuning gebruikt
+worden. </p>
+
+<p>De emulator zal de presentatie van het gehele grafische
+Amiga-scherm in de gaten houden. Deze is ongeveer 768x580 groot.
+Veel van de ondersteunde resoluties zijn niet groot genoeg om een
+afbeelding van deze grootte te laten zien. De afbeelding zal
+worden verkleind om toch op het scherm te kunnen passen. In een
+lage resolutie-scherm zullen Amiga graphics, die origineel in
+hoge-resolutie staan, worden geconverteerd waarbij iedere tweede
+pixel (schermpunt) verloren gaat. </p>
+
+<h4><a name="5.6.2"></a>5.6.2 Frame-skip ratio</h4>
+
+<p>De frame-skip ratio controleert hoe vaak de emulator het
+scherm ververst.&nbsp; 1/1 ververst het scherm zo veel als
+mogelijk. </p>
+
+<p>Een lagere ratio resulteert in animaties die niet soepel
+lopen, maar bespaart een hoop processortijd. Zodoende zal
+emulatie een stuk sneller zijn. Als u de prestaties van de
+emulator wilt perfectioneren dan zal het veranderen van
+frame-skip ratio meestal de eerste stap zijn. </p>
+
+<h4><a name="5.6.3"></a>5.6.3 Maximum frame-rate</h4>
+
+<p>Deze optie controleert de tijd die de emulator toebedeeld
+krijgt om een bepaalde taak uit te voeren. </p>
+
+<p>De opties zijn &quot;Unlimited&quot; (Ongelimiteerd), &quot;50
+hz&quot; and &quot;Synch with VGA-card&quot; (Gesynchroniseerd
+aan de VGA-kaart). </p>
+
+<p>&quot;Unlimited&quot; zal alle tijdslimieten uitschakelen
+zodat de emulator op zijn snelst werkt.&nbsp; Dit heeft ook
+effect op de herhalingssnelheid van toetsen en vernietigd ook
+ieder concept van tijd bij emulatie (bijv. geen synchronisatie
+tussen beeld en geluid). Als uw machine te snel is kunt u
+waarschijnlijk uw toetsenbord niet gebruiken. </p>
+
+<p>&quot;50 hz&quot; beperkt de snelheid aan die van een normale
+PAL A500. </p>
+
+<p>&quot;Synch with VGA-card&quot; zal proberen om het beeld met
+de verversingssnelheid, die gebruikt wordt door de VGA-resolutie
+op dat moment, te synchroniseren. In sommige gevallen kunnen op
+deze manier volledig gladlopende (lees: goed uitgevoerde)
+animaties ontstaan. Omdat de normale PAL verversingssnelheid
+meestal niet overeenkomt met de verversingsnelheid van de
+VGA-resoluties, zal dit behalve de geluidssnelheid ook de
+algemene snelheid van de applicatie in de war sturen. </p>
+
+<p><b>OPMERKING:</b> <br>
+Deze instelling zal worden genegeerd als de geluids-emulatie op
+&quot;Sychronized with emulation&quot; (gelijklopend aan de
+emulatie) staat ingesteld, behalve de &quot;Synch with
+VGA-card&quot; optie, die altijd gebruikt wordt, zelfs met
+geluid. Houd er erg in dat &quot;Synch with VGA-card&quot; en
+geluid geen goede combinatie is. </p>
+
+<h4><a name="5.6.4"></a>5.6.4 Flicker-free interlace</h4>
+
+<p>Als deze optie op aan staat, zal de emulator proberen om van
+een interlaced Amiga-scherm (noot van de vertaler: dit is een
+typische Amiga mode) een 'normaal' scherm te maken. Dit kan
+alleen als de emulator de 800x600 resolutie gebruikt. </p>
+
+<h4><a name="5.6.5"></a>5.6.5 Cycle exact drawing</h4>
+
+<p>Dit is een optie die nog in een experimenteel stadium zit. Als
+deze op aan staat zullen bijv. plasma effecten en dergelijke
+correct geëmuleerd worden. (Althans, dat de bedoeling :-) ) <br>
+Deze optie gaat op dit moment niet verder dan mid-line
+kleurveranderingen. Het is meer een test om te zien hoe dit
+gedaan kan worden zonder het gehele grafische systeem opnieuw te
+moeten ontwerpen.&nbsp; De routines werken nu nog alleen in de
+800x600 resolutie. </p>
+
+<p><b>OPMERKING:</b> <br>
+Het is niet aanbevolen om deze optie permanent op aan te laten
+staan.&nbsp; Er moet nog een hoop aan gesleuteld worden om het
+correct en veilig te laten werken. Het is beter om het af en toe
+te gebruiken om te zien hoe een bepaald effect werkt. </p>
+
+<h4><a name="5.6.6"></a>5.6.6 Scale Y</h4>
+
+<p>Bij deze optie kunt u een correctiemethode in werking stellen
+als het beeld niet juist wordt weergegeven (als verhouding
+beeld/resolutie niet goed is). Deze optie wordt alleen toegepast
+als er gebruik gemaakt wordt van hoge-resoluties. </p>
+
+<p>Er zijn drie instellingen: &quot;No Scaling&quot; (Geen
+correctie), &quot;Hardware VGA Line Doubling&quot; (Verdubbelen
+van iedere regel) en &quot;Insert black lines&quot; (invoegen van
+blanco regels). </p>
+
+<p>&quot;No Scaling&quot; zal geen verticale correctie in werking
+stellen. </p>
+
+<p>&quot;Hardware VGA Line Doubling&quot; gebruikt enkele VGA
+registers om er voor te zorgen dat in de hardware iedere
+(verticale) lijn verdubbeld wordt. Het werkt alleen met
+VGA-kaarten die met dergelijke VGA registers kunnen werken (zelfs
+in SVGA mode). Helaas is niet iedere VGA-kaart hiermee uitgerust.
+</p>
+
+<p>&quot;Insert black lines&quot; is een software methode die er
+voor zorgt dat er blanco regels tussengevoegd worden zodat het
+Amiga scherm juister geprojecteerd wordt. <br>
+&nbsp; </p>
+
+<h3><a name="5.7"></a>5.7 <u>Memory Configuration</u> menu</h3>
+
+<p><img src="images/MemoryMenu.jpeg"
+width="442" height="170"> </p>
+
+<p>Dit submenu controleert welke typen en hoeveelheid geheugen de
+geëmuleerde Amiga toebedeeld krijgt. <br>
+&nbsp; </p>
+
+<h4><a name="5.7.1"></a>5.7.1 Chip-memory</h4>
+
+<p>Stelt u in de gelegenheid te beslissen hoeveel chip-ram er
+geëmuleerd wordt. Toegestane waarden variëren van 256KB tot
+2MB.</p>
+
+<p><strong><font style="BACKGROUND-COLOR: #ffffff">OPMERKING: </strong>&quot;chip-ram&quot; is geheugen
+dat toegankelijk is voor de grafische co-processor die de Amiga
+bezit. Omdat de grafische processor ook gebruik kan maken van dit
+geheugen is het langzamer dan bijv. &quot;fast-memory&quot;.</font>&nbsp;</p>
+
+<h4><a name="5.7.2"></a>5.7.2 Fast-memory</h4>
+
+<p>Stelt u in de gelegenheid te beslissen hoeveel fast-ram er
+geëmuleerd wordt. Toegestane waarden zijn 0, 1, 2, 4 en 8 MB. </p>
+
+<h4><a name="5.7.3"></a>5.7.3 Bogo-memory</h4>
+
+<p>Stelt u in de gelegenheid te beslissen hoeveel bogo-ram (soms
+ook wel langzaam geheugen genoemd) er geëmuleerd wordt. Dit is
+een derde soort geheugen dat bijv. geheugenuitbreidingskaarten
+gebruikten die onderin de Amiga 500 werden geplaatst. Toegestane
+waarden variëren van 0KB tot 1792KB. </p>
+
+<h4><a name="5.7.4"></a>5.7.4 Kickstart-image</h4>
+
+<p>Stelt u in staat om de lokatie van de AmigaOS ROM image (dat
+nodig is voor programma's die werken met de Workbench of
+Workbench zelf) te bepalen. Als u deze optie selecteert krijgt u
+een file-requester te zien. Hiervandaan kiest u de ROM-file.
+Standaard zal Fellow naar &quot;kick.rom&quot; zoeken. </p>
+
+<p>Deze programma's moeten de extensie .rom met zich meekrijgen.
+U kunt ook kickdisk (dat gebruikt werd voor o.a. de Amiga
+1000)&nbsp; in ADF formaat gebruiken. </p>
+
+<p>De emulator zal automatisch de locatie waarnaar de ROM
+weggeschreven moet worden detecteren. Als er een ROM-image op
+adres $F00000 geplaatst wordt, kan er een tweede ROM-file op
+adres $F80000 of $FC0000 geladen worden met de -r2 toevoeging.
+Het is handig te zien hoe (op deze manier) bijv. een CDTV
+animatie eruit ziet. (Hoewel de hardware die nodig is om CDTV op
+te starten niet geëmuleerd wordt.) </p>
+
+<h4><a name="5.7.5"></a>5.7.5 Keyfile</h4>
+
+<p>Deze optie specificeert de plaats van de keyfile die gebruikt
+wordt om gecodeerde Kickstarts die op de Cloanto's Amiga Forever
+CD staan te decoderen. </p>
+
+<h4><a name="5.7.6"></a>5.7.6 Memory Space Size</h4>
+
+<p>Deze optie controleert de geheugen busbreedte. Toegestane
+waarden zijn &quot;24 Bit&quot; of &quot;32 bit&quot;. &quot;24
+bit&quot; is de standaard breedte voor de Motorola 68000 and
+68010 en sommige versies van de 68020 die maar 16MB adresseerbaar
+geheugen toestaan. &quot;32 bit&quot; biedt een volledige 4GB
+adresseerbare ruimte die in medium and high-end M68K processoren
+worden gebruikt.. <br>
+&nbsp; </p>
+
+<h3><a name="5.8"></a>5.8 <u>Sound Configuration</u> menu</h3>
+
+<p><img src="images/SoundMenu.jpeg"
+width="674" height="187"> </p>
+
+<p>Bij dit submenu kunt u de diverse aspecten van de
+geluidsemulatie veranderen. </p>
+
+<h4><a name="5.8.1"></a>5.8.1 Sound-emulation</h4>
+
+<p>Selecteert de type van geluidsemulatie.&nbsp; De beschikbare
+instellingen zijn: &quot;No sound&quot; (geen geluid) en
+&quot;Emulated, not played&quot; (geëmuleerd, geen geluid) </p>
+
+<p>&quot;No Sound&quot; zal de emulatie van de Amiga
+geluids-hardware als ook het geluid op zich uitschakelen. </p>
+
+<p>&quot;Emulated, not played&quot; zal de Amiga geluids-hardware
+emuleren, maar geen geluid afspelen. </p>
+
+<p>Instellingen die alleen beschikbaar zijn als er een
+geluidskaart (Soundblaster) gevonden wordt zijn : &quot;Normal,
+synchronized with emulation&quot; (normaal, gelijklopend aan de
+emulatie) en &quot;Normal, synchronized with real-time&quot;
+(normaal, gelijklopend aan de echte tijd (synschronisatie met de
+klok van de PC)). </p>
+
+<p>Achter deze vreemde namen van instellingen gaan twee
+alternatieve methoden van tijdssynchronisatie van geluidsemulatie
+schuil. &quot;Normal, synchronized with emulation&quot; zal het
+geluid in hetzelfde tempo laten verlopen als de snelheid van de
+emulatie in het algemeen. Als de emulator te langzaam werkt
+zullen er &quot;zwarte gaten&quot; in het geluid vallen of zal de
+produktie van geluid zelfs stoppen. Op redelijk snelle machines
+echter, zal deze methode een goede geluidskwaliteit kunnen
+bieden. </p>
+
+<p>&quot;Normal, synchronized with real-time&quot; zal
+geluidsemulatie afscheiden van de rest van de emulatie, om er
+zeker van te zijn dat er altijd tijd genoeg is om een continu
+geluidsweergave te kunnen bieden. Het nadeel van deze methode is
+dat u waarschijnlijk verschillen in tempo zult waarnemen. Ja, u
+kunt niet alles perfect krijgen op een langzame machine. Een
+ander nadeel is dat de methode niet goed werkt met een processor
+met een Pentium II architectuur. Maar dat zou geen probleem mogen
+zijn omdat de&nbsp; &quot;Normal, synchronized with
+emulation&quot; methode meestal goed werkt met deze processoren. </p>
+
+<p><b>OPMERKING:</b> <br>
+De &quot;Normal, synchronized with real-time&quot; optie&nbsp; is
+niet beschikbaar in V0.3.3 zodat deze informatie alleen
+betrekking heeft op eerdere versies. </p>
+
+<h4><a name="5.8.2"></a>5.8.2 Output-rate</h4>
+
+<p>Dit selecteert de hoogte van geluidskwaliteit die weergegeven
+wordt. De volgende waarden zijn toegestaan: 15650 hz, 22050 hz,
+31300 hz of 44100 hz. </p>
+
+<h4><a name="5.8.3"></a>5.8.3 Output-channels</h4>
+
+<p>Dit selecteert het aantal geluidskanalen die de emulator
+weergeeft. Toegestane waarden zijn &quot;Mono&quot; of
+&quot;Stereo&quot;. </p>
+
+<h4><a name="5.8.4"></a>5.8.4 Output-bits</h4>
+
+<p>Dit selecteert het aantal bits die gebruikt wordt om het
+geluid weer te geven. Toegestane waarden zijn &quot;8 bits&quot;
+of &quot;16 bits&quot;. </p>
+
+<p><b>OPMERKING:</b> <br>
+Niet iedere geluidskaart ondersteund alle mogelijke instellingen.
+Als u een instelling kiest die uw geluidskaart niet ondersteund
+dan zal er automatisch naar de standaard instellingen (bij het
+opstarten van de emulator) gesprongen worden. Iedere instelling
+kan wel gebruikt worden als u kiest voor de &quot;Emulated, no
+playback&quot;. Zodoende kunt u hoge kwaliteits-geluid als een
+WAV-file wegschrijven. </p>
+
+<p><b>OPMERKING OVER GELUIDSPRESTATIE:</b> <br>
+44100 hz is onnodig en een grote processortijd slokop. Een goede
+compromis tussen snelheid en kwaliteit is 31300 hz.&nbsp; 8/16
+bits mono/stereo maken maar een klein verschil in snelheid. <br>
+&nbsp; </p>
+
+<h4><a name="5.8.5"></a>5.8.5 Low Pass Filter</h4>
+
+<p>Een 7khz low-pass filter kan op verschillende manieren
+ingesteld worden. De filter is een geluidsverandering die
+resulteert in een geluid met meer &quot;bassen&quot; en
+elimineert ook hoge-frequentsgeluiden. <br>
+&nbsp; </p>
+
+<h4><a name="5.8.6"></a>5.8.6 Sound buffer depth</h4>
+
+<p>De &quot;sound buffer depth&quot; beïnvloedt de vertraging
+van geluidsweergave en heeft tevens een aantal neveneffecten.Op
+langzamere machines zult u voor een grotere buffer kiezen om
+onregelmatigheden in de geluidsweergave te vermijden. </p>
+
+<p>Het belangrijke neveneffect van de geluidsbuffergrootte is dat
+van de synchronisatie. Een snelle machine (bijv. Pentium II) zal
+het beste af zijn met een kleine buffer om de snelheid van&nbsp;
+geluids- en grafische emulatie gelijk te laten lopen.. <br>
+&nbsp; </p>
+
+<h4><a name="5.8.7"></a>5.8.7 Send sound output to WAV-file</h4>
+
+<p>Als u deze optie tezamen met een geluids-emulatiemethode
+inschakeld zal het geluid omgeleid worden naar een WAV-file
+daarbij gebruikmakend van de geselecteerde geluidskwaliteit. <br>
+&nbsp; </p>
+
+<h4><a name="5.9"></a>5.9 <u>CPU and Blitter configuration</u>
+menu</h4>
+
+<p><img src="images/CPUMenu.jpeg"
+width="469" height="133"> </p>
+
+<p>Dit submenu controleert de verschillende aspecten van
+processor en Blitter emulatie. </p>
+
+<h4><a name="5.9.1"></a>5.9.1 Virtual CPU instruction set</h4>
+
+<p>Deze optie selecteert de instruktieset van de geëmuleerde
+processor. Beschikbare instellingen zijn &quot;68000&quot;,
+&quot;68010&quot;, &quot;68020&quot; en &quot;68030&quot;.&nbsp;
+De 68020 en 68030 correspondeert met EC type processoren zonder
+FPU (rekenkundige co-processor) en MMU. </p>
+
+<h4><a name="5.9.2"></a>5.9.2 Virtual CPU speed</h4>
+
+<p>Controleert de virtuele snelheid van de geëmuleerde
+processor.&nbsp; Verwar dit niet met de wekelijke prestaties. </p>
+
+<p>De verschillende instellingen zijn &quot;3.5 MHZ&quot;,
+&quot;7 MHZ&quot;, &quot;14 MHZ&quot; en &quot;28 MHZ&quot;. Deze
+snelheden zijn gerelateerd aan de snelheid van een normale Amiga
+500 met een 7MHz 68000 processor en heeft niet noodzakelijk met
+de snelheid van een echte processor te maken. (Dat zijn nou één
+van die dingen die je kunt doen met een emulator.) <br>
+&nbsp; </p>
+
+<h4><a name="5.9.3"></a>5.9.3 Virtual Blitter Speed</h4>
+
+<p>Deze optie controleert hoe de Amiga programma's de snelheid
+van de blitter (grafische processor)&nbsp; zien. U heeft de keuze
+uit twee instellingen: &quot;Normal OCS Speed&quot; and
+&quot;Finish Instantly&quot;. </p>
+
+<p>&quot;Normal OCS Speed&quot; zal er voor zorgen dat de blitter
+op dezelfde wijze en snelheid als een echte OCS-blitter werkt. De
+meeste programma's varen wel met deze instelling. </p>
+
+<p>&quot;Finish instantly&quot; zorgt ervoor dat de blitter
+kennelijk geen pauzes in last om zijn bewerkingen te beëindigen.
+In sommige gevallen kan het ervoor zorgen dat de emulator
+overstelpt wordt met blitterbewerkingen en de real-time
+prestaties in gevaar gebracht worden. Het kan er echter ook voor
+zorgen dat sommige programma's die last ondervinden van
+synchronisatieproblemen, zoals het niet goed weergeven van
+bewegende beelden of vectortekeningen die maar voor de helft op
+het Amigascherm verschijnen, beter werken. </p>
+
+<h4><a name="5.9.4"></a>5.9.4 Long Blits</h4>
+
+<p>&quot;Long blits&quot; is een ECS feature. Sommige programma's
+zoals &quot;Doom&quot; hebben dit nodig. <br>
+&nbsp; </p>
+
+<h3><a name="5.10"></a>5.10 Hardfile configuration</h3>
+
+<p><img
+src="images/HardfileMenu.jpeg"
+width="462" height="261"> </p>
+
+<p>Met dit menu kunt u de hardfiles en de werking daarvan
+instellen. </p>
+
+<p>Een hardfile is een manier om de geëmuleerde Amiga een groot
+opslagmedium te geven.. Een hardfile is een programma dat
+gebruikt wordt als een &quot;harddisk&quot;.&nbsp; De hardfile
+kan van iedere grootte zijn. </p>
+
+<p>Hardfiles kunnen alleen gebruikt worden als u Kickstart is
+V2.0 of hoger gebruikt. </p>
+
+<p>Onthoud dat u altijd een nieuwe hardfile moet formatteren. </p>
+
+<p>U kunt van iedere hardfile opstarten. Ze hebben echter een
+lager opstart-prioriteit dan DF0:, maar hoger dan DF1:.. </p>
+
+<p>U kunt ook ongecomprimeerde ADF-files in plaats van eigenlijke
+hardfiles gebruiken. </p>
+
+<p>De stations worden benoemd als FELLOW0 met opgaande nummers. </p>
+
+<p><b>OPMERKING:</b> Het veranderen van de hardfile configuratie
+zal automatisch een harde reset van de Amiga geven. <br>
+&nbsp; </p>
+
+<h4><a name="5.10.1"></a>5.10.1 fhfile.device state</h4>
+
+<p>De hardfile wordt vergezeld met een software device-driver dat
+in- of buiten werking gesteld kan worden. <br>
+&nbsp; </p>
+
+<h4><a name="5.10.2"></a>5.10.2 FELLOWX hardfiles</h4>
+
+<p>Afhankelijk van de hoeveelheid hardfiles u aangemaakt heeft
+kunt u een aantal hardfiles toevoegen aan uw configuratie. Als u
+voor deze optie kiest dan krijgt u een filesystem-browser te zien
+zodat u de hardfile kunt uitkiezen die u als harde schijf kunt
+gebruiken.&nbsp; <br>
+&nbsp; </p>
+
+<h3><a name="5.11"></a>5.11 <u>Various Configuration</u> menu</h3>
+
+<p><img src="images/VariousMenu.jpeg"
+width="717" height="191"> </p>
+
+<p>Dit menu is een collectie van opties in geen enkel ander menu
+past. <br>
+&nbsp; </p>
+
+<h4><a name="5.11.1"></a>5.11.1 Joystick Port 1 &amp; 2</h4>
+
+<p>De uitrusting die de Amiga joystick poorten kontroleert. </p>
+
+<p><u>Mogelijke instellingen zijn:</u> </p>
+
+<p>Disabled, Mouse, Analog Joystick, Keyboard Joystick
+Replacement 1 &amp; 2 <br>
+&nbsp; <br>
+<u>De vervangingstoetsen voor de joystick zijn:</u> </p>
+
+<p>Pijltjestoetsen met rechter CTRL-toets als vuurknop 1 and
+rechter ALT-toets als vuurknop 2. </p>
+
+<p>of </p>
+
+<p>'D' is links, 'F' is naar beneden, 'G' is rechts, 'R' is naar
+boven, Linker CTRL-toets is vuurknop 1, linker ALT-toets is
+vuurknop 2. <br>
+&nbsp; </p>
+
+<p>De werking met een analoge joystick is wat vreemd.&nbsp; Om de
+joystick te kalibreren moet u de joystick gedurende de emulatie
+naar alle hoeken (in het rond) bewegen. </p>
+
+<p>Als de ingebouwde &quot;Analog-joystick&quot;-driver niet aan
+uw verwachtingen voldoet, kunt u met de Joyemu utility een veel
+beter analoge joystick emulatie verkrijgen. <br>
+(U moet wel zelf op zoek naar het desbetreffende hulpprogramma.) <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h4><a name="5.11.2"></a>5.11.2 Power/Floppy Leds</h4>
+
+<p>Conroleert op welke manier de verschillende leds (lampjes)
+zoals de power led en floppy-leds zichtbaar gemaakt worden. </p>
+
+<p>U kunt ook zelf een zogenaamd &quot;led board&quot; maken
+(toegevoegd door Roman Dolejsi).&nbsp; Zie hiervoor
+&quot;ledboard.txt&quot; in de docs directory. </p>
+
+<p>De instelling voor de led-volgorde van het toetsenbord is
+ervoor om de emulator te vertellen op welke manier de ledjes op
+uw toetsenbord gebruikt worden. </p>
+
+<h4><a name="5.11.3"></a>5.11.3 Performance displayed on-screen</h4>
+
+<p>Ingeschakeld laat deze optie laat het aantal frames per
+seconde aan de rechter bovenkant van het scherm zien.. </p>
+
+<p><i>Het aantal is alleen maar geschat.</i> </p>
+
+<h4><a name="5.11.4"></a>5.11.4 Menu-position saving on exit</h4>
+
+<p>Dit is een experimentele optie.&nbsp; Ingechakeld worden alle
+bewegingen door de verschillende menu's weggeschreven als u de
+emulator beëindigd. Als u een volgende keer de emulator opstart
+dan worden deze weer uitgevoerd.</p>
+
+<h4><a name="5.11.5"></a>5.11.5 Automatic run after commands</h4>
+
+<p>Autorun kan na sommige commando's ingeschakeld worden. <br>
+&nbsp; </p>
+
+<h2><a name="6."></a>6. Debugger</h2>
+
+<p><img src="images/DebugMenu.jpeg"
+width="148" height="248" nosave> </p>
+
+<p>Ten eerste zal een normale gebruiker het nut van een debugger
+niet inzien. Als u daarom niets snapt van de dingen die hieronder
+beschreven worden, kunt u dit gedeelte gerust overslaan. </p>
+
+<p>De debugger is een simpele omgeving waarin u bijv. de staat
+van de geëmuleerde Amiga kunt bekijken. Het bevat een simpele
+disassembler dat code rondom de programma counter(teller) en de
+status van de geëmuleerde Motorola 680X0 processor laat zien. U
+kunt de processor telkens 1 instruktie laten uitvoeren of bij een
+breakpoint laten stoppen. U kunt het geheugen doorlopen en u kunt
+sommige registers, die de Amiga custom chips bevatten,
+inspecteren. Het loggen van uitzonderingen en irq's als ook de
+processor-historie is mogelijk als deze in de emulator-binary (*)
+is gecompileerd. Normaal gesproken moet u de emulator zelf
+compileren om de log-opties in de debugger te voeren. <br>
+&nbsp; </p>
+
+<h4><a name="6.1"></a>6.1 Step optie</h4>
+
+<p>Voert de volgende instructie uit (ga 1 instructie verder) <br>
+&nbsp; </p>
+
+<h4><a name="6.2"></a>6.2 Step over optie</h4>
+
+<p>Zet breakpoint bij de volgende instructie. De emulator zal nu
+totdat het de breakpoint bereikt heeft werken. (Handing voor als
+u over loops en jsr/bsr instructies heen wilt springen) </p>
+
+<h4><a name="6.3"></a>6.3 Breakpoint optie</h4>
+
+<p>Deze optie opent een ander submenu waarin u een
+breakpoint-voorwaarde kunt specificeren. U kunt een
+breakpoint-adres opgeven, de emulator laten werken totdat een
+bepaalde regel bereikt is of in het geval van (*) kunt u de
+emulator laten werken totdat het een gelogde uitzondering
+of&nbsp; irq tegenkomt. </p>
+
+<h4><a name="6.4"></a>6.4 Memory optie</h4>
+
+<p>Hiermee kunt u door de inhoud van het geheugen 'lopen' door
+middel van de toetsen PGUP/PGDOWN of de pijltjestoetsen&nbsp;
+UP/DOWN. U kunt kiezen voor Hex of ASCII door middel van (h/a).</p>
+
+<h4><a name="5.5"></a>6.5 CIA optie</h4>
+
+<p>Deze selectie laat de status van de registers van de
+geëmuleerde CIA chips zien. <br>
+&nbsp; </p>
+
+<h4><a name="6.6"></a>6.6 IO optie</h4>
+
+<p>Deze optie opent een submenu zodat u verschillende registers
+en de status van de custom chips kunt inspecteren. </p>
+
+<h4><a name="6.7"></a>6.7 Trace On optie (*)</h4>
+
+<p>Maakt de processorinstructie-historie actief. De laatste half
+miljoen instructies worden onthouden.</p>
+
+<h4><a name="5.5"></a>6.8 Trace Off optie (*)</h4>
+
+<p>Maakt de processorinstructie-historie inactief.. <br>
+&nbsp; </p>
+
+<h4><a name="6.9"></a>6.9 Show Trace optie (*)</h4>
+
+<p>Deze selectie opent een processorinstructie-historie scherm. U
+kunt door de instructies heengaan door middel van&nbsp; UP/DOWN,
+PGUP/PGDOWN, HOME/END en INSERT/DELETE (+-1000 instructies). <br>
+&nbsp; </p>
+
+<h4><a name="6.10"></a>6.10 Trace To File optie (*)</h4>
+
+<p>Hiermee kunt u het huidige processorinstructie-historielog
+naar een file schrijven dat &quot;mytrace.cpu&quot; heet. <br>
+&nbsp; </p>
+
+<h4><a name="6.11"></a>6.11 Evlog Config optie (*)</h4>
+
+<p>Deze selectie opent een scherm waar het loggen van bepaalde
+uitzonderingen en IRQ's aan- of uitgezet kan worden. <br>
+&nbsp; </p>
+
+<h4><a name="6.12"></a>6.12 Show Evlog optie (*)</h4>
+
+<p>De selectie opent een gebeurtenissenscherm waarin allerlei
+verzameld gelogde informatie bekeken kan worden. <br>
+&nbsp; </p>
+
+<h2><a name="7."></a>7. Command Line Interface</h2>
+
+<p>Na de DOS-prompt kunt u behalve de naam van de emulator
+(FELLOW.EXE) ook nog een bepaalde optie meegeven waarmee het
+programma wordt opgestart.</p>
+
+<p>&nbsp;</p>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+    <caption align="top"><font size="4"><b>Opsomming van Command
+    line opties:</b></font></caption>
+<TBODY>    <tr>
+        <td><font color="#FFFF00"><b>Verschillende command line
+        opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-h</font></td>
+        <td><font color="#FFFFFF">Laat de verschillende
+        beschikbare opties zien</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-log</font></td>
+        <td><font color="#FFFFFF">Maakt een&nbsp; log-file
+        &quot;fellow.log&quot; als de emulator opgestart wordt.
+        Gebruik deze optie om te zien wat de emulator over uw
+        hardware te weten komt. (standaard: geen log)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-nogui</font></td>
+        <td><font color="#FFFFFF">Sla de GUI-sessie over
+        (standaard: start met GUI-sessie op)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-f12exit</font></td>
+        <td><font color="#FFFFFF">F12 beëindigd de emulator
+        definitief (standaard: F12 gaat terug naar GUI)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-config &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik config-file
+        &lt;file&gt; (standaard: gebruik fellow.cfg)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-noconfig</font></td>
+        <td><font color="#FFFFFF">Gebruik geen config file
+        (standaard: gebruik config file)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-ns</font></td>
+        <td><font color="#FFFFFF">Sla de instellingen bij het
+        beëindigen van de emulator niet op (standaard:&nbsp;
+        bewaar instellingen)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-nommx</font></td>
+        <td><font color="#FFFFFF">Gebruik geen MMX instructies,
+        zelfs als MMX aanwezig is. (standaard: gebruik MMX als
+        deze gedetecteerd wordt)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Floppy disk command line
+        opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-0 &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik diskimage &lt;file&gt;
+        in DF0 (standaard: geen diskimage)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-1 &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik diskimage &lt;file&gt;
+        in DF1 (standaard: geen diskimage)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-2 &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik diskimage &lt;file&gt;
+        in DF2 (standaardt: geen diskimage)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-3 &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik diskimage &lt;file&gt;
+        in DF3 (standaard: geen diskimage)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-0e +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        DF0 (standaard: geactiveerd)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-1e +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        DF1 (standaard: geactiveerd)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-2e +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        DF2 (standaard: geactiveerd)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-3e +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        DF3 (standaard: geactiveerd)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-ds +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        snelle disk toegang (standaard: langzame toegang)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-dmX &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">File-requester diskgeheugen X
+        (0-9) inhoud</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-dpath &lt;dir/file&gt;</font></td>
+        <td><font color="#FFFFFF">Specificeer actief element in
+        file-requester</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Hardfile command line
+        opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-hfX &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;file&gt; als
+        hardfile X, waar X een nummer van 0 tot 9 is. (standaard:
+        geen hardfile)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-he +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) of deactiveer (-)
+        hardfile device. (standaard: geactiveerd als Kickstart
+        V2.0++ wordt gebruikt)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Geheugen command line
+        opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-c &lt;size&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;grootte&gt; KB
+        chip-geheugen, welke grootte 256, 512, 768, 1024, 1280,
+        1536, 1792 of 2048 kan zijn. (standaard: 2048 KB)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-fm &lt;size&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;grootte&gt;
+        MB&nbsp; snel geheugen, welke grootte 0, 1, 2, 4, of 8
+        kan zijn. (standaard: 0MB)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-b &lt;size&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;grootte&gt;
+        KB&nbsp; bogo-geheugen, welke grootte 0, 256, 512, 768,
+        1024, 1280, 1536 of 1792 kan zijn. (standaard: 0 KB)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-r &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;file&gt; als
+        Kickstart image of kickdisk (standaard: kick.rom)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-r2 &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;file&gt; als tweede
+        Kickstart image of kickdisk. (standaard: geen image)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-K &lt;file&gt;</font></td>
+        <td><font color="#FFFFFF">Gebruik &lt;file&gt; als
+        keyfile voor gecodeerde Kickstart images. (stamdaard:
+        rom.key)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Joystick command line
+        opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-j1 n|a|m|k1|k2&nbsp;</font></td>
+        <td><font color="#FFFFFF">Specificeer randapparatuur game
+        poort 1:&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">n - geen randapparatuur&nbsp;</font>&nbsp;
+        <br>
+        <font color="#FFFFFF">a - Analoge joystick&nbsp;</font>&nbsp;
+        <br>
+        <font color="#FFFFFF">m - Muis&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">k1 - Joystick toetsenbord
+        vervanging 1&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">k2 - Joystick toetsenbord
+        vervanging 2&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">(standaard: Muis)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-j2 n|a|m|k1|k2&nbsp;</font></td>
+        <td><font color="#FFFFFF">Specificeer randapparatuur game
+        poort 2:&nbsp;&nbsp; <br>
+        n - geen randapparatuur&nbsp;&nbsp; <br>
+        a - Analoge joystick&nbsp;&nbsp; <br>
+        m - Muis&nbsp;&nbsp; <br>
+        k1 - Joystick toetsenbord vervanging 1&nbsp;&nbsp; <br>
+        k2 - Joystick toetsenbord vervanging 2&nbsp;&nbsp; <br>
+        (standaard: geen randapparatuur)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Geluid command line opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-s d|n|c|e</font></td>
+        <td><font color="#FFFFFF">Specificeer methode van
+        geluidsemulatie:&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">d - geen emulatie</font>&nbsp; <br>
+        <font color="#FFFFFF">n - Normaal, samenlopend met
+        emulatie&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">c - Normaal, samenlopend met echte
+        tijd&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">e - Geëmuleerd, geen geluid&nbsp;</font>&nbsp;
+        <br>
+        <font color="#FFFFFF">(standaard: geen emulatie)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-sf &lt;rate&gt;</font></td>
+        <td><font color="#FFFFFF">Geluidsweergave in Hz, welke
+        15650, 22050, 31300 of 44100 kan zijn&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">(standaard: 15650)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-ss on|off</font></td>
+        <td><font color="#FFFFFF">Stereo weergave, aan of uit
+        (standaard: uit)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-sb &lt;bits&gt;</font></td>
+        <td><font color="#FFFFFF">Geluidsbits, waar het aantal
+        bits 8 or 16 kunnen zijn (standaard: 8)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-sd &lt;frames&gt;</font></td>
+        <td><font color="#FFFFFF">Grootte van geluidsbuffer in
+        eenheden van 50Hz die variëren van 1 to 9. (standaard:
+        5)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-sw +|-</font></td>
+        <td><font color="#FFFFFF">Activeer (+) or deactiveer( -)
+        opslaan geluid naar WAV. (standaard: niet actief)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-sl 0|1|2</font></td>
+        <td><font color="#FFFFFF">Gebruik van de low-pass
+        filter:&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">0 - Origineel&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">1 - Altijd&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">2 - Nooit&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">(standaard: Origineel)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-s1</font></td>
+        <td><font color="#FFFFFF">Maak gebruik van Soundblaster
+        V1 routines</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFF00"><b>Scherm command line opties:</b></font></td>
+        <td>&nbsp;</td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-res 800600w | 640480w |
+        640400w | 640350w | 400300w | 400300b | 320480w | 320480b
+        | 320400w | 320400b | 320240w | 320240b | 320200w |
+        320200b</font></td>
+        <td><font color="#FFFFFF">Specificeer resolutie die
+        gebruikt wordt(standaard:800600w, daarna 320200b)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-fl none|50|vga</font></td>
+        <td><font color="#FFFFFF">Framerate timing verhouding</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-f &lt;number&gt;</font></td>
+        <td><font color="#FFFFFF">Frame-skip ratio 1/nummer
+        (standaard: 1/1)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-i on|off</font></td>
+        <td><font color="#FFFFFF">De-interlace in 800600
+        (standaard: uit)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-gc on|off</font></td>
+        <td><font color="#FFFFFF">Gebruik cycle-exact graphics in
+        800600 (standaard: uit)</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">-y n|h|b</font></td>
+        <td><font color="#FFFFFF">Specificeer verticale
+        correctie:&nbsp;</font>&nbsp; <br>
+        <font color="#FFFFFF">n - geen correctie&nbsp;</font>&nbsp;
+        <br>
+        <font color="#FFFFFF">h - Hardware VGA correctie&nbsp;</font>&nbsp;
+        <br>
+        <font color="#FFFFFF">b - Toevoegen blanco regel</font></td>
+    </tr>
+</TBODY></table>
+
+<p>&nbsp; </p>
+
+<h2><a name="8."></a>8. We gaan beginnen - Een basisgids</h2>
+
+<p>Wanneer u van een Amiga diskette een .adf file gemaakt hebt en
+deze getransformeerd naar de PC, kunt u Fellow opstarten en deze
+disk-image aan DF0: toewijzen. </p>
+
+<p>Als dit een Workbench diskette is, moet u er zeker van zijn
+dat u uw Kickstart ROM naar een file heeft weggeschreven. Deze
+moet in de Fellow directory staan met de naam
+&quot;kick.rom&quot;. U kunt ook voor een andere lokatie kiezen
+die u dan in het config-menu opgeeft. </p>
+
+<p>Als de Kickstart niet aanwezig is zal Fellow de normale Amiga
+opstartmethode omzeilen en proberen te diskette toch op te
+starten. Dit zal lukken met enkele demo's en spellen die de
+Kickstart-routines negeren en zelf alles in de hand hebben. Het
+kan zijn dat u &quot;RESET&quot; moet selecteren als u een
+disk-image toevoegt. </p>
+
+<p>Selecteer de hoeveelheid RAM die u wilt gebruiken, configureer
+de emulatie van geluid en selecteer &quot;RUN&quot; vanuit het
+hoofdmenu. </p>
+
+<p>Als alles goed geïnstalleerd is zal Fellow vanaf uw
+diskette-image opstarten. <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<h2><a name="9."></a>9. Sneltoetsen</h2>
+
+<p>Sommige sneltoetsen zijn beschikbaar in de user-interface en
+andere ook gedurende de emulatie. Deze worden beschreven in de
+tabellen hieronder. <br>
+&nbsp; </p>
+
+<h3><a name="9.1"></a>9.1 Sneltoetsen in de user-interface</h3>
+
+<p>&nbsp; </p>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+<TBODY>    <tr>
+        <td><font color="#FFFF00">Sneltoets:</font></td>
+        <td><font color="#FFFF00">Omschrijving:</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-X</font></td>
+        <td><font color="#FFFFFF">Beëindigen</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">CTRL-q</font></td>
+        <td><font color="#FFFFFF">Beëindigen</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F1</font></td>
+        <td><font color="#FFFFFF">Configuratie menu</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F3</font></td>
+        <td><font color="#FFFFFF">Utilities menu</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F5</font></td>
+        <td><font color="#FFFFFF">Harde reset</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F7</font></td>
+        <td><font color="#FFFFFF">Debugger menu</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F9</font></td>
+        <td><font color="#FFFFFF">Start</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F11</font></td>
+        <td><font color="#FFFFFF">Informatie over de emulator</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-d</font></td>
+        <td><font color="#FFFFFF">Disk-Image configuratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-f</font></td>
+        <td><font color="#FFFFFF">Filesystem configuratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-m</font></td>
+        <td><font color="#FFFFFF">Geheugenconfiguratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-o</font></td>
+        <td><font color="#FFFFFF">Geluidsconfiguratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-c</font></td>
+        <td><font color="#FFFFFF">Processor en Blitter
+        configuratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-h</font></td>
+        <td><font color="#FFFFFF">Hardfile configuratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-v</font></td>
+        <td><font color="#FFFFFF">Overig configuratie opties</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-a</font></td>
+        <td><font color="#FFFFFF">Voeg VFS Filesystem toe</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">ALT-r</font></td>
+        <td><font color="#FFFFFF">Verwijder Filesystem</font></td>
+    </tr>
+</TBODY></table>
+
+<p>&nbsp; <br>
+&nbsp; </p>
+
+<h3><a name="9.2"></a>9.2 Sneltoetsen gedurende emulatie</h3>
+
+<table border="0" width="100%" bgcolor="#000000" cols="2">
+<TBODY>    <tr>
+        <td><font color="#FFFF00">Sneltoets:</font></td>
+        <td><font color="#FFFF00">Omschrijving:</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">F12</font></td>
+        <td><font color="#FFFFFF">Keer terug naar het menu,
+        waarbij de emulatie gepauzeerd wordt</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-PGUP</font></td>
+        <td><font color="#FFFFFF">Ga naar de volgende beschikbare
+        resolutie</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-PGDOWN</font></td>
+        <td><font color="#FFFFFF">Ga naar de vorige beschikbare
+        resolutie</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-PGUP</font></td>
+        <td><font color="#FFFFFF">Gebruik de volgende
+        correctiemethode</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-PGDOWN</font></td>
+        <td><font color="#FFFFFF">Gebruik de vorige
+        correctiemethode</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-KEYPAD PIJL OMHOOG</font></td>
+        <td><font color="#FFFFFF">Ga in het virtuele Amiga scherm
+        omhoog</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-KEYPAD PIJL LINKS</font></td>
+        <td><font color="#FFFFFF">Ga in het virtuele Amiga scherm
+        naar links</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-KEYPAD PIJL RECHTS</font></td>
+        <td><font color="#FFFFFF">Ga in het virtuele Amiga scherm
+        naar rechts</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-KEYPAD PIJL NAAR BENEDEN</font></td>
+        <td><font color="#FFFFFF">Ga in het virtuele Amiga scherm
+        naar beneden</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-F11</font></td>
+        <td><font color="#FFFFFF">Bevries scherm en schrijf dit
+        weg als een BMP image file</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-F1</font></td>
+        <td><font color="#FFFFFF">Voer disk-image in DF0</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-F2</font></td>
+        <td><font color="#FFFFFF">Voer disk-image in DF1</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-F3</font></td>
+        <td><font color="#FFFFFF">Voer disk-image in DF2</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">HOME-F4</font></td>
+        <td><font color="#FFFFFF">Voer disk-image in DF3</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-F1</font></td>
+        <td><font color="#FFFFFF">Verwijder disk-image in DF0</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-F2</font></td>
+        <td><font color="#FFFFFF">Verwijder disk-image in DF1</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-F3</font></td>
+        <td><font color="#FFFFFF">Verwijder disk-image in DF2</font></td>
+    </tr>
+    <tr>
+        <td><font color="#FFFFFF">END-F4</font></td>
+        <td><font color="#FFFFFF">Verwijder disk-image in DF3</font></td>
+    </tr>
+</TBODY></table>
+
+<p>&nbsp; <br>
+&nbsp; </p>
+
+<h2><a name="10."></a>10. Contact informatie</h2>
+
+<p>U kunt Petter Schau het gemakkelijkst bereiken via email: <a
+href="mailto:pschau@online.no">pschau@online.no</a> </p>
+
+<p>Houd wel in gedachte dat ik (Petter Schau) niet meer in de
+positie ben om alle post te beantwoorden. Vragen zoals 'wanneer
+komt de volgende versie uit' of 'wat zit er in de volgende
+uitgave van de emulator' zullen normaal gesproken genegeerd
+worden, evenzo als vragen voor &quot;user support&quot;
+betreffende gedocumenteerde opties en taken. Dit heeft ook
+betrekking op bepaalde zaken die een normaal mens moet opzoeken
+zoals 'hoe werkt een Amiga' of technische gegevens of het
+transfereren van data van de Amiga naar de PC. </p>
+
+<p>Ouderwets postadres: </p>
+
+<p>Petter Schau <br>
+Ravnkollbakken 83 <br>
+N-0971 Oslo <br>
+Norway </p>
+
+<p>E-Mail addressen van de andere auteurs en medewerkers kunt u
+vinden in de credits file. <br>
+&nbsp; <br>
+&nbsp; <br>
+&nbsp; <br>
+&nbsp; </p>
+
+<hr>
+
+<p><font size="2">Dit document is gemaakt door Brett Eden en is
+het laatst gereviseerd door Petter Schau&nbsp; op 18 september
+1998.&nbsp; Iedere vraag, opmerking of suggestie moet
+doorgestuurd worden naar Brett Eden. Email adres:&nbsp; </font><a
+href="mailto:revere@sub.net.au"><font size="2">revere@sub.net.au</font></a>
+</p>
+
+<hr>
+
+<p><br>
+&nbsp; </p>
+</body>
+</html>
