@@ -52,13 +52,6 @@ ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
 			  1, 0, 0, 0};
 
 /*============================================================================*/
-/* Callback table for minterm-calculation functions                           */
-/*============================================================================*/
-
-blit_min_func blit_min_functable[256];
-//blit_min_func blit_asm_minterm;
-
-/*============================================================================*/
 /* Blitter fill-mode lookup tables                                            */
 /*============================================================================*/
 
@@ -71,8 +64,8 @@ UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data]
 ULO blitend;
 ULO blit_height, blit_width;
 
-// flag showing that a sprite has been activated (a write to BLTSIZE)
-// but at the time of activation the sprite DMA was turned of
+// flag showing that a blit has been activated (a write to BLTSIZE)
+// but at the time of activation the blit DMA was turned of
 ULO blitterdmawaiting; 
 
 BOOLE blitter_operation_log, blitter_operation_log_first;
@@ -172,9 +165,12 @@ void blitterOperationLog(void) {
 #define blitterMinterm33(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat);                              /* b */
 #define blitterMinterm3a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | (~a_dat & c_dat)); /* Ab + aC */
 #define blitterMinterm3c(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ b_dat);                       /* A xor B */
+#define blitterMinterm40(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & ~c_dat);              /* ABc */
 #define blitterMinterm4a(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | (a_dat & b_dat & ~c_dat)); /* aC + ABc */
+#define blitterMinterm5a(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ c_dat);						/* A xor C */
 #define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat))); /* bC + B(A xor C) */
-#define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);			    /* AC */
+#define blitterMinterm80(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & c_dat);				/* ABC */
+#define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);						/* AC */
 #define blitterMinterma8(a_dat, b_dat, c_dat, d_dat) d_dat = (((a_dat & ~b_dat) | b_dat) & c_dat);  /* (Ab + B)C */
 #define blitterMintermaa(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat);                               /* C */
 #define blitterMintermac(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~a_dat & b_dat));  /* AC + aB */
@@ -259,8 +255,11 @@ void blitterOperationLog(void) {
     case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break; \
+    case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break; \
+    case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break; \
     case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break; \
+    case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break; \
     case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break; \
@@ -611,17 +610,6 @@ static void blitterFillTableInit(void) {
 }
 
 /*============================================================================*/
-/* Minterm calculation callback table initialization                          */
-/*============================================================================*/
-
-static void blitterMinTableInit(void) {
-  ULO i;
-
- 
-}  
-
-
-/*============================================================================*/
 /* Set blitter IO stubs in IO read/write table                                */
 /*============================================================================*/
 
@@ -728,7 +716,7 @@ void verifyMinterms()
 {
   UBY minterm;
   ULO a_dat, b_dat, c_dat;
-  for (minterm = 0xa0; minterm <= 0xa0; minterm++)
+  for (minterm = 0x80; minterm <= 0x80; minterm++)
   {
     BOOLE minterm_had_error = FALSE;
     char s[40];
@@ -752,7 +740,6 @@ void blitterStartup(void) {
   for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
 #endif
   
-  blitterMinTableInit();
   blitterFillTableInit();
   blitterSetFast(FALSE);
   blitterSetECS(FALSE);
@@ -1089,7 +1076,7 @@ void wbltsize_C(ULO data, ULO address)
 void wbltcon0l_C(ULO data, ULO address)
 {
   blitForceFinish();
-  bltcon = (bltcon & 0x00FFFFFF) | ((data << 16) & 0xFF000000);
+  bltcon = (bltcon & 0xFF00FFFF) | ((data << 16) & 0x00FF0000);
   blitMinitermsSet(data);
 }
 
@@ -1144,6 +1131,9 @@ void wbltsizh_C(ULO data, ULO address)
   if ((dmacon & 0x00000040) != 0) 
   {
     blitterCopy();
+  }
+  else
+  {
     blitterdmawaiting = 1;
   }
 }
@@ -1308,7 +1298,7 @@ void blitterLineMode(void)
   ULO bltbdat_local;
   ULO bltcdat_local = bltcdat;
   ULO bltddat_local;
-  UWO mask = (bltbdat_original >> blit_b_shift_asc) | (bltbdat_original << (16 - blit_b_shift_asc));
+  UWO mask = (UWO) ((bltbdat_original >> blit_b_shift_asc) | (bltbdat_original << (16 - blit_b_shift_asc)));
 
   BOOL decision_is_signed = (((bltcon >> 6) & 1) == 1);
   WOR decision_variable = (WOR) bltapt;
