@@ -7,36 +7,29 @@
   * Copyright 1999 Bernd Schmidt
   */
 
-/* FELLOW IN (START)
+/* FELLOW IN (START)-----------------
 
-  This file is somewhat adapted to suit Fellow's way of controlling its modules.
-  It originates from the UAE 0.8.15 source code distribution.
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
-  Torsten Enderling (carfesh@gmx.net) 2000
-  
-  FELLOW IN (END) */
+  Torsten Enderling (carfesh@gmx.net) 2004
 
-/* FELLOW IN (START)---------------- */
+   FELLOW IN (END)------------------- */
+
+/* FELLOW IN (START)----------------- */
 #include "uae2fell.h"
-/*#include "penguin.h"
-#include "filesys.h"
-#include "autoconf.h"
-#include "fsusage.h"*/
-/* FELLOW IN (END)---------------- */
+/* FELLOW IN (END)------------------- */
 
 #ifndef FSDB_FILE
 #define FSDB_FILE "_UAEFSDB.___"
 #endif
 
 #ifndef FSDB_DIR_SEPARATOR
-/* FELLOW CHANGE: windows dir seperator
-#define FSDB_DIR_SEPARATOR '/'
-*/
-#define FSDB_DIR_SEPARATOR '\\'
+/* FELLOW CHANGE: #define FSDB_DIR_SEPARATOR '/' */
+#define FSDB_DIR_SEPARATOR '\\' /* windows dir separator */
 #endif
 
 /* AmigaOS errors */
-/* FELLOW OUT (START)-------------------
 #define ERROR_NO_FREE_STORE		103
 #define ERROR_OBJECT_IN_USE		202
 #define ERROR_OBJECT_EXISTS		203
@@ -63,7 +56,6 @@
 #define A_FIBF_WRITE   (1<<2)
 #define A_FIBF_EXECUTE (1<<1)
 #define A_FIBF_DELETE  (1<<0)
-    FELLOW OUT (END)------------------ */
 
 /* AmigaOS "keys" */
 typedef struct a_inode_struct {
@@ -79,11 +71,17 @@ typedef struct a_inode_struct {
     /* AmigaOS file comment, or NULL if file has none.  */
     char *comment;
     /* AmigaOS protection bits.  */
-    uae_u32 amigaos_mode;
+    int amigaos_mode;
     /* Unique number for identification.  */
     uae_u32 uniq;
+	/* For a directory that is being ExNext()ed, the number of child ainos
+       which must be kept locked in core.  */
+    unsigned long locked_children;
+    /* How many ExNext()s are going on in this directory?  */
+    unsigned long exnext_count;
     /* AmigaOS locking bits.  */
     int shlock;
+	long db_offset;
     unsigned int dir:1;
     unsigned int elock:1;
     /* Nonzero if this came from an entry in our database.  */
@@ -110,12 +108,8 @@ extern int fsdb_used_as_nname (a_inode *base, const char *);
 extern a_inode *fsdb_lookup_aino_aname (a_inode *base, const char *);
 extern a_inode *fsdb_lookup_aino_nname (a_inode *base, const char *);
 
-/* FELLOW OUT START ---------------------------------
-STATIC_INLINE int same_aname (const char *an1, const char *an2)
-   FELLOW OUT END -----------------------------------*/
-/* FELLOW IN START --------------------------*/
+/* FELLOW CHANGE: STATIC_INLINE int same_aname (const char *an1, const char *an2) */
 static int same_aname (const char *an1, const char *an2)
-/* FELLOW IN END   --------------------------*/
 {
     return strcasecmp (an1, an2) == 0;
 }
@@ -123,6 +117,6 @@ static int same_aname (const char *an1, const char *an2)
 /* Filesystem-dependent functions.  */
 extern int fsdb_name_invalid (const char *n);
 extern void fsdb_fill_file_attrs (a_inode *);
-extern int fsdb_set_file_attrs (a_inode *, uae_u32);
+extern int fsdb_set_file_attrs (a_inode *, int);
 extern int fsdb_mode_representable_p (const a_inode *);
 extern char *fsdb_create_unique_nname (a_inode *base, const char *);

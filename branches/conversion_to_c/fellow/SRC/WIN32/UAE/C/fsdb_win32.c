@@ -9,23 +9,26 @@
   * Copyright 1999 Bernd Schmidt
   */
 
-/* FELLOW IN (START)
+/* FELLOW IN (START)-----------------
 
-  This file is somewhat adapted to suit Fellow's way of controlling its modules.
-  It originates from the UAE 0.8.15 source code distribution.
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
 
-  Torsten Enderling (carfesh@gmx.net) 2000
+  Torsten Enderling (carfesh@gmx.net) 2004
 
-  FELLOW IN (END) */
+   FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)-------------------
 #include "sysconfig.h"
 #include "sysdeps.h"
 /* FELLOW OUT (END)------------------- */
-
-/* FELLOW IN (START)---------------- */
+#include "fsdb.h"
 #include <windows.h>
+/* FELLOW IN (START)---------------- */
 #include <stdio.h>
+#ifdef WIN32
+#include "filesys_win32.h"
+#endif
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
 #define _CRTDBG_MAP_ALLOC
@@ -51,11 +54,6 @@
 #include "fsusage.h"
 /* FELLOW IN (END)---------------- */
 
-#include "fsdb.h"
-#ifdef WIN32
-#include "filesys_win32.h"
-#endif
-
 /* these are deadly (but I think allowed on the Amiga): */
 #define NUM_EVILCHARS 7
 char evilchars[NUM_EVILCHARS] = { '\\', '*', '?', '\"', '<', '>', '|' };
@@ -68,7 +66,7 @@ int fsdb_name_invalid (const char *n)
     char b = (a == '\0' ? a : n[1]);
     char c = (b == '\0' ? b : n[2]);
     char d = (c == '\0' ? c : n[3]);
-    char e = (d == '\0' ? d : n[4]);
+    int l = strlen (n);
 
     if (a >= 'a' && a <= 'z')
         a -= 32;
@@ -78,22 +76,17 @@ int fsdb_name_invalid (const char *n)
         c -= 32;
 
     /* reserved dos devices */
-    if (d == '\0') {
-        if ((a == 'A' && b == 'U' && c == 'X')                               /* AUX  */
-         || (a == 'C' && b == 'O' && c == 'N')                               /* CON  */
-         || (a == 'P' && b == 'R' && c == 'N')                               /* PRN  */
-         || (a == 'N' && b == 'U' && c == 'L'))                              /* NUL  */
-            return 1;
-    } else if (e == '\0') {
-        if ((a == 'L' && b == 'P' && c == 'T'  && (d >= '0' && d <= '9'))    /* LPT# */
-         || (a == 'C' && b == 'O' && c == 'M'  && (d >= '0' && d <= '9')))   /* COM# */
-            return 1;
-    }
+    if ((a == 'A' && b == 'U' && c == 'X' && l == 3) /* AUX  */
+	|| (a == 'C' && b == 'O' && c == 'N' && l == 3) /* CON  */
+	|| (a == 'P' && b == 'R' && c == 'N' && l == 3) /* PRN  */
+	|| (a == 'N' && b == 'U' && c == 'L' && l == 3) /* NUL  */
+	|| (a == 'L' && b == 'P' && c == 'T'  && (d >= '0' && d <= '9') && l == 4)  /* LPT# */
+	|| (a == 'C' && b == 'O' && c == 'M'  && (d >= '0' && d <= '9') && l == 4)) /* COM# */
+	return 1;
 
     /* spaces and periods at the beginning or the end are a no-no */
     if(n[0] == '.' || n[0] == ' ')
         return 1;
-
     i = strlen(n) - 1;
     if(n[i] == '.' || n[i] == ' ')
         return 1;
@@ -112,7 +105,7 @@ int fsdb_name_invalid (const char *n)
 
 uae_u32 filesys_parse_mask(uae_u32 mask)
 {
-    return(mask ^ 0xf);
+    return mask ^ 0xf;
 }
 
 /* For an a_inode we have newly created based on a filename we found on the
@@ -124,12 +117,14 @@ void fsdb_fill_file_attrs (a_inode *aino)
 	if((mode = GetFileAttributes(aino->nname)) == 0xFFFFFFFF) return;
 	
     aino->dir = (mode & FILE_ATTRIBUTE_DIRECTORY) ? 1 : 0;
-    aino->amigaos_mode = (FILE_ATTRIBUTE_ARCHIVE & mode) ? 0 : A_FIBF_ARCHIVE;
+    /* @@@@@ FELLOW UNSURE (START) */
+	aino->amigaos_mode = (FILE_ATTRIBUTE_ARCHIVE & mode) ? 0 : A_FIBF_ARCHIVE;
 	aino->amigaos_mode |= 0xf; /* set rwed by default */
+	/* @@@@@ FELLOW UNSURE (END) */
 	aino->amigaos_mode = filesys_parse_mask(aino->amigaos_mode);
 }
 
-int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
+int fsdb_set_file_attrs (a_inode *aino, int mask)
 {
     struct stat statbuf;
     uae_u32 mode=0, tmpmask;
@@ -142,7 +137,7 @@ int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
     /* Unix dirs behave differently than AmigaOS ones.  */
 	/* windows dirs go where no dir has gone before...  */
     if (! aino->dir) {
-	
+	/* @@@@@ FELLOW UNSURE */
 	if (tmpmask & A_FIBF_ARCHIVE)
 	    mode |= FILE_ATTRIBUTE_ARCHIVE;
 	else
@@ -160,6 +155,7 @@ int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
  * native FS.  Return zero if that is not possible.  */
 int fsdb_mode_representable_p (const a_inode *aino)
 {
+	/* @@@@@ FELLOW UNSURE */
     if (aino->dir)
 	return aino->amigaos_mode == 0;
     return (aino->amigaos_mode & (
@@ -200,7 +196,7 @@ char *fsdb_create_unique_nname (a_inode *base, const char *suggestion)
 	/* tmpnam isn't reentrant and I don't really want to hack configure
 	 * right now to see whether tmpnam_r is available...  */
 	for (i = 0; i < 8; i++) {
-	    tmp[i+8] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[random () % 63];
+	    tmp[i+8] = "_abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"[rand () % 63];
 	}
     }
 }

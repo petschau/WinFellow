@@ -6,6 +6,15 @@
   * (c) 1996 Ed Hanway
   */
 
+/* FELLOW IN (START)-----------------
+
+  This file has been adapted for use in WinFellow.
+  It originates from the UAE 0.8.22 source code distribution.
+
+  Torsten Enderling (carfesh@gmx.net) 2004
+
+   FELLOW IN (END)------------------- */
+
 typedef uae_u32 (*TrapFunction) (void);
 
 extern int lasttrap;
@@ -41,7 +50,6 @@ extern uaecptr ROM_hardfile_resname, ROM_hardfile_resid;
 extern uaecptr ROM_hardfile_init;
 extern uaecptr filesys_initcode;
 
-struct uaedev_mount_info;
 extern int nr_units (struct uaedev_mount_info *mountinfo);
 extern int is_hardfile (struct uaedev_mount_info *mountinfo, int unit_no);
 extern char *set_filesys_unit (struct uaedev_mount_info *mountinfo, int,
@@ -70,15 +78,13 @@ extern void filesys_reset (void);
 extern void filesys_prepare_reset (void);
 extern void filesys_start_threads (void);
 
-extern void reset_uaedevices (void);
-extern int get_new_device (char **devname, uaecptr *devname_amiga);
-
 extern void filesys_install (void);
 extern void filesys_install_code (void);
 extern void filesys_store_devinfo (uae_u8 *);
 extern void hardfile_install (void);
 extern void emulib_install (void);
 extern void expansion_init (void);
+extern void expansion_cleanup (void);
 
 #define TRAPFLAG_NO_REGSAVE 1
 #define TRAPFLAG_NO_RETVAL 2
@@ -88,7 +94,9 @@ extern void expansion_init (void);
 extern uaecptr libemu_InstallFunction (TrapFunction, uaecptr, int, const char *);
 extern uaecptr libemu_InstallFunctionFlags (TrapFunction, uaecptr, int, int, const char *);
 
-/* FELLOW IN: -------------------------------*/
+#define RTAREA_BASE 0xF00000
+
+/* FELLOW IN (START)---------------- */
 
 /* Rename assembly functions */
 
@@ -118,7 +126,9 @@ extern void filesys_bputASM(ULO value, ULO addr);
 extern void filesys_wputASM(ULO value, ULO addr);
 extern void filesys_lputASM(ULO value, ULO addr);
 
+/* these appear to be missing and are here to suppress compiler warnings */
 
+extern void rtarea_setup(void);
+extern void rtarea_init(void);
 
-/* FELLOW OUT: ------------------------------*/
-
+/* FELLOW IN (END)------------------- */
