@@ -9,9 +9,13 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
+/*============================================================================*/
 /* Changelog:                                                                 */
 /* ==========                                                                 */
+/* 09/01/2000: removed use of fellow_add_filesys_unit; redesigned to use the  */
+/*             UAE add_filesys_unit                                           */
 /* 07/11/2000: fixed up checks using filesys device status                    */
+/*============================================================================*/
 
 #include "portable.h"
 #include "renaming.h"
@@ -24,12 +28,6 @@
 #include "uaefsys.h"
 #endif
 
-extern char *fellow_add_filesys_unit(char *volname,
-			             char *rootdir, 
-			             int readonly,
-			             int removable);
-
-
 /*============================================================================*/
 /* Filesys device data                                                        */
 /*============================================================================*/
@@ -37,7 +35,6 @@ extern char *fellow_add_filesys_unit(char *volname,
 ffilesys_dev ffilesys_devs[FFILESYS_MAX_DEVICES];
 BOOLE ffilesys_enabled;
 BOOLE ffilesys_automount_drives;
-
 
 /*============================================================================*/
 /* Filesys device configuration                                               */
@@ -136,10 +133,11 @@ void ffilesysInstall(void) {
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
 	if (ffilesys_devs[i].status == FFILESYS_INSERTED)
-      fellow_add_filesys_unit(ffilesys_devs[i].volumename,
-			    ffilesys_devs[i].rootpath,
-			    ffilesys_devs[i].readonly,
-			    FALSE);
+		add_filesys_unit(&mountinfo, 
+		  ffilesys_devs[i].volumename, 
+		  ffilesys_devs[i].rootpath, 
+		  ffilesys_devs[i].readonly,
+		  0, 0, 0, 0);
 }
 
 
@@ -203,5 +201,6 @@ void ffilesysStartup(void) {
 /*============================================================================*/
 
 void ffilesysShutdown(void) {
+	filesys_prepare_reset ();
 }
 
