@@ -1,5 +1,5 @@
-WinFellow Module Ripper ReadMe 0.1 (2000/12/18)
-===============================================
+WinFellow Module Ripper ReadMe 0.11 (2000/12/18)
+================================================
 
 Since many users asked about it the old mod-ripper contained in  DOS  Fellow
 has been ported into the new Fellow environment and has undergone some major
@@ -64,6 +64,14 @@ this is not the case for many other formats. For these, the ripper uses  the
 default extension .cus to indicate a format that  is  not  very  widespread;
 these are the ones that won't play in most players so you'll need  either  a
 capable Amiga module player or a converter to play these.
+
+
+Dump Chipmem option
+===================
+
+In the debugger's sound tab you also find a button "Dump chipm.".  This  may
+be used to save the contents of the whole chipmem into a file and so  allows
+you to run other external module rippers over that.
 
 
 Final note
