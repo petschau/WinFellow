@@ -1874,7 +1874,6 @@ void spriteProcessActionList(void)
 							if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
 							{
 								// even sprite not attached to next odd sprite -> 3 color decode 
-                sprx[sprnr] = sprx[sprnr] + 2;
 								spriteDecode4Sprite_C(sprnr);
 								sprites_online = TRUE;
 								sprite_online[sprnr] = TRUE;
@@ -1886,15 +1885,12 @@ void spriteProcessActionList(void)
 							if (spratt[sprnr] == 0) 
 							{
 								// odd sprite not attached to previous even sprite -> 3 color decode 
-                sprx[sprnr] = sprx[sprnr] + 20;
 								spriteDecode4Sprite_C(sprnr);
 								sprites_online = TRUE;
 								sprite_online[sprnr] = TRUE;
 							}
 							else
 							{
-                sprx[sprnr] = sprx[sprnr] + 20;
-                sprx[(LON) sprnr - 1] = sprx[(LON) sprnr - 1] + 20;
 								spriteDecode16Sprite_C(sprnr);
 								sprites_online = TRUE;
 								sprite_online[sprnr] = TRUE;
