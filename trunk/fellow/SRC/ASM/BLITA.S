@@ -71,7 +71,7 @@
 %include "generic/defs.inc"
 
 %define BLITTER_ASM
-%define BLIT_TSC_PROFILE
+;%define BLIT_TSC_PROFILE
 
 FASMFILESTART
 FDATASECTIONSTART
