@@ -266,61 +266,6 @@ InputPath=..\..\asm\ciaa.s
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\asm\coppera.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\asm\cpua.s
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
@@ -525,10 +470,6 @@ SOURCE=..\..\incasm\func\cia.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\func\copper.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\func\cpu.inc
 # End Source File
 # Begin Source File
@@ -546,10 +487,6 @@ SOURCE=..\..\incasm\data\bus.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\data\cia.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\copper.inc
 # End Source File
 # Begin Source File
 

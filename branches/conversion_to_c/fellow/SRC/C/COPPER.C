@@ -48,7 +48,6 @@ ULO copper_suspended_wait;/* Position the copper should have been waiting for */
 
 ULO copcon, cop1lc, cop2lc;
 
-
 /*============================================================================*/
 /* Initialize translation table                                               */
 /*============================================================================*/
@@ -303,7 +302,7 @@ void copperEmulateC(void)
 	BOOLE correctLine;
 	ULO maskedY;
 	ULO maskedX;
-	ULO waitX;
+	ULO waitY;
 
 	if (cpu_next != -1)
 	{
@@ -330,7 +329,7 @@ void copperEmulateC(void)
 		// check bit 0 of first instruction word, zero is move
 		if ((bswapRegC & 0x1) == 0x0)
 		{
-			// move instruction
+			// MOVE instruction
 			bswapRegC &= 0x1fe;
 			copper_next = copper_cycletable[(bplcon0 >> 12) & 0xf] + curcycle;
 
@@ -355,7 +354,7 @@ void copperEmulateC(void)
 			// wait instruction or skip instruction
 			bswapRegC &= 0xfffe;
 			// check bit BFD (Bit Finish Disable)
-			if (((bswapRegD & 0x8000) == 0x0) && ((blit_started & 0xff) != 0x0))
+			if (((bswapRegD & 0x8000) == 0x0) && (blit_started == TRUE))
 			{
 				// Copper waits until Blitter is finished
 				copper_ptr -= 4;
@@ -377,7 +376,7 @@ void copperEmulateC(void)
 				// (not really!)
 				if ((bswapRegD & 0x1) == 0x0)
 				{
-					// wait instruction 
+					// WAIT instruction 
 
 					// calculate our line, masked with vmask
 					// bl - masked graph_raster_y 
@@ -389,8 +388,8 @@ void copperEmulateC(void)
 
 					// compare masked y with wait line
 					maskedY = graph_raster_y;
-					*((UBY*) &maskedY) &= ((bswapRegD >> 8) & 0xff);
-					if ((maskedY & 0xff) > ((bswapRegC >> 8) & 0xff))
+					*((UBY*) &maskedY) &= (UBY) (bswapRegD >> 8);
+					if (*((UBY*) &maskedY) > ((UBY) (bswapRegC >> 8)))
 					{
 						// we have passed the line, set up next instruction immediately
 						// cexit
@@ -413,7 +412,7 @@ void copperEmulateC(void)
 						else
 						{
 							// test line to be waited for
-							if (((bswapRegC >> 8) & 0xff) > 0x40)
+							if ((bswapRegC >> 8) > 0x40)
 							{
 								// line is 256-313, wrong to not wait
 								// ctrueexit
@@ -428,13 +427,12 @@ void copperEmulateC(void)
 								
 								// invert masks
 								bswapRegD = ~bswapRegD;
-								//bswapRegD &= 0xffff;
 
 								// get missing bits
 								maskedY = (graph_raster_y | 0x100);
-								*((UBY*) &maskedY) &= ((bswapRegD >> 8) & 0xff);
+								*((UBY*) &maskedY) &= (bswapRegD >> 8);
 								// mask them into vertical position
-								*((UBY*) &maskedY) |= ((bswapRegC >> 8) & 0xff);
+								*((UBY*) &maskedY) |= (bswapRegC >> 8);
 								maskedY *= CYCLESPERLINE;
 								bswapRegC &= 0xfe;
 								bswapRegD &= 0xfe;
@@ -453,7 +451,7 @@ void copperEmulateC(void)
 							} 
 						}
 					}
-					else if ((maskedY & 0xff) < ((bswapRegC >> 8) & 0xff))
+					else if (*((UBY*) &maskedY) < (UBY) (bswapRegC >> 8))
 					{
 						// we are above the line, calculate the cycle when wait is true
 						// notnever
@@ -463,11 +461,11 @@ void copperEmulateC(void)
 						//bswapRegD &= 0xffff;
 
 						// get bits that is not masked out
-						maskedX = graph_raster_y;
-						*((UBY*) &maskedX) &= ((bswapRegD >> 8) & 0xff);
+						maskedY = graph_raster_y;
+						*((UBY*) &maskedY) &= (bswapRegD >> 8);
 						// mask in bits from waitgraph_raster_y
-						*((UBY*) &maskedX) |= ((bswapRegC >> 8) & 0xff);
-						waitX = copper_ytable[maskedX];
+						*((UBY*) &maskedY) |= (bswapRegC >> 8);
+						waitY = copper_ytable[maskedY];
 						
 						// when wait is on same line, use masking stuff on graph_raster_x
 						// else on graph_raster_x = 0
@@ -480,20 +478,20 @@ void copperEmulateC(void)
 							if (bswapRegD < graph_raster_x)
 							{
 								// get unmasked bits from current x
-								copper_next = waitX + ((bswapRegD & graph_raster_x) | bswapRegC) + 4;
+								copper_next = waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4;
 								busScanEventsLevel2();
 							}
 							else
 							{
 								// copwaitnotsameline
-								copper_next = waitX + ((bswapRegD & 0) | bswapRegC) + 4;
+								copper_next = waitY + ((bswapRegD & 0) | bswapRegC) + 4;
 								busScanEventsLevel2();
 							}
 						}
 						else
 						{
 							// copwaitnotsameline
-							copper_next = waitX + ((bswapRegD & 0) | bswapRegC) + 4;
+							copper_next = waitY + ((bswapRegD & 0) | bswapRegC) + 4;
 							busScanEventsLevel2();
 						}
 					}
@@ -508,7 +506,7 @@ void copperEmulateC(void)
 						maskedX = graph_raster_x;
 						*((UBY*) &maskedX) &= (bswapRegD & 0xff);
 						// compare masked x with wait x
-						if ((maskedX & 0xff) < (bswapRegC & 0xff))
+						if (*((UBY*) &maskedX) < (UBY) (bswapRegC & 0xff))
 						{
 							// here the wait position is not reached yet, calculate cycle when wait is true
 							// previous position checks should assure that a calculated position is not less than the current cycle
@@ -519,11 +517,11 @@ void copperEmulateC(void)
 							//bswapRegD &= 0xffff;
 
 							// get bits that is not masked out
-							maskedX = graph_raster_x;
-							*((UBY*) &maskedX) &= ((bswapRegD >> 8) & 0xff);
+							maskedY = graph_raster_y;
+							*((UBY*) &maskedY) &= (UBY) (bswapRegD >> 8);
 							// mask in bits from waitgraph_raster_y
-							*((UBY*) &maskedX) |= ((bswapRegC >> 8) & 0xff);
-							waitX = copper_ytable[maskedX];
+							*((UBY*) &maskedY) |= (UBY) (bswapRegC >> 8);
+							waitY = copper_ytable[maskedY];
 							
 							// when wait is on same line, use masking stuff on graph_raster_x
 							// else on graph_raster_x = 0
@@ -536,20 +534,20 @@ void copperEmulateC(void)
 								if (bswapRegD < graph_raster_x)
 								{
 									// get unmasked bits from current x
-									copper_next = waitX + ((bswapRegD & graph_raster_x) | bswapRegC) + 4;
+									copper_next = waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4;
 									busScanEventsLevel2();
 								}
 								else
 								{
 									// copwaitnotsameline
-									copper_next = waitX + ((bswapRegD & 0) | bswapRegC) + 4;
+									copper_next = waitY + ((bswapRegD & 0) | bswapRegC) + 4;
 									busScanEventsLevel2();
 								}
 							}
 							else
 							{
 								// copwaitnotsameline
-								copper_next = waitX + ((bswapRegD & 0) | bswapRegC) + 4;
+								copper_next = waitY + ((bswapRegD & 0) | bswapRegC) + 4;
 								busScanEventsLevel2();
 							}
 						}
@@ -576,7 +574,7 @@ void copperEmulateC(void)
 							else
 							{
 								// test line to be waited for
-								if (((bswapRegC >> 8) & 0xff) > 0x40)
+								if ((bswapRegC >> 8) > 0x40)
 								{
 									// line is 256-313, wrong to not wait
 									// ctrueexit
@@ -595,9 +593,9 @@ void copperEmulateC(void)
 
 									// get missing bits
 									maskedY = (graph_raster_y | 0x100);
-									*((UBY*) &maskedY) &= ((bswapRegD >> 8) & 0xff);
+									*((UBY*) &maskedY) &= (bswapRegD >> 8);
 									// mask them into vertical position
-									*((UBY*) &maskedY) |= ((bswapRegC >> 8) & 0xff);
+									*((UBY*) &maskedY) |= (bswapRegC >> 8);
 									maskedY *= CYCLESPERLINE;
 									bswapRegC &= 0xfe;
 									bswapRegD &= 0xfe;
@@ -620,7 +618,7 @@ void copperEmulateC(void)
 				}
 				else
 				{
-					// skip instruction
+					// SKIP instruction
 
 					// new skip, copied from cwait just to try something
 					// cskip
@@ -633,8 +631,8 @@ void copperEmulateC(void)
 					// used to indicate correct line or not
 					correctLine = FALSE;
 					maskedY = graph_raster_y;
-					*((UBY*) &maskedY) &= ((bswapRegD >> 8) & 0xff);
-					if ((maskedY & 0xff) > ((bswapRegC >> 8) & 0xff))
+					*((UBY*) &maskedY) &= ((bswapRegD >> 8));
+					if (*((UBY*) &maskedY) > (UBY) (bswapRegC >> 8))
 					{
 						// do skip
 						// we have passed the line, set up next instruction immediately
@@ -642,7 +640,7 @@ void copperEmulateC(void)
 						copper_next = curcycle + 4;
 						busScanEventsLevel2();
 					}
-					else if (maskedY < ((bswapRegC >> 8) & 0xff))
+					else if (*((UBY *) &maskedY) < (UBY) (bswapRegC >> 8))
 					{
 						// above line, don't skip
 						copper_next = curcycle + 4;
@@ -659,8 +657,8 @@ void copperEmulateC(void)
 						// use mask on graph_raster_x
 						// Compare masked x with wait x
 						maskedX = graph_raster_x;
-						*((UBY*) &maskedX) &= (bswapRegD & 0xff);
-						if ((maskedX & 0xff) >= (bswapRegC & 0xff))
+						*((UBY*) &maskedX) &= bswapRegD;
+						if (*((UBY*) &maskedX) >= (UBY) (bswapRegC & 0xff))
 						{
 							// position reached, set up next instruction immediately
 							copper_ptr += 4;
@@ -679,5 +677,4 @@ void copperEmulateC(void)
 		busScanEventsLevel2();
 	}
 }
-
 
