@@ -1,4 +1,4 @@
-Fellow V0.4 Alpha Version Dated 2000.02.06 (Source code archive)
+Fellow V0.4.2 Alpha Version Dated 2000.09.15 (Source code archive)
 ----------------------------------------------------------------
 
 This is a readme file describing the contents of this archive.
@@ -7,30 +7,13 @@ This is a readme file describing the contents of this archive.
 Introduction
 ------------
 
-Like also stated on the Fellow web-page, Fellow is in a discontinued
-state. There are, at the time the of making of this archive,
-no developers who has time, interest, or due to a combination of the two,
-ability to make a substantial contribution that would bring this
-project forward within a sensible time-frame.
-
-I (Petter Schau) who created it, and has throughout the project been
-its main contributor and maintainer, now think too much time has passed,
-and take the liberty of finally closing down the current activities
-without making a public version.
-
+The WinFellow is an Amiga Emulator targeted for Windows 95/98/NT/2000.
 
 Upon getting these sources
 --------------------------
 
-The web-page explaining the current state of the project, contained an
-offer to receive the source-code on request. This archive contains those
-sources.
-
-There are no requirements for receiving these sources.
-Do whatever you want with them.
-All I ask is that there is no public distribution of this archive or the binary
-executable it produces.
-
+The entire source tree can be found as a CVS repository at
+http://sourceforge.net
 
 GNU Public License (GPL)
 ------------------------
@@ -98,11 +81,6 @@ information, I am available on mail (peschau@online.no).
 
 (Such as, how on earth was this supposed to be portable to x86-Linux, anyway?
  Hint: The src/include/*drv.h files declare the interfaces it needs.)
-
-
-
-Petter Schau
-6. Feb. 2000
 
 
 
