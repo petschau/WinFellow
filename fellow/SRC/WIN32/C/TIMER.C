@@ -130,7 +130,7 @@ void timerStartup(void)
 {
   timer_running = FALSE;
   timer_event = CreateEvent(0, FALSE, FALSE, 0);
-  timerSetUse50HzTimer(TRUE);
+  timerSetUse50HzTimer(FALSE);
 }
 
 void timerShutdown(void)
