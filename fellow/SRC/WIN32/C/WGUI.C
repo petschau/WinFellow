@@ -14,7 +14,15 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#endif
 #include <stdlib.h>
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <crtdbg.h>
+#endif
+
 #include <process.h>
 #include <commctrl.h>
 #include <prsht.h>
