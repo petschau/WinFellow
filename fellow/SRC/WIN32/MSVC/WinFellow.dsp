@@ -1181,6 +1181,10 @@ SOURCE=..\..\C\zlibwrap.c
 # PROP Default_Filter "*.h"
 # Begin Source File
 
+SOURCE="C:\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h"
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\include\blit.h
 # End Source File
 # Begin Source File
@@ -1214,6 +1218,10 @@ SOURCE=..\..\include\defs.h
 # Begin Source File
 
 SOURCE=..\..\include\draw.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\dxver.h
 # End Source File
 # Begin Source File
 
@@ -1278,6 +1286,10 @@ SOURCE=..\..\include\kbd.h
 # Begin Source File
 
 SOURCE=..\..\include\kbddrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\Include\kbdparser.h
 # End Source File
 # Begin Source File
 
@@ -1822,7 +1834,18 @@ SOURCE=.\power_led_on_cool.bmp
 
 SOURCE=.\winfellow.ico
 # End Source File
+# Begin Source File
+
+SOURCE=.\winfellow_logo_small.bmp
+# End Source File
 # End Group
+# Begin Group "Resource Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\gui_debugger.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\GUI_debugger.rc
@@ -1841,6 +1864,10 @@ SOURCE=.\GUI_debugger.rc
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=.\gui_general.h
 # End Source File
 # Begin Source File
 
@@ -1864,9 +1891,6 @@ SOURCE=.\GUI_general.rc
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=.\winfellow_logo_small.bmp
-# End Source File
+# End Group
 # End Target
 # End Project

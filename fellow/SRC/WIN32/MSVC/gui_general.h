@@ -10,7 +10,6 @@
 #define IDS_STRING6                     6
 #define IDS_STRING7                     7
 #define IDS_STRING8                     8
-#define IDD_DIALOG1                     101
 #define IDD_MAIN                        101
 #define IDR_FELLOW_GUI_MENU             102
 #define IDB_FELLOW                      106
@@ -29,8 +28,6 @@
 #define IDD_HARDFILE_ADD                120
 #define IDD_SCREEN                      121
 #define IDD_DISPLAY                     121
-#define IDD_DEBUG_CPU                   123
-#define IDB_DEBUG_ARROW                 124
 #define IDD_ABOUT                       125
 #define IDI_ICON_WINFELLOW              128
 #define IDD_NEW_MAIN                    129
@@ -63,17 +60,13 @@
 #define IDC_EDIT_HARDFILE_ADD_RESERVED  1018
 #define IDC_BUTTON1                     1019
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1019
-#define IDC_DEBUG_CPU_STEP              1019
 #define IDC_BUTTON_HARDFILE_CREATE      1019
 #define IDC_BUTTON2                     1020
 #define IDC_BUTTON_KEYFILE_FILEDIALOG   1020
-#define IDC_DEBUG_CPU_STEP_OVER         1020
 #define IDC_BUTTON3                     1021
 #define IDC_BUTTON_DF2_FILEDIALOG       1021
-#define IDC_DEBUG_CPU_BREAK             1021
 #define IDC_BUTTON4                     1022
 #define IDC_BUTTON_DF3_FILEDIALOG       1022
-#define IDC_DEBUG_CPU_RUN               1022
 #define IDC_CHECK1                      1023
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 1023
 #define IDC_CHECK_VARIOUS_LED           1023
@@ -199,7 +192,6 @@
 #define IDC_CREATE_HARDFILE_NAME        1106
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
-#define ID_DEBUGGER_START               40003
 #define ID_FILE_OPENCONFIGURATION       40004
 #define ID_FILE_SAVECONFIGURATION       40005
 #define ID_FILE_SAVECONFIGURATIONAS     40006
