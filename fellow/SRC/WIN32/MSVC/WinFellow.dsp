@@ -1120,6 +1120,10 @@ SOURCE=.\disk_led_on_cool.bmp
 # End Source File
 # Begin Source File
 
+SOURCE=.\power_led_off_cool.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\power_led_on_cool.bmp
 # End Source File
 # Begin Source File
