@@ -28,6 +28,8 @@
 #include <excpt.h>
 #include "defs.h"
 #include "fellow.h"
+#include "mmx.h"
+#include "sse.h"
 
 /* Older compilers do not support CPUID and RDTSC properly */
 #define cpuid _asm _emit 0x0f _asm _emit 0xa2
@@ -998,6 +1000,13 @@ DetectCPU (void)
   {
     fellowAddLog
       ("Can't calculate CPU speed: processor doesn't support the RDTSC instruction.\n");
+  }
+
+  if (detectMMX() == 1) {
+	fellowAddLog("CPU supports MMX.\n");
+  }
+  if (detectSSE() == 1) {
+	fellowAddLog("CPU supports SSE.\n");
   }
 }
 
