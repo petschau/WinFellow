@@ -608,7 +608,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
-      "WinFellow alpha v0.4.3 build 1",
+      "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15",
       WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | ((gfx_drv_stretch_always) ? (WS_MAXIMIZEBOX | WS_SIZEBOX) : 0),
       CW_USEDEFAULT,
       SW_SHOW,
@@ -622,7 +622,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   else {
     gfx_drv_hwnd = CreateWindowEx(WS_EX_TOPMOST,
       "FellowWindowClass",
-      "WinFellow alpha v0.4.3 build 1",
+      "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15",
       WS_POPUP,
       0,
       0,
