@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.18 2004-07-25 18:23:59 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.19 2004-07-25 22:33:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -54,6 +54,9 @@
 #define FLOPPY_INSERTED_DELAY 150
 
 /* Andromeda Sequential assumes at least 640 bytes of gap */
+/* 640 bytes is exactly the amount of bytes left over if */
+/* the drive spins 5 times per second. */
+
 #define FLOPPY_GAP_BYTES 720
 #define FLOPPY_FAST_WORDS 32
 
@@ -73,15 +76,15 @@ BOOLE floppy_has_sync;
 /* Disk registers and help variables */
 /*-----------------------------------*/
 
-ULO dsklen, dsksync, dskpt, adcon;       /* Registers */
+ULO dsklen, dsksync, dskpt, adcon, dskbytr;       /* Registers */
 ULO diskDMAen;                           /* Write counter for dsklen */
 
 /*
-void floppyLog(ULO drive, ULO track, ULO side, ULO length)
+void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
   FILE *F = fopen("floppy.log", "a");
   if (F == 0) return;
-  fprintf(F, "DMA Read: drive %d track %d side %d length %d\n", drive, track, side, length);
+  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d length %d ticks %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, track, side, length, ticks);
   fclose(F);
 }
 
@@ -89,7 +92,15 @@ void floppyLogStep(ULO drive, ULO from, ULO to)
 {
   FILE *F = fopen("floppy.log", "a");
   if (F == 0) return;
-  fprintf(F, "Step: drive %d from %d to %d\n", drive, from, to);
+  fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, from, to);
+  fclose(F);
+}
+
+void floppyLogValue(STR *text, ULO v, ULO ticks)
+{
+  FILE *F = fopen("floppy.log", "a");
+  if (F == 0) return;
+  fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, graph_raster_y, graph_raster_x, v, ticks);
   fclose(F);
 }
 */
@@ -107,6 +118,9 @@ ULO rdskbytrC(ULO address) {
   ULO tmp = floppy_DMA_started<<14;
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
+  tmp |= dskbytr;
+  dskbytr = 0;
+  //floppyLogValue("dskbytr", tmp, -1);
   return tmp;
 }
 
@@ -147,6 +161,7 @@ void wdsklenC(ULO data, ULO address) {
 
 void wdsksyncC(ULO data, ULO address) {
   dsksync = data;
+  //floppyLogValue("dsksync", dsksync, -1);
 }
 
 /*==================================*/
@@ -237,13 +252,13 @@ void floppyStepSet(BOOLE stp) {
       if (!floppy[i].step && !stp) {
         if (!floppy[i].dir) 
 	{
-//	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+	  //floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
 	  floppy[i].track++;
         }
         else {
           if (floppy[i].track > 0) 
 	  {
-//	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
+	    //floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
 	    floppy[i].track--;
 	  }
         }
@@ -288,7 +303,7 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
   /* Fill unused space */
 
   for (x = 16 ; x < 48; x++)
-    *(dest + x) = 0x55;
+    *(dest + x) = MFM_FILLB;
 
   /* Encode data section of sector */
 
@@ -964,7 +979,7 @@ void floppyDMAReadInit(ULO drive) {
 			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC(pc) & 0xf80000) == 0xf80000);
-//  floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft);
+  //floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
     floppy[drive].motor_ticks = 0;
 }
@@ -1032,6 +1047,7 @@ void floppyDMAStart(void) {
 void floppyDMAWrite(void) {
   if (--floppy_DMA.wait == 0) {
     floppy_DMA_started = FALSE;
+    //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Write, irq not enabled)" : "DSKDONEIRQ (Write, irq enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
     wriw(0x8002, 0xdff09c);
   }
 }
@@ -1040,7 +1056,11 @@ void floppyDMAWrite(void) {
 BOOLE floppyCheckSync(UWO word_under_head) {
   BOOLE word_is_sync = (word_under_head == dsksync);
   BOOLE found_sync = !floppy_has_sync && word_is_sync;
-  if (found_sync) wriw(0x9000, 0xdff09c);
+  if (found_sync)
+  {
+    //floppyLogValue(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", 0x9000, floppy[floppySelectedGet()].motor_ticks);
+    wriw(0x9000, 0xdff09c);
+  }
   floppy_has_sync = word_is_sync;
   return found_sync;
 }
@@ -1056,6 +1076,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
     floppy_DMA.dskpt = (floppy_DMA.dskpt + 2) & 0x1ffffe;
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0) {
+      //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
       wriw(0x8002, 0xdff09c);
       floppy_DMA_started = FALSE;
     }
@@ -1135,6 +1156,8 @@ void floppyEndOfLineC(void) {
                 found_sync = floppyCheckSync(word_under_head);
 			}
 			prev_byte_under_head = word_under_head & 0xff;
+			dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
+
             if (floppyDMAReadStarted()) 
                 floppyReadWord(word_under_head, found_sync);
         }
@@ -1203,6 +1226,7 @@ void floppyEndOfLineC(void) {
         {
             UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
             BOOLE found_sync = floppyCheckSync(word_under_head);
+	    dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
             if (floppyHasIndex(sel_drv)) 
                 ciaRaiseIndexIRQ();
             if (floppyDMAReadStarted()) 
