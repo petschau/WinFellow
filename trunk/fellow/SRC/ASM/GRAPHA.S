@@ -304,7 +304,10 @@ _rdmaconr_:	mov	edx, dword [bltzero]
 global _rvposr_
 _rvposr_:	mov	edx, dword [lof]
 		mov	dl, byte [graph_raster_y + 1]
-		ret
+		test	dword [blitter_ECS], 1
+		jne	.l1
+		or	edx, 02000h
+.l1:		ret
 
 
 ;-------------------------------------------------------------------------------
