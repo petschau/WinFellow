@@ -221,6 +221,62 @@ void winDrvHandleInputDevices(void) {
 }
 
 /*===========================================================================*/
+/* Sets the version and path registry keys                                   */
+/*===========================================================================*/
+
+void winDrvSetKey(char *path, char *name, char *value) {
+  HKEY hkey;
+  DWORD disposition;
+  LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
+			       path,
+			       0,
+			       0,
+			       REG_OPTION_NON_VOLATILE,
+			       KEY_ALL_ACCESS,
+			       NULL,
+			       &hkey,
+			       &disposition);
+  if ((result == ERROR_SUCCESS) &&
+      ((disposition == REG_CREATED_NEW_KEY) ||
+       (disposition == REG_OPENED_EXISTING_KEY)))
+  {
+    RegSetValueEx(hkey,
+		  name,
+		  0,
+		  REG_SZ,
+		  value,
+		  strlen(value));
+    RegCloseKey(hkey);
+  }
+}
+
+void winDrvSetRegistryKeys(char **argv) {
+  char p[1024];
+  char *locc;
+  p[0] = '\0';
+  winDrvSetKey("Software\\WinFellow", "version", "0.4.3.2");
+  _fullpath(p, argv[0], 1024);
+  locc = strrchr(p, '\\');
+  if (locc == NULL) p[0] = '\0';
+  else {
+    BOOLE isreadonly = FALSE;
+    *locc = '\0';
+    if (p[1] == ':' && p[2] == '\\')
+    {
+      UINT drivetype;
+      char p2[8];
+      p2[0] = p[0];
+      p2[1] = ':';
+      p2[2] = '\\';
+      p2[3] = '\0';
+      isreadonly = (GetDriveType(p2) == DRIVE_CDROM);
+    }
+    if (!isreadonly)
+      winDrvSetKey("Software\\WinFellow", "path", p);
+  }
+}
+
+/*===========================================================================*/
 /* Command line conversion routines                                          */
 /*===========================================================================*/
 
@@ -294,7 +350,7 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   win_drv_hInstance = hInstance;
   strcpy(cmdline, lpCmdLine);
   argv = winDrvCmdLineMakeArgv(cmdline, &argc);
-  
+  winDrvSetRegistryKeys(argv);
   result = main(argc, argv);
   free(cmdline);
   free(argv);
