@@ -870,13 +870,14 @@ _wbpl2mod_:	and	edx, 0fffeh
 
 global _wcolor_
 _wcolor_:	and	edx, 0fffh
-		mov	dword [graph_color - 0180h + ecx], edx
+		mov	word [graph_color - 0180h + ecx], dx
 		push	edx
 		mov	edx, dword [draw_color_table + edx*4] ; Translate color
 		mov	dword [graph_color_shadow - 0300h + ecx*2], edx
 		pop	edx
 		and	edx, 0eeeh                             ; Halfbrite color
 		shr	edx, 1
+		mov	word [graph_color - 0180h + 64 + ecx], dx
 		mov	edx, dword [draw_color_table + edx*4] ; Translate color
 		mov	dword [graph_color_shadow - 0300h + 128 + ecx*2], edx
 		ret
