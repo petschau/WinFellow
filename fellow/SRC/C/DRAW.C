@@ -1273,7 +1273,6 @@ static void drawModeTablesInitialize(draw_mode *dm) {
   drawColorTranslationInitialize();
   graphInitializeShadowColors();
   draw_buffer_current_ptr = draw_buffer_top_ptr;
-  copperYTableInit();
   drawHAMTableInit(draw_mode_current);
 }
 

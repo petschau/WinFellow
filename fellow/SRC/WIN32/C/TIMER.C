@@ -9,6 +9,7 @@
 #include "defs.h"
 #include "sound.h"
 #include <windows.h>
+#include "fellow.h"
 
 BOOLE timer_use_50hz_timer;
 BOOLE timer_running;

@@ -263,6 +263,7 @@ extern void drawInvalidateBufferPointer(void);
 /* Standard Fellow functions                                                 */
 /*===========================================================================*/
 
+extern void drawHardReset(void);
 extern void drawEmulationStart(void);
 extern BOOLE drawEmulationStartPost(void);
 extern void drawEmulationStop(void);

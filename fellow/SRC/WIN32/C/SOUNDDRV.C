@@ -230,7 +230,6 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
   BOOLE secondary_stereo, secondary_mono, secondary_bits8, secondary_bits16;
   BOOLE continuous_rate, emulated_driver, certified_driver;
   ULO minrate, maxrate;
-  ULO secondary_minrate, secondary_maxrate;
   char s[80];
 
   memset(&dscaps, 0, sizeof(dscaps));
@@ -1068,13 +1067,11 @@ void soundDrvEmulationStop(void) {
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-BOOLE soundDrvStartup(void) {
+BOOLE soundDrvStartup(sound_device *devinfo) {
   BOOLE result;
 
   result = soundDrvDSoundInitialize();       /* Create a direct sound object */
   if (result) {
-    ULO i;
-
     result =
      soundDrvDSoundModeInformationInitialize(&sound_drv_dsound_device_current);
   }

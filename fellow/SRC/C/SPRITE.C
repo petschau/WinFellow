@@ -11,6 +11,7 @@
 #include "renaming.h"
 
 #include "defs.h"
+#include "fellow.h"
 #include "fmem.h"
 #include "graph.h"
 #include "sprite.h"
@@ -93,7 +94,7 @@ void spriteTranslationTableInit(void) {
       for (j = 0; j < 256; j++) {
         if (k == 0) l = (i == 0) ? j : i;
         else l = (j == 0) ? i : j;
-        sprite_translate[k][i][j] = l;
+        sprite_translate[k][i][j] = (UBY) l;
       }
 }
 
@@ -122,7 +123,6 @@ void spriteP2CTablesInitialize(void)
 /*===========================================================================*/
 
 void spriteMergeHAM(graph_line *linedesc) {
-  ULO i;
   sprite_ham_slot *ham_slot = &sprite_ham_slots[sprite_ham_slot_next];
   linedesc->sprite_ham_slot = sprite_ham_slot_next;
   sprite_ham_slot_next++;
@@ -621,10 +621,9 @@ void spritesDecodeC(void) {
       sprite_state[spriteno] = 2; /* Now read control words */      
     }
     /* Here we are in state 2, 0, 4 or 5, read two data words */
-    data1 = fetw(sprpt[spriteno]);
-    data2 = fetw(sprpt[spriteno] + 2);
+    data1 = (UWO) fetw(sprpt[spriteno]);
+    data2 = (UWO) fetw(sprpt[spriteno] + 2);
     sprpt[spriteno] = ((sprpt[spriteno] + 4) & 0x1fffff);
-//    if (graph_raster_y == sprly[spriteno])
   }
 }
 

@@ -161,7 +161,6 @@ static void fellowLogDateTime(void)
 
 void fellowAddLog(const char *format,...)
 {
-    DWORD numwritten;
     char buffer[WRITE_LOG_BUF_SIZE];
     va_list parms;
     int count = 0;

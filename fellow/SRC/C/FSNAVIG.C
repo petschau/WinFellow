@@ -55,7 +55,6 @@ void fsNavigInitializeStartupDir(void) {
 
 void fsNavigInitializeInstallDir(STR *cmd) {
   STR *locc;
-  STR tmppath[FS_WRAP_MAX_PATH_LENGTH];
   STR tmpname[FS_WRAP_MAX_PATH_LENGTH];
 
   fsWrapFullPath(tmpname, cmd);

@@ -15,6 +15,7 @@
 #include "fmem.h"
 #include "sound.h"
 #include "wav.h"
+#include "sounddrv.h"
 
 
 #define MAX_BUFFER_SAMPLES 65536

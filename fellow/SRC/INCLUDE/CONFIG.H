@@ -363,6 +363,8 @@ extern void cfgManagerShutdown(cfgManager *configmanager);
 
 extern cfgManager cfg_manager;
 
+extern void cfgStartup(int argc, char **argv);
+extern void cfgShutdown(void);
 
 #endif  /* CONFIG_H */
 

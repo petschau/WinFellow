@@ -295,8 +295,8 @@ void blitterOperationLog(void) {
 #define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending) \
   if (pt_tmp != 0xffffffff) \
   { \
-    memory_chip[pt_tmp] = dat >> 8; \
-    memory_chip[pt_tmp + 1] = dat; \
+    memory_chip[pt_tmp] = (UBY) (dat >> 8); \
+    memory_chip[pt_tmp + 1] = (UBY) dat; \
   } \
   pt_tmp = pt; \
   if (!ascending) pt = (pt - 2) & 0x1ffffe; \
@@ -355,8 +355,8 @@ if (enabled) { \
 { \
   if (fill) \
   { \
-    UBY dat1 = dat; \
-    UBY dat2 = (dat >> 8); \
+    UBY dat1 = (UBY) dat; \
+    UBY dat2 = (UBY) (dat >> 8); \
     ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
     dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
     fc = blit_fill[exclusive][fc2][dat2][0]; \
@@ -382,15 +382,18 @@ if (enabled) { \
   ULO b_mod = (ascending) ? bltbmod : ((ULO) - (LON) bltbmod); \
   ULO c_mod = (ascending) ? bltcmod : ((ULO) - (LON) bltcmod); \
   ULO d_mod = (ascending) ? bltdmod : ((ULO) - (LON) bltdmod); \
-  ULO fwm[2] = {0xffff, bltafwm}; \
-  ULO lwm[2] = {0xffff, bltalwm}; \
-  UBY minterms = blit_minterm; \
+  ULO fwm[2]; \
+  ULO lwm[2]; \
+  UBY minterms = (UBY) blit_minterm; \
   ULO fill_exclusive = (bltcon & 0x8) ? 0 : 1; \
   ULO zero_flag = 0; \
-  ULO height = blit_height; \
-  ULO width = blit_width; \
+  LON height = blit_height; \
+  LON width = blit_width; \
   BOOLE fc_original = !!(bltcon & 0x4); \
   BOOLE fill_carry; \
+  fwm[0] = lwm[0] = 0xffff; \
+  fwm[1] = bltafwm; \
+  lwm[1] = bltalwm; \
   /*if (!fill) blit_tsc_words += height*width;*/ \
   for (y = height; y > 0; y--) \
   { \
