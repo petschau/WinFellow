@@ -957,17 +957,19 @@ BOOLE drawSetMode(ULO width,
 		  BOOLE windowed)
 {
   felist *l;
-  for (l = draw_modes; l != NULL; l = listNext(l)) {
-    draw_mode *dm = (draw_mode*) listNode(l);
-    if ((dm->width == width) &&
-        (dm->height == height) &&
-	(windowed || (dm->bits == colorbits)) &&
-	(dm->refresh == refresh) &&
-	(dm->windowed == windowed)) {
-      draw_mode_current = dm;
-      return TRUE;
+  ULO allow_any_refresh;
+  for (allow_any_refresh = 0; allow_any_refresh < 2; allow_any_refresh++)
+    for (l = draw_modes; l != NULL; l = listNext(l)) {
+      draw_mode *dm = (draw_mode*) listNode(l);
+      if ((dm->width == width) &&
+          (dm->height == height) &&
+	  (windowed || (dm->bits == colorbits)) &&
+	  (allow_any_refresh || (dm->refresh == refresh)) &&
+	  (dm->windowed == windowed)) {
+        draw_mode_current = dm;
+	return TRUE;
+      }
     }
-  }
   draw_mode_current = (draw_mode*) listNode(draw_modes);
   return FALSE;
 }
