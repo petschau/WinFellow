@@ -2310,7 +2310,7 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES))) {
 								// scanlines was checked
 								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_VERTICAL_SCALE), FALSE);
-								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE), FALSE);
+								//Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE), FALSE);
 							} 
 							break;
 					}
@@ -2330,7 +2330,7 @@ BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 						case BN_CLICKED:
 							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE))) {
 								// horizontal scale was checked
-								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
+								//Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
 							} 
 							break;
 					}
