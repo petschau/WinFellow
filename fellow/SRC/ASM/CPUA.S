@@ -81,6 +81,8 @@ CFUNCEXTERN fellowSoftReset;
 %include "mac/cpu.mac"
 
 CFUNCEXTERN busScanEventsLevel5
+CFUNCEXTERN cpuActivateSSP
+CFUNCEXTERN cpuPrepareExceptionC
 
 %ifdef PREFETCH
 
@@ -93,8 +95,8 @@ CFUNCEXTERN busScanEventsLevel5
 
 		FALIGN32
 
-global prefetch_fillASM
-prefetch_fillASM:
+global _prefetch_fillASM_
+_prefetch_fillASM_:
 %ifdef PC_PTR
 		push	ecx
 		mov	ch, byte [edx]
@@ -112,531 +114,6 @@ prefetch_fillASM:
 %endif
 		ret
 %endif
-
-;========================================================================
-; Group 1 Frame format
-;
-; 000:	All, except bus and address error
-;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
-;========================================================================
-	
-%macro GROUP1 0
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew		
-%endmacro
-
-
-		FALIGN32
-
-global _cpuGroup1_
-_cpuGroup1_:
-		GROUP1
-		ret
-
-
-;========================================================================
-; Group 2 Frame format
-;
-; 000:	Bus and address error
-;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
-; memory_fault_address contains the violating address
-; memory_fault_read is TRUE if the access was a read
-;========================================================================
-	
-%macro GROUP2 0
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-		mov	ecx, dword [da_regs + 60]	; Fault addr, skip ireg
-		sub	ecx, 6			 
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [memory_fault_address]
-		writel
-		mov	edx, dword [memory_fault_read]
-		shl	edx, 4
-		mov	ecx, dword [da_regs + 60]
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		writel
-%endmacro
-
-
-		FALIGN32
-
-global _cpuGroup2_
-_cpuGroup2_:
-		GROUP2
-		ret
-
-
-;========================================================================
-; Frame format $0, four word frame
-;
-; Stack words:
-; ------------
-; SR
-; PCHI
-; PCLO
-; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
-;
-; 010:	All, except bus and address errors
-; 020:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
-;	Priv. violation, copr preinst
-; 030:	Same as for 020
-; 040:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
-;	Priv. violation, FPU preinst
-; 060:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
-;	Priv. violation, FPU preinst, Unimpl. Integer, Unimpl. EA
-;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
-;========================================================================
-	
-%macro FRAME0 1		; VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector word 
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame0_
-_cpuFrame0_:	FRAME0	ebx
-		ret
-
-
-;========================================================================
-; Frame format $1, 4 word throwaway frame
-;
-; Stack words:
-; ------------
-; SR
-; PCHI
-; PCLO
-; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
-;
-; 020:	Irq, second frame created
-; 030:	Same as for 020
-; 040:	Same as for 020
-;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
-;========================================================================
-	
-%macro FRAME1 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector word 
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 01000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame1_
-_cpuFrame1_:
-		FRAME1	ebx
-		ret
-
-
-;========================================================================
-; Frame format $2
-;
-; 020:	chk, chk2, cpTrapcc, trapcc, trapv, trace, zero divide, MMU config,
-;	copr postinst 
-; 030:	Same as for 020
-; 040:	chk, chk2, FTrapcc, trapcc, trapv, trace, zero divide, address error,
-;	Unimplemented FPU inst. 
-; 060:	Same as for 040
-;
-; Assumes esi is loaded with correct pc ptr wherever it should point,
-; that SR has been updated to whatever it should contain
-; and that _pc contains the start of the current instruction
-;========================================================================
-	
-%macro FRAME2 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save inst address 
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [pc]
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 02000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame2_
-_cpuFrame2_:
-		FRAME2	ebx
-		ret
-
-
-;========================================================================
-; Frame format $3
-;
-; 040:	FPU post inst.
-; 060:	Same as for 040
-;
-; Fellow never generates this frame
-;========================================================================
-	
-%macro FRAME3 1		; VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 6
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 03000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		writel
-		PTR_TO_PC	edx
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame3_
-_cpuFrame3_:
-		FRAME3	ebx
-		ret
-
-	
-;========================================================================
-; Frame format $4
-;
-; 040:	Unimplemented FPU inst. on EC040 and LC040
-; 060:	FPU Disabled, Bus error
-;
-;========================================================================
-	
-%macro FRAME4 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 10
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 04000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame4_
-_cpuFrame4_:
-		FRAME4	ebx
-		ret
-
-
-;========================================================================
-; Frame format $7
-;
-; 040:	Address error for non-inst word accesses
-;
-;========================================================================
-	
-%macro FRAME7 1		; VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 54
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 07000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame7_
-_cpuFrame7_:
-		FRAME7	ebx
-		ret
-
-
-;========================================================================
-; Frame format $8
-;
-; 010:	Bus and address error
-;
-;========================================================================
-	
-%macro FRAME8 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 52
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 08000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-				
-		FALIGN32
-
-global _cpuFrame8_
-_cpuFrame8_:
-		FRAME8	ebx
-		ret
-
-
-;============================================================================
-; Frame format $9
-;
-; 020:	copr midinst, main detected protocol violation, irq during copr inst
-; 030:	Same as for 020
-;
-; Not generated in Fellow
-;========================================================================
-	
-%macro FRAME9 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save inst address 
-		sub	ecx, 12
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [pc]
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 09000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrame9_
-_cpuFrame9_:
-		FRAME9	ebx
-		ret
-
-
-;========================================================================
-; Frame format $A
-;
-; 020:	Address or bus-error on instruction boundrary
-; 030:	Same as for 020
-;
-; Assumes that SR has been updated to whatever it should contain
-; and that _pc contains the start of the current instruction
-;
-; Will not set any values beyond the format/offset word
-; Fellow will always generate this frame for bus/address errors
-;========================================================================
-	
-%macro FRAMEA 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 26
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 0a000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrameA_
-_cpuFrameA_:
-		FRAMEA	ebx
-		ret
-
-
-;========================================================================
-; Frame format $B
-;
-; 020:	Address or bus-error mid-instruction
-; 030:	Same as for 020
-;
-; Fellow will not generate this frame for bus/address errors
-;========================================================================
-	
-%macro FRAMEB 1	;  VECTOR_OFFSET
-		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
-		sub	ecx, 84
-		mov	dword [da_regs + 60], ecx
-		mov	edx, %1
-		or	edx, 0b000h
-		writew
-		mov	ecx, dword [da_regs + 60]	; Save PC
-		sub	ecx, 4
-		mov	dword [da_regs + 60], ecx
-		mov	edx, esi
-		PTR_TO_PC	edx
-		writel
-		mov	ecx, dword [da_regs + 60]	; Save SR
-		sub	ecx, 2
-		mov	dword [da_regs + 60], ecx
-		mov	edx, dword [sr]
-		writew
-%endmacro
-
-
-		FALIGN32
-
-global _cpuFrameB_
-_cpuFrameB_:
-		FRAMEB	ebx
-		ret
-
-
-;========================================================================
-;
-; Generate stack frame
-;
-; Input:	ebx - vector offset
-;========================================================================
-
-
-%macro GENERATE_STACK_FRAME 0
-		and	ebx, 0fch
-		call	dword [cpu_stack_frame_gen + ebx]
-%endmacro
-
-
-;=============================================================
-; Move ISP (SSP) or MSP to A7, return it in ecx
-;=============================================================
-
-%macro ACTIVATE_SSP 0
-		mov	ecx, dword [da_regs + 60]		; ecx - Current SP 
-		test	byte [sr + 1], 20h		; Check supervisor 
-		jnz	%%l1
-		mov	dword [usp], ecx		; User mode, save USP 
-		mov	ecx, dword [ssp]
-		test	byte [sr + 1], 10h		; Get ISP or MSP 
-		jz	%%l2
-		mov	ecx, dword [msp]
-%%l2:		mov	dword [da_regs + 60], ecx		; Set new A7 (SP) 
-%%l1:		; Here, a7 is either ISP (SSP) or MSP
-%endmacro
-	
 
 ;=========================================================================
 ; Takes new SR in edx and maintains the integrity of the super/user state
@@ -787,10 +264,26 @@ rIRQ_exit:	pop	edx
 global _cpuSetUpInterrupt_
 _cpuSetUpInterrupt_:
 		pushad
-		ACTIVATE_SSP				; step 1
+
+; Worfje: some ugly code below to get rid of oddRead assembly function
+		CCALLCONV_IN_NONE
+;		ACTIVATE_SSP				; step 1
+		call cpuActivateSSP
+		CCALLCONV_OUT_ECX 0
+		
 		mov	ebx, dword [interruptlevel]	; step 2
 		mov	esi, dword [pc]
-		GENERATE_STACK_FRAME
+
+; generate stackframe
+		and	ebx, 0fch
+		pushad
+		push esi
+		push ebx
+		call	dword [cpu_stack_frame_gen + ebx]
+		pop ebx
+		pop esi
+		popad
+
 		and	byte [sr + 1], 38h		; step 3 
 		mov	cl, byte [interruptlevel]
 		or	cl, 20h
@@ -805,14 +298,63 @@ _cpuSetUpInterrupt_:
 		mov	dword dword [msp], ecx
 		mov	ecx, dword [ssp]
 		mov	dword [da_regs + 60], ecx
-si_alreadyisp:	mov	ebx, dword [interruptlevel]
-		FRAME1	ebx
+si_alreadyisp:	
+		mov	ebx, dword [interruptlevel]
+
+; FRAME
+		mov	ecx, dword [da_regs + 60]	; Save Vector word 
+		sub	ecx, 2
+		mov	dword [da_regs + 60], ecx
+		mov	edx, ebx
+		or	edx, 01000h
+		writew
+		mov	ecx, dword [da_regs + 60]	; Save PC
+		sub	ecx, 4
+		mov	dword [da_regs + 60], ecx
+		mov	edx, esi
+
+%ifdef PC_PTR
+		and	edx, 0ffffffh
+		push	eax
+		mov	eax, edx
+		shr	eax, 16
+		mov	eax, dword [memory_bank_pointer + 4*eax]
+		test	eax, eax
+		jz	near cpu_pc_in_unmapped_mem
+		add	edx, eax
+		mov	dword [pcbaseadr], eax
+		pop	eax
+%endif
+
+		writel
+		mov	ecx, dword [da_regs + 60]	; Save SR
+		sub	ecx, 2
+		mov	dword [da_regs + 60], ecx
+		mov	edx, dword [sr]
+		writew
+
 		and	byte [sr + 1], 0efh		; step 5
-si_step6:	mov	edx, dword [interruptaddress]; step 6
-		PC_TO_PTR edx
+si_step6:	
+		mov	edx, dword [interruptaddress]; step 6
+
+; PC_TO_PTR
+		
+	%ifdef PC_PTR
+		and	edx, 0ffffffh
+		push	eax
+		mov	eax, edx
+		shr	eax, 16
+		mov	eax, dword [memory_bank_pointer + 4*eax]
+		test	eax, eax
+		jz	near cpu_pc_in_unmapped_mem
+		add	edx, eax
+		mov	dword [pcbaseadr], eax
+		pop	eax
+	%endif
+	
 		mov	dword [pc], edx
 %ifdef PREFETCH
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		test	byte [cpu_stop], 1		; step 7
 		jz	si_nostop
@@ -826,7 +368,7 @@ si_nostop:	mov	dword [interruptflag], 0
 		pushad
 		call busScanEventsLevel5
 		popad
-		;SCAN_EVENTS_LVL5
+
 
 		popad
 		ret
@@ -839,36 +381,16 @@ si_nostop:	mov	dword [interruptflag], 0
 
 		FALIGN32
 
+
 global _cpuPrepareException_
 _cpuPrepareException_:
-		push	eax
-		ACTIVATE_SSP
-		GENERATE_STACK_FRAME
-		mov	ecx, dword [vbr]
-		add	ecx, ebx 
-		fetchl
-		PC_TO_PTR edx
-		mov	dword [pc], edx		; Set PC
-		mov	esi, edx
-
-		or	byte [sr + 1], 20h	; Set supermodus
-		and	byte [sr + 1], 03fh
-
-		test	byte [cpu_stop], 1	; If CPU stopped, restart it
-		jz	prpenostop
-		mov	dword [cpu_stop], 0
-		mov	eax, dword [curcycle]
-		add	eax, 4
-		mov	dword [cpu_next], eax
-
-prpenostop:	pop	eax
-		mov	esp, dword [exceptionstack]
-%ifdef PREFETCH
-		mov	edx, dword [pc]
-		call	prefetch_fillASM
-%endif
-		jmp	dword [exceptionbackdooraddress]
-
+		pushad
+		push esi
+        push ebx
+		call cpuPrepareExceptionC
+		pop ebx
+		pop esi
+		popad
 
 ;=============================================================================
 ; Adressmode routines to read byte, word, longword
@@ -3828,7 +3350,7 @@ _i11_B_:	call	dword [edi + 8] 				; edx = 1 take branch
 		add	esi, ebx			; New PC
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		mov	eax, 8
 		ret
@@ -3854,7 +3376,7 @@ _i11_W_:	call	dword [edi + 8]			; edx != 0 take branch
 		add	esi, ebx
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		ret
 i11wnob:
@@ -3881,7 +3403,7 @@ _i11_L_:	call	dword [edi + 8]			; edx != 0 take branch
 		add	esi, edx
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		ret
 i11lnob:
@@ -4639,7 +4161,7 @@ _i24_:		mov	eax,dword [edi+12]
 		add	esi,edx
 %ifdef PREFETCH
 		mov	edx,esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		mov	eax,10
 		ret
@@ -5036,7 +4558,7 @@ _i31_:		mov	eax,dword [edi+12]
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		mov	eax,dword [edi+16]
 		ret
@@ -5068,7 +4590,7 @@ _i32_:		mov	eax,dword [edi+12]	       ; get new pc
 		writel
 %ifdef PREFETCH
 		mov	edx,esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		mov	eax,dword [edi+16]
 		ret
@@ -7935,7 +7457,7 @@ i61_redo:	mov	ecx, dword [da_regs + 60]	; Get SR, step 1
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 
 		cmp	dword [cpu_type], 0	; step 3 
@@ -7984,7 +7506,7 @@ _i62_:		mov	ecx,dword [da_regs + 60]
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		add	ecx,4
 		mov	dword [da_regs + 60],ecx
@@ -8008,7 +7530,7 @@ _i63_:		mov	ecx,dword [da_regs + 60]
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		add	ecx,4
 		mov	dword [da_regs + 60],ecx
@@ -10922,7 +10444,7 @@ _i329_:		mov	ecx, esi
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		add	ecx, 4
 		add	ecx, eax
@@ -11078,7 +10600,7 @@ _i333_:		mov	eax, dword [edi + 4]	 ; Module data area ptr
 		PC_TO_PTR esi
 %ifdef PREFETCH
 		mov	edx, esi
-		call	prefetch_fillASM
+		call	_prefetch_fillASM_
 %endif
 		mov	ecx, ebx		  ; Get saved stack ptr 
 		add	ecx, 20

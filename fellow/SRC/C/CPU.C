@@ -22,6 +22,9 @@
 #include "cpu.h"
 #include "cpudis.h"
 
+extern ULO curcycle;
+extern ULO memory_fault_address;
+extern BOOLE memory_fault_read;
 
 ULO cpu_major, cpu_minor;
 BOOLE cpu_opcode_table_is_invalid;
@@ -4831,70 +4834,70 @@ void cpuStackFrameInit000(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuGroup1;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuGroup2;  /* 2 - Bus error */
-  cpu_stack_frame_gen[3] = cpuGroup2;  /* 3 - Address error */
+    cpu_stack_frame_gen[i] = cpuGroup1C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuGroup2C;  /* 2 - Bus error */
+  cpu_stack_frame_gen[3] = cpuGroup2C;  /* 3 - Address error */
 }
 
 void cpuStackFrameInit010(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrame8;  /* 2 - Bus error */
-  cpu_stack_frame_gen[3] = cpuFrame8;  /* 3 - Address error */
+    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrame8C;  /* 2 - Bus error */
+  cpu_stack_frame_gen[3] = cpuFrame8C;  /* 3 - Address error */
 }
 
 void cpuStackFrameInit020(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit030(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit040(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit060(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrame4;  /* 2  - Access Fault */
-  cpu_stack_frame_gen[3] = cpuFrame2;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrame4C;  /* 2  - Access Fault */
+  cpu_stack_frame_gen[3] = cpuFrame2C;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
   /* Unfinished */
 }
 
@@ -5381,3 +5384,523 @@ void cpuStartup(void) {
 
 void cpuShutdown(void) {
 }
+
+ULO cpuActivateSSP(void)
+{
+	ULO currentSP;
+	currentSP = da_regs[1][7];
+
+	// check supervisor bit number (bit 13) within the system byte of the status register
+	if ((sr & 0x002000) == 0x0)
+	{
+		// we are in user mode, thus save user stack pointer (USP)
+		usp = currentSP;
+		currentSP = ssp;
+
+		if ((sr & 0x001000) == 0x001000)
+		{
+			currentSP = msp;
+		}
+		da_regs[1][7] = currentSP;
+	}
+	return currentSP;
+}
+
+/*========================================================================
+; Group 1 Frame format
+;
+; 000:	All, except bus and address error
+;
+; Assumes esi is loaded with correct pc ptr wherever it should point
+; and that SR has been updated to whatever it should contain
+;========================================================================*/
+
+void cpuGroup1C(ULO variableVbr, ULO pcPtr)
+{
+	// save PC
+	da_regs[1][7] = (da_regs[1][7]) - 4;
+	wril(cpuGetPC(pcPtr), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] = (da_regs[1][7]) - 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Group 2 Frame format
+;
+; 000:	Bus and address error
+;
+; Assumes esi is loaded with correct pc ptr wherever it should point
+; and that SR has been updated to whatever it should contain
+; memory_fault_address contains the violating address
+; memory_fault_read is TRUE if the access was a read
+;========================================================================*/
+	
+void cpuGroup2C(ULO variableVbr, ULO pcPtr)
+{
+	// save PC
+	da_regs[1][7] = (da_regs[1][7]) - 4;
+	wril(cpuGetPC(pcPtr), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] = (da_regs[1][7]) - 2;
+	wriw(sr, da_regs[1][7]);
+
+	// fault address, skip ireg
+	da_regs[1][7] = (da_regs[1][7]) - 6;
+	wril(memory_fault_address, da_regs[1][7]);
+
+	da_regs[1][7] = (da_regs[1][7]) - 2;
+	wril(memory_fault_read << 4, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $0, four word frame
+;
+; Stack words:
+; ------------
+; SR
+; PCHI
+; PCLO
+; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
+;
+; 010:	All, except bus and address errors
+; 020:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
+;	Priv. violation, copr preinst
+; 030:	Same as for 020
+; 040:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
+;	Priv. violation, FPU preinst
+; 060:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
+;	Priv. violation, FPU preinst, Unimpl. Integer, Unimpl. EA
+;
+; Assumes esi is loaded with correct pc ptr wherever it should point
+; and that SR has been updated to whatever it should contain
+;========================================================================
+*/
+
+void cpuFrame0C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector word
+	da_regs[1][7] = (da_regs[1][7]) - 2;
+	wriw(variableVbr, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] = (da_regs[1][7]) - 4;
+	wril(cpuGetPC(pcPtr), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] = (da_regs[1][7]) - 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $1, 4 word throwaway frame
+;
+; Stack words:
+; ------------
+; SR
+; PCHI
+; PCLO
+; 0000 Vector no. (4 upper bits are frame no., rest is vector no.)
+;
+; 020:	Irq, second frame created
+; 030:	Same as for 020
+; 040:	Same as for 020
+;
+; Assumes esi is loaded with correct pc ptr wherever it should point
+; and that SR has been updated to whatever it should contain
+;========================================================================*/
+
+void cpuFrame1C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector word
+	da_regs[1][7] -= 2;
+	wriw(vbr | 0x1000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $2
+;
+; 020:	chk, chk2, cpTrapcc, trapcc, trapv, trace, zero divide, MMU config,
+;	copr postinst 
+; 030:	Same as for 020
+; 040:	chk, chk2, FTrapcc, trapcc, trapv, trace, zero divide, address error,
+;	Unimplemented FPU inst. 
+; 060:	Same as for 040
+;
+; Assumes esi is loaded with correct pc ptr wherever it should point,
+; that SR has been updated to whatever it should contain
+; and that _pc contains the start of the current instruction
+;========================================================================*/
+
+void cpuFrame2C(ULO variableVbr, ULO pcPtr)
+{
+	// save inst address
+	da_regs[1][7] -= 4;
+	wril(pc, da_regs[1][7]);
+
+	// save vector word
+	da_regs[1][7] -= 2;
+	wriw(vbr | 0x2000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $3
+;
+; 040:	FPU post inst.
+; 060:	Same as for 040
+;
+; Fellow never generates this frame
+;========================================================================*/
+
+void cpuFrame3C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 6;
+	wriw(vbr | 0x3000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $4
+;
+; 040:	Unimplemented FPU inst. on EC040 and LC040
+; 060:	FPU Disabled, Bus error
+;
+;========================================================================*/
+
+void cpuFrame4C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 10;
+	wriw(vbr | 0x4000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $7
+;
+; 040:	Address error for non-inst word accesses
+;
+;========================================================================*/
+
+void cpuFrame7C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 54;
+	wriw(vbr | 0x7000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+	
+/*========================================================================
+; Frame format $8
+;
+; 010:	Bus and address error
+;
+;========================================================================*/
+
+void cpuFrame8C(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 52;
+	wriw(vbr & 0x8000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*============================================================================
+; Frame format $9
+;
+; 020:	copr midinst, main detected protocol violation, irq during copr inst
+; 030:	Same as for 020
+;
+; Not generated in Fellow
+;========================================================================*/
+
+void cpuFrame9C(ULO variableVbr, ULO pcPtr)
+{
+
+	// save inst address
+	da_regs[1][7] -= 12;
+	wril(pc, da_regs[1][7]);
+
+	// save vector offset
+	da_regs[1][7] -= 2;
+	wriw(vbr & 0x9000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $A
+;
+; 020:	Address or bus-error on instruction boundrary
+; 030:	Same as for 020
+;
+; Assumes that SR has been updated to whatever it should contain
+; and that _pc contains the start of the current instruction
+;
+; Will not set any values beyond the format/offset word
+; Fellow will always generate this frame for bus/address errors
+;========================================================================*/
+
+void cpuFrameAC(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 26;
+	wriw(vbr & 0xa000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+/*========================================================================
+; Frame format $B
+;
+; 020:	Address or bus-error mid-instruction
+; 030:	Same as for 020
+;
+; Fellow will not generate this frame for bus/address errors
+;========================================================================*/
+
+void cpuFrameBC(ULO variableVbr, ULO pcPtr)
+{
+	// save vector offset
+	da_regs[1][7] -= 84;
+	wriw(vbr & 0xb000, da_regs[1][7]);
+
+	// save PC
+	da_regs[1][7] -= 4;
+	wril(cpuGetPC(pc), da_regs[1][7]);
+
+	// save SR
+	da_regs[1][7] -= 2;
+	wriw(sr, da_regs[1][7]);
+}
+
+
+/*===============================================
+; Sets up an exception - ebx - offset of vector
+;===============================================
+*/
+
+void cpuPrepareExceptionC(ULO vectorOffset, ULO pcPtr)
+{
+	ULO currentSP;
+	ULO readMemory;
+
+	currentSP = cpuActivateSSP();
+
+	//generate stackframe
+	cpu_stack_frame_gen[(vectorOffset & 0xfc) >> 2](vectorOffset & 0xfc, pcPtr);
+
+	// read a memory position
+	readMemory = fetl(vbr + vectorOffset);
+	readMemory &= 0x0ffffff;
+	cpuSetPC(readMemory);
+
+	// set supermodus
+	sr |= 0x2000; 
+	sr &= 0x3fff;
+
+	// restart cpu, if needed
+	if (cpu_stop == TRUE)
+	{
+		cpu_stop = FALSE;
+		cpu_next = curcycle + 4;
+	}
+
+	_asm
+	{
+		mov	esp, exceptionstack
+	}
+	
+#ifdef PREFETCH
+	_asm
+	{
+		pushad
+		mov	edx, dword ptr [pc]
+		call	prefetch_fillASM
+		popad
+		jmp	dword ptr [exceptionbackdooraddress]
+	}
+#endif
+}
+
+
+
+/*
+;============================================================
+; Transfers control to an interrupt routine
+;
+; 1. Put SSP/MSP into A7
+; 2. Generate stack frame with normal format
+; 3. T1 = T0 = 0, S = 1, set IRQ level (A7 already correct)
+; 4. If 020++ and not 060: Get ISP, generate throwaway frame
+;    with SR from step 3
+; 5. If 020++ and not 060: Clear M bit (A7 already correct)
+; 6. Set new PC and fill prefetch if enabled
+; 7. Restart CPU if stopped
+; 8. Reschedule events
+;============================================================
+*/
+void cpuSetUpInterruptC(void)
+{
+	ULO currentSP;
+
+	// step 1
+	currentSP = cpuActivateSSP();
+
+	// step 2
+/*
+	*(cpu_stack_frame_gen + (interruptlevel & 0xfc))();
+	mov	ebx, dword [interruptlevel]	; step 2
+	mov	esi, dword [pc]
+
+; generate stackframe
+		and	ebx, 0fch
+
+
+		call	dword [cpu_stack_frame_gen + ebx]
+
+		and	byte [sr + 1], 38h		; step 3 
+		mov	cl, byte [interruptlevel]
+		or	cl, 20h
+		or	byte [sr + 1], cl
+		cmp	byte [cpu_type], 2	; step 4
+		jb	near si_step6
+		cmp	byte [cpu_type], 6
+		jae	near si_step6
+		mov	ecx, dword [da_regs + 60]
+		test	byte [sr + 1], 010h
+		jz	si_alreadyisp
+		mov	dword dword [msp], ecx
+		mov	ecx, dword [ssp]
+		mov	dword [da_regs + 60], ecx
+si_alreadyisp:	
+		mov	ebx, dword [interruptlevel]
+
+; FRAME
+		mov	ecx, dword [da_regs + 60]	; Save Vector word 
+		sub	ecx, 2
+		mov	dword [da_regs + 60], ecx
+		mov	edx, ebx
+		or	edx, 01000h
+		writew
+		mov	ecx, dword [da_regs + 60]	; Save PC
+		sub	ecx, 4
+		mov	dword [da_regs + 60], ecx
+		mov	edx, esi
+		
+%ifdef PC_PTR
+		and	edx, 0ffffffh
+		push	eax
+		mov	eax, edx
+		shr	eax, 16
+		mov	eax, dword [memory_bank_pointer + 4*eax]
+		test	eax, eax
+		jz	near cpu_pc_in_unmapped_mem
+		add	edx, eax
+		mov	dword [pcbaseadr], eax
+		pop	eax
+%endif
+
+		writel
+		mov	ecx, dword [da_regs + 60]	; Save SR
+		sub	ecx, 2
+		mov	dword [da_regs + 60], ecx
+		mov	edx, dword [sr]
+		writew
+
+		and	byte [sr + 1], 0efh		; step 5
+si_step6:	
+		mov	edx, dword [interruptaddress]; step 6
+
+; PC_TO_PTR
+		
+	%ifdef PC_PTR
+		and	edx, 0ffffffh
+		push	eax
+		mov	eax, edx
+		shr	eax, 16
+		mov	eax, dword [memory_bank_pointer + 4*eax]
+		test	eax, eax
+		jz	near cpu_pc_in_unmapped_mem
+		add	edx, eax
+		mov	dword [pcbaseadr], eax
+		pop	eax
+	%endif
+	
+		mov	dword [pc], edx
+%ifdef PREFETCH
+		call	prefetch_fillASM
+%endif
+		test	byte [cpu_stop], 1		; step 7
+		jz	si_nostop
+		mov	edx, dword [curcycle]
+		add	edx, 4
+		mov	dword [cpu_next], edx
+		mov	dword [cpu_stop], 0
+si_nostop:	mov	dword [interruptflag], 0
+		mov	dword [irq_next], -1		; step 8
+		
+	busScanEventsLevel5();
+	*/
+}
+
+  
