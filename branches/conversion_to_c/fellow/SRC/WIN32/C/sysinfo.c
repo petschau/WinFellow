@@ -1,7 +1,7 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator - system information retrieval                    */
 /*                                                                         */
-/* @(#) $Id: sysinfo.c,v 1.11.2.2 2004-05-27 09:57:30 carfesh Exp $         */
+/* @(#) $Id: sysinfo.c,v 1.11.2.3 2004-05-27 09:58:13 carfesh Exp $        */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*                                                                         */
