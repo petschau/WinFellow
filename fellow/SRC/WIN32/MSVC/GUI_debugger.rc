@@ -92,6 +92,16 @@ BEGIN
     GROUPBOX        "CIA Information:",IDC_STATIC,7,49,440,170
 END
 
+IDD_DEBUG_FLOPPY DIALOG DISCARDABLE  0, 0, 516, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Floppy"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,212
+    GROUPBOX        "Floppy Information:",IDC_STATIC,7,49,440,170
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -118,6 +128,14 @@ BEGIN
     END
 
     IDD_DEBUG_CIA, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+
+    IDD_DEBUG_FLOPPY, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 509

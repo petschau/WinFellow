@@ -16,6 +16,7 @@
 #define IDC_DEBUG_CPU_RUN               1022
 #define IDD_DEBUG_MEMORY                1125
 #define IDD_DEBUG_CIA                   1126
+#define IDD_DEBUG_FLOPPY                1127
 #define ID_DEBUGGER_START               40003
 
 // Next default values for new objects
