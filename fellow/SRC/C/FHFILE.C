@@ -1,20 +1,19 @@
+/* @(#) $Id: FHFILE.C,v 1.8 2004-06-08 14:10:32 carfesh Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                      */
+/* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: FHFILE.C,v 1.7 2004-06-08 11:09:48 carfesh Exp $          */
+/* Hardfile device                                                         */
 /*                                                                         */
-/* Hardfile device                                                            */
-/*                                                                            */
 /* Authors: Petter Schau (peschau@online.no)                               */
 /*          Torsten Enderling (carfesh@gmx.net)                            */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
-/*                                                                            */
+/*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */
 /* it under the terms of the GNU General Public License as published by    */
 /* the Free Software Foundation; either version 2, or (at your option)     */
 /* any later version.                                                      */
-/*                                                                            */
+/*                                                                         */
 /* This program is distributed in the hope that it will be useful,         */
 /* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
 /* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
