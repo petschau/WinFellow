@@ -35,6 +35,7 @@
 #include "wgui.h"
 #include "mmx.h"
 #include "ffilesys.h"
+#include "cpudis.h"
 
 
 BOOLE fellow_request_emulation_stop;
@@ -217,41 +218,26 @@ void fellowRequestEmulationStopImmediatelyClear(void) {
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
-void fellowEmulationStart(void) {
+BOOLE fellowEmulationStart(void) {
+  BOOLE result;
   fellowRequestEmulationStopClear();
-  //fellowAddLog("Calling memoryEmulationStart()\n");
   memoryEmulationStart();
-  //fellowAddLog("Calling ciaEmulationStart()\n");
   ciaEmulationStart();
-  //fellowAddLog("Calling cpuEmulationStart()\n");
   cpuEmulationStart();
-  //fellowAddLog("Calling graphEmulationStart()\n");
   graphEmulationStart();
-  //fellowAddLog("Calling spriteEmulationStart()\n");
   spriteEmulationStart();
-  //fellowAddLog("Calling blitterEmulationStart()\n");
   blitterEmulationStart();
-  //fellowAddLog("Calling copperEmulationStart()\n");
   copperEmulationStart();
-  //fellowAddLog("Calling drawEmulationStart()\n");
   drawEmulationStart();
-  //fellowAddLog("Calling kbdEmulationStart()\n");
   kbdEmulationStart();
-  //fellowAddLog("Calling gameportEmulationStart()\n");
   gameportEmulationStart();
-  //fellowAddLog("Calling drawEmulationStartPost()\n");
-  drawEmulationStartPost();
-  //fellowAddLog("Calling timerEmulationStart()\n");
+  result = drawEmulationStartPost();
   timerEmulationStart();
-  //fellowAddLog("Calling soundEmulationStart()\n");
   soundEmulationStart();
-  //fellowAddLog("Calling busEmulationStart()\n");
   busEmulationStart();
-  //fellowAddLog("Calling floppyEmulationStart()\n");
   floppyEmulationStart();
-  //fellowAddLog("Calling ffilesysEmulationStart()\n");
   ffilesysEmulationStart();
-  //fellowAddLog("Done calling emulation start handlers\n");
+  return result && memoryGetKickImageOK();
 }
 
 
