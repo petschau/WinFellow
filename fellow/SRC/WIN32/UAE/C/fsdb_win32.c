@@ -133,7 +133,7 @@ int fsdb_set_file_attrs (a_inode *aino, uae_u32 mask)
     tmpmask = filesys_parse_mask(mask);
 	
     if (stat (aino->nname, &statbuf) == -1)
-	return ERROR_OBJECT_NOT_FOUND;
+	return ERROR_OBJECT_NOT_AROUND;
 	
     /* Unix dirs behave differently than AmigaOS ones.  */
 	/* windows dirs go where no dir has gone before...  */
