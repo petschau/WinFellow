@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=WinFellow - Win32 Debug
+CFG=WinFellow - Win32 Dx3 Debug
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,14 @@ CFG=WinFellow - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "WinFellow.mak" CFG="WinFellow - Win32 Debug"
+!MESSAGE NMAKE /f "WinFellow.mak" CFG="WinFellow - Win32 Dx3 Debug"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "WinFellow - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "WinFellow - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Dx3 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "WinFellow - Win32 Dx3 Release" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -43,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G6 /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
@@ -70,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G6 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /FAcs /FR /FD /c
+# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
@@ -83,12 +85,72 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /profile /map /debug /machine:I386
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "WinFellow___Win32_Dx3_Debug"
+# PROP BASE Intermediate_Dir "WinFellow___Win32_Dx3_Debug"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "Dx3Debug"
+# PROP Intermediate_Dir "Dx3Debug"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
+# SUBTRACT BASE CPP /YX
+# ADD CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX3" /FAcs /FR /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
+# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
+# ADD BASE RSC /l 0x414 /d "_DEBUG"
+# ADD RSC /l 0x414 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /profile /map /debug /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /profile /map /debug /machine:I386
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "WinFellow___Win32_Dx3_Release"
+# PROP BASE Intermediate_Dir "WinFellow___Win32_Dx3_Release"
+# PROP BASE Ignore_Export_Lib 0
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "Dx3Release"
+# PROP Intermediate_Dir "Dx3Release"
+# PROP Ignore_Export_Lib 0
+# PROP Target_Dir ""
+# ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
+# SUBTRACT BASE CPP /YX
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX3" /FD /c
+# SUBTRACT CPP /YX
+# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
+# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
+# ADD BASE RSC /l 0x414 /d "NDEBUG"
+# ADD RSC /l 0x414 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LINK32=link.exe
+# ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /machine:I386
+
 !ENDIF 
 
 # Begin Target
 
 # Name "WinFellow - Win32 Release"
 # Name "WinFellow - Win32 Debug"
+# Name "WinFellow - Win32 Dx3 Debug"
+# Name "WinFellow - Win32 Dx3 Release"
 # Begin Group "Assembly Files"
 
 # PROP Default_Filter "*.s"
@@ -112,6 +174,30 @@ InputPath=..\..\asm\blita.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\blita.s
+
+"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\blita.s
+
+"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\blita.s
 
@@ -151,6 +237,30 @@ InputPath=..\..\asm\busa.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\busa.s
+
+"$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\busa.s
+
+"$(IntDir)\busa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -174,6 +284,30 @@ InputPath=..\..\asm\ciaa.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\ciaa.s
+
+"$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\ciaa.s
+
+"$(IntDir)\ciaa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\ciaa.s
 
@@ -213,6 +347,30 @@ InputPath=..\..\asm\coppera.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\coppera.s
+
+"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\coppera.s
+
+"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -236,6 +394,30 @@ InputPath=..\..\asm\cpua.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\cpua.s
+
+"$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\cpua.s
+
+"$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\cpua.s
 
@@ -275,6 +457,30 @@ InputPath=..\..\asm\drawa.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\drawa.s
+
+"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\drawa.s
+
+"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -298,6 +504,30 @@ InputPath=..\..\asm\fhfilea.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\fhfilea.s
+
+"$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\fhfilea.s
+
+"$(IntDir)\fhfilea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\fhfilea.s
 
@@ -337,6 +567,30 @@ InputPath=..\..\asm\fmema.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\fmema.s
+
+"$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\fmema.s
+
+"$(IntDir)\fmema.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -360,6 +614,30 @@ InputPath=..\..\asm\grapha.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\grapha.s
+
+"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\grapha.s
+
+"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\grapha.s
 
@@ -399,6 +677,30 @@ InputPath=..\..\asm\mmx.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\mmx.s
+
+"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\mmx.s
+
+"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -430,6 +732,30 @@ InputPath=..\..\asm\sounda.s
 
 # End Custom Build
 
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\sounda.s
+
+"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
+ProjDir=.
+InputPath=..\..\asm\sounda.s
+
+"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
 !ENDIF 
 
 # End Source File
@@ -453,6 +779,30 @@ InputPath=..\..\asm\spritea.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\asm\spritea.s
+
+"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\asm\spritea.s
+
+"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\asm\spritea.s
 
@@ -1098,6 +1448,30 @@ InputPath=..\..\uae\asm\uaesuppa.s
 
 # Begin Custom Build
 IntDir=.\Debug
+ProjDir=.
+InputPath=..\..\uae\asm\uaesuppa.s
+
+"$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
+
+# Begin Custom Build
+IntDir=.\Dx3Debug
+ProjDir=.
+InputPath=..\..\uae\asm\uaesuppa.s
+
+"$(IntDir)\uaesuppa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
+	nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjDir)\..\..\incasm\ -i$(ProjDir)\..\incasm\ -i$(ProjDir)\..\..\uae\incasm\ $(InputPath)
+
+# End Custom Build
+
+!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
+
+# Begin Custom Build
+IntDir=.\Dx3Release
 ProjDir=.
 InputPath=..\..\uae\asm\uaesuppa.s
 
