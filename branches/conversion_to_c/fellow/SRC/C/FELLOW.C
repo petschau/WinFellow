@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.3 2004-06-08 14:24:58 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.4 2004-06-08 14:27:30 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -23,16 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-
-
-
-/*============================================================================*/
-/* Fellow Amiga Emulator                                                      */
-/*                                  */
-/*                                                                            */
-/* This file is under the GNU Public License (GPL)                            */
-/*============================================================================*/
 
 #include <time.h>
 #include "portable.h"
