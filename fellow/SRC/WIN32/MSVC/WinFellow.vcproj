@@ -553,41 +553,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\sounda.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Asm\Sse.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -656,9 +621,6 @@
 				<File
 					RelativePath="..\..\incasm\mac\plan2c.mac">
 				</File>
-				<File
-					RelativePath="..\..\incasm\mac\sound.mac">
-				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
@@ -689,9 +651,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\func\kbd.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\func\sound.inc">
 				</File>
 			</Filter>
 			<Filter
@@ -725,9 +684,6 @@
 					RelativePath="..\..\incasm\data\gameport.inc">
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\sound.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\data\timer.inc">
 				</File>
 			</Filter>
@@ -736,9 +692,6 @@
 				Filter="*.inc">
 				<File
 					RelativePath="..\..\incasm\generic\defs.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\generic\sound.inc">
 				</File>
 			</Filter>
 		</Filter>
