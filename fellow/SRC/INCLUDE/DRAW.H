@@ -58,7 +58,9 @@
 #define drawLineNormal1x24    ASMRENAME(drawLineNormal1x24)
 #define drawLineNormal2x24    ASMRENAME(drawLineNormal2x24)
 #define drawLineNormal1x32    ASMRENAME(drawLineNormal1x32)
+#define drawLineNormal1x32mmx ASMRENAME(drawLineNormal1x32mmx)
 #define drawLineNormal2x32    ASMRENAME(drawLineNormal2x32)
+#define drawLineNormal2x32mmx ASMRENAME(drawLineNormal2x32mmx)
 
 #define drawLineDual1x8     ASMRENAME(drawLineDual1x8)
 #define drawLineDual1x8mmx  ASMRENAME(drawLineDual1x8mmx)
@@ -135,7 +137,9 @@ extern void drawLineNormal2x16mmx(graph_line *linedesc);
 extern void drawLineNormal1x24(graph_line *linedesc);
 extern void drawLineNormal2x24(graph_line *linedesc);
 extern void drawLineNormal1x32(graph_line *linedesc);
+extern void drawLineNormal1x32mmx(graph_line *linedesc);
 extern void drawLineNormal2x32(graph_line *linedesc);
+extern void drawLineNormal2x32mmx(graph_line *linedesc);
 
 extern void drawLineDual1x8(graph_line *linedesc);
 extern void drawLineDual1x8mmx(graph_line *linedesc);
@@ -232,6 +236,8 @@ extern void drawSetFrameskipRatio(ULO frameskipratio);
 extern void drawSetFPSCounterEnabled(BOOLE enabled);
 extern void drawSetLEDsEnabled(BOOLE enabled);
 extern void drawSetLED(ULO index, BOOLE state);
+extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
+extern BOOLE drawGetAllowMultipleBuffers(void);
 
 
 /*===========================================================================*/
