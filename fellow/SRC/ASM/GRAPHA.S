@@ -763,7 +763,9 @@ _wbplcon0_:
 		ret
 
 
-; When ddfstrt is (mod 8)+4, shift order is 8-f,0-7, not implemeted in lores yet
+; When ddfstrt is (mod 8)+4, shift order is 8-f,0-7 (lores) (Example: New Zealand Story)
+; When ddfstrt is (mod 8)+2, shift order is 4-7,0-3 (hires)
+
 
 ;-------------------------------------------------------------------------------
 ; BPLCON1 - $dff102 Write
@@ -784,7 +786,14 @@ _wbplcon1_:	and	edx, 0ffh
 		mov	dword [bplcon1], edx
 		mov	ecx, edx
 		and	edx, 0fh
-		mov	dword [oddscroll], edx
+
+		test	dword [ddfstrt], 4h	; Reverse shift order?
+		jz	.bpc1normal3
+		add	edx, 8
+		and	edx, 0fh
+
+.bpc1normal3:	mov	dword [oddscroll], edx
+
 		and	edx, 7h
 		test	dword [ddfstrt], 2h
 		jz	.bpc1normal1
@@ -794,7 +803,13 @@ _wbplcon1_:	and	edx, 0ffh
 		mov	dword [oddhiscroll], edx
 		and	ecx, 0f0h
 		shr	ecx, 4
-		mov	dword [evenscroll], ecx
+
+		test	dword [ddfstrt], 4h	; Reverse shift order?
+		jz	.bpc1normal4
+		add	ecx, 8
+		and	ecx, 15
+
+.bpc1normal4:	mov	dword [evenscroll], ecx
 		and	ecx, 7h
 		test	dword [ddfstrt], 2h
 		jz	.bpc1normal2
