@@ -162,7 +162,7 @@ EnumHardwareTree (LPCTSTR SubKey)
       (HKEY_LOCAL_MACHINE, SubKey, 0,
        KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE, &hKey) != ERROR_SUCCESS)
     {
-      LogErrorMessageFromSystem ();
+      /* LogErrorMessageFromSystem (); */
       return;
     }
 
@@ -170,7 +170,7 @@ EnumHardwareTree (LPCTSTR SubKey)
   if (RegQueryInfoKey (hKey, NULL, NULL, NULL, &dwNoSubkeys, NULL,
 		       NULL, NULL, NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
     {
-      LogErrorMessageFromSystem ();
+      /* LogErrorMessageFromSystem (); */
       return;
     }
 
@@ -183,7 +183,7 @@ EnumHardwareTree (LPCTSTR SubKey)
 			&dwSubKeyNameLen,
 			NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
 	{
-	  LogErrorMessageFromSystem ();
+	  /* LogErrorMessageFromSystem (); */
 	  continue;
 	}
 
@@ -193,7 +193,7 @@ EnumHardwareTree (LPCTSTR SubKey)
 	  (hKey, szSubKeyName, 0, KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE,
 	   &hKey2) != ERROR_SUCCESS)
 	{
-	  LogErrorMessageFromSystem ();
+	  /* LogErrorMessageFromSystem (); */
 	  return;
 	}
 
@@ -201,7 +201,7 @@ EnumHardwareTree (LPCTSTR SubKey)
 			   NULL, NULL, NULL, NULL, NULL,
 			   NULL) != ERROR_SUCCESS)
 	{
-	  LogErrorMessageFromSystem ();
+	  /* LogErrorMessageFromSystem (); */
 	  return;
 	}
 
@@ -215,7 +215,7 @@ EnumHardwareTree (LPCTSTR SubKey)
 			    &dwSubKeyNameLen2,
 			    NULL, NULL, NULL, NULL) != ERROR_SUCCESS)
 	    {
-	      LogErrorMessageFromSystem ();
+	      /* LogErrorMessageFromSystem (); */
 	      continue;
 	    }
 
@@ -225,7 +225,8 @@ EnumHardwareTree (LPCTSTR SubKey)
 	  if (szClass)
 	    {
 	      if ((stricmp (szClass, "display") == 0) ||
-		  (stricmp (szClass, "media") == 0))
+		      (stricmp (szClass, "media"  ) == 0) ||
+			  (stricmp (szClass, "unknown") == 0))
 		{
 		  szDevice = RegistryQueryStringValue (hKey2,
 						       szSubKeyName2,
@@ -261,6 +262,7 @@ EnumRegistry (void)
       /* this seems to be the right place in Win2k and NT */
       EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
       EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
+	  EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
     }
   else
     {
