@@ -18,6 +18,76 @@
 #include "draw.h"
 #include "listtree.h"
 
+
+#define DRAW_TSC_PROFILE
+
+#ifdef DRAW_TSC_PROFILE
+
+LLO spritemergelores_tmp = 0;
+LLO spritemergelores = 0;
+LON spritemergelores_times = 0;
+
+LLO spritemergehires_tmp = 0;
+LLO spritemergehires = 0;
+LON spritemergehires_times = 0;
+
+LLO spritemergedual_tmp = 0;
+LLO spritemergedual = 0;
+LON spritemergedual_times = 0;
+
+/*============================================================================*/
+/* profiling help functions                                                   */
+/*============================================================================*/
+
+static __inline spriteTscBefore(LLO* a)
+{
+  LLO local_a = *a;
+  __asm 
+  {
+    push    eax
+    push    edx
+    push    ecx
+    mov     ecx,10h
+    rdtsc
+    pop     ecx
+    mov     dword ptr [local_a], eax
+    mov     dword ptr [local_a + 4], edx
+    pop     edx
+    pop     eax
+  }
+  *a = local_a;
+}
+
+static __inline spriteTscAfter(LLO* a, LLO* b, ULO* c)
+{
+  LLO local_a = *a;
+  LLO local_b = *b;
+  ULO local_c = *c;
+
+  __asm 
+  {
+    push    eax
+    push    edx
+    push    ecx
+    mov     ecx, 10h
+    rdtsc
+    pop     ecx
+    sub     eax, dword ptr [local_a]
+    sbb     edx, dword ptr [local_a + 4]
+    add     dword ptr [local_b], eax
+    adc     dword ptr [local_b + 4], edx
+    inc     dword ptr [local_c]
+    pop     edx
+    pop     eax
+  }
+  *a = local_a;
+  *b = local_b;
+  *c = local_c;
+}
+
+
+#endif
+
 ULO sprite_to_block = 0;
 BOOLE output_sprite_log = FALSE;	
 BOOLE output_action_sprite_log = FALSE;
@@ -1385,6 +1455,16 @@ void spriteStartup(void) {
 /*===========================================================================*/
 
 void spriteShutdown(void) {
+#ifdef DRAW_TSC_PROFILE
+  {
+  FILE *F = fopen("spriteprofile.txt", "w");
+  fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\n");
+  fprintf(F, "SpriteMergeLores()\t%I64d\t%d\t%I64d\n", spritemergelores, spritemergelores_times, (spritemergelores_times == 0) ? 0 : (spritemergelores / spritemergelores_times));
+  fprintf(F, "SpriteMergeHires()\t%I64d\t%d\t%I64d\n", spritemergehires, spritemergehires_times, (spritemergehires_times == 0) ? 0 : (spritemergehires / spritemergehires_times));
+  fprintf(F, "SpriteMergeDual()\t%I64d\t%d\t%I64d\n", spritemergedual, spritemergedual_times, (spritemergedual_times == 0) ? 0 : (spritemergedual / spritemergedual_times));
+  fclose(F);
+  }
+#endif
 }
 
 void spriteDecode4Sprite_C(UBY sprnr)
@@ -2163,6 +2243,10 @@ static void spriteMergeDualPlayfield(graph_line* current_graph_line)
 	UBY *sprite_data;
 	UBY line1_buildup[4];
 
+#ifdef DRAW_TSC_PROFILE
+		spriteTscBefore(&spritemergedual_tmp);
+  #endif
+
 	for (sprnr = 0; sprnr < 8; sprnr++)
 	{
 		if (sprite_online[sprnr] == TRUE)
@@ -2223,6 +2307,9 @@ static void spriteMergeDualPlayfield(graph_line* current_graph_line)
 			}
 		}
 	}
+  #ifdef DRAW_TSC_PROFILE
+		spriteTscAfter(&spritemergedual_tmp, &spritemergedual, &spritemergedual_times);
+  #endif
 }
 
 static void spriteMergeHires(graph_line* current_graph_line)
@@ -2230,7 +2317,11 @@ static void spriteMergeHires(graph_line* current_graph_line)
 	ULO sprnr;
 	UBY *line1;
 	UBY *sprite_data;
-	UBY line1_buildup[4];
+	ULO i;
+
+  #ifdef DRAW_TSC_PROFILE
+		spriteTscBefore(&spritemergehires_tmp);
+  #endif
 
 	for (sprnr = 0; sprnr < 8; sprnr++)
 	{
@@ -2239,138 +2330,27 @@ static void spriteMergeHires(graph_line* current_graph_line)
 			// there is sprite data waiting within this line
 			if (sprx[sprnr] <= graph_DIW_last_visible)
 			{
+				// determine whetever this sprite is in front or behind the playfield
+				ULO in_front = ((bplcon2 & 0x38) > (4 * sprnr)) ? 1 : 0;
 				// set destination and source 
 				line1 = ((current_graph_line->line1) + 2*(sprx[sprnr] + 1));
 				sprite_data = sprite[sprnr];
 
-				// determine whetever this sprite is in front or behind the playfield
-				if ((bplcon2 & 0x38) > (4 * sprnr))
+				// merge sprite data within the line
+				  
+				for (i = 0; i < 16; ++i)
 				{
-					// sprite must be drawn in back of playfield
-
-					// merge sprite data within the line
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-					
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1)))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-				}
-				else
-				{
-					// merge sprite data within the line
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-					
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					line1_buildup[0] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
+					ULO sdat = *sprite_data++;
+					line1[0] = sprite_translate[in_front][line1[0]][sdat];
+					line1[1] = sprite_translate[in_front][line1[1]][sdat];
+					line1 += 2;
 				}
 			}
 		}
 	}
+  #ifdef DRAW_TSC_PROFILE
+		spriteTscAfter(&spritemergehires_tmp, &spritemergehires, &spritemergehires_times);
+  #endif
 }
 
 static void spriteMergeHires320(graph_line* current_graph_line)
@@ -2383,7 +2363,11 @@ static void spriteMergeLores(graph_line* current_graph_line)
 	ULO sprnr;
 	UBY *line1;
 	UBY *sprite_data;
-	UBY line1_buildup[4];
+	ULO i;
+
+  #ifdef DRAW_TSC_PROFILE
+		spriteTscBefore(&spritemergelores_tmp);
+  #endif
 
 	for (sprnr = 0; sprnr < 8; sprnr++)
 	{
@@ -2392,82 +2376,25 @@ static void spriteMergeLores(graph_line* current_graph_line)
 			// there is sprite data waiting within this line
 			if (sprx[sprnr] <= graph_DIW_last_visible)
 			{
+				// determine whetever this sprite is in front or behind the playfield
+				ULO in_front = ((bplcon2 & 0x38) > (4 * sprnr)) ? 1 : 0;
+
 				// set destination and source 
 				line1 = ((current_graph_line->line1) + sprx[sprnr] + 1);
 				sprite_data = sprite[sprnr];
 
-				// determine whetever this sprite is in front or behind the playfield
-				if ((bplcon2 & 0x38) > (4 * sprnr))
+  				// merge sprite data within the line
+				for (i = 0; i < 16; ++i)
 				{
-					// sprite must be drawn in back of playfield
-
-					// merge sprite data within the line
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[1][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[1][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-				}
-				else
-				{
-					// merge sprite data within the line
-					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
-
-					line1 += 4;
-					sprite_data += 4;
-					line1_buildup[0] = sprite_translate[0][(UBY)  *((ULO *) line1)][(UBY) *((ULO *) sprite_data)];
-					line1_buildup[1] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 8)) ][((UBY) (*((ULO *) sprite_data) >> 8))];
-					line1_buildup[2] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 16))][((UBY) (*((ULO *) sprite_data) >> 16))];
-					line1_buildup[3] = sprite_translate[0][((UBY)  (*((ULO *) line1) >> 24))][((UBY) (*((ULO *) sprite_data) >> 24))];
-					*((ULO *) line1) = *((ULO *) line1_buildup);
+				  *line1++ = sprite_translate[in_front][*line1][*sprite_data++];
 				}
 			}
 		}
 	}
+  #ifdef DRAW_TSC_PROFILE
+		spriteTscAfter(&spritemergelores_tmp, &spritemergelores, &spritemergelores_times);
+  #endif
+
 }
 
 void spritesMerge_C(graph_line* current_graph_line)
