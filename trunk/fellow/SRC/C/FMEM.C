@@ -1419,6 +1419,22 @@ void memoryEmulationStart(void) {
 void memoryEmulationStop(void) {
 }
 
+void memorySoftReset(void) {
+  memoryDmemClear();
+  memoryEmemClear();
+  memoryEmemCardsRemove();
+  memoryFastCardAdd();
+  intreq = intena = intenar = 0;
+  memoryBankClearAll();
+  memoryChipMap();
+  memoryBogoMap();
+  memoryIOMap();
+  memoryEmemMap();
+  memoryDmemMap();
+  memoryMysteryMap();
+  memoryKickMap();
+}
+
 void memoryHardReset(void) {
   memoryChipClear(),
   memoryFastClear();
