@@ -18,7 +18,7 @@
 #include "draw.h"
 #include "cpu.h"
 
-#define BLIT_TSC_PROFILE
+/*#define BLIT_TSC_PROFILE*/
 
 #ifdef BLIT_TSC_PROFILE
 LLO blit_tsc_tmp = 0;
@@ -26,7 +26,7 @@ LLO blit_tsc = 0;
 LON blit_tsc_times = 0;
 #endif
 
-ULO blit_tsc_words = 0;
+/*ULO blit_tsc_words = 0;*/
 
 /*============================================================================*/
 /* Blitter registers                                                          */
@@ -391,7 +391,7 @@ if (enabled) { \
   ULO width = blit_width; \
   BOOLE fc_original = !!(bltcon & 0x4); \
   BOOLE fill_carry; \
-  if (!fill) blit_tsc_words += height*width; \
+  /*if (!fill) blit_tsc_words += height*width;*/ \
   for (y = height; y > 0; y--) \
   { \
     blitterFillCarryReload(fill, fill_carry, fc_original); \
