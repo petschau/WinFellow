@@ -154,10 +154,10 @@ void graphP2C1XInit(void) {
   graph_decode_line_tab[6] = graphDecode6_C;
   graph_decode_line_tab[7] = graphDecode0_C;
   graph_decode_line_tab[8] = graphDecode0_C;
-  graph_decode_line_tab[9] = graphDecode1Hi320;
-  graph_decode_line_tab[10] = graphDecode2Hi320;
-  graph_decode_line_tab[11] = graphDecode3Hi320;
-  graph_decode_line_tab[12] = graphDecode4Hi320;
+  graph_decode_line_tab[9] = graphDecodeHi1_C;
+  graph_decode_line_tab[10] = graphDecodeHi2_C;
+  graph_decode_line_tab[11] = graphDecodeHi3_C;
+  graph_decode_line_tab[12] = graphDecodeHi4_C;
   graph_decode_line_tab[13] = graphDecode0_C;
   graph_decode_line_tab[14] = graphDecode0_C;
   graph_decode_line_tab[15] = graphDecode0_C;
@@ -170,10 +170,10 @@ void graphP2C1XInit(void) {
   graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
   graph_decode_line_dual_tab[7] = graphDecode0_C;
   graph_decode_line_dual_tab[8] = graphDecode0_C;
-  graph_decode_line_dual_tab[9] = graphDecode1Hi320;
-  graph_decode_line_dual_tab[10] = graphDecode2HiDual320;
-  graph_decode_line_dual_tab[11] = graphDecode3HiDual320;
-  graph_decode_line_dual_tab[12] = graphDecode4HiDual320;
+  graph_decode_line_dual_tab[9] = graphDecodeHi1_C;
+  graph_decode_line_dual_tab[10] = graphDecodeHi2Dual_C;
+  graph_decode_line_dual_tab[11] = graphDecodeHi3Dual_C;
+  graph_decode_line_dual_tab[12] = graphDecodeHi4Dual_C;
   graph_decode_line_dual_tab[13] = graphDecode0_C;
   graph_decode_line_dual_tab[14] = graphDecode0_C;
   graph_decode_line_dual_tab[15] = graphDecode0_C;
@@ -1173,6 +1173,68 @@ static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO 
   return 0;
 }
 
+// Decode the odd part of the first 4 pixels
+static __inline ULO graphDecodeHiOdd(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2: return graph_deco320hi1[dat1]; 
+    case 3:
+    case 4: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
+	  case 5:
+    case 6: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
+  }
+  return 0;
+}
+
+// Decode the even part of the first 4 pixels
+static __inline ULO graphDecodeHiEven(int bitplanes, ULO dat2, ULO dat4, ULO dat6)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2:
+    case 3: return graph_deco320hi2[dat2]; 
+    case 4: 
+    case 5: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4];  
+    case 6: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4]; 
+
+  }
+  return 0;
+}
+
+// Decode the even part of the last 4 pixels
+static __inline ULO graphDecodeHiDualOdd(int bitplanes, ULO datA, ULO datB, ULO datC)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2: return graph_deco320hi1[datA]; 
+    case 3: 
+    case 4: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
+  	case 5: 
+    case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC]; 
+  }
+  return 0;
+}
+
+// Decode the even part of the first 4 pixels
+static __inline ULO graphDecodeHiDualEven(int bitplanes, ULO datA, ULO datB, ULO datC)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2:
+    case 3: return graph_deco320hi1[datA]; 
+    case 4: 
+    case 5: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
+    case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC]; 
+
+  }
+  return 0;
+}
+
 // Add modulo to the bitplane ptrs
 static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
 {
@@ -1362,6 +1424,131 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
   graphDecodeModulo(bitplanes, bpl_length_in_bytes);
 }
 
+static __inline void graphDecodeHi320Generic(int bitplanes)
+{
+  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
+
+  if (bitplanes == 0) return;
+  if (bpl_length_in_bytes != 0) 
+  {
+    ULO *dest_odd;
+    ULO *dest_even;
+    ULO *dest_tmp;
+    ULO *end_odd;
+    ULO *end_even;
+    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
+    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+
+    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
+    
+	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+	  {
+		  // high resolution
+		  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
+	   
+      // setup loop
+      end_odd = dest_odd + bpl_length_in_bytes; 
+    
+	    if (bitplanes > 1)
+      {
+		    // high resolution
+			  dest_even = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
+		    end_even = dest_even + bpl_length_in_bytes; 
+      }
+
+      switch (bitplanes)
+      {
+        case 6: pt6_tmp = memory_chip + bpl6pt;
+        case 5: pt5_tmp = memory_chip + bpl5pt;
+        case 4: pt4_tmp = memory_chip + bpl4pt;
+        case 3: pt3_tmp = memory_chip + bpl3pt;
+        case 2: pt2_tmp = memory_chip + bpl2pt;
+        case 1: pt1_tmp = memory_chip + bpl1pt;
+      }
+
+      for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
+      {
+        if (bitplanes >= 1) dat1 = *pt1_tmp++;
+        if (bitplanes >= 3) dat3 = *pt3_tmp++;
+	      if (bitplanes >= 5) dat5 = *pt5_tmp++;
+        dest_tmp[0] = graphDecodeHiOdd(bitplanes, dat1, dat3, dat5);
+      }
+
+      if (bitplanes >= 2) 
+      {
+        for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
+        {
+          if (bitplanes >= 2) dat2 = *pt2_tmp++;
+          if (bitplanes >= 4) dat4 = *pt4_tmp++;
+		      if (bitplanes >= 6) dat6 = *pt6_tmp++;
+			    dest_tmp[0] |= graphDecodeHiEven(bitplanes, dat2, dat4, dat6);
+        }
+      }
+    }
+    graphDecodeModulo(bitplanes, bpl_length_in_bytes);
+  }
+}
+
+
+static __inline void graphDecodeDualHi320Generic(int bitplanes)
+{
+  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
+  if (bitplanes == 0) return;
+  if (bpl_length_in_bytes != 0) 
+  {
+    ULO *dest_odd;
+    ULO *dest_even;
+    ULO *dest_tmp;
+    ULO *end_odd;
+    ULO *end_even;
+    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
+    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+  
+    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
+
+	  // setup loop
+	  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddscroll >> 1));			
+    end_odd = dest_odd + bpl_length_in_bytes; 
+    
+	  if (bitplanes > 1)
+    {
+		  // low resolution
+		  dest_even = (ULO*) (graph_line2_tmp + (graph_DDF_start >> 1)+ (evenscroll >> 1));
+		  end_even = dest_even + bpl_length_in_bytes; 
+    }
+
+    switch (bitplanes)
+    {
+      case 6: pt6_tmp = memory_chip + bpl6pt;
+      case 5: pt5_tmp = memory_chip + bpl5pt;
+      case 4: pt4_tmp = memory_chip + bpl4pt;
+      case 3: pt3_tmp = memory_chip + bpl3pt;
+      case 2: pt2_tmp = memory_chip + bpl2pt;
+      case 1: pt1_tmp = memory_chip + bpl1pt;
+    }
+
+    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
+    {
+      if (bitplanes >= 1) dat1 = *pt1_tmp++;
+      if (bitplanes >= 3) dat3 = *pt3_tmp++;
+	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
+      dest_tmp[0] = graphDecodeHiDualOdd(bitplanes, dat1, dat3, dat5);
+    }
+
+    if (bitplanes >= 2) 
+    {
+      for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
+      {
+        if (bitplanes >= 2) dat2 = *pt2_tmp++;
+        if (bitplanes >= 4) dat4 = *pt4_tmp++;
+		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
+			  dest_tmp[0] = graphDecodeHiDualEven(bitplanes, dat2, dat4, dat6);
+      }
+    }
+  }
+  graphDecodeModulo(bitplanes, bpl_length_in_bytes);
+}
+
 /*===========================================================================*/
 /* Planar to chunky conversion, 1 bitplane hires or lores                    */
 /*===========================================================================*/
@@ -1426,6 +1613,60 @@ void graphDecode6_C(void)
 }
 
 /*===========================================================================*/
+/* Planar to chunky conversion, 1 bitplane hires to 320                      */
+/*===========================================================================*/
+
+void graphDecodeHi1_C(void)
+{
+  graphDecodeHi320Generic(1);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 2 bitplanes hires to 320                     */
+/*===========================================================================*/
+
+void graphDecodeHi2_C(void)
+{
+  graphDecodeHi320Generic(2);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 3 bitplanes hires to 320                     */
+/*===========================================================================*/
+
+void graphDecodeHi3_C(void)
+{
+  graphDecodeHi320Generic(3);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 4 bitplanes hires to 320                     */
+/*===========================================================================*/
+
+void graphDecodeHi4_C(void)
+{
+  graphDecodeHi320Generic(4);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 5 bitplanes hires to 320                     */
+/*===========================================================================*/
+
+void graphDecodeHi5_C(void)
+{
+  graphDecodeHi320Generic(5);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 6 bitplanes hires to 320                     */
+/*===========================================================================*/
+
+void graphDecodeHi6_C(void)
+{
+  graphDecodeHi320Generic(6);
+}
+
+/*===========================================================================*/
 /* Planar to chunky conversion, 2 bitplanes lores, dual playfield            */
 /*===========================================================================*/
 void graphDecode2Dual_C(void)
@@ -1442,7 +1683,7 @@ void graphDecode3Dual_C(void)
 }
 
 /*===========================================================================*/
-/* Planar to chunky conversion, 3 bitplanes lores, dual playfield            */
+/* Planar to chunky conversion, 4 bitplanes lores, dual playfield            */
 /*===========================================================================*/
 void graphDecode4Dual_C(void)
 {
@@ -1450,7 +1691,7 @@ void graphDecode4Dual_C(void)
 }
 
 /*===========================================================================*/
-/* Planar to chunky conversion, 3 bitplanes lores, dual playfield            */
+/* Planar to chunky conversion, 5 bitplanes lores, dual playfield            */
 /*===========================================================================*/
 void graphDecode5Dual_C(void)
 {
@@ -1458,11 +1699,51 @@ void graphDecode5Dual_C(void)
 }
 
 /*===========================================================================*/
-/* Planar to chunky conversion, 3 bitplanes lores, dual playfield            */
+/* Planar to chunky conversion, 6 bitplanes lores, dual playfield            */
 /*===========================================================================*/
 void graphDecode6Dual_C(void)
 {
 	graphDecodeDualGeneric(6);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 2 bitplanes hires, dual playfield            */
+/*===========================================================================*/
+void graphDecodeHi2Dual_C(void)
+{
+	graphDecodeDualHi320Generic(2);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 3 bitplanes hires, dual playfield            */
+/*===========================================================================*/
+void graphDecodeHi3Dual_C(void)
+{
+	graphDecodeDualHi320Generic(3);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 4 bitplanes hires, dual playfield            */
+/*===========================================================================*/
+void graphDecodeHi4Dual_C(void)
+{
+	graphDecodeDualHi320Generic(4);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 5 bitplanes hires, dual playfield            */
+/*===========================================================================*/
+void graphDecodeHi5Dual_C(void)
+{
+	graphDecodeDualHi320Generic(5);
+}
+
+/*===========================================================================*/
+/* Planar to chunky conversion, 6 bitplanes hires, dual playfield            */
+/*===========================================================================*/
+void graphDecodeHi6Dual_C(void)
+{
+	graphDecodeDualHi320Generic(6);
 }
 
 /*===========================================================================*/
