@@ -1931,9 +1931,6 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	  case IDC_START_EMULATION:
 	    wgui_action = WGUI_START_EMULATION;
 	    break;
-	  case ID_FILE_SAVECONFIGURATION:
-		wgui_action = WGUI_SAVECONFIGURATION;
-		break;
 	  case IDCANCEL:
 	  case ID_FILE_QUIT:
 	  case IDC_QUIT_EMULATOR:
