@@ -458,7 +458,6 @@ void copperEmulateC(void)
 
 						// invert masks
 						bswapRegD = ~bswapRegD;
-						//bswapRegD &= 0xffff;
 
 						// get bits that is not masked out
 						maskedY = graph_raster_y;
@@ -589,7 +588,6 @@ void copperEmulateC(void)
 									
 									// invert masks
 									bswapRegD = ~bswapRegD;
-									//bswapRegD &= 0xffff;
 
 									// get missing bits
 									maskedY = (graph_raster_y | 0x100);

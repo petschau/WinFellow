@@ -2110,7 +2110,7 @@ static void spriteMergeHires320(graph_line* current_graph_line)
 
 static void spriteMergeLores(graph_line* current_graph_line)
 {
-	ULO sprnr;
+	BYT sprnr;
 	UBY *line1;
 	UBY *sprite_data;
 	spr_merge_list_item *next_item;
@@ -2122,7 +2122,7 @@ static void spriteMergeLores(graph_line* current_graph_line)
 		spriteTscBefore(&spritemergelores_tmp);
   #endif
 
-	for (sprnr = 0; sprnr < 8; sprnr++)
+	for (sprnr = 7; sprnr >= 0; sprnr--)
 	{
 		if (sprite_online[sprnr] == TRUE)
 		{

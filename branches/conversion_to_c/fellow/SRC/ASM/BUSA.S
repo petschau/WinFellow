@@ -319,17 +319,6 @@ _endOfFrame_:	push	edx
 		;==============================================================
 
 		xor	dword [lof], 08000h		; Short/long frame 
-		xor	edx, edx
-		mov	ecx, 0102h			; Zero scroll
-
-		pushad
-		push ecx
-		push edx
-		call	dword [memory_iobank_write + 2*ecx]
-		pop edx
-		pop ecx
-		popad
-
 
 		;==============================================================
 		; Restart copper

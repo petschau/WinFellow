@@ -72,12 +72,16 @@
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1019
 #define IDC_BUTTON_HARDFILE_CREATE      1019
 #define IDC_RADIO_68EC60                1019
+#define IDC_BUTTON_DF1_SWAP             1019
 #define IDC_BUTTON2                     1020
 #define IDC_BUTTON_KEYFILE_FILEDIALOG   1020
+#define IDC_BUTTON_DF2_SWAP             1020
 #define IDC_BUTTON3                     1021
 #define IDC_BUTTON_DF2_FILEDIALOG       1021
+#define IDC_BUTTON_DF3_SWAP             1021
 #define IDC_BUTTON4                     1022
 #define IDC_BUTTON_DF3_FILEDIALOG       1022
+#define IDC_BUTTON_TURBO_LOAD           1022
 #define IDC_CHECK1                      1023
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 1023
 #define IDC_CHECK_VARIOUS_LED           1023
