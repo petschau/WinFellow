@@ -266,6 +266,10 @@ void graphLineDescClearSkips(void) {
         graph_frame[frame][line].linetype = GRAPH_LINE_BG;
         graph_frame[frame][line].frames_left_until_BG_skip = 1;
       }
+      else if (graph_frame[frame][line].linetype == GRAPH_LINE_BPL_SKIP) {
+        graph_frame[frame][line].linetype = GRAPH_LINE_BPL;
+        graph_frame[frame][line].frames_left_until_BG_skip = 1;
+      }
 }
 
 
