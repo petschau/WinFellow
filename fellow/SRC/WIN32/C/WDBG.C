@@ -9,6 +9,8 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/13:                                                                */
+/* - module types SoundFX 1.3 and 2.0 added to module-ripper                  */
 /* 2000/12/10:                                                                */
 /* - the mod-ripper now works                                                 */
 /* 2000/12/09:                                                                */
@@ -119,13 +121,17 @@ extern void soundState3(ULO channelno);
 extern void soundState5(ULO channelno);
 #endif
 
-
-
 /*===============================*/
 /* Handle of the main dialog box */
 /*===============================*/
 
 static HWND wdbg_hDialog;
+
+/*=================================*/
+/* number of unnamed modules found */
+/* by the module ripper            */
+/*=================================*/
+static int wdbg_mods_found = 0;
 
 #define WDBG_CPU_REGISTERS_X 24
 #define WDBG_CPU_REGISTERS_Y 26
@@ -133,7 +139,8 @@ static HWND wdbg_hDialog;
 #define WDBG_DISASSEMBLY_Y 96
 #define WDBG_DISASSEMBLY_LINES 20
 #define WDBG_DISASSEMBLY_INDENT 16
-#define WDBG_STRLEN 1024
+#define WDBG_STRLEN 2048
+#define WDBG_MAX_MODULE_LEN 1000000
 
 /*===================================*/
 /* private variables for this module */
@@ -673,18 +680,12 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     list1 = (cop1lc & 0xfffffe);
     list2 = (cop2lc & 0xfffffe);
 
-    /* @@@@@ changed register names ?
-       atpc  = (curcopptr & 0xfffffe); */
     atpc = (copper_ptr & 0xfffffe);	/* Make sure debug doesn't trap odd ex */
 
-    /* @@@@@ changed register names ?
-       sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%d Copper PC - %.6X", cop1lc, cop2lc, copcon, curcopptr); */
     sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%d Copper PC - %.6X", cop1lc,
 	    cop2lc, copcon, copper_ptr);
     y = wdbgLineOut(hDC, s, x, y);
 
-    /* @@@@@ changed register names ? 
-       sprintf(s, "Next cycle - %d  Y - %d  X - %d", nxtcopaccess, (nxtcopaccess != -1) ? (nxtcopaccess/228) : 0, (nxtcopaccess != -1) ? (nxtcopaccess % 228) : 0); */
     sprintf(s, "Next cycle - %d  Y - %d  X - %d", copper_next,
 	    (copper_next != -1) ? (copper_next / 228) : 0,
 	    (copper_next != -1) ? (copper_next % 228) : 0);
@@ -830,17 +831,10 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     x += WDBG_DISASSEMBLY_INDENT;
 
     sprintf(s,
-       "clipleftx-%.3d   cliprightx-%.3d         cliptop-%.3d           clipbot-%d",
-       draw_left,
-       draw_right,
-       draw_top,
-       draw_bottom);
+	    "clipleftx-%.3d   cliprightx-%.3d         cliptop-%.3d           clipbot-%d",
+	    draw_left, draw_right, draw_top, draw_bottom);
     y = wdbgLineOut(hDC, s, x, y);
 
-    /* @@@@@ changed register names ?
-       sprintf(s,
-       "DDFStartpos-%.3d DIWfirstvisiblepos-%.3d DIWlastvisiblepos-%.3d",
-       DDFstartpos, DIWfirstvisiblepos, DIWlastvisiblepos); */
     sprintf(s,
 	    "DDFStartpos-%.3d DIWfirstvisiblepos-%.3d DIWlastvisiblepos-%.3d",
 	    graph_DDF_start, graph_DIW_first_visible, graph_DIW_last_visible);
@@ -918,8 +912,6 @@ void wdbgUpdateEventState(HWND hwndDlg)
     sprintf(s, "Next Cpu      - %d", cpu_next);
     y = wdbgLineOut(hDC, s, x, y);
 
-    /* @@@@@ changed register name ?
-       sprintf(s, "Next Copper   - %d", nxtcopaccess); */
     sprintf(s, "Next Copper   - %d", copper_next);
     y = wdbgLineOut(hDC, s, x, y);
 
@@ -1012,10 +1004,10 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
 	      i,
 	      (audstate[i] == soundState0) ? 0 :
-	         (audstate[i] == soundState1) ? 1 :
-	         (audstate[i] == soundState2) ? 2 :
-	         (audstate[i] == soundState3) ? 3 :
-	         (audstate[i] == soundState5) ? 5 : -1, audlenw[i],
+	      (audstate[i] == soundState1) ? 1 :
+	      (audstate[i] == soundState2) ? 2 :
+	      (audstate[i] == soundState3) ? 3 :
+	      (audstate[i] == soundState5) ? 5 : -1, audlenw[i],
 	      audlen[i], audper[i], audpercounter[i], audvol[i]);
       y = wdbgLineOut(hDC, s, x, y);
     }
@@ -1034,9 +1026,6 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 /* MOD Ripper */
 /*============*/
 
-/* Module-Ripper functions */
-static int mods_found = 0;	// no. of mods found
-
 /* Saves mem from address start to address end in file *name */
 static BOOLE wdbgSaveMem(char *name, ULO start, ULO end)
 {
@@ -1051,20 +1040,23 @@ static BOOLE wdbgSaveMem(char *name, ULO start, ULO end)
   return TRUE;
 }
 
+/*================================*/
+/* scan for ProTracker and clones */
+/* games: SWIV, Lotus II          */
+/*================================*/
+
 static void wdbgScanModules(char *searchstring, int channels, HWND hWnd)
 {
-  ULO i, j;
-  char file_name[38];		// File name for the module-file
-  char dummy_string[80];
-  char message[2048];
-  char module_name[34];		// Name of the module
+  ULO i, j, start, end;
+  char file_name[WDBG_STRLEN]; /* File name for the module-file */
+  char dummy_string[WDBG_STRLEN];
+  char message[WDBG_STRLEN];
+  char module_name[WDBG_STRLEN]; /* Name of the module */
   int result;
-  ULO start;			// address where the module starts
-  ULO end;				// address where the module ends
-  int sample_size;		// no. of all sample-data used in bytes
-  int pattern_size;		// no. of all pattern-data used in bytes
-  int song_length;		// how many patterns does the song play?
-  int max_pattern;		// highest pattern used
+  int sample_size; /* no. of all sample-data used in bytes */
+  int pattern_size; /* no. of all pattern-data used in bytes */
+  int song_length; /* how many patterns does the song play? */
+  int max_pattern; /* highest pattern used */
 
   for (i = 0; i <= 0xffffff; i++) {
     if ((fetb(i + 0) == searchstring[0])
@@ -1074,12 +1066,11 @@ static void wdbgScanModules(char *searchstring, int channels, HWND hWnd)
       ) {
       /* Searchstring found, now calc size */
       start = i - 0x438;
-	  fellowAddLog("MODRIP: Matching ID for %s at 0x%06x.\n", searchstring, i);
 
       sample_size = 0;		/* Get SampleSize */
       for (j = 0; j <= 30; j++) {
-	sample_size += (256 * fetb(start + 0x2a + j * 0x1e)
-			+ fetb(start + 0x2b + j * 0x1e)) * 2;
+	    sample_size += (256 * fetb(start + 0x2a + j * 0x1e)
+			         +        fetb(start + 0x2b + j * 0x1e)) * 2;
       }
 
       song_length = fetb(start + 0x3b6);
@@ -1087,43 +1078,132 @@ static void wdbgScanModules(char *searchstring, int channels, HWND hWnd)
       max_pattern = 0;		/* Scan for max. ammount of patterns */
 
       for (j = 0; j <= song_length; j++) {
-	if (max_pattern < fetb(start + 0x3b8 + j)) {
-	  max_pattern = fetb(start + 0x3b8 + j);
-	}
+	    if (max_pattern < fetb(start + 0x3b8 + j)) {
+	      max_pattern = fetb(start + 0x3b8 + j);
+		}
       }
 
       pattern_size = (max_pattern + 1) * 64 * 4 * channels;
       end = start + sample_size + pattern_size + 0x43b;
 
-      if ((end <= 0xffffff) && (end - start < 1000000)) {
-	for (j = 0; j < 20; j++) {
-	  module_name[j] = fetb(start + j);
-	}
-	module_name[20] = 0;	/* Get module name */
+      if ((end <= 0xffffff) && (end - start < WDBG_MAX_MODULE_LEN)) {
+	    for (j = 0; j < 20; j++) {
+	      module_name[j] = fetb(start + j);
+		}
+	    module_name[20] = 0;	/* Get module name */
 
-	/* Set filename for the module-file */
-	if (strlen(module_name) > 2) {
-	  strcpy(file_name, module_name);
-	  strcat(file_name, ".mod");
-	}
-	else {
-	  sprintf(file_name, "mod%d.mod", mods_found++);
-	}
+	    /* Set filename for the module-file */
+	    if (strlen(module_name) > 2) {
+	      strcpy(file_name, module_name);
+	      strcat(file_name, ".mod");
+		}
+	    else {
+	      sprintf(file_name, "mod%d.mod", wdbg_mods_found++);
+		}
 
-	sprintf(message, "Module found at $%X\n", start);
-	sprintf(dummy_string, "Module name: %s\n", module_name);
-	strcat(message, dummy_string);
-	sprintf(dummy_string, "Module size: %d Bytes\n", end - start);
-	strcat(message, dummy_string);
-	sprintf(dummy_string, "Patterns used: %d\n", max_pattern);
-	strcat(message, dummy_string);
-	sprintf(dummy_string, "Save module as %s?", file_name);
-	strcat(message, dummy_string);
-	result = MessageBox(hWnd, message, "Module found.", MB_YESNO);
+	    sprintf(message, "ProTracker style module found at $%X\n", start);
+	    sprintf(dummy_string, "Module name: %s\n", module_name);
+	    strcat(message, dummy_string);
+	    sprintf(dummy_string, "Module size: %d Bytes\n", end - start);
+	    strcat(message, dummy_string);
+	    sprintf(dummy_string, "Patterns used: %d\n", max_pattern);
+	    strcat(message, dummy_string);
+	    sprintf(dummy_string, "Save module as %s?", file_name);
+	    strcat(message, dummy_string);
+	    result = MessageBox(hWnd, message, "Module found.", MB_YESNO);
 
-	if (result == IDYES) {
-	  wdbgSaveMem(file_name, start, end);
-	}
+	    if (result == IDYES) {
+	      wdbgSaveMem(file_name, start, end);
+		}
+	  }
+    }
+  }
+}
+
+/*==============================*/
+/* scan for SoundFX 1.3 and 2.0 */
+/* games: TwinWorld (1.3)       */
+/*==============================*/
+
+static void wdbgScanSoundFX(HWND hWnd)
+{
+  ULO i, j, start, size, offset; /* work variables */
+  int instruments, patterns;	/* no. of instruments and patterns */
+  int maxpattern; /* highest pattern used */
+  BOOLE match; /* matching header found ? */
+  char file_name[WDBG_STRLEN];
+  char message[WDBG_STRLEN]; 
+  char templine[WDBG_STRLEN];
+  int result; /* result for save requester */
+
+  for (i = 0; i <= 0xffffff - 4; i++) {
+    match = FALSE;
+    if ((fetb(i + 0) == 'S') && (fetb(i + 1) == 'O')) {
+      if ((fetb(i + 2) == 'N') && (fetb(i + 3) == 'G')) {
+	    /* SoundFX 1.3 */
+	    match = TRUE;
+	    start = i - 60;
+	    instruments = 15;
+	  }
+      if ((fetb(i + 2) == '3') && (fetb(i + 3) == '1')) {
+	    /* SoundFX 2.0 */
+	    match = TRUE;
+	    start = i - 124;
+	    instruments = 31;
+      }
+      if (match) {
+	    offset = 0; size = 0;
+
+	    for (j = 0; j < instruments; j++)
+	      size += fetb(start + j * 4) << 8     | fetb(start + j * 4 + 1)
+	            | fetb(start + j * 4 + 2) << 8 | fetb(start + j * 4 + 3);
+
+	    /* calculate real instruments */
+	    if (instruments == 15) {
+	      /* SoundFX 1.3 */
+	      offset += 80;
+	      size += 80;
+		}
+	    else {
+	      /* SoundFX 2.0 */
+	      offset += 144;
+	      size += 144;
+		}
+
+	    for (j = 0; j < instruments; j++) {
+	      offset += 30;
+	      size += 30;
+		}
+
+	    patterns = fetb(start + offset);
+
+	    offset += 2;
+	    maxpattern = fetb(start + offset);
+
+	    for (j = 1; j < patterns; j++)
+	      maxpattern = max(maxpattern, fetb(start + offset + j));
+
+	    size += 2 + 128 + ((maxpattern + 1) * 1024);
+		
+		if ((start + size <= 0xffffff) && (size < WDBG_MAX_MODULE_LEN)) {
+	      /* Set filename for the module-file */
+	      sprintf(file_name, "mod%d.sfx", wdbg_mods_found++);
+
+	      sprintf(message, "SoundFX module found at $%X\n", start);
+	      /*sprintf(templine, "Module name: %s\n", module_name);
+	      strcat(message, templine); */
+	      sprintf(templine, "Module size: %d Bytes\n", size);
+	      strcat(message, templine);
+	      sprintf(templine, "Patterns used: %d\n", patterns);
+	      strcat(message, templine);
+	      sprintf(templine, "Save module as %s?", file_name);
+	      strcat(message, templine);
+	      result = MessageBox(hWnd, message, "Module found.", MB_YESNO);
+
+	      if (result == IDYES) {
+	        wdbgSaveMem(file_name, start, start + size);
+		  }
+		}
       }
     }
   }
@@ -1136,7 +1216,8 @@ static void wdbgScanModules(char *searchstring, int channels, HWND hWnd)
 void wdbgModrip(HWND hwndDlg)
 {
   HCURSOR BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
-  if(BusyCursor) SetCursor(BusyCursor);
+  if (BusyCursor)
+    SetCursor(BusyCursor);
 
   wdbgScanModules("M.K.", 4, hwndDlg);
   wdbgScanModules("4CHN", 4, hwndDlg);
@@ -1144,9 +1225,11 @@ void wdbgModrip(HWND hwndDlg)
   wdbgScanModules("8CHN", 8, hwndDlg);
   wdbgScanModules("FLT4", 4, hwndDlg);
   wdbgScanModules("FLT8", 8, hwndDlg);
+  wdbgScanSoundFX(hwndDlg);
 
   BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
-  if(BusyCursor) SetCursor(BusyCursor);
+  if (BusyCursor)
+    SetCursor(BusyCursor);
 
   MessageBox(hwndDlg, "Module Ripper finished.", "Finished.", MB_OK);
 
