@@ -76,7 +76,45 @@
 ; Don't touch the rest
 ;=====================
 
-;%define TSC_PROFILING
+%define TSC_PROFILING
+
+
+%macro TSC_BEFORE 1
+%ifdef TSC_PROFILING
+                push    eax
+                push    edx
+                push    ecx
+                mov     ecx,10h
+                rdtsc
+                pop     ecx
+                mov     dword [%1], eax
+                mov     dword [%1 + 4], edx
+                pop     edx
+                pop     eax
+%endif
+%endmacro
+
+
+; TMPVARIABLE VARIABLE TIMES
+
+%macro TSC_AFTER 3
+%ifdef TSC_PROFILING
+                push    eax
+                push    edx
+                push    ecx
+                mov     ecx, 10h
+                rdtsc
+                pop     ecx
+                sub     eax, dword [%1]
+                sbb     edx, dword [%1 + 4]
+                add     dword [%2], eax
+                adc     dword [%2 + 4], edx
+                inc     dword [%3]
+                pop     edx
+                pop     eax
+%endif
+%endmacro
+
 
 %define CHIPMEM 0200000h
 %define FASTMEM 0800000h
