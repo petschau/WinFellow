@@ -1100,14 +1100,17 @@ ULO get_branchtype(ULO opc);
 ULO modreg(ULO modes, ULO regs);
 ULO greg(ULO mode, ULO reg);
 
-
-extern ULO d[8];
-extern ULO a[8];
+extern ULO da_regs[2][8];
 extern char *btab[16];
 extern ULO t[65536][8];
 
 extern ULO vbr, msp;
 extern ULO cacr;
+
+static void cpuSetDReg(ULO i, ULO value) {da_regs[0][i] = value;}
+static ULO cpuGetDReg(ULO i) {return da_regs[0][i];}
+static void cpuSetAReg(ULO i, ULO value) {da_regs[1][i] = value;}
+static ULO cpuGetAReg(ULO i) {return da_regs[1][i];}
 
 extern void cpuReset010(void);
 extern void cpuReset020(void);

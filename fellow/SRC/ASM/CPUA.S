@@ -128,15 +128,15 @@ prefetch_fillASM:
 ;========================================================================
 	
 %macro GROUP1 0
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew		
 %endmacro
@@ -162,27 +162,27 @@ _cpuGroup1_:
 ;========================================================================
 	
 %macro GROUP2 0
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
-		mov	ecx, dword [a + 28]	; Fault addr, skip ireg
+		mov	ecx, dword [da_regs + 60]	; Fault addr, skip ireg
 		sub	ecx, 6			 
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [memory_fault_address]
 		writel
 		mov	edx, dword [memory_fault_read]
 		shl	edx, 4
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		writel
 %endmacro
 
@@ -212,20 +212,20 @@ _cpuGroup2_:
 ;========================================================================
 	
 %macro FRAME0 1		; VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector dword 
+		mov	ecx, dword [da_regs + 60]	; Save Vector dword 
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -250,21 +250,21 @@ _cpuFrame0_:	FRAME0	ebx
 ;========================================================================
 	
 %macro FRAME1 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector dword 
+		mov	ecx, dword [da_regs + 60]	; Save Vector dword 
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 01000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -294,26 +294,26 @@ _cpuFrame1_:
 ;========================================================================
 	
 %macro FRAME2 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save inst address 
+		mov	ecx, dword [da_regs + 60]	; Save inst address 
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [pc]
 		writel
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 02000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -337,21 +337,21 @@ _cpuFrame2_:
 ;========================================================================
 	
 %macro FRAME3 1		; VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 6
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 03000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		writel
 		PTR_TO_PC	edx
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -374,21 +374,21 @@ _cpuFrame3_:
 ;========================================================================
 	
 %macro FRAME4 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 10
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 04000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -410,21 +410,21 @@ _cpuFrame4_:
 ;========================================================================
 	
 %macro FRAME7 1		; VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 54
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 07000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -446,21 +446,21 @@ _cpuFrame7_:
 ;========================================================================
 	
 %macro FRAME8 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 52
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 08000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -484,26 +484,26 @@ _cpuFrame8_:
 ;========================================================================
 	
 %macro FRAME9 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save inst address 
+		mov	ecx, dword [da_regs + 60]	; Save inst address 
 		sub	ecx, 12
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [pc]
 		writel
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 09000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -531,21 +531,21 @@ _cpuFrame9_:
 ;========================================================================
 	
 %macro FRAMEA 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 26
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 0a000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -569,21 +569,21 @@ _cpuFrameA_:
 ;========================================================================
 	
 %macro FRAMEB 1	;  VECTOR_OFFSET
-		mov	ecx, dword [a + 28]	; Save Vector offset 
+		mov	ecx, dword [da_regs + 60]	; Save Vector offset 
 		sub	ecx, 84
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, %1
 		or	edx, 0b000h
 		writew
-		mov	ecx, dword [a + 28]	; Save PC
+		mov	ecx, dword [da_regs + 60]	; Save PC
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		PTR_TO_PC	edx
 		writel
-		mov	ecx, dword [a + 28]	; Save SR
+		mov	ecx, dword [da_regs + 60]	; Save SR
 		sub	ecx, 2
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, dword [sr]
 		writew
 %endmacro
@@ -616,7 +616,7 @@ _cpuFrameB_:
 ;=============================================================
 
 %macro ACTIVATE_SSP 0
-		mov	ecx, dword [a + 28]		; ecx - Current SP 
+		mov	ecx, dword [da_regs + 60]		; ecx - Current SP 
 		test	byte [sr + 1], 20h		; Check supervisor 
 		jnz	%%l1
 		mov	dword [usp], ecx		; User mode, save USP 
@@ -624,7 +624,7 @@ _cpuFrameB_:
 		test	byte [sr + 1], 10h		; Get ISP or MSP 
 		jz	%%l2
 		mov	ecx, dword [msp]
-%%l2:		mov	dword [a + 28], ecx		; Set new A7 (SP) 
+%%l2:		mov	dword [da_regs + 60], ecx		; Set new A7 (SP) 
 %%l1:		; Here, a7 is either ISP (SSP) or MSP
 %endmacro
 	
@@ -647,7 +647,7 @@ _cpuUpdateSR_:	and	edx, 0ffffh
 		test	byte [sr + 1], 0c0h
 		jz	upsrnotraceset
 		inc	byte [upsrtraceset]
-upsrnotraceset:	mov	ecx, dword [a + 28]	; Get current stack pointer
+upsrnotraceset:	mov	ecx, dword [da_regs + 60]	; Get current stack pointer
 		test	byte [sr + 1], 20h	; Are we in super mode?
 		jnz	upsup
 		mov	dword [usp], ecx	; No, save stack pointer to usp
@@ -665,7 +665,7 @@ upsup3:		mov	ecx, dword [ssp]	; New mode is super, get ssp
 		test	dh, 10h			; or msp
 		jz	upd3
 		mov	ecx, dword [msp]
-upd3:		mov	dword [a + 28], ecx	; Set new stack pointer
+upd3:		mov	dword [da_regs + 60], ecx	; Set new stack pointer
 		mov	dword [sr], edx	; Set new SR
 upd4:		test	byte [sr + 1], 0c0h
 		jz	updsrnotrace
@@ -783,12 +783,12 @@ _cpuSetUpInterrupt_:
 		jb	near si_step6
 		cmp	byte [cpu_type], 6
 		jae	near si_step6
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		test	byte [sr + 1], 010h
 		jz	si_alreadyisp
 		mov	dword dword [msp], ecx
 		mov	ecx, dword [ssp]
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 si_alreadyisp:	mov	ebx, dword [interruptlevel]
 		FRAME1	ebx
 		and	byte [sr + 1], 0efh		; step 5
@@ -931,7 +931,7 @@ _arw03_:	mov	ecx, dword [edx]
 global _arb03_
 _arb03_:	mov	ecx, dword [edx]
 		inc	dword [edx]
-		cmp	edx, dword a + 28
+		cmp	edx, dword da_regs + 60
 		jne	arb03_l1
 		inc	dword [edx]
 arb03_l1:	fetchbret
@@ -962,7 +962,7 @@ _arw04_:	sub	dword [edx], 2
 
 global _arb04_
 _arb04_:	dec	dword [edx]
-		cmp	edx, dword a + 28
+		cmp	edx, dword da_regs + 60
 		jne	arb04_l1
 		dec	dword [edx]
 arb04_l1:	mov	ecx, dword [edx]
@@ -1031,7 +1031,7 @@ _arl06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]
+		mov	ebx, dword [da_regs + ebx]
 		test	dh, 8
 		jnz	arl06_l1
 		movsx	ebx, bx
@@ -1053,7 +1053,7 @@ _arw06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	arw06_l1
 		movsx	ebx, bx
@@ -1075,7 +1075,7 @@ _arb06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	arb06_l1
 		movsx	ebx, bx
@@ -1214,7 +1214,7 @@ _arl73_:	push	ebx
 		shr	ebx, 10
 		and	ebx, 03ch
 		add	esi, 2
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	arl73_l1
 		movsx	ebx, bx
@@ -1236,7 +1236,7 @@ _arw73_:	push	ebx
 		shr	ebx, 10
 		and	ebx, 03ch
 		add	esi, 2
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	arw73_l1
 		movsx	ebx, bx
@@ -1258,7 +1258,7 @@ _arb73_:	push	ebx
 		shr	ebx, 10
 		and	ebx, 03ch
 		add	esi, 2
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	arb73_l1
 		movsx	ebx, bx
@@ -1350,7 +1350,7 @@ _parw04_:	mov	ecx, dword [edx]
 global _parb04_
 _parb04_:	mov	ecx, dword [edx]
 		dec	ecx
-		cmp	edx, dword a + 28
+		cmp	edx, dword da_regs + 60
 		jne	parb04_l1
 		dec	ecx
 parb04_l1:	fetchbret
@@ -1414,7 +1414,7 @@ _parl06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parl06_l1
 		movsx	ebx, bx
@@ -1435,7 +1435,7 @@ _parw06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parw06_l1
 		movsx	ebx, bx
@@ -1456,7 +1456,7 @@ _parb06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parb06_l1
 		movsx	ebx, bx
@@ -1584,7 +1584,7 @@ _parl73_:	push	ebx
 		and	ebx, 03ch
 		add	ecx, esi
 		PTR_TO_PC ecx
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parl73_l1
 		movsx	ebx, bx
@@ -1605,7 +1605,7 @@ _parw73_:	push	ebx
 		and	ebx, 03ch
 		add	ecx, esi
 		PTR_TO_PC ecx
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parw73_l1
 		movsx	ebx, bx
@@ -1626,7 +1626,7 @@ _parb73_:	push	ebx
 		and	ebx, 03ch
 		add	ecx, esi
 		PTR_TO_PC ecx
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	parb73_l1
 		movsx	ebx, bx
@@ -1757,7 +1757,7 @@ _aww03_:	mov	ecx, dword [ebx]
 global _awb03_
 _awb03_:	mov	ecx, dword [ebx]
 		inc	dword [ebx]
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	awb03_l1
 		inc	dword [ebx]
 awb03_l1:	writebret
@@ -1787,7 +1787,7 @@ _aww04_:	sub	dword [ebx], 2
 
 global _awb04_
 _awb04_:	dec	dword [ebx]
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	awb04_l1
 		dec	dword [ebx]
 awb04_l1:	mov	ecx, dword [ebx]
@@ -1853,7 +1853,7 @@ _awl06_:	push	edx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	awl06_l1
 		movsx	ebx, bx
@@ -1874,7 +1874,7 @@ _aww06_:	push	edx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	aww06_l1
 		movsx	ebx, bx
@@ -1895,7 +1895,7 @@ _awb06_:	push	edx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	awb06_l1
 		movsx	ebx, bx
@@ -2038,7 +2038,7 @@ _eac06_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	eac06_l1
 		movsx	ebx, bx
@@ -2111,7 +2111,7 @@ _eac73_:	push	ebx
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]	; Exploit position
+		mov	ebx, dword [da_regs + ebx]	; Exploit position
 		test	dh, 8				; Size
 		jnz	eac73_l1
 		movsx	ebx, bx
@@ -2147,9 +2147,9 @@ _cc0_:		mov	edx, 1
 
 global _cc1_
 _cc1_:		mov	ebx, ecx			; Save ecx
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		sub	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	edx, esi
 		add	edx, dword [edi + 12]
 		PTR_TO_PC edx
@@ -2465,7 +2465,7 @@ global _i01_2_
 _i01_2_:	mov	ebx, dword [8 + edi]		; Source
 		mov	ecx, dword [ebx]
 		dec	ecx
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	i01_2i
 		dec	ecx
 i01_2i:		mov	dword [ebx], ecx
@@ -2476,7 +2476,7 @@ i01_2i:		mov	dword [ebx], ecx
 		mov	eax, dword [4 + edi]		; Dest
 		mov	ecx, dword [eax]
 		dec	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i01_2j
 		dec	ecx
 i01_2j:		mov	dword [eax], ecx
@@ -2906,7 +2906,7 @@ global _i06_B_2_
 _i06_B_2_:	mov	ebx, dword [12 + edi]	; Source 
 		mov	ecx, dword [ebx]
 		dec	ecx
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	i06_B_2j
 		dec	ecx
 i06_B_2j:	mov	dword [ebx], ecx
@@ -2915,7 +2915,7 @@ i06_B_2j:	mov	dword [ebx], ecx
 		mov	eax, dword [8 + edi]	; Dest
 		mov	ecx, dword [eax]
 		dec	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i06_B_2i
 		dec	ecx
 i06_B_2i:	mov	dword [eax], ecx
@@ -4510,7 +4510,7 @@ _i23_B_:	mov	eax,dword [edi+8]
 		mov	ecx,dword [eax]
 		fetchb
 		inc	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i23_b_j
 		inc	ecx
 i23_b_j:	mov	dword [eax],ecx
@@ -4519,7 +4519,7 @@ i23_b_j:	mov	dword [eax],ecx
 		mov	ecx,dword [eax]
 		fetchb
 		inc	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i23_b_i
 		inc	ecx
 i23_b_i:	mov	dword [eax],ecx	       ; Dest in edx
@@ -5042,9 +5042,9 @@ _i32_:		mov	eax,dword [edi+12]	       ; get new pc
 
 		PTR_TO_PC edx
 		PC_TO_PTR esi
-		mov	ecx,dword [a+28]
+		mov	ecx,dword [da_regs + 60]
 		sub	ecx,4
-		mov	dword [a+28],ecx
+		mov	dword [da_regs + 60],ecx
 		writel
 %ifdef PREFETCH
 		mov	edx,esi
@@ -5084,7 +5084,7 @@ _i33_:		mov	eax,dword [edi+12]
 global _i34_
 _i34_:		mov	ebx,dword [edi+8]
 		mov	edx,dword [ebx]
-		mov	ecx,dword [a+28]
+		mov	ecx,dword [da_regs + 60]
 		sub	ecx,4
 		mov	dword [ebx],ecx	  ; Load An with updated SP
 		writel
@@ -5094,7 +5094,7 @@ _i34_:		mov	ebx,dword [edi+8]
 		add	esi,2
 		movsx	edx,dx
 		add	ebx,edx
-		mov	dword [a+28],ebx	       ; add disp to SP
+		mov	dword [da_regs + 60],ebx	       ; add disp to SP
 		mov	eax,16
 		ret
 
@@ -5683,7 +5683,7 @@ _MOVEM_W_PREM_:	mov	ecx, esi		; get register mask word
 		add	esi, 2
 		mov	ebx, edx		; Register mask in ebx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword a + 32	; pointer to A7
+		mov	eax, dword da_regs + 64	; pointer to A7
 .l1:		sub	eax, 4			; Point to 1 register less
 		shr	ebx, 1
 		jnc	.l2			; Skip this register
@@ -5693,10 +5693,7 @@ _MOVEM_W_PREM_:	mov	ecx, esi		; get register mask word
 		mov	ecx, dword [ecx]	; get ea
 		add	ebp, 4			; 4 cycles each register
 		writew				; store word
-.l2:		cmp	eax, dword a
-		jne	.l3
-		mov	eax, dword d + 32
-.l3:		cmp	eax, dword d
+.l2:		cmp	eax, dword da_regs
 		jne	.l1
 		lea	eax, [8 + ebp]
 		ret
@@ -5714,7 +5711,7 @@ _MOVEM_L_PREM_:	mov	ecx, esi		; get register mask word
 		add	esi, 2
 		mov	ebx, edx		; Register mask in ebx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword a + 32	; pointer to A7
+		mov	eax, dword da_regs + 64	; pointer to A7
 .l1:		sub	eax, 4
 		shr	ebx, 1
 		jnc	.l2			; Skip this register
@@ -5724,10 +5721,7 @@ _MOVEM_L_PREM_:	mov	ecx, esi		; get register mask word
 		mov	ecx, dword [ecx]	; get ea
 		add	ebp, 8			; 8 cycles for each register
 		writel				; store word
-.l2:		cmp	eax, dword a
-		jne	.l3
-		mov	eax, dword d + 32
-.l3:		cmp	eax, dword d
+.l2:		cmp	eax, dword da_regs
 		jne	.l1
 		lea	eax, [8 + ebp]
 		ret
@@ -5745,7 +5739,7 @@ _MOVEM_W_POSTR_:mov	ecx, esi		; get register mask word
 		add	esi, 2
 		mov	ebx, edx		; Register mask in ebx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to A7
+		mov	eax, dword da_regs	; pointer to D0
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
 		mov	edx, dword [edi + 8]	; register to postincrement
@@ -5756,10 +5750,7 @@ _MOVEM_W_POSTR_:mov	ecx, esi		; get register mask word
 		movsx	edx, dx
 		mov	dword [eax], edx	; store to register
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		lea	eax, [8 + ebp]
 		ret
@@ -5777,7 +5768,7 @@ _MOVEM_L_POSTR_:mov	ecx, esi		; get register mask word
 		add	esi, 2
 		mov	ebx, edx		; Register mask in ebx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to A7
+		mov	eax, dword da_regs	; pointer to D0
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
 		mov	edx, dword [edi + 8]	; register to postincrement
@@ -5787,10 +5778,7 @@ _MOVEM_L_POSTR_:mov	ecx, esi		; get register mask word
 		fetchl				; get memory content
 		mov	dword [eax], edx	; store to register
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		lea	eax, [8 + ebp]
 		ret
@@ -5812,7 +5800,7 @@ _MOVEM_W_CONR_:	mov	ecx, esi		; get register mask word
 		call	ecx
 		mov	ecx, edx		; Source address in ecx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to D0
+		mov	eax, dword da_regs	; pointer to D0
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
 		add	ebp, 4			; 4 cycles for each register
@@ -5821,10 +5809,7 @@ _MOVEM_W_CONR_:	mov	ecx, esi		; get register mask word
 		movsx	edx, dx
 		mov	dword [eax], edx	; store to register
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		mov	eax,dword [edi + 16]
 		add	eax, ebp
@@ -5847,7 +5832,7 @@ _MOVEM_L_CONR_:	mov	ecx, esi		; get register mask word
 		call	ecx
 		mov	ecx, edx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to D0
+		mov	eax, dword da_regs	; pointer to D0
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
 		fetchl				; get memory content
@@ -5855,10 +5840,7 @@ _MOVEM_L_CONR_:	mov	ecx, esi		; get register mask word
 		add	ecx, 4			; increment ea 
 		mov	dword [eax], edx	; store to register
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		mov	eax, dword [edi + 16]
 		add	eax, ebp
@@ -5881,7 +5863,7 @@ _MOVEM_W_CONM_:	mov	ecx, esi		; get register mask word
 		call	ecx
 		mov	ecx, edx		; ecx is ea
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to d0
+		mov	eax, dword da_regs	; pointer to d0
 		pop	ebx
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
@@ -5890,10 +5872,7 @@ _MOVEM_W_CONM_:	mov	ecx, esi		; get register mask word
 		writew				; get memory content
 		add	ecx, 2			; increment ea 
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		mov	eax, dword [edi + 16]
 		add	eax, ebp
@@ -5915,7 +5894,7 @@ _MOVEM_L_CONM_:	mov	ecx, esi		; get register mask word
 		call	ecx
 		mov	ecx, edx
 		xor	ebp, ebp		; count cycles in ebp
-		mov	eax, dword d		; pointer to d0
+		mov	eax, dword da_regs	; pointer to d0
 .l1:		shr	ebx, 1
 		jnc	.l2			; Skip this register
 		add	ebp, 8			; 8 cycles for each register
@@ -5923,10 +5902,7 @@ _MOVEM_L_CONM_:	mov	ecx, esi		; get register mask word
 		writel				; store memory content
 		add	ecx, 4			; increment ea 
 .l2:		add	eax, 4			; Point to 1 register more
-		cmp	eax, dword d + 32
-		jne	.l3
-		mov	eax, dword a
-.l3:		cmp	eax, dword a + 32
+		cmp	eax, dword da_regs + 64
 		jne	.l1
 		mov	eax, dword [edi + 16]
 		add	eax, ebp
@@ -6741,9 +6717,9 @@ global _i55_
 _i55_:		mov	eax,dword [edi+12]
 		mov	edx,dword [edi+8]
 		call	eax
-		mov	ecx,dword [a+28]
+		mov	ecx,dword [da_regs + 60]
 		sub	ecx,4
-		mov	dword [a+28],ecx
+		mov	dword [da_regs + 60],ecx
 		writel
 		mov	eax,dword [edi+16]
 		ret
@@ -7935,16 +7911,16 @@ i59lmw2:	mov	byte [sr],al		  ; Store flags
 global _i61_
 _i61_:		test	byte [sr + 1], 020h
 		jz	near _cpuPrivilegieViolation_
-i61_redo:	mov	ecx, dword [a + 28]	; Get SR, step 1
+i61_redo:	mov	ecx, dword [da_regs + 60]	; Get SR, step 1
 		fetchw
 		mov	ebp, edx
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		add	ecx, 2
-		mov	dword [a + 28], ecx	; Get PC, step 2
+		mov	dword [da_regs + 60], ecx	; Get PC, step 2
 		fetchl
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		add	ecx, 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	esi, edx
 		PC_TO_PTR esi
 %ifdef PREFETCH
@@ -7954,13 +7930,13 @@ i61_redo:	mov	ecx, dword [a + 28]	; Get SR, step 1
 
 		cmp	dword [cpu_type], 0	; step 3 
 		je	near i61_000
-		mov	ecx, dword [a + 28]		; Get Frame type
+		mov	ecx, dword [da_regs + 60]		; Get Frame type
 		fetchw
 		add	ecx, 2
 		shr	edx, 12
 		and	edx, 0fh
 		add	ecx, dword [rte_stackinc + 4*edx]; step 4
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		cmp	edx, 1				; step 5
 		jne	near i61_000
 		cmp	dword [cpu_type], 2
@@ -7986,14 +7962,14 @@ i61_000:	mov	edx, ebp			; step 6
 		FALIGN32
 
 global _i62_
-_i62_:		mov	ecx,dword [a+28]
+_i62_:		mov	ecx,dword [da_regs + 60]
 		fetchw
 		and	dl,01fh
 		mov	byte [sr],dl
 		add	ecx,2
-		mov	dword [a+28],ecx
+		mov	dword [da_regs + 60],ecx
 		fetchl
-		mov	ecx,dword [a+28]
+		mov	ecx,dword [da_regs + 60]
 		mov	esi,edx
 		PC_TO_PTR esi
 %ifdef PREFETCH
@@ -8001,7 +7977,7 @@ _i62_:		mov	ecx,dword [a+28]
 		call	prefetch_fillASM
 %endif
 		add	ecx,4
-		mov	dword [a+28],ecx
+		mov	dword [da_regs + 60],ecx
 		mov	eax,20
 		ret
 
@@ -8016,7 +7992,7 @@ _i62_:		mov	ecx,dword [a+28]
 		FALIGN32
 
 global _i63_
-_i63_:		mov	ecx,dword [a+28]
+_i63_:		mov	ecx,dword [da_regs + 60]
 		fetchl
 		mov	esi,edx
 		PC_TO_PTR esi
@@ -8025,7 +8001,7 @@ _i63_:		mov	ecx,dword [a+28]
 		call	prefetch_fillASM
 %endif
 		add	ecx,4
-		mov	dword [a+28],ecx
+		mov	dword [da_regs + 60],ecx
 		mov	eax,16
 		ret
 
@@ -8075,7 +8051,7 @@ global _i64_2_
 _i64_2_:	mov	ebx,dword [8+edi]
 		mov	ecx,dword [ebx]
 		dec	ecx
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	i64_2_j
 		dec	ecx
 i64_2_j:	mov	dword [ebx],ecx
@@ -8086,7 +8062,7 @@ i64_2_j:	mov	dword [ebx],ecx
 		mov	eax,dword [4+edi]
 		mov	ecx,dword [eax]
 		dec	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i64_2_i
 		dec	ecx
 i64_2_i:	mov	dword [eax],ecx
@@ -8590,7 +8566,7 @@ global _cpuSubXB2_
 _cpuSubXB2_:	mov	ebx, dword [8 + edi]	     ; Source
 		mov	ecx, dword [ebx]
 		dec	ecx
-		cmp	ebx, dword a + 28
+		cmp	ebx, dword da_regs + 60
 		jne	i71_B_2j
 		dec	ecx
 i71_B_2j:	mov	dword [ebx], ecx
@@ -8598,7 +8574,7 @@ i71_B_2j:	mov	dword [ebx], ecx
 		mov	eax, dword [4 + edi]	     ; Dest
 		mov	ecx, dword [eax]
 		dec	ecx
-		cmp	eax, dword a + 28
+		cmp	eax, dword da_regs + 60
 		jne	i71_B_2i
 		dec	ecx
 i71_B_2i:	push	ecx
@@ -8899,7 +8875,7 @@ _cpuUnlk_:	mov	ebx, dword [edi + 4]
 		mov	ecx, dword [ebx]
 		mov	edx, ecx
 		add	edx, 4
-		mov	dword [a + 28], edx
+		mov	dword [da_regs + 60], edx
 		fetchl
 		mov	dword [ebx], edx
 		mov	eax, 12
@@ -9157,7 +9133,7 @@ eac063normal:	movsx	ecx, dl
 		mov	ebx, edx
 		shr	ebx, 10
 		and	ebx, 03ch
-		mov	ebx, dword [d + ebx]
+		mov	ebx, dword [da_regs + ebx]
 		test	dh, 8
 		jnz	eac063nosext
 		movsx	ebx, bx
@@ -9213,7 +9189,7 @@ eac063c:	xor	eax, eax	; ebx = (An) + bd
 		mov	al, dh		; Index is included
 		shr	al, 2
 		and	eax, 3ch
-		mov	eax, dword [d + eax] ; Get index reg value
+		mov	eax, dword [da_regs + eax] ; Get index reg value
 		test	dh, 8		; Index size check
 		jnz	eac063d
 		movsx	eax, ax
@@ -9364,7 +9340,7 @@ _eac063is7_:	mov	ecx, ebx	; Postindexed with long outer disp
 		test	%2, 020h
 		jz	%%l1
 		and	%2, 7	; size is in Dn 
-		mov	%2, dword [d + 4*%2]
+		mov	%2, dword [da_regs + 4*%2]
 %%l1:		dec	%2
 		and	%2, 1fh
 %endmacro
@@ -9388,7 +9364,7 @@ _eac063is7_:	mov	ecx, ebx	; Postindexed with long outer disp
 		test	%1, 0800h
 		jz	%%l1
 		and	%2, 7	; offset is in Dn
-		mov	%2, dword [d + 4*%2]
+		mov	%2, dword [da_regs + 4*%2]
 %%l1:
 %endmacro
 
@@ -9463,7 +9439,7 @@ _eac063is7_:	mov	ecx, ebx	; Postindexed with long outer disp
 		
 %macro BF_SET_DESTREG_CYCLES 1 ; FIELDREG
 		pop	ecx
-		mov	dword [d + ecx], %1
+		mov	dword [da_regs + ecx], %1
 		mov	eax, dword [12 + edi]
 %endmacro
 
@@ -9509,7 +9485,7 @@ _eac063is7_:	mov	ecx, ebx	; Postindexed with long outer disp
 		mov	ecx, 31
 		sub	ecx, %2
 		mov	%2, dword [12 + esp]
-		mov	%2, dword [d + %2]
+		mov	%2, dword [da_regs + %2]
 		shl	%2, cl
 		or	%1, %2
 		pop	%2
@@ -9864,7 +9840,7 @@ _i308_R_:	BF_GET_EXTENSION ebp
 		mov	bl, dl			; Start to get Dc
 		shl	bl, 2
 		and	ebx, 1ch
-		mov	ebx, [d + ebx]		; ebx holds Dc operand
+		mov	ebx, [da_regs + ebx]		; ebx holds Dc operand
 		mov	ecx, eax		; Start to get value at <ea>
 		call	%1
 		cmp	%3, %4			; Compare Dc with <ea> operand
@@ -9882,7 +9858,7 @@ _i308_R_:	BF_GET_EXTENSION ebp
 		pop	ebx			; write Du to <ea>
 		shr	bx, 4
 		and	ebx, 1ch
-		mov	edx, [d + ebx]
+		mov	edx, [da_regs + ebx]
 		mov	ecx, eax
 		call	%2
 		mov	eax, [edi + 12]
@@ -9890,7 +9866,7 @@ _i308_R_:	BF_GET_EXTENSION ebp
 %%l1:		pop	ebx			; write <ea> value to Dc
 		shl	bl, 2
 		and	ebx, 1ch
-		mov	%5 [d + ebx], %4
+		mov	%5 [da_regs + ebx], %4
 		mov	eax, [edi + 12]
 		ret
 %endmacro
@@ -9929,24 +9905,24 @@ _i309_L_:	CAS	fetl, wril, ebx, edx, dword
 		mov	bx, dx
 		rol	bx, 6
 		and	ebx, 3ch
-		mov	ecx, [d + ebx]
+		mov	ecx, [da_regs + ebx]
 		call	%1
 		push	edx			; Save data from (Rx1)
 		push	ecx			; Save eac from Rx1
 		mov	ebx, eax
 		shr	ebx, 14
 		and	ebx, 1ch		; Dc1 register number*4
-		cmp	%3, %4 [d + ebx]	; Dc1 = Rx1 ?
+		cmp	%3, %4 [da_regs + ebx]	; Dc1 = Rx1 ?
 		jne	near %%l1
 		mov	bx, ax			; First compare equal
 		rol	bx, 6
 		and	ebx, 3ch
-		mov	ecx, [d + ebx]		; ecx - rx2 ea
+		mov	ecx, [da_regs + ebx]		; ecx - rx2 ea
 		call	%1			; edx - rx2 value
 		mov	bx, ax
 		shl	bx, 2
 		and	ebx, 1ch		; ebx - dc2 regnr*4
-		cmp	%3, %4 [d + ebx]	; Dc2 = Rx2 ?
+		cmp	%3, %4 [da_regs + ebx]	; Dc2 = Rx2 ?
 		push	ecx
 		pushfd				; Set flags for Dc2 Rx2 cmp
 		pop	ecx
@@ -9958,19 +9934,19 @@ _i309_L_:	CAS	fetl, wril, ebx, edx, dword
 		or	ecx, ebx
 		mov	dword [sr], ecx
 		pop	ecx
-		cmp	%3, %4 [d + ebx] ; Dc2 = Rx2 ?
+		cmp	%3, %4 [da_regs + ebx] ; Dc2 = Rx2 ?
 		jne	%%l2
 		mov	bx, ax			; Perform Rx1 = Du1, Rx2 = Du2
 		shr	bx, 4
 		and	bx, 1ch
-		mov	edx, [d + ebx]		; Get Du2 value
+		mov	edx, [da_regs + ebx]		; Get Du2 value
 		call	%2			; (Rx2) <- Du2
 		pop	ecx			; Reload Rx1 ea
 		ror	eax, 16
 		mov	bx, ax
 		shr	bx, 4
 		and	bx, 1ch
-		mov	edx, [d + ebx]		; Get Du1 value
+		mov	edx, [da_regs + ebx]		; Get Du1 value
 		call	%2			; (Rx1) <- Du1
 		pop	edx
 		mov	eax, [edi + 4]
@@ -9989,16 +9965,16 @@ _i309_L_:	CAS	fetl, wril, ebx, edx, dword
 		mov	ebx, eax
 		ror	ebx, 20
 		and	ebx, 1ch
-		mov	%4 [d + ebx], %3	; Dc1 <- (Rx1)
+		mov	%4 [da_regs + ebx], %3	; Dc1 <- (Rx1)
 		mov	bx, ax
 		rol	bx, 6
 		and	ebx, 3ch
-		mov	ecx, [d + ebx]		; eac Rx2
+		mov	ecx, [da_regs + ebx]		; eac Rx2
 		call	%1			; may not have Rx2 val
 		mov	bx, ax
 		rol	bx, 2
 		and	ebx, 1ch
-		mov	%4 [d + ebx], %3	; Dc2 <- (Rx2)
+		mov	%4 [da_regs + ebx], %3	; Dc2 <- (Rx2)
 		mov	eax, [edi + 4]
 		ret
 %endmacro
@@ -10064,7 +10040,7 @@ i311trap:	mov	ebx, 18h		; vector at $18 (no. 6)
 		rol	bx, 6
 		push	ebx
 		and	ebx, 3ch
-		mov	eax, [d + ebx]			; eax - Rn value 
+		mov	eax, [da_regs + ebx]			; eax - Rn value 
 		push	eax				; Save Rn value
 		mov	eax, dword [edi + 8]		; Fetch lower bound 
 		mov	edx, dword [edi + 4]
@@ -10331,7 +10307,7 @@ i321wns:	mov	dword [sr], edx
 global _i322_
 _i322_:		mov	ebx, [edi + 4]
 		mov	edx, [ebx]		   ; get An
-		mov	ecx, [a + 28]
+		mov	ecx, [da_regs + 60]
 		sub	ecx, 4
 		mov	[ebx], ecx		   ; Store new A7 into An
 		writel				   ; (A7) <- An
@@ -10340,7 +10316,7 @@ _i322_:		mov	ebx, [edi + 4]
 		fetchlopcode_inc_pos
 		add	esi, 4
 		add	ebx, edx
-		mov	[a+28], ebx		   ; A7 += #
+		mov	[da_regs + 60], ebx		   ; A7 += #
 		mov	eax, 16
 		ret
 
@@ -10415,7 +10391,7 @@ _i324_TO_:	test	byte [sr + 1], 20h	; Are we in supervisormode??
 		and	ebx, 0fffh
 		shr	eax, 10
 		and	eax, 03ch
-		mov	eax, dword [d + eax]
+		mov	eax, dword [da_regs + eax]
 
 		cmp	ebx, 000h		; SFC  X12346
 		jne	i324w_1
@@ -10539,25 +10515,25 @@ _i324_FROM_:	test	byte	 [sr + 1], 20h	; Are we in supervisormode??
 		cmp	ebx, 000h		; SFC  X12346
 		jne	i324m_1
 		mov	ecx, dword [sfc]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_1:	cmp	ebx, 001h		; DFC  X12346
 		jne	i324m_2
 		mov	dword [dfc], eax
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_2:	cmp	ebx, 0800h		; USP  X12346
 		jne	i324m_3
 		mov	eax, dword [usp]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_3:	cmp	ebx, 0801h		; VBR  X12346
 		jne	i324m_4
 		mov	ecx, dword [vbr]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_4:	cmp	ebx, 002h		; CACR XX2346
@@ -10566,7 +10542,7 @@ i324m_4:	cmp	ebx, 002h		; CACR XX2346
 		cmp	dword [cpu_type], 2
 		jb	near i324m_illegal
 		mov	ecx, dword [cacr]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_5:	cmp	ebx, 0802h		; CAAR XX23XX
@@ -10577,7 +10553,7 @@ i324m_5:	cmp	ebx, 0802h		; CAAR XX23XX
 		cmp	dword [cpu_type], 4
 		jae	near i324m_illegal
 		mov	ecx, dword [caar]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_6:	cmp	ebx, 0803h		; MSP  XX234X
@@ -10587,7 +10563,7 @@ i324m_6:	cmp	ebx, 0803h		; MSP  XX234X
 		cmp	dword [cpu_type], 6
 		jae	near i324m_illegal
 		mov	ecx, dword [msp]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_7:	cmp	ebx, 0804h		; ISP  XX2346
@@ -10595,7 +10571,7 @@ i324m_7:	cmp	ebx, 0804h		; ISP  XX2346
 		cmp	dword [cpu_type], 2
 		jb	near i324m_illegal
 		mov	ecx, dword [ssp]
-		mov	dword [d + eax], ecx
+		mov	dword [da_regs + eax], ecx
 		jmp	i324m_end
 
 i324m_8:	cmp	ebx, 004h		; IACR0 (EC040)
@@ -10654,7 +10630,7 @@ _i325_B_:	test	byte [sr + 1], 20h	; Are we in supervisormode??
 		and	ebx, 3ch
 		test	dx, 800h
 		jz	i325_Br
-		mov	edx, [d + ebx]		 ; write to memory
+		mov	edx, [da_regs + ebx]		 ; write to memory
 		mov	ebx, [edi + 4]
 		call	[edi + 12]
 		mov	eax, 4
@@ -10664,10 +10640,10 @@ i325_Br:	mov	edx, [edi + 4]
 		test	bl, 8			 ; is this An register ?
 		jz	i325_B1
 		movsx	edx, dl
-		mov	[d + ebx], edx
+		mov	[da_regs + ebx], edx
 		mov	eax, 4
 		ret
-i325_B1:	mov	byte [d + ebx], dl
+i325_B1:	mov	byte [da_regs + ebx], dl
 		mov	eax, 4
 		ret
 
@@ -10685,7 +10661,7 @@ _i325_W_:	test	byte [sr + 1], 20h	; Are we in supervisormode??
 		and	ebx, 3ch
 		test	dx, 800h
 		jz	i325_Wr
-		mov	edx, [d + ebx]		 ; write to memory
+		mov	edx, [da_regs + ebx]		 ; write to memory
 		mov	ebx, [edi + 4]
 		call	[edi + 12]
 		mov	eax, 4
@@ -10695,10 +10671,10 @@ i325_Wr:	mov	edx, [edi + 4]
 		test	bl, 8			 ; is this An register ?
 		jz	i325_W1
 		movsx	edx, dx
-		mov	[d + ebx], edx
+		mov	[da_regs + ebx], edx
 		mov	eax, 4
 		ret
-i325_W1:	mov	word [d + ebx], dx
+i325_W1:	mov	word [da_regs + ebx], dx
 		mov	eax, 4
 		ret
 
@@ -10716,14 +10692,14 @@ _i325_L_:	test	byte [sr + 1], 20h	; Are we in supervisormode??
 		and	ebx, 3ch
 		test	dx, 800h
 		jz	i325_Lr
-		mov	edx, [d + ebx]		 ; write to memory
+		mov	edx, [da_regs + ebx]		 ; write to memory
 		mov	ebx, [edi + 4]
 		call	[edi + 12]
 		mov	eax, 4
 		ret
 i325_Lr:	mov	edx, [edi + 4]
 		call	[edi + 8]
-		mov	[d + ebx], edx
+		mov	[da_regs + ebx], edx
 		mov	eax, 4
 		ret
 
@@ -10743,7 +10719,7 @@ _i326_:		mov	ecx, esi		; Extension word
 		mov	ebx, edx		; Get dl nr
 		shr	ebx, 10
 		and	ebx, 1ch
-		mov	eax, dword[d + ebx]; Get dl value
+		mov	eax, dword[da_regs + ebx]; Get dl value
 		push	ebx			; Save dl nr
 		mov	ebx, edx
 		mov	edx, dword [edi + 4]
@@ -10756,13 +10732,13 @@ _i326_:		mov	ecx, esi		; Extension word
 i326um:		xor	ebp, ebp		; Flag unsigned operations
 		mul	edx			; Unsigned mul
 i326cm:		pop	ecx
-		mov	dword [d + ecx], eax; Low result into dl
+		mov	dword [da_regs + ecx], eax; Low result into dl
 		and	byte [sr], 0f0h
 		mov	cl, 0
 		test	bh, 4
 		jz	i326_3
 		and	ebx, 7			; 64 bit result
-		mov	dword [d + 4*ebx], edx
+		mov	dword [da_regs + 4*ebx], edx
 		test	eax, eax
 		jnz	i326_1
 		test	edx, edx
@@ -10882,7 +10858,7 @@ global _i329_
 _i329_:		mov	ecx, esi
 		fetchwopcode_inc_pos
 		movsx	eax, dx
-		mov	ecx, dword [a + 28]
+		mov	ecx, dword [da_regs + 60]
 		fetchl
 		mov	esi, edx
 		PC_TO_PTR esi
@@ -10892,7 +10868,7 @@ _i329_:		mov	ecx, esi
 %endif
 		add	ecx, 4
 		add	ecx, eax
-		mov	dword [a + 28], ecx
+		mov	dword [da_regs + 60], ecx
 		mov	eax, 4
 		ret
 
@@ -11025,7 +11001,7 @@ _i332_:		mov	ecx, esi	; Load argument count
 
 global _i333_
 _i333_:		mov	eax, dword [edi + 4]	 ; Module data area ptr 
-		mov	ebx, dword [a + 28]	 ; Get stack ptr 
+		mov	ebx, dword [da_regs + 60]	 ; Get stack ptr 
 		mov	ecx, ebx		  ; Get opt and type
 		fetchb
 		call	callm_validate_
@@ -11049,7 +11025,7 @@ _i333_:		mov	eax, dword [edi + 4]	 ; Module data area ptr
 		mov	ecx, ebx		  ; Get saved stack ptr 
 		add	ecx, 20
 		fetchl
-		mov	dword [a + 28], edx	 ; Update stack ptr 
+		mov	dword [da_regs + 60], edx	 ; Update stack ptr 
 		mov	eax, 4
 		ret
 
@@ -11080,7 +11056,7 @@ _i334_1_:	mov	eax, dword [edi + 4]
 		add	esi, 2
 		shr	edx, 11
 		and	edx, 03ch
-		mov	eax, dword [a + edx]	; eax - Dst EA
+		mov	eax, dword [da_regs + 32 + edx]	; eax - Dst EA
 		and	eax, 0fffffff0h
 		and	ebx, 0fffffff0h
 		mov	ebp, 12
@@ -11127,7 +11103,7 @@ _i334_2_01_:	mov	ebx, dword [edi + 4]
 		fetchlopcode_inc_pos
 		add	esi, 4
 		mov	ebx, edx			; ebx - Src EA
-		mov	ebx, dword [a + ebx]	; Dst EA
+		mov	ebx, dword [da_regs + 32 + ebx]	; Dst EA
 		and	eax, 0fffffff0h
 		and	ebx, 0fffffff0h
 		mov	ebp, 12
@@ -11173,7 +11149,7 @@ _i334_2_11_:	mov	ebx, dword [edi + 4]
 		fetchlopcode_inc_pos
 		add	esi, 4
 		mov	ebx, edx			; ebx - Src EA
-		mov	ebx, dword [a + ebx]	; Dst EA
+		mov	ebx, dword [da_regs + 32 + ebx]	; Dst EA
 		and	eax, 0fffffff0h
 		and	ebx, 0fffffff0h
 		mov	ebp, 12

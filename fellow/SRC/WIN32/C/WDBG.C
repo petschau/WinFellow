@@ -238,7 +238,7 @@ STR *wdbgGetDataRegistersStr(STR * s)
 {
   sprintf(s,
 	  "D0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :D7",
-	  d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
+	  cpuGetDReg(0), cpuGetDReg(1), cpuGetDReg(2), cpuGetDReg(3), cpuGetDReg(4), cpuGetDReg(5), cpuGetDReg(6), cpuGetDReg(7));
   return s;
 }
 
@@ -246,7 +246,7 @@ STR *wdbgGetAddressRegistersStr(STR * s)
 {
   sprintf(s,
 	  "A0: %.8X %.8X %.8X %.8X %.8X %.8X %.8X %.8X :A7",
-	  a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7]);
+	  cpuGetAReg(0), cpuGetAReg(1), cpuGetAReg(2), cpuGetAReg(3), cpuGetAReg(4), cpuGetAReg(5), cpuGetAReg(6), cpuGetAReg(7));
   return s;
 }
 
@@ -254,8 +254,8 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
 {
   sprintf(s,
 	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %d y: %d x: %d",
-	  (sr & 0x2000) ? usp : a[7],
-	  (sr & 0x2000) ? a[7] : ssp,
+	  (sr & 0x2000) ? usp : cpuGetAReg(7),
+	  (sr & 0x2000) ? cpuGetAReg(7) : ssp,
 	  sr, draw_frame_count, graph_raster_y, graph_raster_x);
   return s;
 }
@@ -478,9 +478,6 @@ void wdbgUpdateCIAState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    intena &= 0xffdf;
-    intenar &= 0xffdf;
-
     for (i = 0; i < 2; i++) {
       sprintf(s, "Cia %s Registers:", (i == 0) ? "A" : "B");
       y = wdbgLineOut(hDC, s, x, y);
@@ -501,31 +498,32 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 
       strcpy(s, "");
       y = wdbgLineOut(hDC, s, x, y);
+
+      if (cia_cra[i] & 1)
+        strcpy(s, "Timer A started, ");
+      else
+        strcpy(s, "Timer A stopped, ");
+
+      if (cia_cra[i] & 8)
+        strcat(s, "One-shot mode");
+      else
+        strcat(s, "Continuous");
+
+      y = wdbgLineOut(hDC, s, x, y);
+
+      if (cia_crb[i] & 1)
+        strcpy(s, "Timer B started, ");
+      else
+        strcpy(s, "Timer B stopped, ");
+
+      if (cia_crb[i] & 8)
+        strcat(s, "One-shot mode");
+      else
+        strcat(s, "Continuous");
+
+      y = wdbgLineOut(hDC, s, x, y);
+      y++;
     }
-
-    if (cia_cra[i] & 1)
-      strcpy(s, "Timer A started, ");
-    else
-      strcpy(s, "Timer A stopped, ");
-
-    if (cia_cra[i] & 8)
-      strcat(s, "One-shot mode");
-    else
-      strcat(s, "Continuous");
-
-    y = wdbgLineOut(hDC, s, x, y);
-
-    if (cia_crb[i] & 1)
-      strcpy(s, "Timer B started, ");
-    else
-      strcpy(s, "Timer B stopped, ");
-
-    if (cia_crb[i] & 8)
-      strcat(s, "One-shot mode");
-    else
-      strcat(s, "Continuous");
-
-    y = wdbgLineOut(hDC, s, x, y);
 
     DeleteDC(hDC_image);
     DeleteObject(myarrow);

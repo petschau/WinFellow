@@ -180,30 +180,30 @@ static void fhfileSetLed(BOOLE state) {
 /*==================*/
 
 static void fhfileIgnore(ULO index) {
-  wril(0, a[1] + 32);
-  d[0] = 0;
+  wril(0, cpuGetAReg(1) + 32);
+  cpuSetDReg(0, 0);
 }
 
 
 static LON fhfileRead(ULO index) {
-  ULO dest = fetl(a[1] + 40);
-  ULO offset = fetl(a[1] + 44);
-  ULO length = fetl(a[1] + 36);
+  ULO dest = fetl(cpuGetAReg(1) + 40);
+  ULO offset = fetl(cpuGetAReg(1) + 44);
+  ULO length = fetl(cpuGetAReg(1) + 36);
   
   if ((offset + length) > fhfile_devs[index].size)
     return -3;
   fhfileSetLed(TRUE);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fread(memoryAddressToPtr(dest), 1, length, fhfile_devs[index].F);
-  wril(length, a[1] + 32);
+  wril(length, cpuGetAReg(1) + 32);
   fhfileSetLed(FALSE);
   return 0;
 }
 
 static LON fhfileWrite(ULO index) {
-  ULO dest = fetl(a[1] + 40);
-  ULO offset = fetl(a[1] + 44);
-  ULO length = fetl(a[1] + 36);
+  ULO dest = fetl(cpuGetAReg(1) + 40);
+  ULO offset = fetl(cpuGetAReg(1) + 44);
+  ULO length = fetl(cpuGetAReg(1) + 36);
 
   if (fhfile_devs[index].readonly ||
       ((offset + length) > fhfile_devs[index].size))
@@ -211,21 +211,21 @@ static LON fhfileWrite(ULO index) {
   fhfileSetLed(TRUE);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fwrite(memoryAddressToPtr(dest),1, length, fhfile_devs[index].F);
-  wril(length, a[1] + 32);
+  wril(length, cpuGetAReg(1) + 32);
   fhfileSetLed(FALSE);
   return 0;
 }
 
 static void fhfileGetNumberOfTracks(ULO index) {
-  wril(fhfile_devs[index].tracks, a[1] + 32);
+  wril(fhfile_devs[index].tracks, cpuGetAReg(1) + 32);
 }
 
 static void fhfileGetDriveType(ULO index) {
-  wril(1, a[1] + 32);
+  wril(1, cpuGetAReg(1) + 32);
 }
 
 static void fhfileWriteProt(ULO index) {
-  wril(fhfile_devs[index].readonly, a[1] + 32);
+  wril(fhfile_devs[index].readonly, cpuGetAReg(1) + 32);
 }
 
 
@@ -238,10 +238,10 @@ static void fhfileWriteProt(ULO index) {
 /*======================================================*/
 
 void fhfileDiag(void) {
-  fhfile_configdev = a[3];
+  fhfile_configdev = cpuGetAReg(3);
   memoryDmemSetLongNoCounter(FHFILE_MAX_DEVICES, 4088);
   memoryDmemSetLongNoCounter(fhfile_configdev, 4092);
-  d[0] = 1;
+  cpuSetDReg(0, 1);
 }
 
 
@@ -250,36 +250,36 @@ void fhfileDiag(void) {
 /*======================================*/
 
 static void fhfileOpen(void) {
-  if (d[0] < FHFILE_MAX_DEVICES) {
-    wrib(7, a[1] + 8);                     /* ln_type (NT_REPLYMSG) */
-    wrib(0, a[1] + 31);                    /* io_error */
-    wril(d[0], a[1] + 24);                 /* io_unit */
-    wril(fetl(a[6] + 32) + 1, a[6] + 32);  /* LIB_OPENCNT */
-    d[0] = 0;                              /* ? */
+  if (cpuGetDReg(0) < FHFILE_MAX_DEVICES) {
+    wrib(7, cpuGetAReg(1) + 8);                     /* ln_type (NT_REPLYMSG) */
+    wrib(0, cpuGetAReg(1) + 31);                    /* io_error */
+    wril(cpuGetDReg(0), cpuGetAReg(1) + 24);                 /* io_unit */
+    wril(fetl(cpuGetAReg(6) + 32) + 1, cpuGetAReg(6) + 32);  /* LIB_OPENCNT */
+    cpuSetDReg(0, 0);                              /* ? */
   }
   else {
-    wril(-1, a[1] + 20);            
-    wrib(-1, a[1] + 31);                   /* io_error */
-    d[0] = -1;                             /* ? */
+    wril(-1, cpuGetAReg(1) + 20);            
+    wrib(-1, cpuGetAReg(1) + 31);                   /* io_error */
+    cpuSetDReg(0, -1);                             /* ? */
   }
 }
 
 static void fhfileClose(void) {
-  wril(fetl(a[6] + 32) - 1, a[6] + 32);    /* LIB_OPENCNT */
-  d[0] = 0;                                /* ? */
+  wril(fetl(cpuGetAReg(6) + 32) - 1, cpuGetAReg(6) + 32);    /* LIB_OPENCNT */
+  cpuSetDReg(0, 0);                                /* ? */
 }
 
 static void fhfileExpunge(void) {
-  d[0] = 0;                                /* ? */
+  cpuSetDReg(0, 0);                                /* ? */
 }
 
 static void fhfileNULL(void) {}
 
 static void fhfileBeginIO(void) {
   LON error = 0;
-  ULO unit = fetl(a[1] + 24);
+  ULO unit = fetl(cpuGetAReg(1) + 24);
 
-  switch (fetw(a[1] + 28)) {
+  switch (fetw(cpuGetAReg(1) + 28)) {
     case 2:
       error = fhfileRead(unit);
       break;
@@ -309,16 +309,16 @@ static void fhfileBeginIO(void) {
       break;
     default:
       error = -3;
-      d[0] = 0;
+      cpuSetDReg(0, 0);
       break;
   }
-  wrib(5, a[1] + 8);      /* ln_type */
-  wrib(error, a[1] + 31); /* ln_error */
+  wrib(5, cpuGetAReg(1) + 8);      /* ln_type */
+  wrib(error, cpuGetAReg(1) + 31); /* ln_error */
 }
 
 
 static void fhfileAbortIO(void) {
-  d[0] = -3;
+  cpuSetDReg(0, -3);
 }
 
 
