@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb.h,v 1.3.2.2 2004-05-27 09:41:12 carfesh Exp $
+  @(#) $Id: fsdb.h,v 1.3.2.3 2004-05-28 09:44:15 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -98,8 +98,15 @@ typedef struct a_inode_struct {
 } a_inode;
 
 extern char *nname_begin (char *);
-
-extern char *build_nname (const char *d, const char *n);
+/* FELLOW CHANGE (START): extern char *build_nname (const char *d, const char *n); */
+#ifndef _FELLOW_DEBUG_CRT_MALLOC
+extern char *build_nname (const char *d, const char *n); 
+#else
+/* added for malloc() debugging purposes */
+extern char *my_strcpat(char *p, const char* d, const char *n);
+#define build_nname(d,n) my_strcpat((char *)xmalloc(strlen (d) + strlen (n) + 2), d, n)
+#endif
+/* FELLOW CHANGE (END) */
 extern char *build_aname (const char *d, const char *n);
 
 /* Filesystem-independent functions.  */
