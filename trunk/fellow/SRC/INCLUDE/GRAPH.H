@@ -140,18 +140,40 @@ extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];
 extern planar2chunkyroutine graph_decode_line_dual_tab[16];
 
+extern ULO dmaconr;
+extern ULO graph_color_shadow[];
+
+extern ULO diwstrt;
+extern ULO diwstop;
+extern ULO ddfstrt;
+extern ULO ddfstop;
+extern ULO bpl1pt;
+extern ULO bpl2pt;
+extern ULO bpl3pt;
+extern ULO bpl4pt;
+extern ULO bpl5pt;
+extern ULO bpl6pt;
+extern ULO bplcon0;
+extern ULO bplcon1;
+extern ULO bplcon2;
+extern ULO bpl1mod;
+extern ULO bpl2mod;
+extern ULO dmacon;
+extern ULO lof;
+extern ULO evenscroll;
+extern ULO evenhiscroll;
+extern ULO oddscroll;
+extern ULO oddhiscroll;
 extern ULO graph_DDF_start;
 extern ULO graph_DDF_word_count;
 extern ULO graph_DIW_first_visible;
 extern ULO graph_DIW_last_visible;
-extern ULO bplcon0;
-extern ULO bplcon2;
 extern ULO graph_raster_x;
 extern ULO graph_raster_y;
-extern ULO dmacon;
-extern ULO dmaconr;
-extern ULO lof;
-extern ULO graph_color_shadow[];
+extern ULO diwxleft;
+extern ULO diwxright;
+extern ULO diwytop;
+extern ULO diwybottom;
 
 typedef enum {
   GRAPH_LINE_BG = 0,
