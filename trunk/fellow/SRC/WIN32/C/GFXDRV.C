@@ -300,7 +300,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     }
     switch (GET_WM_COMMAND_ID(wParam, lParam)) {
 /*        case IDC_ABOUT:
-            MessageBox(hwnd, "Fellow Amiga Emulator V0.4", "Fellow Amiga Emulator", MB_OK);
+            MessageBox(hwnd, "Fellow Amiga Emulator V0.4.3", "Fellow Amiga Emulator", MB_OK);
 	  return 0; */
         case SC_SCREENSAVE:
 	  return 0;
@@ -607,7 +607,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
-      "WinFellow alpha v0.4.2 build 1",
+      "WinFellow alpha v0.4.3 build 1",
       WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX,
       CW_USEDEFAULT,
       SW_SHOW,
@@ -621,7 +621,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   else {
     gfx_drv_hwnd = CreateWindowEx(WS_EX_TOPMOST,
       "FellowWindowClass",
-      "WinFellow alpha v0.4.2 build 1",
+      "WinFellow alpha v0.4.3 build 1",
       WS_POPUP,
       0,
       0,
