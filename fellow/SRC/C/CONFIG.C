@@ -541,7 +541,7 @@ void cfgSetDefaults(cfg *config) {
   /* Default configuration description                                        */
   /*==========================================================================*/
 
-  cfgSetDescription(config, "winfellow amiga emulator v0.4.3 configuration");
+  cfgSetDescription(config, FELLOWLONGVERSION);
   
 
   /*==========================================================================*/
