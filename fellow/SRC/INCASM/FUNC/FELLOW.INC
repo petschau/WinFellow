@@ -5,6 +5,6 @@
 ; Includes functions declared in the C fellow module
 ;==============================================================================
 
-CFUNCEXTERN fellowHardReset
+CFUNCEXTERN fellowSoftReset
 
 %endif
