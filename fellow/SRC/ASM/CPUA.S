@@ -747,7 +747,7 @@ rIRQ_noprevious:mov	dword [interruptlevel], edx	; Save runlevel
 		mov	dword [interruptaddress], edx
 		mov	eax, dword [curcycle]	; Set time 
 		; Note: Lotus has code that expects a low delay in servicing requested irqs. This used to be 38
-		add	eax, 4
+		add	eax, 10
 		mov	dword [irq_next], eax
 		mov	dword [interruptflag], 1
 
@@ -2420,7 +2420,8 @@ i00fline:	mov	ebx, 02ch
 		mov	eax, 38
 		jmp	_cpuPrepareException_
 
-i00aline:	and	ebx, 0ff0000h
+i00aline:
+		and	ebx, 0ff0000h
 		cmp	ebx, 0f00000h
 		je	i00fsysline
 		mov	ebx, 028h
@@ -3846,7 +3847,7 @@ _i11_W_:	call	dword [edi + 8]			; edx != 0 take branch
 		fetchwopcode_inc_pos
 		movsx	ebx, dx
 		test	dl, 1
-		jnz	i11ex
+		jnz	near i11ex
 		mov	eax, 12
 		add	esi, ebx
 %ifdef PREFETCH
@@ -4623,7 +4624,7 @@ global _i24_
 _i24_:		mov	eax,dword [edi+12]
 		call	eax
 		test	dl,dl
-		jnz	i24ferdig
+		jnz	near i24ferdig
 		mov	ebx,dword [edi+8]
 		mov	edx,dword [ebx]
 		dec	dx
@@ -10905,7 +10906,7 @@ _i330_:		call	[edi + 4]		; edx = 1 succeeded
 		test	dl, dl
 		jz	near i330_n
 		cmp	dword [edi + 8], 0
-		je	i330_0
+		je	near i330_0
 		mov	ecx, esi
 		cmp	dword [edi + 8], 1
 		je	i330_w
