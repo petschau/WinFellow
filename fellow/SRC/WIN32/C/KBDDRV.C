@@ -11,6 +11,10 @@
 */
 
 /* ---------------- CHANGE LOG ----------------- 
+Friday evening, January 05, 2001: nova
+- fixed a little mistake (a " was missing)
+- if the mapping file is not found, a new one will be written at the end of the emulation
+
 Friday, January 05, 2001: nova
 - fixed CaptureKey
 - added kbdDrvKeyPrettyString used to display a more pretty name of a key
@@ -39,6 +43,7 @@ Tuesday, September 05, 2000: nova
 
 #define DINPUT_BUFFERSIZE 256
 
+#define MAPPING_FILENAME  "mapping.key"
 
 /*===========================================================================*/
 /* Keyboard specific data                                                    */
@@ -51,7 +56,8 @@ LPDIRECTINPUTDEVICE	kbd_drv_lpDID;
 HANDLE			kbd_drv_DIevent;
 BYTE			keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
 BYTE			prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
-BOOLE			kbd_drv_initialization_failed;
+BOOLE     kbd_drv_initialization_failed;
+BOOLE     prs_rewrite_mapping_file;
 
 
 /*===========================================================================*/
@@ -238,7 +244,7 @@ STR *symbol_pretty_name[106] = {
   "L",
   ";",
   "'",
-  "\\,
+  "\\",
   "4 (numpad)",
   "5 (numpad)",
   "6 (numpad)",
@@ -1391,7 +1397,7 @@ void kbdDrvStartup(void) {
   kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
 
-  prsReadFile( "mapping.key", kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
+  prs_rewrite_mapping_file = prsReadFile( MAPPING_FILENAME, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 
   for (port = 0; port < 2; port++)
     for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
@@ -1402,7 +1408,6 @@ void kbdDrvStartup(void) {
 			fellowAddLog( "keyplacement port %d direction %d: %s\n", port, setting, kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
 #endif
 
-			//fellowAddLog( "keyrep: %s\n", kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
 		}
 
   kbd_drv_active = FALSE;
@@ -1415,4 +1420,6 @@ void kbdDrvStartup(void) {
 /*===========================================================================*/
 
 void kbdDrvShutdown(void) {
+  if( prs_rewrite_mapping_file )
+    prsWriteFile( MAPPING_FILENAME, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 }
