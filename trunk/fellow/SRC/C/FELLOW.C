@@ -460,20 +460,8 @@ static void fellowModulesShutdown(void) {
 int main(int argc, char *argv[]) {
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);
-  
-  fellowAddLog("WinFellow alpha v0.4.2 build 1");
-#ifdef USE_DX3
-  fellowAddLog(" (DX3");
-#else
-  fellowAddLog(" (DX5");
-#endif
-#ifdef _DEBUG
-  fellowAddLog(" Debug Build)");
-#else
-  fellowAddLog(" Release Build)");
-#endif
-  fellowAddLog(" now starting up...\n");
 
+  fellowLogSysInfo();
   fellowPreStartReset(TRUE);
   fellowSetMMXDetected(detectMMX());
   fellowModulesStartup(argc, argv);
