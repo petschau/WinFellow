@@ -23,6 +23,7 @@
 #define IDD_DEBUG_CPU                   123
 #define IDB_DEBUG_ARROW                 124
 #define IDD_ABOUT                       125
+#define IDI_ICON_WINFELLOW              128
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -156,6 +157,9 @@
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_DEBUGGER_START               40003
+#define ID_FILE_OPENCONFIGURATION       40004
+#define ID_FILE_SAVECONFIGURATION       40005
+#define ID_FILE_SAVECONFIGURATIONAS     40006
 
 // Next default values for new objects
 // 
