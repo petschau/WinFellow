@@ -1,7 +1,7 @@
 /*===========================================================================*/
 /* WinFellow Amiga Emulator                                                  */
 /* Ini file for Windows                                                      */
-/* Author: Wytze Hoogkamp (worfje@gmx.net)                                   */
+/* Author: Worfje (worfje@gmx.net)                                   */
 /*                                                                           */
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
