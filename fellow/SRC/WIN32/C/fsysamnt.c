@@ -1,11 +1,11 @@
-/* @(#) $Id: fsysamnt.c,v 1.1.2.2 2004-06-03 14:19:52 carfesh Exp $ */
+/* @(#) $Id: fsysamnt.c,v 1.1.2.3 2004-06-08 13:20:17 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
 /* Filesys autmount functionality; moved here from WinUAE 0.8.8 filesys.c  */
 /* to keep the UAE filesys.c as original as possible                       */ 
 /*                                                                         */
-/* (w)1994 by Torsten Enderling (carfesh@gmx.net)                          */
+/* (w)2004 by Torsten Enderling (carfesh@gmx.net)                          */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
