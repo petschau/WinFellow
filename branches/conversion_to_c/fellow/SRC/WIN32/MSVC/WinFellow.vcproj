@@ -1946,6 +1946,9 @@
 				RelativePath="..\..\include\sounddrv.h">
 			</File>
 			<File
+				RelativePath="..\Include\sysinfo.h">
+			</File>
+			<File
 				RelativePath="..\..\include\timer.h">
 			</File>
 			<File
