@@ -46,15 +46,15 @@ typedef enum {
   WGUI_START_EMULATION,
   WGUI_QUIT_EMULATOR,
   WGUI_CONFIGURATION,
-  WGUI_LOADCONFIGURATION,
-  WGUI_SAVECONFIGURATIONAS,
-  WGUI_SAVECONFIGURATION,
+  WGUI_OPEN_CONFIGURATION,
+  WGUI_SAVE_CONFIGURATION,
+  WGUI_SAVE_CONFIGURATION_AS,
   WGUI_DEBUGGER_START,
   WGUI_ABOUT
 } wguiActions;
 
 wguiActions wgui_action;
-
+STR currentConfigFileName[CFG_FILENAME_LENGTH] = "default.wfc";
 
 /*============================================================================*/
 /* Forward declarations for each property sheet dialog procedure              */
@@ -153,8 +153,16 @@ typedef enum {
   FSEL_ROM = 0,
   FSEL_ADF = 1,
   FSEL_KEY = 2,
-  FSEL_HDF = 3
+  FSEL_HDF = 3,
+  FSEL_WFC = 4
 } SelectFileFlags;
+
+static STR FileType[5][CFG_FILENAME_LENGTH] = {
+	"ROM Images (*.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+    "ADF Diskfiles (*.adf)\0*.adf\0\0\0", // *.adz; *.adf.gz; *.dms unsupported
+    "Key Files (*.key)\0*.key\0\0\0", 
+    "Hard Files (*.hdf)\0*.hdf\0\0\0",
+    "Configuration Files (*.wfc)\0*.wfc\0\0\0"};
 
 BOOLE wguiSelectFile(HWND DlgHWND,
 		     STR *filename, 
@@ -162,28 +170,16 @@ BOOLE wguiSelectFile(HWND DlgHWND,
 		     STR *title,
 		     SelectFileFlags SelectFileType) {
   OPENFILENAME ofn;
-  STR *filters = NULL;
+  STR filters[CFG_FILENAME_LENGTH];
+  STR *pfilters;
 
-  switch (SelectFileType) {
-    case FSEL_ROM:
-      filters = 
-           "ROM-Images\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0";
-      break;
-    case FSEL_ADF:
-      filters = "ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0";
-      break;
-    case FSEL_KEY:
-      filters = "Key-files\0*.key\0\0\0";
-      break;
-    case FSEL_HDF:
-      filters = "Hardfiles\0*.hdf\0\0\0";
-      break;
-  }
+  memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
+  pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
   ofn.hwndOwner = DlgHWND;                            /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
-  ofn.lpstrFilter = filters;
+  ofn.lpstrFilter = pfilters;
   ofn.lpstrCustomFilter = NULL;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
@@ -193,6 +189,9 @@ BOOLE wguiSelectFile(HWND DlgHWND,
   ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
   ofn.lpstrInitialDir = NULL;
+  if (SelectFileType == FSEL_ADF) { 
+	ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
+  }
   ofn.lpstrTitle = title;
   ofn.Flags = OFN_EXPLORER |
               OFN_FILEMUSTEXIST |
@@ -206,6 +205,43 @@ BOOLE wguiSelectFile(HWND DlgHWND,
   return GetOpenFileName(&ofn);
 }
 
+BOOLE wguiSaveFile(HWND DlgHWND,
+		     STR *filename, 
+		     ULO filenamesize,
+		     STR *title,
+		     SelectFileFlags SelectFileType) {
+  OPENFILENAME ofn;
+  STR filters[CFG_FILENAME_LENGTH];
+  STR *pfilters;
+
+  memcpy(filters, &FileType[SelectFileType], CFG_FILENAME_LENGTH);
+  pfilters = &filters[0];
+
+  ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
+  ofn.hwndOwner = DlgHWND;                            /* the possibilities... */
+  ofn.hInstance = win_drv_hInstance;
+  ofn.lpstrFilter = pfilters;
+  ofn.lpstrCustomFilter = NULL;
+  ofn.nMaxCustFilter = 0;
+  ofn.nFilterIndex = 1;
+  filename[0] = '\0';
+  ofn.lpstrFile = filename;
+  ofn.nMaxFile = filenamesize;
+  ofn.lpstrFileTitle = NULL;
+  ofn.nMaxFileTitle = 0;
+  ofn.lpstrInitialDir = NULL; // the initial dir also could be remembered (ini-file)
+  ofn.lpstrTitle = title;
+  ofn.Flags = OFN_EXPLORER |
+			  OFN_HIDEREADONLY |
+			  OFN_OVERWRITEPROMPT;
+  ofn.nFileOffset = 0;
+  ofn.nFileExtension = 0;
+  ofn.lpstrDefExt = &".wfc";
+  ofn.lCustData = (long) NULL;
+  ofn.lpfnHook = NULL;
+  ofn.lpTemplateName = NULL;
+  return GetSaveFileName(&ofn);
+}
 
 BOOLE wguiSelectDirectory(HWND DlgHWND,
 			  STR *filename, 
@@ -240,6 +276,37 @@ BOOLE wguiSelectDirectory(HWND DlgHWND,
   return GetOpenFileName(&ofn);
 }
 
+
+/*============================================================================*/
+/* Saves and loads configuration files (*.wfc)                                */
+/*============================================================================*/
+
+void wguiSaveConfigurationFileAs(cfg *conf, HWND hwndDlg) {
+  STR filename[CFG_FILENAME_LENGTH];
+  
+  if (wguiSaveFile(hwndDlg,
+		     filename, 
+		     CFG_FILENAME_LENGTH, 
+		     "Save As", 
+		     FSEL_WFC)) {
+    cfgSaveToFilename(wgui_cfg, filename);
+	strncpy(currentConfigFileName, filename, CFG_FILENAME_LENGTH);
+  }
+}
+
+
+void wguiOpenConfigurationFile(cfg *conf, HWND hwndDlg) {
+  STR filename[CFG_FILENAME_LENGTH];
+  
+  if (wguiSelectFile(hwndDlg,
+		     filename, 
+		     CFG_FILENAME_LENGTH, 
+		     "Open", 
+		     FSEL_WFC)) {
+    cfgLoadFromFilename(wgui_cfg, filename);
+	strncpy(currentConfigFileName, filename, CFG_FILENAME_LENGTH);
+  }
+}
 
 /*============================================================================*/
 /* Install configuration in the GUI components                                */
@@ -1237,6 +1304,9 @@ BOOL CALLBACK wguiCPUDialogProc(HWND hwndDlg,
 
 void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, HWND hwndEdit, ULO index) {
   STR filename[CFG_FILENAME_LENGTH];
+  STR pathname[CFG_FILENAME_LENGTH];
+  BYT *strpointer;
+
 
   if (wguiSelectFile(hwndDlg,
 		     filename, 
@@ -1244,6 +1314,12 @@ void wguiSelectDiskImage(cfg *conf, HWND hwndDlg, HWND hwndEdit, ULO index) {
 		     "Select Diskimage", 
 		     FSEL_ADF)) {
     cfgSetDiskImage(conf, index, filename);
+	
+	strpointer = strrchr(filename, '\\');
+	strncpy(pathname, filename, strlen(filename) - strlen(strpointer));
+	pathname[strlen(filename) - strlen(strpointer)] = '\0';
+	cfgSetLastUsedDiskDir(conf, pathname);
+	
     Edit_SetText(hwndEdit, cfgGetDiskImage(conf, index));
   }
 }
@@ -1869,7 +1945,7 @@ BOOL wguiConfigurationDialog(void)
   propertysheetheader.hIcon = NULL;
   propertysheetheader.pszCaption = "Fellow Configuration";
   propertysheetheader.nPages = PROP_SHEETS;
-  propertysheetheader.nStartPage = 0;
+  propertysheetheader.nStartPage = 1;
   propertysheetheader.ppsp = propertysheets;
   propertysheetheader.pfnCallback = NULL;
   return PropertySheet(&propertysheetheader);
@@ -1924,6 +2000,8 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 			     LPARAM lParam) {
   switch (uMsg) {
     case WM_INITDIALOG:
+	  SendMessage((HWND) wParam, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
+	  SendMessage((HWND) wParam, WM_SETICON, (WPARAM) ICON_SMALL, (LPARAM) MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
       return TRUE;
     case WM_COMMAND:
       if (wgui_action == WGUI_NO_ACTION)
@@ -1936,6 +2014,15 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	  case IDC_QUIT_EMULATOR:
 	    wgui_action = WGUI_QUIT_EMULATOR;
 	    break;
+	  case ID_FILE_OPENCONFIGURATION:
+		wgui_action = WGUI_OPEN_CONFIGURATION;
+		break;
+	  case ID_FILE_SAVECONFIGURATION:
+		wgui_action = WGUI_SAVE_CONFIGURATION;
+		break;
+	  case ID_FILE_SAVECONFIGURATIONAS:
+		wgui_action = WGUI_SAVE_CONFIGURATION_AS;
+		break;
 	  case IDC_CONFIGURATION:
 	    wguiConfigurationDialog();
 	    break;
@@ -2075,9 +2162,18 @@ BOOLE wguiEnter(void) {
 	  end_loop = TRUE;
 	  quit_emulator = TRUE;
 	  break;
-		case WGUI_SAVECONFIGURATION:
-			//cfgSaveCurrentConfig
-		break;
+		case WGUI_OPEN_CONFIGURATION:
+		  wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_SAVE_CONFIGURATION:
+		  cfgSaveToFilename(wgui_cfg, currentConfigFileName);		  
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
+		case WGUI_SAVE_CONFIGURATION_AS:
+		  wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
+		  wgui_action = WGUI_NO_ACTION;
+		  break;
 	case WGUI_DEBUGGER_START:
 	  end_loop = TRUE;
 	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
@@ -2088,7 +2184,7 @@ BOOLE wguiEnter(void) {
 	  break;
       }
     }
-    cfgSaveToFilename(wgui_cfg, "conf.txt");
+    cfgSaveToFilename(wgui_cfg, currentConfigFileName);
     DestroyWindow(wgui_hDialog);
     if (!quit_emulator && debugger_start) {
       debugger_start = FALSE;
@@ -2117,7 +2213,7 @@ void wguiStartup(void) {
   wguiSplashWindowHide();
   WaitForSingleObject(wgui_hSplash_thread, INFINITE);
   wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
-  cfgLoadFromFilename(wgui_cfg, "conf.txt");
+  cfgLoadFromFilename(wgui_cfg, currentConfigFileName);
 }
 
 
