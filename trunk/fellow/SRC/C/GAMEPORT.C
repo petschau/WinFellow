@@ -3,10 +3,15 @@
 /* Joystick and Mouse                                                         */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
-/*         Marco Nova (novamarco@hotmail.com) some small changes              */
+/*         Marco Nova (novamarco@hotmail.com)                                 */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
+
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 19, 2000
+- added autofire support
+*/
 
 #include "portable.h"
 #include "renaming.h"
@@ -29,7 +34,7 @@ ULO potgor, potdat[2];
 /* Gameport state                                                            */
 /*===========================================================================*/
 
-BOOLE gameport_fire0[2], gameport_fire1[2];
+BOOLE gameport_fire0[2], gameport_fire1[2], gameport_autofire0[2], gameport_autofire1[2];
 BOOLE gameport_left[2], gameport_right[2], gameport_up[2], gameport_down[2];
 LON gameport_x[2], gameport_y[2];
 LON gameport_x_last_read[2], gameport_y_last_read[2];
@@ -122,6 +127,12 @@ ULO rpot1datC(ULO address) {
 
 ULO rpotgorC(ULO address) {
   ULO val = potgor & 0xbbff;
+
+  if( gameport_autofire1[0] )
+	gameport_fire1[0] = !gameport_fire1[0];
+
+  if( gameport_autofire1[1] )
+	gameport_fire1[1] = !gameport_fire1[1];
 
   if (!gameport_fire1[0])
     val |= 0x400;
@@ -230,6 +241,8 @@ void gameportIORegistersClear(BOOLE clear_pot) {
   if (clear_pot) potgor = 0xffff;
   for (i = 0; i < 2; i++) {
     if (clear_pot) potdat[i] = 0;
+	gameport_autofire0[i] = FALSE;
+	gameport_autofire1[i] = FALSE;
     gameport_fire0[i] = FALSE;
     gameport_fire1[i] = FALSE;
     gameport_left[i] = FALSE;

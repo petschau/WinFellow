@@ -3,10 +3,15 @@
 /* Keyboard emulation                                                         */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
+/*         Marco Nova (novamarco@hotmail.com)                                 */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 19, 2000: nova
+- added autofire support
+*/
 
 #include "defs.h"
 #include "fellow.h"
@@ -155,6 +160,16 @@ void kbdEventEOLHandler(void) {
 	fire1_changed[0] = TRUE;
 	fellowAddLog(fire1[0] ? "Fire10 - pressed\n" : "Fire10 - released\n");
 	break;
+      case EVENT_JOY0_AUTOFIRE0_ACTIVE:
+      case EVENT_JOY0_AUTOFIRE0_INACTIVE:
+	gameport_autofire0[0] = (thisev == EVENT_JOY0_AUTOFIRE0_ACTIVE);
+	fellowAddLog(gameport_autofire0[0] ? "AutoFire00 - pressed\n" : "AutoFire00 - released\n");
+	break;
+      case EVENT_JOY0_AUTOFIRE1_ACTIVE:
+      case EVENT_JOY0_AUTOFIRE1_INACTIVE:
+	gameport_autofire1[0] = (thisev == EVENT_JOY0_AUTOFIRE1_ACTIVE);
+	fellowAddLog(gameport_autofire1[0] ? "AutoFire10 - pressed\n" : "AutoFire10 - released\n");
+	break;
       case EVENT_JOY1_UP_ACTIVE:
       case EVENT_JOY1_UP_INACTIVE:
 	up[1] = (thisev == EVENT_JOY1_UP_ACTIVE);
@@ -190,6 +205,16 @@ void kbdEventEOLHandler(void) {
 	fire1[1] = (thisev == EVENT_JOY1_FIRE1_ACTIVE);
 	fire1_changed[1] = TRUE;
 	fellowAddLog(fire1[1] ? "Fire11 - pressed\n" : "Fire11 - released\n");
+	break;
+      case EVENT_JOY1_AUTOFIRE0_ACTIVE:
+      case EVENT_JOY1_AUTOFIRE0_INACTIVE:
+	gameport_autofire0[1] = (thisev == EVENT_JOY1_AUTOFIRE0_ACTIVE);
+	fellowAddLog(gameport_autofire0[1] ? "AutoFire01 - pressed\n" : "AutoFire01 - released\n");
+	break;
+      case EVENT_JOY1_AUTOFIRE1_ACTIVE:
+      case EVENT_JOY1_AUTOFIRE1_INACTIVE:
+	gameport_autofire1[1] = (thisev == EVENT_JOY1_AUTOFIRE1_ACTIVE);
+	fellowAddLog(gameport_autofire1[1] ? "AutoFire11 - pressed\n" : "AutoFire11 - released\n");
 	break;
     }
     kbd_state.eventsEOL.outpos++;

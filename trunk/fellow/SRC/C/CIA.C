@@ -4,9 +4,15 @@
 /*                                                                            */
 /* Authors: Petter Schau (peschau@online.no)                                  */
 /*          Rainer Sinsch                                                     */
+/*          Marco Nova (novamarco@hotmail.com)                                */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
+
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 19, 2000
+- changed ciaReadApra in order to support autofire
+*/
 
 #include "portable.h"
 #include "renaming.h"
@@ -218,6 +224,11 @@ ULO ciaReadApra(void) {
   ULO result = 0;
   ULO drivesel;
   
+  if( gameport_autofire0[0] )
+	gameport_fire0[0] = !gameport_fire0[0];
+  if( gameport_autofire0[1] )
+	gameport_fire0[1] = !gameport_fire0[1];
+
   if (!gameport_fire0[0])
     result |= 0x40;	/* Two firebuttons on port 1 */
   if (!gameport_fire0[1])

@@ -1,6 +1,11 @@
 #ifndef GAMEPORT_H
 #define GAMEPORT_H
 
+/* ---------------- CHANGE LOG ----------------- 
+Tuesday, September 19, 2000: nova
+- added gameport_autofire arrays
+*/
+
 /*===========================================================================*/
 /* From assembly                                                             */
 /*===========================================================================*/
@@ -31,6 +36,8 @@ extern BOOLE gameport_right[2];
 extern BOOLE gameport_down[2];
 extern BOOLE gameport_fire0[2];
 extern BOOLE gameport_fire1[2];
+extern BOOLE gameport_autofire0[2];
+extern BOOLE gameport_autofire1[2];
 
 
 /*===========================================================================*/

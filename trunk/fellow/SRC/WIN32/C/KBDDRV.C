@@ -7,12 +7,14 @@
 /*===========================================================================*/
 
 /* ---------------- KNOWN BUGS/FIXLIST ----------------- 
-- autofire support for joy replacement
 - additional key functions for wide usage by the emulator
 */
 
 /* ---------------- CHANGE LOG ----------------- 
-Tuesday, September 05, 2000
+Tuesday, September 19, 2000: nova
+- added autofire support
+
+Tuesday, September 05, 2000: nova
 - added DikKeyString for the translation of a DIK key to a string - highly not optimized - ** internal **
 - added kbd_drv_joykey to the prsReadFile call ** internal **
 - now joy replacement are first filled with DIK keys and then translated to PCK symbolic key
@@ -444,12 +446,16 @@ typedef enum {
   JOYKEY_UP = 2,
   JOYKEY_DOWN = 3,
   JOYKEY_FIRE0 = 4,
-  JOYKEY_FIRE1 = 5
+  JOYKEY_FIRE1 = 5,
+  JOYKEY_AUTOFIRE0 = 6,
+  JOYKEY_AUTOFIRE1 = 7
 } kbd_drv_joykey_directions;
 
-kbd_drv_pc_symbol		kbd_drv_joykey[2][6];			/* Keys for joykeys 0 and 1 */
+#define MAX_JOYKEY_VALUE	8
+
+kbd_drv_pc_symbol		kbd_drv_joykey[2][MAX_JOYKEY_VALUE];			/* Keys for joykeys 0 and 1 */
 BOOLE				kbd_drv_joykey_enabled[2][2];	/* For each port, the enabled joykeys */
-kbd_event			kbd_drv_joykey_event[2][2][6];	/* Event ID for each joykey [port][pressed][direction] */
+kbd_event			kbd_drv_joykey_event[2][2][MAX_JOYKEY_VALUE];	/* Event ID for each joykey [port][pressed][direction] */
 volatile kbd_drv_pc_symbol	kbd_drv_captured_key;
 BOOLE				kbd_drv_capture;
 
@@ -805,7 +811,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 		  // Here the gameport is set up for input from the specified set of joykeys 
 		  // Check each key for change
 		  kbd_drv_joykey_directions direction;
-		  for (direction = JOYKEY_LEFT; direction <= JOYKEY_FIRE1; direction++)
+		  for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
 			if (symbol_key == kbd_drv_joykey[setting][direction])
 			  if( pressed( symbol_key ) || released( symbol_key ))
 				kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
@@ -965,6 +971,12 @@ void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey) {
   case EVENT_JOY0_FIRE1_ACTIVE:
     kbd_drv_joykey[0][JOYKEY_FIRE1] = symbolickey;
     break;
+  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
+    kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = symbolickey;
+    break;
+  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
+    kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = symbolickey;
+    break;
   case EVENT_JOY1_UP_ACTIVE:
     kbd_drv_joykey[1][JOYKEY_UP] = symbolickey;
     break;
@@ -982,6 +994,12 @@ void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey) {
     break;
   case EVENT_JOY1_FIRE1_ACTIVE:
     kbd_drv_joykey[1][JOYKEY_FIRE1] = symbolickey;
+    break;
+  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
+    kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = symbolickey;
+    break;
+  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
+    kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = symbolickey;
     break;
   }
 }
@@ -1005,6 +1023,10 @@ ULO kbdDrvJoystickReplacementGet(kbd_event event) {
     return kbd_drv_joykey[0][JOYKEY_FIRE0];
   case EVENT_JOY0_FIRE1_ACTIVE:
     return kbd_drv_joykey[0][JOYKEY_FIRE1];
+  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
+    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
+  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
+    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
   case EVENT_JOY1_UP_ACTIVE:
     return kbd_drv_joykey[1][JOYKEY_UP];
   case EVENT_JOY1_DOWN_ACTIVE:
@@ -1017,6 +1039,10 @@ ULO kbdDrvJoystickReplacementGet(kbd_event event) {
     return kbd_drv_joykey[1][JOYKEY_FIRE0];
   case EVENT_JOY1_FIRE1_ACTIVE:
     return kbd_drv_joykey[1][JOYKEY_FIRE1];
+  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
+    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
+  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
+    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
   }
   return PC_NONE;
 }
@@ -1093,6 +1119,14 @@ void kbdDrvStartup(void) {
   kbd_drv_joykey_event[0][1][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_ACTIVE;
   kbd_drv_joykey_event[1][0][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_INACTIVE;
   kbd_drv_joykey_event[1][1][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_ACTIVE;
   
   kbd_drv_joykey[0][JOYKEY_UP]    = DIK_UP;
   kbd_drv_joykey[0][JOYKEY_DOWN]  = DIK_DOWN;
@@ -1100,12 +1134,16 @@ void kbdDrvStartup(void) {
   kbd_drv_joykey[0][JOYKEY_RIGHT] = DIK_RIGHT;
   kbd_drv_joykey[0][JOYKEY_FIRE0] = DIK_RCONTROL;
   kbd_drv_joykey[0][JOYKEY_FIRE1] = DIK_RMENU;
+  kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = DIK_O;
+  kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = DIK_P;
   kbd_drv_joykey[1][JOYKEY_UP]    = DIK_R;
   kbd_drv_joykey[1][JOYKEY_DOWN]  = DIK_F;
   kbd_drv_joykey[1][JOYKEY_LEFT]  = DIK_D;
   kbd_drv_joykey[1][JOYKEY_RIGHT] = DIK_G;
   kbd_drv_joykey[1][JOYKEY_FIRE0] = DIK_LCONTROL;
   kbd_drv_joykey[1][JOYKEY_FIRE1] = DIK_LMENU;
+  kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = DIK_A;
+  kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = DIK_S;
   
   for (port = 0; port < 2; port++)
     for (setting = 0; setting < 2; setting++)
@@ -1229,7 +1267,7 @@ void kbdDrvStartup(void) {
   prsReadFile( "mapping.key", kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 
   for (port = 0; port < 2; port++)
-    for (setting = JOYKEY_LEFT; setting <= JOYKEY_FIRE1; setting++)
+    for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++)
 	{
 #ifdef _DEBUG
 	  char szMsg[255];
