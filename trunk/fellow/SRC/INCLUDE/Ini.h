@@ -38,6 +38,9 @@ typedef struct {
   STR  m_lastusedkeydir[CFG_FILENAME_LENGTH];
   STR  m_lastusedkickimagedir[CFG_FILENAME_LENGTH];
   STR  m_lastusedconfigurationdir[CFG_FILENAME_LENGTH];
+  ULO  m_lastusedconfigurationtab;
+  STR  m_lastusedglobaldiskdir[CFG_FILENAME_LENGTH];
+  STR  m_lastusedhdfdir[CFG_FILENAME_LENGTH];
   
 } ini;
 
@@ -45,20 +48,26 @@ typedef struct {
 /* struct ini property access functions                                       */
 /*============================================================================*/
 
-extern STR *iniGetCurrentConfigurationFilename(ini *initdata);
-extern void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration);
-extern void iniSetLastUsedCfgDir(ini *initdata, STR *directory);
-extern STR *iniGetLastUsedCfgDir(ini *initdata);
 extern void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos);
 extern void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos);
 extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
 extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *configuration);
 extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
 extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *cfgfilename);
+extern STR *iniGetCurrentConfigurationFilename(ini *initdata);
+extern void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration);
+extern void iniSetLastUsedCfgDir(ini *initdata, STR *directory);
+extern STR *iniGetLastUsedCfgDir(ini *initdata);
 extern void iniSetLastUsedKickImageDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedKickImageDir(ini *initdata);
 extern void iniSetLastUsedKeyDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedKeyDir(ini *initdata);
+extern void iniSetLastUsedGlobalDiskDir(ini *initdata, STR *directory);
+extern STR *iniGetLastUsedGlobalDiskDir(ini *initdata);
+extern void iniSetLastUsedHdfDir(ini *initdata, STR *directory);
+extern STR *iniGetLastUsedHdfDir(ini *initdata);
+extern void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab);
+extern ULO iniGetLastUsedCfgTab(ini *initdata);
 
 /*============================================================================*/
 /* struct iniManager                                                          */
@@ -73,8 +82,7 @@ typedef struct {
 /* struct iniManager property access functions                                */
 /*============================================================================*/
 
-extern void iniManagerSetCurrentInitdata(iniManager *initdatamanager,
-				       ini *currentinitdata);
+extern void iniManagerSetCurrentInitdata(iniManager *initdatamanager, ini *currentinitdata);
 extern ini *iniManagerGetCurrentInitdata(iniManager *initdatamanager);
 extern void iniManagerSetDefaultInitdata(iniManager *inimanager, ini *initdata);
 extern ini *iniManagerGetDefaultInitdata(iniManager *inimanager);

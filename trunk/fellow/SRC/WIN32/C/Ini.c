@@ -1,7 +1,7 @@
 /*===========================================================================*/
 /* WinFellow Amiga Emulator                                                  */
 /* Ini file for Windows                                                      */
-/* Author: Worfje (worfje@gmx.net)                                   */
+/* Author: Worfje (worfje@gmx.net)                                           */
 /*                                                                           */
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
@@ -53,27 +53,9 @@ STR *iniGetDescription(ini *initdata) {
   return initdata->m_description;
 }
 
-void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration) {
-  strncpy(initdata->m_current_configuration, configuration, CFG_FILENAME_LENGTH);
-  fsNavigMakeRelativePath(initdata->m_current_configuration);
-}
-
-STR *iniGetCurrentConfigurationFilename(ini *initdata) {
-  return initdata->m_current_configuration;
-}
-
-void iniSetLastUsedCfgDir(ini *initdata, STR *directory) {
-  strncpy(initdata->m_lastusedconfigurationdir, directory, CFG_FILENAME_LENGTH);
-  fsNavigMakeRelativePath(initdata->m_lastusedconfigurationdir);
-}
-
-STR *iniGetLastUsedCfgDir(ini *initdata) {
-  return initdata->m_lastusedconfigurationdir;
-}
-
 void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, STR *cfgfilename) {
   strncpy(initdata->m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
-  fsNavigMakeRelativePath(initdata->m_configuration_history[index]);
+  //fsNavigMakeRelativePath(initdata->m_configuration_history[index]);
 }
 
 STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index) {
@@ -122,9 +104,35 @@ void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO e
   iniSetEmulationWindowYPos(initdata, emulationwindowypos);
 }
 
+void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration) {
+  strncpy(initdata->m_current_configuration, configuration, CFG_FILENAME_LENGTH);
+  //fsNavigMakeRelativePath(initdata->m_current_configuration);
+}
+
+STR *iniGetCurrentConfigurationFilename(ini *initdata) {
+  return initdata->m_current_configuration;
+}
+
+void iniSetLastUsedCfgDir(ini *initdata, STR *directory) {
+  strncpy(initdata->m_lastusedconfigurationdir, directory, CFG_FILENAME_LENGTH);
+  //fsNavigMakeRelativePath(initdata->m_lastusedconfigurationdir);
+}
+
+STR *iniGetLastUsedCfgDir(ini *initdata) {
+  return initdata->m_lastusedconfigurationdir;
+}
+
+void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab) {
+  initdata->m_lastusedconfigurationtab = cfgTab;
+}
+
+ULO iniGetLastUsedCfgTab(ini *initdata) {
+  return initdata->m_lastusedconfigurationtab;
+}
+
 void iniSetLastUsedKickImageDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
-  fsNavigMakeRelativePath(initdata->m_lastusedkickimagedir);
+  //fsNavigMakeRelativePath(initdata->m_lastusedkickimagedir);
 }
 
 STR *iniGetLastUsedKickImageDir(ini *initdata) {
@@ -133,11 +141,29 @@ STR *iniGetLastUsedKickImageDir(ini *initdata) {
 
 void iniSetLastUsedKeyDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkeydir, directory, CFG_FILENAME_LENGTH);
-  fsNavigMakeRelativePath(initdata->m_lastusedkeydir);
+  //fsNavigMakeRelativePath(initdata->m_lastusedkeydir);
 }
 
 STR *iniGetLastUsedKeyDir(ini *initdata) {
   return initdata->m_lastusedkeydir;
+}
+
+void iniSetLastUsedGlobalDiskDir(ini *initdata, STR *directory) {
+  strncpy(initdata->m_lastusedglobaldiskdir, directory, CFG_FILENAME_LENGTH);
+  //fsNavigMakeRelativePath(initdata->m_lastusedkeydir);
+}
+
+STR *iniGetLastUsedGlobalDiskDir(ini *initdata) {
+  return initdata->m_lastusedglobaldiskdir;
+}
+
+void iniSetLastUsedHdfDir(ini *initdata, STR *directory) {
+  strncpy(initdata->m_lastusedhdfdir, directory, CFG_FILENAME_LENGTH);
+  //fsNavigMakeRelativePath(initdata->m_lastusedkeydir);
+}
+
+STR *iniGetLastUsedHdfDir(ini *initdata) {
+  return initdata->m_lastusedhdfdir;
 }
 
 /*============================================================================*/
@@ -174,13 +200,6 @@ void iniSetDefaults(ini *initdata) {
   iniSetDescription(initdata, "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15 ini-file");
   
   /*==========================================================================*/
-  /* Default configuration filename                                           */
-  /*==========================================================================*/ 
-
-  iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
-  iniSetLastUsedCfgDir(initdata, "");
-
-  /*==========================================================================*/
   /* Default window positions                                                 */
   /*==========================================================================*/
 
@@ -193,12 +212,21 @@ void iniSetDefaults(ini *initdata) {
   }
 
   /*==========================================================================*/
+  /* Default configuration filename                                           */
+  /*==========================================================================*/ 
+
+  iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
+
+  /*==========================================================================*/
   /* Default kickimage and key directories                                    */
   /*==========================================================================*/ 
 
+  iniSetLastUsedCfgDir(initdata, "");
+  iniSetLastUsedCfgTab(initdata, 0);
   iniSetLastUsedKickImageDir(initdata, "");
   iniSetLastUsedKeyDir(initdata, "");
-  
+  iniSetLastUsedGlobalDiskDir(initdata, "");  
+  iniSetLastUsedHdfDir(initdata, "");
 }
 
 /*============================================================================*/
@@ -313,6 +341,15 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 	else if (stricmp(option, "last_used_key_dir") == 0) {
       iniSetLastUsedKeyDir(initdata, value);
     }
+	else if (stricmp(option, "last_used_global_disk_dir") == 0) {
+      iniSetLastUsedGlobalDiskDir(initdata, value);
+    }
+	else if (stricmp(option, "last_used_hdf_dir") == 0) {
+      iniSetLastUsedHdfDir(initdata, value);
+    }
+	else if (stricmp(option, "last_used_cfg_tab") == 0) {
+      iniSetLastUsedCfgTab(initdata, iniGetULOFromString(value));
+    }
     else result = FALSE;
   }
   else result = FALSE;
@@ -323,8 +360,6 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   ULO i;
 
   fprintf(inifile, "ini_description=%s\n", iniGetDescription(initdata));
-  fprintf(inifile, "last_used_configuration=%s\n", iniGetCurrentConfigurationFilename(initdata));
-  fprintf(inifile, "last_used_cfg_dir=%s\n", iniGetLastUsedCfgDir(initdata));
   fprintf(inifile, "main_window_x_pos=%d\n", iniGetMainWindowXPos(initdata));
   fprintf(inifile, "main_window_y_pos=%d\n", iniGetMainWindowYPos(initdata));
   fprintf(inifile, "emu_window_x_pos=%d\n", iniGetEmulationWindowXPos(initdata));
@@ -333,21 +368,26 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "config_history_1=%s\n", iniGetConfigurationHistoryFilename(initdata,1));
   fprintf(inifile, "config_history_2=%s\n", iniGetConfigurationHistoryFilename(initdata,2));
   fprintf(inifile, "config_history_3=%s\n", iniGetConfigurationHistoryFilename(initdata,3));
+  fprintf(inifile, "last_used_configuration=%s\n", iniGetCurrentConfigurationFilename(initdata));
+  fprintf(inifile, "last_used_cfg_dir=%s\n", iniGetLastUsedCfgDir(initdata));
+  fprintf(inifile, "last_used_cfg_tab=%d\n", iniGetLastUsedCfgTab(initdata));
   fprintf(inifile, "last_used_kick_image_dir=%s\n", iniGetLastUsedKickImageDir(initdata));
   fprintf(inifile, "last_used_key_dir=%s\n", iniGetLastUsedKeyDir(initdata));
+  fprintf(inifile, "last_used_global_disk_dir=%s\n", iniGetLastUsedGlobalDiskDir(initdata));
+  fprintf(inifile, "last_used_hdf_dir=%s\n", iniGetLastUsedHdfDir(initdata));
   return TRUE;
 }
 
 ini *iniManagerGetNewIni(iniManager *initdatamanager) {
-  ini *initdata = (ini *) malloc(sizeof(ini));
-  iniSetDefaults(initdata);
-  return initdata;
+	
+	ini *initdata = (ini *) malloc(sizeof(ini));
+	iniSetDefaults(initdata);
+	return initdata;
 }
 
 void iniManagerFreeIni(iniManager *initdatamanager, ini *initdata) {
-  // why set all defaults when freeing memory?
-  //iniSetDefaults(initdata);
-  free(initdata);
+
+	free(initdata);
 }
 
 void iniManagerStartup(iniManager *initdatamanager) {
