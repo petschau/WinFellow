@@ -259,6 +259,14 @@ ULO cfgGetVerticalScale(cfg *config) {
   return config->m_verticalscale;
 }
 
+void cfgSetVerticalScaleStrategy(cfg *config, ULO strategy) {
+  config->m_verticalscalestrategy = strategy;
+}
+
+ULO cfgGetVerticalScaleStrategy(cfg *config) {
+  return config->m_verticalscalestrategy;
+}
+
 void cfgSetScanlines(cfg *config, BOOLE scanlines) {
   config->m_scanlines = scanlines;
 }
@@ -583,6 +591,7 @@ void cfgSetDefaults(cfg *config) {
   cfgSetFrameskipRatio(config, 0);
   cfgSetHorizontalScale(config, 0);
   cfgSetVerticalScale(config, 1);
+  cfgSetVerticalScaleStrategy(config, 0);
   cfgSetDeinterlace(config, FALSE);
   cfgSetScanlines(config, FALSE);
 
@@ -849,6 +858,12 @@ static ULO cfgGetVerticalScaleFromString(STR *value) {
   return 1;
 }
 
+static ULO cfgGetVerticalScaleStrategyFromString(STR *value) {
+  if (stricmp(value, "exact") == 0) return 0;
+  if (stricmp(value, "dxstretch") == 0) return 1;
+  return 0;
+}
+
 static ULO cfgGetColorBitsFromString(STR *value) {
   if ((stricmp(value, "8bit") == 0) ||
       (stricmp(value, "8") == 0)) return 8;
@@ -886,6 +901,16 @@ static STR *cfgGetLinemodeToString(ULO verticalscale, BOOLE scanlines) {
   if (scanlines) return "scanlines";
   if (verticalscale == 2) return "double";
   return "none";
+}
+
+static STR *cfgGetLinemodeStrategyToString(ULO verticalscalestrategy) {
+	
+	switch (verticalscalestrategy) 
+	{
+	case 0: return "exact";
+	case 1: return "dxstretch";
+	}
+	return "exact";
 }
 
 static BOOLE cfgGetECSFromString(STR *value) {
@@ -1092,9 +1117,12 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if (stricmp(option, "gfx_linemode") == 0) {
       cfgSetScanlines(config, cfgGetScanlinesFromString(value));
       if (!cfgGetScanlines(config))
-	cfgSetVerticalScale(config, cfgGetVerticalScaleFromString(value));
+        cfgSetVerticalScale(config, cfgGetVerticalScaleFromString(value));
       else cfgSetVerticalScale(config, 1);
     }
+	else if (stricmp(option, "gfx_linemode_strategy") == 0) {
+		cfgSetVerticalScaleStrategy(config, cfgGetVerticalScaleStrategyFromString(value));
+	}
     else if (stricmp(option, "gfx_framerate") == 0) {
       cfgSetFrameskipRatio(config, cfgGetULOFromString(value));
     }
@@ -1280,6 +1308,8 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "gfx_linemode=%s\n", 
 	  cfgGetLinemodeToString(cfgGetVerticalScale(config), 
 				 cfgGetScanlines(config)));
+  fprintf(cfgfile, "gfx_linemode_strategy=%s\n", 
+	  cfgGetLinemodeStrategyToString(cfgGetVerticalScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%d\n", cfgGetFrameskipRatio(config));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetBOOLEToString(cfgGetScreenDrawLEDs(config)));
   fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n",
@@ -1483,6 +1513,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
   drawSetHorizontalScale(cfgGetHorizontalScale(config));
   drawSetVerticalScale(cfgGetVerticalScale(config));
+  drawSetVerticalScaleStrategy(cfgGetVerticalScaleStrategy(config));
   drawSetScanlines(cfgGetScanlines(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
 	drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));

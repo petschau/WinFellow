@@ -121,6 +121,7 @@ typedef struct {
   draw_mode            *drawmode;
   BOOLE		       use_blitter;
   ULO		       vertical_scale;
+  ULO              vertical_scale_strategy;
   BOOLE		       can_stretch_y;
   BOOLE		       stretch_warning_shutup;
   BOOLE		       no_dd_hardware;
@@ -1336,27 +1337,31 @@ void gfxDrvDDrawSurfaceClear(LPDIRECTDRAWSURFACE surface) {
 /* Restore a surface, do some additional cleaning up.                       */
 /*==========================================================================*/
 
-HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
-				  LPDIRECTDRAWSURFACE surface) {
-  HRESULT err;
-  if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST) return DD_OK;
+HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE surface) {
+	HRESULT err;
+	if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST) return DD_OK;
 
-  if ((err = IDirectDrawSurface_Restore(surface)) == DD_OK) {
-    gfxDrvDDrawSurfaceClear(surface);
-    if ((surface == ddraw_device->lpDDSPrimary) &&
-        (ddraw_device->buffercount > 1)) {
-      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
-      if (ddraw_device->buffercount == 3)
-        if ((err = IDirectDrawSurface_Flip(surface,
-                                           NULL,
-                                           DDFLIP_WAIT)) != DD_OK)
-          gfxDrvDDrawFailure("gfxDrvDDrawSurfaceRestore(), Flip(): ", err);
-	else
-	  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
-    }
-    graphLineDescClear();
-  }
-  return err;
+	if ((err = IDirectDrawSurface_Restore(surface)) == DD_OK) 
+	{
+		gfxDrvDDrawSurfaceClear(surface);
+		if ((surface == ddraw_device->lpDDSPrimary) && (ddraw_device->buffercount > 1)) 
+		{
+			gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+			if (ddraw_device->buffercount == 3)
+			{
+				if ((err = IDirectDrawSurface_Flip(surface, NULL, DDFLIP_WAIT)) != DD_OK)
+				{
+				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceRestore(), Flip(): ", err);
+				}
+			}
+			else
+			{
+				gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+			}
+		}
+		graphLineDescClear();
+	}
+	return err;
 }
     
 /*==========================================================================*/
@@ -1364,92 +1369,89 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
 /*==========================================================================*/
 
 void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
-  HRESULT err;
-  RECT srcwin;
-  RECT dstwin;
-  LPDIRECTDRAWSURFACE lpDDSDestination;
-  DDBLTFX bltfx;
+	HRESULT err;
+	RECT srcwin;
+	RECT dstwin;
+	LPDIRECTDRAWSURFACE lpDDSDestination;
+	DDBLTFX bltfx;
 
-  memset(&bltfx, 0, sizeof(DDBLTFX));
-  bltfx.dwSize = sizeof(DDBLTFX);
+	memset(&bltfx, 0, sizeof(DDBLTFX));
+	bltfx.dwSize = sizeof(DDBLTFX);
 
-  /* When using the blitter to show our buffer, */
-  /* source surface is always the secondary off-screen buffer */
+	/* When using the blitter to show our buffer, */
+	/* source surface is always the secondary off-screen buffer */
 
-  /* Srcwin is used when we do vertical scaling */
-  /* Prevent horisontal scaling of the offscreen buffer */
-  if (ddraw_device->mode->windowed && !gfx_drv_stretch_always)
-  {
-    srcwin.left = 0;
-    srcwin.right = ddraw_device->mode->width;
-    srcwin.top = 0;
-    srcwin.bottom = (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
-  }
-  else
-  {
-    srcwin.left = draw_hoffset;
-    srcwin.right = draw_hoffset + draw_width_amiga_real;
-    srcwin.top = draw_voffset;
-    srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
-  }
-  /* Destination is always the primary or one the backbuffers attached to it */
-  gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
-  /* Destination window, in windowed mode, use the clientrect */
-  if (!ddraw_device->mode->windowed) {
-    /* In full-screen mode, blit centered to the screen */
-    if (!gfx_drv_stretch_always)
-    {
-      dstwin.left = draw_hoffset;
-      dstwin.top = draw_voffset;
-      dstwin.right = draw_hoffset + draw_width_amiga_real;
-      dstwin.bottom = draw_voffset + draw_height_amiga_real;
-    }
-    else
-    {
-      dstwin.left = 0;
-      dstwin.top = 0;
-      dstwin.right = ddraw_device->mode->width;
-      dstwin.bottom = ddraw_device->mode->height;
-    }
-  }
+	/* Srcwin is used when we do vertical scaling */
+	/* Prevent horizontal scaling of the offscreen buffer */
+	if (ddraw_device->mode->windowed && !gfx_drv_stretch_always)
+	{
+		srcwin.left = 0;
+		srcwin.right = ddraw_device->mode->width;
+		srcwin.top = 0;
+		srcwin.bottom = (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+	}
+	else
+	{
+		srcwin.left = draw_hoffset;
+		srcwin.right = draw_hoffset + draw_width_amiga_real;
+		srcwin.top = draw_voffset;
+		srcwin.bottom = draw_voffset + (draw_height_amiga_real >> (ddraw_device->vertical_scale - 1));
+	}
 
-  /* This can fail when a surface is lost */
-  if ((err = IDirectDrawSurface_Blt(lpDDSDestination,
-                                    (ddraw_device->mode->windowed) ?
-				      &ddraw_device->hwnd_clientrect_screen :
-		                      &dstwin,
-                                    ddraw_device->lpDDSSecondary,
-                                    ((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) ? NULL : &srcwin,
-                                    DDBLT_ASYNC,
-                                    &bltfx)) != DD_OK) {
-    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
-    if (err == DDERR_SURFACELOST) {
-      /* Reclaim surface, if that also fails, pass over the blit and hope it */
-      /* gets better later */
-      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSPrimary)) != DD_OK) {
-	/* Here we are in deep trouble, we can not provide a buffer pointer */
-	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore primary surface failed) ", err);
-	return;
-      }
-      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSSecondary)) != DD_OK) {
-	/* Here we are in deep trouble, we can not provide a buffer pointer */
-	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore secondary surface failed) ", err);
-	return;
-      }
-      /* Restore was successful, do the blit */
-      if ((err = IDirectDrawSurface_Blt(lpDDSDestination,
-                                        (ddraw_device->mode->windowed) ?
-				          &ddraw_device->hwnd_clientrect_screen :
-		                          &dstwin,
-                                        ddraw_device->lpDDSSecondary,
-                                        (ddraw_device->vertical_scale == 1) ? NULL : &srcwin,
-                                        DDBLT_ASYNC,
-                                        &bltfx)) != DD_OK) {
-	/* Failed second time, pass over */
-        gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blit failed after restore) ", err);
-      }
-    }
-  }
+	/* Destination is always the primary or one the backbuffers attached to it */
+	gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
+	/* Destination window, in windowed mode, use the clientrect */
+	if (!ddraw_device->mode->windowed) {
+		/* In full-screen mode, blit centered to the screen */
+		if (!gfx_drv_stretch_always)
+		{
+			dstwin.left = draw_hoffset;
+			dstwin.top = draw_voffset;
+			dstwin.right = draw_hoffset + draw_width_amiga_real;
+			dstwin.bottom = draw_voffset + draw_height_amiga_real;
+		}
+		else
+		{
+			dstwin.left = 0;
+			dstwin.top = 0;
+			dstwin.right = ddraw_device->mode->width;
+			dstwin.bottom = ddraw_device->mode->height;
+		}
+	}
+
+	/* This can fail when a surface is lost */
+	if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
+		(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
+		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0))) ? NULL : &srcwin,
+		DDBLT_ASYNC, &bltfx)) != DD_OK) 
+	{
+		gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
+		if (err == DDERR_SURFACELOST) {
+			/* Reclaim surface, if that also fails, pass over the blit and hope it */
+			/* gets better later */
+			if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSPrimary)) != DD_OK) 
+			{
+				/* Here we are in deep trouble, we can not provide a buffer pointer */
+				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore primary surface failed) ", err);
+				return;
+			}
+			if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, ddraw_device->lpDDSSecondary)) != DD_OK) 
+			{
+				/* Here we are in deep trouble, we can not provide a buffer pointer */
+				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Restore secondary surface failed) ", err);
+				return;
+			}
+			/* Restore was successful, do the blit */
+			if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
+			(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary, 
+			(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0))) ? NULL : &srcwin,
+			DDBLT_ASYNC, &bltfx)) != DD_OK) 
+			{
+				/* failed second time, pass over */
+				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blit failed after restore) ", err);
+			}
+		}
+	}
 }
 
 
@@ -1673,50 +1675,48 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
-  HRESULT err;
-  LPDIRECTDRAWSURFACE lpDDS;
-  LPDDSURFACEDESC lpDDSD;
-  
-  gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
-  err = IDirectDrawSurface_Lock(lpDDS,
-				NULL,
-				lpDDSD,
-				DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT,
-				NULL);
-  /* We sometimes have a pointer to a backbuffer, but only primary surfaces can
-     be restored, it implicitly recreates backbuffers as well */
-  if (err != DD_OK)
-  {
-    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): ", err);
-    if (err == DDERR_SURFACELOST) {
-      /* Here we have lost the surface, restore it */
-      /* Unlike when blitting, we only use 1 surface here */
-      if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed || (ddraw_device->vertical_scale > 1)) ? lpDDS : ddraw_device->lpDDSPrimary)) != DD_OK) {
-	/* Here we are in deep trouble, we can not provide a buffer pointer */
-	gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Failed to restore surface 1) ", err);
-	return NULL;
-      }
-      else { /* Try again to lock the surface */
-	if ((err = IDirectDrawSurface_Lock(lpDDS,
-	                                   NULL,
-	                                   lpDDSD,
-	                                   DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT,
-	                                   NULL)) != DD_OK) {
-	  /* Here we are in deep trouble, we can not provide a buffer pointer */
-	  gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Lock failed after restore) ", err);
-	  return NULL;
+	HRESULT err;
+	LPDIRECTDRAWSURFACE lpDDS;
+	LPDDSURFACEDESC lpDDSD;
+
+	gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
+	err = IDirectDrawSurface_Lock(lpDDS, NULL, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
+	/* We sometimes have a pointer to a backbuffer, but only primary surfaces can
+	be restored, it implicitly recreates backbuffers as well */
+	if (err != DD_OK)
+	{
+		gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): ", err);
+		if (err == DDERR_SURFACELOST) 
+		{
+			/* Here we have lost the surface, restore it */
+			/* Unlike when blitting, we only use 1 surface here */
+			if ((err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))) ? lpDDS : ddraw_device->lpDDSPrimary)) != DD_OK) 
+			{
+				/* Here we are in deep trouble, we can not provide a buffer pointer */
+				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Failed to restore surface 1) ", err);
+				return NULL;
+			}
+			else 
+			{ 
+				/* Try again to lock the surface */
+				if ((err = IDirectDrawSurface_Lock(lpDDS, NULL, lpDDSD,	DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL)) != DD_OK) 
+				{
+					/* Here we are in deep trouble, we can not provide a buffer pointer */
+					gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Lock failed after restore) ", err);
+					return NULL;
+				}
+			}      
+		}
+		else 
+		{
+			/* Here we are in deep trouble, we can not provide a buffer pointer */
+			/* The error is something else than lost surface */
+			fellowAddLog("gfxdrv: gfxDrvDDrawSurfaceLock(): (Mega problem 3)\n");	
+			return NULL;
+		}
 	}
-      }      
-    }
-    else {
-      /* Here we are in deep trouble, we can not provide a buffer pointer */
-      /* The error is something else than lost surface */
-      fellowAddLog("gfxdrv: gfxDrvDDrawSurfaceLock(): (Mega problem 3)\n");	
-      return NULL;
-    }
-  }
-  *pitch = lpDDSD->lPitch;  
-  return lpDDSD->lpSurface;
+	*pitch = lpDDSD->lPitch;  
+	return lpDDSD->lpSurface;
 }
 
 
@@ -1761,39 +1761,37 @@ void gfxDrvDDrawFlip(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
-  BOOLE result = TRUE;
-  ULO buffers = 0;
-  
-  if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) {
-    ddraw_device->use_blitter = ((ddraw_device->mode->windowed) ||
-			         (ddraw_device->vertical_scale > 1) ||
-				 (ddraw_device->no_dd_hardware) ||
-				 (gfx_drv_stretch_always));
-    if (!ddraw_device->mode->windowed) {
-      gfx_drv_ddraw_mode *mode;
-      HRESULT err;
-      DDSURFACEDESC myDDSDesc;
-      
-      mode = (gfx_drv_ddraw_mode *) listNode(listIndex(ddraw_device->modes, ddraw_device->drawmode->id));
-      memset(&myDDSDesc, 0, sizeof(myDDSDesc));
-      myDDSDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
-      if ((err = ddraw_device->lpDD2->lpVtbl->SetDisplayMode(ddraw_device->lpDD2,
-	                                                     mode->width,
-	                                                     mode->height,
-	                                                     mode->depth,
-	                                                     mode->refresh,
-	                                                     0)) != DD_OK) {
-	gfxDrvDDrawFailure("gfxDrvDDrawSetMode(): ", err);
-	result = FALSE;
-      }
-    }
-    if (result) {
-      gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device_current);
-      if ((buffers = gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device_current)) == 0)
-	gfxDrvDDrawSetCooperativeLevelNormal(gfx_drv_ddraw_device_current);
-    }
-  }
-  return buffers;
+	BOOLE result = TRUE;
+	ULO buffers = 0;
+
+	if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) 
+	{
+		ddraw_device->use_blitter = 
+			((ddraw_device->mode->windowed) || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))|| (ddraw_device->no_dd_hardware) || (gfx_drv_stretch_always));
+		if (!ddraw_device->mode->windowed) 
+		{
+			gfx_drv_ddraw_mode *mode;
+			HRESULT err;
+			DDSURFACEDESC myDDSDesc;
+
+			mode = (gfx_drv_ddraw_mode *) listNode(listIndex(ddraw_device->modes, ddraw_device->drawmode->id));
+			memset(&myDDSDesc, 0, sizeof(myDDSDesc));
+			myDDSDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
+			if ((err = ddraw_device->lpDD2->lpVtbl->SetDisplayMode(ddraw_device->lpDD2, mode->width, mode->height, mode->depth,	mode->refresh, 0)) != DD_OK) 
+			{
+				gfxDrvDDrawFailure("gfxDrvDDrawSetMode(): ", err);
+				result = FALSE;
+			}
+		}
+		if (result) {
+			gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device_current);
+			if ((buffers = gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device_current)) == 0)
+			{
+				gfxDrvDDrawSetCooperativeLevelNormal(gfx_drv_ddraw_device_current);
+			}
+		}
+	}
+	return buffers;
 }
 
 
@@ -1922,9 +1920,10 @@ void gfxDrvBufferFlip(void) {
 /* Returns the number of available buffers, zero is error                   */
 /*==========================================================================*/
 
-void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale) {
+void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale, ULO vertical_scale_strategy) {
   gfx_drv_ddraw_device_current->drawmode = dm;  
   gfx_drv_ddraw_device_current->vertical_scale = vertical_scale;
+  gfx_drv_ddraw_device_current->vertical_scale_strategy = vertical_scale_strategy;
   gfx_drv_ddraw_device_current->mode = (gfx_drv_ddraw_mode *) listNode(listIndex(gfx_drv_ddraw_device_current->modes, dm->id));
 }
 
@@ -1943,27 +1942,32 @@ void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale) {
 /*==========================================================================*/
 
 BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
-  gfxDrvRunEventReset();                    /* At this point, app is paused */
-  gfx_drv_ddraw_device_current->maxbuffercount = maxbuffercount;
-  gfx_drv_win_active = FALSE;
-  gfx_drv_win_active_original = FALSE;
-  gfx_drv_win_minimized_original = FALSE;
-  gfx_drv_syskey_down = FALSE;
-  gfx_drv_displaychange = FALSE;
-  if ((gfx_drv_ddraw_device_current->vertical_scale != 1) &&
-      (!gfx_drv_ddraw_device_current->can_stretch_y))
-    if (!gfx_drv_ddraw_device_current->stretch_warning_shutup)
-    {
-      gfx_drv_ddraw_device_current->stretch_warning_shutup = TRUE;
-      wguiRequester("Double Lines were selected.",
-		    "Hardware assisted scaling is not supported by this computer",
-		    "Use scanlines instead if performance is poor");
-    }
-  if (!gfxDrvWindowInitialize(gfx_drv_ddraw_device_current)) {
-    fellowAddLog("gfxdrv: gfxDrvEmulationStart(): Failed to create window\n");
-    return FALSE;
-  }
-  return TRUE;
+	gfxDrvRunEventReset();                    /* At this point, app is paused */
+	gfx_drv_ddraw_device_current->maxbuffercount = maxbuffercount;
+	gfx_drv_win_active = FALSE;
+	gfx_drv_win_active_original = FALSE;
+	gfx_drv_win_minimized_original = FALSE;
+	gfx_drv_syskey_down = FALSE;
+	gfx_drv_displaychange = FALSE;
+	
+	// check if hardware supports DirectX stretching
+	if (((gfx_drv_ddraw_device_current->vertical_scale == 2) && 
+		(gfx_drv_ddraw_device_current->vertical_scale_strategy == 1)) && 
+		(!gfx_drv_ddraw_device_current->can_stretch_y))
+	{
+		if (!gfx_drv_ddraw_device_current->stretch_warning_shutup)
+		{
+			gfx_drv_ddraw_device_current->stretch_warning_shutup = TRUE;
+			wguiRequester("Double lines by DirectX stretching was selected.",
+			"Hardware assisted scaling is not supported by this computer",
+			"Use scanlines or exact scaling for double lines");
+		}
+	}
+	if (!gfxDrvWindowInitialize(gfx_drv_ddraw_device_current)) {
+		fellowAddLog("gfxdrv: gfxDrvEmulationStart(): Failed to create window\n");
+		return FALSE;
+	}
+	return TRUE;
 }
 
 ULO gfxDrvEmulationStartPost(void) {
