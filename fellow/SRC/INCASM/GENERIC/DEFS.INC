@@ -20,39 +20,18 @@
 
 %define UAE_FILESYS
 
-
-;======================
-; New sprite emulation
-;======================
-
-;%define USE_NEW_SPRITE
-
-
-;=====================================================================
-; Use graphics emulation in C, replaces USE_C some time in the future 
-;=====================================================================
-
-;%define GRAPHEM_C
-
-;=======================================================
-; Use graphics and drawing routines written in assembly
-; C counterpart is USE_C, only one must be defined.
-;=======================================================
-
-%define USE_ASM
-
 ;==========================================
 ; Use M68k prefetch emulation
 ; For the moment not compatible with PC_PTR
 ;==========================================
 
-;%define PREFETCH
+%define PREFETCH
 
 ;=========================
 ; Direct memory PC-pointer
 ;=========================
 
-%define PC_PTR
+;%define PC_PTR
 
 ;=====================
 ; Don't touch the rest

@@ -22,7 +22,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FSUSAGE.C,v 1.5 2004-05-27 12:30:24 carfesh Exp $
+  @(#) $Id: FSUSAGE.C,v 1.3.2.2 2004-05-27 09:44:38 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 

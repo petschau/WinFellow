@@ -137,7 +137,8 @@ void memoryLogUndefinedIOReads(void) {
 /* Table of register read/write functions                                     */
 /*============================================================================*/
 
-memoryIOReadFunc memory_iobank_read[256] = {rdefault,rdmaconr,rvposr,rvhposr,
+memoryIOReadFunc memory_iobank_read[256] = {
+              rdefault,rdmaconr_C,rvposr_C,rvhposr_C,
 					    rdefault,rdefault,rdefault,rdefault,
 					    rdefault,rdefault,rdefault,rdefault,
 					    rserdatr,rdefault,rintenar,rintreqr,
@@ -152,7 +153,7 @@ memoryIOReadFunc memory_iobank_read[256] = {rdefault,rdmaconr,rvposr,rvhposr,
 					    rdefault,rdefault,rdefault,rdefault,
 					    rdefault,rdefault,rdefault,rdefault,
 					    rdefault,rdefault,rdefault,rdefault,
-					    rdefault,rdefault,rid,rdefault,
+					    rdefault,rdefault,rid_C,rdefault,
 					    rdefault,rdefault,rdefault,rdefault,
 					    rcopjmp1,rcopjmp2,rdefault,rdefault,
 					    rdefault,rdefault,rdefault,rdefault,
@@ -208,7 +209,8 @@ memoryIOWriteFunc memory_iobank_write[256]={wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wvpos   ,wdefault,
+					    wdefault,wdefault,wvpos_C ,wdefault,
+					    wdefault,wserdat_C,wserper_C,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
@@ -216,12 +218,11 @@ memoryIOWriteFunc memory_iobank_write[256]={wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wbltcdat,wbltbdat,wbltadat,wdefault,
+					    wbltcdat_C,wbltbdat_C,wbltadat_C,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wcop1lch,wcop1lcl,wcop2lch,wcop2lcl,
-					    wcopjmp1,wcopjmp2,wdefault,wdiwstrt,
-					    wdiwstop,wddfstrt,wddfstop,wdmacon,
+					    wcopjmp1,wcopjmp2,wdefault,wdiwstrt_C,
+					    wdiwstop_C,wddfstrt_C,wddfstop_C,wdmacon_C,
 					    wdefault,wintena,wintreq,wadcon,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
@@ -231,14 +232,12 @@ memoryIOWriteFunc memory_iobank_write[256]={wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
-					    wbpl1pth,wbpl1ptl,wbpl2pth,wbpl2ptl,
-					    wbpl3pth,wbpl3ptl,wbpl4pth,wbpl4ptl,
-					    wbpl5pth,wbpl5ptl,wbpl6pth,wbpl6ptl,
+					    wbpl1pth_C,wbpl1ptl_C,wbpl2pth_C,wbpl2ptl_C,
+					    wbpl3pth_C,wbpl3ptl_C,wbpl4pth_C,wbpl4ptl_C,
+					    wbpl5pth_C,wbpl5ptl_C,wbpl6pth_C,wbpl6ptl_C,
 					    wdefault,wdefault,wdefault,wdefault,
-					    wbplcon0,wbplcon1,wbplcon2,wdefault,
-					    wbpl1mod,wbpl2mod,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
-					    wdefault,wdefault,wdefault,wdefault,
+					    wbplcon0_C,wbplcon1_C,wbplcon2_C,wdefault,
+					    wbpl1mod_C,wbpl2mod_C,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
@@ -251,14 +250,16 @@ memoryIOWriteFunc memory_iobank_write[256]={wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
-					    wcolor,wcolor,wcolor,wcolor,
+					    wdefault,wdefault,wdefault,wdefault,
+					    wdefault,wdefault,wdefault,wdefault,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
+					    wcolor_C,wcolor_C,wcolor_C,wcolor_C,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
 					    wdefault,wdefault,wdefault,wdefault,
@@ -652,12 +653,30 @@ void memoryChipClear(void) {
   memset(memory_chip, 0, memoryGetChipSize());
 }
 
-void memoryChipMap(void) {
+void memoryChipMap(BOOLE overlay) {
   ULO bank, lastbank;
+
+  if (overlay)
+  {
+    for (bank = 0;
+	 bank < 8;
+	 bank++)
+      memoryBankSet(memoryOVLReadByte,
+		    memoryOVLReadWord,
+		    memoryOVLReadLong,
+		    memoryOVLWriteByte,
+		    memoryOVLWriteWord,
+		    memoryOVLWriteLong,
+		    memory_kick,
+		    bank,
+		    0, 
+		    FALSE);
+  }
 
   if (memoryGetChipSize() > 0x200000) lastbank = 0x200000>>16;
   else lastbank = memoryGetChipSize()>>16;
-  for (bank = 0; bank < lastbank; bank++)
+
+  for (bank = (overlay) ? 8 : 0; bank < lastbank; bank++)
     memoryBankSet(memoryChipReadByte,
 		  memoryChipReadWord, 
 		  memoryChipReadLong,
@@ -1387,6 +1406,7 @@ void memoryBankSettingsClear(void) {
 }
 
 void memoryIOHandlersInstall(void) {
+  memorySetIOReadStub(0x018, rserdatr);
   memorySetIOReadStub(0x01c, rintenar);
   memorySetIOReadStub(0x01e, rintreqr);
   memorySetIOWriteStub(0x09a, wintena);
@@ -1397,7 +1417,7 @@ void memoryIOHandlersInstall(void) {
 /*==============*/
 /* Generic init */
 /*==============*/
-
+/*
 void memoryEmulationStartOld(void) {
   memoryBankClearAll();
   memoryIOClear();
@@ -1410,7 +1430,7 @@ void memoryEmulationStartOld(void) {
   memoryKickMap();
   memoryIOHandlersInstall();
 }
-
+*/
 void memoryEmulationStart(void) {
   memoryIOClear();
   memoryIOHandlersInstall();
@@ -1426,7 +1446,7 @@ void memorySoftReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();
@@ -1445,7 +1465,7 @@ void memoryHardReset(void) {
   memoryFastCardAdd();
   intreq = intena = intenar = 0;
   memoryBankClearAll();
-  memoryChipMap();
+  memoryChipMap(TRUE);
   memoryBogoMap();
   memoryIOMap();
   memoryEmemMap();

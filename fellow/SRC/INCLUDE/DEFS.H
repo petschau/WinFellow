@@ -29,27 +29,6 @@
 
 #define WITH_OS_TIMER
 
-
-/*======================*/
-/* New sprite emulation */
-/*======================*/
-
-/*#define USE_NEW_SPRITE*/
-
-
-/*=====================================================================*/
-/* Use graphics emulation in C, replaces USE_C some time in the future */
-/*=====================================================================*/
-
-/*#define GRAPHEM_C*/
-
-/*================================================*/
-/* Use graphics and drawing routines written in C */
-/* Broken for the moment                          */
-/*================================================*/
-
-/*#define USE_C*/
-
 /*========================================*/
 /* 68000 prefetch word emulation          */
 /* Slower, but some programs need it      */
@@ -57,7 +36,7 @@
 /* is to run 010++ binaries.              */
 /*========================================*/
 
-/*#define PREFETCH*/
+#define PREFETCH
 
 /*================================*/
 /* Use direct memory PC-pointer   */
@@ -65,28 +44,7 @@
 /* memory access.                 */
 /*================================*/
 
-#define PC_PTR
-
-
-/*=========================================*/
-/* Allow odd memory access, (for 68020++)  */
-/* This will reduce compatibility for      */
-/* 68000 binaries, and enhance it for 020+ */
-/*=========================================*/
-
-#define MEMORY_ALLOW_ODD_ACCESS
-
-/*=============================*/
-/* C versus Assembly selection */
-/*=============================*/
-
-/*==========================*/
-/* Use sound emulation in C */
-/* Somewhat buggy now       */
-/*==========================*/
-
-/*#define SOUND_C*/
-
+//#define PC_PTR
 
 /*================================*/
 /* The rest is not wise to change */
@@ -166,8 +124,8 @@ typedef void (*buseventfunc)(void);
 #define CYCLESPERFRAME 71364
 #define LINESPERFRAME    313
 
-#define FELLOWVERSION        "WinFellow alpha v0.4.3.2 - CVS (assembler version)"
-#define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.4.3.2 - CVS (assembler version)" 
+#define FELLOWVERSION        "WinFellow alpha v0.4.3.2 - CVS"
+#define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.4.3.2 - CVS" 
 #define FELLOWNUMERICVERSION "0.4.3.2"
 
 #endif

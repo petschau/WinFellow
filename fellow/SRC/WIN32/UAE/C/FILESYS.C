@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.11 2004-05-28 12:56:17 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.5.2.6 2004-05-28 12:55:25 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 

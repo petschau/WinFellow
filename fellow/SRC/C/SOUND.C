@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.5 2004-06-08 14:28:57 carfesh Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.3 2004-12-28 23:54:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -30,6 +30,8 @@
 #include "fmem.h"
 #include "sound.h"
 #include "wav.h"
+#include "cia.h"
+#include "graph.h"
 #include "sounddrv.h"
 
 
@@ -78,6 +80,17 @@ ULO audioodd;                          /* Used for skipping samples in 22050 */
 ULO sound_framecounter;                       /* Count frames, and then play */
 ULO sound_scale;
 
+double filter_value45 = 0.857270436755215389; // 7000 Hz at 45454 Hz samplingrate
+double filter_value33 = 0.809385175167476725; // 7000 Hz at 33100 Hz samplingrate
+double filter_value22 = 0.727523105310746957; // 7000 Hz at 22005 Hz samplingrate
+double filter_value15 = 0.639362082983339100; // 7000 Hz at 15650 Hz samplingrate
+double amplitude_div45 = 3.5000000000;
+double amplitude_div33 = 2.8000000000;
+double amplitude_div22 = 1.9000000000;
+double amplitude_div15 = 1.4000000000;
+double last_right = 0.0000000000;
+double last_left = 0.0000000000;
+
 
 /*===========================================================================*/
 /* Audio-registers                                                           */
@@ -87,8 +100,8 @@ ULO audpt[4];                                          /* Sample-DMA pointer */
 ULO audlen[4];                                                     /* Length */
 ULO audper[4];                      /* Used directly, NOTE: translated value */ 
 ULO audvol[4];             /* Volume, possibly not reloaded by state-machine */
-ULO auddat[4];                                 /* Last data word read by DMA */
-
+ULO auddat[4];                           /* Last data word set by DMA or CPU */
+BOOLE auddat_set[4];	              /* Set TRUE whenever auddat is written */
 
 /*===========================================================================*/
 /* Internal variables used by state-machine                                  */
@@ -111,6 +124,369 @@ WOR volumes[256][64];
 ULO audioirqmask[4] = {0x0080, 0x0100, 0x0200, 0x0400};
 ULO audiodmaconmask[4] = {0x1, 0x2, 0x4, 0x8};
 
+
+/*==============================================================================
+  Audio IO Registers
+  ==============================================================================*/
+
+/* Extract channel number from the register address */
+
+ULO soundGetChannelNumber(ULO address)
+{
+  return ((address & 0x70) >> 4) - 2;
+}
+
+
+/*
+ ==================
+  AUDXPT
+ ==================
+ $dff0a0,b0,c0,d0
+*/
+
+void waudXpth(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  audpt[ch] = (audpt[ch] & 0xffff) | ((data & 0x1f) << 16);
+}
+
+void waudXptl(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  audpt[ch] = (audpt[ch] & 0x1f0000) | (data & 0xfffe);
+}
+
+/*
+ ==================
+  AUDXLEN
+ ==================
+ $dff0a4,b4,c4,d4
+*/
+
+void waudXlen(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  audlen[ch] = data & 0xffff;
+}
+
+/*
+ ==================
+  AUDXPER
+ ==================
+ $dff0a6,b6,c6,d6
+*/
+
+void waudXper(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  audper[ch] = periodtable[data & 0xffff];
+}
+
+/*
+ ==================
+  AUDXVOL
+ ==================
+ $dff0a8,b8,c8,d8
+
+*/
+
+void waudXvol(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  /*Replay routines sometimes access volume as a byte register at $dff0X9...*/
+  if (((data & 0xff) == 0) && ((data & 0xff00) != 0)) data = (data >> 8) & 0xff;
+  if ((data & 64) == 64) data = 63;
+  audvol[ch] = data & 0x3f;
+}
+
+/*
+ ==================
+  AUDXDAT
+ ==================
+ $dff0aa,ba,ca,da
+
+ Not used right now.
+*/
+
+void waudXdat(ULO data, ULO address)
+{
+  ULO ch = soundGetChannelNumber(address);
+  auddat[ch] = data & 0xff;
+  auddat_set[ch] = TRUE;
+}
+
+
+/*==============================================================================
+  Audio state machine
+  ==============================================================================*/
+
+void soundState0(ULO ch);
+void soundState1(ULO ch);
+void soundState2(ULO ch);
+void soundState3(ULO ch);
+void soundState4(ULO ch);
+void soundState5(ULO ch);
+void soundState6(ULO ch);
+
+/*==============================================================================
+  State 0
+  ==============================================================================*/
+
+void soundState0(ULO ch)
+{
+  /*-------------------
+    Statechange 0 to 1
+    -------------------*/
+
+  audlenw[ch] = audlen[ch];
+  audptw[ch] = audpt[ch];
+  audpercounter[ch] = 0;
+  audstate[ch] = soundState1;
+}
+
+/*==============================================================================
+  State 1
+  ==============================================================================*/
+
+void soundState1(ULO ch)
+{
+  /*-------------------
+    Statechange 1 to 5
+    -------------------*/
+
+  if (audlenw[ch] != 1) audlenw[ch]--; 
+  audstate[ch] = soundState5;
+  wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+}
+
+/*==============================================================================
+  State 2
+  ==============================================================================*/
+
+void soundState2(ULO ch)
+{
+  if (audpercounter[ch] >= 0x10000)
+  {
+
+    /*-------------------
+      Statechange 2 to 3
+      -------------------*/
+
+    audpercounter[ch] -= 0x10000;
+    audpercounter[ch] += audper[ch];
+    audvolw[ch] = audvol[ch];
+    audstate[ch] = soundState3;
+    auddatw[ch] = volumes[(auddat[ch] & 0xff00) >> 8][audvolw[ch]];
+  }
+  else
+  {
+    /*-------------------
+      Statechange 2 to 2
+      -------------------*/
+
+    audpercounter[ch] += audper[ch];
+  }
+}
+
+/*==============================================================================
+  State 3
+  ==============================================================================*/
+
+void soundState3(ULO ch)
+{
+  if (audpercounter[ch] >= 0x10000)
+  {
+    /*-------------------
+      Statechange 3 to 2
+      -------------------*/
+
+    audpercounter[ch] -= 0x10000;
+    audpercounter[ch] += audper[ch];
+    audvolw[ch] = audvol[ch];
+    audstate[ch] = soundState2;
+    auddatw[ch] = volumes[auddat[ch] & 0xff][audvolw[ch]];
+    auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
+    audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
+    if (audlenw[ch] != 1) audlenw[ch]--;
+    else
+    {
+      audlenw[ch] = audlen[ch];
+      audptw[ch] = audpt[ch];
+      wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+    }
+  }
+  else
+  {
+    /*-------------------
+      Statechange 3 to 3
+      -------------------*/
+
+    audpercounter[ch] += audper[ch];
+  }
+}
+
+/*==============================================================================
+  State 4 and State 6, no operation
+  ==============================================================================*/
+
+void soundState4(ULO ch)
+{
+}
+
+void soundState6(ULO ch)
+{
+}
+
+/*==============================================================================
+  State 5
+  ==============================================================================*/
+
+void soundState5(ULO ch)
+{
+  /*-------------------
+    Statechange 5 to 2
+    -------------------*/
+
+  audvolw[ch] = audvol[ch];
+  audpercounter[ch] = 0;
+  auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
+  audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
+  audstate[ch] = soundState2;
+  if (audlenw[ch] != 1) audlenw[ch]--;
+  else
+  {
+    audlenw[ch] = audlen[ch];
+    audptw[ch] = audpt[ch];
+    wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+  }
+}
+
+/*==============================================================================
+  This is called by DMACON when DMA is turned off
+  ==============================================================================*/
+
+void soundChannelKill(ULO ch)
+{
+  auddatw[ch] = 0;
+  audstate[ch] = soundState0;
+}
+
+/*==============================================================================
+  This is called by DMACON when DMA is turned on
+  ==============================================================================*/
+
+void soundChannelEnable(ULO ch)
+{
+  soundState0(ch);
+}
+
+/*==============================================================================
+  Generate sound
+  Called in every end of line
+  Will run the audio state machine the needed number of times
+  and move the generated samples to a temporary buffer
+  ==============================================================================*/
+
+/*==============================================================================
+; Audio_Lowpass filters the _sound_right and sound_left memory with a
+; pass1 lowpass filter at 7000 Hz
+; coded by Rainer Sinsch (sinsch@informatik.uni-frankfurt.de)
+;==============================================================================*/
+
+void soundLowPass(ULO count, WOR *buffer_right, WOR *buffer_left)
+{
+  ULO i;
+  double amplitude_div;
+  double filter_value;
+  switch (soundGetRate())
+  {
+    case SOUND_44100:
+      amplitude_div = amplitude_div45;
+      filter_value = filter_value45;
+      break;
+    case SOUND_31300:
+      amplitude_div = amplitude_div33;
+      filter_value = filter_value33;
+      break;
+    case SOUND_22050:
+      amplitude_div = amplitude_div22;
+      filter_value = filter_value22;
+      break;
+    case SOUND_15650:
+      amplitude_div = amplitude_div15;
+      filter_value = filter_value15;
+      break;
+  }
+
+  for (i = 0; i < count; ++i)
+  {
+    last_left = filter_value*last_left + (double)buffer_left[i];
+    buffer_left[i] = (WOR) (last_left / amplitude_div);
+    last_right = filter_value*last_right + (double)buffer_right[i];
+    buffer_right[i] = (WOR) (last_right / amplitude_div);
+  }
+}
+
+ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, BOOLE halfscale, BOOLE odd)
+{
+  ULO samples_added = 0;
+    ULO i;
+  if (dmacon & audiodmaconmask[ch])
+  {
+    for (i = 0; i < count; ++i)
+    {
+      audstate[ch](ch);
+      if ((!halfscale) || (halfscale && !odd))
+      {
+	if (ch == 0 || ch == 2) buffer_left[samples_added++] += (WOR) auddatw[ch];
+	else buffer_right[samples_added++] += (WOR) auddatw[ch];
+      }
+      odd = !odd;
+    }
+  }
+  else
+  {
+    if ((intreq & audioirqmask[ch]) == 0) wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+    if (!halfscale) samples_added = count;
+    else 
+      for (i = 0; i < count; ++i)
+      {
+	if (!odd) samples_added++;
+	odd = !odd;
+      }
+  }
+  return samples_added;
+}
+
+void soundFrequencyHandler(void)
+{
+  WOR *buffer_left = (WOR*) sound_left + sound_buffer_sample_count;
+  WOR *buffer_right = (WOR*) sound_right + sound_buffer_sample_count;
+  ULO count = 0;
+  ULO samples_added;
+  BOOLE halfscale = (soundGetRate() == SOUND_22050 || soundGetRate() == SOUND_15650);
+  ULO i;
+  if (soundGetRate() == SOUND_44100 || soundGetRate() == SOUND_22050)
+  {
+    while (audiocounter <= 0x40000)
+    {
+      count++;
+      audiocounter += sound_scale;
+    }
+  }
+  else count = 2;
+  audiocounter -= 0x40000;
+  for (i = 0; i < count; ++i) buffer_left[i] = buffer_right[i] = 0;
+  for (i = 0; i < 4; ++i) samples_added = soundChannelUpdate(i, buffer_left, buffer_right, count, halfscale, audioodd);
+  if (halfscale && count & 1) audioodd = !audioodd;
+
+  if (sound_filter != SOUND_FILTER_NEVER)
+  {
+    if (sound_filter == SOUND_FILTER_ALWAYS || (cia_pra[0] & 2))
+      soundLowPass(samples_added, buffer_left, buffer_right);
+  }
+  sound_buffer_sample_count += samples_added;
+}
 
 /*===========================================================================*/
 /* Property settings                                                         */
@@ -321,6 +697,7 @@ void soundIOHandlersInstall(void) {
     memorySetIOWriteStub(0xa4 + 16*i, waudXlen);
     memorySetIOWriteStub(0xa6 + 16*i, waudXper);
     memorySetIOWriteStub(0xa8 + 16*i, waudXvol);
+    memorySetIOWriteStub(0xaa + 16*i, waudXdat);
   }
 }
 
@@ -331,9 +708,6 @@ void soundIOHandlersInstall(void) {
 
 void soundIORegistersClear(void) {
   ULO i;
-
-  /* MSVC 5 and 6 generates an internal compiler error in release mode if audstate
-     is initialized inside the loop....... Convincing.... PS */
 
   audstate[0] = soundState0;
   audstate[1] = soundState0;
@@ -348,6 +722,7 @@ void soundIORegistersClear(void) {
     audvol[i] = 0;
     audpercounter[i] = 0;
     auddat[i] = 0;
+    auddat_set[i] = FALSE;
     auddatw[i] = 0;
     audlenw[i] = 2;
     audvolw[i] = 0;
@@ -362,20 +737,7 @@ void soundIORegistersClear(void) {
 
 void soundEndOfLine(void) {
   if (soundGetEmulation() != SOUND_NONE) {
-    switch (soundGetRate()) {
-      case SOUND_44100:
-	soundFrequencyHandler44100();
-	break;
-      case SOUND_31300:
-	soundFrequencyHandler31300();
-	break;
-      case SOUND_22050:
-	soundFrequencyHandler22050();
-	break;
-      case SOUND_15650:
-	soundFrequencyHandler15650();
-      break;
-    }
+    soundFrequencyHandler();
     if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
         soundGetBufferSampleCountMax()) {
       if (soundGetEmulation() == SOUND_PLAY) {

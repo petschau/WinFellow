@@ -246,7 +246,12 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     {
       int vkey = (int) wParam;
       gfx_drv_syskey_down = (vkey != VK_F10);
-      gfxDrvEvaluateActiveStatus();
+
+      // below is the hack to remove the problem with the ALT key
+      // this is not a nice solution, but it moreless works
+      // we really need Mnd back for some proper work on this
+
+      //gfxDrvEvaluateActiveStatus();
     }
     break;
   case WM_SYSKEYUP:
@@ -604,7 +609,7 @@ void gfxDrvWindowHide(gfx_drv_ddraw_device *ddraw_device) {
 BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
     char *versionstring = fellowGetVersionString();
     
-  if (ddraw_device->mode->windowed) {
+    if (ddraw_device->mode->windowed) {
     gfx_drv_hwnd = CreateWindowEx(0,
       "FellowWindowClass",
       versionstring,
@@ -781,7 +786,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 				       LPSTR lpDriverName,
 				       LPVOID lpContext) {
   gfx_drv_ddraw_device *tmpdev;
-  
+
   winDrvSetThreadName(-1, "gfxDrvDDrawDeviceEnumerate()");
   
   tmpdev = (gfx_drv_ddraw_device *) malloc(sizeof(gfx_drv_ddraw_device));

@@ -1,12 +1,12 @@
-/* @(#) $Id: FELLOW.C,v 1.20 2004-06-12 15:39:19 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.7 2004-08-07 15:45:18 worfje Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                      */
+/* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* This file has overall control over starting and stopping Fellow            */
-/* Everything starts here                                                     */
-/*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
-/*                                                                            */
+/* This file has overall control over starting and stopping Fellow         */
+/* Everything starts here                                                  */
+/*                                                                         */
+/* Author: Petter Schau (peschau@online.no)                                */
+/*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */
@@ -147,7 +147,7 @@ static BOOLE fellowGetLogFirstTime(void) {
   return fellow_log_first_time;
 }
 
-static void fellowAddLog2(STR *msg) {
+void fellowAddLog2(STR *msg) {
   FILE *F;
 
   if (!fellowGetLogEnabled()) return;

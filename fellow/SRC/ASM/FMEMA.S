@@ -30,11 +30,7 @@ FDATASECTIONSTART
 
 %include "data/fmem.inc"
 %include "data/floppy.inc"
-%include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
-%include "data/draw.inc"
 %include "data/cpu.inc"
 	
 FDATASECTIONEND
@@ -47,11 +43,7 @@ _memorystart_:			; Used to check code alignment
 
 
 %include "func/cpu.inc"
-%include "func/sound.inc"
-%include "func/draw.inc"
-%include "func/graph.inc"
 %include "func/copper.inc"
-%include "func/blit.inc"
 %include "func/cia.inc"
 %include "func/floppy.inc"
 %include "func/gameport.inc"
@@ -59,7 +51,6 @@ _memorystart_:			; Used to check code alignment
 %include "mac/fmem.mac"
 %include "mac/cia.mac"
 %include "mac/floppy.mac"
-%include "mac/graph.mac"
 %include "mac/gameport.mac"
 		
 		
@@ -309,6 +300,51 @@ _memoryChipWriteLong_:
 		ret
 
 
+; -----------------------------
+; ROM overlayed to $000000 bank 
+; -----------------------------
+
+
+		FALIGN32
+
+global _memoryOVLReadByte_
+_memoryOVLReadByte_:	
+		and	ecx, 0ffffffh
+		movzx	edx, byte [memory_kick + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadWord_
+_memoryOVLReadWord_:	
+		and	ecx, 0ffffffh
+		xor	edx, edx
+		mov	dh, byte [memory_kick + ecx]
+		mov	dl, byte [memory_kick + 1 + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadLong_
+_memoryOVLReadLong_:
+		and	ecx, 0ffffffh
+		mov	edx, dword [memory_kick + ecx]
+		bswap	edx
+		ret
+
+		FALIGN32
+
+global _memoryOVLWriteByte_
+global _memoryOVLWriteWord_
+global _memoryOVLWriteLong_
+_memoryOVLWriteByte_:
+_memoryOVLWriteWord_:
+_memoryOVLWriteLong_:
+		mov	ecx, dword [memory_wriorgadr]
+		ret
+	
 ; ---------
 ; Fast bank 
 ; ---------
@@ -691,7 +727,14 @@ global _memoryIOReadByte_
 _memoryIOReadByte_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		test	ecx, 1
 		jnz	rrb1
@@ -706,7 +749,14 @@ global _memoryIOReadWord_
 _memoryIOReadWord_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		ret
 
@@ -718,10 +768,24 @@ _memoryIOReadLong_:
 		push	ecx
 		and	ecx, 01feh
 		push	ecx
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+	
 		pop	ecx
 		push	edx
+
+
+		push eax
 		call	dword [memory_iobank_read + 4 + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		shl	ecx, 16
 		or	edx, ecx
@@ -745,13 +809,29 @@ _memoryIOWriteByte_:
 
 		and	ecx, 01feh
 		and	edx, 0ff00h
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 wrbodd:
 		and	ecx, 01feh
 		and	edx, 0ffh
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -764,7 +844,15 @@ _memoryIOWriteWord_:
 		push	ecx
 		and	ecx, 01feh
 		and	edx, 0ffffh		; No extra bits
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -781,11 +869,27 @@ _memoryIOWriteLong_:
 		add	ecx, 2
 		and	ecx, 01feh	; Unreal writes long to $1fe
 		and	edx, 0ffffh   ; No extra bits here
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		pop	edx
 		shr	edx, 16		; No extra bits! Good!
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -807,6 +911,7 @@ _rserdatr_:	xor	edx, edx
 
 global _rintenar_
 _rintenar_:	mov	edx, dword [intenar]
+		mov eax, edx
 		ret
 
 ; INTREQR
@@ -814,7 +919,9 @@ _rintenar_:	mov	edx, dword [intenar]
 		FALIGN32
 
 global _rintreqr_
-_rintreqr_:	mov	edx, dword [intreq]
+_rintreqr_:	
+		mov	edx, dword [intreq]
+		mov eax, edx
 		ret
 
 ; To simulate noise, return 0 and -1 every second time.
@@ -833,6 +940,7 @@ _rdefault_:
 		mov	edx, dword [memory_noise_counter]
 		and	edx, 1
 		mov	edx, dword [memory_noise + 4*edx]
+		mov eax, edx
 		ret
 
 
@@ -947,6 +1055,7 @@ _wdefault_:	inc	dword [memory_undefined_io_write_counter]
 global _rdskbytr_
 _rdskbytr_:
 		RDSKBYTR_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -987,6 +1096,7 @@ _wdsksync_:
 global _rjoy0dat_
 _rjoy0dat_:
 		RJOY0DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -995,6 +1105,7 @@ _rjoy0dat_:
 global _rjoy1dat_
 _rjoy1dat_:
 		RJOY1DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1003,6 +1114,7 @@ _rjoy1dat_:
 global _rpot0dat_
 _rpot0dat_:
 		RPOT0DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1011,6 +1123,7 @@ _rpot0dat_:
 global _rpot1dat_
 _rpot1dat_:
 		RPOT1DAT_CWRAP
+		mov eax, edx
 		ret
 
 
@@ -1019,6 +1132,7 @@ _rpot1dat_:
 global _rpotgor_
 _rpotgor_:
 		RPOTGOR_CWRAP
+		mov eax, edx
 		ret
 
 

@@ -34,6 +34,7 @@ extern void ciaHandleEventC(void);
 extern void ciaRaiseIndexIRQ(void); /* For the floppy loader */
 extern void ciaRaiseIRQC(ULO i, ULO req); /* For kbd.c */
 extern void ciaWritesp(ULO i, ULO data); /* For kbd.c */
+extern void ciaUpdateEventCounterC(ULO);
 
 /* Cia event data */
 

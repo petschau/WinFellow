@@ -20,7 +20,7 @@ felist *listCat(felist *l1, felist *l2);
 ULO listCount(felist *l);
 void *listNode(felist *l);
 void listRemove(felist *l);
-void listFree(felist *node);
+felist *listFree(felist *node);
 felist *listIndex(felist *l, ULO index);
 void listFreeAll(felist *l, BOOLE freenodes);
 

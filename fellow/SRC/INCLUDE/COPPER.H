@@ -13,6 +13,8 @@
 #define wcopjmp1 ASMRENAME(wcopjmp1)
 #define wcopjmp2 ASMRENAME(wcopjmp2)
 
+#define copperUpdateDMA ASMRENAME(copperUpdateDMA)
+
 /* Declare exported functions from assembly */
 
 extern ULO rcopjmp1(ULO address);
@@ -24,6 +26,8 @@ extern void wcop2lch(ULO data, ULO address);
 extern void wcop2lcl(ULO data, ULO address);
 extern void wcopjmp1(ULO data, ULO address);
 extern void wcopjmp2(ULO data, ULO address);
+extern void copperUpdateDMA(void);
+
 
 
 /* C-declarations */

@@ -261,14 +261,18 @@ ULO ciaReadApra(void) {
   if (!gameport_fire0[1])
     result |= 0x80;
   drivesel = floppySelectedGet();       /* Floppy bits */
-  if (!floppyIsReady(drivesel))
-    result |= 0x20;
-  if (!floppyIsTrack0(drivesel))
-    result |= 0x10;
-  if (!floppyIsWriteProtected(drivesel))
-    result |= 8;
-  if (!floppyIsChanged(drivesel))
-    result |= 4;    
+
+//  if (drivesel != -1)
+  {
+    if (!floppyIsReady(drivesel))
+      result |= 0x20;
+    if (!floppyIsTrack0(drivesel))
+      result |= 0x10;
+    if (!floppyIsWriteProtected(drivesel))
+      result |= 8;
+    if (!floppyIsChanged(drivesel))
+      result |= 4;
+  }
   return result | (cia_pra[0] & 2);
 }
 
@@ -279,8 +283,17 @@ ULO ciaReadpra(ULO i) {
 }
 
 void ciaWriteApra(ULO data) {
-  if (cia_pra[0] != data)
-    cia_pra[0] = data;
+  if ((data & 0x1) && !(cia_pra[0] & 0x1))
+  {
+    memoryChipMap(TRUE);
+//    fellowAddLog("OVL turned ON\n");
+  }
+  else if ((cia_pra[0] & 0x1) && !(data & 0x1))
+  {
+    memoryChipMap(FALSE);
+//    fellowAddLog("OVL turned OFF\n");
+  }
+  cia_pra[0] = data;
 }
 
 void ciaWritepra(ULO i, ULO data) {
@@ -309,7 +322,7 @@ void ciaWriteBprb(ULO data) {
   floppySelectedSet((data & 0x78)>>3);
   floppySideSet((data & 4)>>2);
   floppyDirSet((data & 2)>>1);
-  floppyStepSet(data & 1);  
+  floppyStepSet(data & 1);
 }
 
 void ciaWriteprb(ULO i, ULO data) {
@@ -324,7 +337,7 @@ void ciaWriteprb(ULO i, ULO data) {
 ULO ciaReadddra(ULO i) {
   if (i == 0)
     return 3;
-  return 0xc0;
+  return 0xff;
 }
 
 void ciaWriteddra(ULO i, ULO data) {

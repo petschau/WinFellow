@@ -1451,7 +1451,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
     floppySetDiskImage(i, cfgGetDiskImage(config, i));
     floppySetEnabled(i, cfgGetDiskEnabled(config, i));
     if(!floppyIsWriteProtected(i))  /* IPF images are marked read-only by the floppy module itself */
-    floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
+        floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
   }
   floppySetFastDMA(cfgGetDiskFast(config));
   
@@ -1481,7 +1481,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetHorisontalScale(cfgGetHorizontalScale(config));
+  drawSetHorizontalScale(cfgGetHorizontalScale(config));
   drawSetVerticalScale(cfgGetVerticalScale(config));
   drawSetScanlines(cfgGetScanlines(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));

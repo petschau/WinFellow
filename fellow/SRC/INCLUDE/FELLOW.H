@@ -25,6 +25,8 @@ extern BOOLE fellowEmulationStart(void);
 extern void fellowEmulationStop(void);
 extern void fellowRequestEmulationStop(void);
 void fellowRequestEmulationStopImmediately(void);
+void fellowAddLog2(STR *msg);
+
 
 #endif
 

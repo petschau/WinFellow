@@ -52,7 +52,7 @@ FDATASECTIONSTART
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/copper.inc"
-%include "data/blit.inc"
+
 			
 upsrtraceset: db 0
 cpu_cycles: dd 0
@@ -70,7 +70,6 @@ _m68000start_:
 	
 %include "func/fmem.inc"
 %include "func/bus.inc"
-%include "func/blit.inc"
 %include "func/copper.inc"
 %include "func/cpu.inc"
 %include "func/fellow.inc"
@@ -79,6 +78,7 @@ _m68000start_:
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 
+CFUNCEXTERN busScanEventsLevel5
 
 %ifdef PREFETCH
 
@@ -746,11 +746,18 @@ rIRQ_noprevious:mov	dword [interruptlevel], edx	; Save runlevel
 		fetchl
 		mov	dword [interruptaddress], edx
 		mov	eax, dword [curcycle]	; Set time 
-		add	eax, 38
+		; Note: Lotus has code that expects a low delay in servicing requested irqs. This used to be 38
+		add	eax, 10
 		mov	dword [irq_next], eax
 		mov	dword [interruptflag], 1
 
-rIRQ_sched_exit:SCAN_EVENTS_LVL5
+rIRQ_sched_exit:
+		
+		pushad
+		call busScanEventsLevel5
+		popad
+		;SCAN_EVENTS_LVL5
+
 rIRQ_exit:	pop	edx
 		pop	ecx
 		pop	ebx
@@ -813,7 +820,12 @@ si_step6:	mov	edx, dword [interruptaddress]; step 6
 		mov	dword [cpu_stop], 0
 si_nostop:	mov	dword [interruptflag], 0
 		mov	dword [irq_next], -1		; step 8
-		SCAN_EVENTS_LVL5
+		
+		pushad
+		call busScanEventsLevel5
+		popad
+		;SCAN_EVENTS_LVL5
+
 		popad
 		ret
 
@@ -2408,7 +2420,8 @@ i00fline:	mov	ebx, 02ch
 		mov	eax, 38
 		jmp	_cpuPrepareException_
 
-i00aline:	and	ebx, 0ff0000h
+i00aline:
+		and	ebx, 0ff0000h
 		cmp	ebx, 0f00000h
 		je	i00fsysline
 		mov	ebx, 028h
@@ -3834,7 +3847,7 @@ _i11_W_:	call	dword [edi + 8]			; edx != 0 take branch
 		fetchwopcode_inc_pos
 		movsx	ebx, dx
 		test	dl, 1
-		jnz	i11ex
+		jnz	near i11ex
 		mov	eax, 12
 		add	esi, ebx
 %ifdef PREFETCH
@@ -4611,7 +4624,7 @@ global _i24_
 _i24_:		mov	eax,dword [edi+12]
 		call	eax
 		test	dl,dl
-		jnz	i24ferdig
+		jnz	near i24ferdig
 		mov	ebx,dword [edi+8]
 		mov	edx,dword [ebx]
 		dec	dx
@@ -8942,7 +8955,7 @@ _arb0733_:	call	_eac0733_
 
 ;==============================================================================
 ; Adressmode routines for reading byte,word,longword
-; (NOTE!) _Without_ PC increase, without An inc/dec
+; (NOTE!) _Without_ PC increase, without An inc/dec, does not change prefetch
 ; Parameters:  In:  edx - pointer to register	esi - current PC position
 ;	      Out:  edx - result		esi - current PC position
 ;==============================================================================
@@ -8954,7 +8967,13 @@ _arb0733_:	call	_eac0733_
 
 global _parl063_
 _parl063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchlret
@@ -8964,7 +8983,13 @@ _parl063_:	push	esi
 
 global _parw063_
 _parw063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchwret
@@ -8974,7 +8999,13 @@ _parw063_:	push	esi
 
 global _parb063_
 _parb063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchbret
@@ -8984,7 +9015,13 @@ _parb063_:	push	esi
 
 global _parl0733_
 _parl0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchlret
@@ -8994,7 +9031,13 @@ _parl0733_:	push	esi
 
 global _parw0733_
 _parw0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchwret
@@ -9004,7 +9047,13 @@ _parw0733_:	push	esi
 
 global _parb0733_
 _parb0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchbret
@@ -10893,7 +10942,7 @@ _i330_:		call	[edi + 4]		; edx = 1 succeeded
 		test	dl, dl
 		jz	near i330_n
 		cmp	dword [edi + 8], 0
-		je	i330_0
+		je	near i330_0
 		mov	ecx, esi
 		cmp	dword [edi + 8], 1
 		je	i330_w

@@ -52,19 +52,21 @@
 FASMFILESTART
 FDATASECTIONSTART
 
+
+
 %include "data/fellow.inc"
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/fmem.inc"
-%include "data/draw.inc"
 %include "data/floppy.inc"
-%include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/cia.inc"
 %include "data/copper.inc"
-%include "data/blit.inc"
 %include "data/timer.inc"		
-%include "data/graph.inc"
+
+CDATAEXTERN blitend
+CDATAEXTERN draw_frame_count;
+CDATAEXTERN draw_frame_skip;
+CDATAEXTERN draw_frame_skip_factor;
 
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
@@ -77,30 +79,31 @@ FCODESECTIONSTART
 global _busstart_
 _busstart_:	 ; Used to check code alignment
 
-%include "generic/sound.inc"
 %include "func/fmem.inc"
 %include "func/cpu.inc"
 %include "func/floppy.inc"
-%include "func/sound.inc"
 %include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/draw.inc"
-%include "func/blit.inc"
-%include "func/graph.inc"
-%include "func/sprite.inc"
 %include "func/kbd.inc"
 %include "mac/fmem.mac"
-%include "mac/drawmode.mac"
 %include "mac/kbd.mac"
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
-%include "mac/draw.mac"
-%include "mac/sound.mac"
-%include "mac/sprite.mac"
 
 CFUNCEXTERN timerEndOfFrame
+CFUNCEXTERN blitFinishBlit
+CFUNCEXTERN busScanEventsLevel3
+CFUNCEXTERN busScanEventsLevel4
+CFUNCEXTERN busScanEventsLevel6
+CFUNCEXTERN graphEndOfFrame
+CFUNCEXTERN spriteEndOfFrame
+
+CDATAEXTERN graph_raster_x;
+CDATAEXTERN graph_raster_y;
+CDATAEXTERN lof;
+CDATAEXTERN graph_playfield_on;
 
 ;===========================================================
 ; bus_run_
@@ -128,6 +131,7 @@ bus_run:	SETUP_EXCEPTION_HACK bus_exception_ret, bus_loop_events
 		jmp	bus_loop_cpu
 
 		FALIGN32
+
 
 global _checkadr_
 _checkadr_:
@@ -276,73 +280,13 @@ _return_from_stop_:
 		jmp	dword [stopreturnadr]
 
 
-;==============================================================================
-; Global end of line handler
-;==============================================================================
-
-
-		FALIGN32
-
-global _endOfLine_
-_endOfLine_:	push	edx
-		push	ecx
-		push	ebx
-
-
-		;==============================================================
-		; Handles graphics planar to chunky conversion
-		; and updates the graphics emulation for a new line
-		;==============================================================
-
-		call	_graphEndOfLine_
-
-
-		;==============================================================
-		; Update the CIA B event counter
-		;==============================================================
-
-		mov	eax, 1
-		CIA_UPDATE_EVENTCOUNTER_CWRAP
-
-
-		;==============================================================
-		; Handles disk DMA if it is running
-		;==============================================================
-
-		call	floppyEndOfLineC
-
-
-		;==============================================================
-		; Update the sound emulation
-		;==============================================================
-
-		SOUND_END_OF_LINE_CWRAP
-
-
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
-
-		KBDQUEUEHANDLER_CWRAP
-		KBDEVENTEOLHANDLER_CWRAP
-
-
-		;==============================================================
-		; Set up the next end of line event
-		;==============================================================
-
-		add	dword [eol_next], CYCLESPERLINE
-		SCAN_EVENTS_LVL3
-
-		pop	ebx
-		pop	ecx
-		pop	edx
-		ret
 
 
 ;==============================================================================
 ; Global end of frame handler
 ;==============================================================================
+
+CFUNCEXTERN drawEndOfFramePreC
 
 
 		FALIGN32
@@ -356,7 +300,15 @@ _endOfFrame_:	push	edx
 		; Draw the frame in the host buffer
 		;==============================================================
 
-		call	_drawEndOfFrame_
+		pushad
+		push edx
+		push ebx
+		;call	_drawEndOfFrame_
+		
+		call drawEndOfFramePreC
+		pop ebx
+		pop edx
+		popad
 
 
 		;==============================================================
@@ -373,7 +325,14 @@ _endOfFrame_:	push	edx
 		xor	dword [lof], 08000h		; Short/long frame 
 		xor	edx, edx
 		mov	ecx, 0102h			; Zero scroll
+
+		pushad
+		push ecx
+		push edx
 		call	dword [memory_iobank_write + 2*ecx]
+		pop edx
+		pop ecx
+		popad
 
 
 		;==============================================================
@@ -404,8 +363,11 @@ _endOfFrame_:	push	edx
 		;==============================================================
 		; Sprite end of frame updates
 		;==============================================================
-
-		SPRITE_EOF_CWRAP
+	
+		pushad
+		call spriteEndOfFrame
+		popad
+		;SPRITE_EOF_CWRAP
 
 
 		;==============================================================
@@ -424,7 +386,14 @@ _endOfFrame_:	push	edx
 		;==============================================================
 
 		mov	edx, 08020h
+
+		pushad
+		push ecx
+		push edx
 		call	dword [memory_iobank_write + 0138h]
+		pop edx
+		pop ecx
+		popad
 
 
 		;==============================================================
@@ -461,14 +430,19 @@ _endOfFrame_:	push	edx
 		; Perform graphics end of frame
 		;==============================================================
 
+		pushad
 		call	graphEndOfFrame
 		call	timerEndOfFrame
+		popad
 
 		;==============================================================
 		; Recalculate the entire event queue
 		;==============================================================
 
-		SCAN_EVENTS_LVL6
+		pushad
+		call busScanEventsLevel6
+		popad
+		;SCAN_EVENTS_LVL6
 
 
 		;==============================================================
@@ -495,3 +469,4 @@ FBSSSECTIONEND
 FASMFILEEND
 
 
+	
