@@ -77,7 +77,7 @@ LINK32=link.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD BASE RSC /l 0x414 /d "_DEBUG"
-# ADD RSC /l 0x414 /d "_DEBUG"
+# ADD RSC /l 0x417 /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -1855,6 +1855,8 @@ SOURCE=.\GUI_debugger.rc
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
 
 # PROP Exclude_From_Build 1
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x417 /fo"Debug/GUI_debugger.res"
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
 

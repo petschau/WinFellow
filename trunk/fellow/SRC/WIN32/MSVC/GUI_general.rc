@@ -66,6 +66,7 @@ BEGIN
                     SS_SUNKEN,215,90,21,7
     CONTROL         140,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | 
                     SS_SUNKEN,215,125,21,7
+    PUSHBUTTON      "&Debug",ID_DEBUGGER_START,257,79,50,14
 END
 
 IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
@@ -561,7 +562,7 @@ END
 
 3 TEXTINCLUDE DISCARDABLE 
 BEGIN
-    "\r\n"
+    "#include ""gui_debugger.rc""\r\n"
     "\0"
 END
 
@@ -643,7 +644,7 @@ IDB_WINFELLOW_LOGO      BITMAP  DISCARDABLE     "winfellow_logo_small.bmp"
 //
 // Generated from the TEXTINCLUDE 3 resource.
 //
-
+#include "gui_debugger.rc"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
