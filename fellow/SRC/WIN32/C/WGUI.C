@@ -1054,8 +1054,14 @@ void wguiInstallSoundConfig(HWND DlgHWND, cfg *conf) {
 		  cfgGetSoundWAVDump(conf));
 
   /* set sound hardware notification */
-  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION),
-		  cfgGetSoundNotification(conf));
+  switch (cfgGetSoundNotification(conf)) {
+    case SOUND_DSOUND_NOTIFICATION:
+	  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION), TRUE);
+	  break;
+    case SOUND_MMTIMER_NOTIFICATION:
+	  Button_SetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION), FALSE);
+	  break;
+  }
   
   /* set slider of buffer length */
   SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_SETRANGE, 0, MAKELONG(10,80));
@@ -1113,7 +1119,10 @@ void wguiExtractSoundConfig(HWND DlgHWND, cfg *conf) {
   cfgSetSoundWAVDump(conf, Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_WAV)));
 
   /* get notify option */
-  cfgSetSoundNotification(conf, Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)));
+  if (Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)))
+    cfgSetSoundNotification(conf, SOUND_DSOUND_NOTIFICATION);
+  else if (!Button_GetCheck(GetDlgItem(DlgHWND, IDC_CHECK_SOUND_NOTIFICATION)))
+    cfgSetSoundNotification(conf, SOUND_MMTIMER_NOTIFICATION);
 
   /* get slider of buffer length */
   cfgSetSoundBufferLength(conf, SendMessage(GetDlgItem(DlgHWND, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0));
