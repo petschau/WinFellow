@@ -10,6 +10,10 @@
 #include "bus.h"
 #include "windrv.h"
 #include "fellow.h"
+#include "mousedrv.h"
+#include "kbd.h"
+#include "joydrv.h"
+#include "kbddrv.h"
 
 extern int main(int, char **);
 
@@ -66,7 +70,8 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
   return event_count;
 }
 
-void winDrvEmulationStart(void) {
+void winDrvEmulate(void)
+{
   DWORD dwThreadId;
   MSG myMsg;
   HANDLE FellowThread;
@@ -77,15 +82,13 @@ void winDrvEmulationStart(void) {
   BOOLE keep_on_waiting;
   
   win_drv_emulation_ended = CreateEvent(NULL, FALSE, FALSE, NULL);
-  fellowAddLog("winDrvEmulationStart()\n");
-  fellowEmulationStart();
   fellowAddLog("fellowEmulationStart() finished\n");
-  FellowThread = CreateThread(NULL,                // Security attr
-			      0,                   // Stack Size
-			      winDrvFellowStart,   // Thread procedure
-			      NULL,	             // Thread parameter
-			      0,                   // Creation flags
-			      &dwThreadId);        // ThreadId
+  FellowThread = CreateThread(NULL,     // Security attr
+			       0,                   // Stack Size
+			       winDrvFellowStart,   // Thread procedure
+			       NULL,	            // Thread parameter
+			       0,                   // Creation flags
+			       &dwThreadId);        // ThreadId
   SetTimer(gfx_drv_hwnd, 1, 10, NULL);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
@@ -128,6 +131,11 @@ void winDrvEmulationStart(void) {
   }
   CloseHandle(FellowThread);
   CloseHandle(win_drv_emulation_ended);
+}
+
+void winDrvEmulationStart(void) {
+  if (fellowEmulationStart()) winDrvEmulate();
+  else wguiRequester("Emulation session failed to start up", "", "");
   fellowEmulationStop();
 }
 
