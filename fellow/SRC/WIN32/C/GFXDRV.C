@@ -779,7 +779,7 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 				       LPVOID lpContext) {
   gfx_drv_ddraw_device *tmpdev;
   
-  winDrvSetThreadName(-1, "WinFellow gfxDrvDDrawDeviceEnumerate()");
+  winDrvSetThreadName(-1, "gfxDrvDDrawDeviceEnumerate()");
   
   tmpdev = (gfx_drv_ddraw_device *) malloc(sizeof(gfx_drv_ddraw_device));
   memset(tmpdev, 0, sizeof(gfx_drv_ddraw_device));
@@ -1147,7 +1147,7 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeNew(ULO width,
 
 BOOL WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
 				     LPVOID lpContext) {
-  winDrvSetThreadName(-1, "WinFellow gfxDrvDDrawModeEnumerate()");
+  winDrvSetThreadName(-1, "gfxDrvDDrawModeEnumerate()");
   if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) &&
     ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) ||
     (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
