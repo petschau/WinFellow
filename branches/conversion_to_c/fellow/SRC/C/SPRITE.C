@@ -553,11 +553,14 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
 /* ebx - cycle raster xpos must be past to trigger delay                     */
 /*===========================================================================*/
 
-BOOLE decidedelay_C(ULO data, ULO address, ULO cycle_raster_xpos)
+BOOLE decidedelay_C(ULO data, ULO address)
 {
+  /*
+  BOOLE result = FALSE;
+  
   if (sprite_write_real != 1)
   {
-    if (cycle_raster_xpos <= graph_raster_x)
+    if (sprite_delay <= graph_raster_x)
     {
       *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next)) = address;
       *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next + 4)) = data;
@@ -566,13 +569,18 @@ BOOLE decidedelay_C(ULO data, ULO address, ULO cycle_raster_xpos)
     }
   }
   return FALSE;
+  */
+
+  // There seems to be no point in delaying anything.
+  // In the game Brain the Lion it only gets you in trouble (disk 2 request)
+  return FALSE;
 }
 
 /* SPR0PT - $dff120 and $dff122 */
 
 void wspr0pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
@@ -581,7 +589,7 @@ void wspr0pth_C(ULO data, ULO address)
 
 void wspr0ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
@@ -592,7 +600,7 @@ void wspr0ptl_C(ULO data, ULO address)
 
 void wspr1pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
@@ -601,7 +609,7 @@ void wspr1pth_C(ULO data, ULO address)
 
 void wspr1ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
@@ -612,7 +620,7 @@ void wspr1ptl_C(ULO data, ULO address)
 
 void wspr2pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
@@ -621,7 +629,7 @@ void wspr2pth_C(ULO data, ULO address)
 
 void wspr2ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
@@ -632,7 +640,7 @@ void wspr2ptl_C(ULO data, ULO address)
 
 void wspr3pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
@@ -641,7 +649,7 @@ void wspr3pth_C(ULO data, ULO address)
 
 void wspr3ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
@@ -652,7 +660,7 @@ void wspr3ptl_C(ULO data, ULO address)
 
 void wspr4pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
@@ -661,7 +669,7 @@ void wspr4pth_C(ULO data, ULO address)
 
 void wspr4ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
@@ -672,7 +680,7 @@ void wspr4ptl_C(ULO data, ULO address)
 
 void wspr5pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
@@ -681,7 +689,7 @@ void wspr5pth_C(ULO data, ULO address)
 
 void wspr5ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
@@ -692,7 +700,7 @@ void wspr5ptl_C(ULO data, ULO address)
 
 void wspr6pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
@@ -701,7 +709,7 @@ void wspr6pth_C(ULO data, ULO address)
 
 void wspr6ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
@@ -712,7 +720,7 @@ void wspr6ptl_C(ULO data, ULO address)
 
 void wspr7pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // store 21 bit (2 MB)
     *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
@@ -721,7 +729,7 @@ void wspr7pth_C(ULO data, ULO address)
 
 void wspr7ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  if (decidedelay_C(data, address) == FALSE)
   {
     // no odd addresses
     *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
@@ -766,6 +774,7 @@ void wsprxctl_C(ULO data, ULO address) {
     //  spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
     spratt[sprnr] = !!(data & 0x80);
     sprly[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
+    //sprite_state[sprnr] = 1;
 //    }
   }
   else
@@ -785,6 +794,8 @@ void wsprxdata_C(ULO data, ULO address) {
 
   sprnr = (address >> 3) & 7;
   *((UWO *) &sprdat[sprnr]) =  (UWO) data;
+  sprite_state[sprnr] = 1;
+  /*
   if (graph_raster_y >= 0x1a) {
     if (sprite_state[sprnr] <= 3)
       sprite_state_old[sprnr] = sprite_state[sprnr];
@@ -793,6 +804,7 @@ void wsprxdata_C(ULO data, ULO address) {
     else
       sprite_state[sprnr] = 5;
     }
+    */
 }
 
 void wsprxdatb_C(ULO data, ULO address) {
@@ -800,6 +812,8 @@ void wsprxdatb_C(ULO data, ULO address) {
 
   sprnr = (address >> 3) & 7;
   *(((UWO *) &sprdat[sprnr]) + 1) = (UWO) data;
+  
+  /*
   if (graph_raster_y >= 0x1a) {
     if (sprite_state[sprnr] <= 3)
       sprite_state_old[sprnr] = sprite_state[sprnr];
@@ -808,6 +822,7 @@ void wsprxdatb_C(ULO data, ULO address) {
     else
       sprite_state[sprnr] = 5;
     }
+    */
 }
 
 /*===========================================================================*/
@@ -1059,8 +1074,6 @@ void spritesDecode_C(void) {
   
   UBY spriteno;
 //  UWO data1, data2;
-
- 
 
   sprites_online = FALSE;
   spriteno = 0;
