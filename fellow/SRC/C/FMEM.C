@@ -972,7 +972,6 @@ ULO memoryKickChksum(void) {
 STR *memoryKickIdentify(STR *s) {
   ULO i = 0;
   UBY *rom = memory_kick;
-  UBY saved;
   ULO ver, rev;
   
   ver = (rom[12] << 8) | rom[13];
@@ -1318,6 +1317,10 @@ ULO memoryGetKickImageBaseBank(void) {
 
 ULO memoryGetKickImageVersion(void) {
   return memory_kickimage_version;
+}
+
+BOOLE memoryGetKickImageOK(void) {
+  return !memory_kickimage_none;
 }
 
 ULO memoryInitialPC(void) {
