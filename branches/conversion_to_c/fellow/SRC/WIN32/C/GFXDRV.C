@@ -246,7 +246,12 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     {
       int vkey = (int) wParam;
       gfx_drv_syskey_down = (vkey != VK_F10);
-      gfxDrvEvaluateActiveStatus();
+
+      // below is the hack to remove the problem with the ALT key
+      // this is not a nice solution, but it moreless works
+      // we really need Mnd back for some proper work on this
+
+      //gfxDrvEvaluateActiveStatus();
     }
     break;
   case WM_SYSKEYUP:
