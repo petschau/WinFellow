@@ -5,13 +5,16 @@
 ; Includes data declared in the C blit module
 ;==============================================================================
 
-CDATAEXTERN blit_leftoverA
-CDATAEXTERN blit_leftoverB
+CDATAEXTERN blit_minterm
+CDATAEXTERN blit_a_shift_asc
+CDATAEXTERN blit_a_shift_desc
+CDATAEXTERN blit_b_shift_asc
+CDATAEXTERN blit_b_shift_desc
+CDATAEXTERN blit_desc
+CDATAEXTERN blit_asm_minterm
 CDATAEXTERN blit_cycletab
-CDATAEXTERN bltdesc
 CDATAEXTERN blit_min_functable
 CDATAEXTERN blitend
-
 CDATAEXTERN bltzero
 CDATAEXTERN bltcon
 CDATAEXTERN bltafwm
@@ -27,33 +30,12 @@ CDATAEXTERN bltdmod
 CDATAEXTERN bltadat
 CDATAEXTERN bltbdat
 CDATAEXTERN bltcdat
-CDATAEXTERN bltminterm
 CDATAEXTERN blitterstatus
-CDATAEXTERN bltadatoriginal
-CDATAEXTERN bltbdatoriginal
-CDATAEXTERN bltbdatline
-CDATAEXTERN fillincfc0
-CDATAEXTERN fillincfc1
-CDATAEXTERN fillexcfc0
-CDATAEXTERN fillexcfc1
-CDATAEXTERN fillincfc0after
-CDATAEXTERN fillincfc1after
-CDATAEXTERN fillexcfc0after
-CDATAEXTERN fillexcfc1after
-CDATAEXTERN bltlineheight
-CDATAEXTERN bltlinepointflag
-CDATAEXTERN bltfillbltconsave
-CDATAEXTERN bltlinedecision
-
-CDATAEXTERN blittermodes
-CDATAEXTERN blitterfillmodes
-CDATAEXTERN bltlinesudsulaul
-
+CDATAEXTERN bltbdat_original
+CDATAEXTERN bltlinesulsudaul
 CDATAEXTERN blitter_fast
-
-CDATAEXTERN linelength
-CDATAEXTERN linenum
-CDATAEXTERN linecount
+CDATAEXTERN blit_width
+CDATAEXTERN blit_height
 CDATAEXTERN blitterdmawaiting
 CDATAEXTERN blitter_ECS
 CDATAEXTERN blitter_operation_log

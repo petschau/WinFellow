@@ -71,6 +71,7 @@
 %include "generic/defs.inc"
 
 %define BLITTER_ASM
+%define BLIT_TSC_PROFILE
 
 FASMFILESTART
 FDATASECTIONSTART
@@ -80,6 +81,12 @@ FDATASECTIONSTART
 %include "data/copper.inc"
 %include "data/fmem.inc"
 %include "data/cpu.inc"
+
+%ifdef BLIT_TSC_PROFILE
+CDATAEXTERN blit_tsc_tmp
+CDATAEXTERN blit_tsc
+CDATAEXTERN blit_tsc_times
+%endif
 
 FDATASECTIONEND
 FCODESECTIONSTART
@@ -106,15 +113,27 @@ _blitstart_:				; Used to check code alignment
 ;========
 ; $dff040
 
+; Common code for $040 and $05a
+%macro MINTERM_SET 0
+		and	edx, 0ffh
+		mov	dword [blit_minterm], edx
+		mov	edx, dword [blit_min_functable + 4*edx]
+		mov	dword [blit_asm_minterm], edx
+%endmacro
 
 		FALIGN32
 
 global _wbltcon0_
 _wbltcon0_:	BLIT_FINISH
 		mov	word [bltcon + 2], dx
-		and	edx, 0ffh
-		mov	edx, dword [blit_min_functable + 4*edx]
-		mov	dword [bltminterm], edx
+		mov	ecx, edx
+		MINTERM_SET
+		and	ecx, 0ffffh
+		shr	ecx, 12
+		mov	edx, 16
+		mov	dword [blit_a_shift_asc], ecx
+		sub	edx, ecx
+		mov	dword [blit_a_shift_desc], edx
 		ret
 
 
@@ -129,9 +148,7 @@ _wbltcon0_:	BLIT_FINISH
 global _wbltcon0l_
 _wbltcon0l_:	BLIT_FINISH
 		mov	byte [bltcon + 2], dl
-		and	edx, 0ffh
-		mov	edx, dword [blit_min_functable + 4*edx]
-		mov	dword [bltminterm], edx
+		MINTERM_SET
 		ret
 
 
@@ -145,38 +162,19 @@ _wbltcon0l_:	BLIT_FINISH
 
 global _wbltcon1_
 _wbltcon1_:	BLIT_FINISH
-		mov	dword [bltdesc], 2
-		test	edx, 2				; Test descending mode
-		jz	blits1
-		mov	dword [bltdesc], -2
-blits1:		mov	ecx, dword [bltcon]
 		mov	word [bltcon], dx
-		test	edx, 1				; Line mode?
-		jnz	bconlines
-		test	ecx, 1		; Going from linemode to desc mode?
-		jz	bconnoprevlines
-
-		; Here last mode was linemode, but new isn't
-		; Mods need changing if new is desc mode
-
+		mov	ecx, 0
 		test	edx, 2
-		jz	bcon		; New is normal, mods already ok
-		jmp	modrestore
-
-bconnoprevlines:and	edx, 2
-		and	ecx, 2
-		cmp	edx, ecx
-		je	bcon
-modrestore:	neg	dword [bltamod]
-		neg	dword [bltbmod]
-		neg	dword [bltcmod]
-		neg	dword [bltdmod]
-bcon:		ret
-bconlines:	test	ecx, 1	; Restore unless previous mode was linemode
-		jnz	bcon
-		test	ecx, 2
-		jz	bcon
-		jmp	modrestore
+		jz	.ascending
+		mov	ecx, 1
+.ascending:	mov	dword [blit_desc], ecx
+		and	edx, 0ffffh
+		shr	edx, 12
+		mov	ecx, 16
+		mov	dword [blit_b_shift_asc], edx
+		sub	ecx, edx
+		mov	dword [blit_b_shift_desc], ecx
+		ret
 
 
 ;========
@@ -189,8 +187,7 @@ bconlines:	test	ecx, 1	; Restore unless previous mode was linemode
 
 global _wbltafwm_
 _wbltafwm_:	BLIT_FINISH
-		mov	word [bltafwm], dx
-		mov	word [bltafwm + 2], dx
+		mov	dword [bltafwm], edx
 		ret
 
 
@@ -204,8 +201,7 @@ _wbltafwm_:	BLIT_FINISH
 
 global _wbltalwm_
 _wbltalwm_:	BLIT_FINISH
-		mov	word [bltalwm], dx
-		mov	word [bltalwm + 2], dx
+		mov	dword [bltalwm], edx
 		ret
 
 
@@ -329,15 +325,14 @@ global _wbltsize_
 _wbltsize_:	BLIT_FINISH
 		mov	ecx, edx
 		and	ecx, 03fh		; Width
-		jnz	wbltsizea
+		jnz	.l1
 		mov	ecx, 64
-wbltsizea:	mov	dword [linelength], ecx
+.l1:		mov	dword [blit_width], ecx
 		shr	edx, 6			; Height
 		and	edx, 3ffh
-		jnz	wbltsizeb
+		jnz	.l2
 		mov	edx, 1024
-wbltsizeb:	mov	dword [linenum], edx
-		mov	dword [linecount], edx
+.l2:		mov	dword [blit_height], edx
 		test	byte [dmacon], 40h
 		jnz	near _blitter_copy_
 		mov	dword [blitterdmawaiting], 1
@@ -355,9 +350,9 @@ wbltsizeb:	mov	dword [linenum], edx
 global _wbltsizv_
 _wbltsizv_:	BLIT_FINISH
 		and	edx, 07fffh		; Height
-		jnz	wbltsizva
+		jnz	.l1
 		mov	edx, 08000h
-wbltsizva:	mov	dword [linenum], edx
+.l1:		mov	dword [blit_height], edx
 		ret
 
 
@@ -372,11 +367,9 @@ wbltsizva:	mov	dword [linenum], edx
 global _wbltsizh_
 _wbltsizh_:	BLIT_FINISH
 		and	edx, 07ffh		; Width
-		jnz	wbltsizha
+		jnz	.l1
 		mov	edx, 0800h
-wbltsizha:	mov	dword [linelength], edx
-		mov	edx, dword [linenum]
-		mov	dword [linecount], edx
+.l1:		mov	dword [blit_width], edx
 		test	byte [dmacon], 40h
 		jnz	near _blitter_copy_
 		mov	dword [blitterdmawaiting], 1
@@ -395,12 +388,7 @@ global _wbltcmod_
 _wbltcmod_:	BLIT_FINISH
 		and	edx, 0fffeh		; Even modulo
 		movsx	edx, dx
-		test	byte [bltcon], 1
-		jnz	bcn
-		test	byte [bltcon], 2
-		jz	bcn
-		neg	edx
-bcn:		mov	dword [bltcmod], edx
+		mov	dword [bltcmod], edx
 		ret
 
 
@@ -416,12 +404,7 @@ global _wbltbmod_
 _wbltbmod_:	BLIT_FINISH
 		and	edx, 0fffeh		; Even modulo
 		movsx	edx, dx
-		test	byte [bltcon], 1
-		jnz	bbn
-		test	byte [bltcon], 2
-		jz	bbn
-		neg	edx
-bbn:		mov	dword [bltbmod], edx
+		mov	dword [bltbmod], edx
 		ret
 
 
@@ -437,12 +420,7 @@ global _wbltamod_
 _wbltamod_:	BLIT_FINISH
 		and	edx, 0fffeh		; Even modulo
 		movsx	edx, dx
-		test	byte [bltcon], 1
-		jnz	ban
-		test	byte [bltcon], 2
-		jz	ban
-		neg	edx
-ban:		mov	dword [bltamod], edx
+		mov	dword [bltamod], edx
 		ret
 
 
@@ -458,12 +436,7 @@ global _wbltdmod_
 _wbltdmod_:	BLIT_FINISH
 		and	edx, 0fffeh		; Even modulo
 		movsx	edx, dx
-		test	byte [bltcon], 1
-		jnz	bdn
-		test	byte [bltcon], 2
-		jz	bdn
-		neg	edx
-bdn:		mov	dword [bltdmod], edx
+		mov	dword [bltdmod], edx
 		ret
 
 
@@ -491,18 +464,15 @@ _wbltcdat_:	BLIT_FINISH
 
 global _wbltbdat_
 _wbltbdat_:	BLIT_FINISH
-		mov	dword [bltbdatoriginal], edx
-		mov	ecx, dword [bltcon]
-		shr	ecx, 12
-		and	ecx, 0fh
-		test	dword [bltcon], 2
-		jnz	wbltbdatb
-		shr	dx, cl
 		and	edx, 0ffffh
+		mov	ecx, dword [blit_b_shift_asc]
+		mov	dword [bltbdat_original], edx
+		test	dword [blit_desc], 1
+		jnz	.l1
+		shr	dx, cl
 		mov	dword [bltbdat], edx
 		ret
-wbltbdatb:	shl	dx, cl
-		and	edx, 0ffffh
+.l1:		shl	dx, cl
 		mov	dword [bltbdat], edx
 		ret
 
@@ -518,7 +488,6 @@ wbltbdatb:	shl	dx, cl
 global _wbltadat_
 _wbltadat_:	BLIT_FINISH
 		mov	dword [bltadat], edx
-		mov	dword [bltadatoriginal], edx
 		ret
 
 
@@ -557,11 +526,11 @@ _blitter_copy_:	push	ebx
 linecyc:	mov	ebx, 6		 
 nolinecyc:	test	byte [blitter_fast], 0ffh
 		jnz	fastblit
-		imul	ebx, dword [linelength]	; cycles per line
-		imul	ebx, dword [linenum]	; total cyclecount
+		imul	ebx, dword [blit_width]		; cycles per line
+		imul	ebx, dword [blit_height]	; total cyclecount
 fastblit:	mov	eax, 1				; State 1, no bltpri
 		mov	dword [thiscycle], 0
-		test	dword [dmaconr], 0400h	; test bltpri
+		test	dword [dmaconr], 0400h		; test bltpri
 		jz	nobltpri
 		mov	ah, byte [bltcon + 3]
 		and	ah, 15
@@ -589,79 +558,106 @@ nobltpri:	shr	ebx, 1
 ; of the blit.
 ;=======================================================
 
+CFUNCEXTERN blitterCopyABCD
 	
 		FALIGN32
 
 global _finish_blit_
-_finish_blit_:	mov	dword [blitend], -1
+_finish_blit_:
+		mov	dword [blitend], -1
 		SCAN_EVENTS_LVL4
 		mov	dword [blitterdmawaiting], 0
 		mov	dword [blitterstatus], 0
 		and	dword [dmaconr], 0bfffh	
-		xor	eax, eax
-		mov	dword [blit_leftoverA], eax
-		mov	dword [blit_leftoverB], eax
 		mov	ebx, dword [bltcon]
 		test	ebx, 1
 		jnz	blitterlinemode
 		test	ebx, 18h
-		jnz	near blitterfillmode
-		shr	ebx, 22
-		and	ebx, 03ch
-		jmp	dword [blittermodes + ebx]
+		jnz	near blitterfillmode_new
+%ifdef BLIT_TSC_PROFILE
+		TSC_BEFORE blit_tsc_tmp
+%endif
+		call	blitterCopyABCD
+%ifdef BLIT_TSC_PROFILE
+		TSC_AFTER blit_tsc_tmp, blit_tsc, blit_tsc_times
+%endif
+		ret
 
+blitterfillmode_new:
+		call	blitterCopyABCD
+		ret
 
 ; ==============================
 ; Blitter line mode entry point
 ; ==============================
 
+; On entry the stack contains the following variables:
+; 
+; [esp]		- blit_asm_minterm
+; 4[esp]	- bltlinedecision flag
+; 8[esp]	- blit_height
+; 12[esp]	- bltamod
+; 16[esp]	- bltbmod
+; 20[esp]	- bltcmod
+; 24[esp]	- bltadat
+; 28[esp]	- bltcdat
+; 32[esp]	- bltlinepointflag
+; 36[esp]	- bltzero
+; 40[esp]	- bltcon0 and 1
+
 
 		FALIGN32
 
 
-blitterlinemode:mov	dword [bltlinepointflag], 0
-		mov	eax, dword [linecount]
-		mov	dword [bltlineheight], eax	; Line height
+blitterlinemode:mov	eax, dword [bltcon]
+		mov	ebx, 0
+		push	eax
+		push	ebx
+		push	ebx
+		push	dword [bltcdat]
+		push	dword [bltadat]
+		push	dword [bltcmod]
+		push	dword [bltbmod]
+		push	dword [bltamod]
+		push	dword [blit_height]
 
-		mov	eax, dword [bltcon]
-
-		; Prepare ebx, the A shift count
+		; Initial line decision
 
 		mov	ecx, eax
 		shr	ecx, 6
 		and	ecx, 1
-		mov	dword [bltlinedecision], ecx
+		push	ecx
 
-		mov	ecx, eax
-		shr	ecx, 28
-		and	ecx, 00fh
-		and	eax, 1ch
-		mov	ebx, ecx
+		and	eax, 1ch			; SUL SUD AUL
+
+		; Minterm calculation function
+
+		push	dword [blit_asm_minterm]
+
+		; Prepare ebx, the A shift count
+
+		mov	ebx, dword [blit_a_shift_asc]
 
 		mov	ebp, dword [bltapt]
-
 		mov	esi, dword [bltcpt]	  ; get C data adress
 		mov	edi, dword [bltdpt]	  ; get destination adress
 
 		; Prepare ecx, the B data
 
-		mov	edx, dword [bltbdatoriginal]
-		mov	ecx, dword [bltcon]
-		shr	ecx, 12
-		and	ecx, 0fh
+		mov	edx, dword [bltbdat_original]
+		mov	ecx, dword [blit_b_shift_asc]
 		ror	dx, cl
 		mov	ecx, edx
 
 		; Call routine which performs the line
 
-bliq:		jmp	dword [bltlinesudsulaul + eax]
-		; Jump to correct draw routine
+		jmp	dword [bltlinesulsudaul + eax]
 
 
 
 %macro BLITTER_LINEMODE_READ 0
-		mov	edx, dword [bltcdat]
-		test	dword [bltcon], 02000000h   ; If C is enabled, read one word from bplcpt (esi)
+		mov	edx, dword [28 + esp]
+		test	dword [40 + esp], 02000000h   ; If C is enabled, read one word from bplcpt (esi)
 		jz	near %%l1
 		mov	edx, dword [memory_chip - 2 + esi]
 		bswap	edx
@@ -672,11 +668,10 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 %macro BLITTER_LINEMODE_PREPARE_A 0
 		; Prepare data from channel A
 		; It is static data from bltadat, shifted by the current A shift count (ebx)
-
 		push	ebx
 		push	ecx
 		mov	cl, bl
-		mov	ebx, dword [bltadat]
+		mov	ebx, dword [24 + 8 + esp]
 		shr	bx, cl
 %endmacro
 
@@ -691,8 +686,7 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 
 %macro BLITTER_LINEMODE_MAKE_D 0
 		; Calculate D
-
-		call	dword [bltminterm]
+		call	dword [8 + esp]
 		pop	ecx
 		pop	ebx
 %endmacro
@@ -700,37 +694,32 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 
 %macro BLITTER_LINEMODE_STORE_D 0
 		; Store D
-
 		mov	byte [memory_chip + edi], ah		; Store result
 		mov	byte [memory_chip + 1 + edi], al
-		or	dword [bltzero], eax
+		or	dword [36 + esp], eax
 %endmacro
 
 
 ; Label to jump to when there is no increase
 %macro BLITTER_LINEMODE_TEST_DECISION 1
 		; Line logic
-
-		test	dword [bltlinedecision], 1
+		test	dword [4 + esp], 1
 		jz	near %%l1
-		
-		; Do not yet increase
-		
+		; Do not yet increase, has sign		
 		mov	eax, 1
-		add	bp, word [bltbmod] ; D < 0 , D = D + 2*sdelta
+		add	bp, word [16 + esp] ; D < 0 , D = D + 2*sdelta
 		js	near %%l3
 		dec	eax
-%%l3:		mov	dword [bltlinedecision], eax
+%%l3:		mov	dword [4 + esp], eax
 		jmp	near %1
 %%l1:		
-		; Increase
-		
+		; Increase, no sign
 		; D >= 0, D = D + 2*sdelta-2*ldelta
 		mov	eax, 1
-		add	bp, word [bltamod]
+		add	bp, word [12 + esp]
 		js	near %%l4
 		dec	eax
-%%l4:		mov	dword [bltlinedecision], eax
+%%l4:		mov	dword [4 + esp], eax
 %%l2:
 %endmacro
 
@@ -758,7 +747,7 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 %endmacro
 
 %macro BLITTER_LINEMODE_INCREASE_Y 0
-		mov	edx, dword [bltcmod]
+		mov	edx, dword [20 + esp]
 		add	esi, edx
 		add	edi, edx
 		and	esi, 01ffffeh
@@ -766,7 +755,7 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 %endmacro
 
 %macro BLITTER_LINEMODE_DECREASE_Y 0
-		mov	edx, dword [bltcmod]
+		mov	edx, dword [20 + esp]
 		sub	esi, edx
 		sub	edi, edx
 		and	esi, 01ffffeh
@@ -775,35 +764,35 @@ bliq:		jmp	dword [bltlinesudsulaul + eax]
 
 %macro BLITTER_LINEMODE_ROTATE_B 0
 		; Rotate B data to the left 
-
 		rol	cx, 1
 %endmacro
 
 ; Label of the top of the loop
 %macro BLITTER_LINEMODE_ITERATE_LOOP 1
-		dec	dword [bltlineheight]
+		dec	dword [8 + esp]
 		jnz	near %1
 		jmp	blitterlinemodeend
 %endmacro
 
 %macro BLITTER_LINEMODE_ALLOW_DOT 0
-		mov	dword [bltlinepointflag],0 ; enable dot on this line
+		mov	dword [32 + esp], 0 ; enable dot on this line
 %endmacro
 
 ; Label of code to jump to when no dot is allowed
 %macro BLITTER_LINEMODE_CHECK_SINGLE_DOT 0
-		test	dword [bltcon],2	   ; Test sing
+		test	dword [40 + 8 + esp], 2	   ; Test sing
 		jz	near %%l1
-		test	dword [bltlinepointflag],1 ; No draw if bit already set
+		test	dword [32 + 8 + esp], 1 ; No draw if bit already set
 		jnz	near %%l2
-		mov	dword [bltlinepointflag],1
+		mov	dword [32 + 8 + esp], 1
 		jmp	near %%l1
 %%l2:		mov	ebx, 0
 %%l1:
 %endmacro
 
+
 ;===============================================
-; SUD/SUL/AUL = 000
+; SUL/SUD/AUL = 000
 ; Line goes down to the right, Y is independent
 ; 
 ; Input registers:
@@ -832,7 +821,7 @@ _blitterlinemodeoctant0_:
 
 
 ;=============================================
-; SUD/SUL/AUL = 001
+; SUL/SUD/AUL = 001
 ; Line goes up to the right, Y is independent
 ; 
 ; Input registers:
@@ -861,7 +850,7 @@ _blitterlinemodeoctant1_:
 
 
 ;===============================================
-; SUD/SUL/AUL = 010
+; SUL/SUD/AUL = 010
 ; Line goes down, to the left, Y is independent
 ;===============================================
 
@@ -883,7 +872,7 @@ _blitterlinemodeoctant2_:
 
 
 ;============================================
-; SUD/SUL/AUL = 011
+; SUL/SUD/AUL = 011
 ; Line goes up to the left, Y is independent
 ;============================================
 
@@ -906,7 +895,7 @@ _blitterlinemodeoctant3_:
 
 
 ;===============================================
-; SUD/SUL/AUL = 100
+; SUL/SUD/AUL = 100
 ; Line goes down to the right, X is independent
 ;===============================================
 
@@ -931,7 +920,7 @@ _blitterlinemodeoctant4_:
 
 
 ;==============================================
-; SUD/SUL/AUL = 101
+; SUL/SUD/AUL = 101
 ; Line goes down to the left, X is independent
 ;==============================================
 
@@ -956,7 +945,7 @@ _blitterlinemodeoctant5_:
 
 
 ;==============================================
-; SUD/SUL/AUL = 110
+; SUL/SUD/AUL = 110
 ; Line goes up, to the right, X is independent
 ;==============================================
 
@@ -982,7 +971,7 @@ _blitterlinemodeoctant6_:
 
 
 ;===============================================
-; SUD/SUL/AUL = 111
+; SUL/SUD/AUL = 111
 ; Line goes up to the left, X is independent
 ;===============================================
 
@@ -1007,884 +996,20 @@ _blitterlinemodeoctant7_:
 
 
 blitterlinemodeend:
-		mov	dword [bltapt],ebp
-		mov	dword [bltcpt],esi
-		mov	dword [bltdpt],edi
-		mov	edx,08040h
-		mov	ecx,0dff09ch
-		jmp	wriw
-
-
-
-; =================
-; Blitter fill mode
-; =================
-
-
-		FALIGN32
-
-
-; Jump to fill routine
-
-blitterfillmode:shr	ebx,22
-		and	ebx,03ch
-		jmp	dword [blitterfillmodes + ebx]
-
-
-		FALIGN32
-
-
-; General fill routine that handles any combination of ABCD
-
-
-global _blitterfillline_
-_blitterfillline_:
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		test	eax, 8
-		jz	near blitterexfillline
-
-		; General routine for inclusive fill
-
-blitterincfillline:
-		mov	esi, dword [linelength]
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		mov	ebp, dword [bltdesc]
-blitincfillword:
-blitincfill1:
-		test	eax, 08000000h			; Test dma A
-		jz	blitincfill2
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx				; Now, bits 31-16
-		cmp	esi, dword [linelength]		; Do first word masking
-		jne	blitincfilld
-		and	edx, dword [bltafwm]
-blitincfilld:
-		cmp	esi, 1				; Last mask + modulo
-		jne	blitincfillf
-		mov	ebx, dword [bltamod]
-		add	ecx, ebx
-		and	edx, dword [bltalwm]
-blitincfillf:
-		add	ecx, ebp			; Add +2 or -2 to ptA
-		and	edx, 0ffff0000h			; Take away garbage
-		and	ecx, 01ffffeh
-		mov	dword [bltapt], ecx
-		mov	ecx, eax			; Saved bltcon to ecx
-		shr	ecx, 28				; Exctract shift for A
-
-		test	eax, 2				; Test desc mode
-		jz	blitincnofdesc1
-		rol	edx, cl				; To left in desc mode
-		jmp	blitincnofdesc2
-blitincnofdesc1:
-		shr	edx, cl				; Right in forward mode
-blitincnofdesc2:
-		mov	ecx, dword [blit_leftoverA]	; get last leftover
-		mov	dword [blit_leftoverA], edx	; Store leftover
-		shr	edx, 16
-		or	edx, ecx			; Merge with leftover
-		mov	dword [bltadat], edx		; Store data from A
-		jmp	blitincfill2x
-
-		; DMA A off
-blitincfill2:
-		mov	edx, dword [bltadatoriginal]
-		shl	edx, 16
-		cmp	esi, dword [linelength]		; First word masking
-		jne	bifd
-		and	edx, dword [bltafwm]
-bifd:
-		cmp	esi, 1				; Last mask + modulo
-		jne	biff
-		and	edx, dword [bltalwm]
-biff:
-		mov	ecx, eax			; Saved bltcon to ecx
-		shr	ecx, 28				; Exctract shift for A
-
-		test	eax, 2				; Test desc mode
-		jz	binofdesc1
-		rol	edx, cl
-		jmp	binofdesc2
-binofdesc1:
-		shr	edx, cl
-binofdesc2:
-		mov	ecx, dword [blit_leftoverA]	; get last leftover
-		mov	dword [blit_leftoverA], edx	; Store leftover from A
-		shr	edx, 16
-		or	edx, ecx
-		mov	dword [bltadat], edx		; Store data from A
-blitincfill2x:
-
-		; Handle Channel B
-
-		test	eax, 04000000h			; Test dma B
-		jz	blitincfill3
-		mov	ecx, dword [bltbpt]
-		mov	edx, dword [memory_chip - 2 + ecx]
-		bswap	edx				; My data in lo word
-		cmp	esi, 1				; Do modulo if last word on line 
-		jne	blitincfillg
-		mov	ebx, dword [bltbmod]		; BLTBMOD
-		add	ecx, ebx
-blitincfillg:
-		add	ecx, ebp			; Add ptB with +2 or -2
-		and	ecx, 01ffffeh			; For safety
-		mov	dword [bltbpt], ecx		; Save ptB
-		mov	ecx, eax			; Extract shift for B
-		shr	ecx, 12
-		and	ecx, 0fh
-		shl	edx, 16				; Move my data up, lo is clean
-
-		test	eax, 2				; Rotate or shift
-		jz	blitincnofdesc3
-		rol	edx, cl
-		jmp	blitincnofdesc4
-blitincnofdesc3:
-		shr	edx, cl
-blitincnofdesc4:
-
-		mov	ecx, dword [blit_leftoverB]	; Old leftover
-		mov	dword [blit_leftoverB], edx	; Store leftover from B
-		shr	edx, 16				; Move rest of data down
-		or	edx, ecx			; Merge with leftover
-		mov	dword [bltbdat], edx		; Store data from B
-blitincfill3:
-
-		; Handle channel C
-
-blitincfill3x:
-		test	eax, 02000000h			; Test dma C
-		jz	blitincfill4
-		mov	ecx, dword [bltcpt]
-		mov	edx, dword [memory_chip - 2 + ecx]
-		bswap	edx				; Move my data down
-		cmp	esi, 1				; last word??
-		jne	blitincfillh
-		mov	ebx, dword [bltcmod]		; BLTCMOD
-		add	ecx, ebx
-blitincfillh:
-		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltcpt], ecx
-		mov	dword [bltcdat], edx		; Store data from C
-
-; Now the data lies in BLTXDAT registers
-blitincfill4:
-		push	eax
-		mov	edx, dword [bltcdat]
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-
-		mov	edx, eax
-		pop	eax
-		and	edx, 0ffffh
-; Now we have the result
-; Do fill
-
-		test	eax, 4				; test if FC bit is set
-		jnz	blitincafc1
-		mov	bx, word [fillincfc0 + edx*2]	; Get inc,fc0
-		mov	dl, byte [fillincfc0after +edx] ; get fc bit after
-		jmp	blitincfillafter
-blitincafc1:
-		mov	bx, word [fillincfc1 + edx*2]	; Get inc,fc0
-		mov	dl, byte [fillincfc1after + edx]; get fc bit after
-blitincfillafter:
-		shl	dl, 2				; Inject FC bit into saved bltcon
-		and	al, 0fbh
-		or	al, dl
-		mov	byte [bltfillbltconsave], al
-		mov	eax,dword [bltfillbltconsave]
-		or	dword [bltzero], ebx
-	
-		test	eax, 01000000h			; Test DMA D
-		jz	blitincfillDoff
-
-		mov	ecx, dword [bltdpt]
-		mov	byte [memory_chip + ecx], bh
-		mov	byte [memory_chip + 1 + ecx], bl
-		add	ecx, ebp
-	
-		cmp	esi, 1
-		jne	blitincfillj
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-blitincfillj:
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-blitincfilli:
-blitincfillDoff:		
-		dec	esi
-		jnz	near blitincfillword
-		dec	dword [linecount]
-		jnz	near blitterincfillline
-		jmp	blitterfillend
-
-
-		; General routine for exclusive fill
-
-		FALIGN32
-
-blitterexfillline:
-		mov	esi, dword [linelength]
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		mov	ebp, dword [bltdesc]
-blitexfillword:
-blitexfill1:
-		test	eax, 08000000h			; Test dma A
-		jz	blitexfill2
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx				; My word is now in bits 31-16
-		cmp	esi, dword [linelength]		; Do first word masking
-		jne	blitexfilld
-		and	edx, dword [bltafwm]
-blitexfilld:
-		cmp	esi, 1				; Do last word masking+ modulo
-		jne	blitexfillf
-		mov	ebx, dword [bltamod]		; BLTMOD oppdateres DESC
-		add	ecx, ebx
-		and	edx, dword [bltalwm]		; Mask is mirrored in lo/hi word
-blitexfillf:
-		add	ecx, ebp			; Add +2 or -2 to ptA
-		and	edx, 0ffff0000h			; Take away garbage
-		and	ecx, 01ffffeh			; For safety
-		mov	dword [bltapt], ecx
-		mov	ecx, eax			; Move saved bltcon to ecx
-		shr	ecx, 28				; Exctract shift for A
-
-		test	eax, 2				; Test desc mode
-		jz	blitexnofdesc1
-		rol	edx, cl				; Rotate to left in desc mode
-		jmp	blitexnofdesc2
-blitexnofdesc1:
-		shr	edx, cl				; Shift to right in forward mode
-blitexnofdesc2:
-
-
-		mov	ecx, dword [blit_leftoverA]	; get last leftover
-		mov	dword [blit_leftoverA], edx	; Store leftover from A
-		shr	edx, 16				; Move my shifted  data down
-		or	edx, ecx			; Merge with leftover
-		mov	dword [bltadat], edx		; Store data from A
-		jmp	blitexfill2a
-
-; DMA A off
-blitexfill2:
-		mov	edx, dword [bltadatoriginal]
-		shl	edx, 16
-		cmp	esi, dword [linelength]		; Do first word masking
-		jne	befd
-		and	edx, dword [bltafwm]
-befd:
-		cmp	esi, 1				; Do last word masking+ modulo
-		jne	beff
-		and	edx, dword [bltalwm]		; Mask is mirrored in lo/hi word
-beff:
-		mov	ecx, eax			; Move saved bltcon to ecx
-		shr	ecx, 28				; Exctract shift for A
-	
-		test	eax, 2				; Test desc mode
-		jz	befdesc1
-		rol	edx, cl				; Rotate to left in desc mode
-		jmp	befdesc2
-befdesc1:
-		shr	edx, cl				; Shift to right in forward mode
-befdesc2:
-
-
-		mov	ecx, dword [blit_leftoverA]	; get last leftover
-		mov	dword [blit_leftoverA], edx	; Store leftover from A
-		shr	edx, 16				; Move my shifted  data down
-		or	edx, ecx			; Merge with leftover
-		mov	dword [bltadat], edx		; Store data from A
-
-
-blitexfill2a:
-
-
-		test	eax, 04000000h			; Test dma B
-		jz	blitexfill3
-		mov	ecx, dword [bltbpt]
-		mov	edx, dword [memory_chip-2+ecx]
-		bswap	edx				; My data in lo word
-		cmp	esi, 1				; Do modulo if last word on line 
-		jne	blitexfillg
-		mov	ebx, dword [bltbmod]		; BLTBMOD
-		add	ecx, ebx
-blitexfillg:
-		add	ecx, ebp			; Add ptB with +2 or -2
-		and	ecx, 01ffffeh			; For safety
-		mov	dword [bltbpt], ecx		; Save ptB
-		mov	ecx, eax			; Extract shift for B
-		shr	ecx, 12
-		and	ecx, 0fh
-		shl	edx, 16				; Move my data up, lo is clean
-	
-		test	eax, 2				; Rotate or shift
-		jz	blitexnofdesc3
-		rol	edx, cl
-		jmp	blitexnofdesc4
-blitexnofdesc3:
-		shr	edx, cl
-blitexnofdesc4:
-
-
-		mov	ecx, dword [blit_leftoverB]	; Old leftover
-		mov	dword [blit_leftoverB], edx	; Store leftover from B
-		shr	edx, 16				; Move rest of data down
-		or	edx, ecx			; Merge with leftover
-		mov	dword [bltbdat], edx		; Store data from B
-	
-blitexfill3:
-
-blitexfill3a:
-		test	eax, 02000000h			; Test dma C
-		jz	blitexfill4
-		mov	ecx, dword [bltcpt]
-		mov	edx, dword [memory_chip - 2 + ecx]
-		bswap	edx				; Move my data down
-		cmp	esi, 1				; last word??
-		jne	blitexfillh
-		mov	ebx, dword [bltcmod]		; BLTCMOD
-		add	ecx, ebx
-blitexfillh:
-		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltcpt], ecx
-		mov	dword [bltcdat], edx		; Store data from C
-	
-; Now the data lies in BLTXDAT registers
-blitexfill4:
-
-		push	eax
-		mov	edx, dword [bltcdat]
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-
-		mov	edx, eax
-		pop	eax
-		and	edx, 0ffffh
-
-; Now we have the result
-; Do fill
-
-		test	eax, 4				; test if FC bit is set
-		jnz	blitexafc1
-		mov	bx, word [fillexcfc0 + edx*2]	; Get inc,fc0
-		mov	dl, byte [fillexcfc0after + edx]; get fc bit after
-		jmp	blitexfillafter
-blitexafc1:
-		mov	bx, word [fillexcfc1 + edx*2]	; Get inc,fc0
-		mov	dl, byte [fillexcfc1after + edx]; get fc bit after
-blitexfillafter:
-		shl	dl, 2				; Inject FC bit into saved bltcon
-		and	al, 0fbh
-		or	al, dl
-		mov	byte [bltfillbltconsave], al
-		mov	eax, dword [bltfillbltconsave]
-		or	dword [bltzero], ebx
-
-		test	eax, 01000000h			; Test DMA D 
-		jz	blitexfillDoff
-		
-		mov	ecx, dword [bltdpt]
-		mov	byte [memory_chip + ecx], bh
-		mov	byte [memory_chip + 1 + ecx], bl
-		add	ecx, ebp
-		cmp	esi, 1
-		jne	blitexfillj
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-blitexfillj:
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-blitexfilli:
-blitexfillDoff:
-		dec	esi
-		jnz	near blitexfillword
-		dec	dword [linecount]
-		jnz	near blitterexfillline
-		jmp	blitterfillend
-
-
-		FALIGN32
-
-
-; Fill routine optimized for AD
-
-
-global _ADblitterfillline_
-_ADblitterfillline_:
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		test	eax, 8
-		jz	near ADblitterfillexclusive
-
-ADblitterincfillline:
-		mov	esi, dword [linelength]
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		mov	ebp, dword [bltdesc]
-ADblitterincfillword:
-ADblitincfill1:
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx				  ; My word is now in bits 31-16
-
-		cmp	esi, dword [linelength]		  ; Do first word masking
-		jne	ADblitincfilld
-		and	edx, dword [bltafwm]
-ADblitincfilld:
-		cmp	esi, 1				  ; Do last word masking+ modulo
-		jne	ADblitincfillf
-		mov	ebx, dword [bltamod]		  ; BLTMOD updated DESC
-		add	ecx, ebx
-		and	edx, dword [bltalwm]		  ; Mask is mirrored in lo/hi word
-ADblitincfillf:
-		add	ecx, ebp			  ; Add +2 or -2 to ptA
-		and	edx, 0ffff0000h			  ; Take away garbage
-		and	ecx, 01ffffeh			  ; For safety
-		mov	dword [bltapt], ecx
-		mov	ecx, eax			  ; Move saved bltcon to ecx
-		shr	ecx, 28				  ; Exctract shift for A
-
-		test	eax, 2				  ; Test desc mode
-		jz	ADblitincnofdesc1
-		rol	edx, cl				  ; Rotate to left in desc mode
-		jmp	ADblitincnofdesc2
-ADblitincnofdesc1:
-		shr	edx, cl				  ; Shift to right in forward mode
-ADblitincnofdesc2:
-
-
-		mov	ecx, dword [blit_leftoverA]	  ; get last leftover
-		mov	dword [blit_leftoverA], edx	  ; Store leftover from A
-		shr	edx, 16				  ; Move my shifted  data down
-		or	edx, ecx			  ; Merge with leftover
-		mov	dword [bltadat], edx		  ; Store data from A
-
-ADblitincfill2:
-
-; Now the data lies in BLTXDAT registers
-ADblitincfill4:
-
-		push	eax
-		mov	edx, dword [bltcdat]
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-		mov	edx, eax
-		pop	eax
-		and	edx, 0ffffh
-
-; Now we have the result
-
-
-		test	eax, 4				    ; test if FC bit is set
-		jnz	ADblitincafc1
-		mov	bx, word [fillincfc0 + edx*2]	    ; Get inc,fc0
-		mov	dl, byte [fillincfc0after + edx]    ; get fc bit after
-		jmp	ADblitincfillafter
-ADblitincafc1:
-		mov	bx, word [fillincfc1 + edx*2]	    ; Get inc,fc0
-		mov	dl, byte [fillincfc1after + edx]    ; get fc bit after
-ADblitincfillafter:
-		shl	dl, 2				    ; Inject FC bit into saved bltcon
-		and	al, 0fbh
-		or	al, dl
-		mov	byte [bltfillbltconsave], al
-
-
-		mov	eax, dword [bltfillbltconsave]
-
-		mov	ecx, dword [bltdpt]
-		or	dword [bltzero], ebx
-		mov	byte [memory_chip + ecx], bh
-		mov	byte [memory_chip + 1 + ecx], bl
-		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-ADblitincfilli:
-		dec	esi
-		jnz	near ADblitterincfillword
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-
-		dec	dword [linecount]
-		jnz	near ADblitterincfillline
-		jmp	blitterfillend
-
-
-		FALIGN32
-
-
-ADblitterfillexclusive:
-ADblitterexcfillline:
-		mov	esi, dword [linelength]
-		mov	eax, dword [bltcon]
-		mov	dword [bltfillbltconsave], eax
-		mov	ebp, dword [bltdesc]
-ADblitterexcfillword:
-ADblitexcfill1:
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx				    ; My word is now in bits 31-16
-
-		cmp	esi, dword [linelength]		    ; Do first word masking
-		jne	ADblitexcfilld
-		and	edx, dword [bltafwm]
-ADblitexcfilld:
-		cmp	esi, 1				    ; Do last word masking+ modulo
-		jne	ADblitexcfillf
-		mov	ebx, dword [bltamod]		    ; BLTMOD updated DESC
-		add	ecx, ebx
-		and	edx, dword [bltalwm]		    ; Mask is mirrored in lo/hi word
-ADblitexcfillf:
-		add	ecx, ebp			    ; Add +2 or -2 to ptA
-		and	edx, 0ffff0000h			    ; Take away garbage
-		and	ecx, 01ffffeh			    ; For safety
-		mov	dword [bltapt], ecx
-		mov	ecx, eax			    ; Move saved bltcon to ecx
-		shr	ecx, 28				    ; Exctract shift for A
-
-		test	eax, 2				    ; Test desc mode
-		jz	ADblitexcnofdesc1
-		rol	edx, cl				    ; Rotate to left in desc mode
-		jmp	ADblitexcnofdesc2
-ADblitexcnofdesc1:
-		shr	edx, cl				    ; Shift to right in forward mode
-ADblitexcnofdesc2:
-
-
-		mov	ecx, dword [blit_leftoverA]	    ; get last leftover
-		mov	dword [blit_leftoverA], edx	    ; Store leftover from A
-		shr	edx, 16				    ; Move my shifted  data down
-		or	edx, ecx			    ; Merge with leftover
-		mov	dword [bltadat], edx		    ; Store data from A
-
-ADblitexcfill2:
-
-; Now the data lies in BLTXDAT registers
-ADblitexcfill4:
-
-		push	eax
-		mov	edx, dword [bltcdat]
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-
-		mov	edx, eax
-		pop	eax
-		and	edx, 0ffffh
-
-; Now we have the result
-
-
-		test	eax, 4				    ; test if FC bit is set
-		jnz	ADblitexcafc1
-		mov	bx, word [fillexcfc0 + edx*2]	    ; Get exc,fc0
-		mov	dl, byte [fillexcfc0after + edx]    ; get fc bit after
-		jmp	ADblitexcfillafter
-ADblitexcafc1:
-		mov	bx, word [fillexcfc1 + edx*2]	    ; Get exc,fc0
-		mov	dl, byte [fillexcfc1after + edx]    ; get fc bit after
-ADblitexcfillafter:
-		shl	dl, 2				    ; Inject FC bit into saved bltcon
-		and	al, 0fbh
-		or	al, dl
-		mov	byte [bltfillbltconsave], al
-
-
-		mov	eax, dword [bltfillbltconsave]
-
-		mov	ecx, dword [bltdpt]
-		or	dword [bltzero], ebx
-		mov	byte [memory_chip + ecx], bh
-		mov	byte [memory_chip + 1 + ecx], bl
-		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-ADblitexcfilli:
-		dec	esi
-		jnz	near ADblitterexcfillword
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-
-		dec	dword [linecount]
-		jnz	near ADblitterexcfillline
-
-
-
-blitterfillend:
-		test	dword [bltcon],008000000h
-		jz	bliend1
-		mov	edx,dword [bltadatoriginal]
-		mov	dword [bltadat],edx
-bliend1:
+		and	dword [bltcon], 0ffffffbfh
+		test	dword [4 + esp], 1
+		jz	no_sign
+		or	dword [bltcon], 040h
+no_sign:
+		mov	dword [bltapt], ebp
+		mov	dword [bltcpt], esi
+		mov	dword [bltdpt], edi
+		mov	eax, dword [36 + esp]
+		mov	dword [bltzero], eax
+		add	esp, 44
 		mov	edx, 08040h
 		mov	ecx, 0dff09ch
 		jmp	wriw
-
-
-; ===========================================
-; Blitter COPY
-; ===========================================
-
-; -----------------------------------------------------------------------------
-; Do one line of blitter copy operation
-; Not LINEMODE!	 Stupid labelname.
-; This is the general routine called in case there isn't an optimized routine.
-; -----------------------------------------------------------------------------
-
-		FALIGN32
-
-blitter_normal:
-
-global _blitterline_
-_blitterline_:	mov	esi, dword [linelength]
-		mov	ebp, dword [bltdesc]
-blitterword:	mov	eax, dword [bltcon]
-blit1:		test	eax, 01000000h
-		jz	near bliti
-		test	eax, 08000000h				; Test dma A
-		jz	blit2
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx
-		cmp	esi, dword [linelength]
-		jne	blitd
-		and	edx, dword [bltafwm]
-blitd:		cmp	esi, 1
-		jne	blitf
-		mov	ebx, dword [bltamod]
-		add	ecx, ebx
-		and	edx, dword [bltalwm]
-blitf:		add	ecx, ebp
-		and	edx, 0ffff0000h
-		and	ecx, 01ffffeh
-		mov	dword [bltapt], ecx
-		mov	ecx, eax
-		shr	ecx, 28
-		test	eax, 2
-		jz	nodesc1
-		rol	edx, cl
-		jmp	nodesc2
-nodesc1:	shr	edx, cl
-nodesc2		mov	ecx, dword [blit_leftoverA]
-		mov	dword [blit_leftoverA], edx		; Store leftover from A
-		shr	edx, 16
-		or	edx, ecx				; Merge leftover
-		and	edx, 0ffffh
-		mov	dword [bltadat], edx			; Store data from A
-		jmp	blit90
-blit2:		mov	edx, dword [bltadatoriginal]
-		shl	edx, 16
-		cmp	esi, dword [linelength]			; Do first word masking
-		jne	bnorbd
-		and	edx, dword [bltafwm]
-bnorbd:		cmp	esi, 1					; Do last word masking+ modulo
-		jne	bnorbf
-		and	edx, dword [bltalwm]			; Mask mirrored in lo/hi word
-bnorbf:		mov	ecx, eax				; Move saved bltcon to ecx
-		shr	ecx, 28					; Exctract shift for A
-		test	eax, 2					; Test desc mode
-		jz	bnordesc1
-		rol	edx, cl					; Rotate to left in desc mode
-		jmp	bnordesc2
-bnordesc1:	shr	edx, cl					; Shift to right in forward mode
-bnordesc2:	mov	ecx, dword [blit_leftoverA]		; get last leftover
-		mov	dword [blit_leftoverA], edx		; Store leftover from A
-		shr	edx, 16					; Shifted  data down
-		or	edx, ecx				; Merge with leftover
-		mov	dword [bltadat], edx			; Store data from A
-blit90:		test	eax, 04000000h				; Test dma B
-		jz	blit3
-		mov	ecx, dword [bltbpt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx
-		cmp	esi, 1					; Last word??
-		jne	blitg
-		mov	ebx, dword [bltbmod]
-		add	ecx, ebx
-blitg:		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltbpt], ecx
-		mov	ecx, eax
-		shr	ecx, 12
-		and	ecx, 0fh 
-		and	edx, 0ffff0000h
-		test	eax, 2
-		jz	nodesc3
-		rol	edx, cl
-		jmp	nodesc4
-nodesc3:	shr	edx, cl
-nodesc4:	mov	ecx, dword [blit_leftoverB]
-		mov	dword [blit_leftoverB], edx		; Store leftover from B
-		shr	edx, 16
-		or	edx, ecx
-		and	edx, 0ffffh
-		mov	dword [bltbdat], edx			; Store data from B
-blit3:
-blit80:		test	eax, 02000000h				; Test dma C
-		jz	blit4
-		mov	ecx, dword [bltcpt]
-		mov	edx, dword [memory_chip - 2 + ecx]
-		bswap	edx
-		cmp	esi, 1					; Last word??
-		jne	blith
-		mov	ebx, dword [bltcmod]
-		add	ecx, ebx
-blith:		add	ecx, ebp
-		and	ecx, 01ffffeh
-		mov	dword [bltcpt], ecx
-		and	edx, 0ffffh
-		mov	dword [bltcdat], edx			; Store data from C
-blit4:		mov	edx, dword [bltcdat]			; Data lies in BLTXDAT
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-		or	dword [bltzero],eax
-		test	byte [bltcon + 3], 1			; We have the result
-		jz	blitDoff
-		mov	ecx, dword [bltdpt]
-		mov	byte [memory_chip + ecx], ah
-		mov	byte [memory_chip + 1 + ecx], al
-		add	ecx, ebp
-		cmp	esi, 1
-		jne	blitj
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-blitj:		and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-blitDoff:
-bliti:		dec	esi
-		jnz	near blitterword
-		dec	dword [linecount]
-		jnz	near _blitterline_
-		test	dword [bltcon], 008000000h		; restore registers
-		jz	bliend3
-		mov	edx, dword [bltadatoriginal]
-		mov	dword [bltadat], edx
-bliend3:	test	dword [bltcon], 004000000h
-		jz	bliend4
-		mov	edx, dword [bltbdatoriginal]
-		mov	dword [bltbdat], edx
-bliend4:	mov	edx, 08040h
-		mov	ecx, 0dff09ch
-		jmp	wriw
-
-
-; ------------------------------------------
-; Do one line of blitter operation
-; Optimized for AD
-; ------------------------------------------
-
-		FALIGN32
-
-global _ADblitterline_
-_ADblitterline_:mov	esi, dword [linelength]
-		mov	ebp, dword [bltdesc]
-ADblitterword:	mov	eax, dword [bltcon]
-		mov	ecx, dword [bltapt]
-		mov	edx, dword [memory_chip + ecx]
-		bswap	edx
-		cmp	esi, dword [linelength]
-		jne	ADblitd
-		and	edx, dword [bltafwm]
-ADblitd:	cmp	esi, 1					; Last word in line
-		jne	ADblitf					; so
-		mov	ebx, dword [bltamod]			; add modulo
-		add	ecx, ebx
-		and	edx, dword [bltalwm]
-ADblitf:	add	ecx, ebp
-ADblargh2:	and	edx, 0ffff0000h
-		and	ecx, 01ffffeh
-		mov	dword [bltapt], ecx
-		mov	ecx, eax
-		shr	ecx, 28
-		test	eax, 2
-		jz	nodesc5
-		rol	edx, cl
-		jmp	nodesc6
-nodesc5:	shr	edx, cl
-nodesc6:	mov	ecx, dword [blit_leftoverA]
-		mov	dword [blit_leftoverA], edx		; Store leftover from A
-		shr	edx, 16
-		or	edx, ecx				; Merge leftover
-		mov	dword [bltadat], edx			; Store data from A
-		mov	edx, dword [bltcdat]			; Data lies in BLTXDAT
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]			; Do logic
-		mov	ecx, dword [bltdpt]			; We have the result
-ADblargh3:	or	dword [bltzero], eax
-		mov	byte [memory_chip + ecx], ah
-		mov	byte [memory_chip + 1 + ecx], al
-		add	ecx, ebp
-ADblargh4:	cmp	esi, 1
-		jne	ADblitj
-		mov	ebx, dword [bltdmod]
-		add	ecx, ebx
-ADblitj:	and	ecx, 01ffffeh
-		mov	dword [bltdpt], ecx
-ADbliti:	dec	esi
-		jnz	near ADblitterword
-		dec	dword [linecount]
-		jnz	near _ADblitterline_
-		mov	edx, 08040h
-		mov	ecx, 0dff09ch
-		jmp	wriw
-
-; ---------------------------------------
-; Do one line of blitter operation
-; Optimized for D
-; ---------------------------------------
-
-		FALIGN32
-
-
-global _Dblitterline_
-_Dblitterline_:	mov	edx, dword [bltcdat]
-		mov	ecx, dword [bltbdat]
-		mov	ebx, dword [bltadat]
-		call	dword [bltminterm]
-		bswap	eax
-		shr	eax, 16
-		or	dword [bltzero], eax
-		mov	ecx, dword [bltdpt]
-		mov	ebx, dword [bltdmod]
-		mov	ebp, dword [bltdesc]
-Dblitterline2:	mov	esi, dword [linelength]
-Dblitterword:
-Dblit1:
-Dblargh2:	mov	word [memory_chip + ecx], ax
-		add	ecx, ebp
-		and	ecx, 01ffffeh
-Dblargh:	dec	esi
-		jnz	Dblitterword
-		add	ecx, ebx
-		and	ecx, 01ffffeh
-		dec	dword [linecount]
-		jnz	Dblitterline2
-		mov	dword [bltdpt], ecx
-		mov	edx, 08040h
-		mov	ecx, 0dff09ch
-		jmp	wriw
-
-; ===========================================================
-; Blitter COPY ENDS
-; ===========================================================
 
 
 ; ========================================================
@@ -2119,16 +1244,15 @@ _blit_min_0a_:	mov	eax, ebx
 
 		FALIGN32
 
-; !(B+C) + Ca
+; a(b + C)
 
 global _blit_min_0b_
 _blit_min_0b_:	push	ebx
-		mov	eax, edx
-		or	eax, ecx
+		mov	eax, ecx
 		not	eax
+		or	eax, edx
 		not	ebx
-		and	ebx, edx
-		or	eax, ebx
+		and	eax, ebx
 		pop	ebx
 		ret
 
