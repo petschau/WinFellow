@@ -10,6 +10,7 @@
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/09:                                                                */
+/* - added the clipping variables from graph.c                                */
 /* - floppy, copper, events, screen and sprite state added                    */
 /* 2000/12/08:                                                                */
 /* - CIA state added                                                          */
@@ -24,9 +25,8 @@
 /* -----                                                                      */
 /* - how to use that PropSheet_CancelToClose(hwndDlg) ?                       */
 /* - why isn't the bg-color updated on initialization of the window ?         */
-/* verify sound, graph, sprite, copper                                        */
-/* DOS Fellow debugger functions still missing:                               */
-/* io                                                                         */
+/* - verify sound, graph, sprite, copper                                      */
+/* - check the module ripper                                                  */
 /*============================================================================*/
 
 #include "defs.h"
@@ -89,6 +89,9 @@ extern ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
 extern ULO graph_DIW_first_visible;
 extern ULO graph_DIW_last_visible;
 extern ULO graph_DDF_start;
+extern ULO draw_right;
+extern ULO draw_top;
+extern ULO draw_bottom;
 
 /* sound.c */
 extern soundStateFunc audstate[4];
@@ -805,14 +808,13 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    /* @@@@@ variables gone unknown !
-       sprintf(s,
+    sprintf(s,
        "clipleftx-%.3d   cliprightx-%.3d         cliptop-%.3d           clipbot-%d",
-       clipleftx,
-       cliprightx,
-       cliptop,
-       clipbot);
-       y = wdbgLineOut(hDC, s, x, y); */
+       draw_left,
+       draw_right,
+       draw_top,
+       draw_bottom);
+    y = wdbgLineOut(hDC, s, x, y);
 
     /* @@@@@ changed register names ?
        sprintf(s,
@@ -999,10 +1001,10 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
 	      i,
 	      /*(audstate[i] == soundState0) ? 0 :
-	         (audstate[i] == soundState0) ? 1 :
-	         (audstate[i] == soundState0) ? 2 :
-	         (audstate[i] == soundState0) ? 3 :
-	         (audstate[i] == soundState0) ? 5 : */ -1, audlenw[i],
+	         (audstate[i] == soundState1) ? 1 :
+	         (audstate[i] == soundState2) ? 2 :
+	         (audstate[i] == soundState3) ? 3 :
+	         (audstate[i] == soundState5) ? 5 : */ -1, audlenw[i],
 	      audlen[i], audper[i], audpercounter[i], audvol[i]);
       y = wdbgLineOut(hDC, s, x, y);
     }
