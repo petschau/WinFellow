@@ -1,10 +1,27 @@
-/*===========================================================================*/
-/* Fellow Amiga Emulator                                                     */
-/* Keyboard mapping file parser                                              */
-/* Author: Marco Nova (novamarco@hotmail.com)                                */
-/*                                                                           */
-/* This file is under the GNU Public License (GPL)                           */
-/*===========================================================================*/
+/* @(#) $Id: kbdparser.c,v 1.5 2004-06-08 11:09:48 carfesh Exp $ */
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* Keyboard mapping file parser                                            */
+/*                                                                         */
+/* Author: Marco Nova (novamarco@hotmail.com)                              */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 /* ---------------- KNOWN BUGS/FIXLIST ----------------- 
 - translation from keynames to DX keys should be perfectioned
@@ -30,6 +47,7 @@ Tuesday, September 05, 2000: nova
 #include "defs.h"
 #include "keycodes.h"
 #include "kbdparser.h"
+#include "fellow.h"
 #include <stdio.h>
 
 
@@ -213,7 +231,7 @@ UBY amiga_scancode[MAX_AMIGA_NAMES] = {
 	A_COMMA,
 	A_PERIOD,
 	A_SLASH,
-	A_LEFT_SHIFT,
+	A_RIGHT_SHIFT,  /* was A_LEFT_SHIFT intended here? */
 	A_LEFT_ALT,
 	A_LEFT_AMIGA,
 	A_SPACE,
@@ -417,7 +435,7 @@ BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
-	int AmigaIndex, PcIndex, ReplIndex;
+	int AmigaIndex, PcIndex;
 
 	f = fopen( szFilename, "w" );
 	if( !f )

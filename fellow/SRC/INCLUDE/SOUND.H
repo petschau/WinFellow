@@ -92,7 +92,7 @@ extern BOOLE soundGetWAVDump(void);
 extern void soundSetNotification(sound_notifications notification);
 extern sound_notifications soundGetNotification(void);
 
-
+extern void soundEndOfLine(void); /* for bus.c */
 
 /*==================================*/
 /* Standard Fellow Module Functions */
