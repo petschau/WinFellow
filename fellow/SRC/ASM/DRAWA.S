@@ -140,6 +140,77 @@ CDATAEXTERN dlsbg2x32mmx_tmp
 CDATAEXTERN dlsbg2x32mmx
 CDATAEXTERN dlsbg2x32mmx_times
 CDATAEXTERN dlsbg2x32mmx_pixels
+
+CDATAEXTERN dln2x16_tmp
+CDATAEXTERN dln2x16
+CDATAEXTERN dln2x16_times
+CDATAEXTERN dln2x16_pixels
+
+CDATAEXTERN dln2x16mmx_tmp
+CDATAEXTERN dln2x16mmx
+CDATAEXTERN dln2x16mmx_times
+CDATAEXTERN dln2x16mmx_pixels
+
+CDATAEXTERN dld1x8_tmp
+CDATAEXTERN dld1x8
+CDATAEXTERN dld1x8_times
+CDATAEXTERN dld1x8_pixels
+
+CDATAEXTERN dld1x8mmx_tmp
+CDATAEXTERN dld1x8mmx
+CDATAEXTERN dld1x8mmx_times
+CDATAEXTERN dld1x8mmx_pixels
+
+CDATAEXTERN dld2x8_tmp
+CDATAEXTERN dld2x8
+CDATAEXTERN dld2x8_times
+CDATAEXTERN dld2x8_pixels
+
+CDATAEXTERN dld2x8mmx_tmp
+CDATAEXTERN dld2x8mmx
+CDATAEXTERN dld2x8mmx_times
+CDATAEXTERN dld2x8mmx_pixels
+
+CDATAEXTERN dld1x16_tmp
+CDATAEXTERN dld1x16
+CDATAEXTERN dld1x16_times
+CDATAEXTERN dld1x16_pixels
+
+CDATAEXTERN dld1x16mmx_tmp
+CDATAEXTERN dld1x16mmx
+CDATAEXTERN dld1x16mmx_times
+CDATAEXTERN dld1x16mmx_pixels
+
+CDATAEXTERN dld2x16_tmp
+CDATAEXTERN dld2x16
+CDATAEXTERN dld2x16_times
+CDATAEXTERN dld2x16_pixels
+
+CDATAEXTERN dld2x16mmx_tmp
+CDATAEXTERN dld2x16mmx
+CDATAEXTERN dld2x16mmx_times
+CDATAEXTERN dld2x16mmx_pixels
+
+CDATAEXTERN dld1x32_tmp
+CDATAEXTERN dld1x32
+CDATAEXTERN dld1x32_times
+CDATAEXTERN dld1x32_pixels
+
+CDATAEXTERN dld1x32mmx_tmp
+CDATAEXTERN dld1x32mmx
+CDATAEXTERN dld1x32mmx_times
+CDATAEXTERN dld1x32mmx_pixels
+
+CDATAEXTERN dld2x32_tmp
+CDATAEXTERN dld2x32
+CDATAEXTERN dld2x32_times
+CDATAEXTERN dld2x32_pixels
+
+CDATAEXTERN dld2x32mmx_tmp
+CDATAEXTERN dld2x32mmx
+CDATAEXTERN dld2x32mmx_times
+CDATAEXTERN dld2x32mmx_pixels
+
 %endif
 
 
@@ -157,7 +228,6 @@ _drawstart_:				; Used to check code alignment
 %include "func/draw.inc"
 %include "mac/draw.mac"
 %include "mac/sprite.mac"
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -192,22 +262,14 @@ _drawstart_:				; Used to check code alignment
 		add	esi, 4
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
+%%l1:		cmp	ebx, 0
+		jle	%%l3
 %%l4:		mov	byte [esi], al
 		inc	esi
 		dec	ebx
 		jnz	%%l4
 %%l3:		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x8_:
-		DRAWLINESEGMENTBG1x8
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using MMX instructions
@@ -222,8 +284,9 @@ _drawLineSegmentBG1x8_:
 
 
 %macro DRAWLINESEGMENTBG1x8MMX 0
+		mov	edx, 16
 		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 8
+		cmp	ebx, edx
 		jb	%%l1
 		test	esi, 1
 		jz	%%l7
@@ -240,33 +303,27 @@ _drawLineSegmentBG1x8_:
 		mov	dword [esi], eax
 		sub	ebx, 4
 		add	esi, 4
-%%l6:		cmp	ebx, 8
+%%l6:		cmp	ebx, edx
 		jb	%%l1
-		movd	mm0, eax
 		movd	mm1, eax
+		movd	mm0, eax
 		psllq	mm1, 32
+		sub	ebx, edx
 		por	mm0, mm1
 %%l2:		movq	[esi], mm0
-		sub	ebx, 8
-		add	esi, 8
-		cmp	ebx, 8
+		movq	[esi + 8], mm0
+		add	esi, edx
+		sub	ebx, edx
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
+		add	ebx, edx
+%%l1:		cmp	ebx, 0
+		jle	%%l3
 %%l4:		mov	byte [esi], al
 		inc	esi
 		dec	ebx
 		jnz	%%l4
 %%l3:		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x8mmx_:
-		DRAWLINESEGMENTBG1x8MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -281,30 +338,31 @@ _drawLineSegmentBG1x8mmx_:
 
 
 %macro DRAWLINESEGMENTBG2x8 0
-		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 2
+		mov	edx, 4
+		mov	ecx, dword [draw_buffer_current_ptr]
+		cmp	ebx, edx
 		jb	%%l1
-%%l2:		mov	dword [esi], eax
-		sub	ebx, 2
-		add	esi, 4
-		cmp	ebx, 2
+		test	ecx, 2
+		jz	%%l2
+		mov	word [ecx], ax
+		add	ecx, 2
+		dec	ebx
+		cmp	ebx, edx
+		jb	%%l1
+%%l2:		mov	dword [ecx], eax
+		mov	dword [ecx + 4], eax
+		sub	ebx, edx
+		add	ecx, 8
+		cmp	ebx, edx
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
-%%l4:		mov	word [esi], ax
-		add	esi, 2
+%%l1:		cmp	ebx, 0
+		jle	%%l3
+%%l4:		mov	word [ecx], ax
+		add	ecx, 2
 		dec	ebx
 		jnz	%%l4
-%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%%l3:		mov	dword [draw_buffer_current_ptr], ecx
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x8_:
-		DRAWLINESEGMENTBG2x8
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using MMX instructions
@@ -319,47 +377,40 @@ _drawLineSegmentBG2x8_:
 
 
 %macro DRAWLINESEGMENTBG2x8MMX 0
-		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 8
+		mov	edx, 8
+		mov	ecx, dword [draw_buffer_current_ptr]
+		cmp	ebx, edx
 		jb	%%l1
-		test	esi, 2
+		test	ecx, 2
 		jz	%%l5
-		mov	word [esi], ax
-		add	esi, 2
+		mov	word [ecx], ax
+		add	ecx, 2
 		dec	ebx
-%%l5:		test	esi, 4
+%%l5:		test	ecx, 4
 		jz	%%l6
-		mov	dword [esi], eax
+		mov	dword [ecx], eax
 		sub	ebx, 2
-		add	esi, 4
-%%l6:		cmp	ebx, 8
+		add	ecx, 4
+%%l6:		cmp	ebx, edx
 		jb	%%l1
-		movd	mm0, eax
 		movd	mm1, eax
+		movd	mm0, eax
 		psllq	mm1, 32
 		por	mm0, mm1
-%%l2:		movq	[esi], mm0
-		movq	[esi + 8], mm0
-		sub	ebx, 8
-		add	esi, 16
-		cmp	ebx, 8
+%%l2:		movq	[ecx], mm0
+		sub	ebx, edx
+		movq	[ecx + 8], mm0
+		add	ecx, 16
+		cmp	ebx, edx
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
-%%l4:		mov	word [esi], ax
-		add	esi, 2
+%%l1:		cmp	ebx, 0
+		jle	%%l3
+%%l4:		mov	word [ecx], ax
+		add	ecx, 2
 		dec	ebx
 		jnz	%%l4
-%%l3:		mov	dword [draw_buffer_current_ptr], esi
+%%l3:		mov	dword [draw_buffer_current_ptr], ecx
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x8mmx_:
-		DRAWLINESEGMENTBG2x8MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -390,22 +441,14 @@ _drawLineSegmentBG2x8mmx_:
 		add	esi, 8
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
+%%l1:		cmp	ebx, 0
+		jle	%%l3
 %%l4:		mov	word [esi], ax
 		add	esi, 2
 		dec	ebx
 		jnz	%%l4
 %%l3:		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x16_:
-		DRAWLINESEGMENTBG1x16
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color with MMX instructions
@@ -445,22 +488,14 @@ _drawLineSegmentBG1x16_:
 		add	esi, 16
 		cmp	ebx, 8
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	word [esi], ax
 		add	esi, 2
 		dec	ebx
 		jnz	%%l3
 %%l4:		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x16mmx_:
-		DRAWLINESEGMENTBG1x16MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -475,33 +510,26 @@ _drawLineSegmentBG1x16mmx_:
 
 
 %macro DRAWLINESEGMENTBG2x16 0
-		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 4
+		mov	edx, 4
+		mov	ecx, dword [draw_buffer_current_ptr]
+		cmp	ebx, edx
 		jb	%%l1
-%%l2:		mov	[esi], eax
-		mov	[4 + esi], eax
-		mov	[8 + esi], eax
-		mov	[12 + esi], eax
-		sub	ebx, 4
-		add	esi, 16
-		cmp	ebx, 4
+%%l2:		mov	[ecx], eax
+		mov	[4 + ecx], eax
+		mov	[8 + ecx], eax
+		mov	[12 + ecx], eax
+		sub	ebx, edx
+		add	ecx, 16
+		cmp	ebx, edx
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
-%%l3:		mov	dword [esi], eax
-		add	esi, 4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
+%%l3:		mov	dword [ecx], eax
+		add	ecx, edx
 		dec	ebx
 		jnz	%%l3
-%%l4:		mov	dword [draw_buffer_current_ptr], esi
+%%l4:		mov	dword [draw_buffer_current_ptr], ecx
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x16_:
-		DRAWLINESEGMENTBG2x16
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color with MMX instructions
@@ -516,44 +544,39 @@ _drawLineSegmentBG2x16_:
 
 
 %macro DRAWLINESEGMENTBG2x16MMX 0
-		mov	esi, dword [draw_buffer_current_ptr]
-		cmp	ebx, 8
+		mov	edi, 8
+		mov	esi, 4
+		mov	edx, 32
+		mov	ecx, dword [draw_buffer_current_ptr]
+		cmp	ebx, edi
 		jl	%%l1
-		test	esi, 4
+		test	ecx, esi
 		jz	%%l5
-		mov	[esi], eax
+		mov	dword [ecx], eax
 		dec	ebx
-		add	esi, 4
-		cmp	ebx, 8
+		add	ecx, esi
+		cmp	ebx, edi
 		jl	%%l1
-%%l5:		movd	mm0, eax
-		movd	mm1, eax
+%%l5:		movd	mm1, eax
+		movd	mm0, eax
 		psllq	mm1, 32
 		por	mm0, mm1
-%%l2:		movq	[esi], mm0
-		movq	[esi + 8], mm0
-		movq	[esi + 16], mm0
-		movq	[esi + 24], mm0
-		sub	ebx, 8
-		add	esi, 32
-		cmp	ebx, 8
-		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
-%%l3:		mov	dword [esi], eax
-		add	esi, 4
+%%l2:		movq	[ecx], mm0
+		movq	[ecx + 8], mm0
+		movq	[ecx + 16], mm0
+		sub	ebx, edi
+		movq	[ecx + 24], mm0
+		add	ecx, edx
+		cmp	ebx, edi
+		jae	short %%l2
+%%l1:		cmp	ebx, 0
+		jle	%%l4
+%%l3:		mov	dword [ecx], eax
+		add	ecx, esi
 		dec	ebx
 		jnz	%%l3
-%%l4:		mov	dword [draw_buffer_current_ptr], esi
+%%l4:		mov	dword [draw_buffer_current_ptr], ecx
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x16mmx_:
-		DRAWLINESEGMENTBG2x16MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -599,8 +622,8 @@ _drawLineSegmentBG2x16mmx_:
 		add	esi, 12
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [esi], edi
 		add	esi, 3
 		dec	ebx
@@ -608,14 +631,6 @@ _drawLineSegmentBG2x16mmx_:
 %%l4:		pop	ecx
 		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x24_:
-		DRAWLINESEGMENTBG1x24
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using mmx instructions
@@ -688,8 +703,8 @@ _drawLineSegmentBG1x24_:
 		add	esi, 24
 		cmp	ebx, 8
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [esi], ecx
 		add	esi, 3
 		dec	ebx
@@ -697,14 +712,6 @@ _drawLineSegmentBG1x24_:
 %%l4:		pop	ecx
 		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x24mmx_:
-		DRAWLINESEGMENTBG1x24MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -749,8 +756,8 @@ _drawLineSegmentBG1x24mmx_:
 		add	esi, 12
 		cmp	ebx, 2
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [esi], eax
 		mov	word [esi + 4], cx
 		add	esi, 6
@@ -759,14 +766,6 @@ _drawLineSegmentBG1x24mmx_:
 %%l4:		pop	ecx
 		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x24_:
-		DRAWLINESEGMENTBG2x24
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using MMX instructions
@@ -842,8 +841,8 @@ _drawLineSegmentBG2x24_:
 		add	esi, 24
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [esi], eax
 		mov	word [esi + 4], cx
 		add	esi, 6
@@ -852,14 +851,6 @@ _drawLineSegmentBG2x24_:
 %%l4:		pop	ecx
 		mov	dword [draw_buffer_current_ptr], esi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x24mmx_:
-		DRAWLINESEGMENTBG2x24MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -892,22 +883,14 @@ _drawLineSegmentBG2x24mmx_:
 		add	edi, 16
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
+%%l1:		cmp	ebx, 0
+		jle	%%l3
 %%l4:		mov	dword [edi], eax
 		add	edi, 4
 		dec	ebx
 		jnz	%%l4
 %%l3:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x32_:
-		DRAWLINESEGMENTBG1x32
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using MMX instructions
@@ -942,22 +925,14 @@ _drawLineSegmentBG1x32_:
 		add	edi, 16
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l3
+%%l1:		cmp	ebx, 0
+		jle	%%l3
 %%l4:		mov	dword [edi], eax
 		add	edi, 4
 		dec	ebx
 		jnz	%%l4
 %%l3:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG1x32mmx_:
-		DRAWLINESEGMENTBG1x32MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color
@@ -989,8 +964,8 @@ _drawLineSegmentBG1x32mmx_:
 		add	edi, 32
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [edi], eax
 		mov	dword [4 + edi], eax
 		add	edi, 8
@@ -998,14 +973,6 @@ _drawLineSegmentBG1x32mmx_:
 		jnz	%%l3
 %%l4:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x32_:
-		DRAWLINESEGMENTBG2x32
-		ret
-
 
 ;==============================================================================
 ; Draw one line segment using background color using MMX instructions
@@ -1037,8 +1004,8 @@ _drawLineSegmentBG2x32_:
 		add	edi, 32
 		cmp	ebx, 4
 		jae	%%l2
-%%l1:		test	ebx, ebx
-		jz	%%l4
+%%l1:		cmp	ebx, 0
+		jle	%%l4
 %%l3:		mov	dword [edi], eax
 		mov	dword [4 + edi], eax
 		add	edi, 8
@@ -1046,14 +1013,6 @@ _drawLineSegmentBG2x32_:
 		jnz	%%l3
 %%l4:		mov	dword [draw_buffer_current_ptr], edi
 %endmacro
-
-
-		FALIGN32
-
-_drawLineSegmentBG2x32mmx_:
-		DRAWLINESEGMENTBG2x32MMX
-		ret
-
 
 ;==============================================================================
 ; Draw one background line macro template
@@ -1497,7 +1456,6 @@ _drawLineBG2x32mmx_:
 %endif
 		ret
 
-
 ;==============================================================================
 ; Draw one bitplane line macro template
 ;==============================================================================
@@ -1844,8 +1802,8 @@ _drawLineNormal1x8_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -1871,15 +1829,15 @@ _drawLineNormal1x8_:
 		rol	ecx, 16
 		mov	cl, byte [esi + eax]
 		mov	ch, byte [esi + ebx]
-		rol	ecx, 16
-		mov	dword [edx], ecx
 		add	edi, 4
-		add	edx, 4
+		rol	ecx, 16
 		sub	ebp, 4
+		mov	dword [edx], ecx
+		add	edx, 4
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	byte [edx], cl
@@ -1929,8 +1887,8 @@ _drawLineNormal2x8_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -1945,23 +1903,23 @@ _drawLineNormal2x8_:
 		dec	ebp
 		cmp	ebp, 4
 		jl	.last4
-.loop:		mov	al, byte [edi]
-		mov	bl, byte [edi + 1]
+.loop:		mov	bl, byte [edi + 1]
+		mov	al, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	bl, byte [edi + 2]
 		mov	cx, word [esi + eax]
 		mov	al, byte [edi + 3]
 		mov	dword [edx], ecx
 		mov	ecx, dword [esi + eax]
-		mov	cx, word [esi + ebx]
-		mov	dword [edx + 4], ecx
-		add	edi, 4
-		add	edx, 8
 		sub	ebp, 4
+		mov	cx, word [esi + ebx]
+		add	edi, 4
+		mov	dword [edx + 4], ecx
+		add	edx, 8
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	word [edx], cx
@@ -2011,8 +1969,8 @@ _drawLineNormal1x16_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -2042,8 +2000,8 @@ _drawLineNormal1x16_:
 		add	edx, 8
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	word [edx], cx
@@ -2101,8 +2059,8 @@ _drawLineNormal1x16mmx_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -2127,7 +2085,7 @@ _drawLineNormal1x16mmx_:
 		psllq	mm5, 16
 		psllq	mm6, 32
 		psllq	mm7, 48
-		xor	ecx, ecx
+		mov	ecx, 0
 .loop:		mov	al, byte [edi]
 		mov	bl, byte [edi + 1]
 		mov	cl, byte [edi + 2]
@@ -2149,8 +2107,8 @@ _drawLineNormal1x16mmx_:
 		add	edx, 8			      
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	word [edx], cx
@@ -2200,31 +2158,38 @@ _drawLineNormal2x16_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x16_pixels], ebp
+		TSC_BEFORE dln2x16_tmp
+%endif
+
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
 		jl	.last4
-.loop:		mov	al, byte [edi]
-		mov	bl, byte [edi + 1]
-		mov	ecx, dword [esi + eax]
-		mov	dword [edx], ecx
-		mov	al, byte [edi + 2]
-		mov	ecx, dword [esi + ebx]
-		mov	dword [4 + edx], ecx
-		mov	bl, byte [edi + 3]
-		mov	ecx, dword [esi + eax]
-		mov	dword [8 + edx], ecx
-		add	edi, 4
-		mov	ecx, dword [esi + ebx]
-		sub	ebp, 4
-		mov	dword [12 + edx], ecx
-		add	edx, 16
-		cmp	ebp, 4
-		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.loop:		mov	al, byte [edi]		  ; 1
+		mov	bl, byte [edi + 1]	  ;     2
+		sub	ebp, 4			  ; 3
+		mov	ecx, dword [esi + eax]	  ;     3
+		mov	dword [edx], ecx	  ; 4
+		mov	al, byte [edi + 2]	  ;     4
+		mov	ecx, dword [esi + ebx]	  ; 5
+		mov	dword [4 + edx], ecx	  ;     6
+		mov	bl, byte [edi + 3]	  ; 7
+		mov	ecx, dword [esi + eax]	  ;     8
+		add	edi, 4			  ; 9
+		mov	dword [8 + edx], ecx	  ;     9
+		mov	ecx, dword [esi + ebx]	  ;10
+		mov	dword [12 + edx], ecx	  ;     11
+		add	edx, 16			  ;12
+		cmp	ebp, 4			  ;     12
+		jae	.loop			  ;13
+
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		inc	edi
 		mov	ecx, dword [esi + ebx]
@@ -2233,6 +2198,11 @@ _drawLineNormal2x16_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x16_tmp, dln2x16, dln2x16_times
+%endif
+
 		ret
 
 
@@ -2274,16 +2244,24 @@ global _drawLineNormal2x16mmx_
 _drawLineNormal2x16mmx_:
 		mov	esi, dword [4 + esp]
 		mov	edx, dword [draw_buffer_current_ptr]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x16mmx_pixels], ebp
+		TSC_BEFORE dln2x16mmx_tmp
+%endif
+
+
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
 		jl	near .last4
 		test	edx, 4
-		jz	.loopsetup
+		jz	.loop
 .align8:	mov	bl, byte [edi]
 		inc	edi
 		dec	ebp
@@ -2294,31 +2272,29 @@ _drawLineNormal2x16mmx_:
 		jnz	.align8
 		cmp	ebp, 4
 		jl	near .last4
-.loopsetup:	mov	ecx, 0ffffffffh
-		movd	mm4, ecx
-		xor	ecx, ecx
-		psllq	mm4, 32
-.loop:		mov	al, byte [edi]
-		mov	bl, byte [edi + 1]
-		mov	cl, byte [edi + 2]
-		sub	ebp, 4
-		movd	mm0, [esi + eax]
-		mov	al, byte [edi + 3]
-		add	edi, 4
-		movq	mm1, [esi + ebx - 4]
-		movd	mm2, [esi + ecx]
-		movq	mm3, [esi + eax - 4]
-		pand	mm1, mm4
-		pand	mm3, mm4
-		por	mm0, mm1
-		por	mm2, mm3
-		movq	[edx], mm0
-		movq	[edx + 8], mm2
-		add	edx, 16		      
-		cmp	ebp, 4
-		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.loop:		mov	ecx, dword [edi]      ; 1
+		sub	ebp, 4		      ;	    1
+		mov	al, ch		      ; 2
+		add	edi, 4		      ;	    2
+		mov	bl, cl		      ; 3
+		add	edx, 16		      ;     3
+		movd	mm0, [esi + eax]      ; 4
+		shr	ecx, 16		      ;     4
+		movd	mm1, [esi + ebx]      ; 5
+		mov	al, ch		      ;     5 
+		psllq	mm0, 32		      ; 6
+		mov	bl, cl		      ;     6
+		por	mm0, mm1	      ; 7
+		movd	mm2, [esi + eax]      ;     7
+		psllq	mm2, 32		      ; 8
+		movd	mm3, [esi + ebx]      ;     8
+		movq	[edx - 16], mm0	      ;	9
+		por	mm2, mm3	      ;     9
+		movq	[edx - 8], mm2	      ; 10
+		cmp	ebp, 4		      ;	    10
+		jae	.loop		      ; 11
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		inc	edi
 		mov	ecx, dword [esi + ebx]
@@ -2327,6 +2303,11 @@ _drawLineNormal2x16mmx_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x16mmx_tmp, dln2x16mmx, dln2x16mmx_times
+%endif
+
 		ret
 
 
@@ -2369,9 +2350,11 @@ _drawLineNormal1x24_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	eax, eax
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
+		cmp	ebp, 0
+		jle	.exit
 .loop:		mov	al, byte [edi]
 		mov	ecx, dword [esi + eax]
 		mov	word [edx], cx
@@ -2423,7 +2406,7 @@ _drawLineNormal2x24_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	eax, eax
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 0
@@ -2482,8 +2465,8 @@ _drawLineNormal1x32_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -2505,8 +2488,8 @@ _drawLineNormal1x32_:
 		add	edx, 16
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		mov	ecx, dword [esi + ebx]
 		mov	dword [edx], ecx
@@ -2556,8 +2539,8 @@ _drawLineNormal2x32_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
 		cmp	ebp, 4
@@ -2583,8 +2566,8 @@ _drawLineNormal2x32_:
 		add	edx, 32
 		cmp	ebp, 4
 		jae	.loop
-.last4:		test	ebp, ebp
-		jz	.exit
+.last4:		cmp	ebp, 0
+		jle	.exit
 .lastloop:	mov	bl, byte [edi]
 		inc	edi
 		mov	ecx, dword [esi + ebx]
@@ -2636,10 +2619,15 @@ _drawLineDual1x8_:
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
-		sub	esp, 4
-		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x8_pixels], eax
+		TSC_BEFORE dld1x8_tmp
+%endif
+
+		push	eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -2659,7 +2647,7 @@ _drawLineDual1x8_:
 		dec	dword [esp]
 		test	edx, 3
 		jnz	.l2
-		cmp	dword [esp], 2
+		cmp	dword [esp], 4
 		jl	.last4
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 3]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 3]
@@ -2678,10 +2666,10 @@ _drawLineDual1x8_:
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
 		mov	al, byte [edi + ebx]
 		mov	cl, byte [esi + eax]	  
-		mov	dword [edx], ecx 
 		add	ebp, 4
-		add	edx, 4
+		mov	dword [edx], ecx 
 		sub	dword [esp], 4
+		add	edx, 4
 		cmp	dword [esp], 4
 		jae	.loop
 .last4:		cmp	dword [esp], 0
@@ -2697,6 +2685,145 @@ _drawLineDual1x8_:
 		jnz	.last4loop
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x8_tmp, dld1x8, dld1x8_times
+%endif
+
+		ret
+
+
+;==============================================================================
+; void drawLineDual1x8mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual1x8mmx_
+_drawLineDual1x8mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x8mmx_pixels], eax
+		TSC_BEFORE dld1x8mmx_tmp
+%endif
+
+		push	eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 8
+		jl	near .last8
+		test	edx, 7		; Align VGA-pointer
+		jz	.loop
+.l2:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	byte [edx], cl
+		inc	edx
+		inc	ebp
+		dec	dword [esp]
+		test	edx, 7
+		jnz	.l2
+		cmp	dword [esp], 8
+		jl	near .last8
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 3]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 3]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 2]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 2]
+		mov	al, byte [edi + ebx]
+		mov	cl, byte [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		shl	ecx, 16
+		mov	al, byte [edi + ebx]
+		mov	ch, byte [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	cl, byte [esi + eax]	  
+		movd	mm0, ecx 
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 7]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 7]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 6]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 6]
+		mov	al, byte [edi + ebx]
+		mov	cl, byte [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 5]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 5]
+		shl	ecx, 16
+		mov	al, byte [edi + ebx]
+		mov	ch, byte [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 4]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 4]
+		mov	al, byte [edi + ebx]
+		mov	cl, byte [esi + eax]	  
+		movd	mm1, ecx
+		add	ebp, 8
+		psllq	mm1, 32
+		sub	dword [esp], 8
+		por	mm0, mm1
+		movq	[edx], mm0
+		add	edx, 8
+		cmp	dword [esp], 8
+		jae	near .loop
+.last8:		cmp	dword [esp], 0
+		jle	.exit
+.last8loop:	mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	byte [edx], cl 
+		inc	edx
+		inc	ebp
+		dec	dword [esp]
+		jnz	.last8loop
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x8mmx_tmp, dld1x8mmx, dld1x8mmx_times
+%endif
+
 		ret
 
 
@@ -2739,10 +2866,16 @@ _drawLineDual2x8_:
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x8_pixels], eax
+		TSC_BEFORE dld2x8_tmp
+%endif
+
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -2760,9 +2893,9 @@ _drawLineDual2x8_:
 		add	edx, 2
 		inc	ebp
 		dec	dword [esp]
-		test	edx, 3
+		test	edx, 2
 		jnz	.l2
-		cmp	dword [esp], 2
+		cmp	dword [esp], 4
 		jl	.last4
 .loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
 		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
@@ -2783,8 +2916,8 @@ _drawLineDual2x8_:
 		mov	cx, word [esi + eax]
 		add	ebp, 4
 		mov	dword [edx + 4], ecx 
-		add	edx, 8
 		sub	dword [esp], 4
+		add	edx, 8
 		cmp	dword [esp], 4
 		jae	.loop
 .last4:		cmp	dword [esp], 0
@@ -2800,6 +2933,129 @@ _drawLineDual2x8_:
 		jnz	.last4loop
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x8_tmp, dld2x8, dld2x8_times
+%endif
+
+
+		ret
+
+
+;==============================================================================
+; void drawLineDual2x8mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		8 bit indexed RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual2x8mmx_
+_drawLineDual2x8mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x8mmx_pixels], eax
+		TSC_BEFORE dld2x8mmx_tmp
+%endif
+
+		sub	esp, 4
+		mov	dword [esp], eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 4
+		jl	near .last4
+		test	edx, 6		; Align VGA-pointer
+		jz	.loop
+.l2:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	word [edx], cx
+		add	edx, 2
+		inc	ebp
+		dec	dword [esp]
+		test	edx, 6
+		jnz	.l2
+		cmp	dword [esp], 4
+		jl	.last4
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	cx, word [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 3]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 3]
+		movd	mm0, ecx
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 2]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 2]
+		mov	al, byte [edi + ebx]
+		mov	cx, word [esi + eax]
+		add	ebp, 4
+		movd	mm1, ecx
+		sub	dword [esp], 4
+		psllq	mm1, 32
+		por	mm0, mm1
+		movq	[edx], mm0
+		add	edx, 8
+		cmp	dword [esp], 4
+		jae	.loop
+.last4:		cmp	dword [esp], 0
+		jle	.exit
+.last4loop:	mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	word [edx], cx 
+		add	edx, 2
+		inc	ebp
+		dec	dword [esp]
+		jnz	.last4loop
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x8mmx_tmp, dld2x8mmx, dld2x8mmx_times
+%endif
+
 		ret
 
 
@@ -2842,10 +3098,16 @@ _drawLineDual1x16_:
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x16_pixels], eax
+		TSC_BEFORE dld1x16_tmp
+%endif
+
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -2889,6 +3151,127 @@ _drawLineDual1x16_:
 		add	edx, 2
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x16_tmp, dld1x16, dld1x16_times
+%endif
+
+		ret
+
+
+;==============================================================================
+; void drawLineDual1x16mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		15/16 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual1x16mmx_
+_drawLineDual1x16mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x16mmx_pixels], eax
+		TSC_BEFORE dld1x16mmx_tmp
+%endif
+
+		sub	esp, 4
+		mov	dword [esp], eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 4
+		jl	near .last4
+		test	edx, 6		; Align VGA-pointer
+		jz	.loop
+.align8:	mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	word [edx], cx
+		add	edx, 2
+		inc	ebp
+		dec	dword [esp]
+		test	edx, 6
+		jnz	.align8
+		cmp	dword [esp], 4
+		jl	.last4
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	cx, word [esi + eax]	  
+		movd	mm0, ecx 
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 3]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 3]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 2]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 2]
+		mov	al, byte [edi + ebx]
+		mov	cx, word [esi + eax]	  
+		movd	mm1, ecx
+		add	ebp, 4
+		psllq	mm1, 32
+		sub	dword [esp], 4
+		por	mm0, mm1
+		movq	[edx], mm0
+		add	edx, 8
+		cmp	dword [esp], 4
+		jae	.loop
+.last4:		cmp	dword [esp], 0
+		jle	.exit
+.last4l:	mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	word [edx], cx 
+		add	edx, 2
+		dec	dword [esp]
+		jnz	.last4l
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x16mmx_tmp, dld1x16mmx, dld1x16mmx_times
+%endif
+
 		ret
 
 
@@ -2930,11 +3313,17 @@ _drawLineDual2x16_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	esi, dword [4 + esp]
 		lea	edi, [draw_dual_translate]
-		xor	ebx, ebx
+		mov	ebx, 0
 		sub	esp, 4
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	ecx, dword [esi + graph_line_DIW_pixel_count]
-		xor	eax, eax
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x16_pixels], ecx
+		TSC_BEFORE dld2x16_tmp
+%endif
+
+		mov	eax, 0
 		mov	dword [esp], ecx
 		test	dword [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -2999,7 +3388,128 @@ _drawLineDual2x16_:
 		add	edx, 4
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x16_tmp, dld2x16, dld2x16_times
+%endif
+
 		ret
+
+
+;==============================================================================
+; void drawLineDual2x16mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		15/16 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual2x16mmx_
+_drawLineDual2x16mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x16mmx_pixels], eax
+		TSC_BEFORE dld2x16mmx_tmp
+%endif
+		sub	esp, 4
+		mov	dword [esp], eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 4
+		jl	near .last4
+		test	edx, 4		; Align VGA-pointer
+		jz	.loop
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]
+		mov	dword [edx], ecx
+		add	edx, 4
+		inc	ebp
+		dec	dword [esp]
+		cmp	dword [esp], 4
+		jl	near .last4
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		mov	al, byte [edi + ebx]
+		movd	mm0, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		psllq	mm0, 32
+		mov	al, byte [edi + ebx]
+		movd	mm1, dword [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 3]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 3]
+		mov	al, byte [edi + ebx]
+		movd	mm2, dword [esi + eax]
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 2]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 2]
+		psllq	mm2, 32
+		mov	al, byte [edi + ebx]
+		movd	mm3, dword [esi + eax]	  
+		por	mm0, mm1
+		por	mm2, mm3
+		movq	[edx], mm0
+		add	ebp, 4
+		movq	[edx + 8], mm2
+		sub	dword [esp], 4
+		add	edx, 16
+		cmp	dword [esp], 4
+		jae	near .loop
+.last4:		cmp	dword [esp], 0
+		jle	.exit
+.last4l:	mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	dword [edx], ecx 
+		add	edx, 4
+		dec	dword [esp]
+		jnz	.last4l
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x16mmx_tmp, dld2x16mmx, dld2x16mmx_times
+%endif
+
+		ret
+
+
 
 
 ;==============================================================================
@@ -3043,8 +3553,8 @@ _drawLineDual1x24_:
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -3110,8 +3620,8 @@ _drawLineDual2x24_:
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -3177,10 +3687,16 @@ _drawLineDual1x32_:
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x32_pixels], eax
+		TSC_BEFORE dld1x32_tmp
+%endif
+
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -3213,6 +3729,113 @@ _drawLineDual1x32_:
 		add	edx, 4
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x32_tmp, dld1x32, dld1x32_times
+%endif
+
+
+		ret
+
+
+;==============================================================================
+; void drawLineDual1x32mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual1x32mmx_
+_drawLineDual1x32mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x32mmx_pixels], eax
+		TSC_BEFORE dld1x32mmx_tmp
+%endif
+
+		sub	esp, 4
+		mov	dword [esp], eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 2
+		jl	near .last2
+		test	edx, 4
+		jz	.loop
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	dword [edx], ecx 
+		add	edx, 4
+		dec	dword [esp]
+		cmp	dword [esp], 2
+		jl	.last2
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		movd	mm0, dword [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		mov	al, byte [edi + ebx]
+		movd	mm1, dword [esi + eax]	  
+		add	ebp, 2
+		psllq	mm1, 32
+		sub	dword [esp], 2
+		por	mm0, mm1
+		movq	[edx], mm0 
+		add	edx, 8
+		cmp	dword [esp], 2
+		jae	.loop
+.last2:		cmp	dword [esp], 0
+		jle	.exit
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		mov	ecx, dword [esi + eax]	  
+		mov	dword [edx], ecx 
+		add	edx, 4
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x32mmx_tmp, dld1x32mmx, dld1x32mmx_times
+%endif
+
 		ret
 
 
@@ -3255,10 +3878,16 @@ _drawLineDual2x32_:
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x32_pixels], eax
+		TSC_BEFORE dld2x32_tmp
+%endif
+
 		sub	esp, 4
 		mov	dword [esp], eax
-		xor	ebx, ebx
-		xor	eax, eax
+		mov	ebx, 0
+		mov	eax, 0
 		lea	edi, [draw_dual_translate]
 		test	byte [esi + graph_line_bplcon2], 040h
 		jnz	.l1
@@ -3294,6 +3923,109 @@ _drawLineDual2x32_:
 		add	edx, 8
 .exit:		add	esp, 4
 		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x32_tmp, dld2x32, dld2x32_times
+%endif
+
+		ret
+
+
+;==============================================================================
+; void drawLineDual2x32mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line mixing two playfields using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax   - Scratch
+; ebx   - Dual translate table index
+; ecx   - Final PC pixel bitpattern
+; edx   - Framebuffer pointer
+; [esp] - Pixels left to draw
+; ebp   - graph_raster_x
+; edi   - Dual translate table ptr
+; esi   - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineDual2x32mmx_
+_drawLineDual2x32mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	eax, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld2x32mmx_pixels], eax
+		TSC_BEFORE dld2x32mmx_tmp
+%endif
+
+		sub	esp, 4
+		mov	dword [esp], eax
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [draw_dual_translate]
+		test	byte [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+		cmp	dword [esp], 2
+		jl	.last2
+.loop:		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		movd	mm0, dword [esi + eax]	  
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1 + 1]
+		movq	mm1, mm0
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+		psllq	mm1, 32
+		mov	al, byte [edi + ebx]
+		por	mm0, mm1
+		movd	mm2, dword [esi + eax]
+		movq	[edx], mm0
+		movq	mm3, mm2
+		add	ebp, 2
+		psllq	mm3, 32
+		sub	dword [esp], 2
+		por	mm2, mm3
+		movq	[edx + 8], mm2
+		add	edx, 16
+		cmp	dword [esp], 2
+		jae	.loop
+.last2:		cmp	dword [esp], 0
+		jle	.exit
+		mov	bh, byte [ebp + esi - graph_line_colors + graph_line_line1]
+		mov	bl, byte [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	al, byte [edi + ebx]
+		movd	mm0, dword [esi + eax]
+		movq	mm1, mm0
+		psllq	mm1, 32
+		por	mm0, mm1
+		movq	[edx], mm0	  
+		add	edx, 8
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld2x32mmx_tmp, dld2x32mmx, dld2x32mmx_times
+%endif
+
 		ret
 
 
@@ -3334,10 +4066,11 @@ _drawLineDual2x32_:
 global _drawLineHAM1x8_
 _drawLineHAM1x8_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3348,7 +4081,7 @@ _drawLineHAM1x8_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3380,11 +4113,13 @@ _drawLineHAM1x8_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		push	edi
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -3415,7 +4150,7 @@ _drawLineHAM1x8_:
 		dec	ebp
 		jnz	.loop
 		pop	edi
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM1x8_CWRAP
@@ -3459,10 +4194,11 @@ _drawLineHAM1x8_:
 global _drawLineHAM2x8_
 _drawLineHAM2x8_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3473,7 +4209,7 @@ _drawLineHAM2x8_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3505,10 +4241,12 @@ _drawLineHAM2x8_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -3538,7 +4276,7 @@ _drawLineHAM2x8_:
 		add	edx, 2
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM2x8_CWRAP
@@ -3582,10 +4320,11 @@ _drawLineHAM2x8_:
 global _drawLineHAM1x16_
 _drawLineHAM1x16_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3596,7 +4335,7 @@ _drawLineHAM1x16_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3626,10 +4365,12 @@ _drawLineHAM1x16_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -3653,7 +4394,7 @@ _drawLineHAM1x16_:
 		add	edx, 2
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM1x16_CWRAP
@@ -3698,10 +4439,11 @@ _drawLineHAM1x16_:
 global _drawLineHAM2x16_
 _drawLineHAM2x16_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3713,7 +4455,7 @@ _drawLineHAM2x16_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3746,10 +4488,12 @@ _drawLineHAM2x16_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -3776,7 +4520,7 @@ _drawLineHAM2x16_:
 		add	edx, 4
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM2x16_CWRAP
@@ -3820,10 +4564,11 @@ _drawLineHAM2x16_:
 global _drawLineHAM1x24_
 _drawLineHAM1x24_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3834,7 +4579,7 @@ _drawLineHAM1x24_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3864,10 +4609,12 @@ _drawLineHAM1x24_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -3895,7 +4642,7 @@ _drawLineHAM1x24_:
 		add	edx, 3
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM1x24_CWRAP
@@ -3940,10 +4687,11 @@ _drawLineHAM1x24_:
 global _drawLineHAM2x24_
 _drawLineHAM2x24_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -3955,7 +4703,7 @@ _drawLineHAM2x24_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -3988,10 +4736,12 @@ _drawLineHAM2x24_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -4027,7 +4777,7 @@ _drawLineHAM2x24_:
 		add	edx, 6
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM2x24_CWRAP
@@ -4070,10 +4820,11 @@ _drawLineHAM2x24_:
 global _drawLineHAM1x32_
 _drawLineHAM1x32_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -4084,7 +4835,7 @@ _drawLineHAM1x32_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -4114,10 +4865,12 @@ _drawLineHAM1x32_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -4141,7 +4894,7 @@ _drawLineHAM1x32_:
 		add	edx, 4
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM1x32_CWRAP
@@ -4186,10 +4939,11 @@ _drawLineHAM1x32_:
 global _drawLineHAM2x32_
 _drawLineHAM2x32_:
 		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
 		push	edx
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	edi, dword [esi + graph_line_DDF_start]
-		xor	ecx, ecx
+		mov	ecx, 0
 		sub	ebp, edi
 		jle	.realsetup
 
@@ -4201,7 +4955,7 @@ _drawLineHAM2x32_:
 		mov	edi, dword [esi + graph_line_DDF_start]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.preloop:	xor	eax, eax
+.preloop:	mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.premodify
@@ -4231,10 +4985,12 @@ _drawLineHAM2x32_:
 .realsetup:	mov	esi, dword [8 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+		cmp	ebp, 0
+		jle	.nopixels
 		mov	edx, dword [draw_buffer_current_ptr]
 		lea	edi, [esi + edi + graph_line_line1]
 		add	esi, graph_line_colors
-.loop:		xor	eax, eax
+.loop:		mov	eax, 0
 		mov	al, byte [edi]
 		test	al, 0c0h
 		jnz	.modify
@@ -4259,7 +5015,7 @@ _drawLineHAM2x32_:
 		add	edx, 8
 		dec	ebp
 		jnz	.loop
-		mov	dword [draw_buffer_current_ptr], edx
+.nopixels:	mov	dword [draw_buffer_current_ptr], edx
 		pop	edx
 		mov	ecx, dword [4 + esp]
 		SPRITEMERGEHAM2x32_CWRAP
