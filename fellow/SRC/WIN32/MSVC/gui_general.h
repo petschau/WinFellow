@@ -190,6 +190,18 @@
 #define IDC_STATIC_LINK                 1098
 #define IDC_CREATE_HARDFILE_SIZE        1100
 #define IDC_CREATE_HARDFILE_NAME        1106
+#define IDC_GAMEPORT0_UP                1109
+#define IDC_GAMEPORT0_DOWN              1110
+#define IDC_GAMEPORT0_LEFT              1111
+#define IDC_GAMEPORT0_RIGHT             1112
+#define IDC_GAMEPORT0_FIRE0             1113
+#define IDC_GAMEPORT0_FIRE1             1114
+#define IDC_GAMEPORT1_UP                1115
+#define IDC_GAMEPORT1_RIGHT             1117
+#define IDC_GAMEPORT1_LEFT              1118
+#define IDC_GAMEPORT1_FIRE0             1119
+#define IDC_GAMEPORT1_FIRE1             1120
+#define IDC_GAMEPORT1_DOWN              1121
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_FILE_OPENCONFIGURATION       40004
@@ -206,7 +218,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1109
+#define _APS_NEXT_CONTROL_VALUE         1122
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
