@@ -886,7 +886,7 @@ void memoryKickMap(void) {
 		  memory_kick,
 		  bank,
 		  memory_kickimage_basebank, 
-		  TRUE);
+		  FALSE);
 }
 
 
