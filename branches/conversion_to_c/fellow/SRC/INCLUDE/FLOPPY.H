@@ -1,6 +1,31 @@
+/* @(#) $Id: FLOPPY.H,v 1.4.2.2 2004-06-02 12:18:29 carfesh Exp $ */
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* Floppy Emulation                                                        */
+/*                                                                         */
+/* Authors: Petter Schau (peschau@online.no)                               */
+/*          Torsten Enderling (carfesh@gmx.net)                            */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
+
 #ifndef FLOPPY_H
 #define FLOPPY_H
-
 
 /* Assembly function renaming */
 
@@ -15,7 +40,6 @@ void wdskpth(ULO, ULO);
 void wdskptl(ULO, ULO);
 void wdsklen(ULO, ULO);
 void wdsksync(ULO, ULO);
-
 
 #define FLOPPY_TRACKS 164
 
@@ -134,6 +158,5 @@ extern void floppyEmulationStart(void);
 extern void floppyEmulationStop(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
-
 
 #endif
