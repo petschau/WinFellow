@@ -100,6 +100,7 @@ _busstart_:	 ; Used to check code alignment
 %include "mac/sound.mac"
 %include "mac/sprite.mac"
 
+CFUNCEXTERN timerEndOfFrame
 
 ;===========================================================
 ; bus_run_
@@ -131,7 +132,6 @@ bus_run:	SETUP_EXCEPTION_HACK bus_exception_ret, bus_loop_events
 global _checkadr_
 _checkadr_:
 bus_loop_cpu:
-	
 		EXEC_NEXT_68K
 		mov	ecx, dword [cpu_speed]
 		mov	ebx, dword [thiscycle]
@@ -501,7 +501,7 @@ _endOfFrame_:	push	edx
 		;==============================================================
 
 		call	graphEndOfFrame
-
+		call	timerEndOfFrame
 
 		;==============================================================
 		; Recalculate the entire event queue
