@@ -2487,6 +2487,10 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 /* Runs the GUI                                                               */
 /*============================================================================*/
 
+BOOL wguiCheckEmulationNecessities(void) {
+	return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
+}	
+
 BOOLE wguiEnter(void) {
   BOOLE quit_emulator = FALSE;
   BOOLE debugger_start = FALSE;
@@ -2515,11 +2519,16 @@ BOOLE wguiEnter(void) {
 	  DispatchMessage(&myMsg);
       switch (wgui_action) {
         case WGUI_START_EMULATION:
-		  end_loop = TRUE;
-		  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	  fellowPreStartReset(fellowGetPreStartReset() |
-			      cfgManagerConfigurationActivate(&cfg_manager));
-	  break;
+			if (wguiCheckEmulationNecessities() == TRUE) {
+				end_loop = TRUE;
+				cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+				// check for manual or needed reset
+				fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+				break;
+			}
+			MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
+			wgui_action = WGUI_NO_ACTION;
+			break;
         case WGUI_QUIT_EMULATOR:
 		  end_loop = TRUE;
 		  quit_emulator = TRUE;
