@@ -2643,7 +2643,7 @@ void wguiRequester(STR *line1, STR *line2, STR *line3) {
 /*============================================================================*/
 
 BOOL wguiCheckEmulationNecessities(void) {
-	if (*cfgGetKickImage(wgui_cfg) != NULL) {
+	if(strcmp(cfgGetKickImage(wgui_cfg), "") != 0) {
 		return ((fopen(cfgGetKickImage(wgui_cfg), "rb")) != NULL);
 	}
 	else return FALSE;
@@ -2661,7 +2661,7 @@ BOOLE wguiEnter(void) {
     wgui_action = WGUI_NO_ACTION;
   
     wgui_hDialog = CreateDialog(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), NULL, wguiDialogProc); 
-	SetWindowPos(wgui_hDialog, NULL, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), -1, -1, SWP_NOSIZE);
+	SetWindowPos(wgui_hDialog, HWND_TOP, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
 	wguiStartupPost();
 	wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	
