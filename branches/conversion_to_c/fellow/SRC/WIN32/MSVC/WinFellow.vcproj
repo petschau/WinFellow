@@ -219,6 +219,7 @@
 				OptimizeForProcessor="1"
 				AdditionalIncludeDirectories="../include/msvc,../../include,../include,../../uae/include,../../xdms/include,../../zlib/include,."
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5"
+				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
 				PrecompiledHeaderFile=".\Debug/WinFellow.pch"
 				AssemblerOutput="2"
