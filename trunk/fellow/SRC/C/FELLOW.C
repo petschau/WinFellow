@@ -256,6 +256,7 @@ void fellowRequestEmulationStopImmediatelyClear(void) {
 BOOLE fellowEmulationStart(void) {
   BOOLE result;
   fellowRequestEmulationStopClear();
+  iniEmulationStart();
   memoryEmulationStart();
   ciaEmulationStart();
   cpuEmulationStart();
@@ -296,6 +297,7 @@ void fellowEmulationStop(void) {
   cpuEmulationStop();
   ciaEmulationStop();
   memoryEmulationStop();
+  iniEmulationStop();
 }
 
 
