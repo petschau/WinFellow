@@ -1,7 +1,6 @@
+/* @(#) $Id: UAE2FELL.H,v 1.8 2004-05-27 18:04:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: UAE2FELL.H,v 1.7 2004-05-27 12:29:50 carfesh Exp $        */
 /*                                                                         */
 /* UAE to Fellow bridge header file                                        */
 /*                                                                         */
@@ -54,7 +53,6 @@
 /* Misc types, funcs      */
 /*------------------------*/
 
-#define my_strdup strdup
 #define mode_t unsigned int
 #define my_mkdir(P, M) (mkdir(P))
 #define REGPARAM2
@@ -178,8 +176,6 @@ extern void gui_message( const char *, ...);
 #define __inline__ __inline
 #define __volatile__ volatile
 #define __asm__(a) ;
-#undef my_strdup
-#define my_strdup _strdup
 #define off_t  int
 /*#define utimbuf _utimbuf*/
 #define fdopen _fdopen
