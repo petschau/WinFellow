@@ -46,6 +46,9 @@ typedef enum {
   WGUI_START_EMULATION,
   WGUI_QUIT_EMULATOR,
   WGUI_CONFIGURATION,
+  WGUI_LOADCONFIGURATION,
+  WGUI_SAVECONFIGURATIONAS,
+  WGUI_SAVECONFIGURATION,
   WGUI_DEBUGGER_START,
   WGUI_ABOUT
 } wguiActions;
@@ -756,7 +759,7 @@ void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
   /* Set current gameport selections */
 
   for (i = 0; i < 2; i++) {
-    ComboBox_AddString(gpChoice[i], "No Equipment");
+    ComboBox_AddString(gpChoice[i], "None");
     ComboBox_AddString(gpChoice[i], "Joystick on Keyboard 1");
     ComboBox_AddString(gpChoice[i], "Joystick on Keyboard 2");
     ComboBox_AddString(gpChoice[i], "Mouse");
@@ -1752,12 +1755,35 @@ BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
 				     UINT uMsg,
 				     WPARAM wParam,
 				     LPARAM lParam) {
+  HWND gpChoice[2];
+  int i;
+
+  gpChoice[0] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT1);
+  gpChoice[1] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT2);
+    
   switch (uMsg) {
     case WM_INITDIALOG:
       wguiInstallGameportConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
-      break;
+            if (wgui_action == WGUI_NO_ACTION)
+		switch (LOWORD(wParam)) {
+			case IDC_COMBO_GAMEPORT1:
+				if (HIWORD(wParam) == CBN_SELCHANGE) {
+					if (ComboBox_GetCurSel(gpChoice[0]) == ComboBox_GetCurSel(gpChoice[1])) {
+						ComboBox_SetCurSel(gpChoice[1], 0);
+					}
+				}
+			break;
+			case IDC_COMBO_GAMEPORT2:
+				if (HIWORD(wParam) == CBN_SELCHANGE) {
+					if (ComboBox_GetCurSel(gpChoice[0]) == ComboBox_GetCurSel(gpChoice[1])) {
+						ComboBox_SetCurSel(gpChoice[0], 0);
+					}
+				}
+			break;
+	  }
+	break;
     case WM_DESTROY:
       wguiExtractGameportConfig(hwndDlg, wgui_cfg);
       break;
@@ -1905,6 +1931,9 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	  case IDC_START_EMULATION:
 	    wgui_action = WGUI_START_EMULATION;
 	    break;
+	  case ID_FILE_SAVECONFIGURATION:
+		wgui_action = WGUI_SAVECONFIGURATION;
+		break;
 	  case IDCANCEL:
 	  case ID_FILE_QUIT:
 	  case IDC_QUIT_EMULATOR:
@@ -2049,6 +2078,9 @@ BOOLE wguiEnter(void) {
 	  end_loop = TRUE;
 	  quit_emulator = TRUE;
 	  break;
+		case WGUI_SAVECONFIGURATION:
+			//cfgSaveCurrentConfig
+		break;
 	case WGUI_DEBUGGER_START:
 	  end_loop = TRUE;
 	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
