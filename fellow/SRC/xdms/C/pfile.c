@@ -1,6 +1,6 @@
 
 /*
- *     xDMS  v1.3  -  Portable DMS archive unpacker  -  Public Domain
+ *     xDMS  v1.3b  -  Portable DMS archive unpacker  -  Public Domain
  *     Written by     Andre Rodrigues de la Rocha  <adlroc@usa.net>
  *
  *     Handles the processing of a single DMS archive
@@ -207,16 +207,18 @@ static USHORT Process_Track(FILE *fi, FILE *fo, UCHAR *b1, UCHAR *b2, USHORT opt
 
 	if ((number<80) && (unpklen>2048)) {
 		r = Unpack_Track(b1, b2, pklen2, unpklen, cmode, flags);
-		if (r != NO_PROBLEM) 
+		if (r != NO_PROBLEM) {
 			if (pwd)
 				return ERR_BADPASSWD;
 			else
 				return r;
-		if (usum != Calc_CheckSum(b2,(ULONG)unpklen))
+		}
+		if (usum != Calc_CheckSum(b2,(ULONG)unpklen)){
 			if (pwd)
 				return ERR_BADPASSWD;
 			else
 				return ERR_CSUM;
+		}
 		if (fwrite(b2,1,(size_t)unpklen,fo) != unpklen) return ERR_CANTWRITE;
 		if (opt == OPT_VERBOSE) {
 			fprintf(stderr,"#");
