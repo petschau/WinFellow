@@ -1498,6 +1498,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
       strncpy(ffilesys.volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME);
       strncpy(ffilesys.rootpath, filesys.rootpath, CFG_FILENAME_LENGTH);
       ffilesys.readonly = filesys.readonly;
+	  ffilesys.status = FFILESYS_INSERTED;
       if (!ffilesysCompareFilesys(ffilesys, i)) {
         needreset = TRUE;
 	ffilesysSetFilesys(ffilesys, i);
