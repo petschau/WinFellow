@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -54,7 +54,7 @@ END
 
 IDD_DEBUG_CPU DIALOG DISCARDABLE  0, 0, 516, 226
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Fellow CPU Debugger"
+CAPTION "CPU"
 FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "Step",IDC_DEBUG_CPU_STEP,457,17,46,14
@@ -64,6 +64,22 @@ BEGIN
     GROUPBOX        "Disassembly:",IDC_STATIC,7,49,440,170
     PUSHBUTTON      "Break",IDC_DEBUG_CPU_BREAK,457,199,46,14
     PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,457,184,46,14
+END
+
+IDD_DEBUG_MEMORY DIALOG DISCARDABLE  0, 0, 516, 226
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Memory"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Up",IDC_DEBUG_MEMORY_UP,457,17,46,14
+    PUSHBUTTON      "&Down",IDC_DEBUG_MEMORY_DOWN,457,71,46,14
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,212
+    GROUPBOX        "Memory Dump:",IDC_STATIC,7,49,440,170
+    PUSHBUTTON      "Page Up",IDC_DEBUG_MEMORY_PGUP,457,35,46,14
+    PUSHBUTTON      "Page Down",IDC_DEBUG_MEMORY_PGDN,457,53,46,14
+    PUSHBUTTON      "&ASCII view",IDC_DEBUG_MEMORY_ASCII,457,89,46,14
+    PUSHBUTTON      "&Hex view",IDC_DEBUG_MEMORY_HEX,457,107,46,14
 END
 
 
@@ -82,10 +98,18 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 219
     END
+
+    IDD_DEBUG_MEMORY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // English (U.S.) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
