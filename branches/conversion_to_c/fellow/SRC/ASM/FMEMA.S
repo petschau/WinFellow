@@ -745,13 +745,29 @@ _memoryIOWriteByte_:
 
 		and	ecx, 01feh
 		and	edx, 0ff00h
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 wrbodd:
 		and	ecx, 01feh
 		and	edx, 0ffh
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -764,7 +780,15 @@ _memoryIOWriteWord_:
 		push	ecx
 		and	ecx, 01feh
 		and	edx, 0ffffh		; No extra bits
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -781,11 +805,27 @@ _memoryIOWriteLong_:
 		add	ecx, 2
 		and	ecx, 01feh	; Unreal writes long to $1fe
 		and	edx, 0ffffh   ; No extra bits here
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		pop	edx
 		shr	edx, 16		; No extra bits! Good!
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 

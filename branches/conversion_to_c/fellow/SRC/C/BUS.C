@@ -33,6 +33,7 @@ buseventfunc lvl2_ptr, lvl3_ptr, lvl4_ptr, lvl5_ptr, lvl6_ptr, lvl7_ptr;
 UWO bus_cycle_to_ypos[0x20000];
 UBY bus_cycle_to_xpos[0x20000];
 
+extern ULO copper_ptr, copper_next;
 
 /*===========================================================================*/
 /* Cycle counter to raster beam position table                               */
@@ -98,4 +99,124 @@ void busStartup(void) {
 }
 
 void busShutdown(void) {
+}
+
+void busScanLevel6(ULO* lvlx_next, void (**lvlx_ptr)(void))
+{ 
+  if ((*lvlx_next) > cia_next_event_time)
+  {
+    *lvlx_next = cia_next_event_time;
+    *lvlx_ptr = ciaHandleEventWrapper;
+  }
+  lvl6_next = *lvlx_next;
+  lvl6_ptr = *lvlx_ptr; 
+}
+
+void busScanLevel5(ULO* lvlx_next, void (**lvlx_ptr)(void))
+{ 
+  if ((*lvlx_next) > irq_next)
+  {
+    *lvlx_next = irq_next;
+    *lvlx_ptr = cpuSetUpInterrupt;
+  }
+  lvl5_next = *lvlx_next;
+  lvl5_ptr = *lvlx_ptr; 
+}
+
+void busScanLevel4(ULO* lvlx_next, void (**lvlx_ptr)(void))
+{ 
+  if ((*lvlx_next) > blitend)
+  {
+    *lvlx_next = blitend;
+    *lvlx_ptr = finish_blit;
+  }
+  lvl4_next = *lvlx_next;
+  lvl4_ptr = *lvlx_ptr; 
+}
+
+void busScanLevel3(ULO* lvlx_next, void (**lvlx_ptr)(void))
+{ 
+  if ((*lvlx_next) > eol_next)
+  {
+    *lvlx_next = eol_next;
+    *lvlx_ptr = endOfLine;
+  }
+  lvl3_next = *lvlx_next;
+  lvl3_ptr = *lvlx_ptr; 
+}
+
+void busScanLevel2(ULO* lvlx_next, void (**lvlx_ptr)(void))
+{ 
+  if ((*lvlx_next) > copper_next)
+  {
+    *lvlx_next = copper_next;
+    *lvlx_ptr = copperEmulate;
+  }
+  lvl2_next = *lvlx_next;
+  lvl2_ptr = *lvlx_ptr; 
+}
+
+void busScanEventsLevel2(void)
+{ 
+  ULO lvlx_next;
+  void (*lvlx_ptr)(void);
+
+  lvlx_next = lvl3_next;
+  lvlx_ptr = lvl3_ptr;
+
+  busScanLevel2(&lvlx_next, &lvlx_ptr);
+}
+
+void busScanEventsLevel3(void)
+{ 
+  ULO lvlx_next;
+  void (*lvlx_ptr)(void);
+
+  lvlx_next = lvl4_next;
+  lvlx_ptr = lvl4_ptr;
+
+  busScanLevel3(&lvlx_next, &lvlx_ptr);
+  busScanLevel2(&lvlx_next, &lvlx_ptr);
+}
+
+void busScanEventsLevel4(void)
+{ 
+  ULO lvlx_next;
+  void (*lvlx_ptr)(void);
+
+  lvlx_next = lvl5_next;
+  lvlx_ptr = lvl5_ptr;
+
+  busScanLevel4(&lvlx_next, &lvlx_ptr);
+  busScanLevel3(&lvlx_next, &lvlx_ptr);
+  busScanLevel2(&lvlx_next, &lvlx_ptr);
+}
+
+void busScanEventsLevel5(void)
+{ 
+  ULO lvlx_next;
+  void (*lvlx_ptr)(void);
+
+  lvlx_next = lvl6_next;
+  lvlx_ptr = lvl6_ptr;
+
+  busScanLevel5(&lvlx_next, &lvlx_ptr);
+  busScanLevel4(&lvlx_next, &lvlx_ptr);
+  busScanLevel3(&lvlx_next, &lvlx_ptr);
+  busScanLevel2(&lvlx_next, &lvlx_ptr);
+}
+
+void busScanEventsLevel6(void)
+{ 
+  ULO lvlx_next;
+  void (*lvlx_ptr)(void);
+
+  lvlx_next = CYCLESPERFRAME;
+  lvlx_ptr = endOfFrame;
+
+  busScanLevel6(&lvlx_next, &lvlx_ptr);
+  busScanLevel5(&lvlx_next, &lvlx_ptr);
+  busScanLevel4(&lvlx_next, &lvlx_ptr);
+  busScanLevel3(&lvlx_next, &lvlx_ptr);
+  busScanLevel2(&lvlx_next, &lvlx_ptr);
 }

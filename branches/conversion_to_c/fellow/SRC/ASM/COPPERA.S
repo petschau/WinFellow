@@ -362,7 +362,15 @@ _copperEmulate_:
 		jz	.notokay
 		cmp	ecx, 40h
 		jb	.notokay
-.okay:		call	dword [memory_iobank_write + ecx*2]
+.okay:		
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
+		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	edx
 		pop	ecx
 		pop	ebx
