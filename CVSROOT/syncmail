@@ -68,7 +68,7 @@ import time
 import getopt
 
 # Notification command
-MAILCMD = '/bin/mail -s "CVS: %(SUBJECT)s" %(PEOPLE)s 2>&1 > /dev/null'
+MAILCMD = '/bin/mail -s "[winfellow-cvs] %(SUBJECT)s %(PEOPLE)s" %(PEOPLE)s 2>&1 > /dev/null'
 
 # Diff trimming stuff
 DIFF_HEAD_LINES = 20
@@ -92,7 +92,7 @@ def calculate_diff(filespec, contextlines):
         file, oldrev, newrev = string.split(filespec, ',')
     except ValueError:
         # No diff to report
-        return '***** Bogus filespec: %s' % filespec
+        return 'version upgraded from %s to %s' % (oldrev, newrev)
     if oldrev == 'NONE':
         try:
             if os.path.exists(file):
@@ -180,23 +180,23 @@ def main():
     # containing the directory the checkin is being made in, relative to
     # $CVSROOT, followed by the list of files that are changing.
     if not args:
-        usage(1, 'No CVS module specified')
+        usage(1, 'no CVS module specified')
     SUBJECT = args[0]
     specs = string.split(args[0])
     del args[0]
 
     # The remaining args should be the email addresses
     if not args:
-        usage(1, 'No recipients specified')
+        usage(1, 'no recipients specified')
 
     # Now do the mail command
     PEOPLE = string.join(args)
     mailcmd = MAILCMD % vars()
 
-    print 'Mailing %s...' % PEOPLE
-    if specs == ['-', 'Imported', 'sources']:
+    print 'emailing %s...' % PEOPLE
+    if specs == ['-', 'imported', 'sources']:
         return
-    if specs[-3:] == ['-', 'New', 'directory']:
+    if specs[-3:] == ['-', 'new', 'directory']:
         del specs[-3:]
     elif len(specs) > 2:
         L = specs[:2]
@@ -207,9 +207,9 @@ def main():
             else:
                 L.append(s)
         specs = L
-    print 'Generating notification message...'
+    print 'generating notification message...'
     blast_mail(mailcmd, specs[1:], contextlines)
-    print 'Generating notification message... done.'
+    print 'generating notification message... done.'
 
 
 
