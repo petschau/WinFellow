@@ -12,7 +12,7 @@ extern void fellowStepOver(void);
 extern void fellowRunDebug(void);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit(void);
-extern void fellowAddLog(STR *msg);
+extern void fellowAddLog(const char *,...);
 extern BOOLE fellowGetMMXDetected(void);
 extern void fellowSetUseGUI(BOOLE use_gui);
 extern BOOLE fellowGetUseGUI(void);
