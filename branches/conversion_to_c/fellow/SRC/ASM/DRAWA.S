@@ -141,15 +141,65 @@ CDATAEXTERN dlsbg2x32mmx
 CDATAEXTERN dlsbg2x32mmx_times
 CDATAEXTERN dlsbg2x32mmx_pixels
 
+CDATAEXTERN dln1x8_tmp
+CDATAEXTERN dln1x8
+CDATAEXTERN dln1x8_times
+CDATAEXTERN dln1x8_pixels
+
+CDATAEXTERN dln2x8_tmp
+CDATAEXTERN dln2x8
+CDATAEXTERN dln2x8_times
+CDATAEXTERN dln2x8_pixels
+
+CDATAEXTERN dln1x8mmx_tmp
+CDATAEXTERN dln1x8mmx
+CDATAEXTERN dln1x8mmx_times
+CDATAEXTERN dln1x8mmx_pixels
+
+CDATAEXTERN dln2x8mmx_tmp
+CDATAEXTERN dln2x8mmx
+CDATAEXTERN dln2x8mmx_times
+CDATAEXTERN dln2x8mmx_pixels
+
+CDATAEXTERN dln1x16_tmp
+CDATAEXTERN dln1x16
+CDATAEXTERN dln1x16_times
+CDATAEXTERN dln1x16_pixels
+
 CDATAEXTERN dln2x16_tmp
 CDATAEXTERN dln2x16
 CDATAEXTERN dln2x16_times
 CDATAEXTERN dln2x16_pixels
 
+CDATAEXTERN dln1x16mmx_tmp
+CDATAEXTERN dln1x16mmx
+CDATAEXTERN dln1x16mmx_times
+CDATAEXTERN dln1x16mmx_pixels
+
 CDATAEXTERN dln2x16mmx_tmp
 CDATAEXTERN dln2x16mmx
 CDATAEXTERN dln2x16mmx_times
 CDATAEXTERN dln2x16mmx_pixels
+
+CDATAEXTERN dln1x24_tmp
+CDATAEXTERN dln1x24
+CDATAEXTERN dln1x24_times
+CDATAEXTERN dln1x24_pixels
+
+CDATAEXTERN dln2x24_tmp
+CDATAEXTERN dln2x24
+CDATAEXTERN dln2x24_times
+CDATAEXTERN dln2x24_pixels
+
+CDATAEXTERN dln1x24mmx_tmp
+CDATAEXTERN dln1x24mmx
+CDATAEXTERN dln1x24mmx_times
+CDATAEXTERN dln1x24mmx_pixels
+
+CDATAEXTERN dln2x24mmx_tmp
+CDATAEXTERN dln2x24mmx
+CDATAEXTERN dln2x24mmx_times
+CDATAEXTERN dln2x24mmx_pixels
 
 CDATAEXTERN dln1x32_tmp
 CDATAEXTERN dln1x32
@@ -1822,6 +1872,12 @@ _drawLineNormal1x8_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x8_pixels], ebp
+		TSC_BEFORE dln1x8_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -1866,6 +1922,11 @@ _drawLineNormal1x8_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x8_tmp, dln1x8, dln1x8_times
+%endif
+
 		ret
 
 
@@ -1907,6 +1968,12 @@ _drawLineNormal2x8_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x8_pixels], ebp
+		TSC_BEFORE dln2x8_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -1948,6 +2015,11 @@ _drawLineNormal2x8_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x8_tmp, dln2x8, dln2x8_times
+%endif
+
 		ret
 
 
@@ -1989,6 +2061,12 @@ _drawLineNormal1x16_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+	
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x16_pixels], ebp
+		TSC_BEFORE dln1x16_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -2030,6 +2108,11 @@ _drawLineNormal1x16_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x16_tmp, dln1x16, dln1x16_times
+%endif
+
 		ret
 
 
@@ -2079,6 +2162,12 @@ _drawLineNormal1x16mmx_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+	
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x16mmx_pixels], ebp
+		TSC_BEFORE dln1x16mmx_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -2137,6 +2226,11 @@ _drawLineNormal1x16mmx_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x16mmx_tmp, dln1x16mmx, dln1x16mmx_times
+%endif
+
 		ret
 
 
@@ -2269,12 +2363,10 @@ _drawLineNormal2x16mmx_:
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
 
-
 %ifdef DRAW_TSC_PROFILE
 		add	dword [dln2x16mmx_pixels], ebp
 		TSC_BEFORE dln2x16mmx_tmp
 %endif
-
 
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
@@ -2370,6 +2462,12 @@ _drawLineNormal1x24_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+	
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x24_pixels], ebp
+		TSC_BEFORE dln1x24_tmp
+%endif
+
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
@@ -2385,6 +2483,11 @@ _drawLineNormal1x24_:
 		dec	ebp
 		jnz	.loop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x24_tmp, dln1x24, dln1x24_times
+%endif
+
 		ret
 
 
@@ -2426,6 +2529,12 @@ _drawLineNormal2x24_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x24_pixels], ebp
+		TSC_BEFORE dln2x24_tmp
+%endif
+
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
 		add	esi, graph_line_colors
@@ -2444,6 +2553,11 @@ _drawLineNormal2x24_:
 		dec	ebp
 		jnz	.loop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x24_tmp, dln2x24, dln2x24_times
+%endif
+
 		ret
 
 
@@ -2702,7 +2816,8 @@ _drawLineNormal2x32_:
 		jae	.loop
 .last4:		cmp	ebp, 0
 		jle	.exit
-.lastloop:	mov	bl, byte [edi]
+.lastloop:	
+		mov	bl, byte [edi]
 		inc	edi
 		mov	ecx, dword [esi + ebx]
 		mov	dword [edx], ecx

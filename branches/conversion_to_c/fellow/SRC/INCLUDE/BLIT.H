@@ -70,5 +70,6 @@ void blitterStartup(void);
 void blitterShutdown(void);
 void blitterLineMode(void);
 void blitFinishBlit(void);
+void blitterCopy(void);
 
 #endif
