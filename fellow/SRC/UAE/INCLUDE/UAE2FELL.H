@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.8 2004-05-27 18:04:43 carfesh Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.9 2004-05-27 19:56:56 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -127,6 +127,10 @@ extern char warning_buffer[256];
 
 #define xmalloc malloc
 #define xcalloc calloc
+
+#ifndef _FELLOW_DEBUG_CRT_MALLOC
+#define my_strdup _strdup
+#endif
 
 /*===================*/
 /* UAE random define */

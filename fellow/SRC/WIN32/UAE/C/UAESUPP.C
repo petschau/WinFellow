@@ -1,4 +1,4 @@
-/* @(#) $Id: UAESUPP.C,v 1.4 2004-05-27 18:05:23 carfesh Exp $ */
+/* @(#) $Id: UAESUPP.C,v 1.5 2004-05-27 19:55:57 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -114,9 +114,11 @@ void write_log (const char *format,...)
     va_end (parms);
 }
 
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+
 /* written to replace the macro my_strdup, so that we can track down memory leaks better */
 
-char *my_strdup(char *str) 
+char *my_strdup(const char *str) 
 {
   char *result = NULL;
   size_t length = strlen(str)+1;
@@ -131,3 +133,4 @@ char *my_strdup(char *str)
   return result;
 }
 
+#endif
