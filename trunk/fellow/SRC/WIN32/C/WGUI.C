@@ -2,6 +2,7 @@
 /* Fellow Amiga Emulator                                                      */
 /* Windows GUI code                                                           */
 /* Author: Petter Schau (peschau@online.no)                                   */
+/* Author: Wytze Hoogkamp (worfje@gmx.net)                                    */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -460,6 +461,93 @@ void wguiInstallFloppyConfig(HWND DlgHWND, cfg *conf) {
 		  cfgGetDiskFast(conf));
 }
 
+/* set floppy images in main window */
+
+void wguiInstallFloppyMain(HWND DlgHWND, cfg *conf) {
+
+  int i;
+
+  /* Set floppy image names */
+
+  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
+	       cfgGetDiskImage(conf, 0));
+  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
+	       cfgGetDiskImage(conf, 1));
+  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
+	       cfgGetDiskImage(conf, 2));
+  Edit_SetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
+	       cfgGetDiskImage(conf, 3));
+
+  /* Enable or Disable disk drive boxes */
+
+  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
+			cfgGetDiskEnabled(conf,0) == TRUE);
+  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
+			cfgGetDiskEnabled(conf,1) == TRUE);
+  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
+			cfgGetDiskEnabled(conf,2) == TRUE);
+  Edit_Enable(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
+			cfgGetDiskEnabled(conf,3) == TRUE);
+	
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF0_EJECT_MAIN),
+			cfgGetDiskEnabled(conf,0) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF1_EJECT_MAIN),
+			cfgGetDiskEnabled(conf,1) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF2_EJECT_MAIN),
+			cfgGetDiskEnabled(conf,2) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF3_EJECT_MAIN),
+			cfgGetDiskEnabled(conf,3) == TRUE);
+
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF0_FILEDIALOG_MAIN),
+			cfgGetDiskEnabled(conf,0) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF1_FILEDIALOG_MAIN),
+			cfgGetDiskEnabled(conf,1) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF2_FILEDIALOG_MAIN),
+			cfgGetDiskEnabled(conf,2) == TRUE);
+  Button_Enable(GetDlgItem(DlgHWND, IDC_BUTTON_DF3_FILEDIALOG_MAIN),
+			cfgGetDiskEnabled(conf,3) == TRUE); 
+
+  if (cfgGetDiskEnabled(conf,0) == TRUE) {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF0_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
+  } else {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF0_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
+  }
+
+  if (cfgGetDiskEnabled(conf,1) == TRUE) {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF1_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
+  } else {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF1_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
+  }
+
+  if (cfgGetDiskEnabled(conf,2) == TRUE) {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF2_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
+  } else {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF2_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
+  }
+
+  if (cfgGetDiskEnabled(conf,3) == TRUE) {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF3_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_OFF)));
+  } else {
+    SendMessage(GetDlgItem(DlgHWND, IDC_IMAGE_DF3_LED_MAIN), 
+		STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+		MAKEINTRESOURCE(IDB_DISKDRIVE_LED_DISABLED)));
+  }
+}
+
 /* Extract floppy config */
 
 void wguiExtractFloppyConfig(HWND DlgHWND, cfg *conf) {
@@ -520,6 +608,40 @@ void wguiExtractFloppyConfig(HWND DlgHWND, cfg *conf) {
 		 Button_GetCheck(GetDlgItem(DlgHWND,IDC_CHECK_FAST_DMA)));
 }
 
+/* Extract floppy config from main window */
+
+void wguiExtractFloppyMain(HWND DlgHWND, cfg *conf) {
+  char tmp[CFG_FILENAME_LENGTH];
+
+  /* Get floppy disk image names */
+
+  if (cfgGetDiskEnabled(conf, 0) == FALSE) {
+	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF0_IMAGENAME_MAIN),
+		tmp, CFG_FILENAME_LENGTH);
+	cfgSetDiskImage(conf, 0, tmp);
+  }
+  if (cfgGetDiskEnabled(conf, 1) == FALSE) {
+	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF1_IMAGENAME_MAIN),
+		tmp,
+	    CFG_FILENAME_LENGTH);
+	cfgSetDiskImage(conf, 1, tmp);
+  }
+  if (cfgGetDiskEnabled(conf, 2) == FALSE) {
+    Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF2_IMAGENAME_MAIN),
+	    tmp,
+	    CFG_FILENAME_LENGTH);
+	cfgSetDiskImage(conf, 2, tmp);
+  }
+  if (cfgGetDiskEnabled(conf, 3) == FALSE) {
+	Edit_GetText(GetDlgItem(DlgHWND, IDC_EDIT_DF3_IMAGENAME_MAIN),
+	    tmp,
+	    CFG_FILENAME_LENGTH);
+	cfgSetDiskImage(conf, 3, tmp);
+  }
+ 
+}
+
+
 
 /*============================================================================*/
 /* Memory config                                                              */
@@ -532,7 +654,7 @@ void wguiInstallMemoryConfig(HWND DlgHWND, cfg *conf) {
   HWND FastChoice = GetDlgItem(DlgHWND, IDC_COMBO_FAST);
   HWND BogoChoice = GetDlgItem(DlgHWND, IDC_COMBO_BOGO);
   ULO fastindex;
-
+	
   /* Add choice choices */
 
   ComboBox_AddString(ChipChoice, "256 KB");
@@ -827,10 +949,10 @@ void wguiInstallGameportConfig(HWND DlgHWND, cfg *conf) {
 
   for (i = 0; i < 2; i++) {
     ComboBox_AddString(gpChoice[i], "None");
-    ComboBox_AddString(gpChoice[i], "Joystick on Keyboard 1");
-    ComboBox_AddString(gpChoice[i], "Joystick on Keyboard 2");
+    ComboBox_AddString(gpChoice[i], "Keyboard Layout 1");
+    ComboBox_AddString(gpChoice[i], "Keyboard Layout 2");
     ComboBox_AddString(gpChoice[i], "Mouse");
-    ComboBox_AddString(gpChoice[i], "Analog Joystick");
+    ComboBox_AddString(gpChoice[i], "Joystick");
   
     switch (cfgGetGameport(conf, i)) {
       case GP_NONE:
@@ -1386,6 +1508,7 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg,
       break;
     case WM_DESTROY:
       wguiExtractFloppyConfig(hwndDlg, wgui_cfg);
+      wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
       break;
   }
   return FALSE;
@@ -2039,6 +2162,55 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 	  default:
 	    break;
 	}
+	if (HIWORD(wParam) == BN_CLICKED)
+	switch (LOWORD(wParam)) {
+	  case IDC_BUTTON_DF0_FILEDIALOG_MAIN:
+	    wguiSelectDiskImage(wgui_cfg,
+				hwndDlg,
+				GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN),
+				0);
+	    break;
+	  case IDC_BUTTON_DF1_FILEDIALOG_MAIN:
+	    wguiSelectDiskImage(wgui_cfg,
+				hwndDlg,
+				GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN),
+				1);
+	    break;
+	  case IDC_BUTTON_DF2_FILEDIALOG_MAIN:
+	    wguiSelectDiskImage(wgui_cfg,
+				hwndDlg,
+				GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN),
+				2);
+	    break;
+	  case IDC_BUTTON_DF3_FILEDIALOG_MAIN:
+	    wguiSelectDiskImage(wgui_cfg,
+				hwndDlg,
+				GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN),
+				3);
+	    break;
+	  case IDC_BUTTON_DF0_EJECT_MAIN:
+	    cfgSetDiskImage(wgui_cfg, 0, "");
+	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF0_IMAGENAME_MAIN),
+		         cfgGetDiskImage(wgui_cfg, 0));
+	    break;
+	  case IDC_BUTTON_DF1_EJECT_MAIN:
+	    cfgSetDiskImage(wgui_cfg, 1, "");
+	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF1_IMAGENAME_MAIN),
+		         cfgGetDiskImage(wgui_cfg, 1));
+	    break;
+	  case IDC_BUTTON_DF2_EJECT_MAIN:
+	    cfgSetDiskImage(wgui_cfg, 2, "");
+	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF2_IMAGENAME_MAIN),
+		         cfgGetDiskImage(wgui_cfg, 2));
+	    break;
+	  case IDC_BUTTON_DF3_EJECT_MAIN:
+	    cfgSetDiskImage(wgui_cfg, 3, "");
+	    Edit_SetText(GetDlgItem(hwndDlg, IDC_EDIT_DF3_IMAGENAME_MAIN),
+		         cfgGetDiskImage(wgui_cfg, 3));
+	    break;
+	  default:
+	    break;
+	}
   }
   return FALSE;
 }
@@ -2062,52 +2234,6 @@ BOOL CALLBACK wguiSplashProc(HWND hwndDlg,
       }
   }
   return FALSE;
-}
-
-
-/*============================================================================*/
-/* Splash window thread, runs for at least 5 seconds                          */
-/*============================================================================*/
-
-DWORD WINAPI wguiSplashThreadProc(LPVOID pParam) {
-  MSG myMsg;
-  
-  wgui_hSplash = CreateDialog(win_drv_hInstance,
-			      MAKEINTRESOURCE(IDD_SPLASH),
-			      NULL,
-			      wguiSplashProc); 
-  ShowWindow(wgui_hSplash, win_drv_nCmdShow);
-  SetTimer(wgui_hSplash, 1, 1500, NULL);
-  while (!wgui_splash_terminate || !wgui_splash_timeout)
-    if (GetMessage(&myMsg, wgui_hSplash, 0, 0))
-      DispatchMessage(&myMsg);
-  DestroyWindow(wgui_hSplash);
-  return 0;
-}
-
-
-/*============================================================================*/
-/* Show splash window                                                         */
-/*============================================================================*/
-
-void wguiSplashWindowShow(void) {
-  DWORD dwThreadId;
-  wgui_splash_terminate = FALSE;
-  wgui_hSplash_thread = CreateThread(NULL,                /* Security attr */
-				     0,                   /* Stack Size */
-				     wguiSplashThreadProc,/* Thread proc */
-				     NULL,	          /* Thread param */
-				     0,                   /* Creation flags */
-				     &dwThreadId);        /* ThreadId */
-}
-
-
-/*============================================================================*/
-/* Remove splash window                                                       */
-/*============================================================================*/
-
-void wguiSplashWindowHide(void) {
-  wgui_splash_terminate = TRUE;
 }
 
 
@@ -2145,6 +2271,7 @@ BOOLE wguiEnter(void) {
 			        MAKEINTRESOURCE(IDD_MAIN),
 			        NULL,
 			        wguiDialogProc); 
+    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
     ShowWindow(wgui_hDialog, win_drv_nCmdShow);
     while (!end_loop) {
       if (GetMessage(&myMsg, wgui_hDialog, 0, 0))
@@ -2163,6 +2290,7 @@ BOOLE wguiEnter(void) {
 	  break;
 		case WGUI_OPEN_CONFIGURATION:
 		  wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
+		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
 		case WGUI_SAVE_CONFIGURATION:
@@ -2204,8 +2332,6 @@ BOOLE wguiEnter(void) {
 /*============================================================================*/
 
 void wguiStartup(void) {
-  wguiSplashWindowHide();
-  WaitForSingleObject(wgui_hSplash_thread, INFINITE);
   wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
   cfgLoadFromFilename(wgui_cfg, currentConfigFileName);
 }
