@@ -1325,6 +1325,10 @@ SOURCE=..\..\Include\zlibwrap.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\Include\commoncontrol_wrap.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\fswrap.h
 # End Source File
 # Begin Source File
@@ -1399,6 +1403,10 @@ SOURCE=..\incasm\mac\renaming.mac
 # Begin Group "Win32 C Files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\C\commoncontrol_wrap.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\C\fswrap.c
