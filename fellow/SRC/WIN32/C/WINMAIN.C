@@ -255,7 +255,6 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   strcpy(cmdline, lpCmdLine);
   argv = winDrvCmdLineMakeArgv(cmdline, &argc);
   
-  wguiPreStartup();
   result = main(argc, argv);
   free(cmdline);
   free(argv);
