@@ -255,8 +255,10 @@ void kbdQueueHandler(void) {
       scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos &
 					 KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
-      ciaWritesp(0, ~(((scode >> 7) & 1) | (scode << 1)));
-      ciaRaiseIRQC(0, 8);
+      if (scode != A_NONE) {
+        ciaWritesp(0, ~(((scode >> 7) & 1) | (scode << 1)));
+        ciaRaiseIRQC(0, 8);
+      }
     }
   }
 }
