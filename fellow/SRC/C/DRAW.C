@@ -804,7 +804,7 @@ ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 ULO draw_buffer_count;                    /* Number of available framebuffers */
 ULO draw_frame_count;                /* Counts frames, both skipped and drawn */
 ULO draw_frame_skip_factor;            /* Frame-skip factor, 1 / (factor + 1) */
-ULO draw_frame_skip;                            /* Running frame-skip counter */
+LON draw_frame_skip;                            /* Running frame-skip counter */
 ULO draw_switch_bg_to_bpl;       /* Flag TRUE if on current line, switch from */
                                          /* background color to bitplane data */
 
@@ -1659,25 +1659,34 @@ ULO drawStatSessionFps(void)
 /*============================================================================*/
 
 ULO drawValidateBufferPointer(ULO amiga_line_number) {
-  ULO scale;
+	
+	ULO scale;
 
-  draw_buffer_top_ptr = gfxDrvValidateBufferPointer();
-  if (draw_buffer_top_ptr == NULL) {
-    fellowAddLog("Buffer ptr is NULL\n");
-    return 0;
-  }
-  scale = 1;  /* Soild scaling is handled by the graphics driver */
-  if (drawGetScanlines()) scale *= 2;
-  if (drawGetDeinterlace()) scale *= 2;
+	draw_buffer_top_ptr = gfxDrvValidateBufferPointer();
+	if (draw_buffer_top_ptr == NULL) {
+		fellowAddLog("Buffer ptr is NULL\n");
+		return 0;
+	}
+	
+	scale = 1;  /* Solid scaling is handled by the graphics driver */
+	if (drawGetScanlines()) 
+	{
+		scale *= 2;
+	}
+	if (drawGetDeinterlace()) 
+	{
+		scale *= 2;
+	}
 
-  draw_buffer_current_ptr = draw_buffer_top_ptr +
-                            (draw_mode_current->pitch * 
-			     scale *
-			     (amiga_line_number - draw_top)) +
-			    (draw_mode_current->pitch*draw_voffset) +
-			    (draw_hoffset*(draw_mode_current->bits >> 3));
-  if (drawGetDeinterlace() && !lof) draw_buffer_current_ptr += (scale/2)*draw_mode_current->pitch;
-  return draw_mode_current->pitch*scale;
+	draw_buffer_current_ptr = 
+		draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
+		(draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
+	
+	if (drawGetDeinterlace() && !lof) 
+	{
+		draw_buffer_current_ptr += (scale / 2) * draw_mode_current->pitch;
+	}
+	return draw_mode_current->pitch * scale;
 }
 
 
@@ -1914,15 +1923,10 @@ void drawEndOfFramePreC(void)
         {
           if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
           {
-              draw_line_routine_ptr = graph_frame_ptr->draw_line_routine;
-              __asm {
-                pushad
-                push graph_frame_ptr
-                call draw_line_routine_ptr
-                pop eax
-                popad
-              }
-	       }
+              ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr);
+	  		  //draw_buffer_current_ptr = draw_buffer_current_ptr_local + next_line_offset/2;
+			  //((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr);
+		  }
         }
         draw_buffer_current_ptr_local += next_line_offset;
         draw_buffer_current_ptr = draw_buffer_current_ptr_local;
@@ -2919,10 +2923,8 @@ void drawLineDual2x32_C(graph_line *linedescription)
 
 void drawLineBPL1x8_C(graph_line *linedesc)
 {
-  drawLineSegmentBG1x8(linedesc->BG_pad_front, linedesc->colors[0]);
-  __asm { pushad }
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
-  __asm { popad }
+	drawLineSegmentBG1x8(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG1x8(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
@@ -2955,10 +2957,8 @@ void drawLineBPL2x8_C(graph_line *linedesc)
 
 void drawLineBPL1x16_C(graph_line *linedesc)
 {
-  drawLineSegmentBG1x16(linedesc->BG_pad_front, linedesc->colors[0]);
-  __asm { pushad }
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
-  __asm { popad }
+	drawLineSegmentBG1x16(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG1x16(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
@@ -2974,11 +2974,9 @@ void drawLineBPL1x16_C(graph_line *linedesc)
 
 void drawLineBPL2x16_C(graph_line *linedesc)
 {
-  drawLineSegmentBG2x16(linedesc->BG_pad_front, linedesc->colors[0]);
-  __asm { pushad }
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
-  __asm { popad }
- 	drawLineSegmentBG2x16(linedesc->BG_pad_back, linedesc->colors[0]);
+	drawLineSegmentBG2x16(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+	drawLineSegmentBG2x16(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
@@ -2993,8 +2991,8 @@ void drawLineBPL2x16_C(graph_line *linedesc)
 
 void drawLineBPL1x24_C(graph_line *linedesc)
 {
-  drawLineSegmentBG1x24(linedesc->BG_pad_front, linedesc->colors[0]);
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+	drawLineSegmentBG1x24(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG1x24(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
@@ -3010,16 +3008,16 @@ void drawLineBPL1x24_C(graph_line *linedesc)
 
 void drawLineBPL2x24_C(graph_line *linedesc)
 {
-  drawLineSegmentBG2x24(linedesc->BG_pad_front, linedesc->colors[0]);
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+	drawLineSegmentBG2x24(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG2x24(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horizontal Scale:	1x                                                        */ 
-/* Pixel format:		32 bit                                                      */
+/* Horizontal Scale:	1x                                                      */ 
+/* Pixel format:		32 bit                                                  */
 /*                                                                              */
 /* Input:                                                                       */
 /* Line description - [4 + esp]                                                 */
@@ -3027,18 +3025,16 @@ void drawLineBPL2x24_C(graph_line *linedesc)
 
 void drawLineBPL1x32_C(graph_line *linedesc)
 {
-  drawLineSegmentBG1x32(linedesc->BG_pad_front, linedesc->colors[0]);
-  __asm { pushad }
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
-  __asm { popad }
+	drawLineSegmentBG1x32(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG1x32(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one bitplane line                                                       */
 /*                                                                              */
-/* Horizontal Scale:	2x                                                        */ 
-/* Pixel format:		32 bit                                                      */
+/* Horizontal Scale:	2x                                                      */ 
+/* Pixel format:		32 bit                                                  */
 /*                                                                              */
 /* Input:                                                                       */
 /* Line description - [4 + esp]                                                 */
@@ -3046,16 +3042,16 @@ void drawLineBPL1x32_C(graph_line *linedesc)
 
 void drawLineBPL2x32_C(graph_line *linedesc)
 {
-  drawLineSegmentBG2x32(linedesc->BG_pad_front, linedesc->colors[0]);
-  ((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
+	drawLineSegmentBG2x32(linedesc->BG_pad_front, linedesc->colors[0]);
+	((draw_line_func) (linedesc->draw_line_BPL_res_routine))(linedesc);
 	drawLineSegmentBG2x32(linedesc->BG_pad_back, linedesc->colors[0]);
 }
 
 /*==============================================================================*/
 /* Draw one line segment using background color                                 */
 /*                                                                              */
-/* Horizontal Scale:	1x                                                        */
-/* Pixel format:		8 bit RGB                                                   */
+/* Horizontal Scale:	1x													    */
+/* Pixel format:		8 bit RGB                                               */
 /*                                                                              */
 /* Input:                                                                       */
 /* ebx - Number of lores pixels to draw                                         */

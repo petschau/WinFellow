@@ -63,7 +63,7 @@ UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data]
 /* Various blitter variables                                                  */
 /*============================================================================*/
 
-ULO blitend;
+LON blitend;
 ULO blit_height, blit_width;
 
 // flag showing that a blit has been activated (a write to BLTSIZE)

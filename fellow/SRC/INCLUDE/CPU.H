@@ -1021,7 +1021,7 @@ extern ULO prefetch_size;
 #endif
 
 
-extern ULO cpu_next, irq_next;
+extern LON cpu_next, irq_next;
 
 extern ULO exceptionstack;
 extern ULO exceptionbackdooraddress;

@@ -149,7 +149,8 @@ bus_exception_ret:
 		add	eax, dword [curcycle]
 		mov	dword [cpu_next], eax
 		NEXT_EVENT_AFTER_CPU bus_loop_cpu, bus_loop_events
-bus_exit:	ret
+bus_exit:	
+		ret
 
 		FALIGN32
 bus_loop_events:
@@ -255,9 +256,6 @@ tracebit_handler:
 		mov	ebx, 024h
 		jmp	_cpuPrepareException_
 
-
-
-
 ;===========================================================
 ; Clean up after STOP was executed and enter bus_loop again 
 ; Called from 68000.asm only
@@ -274,163 +272,10 @@ _return_from_stop_:
 		jmp	dword [stopreturnadr]
 
 
+global _endOfFrameASM_
+_endOfFrameASM_:
 
-
-;==============================================================================
-; Global end of frame handler
-;==============================================================================
-
-CFUNCEXTERN drawEndOfFramePreC
-CFUNCEXTERN copperEndOfFrame
-
-		FALIGN32
-
-global _endOfFrame_
-_endOfFrame_:	push	edx
-		push	ebx
-
-
-		;==============================================================
-		; Draw the frame in the host buffer
-		;==============================================================
-
-		pushad
-		push edx
-		push ebx
-		;call	_drawEndOfFrame_
-		
-		call drawEndOfFramePreC
-		pop ebx
-		pop edx
-		popad
-
-
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
-
-		pushad
-		call	kbdEventEOFHandlerC
-		popad
-
-
-		;==============================================================
-		; Reset some aspects of the graphics emulation
-		;==============================================================
-
-		xor	dword [lof], 08000h		; Short/long frame 
-
-		;==============================================================
-		; Restart copper
-		;==============================================================
-
-		pushad
-		call	copperEndOfFrame		; Restart copper
-		popad
-
-
-		;==============================================================
-		; Update frame counters
-		;==============================================================
-
-		inc	dword [draw_frame_count]	; Count frames
-		dec	dword [draw_frame_skip]		; Frame skipping
-		jns	.l6
-		mov	edx, dword [draw_frame_skip_factor]
-		mov	dword [draw_frame_skip], edx
-.l6:
-
-		;==============================================================
-		; Update CIA timer counters
-		;==============================================================
-
-		CIA_UPDATE_TIMERS_EOF_CWRAP
-
-
-		;==============================================================
-		; Sprite end of frame updates
-		;==============================================================
-	
-		pushad
-		call spriteEndOfFrame
-		popad
-		;SPRITE_EOF_CWRAP
-
-
-		;==============================================================
-		; Recalculate blitter finished time
-		;==============================================================
-
-		mov	dword [graph_playfield_on], ecx
-		test	dword [blitend], 0ffffffffh
-		js	.l14
-		sub	dword [blitend], CYCLESPERFRAME
-		setns	byte [blitend]
-.l14:
-
-		;==============================================================
-		; Flag vertical refresh IRQ
-		;==============================================================
-
-		mov	edx, 08020h
-
-		pushad
-		push ecx
-		push edx
-		call	dword [memory_iobank_write + 0138h]
-		pop edx
-		pop ecx
-		popad
-
-
-		;==============================================================
-		; Set up next end of line event
-		;==============================================================
-
-		mov	dword [eol_next], CYCLESPERLINE
-		dec	dword [eol_next]
-
-
-		;==============================================================
-		; Update next CPU instruction time
-		;==============================================================
-
-		mov	ebx, dword [cpu_next]
-		test	ebx, ebx
-		js	.l15
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [cpu_next], ebx
-.l15:
-
-		;==============================================================
-		; Update next IRQ time
-		;==============================================================
-
-		mov	ebx, dword [irq_next]
-		test	ebx, ebx
-		js	.l16
-		sub	ebx, CYCLESPERFRAME
-		mov	dword [irq_next], ebx
-.l16:
-
-		;==============================================================
-		; Perform graphics end of frame
-		;==============================================================
-
-		pushad
-		call	graphEndOfFrame
-		call	timerEndOfFrame
-		popad
-
-		;==============================================================
-		; Recalculate the entire event queue
-		;==============================================================
-
-		pushad
-		call busScanEventsLevel6
-		popad
-		;SCAN_EVENTS_LVL6
-
+;		pushad
 
 		;==============================================================
 		; Bail out of emulation if we're asked to
@@ -440,13 +285,12 @@ _endOfFrame_:	push	edx
 		jnz	.l18
 		test	dword [fellow_request_emulation_stop_immediately], 1
 		jz	.l17
-.l18:		mov	esp, dword [exceptionstack]
-		jmp	bus_exit
-
-.l17:		pop	ebx
-		pop	edx
+.l18:		
+		mov	esp, dword [exceptionstack]
 		ret
-
+.l17:		
+;		popad
+		ret
 
 		FALIGN32
 

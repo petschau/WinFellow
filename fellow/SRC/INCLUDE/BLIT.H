@@ -37,7 +37,7 @@ void wbltsizv_C(ULO data, ULO address);
 /* Global blitter variables */
 /*==========================*/
 
-extern ULO blitend;
+extern LON blitend;
 extern ULO blitterstatus;
 extern ULO bltzero;
 extern BOOLE blitter_ECS;

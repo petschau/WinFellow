@@ -143,7 +143,9 @@ void graphP2CTablesInit(void) {
 
 
 /*===========================================================================*/
-/* Decode tables for lores size displays                                     */
+/* Decode tables for horizontal scale                                        */
+/* 1x scaling Lores                                                          */
+/* 0.5x scaling Hires                                                        */
 /* Called from the draw module                                               */
 /*===========================================================================*/
 
@@ -185,7 +187,9 @@ void graphP2C1XInit(void) {
 
 
 /*===========================================================================*/
-/* Decode tables for hires size tables                                       */
+/* Decode tables for horizontal scale                                        */
+/* 2x scaling Lores                                                          */
+/* 1x scaling Hires                                                          */
 /* Called from the draw module                                               */
 /*===========================================================================*/
 

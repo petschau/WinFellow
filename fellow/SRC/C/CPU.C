@@ -90,7 +90,8 @@ ULO irq_changed;
 
 /* Event cycle time */
 
-ULO cpu_next, irq_next;
+LON cpu_next;
+LON irq_next;
 
 /* intreq bit-number to irq-level translation table */
 
