@@ -18,7 +18,6 @@ CDATAEXTERN graph_deco6
 CDATAEXTERN graph_decode_line_ptr
 CDATAEXTERN graph_decode_line_tab
 CDATAEXTERN graph_decode_line_dual_tab
-CDATAEXTERN graph_decode_nop_table
 CDATAEXTERN graph_playfield_on
 CDATAEXTERN graph_color_shadow
 CDATAEXTERN graph_color
