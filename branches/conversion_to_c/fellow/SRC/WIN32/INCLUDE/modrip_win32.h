@@ -1,7 +1,6 @@
+/* @(#) $Id: modrip_win32.h,v 1.5.2.4 2004-06-08 14:05:36 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: modrip_win32.h,v 1.5.2.3 2004-05-27 10:11:03 carfesh Exp $    */
 /*                                                                         */
 /* OS-dependant parts of the module ripper - Windows GUI code              */
 /*                                                                         */
