@@ -207,10 +207,12 @@ extern BOOLE blitterGetOperationLog(void);
 /* Declare C blitter functions                                               */
 /*===========================================================================*/
 
-extern void blitterEmulationStart(void);
-extern void blitterEmulationStop(void);
-extern void blitterHardReset(void);
-extern void blitterStartup(void);
-extern void blitterShutdown(void);
+void blitterEmulationStart(void);
+void blitterEmulationStop(void);
+void blitterHardReset(void);
+void blitterStartup(void);
+void blitterShutdown(void);
+void blitterLineMode(void);
+void blitFinishBlit(void);
 
 #endif

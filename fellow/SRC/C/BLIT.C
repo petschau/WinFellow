@@ -808,7 +808,6 @@ void blitterShutdown(void) {
 
 void blitFinishBlit(void) 
 {
-  /*
   blitend = 0xffffffff;
   busScanEventsLevel4();
   blitterdmawaiting = 0;
@@ -816,11 +815,9 @@ void blitFinishBlit(void)
   dmaconr = 0x0000bfff;
   if ((bltcon & 0x00000001) == 0x00000001)
   {
-    //blitterLineMode();
+    blitterLineMode();
   }
   blitterCopyABCD();
-  */
-  finish_blit();
 }
 
 void blitMinitermsSet(ULO data)
@@ -833,7 +830,7 @@ void blitForceFinish(void)
 {
   if (blit_started == TRUE) 
   {
-    finish_blit();
+    blitFinishBlit();
   }
 }
 
@@ -1294,4 +1291,181 @@ void wbltadat_C(ULO data, ULO address)
 {
   blitForceFinish();
   bltadat = data;
+}
+
+#define blitterLineIncreaseX(a_shift, cpt, dpt) \
+  if (a_shift < 15) a_shift++; \
+  else \
+  { \
+    a_shift = 0; \
+    cpt = (cpt + 2) & 0x1ffffe; \
+    dpt = (dpt + 2) & 0x1ffffe; \
+  }
+
+#define blitterLineDecreaseX(a_shift, cpt, dpt) \
+{ \
+  if (a_shift == 0) \
+  { \
+    a_shift = 16; \
+    cpt = (cpt - 2) & 0x1ffffe; \
+    dpt = (dpt - 2) & 0x1ffffe; \
+  } \
+  a_shift--; \
+}
+
+#define blitterLineIncreaseY(cpt, dpt, cmod) \
+    cpt = (cpt + cmod) & 0x1ffffe; \
+    dpt = (dpt + cmod) & 0x1ffffe;
+
+#define blitterLineDecreaseY(cpt, dpt, cmod) \
+    cpt = (cpt - cmod) & 0x1ffffe; \
+    dpt = (dpt - cmod) & 0x1ffffe;
+
+/*================================================*/
+/* blitterLineMode                                */
+/* responsible for drawing lines with the blitter */
+/*                                                */
+/*================================================*/
+
+void blitterLineMode(void)
+{
+  ULO bltadat_local;
+  ULO bltbdat_local;
+  ULO bltcdat_local = bltcdat;
+  ULO bltddat_local;
+  UWO mask = (bltbdat_original >> blit_b_shift_asc) | (bltbdat_original << (16 - blit_b_shift_asc));
+
+  BOOL decision_is_signed = (((bltcon >> 6) & 1) == 1);
+  WOR decision_variable = (WOR) bltapt;
+  WOR decision_inc_signed = (WOR) bltbmod;
+  WOR decision_inc_unsigned = (WOR) bltamod;
+  
+  ULO bltcpt_local = bltcpt;
+  ULO bltdpt_local = bltdpt;
+  ULO blit_a_shift_local = blit_a_shift_asc;
+  ULO bltzero_local = 0;
+  ULO i;
+
+  ULO sulsudaul = (bltcon >> 2) & 0x7;
+  BOOL x_independent = (sulsudaul & 4);
+  BOOL x_inc = ((!x_independent) && !(sulsudaul & 2)) || (x_independent && !(sulsudaul & 1));
+  BOOL y_inc = ((!x_independent) && !(sulsudaul & 1)) || (x_independent && !(sulsudaul & 2));
+  BOOL single_dot = FALSE;
+
+
+  for (i = 0; i < blit_height; ++i)
+  {
+    // Read C-data from memory if the C-channel is enabled
+    if (bltcon & 0x02000000) bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
+
+    // Calculate data for the A-channel
+    bltadat_local = (bltadat & 0xffff) >> blit_a_shift_local;
+
+    // Check for single dot
+    if (x_independent) 
+    {
+      if (bltcon & 0x00000002)
+      {
+        if (single_dot) 
+        {
+          bltadat_local = 0;
+        }
+        else
+        {
+          single_dot = TRUE;
+        }
+      }
+    }
+
+    // Calculate data for the B-channel
+    bltbdat_local = (mask & 1) ? 0xffff : 0;
+
+    // Calculate result
+    blitterMinterms(bltadat_local, bltbdat_local, bltcdat_local, bltddat_local, blit_minterm);
+
+    // Save result to D-channel
+    memory_chip[bltdpt_local] = (UBY) (bltddat_local >> 8);
+    memory_chip[bltdpt_local + 1] = (UBY) (bltddat_local);
+
+    // Remember zero result status
+    bltzero_local = bltzero_local | bltddat_local;
+
+    // Rotate mask
+    mask = (mask << 1) | (mask >> 15);
+
+    // Test movement in the X direction
+    // When the decision variable gets positive,
+    // the line moves one pixel to the right
+
+    // decrease/increase x
+    if (decision_is_signed)
+    {
+      // Do not yet increase, D has sign
+      // D = D + (2*sdelta = bltbmod)
+      decision_variable += decision_inc_signed;
+    }
+    else
+    {
+      // increase, D reached a positive value
+      // D = D + (2*sdelta - 2*ldelta = bltamod)
+      decision_variable += decision_inc_unsigned;
+
+      if (!x_independent)
+      {
+        if (x_inc)
+        {
+          blitterLineIncreaseX(blit_a_shift_local, bltcpt_local, bltdpt_local);
+        }
+        else
+        {
+          blitterLineDecreaseX(blit_a_shift_local, bltcpt_local, bltdpt_local);
+        }
+      }
+      else
+      {
+        if (y_inc)
+        {
+          blitterLineIncreaseY(bltcpt_local, bltdpt_local, bltcmod);
+        }
+        else
+        {
+          blitterLineDecreaseY(bltcpt_local, bltdpt_local, bltcmod);
+        }
+        single_dot = FALSE;
+      }
+    }
+    decision_is_signed = (decision_variable < 0);
+
+    if (!x_independent)
+    {
+      // decrease/increase y
+      if (y_inc) 
+      {
+        blitterLineIncreaseY(bltcpt_local, bltdpt_local, bltcmod);
+      }
+      else
+      {
+        blitterLineDecreaseY(bltcpt_local, bltdpt_local, bltcmod);
+      }
+    }
+    else
+    {
+      if (x_inc) 
+      {
+        blitterLineIncreaseX(blit_a_shift_local, bltcpt_local, bltdpt_local);
+      }
+      else
+      {
+        blitterLineDecreaseX(blit_a_shift_local, bltcpt_local, bltdpt_local);
+      }
+    }
+  }
+  bltcon = bltcon & 0x0FFFFFFBF;
+  if (decision_is_signed) bltcon |= 0x00000040;
+
+  bltapt = decision_variable;
+  bltcpt = bltcpt_local;
+  bltdpt = bltdpt_local;
+  bltzero = bltzero_local;
+  wriw(0x00008040, 0x00DFF09C);
 }
