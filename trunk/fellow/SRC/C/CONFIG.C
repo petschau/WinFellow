@@ -322,6 +322,21 @@ BOOLE cfgGetSoundWAVDump(cfg *config) {
   return config->m_soundWAVdump;
 }
 
+void cfgSetSoundNotification(cfg *config, BOOLE notification) {
+  config->m_notification = notification;
+}
+
+BOOLE cfgGetSoundNotification(cfg *config) {
+  return config->m_notification;
+}
+
+void cfgSetSoundBufferLength(cfg *config, ULO buffer_length) {
+  config->m_bufferlength = buffer_length;
+}
+
+ULO cfgGetSoundBufferLength(cfg *config) {
+  return config->m_bufferlength;
+}
 
 /*============================================================================*/
 /* CPU configuration property access                                          */
@@ -571,6 +586,8 @@ void cfgSetDefaults(cfg *config) {
   cfgSetSound16Bits(config, TRUE);
   cfgSetSoundFilter(config, SOUND_FILTER_ORIGINAL);
   cfgSetSoundWAVDump(config, FALSE);
+  cfgSetSoundNotification(config, TRUE);
+  cfgSetSoundBufferLength(config, 45);
 
 
   /*==========================================================================*/
@@ -786,6 +803,14 @@ static STR *cfgGetSoundFilterToString(sound_filters filter) {
   return "original";
 }
 
+static ULO cfgGetBufferLengthFromString(STR *value) {
+  ULO buffer_length = cfgGetULOFromString(value);
+  
+  if (buffer_length < 10) return 10;
+  else if (buffer_length > 80) return 80;
+  return buffer_length;
+}
+
 static ULO cfgGetHorisontalScaleFromString(STR *value) {
   if (cfgGetBOOLEFromString(value)) return 1;
   return 2;
@@ -986,6 +1011,12 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if ((stricmp(option, "fellow.sound_filter") == 0) ||
 	     (stricmp(option, "sound_filter") == 0)) {
       cfgSetSoundFilter(config, cfgGetSoundFilterFromString(value));
+    }
+    else if (stricmp(option, "sound_notification") == 0) {
+      cfgSetSoundNotification(config, cfgGetBOOLEFromString(value));
+    }
+    else if (stricmp(option, "sound_buffer_length") == 0) {
+      cfgSetSoundBufferLength(config, cfgGetBufferLengthFromString(value));
     }
     else if (stricmp(option, "chipmem_size") == 0) {
       cfgSetChipSize(config, cfgGetULOFromString(value)*262144);
@@ -1197,6 +1228,8 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 	  cfgGetBOOLEToString(cfgGetSoundWAVDump(config)));
   fprintf(cfgfile, "fellow.sound_filter=%s\n", 
 	  cfgGetSoundFilterToString(cfgGetSoundFilter(config)));
+  fprintf(cfgfile, "sound_notification=%s\n", cfgGetBOOLEToString(cfgGetSoundNotification(config)));
+  fprintf(cfgfile, "sound_buffer_length=%d\n", cfgGetSoundBufferLength(config));
   fprintf(cfgfile, "chipmem_size=%d\n", cfgGetChipSize(config) / 262144);
   fprintf(cfgfile, "fastmem_size=%d\n", cfgGetFastSize(config) / 1048576);
   fprintf(cfgfile, "bogomem_size=%d\n", cfgGetBogoSize(config) / 262144);
@@ -1434,6 +1467,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   soundSet16Bits(cfgGetSound16Bits(config));
   soundSetFilter(cfgGetSoundFilter(config));
   soundSetWAVDump(cfgGetSoundWAVDump(config));
+  soundSetNotification(cfgGetSoundNotification(config));
+  soundSetBufferLength(cfgGetSoundBufferLength(config));
   
 
   /*==========================================================================*/
