@@ -437,6 +437,9 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   WAVEFORMATEX wfm;
   HRESULT res;
   DSBPOSITIONNOTIFY rgdscbpn[2];
+  char* lpAudio;
+  DWORD dwBytes;
+  DWORD i;
 
   /* Create sound buffer */
   
@@ -463,6 +466,41 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
     soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: CreateSoundBuffer(), ", res);
     return FALSE;
   }
+
+  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+				0,
+				dsbdesc.dwBufferBytes,
+				&lpAudio,
+				&dwBytes,
+				NULL,
+				NULL,
+				0);
+
+  if (res == DSERR_BUFFERLOST)
+  {
+    /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
+      IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+	  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+				0,
+				dsbdesc.dwBufferBytes,
+				&lpAudio,
+				&dwBytes,
+				NULL,
+				NULL,
+				0);
+  }
+
+  if (res != DS_OK) {
+    soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: Lock(), ", res);
+    return FALSE;
+  }
+
+  for (i = 0; i < dwBytes; i++)
+  {
+	 lpAudio[i] = 0;
+  }
+
+  IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpAudio, dwBytes, NULL, 0);
 
   /* Get buffer caps */
   memset(&dsbcaps, 0, sizeof(dsbcaps));
