@@ -27,7 +27,7 @@
 #define IDD_FILESYSTEM_ADD              119
 #define IDD_HARDFILE_ADD                120
 #define IDD_SCREEN                      121
-#define IDD_DISPLAY                     121
+#define IDD_DISPLAY                     122
 #define IDD_ABOUT                       125
 #define IDI_ICON_WINFELLOW              128
 #define IDD_NEW_MAIN                    129
@@ -39,6 +39,7 @@
 #define IDB_DISKDRIVE_LED_DISABLED      141
 #define IDD_HARDFILE_CREATE             150
 #define IDB_WINFELLOW_LOGO              154
+#define IDD_DIALOG1                     155
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -202,6 +203,14 @@
 #define IDC_GAMEPORT1_FIRE0             1119
 #define IDC_GAMEPORT1_FIRE1             1120
 #define IDC_GAMEPORT1_DOWN              1121
+#define IDC_SLIDER1                     1123
+#define IDC_COMBO5                      1124
+#define IDC_CHECK5                      1125
+#define IDC_SLIDER2                     1127
+#define IDC_CHECK7                      1128
+#define IDC_CHECK_SOUND_NOTIFICATION    1129
+#define IDC_SLIDER_SOUND_BUFFER_LENGTH  1130
+#define IDC_STATIC_BUFFER_LENGTH        1131
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_FILE_OPENCONFIGURATION       40004
@@ -211,15 +220,16 @@
 #define ID_FILE_HISTORYCONFIGURATION1   40008
 #define ID_FILE_HISTORYCONFIGURATION2   40009
 #define ID_FILE_HISTORYCONFIGURATION3   40010
+#define ID_OPTIONS_EMULATIONSPEED_FASTESTPOSSIBLENOSOUND 40010
 #define ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS 40011
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        155
-#define _APS_NEXT_COMMAND_VALUE         40008
-#define _APS_NEXT_CONTROL_VALUE         1122
+#define _APS_NEXT_RESOURCE_VALUE        157
+#define _APS_NEXT_COMMAND_VALUE         40011
+#define _APS_NEXT_CONTROL_VALUE         1132
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
