@@ -173,6 +173,7 @@ typedef struct {
   ULO DDF_start;
   ULO frames_left_until_BG_skip;
   ULO sprite_ham_slot;
+  ULO bplcon2;
 } graph_line;
 
 #endif
