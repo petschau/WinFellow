@@ -68,6 +68,7 @@ import time
 import getopt
 
 # Notification command
+#
 MAILCMD = '/bin/mail -s "[winfellow-cvs] %(SUBJECT)s %(PEOPLE)s" %(PEOPLE)s 2>&1 > /dev/null'
 
 # Diff trimming stuff
