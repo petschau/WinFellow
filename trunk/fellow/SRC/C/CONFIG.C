@@ -224,6 +224,13 @@ BOOLE cfgGetScreenDrawLEDs(cfg *config) {
   return config->m_screendrawleds;
 }
 
+void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers) {
+  config->m_use_multiple_graphical_buffers = use_multiple_graphical_buffers;
+}
+
+BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *config) {
+  return config->m_use_multiple_graphical_buffers;
+}
 
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */
@@ -241,7 +248,7 @@ void cfgSetHorisontalScale(cfg *config, ULO horisontalscale) {
   config->m_horisontalscale = horisontalscale;
 }
 
-ULO cfgGetHorisontalScale(cfg *config) {
+ULO cfgGetHorizontalScale(cfg *config) {
   return config->m_horisontalscale;
 }
 
@@ -563,6 +570,7 @@ void cfgSetDefaults(cfg *config) {
   cfgSetScreenColorBits(config, 16);
   cfgSetScreenWindowed(config, FALSE);
   cfgSetScreenRefresh(config, 0);
+  cfgSetUseMultipleGraphicalBuffers(config, FALSE);
 
 
   /*==========================================================================*/
@@ -570,7 +578,7 @@ void cfgSetDefaults(cfg *config) {
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetHorisontalScale(config, 1);
+  cfgSetHorisontalScale(config, 0);
   cfgSetVerticalScale(config, 1);
   cfgSetDeinterlace(config, FALSE);
   cfgSetScanlines(config, FALSE);
@@ -825,7 +833,7 @@ static ULO cfgGetBufferLengthFromString(STR *value) {
   return buffer_length;
 }
 
-static ULO cfgGetHorisontalScaleFromString(STR *value) {
+static ULO cfgGetHorizontalScaleFromString(STR *value) {
   if (cfgGetBOOLEFromString(value)) return 1;
   return 2;
 }
@@ -1066,6 +1074,9 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if (stricmp(option, "gfx_fullscreen_amiga") == 0) {
       cfgSetScreenWindowed(config, !cfgGetBOOLEFromString(value));
     }
+		else if (stricmp(option, "use_multiple_graphical_buffers") == 0) {
+			cfgSetUseMultipleGraphicalBuffers(config, cfgGetBOOLEFromString(value));
+		}
     else if (stricmp(option, "gfx_colour_mode") == 0) {
       cfgSetScreenColorBits(config, cfgGetColorBitsFromString(value));
     }
@@ -1073,7 +1084,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
       cfgSetScreenDrawLEDs(config, cfgGetBOOLEFromString(value));
     }
     else if (stricmp(option, "gfx_lores") == 0) {
-      cfgSetHorisontalScale(config, cfgGetHorisontalScaleFromString(value));
+      cfgSetHorisontalScale(config, cfgGetHorizontalScaleFromString(value));
     }
     else if (stricmp(option, "gfx_linemode") == 0) {
       cfgSetScanlines(config, cfgGetScanlinesFromString(value));
@@ -1257,11 +1268,12 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "gfx_height=%d\n", cfgGetScreenHeight(config));
   fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", 
 	  cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
+	fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%d\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", 
 	  cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
   fprintf(cfgfile, "gfx_lores=%s\n", 
-	  cfgGetBOOLEToString(cfgGetHorisontalScale(config) == 1));
+	  cfgGetBOOLEToString(cfgGetHorizontalScale(config) == 1));
   fprintf(cfgfile, "gfx_linemode=%s\n", 
 	  cfgGetLinemodeToString(cfgGetVerticalScale(config), 
 				 cfgGetScanlines(config)));
@@ -1465,10 +1477,11 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetHorisontalScale(cfgGetHorisontalScale(config));
+  drawSetHorisontalScale(cfgGetHorizontalScale(config));
   drawSetVerticalScale(cfgGetVerticalScale(config));
   drawSetScanlines(cfgGetScanlines(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
+	drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
 
   
   /*==========================================================================*/
@@ -1560,6 +1573,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
       needreset |= ffilesysRemoveFilesys(i);
     ffilesysSetAutomountDrives(cfgGetFilesystemAutomountDrives(config));
   }
+
+	
   
   
   /*==========================================================================*/
