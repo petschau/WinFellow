@@ -2760,6 +2760,48 @@ _graphSpriteHack_:
 
 ;-------------------------------------------------------------------------------
 ; Copy data and compare
+; [4 + esp] - source playfield
+; [8 + esp] - destination playfield
+; [12 + esp] - pixel count
+; [16 + esp] - first pixel
+; Return 1, not equal (eax)
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+_graphCompareCopy_:
+		mov	esi, dword [esp + 4]
+		mov	edx, dword [esp + 8]
+		mov	ebp, dword [esp + 12]
+		mov	ebx, dword [esp + 16]
+		and	ebp, 0fffffffch
+		add	ebp, ebx
+		cmp	ebx, ebp
+		jae	.l2
+.loop:		mov	ecx, dword [esi + ebx]
+		cmp	dword [edx + ebx], ecx
+		je	.l1
+		mov	eax, 1
+		mov	dword [edx + ebx], ecx
+.l1:		add	ebx, 4
+		cmp	ebx, ebp
+		jl	.loop
+.l2:		mov	ebp, dword [esp + 12]
+		and	ebp, 3
+		jz	.l3
+.l4:		mov	cl, byte [esi + ebx]
+		cmp	byte [edx + ebx], cl
+		je	.l5
+		mov	eax, 1
+		mov	byte [edx + ebx], cl
+.l5:		inc	ebx
+		dec	ebp
+		jnz	.l4
+.l3:		ret
+
+;-------------------------------------------------------------------------------
+; Copy data and compare
 ; [4 + esp] - source
 ; [8 + esp] - destination
 ; Return 1, not equal (eax)
@@ -2768,7 +2810,7 @@ _graphSpriteHack_:
 
 		FALIGN32
 
-_graphCompareCopy_:
+_graphCompareCopyOld_:
 		mov	ecx, dword [esp + 4]
 		mov	edx, dword [esp + 8]
 		mov	ebx, 0
@@ -3311,7 +3353,7 @@ _graphComposeLineOutputSmart_:
 
 		mov	eax, dword [draw_line_BG_routine]
 		cmp	eax, dword [draw_line_routine]
-		je	.done
+		je	near .done
 
 		;==============================================================
 		; Do the planar to chunky conversion
@@ -3326,14 +3368,34 @@ _graphComposeLineOutputSmart_:
 		call	dword [graph_decode_line_ptr]
 		add	esp, 8
 
+		; Compare line data to old data
 		mov	esi, dword graph_line1_tmp
 		mov	ebp, dword [esp]
+		push	dword [ebp + graph_line_DIW_first_draw]
+		push	dword [ebp + graph_line_DIW_pixel_count]
 		add	ebp, graph_line_line1
 		push	ebp
 		push	esi
 		call	_graphCompareCopy_
-		add	esp, 8
+		add	esp, 16
 		or	dword [esp + 4], eax
+
+		; If the line is dual playfield, compare second playfield too
+		test	dword [bplcon0], 0400h
+		jz	.no_dpf
+
+		mov	esi, dword graph_line2_tmp
+		mov	ebp, dword [esp]
+		push	dword [ebp + graph_line_DIW_first_draw]
+		push	dword [ebp + graph_line_DIW_pixel_count]
+		add	ebp, graph_line_line2
+		push	ebp
+		push	esi
+		call	_graphCompareCopy_
+		add	esp, 16
+		or	dword [esp + 4], eax
+
+.no_dpf:
 
 		;==============================================================
 		; Add sprites to the line image
@@ -3343,10 +3405,12 @@ _graphComposeLineOutputSmart_:
 		jz	.test_bpl_skip
 
 		mov	dword [esp + 4], 1
-  		call	_spritesMerge_
+		call	_spritesMerge_
 		mov	byte [sprites_online], 0
 
-.test_bpl_skip: mov	eax, GRAPH_LINE_BPL
+.test_bpl_skip:
+		; Final test for line skip
+		mov	eax, GRAPH_LINE_BPL
 		test	dword [esp + 4], 1
 		jnz	.no_bpl_skip
 		mov	eax, GRAPH_LINE_BPL_SKIP
