@@ -223,6 +223,27 @@ void ffilesysStartup(void)
   ffilesysSetAutomountDrives(FALSE);
 }
 
+/*=======================================*/
+/* clean up rests from copy of mountinfo */
+/*=======================================*/
+
+void ffilesysClearMountinfo(void)
+{
+  for(mountinfo.num_units; mountinfo.num_units>0; mountinfo.num_units--)
+  {
+    if(mountinfo.ui[mountinfo.num_units-1].volname) 
+    {
+      free(mountinfo.ui[mountinfo.num_units-1].volname);
+      mountinfo.ui[mountinfo.num_units-1].volname = NULL;
+    }
+    if(mountinfo.ui[mountinfo.num_units-1].rootdir) 
+    {
+      free(mountinfo.ui[mountinfo.num_units-1].rootdir);
+      mountinfo.ui[mountinfo.num_units-1].rootdir = NULL;
+    }
+  }
+}
+
 /*============================================================================*/
 /* Shutdown filesys device                                                    */
 /*============================================================================*/
@@ -231,4 +252,5 @@ void ffilesysShutdown(void)
 {
   filesys_prepare_reset();
   filesys_reset();
+  ffilesysClearMountinfo();
 }
