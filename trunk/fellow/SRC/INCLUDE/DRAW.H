@@ -60,14 +60,20 @@
 #define drawLineNormal1x32    ASMRENAME(drawLineNormal1x32)
 #define drawLineNormal2x32    ASMRENAME(drawLineNormal2x32)
 
-#define drawLineDual1x8  ASMRENAME(drawLineDual1x8)
-#define drawLineDual2x8  ASMRENAME(drawLineDual2x8)
-#define drawLineDual1x16 ASMRENAME(drawLineDual1x16)
-#define drawLineDual2x16 ASMRENAME(drawLineDual2x16)
-#define drawLineDual1x24 ASMRENAME(drawLineDual1x24)
-#define drawLineDual2x24 ASMRENAME(drawLineDual2x24)
-#define drawLineDual1x32 ASMRENAME(drawLineDual1x32)
-#define drawLineDual2x32 ASMRENAME(drawLineDual2x32)
+#define drawLineDual1x8     ASMRENAME(drawLineDual1x8)
+#define drawLineDual1x8mmx  ASMRENAME(drawLineDual1x8mmx)
+#define drawLineDual2x8     ASMRENAME(drawLineDual2x8)
+#define drawLineDual2x8mmx  ASMRENAME(drawLineDual2x8mmx)
+#define drawLineDual1x16    ASMRENAME(drawLineDual1x16)
+#define drawLineDual1x16mmx ASMRENAME(drawLineDual1x16mmx)
+#define drawLineDual2x16    ASMRENAME(drawLineDual2x16)
+#define drawLineDual2x16mmx ASMRENAME(drawLineDual2x16mmx)
+#define drawLineDual1x24    ASMRENAME(drawLineDual1x24)
+#define drawLineDual2x24    ASMRENAME(drawLineDual2x24)
+#define drawLineDual1x32    ASMRENAME(drawLineDual1x32)
+#define drawLineDual1x32mmx ASMRENAME(drawLineDual1x32mmx)
+#define drawLineDual2x32    ASMRENAME(drawLineDual2x32)
+#define drawLineDual2x32mmx ASMRENAME(drawLineDual2x32mmx)
 
 #define drawLineHAM1x8  ASMRENAME(drawLineHAM1x8)
 #define drawLineHAM2x8  ASMRENAME(drawLineHAM2x8)
@@ -132,13 +138,19 @@ extern void drawLineNormal1x32(graph_line *linedesc);
 extern void drawLineNormal2x32(graph_line *linedesc);
 
 extern void drawLineDual1x8(graph_line *linedesc);
+extern void drawLineDual1x8mmx(graph_line *linedesc);
 extern void drawLineDual2x8(graph_line *linedesc);
+extern void drawLineDual2x8mmx(graph_line *linedesc);
 extern void drawLineDual1x16(graph_line *linedesc);
+extern void drawLineDual1x16mmx(graph_line *linedesc);
 extern void drawLineDual2x16(graph_line *linedesc);
+extern void drawLineDual2x16mmx(graph_line *linedesc);
 extern void drawLineDual1x24(graph_line *linedesc);
 extern void drawLineDual2x24(graph_line *linedesc);
 extern void drawLineDual1x32(graph_line *linedesc);
+extern void drawLineDual1x32mmx(graph_line *linedesc);
 extern void drawLineDual2x32(graph_line *linedesc);
+extern void drawLineDual2x32mmx(graph_line *linedesc);
 
 extern void drawLineHAM1x8(graph_line *linedesc);
 extern void drawLineHAM2x8(graph_line *linedesc);
