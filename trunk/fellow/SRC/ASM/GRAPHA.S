@@ -571,7 +571,7 @@ wdmanormoff:	mov	edx, dword [dmacon]  ; get old dmacon
 
 		test	ecx, 040h
 		jnz	wdmabrag
-		test	dword [blit_started], 0ffh
+		test	dword [blitterstatus], 0ffh
 		jz	wdmabrag
 		pushad
 		call	_finish_blit_
