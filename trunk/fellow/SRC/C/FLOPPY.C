@@ -746,7 +746,7 @@ void floppyDriveTableInit(void) {
     floppy[i].zipped = FALSE;
     floppy[i].changed = TRUE;
     /* Need to be large enough to hold UAE--ADF encoded tracks */
-    floppy[i].mfm_data = (UBY *) malloc(FLOPPY_TRACKS*14000);
+    floppy[i].mfm_data = (UBY *) malloc(FLOPPY_TRACKS*25000);
   }
 }
 
