@@ -1,7 +1,6 @@
+/* @(#) $Id: zlibwrap.h,v 1.4 2004-06-08 11:09:48 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator - zlib wrapper                                    */
-/*                                                                         */
-/* @(#) $Id: zlibwrap.h,v 1.3 2004-05-27 12:28:03 carfesh Exp $        */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*         (Wraps zlib code to have one simple call for decompression.)    */

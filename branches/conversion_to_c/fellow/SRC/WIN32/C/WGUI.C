@@ -44,7 +44,9 @@
 #include "ini.h"
 #include "kbd.h"
 #include "kbddrv.h"
+#ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
+#endif
 #include "floppy.h"
 #include "fellow.h"
 

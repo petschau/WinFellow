@@ -13,6 +13,7 @@ extern void fellowRunDebug(ULO breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit(void);
 extern void fellowAddLog(const char *,...);
+extern void fellowAddTimelessLog(const char *,...);
 extern BOOLE fellowGetMMXDetected(void);
 extern void fellowSetUseGUI(BOOLE use_gui);
 extern BOOLE fellowGetUseGUI(void);

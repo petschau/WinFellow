@@ -33,9 +33,12 @@ Tuesday, September 05, 2000: nova
 #include "keycodes.h"
 #include "kbd.h"
 #include "kbddrv.h"
+#include "mousedrv.h"
+#include "joydrv.h"
 #include "gameport.h"
 #include "windrv.h"
 #include "kbdparser.h"
+#include "fellow.h"
 
 #include "dxver.h"
 
@@ -1192,7 +1195,7 @@ void kbdDrvHardReset(void) {
 /*===========================================================================*/
 
 void kbdDrvEmulationStart(void) {
-  ULO port, setting;
+  ULO port;
   
   kbd_drv_home_pressed = FALSE;
   kbd_drv_end_pressed = FALSE;
@@ -1222,7 +1225,6 @@ void kbdDrvEmulationStop(void) {
 
 void kbdDrvStartup(void) {
   ULO port, setting;
-  kbd_drv_joykey_directions direction;
   int i;
   
   kbd_drv_joykey_event[0][0][JOYKEY_UP] = EVENT_JOY0_UP_INACTIVE;

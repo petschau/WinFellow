@@ -597,7 +597,7 @@ void joyDrvStateHasChanged(BOOLE active) {
 /* joystick toggle focus                                                     */
 /*===========================================================================*/
 
-void joyDrvToggleFocus() {
+void joyDrvToggleFocus(void) {
   joy_drv_focus = !joy_drv_focus;
   joyDrvStateHasChanged(joy_drv_active);
 }
@@ -743,7 +743,7 @@ BOOLE CheckJoyMovement( int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Ri
 /* joystick movement handler                                                 */
 /*===========================================================================*/
 
-void joyDrvMovementHandler() {
+void joyDrvMovementHandler(void) {
   int port;
   
   if ( joy_drv_failed || !joy_drv_in_use )

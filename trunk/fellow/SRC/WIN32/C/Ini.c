@@ -8,6 +8,7 @@
 
 #include "defs.h"
 #include <windows.h>
+#include <direct.h>
 #include "ini.h"
 #include "draw.h"
 #include "fellow.h"

@@ -1,7 +1,8 @@
+/* @(#) $Id: sysinfo.c,v 1.14 2004-06-08 11:09:48 carfesh Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator - system information retrieval                    */
+/* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: sysinfo.c,v 1.13 2004-05-27 12:28:36 carfesh Exp $        */
+/* System information retrieval                                            */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*                                                                         */
@@ -39,7 +40,7 @@
 #define cpuid _asm _emit 0x0f _asm _emit 0xa2
 #define rdtsc _asm _emit 0x0f _asm _emit 0x31
 
-struct cpu_ident {
+struct sysinfo_cpu_ident {
   char type;
   char model;
   char step;
@@ -48,15 +49,15 @@ struct cpu_ident {
   long capability;
   char vend_id[12];
   unsigned char cache_info[16];
-} cpu_id;
+} sysinfo_cpu_id;
 
 #define MYREGBUFFERSIZE 1024
 
 /*=======================*/
 /* handle error messages */
 /*=======================*/
-void
-LogErrorMessageFromSystem (void) {
+void sysinfoLogErrorMessageFromSystem (void) 
+{
   CHAR szTemp[MYREGBUFFERSIZE * 2];
   DWORD cMsgLen;
   DWORD dwError;
@@ -83,8 +84,7 @@ LogErrorMessageFromSystem (void) {
 /* Read a string value from the registry; if succesful a pointer to the string */
 /* is returned, if failed it returns NULL                                      */
 /*=============================================================================*/
-static char *
-RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
+static char *sysinfoRegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
   HKEY hKey;
   TCHAR szBuffer[MYREGBUFFERSIZE];
   DWORD dwBufLen = MYREGBUFFERSIZE;
@@ -114,8 +114,7 @@ RegistryQueryStringValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
 /* Read a DWORD value from the registry; if succesful a pointer to the DWORD   */
 /* is returned, if failed it returns NULL                                      */
 /*=============================================================================*/
-static DWORD *
-RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
+static DWORD *sysinfoRegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
   HKEY hKey;
   DWORD dwBuffer;
   DWORD dwBufLen = sizeof (dwBuffer);
@@ -145,13 +144,13 @@ RegistryQueryDWORDValue (HKEY RootKey, LPCTSTR SubKey, LPCTSTR ValueName) {
 /* walk through a given registry hardware enumeration tree    */
 /* warning: this may cause serious damage to your health.. ;) */
 /*============================================================*/
-static void EnumHardwareTree (LPCTSTR SubKey) {
+static void sysinfoEnumHardwareTree(LPCTSTR SubKey) {
   HKEY hKey, hKey2;
   DWORD dwNoSubkeys, dwNoSubkeys2;
   DWORD CurrentSubKey, CurrentSubKey2;
   TCHAR szSubKeyName[MYREGBUFFERSIZE], szSubKeyName2[MYREGBUFFERSIZE];
   DWORD dwSubKeyNameLen = MYREGBUFFERSIZE, dwSubKeyNameLen2 = MYREGBUFFERSIZE;
-  char *szClass, *szDevice, *szDriver;
+  char *szClass, *szDevice;
 
   /* get handle to specified key tree */
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SubKey, 0,
@@ -174,7 +173,7 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
 			szSubKeyName,
 			&dwSubKeyNameLen,
 			NULL, NULL, NULL, NULL) != ERROR_SUCCESS) {
-	    /* LogErrorMessageFromSystem (); */
+	    /* sysinfoLogErrorMessageFromSystem (); */
 	    continue;
 	  }
 
@@ -184,7 +183,7 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
 	  (hKey, szSubKeyName, 0, KEY_ENUMERATE_SUB_KEYS | KEY_QUERY_VALUE,
 	   &hKey2) != ERROR_SUCCESS)
 	{
-	  /* LogErrorMessageFromSystem (); */
+	  /* sysinfoLogErrorMessageFromSystem (); */
 	  return;
 	}
 
@@ -192,7 +191,7 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
 			   NULL, NULL, NULL, NULL, NULL,
 			   NULL) != ERROR_SUCCESS)
 	{
-	  /* LogErrorMessageFromSystem (); */
+	  /* sysinfoLogErrorMessageFromSystem (); */
 	  return;
 	}
 
@@ -211,15 +210,14 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
 	    }
 
 	  /* now open the key and read the info */
-	  szClass =
-	    RegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("Class"));
+	  szClass = sysinfoRegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("Class"));
 	  if (szClass)
 	    {
 	      if ((stricmp (szClass, "display") == 0) ||
 		      (stricmp (szClass, "media"  ) == 0) ||
 			  (stricmp (szClass, "unknown") == 0))
 		{
-		  szDevice = RegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("DeviceDesc"));
+		  szDevice = sysinfoRegistryQueryStringValue (hKey2, szSubKeyName2, TEXT ("DeviceDesc"));
 		  if (szDevice) {
 		      fellowAddTimelessLog("\t%s: %s\n", strlwr(szClass), szDevice);
 		      free (szDevice);
@@ -233,29 +231,29 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
   RegCloseKey (hKey);
 }
 
-static void EnumRegistry (void) {
+static void sysinfoEnumRegistry (void) {
   OSVERSIONINFO osInfo;
 
-  ZeroMemory (&osInfo, sizeof (OSVERSIONINFO));
+  ZeroMemory(&osInfo, sizeof (OSVERSIONINFO));
   osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
   if (!GetVersionEx (&osInfo))
     {
-      LogErrorMessageFromSystem ();
+      sysinfoLogErrorMessageFromSystem ();
       return;
     }
 
   if (osInfo.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
       /* this seems to be the right place in Win2k and NT */
-      EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
-      EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
-	  EnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
+      sysinfoEnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
+      sysinfoEnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
+	  sysinfoEnumHardwareTree(TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
     }
   else
     {
       /* this one is for Win9x and ME */
-      EnumHardwareTree (TEXT ("Enum\\PCI"));
-      EnumHardwareTree (TEXT ("Enum\\ISAPNP"));
+      sysinfoEnumHardwareTree (TEXT ("Enum\\PCI"));
+      sysinfoEnumHardwareTree (TEXT ("Enum\\ISAPNP"));
     }
 }
 
@@ -263,8 +261,7 @@ static void EnumRegistry (void) {
 /* windows system info structures */
 /*================================*/
 
-static void
-ParseSystemInfo (void)
+static void sysinfoParseSystemInfo (void)
 {
   SYSTEM_INFO SystemInfo;
   GetSystemInfo(&SystemInfo);
@@ -275,7 +272,7 @@ ParseSystemInfo (void)
   // fellowAddTimelessLog("Processor revision: %d\n", wProcessorRevision; 
 }
 
-static void ParseOSVersionInfo(void) {
+static void sysinfoParseOSVersionInfo(void) {
 	OSVERSIONINFOEX osInfo;
 	BOOL osVersionInfoEx;
 
@@ -287,7 +284,7 @@ static void ParseOSVersionInfo(void) {
 		// OSVERSIONINFOEX didn't work, we try OSVERSIONINFO.
 		osInfo.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
 		if (!GetVersionEx((OSVERSIONINFO *) &osInfo)) {
-			LogErrorMessageFromSystem();
+			sysinfoLogErrorMessageFromSystem();
 			return;  
 		}
 	}
@@ -356,11 +353,11 @@ static void ParseOSVersionInfo(void) {
 	  (osInfo.szCSDVersion ? osInfo.szCSDVersion : "--"));
 }
 
-static void ParseRegistry(void) {
+static void sysinfoParseRegistry(void) {
   char *tempstr = NULL;
   DWORD *dwTemp = NULL;
 
-  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
+  tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
      TEXT ("VendorIdentifier"));
   if (tempstr) {
@@ -368,7 +365,7 @@ static void ParseRegistry(void) {
     free(tempstr);
   }
 
-  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
+  tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
      TEXT ("ProcessorNameString"));
   if (tempstr) {
@@ -376,7 +373,7 @@ static void ParseRegistry(void) {
     free(tempstr);
   }
 
-  tempstr = RegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
+  tempstr = sysinfoRegistryQueryStringValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"),
      TEXT ("Identifier")); 
   if (tempstr) {
@@ -385,7 +382,7 @@ static void ParseRegistry(void) {
   }
 
   /* clock speed seems to be only available on NT systems here */
-  dwTemp = RegistryQueryDWORDValue(HKEY_LOCAL_MACHINE, TEXT
+  dwTemp = sysinfoRegistryQueryDWORDValue(HKEY_LOCAL_MACHINE, TEXT
      ("HARDWARE\\DESCRIPTION\\System\\CentralProcessor\\0"), TEXT ("~MHz"));
   if (dwTemp) {
       fellowAddTimelessLog("\tCPU clock: \t\t%d MHz\n", *dwTemp);
@@ -393,7 +390,7 @@ static void ParseRegistry(void) {
   }
 }
 
-static void ParseMemoryStatus (void) {
+static void sysinfoParseMemoryStatus (void) {
   MEMORYSTATUS MemoryStatus;
 
   ZeroMemory(&MemoryStatus, sizeof (MemoryStatus));
@@ -409,7 +406,7 @@ static void ParseMemoryStatus (void) {
   fellowAddTimelessLog("\tfree virtual address space: \t%u MB\n", MemoryStatus.dwAvailVirtual / 1024 / 1024);
 }
 
-static void fellowVersionInfo (void) {
+static void sysinfoVersionInfo (void) {
 
 	fellowAddTimelessLog(FELLOWVERSION);
 
@@ -430,26 +427,26 @@ static void fellowVersionInfo (void) {
 /* gather information about x86 CPUs                                          */
 /*                                                                            */
 /* based on MemTest86 by Chris Brady (cbrady@sgi.com)                         */
-/* http://reality.sgi.com/cbrady/memtest86                                    */
+/* http://www.memtest86.com                                                   */
 /*                                                                            */
 /* lines marked with @@@@@ differ from the original source                    */
 /* original code from head.s                                                  */
 /*============================================================================*/
-static void cpu_get_features (void) {
-
+static void sysinfoCPUGetFeatures(void) 
+{
   /* initialization */
-  memset (&cpu_id, 0, sizeof (cpu_id));
+  memset(&sysinfo_cpu_id, 0, sizeof(sysinfo_cpu_id));
 
   _asm
   {
     /* *INDENT-OFF* */
 	/* Find out the CPU type */
 
-	mov	cpu_id.thecpuid,	-1			;  -1 for no CPUID initially
+	mov	sysinfo_cpu_id.thecpuid,	-1			;  -1 for no CPUID initially
 
 	/* check if it is 486 or 386. */
 
-	mov		cpu_id.type,	3			; at least 386
+	mov		sysinfo_cpu_id.type,	3			; at least 386
 	pushfd								; push EFLAGS								@@@@@
 	pop     eax			    			; get EFLAGS
 
@@ -463,7 +460,7 @@ static void cpu_get_features (void) {
 	and		eax,			0x40000		; check if AC bit changed
 	je		id_done
 
-	mov		cpu_id.type,	4			; at least 486
+	mov		sysinfo_cpu_id.type,	4			; at least 486
 	mov		eax,			ecx
 	xor		eax,			0x200000	; check ID flag
 	push	eax
@@ -486,7 +483,7 @@ static void cpu_get_features (void) {
 	lahf								; get flags
 	cmp		ah,				2			; check for change in flags
 	jne		id_done						; if not Cyrix
-	mov		cpu_id.type,	2			; Use two to identify as Cyrix
+	mov		sysinfo_cpu_id.type,	2			; Use two to identify as Cyrix
 	jp		id_done
 
 have_cpuid:
@@ -495,10 +492,10 @@ have_cpuid:
 
 	xor		eax,			eax			; call CPUID with 0 -> return vendor ID
 	cpuid
-	mov		cpu_id.thecpuid,eax				; save CPUID level
-	mov		dword ptr[cpu_id.vend_id],ebx	; first 4 chars
-	mov		dword ptr[cpu_id.vend_id+4],edx	; next 4 chars
-	mov		dword ptr[cpu_id.vend_id+8],ecx	; last 4 chars
+	mov		sysinfo_cpu_id.thecpuid,eax				; save CPUID level
+	mov		dword ptr[sysinfo_cpu_id.vend_id],ebx	; first 4 chars
+	mov		dword ptr[sysinfo_cpu_id.vend_id+4],edx	; next 4 chars
+	mov		dword ptr[sysinfo_cpu_id.vend_id+8],ecx	; last 4 chars
 
 	or		eax,			eax			; do we have processor info as well?
 	je		id_done
@@ -507,63 +504,62 @@ have_cpuid:
 	cpuid
 	mov		cl,				al			; save reg for future use
 	and		ah,				0x0f		; mask processor family
-	mov		cpu_id.type,	ah
+	mov		sysinfo_cpu_id.type,	ah
 	and		al,				0xf0		; mask model
 	shr		al,				4
-	mov		cpu_id.model,	al
+	mov		sysinfo_cpu_id.model,	al
 	and		cl,				0x0f		; mask mask revision
-	mov		cpu_id.step,	cl
-	mov		cpu_id.capability,edx
+	mov		sysinfo_cpu_id.step,	cl
+	mov		sysinfo_cpu_id.capability,edx
 
-	mov		dword ptr[cpu_id.cache_info],0
-	mov		dword ptr[cpu_id.cache_info+4],0
-	mov		dword ptr[cpu_id.cache_info+8],0
-	mov		dword ptr[cpu_id.cache_info+12],0
+	mov		dword ptr[sysinfo_cpu_id.cache_info],0
+	mov		dword ptr[sysinfo_cpu_id.cache_info+4],0
+	mov		dword ptr[sysinfo_cpu_id.cache_info+8],0
+	mov		dword ptr[sysinfo_cpu_id.cache_info+12],0
 
-	mov		eax,			dword ptr[cpu_id.vend_id+8]
+	mov		eax,			dword ptr[sysinfo_cpu_id.vend_id+8]
 	cmp		eax,			0x6c65746e	; Is this an Intel CPU?
 	jne		not_intel
 	mov		eax,			2			; Use the CPUID instruction to get cache info 
 	cpuid
-	mov		dword ptr[cpu_id.cache_info],eax
-	mov		dword ptr[cpu_id.cache_info+4],ebx
-	mov		dword ptr[cpu_id.cache_info+8],ecx
-	mov		dword ptr[cpu_id.cache_info+12],edx
+	mov		dword ptr[sysinfo_cpu_id.cache_info],eax
+	mov		dword ptr[sysinfo_cpu_id.cache_info+4],ebx
+	mov		dword ptr[sysinfo_cpu_id.cache_info+8],ecx
+	mov		dword ptr[sysinfo_cpu_id.cache_info+12],edx
 	jp		id_done
 
 not_intel:
-	mov		eax,			dword ptr[cpu_id.vend_id+8]
+	mov		eax,			dword ptr[sysinfo_cpu_id.vend_id+8]
 	cmp		eax,			0x444d4163	; Is this an AMD CPU?
 	jne		not_amd
 
 	mov		eax,			0x80000005	; Use the CPUID instruction to get cache info 
 	cpuid
-	mov		dword ptr[cpu_id.cache_info],ecx
-	mov		dword ptr[cpu_id.cache_info+4],edx
+	mov		dword ptr[sysinfo_cpu_id.cache_info],ecx
+	mov		dword ptr[sysinfo_cpu_id.cache_info+4],edx
 	mov		eax,			0x80000006	; Use the CPUID instruction to get cache info
 	cpuid
-	mov		dword ptr[cpu_id.cache_info+8],ecx
+	mov		dword ptr[sysinfo_cpu_id.cache_info+8],ecx
 
 not_amd:
-	mov		eax,			dword ptr[cpu_id.vend_id+8]
+	mov		eax,			dword ptr[sysinfo_cpu_id.vend_id+8]
 	cmp		eax,			0x64616374	; Is this a Cyrix CPU?
 	jne		id_done
 
-	mov		eax,			cpu_id.thecpuid	; get CPUID level
+	mov		eax,			sysinfo_cpu_id.thecpuid	; get CPUID level
 	cmp		eax,			2			; Is there cache information available ?
 	jne		id_done
 
 	mov		eax,			2			; Use the CPUID instruction to get cache info 
 	cpuid
-	mov		dword ptr[cpu_id.cache_info],edx
+	mov		dword ptr[sysinfo_cpu_id.cache_info],edx
 
 id_done:
 	/* *INDENT-ON* */
   }
 }
 
-static float
-cpu_speed (void)
+static float sysinfoCPUSpeed(void)
 {
   unsigned int Cycle_Start, Cycle_End, ticks, cycles;
   unsigned int result0 = 0, result1 = 0, result2 = 0, SumResults;
@@ -658,11 +654,11 @@ cpu_speed (void)
   return (((float) SumResults) / 3);
 }
 
-/*============================================*/
-/* parse the contents of the cpu_id structure */
-/* original function is cpu_type from init.c  */
-/*============================================*/
-static void DetectCPU (void) {
+/*====================================================*/
+/* parse the contents of the sysinfo_cpu_id structure */
+/* original function is cpu_type from init.c          */
+/*====================================================*/
+static void sysinfoDetectCPU (void) {
   int i, off = 0;
 
   int l1_cache = 0, l2_cache = 0;
@@ -670,17 +666,17 @@ static void DetectCPU (void) {
   char vendor[13];
   BOOL exception;
 
-  cpu_get_features();
+  sysinfoCPUGetFeatures();
 
-  strncpy (vendor, cpu_id.vend_id, 12);
+  strncpy (vendor, sysinfo_cpu_id.vend_id, 12);
   fellowAddTimelessLog("\tCPU vendor: \t%s\n", vendor);
   fellowAddTimelessLog("\tCPU type: \t");
 
   /* If the CPUID instruction is not supported then this is */
   /* a 386, 486 or one of the early Cyrix CPU's */
-  if (cpu_id.thecpuid < 1)
+  if (sysinfo_cpu_id.thecpuid < 1)
     {
-      switch (cpu_id.type)
+      switch (sysinfo_cpu_id.type)
 	{
 	case 2:
 	  /* This is a Cyrix CPU without CPUID */
@@ -729,14 +725,14 @@ static void DetectCPU (void) {
       return;
     }
 
-  switch (cpu_id.vend_id[0])
+  switch (sysinfo_cpu_id.vend_id[0])
     {
       /* AMD Processors */
     case 'A':
-      switch (cpu_id.type)
+      switch (sysinfo_cpu_id.type)
 	{
 	case 4:
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 3:
 	      fellowAddTimelessLog("AMD 486DX2");
@@ -757,7 +753,7 @@ static void DetectCPU (void) {
 	  /* Since we can't get CPU speed or cache info return */
 	  return;
 	case 5:
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 0:
 	    case 1:
@@ -770,27 +766,27 @@ static void DetectCPU (void) {
 	    case 7:
 	      fellowAddTimelessLog("AMD K6");
 	      off = 6;
-	      l1_cache = cpu_id.cache_info[3];
-	      l1_cache += cpu_id.cache_info[7];
+	      l1_cache = sysinfo_cpu_id.cache_info[3];
+	      l1_cache += sysinfo_cpu_id.cache_info[7];
 	      break;
 	    case 8:
 	      fellowAddTimelessLog("AMD K6-2");
 	      off = 8;
-	      l1_cache = cpu_id.cache_info[3];
-	      l1_cache += cpu_id.cache_info[7];
+	      l1_cache = sysinfo_cpu_id.cache_info[3];
+	      l1_cache += sysinfo_cpu_id.cache_info[7];
 	      break;
 	    case 9:
 	      fellowAddTimelessLog("AMD K6-III");
 	      off = 10;
-	      l1_cache = cpu_id.cache_info[3];
-	      l1_cache += cpu_id.cache_info[7];
-	      l2_cache = (cpu_id.cache_info[11] << 8);
-	      l2_cache += cpu_id.cache_info[10];
+	      l1_cache = sysinfo_cpu_id.cache_info[3];
+	      l1_cache += sysinfo_cpu_id.cache_info[7];
+	      l2_cache = (sysinfo_cpu_id.cache_info[11] << 8);
+	      l2_cache += sysinfo_cpu_id.cache_info[10];
 	      break;
 	    }
 	  break;
 	case 6:
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 1:
 	    case 2:
@@ -803,18 +799,18 @@ static void DetectCPU (void) {
 	      off = 9;
 	      break;
 	    }
-	  l1_cache = cpu_id.cache_info[3];
-	  l1_cache += cpu_id.cache_info[7];
-	  l2_cache = (cpu_id.cache_info[11] << 8);
-	  l2_cache += cpu_id.cache_info[10];
+	  l1_cache = sysinfo_cpu_id.cache_info[3];
+	  l1_cache += sysinfo_cpu_id.cache_info[7];
+	  l2_cache = (sysinfo_cpu_id.cache_info[11] << 8);
+	  l2_cache += sysinfo_cpu_id.cache_info[10];
 	}
       break;
 
       /* Intel Processors */
     case 'G':
-      if (cpu_id.type == 4)
+      if (sysinfo_cpu_id.type == 4)
 	{
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 0:
 	    case 1:
@@ -856,7 +852,7 @@ static void DetectCPU (void) {
 
       /* Get the cache info */
       for (i = 0; i < 16; i++) {
-	  switch (cpu_id.cache_info[i])
+	  switch (sysinfo_cpu_id.cache_info[i])
 	    {
 	    case 0x6:
 	      l1_cache += 8;
@@ -894,10 +890,10 @@ static void DetectCPU (void) {
 	    }
 	}
 
-      switch (cpu_id.type)
+      switch (sysinfo_cpu_id.type)
 	{
 	case 5:
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 0:
 	    case 1:
@@ -923,7 +919,7 @@ static void DetectCPU (void) {
 	    }
 	  break;
 	case 6:
-	  switch (cpu_id.model)
+	  switch (sysinfo_cpu_id.model)
 	    {
 	    case 0:
 	    case 1:
@@ -969,7 +965,7 @@ static void DetectCPU (void) {
 
       /* Cyrix Processors with CPUID */
     case 'C':
-      switch (cpu_id.model)
+      switch (sysinfo_cpu_id.model)
 	{
 	case 0:
 	  fellowAddTimelessLog("Cyrix 6x86MX/MII");
@@ -987,7 +983,7 @@ static void DetectCPU (void) {
     default:
       off = 3;
       /* Make a guess at the family */
-      switch (cpu_id.type)
+      switch (sysinfo_cpu_id.type)
 	{
 	case 5:
 	  fellowAddTimelessLog("586");
@@ -1004,7 +1000,7 @@ static void DetectCPU (void) {
 
   __try
   {
-    speed = cpu_speed();
+    speed = sysinfoCPUSpeed();
 	exception = FALSE;
   }
   __except (EXCEPTION_EXECUTE_HANDLER)
@@ -1038,21 +1034,20 @@ static void DetectCPU (void) {
 /*===============*/
 /* Do the thing. */
 /*===============*/
-void
-fellowLogSysInfo (void)
+void sysinfoLogSysInfo(void)
 {
-  fellowVersionInfo();
+  sysinfoVersionInfo();
   fellowAddTimelessLog("\ninformation retrieved from registry:\n\n");
-  ParseRegistry();
+  sysinfoParseRegistry();
   fellowAddTimelessLog("\n");
-  ParseOSVersionInfo();
+  sysinfoParseOSVersionInfo();
   fellowAddTimelessLog("\n");
-  ParseSystemInfo();
+  sysinfoParseSystemInfo();
   fellowAddTimelessLog("\n");
-  ParseMemoryStatus();
+  sysinfoParseMemoryStatus();
   fellowAddTimelessLog("\n");
-  EnumRegistry();
+  sysinfoEnumRegistry();
   fellowAddTimelessLog("\n\ninformation retrieved from hardware detection:\n\n");
-  DetectCPU();
+  sysinfoDetectCPU();
   fellowAddTimelessLog("\n\ndebug information:\n\n");
 }

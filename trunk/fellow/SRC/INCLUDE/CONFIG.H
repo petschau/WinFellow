@@ -71,9 +71,9 @@ typedef struct {
   ULO   m_screencolorbits;
   ULO   m_screenrefresh;
   BOOLE m_screenwindowed;
-	BOOLE m_screendrawleds;
+  BOOLE m_screendrawleds;
   ULO   m_frameskipratio;
-  ULO   m_horisontalscale;
+  ULO   m_horizontalscale;
   ULO   m_verticalscale;
   BOOLE m_scanlines;
   BOOLE m_deinterlace;
@@ -200,14 +200,15 @@ extern void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed);
 extern BOOLE cfgGetScreenWindowed(cfg *config);
 extern void cfgSetScreenDrawLEDs(cfg *config, BOOLE drawleds);
 extern BOOLE cfgGetScreenDrawLEDs(cfg *config);
-
+extern void cfgSetUseMultipleGraphicalBuffers(cfg *, BOOLE);
+extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *);
 
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
 
-extern void cfgSetFrameSkipRatio(cfg *config, ULO frameskipratio);
-extern ULO cfgGetFrameSkipRatio(cfg *config);
+extern void cfgSetFrameskipRatio(cfg *config, ULO frameskipratio);
+extern ULO cfgGetFrameskipRatio(cfg *config);
 extern void cfgSetHorizontalScale(cfg *config, ULO horisontalscale);
 extern ULO cfgGetHorizontalScale(cfg *config);
 extern void cfgSetVerticalScale(cfg *config, ULO verticalscale);

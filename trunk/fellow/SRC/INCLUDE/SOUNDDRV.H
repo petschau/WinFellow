@@ -14,5 +14,6 @@ extern BOOLE soundDrvEmulationStart(ULO outputrate,
 				    ULO *buffersamplecountmax);
 extern void soundDrvEmulationStop(void);
 extern void soundDrvPlay(WOR *leftbuffer, WOR *rightbuffer, ULO samplecount);
+extern void soundDrvPollBufferPosition(void);
 
 #endif
