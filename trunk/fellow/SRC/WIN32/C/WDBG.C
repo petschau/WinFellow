@@ -14,6 +14,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include "gui_general.h"
+#include "gui_debugger.h"
 
 #include <commctrl.h>
 #include <prsht.h>

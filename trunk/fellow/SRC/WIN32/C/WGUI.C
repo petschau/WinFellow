@@ -15,6 +15,7 @@
 #include <windowsx.h>
 #include <windef.h>
 #include "gui_general.h"
+#include "gui_debugger.h"
 #include <process.h>
 #include <commctrl.h>
 #include <prsht.h>
