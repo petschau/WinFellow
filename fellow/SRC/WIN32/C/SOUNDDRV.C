@@ -952,6 +952,8 @@ DWORD WINAPI soundDrvThreadProc(void *in) {
   BOOLE terminate_thread = FALSE;
   sound_drv_dsound_device *dsound_device = (sound_drv_dsound_device *) in;
 
+  winDrvSetThreadName(-1, "WinFellow soundDrvThreadProc()");
+
 //  fellowAddLog("soundDrvThreadProc()\n");
   while (!terminate_thread) {
     // Thread is activated by 3 different events:
