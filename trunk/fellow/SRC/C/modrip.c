@@ -10,6 +10,8 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2000/12/18:                                                                */
+/* - now only the allocated memory areas are scanned instead of the whole mem */
 /* 2000/12/16:                                                                */
 /* - FredEditor support added, defined some useful macros                     */
 /*   and added 2 missing ProTracker clones                                    */
@@ -577,7 +579,7 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 /* here we define the formats that are actually used */
 /*===================================================*/
 
-#define MODRIP_KNOWNFORMATS 5
+#define MODRIP_KNOWNFORMATS 4
 
 static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
   modripDetectProTracker,
@@ -592,14 +594,45 @@ static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
 
 void modripScanFellowMemory(void)
 {
-  ULO i;
-  int j;
+  ULO i, j;
+  ULO ChipSize = 0, BogoSize = 0, FastSize = 0;
 
   if(modripGuiRipMemory()) {
+    ChipSize = memoryGetChipSize();
+    BogoSize = memoryGetBogoSize();
+    FastSize = memoryGetFastSize();
+
     RIPLOG1("mod-ripper now scanning memory...\n");
-    for(i = 0; i <= 0xffffff; i++)
-      for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-	    (*DetectFunctions[j])(i, fetb);
+
+	if(ChipSize) {
+	  RIPLOG2("mod-ripper running over chip memory (%u KB allocated)...\n",
+        ChipSize >> 10);
+
+	  /* chip memory starts at amiga address $0 */
+      for(i = 0; i < ChipSize; i++)
+        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+          (*DetectFunctions[j])(i, fetb);
+	}
+
+	if(BogoSize) {
+	  RIPLOG2("mod-ripper running over bogo memory (%u KB allocated)...\n", 
+        BogoSize >> 10);
+
+      /* bogo memory starts at amiga address $C00000 */
+      for(i = 0xc00000; i < (0xc00000 + BogoSize); i++)
+        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+          (*DetectFunctions[j])(i, fetb);
+	}
+
+	if(FastSize) {
+      RIPLOG2("mod-ripper running over fast memory (%u KB allocated)...\n",
+	    FastSize >> 10);
+
+      /* fast memory usually starts at amiga address $200000 */
+	  for(i = 0x200000; i < (0x200000 + FastSize); i++)
+        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	      (*DetectFunctions[j])(i, fetb);
+	}
   }
 }
 
