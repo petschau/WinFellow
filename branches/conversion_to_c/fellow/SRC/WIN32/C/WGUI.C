@@ -2890,7 +2890,7 @@ void wguiStartupPost(void) {
 			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_on_bitmap);
 	} else {
 		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
-			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) (LPARAM) power_led_on_bitmap);
+			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_off_bitmap);
 	}
 }
 
