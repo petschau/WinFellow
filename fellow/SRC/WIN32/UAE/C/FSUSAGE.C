@@ -67,14 +67,14 @@ get_fs_usage (path, disk, fsp)
      const char *disk;
      struct fs_usage *fsp;
 {
-    char buf1[1024];
+    /*char buf1[1024];*/
     char buf2[1024];
     DWORD SectorsPerCluster;
     DWORD BytesPerSector;
     DWORD NumberOfFreeClusters;
     DWORD TotalNumberOfClusters;
 
-    GetFullPathName (buf1, sizeof buf2, buf2, NULL);
+    GetFullPathName (path, sizeof buf2, buf2, NULL);
 
     buf2[3] = 0;
 
