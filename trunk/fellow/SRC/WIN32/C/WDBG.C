@@ -1275,6 +1275,9 @@ BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
     case WM_PAINT:
       wdbgUpdateBlitterState(hwndDlg);
       break;
+	case WM_DESTROY:
+	  blitterSetOperationLog(Button_GetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT)));
+	  break;
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
 	case IDC_DEBUG_MEMORY_UP:
