@@ -81,6 +81,8 @@ GRAPH_LINE_SKIP equ 2
 %define graph_line_DDF_start			2332
 %define graph_line_frames_left_until_BG_skip	2336
 %define graph_line_sprite_ham_slot		2340
-%define graph_line_end				2344
+%define graph_line_bplcon2			2344
+%define graph_line_reserved1			2346
+%define graph_line_end				2348
 
 %endif

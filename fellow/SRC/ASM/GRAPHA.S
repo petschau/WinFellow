@@ -2793,6 +2793,14 @@ _graphLinedescGeometry_:
 		sub	edx, ebx	; draw_right - DIW_first_draw - DIW_pixel_count
 		mov	dword [ebp + graph_line_BG_pad_front], eax
 		mov	dword [ebp + graph_line_BG_pad_back], edx
+
+		;==============================================================
+		; Need to remember playfield priorities to sort dual pf
+		;==============================================================
+		
+		mov   edx, dword [bplcon2]
+		mov   dword [ebp + graph_line_bplcon2], edx
+
 		ret
 
 
