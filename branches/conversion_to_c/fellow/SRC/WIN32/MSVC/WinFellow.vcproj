@@ -618,9 +618,6 @@
 				<File
 					RelativePath="..\..\incasm\mac\nasm.mac">
 				</File>
-				<File
-					RelativePath="..\..\incasm\mac\plan2c.mac">
-				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
