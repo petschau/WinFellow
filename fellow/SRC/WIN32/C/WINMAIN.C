@@ -118,7 +118,7 @@ void winDrvEmulate(void)
 	  break;
         case met_kbd_data:
 	  /* Deal with kbd input */
-          fellowAddLog("met_kbd_data\n");
+//          fellowAddLog("met_kbd_data\n");
           kbdDrvKeypressHandler();
 	  break;
         case met_messages:
