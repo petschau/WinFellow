@@ -7,10 +7,10 @@
 
 extern void gfxDrvSet8BitColor(ULO col, ULO r, ULO g, ULO b);
 extern void gfxDrvBufferFlip(void);
-extern ULO gfxDrvModeSet(draw_mode *dm, ULO maxbuffercount);
+extern void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale);
 extern UBY *gfxDrvValidateBufferPointer(void);
 extern void gfxDrvInvalidateBufferPointer(void);
-extern void gfxDrvEmulationStart(draw_mode *dm, ULO maxbuffercount);
+extern BOOLE gfxDrvEmulationStart(ULO maxbuffercount);
 extern ULO gfxDrvEmulationStartPost(void);
 extern void gfxDrvEmulationStop(void);
 extern BOOLE gfxDrvStartup(void);
