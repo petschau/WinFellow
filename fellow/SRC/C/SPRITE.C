@@ -159,10 +159,9 @@ void spriteMergeHAM1x8(UBY *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    UBY *frame_ptr = frameptr + (first_visible_cylinder -
-					 draw_left);
+					 DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
             while (--pixel_count >= 0) {
@@ -205,10 +204,9 @@ void spriteMergeHAM2x8(UWO *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    UWO *frame_ptr = frameptr + (first_visible_cylinder -
-					 draw_left);
+					 DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -251,10 +249,9 @@ void spriteMergeHAM1x16(UWO *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    UWO *frame_ptr = frameptr + (first_visible_cylinder -
-					 draw_left);
+					 DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -297,10 +294,9 @@ void spriteMergeHAM2x16(ULO *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    ULO *frame_ptr = frameptr + (first_visible_cylinder -
-					 draw_left);
+					 DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -348,10 +344,9 @@ void spriteMergeHAM1x24(UBY *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    UBY *frame_ptr = frameptr + 3*(first_visible_cylinder -
-					   draw_left);
+					   DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -399,10 +394,9 @@ void spriteMergeHAM2x24(UBY *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    UBY *frame_ptr = frameptr + 6*(first_visible_cylinder -
-					   draw_left);
+					   DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -453,10 +447,9 @@ void spriteMergeHAM1x32(ULO *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    ULO *frame_ptr = frameptr + (first_visible_cylinder -
-					 draw_left);
+					   DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
@@ -499,10 +492,9 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
 	  {
 	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
 	                                       ham_slot->x[i]]);
-	    /* DIW_xxxx_visible is ensured to be visible pixels, but not
-	       always the edge of the host-buffer line, so use draw_left */
+	    /* frameptr points to the first visible HAM pixel in the framebuffer */
 	    ULO *frame_ptr = frameptr + 2*(first_visible_cylinder -
-					   draw_left);
+					   DIW_first_visible);
 	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
 	    while (--pixel_count >= 0) {
