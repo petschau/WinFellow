@@ -1561,3 +1561,18 @@ void drawShutdown(void) {
 #endif
 }
 
+void drawUpdateDrawmode(void) 
+{
+  draw_line_routine = draw_line_BG_routine;
+	if (graph_playfield_on == 1) 
+	{
+		// check if bit 8 of register dmacon is 1; check if bitplane DMA is enabled
+		// check if bit 12, 13 and 14 of register bplcon0 is 1; 
+		// check if atleast one bitplane is active
+		if (((dmacon & 0x0100) == 0x0100) && ((bplcon0 & 0x7000) > 0x0001))
+		{
+			draw_switch_bg_to_bpl = TRUE;
+			draw_line_routine = draw_line_BPL_manage_routine;
+		}
+	}
+}

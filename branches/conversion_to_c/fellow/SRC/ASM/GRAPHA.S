@@ -41,6 +41,9 @@ FDATASECTIONSTART
 
 CFUNCEXTERN blitFinishBlit
 CFUNCEXTERN blitterCopy
+CFUNCEXTERN graphCalculateWindow_C
+CFUNCEXTERN graphPlayfieldOnOff
+CFUNCEXTERN drawUpdateDrawmode
 
 ;-----------------------------------------------------------------------------
 ; Enable this for detailed profiling, log written to drawprofile.txt
@@ -81,221 +84,6 @@ _graphemstart_:				; Used to check code alignment
 %include "func/sprite.inc"
 %include "func/sound.inc"
 %include "func/copper.inc"
-
-
-;-------------------------------------------------------------------------------
-; Calculate all variables connected to the screen emulation
-; First calculate the ddf variables graph_DDF_start and graph_DDF_word_count
-;   Check if stop is bigger than start
-;   Check if strt and stop is mod 8 aligned
-;   If NOK then set numberofwords and startpos to 0 and DIWvisible vars to 128
-;
-; NOTE: The following is (sadly) a prime example of spaghetti code.... (PS)
-;       Though it somehow works, so just leave it and hope it does not break
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-global _graphCalculateWindow_
-_graphCalculateWindow_:
-		test	byte [bplcon0 + 1], 080h
-		jnz	near graphCalculateWindowHires
-		mov	ecx, dword [ddfstop]
-		mov	edx, dword [ddfstrt]
-		cmp	edx, ecx		; ddfstrt bigger than ddfstop?
-		ja	near cwdiwerr
-		and	ecx, 07h		; Must be aligned by mod 8
-		and	edx, 07h
-		push	ebp
-		xor	ebp, ebp
-		cmp	ecx, edx		; start aligned with stop?
-		je	.cwdiwloddfaligned
-		inc	ebp
-
-; everything seems OK with DDF, calculate DFFstartpos, graph_DDF_word_count
-
-.cwdiwloddfaligned:
-		mov	ecx, dword [ddfstop]
-		sub	ecx, dword [ddfstrt]
-		shr	ecx, 3		; length in words
-		inc	ecx
-		add	ecx, ebp
-		pop	ebp
-		mov	dword [graph_DDF_word_count], ecx
-		mov	ecx, dword [ddfstrt]
-		shl	ecx, 1
-		add	ecx, 11h
-		mov	dword [graph_DDF_start], ecx
-
-; Now DDF variables are done
-; Now check the DIW values
-; DIW values are only used by the drawing routines, include
-; clip modification here as well.
-
-		mov	ecx, dword [diwxleft]
-		mov	edx, dword [diwxright]
-		cmp	ecx, edx		;diwxleft less than diwxright?
-		jae	near cwdiwerr
-		cmp	ecx, dword [graph_DDF_start]
-		jb	.cwdiwless
-		cmp	ecx, dword [draw_left]
-		ja	.cwdiwnoclip
-		mov	ecx, dword [draw_left]
-.cwdiwnoclip:	mov	dword [graph_DIW_first_visible], ecx ; graph_DDF_start is less than diwxleft
-		jmp	.cwdiwlastpos
-.cwdiwless:	mov	ecx, dword [graph_DDF_start]
-		cmp	ecx, dword [draw_left]
-		ja	.cwdiwnoclip2
-		mov	ecx, dword [draw_left]
-.cwdiwnoclip2:	mov	dword [graph_DIW_first_visible], ecx ; graph_DDF_start is higher than diwxleft
-.cwdiwlastpos:	mov	ecx, dword [graph_DDF_word_count]   ; Calculate last pos in DDF data
-		mov	edx, dword [graph_DDF_start]
-		shl	ecx, 4				  ; numofwords*16
-		add	ecx, edx
-		mov	edx, dword [oddscroll]
-		cmp	edx, dword [evenscroll]
-		ja	.cwaddodd
-		add	ecx, dword [evenscroll]
-		jmp	.cwdiwlastpos2
-.cwaddodd:	add	ecx, dword [oddscroll]
-.cwdiwlastpos2:
-		; Now we have ecx - the last position in line(first invisible)
-
-		mov	edx, dword [diwxright]
-		cmp	ecx, edx
-		jb	.cwdiwxx
-		cmp	edx, dword [draw_right]
-		jb	.cwdiwnoclip3
-		mov	edx, dword [draw_right]
-.cwdiwnoclip3:	mov	dword [graph_DIW_last_visible], edx ; lastpos is higher than diwxright
-		jmp	.cwdiwyy
-.cwdiwxx:	cmp	ecx, dword [draw_right]
-		jb	.cwdiwnoclip4
-		mov	ecx, dword [draw_right]
-.cwdiwnoclip4:	mov	dword [graph_DIW_last_visible], ecx ; lastpos is lower than diwxright
-.cwdiwyy:
-
-; Now all variables have been initialized
-
-		ret
-
-
-		FALIGN32
-
-graphCalculateWindowHires:
-		mov	ecx, dword [ddfstop]
-		mov	edx, dword [ddfstrt]
-		cmp	edx, ecx		; ddfstrt bigger than ddfstop?
-		ja	near cwdiwerrh
-		and	ecx, 07h	; Must be aligned by mod 8 in hires
-		and	edx, 07h
-
-.cwdiwddfaligned:
-	
-; everything seems OK with DDF, calculate DFFstartpos, graph_DDF_word_count
-; graph_DDF_word_count is  stop-start/4+2
-		mov	ecx, dword [ddfstop]
-		sub	ecx, dword [ddfstrt]
-		add	ecx, 15
-		shr	ecx, 2		  ; length in words
-		and	ecx, 0fffffffeh
-		mov	dword [graph_DDF_word_count], ecx
-
-; graph_DDF_start = start*4+18 in hires
-		mov	ecx, dword [ddfstrt]
-		shl	ecx, 2
-		add	ecx, 18
-		mov	dword [graph_DDF_start], ecx
-
-; Now DDF variables are done
-; Now check the DIW values
-
-		mov	ecx, dword [diwxleft]
-		shl	ecx, 1	     
-		mov	edx, dword [diwxright]
-		shl	edx, 1
-		cmp	ecx, edx	; diwxleft less than diwxright?
-		jae	near cwdiwerrh
-		cmp	ecx, dword [graph_DDF_start]
-		jb	.cwdiwlessh
-		mov	edx, dword [draw_left]
-		shl	edx, 1
-		cmp	ecx, edx
-		ja	.cwdiwnoclip5
-		mov	ecx, edx
-.cwdiwnoclip5:
-		mov	dword [graph_DIW_first_visible], ecx ; graph_DDF_start is less than diwxleft
-		jmp	.cwdiwlastposh
-.cwdiwlessh:
-		mov	ecx, dword [graph_DDF_start]
-		mov	edx, dword [draw_left]
-		shl	edx, 1
-		cmp	ecx, edx
-		ja	.cwdiwnoclip6
-		mov	ecx, edx
-.cwdiwnoclip6:
-		mov	dword [graph_DIW_first_visible], ecx ; graph_DDF_start is higher than diwxleft
-.cwdiwlastposh:
-		mov	ecx, dword [graph_DDF_word_count]	  ; Calculate last pos in DDF data
-		mov	edx, dword [graph_DDF_start]
-		shl	ecx, 4				  ; numofwords*16
-		add	ecx, edx
-
-		mov	edx, dword [oddhiscroll]
-		cmp	edx, dword [evenhiscroll]
-		ja	.cwaddoddh
-		add	ecx, dword [evenhiscroll]
-		jmp	.cwdiwlastpos2h
-.cwaddoddh:	add	ecx, dword [oddhiscroll]
-.cwdiwlastpos2h:
-; Now we have ecx - the last position in line(first invisible)
-
-		mov	edx, dword [diwxright]
-		shl	edx, 1
-		cmp	ecx, edx
-		jb	.cwdiwxxh
-		mov	ecx, dword [draw_right]
-		shl	ecx, 1
-		cmp	edx, ecx
-		jb	.cwdiwnoclip7
-		mov	edx, ecx
-.cwdiwnoclip7:
-	
-		mov	dword [graph_DIW_last_visible], edx ; lastpos is higher than diwxright
-		jmp	.cwdiwyyh
-.cwdiwxxh:	mov	edx, dword [draw_right]
-		shl	edx, 1
-		cmp	ecx, edx
-		jb	.cwdiwnoclip8
-		mov	ecx, edx
-.cwdiwnoclip8:
-		mov	dword [graph_DIW_last_visible], ecx ; lastpos is lower than diwxright
-.cwdiwyyh:
-
-; Now all variables have been initialized
-
-		ret
-
-; Error with DDF variables, set all variables to off values
-
-		FALIGN32
-
-cwdiwerr:	xor	ecx, ecx
-		mov	dword [graph_DDF_start], ecx
-		mov	dword [graph_DDF_word_count], ecx
-		mov	dword [graph_DIW_first_visible], 256
-		mov	dword [graph_DIW_last_visible], 256
-		ret
-
-; Error with DDF variables, set all variables to off values
-cwdiwerrh:	xor	ecx,ecx
-		mov	dword [graph_DDF_start], ecx
-		mov	dword [graph_DDF_word_count], ecx
-		mov	dword [graph_DIW_first_visible], 256
-		mov	dword [graph_DIW_last_visible], 256
-		ret
-
 
 ;===============================================================================
 ; Graphics Register Access routines 
@@ -383,6 +171,36 @@ _wvpos_:	and	edx, 08000h
 
 
 ;-------------------------------------------------------------------------------
+; SERDAT - $dff030 Write
+;
+; ;
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wserdat_
+_wserdat_:	;mov dword[serper_debug_register_edx], edx
+			;mov dword[serper_debug_register_ecx], ecx
+;			;call graphDebugFunction
+		ret
+
+;-------------------------------------------------------------------------------
+; SERPER - $dff032 Write
+;
+; ;
+;-------------------------------------------------------------------------------
+
+
+		FALIGN32
+
+global _wserper_
+_wserper_:	;mov dword[serper_debug_register_edx], edx
+			;mov dword[serper_debug_register_ecx], ecx
+;			;call graphDebugFunction
+		ret
+
+;-------------------------------------------------------------------------------
 ; DIWSTRT - $dff08e Write
 ;-------------------------------------------------------------------------------
 
@@ -401,8 +219,10 @@ _wdiwstrt_:	mov	dword [diwstrt], edx
 		jmp	.l2
 .l1:		mov	edx, 88
 .l2:		mov	dword [diwxleft], edx
-		jmp	_graphCalculateWindow_
-
+		pushad
+		call graphCalculateWindow_C
+		popad
+		ret
 	
 ;-------------------------------------------------------------------------------
 ; DIWSTOP - $dff090 Write
@@ -431,7 +251,11 @@ _wdiwstop_:	mov	ecx, edx
 		and	ecx, 0ffh
 		mov	dword [diwxleft], ecx
 .l3:		mov	dword [diwxright], edx
-		jmp	_graphCalculateWindow_
+		pushad
+		call graphCalculateWindow_C
+		popad
+		ret
+
 
 	
 ;-------------------------------------------------------------------------------
@@ -469,7 +293,11 @@ _wddfstop_:	and	edx, 0fch
 		jbe	.l1
 		mov	edx, 0d8h
 .l1:		mov	dword [ddfstop], edx
-		jmp	_graphCalculateWindow_
+		pushad
+		call graphCalculateWindow_C
+		popad
+		ret
+
 
 
 ;-------------------------------------------------------------------------------
@@ -823,7 +651,9 @@ _wbplcon0_:
 		jz	.lend
 		mov	ecx, dword [draw_line_hires_routine]
 .lend:		mov	dword [draw_line_BPL_res_routine], ecx
-		call	_graphCalculateWindow_
+		pushad
+		call graphCalculateWindow_C
+		popad
 		pop	ecx
 		ret
 
@@ -882,7 +712,9 @@ _wbplcon1_:	and	edx, 0ffh
 		and	ecx, 7h
 .bpc1normal2:	shl	ecx, 1
 		mov	dword [evenhiscroll], ecx
-		call	_graphCalculateWindow_
+		pushad
+		call graphCalculateWindow_C
+		popad
 		ret
 
 
@@ -2575,7 +2407,9 @@ _graphEndOfLine_:
 		; Update diw state
 		;==============================================================
 
-		playfieldonoff
+		pushad
+		call graphPlayfieldOnOff
+		popad
 
 		;==============================================================
 		; Skip lines before line $12
@@ -2616,7 +2450,9 @@ _graphEndOfLine_:
 		; Update pointer to drawing routine
 		;==============================================================
 
-		update_drawmode
+		pushad
+		call drawUpdateDrawmode
+		popad
 
 		;==============================================================
 		; Check if we are clipped

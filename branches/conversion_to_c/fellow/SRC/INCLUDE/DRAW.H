@@ -269,6 +269,6 @@ extern BOOLE drawEmulationStartPost(void);
 extern void drawEmulationStop(void);
 extern BOOLE drawStartup(void);
 extern void drawShutdown(void);
-
+void drawUpdateDrawmode(void);
 
 #endif

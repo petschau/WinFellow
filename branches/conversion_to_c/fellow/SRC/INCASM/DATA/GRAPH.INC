@@ -53,6 +53,9 @@ CDATAEXTERN lof
 CDATAEXTERN diwstrt
 CDATAEXTERN diwstop
 
+; temp variables inserted by Worfje
+CDATAEXTERN serper_debug_register_ecx
+CDATAEXTERN serper_debug_register_edx
 
 %ifdef USE_ASM
 CDATAEXTERN graph_decode_tmp
