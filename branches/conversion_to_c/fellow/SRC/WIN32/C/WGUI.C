@@ -2813,6 +2813,7 @@ void wguiStartupPost(void) {
 /*============================================================================*/
 
 void wguiShutdown(void) {
+  wguiFreeGuiDrawModesList(pwgui_dm);
 }
 
 
