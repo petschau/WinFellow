@@ -241,17 +241,20 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     }
     break;
   case WM_SYSKEYDOWN:
-    fellowAddLog("WM_SYSKEYDOWN\n");
-    gfx_drv_syskey_down = TRUE;
-    gfxDrvEvaluateActiveStatus();
+    fellowAddLog("WM_SYSKEYDOWN %d\n", (int) wParam);
+    {
+      int vkey = (int) wParam;
+      gfx_drv_syskey_down = (vkey != VK_F10);
+      gfxDrvEvaluateActiveStatus();
+    }
     break;
   case WM_SYSKEYUP:
-    fellowAddLog("WM_SYSKEYUP\n");
+//    fellowAddLog("WM_SYSKEYUP\n");
     gfx_drv_syskey_down = FALSE;
     gfxDrvEvaluateActiveStatus();
     switch (wParam) {
       case VK_RETURN:  /* Full screen vs windowed */
-        fellowAddLog("WM_SYSKEYUP/VK_RETURN\n");
+//        fellowAddLog("WM_SYSKEYUP/VK_RETURN\n");
         break;
     }
     break;
@@ -260,15 +263,16 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       gfxDrvWindowFindClientRect(gfx_drv_ddraw_device_current);
     break;
   case WM_ACTIVATE:
-      
+/*      
     fellowAddLog("WM_ACTIVE");
+
     if (hWnd == gfx_drv_hwnd) fellowAddLog("Our window\n");
     else fellowAddLog("Not our window\n");
     if (HIWORD(wParam)) fellowAddLog("Minimized\n");
     else fellowAddLog("Not minimized\n");
     if (LOWORD(wParam) == WA_ACTIVE) fellowAddLog("WA_ACTIVE\n");
     if (LOWORD(wParam) == WA_CLICKACTIVE) fellowAddLog("WA_CLICKACTIVE\n");
-
+*/
     /* WM_ACTIVATE tells us whether our window is active or not */
     /* It is monitored so that we can know whether we should claim */
     /* the DirectInput devices */
@@ -290,7 +294,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
     PostMessage(hWnd, WM_DIACQUIRE, 0, 0L);
     return 0;
   case WM_SYSCOMMAND:
-    fellowAddLog("WM_SYSCOMMAND\n");
+//    fellowAddLog("WM_SYSCOMMAND\n");
     if (IsWindow(hWnd)) {
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     }
@@ -300,13 +304,16 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
 	  return 0; */
         case SC_SCREENSAVE:
 	  return 0;
+	case SC_KEYMENU:
+//	  fellowAddLog("SC_KEYMENU\n");
+	  return 0;
         default:
           return DefWindowProc(hWnd, message, wParam, lParam);
       }
   case WM_ACTIVATEAPP:
-    fellowAddLog("WM_ACTIVATEAPP ");
-    if (hWnd == gfx_drv_hwnd) fellowAddLog("Our window\n");
-    else fellowAddLog("Not our window\n");
+//    fellowAddLog("WM_ACTIVATEAPP ");
+//    if (hWnd == gfx_drv_hwnd) fellowAddLog("Our window\n");
+//    else fellowAddLog("Not our window\n");
     if (wParam) {
       /* Being activated */
     }
@@ -344,7 +351,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
 		GetWindowRect(hWnd, &emulationRect);  
 		iniSetEmulationWindowPosition(gfxdrv_ini, emulationRect.left, emulationRect.top);
 	  }
-      fellowAddLog("WM_DESTROY\n");
+//      fellowAddLog("WM_DESTROY\n");
       gfxDrvChangeDInputDeviceStates(FALSE);
       return 0;
       break;
@@ -364,12 +371,12 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd,
       gfxDrvDDrawSetPalette(gfx_drv_ddraw_device_current);
       break;
     case WM_DIACQUIRE:        /* Re-evaluate the active status of DI-devices */
-      fellowAddLog("WM_DIACQUIRE\n");
+//      fellowAddLog("WM_DIACQUIRE\n");
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
       return 0;
       break;
     case WM_CLOSE:
-      fellowAddLog("WM_CLOSE\n");
+//      fellowAddLog("WM_CLOSE\n");
       fellowRequestEmulationStop();
       return 0; /* We handled this message */ 
 
