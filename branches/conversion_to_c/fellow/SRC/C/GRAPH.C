@@ -156,11 +156,11 @@ void graphP2C1XInit(void) {
   graph_decode_line_tab[15] = graphDecode0_C;
   graph_decode_line_dual_tab[0] = graphDecode0_C;
   graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
   graph_decode_line_dual_tab[7] = graphDecode0_C;
   graph_decode_line_dual_tab[8] = graphDecode0_C;
   graph_decode_line_dual_tab[9] = graphDecode1Hi320;
@@ -198,17 +198,17 @@ void graphP2C2XInit(void) {
   graph_decode_line_tab[15] = graphDecode0_C;
   graph_decode_line_dual_tab[0] = graphDecode0_C;
   graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
   graph_decode_line_dual_tab[7] = graphDecode0_C;
   graph_decode_line_dual_tab[8] = graphDecode0_C;
   graph_decode_line_dual_tab[9] = graphDecode1_C;
-  graph_decode_line_dual_tab[10] = graphDecode2Dual;
-  graph_decode_line_dual_tab[11] = graphDecode3Dual;
-  graph_decode_line_dual_tab[12] = graphDecode4Dual;
+  graph_decode_line_dual_tab[10] = graphDecode2Dual_C;
+  graph_decode_line_dual_tab[11] = graphDecode3Dual_C;
+  graph_decode_line_dual_tab[12] = graphDecode4Dual_C;
   graph_decode_line_dual_tab[13] = graphDecode0_C;
   graph_decode_line_dual_tab[14] = graphDecode0_C;
   graph_decode_line_dual_tab[15] = graphDecode0_C;
@@ -1101,7 +1101,7 @@ static __inline ULO graphDecodeOdd1(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
     case 2: return graph_deco1[dat1][0]; 
     case 3:
     case 4: return graph_deco1[dat1][0] | graph_deco3[dat3][0]; 
-	case 5:
+	  case 5:
     case 6: return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0]; 
   }
   return 0;
@@ -1116,7 +1116,7 @@ static __inline ULO graphDecodeOdd2(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
     case 2: return graph_deco1[dat1][1]; 
     case 3:
     case 4: return graph_deco1[dat1][1] | graph_deco3[dat3][1]; 
-	case 5:
+	  case 5:
     case 6: return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1]; 
   }
   return 0;
@@ -1147,14 +1147,45 @@ static __inline ULO graphDecodeEven2(int bitplanes, ULO dat2, ULO dat4, ULO dat6
     case 2:
     case 3: return graph_deco2[dat2][1]; 
     case 4:  
-	case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1]; 
+  	case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1]; 
     case 6: return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1]; 
   }
   return 0;
 }
 
 // Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeDual1(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline ULO graphDecodeDualOdd1(int bitplanes, ULO datA, ULO datB, ULO datC)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2: return graph_deco1[datA][0]; 
+    case 3: 
+    case 4: return graph_deco1[datA][0] | graph_deco2[datB][0];  
+    case 5: 
+    case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0]; 
+
+  }
+  return 0;
+}
+
+// Decode the even part of the last 4 pixels
+static __inline ULO graphDecodeDualOdd2(int bitplanes, ULO datA, ULO datB, ULO datC)
+{
+  switch (bitplanes)
+  {
+    case 1:
+    case 2: return graph_deco1[datA][1]; 
+    case 3: 
+    case 4: return graph_deco1[datA][1] | graph_deco2[datB][1];  
+  	case 5: 
+    case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
+  }
+  return 0;
+}
+
+// Decode the even part of the first 4 pixels
+static __inline ULO graphDecodeDualEven1(int bitplanes, ULO datA, ULO datB, ULO datC)
 {
   switch (bitplanes)
   {
@@ -1170,7 +1201,7 @@ static __inline ULO graphDecodeDual1(int bitplanes, ULO datA, ULO datB, ULO datC
 }
 
 // Decode the even part of the last 4 pixels
-static __inline ULO graphDecodeDual2(int bitplanes, ULO datA, ULO datB, ULO datC)
+static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO datC)
 {
   switch (bitplanes)
   {
@@ -1178,7 +1209,7 @@ static __inline ULO graphDecodeDual2(int bitplanes, ULO datA, ULO datB, ULO datC
     case 2:
     case 3: return graph_deco1[datA][1]; 
     case 4:  
-	case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
+  	case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
     case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
   }
   return 0;
@@ -1212,8 +1243,8 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-	int maxscroll;
-	ULO temp = 0;
+  	int maxscroll;
+  	ULO temp = 0;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
@@ -1235,28 +1266,31 @@ static __inline void graphDecodeGeneric(int bitplanes)
 		  maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 	  }
 
-	while (maxscroll > 0)
-	{
-	  graph_line1_tmp[graph_DDF_start + temp] = 0;
-	  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-	  maxscroll--;
-	  temp++;
-	}
+    // clear edges
+	  while (maxscroll > 0)
+	  {
+	    graph_line1_tmp[graph_DDF_start + temp] = 0;
+	    graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+	    maxscroll--;
+	    temp++;
+	  }
+
+    // setup loop
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
-	if (bitplanes > 1)
+	  if (bitplanes > 1)
     {
-		if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-		{
-			// high resolution
-			dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenhiscroll);
-		}
-		else
-		{
-			// low resolution
-			dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenscroll);
-		}
-		end_even = dest_even + bpl_length_in_bytes * 2; 
+		  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+		  {
+			  // high resolution
+			  dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenhiscroll);
+		  }
+		  else
+		  {
+			  // low resolution
+			  dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenscroll);
+		  }
+		  end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
     switch (bitplanes)
@@ -1273,7 +1307,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
     {
       if (bitplanes >= 1) dat1 = *pt1_tmp++;
       if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	  if (bitplanes >= 5) dat5 = *pt5_tmp++;
+	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
       dest_tmp[0] = graphDecodeOdd1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeOdd2(bitplanes, dat1, dat3, dat5);
     }
@@ -1284,9 +1318,9 @@ static __inline void graphDecodeGeneric(int bitplanes)
       {
         if (bitplanes >= 2) dat2 = *pt2_tmp++;
         if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
-			dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
+		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
+			  dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
+			  dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1312,7 +1346,7 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
-	// clear edges
+	  // clear edges
     maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 
 	  temp = 0;
@@ -1329,11 +1363,11 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 	  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
-	if (bitplanes > 1)
+	  if (bitplanes > 1)
     {
-		// low resolution
-		dest_even = (ULO*) (graph_line2_tmp + graph_DDF_start + evenscroll);
-		end_even = dest_even + bpl_length_in_bytes * 2; 
+		  // low resolution
+		  dest_even = (ULO*) (graph_line2_tmp + graph_DDF_start + evenscroll);
+		  end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
     switch (bitplanes)
@@ -1351,8 +1385,8 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
       if (bitplanes >= 1) dat1 = *pt1_tmp++;
       if (bitplanes >= 3) dat3 = *pt3_tmp++;
 	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
-      dest_tmp[0] = graphDecodeDual1(bitplanes, dat1, dat3, dat5);
-      dest_tmp[1] = graphDecodeDual2(bitplanes, dat1, dat3, dat5);
+      dest_tmp[0] = graphDecodeDualOdd1(bitplanes, dat1, dat3, dat5);
+      dest_tmp[1] = graphDecodeDualOdd2(bitplanes, dat1, dat3, dat5);
     }
 
     if (bitplanes >= 2) 
@@ -1362,8 +1396,8 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
         if (bitplanes >= 2) dat2 = *pt2_tmp++;
         if (bitplanes >= 4) dat4 = *pt4_tmp++;
 		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			  dest_tmp[0] = graphDecodeDual1(bitplanes, dat2, dat4, dat6);
-			  dest_tmp[1] = graphDecodeDual2(bitplanes, dat2, dat4, dat6);
+			  dest_tmp[0] = graphDecodeDualEven1(bitplanes, dat2, dat4, dat6);
+			  dest_tmp[1] = graphDecodeDualEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
