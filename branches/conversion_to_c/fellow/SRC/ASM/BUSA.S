@@ -58,11 +58,9 @@ FDATASECTIONSTART
 %include "data/fmem.inc"
 %include "data/floppy.inc"
 %include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/cia.inc"
 %include "data/copper.inc"
 %include "data/timer.inc"		
-%include "data/graph.inc"
 
 CDATAEXTERN blitend
 CDATAEXTERN draw_frame_count;
@@ -88,7 +86,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
-%include "func/graph.inc"
 %include "func/sprite.inc"
 %include "func/kbd.inc"
 %include "mac/fmem.mac"
@@ -104,6 +101,12 @@ CFUNCEXTERN blitFinishBlit
 CFUNCEXTERN busScanEventsLevel3
 CFUNCEXTERN busScanEventsLevel4
 CFUNCEXTERN busScanEventsLevel6
+CFUNCEXTERN graphEndOfFrame
+
+CDATAEXTERN graph_raster_x;
+CDATAEXTERN graph_raster_y;
+CDATAEXTERN lof;
+CDATAEXTERN graph_playfield_on;
 
 ;===========================================================
 ; bus_run_

@@ -303,6 +303,9 @@ extern ULO draw_buffer_draw;                 /* Number of the current drawing bu
 extern ULO draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
 
+extern ULO draw_hscale;
+extern BOOLE draw_deinterlace;
+
 /*===========================================================================*/
 /* Module properties                                                         */
 /*===========================================================================*/

@@ -36,10 +36,31 @@ FDATASECTIONSTART
 ;----------------------------------------------------------------------------- 
 
 %include "data/sprite.inc"
-%include "data/graph.inc"
 %include "data/fmem.inc"
 
 CDATAEXTERN draw_hscale;
+CDATAEXTERN graph_raster_y;
+CDATAEXTERN bplcon0;
+CDATAEXTERN bplcon2;
+CDATAEXTERN graph_DIW_last_visible;
+CDATAEXTERN graph_raster_x;
+
+%define graph_line_type                         0
+%define graph_line_line1			4
+%define graph_line_line2			1028
+%define graph_line_colors			2052
+%define graph_line_DIW_first_draw		2308
+%define graph_line_DIW_pixel_count		2312
+%define graph_line_BG_pad_front			2316
+%define graph_line_BG_pad_back			2320
+%define graph_line_draw_routine			2324
+%define graph_line_draw_BPL_res_routine		2328
+%define graph_line_DDF_start			2332
+%define graph_line_frames_left_until_BG_skip	2336
+%define graph_line_sprite_ham_slot		2340
+%define graph_line_bplcon2			2344
+%define graph_line_reserved1			2346
+%define graph_line_end				2348
 	
 FDATASECTIONEND
 FCODESECTIONSTART
