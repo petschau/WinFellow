@@ -24,6 +24,7 @@
 #include "fonts.h"
 #include "copper.h"
 #include "wgui.h"
+#include "sprite.h"
 
 
 
@@ -3585,7 +3586,7 @@ void drawLineHAM2x8_C(graph_line *linedesc)
   #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x8_tmp, &dlh2x8, &dlh2x8_times);
   #endif
-  spriteMergeHAM2x8(draw_buffer_current_ptr_local, linedesc);
+  spriteMergeHAM2x8((UWO*) draw_buffer_current_ptr_local, linedesc);
 }
 
 /*==============================================================================*/
@@ -3672,7 +3673,7 @@ void drawLineHAM1x16_C(graph_line *linedesc)
   #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh1x16_tmp, &dlh1x16, &dlh1x16_times);
   #endif
-  spriteMergeHAM1x16(draw_buffer_current_ptr_local, linedesc);
+  spriteMergeHAM1x16((UWO*) draw_buffer_current_ptr_local, linedesc);
 }
 
 /*==============================================================================*/
@@ -3759,7 +3760,7 @@ void drawLineHAM2x16_C(graph_line *linedesc)
   #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh2x16_tmp, &dlh2x16, &dlh2x16_times);
   #endif
-  spriteMergeHAM2x16(draw_buffer_current_ptr_local, linedesc);
+  spriteMergeHAM2x16((ULO*) draw_buffer_current_ptr_local, linedesc);
 }
 
 /*==============================================================================*/
@@ -3846,7 +3847,7 @@ void drawLineHAM1x32_C(graph_line *linedesc)
   #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlh1x32_tmp, &dlh1x32, &dlh1x32_times);
   #endif
-  spriteMergeHAM1x32(draw_buffer_current_ptr_local, linedesc);
+  spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local, linedesc);
 }
 
 /*==============================================================================*/
@@ -3925,7 +3926,7 @@ void drawLineHAM2x32_C(graph_line *linedesc)
       pixels_left_to_draw--;
       draw_buffer_current_ptr += 8;
   }
-  spriteMergeHAM2x32(draw_buffer_current_ptr_local, linedesc);
+  spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local, linedesc);
 }
 
 /*==============================================================================*/
@@ -3971,10 +3972,12 @@ void drawLineHAM1x24_C(graph_line *linedesc)
     {
       if ((*source_line_ptr & 0xc0) == 0)
       {
+	// Reload color from a color register
         hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
       }
       else
       {
+	// Replace one of the color components
         holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
         bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
         hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
@@ -3994,10 +3997,12 @@ void drawLineHAM1x24_C(graph_line *linedesc)
   {
       if ((*source_line_ptr & 0xc0) == 0)
       {
+	// Reload color from a color register
         hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
       }
       else
       {
+	// Replace one of the color components
         holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
         bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
         hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
@@ -4059,14 +4064,16 @@ void drawLineHAM2x24_C(graph_line *linedesc)
     {
       if ((*source_line_ptr & 0xc0) == 0)
       {
+	// Reload color from a color register
         hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
       }
       else
       {
-        holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+	// Replace one of the color components
+	holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
         bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
         hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
       }
       source_line_ptr++;
       nonvisible--;
@@ -4082,14 +4089,16 @@ void drawLineHAM2x24_C(graph_line *linedesc)
   {
       if ((*source_line_ptr & 0xc0) == 0)
       {
+	// Reload color from a color register
         hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
       }
       else
       {
+	// Replace one of the color components
         holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
         bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
         hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) | ((((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff)) << 16);
+        hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
       }
 
       *((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
