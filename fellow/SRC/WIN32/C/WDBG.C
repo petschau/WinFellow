@@ -9,14 +9,21 @@
 /*============================================================================*/
 /* ChangeLog:                                                                 */
 /* ----------                                                                 */
-/* 2000/12/08: made the debugger a property sheet; it should use register     */
+/* 2000/12/08:                                                                */
+/* - memory dump added                                                        */
+/* - fixed a bug which hung property sheets when launched the second time     */
+/*   (the dialog procs must not destroy the dialog)                           */
+/* - made the debugger a property sheet; it should use register               */
 /*   tabs, but I think for the beginning they are too complicated to use;     */
 /*   shall be fixed later                                                     */
+/*                                                                            */
 /*                                                                            */
 /* TODO:                                                                      */
 /* -----                                                                      */
 /* - how to use that PropSheet_CancelToClose(hwndDlg) ?                       */
 /* - why isn't the bg-color updated on initialization of the window ?         */
+/* DOS Fellow debugger functions still missing:                               */
+/* cia, io, floppy, sound, copper, sprites, screen, events                    */
 /*============================================================================*/
 
 #include "defs.h"
@@ -51,30 +58,48 @@
 
 static HWND wdbg_hDialog;
 
+
+#define WDBG_CPU_REGISTERS_X 24
+#define WDBG_CPU_REGISTERS_Y 26
+#define WDBG_DISASSEMBLY_X 16
+#define WDBG_DISASSEMBLY_Y 96
+#define WDBG_DISASSEMBLY_LINES 17
+#define WDBG_DISASSEMBLY_INDENT 16
+
+
+/*===================================*/
+/* private variables for this module */
+/*===================================*/
+
+static ULO memory_padd = WDBG_DISASSEMBLY_LINES * 32;
+static ULO memory_adress = 0;
+static BOOLE memory_ascii = FALSE;
+
+
 /*============*/
 /* Prototypes */
 /*============*/
 
 BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgKickDialogProc(HWND hwndDlg, UINT uMsg,
-				 WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
 
 /*==============================================================*/
 /* the various sheets of the main dialog and their dialog procs */
 /*==============================================================*/
 
-#define DEBUG_PROP_SHEETS 1
+#define DEBUG_PROP_SHEETS 2
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-  IDD_DEBUG_CPU
+  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY
     /*, IDD_..., */
 };
 
 typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
-  wdbgCPUDialogProc
+  wdbgCPUDialogProc, wdbgMemoryDialogProc
 };
 
 /*===========================*/
@@ -174,13 +199,6 @@ STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
   return s;
 }
 
-#define WDBG_CPU_REGISTERS_X 24
-#define WDBG_CPU_REGISTERS_Y 26
-#define WDBG_DISASSEMBLY_X 16
-#define WDBG_DISASSEMBLY_Y 96
-#define WDBG_DISASSEMBLY_LINES 17
-#define WDBG_DISASSEMBLY_INDENT 16
-
 void wdbgUpdateCPUState(HWND hwndDlg)
 {
   STR s[128];
@@ -232,6 +250,96 @@ void wdbgUpdateCPUState(HWND hwndDlg)
 }
 
 /*============================================================================*/
+/* Updates the memory state                                                   */
+/*============================================================================*/
+
+void wdbgUpdateMemoryState(HWND hwndDlg)
+{
+  STR st[128];
+  unsigned char k;
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i, j;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+	y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(st), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(st), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(st), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+    
+	for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++) {
+      if (memory_ascii) {
+	    sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
+		  (memory_adress + i * 16) & 0xffffff,
+		  fetl(memory_adress + i * 16 + 0),
+		  fetl(memory_adress + i * 16 + 4),
+		  fetl(memory_adress + i * 16 + 8),
+		  fetl(memory_adress + i * 16 + 12));
+		
+	    for (j = 0; j < 16; j++) {
+	      k = fetb(memory_adress + i * 16 + j) & 0xff;
+	      if (k < 32)
+	        st[j+41] = '.';
+	      else
+	        st[j+41] = k;
+		}
+	    st[16+41] = '\0';
+	    y = wdbgLineOut(hDC, st, x, y);
+      }
+      else			
+      {
+	    sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
+		  (memory_adress + i * 32) & 0xffffff,
+		  fetl(memory_adress + i * 32),
+		  fetl(memory_adress + i * 32 + 4),
+		  fetl(memory_adress + i * 32 + 8),
+		  fetl(memory_adress + i * 32 + 12),
+		  fetl(memory_adress + i * 32 + 16),
+		  fetl(memory_adress + i * 32 + 20),
+		  fetl(memory_adress + i * 32 + 24), 
+		  fetl(memory_adress + i * 32 + 28));
+	    y = wdbgLineOut(hDC, st, x, y);
+      }
+    }
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+
+/*============================================================================*/
 /* DialogProc for our cpu dialog                                             */
 /*============================================================================*/
 
@@ -268,19 +376,68 @@ BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg,
 	  fellowRequestEmulationStop();
 	  InvalidateRect(hwndDlg, NULL, FALSE);
 	  break;
-	case IDCANCEL:
-	  EndDialog(hwndDlg, LOWORD(wParam));
-	  return TRUE;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our memory dialog                                           */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateMemoryState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  memory_adress = (memory_adress - 32) & 0xffffff;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
+	  break;
+	case IDC_DEBUG_MEMORY_DOWN:
+	  memory_adress = (memory_adress + 32) & 0xffffff;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
+	  break;
+	case IDC_DEBUG_MEMORY_PGUP:
+	  memory_adress = (memory_adress - memory_padd) & 0xffffff;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
+	  break;
+	case IDC_DEBUG_MEMORY_PGDN:
+	  memory_adress = (memory_adress + memory_padd) & 0xffffff;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
+	  break;
+	case IDC_DEBUG_MEMORY_ASCII:
+	  memory_ascii = TRUE;
+	  memory_padd = WDBG_DISASSEMBLY_LINES * 16;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
+	  break;
+	case IDC_DEBUG_MEMORY_HEX:
+	  memory_ascii = FALSE;
+	  memory_padd = WDBG_DISASSEMBLY_LINES * 32;
+	  InvalidateRect(hwndDlg, NULL, FALSE);
+	  SetFocus(hwndDlg);
 	  break;
 	default:
 	  break;
       }
       break;
-    case WM_DESTROY:
-      EndDialog(hwndDlg, LOWORD(wParam));
-      return TRUE;
     default:
-      /* fellowAddLog("Unknown uMsg 0x%04x.\n", (long) uMsg); */
       break;
   }
   return FALSE;
