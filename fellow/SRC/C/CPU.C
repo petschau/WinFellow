@@ -3888,11 +3888,15 @@ LON i320_C(ULO ext, ULO divisor) {
     dq = (ext>>12) & 7; /* Get operand registers, size and sign */
     dr = ext & 7;
     size64 = (ext>>10) & 1;
+    if (size64)
+    {
+      int i = 0;
+    }
     if (size64 && (cpu_major == 6))
       return DIV_UNIMPLEMENTED_060;
     sign = (ext>>11) & 1;
     if (sign) {         /* Convert operands to 64 bit */
-      if (size64) q = da_regs[0][dq] || (((ULL) da_regs[0][dr])<<32);
+      if (size64) q = da_regs[0][dq] | (((ULL) da_regs[0][dr])<<32);
       else q = (LLO) (LON) da_regs[0][dq];
       dvsor = (LLO) (LON) divisor;
       if (((LLO) dvsor) < 0) {
@@ -3906,7 +3910,7 @@ LON i320_C(ULO ext, ULO divisor) {
       }	
     }
     else {
-      if (size64) q = da_regs[0][dq] || (((ULL) da_regs[0][dr])<<32);
+      if (size64) q = da_regs[0][dq] | (((ULL) da_regs[0][dr])<<32);
       else q = (ULL) da_regs[0][dq];
       dvsor = (ULL) divisor;
     }
