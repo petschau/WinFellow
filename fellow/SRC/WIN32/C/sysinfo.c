@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.11.2.7 2005-01-01 00:28:11 worfje Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.11.2.8 2005-01-30 10:17:22 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -999,6 +999,7 @@ static void sysinfoDetectCPU (void) {
   fellowAddTimelessLog("\tlevel 1 cache: \t%d KB\n", l1_cache);
   fellowAddTimelessLog("\tlevel 2 cache: \t%d KB\n", l2_cache);
 
+/*
   __try
   {
     speed = sysinfoCPUSpeed();
@@ -1008,7 +1009,10 @@ static void sysinfoDetectCPU (void) {
   {
 	  exception = TRUE;
   }
+*/
 
+	speed = 0;
+	exception = TRUE;
   if (exception == FALSE) {
 	fellowAddTimelessLog("\tCPU clock: \t%3.0f MHz\n", speed);
   }
