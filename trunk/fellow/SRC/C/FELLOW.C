@@ -344,6 +344,7 @@ void fellowRun(void) {
 
 void fellowStepOne(void) {
   fellowRequestEmulationStopImmediately();
+  if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_debug();
   fellowRequestEmulationStopImmediatelyClear();
@@ -359,6 +360,7 @@ void fellowStepOne(void) {
 void fellowStepOver(void) {
   char s[128];
   fellowRequestEmulationStopImmediately();
+  if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) {
     ULO current_pc = cpuGetPC(pc);
@@ -378,6 +380,7 @@ void fellowStepOver(void) {
 
 void fellowRunDebug(ULO breakpoint) {
   fellowRequestEmulationStopImmediately();
+  if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC(pc)))
