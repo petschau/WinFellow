@@ -35,7 +35,9 @@
 #define MFM_FILLL 0xaaaaaaaa
 #define MFM_MASK  0x55555555
 #define FLOPPY_INSERTED_DELAY 150
-#define FLOPPY_GAP_BYTES 532
+/* Andromeda Sequential assumes at least 640 bytes of gap,
+   Bernd uses 720 */
+#define FLOPPY_GAP_BYTES 720
 #define FLOPPY_FAST_WORDS 128
 
 /*---------------*/
