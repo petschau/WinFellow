@@ -268,11 +268,11 @@ BOOLE fellowEmulationStart(void) {
   kbdEmulationStart();
   gameportEmulationStart();
   result = drawEmulationStartPost();
-  timerEmulationStart();
   soundEmulationStart();
   busEmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
+  timerEmulationStart();
   return result && memoryGetKickImageOK();
 }
 
@@ -282,11 +282,11 @@ BOOLE fellowEmulationStart(void) {
 /*============================================================================*/
 
 void fellowEmulationStop(void) {
+  timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
   busEmulationStop();
   soundEmulationStop();
-  timerEmulationStop();
   gameportEmulationStop();
   kbdEmulationStop();
   drawEmulationStop();
@@ -311,7 +311,7 @@ void fellowRun(void) {
   fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_run();
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_debug();
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
@@ -356,11 +356,7 @@ void fellowStepOver(void) {
 /* Run until we crash or is exited in debug-mode                              */
 /*============================================================================*/
 
-void fellowRunDebug(void) {
-  //ULO breakpoint = 0xfc0af0; /* Init resident */
-  //ULO breakpoint = 0xfc47d8; /* disk resource start */
-  //ULO breakpoint = 0xfc4578; /* cia resource start */
-  ULO breakpoint = 0xfc0af0; /* cia resource start */
+void fellowRunDebug(ULO breakpoint) {
   fellowRequestEmulationStopImmediately();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
