@@ -44,6 +44,7 @@ extern void soundChannelKill(ULO channelno);
 typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
 typedef enum {SOUND_NONE, SOUND_PLAY, SOUND_EMULATE} sound_emulations;
 typedef enum {SOUND_FILTER_ORIGINAL, SOUND_FILTER_ALWAYS, SOUND_FILTER_NEVER} sound_filters;
+typedef enum {SOUND_DSOUND_NOTIFICATION, SOUND_MMTIMER_NOTIFICATION} sound_notifications;
 
 
 /*==========================*/
@@ -66,6 +67,7 @@ extern BOOLE sound_16bits;
 extern BOOLE sound_wav_capture;
 extern ULO sound_buffer_length;
 extern sound_filters sound_filter;
+extern sound_notifications sound_notification;
 
 
 /*==================================*/
@@ -87,7 +89,8 @@ extern void soundSetBufferLength(ULO ms);
 extern ULO soundGetBufferLength(void);
 extern void soundSetWAVDump(BOOLE wav_capture);
 extern BOOLE soundGetWAVDump(void);
-
+extern void soundSetNotification(sound_notifications notification);
+extern sound_notifications soundGetNotification(void);
 
 
 

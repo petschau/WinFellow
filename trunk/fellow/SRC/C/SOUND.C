@@ -29,6 +29,7 @@ BOOLE sound_stereo;                           /* Current mono/stereo setting */
 BOOLE sound_16bits;                              /* Current 8/16 bit setting */
 sound_emulations sound_emulation;
 sound_filters sound_filter;
+sound_notifications sound_notification;
 BOOLE sound_wav_capture;
 BOOLE sound_device_found;
 
@@ -147,6 +148,14 @@ __inline void soundSetFilter(sound_filters filter) {
 
 __inline sound_filters soundGetFilter(void) {
   return sound_filter;
+}
+
+__inline void soundSetNotification(sound_notifications notification) {
+  sound_notification = notification;
+}
+
+sound_notifications soundGetNotification(void) {
+  return sound_notification;
 }
 
 __inline void soundSetBufferLength(ULO ms) {
@@ -424,6 +433,7 @@ BOOLE soundStartup(void) {
   soundSetRate(SOUND_15650);
   soundSetStereo(FALSE);
   soundSet16Bits(FALSE);
+  soundSetNotification(SOUND_MMTIMER_NOTIFICATION);
   soundSetWAVDump(FALSE);
   soundSetBufferLength(40);
   soundIORegistersClear();
