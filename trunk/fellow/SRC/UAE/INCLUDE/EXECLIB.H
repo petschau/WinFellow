@@ -13,6 +13,8 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
+  @(#) $Id: EXECLIB.H,v 1.3 2004-05-27 12:29:50 carfesh Exp $
+
    FELLOW IN (END)------------------- */
 
 #define CMD_INVALID 0

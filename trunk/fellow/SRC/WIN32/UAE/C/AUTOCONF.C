@@ -14,6 +14,8 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
+  @(#) $Id: AUTOCONF.C,v 1.4 2004-05-27 12:30:24 carfesh Exp $
+
    FELLOW IN (END)------------------- */
 
 /* FELLOW OUT (START)----------------

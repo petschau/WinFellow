@@ -1,30 +1,32 @@
-/*============================================================================*/
-/* Fellow Amiga Emulator - system information retrieval                       */
-/*                                                                            */
-/* Author: Torsten Enderling (carfesh@gmx.net)                                */
-/*                                                                            */
-/* Outputs valuable debugging information like hardware details and           */
-/* OS specifics into the logfile                                              */
-/*                                                                            */
-/* Partially based on MSDN Library code examples; reference IDs are           */
-/* Q117889 Q124207 Q124305                                                    */
-/*                                                                            */
-/* This file is under the GNU General Public License (GPL)                    */
-/*============================================================================*/
-/*============================================================================*/
-/* Changelog:                                                                 */
-/* ----------                                                                 */
-/* 2002/08/18: included more detailed source information since I was unable   */
-/*             at first to find the corresponding sourcelines                 */
-/* 2000/10/24: included draft cpu detection code on assembly level; basically */
-/*             this is a port of the MemTest86 routines to VisualC            */
-/* 2000/10/23: additional hardware enumeration tree ROOT for some NT versions */
-/*             has been added                                                 */
-/* 2000/10/21: reads more stuff from the registry, even more experimental     */
-/*             regarding to where to find stuff in different windows versions */
-/*             and how to enumerate keys in two levels...                     */
-/* 2000/10/19: first release, highly experimental                             */
-/*============================================================================*/
+/*=========================================================================*/
+/* Fellow Amiga Emulator - system information retrieval                    */
+/*                                                                         */
+/* @(#) $Id: sysinfo.c,v 1.13 2004-05-27 12:28:36 carfesh Exp $        */
+/*                                                                         */
+/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/*                                                                         */
+/* Outputs valuable debugging information like hardware details and        */
+/* OS specifics into the logfile                                           */
+/*                                                                         */
+/* Partially based on MSDN Library code examples; reference IDs are        */
+/* Q117889 Q124207 Q124305                                                 */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 
 #include <windows.h>
 #include <excpt.h>

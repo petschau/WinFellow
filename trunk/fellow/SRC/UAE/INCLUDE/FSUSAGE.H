@@ -22,6 +22,8 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
+  @(#) $Id: FSUSAGE.H,v 1.3 2004-05-27 12:29:50 carfesh Exp $
+
    FELLOW IN (END)------------------- */
 
 /* Space usage statistics for a filesystem.  Blocks are 512-byte. */
