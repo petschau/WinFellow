@@ -92,13 +92,12 @@ int spriteCompareRasterX(spr_action_list_item *item_from_list, spr_action_list_i
 void spriteDMAActionListClear(ULO sprnr);
 void spriteActionListsClear();
 void spriteActionListClear(ULO sprnr);
+void spriteMergeListClear(ULO sprnr);
 
 void spriteMergeDualPlayfield(graph_line* current_graph_line);
 void spriteMergeHires(graph_line* current_graph_line);
 void spriteMergeHires320(graph_line* current_graph_line);
 void spriteMergeLores(graph_line* current_graph_line);
-
-
 
 extern void spriteSetDelay(ULO delay);
 extern void spriteEndOfLine(void);

@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.1.1.1.2.7 2004-06-14 19:49:55 worfje Exp $ */
+/* @(#) $Id: BUS.C,v 1.1.1.1.2.8 2004-08-16 17:29:17 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -254,7 +254,8 @@ void endOfLineC(void)
 	/* and updates the graphics emulation for a new line            */
 	/*==============================================================*/
   
-  graphEndOfLine_C(); // non assembly function
+  graphEndOfLine_C(); 
+  spriteEndOfLine();
 
 	/*==============================================================*/
 	/* Update the CIA B event counter                               */
