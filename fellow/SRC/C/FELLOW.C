@@ -37,6 +37,10 @@
 #include "ffilesys.h"
 
 
+BOOLE fellow_request_emulation_stop;
+BOOLE fellow_request_emulation_stop_immediately;
+
+
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
 /*============================================================================*/
@@ -181,12 +185,40 @@ void fellowHardReset(void) {
   fellowPreStartReset(FALSE);
 }
 
+/*============================================================================*/
+/* Modules use this to request that emulation stop safely.                    */
+/* Emulation will stop at the beginning of the next frame                     */
+/*============================================================================*/
+
+void fellowRequestEmulationStop(void) {
+  fellow_request_emulation_stop = TRUE;
+}
+
+
+void fellowRequestEmulationStopClear(void) {
+  fellow_request_emulation_stop = FALSE;
+}
+
+
+/*============================================================================*/
+/* Modules can use this to request that emulation stop immediately            */
+/* Only the debugger should use this.                                         */
+/*============================================================================*/
+
+void fellowRequestEmulationStopImmediately(void) {
+  fellow_request_emulation_stop_immediately = TRUE;
+}
+
+void fellowRequestEmulationStopImmediatelyClear(void) {
+  fellow_request_emulation_stop_immediately = FALSE;
+}
 
 /*============================================================================*/
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
 void fellowEmulationStart(void) {
+  fellowRequestEmulationStopClear();
   memoryEmulationStart();
   ciaEmulationStart();
   cpuEmulationStart();
@@ -236,12 +268,12 @@ void fellowEmulationStop(void) {
 /*============================================================================*/
 
 void fellowRun(void) {
-  debugging = FALSE;
+  fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_run();
-  debugging = FALSE;
-  f12pressed = FALSE;
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
 
@@ -251,11 +283,11 @@ void fellowRun(void) {
 /*============================================================================*/
 
 void fellowStepOne(void) {
-  debugging = TRUE;
+  fellowRequestEmulationStopImmediately();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_debug();
-  debugging = FALSE;
-  f12pressed = FALSE;
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
 
@@ -266,15 +298,16 @@ void fellowStepOne(void) {
 
 void fellowStepOver(void) {
   char s[128];
-  debugging = TRUE;
+  fellowRequestEmulationStopImmediately();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) {
     ULO current_pc = cpuGetPC(pc);
     ULO over_pc = disOpcode(current_pc, s);
-    while ((cpuGetPC(pc) != over_pc) && !f12pressed) bus_debug();
+    while ((cpuGetPC(pc) != over_pc) && !fellow_request_emulation_stop)
+      bus_debug();
   }
-  debugging = FALSE;
-  f12pressed = FALSE;
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
 
@@ -288,12 +321,13 @@ void fellowRunDebug(void) {
   //ULO breakpoint = 0xfc47d8; /* disk resource start */
   //ULO breakpoint = 0xfc4578; /* cia resource start */
   ULO breakpoint = 0xfc0af0; /* cia resource start */
-  debugging = TRUE;
+  fellowRequestEmulationStopImmediately();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
-    while ((!f12pressed) && (breakpoint != cpuGetPC(pc))) bus_debug();
-  debugging = FALSE;
-  f12pressed = FALSE;
+    while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC(pc)))
+      bus_debug();
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
 

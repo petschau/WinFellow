@@ -196,7 +196,7 @@ BOOL CALLBACK wdbgMainDialogProc(HWND hwndDlg,
 	  }
           break;
 	case IDC_DEBUG_CPU_BREAK:
-          f12pressed = TRUE;
+          fellowRequestEmulationStop();
 	  InvalidateRect(hwndDlg, NULL, FALSE); 
           break;
 	case IDCANCEL:

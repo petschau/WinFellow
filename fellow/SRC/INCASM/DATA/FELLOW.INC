@@ -6,5 +6,7 @@
 ;==============================================================================
 
 CDATAEXTERN fellow_mmx_detected
+CDATAEXTERN fellow_request_emulation_stop
+CDATAEXTERN fellow_request_emulation_stop_immediately
 
 %endif
