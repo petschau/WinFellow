@@ -17,6 +17,13 @@
 #define memoryChipWriteWord ASMRENAME(memoryChipWriteWord)
 #define memoryChipWriteLong ASMRENAME(memoryChipWriteLong)
 
+#define memoryOVLReadByte ASMRENAME(memoryOVLReadByte)
+#define memoryOVLReadWord ASMRENAME(memoryOVLReadWord)
+#define memoryOVLReadLong ASMRENAME(memoryOVLReadLong)
+#define memoryOVLWriteByte ASMRENAME(memoryOVLWriteByte)
+#define memoryOVLWriteWord ASMRENAME(memoryOVLWriteWord)
+#define memoryOVLWriteLong ASMRENAME(memoryOVLWriteLong)
+
 #define memoryFastReadByte ASMRENAME(memoryFastReadByte)
 #define memoryFastReadWord ASMRENAME(memoryFastReadWord)
 #define memoryFastReadLong ASMRENAME(memoryFastReadLong)
@@ -103,6 +110,15 @@ extern ULO memoryChipReadLong(ULO ea);
 extern void memoryChipWriteByte(ULO data, ULO ea);
 extern void memoryChipWriteWord(ULO data, ULO ea);
 extern void memoryChipWriteLong(ULO data, ULO ea);
+
+/* KICKSTART OVERLAY INTERFACE */
+
+extern ULO memoryOVLReadByte(ULO ea);
+extern ULO memoryOVLReadWord(ULO ea);
+extern ULO memoryOVLReadLong(ULO ea);
+extern void memoryOVLWriteByte(ULO data, ULO ea);
+extern void memoryOVLWriteWord(ULO data, ULO ea);
+extern void memoryOVLWriteLong(ULO data, ULO ea);
 
 /* FAST RAM INTERFACE */
 
@@ -261,6 +277,7 @@ extern void memoryBankSet(memoryReadFunc rb,
 			  ULO basebank,
 			  BOOLE datadirect);
 extern UBY *memoryAddressToPtr(ULO address);
+extern void memoryChipMap(BOOLE overlay);
 
 /* Memory configuration properties */
 
