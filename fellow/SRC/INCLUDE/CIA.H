@@ -30,6 +30,7 @@ extern void ciaStartup(void);
 extern void ciaShutdown(void);
 extern void ciaMemoryMap(void);
 extern void ciaHandleEventC(void);
+extern void ciaRaiseIndexIRQ(void); /* For the floppy loader */
 
 /* Cia event data */
 

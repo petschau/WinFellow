@@ -34,6 +34,7 @@ Tuesday, September 19, 2000
 #define CIA_TB_IRQ    2
 #define CIA_ALARM_IRQ 4
 #define CIA_KBD_IRQ   8
+#define CIA_FLAG_IRQ  16
 
 LON cia_next_event_time; /* Cycle for cia-event, measured from sof */
 ULO cia_next_event_type; /* What type of event */
@@ -120,6 +121,12 @@ void ciaUpdateIRQ(ULO i) {
 void ciaRaiseIRQC(ULO i, ULO req) {
   cia_icrreq[i] |= (req & 0x1f);
   ciaUpdateIRQ(i);
+}
+
+/* Helps the floppy loader, Cia B Flag IRQ */
+
+void ciaRaiseIndexIRQ(void) {
+  ciaRaiseIRQC(1, CIA_FLAG_IRQ);
 }
 
 /* Timeout handlers */
@@ -531,7 +538,7 @@ ULO ciaReadLongC(ULO address) {
 }
 
 void ciaWriteByteC(ULO data, ULO address) {
-  if ((memory_wriorgadr & 0xa01001) == 0xa00001)
+   if ((memory_wriorgadr & 0xa01001) == 0xa00001)
     cia_write[(memory_wriorgadr & 0xf00)>>8](0, data & 0xff);
   else if ((memory_wriorgadr & 0xa02001) == 0xa00000)
     cia_write[(memory_wriorgadr & 0xf00)>>8](1, data & 0xff);
