@@ -15,5 +15,13 @@
 %endmacro
 
 
+%macro BLITTEROPERATIONLOG_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	blitterOperationLog
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+
 %endif
 

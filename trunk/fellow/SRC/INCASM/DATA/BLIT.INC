@@ -56,6 +56,7 @@ CDATAEXTERN linenum
 CDATAEXTERN linecount
 CDATAEXTERN blitterdmawaiting
 CDATAEXTERN blitter_ECS
+CDATAEXTERN blitter_operation_log
 
 %endif
 
