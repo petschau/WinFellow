@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.11.2.5 2004-06-03 14:47:30 carfesh Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.11.2.6 2004-06-12 15:36:02 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -407,8 +407,9 @@ static void sysinfoParseMemoryStatus (void) {
 }
 
 static void sysinfoVersionInfo (void) {
-
-	fellowAddTimelessLog(FELLOWVERSION);
+    char *versionstring = fellowGetVersionString();
+	fellowAddTimelessLog(versionstring);
+    free(versionstring);
 
 	#ifdef USE_DX3
 		fellowAddTimelessLog(" (DirectX 3");

@@ -125,12 +125,6 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
    }
 }
 
-/*#ifdef _MSC_VER
-#ifndef _DEBUG
-#pragma optimize("g", off)
-#endif
-#endif*/
-
 void winDrvEmulate(void *startfunc, void *param)
 {
   DWORD dwThreadId;
@@ -190,13 +184,6 @@ void winDrvEmulate(void *startfunc, void *param)
   CloseHandle(FellowThread);
   CloseHandle(win_drv_emulation_ended);
 }
-
-/*
-#ifdef _MSC_VER
-#ifndef _DEBUG
-#pragma optimize("g", on)
-#endif
-#endif*/
 
 void winDrvEmulationStart(void) {
   if (fellowEmulationStart()) winDrvEmulate(winDrvFellowRunStart, 0);
