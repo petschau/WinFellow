@@ -481,7 +481,7 @@ void wdiwstrt_C(ULO data, ULO address)
     diwxleft = data & 0x000000FF;
   }
   graphCalculateWindow_C();
-	graphPlayfieldOnOff();
+  graphPlayfieldOnOff();
 }
 
 /*===========================================================================*/
@@ -511,7 +511,7 @@ void wdiwstop_C(ULO data, ULO address)
     diwxright = 472;
   }
   graphCalculateWindow_C();
-	graphPlayfieldOnOff();
+  graphPlayfieldOnOff();
 }
 
 /*==============================================================================*/
@@ -617,17 +617,7 @@ void wdmacon_C(ULO data, ULO address)
         if ((prev_dmacon & (1 << i)) == 0x0)
         {
           // audio channel 0 DMA enable bit was clear previously
-          __asm {
-            push edx
-            push ecx
-            mov edx, 4
-            imul edx, i
-            push eax
-            call soundState0
-            pop eax
-            pop ecx
-            pop edx
-          }
+	  soundChannelEnable(i);
         }
       }
     }    
@@ -683,12 +673,7 @@ void wdmacon_C(ULO data, ULO address)
       {
         if ((prev_dmacon & (1 << i)) != 0x0)
         {
-          __asm {
-            push ecx
-            mov ecx, i
-            call soundChannelKill
-            pop ecx
-          }
+	  soundChannelKill(i);
         }
       }
     }
