@@ -130,7 +130,7 @@ BOOLE soundDrvDSoundInitialize(void) {
   HRESULT res;
   ULO i;
 
-  fellowAddLog("Setting lpDSB to NULL\n");
+  //fellowAddLog("Setting lpDSB to NULL\n");
   sound_drv_dsound_device_current.modes = NULL;
   sound_drv_dsound_device_current.lpDS = NULL;
   sound_drv_dsound_device_current.lpDSB = NULL;
@@ -335,7 +335,7 @@ void soundDrvDSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device) 
   if (dsound_device->lpDSB != NULL) {
     IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, 0);
     IDirectSoundBuffer_Release(dsound_device->lpDSB);
-    fellowAddLog("soundDrvDSoundPrimaryBufferRelease(), setting lpDSB to NULL");
+    //fellowAddLog("soundDrvDSoundPrimaryBufferRelease(), setting lpDSB to NULL");
     dsound_device->lpDSB = NULL;
   }
 }
@@ -354,7 +354,7 @@ BOOLE soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devi
   WAVEFORMATEX wfm;
   HRESULT res;
 
-  fellowAddLog("Place 1\n");
+  //fellowAddLog("Place 1\n");
   
   /* Create sound buffer */
   
@@ -382,7 +382,7 @@ BOOLE soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devi
     return FALSE;
   }
 
-  fellowAddLog("Place 2\n");
+  //fellowAddLog("Place 2\n");
 
   /* Set format of primary buffer */
 
@@ -393,7 +393,7 @@ BOOLE soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devi
     return FALSE;
   }
 
-  fellowAddLog("Place 3\n");
+  //fellowAddLog("Place 3\n");
 
   /* When we get here, all is well */
 
@@ -446,12 +446,13 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
+/*
   {
     char s[80];
     sprintf(s, "Buffer is %d bytes long\n", dsbdesc.dwBufferBytes);
     fellowAddLog(s);
   }
-
+*/
   res = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
                                        &dsbdesc,
 				       &dsound_device->lpDSBS,
@@ -478,7 +479,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 
   /* Attach notification objects to buffer */
   
-  fellowAddLog("Place 4\n");
+  //fellowAddLog("Place 4\n");
   rgdscbpn[0].dwOffset = dsound_device->mode_current->buffer_block_align*
                          (dsound_device->mode_current->buffer_sample_count - 1);
   rgdscbpn[0].hEventNotify = dsound_device->notifications[0];
@@ -497,7 +498,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 
   /* When we get here, all is well */
 
-  fellowAddLog("All is well for secondary buffer\n");
+  //fellowAddLog("All is well for secondary buffer\n");
   return TRUE;
 }
 
@@ -507,7 +508,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 /*===========================================================================*/
 
 void soundDrvDSoundPlaybackStop(sound_drv_dsound_device *dsound_device) {
-  fellowAddLog("soundDrvDSoundPlaybackStop()\n");
+  //fellowAddLog("soundDrvDSoundPlaybackStop()\n");
   soundDrvDSoundSecondaryBufferRelease(dsound_device);
   soundDrvDSoundPrimaryBufferRelease(dsound_device);
 }
@@ -521,21 +522,22 @@ BOOLE soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device) {
   BOOLE result;
   HRESULT res;
 
-  fellowAddLog("Sound, initializing playback\n");
+  //fellowAddLog("Sound, initializing playback\n");
   dsound_device->lastreadpos = 0;
   result = soundDrvDSoundPrimaryBufferInitialize(dsound_device);
-  fellowAddLog("Sound, primary done, doing secondary\n");
+  //fellowAddLog("Sound, primary done, doing secondary\n");
   if (result) result = soundDrvDSoundSecondaryBufferInitialize(dsound_device);
   if (!result) {
     fellowAddLog("Sound, secondary failed\n");
     soundDrvDSoundPrimaryBufferRelease(dsound_device);
   }
   if (result) {
-    fellowAddLog("Starting to play buffers\n");
+    //fellowAddLog("Starting to play buffers\n");
     if ((res = IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, DSBPLAY_LOOPING)) != DS_OK)
       soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Primary->Play(), ", res);
     if ((res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING)) != DS_OK)
       soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Secondary->Play(), ", res);
+    //fellowAddLog("Finished starting to play buffers\n");
   }
   return result;
 }
@@ -643,7 +645,7 @@ BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 
 void soundDrvPlay(WOR *left, WOR *right, ULO sample_count) {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
-  fellowAddLog("soundDrvPlay() starting\n");
+//  fellowAddLog("soundDrvPlay() starting\n");
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);
   dsound_device->pending_data_left = left;
   dsound_device->pending_data_right = right;
@@ -675,25 +677,69 @@ void soundDrvReleaseMutex(sound_drv_dsound_device *dsound_device) {
 /* We use this one only when notification is supported                       */
 /*===========================================================================*/
 
-BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device) {
-  HANDLE multi_events[2];
+BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
+			  ULO next_buffer_no,
+			  BOOLE *need_to_restart_playback) {
+  HANDLE multi_events[3];
   DWORD evt;
+  BOOLE terminate_wait;
+  BOOLE terminate_thread;
+  ULO wait_for_x_events = 3;
 
+  // No-wait test for data_available, return TRUE if data is available
   if (WaitForSingleObject(dsound_device->data_available, 0) == WAIT_OBJECT_0)
   {
     return TRUE;
   }
-  fellowAddLog("Data was not available\n");
-  IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
-  multi_events[0] = dsound_device->data_available;
-  multi_events[1] = dsound_device->notifications[2];
-  evt = WaitForMultipleObjects(2,
-			       (void*const*) multi_events,
-			       FALSE,
-			       INFINITE);
-  if (evt == WAIT_OBJECT_0)
-    IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
-  return (evt == WAIT_OBJECT_0);
+  //fellowAddLog("Data was not available\n");
+  // Here, data is not available from the sound emulation
+  // And we have played past the end of the buffer we want to copy data to
+  // We can continue to play until the end of the next buffer, but then we
+  // must stop playback, since there is no more data to play
+  // So we set up a multiple object wait which trigger on the following
+  // conditions:
+  // 0 - Data becomes available, return TRUE, playback is not stopped
+  // 1 - End of the thread is signaled, return FALSE to indicate termination
+  // 2 - The end of the next buffer is reached, stop playback, has no data,yet
+  //     Redo the wait, this time without the event for end of the next buffer
+
+  // What if we are lagging behind already?
+
+  terminate_wait = FALSE;
+  terminate_thread = FALSE;
+  while (!terminate_wait)
+  {
+    multi_events[0] = dsound_device->data_available;
+    multi_events[1] = dsound_device->notifications[2];
+    if (wait_for_x_events == 3) multi_events[2] = dsound_device->notifications[next_buffer_no];
+    evt = WaitForMultipleObjects(wait_for_x_events,
+			         (void*const*) multi_events,
+			         FALSE,
+			         INFINITE);
+    switch (evt)
+    {
+      case WAIT_OBJECT_0:
+        // Data is now available
+	// Restart playing if we have stopped it
+        *need_to_restart_playback = (wait_for_x_events == 2);
+	terminate_wait = TRUE;
+//	fellowAddLog("Needed to wait for data, got it now\n");
+	break;
+      case WAIT_OBJECT_0 + 1:
+	// End of thread requested, return FALSE
+	terminate_wait = TRUE;
+	terminate_thread = TRUE;
+//	fellowAddLog("soundDrvWaitForData(), thread is terminating\n");
+	break;
+      case WAIT_OBJECT_0 + 2:
+	// End of next buffer reached, stop playback, wait more
+        IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
+	wait_for_x_events = 2;
+//	fellowAddLog("soundDrvWaitForData(), next buffer exhausted, stopping playback\n");
+	break;
+    }
+  }
+  return !terminate_thread;
 }
 
 
@@ -731,6 +777,38 @@ void soundDrvPollBufferPosition(void) {
   soundDrvReleaseMutex(dsound_device);
 }
 
+/*===========================================================================*/
+/* Process end of buffer event                                               */
+/*===========================================================================*/
+
+BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
+				 ULO current_buffer_no,
+				 ULO next_buffer_no)
+{
+  BOOLE terminate_thread = FALSE;
+  BOOLE need_to_restart_playback = FALSE;
+  if (soundDrvWaitForData(dsound_device,
+			  next_buffer_no, 
+			  &need_to_restart_playback)) {
+    soundDrvDSoundCopyToBuffer(dsound_device,
+ 			       dsound_device->pending_data_left,
+			       dsound_device->pending_data_right,
+			       dsound_device->pending_data_sample_count,
+			       current_buffer_no);
+    if (need_to_restart_playback)
+      IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+    // If the next buffer also triggered during soundDrvWaitForData()
+    // it will end multiple object wait immediately, since we don't reset it
+    ResetEvent(dsound_device->data_available);
+    SetEvent(dsound_device->can_add_data);
+    ResetEvent(dsound_device->notifications[current_buffer_no]);
+  }
+  else {
+    terminate_thread = TRUE;
+    //fellowAddLog("Terminated in soundDrvWaitForData()\n");
+  }
+  return terminate_thread;
+}
 
 /*===========================================================================*/
 /* Thread, from which we control playback much in the same way as under DOS  */
@@ -747,11 +825,15 @@ void soundDrvPollBufferPosition(void) {
 /*===========================================================================*/
 
 DWORD WINAPI soundDrvThreadProc(void *in) {
-  BOOLE terminate_loop = FALSE;
+  BOOLE terminate_thread = FALSE;
   sound_drv_dsound_device *dsound_device = (sound_drv_dsound_device *) in;
 
-  fellowAddLog("soundDrvThreadProc()\n");
-  while (!terminate_loop) {
+//  fellowAddLog("soundDrvThreadProc()\n");
+  while (!terminate_thread) {
+    // Thread is activated by 3 different events:
+    // 0 - Play position is at end of buffer 0
+    // 1 - Play position is at end of buffer 1
+    // 2 - Thread must terminate (triggered in soundDrvEmulationStop())
     DWORD dwEvt = WaitForMultipleObjects(3,
 					 (void*const*) (dsound_device->notifications),
 					 FALSE,
@@ -759,47 +841,23 @@ DWORD WINAPI soundDrvThreadProc(void *in) {
     
     switch (dwEvt) {
       case WAIT_OBJECT_0 + 0: /* End of first buffer */
-	if (soundDrvWaitForData(dsound_device)) {
-	  soundDrvDSoundCopyToBuffer(dsound_device,
-				     dsound_device->pending_data_left,
-				     dsound_device->pending_data_right,
-				     dsound_device->pending_data_sample_count,
-				     0);
-	  ResetEvent(dsound_device->data_available);
-	  SetEvent(dsound_device->can_add_data);
-	  ResetEvent(dsound_device->notifications[0]);
-	}
-	else {
-	  terminate_loop = TRUE;
-	  fellowAddLog("Terminated in soundDrvWaitForData()\n");
-	}
-/*	fellowAddLog("Object 1\n");*/
+	// Wait for data_available event to become signaled
+	// or FALSE is returned if (2) becomes signaled (end thread)
+	terminate_thread = soundDrvProcessEndOfBuffer(dsound_device, 0, 1);
 	break;
       case WAIT_OBJECT_0 + 1: /* End of first buffer */
-	if (soundDrvWaitForData(dsound_device)) {
-	  soundDrvDSoundCopyToBuffer(dsound_device,
-				     dsound_device->pending_data_left,
-				     dsound_device->pending_data_right,
-				     dsound_device->pending_data_sample_count,
-				     1);
-	  ResetEvent(dsound_device->data_available);
-	  SetEvent(dsound_device->can_add_data);
-	  ResetEvent(dsound_device->notifications[1]);
-	}
-	else {
-	  terminate_loop = TRUE;
-	  fellowAddLog("Terminated in soundDrvWaitForData()\n");
-	}
-/*	fellowAddLog("Object 2\n");*/
+	// Wait for data_available event to become signaled
+	// or FALSE is returned if (2) becomes signaled (end thread)
+	terminate_thread = soundDrvProcessEndOfBuffer(dsound_device, 1, 0);
 	break;
       case WAIT_OBJECT_0 + 2: /* Emulation is ending */
       default:
-	terminate_loop = TRUE;
-	fellowAddLog("Terminate\n");
+	terminate_thread = TRUE;
+//	fellowAddLog("Sound thread was asked to terminate\n");
 	break;
     }
   }
-  fellowAddLog("soundDrvThreadProc() ending\n");
+//  fellowAddLog("soundDrvThreadProc() ending\n");
   return 0;
 }
 
@@ -866,7 +924,11 @@ BOOLE soundDrvEmulationStart(ULO rate,
 
   /* In case of failure, we undo any stuff we've done so far */
   
-  if (!result) soundDrvDSoundPlaybackStop(dsound_device);
+  if (!result) {
+    fellowAddLog("Failed to start sound\n");
+    soundDrvDSoundPlaybackStop(dsound_device);
+  }
+
   soundDrvReleaseMutex(dsound_device);
   return result;
 }
@@ -919,4 +981,3 @@ void soundDrvShutdown(void) {
   if (sound_drv_dsound_device_current.mutex != NULL)
     CloseHandle(sound_drv_dsound_device_current.mutex);
 }
-
