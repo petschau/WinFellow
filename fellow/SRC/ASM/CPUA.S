@@ -8955,7 +8955,7 @@ _arb0733_:	call	_eac0733_
 
 ;==============================================================================
 ; Adressmode routines for reading byte,word,longword
-; (NOTE!) _Without_ PC increase, without An inc/dec
+; (NOTE!) _Without_ PC increase, without An inc/dec, does not change prefetch
 ; Parameters:  In:  edx - pointer to register	esi - current PC position
 ;	      Out:  edx - result		esi - current PC position
 ;==============================================================================
@@ -8967,7 +8967,13 @@ _arb0733_:	call	_eac0733_
 
 global _parl063_
 _parl063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchlret
@@ -8977,7 +8983,13 @@ _parl063_:	push	esi
 
 global _parw063_
 _parw063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchwret
@@ -8987,7 +8999,13 @@ _parw063_:	push	esi
 
 global _parb063_
 _parb063_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac063_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchbret
@@ -8997,7 +9015,13 @@ _parb063_:	push	esi
 
 global _parl0733_
 _parl0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchlret
@@ -9007,7 +9031,13 @@ _parl0733_:	push	esi
 
 global _parw0733_
 _parw0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchwret
@@ -9017,7 +9047,13 @@ _parw0733_:	push	esi
 
 global _parb0733_
 _parb0733_:	push	esi
+%ifdef PREFETCH
+		push	dword [prefetch_word]
+%endif
 		call	_eac0733_
+%ifdef PREFETCH
+		pop	dword [prefetch_word]
+%endif
 		pop	esi
 		mov	ecx, edx
 		fetchbret
