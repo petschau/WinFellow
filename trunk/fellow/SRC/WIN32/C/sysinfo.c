@@ -14,6 +14,7 @@
 /*============================================================================*/
 /* Changelog:                                                                 */
 /* ----------                                                                 */
+/* 2000/10/23: some NT systems have an additional hardware enum path          */
 /* 2000/10/21: reads more stuff from the registry, even more experimental     */
 /*             regarding to where to find stuff in different windows versions */
 /*             and how to enumerate keys in two levels...                     */
@@ -236,6 +237,9 @@ EnumRegistry (void)
 	  /* this seems to be the right place in Win2k and NT */
       EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\PCI"));
       EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\ISAPNP"));
+	  /* I'm not sure where exactly that one is required; I needed it */
+	  /* on WinNT 4 SP 5:                                             */
+	  EnumHardwareTree (TEXT ("SYSTEM\\CurrentControlSet\\Enum\\Root"));
     }
   else
     {
