@@ -43,7 +43,6 @@ extern ULO irq_next;
 extern ULO lvl2_next, lvl3_next;
 extern ULO lvl4_next, lvl5_next;
 extern ULO lvl6_next, lvl7_next;
-extern ULO debugging;
 extern ULO curcycle;
 
 #endif
