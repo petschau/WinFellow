@@ -409,19 +409,6 @@ _endOfFrame_:	push	edx
 
 
 		;==============================================================
-		; Generate FLAG int (INDEX)  every 16th frame.
-		; Just to keep some loaders happy
-		;==============================================================
-
-		mov	edx, [draw_frame_count]
-		and	edx, 01fh
-		jnz	.l11
-		mov	eax, 1
-		mov	edx, 010h
-		CIA_RAISE_IRQ_CWRAP
-.l11:
-
-		;==============================================================
 		; Recalculate blitter finished time
 		;==============================================================
 
