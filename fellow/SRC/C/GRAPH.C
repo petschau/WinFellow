@@ -533,6 +533,7 @@ static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
 static __inline void graphDecodeGeneric(int bitplanes)
 {
   ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
+
   if (bitplanes == 0) return;
   if (bpl_length_in_bytes != 0) 
   {
@@ -542,37 +543,39 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO *end_odd;
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1=0, dat2=0, dat3=0, dat4=0, dat5=0, dat6=0; 
+    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+
+    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
-	if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-	{
-		// high resolution
-		dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
-	} 
-	else 
-	{
-		int maxscroll;
-		ULO temp;
+	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+	  {
+		  // high resolution
+		  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
+	  } 
+	  else 
+	  {
+		  int maxscroll;
+		  ULO temp;
 
-		// clear edges
-		if (evenscroll > oddscroll) 
-		{
-			maxscroll = evenscroll;
-		}
-		else
-		{
-			maxscroll = oddscroll;
-		}
+		  // clear edges
+		  if (evenscroll > oddscroll) 
+		  {
+			  maxscroll = evenscroll;
+		  }
+		  else
+		  {
+			  maxscroll = oddscroll;
+		  }
 
-		temp = 0;
-		while (maxscroll > 0) {
-			graph_line1_tmp[graph_DDF_start + temp] = 0;
-			graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-			maxscroll -= 4;
-			temp += 4;
-		}
-		dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
-	}
+		  temp = 0;
+		  while (maxscroll > 0) {
+			  graph_line1_tmp[graph_DDF_start + temp] = 0;
+			  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+			  maxscroll -= 4;
+			  temp += 4;
+		  }
+		  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
+	  }
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
 	if (bitplanes > 1)
@@ -637,32 +640,34 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-    
-	int maxscroll;
-	ULO temp;
+  
+	  int maxscroll;
+	  ULO temp;
 
-	// clear edges
-	if (evenscroll > oddscroll) 
-	{
-		maxscroll = evenscroll;
-	}
-	else
-	{
-		maxscroll = oddscroll;
-	}
+    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
-	temp = 0;
-	while (maxscroll > 0) {
-		graph_line1_tmp[graph_DDF_start + temp] = 0;
-		graph_line2_tmp[graph_DDF_start + temp] = 0;
-		graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		graph_line2_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		maxscroll -= 4;
-		temp += 4;
-	}
-	
-	// setup loop
-	dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
+	  // clear edges
+	  if (evenscroll > oddscroll) 
+	  {
+		  maxscroll = evenscroll;
+	  }
+	  else
+	  {
+		  maxscroll = oddscroll;
+	  }
+
+	  temp = 0;
+	  while (maxscroll > 0) {
+		  graph_line1_tmp[graph_DDF_start + temp] = 0;
+		  graph_line2_tmp[graph_DDF_start + temp] = 0;
+		  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+		  graph_line2_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+		  maxscroll -= 4;
+		  temp += 4;
+	  }
+	  
+	  // setup loop
+	  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
 	if (bitplanes > 1)
@@ -686,7 +691,7 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     {
       if (bitplanes >= 1) dat1 = *pt1_tmp++;
       if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	  if (bitplanes >= 5) dat5 = *pt5_tmp++;
+	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
       dest_tmp[0] = graphDecodeDual1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeDual2(bitplanes, dat1, dat3, dat5);
     }
@@ -697,9 +702,9 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
       {
         if (bitplanes >= 2) dat2 = *pt2_tmp++;
         if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			dest_tmp[0] = graphDecodeDual1(bitplanes, dat2, dat4, dat6);
-			dest_tmp[1] = graphDecodeDual2(bitplanes, dat2, dat4, dat6);
+		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
+			  dest_tmp[0] = graphDecodeDual1(bitplanes, dat2, dat4, dat6);
+			  dest_tmp[1] = graphDecodeDual2(bitplanes, dat2, dat4, dat6);
       }
     }
   }

@@ -68,9 +68,9 @@ void fsNavigInitializeInstallDir(STR *cmd) {
 /* Turns the name path into a relative path                                  */
 /*===========================================================================*/
 
-void fsNavigMakeRelativePath(STR *name) {
-  fsWrapMakeRelativePath(fs_navig_install_dir->name, name);
-}
+//void fsNavigMakeRelativePath(STR *name) {
+//  fsWrapMakeRelativePath(fs_navig_install_dir->name, name);
+//}
 
 
 /*===========================================================================*/

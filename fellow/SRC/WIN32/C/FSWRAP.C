@@ -59,6 +59,7 @@ void fsWrapFullPath(STR *dst, STR *src) {
 /* Make relative path                                                        */
 /*===========================================================================*/
 
+/*
 void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
   STR tmpdst[MAX_PATH];
   STR tmpsrc[MAX_PATH];
@@ -73,7 +74,7 @@ void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
     strcpy(file_path, tmpdst);
   }
 }
-
+*/
 
 /*===========================================================================*/
 /* Fills in file attributes in point structure                               */
