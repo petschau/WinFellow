@@ -72,7 +72,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /D "_FELLOW_DEBUG_CRT_MALLOC" /FAcs /FR /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "../CAPS/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /D "_FELLOW_DEBUG_CRT_MALLOC" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
@@ -1254,7 +1254,27 @@ SOURCE=..\..\Include\zlibwrap.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\CAPS\include\caps_win32.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\CAPS\include\CapsAPI.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\CAPS\include\CapsLib.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\CAPS\include\Comlib.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\Include\commoncontrol_wrap.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\CAPS\include\Comtype.h
 # End Source File
 # Begin Source File
 
@@ -1332,6 +1352,10 @@ SOURCE=..\incasm\mac\renaming.mac
 # Begin Group "Win32 C Files"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\CAPS\C\caps_win32.c
+# End Source File
 # Begin Source File
 
 SOURCE=..\C\commoncontrol_wrap.c
@@ -1676,14 +1700,6 @@ SOURCE=..\..\zlib\C\gzio.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\zlib\C\infblock.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\zlib\C\infcodes.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\zlib\C\inffast.c
 # End Source File
 # Begin Source File
@@ -1693,10 +1709,6 @@ SOURCE=..\..\zlib\C\inflate.c
 # Begin Source File
 
 SOURCE=..\..\zlib\C\inftrees.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\zlib\C\infutil.c
 # End Source File
 # Begin Source File
 
@@ -1720,14 +1732,6 @@ SOURCE=..\..\zlib\include\deflate.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\zlib\include\infblock.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\zlib\include\infcodes.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\zlib\include\inffast.h
 # End Source File
 # Begin Source File
@@ -1737,10 +1741,6 @@ SOURCE=..\..\zlib\include\inffixed.h
 # Begin Source File
 
 SOURCE=..\..\zlib\include\inftrees.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\zlib\include\infutil.h
 # End Source File
 # Begin Source File
 
