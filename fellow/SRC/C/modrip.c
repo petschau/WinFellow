@@ -1,7 +1,6 @@
+/* @(#) $Id: modrip.c,v 1.22.2.5 2004-06-08 14:05:36 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: modrip.c,v 1.22.2.4 2004-05-27 10:08:00 carfesh Exp $         */
 /*                                                                         */
 /* Portable parts of the module ripper                                     */
 /*                                                                         */

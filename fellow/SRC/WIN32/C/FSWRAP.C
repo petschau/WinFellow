@@ -1,7 +1,6 @@
+/* @(#) $Id: FSWRAP.C,v 1.2.2.5 2004-06-08 14:05:36 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
-/*                                                                         */
-/* @(#) $Id: FSWRAP.C,v 1.2.2.4 2004-05-27 09:58:13 carfesh Exp $          */
 /*                                                                         */
 /* Filesystem browsing wrapper for the GUI                                 */
 /*                                                                         */
