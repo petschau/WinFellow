@@ -1,11 +1,11 @@
-/* @(#) $Id: zlibwrap.h,v 1.2.2.2 2004-06-02 11:27:40 carfesh Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.1.2.1 2004-06-02 11:26:07 carfesh Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator - zlib wrapper                                    */
+/* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                             */
-/*         (Wraps zlib code to have one simple call for decompression.)    */
+/* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
+/* http://www.caps-project.org                                             */
 /*                                                                         */
-/* originates from minigzip.c                                              */
+/* (w)1994 by Torsten Enderling (carfesh@gmx.net)                          */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -24,7 +24,34 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#ifndef _CAPS_WIN32_H_
+#define _CAPS_WIN32_H_
+
+#ifdef FELLOW_SUPPORT_CAPS
 #include "defs.h"
 
-BOOLE gzUnpack(const char *src, const char *dest);
-BOOLE gzPack  (const char *src, const char *dest);
+/* the following definitions are needed by the Comtype.h include file */
+typedef UBY BYTE;
+typedef UWO WORD;
+typedef ULO DWORD;
+
+/* function prototypes */
+
+extern BOOLE capsStartup(void);
+extern BOOLE capsShutdown(void);
+extern BOOLE capsLoadImage(ULO, FILE *, ULO *);
+extern BOOLE capsUnloadImage(ULO);
+extern BOOLE capsLoadRevolution(ULO, ULO, UBY *, ULO *);
+extern BOOLE capsLoadTrack(ULO, ULO, UBY *, ULO *, ULO *, BOOLE *);
+
+#endif
+
+#endif
+
+#if 0
+int caps_init (void);
+void caps_unloadimage (int drv);
+int caps_loadimage (struct zfile *zf, int drv, int *num_tracks);
+int caps_loadtrack (uae_u16 *mfmbuf, uae_u16 *tracktiming, int drv, int track, int *tracklength, int *multirev);
+int caps_loadrevolution (uae_u16 *mfmbuf, int drv, int track, int *tracklength);
+#endif

@@ -1,7 +1,6 @@
+/* @(#) $Id: sysinfo.c,v 1.11.2.4 2004-06-02 11:26:32 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator - system information retrieval                    */
-/*                                                                         */
-/* @(#) $Id: sysinfo.c,v 1.11.2.3 2004-05-27 09:58:13 carfesh Exp $        */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*                                                                         */
@@ -151,7 +150,7 @@ static void EnumHardwareTree (LPCTSTR SubKey) {
   DWORD CurrentSubKey, CurrentSubKey2;
   TCHAR szSubKeyName[MYREGBUFFERSIZE], szSubKeyName2[MYREGBUFFERSIZE];
   DWORD dwSubKeyNameLen = MYREGBUFFERSIZE, dwSubKeyNameLen2 = MYREGBUFFERSIZE;
-  char *szClass, *szDevice, *szDriver;
+  char *szClass, *szDevice;
 
   /* get handle to specified key tree */
   if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, SubKey, 0,
