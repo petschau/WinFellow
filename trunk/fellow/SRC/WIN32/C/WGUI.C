@@ -42,6 +42,10 @@ cfg *wgui_cfg;                               /* GUI copy of configuration */
 ini *wgui_ini;								 /* GUI copy of initdata */
 STR extractedfilename[CFG_FILENAME_LENGTH];
 
+wgui_drawmodes wgui_dm;								// data structure for resolution data
+wgui_drawmodes* pwgui_dm = &wgui_dm;
+wgui_drawmode *pwgui_dm_match;
+BOOLE wgui_emulation_state = FALSE;
 
 #define MAX_JOYKEY_VALUE 6
 #define MAX_JOYKEY_PORT 2
@@ -96,7 +100,6 @@ typedef enum {
   WGUI_LOAD_HISTORY1,
   WGUI_LOAD_HISTORY2,
   WGUI_LOAD_HISTORY3,
-  WGUI_MULTIPLE_GRAPHICAL_BUFFERS,
   WGUI_DEBUGGER_START,
   WGUI_ABOUT
 } wguiActions;
@@ -120,6 +123,10 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
 				   WPARAM wParam,
 				   LPARAM lParam);
 BOOL CALLBACK wguiBlitterDialogProc(HWND hwndDlg,
+				    UINT uMsg,
+				    WPARAM wParam,
+				    LPARAM lParam);
+BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
 				    UINT uMsg,
 				    WPARAM wParam,
 				    LPARAM lParam);
@@ -169,31 +176,274 @@ BOOL CALLBACK wguiScreenDialogProc(HWND hwndDlg,
 /* -Dialog procedure for each property sheet                                  */
 /*============================================================================*/
 
-#define PROP_SHEETS 10
+#define PROP_SHEETS 9
 
-UINT wgui_propsheetRID[PROP_SHEETS] = {IDD_CPU,
-				       IDD_FLOPPY,
-				       IDD_MEMORY,
-				       IDD_BLITTER,
-				       IDD_SOUND,
-				       IDD_SCREEN,
-				       IDD_FILESYSTEM,
-				       IDD_HARDFILE,
-				       IDD_GAMEPORT,
-				       IDD_VARIOUS};
+UINT wgui_propsheetRID[PROP_SHEETS] = {
+	IDD_CPU,
+	IDD_FLOPPY,
+	IDD_MEMORY,
+	IDD_DISPLAY,
+	IDD_SOUND,
+	IDD_FILESYSTEM,
+	IDD_HARDFILE,
+	IDD_GAMEPORT,
+	IDD_VARIOUS
+};
+
+UINT wgui_propsheetICON[PROP_SHEETS] = {
+	IDI_ICON_CPU,
+	IDI_ICON_FLOPPY,
+//IDI_ICON_MEMORY,
+	0,
+	IDI_ICON_DISPLAY,
+	IDI_ICON_SOUND,
+	IDI_ICON_FILESYSTEM,
+	IDI_ICON_HARDFILE,
+//IDI_ICON_GAMEPORT,
+//IDI_ICON_VARIOUS
+	0,0
+};
+
 
 typedef BOOL (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
 wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {wguiCPUDialogProc,
 						     wguiFloppyDialogProc,
 						     wguiMemoryDialogProc,
-						     wguiBlitterDialogProc,
+						     wguiDisplayDialogProc,
 						     wguiSoundDialogProc,
-						     wguiScreenDialogProc,
 						     wguiFilesystemDialogProc,
 						     wguiHardfileDialogProc,
 						     wguiGameportDialogProc,
 						     wguiVariousDialogProc};
+
+
+void wguiSetSliderRange(HWND sliderHWND, ULO minPos, ULO maxPos) {
+
+	SendMessage(sliderHWND, TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(minPos, maxPos));
+}
+
+ULO wguiGetComboboxCurrentSelection(HWND comboboxHWND) {
+	
+	return ComboBox_GetCurSel(comboboxHWND);
+}
+
+void wguiSetComboboxCurrentSelection(HWND comboboxHWND, ULO index) {
+	
+	ComboBox_SetCurSel(comboboxHWND, index);
+}
+
+ULO wguiGetSliderPosition(HWND sliderHWND) {
+
+	return SendMessage(sliderHWND, TBM_GETPOS, 0, 0);
+}
+
+void wguiSetSliderPosition(HWND sliderHWND, LONG position) {
+
+	SendMessage(sliderHWND, TBM_SETPOS, TRUE, (LPARAM) position);
+}
+
+void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
+
+	felist *listnode;
+	wgui_drawmode *pwguicfgwdm;
+	ULO i;
+	
+	pwguicfgwdm = NULL;
+	if (pwgui_dm_match->windowed) {
+		// windowed
+		listnode = pwgui_dm->reswindowed;
+	} else {
+		// fullscreen
+		switch (pwgui_dm_match->colorbits) {
+			case 8:
+				listnode = pwgui_dm->res8bit;
+				break;
+			case 16:
+				listnode = pwgui_dm->res16bit;
+				break;
+			case 24:
+				listnode = pwgui_dm->res24bit;
+				break;
+			case 32:
+				listnode = pwgui_dm->res32bit;
+				break;
+		}
+	}
+	for (i=0; i < index; i++) {
+		listnode = listNext(listnode);
+	}
+	pwguicfgwdm = listNode(listnode);
+	if (pwguicfgwdm != NULL) {
+		sprintf(char_buffer, "%d by %d pixels", pwguicfgwdm->width, pwguicfgwdm->height);
+	} else {
+		sprintf(char_buffer, "unknown screen area");
+	}
+}
+
+void wguiGetFrameSkippingStrWithIndex(LONG index, char char_buffer[]) {
+	
+	if (index == 0) {
+		sprintf(char_buffer, "no skipping");
+	} else {
+		sprintf(char_buffer, "skip %d of %d frames", index, (index+1));	
+	}
+}
+
+void wguiSetSliderTextAccordingToPosition(HWND sliderHWND, HWND sliderTextHWND, void (*getSliderStrWithIndex)(LONG, char[])) {
+	char buffer[255];
+	ULO pos;
+
+	pos = wguiGetSliderPosition(sliderHWND);
+	getSliderStrWithIndex(pos, buffer);
+	Static_SetText(sliderTextHWND, buffer);
+}
+
+ULO wguiGetColorBitsFromComboboxIndex(LONG index) {
+
+	if (pwgui_dm->comboxbox8bitindex == index) { return 8; }
+	if (pwgui_dm->comboxbox16bitindex == index) { return 16; }
+	if (pwgui_dm->comboxbox24bitindex == index) { return 24; }
+	if (pwgui_dm->comboxbox32bitindex == index) { return 32; }
+	return 8;
+}
+
+LONG wguiGetComboboxIndexFromColorBits(ULO colorbits) {
+
+  switch (colorbits) {
+    case 8:  return pwgui_dm->comboxbox8bitindex;
+    case 16: return pwgui_dm->comboxbox16bitindex;
+    case 24: return pwgui_dm->comboxbox24bitindex;
+    case 32: return pwgui_dm->comboxbox32bitindex;
+  }
+	return 0;
+}
+
+wgui_drawmode *wguiConvertDrawModeNodeToGuiDrawNode(draw_mode *dm, wgui_drawmode *wdm) {
+	
+	wdm->height = dm->height;
+	wdm->refresh = dm->refresh;
+	wdm->width = dm->width;
+	wdm->colorbits = dm->bits;
+	wdm->windowed = dm->windowed;
+	return wdm;
+}
+
+void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
+
+  felist* reslist;
+  draw_mode * dm;
+  wgui_drawmode* pwdm;
+	ULO idw				= 0;
+	ULO id8bit		= 0;
+	ULO id16bit		= 0;
+	ULO id24bit		= 0;
+	ULO id32bit		= 0;
+	wdms->reswindowed = NULL;
+	wdms->res8bit = NULL;
+	wdms->res16bit = NULL;
+	wdms->res24bit = NULL;
+	wdms->res32bit = NULL;
+	wdms->comboxbox8bitindex = -1;
+	wdms->comboxbox16bitindex = -1;
+	wdms->comboxbox24bitindex = -1;
+	wdms->comboxbox32bitindex = -1;
+
+  for (reslist = drawGetModes(); reslist != NULL; reslist = listNext(reslist)) {
+    dm = listNode(reslist);
+	  pwdm = (wgui_drawmode *) malloc(sizeof(wgui_drawmode));
+		wguiConvertDrawModeNodeToGuiDrawNode(dm, pwdm);
+		if (dm->windowed) {
+			// windowed
+			pwdm->id = idw;
+			wdms->reswindowed = listAddLast(wdms->reswindowed, listNew(pwdm));
+			idw++;
+		} else {
+			// fullscreen
+			switch(dm->bits) {
+				case 8:
+					pwdm->id = id8bit;
+					wdms->res8bit = listAddLast(wdms->res8bit, listNew(pwdm));
+					id8bit++;
+					break;
+
+				case 16:
+					pwdm->id = id16bit;
+					wdms->res16bit = listAddLast(wdms->res16bit, listNew(pwdm));
+					id16bit++;
+					break;
+
+				case 24:
+					pwdm->id = id24bit;
+					wdms->res24bit = listAddLast(wdms->res24bit, listNew(pwdm));
+					id24bit++;
+					break;
+
+				case 32:
+					pwdm->id = id32bit;
+					wdms->res32bit = listAddLast(wdms->res32bit, listNew(pwdm));
+					id32bit++;
+					break;
+			}
+		}
+	}
+	wdms->numberofwindowed	= idw;
+	wdms->numberof8bit			= id8bit;
+	wdms->numberof16bit			= id16bit;
+	wdms->numberof24bit			= id24bit;
+	wdms->numberof32bit			= id32bit;
+}
+
+void wguiFreeGuiDrawModesList(wgui_drawmodes *wdms) {
+	
+	listFreeAll(wdms->reswindowed, TRUE);
+	listFreeAll(wdms->res8bit, TRUE);
+	listFreeAll(wdms->res16bit, TRUE);
+	listFreeAll(wdms->res24bit, TRUE);
+	listFreeAll(wdms->res32bit, TRUE);
+}
+
+felist *wguiGetMatchingList(BOOLE windowed, ULO colorbits) {
+
+	if (windowed) {
+		// windowed
+		return pwgui_dm->reswindowed;
+	} else {
+		// fullscreen
+		switch(colorbits) {
+			case 8:
+				return pwgui_dm->res8bit;
+			case 16:
+				return pwgui_dm->res16bit;
+			case 24:
+				return pwgui_dm->res24bit;
+			case 32:
+				return pwgui_dm->res32bit;
+		}
+	}
+	return pwgui_dm->res8bit;
+}
+
+wgui_drawmode *wguiMatchResolution() {
+
+	BOOLE windowed		= cfgGetScreenWindowed(wgui_cfg); 
+	ULO width					= cfgGetScreenWidth(wgui_cfg);
+	ULO height				= cfgGetScreenHeight(wgui_cfg);
+	ULO colorbits			= cfgGetScreenColorBits(wgui_cfg);
+	felist *reslist		= NULL;
+	felist *i					= NULL;
+	wgui_drawmode *dm = NULL;
+	
+	reslist = wguiGetMatchingList(windowed, colorbits);	
+	for (i = reslist; i!=NULL; i = listNext(i)) {
+		dm = listNode(i);
+		if ((dm->height == height) && (dm->width == width)) {
+			return dm;
+		}
+	}
+	// if no matching is found return pointer to first resolution of 8 colorbits
+	return listNode(pwgui_dm->res8bit);
+}
 
 /*============================================================================*/
 /* Extract the filename from a full path name                                 */
@@ -934,7 +1184,6 @@ void wguiExtractMemoryConfig(HWND DlgHWND, cfg *conf) {
   cfgSetKey(conf, tmp);
 }
 
-
 /*============================================================================*/
 /* Blitter config                                                             */
 /*============================================================================*/
@@ -1485,6 +1734,187 @@ BOOLE wguiFilesystemAdd(HWND DlgHWND,
 		   wguiFilesystemAddDialogProc) == IDOK;
 }
 
+/*============================================================================*/
+/* display config                                                              */
+/*============================================================================*/
+
+/* install display config */
+
+void wguiInstallDisplayConfig(HWND DlgHWND, cfg *conf) {
+  HWND screenAreaSliderHWND					= GetDlgItem(DlgHWND, IDC_SLIDER_SCREEN_AREA);
+	HWND screenAreaSliderTextHWND			= GetDlgItem(DlgHWND, IDC_STATIC_SCREEN_AREA);
+  HWND frameSkippingSliderHWND			= GetDlgItem(DlgHWND, IDC_SLIDER_FRAME_SKIPPING);
+  HWND colorBitsComboboxHWND				= GetDlgItem(DlgHWND, IDC_COMBO_COLOR_BITS);
+	HWND fullscreenHWND								= GetDlgItem(DlgHWND, IDC_CHECK_FULLSCREEN);
+	HWND verticalscalingHWND					= GetDlgItem(DlgHWND, IDC_CHECK_VERTICAL_SCALE);
+	HWND horizontalscalingHWND				= GetDlgItem(DlgHWND, IDC_CHECK_HORIZONTAL_SCALE);
+	HWND scanlinesHWND								= GetDlgItem(DlgHWND, IDC_CHECK_SCANLINES);
+	HWND interlaceHWND								= GetDlgItem(DlgHWND, IDC_CHECK_INTERLACE);
+	HWND multiplebuffersHWND					= GetDlgItem(DlgHWND, IDC_CHECK_MULTIPLE_BUFFERS);
+	HWND frameSkippingSliderTextHWND	= GetDlgItem(DlgHWND, IDC_STATIC_FRAME_SKIPPING);
+	
+	
+	ULO comboboxid;
+  LON resindex, i;
+  STR stmp[32];
+
+	// match available resolutions with configuration
+	pwgui_dm_match = wguiMatchResolution();
+
+	// fill combobox for colorbit depth
+	ComboBox_AddString(colorBitsComboboxHWND, "256 colors"); 
+	comboboxid = 0;
+	pwgui_dm->comboxbox8bitindex = comboboxid; comboboxid++; 
+	if (pwgui_dm->numberof16bit > 0) { 
+		ComboBox_AddString(colorBitsComboboxHWND, "high color (16 bit)"); 
+		pwgui_dm->comboxbox16bitindex = comboboxid; comboboxid++; 
+	}
+  if (pwgui_dm->numberof24bit > 0) { 
+		ComboBox_AddString(colorBitsComboboxHWND, "true color (24 bit)"); 
+		pwgui_dm->comboxbox24bitindex = comboboxid; comboboxid++; 
+	}
+  if (pwgui_dm->numberof32bit > 0) { 
+		ComboBox_AddString(colorBitsComboboxHWND, "true color (32 bit)"); 
+		pwgui_dm->comboxbox32bitindex = comboboxid; comboboxid++; 
+	}
+
+	ComboBox_Enable(colorBitsComboboxHWND, TRUE);
+	ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(pwgui_dm_match->colorbits));
+	
+	// add multiple buffer option
+  Button_SetCheck(multiplebuffersHWND, cfgGetUseMultipleGraphicalBuffers(conf));
+		
+  // set fullscreen button check
+	if (pwgui_dm_match->windowed) {
+		// windowed 
+		// colorbits can't be selected through WinFellow, desktop setting will be used
+		ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
+		ComboBox_Enable(colorBitsComboboxHWND, FALSE);
+		Button_SetCheck(fullscreenHWND, FALSE);
+		// disable multiplebuffers
+		Button_Enable(multiplebuffersHWND, FALSE);
+	} else {
+		// fullscreen
+		ComboBox_Enable(colorBitsComboboxHWND, TRUE);
+		Button_SetCheck(fullscreenHWND, TRUE);
+		// enable the checkbox for multiplebuffers
+		Button_Enable(multiplebuffersHWND, TRUE);
+	}
+
+  // add horizontal pixel scale option
+	Button_SetCheck(horizontalscalingHWND, cfgGetHorizontalScale(conf) == 2);
+
+	// add vertical pixel scale option
+	Button_SetCheck(verticalscalingHWND, cfgGetVerticalScale(conf) == 2);
+	
+	// add scanline option
+	if (cfgGetScanlines(conf)) {
+		Button_SetCheck(scanlinesHWND, TRUE);
+		Button_SetCheck(verticalscalingHWND, FALSE);
+	} else {
+		Button_SetCheck(scanlinesHWND, FALSE);
+	}
+
+	// add interlace compensation option
+  Button_SetCheck(interlaceHWND, cfgGetDeinterlace(conf));
+
+  // add screen area 
+	if (pwgui_dm_match->windowed) {
+		// windowed
+		wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberofwindowed - 1));
+	} else {
+		switch (pwgui_dm_match->colorbits) {
+			case 8:
+				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof8bit - 1));
+				break;
+			case 16:
+				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof16bit - 1));
+				break;
+			case 24:
+				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof24bit - 1));
+				break;
+			case 32:
+				wguiSetSliderRange(screenAreaSliderHWND, 0, (pwgui_dm->numberof32bit - 1));
+				break;
+		}
+	}
+	wguiSetSliderPosition(screenAreaSliderHWND, pwgui_dm_match->id);
+	wguiSetSliderTextAccordingToPosition(screenAreaSliderHWND, screenAreaSliderTextHWND, &wguiGetResolutionStrWithIndex);
+
+  // add frame skipping rate choices 
+  wguiSetSliderRange(frameSkippingSliderHWND, 0, 24);
+	wguiSetSliderPosition(frameSkippingSliderHWND, cfgGetFrameskipRatio(conf));
+	wguiSetSliderTextAccordingToPosition(frameSkippingSliderHWND, frameSkippingSliderTextHWND, &wguiGetFrameSkippingStrWithIndex);
+
+	// add blitter selection radio buttons
+	wguiInstallBlitterConfig(DlgHWND, conf);
+}
+
+/* extract display config */
+
+void wguiExtractDisplayConfig(HWND DlgHWND, cfg *conf) {
+  HWND screenAreaSliderHWND					= GetDlgItem(DlgHWND, IDC_SLIDER_SCREEN_AREA);
+	HWND screenAreaSliderTextHWND			= GetDlgItem(DlgHWND, IDC_STATIC_SCREEN_AREA);
+  HWND frameSkippingSliderHWND			= GetDlgItem(DlgHWND, IDC_SLIDER_FRAME_SKIPPING);
+  HWND colorBitsComboboxHWND				= GetDlgItem(DlgHWND, IDC_COMBO_COLOR_BITS);
+	HWND fullscreenHWND								= GetDlgItem(DlgHWND, IDC_CHECK_FULLSCREEN);
+	HWND verticalscalingHWND					= GetDlgItem(DlgHWND, IDC_CHECK_VERTICAL_SCALE);
+	HWND horizontalscalingHWND				= GetDlgItem(DlgHWND, IDC_CHECK_HORIZONTAL_SCALE);
+	HWND scanlinesHWND								= GetDlgItem(DlgHWND, IDC_CHECK_SCANLINES);
+	HWND interlaceHWND								= GetDlgItem(DlgHWND, IDC_CHECK_INTERLACE);
+	HWND multiplebuffersHWND					= GetDlgItem(DlgHWND, IDC_CHECK_MULTIPLE_BUFFERS);
+	HWND frameSkippingSliderTextHWND	= GetDlgItem(DlgHWND, IDC_STATIC_FRAME_SKIPPING);
+		
+	ULO comboboxid;
+  LON resindex, i;
+  STR stmp[32];
+
+	// get current colorbits
+	cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(wguiGetComboboxCurrentSelection(colorBitsComboboxHWND)));
+	
+	// get multiplebuffer check
+	cfgSetUseMultipleGraphicalBuffers(conf, Button_GetCheck(multiplebuffersHWND));
+
+	// get fullscreen check
+	cfgSetScreenWindowed(conf, !Button_GetCheck(fullscreenHWND));
+
+	// get scaling
+  cfgSetVerticalScale(conf, (Button_GetCheck(verticalscalingHWND)) ? 2 : 1);
+  cfgSetHorisontalScale(conf, (Button_GetCheck(horizontalscalingHWND)) ? 2 : 1);
+	cfgSetScanlines(conf, Button_GetCheck(scanlinesHWND));
+	cfgSetDeinterlace(conf, Button_GetCheck(interlaceHWND));
+
+	// get height and width
+	if (cfgGetScreenWindowed(conf)) {
+		cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
+		cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+	} else {
+		switch(cfgGetScreenColorBits(conf)) {
+			case 8:
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				break;
+			case 16:
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				break;
+			case 24:
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				break;
+			case 32:
+				cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, wguiGetSliderPosition(screenAreaSliderHWND))))->width);
+				cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, wguiGetSliderPosition(screenAreaSliderHWND))))->height);
+				break;
+		}
+	}
+	
+  // get frame skipping rate choice
+  cfgSetFrameskipRatio(conf, wguiGetSliderPosition(frameSkippingSliderHWND));
+
+	// get blitter selection radio buttons
+	wguiExtractBlitterConfig(DlgHWND, conf);
+}
 
 /*============================================================================*/
 /* Screen config                                                              */
@@ -1532,7 +1962,7 @@ void wguiInstallScreenConfig(HWND DlgHWND, cfg *conf) {
 
   /* Add horisontal scale options */
 
-  if (cfgGetHorisontalScale(conf) == 1)
+  if (cfgGetHorizontalScale(conf) == 1)
     Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_HSCALE_SINGLE), TRUE);
   else
     Button_SetCheck(GetDlgItem(DlgHWND, IDC_RADIO_SCREEN_HSCALE_DOUBLE), TRUE);
@@ -1730,7 +2160,6 @@ BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg,
       break;
     case WM_DESTROY:
       wguiExtractFloppyConfig(hwndDlg, wgui_cfg);
-      wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
       break;
   }
   return FALSE;
@@ -1802,6 +2231,128 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
   return FALSE;
 }
 
+/*============================================================================*/
+/* dialog procedure for the display property sheet                            */
+/*============================================================================*/
+
+ULO wguiGetNumberOfScreenAreas(ULO colorbits) {
+						
+	switch (colorbits) {
+		case 8:
+			return pwgui_dm->numberof8bit;
+		case 16:
+			return pwgui_dm->numberof16bit;
+		case 24:
+			return pwgui_dm->numberof24bit;
+		case 32:
+			return pwgui_dm->numberof32bit;
+	}
+	return pwgui_dm->numberof8bit;
+}
+
+BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
+				   UINT uMsg,
+				   WPARAM wParam,
+				   LPARAM lParam) {
+	STR buffer[255];
+	ULO position;
+	ULO comboboxIndexColorBits;
+	ULO selectedColorBits;
+	ULO availableScreenAreas;
+
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
+      return TRUE;
+    case WM_COMMAND:
+			switch ((int) LOWORD(wParam)) {
+				case IDC_CHECK_FULLSCREEN:
+					switch (HIWORD(wParam)) {
+						case BN_CLICKED:
+							if (!Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_FULLSCREEN))) {
+								// the checkbox was unchecked - going to windowed
+								wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (pwgui_dm->numberofwindowed - 1));					
+								wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
+								pwgui_dm_match = listNode(pwgui_dm->reswindowed);
+								wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+								ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
+								ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
+								Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
+							} else {
+								// the checkbox was checked 
+								comboboxIndexColorBits = wguiGetComboboxCurrentSelection(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS));
+								selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
+								wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
+								wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+								pwgui_dm_match = listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+								wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+								ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
+								Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
+							}
+							break;
+					}
+					break;
+				case IDC_COMBO_COLOR_BITS:
+					switch (HIWORD(wParam)) {
+						case CBN_SELCHANGE:
+							comboboxIndexColorBits = wguiGetComboboxCurrentSelection(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS));
+							selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
+							wguiSetSliderPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0);
+							wguiSetSliderRange(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+							pwgui_dm_match = listNode(wguiGetMatchingList(!Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_FULLSCREEN)), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+							wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+							break;
+					}
+					break;
+				case IDC_CHECK_SCANLINES:
+					switch (HIWORD(wParam)) {
+						case BN_CLICKED:
+							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES))) {
+								// scanlines was checked
+								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_VERTICAL_SCALE), FALSE);
+								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE), FALSE);
+							} 
+							break;
+					}
+					break;
+				case IDC_CHECK_VERTICAL_SCALE:
+					switch (HIWORD(wParam)) {
+						case BN_CLICKED:
+							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_VERTICAL_SCALE))) {
+								// vertical scale was checked
+								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
+							} 
+							break;
+					}
+					break;
+				case IDC_CHECK_HORIZONTAL_SCALE:
+					switch (HIWORD(wParam)) {
+						case BN_CLICKED:
+							if (Button_GetCheck(GetDlgItem(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE))) {
+								// horizontal scale was checked
+								Button_SetCheck(GetDlgItem(hwndDlg, IDC_CHECK_SCANLINES), FALSE);
+							} 
+							break;
+					}
+					break;
+			}
+      break;
+		case WM_NOTIFY:
+			switch ((int) wParam) {
+			case IDC_SLIDER_SCREEN_AREA:
+				wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_SCREEN_AREA), GetDlgItem(hwndDlg, IDC_STATIC_SCREEN_AREA), &wguiGetResolutionStrWithIndex);
+				break;
+			case IDC_SLIDER_FRAME_SKIPPING:
+				wguiSetSliderTextAccordingToPosition(GetDlgItem(hwndDlg, IDC_SLIDER_FRAME_SKIPPING), GetDlgItem(hwndDlg, IDC_STATIC_FRAME_SKIPPING), &wguiGetFrameSkippingStrWithIndex);
+				break;
+			}
+			break;
+    case WM_DESTROY:
+      wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
+      break;
+  }
+  return FALSE;
+}
 
 /*============================================================================*/
 /* Dialog Procedure for the blitter property sheet                            */
@@ -2371,10 +2922,14 @@ int wguiConfigurationDialog(void)
   
   for (i = 0; i < PROP_SHEETS; i++)  {
     propertysheets[i].dwSize = sizeof(PROPSHEETPAGE);
-    propertysheets[i].dwFlags = PSP_DEFAULT;
+    		if (wgui_propsheetICON[i] != 0) {
+			propertysheets[i].dwFlags = PSP_USEHICON;
+		} else {
+			propertysheets[i].dwFlags = PSP_DEFAULT;
+		}
     propertysheets[i].hInstance = win_drv_hInstance;
     propertysheets[i].pszTemplate = MAKEINTRESOURCE(wgui_propsheetRID[i]);
-    propertysheets[i].hIcon = NULL;
+    propertysheets[i].hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(wgui_propsheetICON[i]));
     propertysheets[i].pszTitle = NULL;
     propertysheets[i].pfnDlgProc = wgui_propsheetDialogProc[i];
     propertysheets[i].lParam = 0;
@@ -2388,7 +2943,7 @@ int wguiConfigurationDialog(void)
   propertysheetheader.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   propertysheetheader.pszCaption = "WinFellow Configuration";
   propertysheetheader.nPages = PROP_SHEETS;
-  propertysheetheader.nStartPage = 4;
+  propertysheetheader.nStartPage = 3;
   propertysheetheader.ppsp = propertysheets;
   propertysheetheader.pfnCallback = NULL;
   return PropertySheet(&propertysheetheader);
@@ -2461,6 +3016,7 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
       if (wgui_action == WGUI_NO_ACTION)
 	switch (LOWORD(wParam)) {
 	  case IDC_START_EMULATION:
+			wgui_emulation_state = TRUE;
 	    wgui_action = WGUI_START_EMULATION;
 	    break;
 	  case IDCANCEL:
@@ -2489,14 +3045,15 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
       case ID_FILE_HISTORYCONFIGURATION3:   
 		wgui_action = WGUI_LOAD_HISTORY3;
 		break;
-	  case ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS:
-		wgui_action = WGUI_MULTIPLE_GRAPHICAL_BUFFERS;
-		break;
 	  case IDC_CONFIGURATION:
 		wguiConfigurationDialog();
 	    break;
 	  case IDC_HARD_RESET:
 	    fellowPreStartReset(TRUE);
+			SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
+				STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+				MAKEINTRESOURCE(IDB_POWER_LED_OFF)));
+			wgui_emulation_state = FALSE;
 	    break;
 	  case ID_DEBUGGER_START:
 	    wgui_action = WGUI_DEBUGGER_START;
@@ -2688,11 +3245,6 @@ BOOLE wguiEnter(void) {
 		  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 		  wgui_action = WGUI_NO_ACTION;
 		  break;
-		case WGUI_MULTIPLE_GRAPHICAL_BUFFERS:
-		  iniSetUseMultipleGraphicalBuffers(wgui_ini, !iniGetUseMultipleGraphicalBuffers(wgui_ini));
-		  wguiSetCheckOfUseMultipleGraphicalBuffers(iniGetUseMultipleGraphicalBuffers(wgui_ini));
-		  wgui_action = WGUI_NO_ACTION;
-		  break;
 		case WGUI_DEBUGGER_START:
 		  end_loop = TRUE;
 		  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
@@ -2731,10 +3283,22 @@ BOOLE wguiEnter(void) {
 void wguiStartup(void) {
   wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
   wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
+	wguiConvertDrawModeListToGuiDrawModes(pwgui_dm);
 }
 
 void wguiStartupPost(void) {
-  wguiSetCheckOfUseMultipleGraphicalBuffers(iniGetUseMultipleGraphicalBuffers(wgui_ini));
+
+	wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	if (wgui_emulation_state) {
+		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
+			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+			MAKEINTRESOURCE(IDB_POWER_LED_ON)));
+	} else {
+		SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
+			STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) LoadBitmap(win_drv_hInstance, 
+			MAKEINTRESOURCE(IDB_POWER_LED_OFF)));
+	}
+
 }
 
 /*============================================================================*/
