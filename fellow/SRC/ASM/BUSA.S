@@ -306,22 +306,11 @@ _endOfLine_:	push	edx
 
 
 		;==============================================================
-		; Handle disk DMA if it is running
+		; Handles disk DMA if it is running
 		;==============================================================
 
-		cmp	byte [floppy_DMA_started], 1
-		jne	.l2
-		cmp	byte [floppy_DMA_read], 1
-		jne	.l1
-		pushad
-		call	floppyDMARead
-		popad
-		jmp	.l2
-.l1:
-		pushad
-		call	floppyDMAWrite
-		popad
-.l2:
+		call	floppyEndOfLineC
+
 
 		;==============================================================
 		; Update the sound emulation
@@ -431,21 +420,6 @@ _endOfFrame_:	push	edx
 		mov	edx, 010h
 		CIA_RAISE_IRQ_CWRAP
 .l11:
-
-		;==============================================================
-		; Generate dsksync value int every 8th frame unless
-		; disk DMA is working, let's see what good it does
-		; Probably no good at all, take me away
-		;==============================================================
-
-		cmp	dword [floppy_DMA_started], 1
-		je	.l13
-		mov	edx, dword [draw_frame_count]
-		and	edx, 7h
-		jnz	.l13
-		mov	edx, 09000h
-		call	dword [memory_iobank_write + 0138h]
-.l13:
 
 		;==============================================================
 		; Recalculate blitter finished time
