@@ -2065,7 +2065,13 @@ void graphEndOfLine_C(void)
 			{
 				if (graph_raster_y >= 0x18) 
 				{
-          spritesDecode_C();
+					spritesDMASpriteHandler();
+					spriteProcessActionList();
+					//spriteActionListClear();
+				}
+				else
+				{
+					//spriteProcessActionList();
 				}
 			}
 			
@@ -2109,7 +2115,7 @@ void graphEndOfLine_C(void)
 	}
 
 	// .skip_frame
-  graphSpriteHack_C();
+  //graphSpriteHack_C();
 }
 
 /*===========================================================================*/
@@ -2766,48 +2772,4 @@ BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* 
     return result;
   }
   return FALSE;
-}
-
-/*-------------------------------------------------------------------------------*/
-/* Sprite hack, try to delay effect of writes to sprxpt                          */
-/*-------------------------------------------------------------------------------*/
-
-void graphSpriteHack_C(void)
-{
-  ULO local_sprite_write_next;
-  ULO i;
-
-  local_sprite_write_next = sprite_write_next;
-  if (sprite_write_next != 0)
-  {
-    sprite_write_next = 0;
-    sprite_write_real = 1;
-    
-    // loop_sprite_hack
-    i = 0;
-    while (i != local_sprite_write_next)
-    {
-      __asm
-      {
-  	    pushad
-        lea ecx, sprite_write_buffer
-        add ecx, i
-	    	lea	edx, sprite_write_buffer 
-        add edx, i 
-        add edx, 4
-        mov ecx, [ecx]
-        mov edx, [edx]
-		    and	ecx, 0x01fe
-        push ecx
-		    push edx
-
-		    call [memory_iobank_write + 2*ecx]
-		    pop edx
-	  	  pop ecx
-  		  popad
-      }
-		  i += 8;
-    }
-  }
-	sprite_write_real = 0;
 }

@@ -16,21 +16,65 @@
 #include "graph.h"
 #include "sprite.h"
 #include "draw.h"
+#include "listtree.h"
 
-
-BOOLE sprite_improvement = TRUE;
 ULO sprite_to_block = 0;
+BOOLE output_sprite_log = FALSE;	
+BOOLE output_action_sprite_log = FALSE;
 
 /*===========================================================================*/
 /* Sprite registers and derived data                                         */
 /*===========================================================================*/
 
 ULO sprpt[8];
+ULO sprpt_debug[8];
 ULO sprx[8];
+ULO sprx_debug[8];
 ULO spry[8];
+ULO spry_debug[8];
 ULO sprly[8];
+ULO sprly_debug[8];
 ULO spratt[8];
 UWO sprdat[8][2];
+BOOLE spr_arm_data[8];
+BOOLE spr_arm_comparator[8];
+
+felist * spr_action_list[8] = {
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+felist * spr_dma_action_list[8] = {
+	NULL, NULL, NULL, NULL, NULL, NULL, NULL
+};
+
+
+spr_register_func sprxptl_functions[8] =
+{
+	aspr0ptl,
+	aspr1ptl,
+	aspr2ptl,
+	aspr3ptl,
+	aspr4ptl,
+	aspr5ptl,
+	aspr6ptl,
+	aspr7ptl
+};
+
+spr_register_func sprxpth_functions[8] =
+{
+	aspr0pth,
+	aspr1pth,
+	aspr2pth,
+	aspr3pth,
+	aspr4pth,
+	aspr5pth,
+	aspr6pth,
+	aspr7pth
+};
+
+// NOT FOR COMMIT
+UBY buffer[128];
+// END NOT FOR COMMIT
 
 ULO sprite_state[8];
 ULO sprite_state_old[8];
@@ -541,288 +585,612 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
   }
 }
 
-
 /*===========================================================================*/
 /* Sprite control registers                                                  */
 /*===========================================================================*/
 
-
-
-/*===========================================================================*/
-/* Decide delay of sprite ptr update                                         */
-/* ebx - cycle raster xpos must be past to trigger delay                     */
-/*===========================================================================*/
-
-BOOLE decidedelay_C(ULO data, ULO address)
+static void spriteBuildItem(spr_action_list_item ** item)
 {
-  /*
-  BOOLE result = FALSE;
-  
-  if (sprite_write_real != 1)
+  *item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+  if (graph_raster_x >= 18) 
   {
-    if (sprite_delay <= graph_raster_x)
+    // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
+    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
     {
-      *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next)) = address;
-      *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next + 4)) = data;
-      sprite_write_next += 8;
-      return TRUE;      
+      // hires (x position is cycle position times four)
+      (*item)->raster_x = (graph_raster_x - 16) * 4;
+    }
+    else
+    {
+      // lores (x position is cycle position times two)
+      (*item)->raster_x = (graph_raster_x - 16) * 2;
     }
   }
-  return FALSE;
-  */
-
-  // There seems to be no point in delaying anything.
-  // In the game Brain the Lion it only gets you in trouble (disk 2 request)
-  return FALSE;
+  else
+  {
+		if ((bplcon0 & 0x8000) == 0x8000)
+		{
+			// hires
+			(*item)->raster_x = 8;
+		}
+		else
+		{
+			// lores
+			(*item)->raster_x = 4;
+		}
+  }
+  (*item)->raster_y = graph_raster_y;
 }
 
 /* SPR0PT - $dff120 and $dff122 */
 
 void wspr0pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr0pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[0] = listAddLast(spr_dma_action_list[0], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 0;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr0pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
 }
 
 void wspr0ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr0ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[0] = listAddLast(spr_dma_action_list[0], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 0;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr0ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
 }
 
 /* SPR1PT - $dff124 and $dff126 */
 
 void wspr1pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr1pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[1] = listAddLast(spr_dma_action_list[1], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 1;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr1pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
 }
 
 void wspr1ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr1ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[1] = listAddLast(spr_dma_action_list[1], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 1;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr1ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
 }
 
 /* SPR2PT - $dff128 and $dff12a */
 
 void wspr2pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr2pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[2] = listAddLast(spr_dma_action_list[2], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 2;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr2pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
 }
 
 void wspr2ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr2ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[2] = listAddLast(spr_dma_action_list[2], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 2;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr2ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
 }
 
 /* SPR3PT - $dff128 and $dff12a */
 
 void wspr3pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr3pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[3] = listAddLast(spr_dma_action_list[3], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 3;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr3pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
 }
 
 void wspr3ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr3ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[3] = listAddLast(spr_dma_action_list[3], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 3;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr3ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
 }
 
 /* SPR3PT - $dff128 and $dff12a */
 
 void wspr4pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr4pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[4] = listAddLast(spr_dma_action_list[4], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 4;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr4pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
 }
 
 void wspr4ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr4ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[4] = listAddLast(spr_dma_action_list[4], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 4;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr4ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
 }
 
 /* SPR5PT - $dff120 and $dff122 */
 
 void wspr5pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr5pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[5] = listAddLast(spr_dma_action_list[5], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 5;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr5pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
 }
 
 void wspr5ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr5ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[5] = listAddLast(spr_dma_action_list[5], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 5;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr5ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
 }
 
 /* SPR1PT - $dff124 and $dff126 */
 
 void wspr6pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr6pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[6] = listAddLast(spr_dma_action_list[6], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 6;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr6pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
 }
 
 void wspr6ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr6ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[6] = listAddLast(spr_dma_action_list[6], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 6;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr6ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
 }
 
 /* SPR2PT - $dff128 and $dff12a */
 
 void wspr7pth_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // store 21 bit (2 MB)
-    *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr7pth;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[7] = listAddLast(spr_dma_action_list[7], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 7;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = data & 0x01f;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr7pth(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
 }
 
 void wspr7ptl_C(ULO data, ULO address)
 {
-  if (decidedelay_C(data, address) == FALSE)
-  {
-    // no odd addresses
-    *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
+  spr_action_list_item * item;
+
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = aspr7ptl;
+  item->data = data;
+  item->address = address;
+  spr_dma_action_list[7] = listAddLast(spr_dma_action_list[7], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+		ULO sprnr = 7;
+		*((UWO *) ((UBY *) sprpt_debug + sprnr*4)) = data & 0xfffe;
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dptl (sprx = %d, spry = %d, sprly = %d)\n", 
+			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    fellowAddLog2(buffer);
   }
+}
+
+void aspr7ptl(ULO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void wsprxpos_C(ULO data, ULO address) {
+void wsprxpos_C(ULO data, ULO address) 
+{
+  ULO sprnr;
+  spr_action_list_item * item;
+
+  sprnr = (address >> 3) & 7;
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = asprxpos;
+  item->data = data;
+  item->address = address;
+  spr_action_list[sprnr] = listAddLast(spr_action_list[sprnr], listNew(item));
+
+  // for debugging only
+  sprx_debug[sprnr] = (sprx_debug[sprnr] & 0x001) | ((data & 0xff) << 1);
+  spry_debug[sprnr] = (spry_debug[sprnr] & 0x100) | ((data & 0xff00) >> 8);
+  if (output_sprite_log == TRUE) {
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpos (sprx = %d, spry = %d)\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr, sprx_debug[sprnr], sprly_debug[sprnr]);
+    fellowAddLog2(buffer);
+  }
+}
+
+void asprxpos(ULO data, ULO address)
+{
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
 
-  if (sprite_improvement == TRUE)
-  {
-    // retrieve some of the horizontal and vertical position bits
-    sprx[sprnr] = (sprx[sprnr] & 0x001) | ((data & 0xff) << 1);
-    spry[sprnr] = (spry[sprnr] & 0x100) | ((data & 0xff00) >> 8);
-  }
-  else
-  {
-    sprx[sprnr] = (sprx[sprnr] & 1) | ((data & 0xff) << 1);
-  }
+  // retrieve some of the horizontal and vertical position bits
+  sprx[sprnr] = (sprx[sprnr] & 0x001) | ((data & 0xff) << 1);
+  spry[sprnr] = (spry[sprnr] & 0x100) | ((data & 0xff00) >> 8);
 }
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void wsprxctl_C(ULO data, ULO address) {
+void wsprxctl_C(ULO data, ULO address)
+{
+  ULO sprnr;
+  spr_action_list_item * item;
+
+  sprnr = (address >> 3) & 7;
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = asprxctl;
+  item->data = data;
+  item->address = address;
+  spr_action_list[sprnr] = listAddLast(spr_action_list[sprnr], listNew(item));
+
+  // for debugging only
+  sprx_debug[sprnr] = (sprx_debug[sprnr] & 0x1fe) | (data & 0x1);
+  spry_debug[sprnr] = (spry_debug[sprnr] & 0x0ff) | ((data & 0x4) << 6);
+  sprly_debug[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
+  if (output_sprite_log == TRUE) {
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dctl (sprx = %d, spry = %d, sprly = %d)\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr, sprx_debug[sprnr], spry_debug[sprnr], sprly_debug[sprnr]);
+    fellowAddLog2(buffer);
+  }
+}
+
+
+void asprxctl(ULO data, ULO address) {
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
 
-  if (sprite_improvement == TRUE)
-  {
-//    if (sprnr != sprite_to_block) {
-    // retrieve the rest of the horizontal and vertical position bits
-    sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 0x1);
-    spry[sprnr] = (spry[sprnr] & 0x0ff) | ((data & 0x4) << 6);
+  // retrieve the rest of the horizontal and vertical position bits
+  sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 0x1);
+  spry[sprnr] = (spry[sprnr] & 0x0ff) | ((data & 0x4) << 6);
 
-    // when the sprite number is odd, is this right? 
-    //if (sprnr & 1)
-    //  spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
-    spratt[sprnr] = !!(data & 0x80);
-    sprly[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
-    //sprite_state[sprnr] = 1;
-//    }
-  }
-  else
+  // attach bit only applies when having an odd sprite
+  if (sprnr & 1) 
   {
-    sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 1);
-    if (sprnr & 1)
-      spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
+    spratt[sprnr & 6] = !!(data & 0x80);
   }
+  spratt[sprnr] = !!(data & 0x80);
+  sprly[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
+
+	spr_arm_data[sprnr] = FALSE;
 }
-
 
 /* SPRXDATA $dff144 to $dff17c */
-/* The statestuff comes out pretty wrong..... */
 
-void wsprxdata_C(ULO data, ULO address) {
+void wsprxdata_C(ULO data, ULO address)
+{
   ULO sprnr;
+  spr_action_list_item * item;
 
   sprnr = (address >> 3) & 7;
-  *((UWO *) &sprdat[sprnr]) =  (UWO) data;
-  sprite_state[sprnr] = 1;
-  /*
-  if (graph_raster_y >= 0x1a) {
-    if (sprite_state[sprnr] <= 3)
-      sprite_state_old[sprnr] = sprite_state[sprnr];
-    if (sprite_state[sprnr] != 3 && sprite_state[sprnr] != 5)
-      sprite_state[sprnr] = 4;
-    else
-      sprite_state[sprnr] = 5;
-    }
-    */
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = asprxdata;
+  item->data = data;
+  item->address = address;
+  spr_action_list[sprnr] = listAddLast(spr_action_list[sprnr], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddata\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr);
+    fellowAddLog2(buffer);
+  }
 }
 
-void wsprxdatb_C(ULO data, ULO address) {
+void asprxdata(ULO data, ULO address) {
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
-  *(((UWO *) &sprdat[sprnr]) + 1) = (UWO) data;
-  
-  /*
-  if (graph_raster_y >= 0x1a) {
-    if (sprite_state[sprnr] <= 3)
-      sprite_state_old[sprnr] = sprite_state[sprnr];
-    if (sprite_state[sprnr] != 3 && sprite_state[sprnr] != 5)
-      sprite_state[sprnr] = 4;
-    else
-      sprite_state[sprnr] = 5;
-    }
-    */
+  *((UWO *) &sprdat[sprnr]) = (UWO) data;
+
+	spr_arm_data[sprnr] = TRUE;
+}
+
+void wsprxdatb_C(ULO data, ULO address)
+{
+  ULO sprnr;
+  spr_action_list_item * item;
+
+  sprnr = (address >> 3) & 7;
+  item = NULL;
+  spriteBuildItem(&item);
+  item->called_function = asprxdatb;
+  item->data = data;
+  item->address = address;
+  spr_action_list[sprnr] = listAddLast(spr_action_list[sprnr], listNew(item));
+
+	// for debugging only
+  if (output_sprite_log == TRUE) {
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddatb\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr);
+    fellowAddLog2(buffer);
+  }
+}
+
+void asprxdatb(ULO data, ULO address) {
+  ULO sprnr;
+
+  sprnr = (address >> 3) & 7;
+  *(((UWO *) &sprdat[sprnr]) + 1) = (UWO) data; 
 }
 
 /*===========================================================================*/
@@ -907,10 +1275,13 @@ void spriteIORegistersClear(void) {
 
   for (i = 0; i < 8; i++) {
     sprpt[i] = 0;
+		sprpt_debug[i] = 0;
     sprx[i] = 0;
     spry[i] = 0;
     sprly[i] = 0;
     spratt[i] = 0;
+		spr_arm_data[i] = FALSE;
+		spr_arm_comparator[i] = FALSE;
     for (j = 0; j < 2; j++) sprdat[i][j];
     sprite_state[i] = 0;
     sprite_state_old[i] = 0;
@@ -924,6 +1295,7 @@ void spriteIORegistersClear(void) {
       sprite_write_buffer[i][j];
   sprite_write_next = 0;
   sprite_write_real = 0;
+
 }
 
 void spriteLogActiveSprites(void) {
@@ -962,8 +1334,15 @@ void spriteEndOfLine(void) {
 void spriteEndOfFrame(void) {
   ULO i;
 
-  for (i = 0; i < 8; i++) sprite_state[i] = 0;
+  for (i = 0; i < 8; i++) 
+  {
+    sprite_state[i] = 0;
+    spr_arm_data[i] = FALSE;
+    spr_arm_comparator[i] = FALSE;
+    spriteDMAActionListClear(i);
+  }
   sprite_ham_slot_next = 0;
+  spriteActionListsClear();
 }
 
 
@@ -1005,240 +1384,602 @@ void spriteStartup(void) {
 void spriteShutdown(void) {
 }
 
-void spriteDecode4Sprite_C(UBY spriteno)
+void spriteDecode4Sprite_C(UBY sprnr)
 {
-  ULO sprite_class = spriteno >> 1;
-  ULO* chunky_dest = (ULO *) (&sprite[spriteno][0]);
+  ULO sprite_class = sprnr >> 1;
+  ULO* chunky_dest = (ULO *) (&sprite[sprnr][0]);
   UBY* word[2] = {
-    (UBY *) &sprdat[spriteno][0], 
-    (UBY *) &sprdat[spriteno][1]
+    (UBY *) &sprdat[sprnr][0], 
+    (UBY *) &sprdat[sprnr][1]
   };
   ULO planardata;
 
   planardata = *word[0]++;
-  chunky_dest[0] = sprite_deco4[sprite_class][0][planardata].i32[0];
-  chunky_dest[1] = sprite_deco4[sprite_class][0][planardata].i32[1];
-
-  planardata = *word[0];
   chunky_dest[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
   chunky_dest[3] = sprite_deco4[sprite_class][0][planardata].i32[1];
 
-  planardata = *word[1]++;
-  chunky_dest[0] |= sprite_deco4[sprite_class][1][planardata].i32[0];
-  chunky_dest[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+  planardata = *word[0];
+  chunky_dest[0] = sprite_deco4[sprite_class][0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco4[sprite_class][0][planardata].i32[1];
 
-  planardata = *word[1];
+  planardata = *word[1]++;
   chunky_dest[2] |= sprite_deco4[sprite_class][1][planardata].i32[0];
   chunky_dest[3] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+
+  planardata = *word[1];
+  chunky_dest[0] |= sprite_deco4[sprite_class][1][planardata].i32[0];
+  chunky_dest[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
 }
 
-void spriteDecode16Sprite_C(ULO spriteno)
+void spriteDecode16Sprite_C(ULO sprnr)
 {
-  ULO *chunky_dest = (ULO *) (&sprite[spriteno][0]);
-  UBY *word[4] = {(UBY*) &sprdat[spriteno & 0xfe][0], (UBY*) &sprdat[spriteno & 0xfe][1],
-                  (UBY*) &sprdat[spriteno][0], (UBY*)&sprdat[spriteno][1]};
+  ULO *chunky_dest = (ULO *) (&sprite[sprnr][0]);
+  UBY *word[4] = {(UBY*) &sprdat[sprnr & 0xfe][0], (UBY*) &sprdat[sprnr & 0xfe][1],
+                  (UBY*) &sprdat[sprnr][0], (UBY*)&sprdat[sprnr][1]};
   ULO planardata;
   UBY bpl;
 
-  if (spriteno == 7)
+  if (sprnr == 7)
   {
-    spriteno = spriteno;
+    sprnr = sprnr;
   }
 
   planardata = *word[0]++;
-  chunky_dest[0] = sprite_deco16[0][planardata].i32[0];
-  chunky_dest[1] = sprite_deco16[0][planardata].i32[1];
-
-  planardata = *word[0];
   chunky_dest[2] = sprite_deco16[0][planardata].i32[0];
   chunky_dest[3] = sprite_deco16[0][planardata].i32[1];
+
+  planardata = *word[0];
+  chunky_dest[0] = sprite_deco16[0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco16[0][planardata].i32[1];
 
   for (bpl = 1; bpl < 4; bpl++)
   {  
     planardata = *word[bpl]++;
-    chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
-    chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
-
-    planardata = *word[bpl];
     chunky_dest[2] |= sprite_deco16[bpl][planardata].i32[0];
     chunky_dest[3] |= sprite_deco16[bpl][planardata].i32[1];
+
+    planardata = *word[bpl];
+    chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
+    chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
   }
 }
 
-void spritesDecode_C(void) {
-  // when sprite is in state 4, edx should hold the two control words
-  // used when debugging emulator?
-  // edx = edh:edl:dh:dl 
-  // = AT,0,0,0,0,E8,L8,H0:L7,L6,L5,L4,L3,L2,L1,L0:
-  //   H8,H7,H6,H5,H4,H3,H2,H1:E7,E6,E5,E4,E3,E2,E1,E0
-  
-  UBY spriteno;
-//  UWO data1, data2;
+void spritesDecode_C_CopperOnly(void) {
+  UBY sprnr;
 
   sprites_online = FALSE;
-  spriteno = 0;
+  sprnr = 0;
 
-  while ((spriteno < 8) && (spriteno * 4 <= sprite_ddf_kill)) 
+  while (sprnr < 8) 
   {
-    sprite_online[spriteno] = FALSE;
-    sprite_16col[spriteno] = FALSE;
+    sprite_online[sprnr] = FALSE;
+    sprite_16col[sprnr] = FALSE;
     
-    switch(sprite_state[spriteno]) 
+    switch(sprite_state[sprnr]) 
     {
-    case 0: // state 0, reading two control words
-      // .dsrwc0
-      spratt[spriteno] = !!(memory_chip[sprpt[spriteno] + 3] & 0x80);  // get bit AT
-      sprx[spriteno]   = (memory_chip[sprpt[spriteno] + 1] << 1) | (memory_chip[sprpt[spriteno] + 3] & 0x01); // get H8 to H0
-      sprx[spriteno]   = sprx[spriteno] + 1;  // delay x position with 1 cycle
-      spry[spriteno]   = memory_chip[sprpt[spriteno]] | ((memory_chip[sprpt[spriteno] + 3] & 0x04) << 6); // get E8 to E0
-      sprly[spriteno]  = memory_chip[sprpt[spriteno] + 2] | ((memory_chip[sprpt[spriteno] + 3] & 0x02) << 7); // get L8 to L0
-      sprite_state[spriteno] = 1;
-      sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
-      sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
-      sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
+    case 0: // state 0, inactive
+
       break;
 
-    case 1: // state 1, waiting for first line and in case of first line, decode first two data words
-      if (graph_raster_y == spry[spriteno]) 
+    case 1: // state 1, handling data from SPRxDATA and SPRxDATB
+
+      if ((sprnr & 0x01) == 0)
       {
-        sprite_state[spriteno] = 2;
-        
-        // read next two data words
-        sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
-        sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
-        sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
-
-        if ((spriteno & 0x01) == 0)
+        // even sprite 
+        if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
         {
-          // even sprite 
-          if (spratt[spriteno + 1] == 0) // if attached, work is done when handling odd sprite 
-          {
-            // even sprite not attached to next odd sprite -> 3 color decode 
-            spriteDecode4Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-            }
-          }
+          // even sprite not attached to next odd sprite -> 3 color decode 
+          spriteDecode4Sprite_C(sprnr);
+          sprites_online = TRUE;
+          sprite_online[sprnr] = TRUE;
+        }
+      }
+      else
+      {
+        // odd sprite 
+        if (spratt[sprnr] == 0) 
+        {
+          // odd sprite not attached to previous even sprite -> 3 color decode 
+          spriteDecode4Sprite_C(sprnr);
+          sprites_online = TRUE;
+          sprite_online[sprnr] = TRUE;
         }
         else
         {
-          // odd sprite (formerly dsoddsprite)
-          if (spratt[spriteno] == 0) 
-          {
-            // odd sprite not attached to previous even sprite -> 3 color decode 
-            spriteDecode4Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-            }
-          }
-          else
-          {
-            // odd sprite is attached to even sprite 
-            spriteDecode16Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-            sprite_16col[spriteno] = TRUE;
-            
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-              sprite_state[spriteno - 1] = 0;
-            }
-          }
+          // odd sprite is attached to even sprite 
+          spriteDecode16Sprite_C(sprnr);
+          sprites_online = TRUE;
+          sprite_online[sprnr] = TRUE;
+          sprite_16col[sprnr] = TRUE;
         }
       }
-      break;
-
-    case 2: // state 2, read two data words and decode them
-      if (graph_raster_y == sprly[spriteno])
-      {
-        if (spratt[spriteno] == 1) {
-          sprite_state[spriteno - 1] = 0;
-          sprx[spriteno - 1]         = 0;
-          spry[spriteno - 1]         = 0;
-          sprly[spriteno - 1]        = 0;
-          spratt[spriteno - 1]       = 0;
-        }  
-        sprite_state[spriteno] = 0;
-        sprx[spriteno]         = 0;
-        spry[spriteno]         = 0;
-        sprly[spriteno]        = 0;
-        spratt[spriteno]       = 0;
-      } 
-      else 
-      {
-        // read next two data words (if in state 2)
-        if (sprite_state[spriteno] == 2) {
-        sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
-        sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
-        }
-        sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
-
-        if ((spriteno & 0x01) == 0)
-        {
-          // even sprite 
-          if (spratt[spriteno + 1] == 0) // if attached, work is done when handling odd sprite 
-          {
-            // even sprite not attached to next odd sprite -> 3 color decode 
-            spriteDecode4Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-            }
-          }
-        }
-        else
-        {
-          // odd sprite (formerly dsoddsprite)
-          if (spratt[spriteno] == 0) 
-          {
-            // odd sprite not attached to previous even sprite -> 3 color decode 
-            spriteDecode4Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-            }
-          }
-          else
-          {
-            spriteDecode16Sprite_C(spriteno);
-            sprites_online = TRUE;
-            sprite_online[spriteno] = TRUE;
-            sprite_16col[spriteno] = TRUE;
-            
-            // check for last line
-            if ((graph_raster_y + 1) == sprly[spriteno])
-            {
-              sprite_state[spriteno] = 0; // return to state 'read two control words'
-              sprite_state[spriteno  - 1] = 0; // return to state 'read two control words'
-            }
-          }
-        }
-      }
-      break;
-
-    case 3:
       break;
     }
-    spriteno++;
+    sprnr++;
+  }
+}
+
+void spritesDMASpriteHandler(void) {
+  ULO sprnr;
+  felist * dma_action_item;
+  spr_action_list_item * item;
+	ULO local_sprx;
+  ULO local_spry;
+	ULO local_sprly;
+  ULO local_data;
+	ULO local_data_ctl;
+  ULO local_data_pos;
+
+  sprites_online = FALSE;
+  sprnr = 0;
+  
+  while (sprnr < 8) 
+  {
+    switch(sprite_state[sprnr]) 
+    {
+    case 0:
+      // inactive (waiting for a write to sprxptl)
+      if (spr_dma_action_list[sprnr] != NULL)
+      {
+        // move through DMA action list
+        dma_action_item = spr_dma_action_list[sprnr];
+        while (dma_action_item != NULL)
+        {
+          // check if item is a write to register sprxptl
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxptl_functions[sprnr])
+          {
+            // a write to sprxptl was made during this line, execute it now
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+
+            // data from sprxpos
+						local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+						local_spry = ((local_data_pos & 0xff00) >> 8);
+            local_sprx = ((local_data_pos & 0xff) << 1);
+
+            // data from sprxctl
+						local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+						local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
+            local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+						local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
+
+						if (((local_spry < local_sprly) ) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+              //((spr_action_list_item *) (dma_action_item->node))->raster_x < 71
+            //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
+						{
+							// insert a write to sprxpos at time raster_x
+							item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+							item->raster_x = ((spr_action_list_item *) (dma_action_item->node))->raster_x;
+							item->raster_y = ((spr_action_list_item *) (dma_action_item->node))->raster_y;
+							item->called_function = asprxpos;
+							item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+							item->address = sprnr << 3;
+							spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+            
+							// insert a write to sprxctl at time raster_x
+							item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+							item->raster_x = ((spr_action_list_item *) (dma_action_item->node))->raster_x;
+							item->raster_y = ((spr_action_list_item *) (dma_action_item->node))->raster_y;
+							item->called_function = asprxctl;
+							item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+							item->address = sprnr << 3;
+							spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+						}
+
+            if ((local_spry < local_sprly) && (local_sprx > 40))
+            {
+              // point to next two data words
+	            sprpt[sprnr] = sprpt[sprnr] + 4; 
+            }
+
+            if ((graph_raster_y < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+            {
+              sprite_state[sprnr] = 0;
+            }
+            else
+            {
+              sprite_state[sprnr] = 1;
+            }
+          }
+
+          // check if item is a write to register sprxpth
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxpth_functions[sprnr])
+          {
+            // update the sprxpth
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+          }
+          dma_action_item = listNext(dma_action_item);
+        }
+				spriteDMAActionListClear(sprnr);
+      }
+      break;
+
+    case 1: 
+			// waiting for (graph_raster_y == spry)
+			if (graph_raster_y == spry[sprnr])
+			{
+				if (graph_raster_y != sprly[sprnr])
+				{
+					// we can start to display the first line of the sprite
+   
+					// insert a write to sprxdatb 
+					item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+					item->raster_x = 60;
+					item->raster_y = graph_raster_y;
+					item->called_function = asprxdatb;
+					item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+					item->address = sprnr << 3;
+					spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+
+					// insert a write to sprxdata 
+					item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+					item->raster_x = 61;
+					item->raster_y = graph_raster_y;
+					item->called_function = asprxdata;
+					item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+					item->address = sprnr << 3;
+					spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+
+					// point to next two data words
+					sprpt[sprnr] = sprpt[sprnr] + 4; 
+
+					// we move to state 2 to wait for the last line sprly
+					sprite_state[sprnr] = 2;
+				}
+			}
+
+			// handle writes to sprxptl and sprxpth
+			if (spr_dma_action_list[sprnr] != NULL)
+      {
+        // move through DMA action list
+        dma_action_item = spr_dma_action_list[sprnr];
+        while (dma_action_item != NULL)
+        {
+          // check if item is a write to register sprxptl
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxptl_functions[sprnr])
+          {
+            // a write to sprxptl was made during this line, execute it now
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+          }
+
+          // check if item is a write to register sprxpth
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxpth_functions[sprnr])
+          {
+            // update the sprxpth
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+          }
+          dma_action_item = listNext(dma_action_item);
+        }
+				spriteDMAActionListClear(sprnr);
+      }
+      break;
+
+    case 2: 
+			// waiting for (graph_raster_y == sprly)
+			if (graph_raster_y == sprly[sprnr]) 
+			{
+				// we interpret the next two data words as the next two control words
+				local_data_ctl = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+				local_spry = ((local_data_ctl & 0xff00) >> 8);
+
+				local_data_pos = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+				local_spry = (local_spry & 0x0ff) | ((local_data_pos & 0x4) << 6);
+				local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
+
+				//if ((local_spry <= local_sprly) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+        if (TRUE)
+				{
+					// insert a write to sprxpos at time raster_x
+					item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+					item->raster_x = 0;
+					item->raster_y = graph_raster_y;
+					item->called_function = asprxpos;
+					item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+					item->address = sprnr << 3;
+					spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+        
+					// insert a write to sprxctl at time raster_x
+					item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+					item->raster_x = 1;
+					item->raster_y = graph_raster_y;
+					item->called_function = asprxctl;
+					item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+					item->address = sprnr << 3;
+					spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+        } 
+ 
+        if (local_spry < local_sprly)
+        {
+          // point to next two data words
+	        sprpt[sprnr] = sprpt[sprnr] + 4; 
+        }
+
+        if ((local_data_ctl == 0) && (local_data_pos == 0))
+        {
+          sprite_state[sprnr] = 0;
+        }
+        else
+        {
+          sprite_state[sprnr] = 1;
+        }
+			}
+			else
+			{
+				// we can continue to display the next line of the sprite
+   
+				// insert a write to sprxdatb 
+				item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+				item->raster_x = 60;
+				item->raster_y = graph_raster_y;
+				item->called_function = asprxdatb;
+				item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+				item->address = sprnr << 3;
+				spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+
+				// insert a write to sprxdata 
+				item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+				item->raster_x = 61;
+				item->raster_y = graph_raster_y;
+				item->called_function = asprxdata;
+				item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+				item->address = sprnr << 3;
+				spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+
+				// point to next two data words
+				sprpt[sprnr] = sprpt[sprnr] + 4; 
+			}
+
+			// handle writes to sprxptl and sprxpth
+			if (spr_dma_action_list[sprnr] != NULL)
+      {
+        // move through DMA action list
+        dma_action_item = spr_dma_action_list[sprnr];
+        while (dma_action_item != NULL)
+        {
+          // check if item is a write to register sprxptl
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxptl_functions[sprnr])
+          {
+            // a write to sprxptl was made during this line, execute it now
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+
+                // data from sprxpos
+						local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+						local_spry = ((local_data_pos & 0xff00) >> 8);
+            local_sprx = ((local_data_pos & 0xff) << 1);
+
+            // data from sprxctl
+						local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+						local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
+            local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+						local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
+
+						if (((local_spry < local_sprly) ) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+            //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
+						{
+							// insert a write to sprxpos at time raster_x
+							item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+							item->raster_x = ((spr_action_list_item *) (dma_action_item->node))->raster_x;
+							item->raster_y = ((spr_action_list_item *) (dma_action_item->node))->raster_y;
+							item->called_function = asprxpos;
+							item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+							item->address = sprnr << 3;
+							spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+            
+							// insert a write to sprxctl at time raster_x
+							item = (spr_action_list_item *) malloc(sizeof(spr_action_list_item));
+							item->raster_x = ((spr_action_list_item *) (dma_action_item->node))->raster_x;
+							item->raster_y = ((spr_action_list_item *) (dma_action_item->node))->raster_y;
+							item->called_function = asprxctl;
+							item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+							item->address = sprnr << 3;
+							spr_action_list[sprnr] = listAddSorted(spr_action_list[sprnr], listNew(item), &spriteCompareRasterX);
+						}
+
+            if ((local_spry < local_sprly) && (local_sprx > 40))
+            {
+              // point to next two data words
+	            sprpt[sprnr] = sprpt[sprnr] + 4; 
+            }
+
+            if ((graph_raster_y < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+            {
+              sprite_state[sprnr] = 0;
+            }
+            else
+            {
+              sprite_state[sprnr] = 1;
+            }
+          }
+
+          // check if item is a write to register sprxpth
+          if (((spr_action_list_item *) (dma_action_item->node))->called_function == sprxpth_functions[sprnr])
+          {
+            // update the sprxpth
+            (((spr_action_list_item *) (dma_action_item->node))->called_function)(((spr_action_list_item *) (dma_action_item->node))->data, ((spr_action_list_item *) (dma_action_item->node))->address);
+          }
+          dma_action_item = listNext(dma_action_item);
+        }
+				spriteDMAActionListClear(sprnr);
+      }
+      break;
+  
+    }
+    sprnr++;
+  }
+}
+
+void spriteActionListsClear()
+{
+  ULO i;
+
+  for (i = 0; i < 8; i++)
+  {
+    listFreeAll(spr_action_list[i], TRUE);
+    spr_action_list[i] = NULL;
+  }
+}
+
+void spriteActionListClear(ULO sprnr)
+{
+  listFreeAll(spr_action_list[sprnr], TRUE);
+  spr_action_list[sprnr] = NULL;
+}
+
+void spriteDMAActionListClear(ULO sprnr)
+{
+  listFreeAll(spr_dma_action_list[sprnr], TRUE);
+  spr_dma_action_list[sprnr] = NULL;
+}
+
+int spriteCompareRasterX(spr_action_list_item *item_from_list, spr_action_list_item *to_be_inserted) {
+
+  if (to_be_inserted->raster_y <= item_from_list->raster_y)
+  {
+	  if (to_be_inserted->raster_x <= item_from_list->raster_x)
+	  {
+		return 0;
+	  }
+  }
+  return -1;
+}
+
+void spriteProcessActionList(void)
+{
+  ULO sprnr;
+  felist * action_item;
+	ULO x_pos;
+
+  sprites_online = FALSE;
+  sprnr = 0;
+  while (sprnr < 8) 
+  {
+		x_pos = 0;
+    sprite_online[sprnr] = FALSE;
+    sprite_16col[sprnr] = FALSE;
+
+		action_item = spr_action_list[sprnr];
+		while (action_item != NULL)
+		{
+			if (spr_arm_data[sprnr] == TRUE)
+			{
+				// flipflop is armed by a write to sprxdata
+				if (((spr_action_list_item *) (action_item->node))->raster_x > sprx[sprnr])
+				{
+					// for lores the horizontal blanking is until 71
+					if (sprx[sprnr] >= 71) 
+					{
+						// the comparator is armed before the coming action item, we may display the sprite data
+						if ((sprnr & 0x01) == 0)
+						{
+							// even sprite 
+							if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
+							{
+								// even sprite not attached to next odd sprite -> 3 color decode 
+                sprx[sprnr] = sprx[sprnr] + 2;
+								spriteDecode4Sprite_C(sprnr);
+								sprites_online = TRUE;
+								sprite_online[sprnr] = TRUE;
+							}
+						}
+						else
+						{
+							// odd sprite 
+							if (spratt[sprnr] == 0) 
+							{
+								// odd sprite not attached to previous even sprite -> 3 color decode 
+                sprx[sprnr] = sprx[sprnr] + 20;
+								spriteDecode4Sprite_C(sprnr);
+								sprites_online = TRUE;
+								sprite_online[sprnr] = TRUE;
+							}
+							else
+							{
+                sprx[sprnr] = sprx[sprnr] + 20;
+                sprx[(LON) sprnr - 1] = sprx[(LON) sprnr - 1] + 20;
+								spriteDecode16Sprite_C(sprnr);
+								sprites_online = TRUE;
+								sprite_online[sprnr] = TRUE;
+								sprite_16col[sprnr] = TRUE;
+							}
+						}
+
+						x_pos = sprx[sprnr];
+
+						// for debugging only
+						if (output_action_sprite_log == TRUE) {
+							sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
+								sprnr, graph_raster_y, sprx[sprnr]);
+							fellowAddLog2(buffer);
+						}
+					}
+				}
+			}
+			// we can execute the coming action item
+			(((spr_action_list_item *) (action_item->node))->called_function)(((spr_action_list_item *) (action_item->node))->data, ((spr_action_list_item *) (action_item->node))->address);
+			x_pos = ((spr_action_list_item *) (action_item->node))->raster_x;
+			action_item = listNext(action_item);
+		}
+
+		// check if flipflop is armed, maybe the comparator will also get armed in time left
+		if ((spr_arm_data[sprnr] == TRUE) && (x_pos <= sprx[sprnr]))
+		{
+			// for lores the horizontal blanking is until 71
+			if (sprx[sprnr] >= 71) 
+			{
+				// the comparator becomes armed in time left, we may display the sprite data
+				if ((sprnr & 0x01) == 0)
+				{
+					// even sprite 
+					if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
+					{
+						// even sprite not attached to next odd sprite -> 3 color decode 
+						spriteDecode4Sprite_C(sprnr);
+						sprites_online = TRUE;
+						sprite_online[sprnr] = TRUE;
+					}
+				}
+				else
+				{
+					// odd sprite 
+					if (spratt[sprnr] == 0) 
+					{
+						// odd sprite not attached to previous even sprite -> 3 color decode 
+						spriteDecode4Sprite_C(sprnr);
+						sprites_online = TRUE;
+						sprite_online[sprnr] = TRUE;
+					}
+					else
+					{
+						spriteDecode16Sprite_C(sprnr);
+						sprites_online = TRUE;
+						sprite_online[sprnr] = TRUE;
+						sprite_16col[sprnr] = TRUE;
+					}
+				}
+
+				// for debugging only
+				if (output_action_sprite_log == TRUE) {
+					sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
+						sprnr, graph_raster_y, sprx[sprnr]);
+					fellowAddLog2(buffer);
+				}
+			}
+		}
+		// clear the list at the end
+		spriteActionListClear(sprnr);
+		sprnr++;
+	}
+}
+
+void spriteSetDebugging()
+{
+  if (output_sprite_log == TRUE)
+  {
+    output_sprite_log = FALSE;
+    output_action_sprite_log = FALSE;
+  }
+  else
+  {
+    output_sprite_log = TRUE;
+    output_action_sprite_log = TRUE;
   }
 }
