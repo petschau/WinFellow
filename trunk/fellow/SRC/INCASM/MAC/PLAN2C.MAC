@@ -205,52 +205,52 @@
 
 %macro MODULO1 0
 		MODULO_ODD_SETUP
-		MODULO			_bpl1pt, esi
+		MODULO			bpl1pt, esi
 %endmacro
 
 %macro MODULO2 0
 		MODULO_ODD_SETUP
 		MODULO_EVEN_SETUP
-		MODULO			_bpl1pt, esi
-		MODULO			_bpl2pt, edi
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
 %endmacro
 
 %macro MODULO3 0
 		MODULO_ODD_SETUP
 		MODULO_EVEN_SETUP
-		MODULO			_bpl1pt, esi
-		MODULO			_bpl2pt, edi
-		MODULO			_bpl3pt, esi
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
 %endmacro
 
 %macro MODULO4 0
 		MODULO_ODD_SETUP
 		MODULO_EVEN_SETUP
-		MODULO			_bpl1pt, esi
-		MODULO			_bpl2pt, edi
-		MODULO			_bpl3pt, esi
-		MODULO			_bpl4pt, edi
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
 %endmacro
 
 %macro MODULO5 0
 		MODULO_ODD_SETUP
 		MODULO_EVEN_SETUP
-		MODULO			_bpl1pt, esi
-		MODULO			_bpl2pt, edi
-		MODULO			_bpl3pt, esi
-		MODULO			_bpl4pt, edi
-		MODULO			_bpl5pt, esi
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
+		MODULO			bpl5pt, esi
 %endmacro
 
 %macro MODULO6 0
 		MODULO_ODD_SETUP
 		MODULO_EVEN_SETUP
-		MODULO			_bpl1pt, esi
-		MODULO			_bpl2pt, edi
-		MODULO			_bpl3pt, esi
-		MODULO			_bpl4pt, edi
-		MODULO			_bpl5pt, esi
-		MODULO			_bpl6pt, edi
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
+		MODULO			bpl5pt, esi
+		MODULO			bpl6pt, edi
 %endmacro
 
 %endif
