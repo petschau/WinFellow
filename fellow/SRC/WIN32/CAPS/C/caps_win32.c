@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.13 2004-06-06 16:14:58 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.14 2004-06-06 21:33:50 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -211,7 +211,7 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
     capsDriveIsLocked[drive] = TRUE;
 
     CAPSGetImageInfo(&capsImageInfo, capsDriveContainer[drive]);
-    *tracks = (capsImageInfo.maxcylinder - capsImageInfo.mincylinder + 1) * (capsImageInfo.maxhead - capsImageInfo.minhead + 1);
+    *tracks = ((capsImageInfo.maxcylinder - capsImageInfo.mincylinder + 1) * (capsImageInfo.maxhead - capsImageInfo.minhead + 1) + 1) / 2;
 
     CAPSLoadImage(capsDriveContainer[drive], capsFlags);
     capsLogImageInfo(&capsImageInfo, drive);

@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.14 2004-06-06 13:56:00 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.15 2004-06-06 21:35:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -688,7 +688,7 @@ void floppyImageIPFLoad(ULO drive) {
         return;
     }
 
-    for (i = 0; i < floppy[drive].tracks; i++) {
+    for (i = 0; i < floppy[drive].tracks*2; i++) {
         ULO maxtracklength;
         floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
 
@@ -904,7 +904,7 @@ BOOLE floppyDMAChannelOn(void) {
 }
 
 BOOLE floppyHasIndex(ULO sel_drv) {
-  return (floppy[sel_drv].motor_ticks == 0);
+  return ((floppy[sel_drv].motor_ticks & ~1) == 0);
 }
 
 ULO floppyGetLinearTrack(ULO sel_drv) {
@@ -1059,6 +1059,8 @@ void floppyNextTick(ULO sel_drv, ULO track) {
 #endif
 }
 
+UWO prev_word_under_head = 0;
+
 void floppyEndOfLineC(void) {
     LON sel_drv = floppySelectedGet();
     if (floppyDMAWriteStarted()) 
@@ -1080,9 +1082,19 @@ void floppyEndOfLineC(void) {
         for (i = 0; i < words; i++) 
         {
             UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
-            BOOLE found_sync = floppyCheckSync(word_under_head);
-            if (floppyHasIndex(sel_drv)) 
+            BOOLE found_sync = floppyCheckSync(((prev_word_under_head & 0xff) << 8) |
+												((word_under_head & 0xff00)>>8));
+			if (floppyHasIndex(sel_drv)) 
                 ciaRaiseIndexIRQ();
+			if (found_sync) // Odd aligned sync, step one byte back in the stream to align
+			{
+				i = i;
+				word_under_head = ((prev_word_under_head & 0xff) << 8) | ((word_under_head & 0xff00)>>8);
+				floppy[sel_drv].motor_ticks -= 1;
+			}
+			else
+			  found_sync = floppyCheckSync(word_under_head);
+			prev_word_under_head = word_under_head;
             if (floppyDMAReadStarted()) 
                 floppyReadWord(word_under_head, found_sync);
             floppyNextTick(sel_drv, track);
