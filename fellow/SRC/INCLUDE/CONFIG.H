@@ -42,7 +42,7 @@ typedef struct {
   BOOLE  m_diskenabled[4];
   BOOLE  m_diskreadonly[4];
   BOOLE  m_diskfast;
-
+  STR    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
 
   /*==========================================================================*/
   /* Memory configuration                                                     */
@@ -149,7 +149,8 @@ extern void cfgSetDiskReadOnly(cfg *config, ULO index, BOOLE readonly);
 extern BOOLE cfgGetDiskReadOnly(cfg *config, ULO index);
 extern void cfgSetDiskFast(cfg *config, BOOLE fast);
 extern BOOLE cfgGetDiskFast(cfg *config);  
-
+extern void cfgSetLastUsedDiskDir(cfg *config, STR *directory);
+extern STR *cfgGetLastUsedDiskDir(cfg *config);
 
 /*============================================================================*/
 /* Memory configuration property access                                       */
