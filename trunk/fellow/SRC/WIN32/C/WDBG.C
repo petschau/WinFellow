@@ -1045,7 +1045,7 @@ static BOOLE save_mem(char *name, ULO start, ULO end)
   if ((modfile = fopen(name, "w+b")) == NULL)
     return FALSE;
   for (i = start; i <= end; i++)
-    fputc(memoryChipReadByte(i), modfile);
+    fputc(fetb(i), modfile);
   fclose(modfile);
   return TRUE;
 }
@@ -1059,45 +1059,44 @@ static void scan(char *searchstring, int channels, HWND hWnd)
   char module_name[34];		// Name of the module
   int result;
   ULO start;			// address where the module starts
-  ULO end;			// address where the module ends
+  ULO end;				// address where the module ends
   int sample_size;		// no. of all sample-data used in bytes
   int pattern_size;		// no. of all pattern-data used in bytes
   int song_length;		// how many patterns does the song play?
   int max_pattern;		// highest pattern used
 
-  fellowAddLog("%s\n", searchstring);
-
-  for (i = 0; i <= memoryGetChipSize(); i++) {
-    if ((memoryChipReadByte(i + 0) == searchstring[0])
-	&& (memoryChipReadByte(i + 1) == searchstring[1])
-	&& (memoryChipReadByte(i + 2) == searchstring[2])
-	&& (memoryChipReadByte(i + 3) == searchstring[3])
+  for (i = 0; i <= 0xffffff; i++) {
+    if ((fetb(i + 0) == searchstring[0])
+	&& (fetb(i + 1) == searchstring[1])
+	&& (fetb(i + 2) == searchstring[2])
+	&& (fetb(i + 3) == searchstring[3])
       ) {
       /* Searchstring found, now calc size */
       start = i - 0x438;
+	  fellowAddLog("MODRIP: Matching ID for %s at 0x%06x.\n", searchstring, i);
 
       sample_size = 0;		/* Get SampleSize */
       for (j = 0; j <= 30; j++) {
-	sample_size += (256 * memoryChipReadByte(start + 0x2a + j * 0x1e)
-			+ memoryChipReadByte(start + 0x2b + j * 0x1e)) * 2;
+	sample_size += (256 * fetb(start + 0x2a + j * 0x1e)
+			+ fetb(start + 0x2b + j * 0x1e)) * 2;
       }
 
-      song_length = memoryChipReadByte(start + 0x3b6);
+      song_length = fetb(start + 0x3b6);
 
       max_pattern = 0;		/* Scan for max. ammount of patterns */
 
       for (j = 0; j <= song_length; j++) {
-	if (max_pattern < memoryChipReadByte(start + 0x3b8 + j)) {
-	  max_pattern = memoryChipReadByte(start + 0x3b8 + j);
+	if (max_pattern < fetb(start + 0x3b8 + j)) {
+	  max_pattern = fetb(start + 0x3b8 + j);
 	}
       }
 
       pattern_size = (max_pattern + 1) * 64 * 4 * channels;
       end = start + sample_size + pattern_size + 0x43b;
 
-      if ((end <= memoryGetChipSize()) && (end - start < 1000000)) {
+      if ((end <= 0xffffff) && (end - start < 1000000)) {
 	for (j = 0; j < 20; j++) {
-	  module_name[j] = memoryChipReadByte(start + j);
+	  module_name[j] = fetb(start + j);
 	}
 	module_name[20] = 0;	/* Get module name */
 
