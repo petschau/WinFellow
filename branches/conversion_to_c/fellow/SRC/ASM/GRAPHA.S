@@ -44,6 +44,7 @@ CFUNCEXTERN blitterCopy
 CFUNCEXTERN graphCalculateWindow_C
 CFUNCEXTERN graphPlayfieldOnOff
 CFUNCEXTERN drawUpdateDrawmode
+CFUNCEXTERN graphDecodeNOP_C
 
 ;-----------------------------------------------------------------------------
 ; Enable this for detailed profiling, log written to drawprofile.txt
@@ -80,7 +81,6 @@ _graphemstart_:				; Used to check code alignment
 
 %include "mac/plan2c.mac"
 %include "func/fmem.inc"
-%include "mac/drawmode.mac"
 %include "func/sprite.inc"
 %include "func/sound.inc"
 %include "func/copper.inc"
@@ -1623,48 +1623,6 @@ _graphDecode4HiDual320_:
 .dd320h4nowork:		ret
 
 
-
-
-;-------------------------------------------------------------------------------
-; Do nop decoding, no screen output needed
-; This routine updates some data, the calls the functions below via a table
-;-------------------------------------------------------------------------------
-
-
-		FALIGN32
-
-graphDecodeNOP:
-		mov	edx, dword [bplcon0]
-		shr	edx, 12
-		and	edx, 07h
-		mov	ecx, dword [graph_DDF_word_count]
-		shl	ecx, 1
-		mov	ebx, dword [bpl1mod]
-		mov	eax, dword [bpl2mod]
-		jmp	dword [graph_decode_nop_table + edx*4]
-
-global _graphDecodeNOP6_
-global _graphDecodeNOP5_
-global _graphDecodeNOP4_
-global _graphDecodeNOP3_
-global _graphDecodeNOP2_
-global _graphDecodeNOP1_
-global _graphDecodeNOP0_
-_graphDecodeNOP6_:	add	dword [bpl6pt], ecx
-			add	dword [bpl6pt], eax
-_graphDecodeNOP5_:	add	dword [bpl5pt], ecx
-			add	dword [bpl5pt], ebx
-_graphDecodeNOP4_:	add	dword [bpl4pt], ecx
-			add	dword [bpl4pt], eax
-_graphDecodeNOP3_:	add	dword [bpl3pt], ecx
-		        add	dword [bpl3pt], ebx
-_graphDecodeNOP2_:	add	dword [bpl2pt], ecx
-			add	dword [bpl2pt], eax
-_graphDecodeNOP1_:	add	dword [bpl1pt], ecx
-			add	dword [bpl1pt], ebx
-_graphDecodeNOP0_:	ret
-
-
 ;-------------------------------------------------------------------------------
 ; Sprite hack, try to delay effect of writes to sprxpt
 ;-------------------------------------------------------------------------------
@@ -2475,7 +2433,10 @@ _graphEndOfLine_:
 		cmp	eax, dword [draw_line_routine]
 		je	.draw_end
 		push	dword .draw_end
-		jmp	graphDecodeNOP
+		pushad
+		call graphDecodeNOP_C
+		popad
+		ret
 
 		;==============================================================
 		; Visible line, either background or bitplanes

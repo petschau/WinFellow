@@ -91,7 +91,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/sprite.inc"
 %include "func/kbd.inc"
 %include "mac/fmem.mac"
-%include "mac/drawmode.mac"
 %include "mac/kbd.mac"
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
@@ -444,3 +443,4 @@ FBSSSECTIONEND
 FASMFILEEND
 
 
+	

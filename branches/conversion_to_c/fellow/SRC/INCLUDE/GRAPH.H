@@ -52,14 +52,6 @@
 #define rvposr ASMRENAME(rvposr)
 #define rdmaconr ASMRENAME(rdmaconr)
 
-#define graphDecodeNOP0 ASMRENAME(graphDecodeNOP0)
-#define graphDecodeNOP1 ASMRENAME(graphDecodeNOP1)
-#define graphDecodeNOP2 ASMRENAME(graphDecodeNOP2)
-#define graphDecodeNOP3 ASMRENAME(graphDecodeNOP3)
-#define graphDecodeNOP4 ASMRENAME(graphDecodeNOP4)
-#define graphDecodeNOP5 ASMRENAME(graphDecodeNOP5)
-#define graphDecodeNOP6 ASMRENAME(graphDecodeNOP6)
-
 /* Declare asm functions */
 
 extern void graphemstart(void); /* Code alignment check label */
@@ -110,14 +102,6 @@ extern ULO rid(ULO);
 extern ULO rvhposr(ULO);
 extern ULO rvposr(ULO);
 extern ULO rdmaconr(ULO);
-
-extern void graphDecodeNOP0(void);
-extern void graphDecodeNOP1(void);
-extern void graphDecodeNOP2(void);
-extern void graphDecodeNOP3(void);
-extern void graphDecodeNOP4(void);
-extern void graphDecodeNOP5(void);
-extern void graphDecodeNOP6(void);
 
 /* C declarations */
 

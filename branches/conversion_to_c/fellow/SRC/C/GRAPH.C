@@ -30,15 +30,6 @@
 planar2chunkyroutine graph_decode_line_ptr;
 planar2chunkyroutine graph_decode_line_tab[16];
 planar2chunkyroutine graph_decode_line_dual_tab[16];
-planar2chunkyroutine graph_decode_nop_table[8] = {graphDecodeNOP0,
-						  graphDecodeNOP1,
-						  graphDecodeNOP2,
-						  graphDecodeNOP3,
-						  graphDecodeNOP4,
-						  graphDecodeNOP5,
-						  graphDecodeNOP6,
-						  graphDecodeNOP6};
-
 
 /*===========================================================================*/
 /* Planar to chunky lookuptables for data                                    */
@@ -1028,6 +1019,27 @@ void graphPlayfieldOnOff(void)
 		}
 	}
 	// OK, here the state of the playfield is taken care of
+}
+
+void graphDecodeNOP_C(void)
+{
+    switch ((bplcon0 >> 12) & 0x07) {
+    case 0:
+      break;
+    case 6:
+      bpl6pt += (graph_DDF_word_count << 1) + bpl2mod;
+    case 5:
+      bpl5pt += (graph_DDF_word_count << 1) + bpl1mod;
+    case 4:
+      bpl4pt += (graph_DDF_word_count << 1) + bpl2mod;
+    case 3:
+      bpl3pt += (graph_DDF_word_count << 1) + bpl1mod;
+    case 2:
+      bpl2pt += (graph_DDF_word_count << 1) + bpl2mod;
+    case 1:
+      bpl1pt += (graph_DDF_word_count << 1) + bpl1mod;
+      break;
+    }
 }
 
 /*===========================================================================*/
