@@ -95,6 +95,9 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 /* FELLOW IN (END)------------------- */
   
 #include "fsdb.h"
+#ifdef WIN32
+#include "filesys_win32.h"
+#endif
 
 /*#define TRACING_ENABLED*/
 #ifdef TRACING_ENABLED

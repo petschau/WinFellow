@@ -36,6 +36,9 @@
    FELLOW OUT (END)------------------ */
 
 #include "fsdb.h"
+#ifdef WIN32
+#include "filesys_win32.h"
+#endif
 
 /* The on-disk format is as follows:
  * Offset 0, 1 byte, valid
