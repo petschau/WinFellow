@@ -46,7 +46,7 @@ extern BOOLE fhfileGetEnabled(void);
 extern void fhfileSetHardfile(fhfile_dev hardfile, ULO index);
 extern BOOLE fhfileCompareHardfile(fhfile_dev hardfile, ULO index);
 extern BOOLE fhfileRemoveHardfile(ULO index);
-static BOOLE fhfileCreate(fhfile_dev hfile);
+extern BOOLE fhfileCreate(fhfile_dev hfile);
 
 
 extern void fhfileClear(void);
