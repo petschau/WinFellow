@@ -54,7 +54,7 @@
 #include "portable.h"
 
 #include <windowsx.h>
-#include "resource.h"
+#include "gui_general.h"
 #include <ddraw.h>
 #include <dsound.h>
 

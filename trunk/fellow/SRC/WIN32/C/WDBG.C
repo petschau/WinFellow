@@ -13,7 +13,7 @@
 #include <windef.h>
 #include <windows.h>
 #include <windowsx.h>
-#include "resource.h"
+#include "gui_general.h"
 
 #include <commctrl.h>
 #include <prsht.h>

@@ -14,7 +14,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
-#include "resource.h"
+#include "gui_general.h"
 #include <process.h>
 #include <commctrl.h>
 #include <prsht.h>
