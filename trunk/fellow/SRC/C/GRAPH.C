@@ -379,7 +379,6 @@ void graphEndOfFrame(void) {
   graph_playfield_on = FALSE;
 }
 
-
 /*===========================================================================*/
 /* Called on emulation hard reset                                            */
 /*===========================================================================*/
@@ -416,7 +415,7 @@ void graphStartup(void) {
   graphP2CTablesInit();
   graphLineDescClear();
   graphIORegistersClear();
-  graphSetAllowBplLineSkip(FALSE);
+  graphSetAllowBplLineSkip(TRUE);
 }
 
 
