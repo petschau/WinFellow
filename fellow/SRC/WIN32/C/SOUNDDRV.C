@@ -611,6 +611,21 @@ BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 				NULL,
 				NULL,
 				0);
+
+  if (res == DSERR_BUFFERLOST)
+  {
+    /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
+      IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+	  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+				start_offset,
+				size,
+				&lpvAudio,
+				&dwBytes,
+				NULL,
+				NULL,
+				0);
+  }
+
   if (res != DS_OK) {
     soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Lock(), ", res);
     return FALSE;
@@ -785,6 +800,7 @@ BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
 				 ULO current_buffer_no,
 				 ULO next_buffer_no)
 {
+  HRESULT res;
   BOOLE terminate_thread = FALSE;
   BOOLE need_to_restart_playback = FALSE;
   if (soundDrvWaitForData(dsound_device,
@@ -796,7 +812,16 @@ BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
 			       dsound_device->pending_data_sample_count,
 			       current_buffer_no);
     if (need_to_restart_playback)
-      IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+    {
+      res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+      if (res == DSERR_BUFFERLOST)
+      {
+        /* Temporary fix for restoring buffer once. Multiple restore needs alot more */
+        IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+        res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+      }
+    }
+
     // If the next buffer also triggered during soundDrvWaitForData()
     // it will end multiple object wait immediately, since we don't reset it
     ResetEvent(dsound_device->data_available);
