@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.12 2004-06-06 13:56:00 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.13 2004-06-06 16:14:58 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -253,10 +253,11 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 	    fclose(f);
     }
 #endif
-    if (capsTrackInfo.timelen > 0) {
-	for (i = 0; i < capsTrackInfo.timelen; i++)
-	    timebuf[i] = (ULO) capsTrackInfo.timebuf[i];
-    }
+
+    if (capsTrackInfo.timelen > 0)
+	    for(i = 0; i < capsTrackInfo.timelen; i++)
+	        timebuf[i] = (ULO) capsTrackInfo.timebuf[i];
+
 #if TRACECAPS
     fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
         drive, 
