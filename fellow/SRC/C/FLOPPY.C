@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.11 2004-06-06 10:58:10 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.12 2004-06-06 12:58:54 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -700,6 +700,7 @@ void floppyImageIPFLoad(ULO drive) {
             floppy[drive].tracktiming,
             &floppy[drive].flakey);
         LastTrackMFMData += maxtracklength;
+        floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
     }
 
     floppy[drive].writeprot = TRUE;
@@ -829,7 +830,6 @@ void floppyDriveTableReset(void) {
   for (i = 0; i < 4; i++) {
     floppy[i].sel = FALSE;
     floppy[i].track = 0;
-    floppy[i].writeprot = FALSE;
     floppy[i].dir = FALSE;
     floppy[i].motor = FALSE;
     floppy[i].motor_ticks = 0;
@@ -1034,10 +1034,14 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
 }
 
 void floppyNextTick(ULO sel_drv, ULO track) {
+    ULO modulo;
 #ifdef FELLOW_SUPPORT_CAPS
     ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
+    /*if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
+        modulo = floppy[sel_drv].trackinfo[track].mfm_length;
+    else*/
 #endif
-    ULO modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
+    modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
 								     floppy[sel_drv].trackinfo[track].mfm_length;
     floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 #ifdef FELLOW_SUPPORT_CAPS
