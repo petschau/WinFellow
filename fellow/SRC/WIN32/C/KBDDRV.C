@@ -569,8 +569,6 @@ typedef enum {
   JOYKEY_AUTOFIRE1 = 7
 } kbd_drv_joykey_directions;
 
-#define MAX_JOYKEY_VALUE	8
-
 kbd_drv_pc_symbol		kbd_drv_joykey[2][MAX_JOYKEY_VALUE];			/* Keys for joykeys 0 and 1 */
 BOOLE				kbd_drv_joykey_enabled[2][2];	/* For each port, the enabled joykeys */
 kbd_event			kbd_drv_joykey_event[2][2][MAX_JOYKEY_VALUE];	/* Event ID for each joykey [port][pressed][direction] */
@@ -829,7 +827,6 @@ void kbdDrvStateHasChanged(BOOL active) {
   if (kbd_drv_active) kbdDrvDInputAcquire();
   else kbdDrvDInputUnacquire();
 }
-
 
 #define map(sym) symbol_to_DIK_kbddrv[(sym)]
 #define symbolickey(scancode) kbddrv_DIK_to_symbol[scancode]
