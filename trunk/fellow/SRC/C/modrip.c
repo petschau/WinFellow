@@ -11,6 +11,7 @@
 /* Changelog:                                                                 */
 /* ----------                                                                 */
 /* 2000/12/18:                                                                */
+/* - added ProRunner 2.0 support                                              */
 /* - now only the allocated memory areas are scanned instead of the whole mem */
 /* 2000/12/16:                                                                */
 /* - FredEditor support added, defined some useful macros                     */
@@ -111,15 +112,15 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 {
   ULO i;
   int type;
-  struct { char *ID; int channels; } formats[8] = {
-	  {"M.K.", 4},  /* Standard ProTracker */
-      {"M!K!", 4},  /* ProTracker w. more than 64 patterns */
-	  {"4CHN", 4},  /* 4 channels */
-	  {"6CHN", 6},  /* 6 channel ProTracker */
-	  {"8CHN", 8},  /* 8 channels */
-	  {"FLT4", 4},	/* Startrekker 4 channel */
-	  {"FLT8", 8},  /* Startrekker 8 channel */
-	  {"M&K!", 4}   /* Noisetracker */
+  struct { char *ID; char *Desc; int channels; } formats[8] = {
+	  {"M.K.", "Noisetracker",  4},
+      {"M!K!", "Protracker",    4},
+	  {"4CHN", "4 channel",     4},
+	  {"6CHN", "6 channel",     6},
+	  {"8CHN", "8 channel",     8},
+	  {"FLT4", "Startrekker 4", 4},
+	  {"FLT8", "Startrekker 8", 8},
+	  {"M&K!", "Noisetracker",  4}
   };
   struct ModuleInfo info;
   BOOLE ScratchyName;
@@ -136,7 +137,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
       modripModuleInfoInitialize(&info);
 
       /* store general info */
-      strcpy(info.typedesc, "ProTracker and clones");
+	  strncpy(info.typedesc, formats[type].Desc, 30);
       strncpy(info.typesig, formats[type].ID, 4);
       info.typesig[4] = '\0';
       info.channels = formats[type].channels;
@@ -571,6 +572,64 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   }   
 }
 
+/*==========================*/
+/* detect ProRunner 2.0     */
+/* games: Pinball Illusions */
+/*==========================*/
+
+static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
+{
+  ULO i;
+  ULO sampSize = 0, sampPtr = 0;
+  struct ModuleInfo info;
+  
+  if(
+      (BYTE(address + 0) != 'S')
+   || (BYTE(address + 1) != 'N')
+   || (BYTE(address + 2) != 'T')
+   || (BYTE(address + 3) != '!')
+    ) return;
+
+  RIPLOG1("mod-ripper possible ProRunner 2.0 match...\n");
+
+  RIPLOG1("checkpoint 1: finetune values...\n");
+  /* check finetune values */
+  for(i = 0; i < 31; i++) {
+    if(BYTE(address + 10 + 8*i) > 0xf)
+      return;
+  }
+  
+  RIPLOG1("checkpoint 2: volume values...\n");
+  /* check volume values */
+  for(i = 0; i < 31; i++) {
+    if(BYTE(address + 11 + 8*i) > 0x40)
+      return;
+  }
+
+  modripModuleInfoInitialize(&info);
+  info.start = address;
+  info.end = address;
+  strcpy(info.typesig, "SNT!");
+  strcpy(info.typedesc, "ProRunner 2.0");
+
+  sampPtr = BEDWORD(address + 4);
+  RIPLOG2("found sample pointer %u\n", sampPtr);
+
+  for(i = 0; i < 31; i++)
+    sampSize += BEWORD(address + 8 + 8*i) << 1;
+  RIPLOG2("sample size %u\n", sampSize);
+
+  info.end += sampPtr + sampSize;
+
+  if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+    sprintf(info.filename, "PR2.Mod%d.cus", modripModsFound++);
+
+    if(modripGuiSaveRequest(&info)) 
+      if(!modripSaveMem(&info, func))
+        modripGuiErrorSave(&info);
+  }   
+}
+
 /*====================================================*/
 /* from here on starts the actual fellow ripping code */
 /*====================================================*/
@@ -579,13 +638,14 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 /* here we define the formats that are actually used */
 /*===================================================*/
 
-#define MODRIP_KNOWNFORMATS 4
+#define MODRIP_KNOWNFORMATS 5
 
 static ModuleDetectFunc DetectFunctions[MODRIP_KNOWNFORMATS] = {
   modripDetectProTracker,
   modripDetectSoundFX,
   modripDetectSoundMon,
-  modripDetectFred
+  modripDetectFred,
+  modripDetectProRunner2
 };
 
 /*==============================================*/
