@@ -23,7 +23,7 @@
 /* - how to use that PropSheet_CancelToClose(hwndDlg) ?                       */
 /* - why isn't the bg-color updated on initialization of the window ?         */
 /* DOS Fellow debugger functions still missing:                               */
-/* cia, io, floppy, sound, copper, sprites, screen, events                    */
+/* io, floppy, sound, copper, sprites, screen, events                         */
 /*============================================================================*/
 
 #include "defs.h"
@@ -52,6 +52,7 @@
 #include "kbd.h"
 #include "fmem.h"
 #include "cia.h"
+#include "floppy.h"
 
 /*===============================*/
 /* Handle of the main dialog box */
@@ -84,22 +85,24 @@ BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg,
+				   WPARAM wParam, LPARAM lParam);
 
 /*==============================================================*/
 /* the various sheets of the main dialog and their dialog procs */
 /*==============================================================*/
 
-#define DEBUG_PROP_SHEETS 3
+#define DEBUG_PROP_SHEETS 4
 
 UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
-  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA
-    /*, IDD_..., */
+  IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY
 };
 
 typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
-  wdbgCPUDialogProc, wdbgMemoryDialogProc, wdbgCIADialogProc
+  wdbgCPUDialogProc, wdbgMemoryDialogProc, wdbgCIADialogProc,
+  wdbgFloppyDialogProc
 };
 
 /*===========================*/
@@ -140,7 +143,7 @@ int wdbgSessionMainDialog(void)
 }
 
 /*============================================================================*/
-/* Updates the CPU state in the main window                                   */
+/* helper functions                                                           */
 /*============================================================================*/
 
 STR *wdbgGetDataRegistersStr(STR * s)
@@ -198,6 +201,10 @@ STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
   *disasm_pc = disOpcode(*disasm_pc, s);
   return s;
 }
+
+/*============================================================================*/
+/* Updates the CPU state                                                      */
+/*============================================================================*/
 
 void wdbgUpdateCPUState(HWND hwndDlg)
 {
@@ -440,7 +447,106 @@ void wdbgUpdateCIAState(HWND hwndDlg)
 }
 
 /*============================================================================*/
-/* DialogProc for our cpu dialog                                             */
+/* Updates the floppy state                                                   */
+/*============================================================================*/
+
+extern ULO dsklen, dsksync, dskpt;
+
+void wdbgUpdateFloppyState(HWND hwndDlg)
+{
+  STR s[128];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
+
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+
+    ULO y = WDBG_CPU_REGISTERS_Y;
+    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
+
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = WDBG_DISASSEMBLY_X;
+    y = WDBG_DISASSEMBLY_Y;
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += WDBG_DISASSEMBLY_INDENT;
+
+    for (i = 0; i < 4; i++) {
+      sprintf(s, "DF%d:", i);
+      y = wdbgLineOut(hDC, s, x, y);
+
+      sprintf(s, "Track-%d Sel-%d Motor-%d Side-%d WP-%d Cached-%s",
+	      floppy[i].track,
+	      floppy[i].sel,
+	      floppy[i].motor,
+	      floppy[i].side,
+	      floppy[i].writeprot, floppy[i].cached ? "No " : "Yes");
+      y = wdbgLineOut(hDC, s, x, y);
+    }
+
+    sprintf(s, "Dskpt-%.6X dsklen-%.4X dsksync-%.4X", dskpt, dsklen, dsksync);
+    y = wdbgLineOut(hDC, s, x, y);
+
+    if (floppy_DMA_started)
+      strcpy(s, "Disk DMA running");
+    else
+      strcpy(s, "Disk DMA stopped");
+    y = wdbgLineOut(hDC, s, x, y);
+
+    strcpy(s, "Transfer settings:");
+    y = wdbgLineOut(hDC, s, x, y);
+
+    sprintf(s, "Drive: %d  Wordsleft: %d  Wait: %d  Dst: %X",
+	    floppy_DMA.drive,
+	    floppy_DMA.wordsleft, floppy_DMA.wait, floppy_DMA.dst);
+    y = wdbgLineOut(hDC, s, x, y);
+
+#ifdef ALIGN_CHECK
+    sprintf(s, "Busloop: %X  eol: %X copemu: %X", checkadr, end_of_line,
+	    copemu);
+    y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "68000strt:%X busstrt:%X copperstrt:%X memorystrt:%X",
+	    m68000start, busstart, copperstart, memorystart);
+    y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "sndstrt:%X sbstrt:%X blitstrt:%X", soundstart, sblaststart,
+	    blitstart);
+    y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "drawstrt:%X graphemstrt:%X", drawstart, graphemstart);
+    y = wdbgLineOut(hDC, s, x, y);
+#endif
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
+}
+
+/*============================================================================*/
+/* DialogProc for our CPU dialog                                              */
 /*============================================================================*/
 
 BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg,
@@ -555,6 +661,33 @@ BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg,
       return TRUE;
     case WM_PAINT:
       wdbgUpdateCIAState(hwndDlg);
+      break;
+    case WM_COMMAND:
+      switch (LOWORD(wParam)) {
+	case IDC_DEBUG_MEMORY_UP:
+	  break;
+	default:
+	  break;
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+/*============================================================================*/
+/* DialogProc for our floppy dialog                                           */
+/*============================================================================*/
+
+BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
+				   UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_PAINT:
+      wdbgUpdateFloppyState(hwndDlg);
       break;
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
