@@ -12,6 +12,7 @@ extern void wguiStartup(void);
 extern void wguiShutdown(void);
 extern BOOLE wguiEnter(void);
 extern void wguiRequester(STR *line1, STR *line2, STR *line3);
+extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
 
 #else
 
@@ -21,7 +22,9 @@ static void wguiPreStartup(void) {}
 static void wguiStartup(void) {}
 static void wguiShutdown(void) {}
 static void wguiEnter(void) {}
+static void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert) {}
 static void wguiRequester(STR *line1, STR *line2, STR *line3) {}
+
 
 
 #endif /* End of WGUI */
