@@ -61,17 +61,17 @@ FDATASECTIONSTART
 ; the C-compiler does not do tricks with them.
 ;===============================================================================
 
-global _d
-global _a
-global _aend
+global d
+global a
+global aend
 
-_d: dd 0,0,0,0,0,0,0,0
-_a: dd 0,0,0,0,0,0,0,0
-_aend:
+d: dd 0,0,0,0,0,0,0,0
+a: dd 0,0,0,0,0,0,0,0
+aend:
 
-%define a _a
-%define d _d
-%define aend _aend
+;%define a _a
+;%define d _d
+;%define aend _aend
 
 
 upsrtraceset: db 0
