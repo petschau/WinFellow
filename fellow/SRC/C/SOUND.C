@@ -353,9 +353,6 @@ void soundEndOfLine(void) {
     }
     if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
         soundGetBufferSampleCountMax()) {
-      char s[80];
-      sprintf(s, "Sample count is %d, playing it now, sample count max is %d\n", soundGetBufferSampleCount(), soundGetBufferSampleCountMax());
-      fellowAddLog(s);
       if (soundGetEmulation() == SOUND_PLAY) {
 	soundDrvPlay(sound_left[sound_current_buffer],
 		     sound_right[sound_current_buffer],
