@@ -58,6 +58,10 @@ ULO graph_deco320hi4[256];
 ULO graph_decode_tmp;
 
 
+UBY graph_line1_tmp[1024];
+UBY graph_line2_tmp[1024];
+
+
 /*===========================================================================*/
 /* Line description registers and data                                       */
 /*===========================================================================*/
@@ -66,6 +70,7 @@ ULO graph_DDF_start;
 ULO graph_DDF_word_count;
 ULO graph_DIW_first_visible;
 ULO graph_DIW_last_visible;
+ULO graph_allow_bpl_line_skip;
 
 
 /*===========================================================================*/
@@ -233,7 +238,7 @@ void graphLineDescClear(void) {
       graph_frame[frame][line].draw_line_routine =
 	                                        (void *) draw_line_BG_routine;
       graph_frame[frame][line].colors[0] = 0;
-      graph_frame[frame][line].frames_left_until_BG_skip = 1;
+      graph_frame[frame][line].frames_left_until_BG_skip = 1; /* Ensures we draw once */
       graph_frame[frame][line].sprite_ham_slot = 0xffffffff;
     }
 }
@@ -315,6 +320,18 @@ static void graphIORegistersClear(void) {
   dmacon = 0;
 }
 
+
+/*===========================================================================*/
+/* Property set/get for smart drawing                                       */
+/*===========================================================================*/
+
+void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip) {
+  graph_allow_bpl_line_skip = allow_bpl_line_skip;
+}
+
+BOOLE graphGetAllowBplLineSkip(void) {
+  return graph_allow_bpl_line_skip;
+}
 
 /*===========================================================================*/
 /* Registers the graphics IO register handlers                               */
@@ -399,6 +416,7 @@ void graphStartup(void) {
   graphP2CTablesInit();
   graphLineDescClear();
   graphIORegistersClear();
+  graphSetAllowBplLineSkip(FALSE);
 }
 
 
