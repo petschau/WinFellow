@@ -596,61 +596,6 @@ InputPath=..\..\asm\sounda.s
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\asm\spritea.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\Asm\Sse.s
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
@@ -751,10 +696,6 @@ SOURCE=..\..\incasm\mac\plan2c.mac
 
 SOURCE=..\..\incasm\mac\sound.mac
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\sprite.mac
-# End Source File
 # End Group
 # Begin Group "Functions"
 
@@ -799,10 +740,6 @@ SOURCE=..\..\incasm\func\kbd.inc
 
 SOURCE=..\..\incasm\func\sound.inc
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\sprite.inc
-# End Source File
 # End Group
 # Begin Group "Data"
 
@@ -846,10 +783,6 @@ SOURCE=..\..\incasm\data\gameport.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\data\sound.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\sprite.inc
 # End Source File
 # Begin Source File
 

@@ -2068,8 +2068,7 @@ void graphEndOfLine_C(void)
 				if (graph_raster_y >= 0x18) 
 				{
 					spritesDMASpriteHandler();
-					spriteProcessActionList();
-					//spriteActionListClear();
+					spriteProcessActionList(current_graph_line);
 				}
 				else
 				{
@@ -2117,7 +2116,6 @@ void graphEndOfLine_C(void)
 	}
 
 	// .skip_frame
-  //graphSpriteHack_C();
 }
 
 /*===========================================================================*/
@@ -2155,18 +2153,12 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
       line_desc_changed |= graphCompareCopy_C(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), (ULO *) (current_graph_line->line2), (ULO *) graph_line2_tmp);
     }
   
-		// add sprites to the line image
+	// add sprites to the line image
     if (sprites_online == 1)
     {
       line_desc_changed = TRUE;
-      __asm {
-        pushad
-        push current_graph_line
-        call spritesMerge
-        pop edx
-        popad
-      }
-		  sprites_online = 0;
+	  spritesMerge_C(current_graph_line);
+	  sprites_online = 0;
     }
     
     // final test for line skip
@@ -2367,36 +2359,29 @@ void graphLinedescMake_C(graph_line* current_graph_line)
 
 void graphComposeLineOutput_C(graph_line* current_graph_line)
 {
-  /*==================================================================*/
+	/*==================================================================*/
 	/* Check if we need to decode bitplane data                         */
-  /*==================================================================*/
+	/*==================================================================*/
   
-  if (draw_line_BG_routine != draw_line_routine) 
-  {
-    /*================================================================*/
+	if (draw_line_BG_routine != draw_line_routine) 
+	{
+		/*================================================================*/
 		/* Do the planar to chunky conversion                             */
-    /*================================================================*/
-    graph_decode_line_ptr();
+		/*================================================================*/
+		graph_decode_line_ptr();
 
-    /*================================================================*/
+		/*================================================================*/
 		/* Add sprites to the line image                                  */
-    /*================================================================*/
+		/*================================================================*/
 		if (sprites_online == 1)
-    {
-      __asm 
-      {
-        pushad
-        push current_graph_line
-        call	spritesMerge
-        pop ebx
-        popad
-      }
-      sprites_online = 0;
-    }
+		{
+		  spritesMerge_C(current_graph_line);
+		  sprites_online = 0;
+		}
 
-    /*================================================================*/
+		/*================================================================*/
 		/* Remember line geometry for later drawing                       */
-    /*================================================================*/
+		/*================================================================*/
   }
   graphLinedescMake_C(current_graph_line);
 }
