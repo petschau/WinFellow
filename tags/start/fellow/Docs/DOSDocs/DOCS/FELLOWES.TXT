@@ -1,0 +1,893 @@
+******************************************************************************
+                                F E L L O W
+                          EMULADOR DE COMMODORE AMIGA 
+                    por Petter Schau (pettersc@ifi.uio.no)
+           Documentacion y FAQ por Brett Eden (revere@sub.net.au)
+         Traducción al castellano por Lou C. Fer (pudo@galiciaweb.com)
+******************************************************************************
+
+     **** POR FAVOR, LEA ESTE DOCUMENTO CUIDADOSAMENTE ANTES DE USAR FELLOW ****
+
+Este archivo contiene Fellow V0.3.1,
+
+El emulador ha sido programado por:
+
+(C) Petter Schau en 1996/1997.  (pettersc@ifi.uio.no)
+
+Algunas contribuciones al programa por:
+
+(C) Roman Dolejsi 1997          (roman@sorry.vse.cz)
+(C) David Voracek 1997          (assassin@paru.cas.cz)
+
+
+
+Condiciones para usar y distribuir este emulador:
+-------------------------------------------------
+
+Los derechos de este programa son de Petter Schau y sus colaboradores.
+
+Esta permitido el uso de este programa de manera gratuita.
+
+La distribución gratuita esta permitida con algunas restricciones.
+
+Este programa se puede distribuir gratuitamente siempre que el contenido de este archivo esté intacto y sin modificaciones, y no reporta beneficios de ningun tipo excepto el precio del soporte.  
+
+La redistribución no cambia las condiciones bajo las cuales este programa es usado y distribuido.
+
+La inclusion en colecciones en CD-ROM con otro software de dominio publico está permitida. 
+
+La distribución que viola el principio de no lucro requiere el permiso de los autores del programa.
+
+El emulador se distribuye "tal cual", para ser usado por propio riesgo. No hay usos expresos o implicitos de este programa, ni obligaciones por parte del autor de dar soporte o reparaciones en caso de problemas.
+
+Al usar este programa,usted esta de acuerdo con que el autor no se hace responsable de cualquier problema derivado del uso del mismo.
+  
+Este software es experimental y se debe usar por riesgo propio.
+
+Las condiciones descritas arriba también son aplicables al codigo fuente del emulador.
+
+Las condiciones adicionales para el uso del cogido fuente del emulador son:
+
+Usted lo puede modificar en la manera que quiera para uso personal.
+
+Si usted cambia o añade algo que sea de utilidad para los demas,
+Le agradeceriamos que nos enviase un patch para que sea incluido en el codigo fuente oficial.
+
+La inclusión de partes del codigo fuente en otros productos de distribucion gratuita esta permitido siempre que los autores sean notificados primero e incluidos en los creditos.
+
+"AMIGA", "AmigaOS", "Kickstart" y "Workbench" son marcas registradas de Amiga Internacional. Otras marcas registradas mencionadas estan en posesion de sus respectivos poseedores.
+
+
+Contenidos:
+---------
+
+1       Introduccion
+2 Requerimientos del sistema
+3 Requerimientos esenciales
+3.1       Imagen del Kickstart
+3.1.1       Uso de TransROM
+3.2       Imagen de Diskette
+3.2.1       Uso de Transdisk
+3.3       Copiar ficheros desde PC -> AMIGA & AMIGA -> PC
+4       Uso de Fellow
+5       Menu del sistema
+5.1       Opcion Run 
+5.2       Soft Reset
+5.3       Hard Reset
+6       Debugger
+6.1       Opcion Step
+6.2       Opcion Step Over
+6.3       Opcion Breakpoint 
+6.3.1       Opcion Set Breakpoint
+6.3.2       Opcion Until Line 312
+6.3.3       Opcion Until Event
+6.4       Opcion Memory 
+6.5       Opcion Cia
+6.6       Opcion IO
+6.7       Opcion Trace on
+6.8       Opcion Trace off
+6.9      Opcion Show trace
+6.10      Opcion Evlog config
+6.11      Opcion Show evlog 
+6.12     Captura de Wav
+7       Configuracion
+7.1       Configuracion de Diskette
+7.1.1       Imagen de disco en DF(x)
+7.1.2       Drive (x) status
+7.1.3       Disk-DMA speed
+7.1.4       Alt-N cycling
+7.1.5       File-requester
+7.2       Screen configuration
+7.2.1       Screen resolution
+7.2.2       Frame-skip ratio
+7.2.3       Maximum frame-rate
+7.2.4       Flicker-free interlace
+7.2.5       Cycle exact drawing
+7.2.6       Scale Y
+7.3       Memory configuration
+7.3.1       Chip-memory
+7.3.2       Fast-memory
+7.3.3       Bogo-memory
+7.3.4       Kickstart-image
+7.3.5       Keyfile
+7.4       Sound configuration
+7.4.1       Sound-emulation
+7.4.2       Sound-quality
+7.5       Cpu configuration
+7.5.1       Cpu-type
+7.5.2       Cpu-speed
+7.6       Hardfile configuration
+7.6.1       Hardfile device state
+7.6.2       Hardfile filename
+7.7       Various configuration
+7.7.1       Joystick Port 1 & 2
+7.7.2       Power Floppy Leds
+7.7.3       Performance displayed on-screen
+7.7.4       Menu-position saving on exit
+7.7.5       Automatic run after commands
+8           Interface Command-line 
+9           COMANZANDO - GUIA BASICA
+10          Teclas rapidas
+10.1          Teclas rapidas en el interfaz de usuario
+10.2          Teclas rapidas durante la emulacion 
+
+
+
+1 Introduccion
+---------------
+
+Bienvenido a Fellow, un emulador de Commodore Amiga para compatibles IBM-PC.
+Esta documentación cubre el uso y caracteristicas de Fellow 0.3.1, ademas de imformacion de cómo configurarlo y usarlo al limite de sus capacidades.Esto es una emulación basada en software.
+Fellow es similar a UAE, otro emulador de Amiga programado por Bernd Schmidt
+Y otros colaboradores.  Fellow es distinto en el sentido de que ha sido escrito especificamente para MS-DOS con algun codigo añadido para aumentar la velocidad criticamente en lenguaje ensamblador del x86, lo cual lo dota de una ventaja sobre UAE en cuanto a velocidad, pero a estas alturas no comparte algunas de las caracteristicas de UAE con respecto a la emulacion del SO del Amiga.
+
+Fellow funciona de una manera muy parecida a UAE. Si ha usado UAE antes, no deberia tener problemas al usar Fellow.  Si desea mas informacion sobre la emulacion del Amiga, le recomendamos que consulte la documentacion de UAE, que cubre muchos de los detalles que no se tocan aquí.
+
+2 REQUERIMIENTOS DEL SISTEMA
+----------------------------
+
+Para poder usar Fellow, su sistema debe poseer, o exceder las siguientes especificaciones:
+
+* Un ordenador compatible IBM con una CPU 486 o superior
+* MS-DOS Version 5.00 o posterior
+* 11 Megabytes de RAM
+* Una tarjeta compatible VGA
+* Un raton
+
+Es RECOMENDABLE que usted tenga al menos la el siguiente equipo si desea sacar el maximo partido de Fellow:
+
+* Un ordenador compatible IBM con un 486 Mhz o un Pentium rapido
+* MS-DOS Version 5.00 o superior
+* 16-20 Megabytes de RAM (se usaran hasta 28 Mb si estan disponibles).
+* Una tarjeta de Video (S)VGA PCI, con soporte para  VBE 2.0 
+* Tarjeta de sonido Soundblaster o compatible
+
+* Optionalmente, un procesador MMX sera usado en algunos casos.
+
+Si su tarjeta de video no soporta las extensiones VESA BIOS 2.0, necesitara obtener un driver VBE 2.0 para DOS especifico para su tarjeta (pruebe en la pagina de su distribuidor), o Scitech Display Doctor, disponible en la Red.
+
+Sin soporte para VBE 2.0 , no estaran disponibles todas las resoluciones de pantalla al usar Fellow!
+
+Fellow consume mucho proceso de la CPU, y si desea usar programas de Amiga que hagan un uso intensivo de graficos a la velocidad de un "Amiga real", requerira algo entre un Pentium 133 -> 150 y una tarjeta grafica PCI rapida, otros factores como la velocidad de la RAM afectaran a los resultados (tenga en cuenta que la velocidad de la RAM DIMM es 12ns, comparada con los SIMMs estandar EDO/no EDO que operan a velocidades de 60ns y 70ns respectivamente).
+
+
+3 ANTES DE COMENZAR - REQUERIMIENTOS ESENCIALES
+------------------------------------------------
+
+Antes de poder usar Fellow, necesitara dos cosas:
+
+3.1 Imagen del Kickstart
+------------------------
+
+Una copia de la ROM del AmigaDOS llamado kickstart, extraida de un Amiga REAL.  Este fichero se extrae usando un programa llamado "TransROM", incluido con Fellow. El Kickstart es software con copyright de Amiga Internacional y por supuesto no es posible incluirlo con el emulador.La manera correcta de obtener este fichero es copiarlo del Amiga que usted posea.
+
+3.1.1 USO DE TRANSROM
+~~~~~~~~~~~~~~~~~~~~
+
+TransROM debe ser copiado en un Amiga REAL para poder extraer una copia de la ROM del kickstart y capturarla en un fichero.
+
+CLI> transrom >RAM:kick.rom
+
+Copiara la ROM Kickstart del chip y la escribira en un fichero en RAM: llamado "kick.rom".  Este fichero debe ser copiado al PC dentro del directorio de Fellow (aunque puede ser llamado de un directorio diferente).
+
+
+3.2 Imagen de Diskette
+-----------------------
+
+Tambien necesitara una "imagen" de un diskette de un Amiga real,conteniendo el juego/demo que quiera usar con Fellow.  Se obtiene usando un programa llamado "transdisk", que tambien esta incluido con Fellow.
+
+Una imagen de diskette es un fichero en el cual estan almacenados los datos normalmente incluidos en un diskette.
+
+Una unidad de diskettes de PC NO PUEDE leer diskettes de Amiga, por lo tanto para poder usar Fellow necesitara una imagen de un diskette de Amiga real.
+
+3.2.1 USO DE TRANSDISK
+~~~~~~~~~~~~~~~~~~~~~
+
+Al igual que TransROM, Transdisk debe ser copiado en un Amiga real para ser de alguna utilidad.
+
+Transdisk se ejecuta desde el interprete de comandos del AmigaDOS , y copiara una diskette pista a pista en un fichero que puede ser leido por Fellow.
+
+CLI> transdisk >RAM:df0.adf
+
+Creara una imagen de cualquier diskette presente en DF0:. El diskette no tiene porque llamarse "df0.adf",se puede usar cualquier nombre que se crea apropiado.
+
+3.3 COPIANDO FICHEROS DESDE PC -> AMIGA & AMIGA -> PC
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. Usando un cable modem-nulo, se puede hacer una transferencia por medio del protocolo Zmodem entre un Amiga y un PC. Simplemente conecte el cable en el puerto serie de cada maquina, cargue un programa terminal como Terminus, NComm o Term en el Amiga, o Terminate, Telemate, Telix (o HyperTerminal en Windows 95 si se empeña) en el PC, e inicie un upload Zmodem en el Amiga. Si lo ha configurado correctamente (el download automatico Zmodem debe estar activado en el receptor) , el PC aceptara automaticamente este upload y bajara el software al disco duro de su PC.
+Para conseguir los mejores resultados, obtenga una copia del sustituto del serial.device del Amiga llamado BaudBandit y ponga los dos ordenadores a 57,600 baudios. BaudBandit deberia permitir transferencias de hasta 5500cps desde/hasta un Amiga basado en un 68000 - esta disponible en AmiNET. 
+
+Si usted es una de esas personas que poseen un Amiga500 con AmigaOS 1.2/1.3,con solo una Diskettera, podria estar en un problema.  A menos que tenga un programa terminal en un diskette desde el cual pueda arrancar o usarlo en una segunda diskettera, no hay manera de que pueda usar un modem-nulo para conectar con el PC (lo cual es esencial actualmente para conseguir software como transdisk o tansrom en un floppy de Amiga). Su mejor solucion seria acercarse a un grupo de usuarios de Amiga que podrian proveerle con dicho diskette, o si tiene suerte un distribuidor de shareware de Amiga en su area (aquí me da la risa a mi :DDD ).
+
+
+Nota: Algunos Amigas permiten bloquear en puerto serie a 115.200 baudios.Esto depende de la maquina , la revision de la placa base, y su procesador. Bloqueando el puerto serie a 115.200baudios en el Amiga y en el PC, puede tranferir ficheros a traves de un modem-nulo a alrededor de 10.100cps
+
+Si usted no posee un modem-nulo,o si no desee comprar uno, puede transferir el software del Amiga al PC usando un diskette de 720Kb de PC. Workbench 2.1+ viene con CrossDOS incluido, que es un programa que permite leer diskette de baja densidad de PC en la diskettera de su Amiga.
+Si usted no tiene CrossDOS (p.ej no tiene acceso al Workbench 2.1 o superior), puede tambien usar MessyDOS que puede encontrar en AmiNET.Ahora le describiremos como transferir software paso a paso mediante diskettes. 
+
+     i) Obtenga un diskette de 720Kb de PC. Formateelo en el PC o en el Amiga usando CrossDOS.
+
+     ii) Cree un fichero .ADF o una imagen del Kickstart ROM usando el metodo descrito arriba.
+
+     iii) Comprima este fichero usando o LhA o Zip (Asegurese de que tiene el descompresor en el PC,para poder descomprimirlo una vez transferido). 
+
+     iv) Copie el fichero a un diskette de 720Kb de PC, usando CrossDOS o MessyDOS. 
+
+     v) Introduzca el diskette en el PC,copie el fichero al disco duro y descomprimalo.Copie el fichero .ADF o la imagen de la ROM Kickstart al directorio de Fellow y ya está.
+
+4 USO DE FELLOW
+~~~~~~~~~~~~~~~~
+
+Fellow se usa ejecutando FELLOW.EXE desde el DOS.  Despues de esto aparecera una pantalla de menu.La seccion del medio muestra que diskettes estan asignados a las disketteras del Amiga, y si el Kickstart esta presente o no.
+
+
+5 Menu system
+-------------
+
+En la parte inferior derecha de la pantalla esta el menu llamado "menu system". Use las flechas del cursor para moverse por los menus y RETURN para seleccionar uno. Las teclas rapidas iluminadas en verde estan tambien disponibles. ESC vuelve un nivel hacia atrás.El menu "menu System" se descompone de la siguiente manera:
+
+Run
+Debugger
+Configuration
+Soft Reset
+Hard Reset
+Quit
+
+
+El debugger y configuration poseen secciones separadas mas adelante.
+
+5.1 Opcion Run 
+---------------
+
+Seleccionando esta opcion comenzara la emulacion del Amiga, y el emulador intentara arrancar de cualquier imagen de diskette asignada a la diskettera DF0:
+
+5.2 Soft Reset
+--------------
+
+Soft reset causara un reset en el Amiga emulado.  
+Esta opcion permite la preservacion de la memoria y deja que los programas residentes sobrevivan, aunque no estoy seguro al 100% de que actualmente funcione como deberia.
+Soft Reset puede ser desaconsejable en algunos casos, es decir, causar un GURU MEDITATION en algunos casos si el Amiga ha sido tomado por un mal programa.
+
+Si no esta cargado el Kickstart, ademas introducira un arranque alternativo para la imagen de diskette insertada en DF0:.  En algunos casos puede arrancar programas que no necesitan las rutinas del Kicktart para funcionar.
+Si la imagen se cambia antes de comenzar la emulacion y despues del ultimo reset ,reset debe ser seleccionado de nuevo.
+
+
+5.3 Hard Reset
+--------------
+
+Borra completamente la memoria (del Amiga) y causa una reinicializacion de la emulacion.
+
+Si no esta cargado el Kickstart , ademas introdicira un arranque alternativo para la imagen del diskette insertada en DF0:. En algunos casos puede arrancar programs que no necesitan las rutinas del Kickstart para funcionar.
+Si la imagen se cambia antes de comenzar la emulacion y despues del ultimo reset ,reset debe ser seleccionado de nuevo.
+
+
+6 Debugger 
+----------
+
+Un usuario normal probablemente nunca encuentre uso para el debugger,por lo tanto si no entiende lo que se describe aquí,simplemente avance. 
+
+El debugger es un simple entorno en el cual usted puede hacer varias cosas relacionadas con la inspeccion del Amiga emulado.Contiene un desensamblador simple que muestra el codigo alrededor del contador de programa y el estado del Motorola 68000 emulado. La CPU puede ser inspeccionada paso a paso o hasta llegar a un breakpoint.La memoria puede ser observada al igual que algunos de los registros de los chips especiales del Amiga. 
+Algunas opciones de logging tambien estan disponibles (si estan compiladas dentro del ejecutable(*).)
+
+El sub-menu debugger esta dividido de la siguiente manera:
+
+Step
+Step Over
+Breakpoint
+Memory
+Cia
+Wav Capture
+Trace on (*)
+Trace off (*) 
+Show trace (*) 
+Evlog config (*)
+Show evlog (*)
+
+
+6.1 Opcion Step
+---------------
+
+Ejecuta la siguiente instruccion (1 paso: instruction hacia delante)
+
+
+6.2 Opcion Step over
+--------------------
+
+Introduce un breakpoint en la siguiente instruccion, y el emulador seguira funcionando hasta llegar a esa instrucción. (Util para saltarse bucles e instrucciones jsr/bsr)
+
+6.3 Opcion Breakpoint
+---------------------
+
+Esta opcion entra en otro sub-menu, el emulador seguira funcionando hasta que se cumpla la condicion seleccionada.
+
+El sub-menu breakpoint esta dividido de la siguiente manera:
+
+Set Breakpoint
+Until line 312
+Until Event
+
+
+6.3.1 Opcion Set Breakpoint
+---------------------------
+
+Permite introducir la direccion de la instrucción donde se parara la ejecucion. Despues de introducir el breakpoint, la ejecucion comienza. 
+
+6.3.2 Opcion Until Line 312 
+---------------------------
+
+Se ejecuta hasta que se llega a la linea 312 (posición del haz de pantalla). 
+
+
+6.3.3 Opcion Until Event
+------------------------
+
+Se ejecuta hasta que ocurre un evento marcado (logged). El evento marcado se controla con la opcion "Evlog config" en el nivel superior del menu debugger.                        
+
+6.4 Opcion Memory
+-----------------
+
+Ver memoria. Las flechas arriba y abajo para moverse y avpag y repag para moverse alrededor.
+"h" y "a" indican formato hex o ascii .
+
+
+6.5 Opcion Cia
+--------------
+
+Muestra el estado de los registros en los chips CIA.
+
+
+6.6 Opcion IO
+-------------
+
+Muestra el estado de los registros de los chips especiales. Esto hace entrar en un submenu donde los registros de cada unidad pueden ser seleccionados.
+
+
+6.7 Opcion Trace on
+-------------------
+
+Activa el historial de instrucciones de la CPU. Se almacena el ultimo medio millón de instrucciones.
+
+6.8 Opcion Trace off
+--------------------
+
+Desactiva el historial de instrucciones de la CPU. 
+
+
+6.9 Opción Show trace
+---------------------
+
+Muestra el historial de instrucciones de la CPU.
+
+
+6.10 Opcion Evlog config
+------------------------
+
+Configura el registro de eventos, las irq y excepciones pueden ser registradas.
+
+
+6.11 Opcion Show evlog
+----------------------
+
+Muestra los eventos registrados.
+
+
+6.12 Captura de Wav
+-------------------
+
+Permite redirigir el sonido a un fichero en el directorio del emulador. La grabacion se hace a 44100Hz, 16-bits stereo.
+Funciona tambien sin tarjeta de sonido.
+
+El fichero se graba en formato WAV. Esto es experimental y no todos los programas de edicion de sonido podran leer los ficheros, puede dar algunos problemas en las cabeceras (Cool-edit si los lee) 
+
+Nota: El fichero se hara MUY grande rapidamente. Necesitara 11Mb/minuto. 
+
+7 Configuracion
+---------------
+
+El menu de configuracion esta dividido en varios submenus, los cuales permiten cambiar y variar varios aspectos de la emulacion de Amiga.
+
+7.1 Configuracion de Diskettes
+------------------------------
+
+Este sub-menu controla varios aspectos de la configuracion de las imágenes de diskette.
+
+7.1.1 Diskimage en DF(x)
+------------------------
+
+Donde (x) puede ser 0, 1, 2 o 3, esta opcion le permite asignar ficheros virtuales de diskette a cualquiera de las 4 disketteras del Amiga.Cuando ejecute la emulacion , se requiere que haya una imagen de diskette asignada a DF0: si tiene intencion de arrancar. 
+
+Pulsando SUPR en esta opcion se expulsara la imagen insertada en la diskettera virtual. 
+
+Pulsando ALT-0 a 9 en esta opcion se insertara el fichero cuyo nombre este almacenado en uno de los predeterminados en memoria. (ALT-0 a 9 de describira mas tarde en el administrador de ficheros.) 
+
+Las imágenes comprimidas con gzip o bzip seran descomprimidas en el directorio especificado en las variables de entorno TEMP o TMP.Los cambios a esas imágenes comprimidas son desechados (Solo se cambia la imagen descomprimida temporal.)
+
+7.1.2 Drive (x) status
+----------------------
+
+Donde (x) puede ser 0, 1, 2 or 3.  Estas opciones le permiten desactivar la diskettera de manera que el Amiga no la detecte. La utilidad de esto es que el AmigaOS no reserve espacio de buffer para la diskettera, y por lo tanto esa cantidad de memoria extra este disponible para otras cosas. 
+
+La utilidad de esto consiste en ayudar a ejecutar demos viejas comprimidas con compresores erroneos. 
+
+Normalmente es mejor dejar las disketteras activadas.
+
+
+7.1.3 Disk-DMA speed
+--------------------
+
+Permite seleccionar la velocidad a la cual las disketteras virtuales leeran desde los diskettes. El acceso a disco es originariamente lento, pero la emulacion provee un acceso mucho mas rapido. 
+
+Los valores permitidos son "Original" y "Fast" (rapido).
+
+Hay que tener en cuenta que algunos programas no funcionaran al menos que esta opcion este seleccionada como "Original".
+
+7.1.4 Alt-N cycling
+-------------------
+
+Controla lo lejos que saltara el cursor si se pulsa SUPR, o si una imagen de diskette se selecciona desde los ajustes de memoria.
+
+7.1.5 Selector de Ficheros
+--------------------------
+
+El selector de ficheros es seleccionado cuando se escoge la opcion  "Diskimage in DF(x)".
+Navegue por el sistema de ficheros y seleccione la imagen a ser insetada con RETURN.
+
+Algunas opciones especiales:
+
+Quickfind:  Comience a escribir el nombre de un fichero, y el cursor saltara a la opcion que mas se ajuste.
+
+ALT-(x):    Donde (x) es la letra de la unidad a la que se ira.
+
+Memory-settings:
+
+Pulsando ALT- 0 to 9 sobre un fichero se almacenara el mismo , el cual se prodra recuperar como se ha descrito antes.
+ALT-| (la tecla a la izquierda del "1") borrara todos los ficheros almacenados.
+
+7.2 Screen configuration
+------------------------
+
+Este submenu controla algunos aspectos de la emulacion grafica.
+
+7.2.1 Screen resolution
+-----------------------
+
+Controla la resolucion que usara el emulador.
+Las resoluciones disponibles dependen del driver VESA que usted posea.
+
+7.2.2 Frame-skip ratio
+----------------------
+
+El frame-skip ratio controla lo a menudo que el emulador acutaliza la pantalla. 1/1 actualiza la pantalla tan a menudo como sea posible.
+Ratios mas bajos daran como resultado animaciones a saltos etc., pero ahorraran mucho tiempo que puede ser aprovechado en otras partes de la emulacion.
+
+7.2.3 Maximum frame-rate
+------------------------
+
+Controla los limites del temporizador impuestos en el emulador.
+
+"Unlimited" desactiva el temporizador y permite al emulador ejecutarse tan rapido como sea posible.  Esto tambien afecta la velocidad de repeticion de las teclas. Puede que resulte imposible controlar el teclado si su maquina es demasiado rapida. 
+
+"50 hz" limita la velocidad a un A500 PAL normal.
+
+"Synch with VGA-card" intentara sincronizar la pantalla con el refresco de la resulcion de la VGA usada. En algunos casos causa que la imagen sea absolutamente suave. Como normalmente la velocidad de refresco PAL no coincide con las velocidades de refresco de los modos VGA, puede causar que tanto la velocidad del sonido y la velocidad general de la aplicación sea erronea. 
+
+Esta opcion es ignorada cuando sound-emulation se ajusta como "Syncronized with emulation".
+
+7.2.4 Flicker-free interlace
+----------------------------
+
+Cuando se activa , esta opción intentara desentralazar cualquier imagen de Amiga entrelazada. 
+
+Solo funciona cuando el emulador usa una resolucion del 800x600 SVGA.
+
+7.2.5 Cycle exact drawing
+-------------------------
+
+Opcion muy experimental. Cuando se activa, los efectos de plasma etc se emulan correctamente.
+Esta opcion de momento no cubre mas que los cambios de color.
+No es mas que una prueba para ver como se puede hacer sin tener que rediseñar todo el sistema grafico. Las rutinas solo funcionan en 800x600 de momento.
+Cuando esta opcion este mas desarrollada se impondra por defecto y se duplicara para los otros modos de resolucion.
+
+NOTA: Dejar esta opcion activada permanentemente es no es aconsejable. Necesita muchos mas ajustes y mas trabajo para funcionar correctamente y de una manera segura. Se recomienda activarla para ver un efecto en particular. 
+
+7.2.6 Scale Y
+-------------
+
+Cuando se activa esta opcion, el hardware de la VGA se usara para mostrar la pantalla del Amiga con un aspecto mas correcto. Solo se aplica a algunos modos.
+ (800x600, 640X480, 640x400, 640x350).
+
+Si su tarjeta grafica es compatible VESA, pero no compatible con VGA-register, no active esta opción. 
+
+7.3 Memory configuration
+------------------------
+
+Este submenu controla que tipos y cantidades de memoria tiene el Amiga emulado.
+
+
+7.3.1 Chip-memory
+-----------------
+
+Permite decidir que cantidad de memoria CHIP se emulara. Los valores permitidos van desde 256kb hasta 2048kb.
+
+7.3.2 Fast-memory
+-----------------
+
+Permite decidir que cantidad de memoria FAST se emulara. Los valores permitidos son 0, 1, 2, 4, y 8 MB.
+
+7.3.3 Bogo-memory
+-----------------
+
+Permite decidor que cantidad de memoria Bogo (llamada a veces memoria lenta) se emulara. Este es un tercer tipo de memoria que se corresponde con las tarjetas de expansion que se solian instalar en la parte de debajo de los Amiga 500.
+Los valores permitidos van desde 0kb has ta 1792kb.
+
+7.3.4 Kickstart-image
+---------------------
+
+Permite escoger la localizacion de la imagen de la ROM del AmigaOS (que es imprescindible para ejecutar programas que arranquen el Workbench, o para ejecutar el propio Workbench).
+Al escoger esta opcion aparecera un selector de ficheros sencillo con el cual escoger el fichero con la ROM.
+Fellow buscara el fichero "kick.rom" por defecto.
+
+El sufijo .rom se requiere para estos ficheros.
+
+7.3.5 Keyfile
+-------------
+
+Esta opcion especifica el fichero llave para desencriptar Kickstarts codificados.
+
+7.4 Sound configuration
+-----------------------
+
+Este submenu controla los aspectos de la emulacion del sonido.
+No se puede seleccionar sonido si no se detecta una tarjeta de sonido soportada por el emulador.
+
+7.4.1 Sound-emulation
+---------------------
+
+Selecciona el tipo de emulacion de sonido. Las opciones son:
+
+"No sound"             - El sonido ni se emula ni suena.
+"Emulated, not played" - Se emula el sonido pero no suena.
+
+Las opciones anteriores estan disponibles siempre.
+
+Opciones solo disponibles si se encuentra una tarjeta de sonido (soundblaster):
+
+"Normal, synchronized with emulation" - La emulacion mas correcta.
+"Normal, synchronized with real-time" - Puede funcionar mejor en maquinas 
+						     mas lentas, pero la velocidad de            reproduccion puede variar mucho.
+ En cualquier caso, la reproduccion sera parecida.	
+
+La opcion recomendada es "Normal, synchronized with emulation".
+
+El sonido usando "Normal, synchronized with real-time" puede estar muy distorsionado. La velocidad puede ser erronea e incluso puede variar mucho dependiendo directamente en la velocidad actual del emulador.
+El metodo usado para implementar esta opcion funciona bien en los Pentium, pero las CPUs K6 de AMD responden muy mal a el en terminos de velocidad.
+
+
+7.4.2 Sound-quality
+-------------------
+
+Selecciona la calidad del sonido. Estan disponibles diferentes frecuencias de muestreo de 8-16 bits y mono/stereo dependiendo de la Soundblaster que use.
+
+NOTA: 44100 hz es innecesario y consume tiempo de la CPU.
+Una buena opcion equilibrada entre velocidad y calidad es 31300Hz. 
+
+8/16 bits mono/stereo solo crea una  pequeña diferencia en terminos de velocidad.
+
+7.5 Cpu configuration
+---------------------
+
+Este submenu controla algunos aspectos de la emulacion de la CPU.
+
+7.5.1 Cpu-type
+--------------
+
+Actualmente, la unica opcion funcional aquí es 68000. 68030 esta bajo desarrollo. 68030 se puede seleccionar pero no usar.
+
+7.5.2 Cpu-speed
+---------------
+
+Controla la velocidad virtual de la CPU emulada. No confundir esto con la velocidad en tiempo real.
+
+Las opciones son "original", que se corresponde una cpu a  7.14 mhz, y "fast", que aproximadamente se corresponde a una cpu a 28Mhz. (Fast causa que las operaciones del Blitter se den inmediatamente sin coste de tiempo.)
+
+7.6 Hardfile configuration
+--------------------------
+
+Este submenu controla los discos duros.
+
+Un disco duro es una manera de proveer almacenamiento en masa al Amiga emulado. El disco duro virtual es un fichero grande usado como un "disco duro". Puede ser
+De cualquier tamaño.
+
+Solo se pueden usar con el Kickstart V2.0 o superior.
+
+Hay que recordar el formatear cada nuevo disco duro virtual.
+
+Se puede arrancar desde cualquier disco duro virtual, la prioridad que poseen es menor que DF0: pero mayor que DF1:.
+
+Tambien se pueden usar ficheros ADF sin comprimir en lugar de los discos duros virtuales.
+
+Las unidades manejadas con esta opcion se llaman FELLOW0 incrementandose los numeros.
+
+NOTA: Cambiar la configuracion del disco duro virtual automaticamente efectua un hard reset del Amiga. 
+
+7.6.1 Hardfile device state
+---------------------------
+
+El disco duro virtual puede estar activado o desactivado (enabled/disabled).
+
+7.6.2 Hardfile filename
+-----------------------
+
+Esta opcion activara el selector de ficheros. Seleccione el disco duro virtual o el fichero ADF que desee usar.
+
+7.7 Various configuration
+-------------------------
+
+Este submenu contiene otros ajustes variados.
+
+7.7.1 Joystick Port 1 & 2
+-------------------------
+
+Las opciones que controlan los puertos de juystick del Amiga.
+
+Las opciones posibles son:
+
+Disabled, Mouse, Analog Joystick, Keyboard Joystick Replacement 1 & 2
+                      
+La emualacion del joystick mediante el teclado es:
+
+Las teclas del cursor con el CTRL derecho como boton 1 y el ALT derecho como boton 2.
+
+o
+
+'D' es izquierda, 'F' es abajo, 'G' es derecha, 'R' es arriba, CTRL izquierdo es boton 1 y ALT izquierdo es boton 2.
+
+El control de Joystick analogico es algo defectuoso. Para calibrar el joystick se debe rotar el mando durante la emulacion.
+
+Si la emulacion del Joystick Analogico es insuficiente, el programa Joyemu provee una emulacion de Joystick mucho mejor.
+(Se puede encontrar en: http://www.dsi.unive.it/~szanella/index.htm )
+
+
+7.7.2 Power Floppy Leds
+-----------------------
+
+Controla donde mostrar los leds del Amiga como el led de encendido y los de las disketteras.
+
+Se puede construir una tarjeta con leds (añadido por Roman Dolejsi).
+
+Consultar ledboard.txt.
+
+Los ajustes para el orden del los leds en el teclado sirve para indicarle al emulador el orden de los led en su teclado.
+
+7.7.3 Performance displayed on-screen
+-------------------------------------
+
+
+Muestra el % de velocidad del Amiga real emulado en su maquina. Se muestra en la esquina superior derecha de la pantalla de Fellow.
+Es relativo a los 500 frames/segundo normalmente producidos por un Amiga 500.
+
+Esta figura solo es aproximada.
+
+7.7.4 Menu-position saving on exit
+----------------------------------
+
+Esta es una opcion experimental. Cuando esta activada, los movimientos en el menu se graban a la salida y se ejecutan la siguiente vez que se ejecuta el emulador.
+
+7.7.5 Automatic run after commands
+----------------------------------
+
+El arranque automatico se puede activar despues de algunos comandos.
+
+8  Command-line interface
+-------------------------
+
+Las opciones de configuracion estas disponibles en el interfaz comandos tambien.
+Este es una lista resumida de las opciones, para informacion mas detallada consulte la correspondiente en el interfaz de usuario. 
+
+
+Opciones variadas:
+
+-h                         Este resumen de opciones, ayuda.
+-log                       Genera un log-file al inicializar.
+                           Usado para saber que hardware encuentra el 
+                           Emulador.
+-nogui                     Salta el menu inicial.
+-config file               Use este fichero en lugar del fichero de 							configuracion por defecto.
+                           El fichero de configuracion por defecto es Fellow.cfg 					en el directorio de instalacion.
+                           
+-ns                        No grabar las opciones al salir.
+
+
+Opciones de imagen de diskette:
+
+-0 fichero                 Imagen en df0
+-1 fichero                 Imagen en df1
+-2 fichero                 Imagen en df2
+-3 fichero                 Imagen en df3
+                           Descrito en 7.1.1
+
+-0e +|-                    Activa/Desactiva df0
+-1e +|-                    Activa/Desactiva df1
+-2e +|-                    Activa/Desactiva df2
+-3e +|-                    Activa/Desactiva df3
+                           Descrito en 7.1.2
+
+-ds +|-                    Diskettera Rapida activa/desactiva
+                           Descrito en 7.1.3
+
+-dmX fichero               Informacion de diskette X (0..9) 
+                           Descrito en 7.1.4
+
+-dpath dir/fichero         Activa el camino de disco.El selector de
+				   ficheros comenzara en este camino/fichero	
+                           cuando se active la primera vez.
+-rmpos +|-                 Activa/Desactiva el registro de posicion del menu                                       				    Descrito en 7.1.4
+-mpos /../...              Especifica la posicion activa del menu. 
+                           Descrito en 7.1.4
+
+Opciones de disco duro virtual:
+
+-hf fichero                Nombre del disco duro virtual, descrito en 7.6.2
+-he +|-                    Disco duro activo/desactivo, descrito en 7.6.1
+-hi tamaño                Crea (borra!) el disco duro virtual especificado   				    tamaño esta en Mb	          
+                           Uselo para crear un disco duro virtual.
+
+
+Opciones de Memoria:
+
+-c tamaño                  Tamaño de la memoria chip, tamaño*256k, defecto: 2MB
+                           Descrito en 7.3.1
+-fm tamaño                 Tamaño de la memoria fast, tamaño en Mb, (0,1,2,4,8) 
+                           Descrito en 7.3.2
+-b tamaño                  Tamaño de la memoria bogo, tamaño*256k, 						   defecto:1.75MB
+                           Descrito en 7.3.3
+-r fichero                 Fichero con el Kickstart
+                           Descrito en 7.3.4
+-K fichero                 Fichero llave para kickstart encriptado.
+			         Descrito en 7.3.5
+
+Opciones de Joystick:
+
+-j1 n|a|m|k1|k2
+-j2 n|a|m|k1|k2            Puerto de Joystick 1 o 2:
+                           n - nada, a - Joystick Analogico
+                           m - raton, k1 - Emulacion por teclado 1
+                           k2 - Emulacion por teclado 2
+                           Descrito en 7.7.1
+
+
+Opciones de Sonido:
+
+-s d|n|c|e                 d - desactivo n - normal c - continuo
+                           e - emulado, sin salida
+                           Descrito en 7.4.1
+-sf calidad                Calidad de Sonido: 44100,31300,22050,15650
+-ss on|off                 Estereo, encendido o apagado
+-sb bits                   8 o 16 bits
+                           -sf,ss,sb descrito en 7.4.2
+-s1                        Fuerza el driver de Soundblaster 1.0
+
+
+Opciones de Pantalla:
+
+-res 320200b|320200|320240|640350|640400|640480|800600
+                           Resolucion, defecto: 800600
+                           Descrito in 7.2.1
+-v none|50|vga             velocidad de frames: nada, 50 - 50hz, vga - de 					   tarjeta vga  Descrito en 7.2.3
+-f numero                  Salta 1/numero de frames.
+                           Descrito en 7.2.2
+-i on|off                  Desentrelazado en la resolucion 800x600
+                           Descrito en 7.2.4
+
+
+Opciones de CPU:
+
+-cpu 0|3                   Tipo de Cpu 0 - 68000  3 - 68030
+                           Descrito en 7.5.1
+-cs normal|max             Velocidad de reloj del M68000 emulado y el blitter.
+                           Descrito en 7.5.2
+
+
+Opciones varias:
+
+-p on|off                  Contador de velocidad en la pantalla.
+                           Descrito in 7.7.3
+-l scr|kb?|lp?|lp?m|off    leds de Encendido/diskettera:
+                           scr - en pantalla (solo 800x600)
+                           kb1 - en el teclado (diskettera 0, 1, 2)
+                           kb2 - en el teclado (encendido, diskettera 0, 1)
+                           kb3 - en el teclado (encendido, diskettera 0+1, 2+3)
+                           lp1/2/3 - en tarjeta de leds en el puerto paralelo
+                           lp1/2/3m - en tarjeta de leds en el puerto paralelo 				    (reflejado)
+                           Descrito en 7.7.2
+-lk ncs|nsc...             Usar los leds en el teclado en el order especificado:
+                           (Num lock = N, Caps lock = C, Scroll lock = S)
+                           Descrito en 7.7.2
+-altn 1..4                 Rotacion de diskettera Alt-N
+                           Descrito en 7.7.4
+-arun none|altn|res        Ejecucion automatico despues de comandos.
+                           Descrito en 7.7.5
+
+
+9 COMENZANDO - GUIA BASICA
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Una vez que haya copiado un diskette de Amiga en un fichero .adf y transferida la misma a su PC, ejecute Fellow y asigne la imagen del diskette a DF0:
+
+Si es un diskette del workbench, asegurese de que ha copiado su ROM del kickstart en un diskette y la ha situado en el directorio de Fellow, y le ha puesto el nombre "kick.rom", o seleccionado una localizacion diferente en el menu de configuracion.
+Si no esta presente el kickstart, Fellow saltara el arranque normal del Amiga e intentara arrancar de todos modos.
+Esto funciona con algunas demos y juegos que ignoran las rutinas del kickstar y se manejan ellas por si solas.
+Debe seleccionar "RESET" para activar esto despues de insertar una imagen de diskette.
+
+Seleccione la cantidad de RAM que desea usar, la emulacion de sonido que encaje con su hardware y seleccione "RUN" en el menu principal.
+
+Si todo ha ido bien, Fellow deberia arrancar su imagen de disco.
+
+10 Teclas Rapidas
+-----------------
+
+Algunas teclas rapidas estan disponibles en el menu, y algunas durante la emulacion.
+
+10.1 Teclas en el menu
+----------------------
+
+     F5: Reset soft
+     F7: Reset Hard 
+     F9: Empezar
+    F11: Debugger
+  Alt-D: Opciones de Floppy Disk
+  Alt-F: Velocidad de salto de frames
+  Alt-H: Opciones de disco duro virtual
+  Alt-J: Opciones de Joystick
+  Alt-L: Opciones de LEDs
+  Alt-M: Opciones de Memoria
+  Alt-R: Opciones de Resolucion
+  Alt-S: Opciones de Sonido
+  ESC  : Salta un nivel arriba usando los menus,o comienza la emulacion.
+
+10.2 Teclas Rapidas durante la emulacion 
+----------------------------------------
+
+F12                     - Vuelve al menu.
+HOME + PGUP/PGDOWN      - cambia la resolucion.
+HOME + Keypad arrowkeys - centra la imagen en modos VGA bajos.
+HOME + F11              - Captura la pantalla en formato BMP.
+HOME + F1/F2/F3/F4      - Inserta imagen de diskette en unidad.
+END  + F1/F2/F3/F4      - Expulsa la imagen de diskette de la unidad.
+END  + PGUP/PGDOWN      - Cambia el doble de lineas encendido/apagado
+					(solo en algunas Vga)
+                          (Lo mismo que Scale Y en el menu Config)
+
+
+----------------------------------------------------------------------------
+
+Este documento ha sido preparado por Brett Eden (si,el que todos odian o aman, por alguna razon u otra). Puede ser contactado en revere@sub.net.au, para preguntas u otra cosa que desee.
+
+Actualizado para V0.3.1 por Petter Schau
+Traducido al Castellano por Lou C. Fer (pudo@galiciaweb.com)
+
+
+
+
+
+
