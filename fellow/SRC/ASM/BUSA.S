@@ -52,12 +52,13 @@
 FASMFILESTART
 FDATASECTIONSTART
 
+
+
 %include "data/fellow.inc"
 %include "data/cpu.inc"
 %include "data/bus.inc"
 %include "data/fmem.inc"
 %include "data/floppy.inc"
-%include "data/sound.inc"
 %include "data/cia.inc"
 %include "data/copper.inc"
 %include "data/timer.inc"		
@@ -82,7 +83,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/fmem.inc"
 %include "func/cpu.inc"
 %include "func/floppy.inc"
-%include "func/sound.inc"
 %include "func/gameport.inc"
 %include "func/copper.inc"
 %include "func/cia.inc"
@@ -92,7 +92,6 @@ _busstart_:	 ; Used to check code alignment
 %include "mac/bus.mac"
 %include "mac/cpu.mac"
 %include "mac/cia.mac"
-%include "mac/sound.mac"
 
 CFUNCEXTERN timerEndOfFrame
 CFUNCEXTERN blitFinishBlit
@@ -133,6 +132,7 @@ bus_run:	SETUP_EXCEPTION_HACK bus_exception_ret, bus_loop_events
 		jmp	bus_loop_cpu
 
 		FALIGN32
+
 
 global _checkadr_
 _checkadr_:
