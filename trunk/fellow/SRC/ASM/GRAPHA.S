@@ -293,7 +293,7 @@ _rdmaconr_:	mov	edx, dword [bltzero]
 
 
 ;-------------------------------------------------------------------------------
-; VPOSR - $dff004 Read
+; VPOSR - $dff004 Read vpos and chipset ID bits
 ;
 ; return lof | (graph_raster_y>>8);
 ;-------------------------------------------------------------------------------
@@ -305,7 +305,7 @@ global _rvposr_
 _rvposr_:	mov	edx, dword [lof]
 		mov	dl, byte [graph_raster_y + 1]
 		test	dword [blitter_ECS], 1
-		jne	.l1
+		jz	.l1
 		or	edx, 02000h
 .l1:		ret
 
