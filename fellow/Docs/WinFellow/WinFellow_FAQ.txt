@@ -75,7 +75,7 @@ thing or such) it's possibly a WinFellow problem.
 1.2. Where can I find/download the Kickstart ROM file?
 ------------------------------------------------------
 
-You can buy the Kickstart rom at www.cloanto.com.
+You can buy the Kickstart rom at http://www.cloanto.com.
 
 
 2. Floppy disk images
