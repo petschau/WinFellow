@@ -1,7 +1,7 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* @(#) $Id: FLOPPY.C,v 1.14.2.3 2004-05-27 10:06:22 carfesh Exp $         */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.4 2004-05-28 13:28:35 carfesh Exp $         */
 /*                                                                         */
 /* Floppy Emulation                                                        */
 /*                                                                         */
@@ -443,6 +443,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
   sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
 }
@@ -462,6 +463,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
   if(dmsUnpack(diskname, gzname) != 0) return FALSE;
 
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
 }
@@ -481,6 +483,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
   if(!gzUnpack(diskname, gzname)) return FALSE;
 
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   if((access(diskname, 2 )) == -1 )
     floppy[drive].writeprot = TRUE;
