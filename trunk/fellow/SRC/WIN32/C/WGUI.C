@@ -1940,7 +1940,7 @@ BOOL wguiConfigurationDialog(void)
   }
   propertysheetheader.dwSize = sizeof(PROPSHEETHEADER);
   propertysheetheader.dwFlags = PSH_PROPSHEETPAGE;
-  propertysheetheader.hwndParent = NULL;
+  propertysheetheader.hwndParent = wgui_hDialog;
   propertysheetheader.hInstance = win_drv_hInstance;
   propertysheetheader.hIcon = NULL;
   propertysheetheader.pszCaption = "Fellow Configuration";
@@ -2000,8 +2000,7 @@ BOOL CALLBACK wguiDialogProc(HWND hwndDlg,
 			     LPARAM lParam) {
   switch (uMsg) {
     case WM_INITDIALOG:
-	  SendMessage((HWND) wParam, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
-	  SendMessage((HWND) wParam, WM_SETICON, (WPARAM) ICON_SMALL, (LPARAM) MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
+	  SendMessage(hwndDlg, WM_SETICON, (WPARAM) ICON_BIG, (LPARAM) LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
       return TRUE;
     case WM_COMMAND:
       if (wgui_action == WGUI_NO_ACTION)
