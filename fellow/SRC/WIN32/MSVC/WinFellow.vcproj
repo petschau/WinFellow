@@ -448,41 +448,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\drawa.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\fhfilea.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -744,9 +709,6 @@
 					RelativePath="..\..\incasm\mac\cpu.mac">
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\draw.mac">
-				</File>
-				<File
 					RelativePath="..\..\incasm\mac\floppy.mac">
 				</File>
 				<File
@@ -790,9 +752,6 @@
 					RelativePath="..\..\incasm\func\cpu.inc">
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\draw.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\func\fellow.inc">
 				</File>
 				<File
@@ -831,9 +790,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\cpu.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\draw.inc">
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\fellow.inc">
