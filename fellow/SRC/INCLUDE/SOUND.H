@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.H,v 1.2.2.2 2004-06-08 14:24:58 carfesh Exp $ */
+/* @(#) $Id: SOUND.H,v 1.2.2.3 2004-08-22 17:25:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -25,41 +25,6 @@
 
 #ifndef SOUND_H
 #define SOUND_H
-
-
-/*===========================================================================*/
-/* Exports from assembly                                                     */
-/*===========================================================================*/
-
-/* Renaming */
-
-#define soundStart ASMRENAME(soundStart)
-#define waudXpth ASMRENAME(waudXpth)
-#define waudXptl ASMRENAME(waudXptl)
-#define waudXlen ASMRENAME(waudXlen)
-#define waudXper ASMRENAME(waudXper)
-#define waudXvol ASMRENAME(waudXvol)
-#define soundFrequencyHandler44100 ASMRENAME(soundFrequencyHandler44100)
-#define soundFrequencyHandler31300 ASMRENAME(soundFrequencyHandler31300)
-#define soundFrequencyHandler22050 ASMRENAME(soundFrequencyHandler22050)
-#define soundFrequencyHandler15650 ASMRENAME(soundFrequencyHandler15650)
-#define soundState0 ASMRENAME(soundState0)
-#define soundChannelKill ASMRENAME(soundChannelKill)
-
-/* Declare assembly functions */
-
-extern void soundStart(void); /* Code alignment check label */
-extern void waudXpth(ULO data, ULO address);
-extern void waudXptl(ULO data, ULO address);
-extern void waudXlen(ULO data, ULO address);
-extern void waudXvol(ULO data, ULO address);
-extern void waudXper(ULO data, ULO address);
-extern void soundFrequencyHandler44100(void);
-extern void soundFrequencyHandler31300(void);
-extern void soundFrequencyHandler22050(void);
-extern void soundFrequencyHandler15650(void);
-extern void soundState0(ULO channelno);
-extern void soundChannelKill(ULO channelno);
 
 
 /*===========================*/
@@ -118,6 +83,16 @@ extern void soundSetNotification(sound_notifications notification);
 extern sound_notifications soundGetNotification(void);
 
 extern void soundEndOfLine(void); /* for bus.c */
+extern void soundChannelKill(ULO ch); /* for wdmacon */
+extern void soundChannelEnable(ULO ch); /* for wdmacon */
+
+extern void soundState0(ULO ch); /* for wdbg.c */
+extern void soundState1(ULO ch);
+extern void soundState2(ULO ch);
+extern void soundState3(ULO ch);
+extern void soundState4(ULO ch);
+extern void soundState5(ULO ch);
+
 
 /*==================================*/
 /* Standard Fellow Module Functions */
