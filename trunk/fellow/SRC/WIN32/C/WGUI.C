@@ -184,11 +184,11 @@ typedef enum {
 } SelectFileFlags;
 
 static STR FileType[5][CFG_FILENAME_LENGTH] = {
-	"ROM Images (*.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
-    "ADF Diskfiles (*.adf)\0*.adf\0\0\0", // *.adz; *.adf.gz; *.dms unsupported
-    "Key Files (*.key)\0*.key\0\0\0", 
-    "Hard Files (*.hdf)\0*.hdf\0\0\0",
-    "Configuration Files (*.wfc)\0*.wfc\0\0\0"};
+	"ROM Images (.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+    "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+    "Key Files (.key)\0*.key\0\0\0", 
+    "Hard Files (.hdf)\0*.hdf\0\0\0",
+    "Configuration Files (.wfc)\0*.wfc\0\0\0"};
 
 BOOLE wguiSelectFile(HWND DlgHWND,
 		     STR *filename, 
