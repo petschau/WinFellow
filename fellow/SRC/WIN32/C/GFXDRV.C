@@ -1323,7 +1323,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device,
 	else
 	  gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
     }
-    graphLineDescClearSkips();
+    graphLineDescClear();
   }
   return err;
 }
