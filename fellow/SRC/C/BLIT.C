@@ -63,6 +63,7 @@ UBY fillexcfc0after[65536], fillexcfc1after[65536];
 ULO bltdesc, blitend, blitterstatus;
 ULO bltadatoriginal, bltbdatoriginal;
 ULO bltbdatline, bltlineheight, bltlinepointflag, bltfillbltconsave;
+ULO bltlinedecision;
 ULO linenum,linecount,linelength,blitterdmawaiting;
 
 
@@ -290,6 +291,7 @@ static void blitterIORegistersClear(void) {
   linecount = 0;
   linelength = 0;
   blitterdmawaiting = 0;
+  bltlinedecision = 0;
 }
 
 

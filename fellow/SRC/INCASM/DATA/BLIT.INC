@@ -43,6 +43,7 @@ CDATAEXTERN fillexcfc1after
 CDATAEXTERN bltlineheight
 CDATAEXTERN bltlinepointflag
 CDATAEXTERN bltfillbltconsave
+CDATAEXTERN bltlinedecision
 
 CDATAEXTERN blittermodes
 CDATAEXTERN blitterfillmodes
@@ -54,6 +55,7 @@ CDATAEXTERN linelength
 CDATAEXTERN linenum
 CDATAEXTERN linecount
 CDATAEXTERN blitterdmawaiting
+CDATAEXTERN blitter_ECS
 
 %endif
 
