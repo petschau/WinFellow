@@ -2160,12 +2160,10 @@ void drawLineNormal2x24_C(graph_line *linedescription)
 
 void drawLineNormal1x32_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_ptr;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
-  source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
-
   #ifdef DRAW_TSC_PROFILE
 		dln1x32_pixels += pixels_left_to_draw;
 		drawTscBefore(&dln1x32_tmp);
@@ -2173,25 +2171,23 @@ void drawLineNormal1x32_C(graph_line *linedescription)
 
   while (pixels_left_to_draw >= 4)
   {
-    *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
+    *framebuffer = *((ULO*)(((UBY*)linedescription->colors) + *source_ptr));
+    *(framebuffer + 1) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 1)));
+    *(framebuffer + 2) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 2)));
+    *(framebuffer + 3) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 3)));
     pixels_left_to_draw -= 4;
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 8)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 12)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
     source_ptr += 4;
-    draw_buffer_current_ptr += 16;
+    framebuffer += 4;
   }
-  while (pixels_left_to_draw > 0)
+  while (pixels_left_to_draw-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
-    source_ptr++;
-    pixels_left_to_draw--;
-    draw_buffer_current_ptr += 4;
+    *framebuffer++ = *((ULO*)(((UBY*)linedescription->colors) + *source_ptr++));
   }
 
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dln1x32_tmp, &dln1x32, &dln1x32_times);
   #endif
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2207,12 +2203,10 @@ void drawLineNormal1x32_C(graph_line *linedescription)
 
 void drawLineNormal2x32_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_ptr;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
-  source_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
-
   #ifdef DRAW_TSC_PROFILE
 		dln2x32_pixels += pixels_left_to_draw;
 		drawTscBefore(&dln2x32_tmp);
@@ -2220,30 +2214,29 @@ void drawLineNormal2x32_C(graph_line *linedescription)
 
   while (pixels_left_to_draw >= 4)
   {
-    *((ULO *) ((UBY *) draw_buffer_current_ptr)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 4)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 8)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 12)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 1)));
+    *(framebuffer + 1) =
+    *framebuffer = *((ULO*)(((UBY*)linedescription->colors) + *source_ptr));
+    *(framebuffer + 3) =
+    *(framebuffer + 2) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 1)));
+    *(framebuffer + 5) =
+    *(framebuffer + 4) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 2)));
+    *(framebuffer + 7) =
+    *(framebuffer + 6) = *((ULO*)(((UBY*)linedescription->colors) + *(source_ptr + 3)));
     pixels_left_to_draw -= 4;
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 16)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 20)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 2)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 24)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
-    *((ULO *) ((UBY *) draw_buffer_current_ptr + 28)) = *((ULO *) ((UBY *) linedescription->colors + *(source_ptr + 3)));
     source_ptr += 4;
-    draw_buffer_current_ptr += 32;
+    framebuffer += 8;
   }
-  while (pixels_left_to_draw > 0)
+  while (pixels_left_to_draw-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
-    *((ULO *) draw_buffer_current_ptr + 1) = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
-    source_ptr++;
-    pixels_left_to_draw--;
-    draw_buffer_current_ptr += 8;
+    *(framebuffer + 1)=
+    *framebuffer = *((ULO*)(((UBY*)linedescription->colors) + *source_ptr++));
+    framebuffer += 2;
   }
 
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dln2x32_tmp, &dln2x32, &dln2x32_times);
   #endif
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2795,58 +2788,33 @@ void drawLineDual2x24_C(graph_line *linedescription)
 
 void drawLineDual1x32_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_line1_ptr;
-  UBY *source_line2_ptr;
-  UBY *draw_dual_translate_ptr;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
-  source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
-
   #ifdef DRAW_TSC_PROFILE
 		dld1x32_pixels += pixels_left_to_draw;
 		drawTscBefore(&dld1x32_tmp);
   #endif
 
-  draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
     // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
     // write results in draw_dual_translate[1], instead of draw_dual_translate[0]
     draw_dual_translate_ptr += 0x10000;
   }
-  while (pixels_left_to_draw >= 2)
+  while (pixels_left_to_draw-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 4;
-
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 4;
-    pixels_left_to_draw -= 2;
-  }
-  if (pixels_left_to_draw > 0)
-  {
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    draw_buffer_current_ptr += 4;
+    *framebuffer++ = *((ULO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*source_line1_ptr++ << 8) + *source_line2_ptr++)))));
   }
 
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dld1x32_tmp, &dld1x32, &dld1x32_times);
   #endif
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -2862,72 +2830,35 @@ void drawLineDual1x32_C(graph_line *linedescription)
 
 void drawLineDual2x32_C(graph_line *linedescription)
 {
-  ULO pixels_left_to_draw;
-  UBY *source_line1_ptr;
-  UBY *source_line2_ptr;
-  UBY *draw_dual_translate_ptr;
+  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
-  source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  pixels_left_to_draw = linedescription->DIW_pixel_count;
-
   #ifdef DRAW_TSC_PROFILE
 		dld2x32_pixels += pixels_left_to_draw;
 		drawTscBefore(&dld2x32_tmp);
   #endif
 
-  draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
     // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
     // write results in draw_dual_translate[1], instead of draw_dual_translate[0]
     draw_dual_translate_ptr += 0x10000;
   }
-  while (pixels_left_to_draw >= 2)
+  while (pixels_left_to_draw-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
+    *(framebuffer + 1) = 
+    *framebuffer = *((ULO *) ((UBY *) linedescription->colors + 
+      (*(draw_dual_translate_ptr + ((*source_line1_ptr++ << 8) + *source_line2_ptr++)))));
 
-    *((ULO *) draw_buffer_current_ptr + 1) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 8;
-
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    *((ULO *) draw_buffer_current_ptr + 1) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    source_line1_ptr++;
-    source_line2_ptr++;
-    draw_buffer_current_ptr += 8;
-    pixels_left_to_draw -= 2;
+    framebuffer += 2;
   }
-  if (pixels_left_to_draw > 0)
-  {
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    draw_buffer_current_ptr += 4;
-
-    *((ULO *) draw_buffer_current_ptr) = 
-      *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
-
-    draw_buffer_current_ptr += 4;
-  }
-
   #ifdef DRAW_TSC_PROFILE
 		drawTscAfter(&dld2x32_tmp, &dld2x32, &dld2x32_times);
   #endif
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -3319,30 +3250,21 @@ static __inline void drawLineSegmentBG2x24(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG1x32(ULO topad, ULO bgcolor)
 {
-  if (topad >= 4)
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
+  while (topad >= 4)
   {
-    if (((ULO) draw_buffer_current_ptr & 0x3) != 0)
-    {
-      *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      topad--;
-      draw_buffer_current_ptr += 4;
-    }
-    while (topad >= 4)
-    {
-      *((ULO *) draw_buffer_current_ptr) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 2) = bgcolor;
-      *((ULO *) draw_buffer_current_ptr + 3) = bgcolor;
-      topad -= 4;
-      draw_buffer_current_ptr += 16;
-    }
+    *framebuffer = bgcolor; 
+    *(framebuffer + 1) = bgcolor;
+    *(framebuffer + 2) = bgcolor;
+    *(framebuffer + 3) = bgcolor;
+    topad -= 4;
+    framebuffer += 4;
   }
-  while (topad > 0)
+  while (topad-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = bgcolor;
-    topad--;
-    draw_buffer_current_ptr += 4;
+    *framebuffer++ = bgcolor;
   }
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
@@ -3358,26 +3280,27 @@ static __inline void drawLineSegmentBG1x32(ULO topad, ULO bgcolor)
 
 static __inline void drawLineSegmentBG2x32(ULO topad, ULO bgcolor)
 {
+  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   while (topad >= 4)
   {
-    *((ULO *) draw_buffer_current_ptr) = 
-    *((ULO *) draw_buffer_current_ptr + 1) = 
-    *((ULO *) draw_buffer_current_ptr + 2) = 
-    *((ULO *) draw_buffer_current_ptr + 3) = 
-    *((ULO *) draw_buffer_current_ptr + 4) = 
-    *((ULO *) draw_buffer_current_ptr + 5) = 
-    *((ULO *) draw_buffer_current_ptr + 6) = 
-    *((ULO *) draw_buffer_current_ptr + 7) = bgcolor;
+    *(framebuffer) =  bgcolor;
+    *(framebuffer + 1) = bgcolor;
+    *(framebuffer + 2) = bgcolor;
+    *(framebuffer + 3) = bgcolor;
+    *(framebuffer + 4) = bgcolor;
+    *(framebuffer + 5) = bgcolor;
+    *(framebuffer + 6) = bgcolor;
+    *(framebuffer + 7) = bgcolor;
     topad -= 4;
-    draw_buffer_current_ptr += 32;
+    framebuffer += 8;
   }
-  while (topad > 0)
+  while (topad-- > 0)
   {
-    *((ULO *) draw_buffer_current_ptr) = bgcolor;
-    *((ULO *) draw_buffer_current_ptr + 1) = bgcolor;
-    topad--;
-    draw_buffer_current_ptr += 8;
+    *(framebuffer) = bgcolor;
+    *(framebuffer + 1) = bgcolor;
+    framebuffer += 2;
   }
+  draw_buffer_current_ptr = (UBY*) framebuffer;
 }
 
 /*==============================================================================*/
