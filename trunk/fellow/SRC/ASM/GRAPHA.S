@@ -38,6 +38,23 @@ FDATASECTIONSTART
 %include "data/sprite.inc"
 %include "data/blit.inc"
 
+
+;-----------------------------------------------------------------------------
+; Enable this for detailed profiling, log written to drawprofile.txt
+; It can be imported into excel for better viewing
+;
+;%define GRAPH_TSC_PROFILE
+;
+;-----------------------------------------------------------------------------
+
+%ifdef GRAPH_TSC_PROFILE
+CDATAEXTERN gcc_tmp
+CDATAEXTERN gcc
+CDATAEXTERN gcc_times
+CDATAEXTERN gcc_pixels
+%endif
+
+
 FDATASECTIONEND
 FCODESECTIONSTART
 
@@ -554,7 +571,7 @@ wdmanormoff:	mov	edx, dword [dmacon]  ; get old dmacon
 
 		test	ecx, 040h
 		jnz	wdmabrag
-		test	dword [blitterstatus], 0ffh
+		test	dword [blit_started], 0ffh
 		jz	wdmabrag
 		pushad
 		call	_finish_blit_
@@ -2774,68 +2791,95 @@ _graphSpriteHack_:
 ; [8 + esp] - destination playfield
 ; [12 + esp] - pixel count
 ; [16 + esp] - first pixel
-; Return 1, not equal (eax)
+; Return 1 = not equal (eax), 0 = equal
 ;-------------------------------------------------------------------------------
-
 
 		FALIGN32
 
 _graphCompareCopy_:
+%ifdef GRAPH_TSC_PROFILE
+		mov	ebx, dword [esp + 12]
+		add	dword [gcc_pixels], ebx
+		TSC_BEFORE gcc_tmp
+%endif
+		mov	eax, 0
 		mov	esi, dword [esp + 4]
 		mov	edx, dword [esp + 8]
 		mov	ebp, dword [esp + 12]
 		mov	ebx, dword [esp + 16]
-		and	ebp, 0fffffffch
-		add	ebp, ebx
-		cmp	ebx, ebp
-		jae	.l2
-.loop:		mov	ecx, dword [esi + ebx]
-		cmp	dword [edx + ebx], ecx
-		je	.l1
-		mov	eax, 1
-		mov	dword [edx + ebx], ecx
-.l1:		add	ebx, 4
-		cmp	ebx, ebp
-		jl	.loop
-.l2:		mov	ebp, dword [esp + 12]
-		and	ebp, 3
-		jz	.l3
-.l4:		mov	cl, byte [esi + ebx]
+		cmp	ebp, 0			; Check for 0 or less pixels
+		jle	.lexit
+		; Align on 4-byte boundrary
+		test	ebx, 3
+		jz	.dwloopsetup
+.bloop1:	mov	cl, byte [esi + ebx]
 		cmp	byte [edx + ebx], cl
-		je	.l5
+		jne	near .copyrestb
+		inc	ebx
+		dec	ebp
+		jz	.lexit
+		test	ebx, 3
+		jnz	.bloop1
+
+.dwloopsetup:	cmp	ebp, 4
+		jl	.bloop2setup
+		sub	ebp, 3
+.dwloop:	mov	ecx, dword [esi + ebx]
+		cmp	dword [edx + ebx], ecx
+		jne	.copyrestdw
+		add	ebx, 4
+		sub	ebp, 4
+		jge	.dwloop
+		add	ebp, 3
+
+.bloop2setup:	cmp	ebp, 0
+		jle	.lexit
+
+.bloop2:	mov	cl, byte [esi + ebx]
+		cmp	byte [edx + ebx], cl
+		je	.l1
 		mov	eax, 1
 		mov	byte [edx + ebx], cl
-.l5:		inc	ebx
+.l1:		inc	ebx
 		dec	ebp
-		jnz	.l4
-.l3:		ret
+		jnz	.bloop2
+.lexit:
+%ifdef GRAPH_TSC_PROFILE
+		TSC_AFTER gcc_tmp, gcc, gcc_times
+%endif
+		ret
 
-;-------------------------------------------------------------------------------
-; Copy data and compare
-; [4 + esp] - source
-; [8 + esp] - destination
-; Return 1, not equal (eax)
-;-------------------------------------------------------------------------------
+.bloop3:	mov	cl, byte [esi + ebx]
+.copyrestb:	mov	byte [edx + ebx], cl
+		inc	ebx
+		dec	ebp
+		jz	.lexit2
+		test	ebx, 3
+		jnz	.bloop3
 
+		cmp	ebp, 4
+		jl	.bloop4setup
+		sub	ebp, 3
+.dwloop2:	mov	ecx, dword [esi + ebx]
+.copyrestdw:	mov	dword [edx + ebx], ecx
+		add	ebx, 4
+		sub	ebp, 4
+		jge	.dwloop2
+		add	ebp, 3
 
-		FALIGN32
+.bloop4setup:	cmp	ebp, 0
+		jle	.lexit2
 
-_graphCompareCopyOld_:
-		mov	ecx, dword [esp + 4]
-		mov	edx, dword [esp + 8]
-		mov	ebx, 0
-		mov	eax, 0
-		cmp	esi, 0
-		jle	.l2
-.loop:		mov	edi, dword [ecx + ebx]
-		cmp	dword [edx + ebx], edi
-		je	.l1
-		mov	eax, 1
-		mov	dword [edx + ebx], edi
-.l1:		add	ebx, 4
-		cmp	ebx, 1024
-		jne	.loop
-.l2:		ret
+.bloop4:	mov	cl, byte [esi + ebx]
+		mov	byte [edx + ebx], cl
+		inc	ebx
+		dec	ebp
+		jnz	.bloop4
+.lexit2:	mov	eax, 1
+%ifdef GRAPH_TSC_PROFILE
+		TSC_AFTER gcc_tmp, gcc, gcc_times
+%endif
+		ret
 
 ;-------------------------------------------------------------------------------
 ; Copy color block to line description
