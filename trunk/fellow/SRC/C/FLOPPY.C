@@ -1,19 +1,29 @@
-/*============================================================================*/
-/* Fellow Amiga Emulator                                                      */
-/* Floppy Emulation                                                           */
-/*                                                                            */
-/* Authors: Petter Schau (peschau@online.no)                                  */
-/*          Torsten Enderling (carfesh@gmx.net)                               */
-/*                                                                            */
-/* This file is under the GNU Public License (GPL)                            */
-/*============================================================================*/
-/*============================================================================*/
-/* Changelog                                                                  */
-/* ---------                                                                  */
-/* 02/14/2001:                                                                */
-/* - added re-zipping of gzip'ed disk images upon removing the disk           */
-/* - experimental work on extended adf image support                          */
-/*============================================================================*/
+/* @(#) $Id: FLOPPY.C,v 1.16 2004-05-28 13:30:19 carfesh Exp $ */
+/*=========================================================================*/
+/* Fellow Amiga Emulator                                                   */
+/*                                                                         */
+/* Floppy Emulation                                                        */
+/*                                                                         */
+/* Authors: Petter Schau (peschau@online.no)                               */
+/*          Torsten Enderling (carfesh@gmx.net)                            */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
+
 
 #include "portable.h"
 #include "renaming.h"
@@ -432,6 +442,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
   sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
   system(cmdline);
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
 }
@@ -451,6 +462,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
   if(dmsUnpack(diskname, gzname) != 0) return FALSE;
 
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
 }
@@ -470,6 +482,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
   if(!gzUnpack(diskname, gzname)) return FALSE;
 
   strcpy(floppy[drive].imagenamereal, gzname);
+  free(gzname);
   floppy[drive].zipped = TRUE;
   if((access(diskname, 2 )) == -1 )
     floppy[drive].writeprot = TRUE;
