@@ -190,12 +190,18 @@
 #define IDC_IMAGE_DF1_LED_MAIN          1095
 #define IDC_IMAGE_DF0_LED_MAIN          1096
 #define IDC_IMAGE_POWER_LED_MAIN        1097
+#define IDC_STATIC_LINK                 1098
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
 #define ID_DEBUGGER_START               40003
 #define ID_FILE_OPENCONFIGURATION       40004
 #define ID_FILE_SAVECONFIGURATION       40005
 #define ID_FILE_SAVECONFIGURATIONAS     40006
+#define ID_FILE_HISTORYCONFIGURATION0   40007
+#define ID_FILE_HISTORYCONFIGURATION1   40008
+#define ID_FILE_HISTORYCONFIGURATION2   40009
+#define ID_FILE_HISTORYCONFIGURATION3   40010
+
 
 // Next default values for new objects
 // 
@@ -203,7 +209,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        150
 #define _APS_NEXT_COMMAND_VALUE         40007
-#define _APS_NEXT_CONTROL_VALUE         1098
+#define _APS_NEXT_CONTROL_VALUE         1099
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
