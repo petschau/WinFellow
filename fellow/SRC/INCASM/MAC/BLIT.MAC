@@ -6,7 +6,7 @@
 ;=============================================================
 
 %macro BLIT_FINISH 0
-		test	byte [blitterstatus], 0ffh
+		test	byte [blit_started], 0ffh
 		jz	%%l1
 		pushad
 		call	_finish_blit_

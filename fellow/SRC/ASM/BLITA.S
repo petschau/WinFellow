@@ -12,7 +12,6 @@
 ;
 ; 2000 12 21 (PS) - Reorganized linemode using macros. No unsafe pointers.
 ;                   Changed doubtful handling of data from the B channel.
-;
 ;===============================================================================
 
 
@@ -20,48 +19,8 @@
 ; Summary of what is in this file:
 ;
 ; * Get and Set functions for each blitter hardware register.
-; * Start and finish code for a generic blitter operation. (Does all the work
-;   in one fell swoop.) A blitter operation is an event type. Look busa.asm
 ; * Implementation of blitter line mode (The blitter uses a plain Bresenham)
-; * Implementation of blitter fill mode.
-; * Implementation of blitter copy mode.
-; * Implementation of blitter D = A B C logic
-; 
-; Summary of optimizations:
-;
-; * The blitter always feed data from all three channels into its minterm logic,
-;   even when some channels are turned off. (ie. some channels feed the same
-;   word throughout the blit.) 
-;   A number of common ABC channel combinations have been implemented in a
-;   faster way, knowing that some channels contain static data.
-;   Line mode is always generic though.
-; * Blitter logic, each minterm combination could be reduced to a small
-;   expression. Some common minterm expressions have been implemented.
-;   The rest uses a generic routine that dumbly OR the result of the 8
-;   minterms.
-;   Implementing all 256 expressions by hand would be stupid. Much better to
-;   use an automatic optimizer to generate the code. I have not made such an
-;   expression optimizer.
-;
-; Status of the code in this file:
-;
-; Drawbacks:
-;
-; * Unreadable, dominated by slightly fuzzy thinking.
-; * One known problem: A few demos use linemode to rotate images by drawing
-;   lines that take image data as a texture from a blitter data register.
-;   The way the blitter rotates data registers in linemode has some pitfalls.
-;   I have also seen demos where I have verified that the demo use a similar
-;   technique with apparently correct result, so it is not all wrong, I just
-;   simply don't have full control over that particular detail.
-;
-; Advantages:
-; 
-; * It is uncommon to see programs fail to run correctly related to bugs in
-;   the blitter code.  (Normally it is related to doing the full blitter op
-;   at once, which makes it difficult to accurately calculate the actual
-;   time the operation takes. But to do that, you need a cycle exact emulator
-;   that dynamically monitors and compensates all side-effects.)
+; * Implementation of blitter D = A B C logic (nowdays only for the linemode)
 ;===============================================================================
 
 
@@ -504,52 +463,15 @@ _wbltadat_:	BLIT_FINISH
 ; thiscycle
 ; -------------------------------------------
 
+CFUNCEXTERN blitInitiate
 
 		FALIGN32
 
 global _blitter_copy_
-_blitter_copy_:	push	ebx
-		push	eax
-
-		test	dword [blitter_operation_log], 0ffffffffh
-		jz	.no_log
-		BLITTEROPERATIONLOG_CWRAP
-.no_log:
-		mov	dword [bltzero], 0
-		mov	eax, dword [bltcon]
-		shr	eax, 24				; calc cycles
-		and	eax, 0fh
-		test	dword [bltcon], 1
-		jnz	linecyc
-		mov	ebx, dword [blit_cycletab + 4*eax]
-		jmp	nolinecyc
-linecyc:	mov	ebx, 6		 
-nolinecyc:	test	byte [blitter_fast], 0ffh
-		jnz	fastblit
-		imul	ebx, dword [blit_width]		; cycles per line
-		imul	ebx, dword [blit_height]	; total cyclecount
-fastblit:	mov	eax, 1				; State 1, no bltpri
-		mov	dword [thiscycle], 0
-		test	dword [dmaconr], 0400h		; test bltpri
-		jz	nobltpri
-		mov	ah, byte [bltcon + 3]
-		and	ah, 15
-		cmp	ah, 1		
-		je	nobltpri
-		inc	al				; State 2, bltpri blt
-		shr	ebx, 1				; Set blitend cycle
-		test	byte [blitter_fast], 0ffh
-		jnz	nobltpri
-		mov	dword [thiscycle], ebx
-nobltpri:	shr	ebx, 1
-		add	ebx, dword [curcycle]
-		mov	dword [blitend], ebx
-		mov	ah, 0				; Set blitter busy bit
-		or	dword [dmaconr], 04000h
-		mov	dword [blitterstatus], eax
+_blitter_copy_:	pushad
+		call	blitInitiate
 		SCAN_EVENTS_LVL4
-		pop	eax
-		pop	ebx
+		popad
 		ret
 
 
@@ -567,13 +489,11 @@ _finish_blit_:
 		mov	dword [blitend], -1
 		SCAN_EVENTS_LVL4
 		mov	dword [blitterdmawaiting], 0
-		mov	dword [blitterstatus], 0
+		mov	dword [blit_started], 0
 		and	dword [dmaconr], 0bfffh	
 		mov	ebx, dword [bltcon]
 		test	ebx, 1
 		jnz	blitterlinemode
-		test	ebx, 18h
-		jnz	near blitterfillmode_new
 %ifdef BLIT_TSC_PROFILE
 		TSC_BEFORE blit_tsc_tmp
 %endif
@@ -581,10 +501,6 @@ _finish_blit_:
 %ifdef BLIT_TSC_PROFILE
 		TSC_AFTER blit_tsc_tmp, blit_tsc, blit_tsc_times
 %endif
-		ret
-
-blitterfillmode_new:
-		call	blitterCopyABCD
 		ret
 
 ; ==============================
