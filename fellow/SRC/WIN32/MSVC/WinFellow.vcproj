@@ -3620,80 +3620,6 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\infblock.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\zlib\C\infcodes.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\..\zlib\C\inffast.c">
 					<FileConfiguration
 						Name="Release|Win32">
@@ -3769,43 +3695,6 @@
 				</File>
 				<File
 					RelativePath="..\..\zlib\C\inftrees.c">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Dx3 Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="2"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
-					</FileConfiguration>
-					<FileConfiguration
-						Name="Debug|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							Optimization="0"
-							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
-					</FileConfiguration>
-				</File>
-				<File
-					RelativePath="..\..\zlib\C\infutil.c">
 					<FileConfiguration
 						Name="Release|Win32">
 						<Tool
@@ -3957,13 +3846,10 @@
 				Name="zlib Header Files"
 				Filter=".h">
 				<File
+					RelativePath="..\..\zlib\include\crc32.h">
+				</File>
+				<File
 					RelativePath="..\..\zlib\include\deflate.h">
-				</File>
-				<File
-					RelativePath="..\..\zlib\include\infblock.h">
-				</File>
-				<File
-					RelativePath="..\..\zlib\include\infcodes.h">
 				</File>
 				<File
 					RelativePath="..\..\zlib\include\inffast.h">
@@ -3972,10 +3858,10 @@
 					RelativePath="..\..\zlib\include\inffixed.h">
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inftrees.h">
+					RelativePath="..\..\zlib\include\inflate.h">
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\infutil.h">
+					RelativePath="..\..\zlib\include\inftrees.h">
 				</File>
 				<File
 					RelativePath="..\..\zlib\include\trees.h">
