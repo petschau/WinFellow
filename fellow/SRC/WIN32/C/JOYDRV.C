@@ -12,7 +12,11 @@
 */
 
 /* ---------------- CHANGE LOG ----------------- 
-Tuesday, September 07, 2000
+Monday, September 11, 2000
+- fixed joyDrvMovementHandler if the input is lost for 50 times consecutives, the driver is marked as failed and a new joyDrvEmulationStart should be issued
+- fixed joyDrvEmulationStart, some internal variables were initialized only at startup (joyDrvStartup)
+
+Thursday, September 07, 2000
 - now use multimedia functions with dx3 mode (instead of pure dinput)
 - removed heavy debug log with Dx3
 
@@ -463,6 +467,7 @@ void joyDrvMovementHandler() {
 	
 	DIJOYSTATE dims;
 	HRESULT res;
+	int LostCounter = 50;
 
 #else
 	
@@ -492,6 +497,14 @@ void joyDrvMovementHandler() {
 		sizeof(DIJOYSTATE),
 		&dims);
 	  if (res == DIERR_INPUTLOST) joyDrvDInputAcquire();
+
+	  if( LostCounter-- < 0 )
+	  {
+		joyDrvDInputFailure("joyDrvMovementHandler(): abort -- ", res );
+		joyDrvToggleFocus();
+		return;
+	  }
+
 	} while (res == DIERR_INPUTLOST);
 	
 	if (res != DI_OK) {
@@ -597,6 +610,9 @@ void joyDrvHardReset(void) {
 /*===========================================================================*/
 
 void joyDrvEmulationStart(void) {
+  joy_drv_focus = TRUE;
+  joy_drv_active = FALSE;
+  joy_drv_in_use = FALSE;
   joyDrvDInputInitialize();
 }
 
