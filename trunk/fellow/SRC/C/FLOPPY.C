@@ -2,7 +2,8 @@
 /* Fellow Amiga Emulator                                                      */
 /* Floppy Emulation                                                           */
 /*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
+/* Authors: Petter Schau (peschau@online.no)                                  */
+/*          Torsten Enderling (carfesh@gmx.net)                               */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -19,11 +20,12 @@
 #include "fswrap.h"
 #include "graph.h"
 
+#include "xdms.h"
+#include "zlibwrap.h"
+
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
 #define FLOPPY_INSERTED_DELAY 200   
-
-#define WIN_SHORTPATHNAMES
 
 /*---------------*/
 /* Configuration */
@@ -371,19 +373,6 @@ void floppyTrackLoad(ULO drive, ULO track) {
 }
 
 
-/*=================================*/
-/* Insert gzip, bzip2 or DMS image */
-/* Unzip the image to tempdir      */
-/*=================================*/
-
-static UBY gzbuff[512];
-static STR gzname[L_tmpnam];
-static STR cmdline[512];
-#ifdef WIN_SHORTPATHNAMES
-static STR gzshortname[512];
-#endif
-
-
 /*======================*/
 /* Set error conditions */
 /*======================*/
@@ -403,22 +392,45 @@ void floppyError(ULO drive, ULO errorID) {
 /* Handling of Compressed Images */
 /*===============================*/
 
+/*=========================================*/
+/* Get a temporary file name               */
+/* if TEMP environment variable is set try */
+/* to create in temporary folder, else in  */
+/* the volumes rootdir                     */
+/*=========================================*/
+
+static char *TemporaryFilename(void)
+{
+  char *tempvar;
+  char *result;
+
+  tempvar = getenv("TEMP");
+  if( tempvar != NULL )
+    result = tempnam(tempvar, "wftemp");
+  else
+	result = tmpnam(NULL);
+  return result;
+}
+
+
 /*=========================*/
 /* Uncompress a BZip image */
 /*=========================*/
 
 BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
-  FILE *F;
+  char *gzname;
+  STR cmdline[512];
 
-  F = fopen(tmpnam(gzname), "wb");
-  if (F == NULL) floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
-  else {
-    fclose(F);
-    sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
-    system(cmdline);
-    strcpy(floppy[drive].imagenamereal, gzname);
-    floppy[drive].zipped = TRUE;
+  if( (gzname = TemporaryFilename()) == NULL)
+  {
+    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+	return FALSE;
   }
+
+  sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
+  system(cmdline);
+  strcpy(floppy[drive].imagenamereal, gzname);
+  floppy[drive].zipped = TRUE;
   return TRUE;
 }
 
@@ -428,15 +440,15 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
 /*========================*/
 
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
-#ifdef WIN_SHORTPATHNAMES
-  HRESULT res;
-  res = GetShortPathName(diskname, gzshortname, 512);
-  if(!res) return FALSE;
-  sprintf(cmdline, "xdms.exe -q u \"%s\" +\"%s\"", gzshortname, tmpnam(gzname));
-#else
-  sprintf(cmdline, "xdms.exe -q u \"%s\" +\"%s\"", diskname, tmpnam(gzname));
-#endif
-  system(cmdline);
+  char *gzname;
+  if( (gzname = TemporaryFilename()) == NULL)
+  {
+    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+	return FALSE;
+  }
+
+  if(dmsUnpack(diskname, gzname) != 0) return FALSE;
+
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
@@ -448,15 +460,15 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
 /*============================*/
 
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
-#ifdef WIN_SHORTPATHNAMES
-  HRESULT res;
-  res = GetShortPathName(diskname, gzshortname, 512);
-  if(!res) return FALSE;
-  sprintf(cmdline, "gzip -c -d \"%s\" > \"%s\"", gzshortname, tmpnam(gzname));
-#else
-  sprintf(cmdline, "gzip -c -d \"%s\" > \"%s\"", diskname, tmpnam(gzname));
-#endif
-  system(cmdline);
+  char *gzname;
+  if( (gzname = TemporaryFilename()) == NULL)
+  {
+    floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
+	return FALSE;
+  }
+
+  if(!gzUnpack(diskname, gzname)) return FALSE;
+
   strcpy(floppy[drive].imagenamereal, gzname);
   floppy[drive].zipped = TRUE;
   return TRUE;
@@ -470,8 +482,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
 void floppyImageCompressedRemove(ULO drive) {
   if (floppy[drive].zipped) {
     floppy[drive].zipped = FALSE;
-    sprintf(cmdline, "del \"%s\"", floppy[drive].imagenamereal);
-    system(cmdline);
+	remove(floppy[drive].imagenamereal);
   }
 }
 
