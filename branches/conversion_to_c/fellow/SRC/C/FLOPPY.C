@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.7 2004-06-02 12:09:45 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.8 2004-06-03 10:06:58 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -696,7 +696,7 @@ void floppyImageIPFLoad(ULO drive) {
             floppy[drive].trackinfo[i].mfm_data,
             &floppy[drive].trackinfo[i].mfm_length, 
             floppy[drive].tracktiming,
-            &floppy[drive].multirevolution);
+            &floppy[drive].flakey);
         LastTrackMFMData += floppy[drive].trackinfo[i].mfm_length;
     }
 
@@ -816,7 +816,7 @@ void floppyDriveTableInit(void) {
     /* Need to be large enough to hold UAE--ADF encoded tracks */
     floppy[i].mfm_data = (UBY *) malloc(FLOPPY_TRACKS*25000);
 #ifdef FELLOW_SUPPORT_CAPS
-    floppy[i].multirevolution = FALSE;
+    floppy[i].flakey = FALSE;
     floppy[i].tracktiming = (ULO *) malloc(FLOPPY_TRACKS*25000);
 #endif
   }
