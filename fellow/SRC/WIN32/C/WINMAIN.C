@@ -25,6 +25,15 @@ extern int main(int, char **);
 HINSTANCE win_drv_hInstance;
 int win_drv_nCmdShow;
 
+/* thread name info struct */
+
+typedef struct tagTHREADNAME_INFO
+{
+   DWORD dwType; // must be 0x1000
+   LPCSTR szName; // pointer to name (in user addr space)
+   DWORD dwThreadID; // thread ID (-1=caller thread)
+   DWORD dwFlags; // reserved for future use, must be zero
+} THREADNAME_INFO;
 
 /*===========================================================================*/
 /* Start Fellow and main message loop                                        */
@@ -93,15 +102,6 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
   return event_count;
 }
 
-
-typedef struct tagTHREADNAME_INFO
-{
-   DWORD dwType; // must be 0x1000
-   LPCSTR szName; // pointer to name (in user addr space)
-   DWORD dwThreadID; // thread ID (-1=caller thread)
-   DWORD dwFlags; // reserved for future use, must be zero
-} THREADNAME_INFO;
-
 /* added setting of thread names for easier debugging */
 
 void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
@@ -114,7 +114,7 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 
    __try
    {
-      RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+       RaiseException(0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info);
    }
    __except(EXCEPTION_CONTINUE_EXECUTION)
    {
