@@ -41,6 +41,7 @@
 #define IDB_DISKDRIVE_LED_OFF           140
 #define IDB_DISKDRIVE_LED_DISABLED      141
 #define IDD_HARDFILE_CREATE             150
+#define IDB_WINFELLOW_LOGO              154
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -211,7 +212,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        151
+#define _APS_NEXT_RESOURCE_VALUE        155
 #define _APS_NEXT_COMMAND_VALUE         40007
 #define _APS_NEXT_CONTROL_VALUE         1109
 #define _APS_NEXT_SYMED_VALUE           101
