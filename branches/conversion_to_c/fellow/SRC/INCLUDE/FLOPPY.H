@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.4.2.5 2004-06-06 13:56:00 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.4.2.6 2004-06-07 22:11:26 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -41,7 +41,7 @@ void wdskptl(ULO, ULO);
 void wdsklen(ULO, ULO);
 void wdsksync(ULO, ULO);
 
-#define FLOPPY_TRACKS 164
+#define FLOPPY_TRACKS 180
 
 /* Status symbols */
 
