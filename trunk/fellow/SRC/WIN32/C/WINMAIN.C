@@ -107,7 +107,7 @@ void winDrvEmulate(void *startfunc, void *param)
   DWORD dwEvt;
   HANDLE multi_events[3];
   ULO event_count;
-  enum MultiEventTypes object_mapping[3];
+  enum MultiEventTypes object_mapping[4];
   BOOLE keep_on_waiting;
   
   win_drv_emulation_ended = CreateEvent(NULL, FALSE, FALSE, NULL);
