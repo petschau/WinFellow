@@ -90,7 +90,7 @@ static BOOLE ffilesysHasZeroDevices(void) {
   ULO dev_count = 0;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
-    if (ffilesys_devs[i].status != FFILESYS_INSERTED) dev_count++;
+    if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
