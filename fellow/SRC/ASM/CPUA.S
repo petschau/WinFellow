@@ -751,8 +751,12 @@ rIRQ_noprevious:mov	dword [interruptlevel], edx	; Save runlevel
 		mov	dword [interruptflag], 1
 
 rIRQ_sched_exit:
+		
+		pushad
 		call busScanEventsLevel5
+		popad
 		;SCAN_EVENTS_LVL5
+
 rIRQ_exit:	pop	edx
 		pop	ecx
 		pop	ebx
@@ -815,8 +819,12 @@ si_step6:	mov	edx, dword [interruptaddress]; step 6
 		mov	dword [cpu_stop], 0
 si_nostop:	mov	dword [interruptflag], 0
 		mov	dword [irq_next], -1		; step 8
+		
+		pushad
 		call busScanEventsLevel5
+		popad
 		;SCAN_EVENTS_LVL5
+
 		popad
 		ret
 

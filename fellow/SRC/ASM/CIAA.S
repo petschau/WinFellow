@@ -121,8 +121,12 @@ global _ciaSetupEventWrapper_
 _ciaSetupEventWrapper_:
 		push	ebx
 		push	eax
+		
+		pushad
 		call busScanEventsLevel6
+		popad
 		;SCAN_EVENTS_LVL6
+
 		pop	eax
 		pop	ebx
 		ret

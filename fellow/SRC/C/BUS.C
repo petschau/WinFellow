@@ -243,8 +243,6 @@ void endOfLineC(void)
 	/* Update the CIA B event counter                               */
 	/*==============================================================*/
 
-	//mov	eax, 1
-	//CIA_UPDATE_EVENTCOUNTER_CWRAP
   ciaUpdateEventCounterC(1);
 
 	/*==============================================================*/
@@ -257,16 +255,13 @@ void endOfLineC(void)
 	/* Update the sound emulation                                   */
 	/*==============================================================*/
 
-	//SOUND_END_OF_LINE_CWRAP
   soundEndOfLine();
 
 	/*==============================================================*/
 	/* Handle keyboard events                                       */
 	/*==============================================================*/
 
-	//	KBDQUEUEHANDLER_CWRAP
   kbdQueueHandler();
-	//	KBDEVENTEOLHANDLER_CWRAP
   kbdEventEOLHandler();
 
 	/*==============================================================*/

@@ -423,7 +423,9 @@ _endOfFrame_:	push	edx
 		; Recalculate the entire event queue
 		;==============================================================
 
+		pushad
 		call busScanEventsLevel6
+		popad
 		;SCAN_EVENTS_LVL6
 
 
