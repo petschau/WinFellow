@@ -54,14 +54,6 @@
 #define wbltcdat ASMRENAME(wbltcdat)
 #define wbltbdat ASMRENAME(wbltbdat)
 #define wbltadat ASMRENAME(wbltadat)
-#define blitterlinemodeoctant0 ASMRENAME(blitterlinemodeoctant0)
-#define blitterlinemodeoctant1 ASMRENAME(blitterlinemodeoctant1)
-#define blitterlinemodeoctant2 ASMRENAME(blitterlinemodeoctant2)
-#define blitterlinemodeoctant3 ASMRENAME(blitterlinemodeoctant3)
-#define blitterlinemodeoctant4 ASMRENAME(blitterlinemodeoctant4)
-#define blitterlinemodeoctant5 ASMRENAME(blitterlinemodeoctant5)
-#define blitterlinemodeoctant6 ASMRENAME(blitterlinemodeoctant6)
-#define blitterlinemodeoctant7 ASMRENAME(blitterlinemodeoctant7)
 
 
 /*===========================================================================*/
@@ -114,16 +106,6 @@ extern ULO blit_min_ff(ULO, ULO, ULO);
 /* Blitter modes */
 /*===============*/
 
-typedef void (*blitmodefunc)(void);
-
-extern void blitterlinemodeoctant0(void);
-extern void blitterlinemodeoctant1(void);
-extern void blitterlinemodeoctant2(void);
-extern void blitterlinemodeoctant3(void);
-extern void blitterlinemodeoctant4(void);
-extern void blitterlinemodeoctant5(void);
-extern void blitterlinemodeoctant6(void);
-extern void blitterlinemodeoctant7(void);
 
 
 /*==============================*/

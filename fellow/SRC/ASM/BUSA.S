@@ -62,9 +62,10 @@ FDATASECTIONSTART
 %include "data/graph.inc"
 %include "data/cia.inc"
 %include "data/copper.inc"
-%include "data/blit.inc"
 %include "data/timer.inc"		
 %include "data/graph.inc"
+
+CDATAEXTERN blitend
 
 global _bus_blitter_delay
 _bus_blitter_delay:	db	0,1,0,0
@@ -86,7 +87,6 @@ _busstart_:	 ; Used to check code alignment
 %include "func/copper.inc"
 %include "func/cia.inc"
 %include "func/draw.inc"
-%include "func/blit.inc"
 %include "func/graph.inc"
 %include "func/sprite.inc"
 %include "func/kbd.inc"
@@ -280,70 +280,6 @@ _return_from_stop_:
 		jmp	dword [stopreturnadr]
 
 
-;==============================================================================
-; Global end of line handler
-;==============================================================================
-
-
-		FALIGN32
-
-global _endOfLine_
-_endOfLine_:	push	edx
-		push	ecx
-		push	ebx
-
-
-		;==============================================================
-		; Handles graphics planar to chunky conversion
-		; and updates the graphics emulation for a new line
-		;==============================================================
-
-		call	_graphEndOfLine_
-
-
-		;==============================================================
-		; Update the CIA B event counter
-		;==============================================================
-
-		mov	eax, 1
-		CIA_UPDATE_EVENTCOUNTER_CWRAP
-
-
-		;==============================================================
-		; Handles disk DMA if it is running
-		;==============================================================
-
-		call	floppyEndOfLineC
-
-
-		;==============================================================
-		; Update the sound emulation
-		;==============================================================
-
-		SOUND_END_OF_LINE_CWRAP
-
-
-		;==============================================================
-		; Handle keyboard events
-		;==============================================================
-
-		KBDQUEUEHANDLER_CWRAP
-		KBDEVENTEOLHANDLER_CWRAP
-
-
-		;==============================================================
-		; Set up the next end of line event
-		;==============================================================
-
-		add	dword [eol_next], CYCLESPERLINE
-		
-		call busScanEventsLevel3
-		;SCAN_EVENTS_LVL3
-
-		pop	ebx
-		pop	ecx
-		pop	edx
-		ret
 
 
 ;==============================================================================

@@ -48,9 +48,11 @@ FDATASECTIONSTART
 %include "data/copper.inc"
 %include "data/fmem.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
 %include "data/cpu.inc"
 %include "data/graph.inc"
+
+CDATAEXTERN blit_started
+CDATAEXTERN blitend
 
 FDATASECTIONEND
 FCODESECTIONSTART

@@ -19,6 +19,7 @@
 #define endOfLine ASMRENAME(endOfLine)
 #define copperEmulate ASMRENAME(copperEmulate)
 #define endOfFrame ASMRENAME(endOfFrame)
+#define graphEndOfLine ASMRENAME(graphEndOfLine)
 
 
 /* Assembly functions called from C */
@@ -39,6 +40,7 @@ extern void finish_blit(void);
 extern void endOfLine(void);
 extern void copperEmulate(void);
 extern void endOfFrame(void);
+extern void graphEndOfLine(void);
 
 
 
@@ -53,17 +55,19 @@ extern void busHardReset(void);
 extern void busStartup(void);
 extern void busShutdown(void);
 
-void busScanLevel6(ULO* lvlx_next, void (**lvlx_ptr)(void));
-void busScanLevel5(ULO* lvlx_next, void (**lvlx_ptr)(void));
-void busScanLevel4(ULO* lvlx_next, void (**lvlx_ptr)(void));
-void busScanLevel3(ULO* lvlx_next, void (**lvlx_ptr)(void));
-void busScanLevel2(ULO* lvlx_next, void (**lvlx_ptr)(void));
+void busScanLevel6(ULO* lvlx_next, buseventfunc* lvlx_ptr);
+void busScanLevel5(ULO* lvlx_next, buseventfunc* lvlx_ptr);
+void busScanLevel4(ULO* lvlx_next, buseventfunc* lvlx_ptr);
+void busScanLevel3(ULO* lvlx_next, buseventfunc* lvlx_ptr);
+void busScanLevel2(ULO* lvlx_next, buseventfunc* lvlx_ptr);
 
 void busScanEventsLevel2(void);
 void busScanEventsLevel3(void);
 void busScanEventsLevel4(void);
 void busScanEventsLevel5(void);
 void busScanEventsLevel6(void);
+
+void endOfLineC(void);
 
 extern ULO eol_next, eof_next, cpu_next;
 extern ULO irq_next;

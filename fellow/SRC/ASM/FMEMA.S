@@ -33,7 +33,6 @@ FDATASECTIONSTART
 %include "data/sound.inc"
 %include "data/graph.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
 %include "data/draw.inc"
 %include "data/cpu.inc"
 	
@@ -51,7 +50,6 @@ _memorystart_:			; Used to check code alignment
 %include "func/draw.inc"
 %include "func/graph.inc"
 %include "func/copper.inc"
-%include "func/blit.inc"
 %include "func/cia.inc"
 %include "func/floppy.inc"
 %include "func/gameport.inc"

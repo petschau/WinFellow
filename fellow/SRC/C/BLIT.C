@@ -2,7 +2,8 @@
 /* Fellow Amiga Emulator                                                      */
 /* Blitter Initialization                                                     */
 /*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
+/* Authors: Petter Schau                                                      */
+/*          Worfje                                                            */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
@@ -55,7 +56,7 @@ ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
 /*============================================================================*/
 
 blit_min_func blit_min_functable[256];
-blit_min_func blit_asm_minterm;
+//blit_min_func blit_asm_minterm;
 
 /*============================================================================*/
 /* Blitter fill-mode lookup tables                                            */
@@ -82,18 +83,7 @@ ULO blit_cycle_length, blit_cycle_free;
 BOOLE blit_minterm_seen[256];
 #endif
 
-/*============================================================================*/
-/* Function tables for different types of blitter emulation                   */
-/*============================================================================*/
 
-blitmodefunc bltlinesulsudaul[8] = {blitterlinemodeoctant0,
-				    blitterlinemodeoctant1,
-				    blitterlinemodeoctant2,
-				    blitterlinemodeoctant3,
-				    blitterlinemodeoctant4,
-				    blitterlinemodeoctant5,
-				    blitterlinemodeoctant6,
-				    blitterlinemodeoctant7};
 
 /*===========================================================================*/
 /* Blitter properties                                                        */
@@ -622,33 +612,7 @@ static void blitterFillTableInit(void) {
 static void blitterMinTableInit(void) {
   ULO i;
 
-  for (i = 0; i < 256; i++)
-    blit_min_functable[i] = blit_min_generic;
-  blit_min_functable[0x00] = blit_min_00;
-  blit_min_functable[0x01] = blit_min_01;
-  blit_min_functable[0x02] = blit_min_02;
-  blit_min_functable[0x03] = blit_min_03;
-  blit_min_functable[0x04] = blit_min_04;
-  blit_min_functable[0x05] = blit_min_05;
-  blit_min_functable[0x06] = blit_min_06;
-  blit_min_functable[0x07] = blit_min_07;
-  blit_min_functable[0x08] = blit_min_08;
-  blit_min_functable[0x09] = blit_min_09;
-  blit_min_functable[0x0a] = blit_min_0a;
-  blit_min_functable[0x0b] = blit_min_0b;
-  blit_min_functable[0x0c] = blit_min_0c;
-  blit_min_functable[0x0d] = blit_min_0d;
-  blit_min_functable[0x0e] = blit_min_0e;
-  blit_min_functable[0x0f] = blit_min_0f;
-  blit_min_functable[0x2a] = blit_min_2a;
-  blit_min_functable[0x4a] = blit_min_4a;
-  blit_min_functable[0xca] = blit_min_ca;
-  blit_min_functable[0xd8] = blit_min_d8;
-  blit_min_functable[0xea] = blit_min_ea;
-  blit_min_functable[0xf0] = blit_min_f0;
-  blit_min_functable[0xfa] = blit_min_fa;
-  blit_min_functable[0xfc] = blit_min_fc;
-  blit_min_functable[0xff] = blit_min_ff;
+ 
 }  
 
 
@@ -690,7 +654,7 @@ static void blitterIOHandlersInstall(void) {
 /*============================================================================*/
 
 static void blitterIORegistersClear(void) {
-  blit_asm_minterm = blit_min_generic;
+  //blit_asm_minterm = blit_min_generic;
   blitend = 0xffffffff;             /* Must keep blitend -1 when not blitting */
   bltapt = 0;
   bltbpt = 0;
@@ -808,11 +772,11 @@ void blitterShutdown(void) {
 
 void blitFinishBlit(void) 
 {
-  blitend = 0xffffffff;
+  blitend = -1;
   busScanEventsLevel4();
   blitterdmawaiting = 0;
   blit_started = 0;
-  dmaconr = 0x0000bfff;
+  dmaconr = dmaconr & 0x0000bfff;
   if ((bltcon & 0x00000001) == 0x00000001)
   {
     blitterLineMode();
@@ -826,7 +790,7 @@ void blitFinishBlit(void)
 void blitMinitermsSet(ULO data)
 {
   blit_minterm = data & 0x000000FF;
-  blit_asm_minterm = blit_min_functable[blit_minterm];
+  //blit_asm_minterm = blit_min_functable[blit_minterm];
 }
 
 void blitForceFinish(void)
