@@ -251,7 +251,6 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalOptions="/PROFILE"
 				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
