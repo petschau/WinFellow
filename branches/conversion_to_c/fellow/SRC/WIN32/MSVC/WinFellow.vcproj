@@ -588,41 +588,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\spritea.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\Asm\Sse.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -694,9 +659,6 @@
 				<File
 					RelativePath="..\..\incasm\mac\sound.mac">
 				</File>
-				<File
-					RelativePath="..\..\incasm\mac\sprite.mac">
-				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
@@ -731,9 +693,6 @@
 				<File
 					RelativePath="..\..\incasm\func\sound.inc">
 				</File>
-				<File
-					RelativePath="..\..\incasm\func\sprite.inc">
-				</File>
 			</Filter>
 			<Filter
 				Name="Data"
@@ -767,9 +726,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\sound.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\sprite.inc">
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\timer.inc">
