@@ -3,8 +3,15 @@
 /* Hardfile device                                                            */
 /*                                                                            */
 /* Author: Petter Schau (peschau@online.no)                                   */
+/* Author: Torsten Enderling (carfesh@gmx.net)                                */
+/*                                                                            */
+/* Last Changed: 13.08.2000                                                   */
 /*                                                                            */
 /* This file is under the GNU Public License (GPL)                            */
+/*                                                                            */
+/* ChangeLog:                                                                 */
+/* ==========                                                                 */
+/* 13.08.2000 - added creation of hardfiles                                   */
 /*============================================================================*/
 
 #include "portable.h"
@@ -779,3 +786,28 @@ void fhfileShutdown(void) {
   fhfileClear();
 }
 
+/*==========================*/
+/* Create hardfile          */
+/*==========================*/
+
+static BOOLE fhfileCreate(fhfile_dev hfile)
+{
+    HANDLE hf;
+    int i = 0;
+    BOOLE result = FALSE;
+        
+    if(*hfile.filename && hfile.size) 
+    {
+	    if((hf = CreateFile(hfile.filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
+        {
+            if( SetFilePointer(hf, hfile.size, NULL, FILE_BEGIN) == hfile.size )
+                result = SetEndOfFile(hf);
+            else
+                fellowAddLog("SetFilePointer() failure.\n");
+            CloseHandle(hf);
+        }
+        else
+            fellowAddLog("CreateFile() failed.\n");
+    }
+    return result;
+}
