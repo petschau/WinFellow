@@ -37,6 +37,8 @@ FDATASECTIONSTART
 %include "data/draw.inc"
 %include "data/sprite.inc"
 %include "data/blit.inc"
+%include "data/bus.inc"
+%include "data/cpu.inc"
 
 
 ;-----------------------------------------------------------------------------
@@ -476,7 +478,26 @@ global _wdmacon_
 _wdmacon_:	mov	ecx, dword [dmaconr]
 		test	edx, 08000h
 		jz	near wdma1
-		and	edx, 7ffh		; Sett bits - Readonly bits
+		and	edx, 7ffh		; Set bits - Readonly bits
+
+; Test if BLTHOG got turned on
+		test	edx, 0400h		; Is BLTHOG on now?
+		jz	.bhogend
+		test	ecx, 0400h		; Was BLTHOG off before?
+		jnz	.bhogend
+		; BLTHOG got turned on, stop CPU until a blit is finished if
+		; this is a blit that uses all cycles.
+		cmp	dword [blitend], -1
+		je	.bhogend
+		cmp	dword [blit_cycle_free], 0
+		jne	.bhogend
+		push	edx
+		mov	edx, dword [blitend]
+		sub	edx, dword [curcycle]
+		add	dword [thiscycle], edx	; Delays CPU additionally edx cycles
+		pop	edx
+.bhogend:
+
 		or	ecx, edx			; ecx is new dmaconr
 		mov	dword [dmaconr], ecx
 		test	ecx, 0200h
@@ -484,6 +505,8 @@ _wdmacon_:	mov	ecx, dword [dmaconr]
 		xor	ecx, ecx
 wdmanorm:	mov	edx, dword [dmacon]	; get old dmacon (master dma adjusted)
 		mov	dword [dmacon], ecx	; Store new dmacon --------"---------
+
+		
 
 
 ; Do audio stuff
@@ -3342,7 +3365,7 @@ _graphComposeLineOutput_:
 
 		mov	eax, dword [draw_line_BG_routine]
 		cmp	eax, dword [draw_line_routine]
-		je	.eol_draw
+		je	near .eol_draw
 
 		;==============================================================
 		; Do the planar to chunky conversion
