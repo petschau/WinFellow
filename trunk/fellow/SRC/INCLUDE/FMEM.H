@@ -203,6 +203,7 @@ extern void memorySetIOWriteStub(ULO index, memoryIOWriteFunc iowritefunction);
 typedef void (*memoryEmemCardInitFunc)(void);
 typedef void (*memoryEmemCardMapFunc)(ULO);
 
+extern void memoryEmemClear(void);
 extern void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
 			      memoryEmemCardMapFunc cardmap);
 extern void memoryEmemSet(ULO index, ULO data);
@@ -274,11 +275,14 @@ extern BOOLE memorySetKickImage(STR *kickimage);
 extern STR *memoryGetKickImage(void);
 extern void memorySetKey(STR *key);
 extern STR *memoryGetKey(void);
+extern BOOLE memoryGetKickImageOK(void);
 
 /* Derived from memory configuration */
 
 extern ULO memoryGetKickImageBaseBank(void);
 extern ULO memoryGetKickImageVersion(void);
+extern ULO memoryInitialPC(void);
+extern ULO memoryInitialSP(void);
 
 /* Kickstart load error handling */
 
