@@ -2065,10 +2065,10 @@ BOOL wguiConfigurationDialog(void)
   propertysheetheader.dwFlags = PSH_PROPSHEETPAGE;
   propertysheetheader.hwndParent = wgui_hDialog;
   propertysheetheader.hInstance = win_drv_hInstance;
-  propertysheetheader.hIcon = NULL;
-  propertysheetheader.pszCaption = "Fellow Configuration";
+  propertysheetheader.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
+  propertysheetheader.pszCaption = "WinFellow Configuration";
   propertysheetheader.nPages = PROP_SHEETS;
-  propertysheetheader.nStartPage = 1;
+  propertysheetheader.nStartPage = 4;
   propertysheetheader.ppsp = propertysheets;
   propertysheetheader.pfnCallback = NULL;
   return PropertySheet(&propertysheetheader);
