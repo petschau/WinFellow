@@ -479,9 +479,10 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 	  fellowAddLog(s);
   }
 
-  if(dsound_device->notification_supported = !!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY))
+  dsound_device->notification_supported = (!!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY)) && (soundGetNotification() == SOUND_DSOUND_NOTIFICATION);
+  if(dsound_device->notification_supported)
   {
-    /* Notification supported */
+    /* Notification supported AND selected */
 
 	/* Get notification interface */
   
