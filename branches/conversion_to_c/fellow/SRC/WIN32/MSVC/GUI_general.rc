@@ -362,7 +362,7 @@ CAPTION "About WinFellow"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    LTEXT           "WinFellow alpha v0.4.3 build 1 - Snapshot 2001/11/15",
+    LTEXT           "WinFellow alpha v0.4.3.2 - CVS",
                     IDC_STATIC,67,50,80,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,
