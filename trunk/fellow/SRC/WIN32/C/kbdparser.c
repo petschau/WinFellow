@@ -8,13 +8,16 @@
 
 /* ---------------- KNOWN BUGS/FIXLIST ----------------- 
 - translation from keynames to DX keys should be perfectioned
-- autofire support
-- possibilty to specify only the changed keys
 - conflicts in the keys choosen by the user
-- problem if the last line is not an empty line
 */
 
 /* ---------------- CHANGE LOG ----------------- 
+Friday, January 05, 2001: nova
+- fixed problem if the last line is not an empty line
+- fixed handling of joystick key replacement
+- added prsWriteFile function to save the current state of the key mappings
+- now you can specify only the keys you want to change
+
 Tuesday, September 19, 2000: nova
 - added autofire support
 
@@ -28,6 +31,7 @@ Tuesday, September 05, 2000: nova
 #include "keycodes.h"
 #include "kbdparser.h"
 #include <stdio.h>
+
 
 extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
 
@@ -252,8 +256,8 @@ UBY amiga_scancode[MAX_AMIGA_NAMES] = {
 };
 
 
-#define MAX_KEY_REPLACEMENT		15
-#define FIRST_KEY2_REPLACEMENT	9		// MAX_KEY_REPLACEMENT / 2
+#define MAX_KEY_REPLACEMENT		16
+#define FIRST_KEY2_REPLACEMENT	8		// MAX_KEY_REPLACEMENT / 2
 
 
 // the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
@@ -272,7 +276,7 @@ STR *replacement_keys[MAX_KEY_REPLACEMENT] = {
 	"JOYKEY2_UP",
 	"JOYKEY2_DOWN",
 	"JOYKEY2_FIRE0",
-	"JOYKEY2_FIRE1"
+	"JOYKEY2_FIRE1",
 	"JOYKEY2_AUTOFIRE0",
 	"JOYKEY2_AUTOFIRE1"
 };
@@ -304,7 +308,7 @@ STR *prsTrim( STR *line )
 
 	// trim starting space and tab
 	while(( i < j ) && ((line[i] == '\t') || (line[i] == ' '))) i++;
-	if( i >= j )
+	if( i > j )
 		return line;
 
 	if( i )
@@ -355,14 +359,8 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 	int AmigaIndex, PcIndex, ReplIndex;
 
 	f = fopen( szFilename, "r" );
-	if( !f )
-	{
-		fellowAddLog( "cannot open filename " );
-		fellowAddLog( szFilename );
-		fellowAddLog( ": " );
-		fellowAddLog( strerror( errno ));
-		fellowAddLog( "\n" );
-
+	if( !f ) {
+    fellowAddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
 		return TRUE;
 	}
 
@@ -390,19 +388,13 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 		if( AmigaIndex < 0 )
 			ReplIndex = prsGetKeyIndex( pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT );
 
-		if(( AmigaIndex < 0 ) && ( ReplIndex < 0 ))
-		{
-			fellowAddLog( "Amiga key: " );
-			fellowAddLog( pAmigaName );
-			fellowAddLog( " unrecognized\n" );
+		if(( AmigaIndex < 0 ) && ( ReplIndex < 0 )) {
+			fellowAddLog( "Amiga key: %s unrecognized\n", pAmigaName );
 			continue;
 		}
 
-		if( PcIndex < 0 )
-		{
-			fellowAddLog( "Pc    key: " );
-			fellowAddLog( pWinName );
-			fellowAddLog( " unrecognized\n" );
+		if( PcIndex < 0 ) {
+			fellowAddLog( "Pc    key: %s unrecognized\n", pWinName );
 			continue;
 		}
 
@@ -420,3 +412,51 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 
 	return FALSE;
 }
+
+BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+{
+	FILE *f = NULL;
+	char line[256], *pAmigaName = NULL, *pWinName = NULL;
+	int AmigaIndex, PcIndex, ReplIndex;
+
+	f = fopen( szFilename, "w" );
+	if( !f )
+	{
+		fellowAddLog( "cannot open filename %s: %s\n", szFilename, strerror( errno ));
+		return TRUE;
+	}
+
+#ifdef _DEBUG
+  fellowAddLog( "rewriting mapping file %s\n", szFilename );
+#endif
+
+  for( AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++ ) {
+    line[0] = '\0';
+    for( PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ ) {
+      if( pc_to_am[PcIndex] == amiga_scancode[ AmigaIndex ] ) {
+        if( line[0] )
+          fputs( line, f );
+        sprintf( line, "%s = %s\n", amiga_keys[ AmigaIndex ], pc_keys[PcIndex] );
+      }
+    }
+    if( line[0] )
+      fputs( line, f );
+    else {
+      sprintf( line, ";%s = NONE\n", amiga_keys[ AmigaIndex ] );
+      fputs( line, f );
+    }
+  }
+  for( AmigaIndex = 0; AmigaIndex < MAX_KEY_REPLACEMENT; AmigaIndex++ ) {
+    if( AmigaIndex < FIRST_KEY2_REPLACEMENT )
+      sprintf( line, "%s = %s\n", replacement_keys[ AmigaIndex ], pc_keys[ key_repl[0][AmigaIndex] ] );
+    else
+      sprintf( line, "%s = %s\n", replacement_keys[ AmigaIndex ], pc_keys[ key_repl[1][AmigaIndex-FIRST_KEY2_REPLACEMENT] ] );
+
+    fputs( line, f );
+  }
+
+	fclose( f );
+
+	return FALSE;
+}
+
