@@ -544,38 +544,36 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
+	int maxscroll;
+	ULO temp = 0;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
 	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 	  {
 		  // high resolution
-		  dest_odd = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
+		  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddhiscroll);		
+
+		  // Find out how many pixels the bitplane is scrolled
+		  // the first pixels must then be zeroed to avoid garbage.
+		  maxscroll = (evenhiscroll > oddhiscroll) ? evenhiscroll : oddhiscroll; 
 	  } 
 	  else 
 	  {
-		  int maxscroll;
-		  ULO temp;
-
-		  // clear edges
-		  if (evenscroll > oddscroll) 
-		  {
-			  maxscroll = evenscroll;
-		  }
-		  else
-		  {
-			  maxscroll = oddscroll;
-		  }
-
-		  temp = 0;
-		  while (maxscroll > 0) {
-			  graph_line1_tmp[graph_DDF_start + temp] = 0;
-			  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-			  maxscroll -= 4;
-			  temp += 4;
-		  }
 		  dest_odd = (ULO*) (graph_line1_tmp + graph_DDF_start + oddscroll);			
+
+		  // Find out how many pixels the bitplane is scrolled
+		  // the first pixels must then be zeroed to avoid garbage.
+		  maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 	  }
+
+	while (maxscroll > 0)
+	{
+	  graph_line1_tmp[graph_DDF_start + temp] = 0;
+	  graph_line1_tmp[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+	  maxscroll -= 4;
+	  temp += 4;
+	}
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
 	if (bitplanes > 1)
@@ -583,7 +581,7 @@ static __inline void graphDecodeGeneric(int bitplanes)
 		if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
 		{
 			// high resolution
-			dest_even = (ULO*) (graph_line1_tmp + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
+			dest_even = (ULO*) (graph_line1_tmp + graph_DDF_start + evenhiscroll);
 		}
 		else
 		{
@@ -646,15 +644,8 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
-	  // clear edges
-	  if (evenscroll > oddscroll) 
-	  {
-		  maxscroll = evenscroll;
-	  }
-	  else
-	  {
-		  maxscroll = oddscroll;
-	  }
+	// clear edges
+    maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 
 	  temp = 0;
 	  while (maxscroll > 0) {
