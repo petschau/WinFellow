@@ -804,9 +804,6 @@
 				Name="Data"
 				Filter="*.inc">
 				<File
-					RelativePath="..\..\incasm\data\blit.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\data\bus.inc">
 				</File>
 				<File
