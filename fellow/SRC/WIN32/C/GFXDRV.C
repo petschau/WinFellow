@@ -74,6 +74,7 @@
 #include "joydrv.h"
 #include "sounddrv.h"
 #include "wgui.h"
+#include "ini.h"
 
 ini *gfxdrv_ini; /* GFXDRV copy of initdata */
 
