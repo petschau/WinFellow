@@ -38,6 +38,7 @@ CDATAEXTERN blit_started
 CDATAEXTERN blitterdmawaiting
 CDATAEXTERN blitter_ECS
 CDATAEXTERN blitter_operation_log
+CDATAEXTERN blit_cycle_free
 
 %endif
 
