@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.15 2004-06-06 21:35:10 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.16 2004-06-07 22:10:27 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -45,6 +45,8 @@
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
 #endif
+
+#define FLOPPY_TEST_BYTE_ALIGNMENT 1
 
 #define MFM_FILLB 0xaa
 #define MFM_FILLL 0xaaaaaaaa
@@ -903,9 +905,15 @@ BOOLE floppyDMAChannelOn(void) {
   return (dmaconr & 0x0010) && (dsklen & 0x8000);
 }
 
+#ifdef FLOPPY_TEST_BYTE_ALIGNMENT
 BOOLE floppyHasIndex(ULO sel_drv) {
-  return ((floppy[sel_drv].motor_ticks & ~1) == 0);
+  return floppy[sel_drv].motor_ticks == 0;
 }
+#else
+BOOLE floppyHasIndex(ULO sel_drv) {
+  return floppy[sel_drv].motor_ticks == 0 || floppy[sel_drv].motor_ticks == 1;
+}
+#endif
 
 ULO floppyGetLinearTrack(ULO sel_drv) {
   return floppy[sel_drv].track*2 + floppy[sel_drv].side;
@@ -1002,11 +1010,6 @@ void floppyDMAWrite(void) {
   }
 }
 
-UWO floppyGetWordUnderHead(ULO sel_drv, ULO track) {
-  return ((floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks] << 8) |
-          floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks + 1]);
-}
-
 /* Returns TRUE is sync is seen for the first time */
 BOOLE floppyCheckSync(UWO word_under_head) {
   BOOLE word_is_sync = (word_under_head == dsksync);
@@ -1033,6 +1036,94 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
   }
 }
 
+
+#ifdef FLOPPY_TEST_BYTE_ALIGNMENT
+
+UWO floppyGetByteUnderHead(ULO sel_drv, ULO track)
+{
+	return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
+}
+
+void floppyNextByte(ULO sel_drv, ULO track) {
+    ULO modulo;
+#ifdef FELLOW_SUPPORT_CAPS
+    ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
+    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
+        modulo = floppy[sel_drv].trackinfo[track].mfm_length;
+    else
+#endif
+    modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
+								     floppy[sel_drv].trackinfo[track].mfm_length;
+    floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 1) % modulo;
+	if (floppyHasIndex(sel_drv)) ciaRaiseIndexIRQ();
+
+#ifdef FELLOW_SUPPORT_CAPS
+    if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
+        if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
+        && floppy[sel_drv].flakey)
+            {
+                ULO track = floppy[sel_drv].track;    
+                capsLoadNextRevolution(
+                    sel_drv, 
+                    floppy[sel_drv].track, 
+                    floppy[sel_drv].trackinfo[track].mfm_data, 
+                    &floppy[sel_drv].trackinfo[track].mfm_length);
+            }
+#endif
+}
+/* Note: Inside FLOPPY_TEST_BYTE_ALIGNMENT */
+UWO prev_byte_under_head = 0;
+void floppyEndOfLineC(void) {
+    LON sel_drv = floppySelectedGet();
+    if (floppyDMAWriteStarted()) 
+    {
+        floppyDMAWrite(); 
+        floppy_has_sync = FALSE; 
+        return;
+    }
+    if (sel_drv == -1) 
+    {
+        floppy_has_sync = FALSE; 
+        return;
+    }
+    if (floppyIsSpinning(sel_drv)) 
+    {
+        ULO i;
+        ULO track = floppyGetLinearTrack(sel_drv);
+        ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+        for (i = 0; i < words; i++) 
+        {
+			UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
+			UWO tmpb2;
+			UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
+            BOOLE found_sync = floppyCheckSync(word_under_head);
+			floppyNextByte(sel_drv, track);
+			if (!found_sync) // Odd aligned sync, temporary solution
+			{
+				tmpb2 = floppyGetByteUnderHead(sel_drv, track);
+				floppyNextByte(sel_drv, track);
+				word_under_head = (tmpb1 << 8) | tmpb2;
+                found_sync = floppyCheckSync(word_under_head);
+			}
+			prev_byte_under_head = word_under_head & 0xff;
+            if (floppyDMAReadStarted()) 
+                floppyReadWord(word_under_head, found_sync);
+        }
+    }
+    else floppy_has_sync = FALSE;
+}
+
+
+
+/* End of FLOPPY_TEST_BYTE_ALIGNMENT */
+
+#else
+
+UWO floppyGetWordUnderHead(ULO sel_drv, ULO track) {
+	return ((floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks] << 8) |
+          floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks + 1]);
+}
+
 void floppyNextTick(ULO sel_drv, ULO track) {
     ULO modulo;
 #ifdef FELLOW_SUPPORT_CAPS
@@ -1042,7 +1133,7 @@ void floppyNextTick(ULO sel_drv, ULO track) {
     else
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
-								     floppy[sel_drv].trackinfo[track].mfm_length;
+     floppy[sel_drv].trackinfo[track].mfm_length;
     floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 #ifdef FELLOW_SUPPORT_CAPS
     if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
@@ -1058,8 +1149,6 @@ void floppyNextTick(ULO sel_drv, ULO track) {
             }
 #endif
 }
-
-UWO prev_word_under_head = 0;
 
 void floppyEndOfLineC(void) {
     LON sel_drv = floppySelectedGet();
@@ -1082,19 +1171,9 @@ void floppyEndOfLineC(void) {
         for (i = 0; i < words; i++) 
         {
             UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
-            BOOLE found_sync = floppyCheckSync(((prev_word_under_head & 0xff) << 8) |
-												((word_under_head & 0xff00)>>8));
-			if (floppyHasIndex(sel_drv)) 
+            BOOLE found_sync = floppyCheckSync(word_under_head);
+            if (floppyHasIndex(sel_drv)) 
                 ciaRaiseIndexIRQ();
-			if (found_sync) // Odd aligned sync, step one byte back in the stream to align
-			{
-				i = i;
-				word_under_head = ((prev_word_under_head & 0xff) << 8) | ((word_under_head & 0xff00)>>8);
-				floppy[sel_drv].motor_ticks -= 1;
-			}
-			else
-			  found_sync = floppyCheckSync(word_under_head);
-			prev_word_under_head = word_under_head;
             if (floppyDMAReadStarted()) 
                 floppyReadWord(word_under_head, found_sync);
             floppyNextTick(sel_drv, track);
@@ -1102,6 +1181,9 @@ void floppyEndOfLineC(void) {
     }
     else floppy_has_sync = FALSE;
 }
+
+#endif
+
 
 /*===========================================================================*/
 /* Top level disk-emulation initialization                                   */
