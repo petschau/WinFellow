@@ -56,7 +56,7 @@ FDATASECTIONSTART
 ; Enable this for detailed profiling, log written to drawprofile.txt
 ; It can be imported into excel for better viewing
 ;
-;%define DRAW_TSC_PROFILE
+%define DRAW_TSC_PROFILE
 ;
 ;-----------------------------------------------------------------------------
 
@@ -150,6 +150,26 @@ CDATAEXTERN dln2x16mmx_tmp
 CDATAEXTERN dln2x16mmx
 CDATAEXTERN dln2x16mmx_times
 CDATAEXTERN dln2x16mmx_pixels
+
+CDATAEXTERN dln1x32_tmp
+CDATAEXTERN dln1x32
+CDATAEXTERN dln1x32_times
+CDATAEXTERN dln1x32_pixels
+
+CDATAEXTERN dln1x32mmx_tmp
+CDATAEXTERN dln1x32mmx
+CDATAEXTERN dln1x32mmx_times
+CDATAEXTERN dln1x32mmx_pixels
+
+CDATAEXTERN dln2x32_tmp
+CDATAEXTERN dln2x32
+CDATAEXTERN dln2x32_times
+CDATAEXTERN dln2x32_pixels
+
+CDATAEXTERN dln2x32mmx_tmp
+CDATAEXTERN dln2x32mmx
+CDATAEXTERN dln2x32mmx_times
+CDATAEXTERN dln2x32mmx_pixels
 
 CDATAEXTERN dld1x8_tmp
 CDATAEXTERN dld1x8
@@ -2465,6 +2485,12 @@ _drawLineNormal1x32_:
 		mov	esi, dword [4 + esp]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x32_pixels], ebp
+		TSC_BEFORE dln1x32_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -2498,6 +2524,108 @@ _drawLineNormal1x32_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x32_tmp, dln1x32, dln1x32_times
+%endif
+
+		ret
+
+
+;==============================================================================
+; void drawLineNormal1x32mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line using normal pixels using mmx instructions
+;
+; Horisontal Scale:	1x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax - Scratch
+; ebx - Scratch
+; ecx - Final PC pixel bitpattern
+; edx - Framebuffer pointer
+; ebp - Pixels left to draw
+; edi - graph_raster_x + linedescription->line1
+; esi - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineNormal1x32mmx_
+_drawLineNormal1x32mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		mov	edi, dword [esi + graph_line_DIW_first_draw]
+		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln1x32mmx_pixels], ebp
+		TSC_BEFORE dln1x32mmx_tmp
+%endif
+
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [edi + esi + graph_line_line1]
+		add	esi, graph_line_colors
+		cmp	ebp, 4
+		jl	.last4
+		test	edx, 4
+		jz	.loop
+		mov	bl, byte [edi]
+		mov	ecx, dword [esi + ebx]
+		mov	dword [edx], ecx
+		inc	edi
+		dec	ebp
+      		add	edx, 4
+		cmp	ebp, 4
+		jl	.last4
+.loop:		mov	al, byte [edi]
+		sub	ebp, 4
+		mov	bl, byte [edi + 1]
+		movd	mm0, dword [esi + eax]
+		mov	al, byte [edi + 2]
+		movd	mm1, dword [esi + ebx]
+		mov	bl, byte [edi + 3]
+		psllq	mm1, 32
+		movd	mm2, dword [esi + eax]
+		por	mm0, mm1
+		movd	mm3, dword [esi + ebx]
+		psllq	mm3, 32
+		movq	[edx], mm0
+		por	mm2, mm3
+		add	edi, 4
+		movq	[edx + 8], mm2
+		add	edx, 16
+		cmp	ebp, 4
+		jae	.loop
+.last4:		cmp	ebp, 0
+		jle	.exit
+.lastloop:	mov	bl, byte [edi]
+		mov	ecx, dword [esi + ebx]
+		mov	dword [edx], ecx
+		inc	edi
+		add	edx, 4
+		dec	ebp
+		jnz	.lastloop
+.exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln1x32mmx_tmp, dln1x32mmx, dln1x32mmx_times
+%endif
+
 		ret
 
 
@@ -2539,6 +2667,12 @@ _drawLineNormal2x32_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	edi, dword [esi + graph_line_DIW_first_draw]
 		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x32_pixels], ebp
+		TSC_BEFORE dln2x32_tmp
+%endif
+
 		mov	ebx, 0
 		mov	eax, 0
 		lea	edi, [edi + esi + graph_line_line1]
@@ -2577,6 +2711,111 @@ _drawLineNormal2x32_:
 		dec	ebp
 		jnz	.lastloop
 .exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x32_tmp, dln2x32, dln2x32_times
+%endif
+
+		ret
+
+
+;==============================================================================
+; void drawLineNormal2x32mmx(graph_line *linedescription);
+;
+; Description:
+; ------------
+; Draw one line using normal pixels using mmx instructions
+;
+; Horisontal Scale:	2x
+; Pixel format:		32 bit RGB
+;
+; Input:
+; ------
+; Line description - [4 + esp]
+;
+; Register usage:
+; ---------------
+; eax - Scratch
+; ebx - Scratch
+; ecx - Final PC pixel bitpattern
+; edx - Framebuffer pointer
+; ebp - Pixels left to draw
+; edi - graph_raster_x + linedescription->line1
+; esi - linedescription->colors
+;
+; Returns:
+; --------
+; Nothing
+;==============================================================================
+
+
+		FALIGN32
+
+global _drawLineNormal2x32mmx_
+_drawLineNormal2x32mmx_:
+		mov	esi, dword [4 + esp]
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	edi, dword [esi + graph_line_DIW_first_draw]
+		mov	ebp, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dln2x32mmx_pixels], ebp
+		TSC_BEFORE dln2x32mmx_tmp
+%endif
+
+		mov	ebx, 0
+		mov	eax, 0
+		lea	edi, [edi + esi + graph_line_line1]
+		add	esi, graph_line_colors
+		cmp	ebp, 4
+		jl	.last4
+.loop:		mov	al, byte [edi]
+		mov	bl, byte [edi + 1]
+		movd	mm0, dword [esi + eax]
+		mov	al, byte [edi + 2]
+		movq	mm4, mm0
+		movd	mm1, dword [esi + ebx]
+		psllq	mm4, 32
+		movq	mm5, mm1
+		por	mm0, mm4
+		psllq	mm5, 32
+		movq	[edx], mm0
+		por	mm1, mm5
+		mov	bl, byte [edi + 3]
+		movq 	[edx + 8], mm1
+		movd	mm2, dword [esi + eax]
+		add	edi, 4
+		movd	mm3, dword [esi + ebx]
+		movq	mm4, mm2
+		movq	mm5, mm3
+		psllq	mm4, 32
+		psllq	mm5, 32
+		por	mm2, mm4
+		por	mm3, mm5
+		movq	[edx + 16], mm2
+		sub	ebp, 4
+		movq	[edx + 24], mm3
+		add	edx, 32
+		cmp	ebp, 4
+		jae	.loop
+.last4:		cmp	ebp, 0
+		jle	.exit
+.lastloop:	mov	bl, byte [edi]
+		inc	edi
+		movd	mm0, dword [esi + ebx]
+		movq	mm1, mm0
+		psllq	mm1, 32
+		por	mm0, mm1
+		movq	[edx], mm0
+		add	edx, 8
+		dec	ebp
+		jnz	.lastloop
+.exit:		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dln2x32mmx_tmp, dln2x32mmx, dln2x32mmx_times
+%endif
+
 		ret
 
 
@@ -3096,6 +3335,125 @@ global _drawLineDual1x16_
 _drawLineDual1x16_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	esi, dword [4 + esp]
+		lea	edi, [draw_dual_translate]
+		mov	ebx, 0
+		sub	esp, 4
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	ecx, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x16_pixels], ecx
+		TSC_BEFORE dld1x16_tmp
+%endif
+
+		mov	eax, 0
+		mov	dword [esp], ecx
+		test	dword [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+
+		and	ebx, 0ffh
+		and	ecx, 0ff00h
+
+		or	ebx, ecx
+		cmp	dword [esp], 2
+
+		jl	near .last2
+
+		test	edx, 2									; Align on 4 bytes
+		jz	.loop
+
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+		dec	dword [esp]
+
+		and	eax, 0ffh
+		inc	ebp
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		mov	word [edx], ax
+
+		add	edx, 2
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+		and	ebx, 0ffh
+
+		and	ecx, 0ff00h
+		or	ebx, ecx
+
+		cmp	dword [esp], 2
+		jl	.last2
+
+.loop:
+
+		sub	dword [esp], 2
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1]
+
+		and	ecx, 0ff00h
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+
+		and	eax, 0ffh
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+
+		add	ebp, 2
+		and	ebx, 0ffh
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		or	ebx, ecx
+
+		mov	dword [esp - 4], eax
+		add	edx, 4
+
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 2
+
+		and	eax, 0ffh
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+
+		and	ecx, 0ff00h
+		and	ebx, 0ffh
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 2
+		or	ebx, ecx
+
+		mov	ax, word [esp - 4]
+		cmp	dword [esp], 2
+
+		mov	dword [edx - 4], eax							; Write color of pixel 1 & 2 
+		jae	.loop
+
+.last2:		cmp	dword [esp], 0
+		jle	.exit
+
+		mov	eax, dword [edi + ebx]
+		and	eax, 0ffh
+
+		mov	ecx, dword [esi + eax]	  
+		mov	dword [edx], ecx 
+		add	edx, 4
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x16_tmp, dld1x16, dld1x16_times
+%endif
+
+		ret
+
+
+
+; This routine does 30 cycles per pixel, the above does 20 cycles per pixel....
+
+		FALIGN32
+
+global _drawLineDual1x16Old_
+_drawLineDual1x16Old_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
 		mov	eax, dword [esi + graph_line_DIW_pixel_count]
 
@@ -3194,6 +3552,175 @@ _drawLineDual1x16_:
 
 global _drawLineDual1x16mmx_
 _drawLineDual1x16mmx_:
+		mov	edx, dword [draw_buffer_current_ptr]
+		mov	esi, dword [4 + esp]
+		lea	edi, [draw_dual_translate]
+		mov	ebx, 0
+		sub	esp, 4
+		mov	ebp, dword [esi + graph_line_DIW_first_draw]
+		mov	ecx, dword [esi + graph_line_DIW_pixel_count]
+
+%ifdef DRAW_TSC_PROFILE
+		add	dword [dld1x16mmx_pixels], ecx
+		TSC_BEFORE dld1x16mmx_tmp
+%endif
+
+		mov	eax, 0
+		mov	dword [esp], ecx
+		test	dword [esi + graph_line_bplcon2], 040h
+		jnz	.l1
+		add	edi, 010000h
+.l1:		add	esi, graph_line_colors
+
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+
+		and	ebx, 0ffh
+		and	ecx, 0ff00h
+
+		or	ebx, ecx
+		cmp	dword [esp], 4
+
+		jl	near .last4
+
+.align8:	test	edx, 6									; Align on 8 bytes
+		jz	.loop
+
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+		dec	dword [esp]
+
+		and	eax, 0ffh
+		inc	ebp
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		mov	word [edx], ax
+
+		add	edx, 2
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+		and	ebx, 0ffh
+
+		and	ecx, 0ff00h
+		or	ebx, ecx
+
+		test	edx, 6
+		jnz	.align8
+
+		cmp	dword [esp], 4
+		jl	near .last4
+
+.loop:
+
+		sub	dword [esp], 4
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1]
+
+		and	ecx, 0ff00h
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+
+		and	eax, 0ffh
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2 + 1]
+
+		add	ebp, 4
+		and	ebx, 0ffh
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		or	ebx, ecx
+
+		mov	dword [esp - 4], eax
+		add	edx, 8
+
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 3]
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 2
+
+		and	eax, 0ffh
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2 - 2]
+
+		and	ecx, 0ff00h
+		and	ebx, 0ffh
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 2
+		or	ebx, ecx
+
+		mov	ax, word [esp - 4]
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 2]
+
+		movd	mm0, eax								; Store color of pixel 1 & 2 
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+
+		and	eax, 0ffh
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2 - 1]
+
+		and	ecx, 0ff00h
+		and	ebx, 0ffh
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		or	ebx, ecx
+
+		mov	dword [esp - 4], eax
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+
+		mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 2
+		and	ecx, 0ff00h
+
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+		and	eax, 0ffh
+
+		and	ebx, 0ffh
+		mov	eax, dword [esi + eax]							; Get host color of pixel 2
+
+		or	ebx, ecx
+		mov	ax, word [esp - 4]
+
+		movd	mm1, eax								; Store color of pixel 1 & 2 
+		psllq	mm1, 32
+		
+		por	mm0, mm1
+		cmp	dword [esp], 4
+
+		movq	[edx - 8], mm0
+		jae	near .loop
+
+.last4:		cmp	dword [esp], 0
+		jle	.exit
+
+.last4_2:	mov	eax, dword [edi + ebx]							; Get Amiga color of pixel 1
+		dec	dword [esp]
+
+		and	eax, 0ffh
+		inc	ebp
+
+		mov	eax, dword [esi + eax]							; Get host color of pixel 1
+		mov	word [edx], ax
+
+		add	edx, 2
+		mov	ebx, dword [ebp + esi - graph_line_colors + graph_line_line2]
+
+		mov	ecx, dword [ebp + esi - graph_line_colors + graph_line_line1 - 1]
+		and	ebx, 0ffh
+
+		and	ecx, 0ff00h
+		or	ebx, ecx
+
+		cmp	dword [esp], 0
+		jne	.last4_2
+
+.exit:		add	esp, 4
+		mov	dword [draw_buffer_current_ptr], edx
+
+%ifdef DRAW_TSC_PROFILE
+		TSC_AFTER dld1x16mmx_tmp, dld1x16mmx, dld1x16mmx_times
+%endif
+
+		ret
+
+
+
+
+		FALIGN32
+
+global _drawLineDual1x16mmxOld_
+_drawLineDual1x16mmxOld_:
 		mov	edx, dword [draw_buffer_current_ptr]
 		mov	esi, dword [4 + esp]
 		mov	ebp, dword [esi + graph_line_DIW_first_draw]
