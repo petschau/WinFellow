@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.8 2004-06-03 14:19:52 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.9 2004-06-04 19:12:58 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -219,7 +219,7 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
     return TRUE;
 }
 
-BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *tracktiming, BOOLE *flakey)
+BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *tracktiming, BOOLE *flakey)
 {
     ULO i, len, type;
     struct CapsTrackInfo capsTrackInfo;
@@ -230,6 +230,16 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
     type = capsTrackInfo.type & CTIT_MASK_TYPE;
     len = capsTrackInfo.tracksize[0];
     *tracklength = len;
+    *maxtracklength = 0;
+    /* trackcnt contains number of valid entries, we need to determine the max tracklen value for 
+       correct sizing of the MFM buffer in case these lengths differ between revolutions; each 
+       track should be loaded once with capsLoadTrack() to reserve the correct space in the MFM 
+       buffer, later capsLoadRevolution() can be called successively to update the existing MFM buffer
+    */
+    for(i = 0; i < capsTrackInfo.trackcnt; i++)
+        if(capsTrackInfo.tracksize[i] > *maxtracklength)
+            *maxtracklength = capsTrackInfo.tracksize[i];
+
     memcpy(mfm_data, capsTrackInfo.trackdata[0], len);
 
 #if TRACECAPS
@@ -266,12 +276,11 @@ BOOLE capsLoadRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
     CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
     revolution = revolutioncount % capsTrackInfo.trackcnt;
     len = capsTrackInfo.tracksize[revolution];
-    if(*tracklength != len)
+    /*if(*tracklength != len)
     {
         fellowAddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
-        /* capsLoadRevolution() is only to be called after a track has been capsLoadTrack()ed once initially */
         assert(0);
-    }
+    }*/
     *tracklength = len;
     memcpy(mfm_data, capsTrackInfo.trackdata[revolution], len);
 
