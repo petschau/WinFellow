@@ -1,7 +1,9 @@
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* uae2fell.h -- UAE to Fellow bridge header file                          */
+/* @(#) $Id: UAE2FELL.H,v 1.5.2.3 2004-05-27 09:39:22 carfesh Exp $        */
+/*                                                                         */
+/* UAE to Fellow bridge header file                                        */
 /*                                                                         */
 /* In the case where similar functions exist, macros are defined which     */
 /* expand to the Fellow equivalent.                                        */
