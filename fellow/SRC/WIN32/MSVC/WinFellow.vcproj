@@ -281,41 +281,6 @@
 			Name="Assembly Files"
 			Filter="*.s">
 			<File
-				RelativePath="..\..\asm\blita.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\busa.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -743,9 +708,6 @@
 				Name="Macros"
 				Filter="*.mac">
 				<File
-					RelativePath="..\..\incasm\mac\blit.mac">
-				</File>
-				<File
 					RelativePath="..\..\incasm\mac\bus.mac">
 				</File>
 				<File
@@ -756,9 +718,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\mac\draw.mac">
-				</File>
-				<File
-					RelativePath="..\..\incasm\mac\drawmode.mac">
 				</File>
 				<File
 					RelativePath="..\..\incasm\mac\floppy.mac">
@@ -791,9 +750,6 @@
 			<Filter
 				Name="Functions"
 				Filter="*.inc">
-				<File
-					RelativePath="..\..\incasm\func\blit.inc">
-				</File>
 				<File
 					RelativePath="..\..\incasm\func\bus.inc">
 				</File>
