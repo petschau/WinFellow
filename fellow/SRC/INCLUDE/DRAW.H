@@ -168,6 +168,9 @@ extern ULO draw_frame_count;
 extern ULO draw_view_scroll;
 extern ULO draw_color_table[4096];
 extern ULO draw_left;
+extern ULO draw_right;
+extern ULO draw_top;
+extern ULO draw_bottom;
 
 
 /*===========================================================================*/
