@@ -86,38 +86,6 @@
 ; Out: Nothing
 ;==============================================================================
 
-%macro SPRITESLOG_CWRAP 0
-		CCALLCONV_IN_NONE
-		call	spritesLog
-		CCALLCONV_OUT_NONE	0
-%endmacro
-
-
-%macro WSPRXPOS_CWRAP 0
-		CCALLCONV_IN_EDXECX
-		call	wsprxposC
-		CCALLCONV_OUT_NONE	2
-%endmacro
-
-
-%macro WSPRXCTL_CWRAP 0
-		CCALLCONV_IN_EDXECX
-		call	wsprxctlC
-		CCALLCONV_OUT_NONE	2
-%endmacro
-
-%macro WSPRXDATA_CWRAP 0
-		CCALLCONV_IN_EDXECX
-		call	wsprxdataC
-		CCALLCONV_OUT_NONE	2
-%endmacro
-
-%macro WSPRXDATB_CWRAP 0
-		CCALLCONV_IN_EDXECX
-		call	wsprxdatbC
-		CCALLCONV_OUT_NONE	2
-%endmacro
-
 ;==============================================================================
 ; Sprite end of frame handler
 ;

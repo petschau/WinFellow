@@ -18,6 +18,9 @@
 #include "draw.h"
 
 
+BOOLE sprite_improvement = TRUE;
+ULO sprite_to_block = 0;
+
 /*===========================================================================*/
 /* Sprite registers and derived data                                         */
 /*===========================================================================*/
@@ -69,6 +72,15 @@ ULO sprite4_0[4] = {(ULO) sprite_deco01, (ULO) sprite_deco11,
 ULO sprite4_1[4] = {(ULO) sprite_deco02, (ULO) sprite_deco12,
                     (ULO) sprite_deco22, (ULO) sprite_deco32};
 
+typedef union sprite_deco_
+{
+  UBY i8[8];
+  ULO i32[2];
+} sprite_deco;
+
+sprite_deco sprite_deco4[4][2][256];
+sprite_deco sprite_deco16[4][256];
+
 ULO sprite_write_buffer[128][2];
 ULO sprite_write_next;
 ULO sprite_write_real;
@@ -96,6 +108,22 @@ void spriteTranslationTableInit(void) {
         else l = (j == 0) ? i : j;
         sprite_translate[k][i][j] = (UBY) l;
       }
+}
+
+void spriteP2CTablesInitialize_ALSO(void)
+{
+  ULO m, n, q, p;
+
+  for (m = 0; m < 4; m++)
+    for (n = 0; n < 2; n++)
+      for (q = 0; q < 256; q++) 
+        for (p = 0; p < 8; p++)
+          sprite_deco4[m][n][q].i8[p] = ((q & (0x80>>p)) == 0) ? 0 : (((m + 4)<<4) | (1<<(n + 2)));
+
+  for (n = 0; n < 4; n++)
+    for (q = 0; q < 256; q++) 
+      for (p = 0; p < 8; p++)
+        sprite_deco16[n][q].i8[p] = ((q & (0x80>>p)) == 0) ? 0 :  (64 | (1<<(n + 2)));
 }
 
 void spriteP2CTablesInitialize(void)
@@ -518,32 +546,244 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
 /* Sprite control registers                                                  */
 /*===========================================================================*/
 
+
+
+/*===========================================================================*/
+/* Decide delay of sprite ptr update                                         */
+/* ebx - cycle raster xpos must be past to trigger delay                     */
+/*===========================================================================*/
+
+BOOLE decidedelay_C(ULO data, ULO address, ULO cycle_raster_xpos)
+{
+  if (sprite_write_real != 1)
+  {
+    if (cycle_raster_xpos <= graph_raster_x)
+    {
+      *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next)) = address;
+      *((ULO *) ((UBY *) sprite_write_buffer + sprite_write_next + 4)) = data;
+      sprite_write_next += 8;
+      return TRUE;      
+    }
+  }
+  return FALSE;
+}
+
+/* SPR0PT - $dff120 and $dff122 */
+
+void wspr0pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
+  }
+}
+
+void wspr0ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
+  }
+}
+
+/* SPR1PT - $dff124 and $dff126 */
+
+void wspr1pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
+  }
+}
+
+void wspr1ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
+  }
+}
+
+/* SPR2PT - $dff128 and $dff12a */
+
+void wspr2pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
+  }
+}
+
+void wspr2ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
+  }
+}
+
+/* SPR3PT - $dff128 and $dff12a */
+
+void wspr3pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
+  }
+}
+
+void wspr3ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
+  }
+}
+
+/* SPR3PT - $dff128 and $dff12a */
+
+void wspr4pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
+  }
+}
+
+void wspr4ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
+  }
+}
+
+/* SPR5PT - $dff120 and $dff122 */
+
+void wspr5pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
+  }
+}
+
+void wspr5ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
+  }
+}
+
+/* SPR1PT - $dff124 and $dff126 */
+
+void wspr6pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
+  }
+}
+
+void wspr6ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
+  }
+}
+
+/* SPR2PT - $dff128 and $dff12a */
+
+void wspr7pth_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // store 21 bit (2 MB)
+    *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
+  }
+}
+
+void wspr7ptl_C(ULO data, ULO address)
+{
+  if (decidedelay_C(data, address, sprite_delay) == FALSE)
+  {
+    // no odd addresses
+    *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
+  }
+}
+
 /* SPRXPOS - $dff140 to $dff178 */
 
-void wsprxposC(ULO data, ULO address) {
+void wsprxpos_C(ULO data, ULO address) {
   ULO sprnr;
-  sprnr = (address>>3) & 7;
-  sprx[sprnr] = (sprx[sprnr] & 1) | ((data & 0xff)<<1);
+
+  sprnr = (address >> 3) & 7;
+
+  if (sprite_improvement == TRUE)
+  {
+    // retrieve some of the horizontal and vertical position bits
+    sprx[sprnr] = (sprx[sprnr] & 0x001) | ((data & 0xff) << 1);
+    spry[sprnr] = (spry[sprnr] & 0x100) | ((data & 0xff00) >> 8);
+  }
+  else
+  {
+    sprx[sprnr] = (sprx[sprnr] & 1) | ((data & 0xff) << 1);
+  }
 }
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void wsprxctlC(ULO data, ULO address) {
+void wsprxctl_C(ULO data, ULO address) {
   ULO sprnr;
-  sprnr = (address>>3) & 7;
-  sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 1);
-  if (sprnr & 1)
-    spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
+
+  sprnr = (address >> 3) & 7;
+
+  if (sprite_improvement == TRUE)
+  {
+//    if (sprnr != sprite_to_block) {
+    // retrieve the rest of the horizontal and vertical position bits
+    sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 0x1);
+    spry[sprnr] = (spry[sprnr] & 0x0ff) | ((data & 0x4) << 6);
+
+    // when the sprite number is odd, is this right? 
+    //if (sprnr & 1)
+    //  spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
+    spratt[sprnr] = !!(data & 0x80);
+    sprly[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
+//    }
+  }
+  else
+  {
+    sprx[sprnr] = (sprx[sprnr] & 0x1fe) | (data & 1);
+    if (sprnr & 1)
+      spratt[sprnr & 6] = spratt[sprnr] = !!(data & 0x80);
+  }
 }
 
 
 /* SPRXDATA $dff144 to $dff17c */
 /* The statestuff comes out pretty wrong..... */
 
-void wsprxdataC(ULO data, ULO address) {
+void wsprxdata_C(ULO data, ULO address) {
   ULO sprnr;
 
-  sprnr = (address>>3) & 7;
+  sprnr = (address >> 3) & 7;
   *((UWO *) &sprdat[sprnr]) =  (UWO) data;
   if (graph_raster_y >= 0x1a) {
     if (sprite_state[sprnr] <= 3)
@@ -555,10 +795,10 @@ void wsprxdataC(ULO data, ULO address) {
     }
 }
 
-void wsprxdatbC(ULO data, ULO address) {
+void wsprxdatb_C(ULO data, ULO address) {
   ULO sprnr;
 
-  sprnr = (address>>3) & 7;
+  sprnr = (address >> 3) & 7;
   *(((UWO *) &sprdat[sprnr]) + 1) = (UWO) data;
   if (graph_raster_y >= 0x1a) {
     if (sprite_state[sprnr] <= 3)
@@ -601,32 +841,6 @@ void spritesLog(void) {
   }
 }
 
-void spritesDecodeC(void) {
-  ULO spriteno;
-  UWO data1, data2;
-  sprites_online = FALSE;
-  spriteno = 0;
-  while (spriteno < 8 && spriteno*4 < sprite_ddf_kill) {
-    sprite_online[spriteno] = FALSE;
-    sprite_16col[spriteno] = FALSE;
-    if (sprite_state[spriteno] == 3) {  /* State 3, sprite disabled */
-      spriteno++;
-      continue; /* Next sprite */
-    }
-    if (sprite_state[spriteno] == 1) { /* State 1, waiting for first line in sprite */
-      if (spry[spriteno] != graph_raster_y) {
-	spriteno++;
-	continue;  /* Not first line of sprite, check next sprite */
-      }
-      sprite_state[spriteno] = 2; /* Now read control words */      
-    }
-    /* Here we are in state 2, 0, 4 or 5, read two data words */
-    data1 = (UWO) fetw(sprpt[spriteno]);
-    data2 = (UWO) fetw(sprpt[spriteno] + 2);
-    sprpt[spriteno] = ((sprpt[spriteno] + 4) & 0x1fffff);
-  }
-}
-
 /*===========================================================================*/
 /* Map IO registers into memory space                                        */
 /*===========================================================================*/
@@ -634,27 +848,27 @@ void spritesDecodeC(void) {
 void spriteIOHandlersInstall(void) {
   ULO i;
 
-  memorySetIOWriteStub(0x120, wspr0pth);
-  memorySetIOWriteStub(0x122, wspr0ptl);
-  memorySetIOWriteStub(0x124, wspr1pth);
-  memorySetIOWriteStub(0x126, wspr1ptl);
-  memorySetIOWriteStub(0x128, wspr2pth);
-  memorySetIOWriteStub(0x12a, wspr2ptl);
-  memorySetIOWriteStub(0x12c, wspr3pth);
-  memorySetIOWriteStub(0x12e, wspr3ptl);
-  memorySetIOWriteStub(0x130, wspr4pth);
-  memorySetIOWriteStub(0x132, wspr4ptl);
-  memorySetIOWriteStub(0x134, wspr5pth);
-  memorySetIOWriteStub(0x136, wspr5ptl);
-  memorySetIOWriteStub(0x138, wspr6pth);
-  memorySetIOWriteStub(0x13a, wspr6ptl);
-  memorySetIOWriteStub(0x13c, wspr7pth);
-  memorySetIOWriteStub(0x13e, wspr7ptl);
+  memorySetIOWriteStub(0x120, wspr0pth_C);
+  memorySetIOWriteStub(0x122, wspr0ptl_C);
+  memorySetIOWriteStub(0x124, wspr1pth_C);
+  memorySetIOWriteStub(0x126, wspr1ptl_C);
+  memorySetIOWriteStub(0x128, wspr2pth_C);
+  memorySetIOWriteStub(0x12a, wspr2ptl_C);
+  memorySetIOWriteStub(0x12c, wspr3pth_C);
+  memorySetIOWriteStub(0x12e, wspr3ptl_C);
+  memorySetIOWriteStub(0x130, wspr4pth_C);
+  memorySetIOWriteStub(0x132, wspr4ptl_C);
+  memorySetIOWriteStub(0x134, wspr5pth_C);
+  memorySetIOWriteStub(0x136, wspr5ptl_C);
+  memorySetIOWriteStub(0x138, wspr6pth_C);
+  memorySetIOWriteStub(0x13a, wspr6ptl_C);
+  memorySetIOWriteStub(0x13c, wspr7pth_C);
+  memorySetIOWriteStub(0x13e, wspr7ptl_C);
   for (i = 0; i < 8; i++) {
-    memorySetIOWriteStub(0x140 + i*8, wsprxpos);
-    memorySetIOWriteStub(0x142 + i*8, wsprxctl);
-    memorySetIOWriteStub(0x144 + i*8, wsprxdata);
-    memorySetIOWriteStub(0x146 + i*8, wsprxdatb);
+    memorySetIOWriteStub(0x140 + i*8, wsprxpos_C);
+    memorySetIOWriteStub(0x142 + i*8, wsprxctl_C);
+    memorySetIOWriteStub(0x144 + i*8, wsprxdata_C);
+    memorySetIOWriteStub(0x146 + i*8, wsprxdatb_C);
   }
 }
 
@@ -761,6 +975,7 @@ void spriteEmulationStop(void) {
 
 void spriteStartup(void) {
   spriteP2CTablesInitialize();
+  spriteP2CTablesInitialize_ALSO();
   spriteTranslationTableInit();
   spriteIORegistersClear();
   sprite_ddf_kill = 32;                     /* Not modified during emulation */
@@ -773,4 +988,244 @@ void spriteStartup(void) {
 /*===========================================================================*/
 
 void spriteShutdown(void) {
+}
+
+void spriteDecode4Sprite_C(UBY spriteno)
+{
+  ULO sprite_class = spriteno >> 1;
+  ULO* chunky_dest = (ULO *) (&sprite[spriteno][0]);
+  UBY* word[2] = {
+    (UBY *) &sprdat[spriteno][0], 
+    (UBY *) &sprdat[spriteno][1]
+  };
+  ULO planardata;
+
+  planardata = *word[0]++;
+  chunky_dest[0] = sprite_deco4[sprite_class][0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco4[sprite_class][0][planardata].i32[1];
+
+  planardata = *word[0];
+  chunky_dest[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
+  chunky_dest[3] = sprite_deco4[sprite_class][0][planardata].i32[1];
+
+  planardata = *word[1]++;
+  chunky_dest[0] |= sprite_deco4[sprite_class][1][planardata].i32[0];
+  chunky_dest[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+
+  planardata = *word[1];
+  chunky_dest[2] |= sprite_deco4[sprite_class][1][planardata].i32[0];
+  chunky_dest[3] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+}
+
+void spriteDecode16Sprite_C(ULO spriteno)
+{
+  ULO *chunky_dest = (ULO *) (&sprite[spriteno][0]);
+  UBY *word[4] = {(UBY*) &sprdat[spriteno & 0xfe][0], (UBY*) &sprdat[spriteno & 0xfe][1],
+                  (UBY*) &sprdat[spriteno][0], (UBY*)&sprdat[spriteno][1]};
+  ULO planardata;
+  UBY bpl;
+
+  if (spriteno == 7)
+  {
+    spriteno = spriteno;
+  }
+
+  planardata = *word[0]++;
+  chunky_dest[0] = sprite_deco16[0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco16[0][planardata].i32[1];
+
+  planardata = *word[0];
+  chunky_dest[2] = sprite_deco16[0][planardata].i32[0];
+  chunky_dest[3] = sprite_deco16[0][planardata].i32[1];
+
+  for (bpl = 1; bpl < 4; bpl++)
+  {  
+    planardata = *word[bpl]++;
+    chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
+    chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
+
+    planardata = *word[bpl];
+    chunky_dest[2] |= sprite_deco16[bpl][planardata].i32[0];
+    chunky_dest[3] |= sprite_deco16[bpl][planardata].i32[1];
+  }
+}
+
+void spritesDecode_C(void) {
+  // when sprite is in state 4, edx should hold the two control words
+  // used when debugging emulator?
+  // edx = edh:edl:dh:dl 
+  // = AT,0,0,0,0,E8,L8,H0:L7,L6,L5,L4,L3,L2,L1,L0:
+  //   H8,H7,H6,H5,H4,H3,H2,H1:E7,E6,E5,E4,E3,E2,E1,E0
+  
+  UBY spriteno;
+//  UWO data1, data2;
+
+ 
+
+  sprites_online = FALSE;
+  spriteno = 0;
+
+  while ((spriteno < 8) && (spriteno * 4 <= sprite_ddf_kill)) 
+  {
+    sprite_online[spriteno] = FALSE;
+    sprite_16col[spriteno] = FALSE;
+    
+    switch(sprite_state[spriteno]) 
+    {
+    case 0: // state 0, reading two control words
+      // .dsrwc0
+      spratt[spriteno] = !!(memory_chip[sprpt[spriteno] + 3] & 0x80);  // get bit AT
+      sprx[spriteno]   = (memory_chip[sprpt[spriteno] + 1] << 1) | (memory_chip[sprpt[spriteno] + 3] & 0x01); // get H8 to H0
+      sprx[spriteno]   = sprx[spriteno] + 1;  // delay x position with 1 cycle
+      spry[spriteno]   = memory_chip[sprpt[spriteno]] | ((memory_chip[sprpt[spriteno] + 3] & 0x04) << 6); // get E8 to E0
+      sprly[spriteno]  = memory_chip[sprpt[spriteno] + 2] | ((memory_chip[sprpt[spriteno] + 3] & 0x02) << 7); // get L8 to L0
+      sprite_state[spriteno] = 1;
+      sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
+      sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
+      sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
+      break;
+
+    case 1: // state 1, waiting for first line and in case of first line, decode first two data words
+      if (graph_raster_y == spry[spriteno]) 
+      {
+        sprite_state[spriteno] = 2;
+        
+        // read next two data words
+        sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
+        sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
+        sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
+
+        if ((spriteno & 0x01) == 0)
+        {
+          // even sprite 
+          if (spratt[spriteno + 1] == 0) // if attached, work is done when handling odd sprite 
+          {
+            // even sprite not attached to next odd sprite -> 3 color decode 
+            spriteDecode4Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+            }
+          }
+        }
+        else
+        {
+          // odd sprite (formerly dsoddsprite)
+          if (spratt[spriteno] == 0) 
+          {
+            // odd sprite not attached to previous even sprite -> 3 color decode 
+            spriteDecode4Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+            }
+          }
+          else
+          {
+            // odd sprite is attached to even sprite 
+            spriteDecode16Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+            sprite_16col[spriteno] = TRUE;
+            
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+              sprite_state[spriteno - 1] = 0;
+            }
+          }
+        }
+      }
+      break;
+
+    case 2: // state 2, read two data words and decode them
+      if (graph_raster_y == sprly[spriteno])
+      {
+        if (spratt[spriteno] == 1) {
+          sprite_state[spriteno - 1] = 0;
+          sprx[spriteno - 1]         = 0;
+          spry[spriteno - 1]         = 0;
+          sprly[spriteno - 1]        = 0;
+          spratt[spriteno - 1]       = 0;
+        }  
+        sprite_state[spriteno] = 0;
+        sprx[spriteno]         = 0;
+        spry[spriteno]         = 0;
+        sprly[spriteno]        = 0;
+        spratt[spriteno]       = 0;
+      } 
+      else 
+      {
+        // read next two data words (if in state 2)
+        if (sprite_state[spriteno] == 2) {
+        sprdat[spriteno][0] = ((memory_chip[sprpt[spriteno] + 1]) << 8) + memory_chip[sprpt[spriteno]]; 
+        sprdat[spriteno][1] = ((memory_chip[sprpt[spriteno] + 3]) << 8) + memory_chip[sprpt[spriteno] + 2];
+        }
+        sprpt[spriteno] = sprpt[spriteno] + 4; // point to next two data words
+
+        if ((spriteno & 0x01) == 0)
+        {
+          // even sprite 
+          if (spratt[spriteno + 1] == 0) // if attached, work is done when handling odd sprite 
+          {
+            // even sprite not attached to next odd sprite -> 3 color decode 
+            spriteDecode4Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+            }
+          }
+        }
+        else
+        {
+          // odd sprite (formerly dsoddsprite)
+          if (spratt[spriteno] == 0) 
+          {
+            // odd sprite not attached to previous even sprite -> 3 color decode 
+            spriteDecode4Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+            }
+          }
+          else
+          {
+            spriteDecode16Sprite_C(spriteno);
+            sprites_online = TRUE;
+            sprite_online[spriteno] = TRUE;
+            sprite_16col[spriteno] = TRUE;
+            
+            // check for last line
+            if ((graph_raster_y + 1) == sprly[spriteno])
+            {
+              sprite_state[spriteno] = 0; // return to state 'read two control words'
+              sprite_state[spriteno  - 1] = 0; // return to state 'read two control words'
+            }
+          }
+        }
+      }
+      break;
+
+    case 3:
+      break;
+    }
+    spriteno++;
+  }
 }

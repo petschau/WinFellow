@@ -34,6 +34,8 @@ ULO blit_tsc_words = 0;
 /* Blitter registers                                                          */
 /*============================================================================*/
 
+BOOLE blit_on = TRUE;
+
 ULO bltcon, bltafwm, bltalwm, bltapt, bltbpt, bltcpt, bltdpt, bltamod, bltbmod;
 ULO bltcmod, bltdmod, bltadat, bltbdat, bltbdat_original, bltcdat, bltzero;
 
@@ -1036,6 +1038,7 @@ void wbltdptl_C(ULO data, ULO address)
 
 void wbltsize_C(ULO data, ULO address)
 {
+  if (blit_on) {
   blitForceFinish();
   if ((data & 0x0000003F) != 0)
   {
@@ -1053,6 +1056,7 @@ void wbltsize_C(ULO data, ULO address)
   {
     blit_height = 1024;
   }
+  // check if blitter DMA is on
   if ((dmacon & 0x00000040) != 0) 
   {
     blitterCopy();
@@ -1060,6 +1064,7 @@ void wbltsize_C(ULO data, ULO address)
   else
   {
     blitterdmawaiting = 1;
+  }
   }
 }
 
