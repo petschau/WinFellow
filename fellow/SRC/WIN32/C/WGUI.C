@@ -2199,11 +2199,6 @@ BOOLE wguiEnter(void) {
 /* Called at the start of Fellow execution                                    */
 /*============================================================================*/
 
-void wguiPreStartup(void) {
-  wguiSplashWindowShow();
-}
-
-
 /*============================================================================*/
 /* Called at the end of Fellow initialization                                 */
 /*============================================================================*/
