@@ -1,9 +1,9 @@
 
 /*
- *     xDMS  v1.3  -  Portable DMS archive unpacker  -  Public Domain
+ *     xDMS  v1.3b  -  Portable DMS archive unpacker  -  Public Domain
  *     Written by     "Andre Rodrigues de la Rocha"  <adlroc@usa.net>
  *     Hacked to pieces by Dan Sutherland <dan@chromerhino.demon.co.uk>
- *      for use in ADF Opus.
+ *     for use in ADF Opus.
  */
 
 #include <stdio.h>
