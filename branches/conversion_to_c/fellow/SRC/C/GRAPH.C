@@ -481,6 +481,7 @@ void wdiwstrt_C(ULO data, ULO address)
     diwxleft = data & 0x000000FF;
   }
   graphCalculateWindow_C();
+	graphPlayfieldOnOff();
 }
 
 /*===========================================================================*/
@@ -510,6 +511,7 @@ void wdiwstop_C(ULO data, ULO address)
     diwxright = 472;
   }
   graphCalculateWindow_C();
+	graphPlayfieldOnOff();
 }
 
 /*==============================================================================*/
