@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.2 2004-06-02 12:09:46 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.3 2004-06-02 12:53:18 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -116,13 +116,69 @@ BOOLE capsUnloadImage(ULO drive)
     return TRUE;
 }
 
+static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive)
+{
+    int i;
+    char DateString[100], TypeString[100], PlatformString[100];
+    struct CapsDateTimeExt *capsDateTimeExt;
+
+    if(!capsImageInfo)
+        return;
+    
+    /* extract the date from information */
+    capsDateTimeExt = &capsImageInfo->crdt;
+    sprintf(DateString, "%02d.%02d.%04d %02d:%02d:%02d", 
+        capsDateTimeExt->day, 
+        capsDateTimeExt->month,
+        capsDateTimeExt->year,
+        capsDateTimeExt->hour,
+        capsDateTimeExt->min,
+        capsDateTimeExt->sec);
+
+    /* generate a type string */
+    switch(capsImageInfo->type)
+    {
+        case ciitNA:
+            sprintf(TypeString, "ciitNA (invalid image)");
+            break;
+        case ciitFDD:
+            sprintf(TypeString, "ciitFDD (floppy disk)");
+            break;
+        default:
+            sprintf(TypeString, "N/A (%d)");
+            break;
+    }
+
+    /* generate a platform string */
+    for(i = 0; capsImageInfo->platform[i] != 0; i++)
+    {
+        if(i > 0) {
+            char AppendString[100];
+            sprintf(AppendString, CAPSGetPlatformName(capsImageInfo->platform[i]));
+            strcat(PlatformString, ", ");
+            strcat(PlatformString, AppendString);
+        }
+        else   
+            sprintf(PlatformString, CAPSGetPlatformName(capsImageInfo->platform[i]));
+    }
+
+    /* log the information */
+    fellowAddTimelessLog("\nCAPS Image Information:\n");
+    fellowAddTimelessLog("Floppy Drive No: %u\n", drive);
+    fellowAddTimelessLog("Filename: %s\n", floppy[drive].imagename);
+    fellowAddTimelessLog("Type:%s\n", TypeString);
+    fellowAddTimelessLog("Date:%s\n", DateString);
+    fellowAddTimelessLog("Release:%04d Revision:%d\n",
+        capsImageInfo->release, 
+        capsImageInfo->revision);
+    fellowAddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
+}
+
 BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
 {
     struct CapsImageInfo capsImageInfo;
     ULO ImageSize, ReturnCode;
     UBY *ImageBuffer;
-    char DateString[100];
-    struct CapsDateTimeExt *capsDateTimeExt;
 
     /* make sure we're up and running beforehand */
     if(!capsIsInitialized)
@@ -156,22 +212,7 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
     *tracks = (capsImageInfo.maxcylinder - capsImageInfo.mincylinder + 1) * (capsImageInfo.maxhead - capsImageInfo.minhead + 1);
 
     CAPSLoadImage(capsDriveContainer[drive], capsFlags);
-
-    /* extract the date from information */
-    capsDateTimeExt = &capsImageInfo.crdt;
-    sprintf(DateString, "%02d.%02d.%04d %02d:%02d:%02d", 
-        capsDateTimeExt->day, 
-        capsDateTimeExt->month,
-        capsDateTimeExt->year,
-        capsDateTimeExt->hour,
-        capsDateTimeExt->min,
-        capsDateTimeExt->sec);
-    fellowAddLog("CAPS Image Information: Type:%d Date:%s Release:%04d Revision:%d\n",
-	    capsImageInfo.type, 
-        DateString, 
-        capsImageInfo.release, 
-        capsImageInfo.revision);
-
+    capsLogImageInfo(&capsImageInfo, drive);
     fellowAddLog("capsLoadImage(): Image loaded successfully.\n");
     return TRUE;
 }
@@ -203,7 +244,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 	    tracktiming[i] = (ULO) capsTrackInfo.timebuf[i];
     }
 #if TRACECAPS
-    fellowAddLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
+    fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
         drive, 
         track, 
         *multirevolution ? "TRUE " : "FALSE", 
