@@ -114,7 +114,7 @@ extern char warning_buffer[256];
 /*==========*/
 
 #ifdef PREFETCH
-#define fill_prefetch_0() prefetch_fill(pc)
+#define fill_prefetch_0() cpuPrefetchFill(pc)
 #else
 #define fill_prefetch_0()
 #endif
