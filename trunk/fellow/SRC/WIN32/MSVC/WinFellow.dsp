@@ -1831,6 +1831,8 @@ SOURCE=.\GUI_debugger.rc
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
 
+# PROP Exclude_From_Build 1
+
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
@@ -1850,7 +1852,8 @@ SOURCE=.\GUI_general.rc
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
 
-# PROP Exclude_From_Build 1
+# ADD BASE RSC /l 0x409
+# ADD RSC /l 0x417
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
 
@@ -1860,6 +1863,10 @@ SOURCE=.\GUI_general.rc
 
 !ENDIF 
 
+# End Source File
+# Begin Source File
+
+SOURCE=.\winfellow_logo_small.bmp
 # End Source File
 # End Target
 # End Project
