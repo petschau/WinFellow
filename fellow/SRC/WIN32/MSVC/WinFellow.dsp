@@ -1108,15 +1108,19 @@ SOURCE=..\include\msvc\renaming.h
 # End Group
 # Begin Source File
 
-SOURCE=.\bitmap1.bmp
+SOURCE=.\disk_led_disabled_cool.bmp
 # End Source File
 # Begin Source File
 
-SOURCE=.\Fellow.bmp
+SOURCE=.\disk_led_off_cool.bmp
 # End Source File
 # Begin Source File
 
-SOURCE=.\fellow2.BMP
+SOURCE=.\disk_led_on_cool.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\power_led_on_cool.bmp
 # End Source File
 # Begin Source File
 
