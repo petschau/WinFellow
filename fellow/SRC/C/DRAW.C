@@ -33,290 +33,336 @@
   It can be imported into excel for better viewing
 */
 
-#define DRAW_TSC_PROFILE
-
+//#define DRAW_TSC_PROFILE
 #ifdef DRAW_TSC_PROFILE
-LLO dlsbg1x8_tmp = 0;
-LLO dlsbg1x8 = 0;
-LON dlsbg1x8_times = 0;
-LON dlsbg1x8_pixels = 0;
 
-LLO dlsbg2x8_tmp = 0;
-LLO dlsbg2x8 = 0;
-LON dlsbg2x8_times = 0;
-LON dlsbg2x8_pixels = 0;
+// variables for holding profile data on background lines
 
-LLO dlsbg1x16_tmp = 0;
-LLO dlsbg1x16 = 0;
-LON dlsbg1x16_times = 0;
-LON dlsbg1x16_pixels = 0;
+LLO dlsbg1x1__8bit_tmp = 0;
+LLO dlsbg1x1__8bit = 0;
+LON dlsbg1x1__8bit_times = 0;
+LON dlsbg1x1__8bit_pixels = 0;
 
-LLO dlsbg2x16_tmp = 0;
-LLO dlsbg2x16 = 0;
-LON dlsbg2x16_times = 0;
-LON dlsbg2x16_pixels = 0;
+LLO dlsbg2x1__8bit_tmp = 0;
+LLO dlsbg2x1__8bit = 0;
+LON dlsbg2x1__8bit_times = 0;
+LON dlsbg2x1__8bit_pixels = 0;
 
-LLO dlsbg1x24_tmp = 0;
-LLO dlsbg1x24 = 0;
-LON dlsbg1x24_times = 0;
-LON dlsbg1x24_pixels = 0;
+LLO dlsbg1x2__8bit_tmp = 0;
+LLO dlsbg1x2__8bit = 0;
+LON dlsbg1x2__8bit_times = 0;
+LON dlsbg1x2__8bit_pixels = 0;
 
-LLO dlsbg2x24_tmp = 0;
-LLO dlsbg2x24 = 0;
-LON dlsbg2x24_times = 0;
-LON dlsbg2x24_pixels = 0;
+LLO dlsbg2x2__8bit_tmp = 0;
+LLO dlsbg2x2__8bit = 0;
+LON dlsbg2x2__8bit_times = 0;
+LON dlsbg2x2__8bit_pixels = 0;
 
-LLO dlsbg1x32_tmp = 0;
-LLO dlsbg1x32 = 0;
-LON dlsbg1x32_times = 0;
-LON dlsbg1x32_pixels = 0;
+LLO dlsbg1x1_16bit_tmp = 0;
+LLO dlsbg1x1_16bit = 0;
+LON dlsbg1x1_16bit_times = 0;
+LON dlsbg1x1_16bit_pixels = 0;
 
-LLO dlsbg2x32_tmp = 0;
-LLO dlsbg2x32 = 0;
-LON dlsbg2x32_times = 0;
-LON dlsbg2x32_pixels = 0;
+LLO dlsbg2x1_16bit_tmp = 0;
+LLO dlsbg2x1_16bit = 0;
+LON dlsbg2x1_16bit_times = 0;
+LON dlsbg2x1_16bit_pixels = 0;
 
-LLO dln1x8_tmp = 0;
-LLO dln1x8 = 0;
-LON dln1x8_times = 0;
-LON dln1x8_pixels = 0;
+LLO dlsbg1x2_16bit_tmp = 0;
+LLO dlsbg1x2_16bit = 0;
+LON dlsbg1x2_16bit_times = 0;
+LON dlsbg1x2_16bit_pixels = 0;
 
-LLO dln2x8_tmp = 0;
-LLO dln2x8 = 0;
-LON dln2x8_times = 0;
-LON dln2x8_pixels = 0;
+LLO dlsbg2x2_16bit_tmp = 0;
+LLO dlsbg2x2_16bit = 0;
+LON dlsbg2x2_16bit_times = 0;
+LON dlsbg2x2_16bit_pixels = 0;
 
-LLO dln1x16_tmp = 0;
-LLO dln1x16 = 0;
-LON dln1x16_times = 0;
-LON dln1x16_pixels = 0;
+LLO dlsbg1x1_24bit_tmp = 0;
+LLO dlsbg1x1_24bit = 0;
+LON dlsbg1x1_24bit_times = 0;
+LON dlsbg1x1_24bit_pixels = 0;
 
-LLO dln2x16_tmp = 0;
-LLO dln2x16 = 0;
-LON dln2x16_times = 0;
-LON dln2x16_pixels = 0;
+LLO dlsbg2x1_24bit_tmp = 0;
+LLO dlsbg2x1_24bit = 0;
+LON dlsbg2x1_24bit_times = 0;
+LON dlsbg2x1_24bit_pixels = 0;
 
-LLO dln1x24_tmp = 0;
-LLO dln1x24 = 0;
-LON dln1x24_times = 0;
-LON dln1x24_pixels = 0;
+LLO dlsbg1x2_24bit_tmp = 0;
+LLO dlsbg1x2_24bit = 0;
+LON dlsbg1x2_24bit_times = 0;
+LON dlsbg1x2_24bit_pixels = 0;
 
-LLO dln2x24_tmp = 0;
-LLO dln2x24 = 0;
-LON dln2x24_times = 0;
-LON dln2x24_pixels = 0;
+LLO dlsbg2x2_24bit_tmp = 0;
+LLO dlsbg2x2_24bit = 0;
+LON dlsbg2x2_24bit_times = 0;
+LON dlsbg2x2_24bit_pixels = 0;
 
-LLO dln1x32_tmp = 0;
-LLO dln1x32 = 0;
-LON dln1x32_times = 0;
-LON dln1x32_pixels = 0;
+LLO dlsbg1x1_32bit_tmp = 0;
+LLO dlsbg1x1_32bit = 0;
+LON dlsbg1x1_32bit_times = 0;
+LON dlsbg1x1_32bit_pixels = 0;
 
-LLO dln2x32_tmp = 0;
-LLO dln2x32 = 0;
-LON dln2x32_times = 0;
-LON dln2x32_pixels = 0;
+LLO dlsbg2x1_32bit_tmp = 0;
+LLO dlsbg2x1_32bit = 0;
+LON dlsbg2x1_32bit_times = 0;
+LON dlsbg2x1_32bit_pixels = 0;
 
-LLO dld1x8_tmp = 0;
-LLO dld1x8 = 0;
-LON dld1x8_times = 0;
-LON dld1x8_pixels = 0;
+LLO dlsbg1x2_32bit_tmp = 0;
+LLO dlsbg1x2_32bit = 0;
+LON dlsbg1x2_32bit_times = 0;
+LON dlsbg1x2_32bit_pixels = 0;
 
-LLO dld2x8_tmp = 0;
-LLO dld2x8 = 0;
-LON dld2x8_times = 0;
-LON dld2x8_pixels = 0;
+LLO dlsbg2x2_32bit_tmp = 0;
+LLO dlsbg2x2_32bit = 0;
+LON dlsbg2x2_32bit_times = 0;
+LON dlsbg2x2_32bit_pixels = 0;
 
-LLO dld1x16_tmp = 0;
-LLO dld1x16 = 0;
-LON dld1x16_times = 0;
-LON dld1x16_pixels = 0;
+// variables for holding profile data on normal line drawing
 
-LLO dld2x16_tmp = 0;
-LLO dld2x16 = 0;
-LON dld2x16_times = 0;
-LON dld2x16_pixels = 0;
+LLO dln1x1__8bit_tmp = 0;
+LLO dln1x1__8bit = 0;
+LON dln1x1__8bit_times = 0;
+LON dln1x1__8bit_pixels = 0;
 
-LLO dld1x24_tmp = 0;
-LLO dld1x24 = 0;
-LON dld1x24_times = 0;
-LON dld1x24_pixels = 0;
+LLO dln2x1__8bit_tmp = 0;
+LLO dln2x1__8bit = 0;
+LON dln2x1__8bit_times = 0;
+LON dln2x1__8bit_pixels = 0;
 
-LLO dld2x24_tmp = 0;
-LLO dld2x24 = 0;
-LON dld2x24_times = 0;
-LON dld2x24_pixels = 0;
+LLO dln1x2__8bit_tmp = 0;
+LLO dln1x2__8bit = 0;
+LON dln1x2__8bit_times = 0;
+LON dln1x2__8bit_pixels = 0;
 
-LLO dld1x32_tmp = 0;
-LLO dld1x32 = 0;
-LON dld1x32_times = 0;
-LON dld1x32_pixels = 0;
+LLO dln2x2__8bit_tmp = 0;
+LLO dln2x2__8bit = 0;
+LON dln2x2__8bit_times = 0;
+LON dln2x2__8bit_pixels = 0;
 
-LLO dld2x32_tmp = 0;
-LLO dld2x32 = 0;
-LON dld2x32_times = 0;
-LON dld2x32_pixels = 0;
+LLO dln1x1_16bit_tmp = 0;
+LLO dln1x1_16bit = 0;
+LON dln1x1_16bit_times = 0;
+LON dln1x1_16bit_pixels = 0;
 
-LLO dlh1x8_tmp = 0;
-LLO dlh1x8 = 0;
-LON dlh1x8_times = 0;
-LON dlh1x8_pixels = 0;
+LLO dln2x1_16bit_tmp = 0;
+LLO dln2x1_16bit = 0;
+LON dln2x1_16bit_times = 0;
+LON dln2x1_16bit_pixels = 0;
 
-LLO dlh2x8_tmp = 0;
-LLO dlh2x8 = 0;
-LON dlh2x8_times = 0;
-LON dlh2x8_pixels = 0;
+LLO dln1x2_16bit_tmp = 0;
+LLO dln1x2_16bit = 0;
+LON dln1x2_16bit_times = 0;
+LON dln1x2_16bit_pixels = 0;
 
-LLO dlh1x16_tmp = 0;
-LLO dlh1x16 = 0;
-LON dlh1x16_times = 0;
-LON dlh1x16_pixels = 0;
+LLO dln2x2_16bit_tmp = 0;
+LLO dln2x2_16bit = 0;
+LON dln2x2_16bit_times = 0;
+LON dln2x2_16bit_pixels = 0;
 
-LLO dlh2x16_tmp = 0;
-LLO dlh2x16 = 0;
-LON dlh2x16_times = 0;
-LON dlh2x16_pixels = 0;
+LLO dln1x1_24bit_tmp = 0;
+LLO dln1x1_24bit = 0;
+LON dln1x1_24bit_times = 0;
+LON dln1x1_24bit_pixels = 0;
 
-LLO dlh1x24_tmp = 0;
-LLO dlh1x24 = 0;
-LON dlh1x24_times = 0;
-LON dlh1x24_pixels = 0;
+LLO dln2x1_24bit_tmp = 0;
+LLO dln2x1_24bit = 0;
+LON dln2x1_24bit_times = 0;
+LON dln2x1_24bit_pixels = 0;
 
-LLO dlh2x24_tmp = 0;
-LLO dlh2x24 = 0;
-LON dlh2x24_times = 0;
-LON dlh2x24_pixels = 0;
+LLO dln1x2_24bit_tmp = 0;
+LLO dln1x2_24bit = 0;
+LON dln1x2_24bit_times = 0;
+LON dln1x2_24bit_pixels = 0;
 
-LLO dlh1x32_tmp = 0;
-LLO dlh1x32 = 0;
-LON dlh1x32_times = 0;
-LON dlh1x32_pixels = 0;
+LLO dln2x2_24bit_tmp = 0;
+LLO dln2x2_24bit = 0;
+LON dln2x2_24bit_times = 0;
+LON dln2x2_24bit_pixels = 0;
 
-LLO dlh2x32_tmp = 0;
-LLO dlh2x32 = 0;
-LON dlh2x32_times = 0;
-LON dlh2x32_pixels = 0;
+LLO dln1x1_32bit_tmp = 0;
+LLO dln1x1_32bit = 0;
+LON dln1x1_32bit_times = 0;
+LON dln1x1_32bit_pixels = 0;
 
-// MMX
+LLO dln2x1_32bit_tmp = 0;
+LLO dln2x1_32bit = 0;
+LON dln2x1_32bit_times = 0;
+LON dln2x1_32bit_pixels = 0;
 
-LLO dlsbg1x8mmx_tmp = 0;
-LLO dlsbg1x8mmx = 0;
-LON dlsbg1x8mmx_times = 0;
-LON dlsbg1x8mmx_pixels = 0;
+LLO dln1x2_32bit_tmp = 0;
+LLO dln1x2_32bit = 0;
+LON dln1x2_32bit_times = 0;
+LON dln1x2_32bit_pixels = 0;
 
-LLO dlsbg2x8mmx_tmp = 0;
-LLO dlsbg2x8mmx = 0;
-LON dlsbg2x8mmx_times = 0;
-LON dlsbg2x8mmx_pixels = 0;
+LLO dln2x2_32bit_tmp = 0;
+LLO dln2x2_32bit = 0;
+LON dln2x2_32bit_times = 0;
+LON dln2x2_32bit_pixels = 0;
 
-LLO dlsbg1x16mmx_tmp = 0;
-LLO dlsbg1x16mmx = 0;
-LON dlsbg1x16mmx_times = 0;
-LON dlsbg1x16mmx_pixels = 0;
+// variables for holding profile data on dual playfield line drawing
 
-LLO dlsbg2x16mmx_tmp = 0;
-LLO dlsbg2x16mmx = 0;
-LON dlsbg2x16mmx_times = 0;
-LON dlsbg2x16mmx_pixels = 0;
+LLO dld1x1__8bit_tmp = 0;
+LLO dld1x1__8bit = 0;
+LON dld1x1__8bit_times = 0;
+LON dld1x1__8bit_pixels = 0;
 
-LLO dlsbg1x24mmx_tmp = 0;
-LLO dlsbg1x24mmx = 0;
-LON dlsbg1x24mmx_times = 0;
-LON dlsbg1x24mmx_pixels = 0;
+LLO dld2x1__8bit_tmp = 0;
+LLO dld2x1__8bit = 0;
+LON dld2x1__8bit_times = 0;
+LON dld2x1__8bit_pixels = 0;
 
-LLO dlsbg2x24mmx_tmp = 0;
-LLO dlsbg2x24mmx = 0;
-LON dlsbg2x24mmx_times = 0;
-LON dlsbg2x24mmx_pixels = 0;
+LLO dld1x2__8bit_tmp = 0;
+LLO dld1x2__8bit = 0;
+LON dld1x2__8bit_times = 0;
+LON dld1x2__8bit_pixels = 0;
 
-LLO dlsbg1x32mmx_tmp = 0;
-LLO dlsbg1x32mmx = 0;
-LON dlsbg1x32mmx_times = 0;
-LON dlsbg1x32mmx_pixels = 0;
+LLO dld2x2__8bit_tmp = 0;
+LLO dld2x2__8bit = 0;
+LON dld2x2__8bit_times = 0;
+LON dld2x2__8bit_pixels = 0;
 
-LLO dlsbg2x32mmx_tmp = 0;
-LLO dlsbg2x32mmx = 0;
-LON dlsbg2x32mmx_times = 0;
-LON dlsbg2x32mmx_pixels = 0;
+LLO dld1x1_16bit_tmp = 0;
+LLO dld1x1_16bit = 0;
+LON dld1x1_16bit_times = 0;
+LON dld1x1_16bit_pixels = 0;
 
-LLO dln1x8mmx_tmp = 0;
-LLO dln1x8mmx = 0;
-LON dln1x8mmx_times = 0;
-LON dln1x8mmx_pixels = 0;
+LLO dld2x1_16bit_tmp = 0;
+LLO dld2x1_16bit = 0;
+LON dld2x1_16bit_times = 0;
+LON dld2x1_16bit_pixels = 0;
 
-LLO dln2x8mmx_tmp = 0;
-LLO dln2x8mmx = 0;
-LON dln2x8mmx_times = 0;
-LON dln2x8mmx_pixels = 0;
+LLO dld1x2_16bit_tmp = 0;
+LLO dld1x2_16bit = 0;
+LON dld1x2_16bit_times = 0;
+LON dld1x2_16bit_pixels = 0;
 
-LLO dln1x16mmx_tmp = 0;
-LLO dln1x16mmx = 0;
-LON dln1x16mmx_times = 0;
-LON dln1x16mmx_pixels = 0;
+LLO dld2x2_16bit_tmp = 0;
+LLO dld2x2_16bit = 0;
+LON dld2x2_16bit_times = 0;
+LON dld2x2_16bit_pixels = 0;
 
-LLO dln2x16mmx_tmp = 0;
-LLO dln2x16mmx = 0;
-LON dln2x16mmx_times = 0;
-LON dln2x16mmx_pixels = 0;
+LLO dld1x1_24bit_tmp = 0;
+LLO dld1x1_24bit = 0;
+LON dld1x1_24bit_times = 0;
+LON dld1x1_24bit_pixels = 0;
 
-LLO dln1x24mmx_tmp = 0;
-LLO dln1x24mmx = 0;
-LON dln1x24mmx_times = 0;
-LON dln1x24mmx_pixels = 0;
+LLO dld2x1_24bit_tmp = 0;
+LLO dld2x1_24bit = 0;
+LON dld2x1_24bit_times = 0;
+LON dld2x1_24bit_pixels = 0;
 
-LLO dln2x24mmx_tmp = 0;
-LLO dln2x24mmx = 0;
-LON dln2x24mmx_times = 0;
-LON dln2x24mmx_pixels = 0;
+LLO dld1x2_24bit_tmp = 0;
+LLO dld1x2_24bit = 0;
+LON dld1x2_24bit_times = 0;
+LON dld1x2_24bit_pixels = 0;
 
-LLO dln1x32mmx_tmp = 0;
-LLO dln1x32mmx = 0;
-LON dln1x32mmx_times = 0;
-LON dln1x32mmx_pixels = 0;
+LLO dld2x2_24bit_tmp = 0;
+LLO dld2x2_24bit = 0;
+LON dld2x2_24bit_times = 0;
+LON dld2x2_24bit_pixels = 0;
 
-LLO dln2x32mmx_tmp = 0;
-LLO dln2x32mmx = 0;
-LON dln2x32mmx_times = 0;
-LON dln2x32mmx_pixels = 0;
+LLO dld1x1_32bit_tmp = 0;
+LLO dld1x1_32bit = 0;
+LON dld1x1_32bit_times = 0;
+LON dld1x1_32bit_pixels = 0;
 
-LLO dld1x8mmx_tmp = 0;
-LLO dld1x8mmx = 0;
-LON dld1x8mmx_times = 0;
-LON dld1x8mmx_pixels = 0;
+LLO dld2x1_32bit_tmp = 0;
+LLO dld2x1_32bit = 0;
+LON dld2x1_32bit_times = 0;
+LON dld2x1_32bit_pixels = 0;
 
-LLO dld2x8mmx_tmp = 0;
-LLO dld2x8mmx = 0;
-LON dld2x8mmx_times = 0;
-LON dld2x8mmx_pixels = 0;
+LLO dld1x2_32bit_tmp = 0;
+LLO dld1x2_32bit = 0;
+LON dld1x2_32bit_times = 0;
+LON dld1x2_32bit_pixels = 0;
 
-LLO dld1x16mmx_tmp = 0;
-LLO dld1x16mmx = 0;
-LON dld1x16mmx_times = 0;
-LON dld1x16mmx_pixels = 0;
+LLO dld2x2_32bit_tmp = 0;
+LLO dld2x2_32bit = 0;
+LON dld2x2_32bit_times = 0;
+LON dld2x2_32bit_pixels = 0;
 
-LLO dld2x16mmx_tmp = 0;
-LLO dld2x16mmx = 0;
-LON dld2x16mmx_times = 0;
-LON dld2x16mmx_pixels = 0;
+// variables for holding profile data on HAM line drawing
 
-LLO dld1x24mmx_tmp = 0;
-LLO dld1x24mmx = 0;
-LON dld1x24mmx_times = 0;
-LON dld1x24mmx_pixels = 0;
+LLO dlh1x1__8bit_tmp = 0;
+LLO dlh1x1__8bit = 0;
+LON dlh1x1__8bit_times = 0;
+LON dlh1x1__8bit_pixels = 0;
 
-LLO dld2x24mmx_tmp = 0;
-LLO dld2x24mmx = 0;
-LON dld2x24mmx_times = 0;
-LON dld2x24mmx_pixels = 0;
+LLO dlh2x1__8bit_tmp = 0;
+LLO dlh2x1__8bit = 0;
+LON dlh2x1__8bit_times = 0;
+LON dlh2x1__8bit_pixels = 0;
 
-LLO dld1x32mmx_tmp = 0;
-LLO dld1x32mmx = 0;
-LON dld1x32mmx_times = 0;
-LON dld1x32mmx_pixels = 0;
+LLO dlh1x2__8bit_tmp = 0;
+LLO dlh1x2__8bit = 0;
+LON dlh1x2__8bit_times = 0;
+LON dlh1x2__8bit_pixels = 0;
 
-LLO dld2x32mmx_tmp = 0;
-LLO dld2x32mmx = 0;
-LON dld2x32mmx_times = 0;
-LON dld2x32mmx_pixels = 0;
+LLO dlh2x2__8bit_tmp = 0;
+LLO dlh2x2__8bit = 0;
+LON dlh2x2__8bit_times = 0;
+LON dlh2x2__8bit_pixels = 0;
+
+LLO dlh1x1_16bit_tmp = 0;
+LLO dlh1x1_16bit = 0;
+LON dlh1x1_16bit_times = 0;
+LON dlh1x1_16bit_pixels = 0;
+
+LLO dlh2x1_16bit_tmp = 0;
+LLO dlh2x1_16bit = 0;
+LON dlh2x1_16bit_times = 0;
+LON dlh2x1_16bit_pixels = 0;
+
+LLO dlh1x2_16bit_tmp = 0;
+LLO dlh1x2_16bit = 0;
+LON dlh1x2_16bit_times = 0;
+LON dlh1x2_16bit_pixels = 0;
+
+LLO dlh2x2_16bit_tmp = 0;
+LLO dlh2x2_16bit = 0;
+LON dlh2x2_16bit_times = 0;
+LON dlh2x2_16bit_pixels = 0;
+
+LLO dlh1x1_24bit_tmp = 0;
+LLO dlh1x1_24bit = 0;
+LON dlh1x1_24bit_times = 0;
+LON dlh1x1_24bit_pixels = 0;
+
+LLO dlh2x1_24bit_tmp = 0;
+LLO dlh2x1_24bit = 0;
+LON dlh2x1_24bit_times = 0;
+LON dlh2x1_24bit_pixels = 0;
+
+LLO dlh1x2_24bit_tmp = 0;
+LLO dlh1x2_24bit = 0;
+LON dlh1x2_24bit_times = 0;
+LON dlh1x2_24bit_pixels = 0;
+
+LLO dlh2x2_24bit_tmp = 0;
+LLO dlh2x2_24bit = 0;
+LON dlh2x2_24bit_times = 0;
+LON dlh2x2_24bit_pixels = 0;
+
+LLO dlh1x1_32bit_tmp = 0;
+LLO dlh1x1_32bit = 0;
+LON dlh1x1_32bit_times = 0;
+LON dlh1x1_32bit_pixels = 0;
+
+LLO dlh2x1_32bit_tmp = 0;
+LLO dlh2x1_32bit = 0;
+LON dlh2x1_32bit_times = 0;
+LON dlh2x1_32bit_pixels = 0;
+
+LLO dlh1x2_32bit_tmp = 0;
+LLO dlh1x2_32bit = 0;
+LON dlh1x2_32bit_times = 0;
+LON dlh1x2_32bit_pixels = 0;
+
+LLO dlh2x2_32bit_tmp = 0;
+LLO dlh2x2_32bit = 0;
+LON dlh2x2_32bit_times = 0;
+LON dlh2x2_32bit_pixels = 0;
 
 #endif
 
@@ -356,7 +402,6 @@ BOOLE draw_fps_counter_enabled;
 
 BOOLE draw_LEDs_enabled;
 BOOLE draw_LEDs_state[DRAW_LED_COUNT];
-
 
 /*============================================================================*/
 /* Event flags that trigger some action regarding the host display            */
@@ -653,7 +698,6 @@ static void drawViewScroll(void) {
   draw_view_scroll = 0;
 }
 
-
 /*============================================================================*/
 /* Draws a LED symbol                                                         */
 /*============================================================================*/
@@ -747,7 +791,7 @@ static void drawLED(ULO index, BOOLE state) {
       break;
     case 32:
       drawLED32(x, y, DRAW_LED_WIDTH, DRAW_LED_HEIGHT, color);
-      break;
+	  break;
     default:
       break;
   }
@@ -1015,8 +1059,6 @@ BOOLE drawGetAllowMultipleBuffers(void) {
   return draw_allow_multiple_buffers;
 }
 
-
-
 /*============================================================================*/
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/
@@ -1080,36 +1122,39 @@ static void drawPaletteInitialize(void) {
 /*============================================================================*/
 
 static void drawColorTranslationInitialize(void) {
-  ULO k, r, g, b;
+	ULO k, r, g, b;
 
-  /* Create color translation table */
-
-  if (draw_mode_current->bits == 8) {
-
-    /* Use 6 levels of red and blue, 7 levels of green */
-    
-    for (k = 0; k < 4096; k++) {
-      b = (ULO) (((((k & 0xf)<<4)*(16.0/15.0)) + 25) / 51);
-      g = (ULO) ((((k & 0xf0)*(16.0/15.0)) + 25) / 51);
-      r = (ULO) (((((k & 0xf00)>>4)*(16.0/15.0)) + 25) / 51);
-      draw_color_table[k] = r + g*6 + b*36 + 10;
-      draw_8bit_to_color[draw_color_table[k]] = k | (k<<16);
-      draw_color_table[k] = draw_color_table[k]<<24 |
-			    draw_color_table[k]<<16 |
-			    draw_color_table[k]<<8 |
-			    draw_color_table[k];
-    }
-  }
-  else {
-    for (k = 0; k < 4096; k++) {
-      r = ((k & 0xf00) >> 8) << (draw_mode_current->redpos + draw_mode_current->redsize - 4);
-      g = ((k & 0xf0) >> 4) << (draw_mode_current->greenpos + draw_mode_current->greensize - 4);
-      b = (k & 0xf) << (draw_mode_current->bluepos + draw_mode_current->bluesize - 4);
-      draw_color_table[k] = r | g | b;
-      if (draw_mode_current->bits <= 16)
-	draw_color_table[k] = draw_color_table[k]<<16 | draw_color_table[k];
-    }
-  }
+	/* create color translation table */
+	if (draw_mode_current->bits == 8) 
+	{
+		/* use 6 levels of red and blue, 7 levels of green */
+		for (k = 0; k < 4096; k++) 
+		{
+			b = (ULO) (((((k & 0xf)<<4)*(16.0/15.0)) + 25) / 51);
+			g = (ULO) ((((k & 0xf0)*(16.0/15.0)) + 25) / 51);
+			r = (ULO) (((((k & 0xf00)>>4)*(16.0/15.0)) + 25) / 51);
+			draw_color_table[k] = r + g*6 + b*36 + 10;
+			draw_8bit_to_color[draw_color_table[k]] = k | (k<<16);
+			draw_color_table[k] = draw_color_table[k]<<24 |
+				draw_color_table[k]<<16 |
+				draw_color_table[k]<<8 |
+				draw_color_table[k];
+		}
+	}
+	else 
+	{
+		for (k = 0; k < 4096; k++) 
+		{
+			r = ((k & 0xf00) >> 8) << (draw_mode_current->redpos + draw_mode_current->redsize - 4);
+			g = ((k & 0xf0) >> 4) << (draw_mode_current->greenpos + draw_mode_current->greensize - 4);
+			b = (k & 0xf) << (draw_mode_current->bluepos + draw_mode_current->bluesize - 4);
+			draw_color_table[k] = r | g | b;
+			if (draw_mode_current->bits <= 16)
+			{
+				draw_color_table[k] = draw_color_table[k]<<16 | draw_color_table[k];
+			}
+		}
+	}
 }
 
 
@@ -1493,31 +1538,31 @@ void drawEmulationStop(void) {
 /*============================================================================*/
 
 BOOLE drawStartup(void) {
-  ULO i;
+	ULO i;
 
-  drawModesClear();
-  if (!gfxDrvStartup()) return FALSE;
-  draw_mode_current = (draw_mode *) listNode(draw_modes);
-  drawDualTranslationInitialize();
-  drawPaletteInitialize();
-  draw_left = 120;
-  draw_right = 440;
-  draw_top = 0x45;
-  draw_bottom = 0x10d;
-  draw_view_scroll = 0;
-  draw_switch_bg_to_bpl = FALSE;
-  draw_frame_count = 0;
-  drawSetDeinterlace(FALSE);
-  drawSetHorizontalScale(1);
-  drawSetVerticalScale(1);
-  drawSetVerticalScaleStrategy(0);
-  drawSetScanlines(FALSE);
-  drawSetFrameskipRatio(1);
-  drawSetFPSCounterEnabled(FALSE);
-  drawSetLEDsEnabled(FALSE);
-  drawSetAllowMultipleBuffers(FALSE);
-  for (i = 0; i < DRAW_LED_COUNT; i++) drawSetLED(i, FALSE);
-  return TRUE;
+	drawModesClear();
+	if (!gfxDrvStartup()) return FALSE;
+	draw_mode_current = (draw_mode *) listNode(draw_modes);
+	drawDualTranslationInitialize();
+	drawPaletteInitialize();
+	draw_left = 120;
+	draw_right = 440;
+	draw_top = 0x45;
+	draw_bottom = 0x10d;
+	draw_view_scroll = 0;
+	draw_switch_bg_to_bpl = FALSE;
+	draw_frame_count = 0;
+	drawSetDeinterlace(FALSE);
+	drawSetHorizontalScale(1);
+	drawSetVerticalScale(1);
+	drawSetVerticalScaleStrategy(0);
+	drawSetScanlines(FALSE);
+	drawSetFrameskipRatio(1);
+	drawSetFPSCounterEnabled(FALSE);
+	drawSetLEDsEnabled(FALSE);
+	drawSetAllowMultipleBuffers(FALSE);
+	for (i = 0; i < DRAW_LED_COUNT; i++) drawSetLED(i, FALSE);
+	return TRUE;
 }
 
 
@@ -1532,78 +1577,95 @@ void drawShutdown(void) {
   {
   FILE *F = fopen("drawprofile.txt", "w");
   fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tTOTALPIXELS\tPIXELSPERCALL\tCYCLESPERPIXEL\n");
-  fprintf(F, "DrawBGLine1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x8, dlsbg1x8_times, (dlsbg1x8_times == 0) ? 0 : (dlsbg1x8 / dlsbg1x8_times), dlsbg1x8_pixels, (dlsbg1x8_times == 0) ? 0 : (dlsbg1x8_pixels / dlsbg1x8_times), (dlsbg1x8_pixels == 0) ? 0 : (dlsbg1x8 / dlsbg1x8_pixels));
-  fprintf(F, "DrawBGLine1x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x8mmx, dlsbg1x8mmx_times, (dlsbg1x8mmx_times == 0) ? 0 : (dlsbg1x8mmx / dlsbg1x8mmx_times), dlsbg1x8mmx_pixels, (dlsbg1x8mmx_times == 0) ? 0 : (dlsbg1x8mmx_pixels / dlsbg1x8mmx_times), (dlsbg1x8mmx_pixels == 0) ? 0 : (dlsbg1x8mmx / dlsbg1x8mmx_pixels));
-  fprintf(F, "DrawBGLine2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x8, dlsbg2x8_times, (dlsbg2x8_times == 0) ? 0 : (dlsbg2x8 / dlsbg2x8_times), dlsbg2x8_pixels, (dlsbg2x8_times == 0) ? 0 : (dlsbg2x8_pixels / dlsbg2x8_times), (dlsbg2x8_pixels == 0) ? 0 : (dlsbg2x8 / dlsbg2x8_pixels));
-  fprintf(F, "DrawBGLine2x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x8mmx, dlsbg2x8mmx_times, (dlsbg2x8mmx_times == 0) ? 0 : (dlsbg2x8mmx / dlsbg2x8mmx_times), dlsbg2x8mmx_pixels, (dlsbg2x8mmx_times == 0) ? 0 : (dlsbg2x8mmx_pixels / dlsbg2x8mmx_times), (dlsbg2x8mmx_pixels == 0) ? 0 : (dlsbg2x8mmx / dlsbg2x8mmx_pixels));
-  
-  fprintf(F, "DrawBGLine1x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x16, dlsbg1x16_times, (dlsbg1x16_times == 0) ? 0 : (dlsbg1x16 / dlsbg1x16_times), dlsbg1x16_pixels, (dlsbg1x16_times == 0) ? 0 : (dlsbg1x16_pixels / dlsbg1x16_times), (dlsbg1x16_pixels == 0) ? 0 : (dlsbg1x16 / dlsbg1x16_pixels));
-  fprintf(F, "DrawBGLine1x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x16mmx, dlsbg1x16mmx_times, (dlsbg1x16mmx_times == 0) ? 0 : (dlsbg1x16mmx / dlsbg1x16mmx_times), dlsbg1x16mmx_pixels, (dlsbg1x16mmx_times == 0) ? 0 : (dlsbg1x16mmx_pixels / dlsbg1x16mmx_times), (dlsbg1x16mmx_pixels == 0) ? 0 : (dlsbg1x16mmx / dlsbg1x16mmx_pixels));
-  fprintf(F, "DrawBGLine2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x16, dlsbg2x16_times, (dlsbg2x16_times == 0) ? 0 : (dlsbg2x16 / dlsbg2x16_times), dlsbg2x16_pixels, (dlsbg2x16_times == 0) ? 0 : (dlsbg2x16_pixels / dlsbg2x16_times), (dlsbg2x16_pixels == 0) ? 0 : (dlsbg2x16 / dlsbg2x16_pixels));
-  fprintf(F, "DrawBGLine2x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x16mmx, dlsbg2x16mmx_times, (dlsbg2x16mmx_times == 0) ? 0 : (dlsbg2x16mmx / dlsbg2x16mmx_times), dlsbg2x16mmx_pixels, (dlsbg2x16mmx_times == 0) ? 0 : (dlsbg2x16mmx_pixels / dlsbg2x16mmx_times), (dlsbg2x16mmx_pixels == 0) ? 0 : (dlsbg2x16mmx / dlsbg2x16mmx_pixels));
-  
-  fprintf(F, "DrawBGLine1x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x24, dlsbg1x24_times, (dlsbg1x24_times == 0) ? 0 : (dlsbg1x24 / dlsbg1x24_times), dlsbg1x24_pixels, (dlsbg1x24_times == 0) ? 0 : (dlsbg1x24_pixels / dlsbg1x24_times), (dlsbg1x24_pixels == 0) ? 0 : (dlsbg1x24 / dlsbg1x24_pixels));
-  fprintf(F, "DrawBGLine1x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x24mmx, dlsbg1x24mmx_times, (dlsbg1x24mmx_times == 0) ? 0 : (dlsbg1x24mmx / dlsbg1x24mmx_times), dlsbg1x24mmx_pixels, (dlsbg1x24mmx_times == 0) ? 0 : (dlsbg1x24mmx_pixels / dlsbg1x24mmx_times), (dlsbg1x24mmx_pixels == 0) ? 0 : (dlsbg1x24mmx / dlsbg1x24mmx_pixels));
-  fprintf(F, "DrawBGLine2x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x24, dlsbg2x24_times, (dlsbg2x24_times == 0) ? 0 : (dlsbg2x24 / dlsbg2x24_times), dlsbg2x24_pixels, (dlsbg2x24_times == 0) ? 0 : (dlsbg2x24_pixels / dlsbg2x24_times), (dlsbg2x24_pixels == 0) ? 0 : (dlsbg2x24 / dlsbg2x24_pixels));
-  fprintf(F, "DrawBGLine2x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x24mmx, dlsbg2x24mmx_times, (dlsbg2x24mmx_times == 0) ? 0 : (dlsbg2x24mmx / dlsbg2x24mmx_times), dlsbg2x24mmx_pixels, (dlsbg2x24mmx_times == 0) ? 0 : (dlsbg2x24mmx_pixels / dlsbg2x24mmx_times), (dlsbg2x24mmx_pixels == 0) ? 0 : (dlsbg2x24mmx / dlsbg2x24mmx_pixels));
-  
-  fprintf(F, "DrawBGLine1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x32, dlsbg1x32_times, (dlsbg1x32_times == 0) ? 0 : (dlsbg1x32 / dlsbg1x32_times), dlsbg1x32_pixels, (dlsbg1x32_times == 0) ? 0 : (dlsbg1x32_pixels / dlsbg1x32_times), (dlsbg1x32_pixels == 0) ? 0 : (dlsbg1x32 / dlsbg1x32_pixels));
-  fprintf(F, "DrawBGLine1x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x32mmx, dlsbg1x32mmx_times, (dlsbg1x32mmx_times == 0) ? 0 : (dlsbg1x32mmx / dlsbg1x32mmx_times), dlsbg1x32mmx_pixels, (dlsbg1x32mmx_times == 0) ? 0 : (dlsbg1x32mmx_pixels / dlsbg1x32mmx_times), (dlsbg1x32mmx_pixels == 0) ? 0 : (dlsbg1x32mmx / dlsbg1x32mmx_pixels));
-  fprintf(F, "DrawBGLine2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x32, dlsbg2x32_times, (dlsbg2x32_times == 0) ? 0 : (dlsbg2x32 / dlsbg2x32_times), dlsbg2x32_pixels, (dlsbg2x32_times == 0) ? 0 : (dlsbg2x32_pixels / dlsbg2x32_times), (dlsbg2x32_pixels == 0) ? 0 : (dlsbg2x32 / dlsbg2x32_pixels));
-  fprintf(F, "DrawBGLine2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x32mmx, dlsbg2x32mmx_times, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_times), dlsbg2x32mmx_pixels, (dlsbg2x32mmx_times == 0) ? 0 : (dlsbg2x32mmx_pixels / dlsbg2x32mmx_times), (dlsbg2x32mmx_pixels == 0) ? 0 : (dlsbg2x32mmx / dlsbg2x32mmx_pixels));
-  
-  fprintf(F, "DrawNormal1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x8, dln1x8_times, (dln1x8_times == 0) ? 0 : (dln1x8 / dln1x8_times), dln1x8_pixels, (dln1x8_times == 0) ? 0 : (dln1x8_pixels / dln1x8_times), (dln1x8_pixels == 0) ? 0 : (dln1x8 / dln1x8_pixels));
-  fprintf(F, "DrawNormal1x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x8mmx, dln1x8mmx_times, (dln1x8mmx_times == 0) ? 0 : (dln1x8mmx / dln1x8mmx_times), dln1x8mmx_pixels, (dln1x8mmx_times == 0) ? 0 : (dln1x8mmx_pixels / dln1x8mmx_times), (dln1x8mmx_pixels == 0) ? 0 : (dln1x8mmx / dln1x8mmx_pixels));
-  fprintf(F, "DrawNormal2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x8, dln2x8_times, (dln2x8_times == 0) ? 0 : (dln2x8 / dln2x8_times), dln2x8_pixels, (dln2x8_times == 0) ? 0 : (dln2x8_pixels / dln2x8_times), (dln2x8_pixels == 0) ? 0 : (dln2x8 / dln2x8_pixels));
-  fprintf(F, "DrawNormal2x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x8mmx, dln2x8mmx_times, (dln2x8mmx_times == 0) ? 0 : (dln2x8mmx / dln2x8mmx_times), dln2x8mmx_pixels, (dln2x8mmx_times == 0) ? 0 : (dln2x8mmx_pixels / dln2x8mmx_times), (dln2x8mmx_pixels == 0) ? 0 : (dln2x8mmx / dln2x8mmx_pixels));
-  
-  fprintf(F, "DrawNormal1x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x16, dln1x16_times, (dln1x16_times == 0) ? 0 : (dln1x16 / dln1x16_times), dln1x16_pixels, (dln1x16_times == 0) ? 0 : (dln1x16_pixels / dln1x16_times), (dln1x16_pixels == 0) ? 0 : (dln1x16 / dln1x16_pixels));
-  fprintf(F, "DrawNormal1x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x16mmx, dln1x16mmx_times, (dln1x16mmx_times == 0) ? 0 : (dln1x16mmx / dln1x16mmx_times), dln1x16mmx_pixels, (dln1x16mmx_times == 0) ? 0 : (dln1x16mmx_pixels / dln1x16mmx_times), (dln1x16mmx_pixels == 0) ? 0 : (dln1x16mmx / dln1x16mmx_pixels));
-  fprintf(F, "DrawNormal2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x16, dln2x16_times, (dln2x16_times == 0) ? 0 : (dln2x16 / dln2x16_times), dln2x16_pixels, (dln2x16_times == 0) ? 0 : (dln2x16_pixels / dln2x16_times), (dln2x16_pixels == 0) ? 0 : (dln2x16 / dln2x16_pixels));  
-  fprintf(F, "DrawNormal2x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x16mmx, dln2x16mmx_times, (dln2x16mmx_times == 0) ? 0 : (dln2x16mmx / dln2x16mmx_times), dln2x16mmx_pixels, (dln2x16mmx_times == 0) ? 0 : (dln2x16mmx_pixels / dln2x16mmx_times), (dln2x16mmx_pixels == 0) ? 0 : (dln2x16mmx / dln2x16mmx_pixels));
-  
-  fprintf(F, "DrawNormal1x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x24, dln1x24_times, (dln1x24_times == 0) ? 0 : (dln1x24 / dln1x24_times), dln1x24_pixels, (dln1x24_times == 0) ? 0 : (dln1x24_pixels / dln1x24_times), (dln1x24_pixels == 0) ? 0 : (dln1x24 / dln1x24_pixels));
-  fprintf(F, "DrawNormal1x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x24mmx, dln1x24mmx_times, (dln1x24mmx_times == 0) ? 0 : (dln1x24mmx / dln1x24mmx_times), dln1x24mmx_pixels, (dln1x24mmx_times == 0) ? 0 : (dln1x24mmx_pixels / dln1x24mmx_times), (dln1x24mmx_pixels == 0) ? 0 : (dln1x24mmx / dln1x24mmx_pixels));
-  fprintf(F, "DrawNormal2x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x24, dln2x24_times, (dln2x24_times == 0) ? 0 : (dln2x24 / dln2x24_times), dln2x24_pixels, (dln2x24_times == 0) ? 0 : (dln2x24_pixels / dln2x24_times), (dln2x24_pixels == 0) ? 0 : (dln2x24 / dln2x24_pixels));
-  fprintf(F, "DrawNormal2x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x24mmx, dln2x24mmx_times, (dln2x24mmx_times == 0) ? 0 : (dln2x24mmx / dln2x24mmx_times), dln2x24mmx_pixels, (dln2x24mmx_times == 0) ? 0 : (dln2x24mmx_pixels / dln2x24mmx_times), (dln2x24mmx_pixels == 0) ? 0 : (dln2x24mmx / dln2x24mmx_pixels));
-  
-  fprintf(F, "DrawNormal1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x32, dln1x32_times, (dln1x32_times == 0) ? 0 : (dln1x32 / dln1x32_times), dln1x32_pixels, (dln1x32_times == 0) ? 0 : (dln1x32_pixels / dln1x32_times), (dln1x32_pixels == 0) ? 0 : (dln1x32 / dln1x32_pixels));
-  fprintf(F, "DrawNormal1x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x32mmx, dln1x32mmx_times, (dln1x32mmx_times == 0) ? 0 : (dln1x32mmx / dln1x32mmx_times), dln1x32mmx_pixels, (dln1x32mmx_times == 0) ? 0 : (dln1x32mmx_pixels / dln1x32mmx_times), (dln1x32mmx_pixels == 0) ? 0 : (dln1x32mmx / dln1x32mmx_pixels));
-  fprintf(F, "DrawNormal2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x32, dln2x32_times, (dln2x32_times == 0) ? 0 : (dln2x32 / dln2x32_times), dln2x32_pixels, (dln2x32_times == 0) ? 0 : (dln2x32_pixels / dln2x32_times), (dln2x32_pixels == 0) ? 0 : (dln2x32 / dln2x32_pixels));
-  fprintf(F, "DrawNormal2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x32mmx, dln2x32mmx_times, (dln2x32mmx_times == 0) ? 0 : (dln2x32mmx / dln2x32mmx_times), dln2x32mmx_pixels, (dln2x32mmx_times == 0) ? 0 : (dln2x32mmx_pixels / dln2x32mmx_times), (dln2x32mmx_pixels == 0) ? 0 : (dln2x32mmx / dln2x32mmx_pixels));
-  
-  fprintf(F, "DrawDual1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x8, dld1x8_times, (dld1x8_times == 0) ? 0 : (dld1x8 / dld1x8_times), dld1x8_pixels, (dld1x8_times == 0) ? 0 : (dld1x8_pixels / dld1x8_times), (dld1x8_pixels == 0) ? 0 : (dld1x8 / dld1x8_pixels));
-  fprintf(F, "DrawDual1x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x8mmx, dld1x8mmx_times, (dld1x8mmx_times == 0) ? 0 : (dld1x8mmx / dld1x8mmx_times), dld1x8mmx_pixels, (dld1x8mmx_times == 0) ? 0 : (dld1x8mmx_pixels / dld1x8mmx_times), (dld1x8mmx_pixels == 0) ? 0 : (dld1x8mmx / dld1x8mmx_pixels));
-  fprintf(F, "DrawDual2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x8, dld2x8_times, (dld2x8_times == 0) ? 0 : (dld2x8 / dld2x8_times), dld2x8_pixels, (dld2x8_times == 0) ? 0 : (dld2x8_pixels / dld2x8_times), (dld2x8_pixels == 0) ? 0 : (dld2x8 / dld2x8_pixels));
-  fprintf(F, "DrawDual2x8mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x8mmx, dld2x8mmx_times, (dld2x8mmx_times == 0) ? 0 : (dld2x8mmx / dld2x8mmx_times), dld2x8mmx_pixels, (dld2x8mmx_times == 0) ? 0 : (dld2x8mmx_pixels / dld2x8mmx_times), (dld2x8mmx_pixels == 0) ? 0 : (dld2x8mmx / dld2x8mmx_pixels));
-  
-  fprintf(F, "DrawDual1x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x16, dld1x16_times, (dld1x16_times == 0) ? 0 : (dld1x16 / dld1x16_times), dld1x16_pixels, (dld1x16_times == 0) ? 0 : (dld1x16_pixels / dld1x16_times), (dld1x16_pixels == 0) ? 0 : (dld1x16 / dld1x16_pixels));
-  fprintf(F, "DrawDual1x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x16mmx, dld1x16mmx_times, (dld1x16mmx_times == 0) ? 0 : (dld1x16mmx / dld1x16mmx_times), dld1x16mmx_pixels, (dld1x16mmx_times == 0) ? 0 : (dld1x16mmx_pixels / dld1x16mmx_times), (dld1x16mmx_pixels == 0) ? 0 : (dld1x16mmx / dld1x16mmx_pixels));
-  fprintf(F, "DrawDual2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x16, dld2x16_times, (dld2x16_times == 0) ? 0 : (dld2x16 / dld2x16_times), dld2x16_pixels, (dld2x16_times == 0) ? 0 : (dld2x16_pixels / dld2x16_times), (dld2x16_pixels == 0) ? 0 : (dld2x16 / dld2x16_pixels));
-  fprintf(F, "DrawDual2x16mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x16mmx, dld2x16mmx_times, (dld2x16mmx_times == 0) ? 0 : (dld2x16mmx / dld2x16mmx_times), dld2x16mmx_pixels, (dld2x16mmx_times == 0) ? 0 : (dld2x16mmx_pixels / dld2x16mmx_times), (dld2x16mmx_pixels == 0) ? 0 : (dld2x16mmx / dld2x16mmx_pixels));
-  
-  fprintf(F, "DrawDual1x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x24, dld1x24_times, (dld1x24_times == 0) ? 0 : (dld1x24 / dld1x24_times), dld1x24_pixels, (dld1x24_times == 0) ? 0 : (dld1x24_pixels / dld1x24_times), (dld1x24_pixels == 0) ? 0 : (dld1x24 / dld1x24_pixels));
-  fprintf(F, "DrawDual1x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x24mmx, dld1x24mmx_times, (dld1x24mmx_times == 0) ? 0 : (dld1x24mmx / dld1x24mmx_times), dld1x24mmx_pixels, (dld1x24mmx_times == 0) ? 0 : (dld1x24mmx_pixels / dld1x24mmx_times), (dld1x24mmx_pixels == 0) ? 0 : (dld1x24mmx / dld1x24mmx_pixels));
-  fprintf(F, "DrawDual2x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x24, dld2x24_times, (dld2x24_times == 0) ? 0 : (dld2x24 / dld2x24_times), dld2x24_pixels, (dld2x24_times == 0) ? 0 : (dld2x24_pixels / dld2x24_times), (dld2x24_pixels == 0) ? 0 : (dld2x24 / dld2x24_pixels));
-  fprintf(F, "DrawDual2x24mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x24mmx, dld2x24mmx_times, (dld2x24mmx_times == 0) ? 0 : (dld2x24mmx / dld2x24mmx_times), dld2x24mmx_pixels, (dld2x24mmx_times == 0) ? 0 : (dld2x24mmx_pixels / dld2x24mmx_times), (dld2x24mmx_pixels == 0) ? 0 : (dld2x24mmx / dld2x24mmx_pixels));
+ 
+  // drawing background lines
 
-  fprintf(F, "DrawDual1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x32, dld1x32_times, (dld1x32_times == 0) ? 0 : (dld1x32 / dld1x32_times), dld1x32_pixels, (dld1x32_times == 0) ? 0 : (dld1x32_pixels / dld1x32_times), (dld1x32_pixels == 0) ? 0 : (dld1x32 / dld1x32_pixels));
-  fprintf(F, "DrawDual1x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x32mmx, dld1x32mmx_times, (dld1x32mmx_times == 0) ? 0 : (dld1x32mmx / dld1x32mmx_times), dld1x32mmx_pixels, (dld1x32mmx_times == 0) ? 0 : (dld1x32mmx_pixels / dld1x32mmx_times), (dld1x32mmx_pixels == 0) ? 0 : (dld1x32mmx / dld1x32mmx_pixels));
-  fprintf(F, "DrawDual2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x32, dld2x32_times, (dld2x32_times == 0) ? 0 : (dld2x32 / dld2x32_times), dld2x32_pixels, (dld2x32_times == 0) ? 0 : (dld2x32_pixels / dld2x32_times), (dld2x32_pixels == 0) ? 0 : (dld2x32 / dld2x32_pixels));
-  fprintf(F, "DrawDual2x32mmx\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x32mmx, dld2x32mmx_times, (dld2x32mmx_times == 0) ? 0 : (dld2x32mmx / dld2x32mmx_times), dld2x32mmx_pixels, (dld2x32mmx_times == 0) ? 0 : (dld2x32mmx_pixels / dld2x32mmx_times), (dld2x32mmx_pixels == 0) ? 0 : (dld2x32mmx / dld2x32mmx_pixels));
-
-  fprintf(F, "DrawHAM1x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x8, dlh1x8_times, (dlh1x8_times == 0) ? 0 : (dlh1x8 / dlh1x8_times), dlh1x8_pixels, (dlh1x8_times == 0) ? 0 : (dlh1x8_pixels / dlh1x8_times), (dlh1x8_pixels == 0) ? 0 : (dlh1x8 / dlh1x8_pixels));
-  fprintf(F, "DrawHAM2x8\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x8, dlh2x8_times, (dlh2x8_times == 0) ? 0 : (dlh2x8 / dlh2x8_times), dlh2x8_pixels, (dlh2x8_times == 0) ? 0 : (dlh2x8_pixels / dlh2x8_times), (dlh2x8_pixels == 0) ? 0 : (dlh2x8 / dlh2x8_pixels));
+  fprintf(F, "drawLineBG1x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x1__8bit, dlsbg1x1__8bit_times, (dlsbg1x1__8bit_times == 0) ? 0 : (dlsbg1x1__8bit / dlsbg1x1__8bit_times), dlsbg1x1__8bit_pixels, (dlsbg1x1__8bit_times == 0) ? 0 : (dlsbg1x1__8bit_pixels / dlsbg1x1__8bit_times), (dlsbg1x1__8bit_pixels == 0) ? 0 : (dlsbg1x1__8bit / dlsbg1x1__8bit_pixels));
+  fprintf(F, "drawLineBG2x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x1__8bit, dlsbg2x1__8bit_times, (dlsbg2x1__8bit_times == 0) ? 0 : (dlsbg2x1__8bit / dlsbg2x1__8bit_times), dlsbg2x1__8bit_pixels, (dlsbg2x1__8bit_times == 0) ? 0 : (dlsbg2x1__8bit_pixels / dlsbg2x1__8bit_times), (dlsbg2x1__8bit_pixels == 0) ? 0 : (dlsbg2x1__8bit / dlsbg2x1__8bit_pixels));
+  fprintf(F, "drawLineBG1x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x2__8bit, dlsbg1x2__8bit_times, (dlsbg1x2__8bit_times == 0) ? 0 : (dlsbg1x2__8bit / dlsbg1x2__8bit_times), dlsbg1x2__8bit_pixels, (dlsbg1x2__8bit_times == 0) ? 0 : (dlsbg1x2__8bit_pixels / dlsbg1x2__8bit_times), (dlsbg1x2__8bit_pixels == 0) ? 0 : (dlsbg1x2__8bit / dlsbg1x2__8bit_pixels));
+  fprintf(F, "drawLineBG2x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x2__8bit, dlsbg2x2__8bit_times, (dlsbg2x2__8bit_times == 0) ? 0 : (dlsbg2x2__8bit / dlsbg2x2__8bit_times), dlsbg2x2__8bit_pixels, (dlsbg2x2__8bit_times == 0) ? 0 : (dlsbg2x2__8bit_pixels / dlsbg2x2__8bit_times), (dlsbg2x2__8bit_pixels == 0) ? 0 : (dlsbg2x2__8bit / dlsbg2x2__8bit_pixels));
   
-  fprintf(F, "DrawHAM1x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x16, dlh1x16_times, (dlh1x16_times == 0) ? 0 : (dlh1x16 / dlh1x16_times), dlh1x16_pixels, (dlh1x16_times == 0) ? 0 : (dlh1x16_pixels / dlh1x16_times), (dlh1x16_pixels == 0) ? 0 : (dlh1x16 / dlh1x16_pixels));
-  fprintf(F, "DrawHAM2x16\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x16, dlh2x16_times, (dlh2x16_times == 0) ? 0 : (dlh2x16 / dlh2x16_times), dlh2x16_pixels, (dlh2x16_times == 0) ? 0 : (dlh2x16_pixels / dlh2x16_times), (dlh2x16_pixels == 0) ? 0 : (dlh2x16 / dlh2x16_pixels));
+  fprintf(F, "drawLineBG1x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x1_16bit, dlsbg1x1_16bit_times, (dlsbg1x1_16bit_times == 0) ? 0 : (dlsbg1x1_16bit / dlsbg1x1_16bit_times), dlsbg1x1_16bit_pixels, (dlsbg1x1_16bit_times == 0) ? 0 : (dlsbg1x1_16bit_pixels / dlsbg1x1_16bit_times), (dlsbg1x1_16bit_pixels == 0) ? 0 : (dlsbg1x1_16bit / dlsbg1x1_16bit_pixels));
+  fprintf(F, "drawLineBG2x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x1_16bit, dlsbg2x1_16bit_times, (dlsbg2x1_16bit_times == 0) ? 0 : (dlsbg2x1_16bit / dlsbg2x1_16bit_times), dlsbg2x1_16bit_pixels, (dlsbg2x1_16bit_times == 0) ? 0 : (dlsbg2x1_16bit_pixels / dlsbg2x1_16bit_times), (dlsbg2x1_16bit_pixels == 0) ? 0 : (dlsbg2x1_16bit / dlsbg2x1_16bit_pixels));
+  fprintf(F, "drawLineBG1x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x2_16bit, dlsbg1x2_16bit_times, (dlsbg1x2_16bit_times == 0) ? 0 : (dlsbg1x2_16bit / dlsbg1x2_16bit_times), dlsbg1x2_16bit_pixels, (dlsbg1x2_16bit_times == 0) ? 0 : (dlsbg1x2_16bit_pixels / dlsbg1x2_16bit_times), (dlsbg1x2_16bit_pixels == 0) ? 0 : (dlsbg1x2_16bit / dlsbg1x2_16bit_pixels));
+  fprintf(F, "drawLineBG2x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x2_16bit, dlsbg2x2_16bit_times, (dlsbg2x2_16bit_times == 0) ? 0 : (dlsbg2x2_16bit / dlsbg2x2_16bit_times), dlsbg2x2_16bit_pixels, (dlsbg2x2_16bit_times == 0) ? 0 : (dlsbg2x2_16bit_pixels / dlsbg2x2_16bit_times), (dlsbg2x2_16bit_pixels == 0) ? 0 : (dlsbg2x2_16bit / dlsbg2x2_16bit_pixels));
   
-  fprintf(F, "DrawHAM1x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x24, dlh1x24_times, (dlh1x24_times == 0) ? 0 : (dlh1x24 / dlh1x24_times), dlh1x24_pixels, (dlh1x24_times == 0) ? 0 : (dlh1x24_pixels / dlh1x24_times), (dlh1x24_pixels == 0) ? 0 : (dlh1x24 / dlh1x24_pixels));
-  fprintf(F, "DrawHAM2x24\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x24, dlh2x24_times, (dlh2x24_times == 0) ? 0 : (dlh2x24 / dlh2x24_times), dlh2x24_pixels, (dlh2x24_times == 0) ? 0 : (dlh2x24_pixels / dlh2x24_times), (dlh2x24_pixels == 0) ? 0 : (dlh2x24 / dlh2x24_pixels));
+  fprintf(F, "drawLineBG1x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x1_24bit, dlsbg1x1_24bit_times, (dlsbg1x1_24bit_times == 0) ? 0 : (dlsbg1x1_24bit / dlsbg1x1_24bit_times), dlsbg1x1_24bit_pixels, (dlsbg1x1_24bit_times == 0) ? 0 : (dlsbg1x1_24bit_pixels / dlsbg1x1_24bit_times), (dlsbg1x1_24bit_pixels == 0) ? 0 : (dlsbg1x1_24bit / dlsbg1x1_24bit_pixels));
+  fprintf(F, "drawLineBG2x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x1_24bit, dlsbg2x1_24bit_times, (dlsbg2x1_24bit_times == 0) ? 0 : (dlsbg2x1_24bit / dlsbg2x1_24bit_times), dlsbg2x1_24bit_pixels, (dlsbg2x1_24bit_times == 0) ? 0 : (dlsbg2x1_24bit_pixels / dlsbg2x1_24bit_times), (dlsbg2x1_24bit_pixels == 0) ? 0 : (dlsbg2x1_24bit / dlsbg2x1_24bit_pixels));
+  fprintf(F, "drawLineBG1x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x2_24bit, dlsbg1x2_24bit_times, (dlsbg1x2_24bit_times == 0) ? 0 : (dlsbg1x2_24bit / dlsbg1x2_24bit_times), dlsbg1x2_24bit_pixels, (dlsbg1x2_24bit_times == 0) ? 0 : (dlsbg1x2_24bit_pixels / dlsbg1x2_24bit_times), (dlsbg1x2_24bit_pixels == 0) ? 0 : (dlsbg1x2_24bit / dlsbg1x2_24bit_pixels));
+  fprintf(F, "drawLineBG2x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x2_24bit, dlsbg2x2_24bit_times, (dlsbg2x2_24bit_times == 0) ? 0 : (dlsbg2x2_24bit / dlsbg2x2_24bit_times), dlsbg2x2_24bit_pixels, (dlsbg2x2_24bit_times == 0) ? 0 : (dlsbg2x2_24bit_pixels / dlsbg2x2_24bit_times), (dlsbg2x2_24bit_pixels == 0) ? 0 : (dlsbg2x2_24bit / dlsbg2x2_24bit_pixels));
+  
+  fprintf(F, "drawLineBG1x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x1_32bit, dlsbg1x1_32bit_times, (dlsbg1x1_32bit_times == 0) ? 0 : (dlsbg1x1_32bit / dlsbg1x1_32bit_times), dlsbg1x1_32bit_pixels, (dlsbg1x1_32bit_times == 0) ? 0 : (dlsbg1x1_32bit_pixels / dlsbg1x1_32bit_times), (dlsbg1x1_32bit_pixels == 0) ? 0 : (dlsbg1x1_32bit / dlsbg1x1_32bit_pixels));
+  fprintf(F, "drawLineBG2x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x1_32bit, dlsbg2x1_32bit_times, (dlsbg2x1_32bit_times == 0) ? 0 : (dlsbg2x1_32bit / dlsbg2x1_32bit_times), dlsbg2x1_32bit_pixels, (dlsbg2x1_32bit_times == 0) ? 0 : (dlsbg2x1_32bit_pixels / dlsbg2x1_32bit_times), (dlsbg2x1_32bit_pixels == 0) ? 0 : (dlsbg2x1_32bit / dlsbg2x1_32bit_pixels));
+  fprintf(F, "drawLineBG1x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg1x2_32bit, dlsbg1x2_32bit_times, (dlsbg1x2_32bit_times == 0) ? 0 : (dlsbg1x2_32bit / dlsbg1x2_32bit_times), dlsbg1x2_32bit_pixels, (dlsbg1x2_32bit_times == 0) ? 0 : (dlsbg1x2_32bit_pixels / dlsbg1x2_32bit_times), (dlsbg1x2_32bit_pixels == 0) ? 0 : (dlsbg1x2_32bit / dlsbg1x2_32bit_pixels));
+  fprintf(F, "drawLineBG2x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlsbg2x2_32bit, dlsbg2x2_32bit_times, (dlsbg2x2_32bit_times == 0) ? 0 : (dlsbg2x2_32bit / dlsbg2x2_32bit_times), dlsbg2x2_32bit_pixels, (dlsbg2x2_32bit_times == 0) ? 0 : (dlsbg2x2_32bit_pixels / dlsbg2x2_32bit_times), (dlsbg2x2_32bit_pixels == 0) ? 0 : (dlsbg2x2_32bit / dlsbg2x2_32bit_pixels));
 
-  fprintf(F, "DrawHAM1x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x32, dlh1x32_times, (dlh1x32_times == 0) ? 0 : (dlh1x32 / dlh1x32_times), dlh1x32_pixels, (dlh1x32_times == 0) ? 0 : (dlh1x32_pixels / dlh1x32_times), (dlh1x32_pixels == 0) ? 0 : (dlh1x32 / dlh1x32_pixels));
-  fprintf(F, "DrawHAM2x32\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x32, dlh2x32_times, (dlh2x32_times == 0) ? 0 : (dlh2x32 / dlh2x32_times), dlh2x32_pixels, (dlh2x32_times == 0) ? 0 : (dlh2x32_pixels / dlh2x32_times), (dlh2x32_pixels == 0) ? 0 : (dlh2x32 / dlh2x32_pixels));
+  // drawing normal lines
+  
+  fprintf(F, "drawLineNormal1x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x1__8bit, dln1x1__8bit_times, (dln1x1__8bit_times == 0) ? 0 : (dln1x1__8bit / dln1x1__8bit_times), dln1x1__8bit_pixels, (dln1x1__8bit_times == 0) ? 0 : (dln1x1__8bit_pixels / dln1x1__8bit_times), (dln1x1__8bit_pixels == 0) ? 0 : (dln1x1__8bit / dln1x1__8bit_pixels));
+  fprintf(F, "drawLineNormal2x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x1__8bit, dln2x1__8bit_times, (dln2x1__8bit_times == 0) ? 0 : (dln2x1__8bit / dln2x1__8bit_times), dln2x1__8bit_pixels, (dln2x1__8bit_times == 0) ? 0 : (dln2x1__8bit_pixels / dln2x1__8bit_times), (dln2x1__8bit_pixels == 0) ? 0 : (dln2x1__8bit / dln2x1__8bit_pixels));
+  fprintf(F, "drawLineNormal1x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x2__8bit, dln1x2__8bit_times, (dln1x2__8bit_times == 0) ? 0 : (dln1x2__8bit / dln1x2__8bit_times), dln1x2__8bit_pixels, (dln1x2__8bit_times == 0) ? 0 : (dln1x2__8bit_pixels / dln1x2__8bit_times), (dln1x2__8bit_pixels == 0) ? 0 : (dln1x1__8bit / dln1x2__8bit_pixels));
+  fprintf(F, "drawLineNormal2x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x2__8bit, dln2x2__8bit_times, (dln2x2__8bit_times == 0) ? 0 : (dln2x2__8bit / dln2x2__8bit_times), dln2x2__8bit_pixels, (dln2x2__8bit_times == 0) ? 0 : (dln2x2__8bit_pixels / dln2x2__8bit_times), (dln2x2__8bit_pixels == 0) ? 0 : (dln2x1__8bit / dln2x2__8bit_pixels));
+  
+  fprintf(F, "drawLineNormal1x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x1_16bit, dln1x1_16bit_times, (dln1x1_16bit_times == 0) ? 0 : (dln1x1_16bit / dln1x1_16bit_times), dln1x1_16bit_pixels, (dln1x1_16bit_times == 0) ? 0 : (dln1x1_16bit_pixels / dln1x1_16bit_times), (dln1x1_16bit_pixels == 0) ? 0 : (dln1x1_16bit / dln1x1_16bit_pixels));
+  fprintf(F, "drawLineNormal2x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x1_16bit, dln2x1_16bit_times, (dln2x1_16bit_times == 0) ? 0 : (dln2x1_16bit / dln2x1_16bit_times), dln2x1_16bit_pixels, (dln2x1_16bit_times == 0) ? 0 : (dln2x1_16bit_pixels / dln2x1_16bit_times), (dln2x1_16bit_pixels == 0) ? 0 : (dln2x1_16bit / dln2x1_16bit_pixels));
+  fprintf(F, "drawLineNormal1x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x2_16bit, dln1x2_16bit_times, (dln1x2_16bit_times == 0) ? 0 : (dln1x2_16bit / dln1x2_16bit_times), dln1x2_16bit_pixels, (dln1x2_16bit_times == 0) ? 0 : (dln1x2_16bit_pixels / dln1x2_16bit_times), (dln1x2_16bit_pixels == 0) ? 0 : (dln1x2_16bit / dln1x2_16bit_pixels));
+  fprintf(F, "drawLineNormal2x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x2_16bit, dln2x2_16bit_times, (dln2x2_16bit_times == 0) ? 0 : (dln2x2_16bit / dln2x2_16bit_times), dln2x2_16bit_pixels, (dln2x2_16bit_times == 0) ? 0 : (dln2x2_16bit_pixels / dln2x2_16bit_times), (dln2x2_16bit_pixels == 0) ? 0 : (dln2x2_16bit / dln2x2_16bit_pixels));
+  
+  fprintf(F, "drawLineNormal1x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x1_24bit, dln1x1_24bit_times, (dln1x1_24bit_times == 0) ? 0 : (dln1x1_24bit / dln1x1_24bit_times), dln1x1_24bit_pixels, (dln1x1_24bit_times == 0) ? 0 : (dln1x1_24bit_pixels / dln1x1_24bit_times), (dln1x1_24bit_pixels == 0) ? 0 : (dln1x1_24bit / dln1x1_24bit_pixels));
+  fprintf(F, "drawLineNormal2x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x1_24bit, dln2x1_24bit_times, (dln2x1_24bit_times == 0) ? 0 : (dln2x1_24bit / dln2x1_24bit_times), dln2x1_24bit_pixels, (dln2x1_24bit_times == 0) ? 0 : (dln2x1_24bit_pixels / dln2x1_24bit_times), (dln2x1_24bit_pixels == 0) ? 0 : (dln2x1_24bit / dln2x1_24bit_pixels));
+  fprintf(F, "drawLineNormal1x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x2_24bit, dln1x2_24bit_times, (dln1x2_24bit_times == 0) ? 0 : (dln1x2_24bit / dln1x2_24bit_times), dln1x2_24bit_pixels, (dln1x2_24bit_times == 0) ? 0 : (dln1x2_24bit_pixels / dln1x2_24bit_times), (dln1x2_24bit_pixels == 0) ? 0 : (dln1x2_24bit / dln1x2_24bit_pixels));
+  fprintf(F, "drawLineNormal2x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x2_24bit, dln2x2_24bit_times, (dln2x2_24bit_times == 0) ? 0 : (dln2x2_24bit / dln2x2_24bit_times), dln2x2_24bit_pixels, (dln2x2_24bit_times == 0) ? 0 : (dln2x2_24bit_pixels / dln2x2_24bit_times), (dln2x2_24bit_pixels == 0) ? 0 : (dln2x2_24bit / dln2x2_24bit_pixels));
+  
+  fprintf(F, "drawLineNormal1x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x1_32bit, dln1x1_32bit_times, (dln1x1_32bit_times == 0) ? 0 : (dln1x1_32bit / dln1x1_32bit_times), dln1x1_32bit_pixels, (dln1x1_32bit_times == 0) ? 0 : (dln1x1_32bit_pixels / dln1x1_32bit_times), (dln1x1_32bit_pixels == 0) ? 0 : (dln1x1_32bit / dln1x1_32bit_pixels));
+  fprintf(F, "drawLineNormal2x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x1_32bit, dln2x1_32bit_times, (dln2x1_32bit_times == 0) ? 0 : (dln2x1_32bit / dln2x1_32bit_times), dln2x1_32bit_pixels, (dln2x1_32bit_times == 0) ? 0 : (dln2x1_32bit_pixels / dln2x1_32bit_times), (dln2x1_32bit_pixels == 0) ? 0 : (dln2x1_32bit / dln2x1_32bit_pixels));
+  fprintf(F, "drawLineNormal1x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln1x2_32bit, dln1x2_32bit_times, (dln1x2_32bit_times == 0) ? 0 : (dln1x2_32bit / dln1x2_32bit_times), dln1x2_32bit_pixels, (dln1x2_32bit_times == 0) ? 0 : (dln1x2_32bit_pixels / dln1x2_32bit_times), (dln1x2_32bit_pixels == 0) ? 0 : (dln1x2_32bit / dln1x2_32bit_pixels));
+  fprintf(F, "drawLineNormal2x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dln2x2_32bit, dln2x2_32bit_times, (dln2x2_32bit_times == 0) ? 0 : (dln2x2_32bit / dln2x2_32bit_times), dln2x2_32bit_pixels, (dln2x2_32bit_times == 0) ? 0 : (dln2x2_32bit_pixels / dln2x2_32bit_times), (dln2x2_32bit_pixels == 0) ? 0 : (dln2x2_32bit / dln2x2_32bit_pixels));
+  
+  // drawing dual playfield lines
 
+  fprintf(F, "drawLineDual1x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x1__8bit, dld1x1__8bit_times, (dld1x1__8bit_times == 0) ? 0 : (dld1x1__8bit / dld1x1__8bit_times), dld1x1__8bit_pixels, (dld1x1__8bit_times == 0) ? 0 : (dld1x1__8bit_pixels / dld1x1__8bit_times), (dld1x1__8bit_pixels == 0) ? 0 : (dld1x1__8bit / dld1x1__8bit_pixels));
+  fprintf(F, "drawLineDual2x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x1__8bit, dld2x1__8bit_times, (dld2x1__8bit_times == 0) ? 0 : (dld2x1__8bit / dld2x1__8bit_times), dld2x1__8bit_pixels, (dld2x1__8bit_times == 0) ? 0 : (dld2x1__8bit_pixels / dld2x1__8bit_times), (dld2x1__8bit_pixels == 0) ? 0 : (dld2x1__8bit / dld2x1__8bit_pixels));
+  fprintf(F, "drawLineDual1x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x2__8bit, dld1x2__8bit_times, (dld1x2__8bit_times == 0) ? 0 : (dld1x2__8bit / dld1x2__8bit_times), dld1x2__8bit_pixels, (dld1x2__8bit_times == 0) ? 0 : (dld1x2__8bit_pixels / dld1x2__8bit_times), (dld1x2__8bit_pixels == 0) ? 0 : (dld1x2__8bit / dld1x2__8bit_pixels));
+  fprintf(F, "drawLineDual2x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x2__8bit, dld2x2__8bit_times, (dld2x2__8bit_times == 0) ? 0 : (dld2x2__8bit / dld2x2__8bit_times), dld2x2__8bit_pixels, (dld2x2__8bit_times == 0) ? 0 : (dld2x2__8bit_pixels / dld2x2__8bit_times), (dld2x2__8bit_pixels == 0) ? 0 : (dld2x2__8bit / dld2x2__8bit_pixels));
+  
+  fprintf(F, "drawLineDual1x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x1_16bit, dld1x1_16bit_times, (dld1x1_16bit_times == 0) ? 0 : (dld1x1_16bit / dld1x1_16bit_times), dld1x1_16bit_pixels, (dld1x1_16bit_times == 0) ? 0 : (dld1x1_16bit_pixels / dld1x1_16bit_times), (dld1x1_16bit_pixels == 0) ? 0 : (dld1x1_16bit / dld1x1_16bit_pixels));
+  fprintf(F, "drawLineDual2x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x1_16bit, dld2x1_16bit_times, (dld2x1_16bit_times == 0) ? 0 : (dld2x1_16bit / dld2x1_16bit_times), dld2x1_16bit_pixels, (dld2x1_16bit_times == 0) ? 0 : (dld2x1_16bit_pixels / dld2x1_16bit_times), (dld2x1_16bit_pixels == 0) ? 0 : (dld2x1_16bit / dld2x1_16bit_pixels));
+  fprintf(F, "drawLineDual1x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x2_16bit, dld1x2_16bit_times, (dld1x2_16bit_times == 0) ? 0 : (dld1x2_16bit / dld1x2_16bit_times), dld1x2_16bit_pixels, (dld1x2_16bit_times == 0) ? 0 : (dld1x2_16bit_pixels / dld1x2_16bit_times), (dld1x2_16bit_pixels == 0) ? 0 : (dld1x2_16bit / dld1x2_16bit_pixels));
+  fprintf(F, "drawLineDual2x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x2_16bit, dld2x2_16bit_times, (dld2x2_16bit_times == 0) ? 0 : (dld2x2_16bit / dld2x2_16bit_times), dld2x2_16bit_pixels, (dld2x2_16bit_times == 0) ? 0 : (dld2x2_16bit_pixels / dld2x2_16bit_times), (dld2x2_16bit_pixels == 0) ? 0 : (dld2x2_16bit / dld2x2_16bit_pixels));
+  
+  fprintf(F, "drawLineDual1x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x1_24bit, dld1x1_24bit_times, (dld1x1_24bit_times == 0) ? 0 : (dld1x1_24bit / dld1x1_24bit_times), dld1x1_24bit_pixels, (dld1x1_24bit_times == 0) ? 0 : (dld1x1_24bit_pixels / dld1x1_24bit_times), (dld1x1_24bit_pixels == 0) ? 0 : (dld1x1_24bit / dld1x1_24bit_pixels));
+  fprintf(F, "drawLineDual2x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x1_24bit, dld2x1_24bit_times, (dld2x1_24bit_times == 0) ? 0 : (dld2x1_24bit / dld2x1_24bit_times), dld2x1_24bit_pixels, (dld2x1_24bit_times == 0) ? 0 : (dld2x1_24bit_pixels / dld2x1_24bit_times), (dld2x1_24bit_pixels == 0) ? 0 : (dld2x1_24bit / dld2x1_24bit_pixels));
+  fprintf(F, "drawLineDual1x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x2_24bit, dld1x2_24bit_times, (dld1x2_24bit_times == 0) ? 0 : (dld1x2_24bit / dld1x2_24bit_times), dld1x2_24bit_pixels, (dld1x2_24bit_times == 0) ? 0 : (dld1x2_24bit_pixels / dld1x2_24bit_times), (dld1x2_24bit_pixels == 0) ? 0 : (dld1x2_24bit / dld1x2_24bit_pixels));
+  fprintf(F, "drawLineDual2x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x2_24bit, dld2x2_24bit_times, (dld2x2_24bit_times == 0) ? 0 : (dld2x2_24bit / dld2x2_24bit_times), dld2x2_24bit_pixels, (dld2x2_24bit_times == 0) ? 0 : (dld2x2_24bit_pixels / dld2x2_24bit_times), (dld2x2_24bit_pixels == 0) ? 0 : (dld2x2_24bit / dld2x2_24bit_pixels));
+  
+  fprintf(F, "drawLineDual1x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x1_32bit, dld1x1_32bit_times, (dld1x1_32bit_times == 0) ? 0 : (dld1x1_32bit / dld1x1_32bit_times), dld1x1_32bit_pixels, (dld1x1_32bit_times == 0) ? 0 : (dld1x1_32bit_pixels / dld1x1_32bit_times), (dld1x1_32bit_pixels == 0) ? 0 : (dld1x1_32bit / dld1x1_32bit_pixels));
+  fprintf(F, "drawLineDual2x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x1_32bit, dld2x1_32bit_times, (dld2x1_32bit_times == 0) ? 0 : (dld2x1_32bit / dld2x1_32bit_times), dld2x1_32bit_pixels, (dld2x1_32bit_times == 0) ? 0 : (dld2x1_32bit_pixels / dld2x1_32bit_times), (dld2x1_32bit_pixels == 0) ? 0 : (dld2x1_32bit / dld2x1_32bit_pixels));
+  fprintf(F, "drawLineDual1x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld1x2_32bit, dld1x2_32bit_times, (dld1x2_32bit_times == 0) ? 0 : (dld1x2_32bit / dld1x2_32bit_times), dld1x2_32bit_pixels, (dld1x2_32bit_times == 0) ? 0 : (dld1x2_32bit_pixels / dld1x2_32bit_times), (dld1x2_32bit_pixels == 0) ? 0 : (dld1x2_32bit / dld1x2_32bit_pixels));
+  fprintf(F, "drawLineDual2x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dld2x2_32bit, dld2x2_32bit_times, (dld2x2_32bit_times == 0) ? 0 : (dld2x2_32bit / dld2x2_32bit_times), dld2x2_32bit_pixels, (dld2x2_32bit_times == 0) ? 0 : (dld2x2_32bit_pixels / dld2x2_32bit_times), (dld2x2_32bit_pixels == 0) ? 0 : (dld2x2_32bit / dld2x2_32bit_pixels));
+ 
+  // drawing HAM lines
+
+  fprintf(F, "drawLineHAM1x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x1__8bit, dlh1x1__8bit_times, (dlh1x1__8bit_times == 0) ? 0 : (dlh1x1__8bit / dlh1x1__8bit_times), dlh1x1__8bit_pixels, (dlh1x1__8bit_times == 0) ? 0 : (dlh1x1__8bit_pixels / dlh1x1__8bit_times), (dlh1x1__8bit_pixels == 0) ? 0 : (dlh1x1__8bit / dlh1x1__8bit_pixels));
+  fprintf(F, "drawLineHAM2x1__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x1__8bit, dlh2x1__8bit_times, (dlh2x1__8bit_times == 0) ? 0 : (dlh2x1__8bit / dlh2x1__8bit_times), dlh2x1__8bit_pixels, (dlh2x1__8bit_times == 0) ? 0 : (dlh2x1__8bit_pixels / dlh2x1__8bit_times), (dlh2x1__8bit_pixels == 0) ? 0 : (dlh2x1__8bit / dlh2x1__8bit_pixels));
+  fprintf(F, "drawLineHAM1x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x2__8bit, dlh1x2__8bit_times, (dlh1x2__8bit_times == 0) ? 0 : (dlh1x2__8bit / dlh1x2__8bit_times), dlh1x2__8bit_pixels, (dlh1x2__8bit_times == 0) ? 0 : (dlh1x2__8bit_pixels / dlh1x2__8bit_times), (dlh1x2__8bit_pixels == 0) ? 0 : (dlh1x2__8bit / dlh1x2__8bit_pixels));
+  fprintf(F, "drawLineHAM2x2__8bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x2__8bit, dlh2x2__8bit_times, (dlh2x2__8bit_times == 0) ? 0 : (dlh2x2__8bit / dlh2x2__8bit_times), dlh2x2__8bit_pixels, (dlh2x2__8bit_times == 0) ? 0 : (dlh2x2__8bit_pixels / dlh2x2__8bit_times), (dlh2x2__8bit_pixels == 0) ? 0 : (dlh2x2__8bit / dlh2x2__8bit_pixels));
+  
+  fprintf(F, "drawLineHAM1x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x1_16bit, dlh1x1_16bit_times, (dlh1x1_16bit_times == 0) ? 0 : (dlh1x1_16bit / dlh1x1_16bit_times), dlh1x1_16bit_pixels, (dlh1x1_16bit_times == 0) ? 0 : (dlh1x1_16bit_pixels / dlh1x1_16bit_times), (dlh1x1_16bit_pixels == 0) ? 0 : (dlh1x1_16bit / dlh1x1_16bit_pixels));
+  fprintf(F, "drawLineHAM2x1_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x1_16bit, dlh2x1_16bit_times, (dlh2x1_16bit_times == 0) ? 0 : (dlh2x1_16bit / dlh2x1_16bit_times), dlh2x1_16bit_pixels, (dlh2x1_16bit_times == 0) ? 0 : (dlh2x1_16bit_pixels / dlh2x1_16bit_times), (dlh2x1_16bit_pixels == 0) ? 0 : (dlh2x1_16bit / dlh2x1_16bit_pixels));
+  fprintf(F, "drawLineHAM1x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x2_16bit, dlh1x2_16bit_times, (dlh1x2_16bit_times == 0) ? 0 : (dlh1x2_16bit / dlh1x2_16bit_times), dlh1x2_16bit_pixels, (dlh1x2_16bit_times == 0) ? 0 : (dlh1x2_16bit_pixels / dlh1x2_16bit_times), (dlh1x2_16bit_pixels == 0) ? 0 : (dlh1x2_16bit / dlh1x2_16bit_pixels));
+  fprintf(F, "drawLineHAM2x2_16bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x2_16bit, dlh2x2_16bit_times, (dlh2x2_16bit_times == 0) ? 0 : (dlh2x2_16bit / dlh2x2_16bit_times), dlh2x2_16bit_pixels, (dlh2x2_16bit_times == 0) ? 0 : (dlh2x2_16bit_pixels / dlh2x2_16bit_times), (dlh2x2_16bit_pixels == 0) ? 0 : (dlh2x2_16bit / dlh2x2_16bit_pixels));
+  
+  fprintf(F, "drawLineHAM1x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x1_24bit, dlh1x1_24bit_times, (dlh1x1_24bit_times == 0) ? 0 : (dlh1x1_24bit / dlh1x1_24bit_times), dlh1x1_24bit_pixels, (dlh1x1_24bit_times == 0) ? 0 : (dlh1x1_24bit_pixels / dlh1x1_24bit_times), (dlh1x1_24bit_pixels == 0) ? 0 : (dlh1x1_24bit / dlh1x1_24bit_pixels));
+  fprintf(F, "drawLineHAM2x1_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x1_24bit, dlh2x1_24bit_times, (dlh2x1_24bit_times == 0) ? 0 : (dlh2x1_24bit / dlh2x1_24bit_times), dlh2x1_24bit_pixels, (dlh2x1_24bit_times == 0) ? 0 : (dlh2x1_24bit_pixels / dlh2x1_24bit_times), (dlh2x1_24bit_pixels == 0) ? 0 : (dlh2x1_24bit / dlh2x1_24bit_pixels));
+  fprintf(F, "drawLineHAM1x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x2_24bit, dlh1x2_24bit_times, (dlh1x2_24bit_times == 0) ? 0 : (dlh1x2_24bit / dlh1x2_24bit_times), dlh1x2_24bit_pixels, (dlh1x2_24bit_times == 0) ? 0 : (dlh1x2_24bit_pixels / dlh1x2_24bit_times), (dlh1x2_24bit_pixels == 0) ? 0 : (dlh1x2_24bit / dlh1x2_24bit_pixels));
+  fprintf(F, "drawLineHAM2x2_24bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x2_24bit, dlh2x2_24bit_times, (dlh2x2_24bit_times == 0) ? 0 : (dlh2x2_24bit / dlh2x2_24bit_times), dlh2x2_24bit_pixels, (dlh2x2_24bit_times == 0) ? 0 : (dlh2x2_24bit_pixels / dlh2x2_24bit_times), (dlh2x2_24bit_pixels == 0) ? 0 : (dlh2x2_24bit / dlh2x2_24bit_pixels));
+  
+  fprintf(F, "drawLineHAM1x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x1_32bit, dlh1x1_32bit_times, (dlh1x1_32bit_times == 0) ? 0 : (dlh1x1_32bit / dlh1x1_32bit_times), dlh1x1_32bit_pixels, (dlh1x1_32bit_times == 0) ? 0 : (dlh1x1_32bit_pixels / dlh1x1_32bit_times), (dlh1x1_32bit_pixels == 0) ? 0 : (dlh1x1_32bit / dlh1x1_32bit_pixels));
+  fprintf(F, "drawLineHAM2x1_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x1_32bit, dlh2x1_32bit_times, (dlh2x1_32bit_times == 0) ? 0 : (dlh2x1_32bit / dlh2x1_32bit_times), dlh2x1_32bit_pixels, (dlh2x1_32bit_times == 0) ? 0 : (dlh2x1_32bit_pixels / dlh2x1_32bit_times), (dlh2x1_32bit_pixels == 0) ? 0 : (dlh2x1_32bit / dlh2x1_32bit_pixels));
+  fprintf(F, "drawLineHAM1x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh1x2_32bit, dlh1x2_32bit_times, (dlh1x2_32bit_times == 0) ? 0 : (dlh1x2_32bit / dlh1x2_32bit_times), dlh1x2_32bit_pixels, (dlh1x2_32bit_times == 0) ? 0 : (dlh1x2_32bit_pixels / dlh1x2_32bit_times), (dlh1x2_32bit_pixels == 0) ? 0 : (dlh1x2_32bit / dlh1x2_32bit_pixels));
+  fprintf(F, "drawLineHAM2x2_32bit\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", dlh2x2_32bit, dlh2x2_32bit_times, (dlh2x2_32bit_times == 0) ? 0 : (dlh2x2_32bit / dlh2x2_32bit_times), dlh2x2_32bit_pixels, (dlh2x2_32bit_times == 0) ? 0 : (dlh2x2_32bit_pixels / dlh2x2_32bit_times), (dlh2x2_32bit_pixels == 0) ? 0 : (dlh2x2_32bit / dlh2x2_32bit_pixels));
+ 
   fclose(F);
   }
 #endif
@@ -1825,22 +1887,50 @@ static __inline void drawLineNormal2xX__8bit(graph_line *linedescription, ULO ne
 
 void drawLineNormal1x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x1__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x1__8bit_tmp);
+	#endif
 	drawLineNormal1xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x1__8bit_tmp, &dln1x1__8bit, &dln1x1__8bit_times);
+	#endif
 }
 
 void drawLineNormal1x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x2__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x2__8bit_tmp);
+	#endif
 	drawLineNormal1xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x2__8bit_tmp, &dln1x2__8bit, &dln1x2__8bit_times);
+	#endif
 }
 
 void drawLineNormal2x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x1__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x1__8bit_tmp);
+	#endif
 	drawLineNormal2xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x1__8bit_tmp, &dln2x1__8bit, &dln2x1__8bit_times);
+	#endif
 }
 
 void drawLineNormal2x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x2__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x2__8bit_tmp);
+	#endif
 	drawLineNormal2xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x2__8bit_tmp, &dln2x2__8bit, &dln2x2__8bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -1992,22 +2082,50 @@ static __inline void drawLineNormal2xX_16bit(graph_line *linedescription, ULO ne
 
 void drawLineNormal1x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x1_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x1_16bit_tmp);
+	#endif
 	drawLineNormal1xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x1_16bit_tmp, &dln1x1_16bit, &dln1x1_16bit_times);
+	#endif
 }
 
 void drawLineNormal1x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x2_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x2_16bit_tmp);
+	#endif
 	drawLineNormal1xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x2_16bit_tmp, &dln1x2_16bit, &dln1x2_16bit_times);
+	#endif
 }
 
 void drawLineNormal2x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
-  drawLineNormal2xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		dln2x1_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x1_16bit_tmp);
+	#endif
+	drawLineNormal2xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x1_16bit_tmp, &dln2x1_16bit, &dln2x1_16bit_times);
+	#endif
 }
 
 void drawLineNormal2x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
-  drawLineNormal2xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		dln2x2_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x2_16bit_tmp);
+	#endif
+	drawLineNormal2xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x2_16bit_tmp, &dln2x2_16bit, &dln2x2_16bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -2112,22 +2230,50 @@ static __inline void drawLineNormal2xX_24bit(graph_line *linedescription, ULO ne
 
 void drawLineNormal1x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x1_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x1_24bit_tmp);
+	#endif
 	drawLineNormal1xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x1_24bit_tmp, &dln1x1_24bit, &dln1x1_24bit_times);
+	#endif	
 }
 
 void drawLineNormal1x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x2_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x2_24bit_tmp);
+	#endif
 	drawLineNormal1xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x2_24bit_tmp, &dln1x2_24bit, &dln1x2_24bit_times);
+	#endif	
 }
 
 void drawLineNormal2x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x1_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x1_24bit_tmp);
+	#endif
 	drawLineNormal2xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x1_24bit_tmp, &dln2x1_24bit, &dln2x1_24bit_times);
+	#endif	
 }
 
 void drawLineNormal2x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x2_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x2_24bit_tmp);
+	#endif
 	drawLineNormal2xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x2_24bit_tmp, &dln2x2_24bit, &dln2x2_24bit_times);
+	#endif	
 }
 
 /*==============================================================================*/
@@ -2249,22 +2395,50 @@ static __inline void drawLineNormalXxX_32bit(graph_line *linedescription, ULO ne
 
 void drawLineNormal1x1_32bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x1_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x1_32bit_tmp);
+	#endif
 	drawLineNormalXxX_32bit(linedescription, nextlineoffset, 1, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x1_32bit_tmp, &dln1x1_32bit, &dln1x1_32bit_times);
+	#endif	
 }
 
 void drawLineNormal1x2_32bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln1x2_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln1x2_32bit_tmp);
+	#endif
 	drawLineNormalXxX_32bit(linedescription, nextlineoffset, 1, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln1x2_32bit_tmp, &dln1x2_32bit, &dln1x2_32bit_times);
+	#endif	
 }
 
 void drawLineNormal2x1_32bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x1_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x1_32bit_tmp);
+	#endif
 	drawLineNormalXxX_32bit(linedescription, nextlineoffset, 2, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x1_32bit_tmp, &dln2x1_32bit, &dln2x1_32bit_times);
+	#endif	
 }
 
 void drawLineNormal2x2_32bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dln2x2_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dln2x2_32bit_tmp);
+	#endif
 	drawLineNormalXxX_32bit(linedescription, nextlineoffset, 2, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dln2x2_32bit_tmp, &dln2x2_32bit, &dln2x2_32bit_times);
+	#endif	
 }
 
 /*==============================================================================*/
@@ -2478,22 +2652,50 @@ static __inline void drawLineDual2xX__8bit(graph_line *linedescription, ULO next
 
 void drawLineDual1x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x1__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x1__8bit_tmp);
+	#endif
 	drawLineDual1xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x1__8bit_tmp, &dld1x1__8bit, &dld1x1__8bit_times);
+	#endif
 }
 
 void drawLineDual1x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x2__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x2__8bit_tmp);
+	#endif
 	drawLineDual1xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x2__8bit_tmp, &dld1x2__8bit, &dld1x2__8bit_times);
+	#endif
 }
 
 void drawLineDual2x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x1__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x1__8bit_tmp);
+	#endif
 	drawLineDual2xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x1__8bit_tmp, &dld2x1__8bit, &dld2x1__8bit_times);
+	#endif
 }
 
 void drawLineDual2x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x2__8bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x2__8bit_tmp);
+	#endif
 	drawLineDual2xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x2__8bit_tmp, &dld2x2__8bit, &dld2x2__8bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -2536,9 +2738,10 @@ static __inline void drawLineDual1xX_16bit(graph_line *linedescription, ULO next
 		{
 			if (verticalscale == 1)
 			{
-				*framebuffer++ = 
+				*framebuffer = 
 					*((UWO *) ((UBY *) linedescription->colors + 
 					(*(draw_dual_translate_ptr + (((*source_line1_ptr++) << 8) + *source_line2_ptr++)))));
+				framebuffer++;
 			}
 			else
 			{
@@ -2559,13 +2762,13 @@ static __inline void drawLineDual1xX_16bit(graph_line *linedescription, ULO next
 				*((UWO *) ((UBY *) linedescription->colors + 
 				(*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
 		
-			*(framebuffer + 1) = *(framebuffer + nextlineoffset_local + 1) =
+			*(framebuffer + 1) = 
 				*((UWO *) ((UBY *) linedescription->colors + 
 				(*(draw_dual_translate_ptr + ((*(source_line1_ptr + 1) << 8) + *(source_line2_ptr + 1))))));
 		}
 		else
 		{
-			*framebuffer = 
+			*framebuffer = *(framebuffer + nextlineoffset_local) =
 				*((UWO *) ((UBY *) linedescription->colors + 
 				(*(draw_dual_translate_ptr + ((*(source_line1_ptr) << 8) + *(source_line2_ptr))))));
 
@@ -2614,12 +2817,26 @@ static __inline void drawLineDual1xX_16bit(graph_line *linedescription, ULO next
 
 void drawLineDual1x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x1_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x1_16bit_tmp);
+	#endif
 	drawLineDual1xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x1_16bit_tmp, &dld1x1_16bit, &dld1x1_16bit_times);
+	#endif
 }
 
 void drawLineDual1x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x2_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x2_16bit_tmp);
+	#endif
 	drawLineDual1xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x2_16bit_tmp, &dld1x2_16bit, &dld1x2_16bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -2807,12 +3024,26 @@ static __inline void drawLineDual2xX_16bit(graph_line *linedescription, ULO next
 
 void drawLineDual2x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x1_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x1_16bit_tmp);
+	#endif
 	drawLineDual2xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x1_16bit_tmp, &dld2x1_16bit, &dld2x1_16bit_times);
+	#endif
 }
 
 void drawLineDual2x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x2_16bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x2_16bit_tmp);
+	#endif
 	drawLineDual2xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x2_16bit_tmp, &dld2x2_16bit, &dld2x2_16bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -2965,22 +3196,50 @@ void drawLineDual2xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
 
 void drawLineDual1x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x1_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x1_24bit_tmp);
+	#endif
 	drawLineDual1xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x1_24bit_tmp, &dld1x1_24bit, &dld1x1_24bit_times);
+	#endif
 }
 
 void drawLineDual1x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld1x2_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x2_24bit_tmp);
+	#endif
 	drawLineDual1xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x2_24bit_tmp, &dld1x2_24bit, &dld1x2_24bit_times);
+	#endif
 }
 
 void drawLineDual2x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x1_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x1_24bit_tmp);
+	#endif
 	drawLineDual2xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x1_24bit_tmp, &dld2x1_24bit, &dld2x1_24bit_times);
+	#endif
 }
 
 void drawLineDual2x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		dld2x2_24bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x2_24bit_tmp);
+	#endif
 	drawLineDual2xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x2_24bit_tmp, &dld2x2_24bit, &dld2x2_24bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -2997,24 +3256,33 @@ void drawLineDual2x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 
 void drawLineDual1x1_32bit(graph_line *linedescription, ULO nextlineoffset)
 {
-  ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
-  UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
-  UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
-  UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
-  ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
+	ULO pixels_left_to_draw = linedescription->DIW_pixel_count;
+	UBY *source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
+	UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
+	UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
+	ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
  
-  if ((linedescription->bplcon2 & 0x40) == 0)
-  {
-    // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
-    // write results in draw_dual_translate[1], instead of draw_dual_translate[0]
-    draw_dual_translate_ptr += 0x10000;
-  }
-  while (pixels_left_to_draw-- > 0)
-  {
-    *framebuffer++ = *((ULO *) ((UBY *) linedescription->colors + 
-      (*(draw_dual_translate_ptr + ((*source_line1_ptr++ << 8) + *source_line2_ptr++)))));
-  }
-  draw_buffer_current_ptr = (UBY*) framebuffer;
+	#ifdef DRAW_TSC_PROFILE
+		dld1x1_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x1_32bit_tmp);
+	#endif
+
+	if ((linedescription->bplcon2 & 0x40) == 0)
+	{
+		// bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
+		// write results in draw_dual_translate[1], instead of draw_dual_translate[0]
+		draw_dual_translate_ptr += 0x10000;
+	}
+	while (pixels_left_to_draw-- > 0)
+	{
+		*framebuffer++ = *((ULO *) ((UBY *) linedescription->colors + 
+			(*(draw_dual_translate_ptr + ((*source_line1_ptr++ << 8) + *source_line2_ptr++)))));
+	}
+	draw_buffer_current_ptr = (UBY*) framebuffer;
+
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x1_32bit_tmp, &dld1x1_32bit, &dld1x1_32bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -3037,6 +3305,11 @@ void drawLineDual1x2_32bit(graph_line *linedescription, ULO nextlineoffset)
   UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
  
+  	#ifdef DRAW_TSC_PROFILE
+		dld1x2_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld1x2_32bit_tmp);
+	#endif
+
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
     // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
@@ -3049,6 +3322,10 @@ void drawLineDual1x2_32bit(graph_line *linedescription, ULO nextlineoffset)
 	framebuffer++;
   }
   draw_buffer_current_ptr = (UBY*) framebuffer;
+
+  	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld1x2_32bit_tmp, &dld1x2_32bit, &dld1x2_32bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -3070,7 +3347,12 @@ void drawLineDual2x1_32bit(graph_line *linedescription, ULO nextlineoffset)
   UBY *source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;
   UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
-  
+
+  	#ifdef DRAW_TSC_PROFILE
+		dld2x1_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x1_32bit_tmp);
+	#endif
+
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
     // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
@@ -3086,6 +3368,10 @@ void drawLineDual2x1_32bit(graph_line *linedescription, ULO nextlineoffset)
     framebuffer += 2;
   }
   draw_buffer_current_ptr = (UBY*) framebuffer;
+
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x1_32bit_tmp, &dld2x1_32bit, &dld2x1_32bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -3108,6 +3394,11 @@ void drawLineDual2x2_32bit(graph_line *linedescription, ULO nextlineoffset)
   UBY *draw_dual_translate_ptr = (UBY *) draw_dual_translate;
   ULO *framebuffer = (ULO *) draw_buffer_current_ptr;
   
+  	#ifdef DRAW_TSC_PROFILE
+		dld2x2_32bit_pixels += linedescription->DIW_pixel_count;
+		drawTscBefore(&dld2x2_32bit_tmp);
+	#endif
+
   if ((linedescription->bplcon2 & 0x40) == 0)
   {
     // bit 6 of BPLCON2 is not set, thus playfield 1 is in front of playfield 2
@@ -3122,6 +3413,10 @@ void drawLineDual2x2_32bit(graph_line *linedescription, ULO nextlineoffset)
     framebuffer += 2;
   }
   draw_buffer_current_ptr = (UBY*) framebuffer;
+
+  	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dld2x2_32bit_tmp, &dld2x2_32bit, &dld2x2_32bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -3538,11 +3833,13 @@ static __inline void drawLineSegmentBG1x2_16bit(ULO topad, ULO bgcolor, ULO next
   ULO *fb_l;
   ULO i;
   ULO count;
+  ULO nextlineoffset_local = nextlineoffset*2;
+
   if (topad == 0) return;
   /* Align framebuffer to 32-bit */
   if (((ULO) framebuffer & 0x2) != 0)
   {
-    *framebuffer = *(framebuffer + nextlineoffset) = (UWO) bgcolor;
+    *framebuffer = *(framebuffer + nextlineoffset_local) = (UWO) bgcolor;
 	framebuffer++;
     topad--;
   }
@@ -3554,7 +3851,7 @@ static __inline void drawLineSegmentBG1x2_16bit(ULO topad, ULO bgcolor, ULO next
   /* One pixel might be left */
   if (topad & 1) 
   {
-	  *framebuffer = *(framebuffer + nextlineoffset) = (UWO) bgcolor;
+	  *framebuffer = *(framebuffer + nextlineoffset_local) = (UWO) bgcolor;
 	  framebuffer++;
   }
   draw_buffer_current_ptr = (UBY*) framebuffer;
@@ -3831,82 +4128,194 @@ static __inline void drawLineSegmentBG2x2_32bit(ULO topad, ULO bgcolor, ULO next
 
 void drawLineBG1x1__8bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x1__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x1__8bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x1__8bit_tmp);
+	#endif
+	drawLineSegmentBG1x1__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlsbg1x1__8bit_tmp, &dlsbg1x1__8bit, &dlsbg1x1__8bit_times);
+	#endif
 }
 
 void drawLineBG2x1__8bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x1__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x1__8bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x1__8bit_tmp);
+	#endif
+	drawLineSegmentBG2x1__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlsbg2x1__8bit_tmp, &dlsbg2x1__8bit, &dlsbg2x1__8bit_times);
+	#endif
 }
 
 void drawLineBG1x2__8bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x2__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x2__8bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x2__8bit_tmp);
+	#endif
+	drawLineSegmentBG1x2__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x2__8bit_tmp, &dlsbg1x2__8bit, &dlsbg1x2__8bit_times);
+	#endif
 }
 
 void drawLineBG2x2__8bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x2__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x2__8bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x2__8bit_tmp);
+	#endif
+	drawLineSegmentBG2x2__8bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x2__8bit_tmp, &dlsbg2x2__8bit, &dlsbg2x2__8bit_times);
+	#endif
 }
 
 void drawLineBG1x1_16bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x1_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x1_16bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x1_16bit_tmp);
+	#endif
+	drawLineSegmentBG1x1_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x1_16bit_tmp, &dlsbg1x1_16bit, &dlsbg1x1_16bit_times);
+	#endif
 }
 
 void drawLineBG1x2_16bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x2_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x2_16bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x2_16bit_tmp);
+	#endif
+	drawLineSegmentBG1x2_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x2_16bit_tmp, &dlsbg1x2_16bit, &dlsbg1x2_16bit_times);
+	#endif
 }
 
 void drawLineBG2x1_16bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x1_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x1_16bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x1_16bit_tmp);
+	#endif
+	drawLineSegmentBG2x1_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x1_16bit_tmp, &dlsbg2x1_16bit, &dlsbg2x1_16bit_times);
+	#endif
 }
 
 void drawLineBG2x2_16bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x2_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x2_16bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x2_16bit_tmp);
+	#endif
+	drawLineSegmentBG2x2_16bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x2_16bit_tmp, &dlsbg2x2_16bit, &dlsbg2x2_16bit_times);
+	#endif
 }
 
 void drawLineBG1x1_24bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x1_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x1_24bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x1_24bit_tmp);
+	#endif
+	drawLineSegmentBG1x1_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x1_24bit_tmp, &dlsbg1x1_24bit, &dlsbg1x1_24bit_times);
+	#endif
 }
 
 void drawLineBG2x1_24bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x1_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x1_24bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x1_24bit_tmp);
+	#endif
+	drawLineSegmentBG2x1_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x1_24bit_tmp, &dlsbg2x1_24bit, &dlsbg2x1_24bit_times);
+	#endif
 }
 
 void drawLineBG1x2_24bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x2_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x2_24bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x2_24bit_tmp);
+	#endif
+	drawLineSegmentBG1x2_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x2_24bit_tmp, &dlsbg1x2_24bit, &dlsbg1x2_24bit_times);
+	#endif
 }
 
 void drawLineBG2x2_24bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x2_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x2_24bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x2_24bit_tmp);
+	#endif
+	drawLineSegmentBG2x2_24bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x2_24bit_tmp, &dlsbg2x2_24bit, &dlsbg2x2_24bit_times);
+	#endif
 }
 
 void drawLineBG1x1_32bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x1_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x1_32bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x1_32bit_tmp);
+	#endif
+	drawLineSegmentBG1x1_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x1_32bit_tmp, &dlsbg1x1_32bit, &dlsbg1x1_32bit_times);
+	#endif
 }
 
 void drawLineBG1x2_32bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG1x2_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg1x2_32bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg1x2_32bit_tmp);
+	#endif
+	drawLineSegmentBG1x2_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg1x2_32bit_tmp, &dlsbg1x2_32bit, &dlsbg1x2_32bit_times);
+	#endif
 }
 
 void drawLineBG2x1_32bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x1_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x1_32bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x1_32bit_tmp);
+	#endif
+	drawLineSegmentBG2x1_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x1_32bit_tmp, &dlsbg2x1_32bit, &dlsbg2x1_32bit_times);
+	#endif
 }
 
 void drawLineBG2x2_32bit(graph_line *linedesc, ULO nextlineoffset)
 {
-  drawLineSegmentBG2x2_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+		dlsbg2x2_32bit_pixels += draw_width_amiga;
+		drawTscBefore(&dlsbg2x2_32bit_tmp);
+	#endif
+	drawLineSegmentBG2x2_32bit(draw_width_amiga, linedesc->colors[0], nextlineoffset);
+	#ifdef DRAW_TSC_PROFILE
+	    drawTscAfter(&dlsbg2x2_32bit_tmp, &dlsbg2x2_32bit, &dlsbg2x2_32bit_times);
+	#endif
 }
 	
 /*==============================================================================*/
@@ -4120,22 +4529,54 @@ static __inline void drawLineHAM2xX__8bit(graph_line *linedesc, ULO nextlineoffs
 
 void drawLineHAM1x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x1__8bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x1__8bit_tmp);
+	#endif	
 	drawLineHAM1xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x1__8bit_tmp, &dlh1x1__8bit, &dlh1x1__8bit_times);
+	#endif
 }
 
 void drawLineHAM1x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x2__8bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x2__8bit_tmp);
+	#endif	
 	drawLineHAM1xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x2__8bit_tmp, &dlh1x2__8bit, &dlh1x2__8bit_times);
+	#endif
 }
 
 void drawLineHAM2x1__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x1__8bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x1__8bit_tmp);
+	#endif	
 	drawLineHAM2xX__8bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x1__8bit_tmp, &dlh2x1__8bit, &dlh2x1__8bit_times);
+	#endif
 }
 
 void drawLineHAM2x2__8bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x2__8bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x2__8bit_tmp);
+	#endif	
 	drawLineHAM2xX__8bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x2__8bit_tmp, &dlh2x2__8bit, &dlh2x2__8bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -4344,250 +4785,54 @@ static __inline void drawLineHAM2xX_16bit(graph_line *linedesc, ULO nextlineoffs
 
 void drawLineHAM1x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x1_16bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x1_16bit_tmp);
+	#endif	
 	drawLineHAM1xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x1_16bit_tmp, &dlh1x1_16bit, &dlh1x1_16bit_times);
+	#endif
 }
 
 void drawLineHAM1x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x2_16bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x2_16bit_tmp);
+	#endif	
 	drawLineHAM1xX_16bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x2_16bit_tmp, &dlh1x2_16bit, &dlh1x2_16bit_times);
+	#endif
 }
 
 void drawLineHAM2x1_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x1_16bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x1_16bit_tmp);
+	#endif	
 	drawLineHAM2xX_16bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x1_16bit_tmp, &dlh2x1_16bit, &dlh2x1_16bit_times);
+	#endif
 }
 
 void drawLineHAM2x2_16bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x2_16bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x2_16bit_tmp);
+	#endif	
 	drawLineHAM2xX_16bit(linedescription, nextlineoffset, 2);
-}
-
-/*==============================================================================*/
-/* void drawLineHAM1xX_32bit                                                    */
-/*                                                                              */
-/* Description:                                                                 */
-/* ------------                                                                 */
-/* Draw one line of HAM data                                                    */
-/* HAM state must be accumulated from the start of the line, even if pixels are */
-/* not visible.                                                                 */
-/*                                                                              */
-/* Horizontal Scale: 1x                                                         */
-/* Vertical Scale:   1x, 2x                                                     */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
-
-static __inline void drawLineHAM1xX_32bit(graph_line *linedesc, ULO nextlineoffset, ULO verticalscale)
-{
-	UBY * source_line_ptr;
-	LON nonvisible;
-	ULO bitindex;
-	ULO holdmask;
-	ULO hampixel;
-	UBY * draw_buffer_current_ptr_local;
-	ULO pixels_left_to_draw;
-
-	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
-	draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-	hampixel = 0;
-
-	if (nonvisible > 0)
-	{
-		/*========================================*/
-		/* Preprocess none visible pixels         */
-		/*========================================*/
-		source_line_ptr = linedesc->line1 + linedesc->DDF_start;
-		while (nonvisible > 0) 
-		{
-			if ((*source_line_ptr & 0xc0) == 0)
-			{
-				hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
-			}
-			else
-			{
-				holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
-				bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
-				hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-				hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
-			}
-			source_line_ptr++;
-			nonvisible--;
-		}
-	}
-
-	/*===============================*/
-	/* Draw visible HAM pixels       */
-	/*===============================*/
-	pixels_left_to_draw = linedesc->DIW_pixel_count;
-	source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
-	while (pixels_left_to_draw > 0)
-	{
-		if ((*source_line_ptr & 0xc0) == 0)
-		{
-			hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
-		}
-		else
-		{
-			holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
-			bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
-			hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-			hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
-		}
-
-		if (verticalscale == 1)
-		{
-			*((ULO *) draw_buffer_current_ptr) = hampixel;
-		}
-		else
-		{
-			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + nextlineoffset) = hampixel;
-		}
-		source_line_ptr++;
-		pixels_left_to_draw--;
-		draw_buffer_current_ptr += 4;
-	}
-		
-	if (verticalscale == 1)
-	{
-		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local, linedesc);
-	}
-	else
-	{
-		// below and above calls to spriteMerge could be optimized by calling a single 2x2x32 function
-		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local, linedesc);
-		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local + nextlineoffset, linedesc);
-	}
-}
-
-/*==============================================================================*/
-/* void drawLineHAM2xX_32bit(graph_line *linedescription);                      */
-/*                                                                              */
-/* Description:                                                                 */
-/* ------------                                                                 */
-/* Draw one line of HAM data                                                    */
-/* HAM state must be accumulated from the start of the line, even if pixels are */
-/* not visible.                                                                 */
-/*                                                                              */
-/* Horizontal Scale: 2x                                                         */
-/* Vertical Scale:   1x                                                         */
-/* Pixel format:     32 bit RGB                                                 */
-/*==============================================================================*/
-
-static __inline void drawLineHAM2xX_32bit(graph_line *linedesc, ULO nextlineoffset, ULO verticalscale)
-{
-	UBY * source_line_ptr;
-	LON nonvisible;
-	ULO bitindex;
-	ULO holdmask;
-	ULO hampixel;
-	UBY * draw_buffer_current_ptr_local;
-	ULO pixels_left_to_draw;
-
-	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
-	draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-	hampixel = 0;
-
-	if (nonvisible > 0)
-	{
-		/*========================================*/
-		/* Preprocess none visible pixels         */
-		/*========================================*/
-		source_line_ptr = linedesc->line1 + linedesc->DDF_start;
-		while (nonvisible > 0) 
-		{
-			if ((*source_line_ptr & 0xc0) == 0)
-			{
-				hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
-			}
-			else
-			{
-				holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
-				bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
-				hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-				hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
-			}
-			source_line_ptr++;
-			nonvisible--;
-		}
-	}
-
-	/*===============================*/
-	/* Draw visible HAM pixels       */
-	/*===============================*/
-	pixels_left_to_draw = linedesc->DIW_pixel_count;
-	source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
-	while (pixels_left_to_draw > 0)
-	{
-		if ((*source_line_ptr & 0xc0) == 0)
-		{
-			hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
-		}
-		else
-		{
-			holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
-			bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
-			hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
-			hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
-		}
-
-		if (verticalscale == 1)
-		{
-			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + 1) = hampixel;
-		}
-		else
-		{
-			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + 1) = 
-				*((ULO *) draw_buffer_current_ptr + nextlineoffset) = 
-				*((ULO *) draw_buffer_current_ptr + nextlineoffset + 1) = hampixel;
-		}
-		 
-		source_line_ptr++;
-		pixels_left_to_draw--;
-		draw_buffer_current_ptr += 8;
-	}
-	if (verticalscale == 1)
-	{
-		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local, linedesc);
-	}
-	else
-	{
-		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local, linedesc);
-		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local + nextlineoffset, linedesc);
-	}
-}
-
-/*================================================================================*/
-/* drawLineHAM1x1_32bit                                                           */
-/* drawLineHAM1x2_32bit                                                           */
-/* drawLineHAM2x1_32bit                                                           */
-/* drawLineHAM2x2_32bit                                                           */
-/*                                                                                */
-/* Description:                                                                   */
-/* ------------                                                                   */
-/* Draw one line of HAM data                                                      */
-/*                                                                                */
-/* Horizontal Scale: 1x, 2x                                                       */
-/* Vertical Scale:   1x, 2x                                                       */
-/* Pixel format:     32 bit RGB                                                   */
-/*================================================================================*/
-
-void drawLineHAM1x1_32bit(graph_line *linedescription, ULO nextlineoffset)
-{
-	drawLineHAM1xX_32bit(linedescription, nextlineoffset, 1);
-}
-
-void drawLineHAM1x2_32bit(graph_line *linedescription, ULO nextlineoffset)
-{
-	drawLineHAM1xX_32bit(linedescription, nextlineoffset, 2);
-}
-
-void drawLineHAM2x1_32bit(graph_line *linedescription, ULO nextlineoffset)
-{
-	drawLineHAM2xX_32bit(linedescription, nextlineoffset, 1);
-}
-
-void drawLineHAM2x2_32bit(graph_line *linedescription, ULO nextlineoffset)
-{
-	drawLineHAM2xX_32bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x2_16bit_tmp, &dlh2x2_16bit, &dlh2x2_16bit_times);
+	#endif
 }
 
 /*==============================================================================*/
@@ -4817,20 +5062,312 @@ void drawLineHAM2xX_24bit(graph_line *linedesc, ULO nextlineoffset, ULO vertical
 
 void drawLineHAM1x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x1_24bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x1_24bit_tmp);
+	#endif	
 	drawLineHAM1xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x1_24bit_tmp, &dlh1x1_24bit, &dlh1x1_24bit_times);
+	#endif
 }
 
 void drawLineHAM1x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x2_24bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x2_24bit_tmp);
+	#endif	
 	drawLineHAM1xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x2_24bit_tmp, &dlh1x2_24bit, &dlh1x2_24bit_times);
+	#endif
 }
 
 void drawLineHAM2x1_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x1_24bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x1_24bit_tmp);
+	#endif	
 	drawLineHAM2xX_24bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x1_24bit_tmp, &dlh2x1_24bit, &dlh2x1_24bit_times);
+	#endif
 }
 
 void drawLineHAM2x2_24bit(graph_line *linedescription, ULO nextlineoffset)
 {
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x2_24bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x2_24bit_tmp);
+	#endif	
 	drawLineHAM2xX_24bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x2_24bit_tmp, &dlh2x2_24bit, &dlh2x2_24bit_times);
+	#endif
+}
+
+/*==============================================================================*/
+/* void drawLineHAM1xX_32bit                                                    */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale: 1x                                                         */
+/* Vertical Scale:   1x, 2x                                                     */
+/* Pixel format:     32 bit RGB                                                 */
+/*==============================================================================*/
+
+static __inline void drawLineHAM1xX_32bit(graph_line *linedesc, ULO nextlineoffset, ULO verticalscale)
+{
+	UBY * source_line_ptr;
+	LON nonvisible;
+	ULO bitindex;
+	ULO holdmask;
+	ULO hampixel;
+	UBY * draw_buffer_current_ptr_local;
+	ULO pixels_left_to_draw;
+
+	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+	draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+	hampixel = 0;
+
+	if (nonvisible > 0)
+	{
+		/*========================================*/
+		/* Preprocess none visible pixels         */
+		/*========================================*/
+		source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+		while (nonvisible > 0) 
+		{
+			if ((*source_line_ptr & 0xc0) == 0)
+			{
+				hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+			}
+			else
+			{
+				holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+				bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+				hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+				hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+			}
+			source_line_ptr++;
+			nonvisible--;
+		}
+	}
+
+	/*===============================*/
+	/* Draw visible HAM pixels       */
+	/*===============================*/
+	pixels_left_to_draw = linedesc->DIW_pixel_count;
+	source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+	while (pixels_left_to_draw > 0)
+	{
+		if ((*source_line_ptr & 0xc0) == 0)
+		{
+			hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+		}
+		else
+		{
+			holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+			bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+			hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+			hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+		}
+
+		if (verticalscale == 1)
+		{
+			*((ULO *) draw_buffer_current_ptr) = hampixel;
+		}
+		else
+		{
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + nextlineoffset) = hampixel;
+		}
+		source_line_ptr++;
+		pixels_left_to_draw--;
+		draw_buffer_current_ptr += 4;
+	}
+		
+	if (verticalscale == 1)
+	{
+		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local, linedesc);
+	}
+	else
+	{
+		// below and above calls to spriteMerge could be optimized by calling a single 2x2x32 function
+		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local, linedesc);
+		spriteMergeHAM1x32((ULO*) draw_buffer_current_ptr_local + nextlineoffset, linedesc);
+	}
+}
+
+/*==============================================================================*/
+/* void drawLineHAM2xX_32bit(graph_line *linedescription);                      */
+/*                                                                              */
+/* Description:                                                                 */
+/* ------------                                                                 */
+/* Draw one line of HAM data                                                    */
+/* HAM state must be accumulated from the start of the line, even if pixels are */
+/* not visible.                                                                 */
+/*                                                                              */
+/* Horizontal Scale: 2x                                                         */
+/* Vertical Scale:   1x                                                         */
+/* Pixel format:     32 bit RGB                                                 */
+/*==============================================================================*/
+
+static __inline void drawLineHAM2xX_32bit(graph_line *linedesc, ULO nextlineoffset, ULO verticalscale)
+{
+	UBY * source_line_ptr;
+	LON nonvisible;
+	ULO bitindex;
+	ULO holdmask;
+	ULO hampixel;
+	UBY * draw_buffer_current_ptr_local;
+	ULO pixels_left_to_draw;
+
+	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
+	draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+	hampixel = 0;
+
+	if (nonvisible > 0)
+	{
+		/*========================================*/
+		/* Preprocess none visible pixels         */
+		/*========================================*/
+		source_line_ptr = linedesc->line1 + linedesc->DDF_start;
+		while (nonvisible > 0) 
+		{
+			if ((*source_line_ptr & 0xc0) == 0)
+			{
+				hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+			}
+			else
+			{
+				holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+				bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+				hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+				hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+			}
+			source_line_ptr++;
+			nonvisible--;
+		}
+	}
+
+	/*===============================*/
+	/* Draw visible HAM pixels       */
+	/*===============================*/
+	pixels_left_to_draw = linedesc->DIW_pixel_count;
+	source_line_ptr = linedesc->line1 + linedesc->DIW_first_draw;
+	while (pixels_left_to_draw > 0)
+	{
+		if ((*source_line_ptr & 0xc0) == 0)
+		{
+			hampixel = *((ULO *) ((UBY *) linedesc->colors + *source_line_ptr));
+		}
+		else
+		{
+			holdmask = (ULO) ((UBY *) draw_HAM_modify_table + ((*source_line_ptr & 0xc0) >> 3));
+			bitindex = *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_bitindex));
+			hampixel &= *((ULO *) ((UBY *) holdmask + draw_HAM_modify_table_holdmask));
+			hampixel |= (((*source_line_ptr & 0x3c) >> 2) << (bitindex & 0xff));
+		}
+
+		if (verticalscale == 1)
+		{
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + 1) = hampixel;
+		}
+		else
+		{
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + 1) = 
+				*((ULO *) draw_buffer_current_ptr + nextlineoffset) = 
+				*((ULO *) draw_buffer_current_ptr + nextlineoffset + 1) = hampixel;
+		}
+		 
+		source_line_ptr++;
+		pixels_left_to_draw--;
+		draw_buffer_current_ptr += 8;
+	}
+	if (verticalscale == 1)
+	{
+		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local, linedesc);
+	}
+	else
+	{
+		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local, linedesc);
+		spriteMergeHAM2x32((ULO*) draw_buffer_current_ptr_local + nextlineoffset, linedesc);
+	}
+}
+
+/*================================================================================*/
+/* drawLineHAM1x1_32bit                                                           */
+/* drawLineHAM1x2_32bit                                                           */
+/* drawLineHAM2x1_32bit                                                           */
+/* drawLineHAM2x2_32bit                                                           */
+/*                                                                                */
+/* Description:                                                                   */
+/* ------------                                                                   */
+/* Draw one line of HAM data                                                      */
+/*                                                                                */
+/* Horizontal Scale: 1x, 2x                                                       */
+/* Vertical Scale:   1x, 2x                                                       */
+/* Pixel format:     32 bit RGB                                                   */
+/*================================================================================*/
+
+void drawLineHAM1x1_32bit(graph_line *linedescription, ULO nextlineoffset)
+{
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x1_32bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x1_32bit_tmp);
+	#endif	
+	drawLineHAM1xX_32bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x1_32bit_tmp, &dlh1x1_32bit, &dlh1x1_32bit_times);
+	#endif
+}
+
+void drawLineHAM1x2_32bit(graph_line *linedescription, ULO nextlineoffset)
+{
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh1x2_32bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh1x2_32bit_tmp);
+	#endif	
+	drawLineHAM1xX_32bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh1x2_32bit_tmp, &dlh1x2_32bit, &dlh1x2_32bit_times);
+	#endif
+}
+
+void drawLineHAM2x1_32bit(graph_line *linedescription, ULO nextlineoffset)
+{
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x1_32bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x1_32bit_tmp);
+	#endif	
+	drawLineHAM2xX_32bit(linedescription, nextlineoffset, 1);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x1_32bit_tmp, &dlh2x1_32bit, &dlh2x1_32bit_times);
+	#endif
+}
+
+void drawLineHAM2x2_32bit(graph_line *linedescription, ULO nextlineoffset)
+{
+	#ifdef DRAW_TSC_PROFILE
+		LON nonvisible = linedescription->DIW_first_draw - linedescription->DDF_start;
+		dlh2x2_32bit_pixels += linedescription->DIW_pixel_count + ((nonvisible > 0) ? nonvisible : 0);
+		drawTscBefore(&dlh2x2_32bit_tmp);
+	#endif	
+	drawLineHAM2xX_32bit(linedescription, nextlineoffset, 2);
+	#ifdef DRAW_TSC_PROFILE
+		drawTscAfter(&dlh2x2_32bit_tmp, &dlh2x2_32bit, &dlh2x2_32bit_times);
+	#endif
 }
