@@ -4716,6 +4716,8 @@ static __inline void drawLineHAM1xX__8bit(graph_line *linedesc, ULO nextlineoffs
 	ULO hampixel;
 	UBY * draw_buffer_current_ptr_local;
 	ULO pixels_left_to_draw;
+	UBY hamcolor;
+	ULO local_nextlineoffset = nextlineoffset*4;
 
 	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
 	draw_buffer_current_ptr_local = draw_buffer_current_ptr;
@@ -4770,7 +4772,8 @@ static __inline void drawLineHAM1xX__8bit(graph_line *linedesc, ULO nextlineoffs
 		}
 		else
 		{
-			*draw_buffer_current_ptr = *(draw_buffer_current_ptr + nextlineoffset*4) = (UBY) (*(draw_color_table + (hampixel & 0xfff)));
+			hamcolor = (UBY) (*(draw_color_table + (hampixel & 0xfff)));
+			*draw_buffer_current_ptr = *(draw_buffer_current_ptr + local_nextlineoffset) = hamcolor;
 		}
 		source_line_ptr++;
 		pixels_left_to_draw--;
@@ -5233,6 +5236,7 @@ void drawLineHAM1xX_24bit(graph_line *linedesc, ULO nextlineoffset, ULO vertical
 	ULO hampixel;
 	UBY * draw_buffer_current_ptr_local;
 	ULO pixels_left_to_draw;
+	ULO local_nextlineoffset = nextlineoffset*2;
 
 	nonvisible = linedesc->DIW_first_draw - linedesc->DDF_start;
 
@@ -5287,15 +5291,11 @@ void drawLineHAM1xX_24bit(graph_line *linedesc, ULO nextlineoffset, ULO vertical
 		}
 		if (verticalscale == 1)
 		{
-			*((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = hampixel;
 		}
 		else
 		{
-			*((UWO *) draw_buffer_current_ptr) = 
-				*((UWO *) draw_buffer_current_ptr + nextlineoffset * 2) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = 
-				*((UBY *) draw_buffer_current_ptr + nextlineoffset * 4 + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + local_nextlineoffset) = hampixel;
 		}
 		source_line_ptr++;
 		pixels_left_to_draw--;
@@ -5389,21 +5389,15 @@ void drawLineHAM2xX_24bit(graph_line *linedesc, ULO nextlineoffset, ULO vertical
 		}
 		if (verticalscale == 1)
 		{
-			*((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = hampixel;
 			draw_buffer_current_ptr += 3;
-			*((UWO *) draw_buffer_current_ptr) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = hampixel;
 		}
 		else
 		{
-			*((UWO *) draw_buffer_current_ptr) = *((UWO *) draw_buffer_current_ptr + nextlineoffset * 2) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = 
-				*((UBY *) draw_buffer_current_ptr + nextlineoffset * 4 + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + nextlineoffset * 2) = hampixel;
 			draw_buffer_current_ptr += 3;
-			*((UWO *) draw_buffer_current_ptr) = *((UWO *) draw_buffer_current_ptr + nextlineoffset * 2) = (UWO) hampixel;
-			*((UBY *) draw_buffer_current_ptr + 2) = 
-				*((UBY *) draw_buffer_current_ptr + nextlineoffset * 4 + 2) = (UBY) (hampixel >> 16);
+			*((ULO *) draw_buffer_current_ptr) = *((ULO *) draw_buffer_current_ptr + nextlineoffset * 2) = hampixel;
 		}
 		source_line_ptr++;
 		pixels_left_to_draw--;
