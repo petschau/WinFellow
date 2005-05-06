@@ -11,18 +11,10 @@
 #define cpuPrivilegieViolation ASMRENAME(cpuPrivilegieViolation)
 #define cpuUpdateSR ASMRENAME(cpuUpdateSR)
 #define cpuSetUpInterrupt ASMRENAME(cpuSetUpInterrupt)
-#define cpuGroup1 ASMRENAME(cpuGroup1)
-#define cpuGroup2 ASMRENAME(cpuGroup2)
-#define cpuFrame0 ASMRENAME(cpuFrame0)
-#define cpuFrame1 ASMRENAME(cpuFrame1)
-#define cpuFrame2 ASMRENAME(cpuFrame2)
-#define cpuFrame3 ASMRENAME(cpuFrame3)
-#define cpuFrame4 ASMRENAME(cpuFrame4)
-#define cpuFrame7 ASMRENAME(cpuFrame7)
-#define cpuFrame8 ASMRENAME(cpuFrame8)
-#define cpuFrame9 ASMRENAME(cpuFrame9)
-#define cpuFrameA ASMRENAME(cpuFrameA)
-#define cpuFrameB ASMRENAME(cpuFrameB)
+
+#define prefetch_fillASM ASMRENAME(prefetch_fillASM)
+
+
 #define i00 ASMRENAME(i00)
 #define i01_1 ASMRENAME(i01_1)
 #define i01_2 ASMRENAME(i01_2)
@@ -475,18 +467,23 @@ extern void cpuPrepareException(void);
 extern void cpuPrivilegieViolation(void);
 extern void cpuUpdateSR(void);
 extern void cpuSetUpInterrupt(void);
-extern void cpuGroup1(ULO vbr);
-extern void cpuGroup2(ULO vbr);
-extern void cpuFrame0(ULO vbr);
-extern void cpuFrame1(ULO vbr);
-extern void cpuFrame2(ULO vbr);
-extern void cpuFrame3(ULO vbr);
-extern void cpuFrame4(ULO vbr);
-extern void cpuFrame7(ULO vbr);
-extern void cpuFrame8(ULO vbr);
-extern void cpuFrame9(ULO vbr);
-extern void cpuFrameA(ULO vbr);
-extern void cpuFrameB(ULO vbr);
+
+extern void prefetch_fillASM(void);
+
+void cpuGroup1C(ULO variableVbr, ULO pcPtr);
+void cpuGroup2C(ULO variableVbr, ULO pcPtr);
+void cpuFrame0C(ULO variableVbr, ULO pcPtr);
+void cpuFrame0C(ULO variableVbr, ULO pcPtr);
+void cpuFrame1C(ULO variableVbr, ULO pcPtr);
+void cpuFrame2C(ULO variableVbr, ULO pcPtr);
+void cpuFrame3C(ULO variableVbr, ULO pcPtr);
+void cpuFrame4C(ULO variableVbr, ULO pcPtr);
+void cpuFrame7C(ULO variableVbr, ULO pcPtr);
+void cpuFrame8C(ULO variableVbr, ULO pcPtr);
+void cpuFrame9C(ULO variableVbr, ULO pcPtr);
+void cpuFrameAC(ULO variableVbr, ULO pcPtr);
+void cpuFrameBC(ULO variableVbr, ULO pcPtr);
+
 extern void i00(ULO);
 extern void i01_1(ULO);
 extern void i01_2(ULO);
@@ -1011,8 +1008,7 @@ extern ULO cpuGetSpeed(void);
 #define BIT31 0x80000000
 
 
-typedef void (*cpuStackFrameFunc)(ULO);
-
+typedef void (*cpuStackFrameFunc)(ULO, ULO);
 
 extern void m68000start(void);   /* Code alignment label */
 
@@ -1025,7 +1021,7 @@ extern ULO prefetch_size;
 #endif
 
 
-extern ULO cpu_next, irq_next;
+extern LON cpu_next, irq_next;
 
 extern ULO exceptionstack;
 extern ULO exceptionbackdooraddress;
@@ -1141,5 +1137,8 @@ extern void cpuEmulationStart(void);
 extern void cpuEmulationStop(void);
 extern void cpuStartup(void);
 extern void cpuShutdown(void);
+
+extern ULO ACTIVATE_SSP_C(void);
+extern void cpuPrepareExceptionC(ULO vectorOffset, ULO pcPtr);
 
 #endif

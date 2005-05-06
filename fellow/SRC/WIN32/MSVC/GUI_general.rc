@@ -1,4 +1,4 @@
-// Microsoft Visual C++ generated resource script.
+//Microsoft Developer Studio generated resource script.
 //
 #include "gui_general.h"
 
@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -27,20 +27,19 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 IDD_MAIN DIALOGEX 0, 0, 312, 170
-STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_NOPARENTNOTIFY
-CAPTION "WinFellow alpha v0.4.3.2 - CVS (assembler version)"
+CAPTION "WinFellow alpha v0.4.4"
 MENU IDR_FELLOW_GUI_MENU
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "&start emulation",IDC_START_EMULATION,250,10,56,20,
                     WS_GROUP
-    PUSHBUTTON      "&quit emulator",IDC_QUIT_EMULATOR,250,147,56,16,
+    PUSHBUTTON      "&quit emulator",IDC_QUIT_EMULATOR,250,148,56,15,
                     WS_GROUP
-    PUSHBUTTON      "&configuration",IDC_CONFIGURATION,250,120,56,22,
+    PUSHBUTTON      "&configuration",IDC_CONFIGURATION,250,125,56,20,
                     WS_GROUP
-    PUSHBUTTON      "hard &reset",IDC_HARD_RESET,250,100,56,15,WS_GROUP
+    PUSHBUTTON      "hard &reset",IDC_HARD_RESET,250,107,56,15,WS_GROUP
     LTEXT           "DF0:",IDC_STATIC,15,20,16,8
     LTEXT           "DF1:",IDC_STATIC,15,57,16,8
     LTEXT           "DF2:",IDC_STATIC,15,92,16,8
@@ -68,11 +67,16 @@ BEGIN
                     SS_SUNKEN,215,90,21,7
     CONTROL         140,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | 
                     SS_SUNKEN,215,125,21,7
-    PUSHBUTTON      "&debug",ID_DEBUGGER_START,257,79,50,14
+    PUSHBUTTON      "&debug",ID_DEBUGGER_START,274,89,32,15
+    PUSHBUTTON      "into df0",IDC_BUTTON_DF1_SWAP,65,70,30,12
+    PUSHBUTTON      "into df0",IDC_BUTTON_DF2_SWAP,65,105,30,12
+    PUSHBUTTON      "into df0",IDC_BUTTON_DF3_SWAP,65,140,30,12
+    PUSHBUTTON      "turbo",IDC_BUTTON_TURBO_LOAD,260,55,38,15,NOT 
+                    WS_VISIBLE
 END
 
-IDD_CPU DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_CPU DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "CPU"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -106,8 +110,8 @@ BEGIN
                     NOT WS_VISIBLE | WS_DISABLED | WS_TABSTOP,55,85,41,10
 END
 
-IDD_FLOPPY DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FLOPPY DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "floppy"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -150,8 +154,8 @@ BEGIN
     PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT,135,65,25,12
 END
 
-IDD_SOUND DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_SOUND DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "sound"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -201,8 +205,8 @@ BEGIN
     LTEXT           "ms",IDC_STATIC,180,130,10,8
 END
 
-IDD_FILESYSTEM DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_FILESYSTEM DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "filesystem"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -218,8 +222,8 @@ BEGIN
                     WS_TABSTOP,126,7,102,10
 END
 
-IDD_HARDFILE DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_HARDFILE DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "hardfile"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -232,8 +236,8 @@ BEGIN
     PUSHBUTTON      "&Create",IDC_BUTTON_HARDFILE_CREATE,7,134,54,15
 END
 
-IDD_MEMORY DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_MEMORY DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "memory"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -257,9 +261,9 @@ BEGIN
 END
 
 IDD_GAMEPORT DIALOGEX 0, 0, 235, 174
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "gameport"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "gameport equipment",IDC_STATIC,10,5,135,50
     LTEXT           "gameport 1",IDC_STATIC,15,22,36,8
@@ -297,8 +301,8 @@ BEGIN
     LTEXT           "not set",IDC_GAMEPORT1_AUTOFIRE1,150,155,70,8
 END
 
-IDD_VARIOUS DIALOG  0, 0, 235, 156
-STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
+IDD_VARIOUS DIALOG DISCARDABLE  0, 0, 235, 156
+STYLE WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "various"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -313,7 +317,7 @@ BEGIN
 END
 
 IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 190, 94
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Filesystem Configuration"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -332,9 +336,9 @@ BEGIN
 END
 
 IDD_HARDFILE_ADD DIALOGEX 0, 0, 186, 130
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Edit Hardfile Configuration"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,5,110,50,14
     PUSHBUTTON      "&Cancel",IDCANCEL,130,110,50,14
@@ -359,26 +363,25 @@ BEGIN
 END
 
 IDD_ABOUT DIALOGEX 0, 0, 215, 137
-STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | 
-    WS_SYSMENU
+STYLE DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About WinFellow"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    CTEXT           "WinFellow alpha v0.4.3.2 - CVS",
+    CTEXT           "WinFellow alpha v0.4.4.1 - CVS",
                     IDC_STATIC_ABOUT_VERSION,17,50,180,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,
                     94,8,SS_NOTIFY
-    CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,40,7,133,25,
+    CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,
                     WS_EX_TRANSPARENT
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 
 IDD_HARDFILE_CREATE DIALOGEX 0, 0, 186, 98
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Create Hardfile Configuration"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "&OK",IDOK,5,77,50,14
     PUSHBUTTON      "&Cancel",IDCANCEL,130,77,50,14
@@ -392,8 +395,8 @@ BEGIN
     PUSHBUTTON      "...",IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG,141,10,15,15
 END
 
-IDD_DISPLAY DIALOG  0, 0, 242, 161
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_DISPLAY DIALOG DISCARDABLE  0, 0, 242, 181
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "display"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -407,7 +410,7 @@ BEGIN
     CONTROL         "ECS",IDC_RADIO_BLITTER_ECS,"Button",BS_AUTORADIOBUTTON | 
                     WS_TABSTOP,180,90,30,10
     GROUPBOX        "blitter speed",IDC_STATIC,175,111,60,45
-    GROUPBOX        "options",IDC_STATIC,5,60,95,45
+    GROUPBOX        "options",IDC_STATIC,5,60,95,60
     CONTROL         "interlace compensation",IDC_CHECK_INTERLACE,"Button",
                     BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,10,75,89,10
     CONTROL         "Slider1",IDC_SLIDER_SCREEN_AREA,"msctls_trackbar32",
@@ -420,23 +423,29 @@ BEGIN
     CONTROL         "full screen",IDC_CHECK_FULLSCREEN,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,40,48,10
     GROUPBOX        "resolution",IDC_STATIC,5,5,230,50
-    CONTROL         "2x vertical",IDC_CHECK_VERTICAL_SCALE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,110,90,48,10
-    CONTROL         "2x horizontal",IDC_CHECK_HORIZONTAL_SCALE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,110,106,55,10
-    GROUPBOX        "pixel scaling",IDC_STATIC,105,60,65,60
+    CONTROL         "low resolution",IDC_CHECK_HORIZONTAL_SCALE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,10,105,59,10
+    GROUPBOX        "line mode",IDC_STATIC,105,60,65,80
     CONTROL         "Slider2",IDC_SLIDER_FRAME_SKIPPING,"msctls_trackbar32",
                     TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,10,
-                    125,85,15
-    CTEXT           "not set",IDC_STATIC_FRAME_SKIPPING,15,140,75,8,
+                    140,85,15
+    CTEXT           "not set",IDC_STATIC_FRAME_SKIPPING,15,155,75,8,
                     SS_CENTERIMAGE
     CONTROL         "multiple buffers",IDC_CHECK_MULTIPLE_BUFFERS,"Button",
                     BS_AUTOCHECKBOX | WS_TABSTOP,10,90,63,10
-    GROUPBOX        "frame skipping",IDC_STATIC,5,110,95,45
-    CONTROL         "scanlines",IDC_CHECK_SCANLINES,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,110,76,45,10
+    GROUPBOX        "frame skipping",IDC_STATIC,5,125,95,45
     COMBOBOX        IDC_COMBO_COLOR_BITS,10,20,85,135,CBS_DROPDOWNLIST | 
                     WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "normal",IDC_RADIO_LINEMODE_NORMAL,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,110,75,37,10
+    CONTROL         "doubled",IDC_RADIO_LINEMODE_DOUBLE,"Button",
+                    BS_AUTORADIOBUTTON,110,105,41,10
+    CONTROL         "scanline",IDC_RADIO_LINEMODE_SCANLINE,"Button",
+                    BS_AUTORADIOBUTTON,110,90,42,10
+    CONTROL         "exact",IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,125,115,33,10
+    CONTROL         "stretch",IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH,
+                    "Button",BS_AUTORADIOBUTTON,125,125,37,10
 END
 
 
@@ -446,7 +455,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO MOVEABLE PURE 
 BEGIN
     IDD_MAIN, DIALOG
     BEGIN
@@ -557,7 +566,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 235
         TOPMARGIN, 7
-        BOTTOMMARGIN, 154
+        BOTTOMMARGIN, 174
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -569,18 +578,18 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE MOVEABLE PURE 
 BEGIN
     "gui_general.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE MOVEABLE PURE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "#include ""gui_debugger.h""\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE MOVEABLE PURE 
 BEGIN
     "#include ""gui_debugger.rc""\r\n"
     "\0"
@@ -594,7 +603,7 @@ END
 // Menu
 //
 
-IDR_FELLOW_GUI_MENU MENU 
+IDR_FELLOW_GUI_MENU MENU DISCARDABLE 
 BEGIN
     POPUP "&File"
     BEGIN
@@ -641,33 +650,34 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_ICON_WINFELLOW      ICON                    "winfellow.ico"
-IDI_ICON_DISPLAY        ICON                    "..\\icons\\display.ico"
-IDI_ICON_SOUND          ICON                    "..\\icons\\sound.ico"
-IDI_ICON_FLOPPY         ICON                    "..\\icons\\floppy.ico"
-IDI_ICON_HARDFILE       ICON                    "..\\icons\\harddrives.ico"
-IDI_ICON_FILESYSTEM     ICON                    "..\\icons\\filesystem.ico"
-IDI_ICON_CPU            ICON                    "..\\icons\\cpu.ico"
+IDI_ICON_WINFELLOW      ICON    DISCARDABLE     "winfellow.ico"
+IDI_ICON_DISPLAY        ICON    DISCARDABLE     "..\\icons\\display.ico"
+IDI_ICON_SOUND          ICON    DISCARDABLE     "..\\icons\\sound.ico"
+IDI_ICON_FLOPPY         ICON    DISCARDABLE     "..\\icons\\floppy.ico"
+IDI_ICON_HARDFILE       ICON    DISCARDABLE     "..\\icons\\harddrives.ico"
+IDI_ICON_FILESYSTEM     ICON    DISCARDABLE     "..\\icons\\filesystem.ico"
+IDI_ICON_CPU            ICON    DISCARDABLE     "..\\icons\\cpu.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_DISKDRIVE_LED_DISABLED BITMAP                  "disk_led_disabled_cool.bmp"
-IDB_DISKDRIVE_LED_OFF   BITMAP                  "disk_led_off_cool.bmp"
-IDB_DISKDRIVE_LED_ON    BITMAP                  "disk_led_on_cool.bmp"
-IDB_POWER_LED_OFF       BITMAP                  "power_led_off_cool.bmp"
-IDB_POWER_LED_ON        BITMAP                  "power_led_on_cool.bmp"
-IDB_WINFELLOW_LOGO      BITMAP                  "winfellow_logo_small.bmp"
+IDB_DISKDRIVE_LED_DISABLED BITMAP  MOVEABLE PURE   "disk_led_disabled_cool.bmp"
+IDB_DISKDRIVE_LED_OFF   BITMAP  MOVEABLE PURE   "disk_led_off_cool.bmp"
+IDB_DISKDRIVE_LED_ON    BITMAP  MOVEABLE PURE   "disk_led_on_cool.bmp"
+IDB_POWER_LED_OFF       BITMAP  MOVEABLE PURE   "power_led_off_cool.bmp"
+IDB_POWER_LED_ON        BITMAP  MOVEABLE PURE   "power_led_on_cool.bmp"
+IDB_WINFELLOW_LOGO      BITMAP  DISCARDABLE     "winfellow_logo_small.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // RT_MANIFEST
 //
 
-1                       RT_MANIFEST             "WinFellow.exe.manifest"
+1                       RT_MANIFEST MOVEABLE PURE "WinFellow.exe.manifest"
 
+#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -690,14 +700,14 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "http://fellow.sourceforge.net"
-            VALUE "FileDescription", "WinFellow Amiga Emulator"
-            VALUE "FileVersion", "0.4.3.2"
-            VALUE "InternalName", "WinFellow"
-            VALUE "LegalCopyright", "©1996-2004 under the GNU General Public License (GPL)"
-            VALUE "OriginalFilename", "WinFellow.exe"
-            VALUE "ProductName", "WinFellow"
-            VALUE "ProductVersion", "0.4.3.2"
+            VALUE "Comments", "http://fellow.sourceforge.net\0"
+            VALUE "FileDescription", "WinFellow Amiga Emulator\0"
+            VALUE "FileVersion", "0.4.3.2\0"
+            VALUE "InternalName", "WinFellow\0"
+            VALUE "LegalCopyright", "©1996-2004 under the GNU General Public License (GPL)\0"
+            VALUE "OriginalFilename", "WinFellow.exe\0"
+            VALUE "ProductName", "WinFellow\0"
+            VALUE "ProductVersion", "0.4.3.2\0"
         END
     END
     BLOCK "VarFileInfo"
@@ -706,18 +716,39 @@ BEGIN
     END
 END
 
+#endif    // !_MAC
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE DISCARDABLE 
 BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Norwegian (Bokmal) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
+#ifdef _WIN32
+LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_DEBUG_ARROW         BITMAP  DISCARDABLE     "..\\icons\\arrow.bmp"
+#endif    // Norwegian (Bokmal) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -731,3 +762,4 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+
