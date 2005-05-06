@@ -1,4 +1,4 @@
-Fellow V0.4.3 Alpha Version Dated 2001/11/15 (Source code archive)
+WinFellow v0.4.4 alpha version dated 2005/05/06 (source code archive)
 ----------------------------------------------------------------
 
 This is a readme file describing the contents of this archive.
@@ -7,7 +7,7 @@ This is a readme file describing the contents of this archive.
 Introduction
 ------------
 
-The WinFellow is an Amiga Emulator targeted for Windows 95/98/NT/2000.
+The WinFellow is an Amiga Emulator targeted for Windows 95/98/NT/2000/XP.
 
 Upon getting these sources
 --------------------------
@@ -62,10 +62,10 @@ What you need to compile the sources:
 
 MS Visual Studio V6 or V5.
 The Netwide Assembler, located in your PATH. (nasmw.exe)
-DirectX V? (No, I have not actually examined which version it REALLY needs,
+DirectX 5? (No, I have not actually examined which version it REALLY needs,
             but NT does not accept anything better than V3, and it works on NT).
 
-Link to NASM: http://www.web-sites.co.uk/nasm/index.html
+Link to NASM: http://nasm.sourceforge.net/
 
 Other notes:
 ------------
