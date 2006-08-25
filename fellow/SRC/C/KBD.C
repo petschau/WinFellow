@@ -17,15 +17,14 @@ Tuesday, September 19, 2000: nova
 #include "fellow.h"
 #include "keycodes.h"
 #include "kbd.h"
-#include "kbddrv.h"
 #include "gameport.h"
 #include "graph.h"
 #include "cia.h"
 #include "draw.h"
-
+#include "kbddrvsdl.h"
 
 /*===========================================================================*/
-/* Data collected in struct, for easy locking in IRQs by kbddrv.c            */
+/* Data collected in struct, for easy locking in IRQs by kbddrvsdl.c         */
 /*===========================================================================*/
 
 kbd_state_type kbd_state;
@@ -278,26 +277,26 @@ void kbdHardReset(void) {
   kbd_state.scancodes.buffer[0] = 0xfd; /* Start of keys pressed on reset */
   kbd_state.scancodes.buffer[1] = 0xfe; /* End of keys pressed during reset */
   kbd_time_to_wait = 10;
-  kbdDrvHardReset();
+  kbdDrvSDLHardReset();
 }
 
 void kbdEmulationStart(void) {
   ULO i;
 
   for (i = 0; i < 4; i++) insert_dfX[i] = FALSE;
-  kbdDrvEmulationStart();
+  kbdDrvSDLEmulationStart();
 }
 
 void kbdEmulationStop(void) {
-  kbdDrvEmulationStop();
+  kbdDrvSDLEmulationStop();
 }
 
 void kbdStartup(void) {
-  kbdDrvStartup();
+  kbdDrvSDLStartup();
 }
 
 void kbdShutdown(void) {
-  kbdDrvShutdown();
+  kbdDrvSDLShutdown();
 }
 
 

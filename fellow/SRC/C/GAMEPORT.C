@@ -162,25 +162,25 @@ void wjoytestC(ULO data, ULO address) {
 /* The input coordinates are used raw. There can be a granularity problem.   */
 /*                                                                           */
 /* Parameters:                                                               */
-/* mouseno                   - mouse 0 or mouse 1                            */
-/* x, y                      - New relative position of mouse                */
-/* button1, button2, button3 - State of the mouse buttons, button2 not used  */
+/* mouseno                   - mouse 0 or mouse 1 (not used/supported)       */
+/* x, y                      - relative position changes of mouse            */
+/* but_left, but_middle, but_right - state of the mouse buttons              */
 /*===========================================================================*/
 
-void gameportMouseHandler(gameport_inputs mousedev,
-			  LON x,
-			  LON y,
-			  BOOLE button1,
-			  BOOLE button2,
-			  BOOLE button3) {
+void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, BOOLE but_left, BOOLE but_middle, BOOLE but_right) 
+{
   ULO i;
 
-  for (i = 0; i < 2; i++) {
-    if (gameport_input[i] == mousedev) {
-      if ((!gameport_fire1[i]) && button3)
-		  potdat[i] = (potdat[i] + 0x100) & 0xffff; 
-      gameport_fire0[i] = button1;
-      gameport_fire1[i] = button3;
+  for (i = 0; i < 2; i++) 
+  {
+    if (gameport_input[i] == mousedev) 
+    {
+      if ((!gameport_fire1[i]) && but_right)
+      {
+		    potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+      }
+      gameport_fire0[i] = but_left;
+      gameport_fire1[i] = but_right;
       gameport_x[i] += x;
       gameport_y[i] += y;
     }
@@ -268,27 +268,31 @@ void gameportIORegistersClear(BOOLE clear_pot) {
 
 void gameportHardReset(void) {
   gameportIORegistersClear(TRUE);
-  mouseDrvHardReset();
-  joyDrvHardReset();
+  //mouseDrvHardReset();
+  mouseDrvSDLHardReset();
+  //joyDrvHardReset();
 }
 
 void gameportEmulationStart(void) {
   gameportIOHandlersInstall();
   fellowAddLog("gameportEmulationStart()\n");
-  mouseDrvEmulationStart();
-  joyDrvEmulationStart();
+  //mouseDrvEmulationStart();
+  mouseDrvSDLEmulationStart();
+  //joyDrvEmulationStart();
   gameportIORegistersClear(FALSE);
 }
 
 void gameportEmulationStop(void) {
-  joyDrvEmulationStop();
-  mouseDrvEmulationStop();
+  //joyDrvEmulationStop();
+  //mouseDrvEmulationStop();
+  mouseDrvSDLEmulationStop();
 }
 
 void gameportStartup(void) {
   gameportIORegistersClear(TRUE);
-  mouseDrvStartup();
-  joyDrvStartup();
+  //mouseDrvStartup();
+  mouseDrvSDLStartup();
+  //joyDrvStartup();
 
   // -- nova --
   // this is only an initial settings, they will be overrided
@@ -299,7 +303,8 @@ void gameportStartup(void) {
 }
 
 void gameportShutdown(void) {
-  joyDrvShutdown();
-  mouseDrvShutdown();
+  //joyDrvShutdown();
+  //mouseDrvShutdown();
+  mouseDrvSDLShutdown();
 }
 

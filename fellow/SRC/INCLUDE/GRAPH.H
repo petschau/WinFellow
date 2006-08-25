@@ -281,6 +281,7 @@ typedef enum {
 
 typedef struct {
   graph_linetypes linetype;
+  graph_linetypes prev_linetype;
   UBY line1[1024];
   UBY line2[1024];
   ULO colors[64];

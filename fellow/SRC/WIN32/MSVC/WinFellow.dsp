@@ -763,6 +763,50 @@ SOURCE=..\..\Include\zlibwrap.h
 # Begin Group "Win32 C Header Files"
 
 # PROP Default_Filter ""
+# Begin Group "DirectX C Header Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\include\gfxdrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\joydrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\kbddrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\mousedrv.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\sound.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\include\sounddrv.h
+# End Source File
+# End Group
+# Begin Group "SDL C Header Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\..\INCLUDE\GFXDRVSDL.H
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\INCLUDE\KBDDRVSDL.H
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\INCLUDE\MOUSEDRVSDL.H
+# End Source File
+# End Group
 # Begin Source File
 
 SOURCE=..\CAPS\include\caps_win32.h
@@ -793,19 +837,7 @@ SOURCE=..\include\fswrap.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\include\gfxdrv.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\joydrv.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\include\kbd.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\kbddrv.h
 # End Source File
 # Begin Source File
 
@@ -814,18 +846,6 @@ SOURCE=..\Include\kbdparser.h
 # Begin Source File
 
 SOURCE=..\Include\modrip_win32.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\mousedrv.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\sound.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\include\sounddrv.h
 # End Source File
 # Begin Source File
 
@@ -863,18 +883,9 @@ SOURCE=..\incasm\mac\renaming.mac
 # Begin Group "Win32 C Files"
 
 # PROP Default_Filter ""
-# Begin Source File
+# Begin Group "DirectX C Files"
 
-SOURCE=..\CAPS\C\caps_win32.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\C\commoncontrol_wrap.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\C\fswrap.c
-# End Source File
+# PROP Default_Filter ""
 # Begin Source File
 
 SOURCE=..\C\gfxdrv.c
@@ -889,19 +900,48 @@ SOURCE=..\C\kbddrv.c
 # End Source File
 # Begin Source File
 
-SOURCE=..\C\kbdparser.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\C\modrip_win32.c
-# End Source File
-# Begin Source File
-
 SOURCE=..\C\mousedrv.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\C\sounddrv.c
+# End Source File
+# End Group
+# Begin Group "SDL C Files"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\C\GFXDRVSDL.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\KBDDRVSDL.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\MOUSEDRVSDL.C
+# End Source File
+# End Group
+# Begin Source File
+
+SOURCE=..\CAPS\C\caps_win32.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\commoncontrol_wrap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\fswrap.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\kbdparser.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\modrip_win32.c
 # End Source File
 # Begin Source File
 
@@ -1365,6 +1405,14 @@ SOURCE=.\WinFellow.exe.manifest
 # Begin Source File
 
 SOURCE=..\icons\winfellow_logo_small.bmp
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\..\..\..\SDL-1.2.11\lib\SDLmain.lib"
+# End Source File
+# Begin Source File
+
+SOURCE="..\..\..\..\..\..\SDL-1.2.11\lib\SDL.lib"
 # End Source File
 # End Target
 # End Project

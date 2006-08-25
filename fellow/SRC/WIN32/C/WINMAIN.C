@@ -3,6 +3,7 @@
 /*===========================================================================*/
 
 #include <windows.h>
+#include "SDL.h"
 #include "gui_general.h"
 #include "defs.h"
 #include "wgui.h"
@@ -11,12 +12,12 @@
 #include "windrv.h"
 #include "fellow.h"
 #include "mousedrv.h"
+#include "mousedrvsdl.h"
 #include "kbd.h"
 #include "joydrv.h"
-#include "kbddrv.h"
+#include "kbddrvsdl.h"
 
 extern int main(int, char **);
-
 
 /*===========================================================================*/
 /* Records some startup data                                                 */
@@ -83,7 +84,9 @@ enum MultiEventTypes {
   met_messages = 3
 };
 
+// DirectX
 extern BOOLE mouse_drv_initialization_failed;
+
 extern HANDLE mouse_drv_DIevent;
 extern BOOLE kbd_drv_initialization_failed;
 extern HANDLE kbd_drv_DIevent;
@@ -94,13 +97,13 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
 
   multi_events[event_count] = win_drv_emulation_ended;
   object_mapping[event_count++] = met_emulation_ended;
-  if (!mouse_drv_initialization_failed) {
-    multi_events[event_count] = mouse_drv_DIevent;
-    object_mapping[event_count++] = met_mouse_data;
+  if (mouse_drv_initialization_failed) {
+   // multi_events[event_count] = mouse_drv_DIevent;
+   // object_mapping[event_count++] = met_mouse_data;
   }
   if (!kbd_drv_initialization_failed) {
-    multi_events[event_count] = kbd_drv_DIevent;
-    object_mapping[event_count++] = met_kbd_data;
+   // multi_events[event_count] = kbd_drv_DIevent;
+   // object_mapping[event_count++] = met_kbd_data;
   }
   object_mapping[event_count] = met_messages;
   return event_count;
@@ -135,6 +138,8 @@ void winDrvEmulate(void *startfunc, void *param)
   ULO event_count;
   enum MultiEventTypes object_mapping[4];
   BOOLE keep_on_waiting;
+  SDL_Event event;
+  ULO temp;
   
   win_drv_emulation_ended = CreateEvent(NULL, FALSE, FALSE, NULL);
   fellowAddLog("fellowEmulationStart() finished\n");
@@ -148,6 +153,41 @@ void winDrvEmulate(void *startfunc, void *param)
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
   while (keep_on_waiting) {
+
+    // handle SDL events
+	  while(SDL_PollEvent(&event))
+	    {
+	    switch(event.type)
+	    {  
+        case SDL_ACTIVEEVENT:
+          // check if the window gained keyboard focus
+          // if so, also force mouse focus for the window
+          if ((event.active.state & SDL_APPINPUTFOCUS) == SDL_APPINPUTFOCUS)
+          {
+            gfxDrvSDL_ChangeInputDeviceStates(&event);
+          }
+          break;
+
+		    case SDL_MOUSEMOTION:
+        case SDL_MOUSEBUTTONDOWN:
+        case SDL_MOUSEBUTTONUP:
+          // deal with mouse events
+			    mouseDrvSDLMovementHandler(&event);
+		      break;
+
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+          // deal with keyboard events
+          kbdDrvSDLKeypressHandler(&event);
+          break;
+
+		    default: /* Report an unhandled event */
+          fellowAddLog("WinMain: unhandled SDL event (%d)\n", event.type);
+		      break;
+	    }
+	  }
+
+
     dwEvt = MsgWaitForMultipleObjects(event_count,
 				      multi_events,
 				      FALSE,

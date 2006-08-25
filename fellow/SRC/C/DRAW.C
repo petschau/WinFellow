@@ -1110,10 +1110,12 @@ static void drawModesDump(void) {
 static void drawPaletteInitialize(void) {
   ULO r, g, b;
 
-    for (r = 0; r < 6; r++) 
-      for (g = 0; g < 6; g++)
-	for (b = 0; b < 6; b++)
-	  gfxDrvSet8BitColor(r + g*6 + b*36 + 10, r*51, g*51, b*51);
+  //  for (r = 0; r < 6; r++) 
+  //    for (g = 0; g < 6; g++)
+	//      for (b = 0; b < 6; b++)
+    // 8 bit not yet supported by SDL
+	  //gfxDrvSet8BitColor(r + g*6 + b*36 + 10, r*51, g*51, b*51);
+	  //gxfDrvSDLSet8BitColor();
 }
 
 
@@ -1323,11 +1325,12 @@ static void drawModeTablesInitialize(draw_mode *dm) {
 /*============================================================================*/
 
 static void drawBufferFlip(void) {
-  if (++draw_buffer_show >= draw_buffer_count)
-    draw_buffer_show = 0;
-  if (++draw_buffer_draw >= draw_buffer_count)
-    draw_buffer_draw = 0;
-  gfxDrvBufferFlip();
+  //if (++draw_buffer_show >= draw_buffer_count)
+  //  draw_buffer_show = 0;
+  //if (++draw_buffer_draw >= draw_buffer_count)
+  //  draw_buffer_draw = 0;
+  //gfxDrvBufferFlip();
+  gfxDrvSDL_BufferFlip();
 }
 
 
@@ -1433,7 +1436,8 @@ ULO drawValidateBufferPointer(ULO amiga_line_number) {
 	
 	ULO scale;
 
-	draw_buffer_top_ptr = gfxDrvValidateBufferPointer();
+	//draw_buffer_top_ptr = gfxDrvValidateBufferPointer();
+	draw_buffer_top_ptr = gfxDrvSDL_ValidateBufferPointer();
 	if (draw_buffer_top_ptr == NULL) {
 		fellowAddLog("Buffer ptr is NULL\n");
 		return 0;
@@ -1470,7 +1474,8 @@ ULO drawValidateBufferPointer(ULO amiga_line_number) {
 /*============================================================================*/
 
 void drawInvalidateBufferPointer(void) {
-  gfxDrvInvalidateBufferPointer();
+  //gfxDrvInvalidateBufferPointer();
+  gfxDrvSDL_InvalidateBufferPointer();
 }
 
 
@@ -1503,16 +1508,20 @@ void drawEndOfFramePostC(void) {
 void drawEmulationStart(void) {
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;
-  gfxDrvSetMode(draw_mode_current, drawGetVerticalScale(), drawGetVerticalScaleStrategy());
+  //gfxDrvSetMode(draw_mode_current, drawGetVerticalScale(), drawGetVerticalScaleStrategy());
+  gfxDrvSDL_SetMode(draw_mode_current, drawGetVerticalScale(), drawGetVerticalScaleStrategy());
   /* Use 1 buffer when deinterlacing, else 3 */
-  gfxDrvEmulationStart((drawGetDeinterlace() || (!drawGetAllowMultipleBuffers())) ? 1 : 3);
+  //gfxDrvEmulationStart((drawGetDeinterlace() || (!drawGetAllowMultipleBuffers())) ? 1 : 3);
+  gfxDrvSDL_EmulationStart((drawGetDeinterlace() || (!drawGetAllowMultipleBuffers())) ? 1 : 3);
   drawStatClear();
 }
 
 BOOLE drawEmulationStartPost(void) {
   BOOLE result;
   
-  draw_buffer_count = gfxDrvEmulationStartPost();
+  //draw_buffer_count = gfxDrvEmulationStartPost();
+  draw_buffer_count = 1;
+  
   if ((result = (draw_buffer_count != 0))) {
     drawModeTablesInitialize(draw_mode_current);
     draw_buffer_show = 0;
@@ -1529,7 +1538,8 @@ BOOLE drawEmulationStartPost(void) {
 /*============================================================================*/
 
 void drawEmulationStop(void) {
-  gfxDrvEmulationStop();
+  //gfxDrvEmulationStop();
+  gfxDrvSDL_EmulationStop();
 }
 
 
@@ -1541,7 +1551,8 @@ BOOLE drawStartup(void) {
 	ULO i;
 
 	drawModesClear();
-	if (!gfxDrvStartup()) return FALSE;
+	//if (!gfxDrvStartup()) return FALSE;
+	if (!gfxDrvSDL_Startup()) return FALSE;
 	draw_mode_current = (draw_mode *) listNode(draw_modes);
 	drawDualTranslationInitialize();
 	drawPaletteInitialize();
@@ -1572,7 +1583,9 @@ BOOLE drawStartup(void) {
 
 void drawShutdown(void) {
   drawModesFree();
-  gfxDrvShutdown();
+  //gfxDrvShutdown();
+  gfxDrvSDL_Shutdown();
+
 #ifdef DRAW_TSC_PROFILE
   {
   FILE *F = fopen("drawprofile.txt", "w");
@@ -1712,13 +1725,16 @@ void drawEndOfFramePreC(void)
       draw_buffer_current_ptr_local = draw_buffer_current_ptr;
       for (i = 0; i <= (draw_bottom - draw_top); i++) {
         graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
+        //if ((graph_frame_ptr->linetype != GRAPH_LINE_SKIP) || (graph_frame_ptr->prev_linetype != GRAPH_LINE_BPL_SKIP))
         if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
         {
+          //if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP) || (graph_frame_ptr->prev_linetype != GRAPH_LINE_BPL_SKIP))
           if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
           {
               ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, next_line_offset/8);
-		  }
+  	      }
         }
+        //graph_frame_ptr->prev_linetype = graph_frame_ptr->linetype;
         draw_buffer_current_ptr_local += next_line_offset;
         draw_buffer_current_ptr = draw_buffer_current_ptr_local;
       }

@@ -43,7 +43,7 @@
 #include "fhfile.h"
 #include "ini.h"
 #include "kbd.h"
-#include "kbddrv.h"
+#include "kbddrvsdl.h"
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
 #endif
@@ -70,7 +70,7 @@ HBITMAP diskdrive_led_off_bitmap = 0;
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
 
-	kbd_event gameport_keys_events[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
+	kbd_event gameport_keys_events[KBDDRVSDL_MAX_JOYKEY_VALUE][KBDDRVSDL_MAX_JOYKEY_VALUE] = {
     {
 	    EVENT_JOY0_UP_ACTIVE,
       EVENT_JOY0_DOWN_ACTIVE,
@@ -93,7 +93,7 @@ HBITMAP diskdrive_led_off_bitmap = 0;
     }
   };
 
-  int gameport_keys_labels[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
+  int gameport_keys_labels[KBDDRVSDL_MAX_JOYKEY_VALUE][KBDDRVSDL_MAX_JOYKEY_VALUE] = {
     { IDC_GAMEPORT0_UP, IDC_GAMEPORT0_DOWN, IDC_GAMEPORT0_LEFT, IDC_GAMEPORT0_RIGHT, IDC_GAMEPORT0_FIRE0, IDC_GAMEPORT0_FIRE1, IDC_GAMEPORT0_AUTOFIRE0, IDC_GAMEPORT0_AUTOFIRE1 },
     { IDC_GAMEPORT1_UP, IDC_GAMEPORT1_DOWN, IDC_GAMEPORT1_LEFT, IDC_GAMEPORT1_RIGHT, IDC_GAMEPORT1_FIRE0, IDC_GAMEPORT1_FIRE1, IDC_GAMEPORT1_AUTOFIRE0, IDC_GAMEPORT1_AUTOFIRE1 }
   };
@@ -1286,9 +1286,9 @@ void wguiInstallGameportConfig(HWND hwndDlg, cfg *conf) {
 	ccwComboBoxSetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT2, cfgGetGameport(conf, 1));
 
 	/* set current used keys for keyboard layout replacements */
-  for( i=0; i<MAX_JOYKEY_PORT; i++ ) {
-    for ( j=0; j<MAX_JOYKEY_VALUE; j++) {
-      ccwStaticSetText(hwndDlg, gameport_keys_labels[i][j], kbdDrvKeyPrettyString(kbdDrvJoystickReplacementGet(gameport_keys_events[i][j])));
+  for( i=0; i<KBDDRVSDL_MAX_JOYKEY_VALUE; i++ ) {
+    for ( j=0; j<KBDDRVSDL_MAX_JOYKEY_VALUE; j++) {
+      ccwStaticSetText(hwndDlg, gameport_keys_labels[i][j], kbdDrvSDLKeyString(kbdDrvSDLJoystickReplacementGet(gameport_keys_events[i][j])));
     }
 	}
 }
