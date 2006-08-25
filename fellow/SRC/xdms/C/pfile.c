@@ -21,6 +21,7 @@
 #endif
 #include <stdlib.h>
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <malloc.h>
 #include <crtdbg.h>
 #endif
 

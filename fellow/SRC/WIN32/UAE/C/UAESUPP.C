@@ -1,4 +1,4 @@
-/* @(#) $Id: UAESUPP.C,v 1.1.1.1.2.6 2004-05-28 06:41:51 carfesh Exp $ */
+/* @(#) $Id: UAESUPP.C,v 1.1.1.1.2.6.2.1 2006-08-25 21:32:58 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -33,6 +33,7 @@
 #endif
 #include <stdlib.h>
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <malloc.h>
 #include <crtdbg.h>
 #endif
 
