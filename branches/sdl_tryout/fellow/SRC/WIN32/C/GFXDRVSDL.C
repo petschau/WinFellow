@@ -172,7 +172,7 @@ STR *gfxDrvSDL_ErrorString(void)
 /*==========================================================================*/
 
 void gfxDrvSDL_Failure(STR *header) {
-  fellowAddLog("gfxdrv: ");
+  fellowAddLog("gfxdrvSDL: ");
   fellowAddLog(header);
   fellowAddLog(gfxDrvSDL_ErrorString());
   fellowAddLog("\n");
@@ -184,7 +184,7 @@ void gfxDrvSDL_Failure(STR *header) {
 /*==========================================================================*/
 
 void gfxDrvSDL_WindowShow(gfxdrv_sdl_device *sdl_device) {
-  fellowAddLog("gfxdrv: gfxDrvSDL_WindowShow()\n");
+  fellowAddLog("gfxdrvSDL: gfxDrvSDL_WindowShow()\n");
   if (!sdl_device->mode->windowed) {
     //ShowWindow(gfx_drv_hwnd, SW_SHOWMAXIMIZED);
     //UpdateWindow(gfx_drv_hwnd);
@@ -335,7 +335,7 @@ void gfxDrvSDL_ModeInformationDump(gfxdrv_sdl_device *sdl_device)
 	felist * l;
 	STR s[120];
   
-	sprintf(s, "gfxdrv: SDL modes found: %d\n", listCount(sdl_device->modes));
+	sprintf(s, "gfxdrvSDL: SDL modes found: %d\n", listCount(sdl_device->modes));
 	fellowAddLog(s);
 	for (l = sdl_device->modes; l != NULL; l = listNext(l)) 
 	{
@@ -790,7 +790,7 @@ UBY *gfxDrvSDL_ValidateBufferPointer(void)
 	//gfxDrvSDL_RunEventWait();
 	if (gfxdrv_sdl_displaychange) 
 	{
-		fellowAddLog("gfxdrv: displaymode change\n");
+		fellowAddLog("gfxdrvSDL: displaymode change\n");
 		soundEmulationStop();
 		gameportEmulationStop();
 		kbdEmulationStop();
@@ -1013,7 +1013,9 @@ void gfxDrvSDL_EndOfFrame(void) {
 
 BOOLE gfxDrvSDL_Startup(void) 
 {
-	gfxdrv_sdl_ini = iniManagerGetCurrentInitdata(&ini_manager);
+  char videodriver_name[32];
+
+  gfxdrv_sdl_ini = iniManagerGetCurrentInitdata(&ini_manager);
 	gfxdrv_sdl_initialized = FALSE;
 	gfxdrv_sdl_app_run = NULL;
 	graph_buffer_lost = FALSE;
@@ -1021,7 +1023,7 @@ BOOLE gfxDrvSDL_Startup(void)
 	// initilize event, making it possible to pause emulation
 	if (gfxDrvSDL_RunEventInitialize() == FALSE)
 	{
-		fellowAddLog("gfxdrv: event could not be intialized\n");
+		fellowAddLog("gfxdrvSDL: event could not be intialized\n");
 		return FALSE;
 	}
 
@@ -1033,6 +1035,10 @@ BOOLE gfxDrvSDL_Startup(void)
 	}
 	gfxdrv_sdl_initialized = TRUE;
 
+  // log some info
+  SDL_VideoDriverName(videodriver_name, sizeof(videodriver_name));
+  fellowAddLog("gfxdrvSDL: using %s as 2D graphics layer\n", videodriver_name);
+  
 	// allocate memory for our current SDL device
 	gfxdrv_sdl_device_current = (gfxdrv_sdl_device *) malloc(sizeof(gfxdrv_sdl_device));
 	memset(gfxdrv_sdl_device_current, 0, sizeof(gfxdrv_sdl_device));

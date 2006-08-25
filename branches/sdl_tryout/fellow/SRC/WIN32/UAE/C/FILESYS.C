@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.5.2.6 2004-05-28 12:55:25 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.5.2.6.2.1 2006-08-25 21:32:58 worfje Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -64,6 +64,7 @@
 #endif
 #include <stdlib.h>
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <malloc.h>
 #include <crtdbg.h>
 #endif
 

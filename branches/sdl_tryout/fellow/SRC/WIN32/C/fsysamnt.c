@@ -1,4 +1,4 @@
-/* @(#) $Id: fsysamnt.c,v 1.1.2.3 2004-06-08 13:20:17 carfesh Exp $ */
+/* @(#) $Id: fsysamnt.c,v 1.1.2.3.2.1 2006-08-25 21:32:58 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -26,14 +26,6 @@
 
 #include <windows.h>
 #include <stdio.h>
-
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-#define _CRTDBG_MAP_ALLOC
-#endif
-#include <stdlib.h>
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-#include <crtdbg.h>
-#endif
 
 #include <errno.h>
 #include <sys/types.h>

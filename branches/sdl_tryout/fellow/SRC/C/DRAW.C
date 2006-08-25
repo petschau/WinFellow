@@ -18,7 +18,7 @@
 #include "cpu.h"
 #include "fmem.h"
 #include "graph.h"
-#include "gfxdrv.h"
+#include "gfxdrvsdl.h"
 #include "listtree.h"
 #include "timer.h"
 #include "fonts.h"

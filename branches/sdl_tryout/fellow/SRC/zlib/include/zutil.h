@@ -8,7 +8,7 @@
    subject to change. Applications should only use zlib.h.
  */
 
-/* @(#) $Id: zutil.h,v 1.1.2.3 2004-06-07 15:46:37 carfesh Exp $ */
+/* @(#) $Id: zutil.h,v 1.1.2.3.2.1 2006-08-25 21:32:58 worfje Exp $ */
 
 #ifndef ZUTIL_H
 #define ZUTIL_H
@@ -27,6 +27,7 @@
 #endif
 #include <stdlib.h>
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
+#include <malloc.h>
 #include <crtdbg.h>
 #endif
 
