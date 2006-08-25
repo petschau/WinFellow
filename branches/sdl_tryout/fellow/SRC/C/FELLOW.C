@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.11 2005-05-06 15:21:44 worfje Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.11.2.1 2006-08-25 00:18:54 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -54,6 +54,8 @@
 #include "ini.h"
 #include "cpudis.h"
 #include "sysinfo.h"
+
+#include "SDL.h"
 
 BOOLE fellow_request_emulation_stop;
 BOOLE fellow_request_emulation_stop_immediately;

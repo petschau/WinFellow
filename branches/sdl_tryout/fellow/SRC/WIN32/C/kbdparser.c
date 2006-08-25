@@ -1,4 +1,4 @@
-/* @(#) $Id: kbdparser.c,v 1.4.2.2 2004-06-04 04:44:17 carfesh Exp $ */
+/* @(#) $Id: kbdparser.c,v 1.4.2.2.2.1 2006-08-25 00:18:55 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -43,7 +43,7 @@ Tuesday, September 05, 2000: nova
 - added a third parameter to prsReadFile for the array of joy replacement ** internal **
 */
 
-
+#include "SDL.h"
 #include "defs.h"
 #include "keycodes.h"
 #include "kbdparser.h"
@@ -346,12 +346,13 @@ STR *prsTrim( STR *line )
 }
 
 /*===========================================================================*/
-/* read the line and get Amiga key name and Pc key name						 */
+/* read the line and get Amiga key name and SDL key name						         */
 /*===========================================================================*/
 
 BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 {
-	int i = 0, j = 0;
+	int i = 0;
+  int j = 0;
 	*pAm = line;
 
 	while( line[i] && (line[i] != '=')) i++;
@@ -370,11 +371,11 @@ BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 /* read the mapping file and set the map array								 */
 /*===========================================================================*/
 
-BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsReadFile( char *szFilename, UBY *sdl_to_am, SDLKey key_repl[2][8] )
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
-	int AmigaIndex, PcIndex, ReplIndex;
+	int AmigaIndex, SDLIndex, ReplIndex;
 
 	f = fopen( szFilename, "r" );
 	if( !f ) {
@@ -384,11 +385,14 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 
 	// clear array
 
-	for( PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ )
-		pc_to_am[PcIndex] = A_NONE;
+	for (SDLIndex = SDLK_FIRST; SDLIndex < SDLK_LAST; SDLIndex++)
+  {
+		sdl_to_am[SDLIndex] = A_NONE;
+  }
 
 	while( !feof( f ))
 	{
+    // read a line from file
 		if( !fgets( line, 256, f ))
 			break;
 
@@ -396,12 +400,12 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 		if( line[0] == ';' )
 			continue;
 
-		if( prsGetAmigaName( line, &pAmigaName, &pWinName ))
-			continue;
-
+    // split up the line (left and right from equal sign)
+		prsGetAmigaName( line, &pAmigaName, &pWinName );
+			
 		ReplIndex = -1;
 		AmigaIndex = prsGetKeyIndex( pAmigaName, amiga_keys, MAX_AMIGA_NAMES );
-		PcIndex = prsGetKeyIndex( pWinName, pc_keys, MAX_PC_NAMES );
+		SDLIndex = prsGetKeyIndex( pWinName, pc_keys, MAX_PC_NAMES );
 
 		if( AmigaIndex < 0 )
 			ReplIndex = prsGetKeyIndex( pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT );
@@ -411,19 +415,19 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 			continue;
 		}
 
-		if( PcIndex < 0 ) {
+		if( SDLIndex < 0 ) {
 			fellowAddLog( "Pc    key: %s unrecognized\n", pWinName );
 			continue;
 		}
 
 		if( AmigaIndex >= 0 )
-			pc_to_am[PcIndex] = amiga_scancode[AmigaIndex];
+			sdl_to_am[SDLIndex] = amiga_scancode[AmigaIndex];
 		else
 		{
 			if( ReplIndex < FIRST_KEY2_REPLACEMENT )
-				key_repl[0][ReplIndex] = symbol_to_DIK_kbddrv[ PcIndex ];
+				key_repl[0][ReplIndex] = symbol_to_DIK_kbddrv[ SDLIndex ];
 			else
-				key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = symbol_to_DIK_kbddrv[ PcIndex ];
+				key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = symbol_to_DIK_kbddrv[ SDLIndex ];
 		}
 	}
 	fclose( f );
@@ -431,7 +435,7 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 	return FALSE;
 }
 
-BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
+BOOLE prsWriteFile( char *szFilename, UBY *sdl_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
 	FILE *f = NULL;
 	char line[256], *pAmigaName = NULL, *pWinName = NULL;
@@ -451,7 +455,7 @@ BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[
   for( AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++ ) {
     line[0] = '\0';
     for( PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++ ) {
-      if( pc_to_am[PcIndex] == amiga_scancode[ AmigaIndex ] ) {
+      if( sdl_to_am[PcIndex] == amiga_scancode[ AmigaIndex ] ) {
         if( line[0] )
           fputs( line, f );
         sprintf( line, "%s = %s\n", amiga_keys[ AmigaIndex ], pc_keys[PcIndex] );
