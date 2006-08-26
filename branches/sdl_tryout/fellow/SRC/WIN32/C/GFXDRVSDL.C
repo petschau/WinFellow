@@ -16,11 +16,9 @@
 #define INITGUID
 
 #include "portable.h"
-
 #include <windowsx.h>
 #include "gui_general.h"
 #include "SDL.h"
-
 #include "defs.h"
 #include "fellow.h"
 #include "fmem.h"
@@ -389,8 +387,12 @@ void gfxDrvSDL_BuildKnownModesList(void)
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(640, 480, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(800, 600, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1024, 768, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
+    gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1152, 864, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1280, 1024, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1600, 1200, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
+    gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1856, 1392, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
+    gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1900, 1440, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
+    gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(2048, 1536, colordepth, 0, 0, 0, 0, 0, 0, 0, FALSE)));
 
 		colordepth += 8;
 	}
@@ -405,6 +407,8 @@ void gfxDrvSDL_BuildKnownModesList(void)
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(width[i], 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
 		gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(width[i], 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
 	}		
+  gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(800, 600, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+  gfxdrv_sdl_known_mode_list = listAddLast(gfxdrv_sdl_known_mode_list, listNew(gfxDrvSDL_ModeNew(1024, 768, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
 }
 
 void gfxDrvSDL_KnownModesListRelease(void)
@@ -427,8 +431,12 @@ void gfxDrvSDL_ModeInformationInitialize(gfxdrv_sdl_device * sdl_device)
 	ULO i, j;
 	felist * l;
 	ULO colordepth;
+	const SDL_VideoInfo * video_info;
   
 	sdl_device->modes = NULL;
+    
+  // retrieve color depth of desktop
+  video_info = SDL_GetVideoInfo();
 
 	// check fullscreen modes
 	modes = SDL_ListModes(NULL, SDL_FULLSCREEN);
@@ -458,7 +466,6 @@ void gfxDrvSDL_ModeInformationInitialize(gfxdrv_sdl_device * sdl_device)
 	else
 	{
 		// some fullscreen modes available 
-		
 		for(i = 0; modes[i] != NULL; i++)
 		{
 			colordepth = 8;
@@ -491,12 +498,12 @@ void gfxDrvSDL_ModeInformationInitialize(gfxdrv_sdl_device * sdl_device)
 			// make sure the proposed mode is a windowed mode
 			if (mode->windowed == TRUE)
 			{
-				// we are bound to desktop color depth (we choose 8-bit to trigger a suggestion from SDL)
-				suggested_depth = SDL_VideoModeOK(mode->width, mode->height, 8, 0);
-				if (suggested_depth != 0)
+				// we are bound to desktop color depth
+				suggested_depth = SDL_VideoModeOK(mode->width, mode->height, video_info->vfmt->BitsPerPixel, 0);
+				if (suggested_depth == video_info->vfmt->BitsPerPixel)
 				{
 					// mode exists at suggested color depth
-					listAddLast(sdl_device->modes, listNew(gfxDrvSDL_ModeNew(mode->width, mode->height, suggested_depth, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+					listAddLast(sdl_device->modes, listNew(gfxDrvSDL_ModeNew(mode->width, mode->height, video_info->vfmt->BitsPerPixel, 0, 0, 0, 0, 0, 0, 0, TRUE)));
 				}
 			}
 		}
@@ -506,12 +513,12 @@ void gfxDrvSDL_ModeInformationInitialize(gfxdrv_sdl_device * sdl_device)
 		// some windowed modes available 
 		for(i = 0; modes[i] != NULL; i++)
 		{
-			// we are bound to desktop color depth (we choose 8-bit to trigger a suggestion from SDL)
-			suggested_depth = SDL_VideoModeOK(modes[i]->w, modes[i]->h, 8, 0);
-			if (suggested_depth != 0)
+			// we are bound to desktop color depth 
+			suggested_depth = SDL_VideoModeOK(modes[i]->w, modes[i]->h, video_info->vfmt->BitsPerPixel, 0);
+			if (suggested_depth == video_info->vfmt->BitsPerPixel)
 			{
-				// mode exists at suggested color depth
-				listAddLast(sdl_device->modes, listNew(gfxDrvSDL_ModeNew(modes[i]->w, modes[i]->h, suggested_depth, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+				// mode exists at requested color depth
+				listAddLast(sdl_device->modes, listNew(gfxDrvSDL_ModeNew(modes[i]->w, modes[i]->h, video_info->vfmt->BitsPerPixel, 0, 0, 0, 0, 0, 0, 0, TRUE)));
 			}
 		}
 	}
@@ -666,8 +673,6 @@ ULO gfxDrvSDL_SurfacesInitialize(gfxdrv_sdl_device *sdl_device)
 
 UBY *gfxDrvSDL_SurfaceLock(gfxdrv_sdl_device *sdl_device) 
 {
-	SDL_Surface * temp;
-
 	if ( SDL_MUSTLOCK(sdl_device->draw_surface) ) 
 	{
         if ( SDL_LockSurface(sdl_device->draw_surface) < 0 )
@@ -864,8 +869,9 @@ void gfxDrvSDL_SetMode(draw_mode *dm, ULO vertical_scale, ULO vertical_scale_str
 
 BOOLE gfxDrvSDL_EmulationStart(ULO maxbuffercount) 
 {
-	ULO suggested_depth;
-	SDL_VideoInfo * temp;
+  ULO applied_depth;
+	const SDL_VideoInfo * video_info;
+  ULO suggested_depth;
 
 	// we pause the application
 	//gfxDrvSDL_RunEventReset();                    
@@ -889,28 +895,30 @@ BOOLE gfxDrvSDL_EmulationStart(ULO maxbuffercount)
   // windowed
 	if (gfxdrv_sdl_device_current->mode->windowed)
 	{
+    // retrieve color depth of desktop
+    video_info = SDL_GetVideoInfo();
+
 		// when (use_blitter == 1) only a SW surface can be requested
 		suggested_depth = SDL_VideoModeOK(
 			gfxdrv_sdl_device_current->drawmode->width, 
 			gfxdrv_sdl_device_current->drawmode->height, 
-			8, 
-			SDL_SWSURFACE | SDL_ANYFORMAT 
+			video_info->vfmt->BitsPerPixel, 
+			SDL_SWSURFACE 
 		);
-		
-		// suggested depth should not be zero
-		if (suggested_depth == 0)
-		{
-			fellowAddLog("gfxdrvSDL: returned color depth did not match requested color depth\n");
-		}	
 
-    // set the icon for the hosting window
-    SDL_WM_SetIcon(SDL_LoadBMP("winfellow_icon.bmp"), NULL);
+    if (suggested_depth != video_info->vfmt->BitsPerPixel)
+    {
+      gfxDrvSDL_Failure("different color depth applied than requested");
+    }
+		
+    // set the icon for the hosting window (bmp not yet available)
+    //SDL_WM_SetIcon(SDL_LoadBMP("winfellow_icon.bmp"), NULL);
 
 		// set video mode and show window
 		gfxdrv_sdl_device_current->draw_surface = SDL_SetVideoMode(
 			gfxdrv_sdl_device_current->drawmode->width, 
 			gfxdrv_sdl_device_current->drawmode->height, 
-			suggested_depth, 
+			video_info->vfmt->BitsPerPixel, 
 			SDL_SWSURFACE
 		);
 
@@ -934,7 +942,7 @@ BOOLE gfxDrvSDL_EmulationStart(ULO maxbuffercount)
 	else
 	{
 		// fullscreen
-    suggested_depth = SDL_VideoModeOK(
+    applied_depth = SDL_VideoModeOK(
 			gfxdrv_sdl_device_current->drawmode->width, 
 			gfxdrv_sdl_device_current->drawmode->height, 
 			gfxdrv_sdl_device_current->drawmode->bits, 
@@ -943,13 +951,14 @@ BOOLE gfxDrvSDL_EmulationStart(ULO maxbuffercount)
 		);
 		
 		// suggested depth should not be zero
-		if (suggested_depth == 0)
+		if (applied_depth == 0)
 		{
-			fellowAddLog("gfxdrvSDL: returned color depth did not match requested color depth\n");
+			gfxDrvSDL_Failure("returned color depth was zero, video mode not available");
+      return FALSE;
 		}	
 
-    // set the icon for the hosting window
-    SDL_WM_SetIcon(SDL_LoadBMP("winfellow_icon.bmp"), NULL);
+    // set the icon for the hosting window (bmp not yet available)
+    //SDL_WM_SetIcon(SDL_LoadBMP("winfellow_icon.bmp"), NULL);
 
 		// set video mode and show window
 		gfxdrv_sdl_device_current->draw_surface = SDL_SetVideoMode(
@@ -1027,7 +1036,7 @@ BOOLE gfxDrvSDL_Startup(void)
 		return FALSE;
 	}
 
-	// initialize SDL
+ 	// initialize SDL
 	if (SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0)
 	{
 	  gfxDrvSDL_Failure("unable to init SDL");
