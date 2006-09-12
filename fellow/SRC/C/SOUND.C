@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.7 2005-01-23 16:30:20 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.7.2.1 2006-09-12 22:00:47 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -32,7 +32,7 @@
 #include "wav.h"
 #include "cia.h"
 #include "graph.h"
-#include "sounddrv.h"
+#include "sounddrvsdl.h"
 
 
 #define MAX_BUFFER_SAMPLES 65536
@@ -136,67 +136,47 @@ ULO audiodmaconmask[4] = {0x1, 0x2, 0x4, 0x8};
   Audio IO Registers
   ==============================================================================*/
 
-/* Extract channel number from the register address */
+/* extract channel number from the register address */
 
 ULO soundGetChannelNumber(ULO address)
 {
   return ((address & 0x70) >> 4) - 2;
 }
 
-
-/*
- ==================
-  AUDXPT
- ==================
- $dff0a0,b0,c0,d0
-*/
-
+// AUDXPTH (registers $dff0a0, $dff0b0, $dff0c0, $dff0d0)
+// 19 bits pointer to audio data for each channel
 void waudXpth(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   audpt[ch] = (audpt[ch] & 0xffff) | ((data & 0x1f) << 16);
 }
 
+// AUDXPTL (registers $dff0a2, $dff0b2, $dff0c2, $dff0d2)
+// 19 bits pointer to audio data for each channel
 void waudXptl(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   audpt[ch] = (audpt[ch] & 0x1f0000) | (data & 0xfffe);
 }
 
-/*
- ==================
-  AUDXLEN
- ==================
- $dff0a4,b4,c4,d4
-*/
-
+// AUDXLEN (registers $dff0a4, $dff0b4, $dff0c4, $dff0d4)
+// lenght of audio data for each channel
 void waudXlen(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   audlen[ch] = data & 0xffff;
 }
 
-/*
- ==================
-  AUDXPER
- ==================
- $dff0a6,b6,c6,d6
-*/
-
+// AUDXPER (registers $dff0a6, $dff0b6, $dff0c6, $dff0d6)
+// sample period for each channel
 void waudXper(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   audper[ch] = periodtable[data & 0xffff];
 }
 
-/*
- ==================
-  AUDXVOL
- ==================
- $dff0a8,b8,c8,d8
-
-*/
-
+// AUDXVOL (registers $dff0a8, $dff0b8, $dff0c8, $dff0d8)
+// loudness of each channel
 void waudXvol(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
@@ -206,15 +186,8 @@ void waudXvol(ULO data, ULO address)
   audvol[ch] = data & 0x3f;
 }
 
-/*
- ==================
-  AUDXDAT
- ==================
- $dff0aa,ba,ca,da
-
- Not used right now.
-*/
-
+// AUDXDAT (registers $dff0aa, $dff0ba, $dff0ca, $dff0da)
+// seems not to be used (do we only support DMA driven sound?)
 void waudXdat(ULO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
@@ -437,7 +410,8 @@ void soundLowPass(ULO count, WOR *buffer_left, WOR *buffer_right)
 ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, BOOLE halfscale, BOOLE odd)
 {
   ULO samples_added = 0;
-    ULO i;
+  ULO i;
+
   if (dmacon & audiodmaconmask[ch])
   {
     for (i = 0; i < count; ++i)
@@ -445,21 +419,33 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
       audstate[ch](ch);
       if ((!halfscale) || (halfscale && !odd))
       {
-	if (ch == 0 || ch == 3) buffer_left[samples_added++] += (WOR) auddatw[ch];
-	else buffer_right[samples_added++] += (WOR) auddatw[ch];
+	      if (ch == 0 || ch == 3) 
+        {
+          buffer_left[samples_added++] += (WOR) auddatw[ch];
+        }
+	      else 
+        {
+          buffer_right[samples_added++] += (WOR) auddatw[ch];
+        }
       }
       odd = !odd;
     }
   }
   else
   {
-    if ((intreq & audioirqmask[ch]) == 0) wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
-    if (!halfscale) samples_added = count;
+    if ((intreq & audioirqmask[ch]) == 0) 
+    {
+      wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+    }
+    if (!halfscale) 
+    {
+      samples_added = count;
+    }
     else 
       for (i = 0; i < count; ++i)
       {
-	if (!odd) samples_added++;
-	odd = !odd;
+	      if (!odd) samples_added++;
+	      odd = !odd;
       }
   }
   return samples_added;
@@ -473,6 +459,7 @@ void soundFrequencyHandler(void)
   ULO samples_added;
   BOOLE halfscale = (soundGetRate() == SOUND_22050 || soundGetRate() == SOUND_15650);
   ULO i;
+
   if (soundGetRate() == SOUND_44100 || soundGetRate() == SOUND_22050)
   {
     while (audiocounter <= 0x40000)
@@ -481,11 +468,24 @@ void soundFrequencyHandler(void)
       audiocounter += sound_scale;
     }
   }
-  else count = 2;
+  else 
+  {
+    count = 2;
+  }
   audiocounter -= 0x40000;
-  for (i = 0; i < count; ++i) buffer_left[i] = buffer_right[i] = 0;
-  for (i = 0; i < 4; ++i) samples_added = soundChannelUpdate(i, buffer_left, buffer_right, count, halfscale, audioodd);
-  if (halfscale && count & 1) audioodd = !audioodd;
+
+  for (i = 0; i < count; ++i) 
+  {
+    buffer_left[i] = buffer_right[i] = 0;
+  }
+  for (i = 0; i < 4; ++i)
+  {
+    samples_added = soundChannelUpdate(i, buffer_left, buffer_right, count, halfscale, audioodd);
+  }
+  if (halfscale && count & 1) 
+  {
+    audioodd = !audioodd;
+  }
 
   if (sound_filter != SOUND_FILTER_NEVER)
   {
@@ -742,22 +742,31 @@ void soundIORegistersClear(void) {
 /* Called on end of line                                                     */
 /*===========================================================================*/
 
-void soundEndOfLine(void) {
-  if (soundGetEmulation() != SOUND_NONE) {
+void soundEndOfLine(void) 
+{
+  if (soundGetEmulation() != SOUND_NONE) 
+  {
     soundFrequencyHandler();
     if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
-        soundGetBufferSampleCountMax()) {
-      if (soundGetEmulation() == SOUND_PLAY) {
-	soundDrvPlay(sound_left[sound_current_buffer],
-		     sound_right[sound_current_buffer],
-		     soundGetBufferSampleCountMax());
+        soundGetBufferSampleCountMax()) 
+    {
+      if (soundGetEmulation() == SOUND_PLAY) 
+      {
+	      soundDrvSDL_Play( sound_left[sound_current_buffer],
+		                      sound_right[sound_current_buffer],
+		                      soundGetBufferSampleCountMax());
       }
       if (soundGetWAVDump())
-	wavPlay(sound_left[sound_current_buffer],
-	        sound_right[sound_current_buffer],
-		soundGetBufferSampleCountMax());
+      {
+	      wavPlay( sound_left[sound_current_buffer],
+	               sound_right[sound_current_buffer],
+		             soundGetBufferSampleCountMax());
+      }
       sound_current_buffer++;
-      if (sound_current_buffer > 1) sound_current_buffer = 0;
+      if (sound_current_buffer > 1) 
+      {
+        sound_current_buffer = 0;
+      }
       soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
     }
   }
@@ -776,7 +785,7 @@ void soundEmulationStart(void) {
   {
     /* Allow sound driver to override buffer length */
     ULO buffer_length = soundGetBufferSampleCountMax();
-    if (!soundDrvEmulationStart(soundGetRateReal(),
+    if (!soundDrvSDL_EmulationStart(soundGetRateReal(),
 			        soundGet16Bits(),
 			        soundGetStereo(),
 			        &buffer_length))
@@ -793,7 +802,7 @@ void soundEmulationStart(void) {
 
 void soundEmulationStop(void) {
   if (soundGetEmulation() != SOUND_NONE && soundGetEmulation() != SOUND_EMULATE)
-    soundDrvEmulationStop();
+    soundDrvSDL_EmulationStop();
   if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
     wavEmulationStop();
 }
@@ -823,7 +832,7 @@ BOOLE soundStartup(void) {
   soundSetBufferLength(40);
   soundIORegistersClear();
   soundDeviceClear(&sound_dev);
-  soundSetDeviceFound(soundDrvStartup(&sound_dev));
+  soundSetDeviceFound(soundDrvSDL_Startup(&sound_dev));
   wavStartup();
   if (!soundGetDeviceFound())
     if (soundGetEmulation() == SOUND_PLAY)
@@ -837,5 +846,5 @@ BOOLE soundStartup(void) {
 /*===========================================================================*/
 
 void soundShutdown(void) {
-  soundDrvShutdown();
+  soundDrvSDL_Shutdown();
 }
