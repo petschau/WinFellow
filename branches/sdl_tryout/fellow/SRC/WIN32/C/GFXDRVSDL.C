@@ -632,11 +632,6 @@ void gfxDrvSDL_SurfacesRelease(gfxdrv_sdl_device *sdl_device)
 		SDL_FreeSurface(sdl_device->draw_surface);
 		sdl_device->draw_surface = NULL;
 	}
-//	if (sdl_device->sec_surface != NULL) 
-	{
-//		SDL_FreeSurface(sdl_device->sec_surface);
-//		sdl_device->sec_surface = NULL;
-	}
 	sdl_device->buffercount = 0;
 }
 

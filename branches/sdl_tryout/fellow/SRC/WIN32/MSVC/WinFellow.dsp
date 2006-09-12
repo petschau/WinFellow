@@ -806,6 +806,10 @@ SOURCE=..\..\INCLUDE\KBDDRVSDL.H
 
 SOURCE=..\..\INCLUDE\MOUSEDRVSDL.H
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\INCLUDE\SOUNDDRVSDL.H
+# End Source File
 # End Group
 # Begin Source File
 
@@ -921,6 +925,10 @@ SOURCE=..\C\KBDDRVSDL.C
 # Begin Source File
 
 SOURCE=..\C\MOUSEDRVSDL.C
+# End Source File
+# Begin Source File
+
+SOURCE=..\C\SOUNDDRVSDL.C
 # End Source File
 # End Group
 # Begin Source File

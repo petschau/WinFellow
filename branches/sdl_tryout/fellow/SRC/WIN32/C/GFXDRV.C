@@ -272,7 +272,7 @@ long FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPAR
 	case WM_TIMER:
     if (wParam == 1) {
       winDrvHandleInputDevices();
-      soundDrvPollBufferPosition();
+     // soundDrvPollBufferPosition();
       return 0;
     }
     break;
