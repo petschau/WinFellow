@@ -34,7 +34,8 @@ typedef struct {
   UWO *pending_data_right;
   HANDLE data_available;
   HANDLE can_add_data;
-  HANDLE end_emulation;
+  HANDLE end_callback_thread;
+  HANDLE end_play_thread;
   ULO pending_data_sample_count;
   DWORD lastreadpos;
 } sound_drv_sdl_device;
@@ -45,7 +46,8 @@ typedef struct {
 /*==========================================================================*/
 
 sound_drv_sdl_device sound_drv_sdl_device_current;
-BOOLE waiting_for_termination;
+BOOLE waiting_for_callback_end;
+BOOLE waiting_for_play_end;
 
 /*==========================================================================*/
 /* Forward decleration of functions                                         */
@@ -181,10 +183,10 @@ BOOLE soundDrvSDL_PlaybackInitialize(sound_drv_sdl_device *sdl_device)
   // open the SDL audio device
   if (SDL_OpenAudio(&desired, &obtained) < 0)
   {
-    soundDrvSDL_Failure("sounddrvSDL: initialize failed, ");
+    soundDrvSDL_Failure("initialize failed, ");
     result = FALSE;
   }
-
+  
   // check if received matches request
   if ( !( 
     (obtained.freq     == desired.freq) &&
@@ -193,13 +195,14 @@ BOOLE soundDrvSDL_PlaybackInitialize(sound_drv_sdl_device *sdl_device)
     (obtained.samples  == desired.samples)
     ) )
   {
-    soundDrvSDL_Failure("sounddrvSDL: hardware did not support requested mode, ");
+    soundDrvSDL_Failure("hardware did not support requested mode, ");
     result = FALSE;
   }
 
   sdl_device->data_available = CreateEvent(0, 0, 0, 0);
   sdl_device->can_add_data   = CreateEvent(0, 0, 0, 0);
-  sdl_device->end_emulation  = CreateEvent(0, 0, 0, 0);
+  sdl_device->end_callback_thread  = CreateEvent(0, 0, 0, 0);
+  sdl_device->end_play_thread = CreateEvent(0, 0, 0, 0);
   
   return result;
 }
@@ -287,16 +290,38 @@ void soundDrvSDL_CopyToBuffer(UWO *buffer, WOR *left, WOR *right, ULO sample_cou
 void soundDrvSDL_Play(WOR *left, WOR *right, ULO sample_count) 
 {
   sound_drv_sdl_device *sdl_device = &sound_drv_sdl_device_current;
+  HANDLE multi_events[2];
+  DWORD ret_event;
 
-  WaitForSingleObject(sdl_device->can_add_data, INFINITE);
-  sdl_device->pending_data_left = left;
-  sdl_device->pending_data_right = right;
-  sdl_device->pending_data_sample_count = sample_count;
-  ResetEvent(sdl_device->can_add_data);
-  SetEvent(sdl_device->data_available);
+  multi_events[0] = sound_drv_sdl_device_current.end_play_thread;
+  multi_events[1] = sound_drv_sdl_device_current.can_add_data;
+  
+  if (waiting_for_play_end == FALSE)
+  {
+    ret_event = WaitForMultipleObjects(2, (void*const*) multi_events, FALSE, INFINITE);
 
-  // to improve performance on 10 ms buffer length 
-  Sleep(1);
+    switch (ret_event)
+    {
+      case WAIT_OBJECT_0:
+
+        // we are signaled to terminate by winmain thread
+        waiting_for_play_end = TRUE;
+        break;
+ 
+      case WAIT_OBJECT_0 + 1:
+        sdl_device->pending_data_left = left;
+        sdl_device->pending_data_right = right;
+        sdl_device->pending_data_sample_count = sample_count;
+        ResetEvent(sdl_device->can_add_data);
+        SetEvent(sdl_device->data_available);
+
+        // to improve performance on 10 ms buffer length 
+        Sleep(1);
+        break;
+
+
+    }
+  }
 }
 
 void soundDrvSDL_Callback(void *userdata, Uint8 *stream, int len)
@@ -305,17 +330,24 @@ void soundDrvSDL_Callback(void *userdata, Uint8 *stream, int len)
   HANDLE multi_events[2];
   DWORD ret_event;
 
-  multi_events[0] = sound_drv_sdl_device_current.data_available;
-  multi_events[1] = sound_drv_sdl_device_current.end_emulation;
-
-  if (waiting_for_termination == FALSE)
+  multi_events[0] = sound_drv_sdl_device_current.end_callback_thread;
+  multi_events[1] = sound_drv_sdl_device_current.data_available;
+  
+  if (waiting_for_callback_end == FALSE)
   {
     ret_event = WaitForMultipleObjects(2, (void*const*) multi_events, FALSE, INFINITE);
 
     // check if we were signaled to terminate
     switch (ret_event)
     {
+
       case WAIT_OBJECT_0:
+
+        // we are signaled to terminate by winmain thread
+        waiting_for_callback_end = TRUE;
+        break;
+
+      case WAIT_OBJECT_0 + 1:
 
         soundDrvSDL_CopyToBuffer(
           (UWO *) stream, 
@@ -329,12 +361,6 @@ void soundDrvSDL_Callback(void *userdata, Uint8 *stream, int len)
 
         // to improve performance on 10 ms buffer length 
         Sleep(1);
-        break;
-
-      case WAIT_OBJECT_0 + 1:
-
-        // we are signaled to terminate by emulation thread
-        waiting_for_termination = TRUE;
         break;
     }
   }
@@ -375,10 +401,12 @@ BOOLE soundDrvSDL_EmulationStart(ULO rate, BOOLE bits16, BOOLE stereo, ULO *samp
   // set all events to their initial state 
   ResetEvent(sdl_device->data_available);
   SetEvent(sdl_device->can_add_data);
-  ResetEvent(sdl_device->end_emulation);
+  ResetEvent(sdl_device->end_callback_thread);
+  ResetEvent(sdl_device->end_play_thread);
 
   // set global variable which is set when emulation is ending
-  waiting_for_termination = FALSE;
+  waiting_for_callback_end = FALSE;
+  waiting_for_play_end = FALSE;
 
   if (result) 
   {
@@ -389,7 +417,7 @@ BOOLE soundDrvSDL_EmulationStart(ULO rate, BOOLE bits16, BOOLE stereo, ULO *samp
   // in case of failure, we undo any stuff we've done so far 
   if (!result) 
   {
-    soundDrvSDL_Failure("sounddrvSDL: failed to start sound\n");
+    soundDrvSDL_Failure("failed to start sound\n");
     SDL_CloseAudio();
   }
 
@@ -404,8 +432,9 @@ BOOLE soundDrvSDL_EmulationStart(ULO rate, BOOLE bits16, BOOLE stereo, ULO *samp
 void soundDrvSDL_EmulationStop(void) 
 {
   // signal the callback to skip waiting on the 'data is available' event
-  SetEvent(sound_drv_sdl_device_current.end_emulation);
-
+  SetEvent(sound_drv_sdl_device_current.end_callback_thread);
+  SetEvent(sound_drv_sdl_device_current.end_play_thread);
+  
   // terminate the audio driver 
   SDL_CloseAudio();
   
@@ -418,8 +447,6 @@ void soundDrvSDL_EmulationStop(void)
   {
     CloseHandle(sound_drv_sdl_device_current.can_add_data);
   }
-
-  //SetEvent(sound_drv_sdl_device_current.end_emulation);
 }
 
 

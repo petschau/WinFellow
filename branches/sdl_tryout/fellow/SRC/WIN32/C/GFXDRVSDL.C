@@ -93,6 +93,9 @@ HWND  gfxdrv_sdl_hwnd;
 BOOLE gfxdrv_sdl_displaychange;
 BOOLE gfxdrv_sdl_stretch_always;
 
+ULO time_at_last_flip;
+ULO time_current;
+
 HANDLE gfxdrv_sdl_app_run;        /* Event indicating running or paused status */
 
 /*==========================================================================*/
@@ -333,21 +336,24 @@ void gfxDrvSDL_ModeInformationDump(gfxdrv_sdl_device *sdl_device)
 	felist * l;
 	STR s[120];
   
-	sprintf(s, "gfxdrvSDL: SDL modes found: %d\n", listCount(sdl_device->modes));
-	fellowAddLog(s);
+	//sprintf(s, "gfxdrvSDL: graphical modes found: %d\n", listCount(sdl_device->modes));
+	//fellowAddLog(s);
+
+  /*
 	for (l = sdl_device->modes; l != NULL; l = listNext(l)) 
 	{
 		gfxdrv_sdl_mode * tmpmode = (gfxdrv_sdl_mode *) listNode(l);
 		if (!tmpmode->windowed)
 		{
-			sprintf(s, "gfxdrvsdl: Mode Description: %dWx%dHx%dBPPx%dHZ (%d,%d,%d,%d,%d,%d)\n", tmpmode->width, tmpmode->height, tmpmode->depth, tmpmode->refresh, tmpmode->redpos, tmpmode->redsize, tmpmode->greenpos, tmpmode->greensize, tmpmode->bluepos, tmpmode->bluesize);
+			sprintf(s, "gfxdrvSDL: Mode Description: %dWx%dHx%dBPPx%dHZ (%d,%d,%d,%d,%d,%d)\n", tmpmode->width, tmpmode->height, tmpmode->depth, tmpmode->refresh, tmpmode->redpos, tmpmode->redsize, tmpmode->greenpos, tmpmode->greensize, tmpmode->bluepos, tmpmode->bluesize);
 		}
 		else
 		{
-			sprintf(s, "gfxdrvsdl: Mode Description: %dWx%dHxWindow\n", tmpmode->width, tmpmode->height);
+			sprintf(s, "gfxdrvSDL: Mode Description: %dWx%dHxWindow\n", tmpmode->width, tmpmode->height);
 		}
 		fellowAddLog(s);
 	}
+  */
 }
 
 /*==========================================================================*/
@@ -698,19 +704,27 @@ void gfxDrvSDL_SurfaceUnlock(gfxdrv_sdl_device *sdl_device)
 
 void gfxDrvSDL_Flip(gfxdrv_sdl_device *sdl_device) 
 {
-	/*
-  HRESULT err;
-  
-  if (ddraw_device->use_blitter)     // Blit secondary buffer to primary 
-    gfxDrvDDrawSurfaceBlit(ddraw_device);
-  if (ddraw_device->buffercount > 1)    // Flip buffer if there are several 
-    if ((err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary,
-      NULL,
-      DDFLIP_WAIT)) != DD_OK)
-      gfxDrvDDrawFailure("gfxDrvDDrawFlip(): ", err);
-	*/
-	SDL_Flip(sdl_device->draw_surface);
-	//SDL_UpdateRect(sdl_device->draw_surface,0,0,0,0);
+  if ((soundGetEmulation() == SOUND_EMULATE) && (soundGetSynchronized() == TRUE))
+  {
+    // the sound driver has failed and therefor we lack synchronization 
+    time_current = timerGetTimeMs();
+    while ((time_current - time_at_last_flip) < 20)
+    {
+      // we let this thread sleep when we have to wait more than 15 ms
+      if ((time_current - time_at_last_flip) < 15)
+      {
+        Sleep(5);
+      }
+      time_current = timerGetTimeMs();
+    }
+    
+    SDL_Flip(sdl_device->draw_surface);
+    time_at_last_flip = time_current;
+  }
+  else
+  {
+    SDL_Flip(sdl_device->draw_surface);
+  }
 }
 
 
@@ -984,6 +998,10 @@ BOOLE gfxDrvSDL_EmulationStart(ULO maxbuffercount)
 
 	// recover pitch (maybe not needed here)
 	gfxdrv_sdl_device_current->drawmode->pitch = gfxdrv_sdl_device_current->draw_surface->pitch;
+
+  // initialize synchronization object (in case of failing sound driver)
+  time_current = timerGetTimeMs();
+  time_at_last_flip = time_current;
 
 	return TRUE;
 }

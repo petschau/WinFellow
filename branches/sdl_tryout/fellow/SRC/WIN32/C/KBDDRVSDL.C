@@ -28,6 +28,7 @@
 #include "kbdparser.h"
 #include "fellow.h"
 #include "gfxdrvsdl.h"
+#include "sound.h"
 
 #define SDL_MAPPING_FILENAME  "mapping.key"
 
@@ -215,6 +216,13 @@ BOOLE kbdDrvSDLEventChecker(SDL_KeyboardEvent* key_event)
     mouseDrvSDLToggleFocus();
 	  //joyDrvToggleFocus();
 	  break;
+	}
+
+  if((kbd_drv_sdl_keys[SDLK_SYSREQ]) && (!(kbd_drv_sdl_prevkeys[SDLK_SYSREQ])))
+	{
+    // toggle for running emulation at full speed or synchronized
+    soundToggleSynchronization();
+    break;
 	}
 /*	
 	if (home_pressed)

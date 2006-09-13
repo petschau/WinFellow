@@ -408,10 +408,13 @@ void iniManagerStartup(iniManager *initdatamanager) {
   iniManagerSetCurrentInitdata(initdatamanager, initdata);
   
   // load the ini-file into the m_current_initdata data structure
-  if (iniLoadIniFromFilename(initdata, "winfellow.ini") == FALSE) {
-	fellowAddLog("ini-file not found\n");
-  } else {
-	fellowAddLog("ini-file succesfully loaded\n");
+  if (iniLoadIniFromFilename(initdata, "winfellow.ini") == FALSE) 
+  {
+	  fellowAddLog("iniManager: ini file not found\n");
+  } 
+  else 
+  {
+	  fellowAddLog("iniManager: ini file succesfully loaded\n");
   }
 
   initdata = iniManagerGetNewIni(initdatamanager);
