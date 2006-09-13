@@ -1,4 +1,4 @@
-/* @(#) $Id: kbdparser.c,v 1.4.2.2.2.1 2006-08-25 00:18:55 worfje Exp $ */
+/* @(#) $Id: kbdparser.c,v 1.4.2.2.2.2 2006-09-13 15:00:33 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -411,12 +411,12 @@ BOOLE prsReadFile( char *szFilename, UBY *sdl_to_am, SDLKey key_repl[2][8] )
 			ReplIndex = prsGetKeyIndex( pAmigaName, replacement_keys, MAX_KEY_REPLACEMENT );
 
 		if(( AmigaIndex < 0 ) && ( ReplIndex < 0 )) {
-			fellowAddLog( "Amiga key: %s unrecognized\n", pAmigaName );
+			fellowAddLog( "kbdParser: amiga key: %s unrecognized\n", pAmigaName );
 			continue;
 		}
 
 		if( SDLIndex < 0 ) {
-			fellowAddLog( "Pc    key: %s unrecognized\n", pWinName );
+			fellowAddLog( "kbdParser: pc key: %s unrecognized\n", pWinName );
 			continue;
 		}
 

@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.7.2.1 2006-09-12 22:00:47 worfje Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.7.2.2 2006-09-13 15:00:31 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -50,6 +50,8 @@ sound_filters sound_filter;
 sound_notifications sound_notification;
 BOOLE sound_wav_capture;
 BOOLE sound_device_found;
+BOOLE sound_synchronized;
+BOOLE sound_driver_started;
 
 
 /*===========================================================================*/
@@ -621,6 +623,14 @@ __inline ULO soundGetPeriodValue(ULO period) {
   return periodtable[period];
 }
 
+// below function is not stored in the configuration file
+// it is only used for running at full speed during 'silent emulation'
+// and 'sound play'
+BOOLE soundGetSynchronized(void)
+{
+  return sound_synchronized;
+}
+
 
 /*===========================================================================*/
 /* Initializes the volume table                                              */
@@ -744,67 +754,142 @@ void soundIORegistersClear(void) {
 
 void soundEndOfLine(void) 
 {
-  if (soundGetEmulation() != SOUND_NONE) 
+  switch (soundGetEmulation()) 
   {
-    soundFrequencyHandler();
-    if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
-        soundGetBufferSampleCountMax()) 
-    {
-      if (soundGetEmulation() == SOUND_PLAY) 
+    case SOUND_PLAY:
+      soundFrequencyHandler();
+      if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
+          soundGetBufferSampleCountMax()) 
       {
-	      soundDrvSDL_Play( sound_left[sound_current_buffer],
-		                      sound_right[sound_current_buffer],
-		                      soundGetBufferSampleCountMax());
+        if (soundGetEmulation() == SOUND_PLAY) 
+        {
+	        soundDrvSDL_Play( sound_left[sound_current_buffer],
+		                        sound_right[sound_current_buffer],
+		                        soundGetBufferSampleCountMax());
+        }
+        if (soundGetWAVDump())
+        {
+	        wavPlay( sound_left[sound_current_buffer],
+	                 sound_right[sound_current_buffer],
+		               soundGetBufferSampleCountMax());
+        }
+        sound_current_buffer++;
+        if (sound_current_buffer > 1) 
+        {
+          sound_current_buffer = 0;
+        }
+        soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
       }
-      if (soundGetWAVDump())
-      {
-	      wavPlay( sound_left[sound_current_buffer],
-	               sound_right[sound_current_buffer],
-		             soundGetBufferSampleCountMax());
-      }
-      sound_current_buffer++;
-      if (sound_current_buffer > 1) 
-      {
-        sound_current_buffer = 0;
-      }
-      soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
-    }
+      break;
+
+    case SOUND_EMULATE:
+
+      // Sound driver has failed and we need another way to sync to PAL.
+      // This is done within the GFXDRVSDL, we don't want to wait or poll
+      // at this point. The best place to wait is where the graphical buffer 
+      // is flipped (gfxDrvSDL_Flip)
+      break;
+ 
   }
 }
 
+
+void soundToggleSynchronization(void)
+{
+  switch (soundGetEmulation())
+  {
+  case SOUND_NONE:
+    break;
+
+  case SOUND_PLAY:
+    sound_synchronized = !sound_synchronized;
+
+    if (sound_synchronized == TRUE)
+    {
+      soundEmulationStart();
+    }
+    else
+    {
+      soundEmulationStop();
+    }
+    break;
+
+  case SOUND_EMULATE:
+    sound_synchronized = !sound_synchronized;
+
+    if (sound_synchronized == TRUE)
+    {
+      soundEmulationStart();
+    }
+    else
+    {
+      soundEmulationStop();
+    }
+    break;
+  }
+}
 
 /*===========================================================================*/
 /* Called on emulation start and stop                                        */
 /*===========================================================================*/
 
-void soundEmulationStart(void) {
-  soundIOHandlersInstall();
-  audioodd = 0;
-  soundPlaybackInitialize();
-  if (soundGetEmulation() != SOUND_NONE && soundGetEmulation() != SOUND_EMULATE)
+void soundEmulationStart(void) 
+{
+  if (sound_driver_started == FALSE)
   {
-    /* Allow sound driver to override buffer length */
-    ULO buffer_length = soundGetBufferSampleCountMax();
-    if (!soundDrvSDL_EmulationStart(soundGetRateReal(),
-			        soundGet16Bits(),
-			        soundGetStereo(),
-			        &buffer_length))
-      soundSetEmulation(SOUND_EMULATE); /* Driver failed, slient emulation */
-    if (buffer_length != soundGetBufferSampleCountMax())
-      soundSetBufferSampleCountMax(buffer_length);
+    soundIOHandlersInstall();
+    audioodd = 0;
+
+    soundPlaybackInitialize();
+    if (soundGetEmulation() == SOUND_PLAY)
+    {
+      /* Allow sound driver to override buffer length */
+      ULO buffer_length = soundGetBufferSampleCountMax();
+      if (!soundDrvSDL_EmulationStart( soundGetRateReal(),
+			                                 soundGet16Bits(),
+			                                 soundGetStereo(),
+			                                 &buffer_length))
+      {
+        // driver failed, we need another way to synchronize to PAL
+        soundSetEmulation(SOUND_EMULATE); 
+      }
+      else
+      {
+        sound_driver_started = TRUE;
+      }
+
+      if (buffer_length != soundGetBufferSampleCountMax())
+      {
+        soundSetBufferSampleCountMax(buffer_length);
+      }
+    }
+    if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
+    {
+      wavEmulationStart( soundGetRate(),
+            		         soundGet16Bits(),
+		                     soundGetStereo(),
+		                     soundGetBufferSampleCountMax());
+    }
   }
-  if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
-    wavEmulationStart(soundGetRate(),
-		      soundGet16Bits(),
-		      soundGetStereo(),
-		      soundGetBufferSampleCountMax());
 }
 
-void soundEmulationStop(void) {
-  if (soundGetEmulation() != SOUND_NONE && soundGetEmulation() != SOUND_EMULATE)
-    soundDrvSDL_EmulationStop();
-  if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
-    wavEmulationStop();
+void soundEmulationStop(void) 
+{
+  if (sound_driver_started == TRUE)
+  {
+    // stop the sound driver
+    if (soundGetEmulation() == SOUND_PLAY)
+    {
+      soundDrvSDL_EmulationStop();
+      sound_driver_started = FALSE;
+    }
+
+    // stop the dump of the wav file
+    if (soundGetWAVDump() && (soundGetEmulation() == SOUND_PLAY))
+    {
+      wavEmulationStop();
+    }
+  }
 }
 
 
@@ -821,7 +906,11 @@ void soundHardReset(void) {
 /* Called once on emulator startup                                           */
 /*===========================================================================*/
 
-BOOLE soundStartup(void) {
+BOOLE soundStartup(void) 
+{
+  sound_synchronized = TRUE;
+  sound_driver_started = FALSE;
+
   soundSetEmulation(SOUND_NONE);
   soundSetFilter(SOUND_FILTER_ORIGINAL);
   soundSetRate(SOUND_15650);

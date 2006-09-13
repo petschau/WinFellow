@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.H,v 1.2.2.3 2004-08-22 17:25:21 peschau Exp $ */
+/* @(#) $Id: SOUND.H,v 1.2.2.3.2.1 2006-09-13 15:00:32 worfje Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -92,6 +92,8 @@ extern void soundState2(ULO ch);
 extern void soundState3(ULO ch);
 extern void soundState4(ULO ch);
 extern void soundState5(ULO ch);
+
+extern BOOLE soundGetSynchronized(void);
 
 
 /*==================================*/

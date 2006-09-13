@@ -55,7 +55,7 @@ void mouseDrvSDLInputAcquire(void)
   SDL_GrabMode result_grab;
   int          result_show;
 
-  fellowAddLog("mouseDrvSDLInputAcquire()\n");
+  fellowAddLog("mouseDrvSDL: a call was made to mouseDrvSDLInputAcquire()\n");
 
   if (mouse_drv_sdl_in_use) 
   {
@@ -68,7 +68,7 @@ void mouseDrvSDLInputAcquire(void)
     // check outcome
     if ((result_grab != SDL_GRAB_ON) || (result_show != SDL_DISABLE))
     {
-        mouseDrvSDLInputFailure("mouseDrvSDLInputAcquire(): ");
+        mouseDrvSDLInputFailure("mouseDrvSDL: failed to hide the mouse cursor and/or grab the mouse input\n");
     }
   }
   else 
@@ -84,7 +84,7 @@ void mouseDrvSDLInputAcquire(void)
     // check outcome
     if ((result_grab != SDL_GRAB_OFF) || (result_show != SDL_ENABLE))
     {
-        mouseDrvSDLInputFailure("mouseDrvSDLInputAcquire(): ");
+        mouseDrvSDLInputFailure("mouseDrvSDL: failed to show the mouse cursor and/or release the mouse input\n");
     }
   }
 }
@@ -231,7 +231,7 @@ BOOLE mouseDrvSDLEmulationStart(void)
 /*===========================================================================*/
 
 void mouseDrvSDLEmulationStop(void) {
-  fellowAddLog("mouseDrvSDLEmulationStop\n");
+  //fellowAddLog("mouseDrvSDLEmulationStop\n");
   mouseDrvSDLInputRelease();
 }
 
@@ -242,7 +242,7 @@ void mouseDrvSDLEmulationStop(void) {
 
 void mouseDrvSDLStartup(void) 
 {
-  fellowAddLog("mouseDrvSDLStartup\n");
+  //fellowAddLog("mouseDrvSDLStartup\n");
 
   mouse_drv_sdl_active        = FALSE;
   mouse_drv_sdl_focus         = TRUE;
@@ -260,6 +260,6 @@ void mouseDrvSDLStartup(void)
 
 void mouseDrvSDLShutdown(void) 
 {
-  fellowAddLog("mouseDrvSDLShutdown\n");
+  //fellowAddLog("mouseDrvSDLShutdown\n");
 }
 
