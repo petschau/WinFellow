@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: AUTOCONF.C,v 1.2.2.2 2004-05-27 09:37:01 carfesh Exp $
+  @(#) $Id: AUTOCONF.C,v 1.2.2.2.4.1 2008-02-03 13:21:08 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -227,9 +227,9 @@ uae_u32 CallLib(uaecptr base, uae_s16 offset)
 	    return (*libpatches[i].functions[-offset/6])();
     }
 #endif
-    m68k_areg(regs, 6) = base;
+    cpuSetAReg(6, base);
     retval = call_m68k(base + offset, 1);
-    m68k_areg(regs, 6) = olda6;
+    cpuSetAReg(6, olda6);
     return retval;
 }
 
@@ -311,13 +311,13 @@ FELLOW OUT (END)-------------------------------------*/
 /* Had to change these a bit since the cpuemu assumes that addr survives */
 /* The memory access stubs is called from assembler counterparts */
 
-ULO rtarea_wgetC(ULO addr)
+UWO rtarea_wget(ULO addr)
 {
-  return (ULO) (rtarea[addr - RTAREA_BASE]<<8) + rtarea[addr-RTAREA_BASE+1];
+  return (UWO) (rtarea[addr - RTAREA_BASE]<<8) + rtarea[addr-RTAREA_BASE+1];
 }
 
 
-ULO rtarea_lgetC(ULO addr)
+ULO rtarea_lget(ULO addr)
 {
     return (ULO) (rtarea[(addr & 0xffffff) - RTAREA_BASE]<<24) |
            (rtarea[(addr & 0xffffff) -RTAREA_BASE+1]<<16) |
@@ -325,16 +325,16 @@ ULO rtarea_lgetC(ULO addr)
            rtarea[(addr & 0xffffff) -RTAREA_BASE+3];
 }
 
-ULO rtarea_bgetC(ULO addr)
+UBY rtarea_bget(ULO addr)
 {
     return rtarea[addr-RTAREA_BASE];
 }
 
 /* Swapped parameter order */
 
-void rtarea_lputC(ULO value, ULO addr) { }
-void rtarea_wputC(ULO value, ULO addr) { }
-void rtarea_bputC(ULO value, ULO addr) { }
+void rtarea_lput(ULO value, ULO addr) { }
+void rtarea_wput(UWO value, ULO addr) { }
+void rtarea_bput(UBY value, ULO addr) { }
 
 /* FELLOW IN (END)---------------------------------*/
 
@@ -351,6 +351,7 @@ void REGPARAM2 call_calltrap(int func)
 	write_log ("TRAP: %s\n", trapstr[func]);
 
     /* For monitoring only? */
+    
     if (traps[func] == NULL) {
 	m68k_setpc(trapoldfunc[func]);
 	fill_prefetch_0 ();
@@ -367,7 +368,7 @@ void REGPARAM2 call_calltrap(int func)
 	write_log ("illegal emulator trap\n");
 
     if (has_retval)
-	m68k_dreg(regs, 0) = retval;
+	cpuSetDReg(0, retval);
     if (implicit_rts) {
 	m68k_do_rts ();
 	fill_prefetch_0 ();
@@ -388,9 +389,9 @@ uaecptr libemu_InstallFunctionFlags(TrapFunction f, uaecptr libbase, int offset,
     calltrap(trnum = deftrap2(f, flags, tracename));
     dw(RTS);
 
-    m68k_areg(regs, 1) = libbase;
-    m68k_areg(regs, 0) = offset;
-    m68k_dreg(regs, 0) = addr;
+    cpuSetAReg(1, libbase);
+    cpuSetAReg(0, offset);
+    cpuSetDReg(0, addr);
     retval = CallLib(execbase, -420);
 
     trapoldfunc[trnum] = retval;
@@ -449,9 +450,9 @@ void dl(uae_u32 data)
 
 uae_u32 ds(char *str)
 {
-    int len = strlen(str) + 1;
+    size_t len = strlen(str) + 1;
 
-    rt_straddr -= len;
+    rt_straddr -= (int)len;
     strcpy((char *)rtarea + rt_straddr, str);
 
     return addr(rt_straddr);
@@ -572,8 +573,8 @@ void rtarea_setup(void)
   if (memoryGetKickImageBaseBank() >= 0xf8) {
     int bank = RTAREA_BASE >> 16;
 
-    memoryBankSet(rtarea_bgetASM, rtarea_wgetASM, rtarea_lgetASM, rtarea_bputASM,
-		  rtarea_lputASM, rtarea_lputASM, rtarea, bank, bank, FALSE);
+    memoryBankSet(rtarea_bget, rtarea_wget, rtarea_lget, rtarea_bput,
+		  rtarea_wput, rtarea_lput, rtarea, bank, bank);
   }
     /* NOTE: No direct pointer must be used */
   /* FELLOW IN (END)------------------- */
