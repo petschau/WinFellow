@@ -3,6 +3,7 @@
 /* Mouse driver for Windows                                                  */
 /* Author: Marco Nova (novamarco@hotmail.com)                                */
 /*         Petter Schau (peschau@online.no) (Some extensions)                */
+/*         Torsten Enderling (carfesh@gmx.net) (Nov 2007 DirectX SDK fixes)  */           
 /*                                                                           */
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
@@ -18,6 +19,9 @@ Monday, August 29, 2000
 Sunday, July 9, 2000
 - couldn't keep the mouse buttons pressed;
 - removed some unuseful logging
+
+Sunday, February 03, 2008: carfesh
+- rebuild to use DirectInput8Create instead of DirectInputCreate
 */
 
 #include "defs.h"
@@ -39,13 +43,13 @@ Sunday, July 9, 2000
 
 LPDIRECTINPUT		mouse_drv_lpDI = NULL;
 LPDIRECTINPUTDEVICE	mouse_drv_lpDID = NULL;
-HANDLE			mouse_drv_DIevent = NULL;
-BOOLE			mouse_drv_focus;
-BOOLE			mouse_drv_active;
-BOOLE			mouse_drv_in_use;
-BOOLE			mouse_drv_initialization_failed;
-static BOOLE	bLeftButton;
-static BOOLE	bRightButton;
+HANDLE				mouse_drv_DIevent = NULL;
+BOOLE				mouse_drv_focus;
+BOOLE				mouse_drv_active;
+BOOLE				mouse_drv_in_use;
+BOOLE				mouse_drv_initialization_failed;
+static BOOLE		bLeftButton;
+static BOOLE		bRightButton;
 
 int num_mouse_attached = 0;
 
@@ -176,11 +180,12 @@ BOOLE mouseDrvDInputInitialize(void) {
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
   mouse_drv_initialization_failed = FALSE;
-  if ((res = DirectInputCreate(win_drv_hInstance,
+  if ((res = DirectInput8Create(win_drv_hInstance,
                                DIRECTINPUT_VERSION,
-                               &mouse_drv_lpDI,
-                               NULL)) != DI_OK) {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInputCreate() ", res );
+                               &IID_IDirectInput8,
+                               (void**)&mouse_drv_lpDI,
+							   NULL)) != DI_OK) {
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -188,7 +193,7 @@ BOOLE mouseDrvDInputInitialize(void) {
 
   num_mouse_attached = 0;
 
-  if ((res = IDirectInput_EnumDevices( mouse_drv_lpDI, DIDEVTYPE_MOUSE,
+  if ((res = IDirectInput_EnumDevices( mouse_drv_lpDI, DI8DEVTYPE_MOUSE,
 			  GetMouseInfo, NULL, DIEDFL_ALLDEVICES )) != DI_OK) {
 	  fellowAddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
   }
