@@ -43,7 +43,7 @@ UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 /* Called from the main end of frame handler                                 */
 /*===========================================================================*/
 
-void kbdEventEOFHandler(void) {
+void kbdEventEOFHandlerC(void) {
   kbd_event thisev;
   
   while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos) {
@@ -109,7 +109,7 @@ void kbdEventEOFHandler(void) {
 /* Called from the main end of line handler                                  */
 /*===========================================================================*/
 
-void kbdEventEOLHandler(void) {
+void kbdEventEOLHandlerC(void) {
   kbd_event thisev;
   BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
@@ -246,7 +246,7 @@ void kbdEventEOLHandler(void) {
 /* Called from end_of_line                                                   */
 /*===========================================================================*/
 
-void kbdQueueHandler(void) {
+void kbdQueueHandlerC(void) {
   if (kbd_state.scancodes.outpos < kbd_state.scancodes.inpos) {
     if (--kbd_time_to_wait <= 0) {
       ULO scode;

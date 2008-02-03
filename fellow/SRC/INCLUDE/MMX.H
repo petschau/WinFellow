@@ -3,11 +3,11 @@
 
 /* Rename assembly functions */
 
-#define detectMMX ASMRENAME(detectMMX)
+//#define detectMMX ASMRENAME(detectMMX)
 
 /* Declare assembly functions */
 
-extern BOOLE detectMMX(void);
+//extern BOOLE detectMMX(void);
 
 /* End of assembly function declarations */
 

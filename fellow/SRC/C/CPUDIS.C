@@ -261,9 +261,9 @@ ULO dis73(ULO reg, ULO pcp, STR *st, ULO *pos) {
   ULO ext = fetw(pcp);
 
   if (cpuGetType() < 2 || !(ext & 0x0100))
-    return dis06Brief(reg, pcp, st, pos, TRUE, ext);
+    return dis06Brief(reg, pcp + 2, st, pos, TRUE, ext);
   else
-    return dis06Extended(reg, pcp, st, pos, TRUE, ext);
+    return dis06Extended(reg, pcp + 2, st, pos, TRUE, ext);
 }
 
 ULO disb74(ULO reg, ULO pcp, STR *st, ULO *pos) {
