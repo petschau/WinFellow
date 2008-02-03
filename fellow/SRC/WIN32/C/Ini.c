@@ -24,7 +24,7 @@ iniManager ini_manager;
 /*============================================================================*/
 
 static void iniStripTrailingNewlines(STR *line) {
-  LON length = strlen(line);
+  size_t length = strlen(line);
   while ((length > 0) && 
 	 ((line[length - 1] == '\n') || (line[length - 1] == '\r')))
     line[--length] = '\0';
