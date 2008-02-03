@@ -43,7 +43,7 @@ UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 /* Called from the main end of frame handler                                 */
 /*===========================================================================*/
 
-void kbdEventEOFHandlerC(void) {
+void kbdEventEOFHandler(void) {
   kbd_event thisev;
   
   while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos) {
@@ -109,7 +109,7 @@ void kbdEventEOFHandlerC(void) {
 /* Called from the main end of line handler                                  */
 /*===========================================================================*/
 
-void kbdEventEOLHandlerC(void) {
+void kbdEventEOLHandler(void) {
   kbd_event thisev;
   BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
@@ -246,7 +246,7 @@ void kbdEventEOLHandlerC(void) {
 /* Called from end_of_line                                                   */
 /*===========================================================================*/
 
-void kbdQueueHandlerC(void) {
+void kbdQueueHandler(void) {
   if (kbd_state.scancodes.outpos < kbd_state.scancodes.inpos) {
     if (--kbd_time_to_wait <= 0) {
       ULO scode;
@@ -256,8 +256,8 @@ void kbdQueueHandlerC(void) {
 					 KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
-        ciaWritesp(0, ~(((scode >> 7) & 1) | (scode << 1)));
-        ciaRaiseIRQC(0, 8);
+        ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+        ciaRaiseIRQ(0, 8);
       }
     }
   }

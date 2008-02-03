@@ -1,4 +1,4 @@
-/* @(#) $Id: modrip.c,v 1.22.2.5 2004-06-08 14:05:36 carfesh Exp $ */
+/* @(#) $Id: modrip.c,v 1.22.2.5.4.1 2008-02-03 12:37:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -47,6 +47,8 @@
 #else
 #include "modrip_linux.h"
 #endif
+
+#define access _access
 
 #define MODRIPDOLOGGING 1
 
@@ -113,15 +115,15 @@ static BOOLE modripSaveChipMem(char *filename)
   return TRUE;
 }
 
-static BOOLE modripSaveBogoMem(char *filename)
+static BOOLE modripSaveSlowMem(char *filename)
 {
   FILE *memfile;
   size_t written;
   if(!filename || !(*filename)) return FALSE;
   if((memfile = fopen(filename, "wb")) == NULL) return FALSE;
-  written = fwrite(memory_bogo, 1, memoryGetBogoSize(), memfile);
+  written = fwrite(memory_slow, 1, memoryGetSlowSize(), memfile);
   fclose(memfile);
-  if(written < memoryGetBogoSize()) return FALSE;
+  if(written < memoryGetSlowSize()) return FALSE;
   return TRUE;
 }
 
@@ -786,7 +788,7 @@ static void modripScanFellowMemory(void)
 
   if(modripGuiRipMemory()) {
     ChipSize = memoryGetChipSize();
-    BogoSize = memoryGetBogoSize();
+    BogoSize = memoryGetSlowSize();
     FastSize = memoryGetFastSize();
 
     RIPLOG1("mod-ripper now scanning memory...\n");
@@ -798,7 +800,7 @@ static void modripScanFellowMemory(void)
 	  /* chip memory starts at amiga address $0 */
       for(i = 0; i < ChipSize; i++)
         for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-          (*DetectFunctions[j])(i, fetb);
+          (*DetectFunctions[j])(i, memoryReadByte);
 	}
 
 	if(BogoSize) {
@@ -808,7 +810,7 @@ static void modripScanFellowMemory(void)
       /* bogo memory starts at amiga address $C00000 */
       for(i = 0xc00000; i < (0xc00000 + BogoSize); i++)
         for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-          (*DetectFunctions[j])(i, fetb);
+          (*DetectFunctions[j])(i, memoryReadByte);
 	}
 
 	if(FastSize) {
@@ -818,7 +820,7 @@ static void modripScanFellowMemory(void)
       /* fast memory usually starts at amiga address $200000 */
 	  for(i = 0x200000; i < (0x200000 + FastSize); i++)
         for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-	      (*DetectFunctions[j])(i, fetb);
+	      (*DetectFunctions[j])(i, memoryReadByte);
 	}
   }
 }
@@ -833,7 +835,7 @@ static void modripScanFellowMemory(void)
 /* meant to hold the read floppy cache */
 static char *modripCurrentFloppyCache = NULL;
 
-static ULO modripFloppyCacheRead(ULO address)
+static UBY modripFloppyCacheRead(ULO address)
 {
   return(modripCurrentFloppyCache[address & MODRIP_FLOPCACHE]);
 }
@@ -915,7 +917,7 @@ void modripChipDump(void)
 
   if(modripGuiDumpChipMem()) {
     Saved = modripSaveChipMem("chip.mem");
-    if(memoryGetBogoSize()) modripSaveBogoMem("bogo.mem");
+    if(memoryGetSlowSize()) modripSaveSlowMem("bogo.mem");
     if(memoryGetFastSize()) modripSaveFastMem("fast.mem");
   }
   if(Saved) {

@@ -13,7 +13,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: AUTOCONF.H,v 1.2.2.2 2004-05-27 09:41:12 carfesh Exp $
+  @(#) $Id: AUTOCONF.H,v 1.2.2.2.4.1 2008-02-03 12:40:53 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -97,36 +97,6 @@ extern uaecptr libemu_InstallFunction (TrapFunction, uaecptr, int, const char *)
 extern uaecptr libemu_InstallFunctionFlags (TrapFunction, uaecptr, int, int, const char *);
 
 #define RTAREA_BASE 0xF00000
-
-/* FELLOW IN (START)---------------- */
-
-/* Rename assembly functions */
-
-#define rtarea_bgetASM ASMRENAME(rtarea_bgetASM)
-#define rtarea_wgetASM ASMRENAME(rtarea_wgetASM)
-#define rtarea_lgetASM ASMRENAME(rtarea_lgetASM)
-#define rtarea_bputASM ASMRENAME(rtarea_bputASM)
-#define rtarea_lputASM ASMRENAME(rtarea_lputASM)
-#define filesys_bgetASM ASMRENAME(filesys_bgetASM)
-#define filesys_wgetASM ASMRENAME(filesys_wgetASM)
-#define filesys_lgetASM ASMRENAME(filesys_lgetASM)
-#define filesys_bputASM ASMRENAME(filesys_bputASM)
-#define filesys_wputASM ASMRENAME(filesys_wputASM)
-#define filesys_lputASM ASMRENAME(filesys_lputASM)
-
-/* Declare assembly functions */
-
-extern ULO rtarea_bgetASM(ULO addr);
-extern ULO rtarea_wgetASM(ULO addr);
-extern ULO rtarea_lgetASM(ULO addr);
-extern void rtarea_bputASM(ULO value, ULO addr);
-extern void rtarea_lputASM(ULO value, ULO addr);
-extern ULO filesys_bgetASM(ULO addr);
-extern ULO filesys_wgetASM(ULO addr);
-extern ULO filesys_lgetASM(ULO addr);
-extern void filesys_bputASM(ULO value, ULO addr);
-extern void filesys_wputASM(ULO value, ULO addr);
-extern void filesys_lputASM(ULO value, ULO addr);
 
 /* these appear to be missing and are here to suppress compiler warnings */
 

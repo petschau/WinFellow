@@ -1,4 +1,4 @@
-/* @(#) $Id: filesys_win32.h,v 1.1.2.4 2004-06-09 05:54:41 carfesh Exp $ */
+/* @(#) $Id: filesys_win32.h,v 1.1.2.4.4.1 2008-02-03 12:40:53 peschau Exp $ */
 /*=========================================================================*/
 /* UAE - The Un*x Amiga Emulator                                           */
 /*                                                                         */
@@ -35,6 +35,16 @@
 #define readdir  win32_readdir
 #define closedir win32_closedir
 #define mkdir    win32_mkdir
+
+#define access _access
+#define unlink _unlink
+#define lseek _lseek
+#define write _write
+#define rmdir _rmdir
+#define open _open
+#define close _close
+#define read _read
+#define dup _dup
 
 #define truncate win32_truncate
 

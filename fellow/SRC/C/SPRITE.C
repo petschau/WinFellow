@@ -7,9 +7,6 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "fellow.h"
 #include "fmem.h"
@@ -780,7 +777,7 @@ static void spriteBuildItem(spr_action_list_item ** item)
 /* Makes a log of the writes to the wsprpt registers */
 /* PETTER */
 
-void wsprpt_C(ULO data, ULO address)
+void wsprpt(UWO data, ULO address)
 {
   spr_action_list_item * item;
   ULO sprnr = (address >> 2) & 7;
@@ -807,80 +804,80 @@ void wsprpt_C(ULO data, ULO address)
 #endif
 }
 
-void aspr0pth(ULO data, ULO address)
+void aspr0pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 2)) = (UWO) (data & 0x01f);
+  *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
 }
-void aspr0ptl(ULO data, ULO address)
+void aspr0ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt)) = (UWO) (data & 0xfffe);
-}
-
-void aspr1pth(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 6)) = (UWO) (data & 0x01f);
-}
-void aspr1ptl(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 4)) = (UWO) (data & 0xfffe);
+  *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
 }
 
-void aspr2pth(ULO data, ULO address)
+void aspr1pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 10)) = (UWO) (data & 0x01f);
+  *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
 }
-void aspr2ptl(ULO data, ULO address)
+void aspr1ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 8)) = (UWO) (data & 0xfffe);
-}
-
-void aspr3pth(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 14)) = (UWO) (data & 0x01f);
-}
-void aspr3ptl(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 12)) = (UWO) (data & 0xfffe);
+  *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
 }
 
-void aspr4pth(ULO data, ULO address)
+void aspr2pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 18)) = (UWO) (data & 0x01f);
+  *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
 }
-void aspr4ptl(ULO data, ULO address)
+void aspr2ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 16)) = (UWO) (data & 0xfffe);
-}
-
-void aspr5pth(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 22)) = (UWO) (data & 0x01f);
-}
-void aspr5ptl(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 20)) = (UWO) (data & 0xfffe);
-}
-void aspr6pth(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 26)) = (UWO) (data & 0x01f);
-}
-void aspr6ptl(ULO data, ULO address)
-{
-  *((UWO *) ((UBY *) sprpt + 24)) = (UWO) (data & 0xfffe);
+  *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
 }
 
-void aspr7pth(ULO data, ULO address)
+void aspr3pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 30)) = (UWO) (data & 0x01f);
+  *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
 }
-void aspr7ptl(ULO data, ULO address)
+void aspr3ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 28)) = (UWO) (data & 0xfffe);
+  *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
+}
+
+void aspr4pth(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
+}
+void aspr4ptl(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
+}
+
+void aspr5pth(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
+}
+void aspr5ptl(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
+}
+void aspr6pth(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
+}
+void aspr6ptl(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
+}
+
+void aspr7pth(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
+}
+void aspr7ptl(UWO data, ULO address)
+{
+  *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void wsprxpos_C(ULO data, ULO address) 
+void wsprxpos(UWO data, ULO address) 
 {
   ULO sprnr;
   spr_action_list_item * item;
@@ -908,7 +905,7 @@ void wsprxpos_C(ULO data, ULO address)
 #endif
 }
 
-void asprxpos(ULO data, ULO address)
+void asprxpos(UWO data, ULO address)
 {
   ULO sprnr;
 
@@ -921,7 +918,7 @@ void asprxpos(ULO data, ULO address)
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void wsprxctl_C(ULO data, ULO address)
+void wsprxctl(UWO data, ULO address)
 {
   ULO sprnr;
   spr_action_list_item * item;
@@ -951,7 +948,7 @@ void wsprxctl_C(ULO data, ULO address)
 }
 
 
-void asprxctl(ULO data, ULO address) {
+void asprxctl(UWO data, ULO address) {
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
@@ -973,7 +970,7 @@ void asprxctl(ULO data, ULO address) {
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void wsprxdata_C(ULO data, ULO address)
+void wsprxdata(UWO data, ULO address)
 {
   ULO sprnr;
   spr_action_list_item * item;
@@ -999,7 +996,7 @@ void wsprxdata_C(ULO data, ULO address)
 #endif
 }
 
-void asprxdata(ULO data, ULO address) {
+void asprxdata(UWO data, ULO address) {
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
@@ -1008,7 +1005,7 @@ void asprxdata(ULO data, ULO address) {
 	spr_arm_data[sprnr] = TRUE;
 }
 
-void wsprxdatb_C(ULO data, ULO address)
+void wsprxdatb(UWO data, ULO address)
 {
   ULO sprnr;
   spr_action_list_item * item;
@@ -1034,11 +1031,11 @@ void wsprxdatb_C(ULO data, ULO address)
 #endif
 }
 
-void asprxdatb(ULO data, ULO address) {
+void asprxdatb(UWO data, ULO address) {
   ULO sprnr;
 
   sprnr = (address >> 3) & 7;
-  *(((UWO *) &sprdat[sprnr]) + 1) = (UWO) data; 
+  *(((UWO *) &sprdat[sprnr]) + 1) = data; 
 }
 
 /*===========================================================================*/
@@ -1080,13 +1077,14 @@ void spriteIOHandlersInstall(void) {
   ULO i;
 
   for (i = 0x120; i < 0x140; i = i + 2)
-    memorySetIOWriteStub(i, wsprpt_C);
+    memorySetIoWriteStub(i, wsprpt);
 
-  for (i = 0; i < 8; i++) {
-    memorySetIOWriteStub(0x140 + i*8, wsprxpos_C);
-    memorySetIOWriteStub(0x142 + i*8, wsprxctl_C);
-    memorySetIOWriteStub(0x144 + i*8, wsprxdata_C);
-    memorySetIOWriteStub(0x146 + i*8, wsprxdatb_C);
+  for (i = 0; i < 8; i++)
+  {
+    memorySetIoWriteStub(0x140 + i*8, wsprxpos);
+    memorySetIoWriteStub(0x142 + i*8, wsprxctl);
+    memorySetIoWriteStub(0x144 + i*8, wsprxdata);
+    memorySetIoWriteStub(0x146 + i*8, wsprxdatb);
   }
 }
 
@@ -1158,12 +1156,13 @@ void spriteHardReset(void) {
 /* Called on emulation end of line                                           */
 /*===========================================================================*/
 
-void spriteEndOfLine(void) {
+void spriteEndOfLine(void)
+{
   ULO i;
 
   for (i = 0; i < 8; i++) 
   {
-	spriteMergeListClear(&spr_merge_list[i]);
+    spriteMergeListClear(&spr_merge_list[i]);
   }
 }
 
@@ -1211,6 +1210,22 @@ void spriteEmulationStop(void) {
 /*===========================================================================*/
 
 void spriteStartup(void) {
+  ULO i;
+
+  for (i = 0; i < 8; i++) 
+  {
+    sprite_state[i] = 0;
+    spr_arm_data[i] = FALSE;
+    spr_arm_comparator[i] = FALSE;
+    spriteActionListClear(&spr_action_list[i]);
+    spriteActionListClear(&spr_dma_action_list[i]);
+    spriteMergeListClear(&spr_merge_list[i]);
+//    spriteDMAActionListClear(i);
+  }
+  sprite_ham_slot_next = 0;
+//  spriteActionListsClear();
+
+
   spriteP2CTablesInitialize();
   spriteP2CTablesInitialize_ALSO();
   spriteTranslationTableInit();
@@ -1313,7 +1328,7 @@ void spriteDecode16Sprite_C(ULO sprnr)
 	}
 }
 
-void spritesDMASpriteHandler(ULO sprnr, ULO nothing) {
+void spritesDMASpriteHandler(void) {
   spr_action_list_item * dma_action_item;
   spr_action_list_item * item;
   ULO local_sprx;
@@ -1322,6 +1337,7 @@ void spritesDMASpriteHandler(ULO sprnr, ULO nothing) {
   ULO local_data_ctl;
   ULO local_data_pos;
   ULO i, count;
+  ULO sprnr;
 
   sprites_online = FALSE;
   sprnr = 0;
@@ -2155,7 +2171,7 @@ static void spriteMergeLores(graph_line* current_graph_line)
 
 }
 
-void spritesMerge_C(graph_line* current_graph_line)
+void spritesMerge(graph_line* current_graph_line)
 {
 	sprites_online = 0;
 	

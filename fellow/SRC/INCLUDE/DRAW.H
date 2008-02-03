@@ -210,6 +210,7 @@ extern felist *drawGetModes(void);
 extern void drawSetDeinterlace(BOOLE deinterlace);
 extern void drawSetHorizontalScale(ULO horisontalscale);
 extern void drawSetVerticalScale(ULO verticalscale);
+extern void drawSetVerticalScaleStrategy(ULO verticalscalestrategy);
 extern void drawSetVerticalStretch(ULO verticalstretch);
 extern void drawSetScanlines(BOOLE scanlines);
 extern void drawSetFrameskipRatio(ULO frameskipratio);
@@ -244,6 +245,7 @@ extern void drawInvalidateBufferPointer(void);
 /* Standard Fellow functions                                                 */
 /*===========================================================================*/
 
+extern void drawEndOfFramePre(void);
 extern void drawHardReset(void);
 extern void drawEmulationStart(void);
 extern BOOLE drawEmulationStartPost(void);

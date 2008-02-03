@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.5.2.7 2004-06-03 14:19:52 carfesh Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.5.2.7.4.1 2008-02-03 12:40:53 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -75,8 +75,8 @@ extern ULO hardfile_size;
 /* Access m68k registers  */
 /*------------------------*/
 
-#define m68k_dreg(REGS, NR) (da_regs[0][NR])
-#define m68k_areg(REGS, NR) (da_regs[1][NR])
+#define m68k_dreg(REGS, NR) (cpuGetDReg(NR))
+#define m68k_areg(REGS, NR) (cpuGetAReg(NR))
 #define m68k_setpc(I) (cpuSetPC(I))
 extern void m68k_do_rts(void);
 
@@ -84,13 +84,13 @@ extern void m68k_do_rts(void);
 /* Memory interfacing     */
 /*------------------------*/
 
-#define get_long(ADR) (fetl(ADR))
-#define get_word(ADR) (fetw(ADR))
-#define get_byte(ADR) (char)(fetb(ADR))
+#define get_long(ADR) (memoryReadLong(ADR))
+#define get_word(ADR) (memoryReadWord(ADR))
+#define get_byte(ADR) (char)(memoryReadByte(ADR))
 
-#define put_long(ADR, DATA) (wril(DATA, ADR))
-#define put_word(ADR, DATA) (wriw(DATA, ADR))
-#define put_byte(ADR, DATA) (wrib(DATA, ADR))
+#define put_long(ADR, DATA) (memoryWriteLong(DATA, ADR))
+#define put_word(ADR, DATA) (memoryWriteWord(DATA, ADR))
+#define put_byte(ADR, DATA) (memoryWriteByte(DATA, ADR))
 
 #define expamem_write(OFFSET, DATA) (memoryEmemSet(OFFSET,DATA))
 #define expamem memory_emem
@@ -144,12 +144,7 @@ extern char warning_buffer[256];
 /* Prefetch */
 /*==========*/
 
-#ifdef PREFETCH
-#define fill_prefetch_0() cpuPrefetchFill(pc)
-#else
-#define fill_prefetch_0()
-#endif
-
+#define fill_prefetch_0() cpuReadPrefetch()
 
 /*================================*/
 /* Taken from sysdeps.h on WinUAE */

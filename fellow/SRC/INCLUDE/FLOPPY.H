@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.4.2.6 2004-06-07 22:11:26 peschau Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.4.2.6.4.1 2008-02-03 12:37:43 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -26,20 +26,6 @@
 
 #ifndef FLOPPY_H
 #define FLOPPY_H
-
-/* Assembly function renaming */
-
-#define rdskbytr ASMRENAME(rdskbytr)
-#define wdskpth ASMRENAME(wdskpth)
-#define wdskptl ASMRENAME(wdskptl)
-#define wdsklen ASMRENAME(wdsklen)
-#define wdsksync ASMRENAME(wdsksync)
-
-ULO rdskbytr(ULO);
-void wdskpth(ULO, ULO);
-void wdskptl(ULO, ULO);
-void wdsklen(ULO, ULO);
-void wdsksync(ULO, ULO);
 
 #define FLOPPY_TRACKS 180
 
@@ -159,6 +145,6 @@ extern void floppyEmulationStop(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);
 
-extern void floppyEndOfLineC(void);
+extern void floppyEndOfLine(void);
 
 #endif
