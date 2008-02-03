@@ -645,7 +645,8 @@ void kbdDrvDInputUnacquire(void) {
   
   fellowAddLog("kbdDrvDInputUnacquire()\n");
   if (kbd_drv_lpDID == NULL) return;
-  if ((res = IDirectInputDevice_Unacquire(kbd_drv_lpDID)))
+  res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
+  if (res)
     kbdDrvDInputFailure("kbdDrvDInputUnacquire(): ", res);
 }
 

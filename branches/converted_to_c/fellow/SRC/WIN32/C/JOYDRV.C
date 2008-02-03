@@ -295,9 +295,9 @@ void joyDrvDInputUnacquire(int port) {
 	fellowAddLog( "joyDrvDInputUnacquire(%d)\n", port );
 
   if (!joy_drv_failed) {
-    HRESULT res;
+    HRESULT res = IDirectInputDevice_Unacquire( joy_drv_lpDID[port] );
 	
-    if ((res = IDirectInputDevice_Unacquire( joy_drv_lpDID[port] )))
+    if (res)
       joyDrvDInputFailure("joyDrvDInputUnacquire(): ", res);
   }
 }

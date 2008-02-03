@@ -193,7 +193,6 @@ void gfxDrvChangeDInputDeviceStates(BOOLE active) {
 }
 
 void gfxDrvEvaluateActiveStatus(void) {
-  BOOLE old_active = gfx_drv_win_active;
   gfx_drv_win_active = (gfx_drv_win_active_original &&
                        !gfx_drv_win_minimized_original &&
 		        !gfx_drv_syskey_down);
@@ -227,7 +226,7 @@ void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device);
 BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
 
-long FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
+LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	RECT emulationRect;
 	BOOLE diacquire_sent = FALSE;
 /*
@@ -1008,9 +1007,9 @@ BOOLE gfxDrvDDraw2ObjectRelease(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 BOOLE gfxDrvDDrawObjectInitialize(gfx_drv_ddraw_device *ddraw_device) {
-  BOOLE result;
+  BOOLE result = gfxDrvDDraw1ObjectInitialize(ddraw_device);
   
-  if ((result = gfxDrvDDraw1ObjectInitialize(ddraw_device))) {
+  if (result) {
     result = gfxDrvDDraw2ObjectInitialize(ddraw_device);
     gfxDrvDDraw1ObjectRelease(ddraw_device);
   }
@@ -1233,7 +1232,8 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device) {
     result = FALSE;
   }
   else {
-    if ((result = (listCount(ddraw_device->modes) != 0))) {
+    result = listCount(ddraw_device->modes) != 0;
+    if (result) {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 288, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
@@ -1802,11 +1802,13 @@ ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 BOOLE gfxDrvDDrawInitialize(void) {
-  BOOLE result;
+  BOOLE result = gfxDrvDDrawDeviceInformationInitialize();
   
-  if ((result = gfxDrvDDrawDeviceInformationInitialize())) {
-    if ((result = gfxDrvDDrawObjectInitialize(gfx_drv_ddraw_device_current))) {
-      if (!(result = gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device_current))) {
+  if (result) {
+    result = gfxDrvDDrawObjectInitialize(gfx_drv_ddraw_device_current);
+    if (result) {
+      result = gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device_current);
+      if (!result) {
 	gfxDrvDDraw2ObjectRelease(gfx_drv_ddraw_device_current);
 	gfxDrvDDrawDeviceInformationRelease();
       }
@@ -2007,7 +2009,7 @@ void gfxDrvEndOfFrame(void) {
 /*==========================================================================*/
 
 BOOLE gfxDrvStartup(void) {
-  gfxDrvSetStretchAlways(FALSE);
+  gfxDrvSetStretchAlways(TRUE);
   gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
@@ -2031,9 +2033,4 @@ void gfxDrvShutdown(void) {
     gfxDrvWindowRelease(gfx_drv_ddraw_device_current);
   }
   gfxDrvRunEventRelease();
-}
-
-void gfxDrvDebugging(void)
-{
-
 }
