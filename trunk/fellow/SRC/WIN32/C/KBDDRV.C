@@ -2,6 +2,7 @@
 /* Fellow Amiga Emulator                                                     */
 /* Keyboard driver for Windows                                               */
 /* Author: Marco Nova (novamarco@hotmail.com)                                */
+/*         Torsten Enderling (carfesh@gmx.net) (Nov 2007 DirectX SDK fixes)  */
 /*                                                                           */
 /* This file is under the GNU Public License (GPL)                           */
 /*===========================================================================*/
@@ -27,6 +28,9 @@ Tuesday, September 05, 2000: nova
 - added kbd_drv_joykey to the prsReadFile call ** internal **
 - now joy replacement are first filled with DIK keys and then translated to PCK symbolic key
 - added dxver.h include, dx version is decided with USE_DX3 or USE_DX5 macro
+
+Sunday, February 03, 2008: carfesh
+- rebuild to use DirectInput8Create instead of DirectInputCreate
 */
 
 #include "defs.h"
@@ -585,27 +589,28 @@ BOOLE				kbd_drv_capture;
 
 STR *kbdDrvDInputErrorString(HRESULT hResult) {
   switch (hResult) {
-    case DI_OK:				return "The operation completed successfully.";
-    case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
-    case DI_POLLEDDEVICE:		return "The device is a polled device.";
-    case DIERR_ACQUIRED:		return "The operation cannot be performed while the device is acquired.";
-    case DIERR_ALREADYINITIALIZED:	return "This object is already initialized.";
-    case DIERR_BADDRIVERVER:		return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
+    case DI_OK:				            return "The operation completed successfully.";
+    case DI_BUFFEROVERFLOW:		        return "The device buffer overflowed and some input was lost.";
+    case DI_POLLEDDEVICE:		        return "The device is a polled device.";
+    case DIERR_ACQUIRED:		        return "The operation cannot be performed while the device is acquired.";
+    case DIERR_ALREADYINITIALIZED:	    return "This object is already initialized.";
+    case DIERR_BADDRIVERVER:		    return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
     case DIERR_BETADIRECTINPUTVERSION:	return "The application was written for an unsupported prerelease version of DirectInput.";
-    case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
-    case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
-    case DIERR_HANDLEEXISTS:		return "The device already has an event notification associated with it.";
-    case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
-    case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
-    case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
-    case DIERR_NOINTERFACE:		return "The specified interface is not supported by the object.";
-    case DIERR_NOTACQUIRED:		return "The operation cannot be performed unless the device is acquired.";
-    case DIERR_NOTINITIALIZED:		return "This object has not been initialized.";
-    case DIERR_OBJECTNOTFOUND:		return "The requested object does not exist.";
+    case DIERR_DEVICENOTREG:		    return "The device or device instance is not registered with DirectInput.";
+    case DIERR_GENERIC:			        return "An undetermined error occurred inside the DirectInput subsystem.";
+    case DIERR_HANDLEEXISTS:	        return "The device already has an event notification associated with it.";
+    case DIERR_INPUTLOST:		        return "Access to the input device has been lost. It must be re-acquired.";
+    case DIERR_INVALIDPARAM:		    return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_NOAGGREGATION:		    return "This object does not support aggregation.";
+    case DIERR_NOINTERFACE:		        return "The specified interface is not supported by the object.";
+    case DIERR_NOTACQUIRED:		        return "The operation cannot be performed unless the device is acquired.";
+    case DIERR_NOTINITIALIZED:		    return "This object has not been initialized.";
+    case DIERR_OBJECTNOTFOUND:		    return "The requested object does not exist.";
     case DIERR_OLDDIRECTINPUTVERSION:	return "The application requires a newer version of DirectInput.";
-    case DIERR_OUTOFMEMORY:		return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
-    case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
-    case E_PENDING:			return "Data is not yet available.";
+    case DIERR_OUTOFMEMORY:		        return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
+    case DIERR_UNSUPPORTED:		        return "The function called is not supported at this time.";
+    case E_PENDING:			            return "Data is not yet available.";
+	case E_POINTER:                     return "Invalid pointer.";
   }
   return "Not a DirectInput Error";
 }
@@ -694,12 +699,13 @@ void kbdDrvDInputInitializeOld(void) {
   
   fellowAddLog("kbdDrvDInputInitialize()\n");
   if(!kbd_drv_lpDI) {
-    if(( res = DirectInputCreate(win_drv_hInstance,
+    if(( res = DirectInput8Create(win_drv_hInstance,
       DIRECTINPUT_VERSION,
-      &kbd_drv_lpDI,
-      NULL )) != DI_OK )
+      &IID_IDirectInput8,
+      (void**)&kbd_drv_lpDI,
+	  NULL)) != DI_OK )
     {
-      kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInputCreate() ", res );
+      kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
       return;
     }
   }
@@ -745,11 +751,12 @@ BOOLE kbdDrvDInputInitialize(void) {
   kbd_drv_lpDID = NULL;
   kbd_drv_DIevent = NULL;
   kbd_drv_initialization_failed = FALSE;
-  if ((res = DirectInputCreate(win_drv_hInstance,
+  if ((res = DirectInput8Create(win_drv_hInstance,
                                DIRECTINPUT_VERSION,
-                               &kbd_drv_lpDI,
-                               NULL)) != DI_OK) {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInputCreate() ", res );
+                               &IID_IDirectInput8,
+                               (void**)&kbd_drv_lpDI,
+							   NULL)) != DI_OK) {
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
     return FALSE;
