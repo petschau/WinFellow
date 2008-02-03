@@ -1,0 +1,85 @@
+WinFellow Module Ripper ReadMe 0.11 (2000/12/18)
+================================================
+
+Since many users asked about it the old mod-ripper contained in  DOS  Fellow
+has been ported into the new Fellow environment and has undergone some major
+changes. This document is meant to  describe  Fellow's  mod-ripper  in  it's 
+current form.
+
+
+Credits
+=======
+
+Special thanks must go out to Laurent Clévy for his file format  section  on
+Exotica (http://exotica.fix.no) and Sylvain "Asle" Chipaux for his Amiga Mod
+Packers Described Page  (http://www.multimania.com/asle/ampd.html).  Without 
+the information provided on their pages the mod-ripper  wouldn't  have  been 
+possible in that form.
+Another source of information was the xmp source code which  also  has  some
+nice information about various module formats (http://xmp.helllabs.org).
+
+
+Formats
+=======
+
+The following formats are currently supported; more  are  probably  to  come
+later (we'll have to see the demand):
+
+- ProTracker and clones (Protracker, Noisetracker, Startrekker 4/8 channel,
+  ...)
+- SoundFX 1.3 and 2.0
+- SoundMon 1.0, 2.0 and 2.2
+- FredEditor
+- ProRunner 2.0
+- ThePlayer 4
+
+Note that while Protracker files play fine  in  many  music  replayers  like
+Winamp this isn't the case for the other more exotic formats. When you  look
+for a good module player capable of playing all kinds of Amiga  formats  try
+DeliPlayer (http://www.deliplayer.com) which is a port of the good old Amiga
+DeliTracker and plays really alot of formats.
+
+
+How to invoke the mod-ripper?
+=============================
+
+The mod-ripper is a bit  hidden  in  Fellow's  integrated  debugger  on  the
+"Sound" tab. When running it you're first prompted if you want to  scan  the
+emulated Amiga's memory for modules. This is  the  recommended  way  to  rip
+modules; start the game or demo you want to rip the music from and when  the
+song you want to rip is actually playing you may halt the emulation and  run
+the mod-ripper to gather the song out of the memory. The other possible  way
+is to rip from  floppies;  the  module  ripper  detects  when  floppies  are 
+inserted and prompts you for each one if you want to rip from  that  floppy;
+this works ok with some games or demos that use custom trackloaders but will
+usually result in damaged modules when used on formatted AmigaDOS  disks  so
+that you have to be abit careful with modules ripped off a disk.
+
+
+Naming conventions
+==================
+
+Whereas common module types like Protracker have  a  unique  ending  (*.mod)
+this is not the case for many other formats. For these, the ripper uses  the
+default extension .cus to indicate a format that  is  not  very  widespread;
+these are the ones that won't play in most players so you'll need  either  a
+capable Amiga module player or a converter to play these.
+
+
+Dump Chipmem option
+===================
+
+In the debugger's sound tab you also find a button "Dump chipm.".  This  may
+be used to save the contents of the whole chipmem into a file and so  allows
+you to run other external module rippers over that.
+
+
+Final note
+==========
+
+The mod-ripper is currently in a highly experimental state. So generally  be
+careful with the resulting modules and if the mod-ripper gives you a  module
+that is defective don't wonder about that. When this happens, send  Fellow's
+logfile along with a description of what you tried to rip  from  (game/demo)
+and the information the file save requester showed to  me  (carfesh@gmx.net)
+so that I can possibly try to fix the problem.
