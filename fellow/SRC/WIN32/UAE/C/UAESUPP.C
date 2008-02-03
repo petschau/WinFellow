@@ -1,4 +1,4 @@
-/* @(#) $Id: UAESUPP.C,v 1.1.1.1.2.6 2004-05-28 06:41:51 carfesh Exp $ */
+/* @(#) $Id: UAESUPP.C,v 1.1.1.1.2.6.4.1 2008-02-03 13:21:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -89,7 +89,7 @@ int valid_address(uaecptr adr, uae_u32 size) {
 void m68k_do_rts(void)
 {
     m68k_setpc(get_long(m68k_areg(regs, 7)));
-    m68k_areg(regs, 7) += 4;
+    cpuSetAReg(7, m68k_areg(regs, 7) + 4);
     /* FELLOW OUT (START)----------------
        if (jsr_num > 0)
 	jsr_num--;

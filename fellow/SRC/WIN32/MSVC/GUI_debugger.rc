@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -52,18 +52,19 @@ END
 // Dialog
 //
 
-IDD_DEBUG_CPU DIALOG  0, 0, 516, 256
+IDD_DEBUG_CPU DIALOGEX 0, 0, 674, 346
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "CPU"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    PUSHBUTTON      "Step",IDC_DEBUG_CPU_STEP,457,17,46,14
-    PUSHBUTTON      "Step Over",IDC_DEBUG_CPU_STEP_OVER,457,35,46,14
+    PUSHBUTTON      "Step",IDC_DEBUG_CPU_STEP,613,17,46,14
+    PUSHBUTTON      "Step Over",IDC_DEBUG_CPU_STEP_OVER,613,35,46,14
     GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
-    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
-    GROUPBOX        "Disassembly:",IDC_STATIC,7,49,440,200
-    PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,457,212,46,14
-    PUSHBUTTON      "Break",IDC_DEBUG_CPU_BREAK,457,230,46,14
+    GROUPBOX        "Commands:",IDC_STATIC,609,7,58,332
+    GROUPBOX        "Disassembly:",IDC_STATIC,7,50,440,289
+    PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,613,53,46,14
+    PUSHBUTTON      "Break",IDC_DEBUG_CPU_BREAK,613,71,46,14
+    GROUPBOX        "Static",IDC_STATIC,448,7,159,154
 END
 
 IDD_DEBUG_MEMORY DIALOG  0, 0, 516, 256
@@ -178,9 +179,9 @@ BEGIN
     IDD_DEBUG_CPU, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 509
+        RIGHTMARGIN, 667
         TOPMARGIN, 7
-        BOTTOMMARGIN, 249
+        BOTTOMMARGIN, 339
     END
 
     IDD_DEBUG_MEMORY, DIALOG
@@ -257,7 +258,7 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Englisch (USA) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
