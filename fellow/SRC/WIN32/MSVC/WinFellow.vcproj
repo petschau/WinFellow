@@ -308,41 +308,6 @@
 			Name="Assembly Files"
 			Filter="*.s">
 			<File
-				RelativePath="..\..\asm\blita.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\blita.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\busa.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -483,41 +448,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\drawa.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\drawa.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\fhfilea.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -588,41 +518,6 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\grapha.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\grapha.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
 				RelativePath="..\..\asm\mmx.s">
 				<FileConfiguration
 					Name="Release|Win32">
@@ -655,76 +550,6 @@
 						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
 "
 						Outputs="$(IntDir)\mmx.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\asm\sounda.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sounda.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\asm\spritea.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\spritea.obj"/>
 				</FileConfiguration>
 			</File>
 			<File
@@ -770,9 +595,6 @@
 				Name="Macros"
 				Filter="*.mac">
 				<File
-					RelativePath="..\..\incasm\mac\blit.mac">
-				</File>
-				<File
 					RelativePath="..\..\incasm\mac\bus.mac">
 				</File>
 				<File
@@ -780,12 +602,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\mac\cpu.mac">
-				</File>
-				<File
-					RelativePath="..\..\incasm\mac\draw.mac">
-				</File>
-				<File
-					RelativePath="..\..\incasm\mac\drawmode.mac">
 				</File>
 				<File
 					RelativePath="..\..\incasm\mac\floppy.mac">
@@ -797,30 +613,15 @@
 					RelativePath="..\..\incasm\mac\gameport.mac">
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\graph.mac">
-				</File>
-				<File
 					RelativePath="..\..\incasm\mac\kbd.mac">
 				</File>
 				<File
 					RelativePath="..\..\incasm\mac\nasm.mac">
 				</File>
-				<File
-					RelativePath="..\..\incasm\mac\plan2c.mac">
-				</File>
-				<File
-					RelativePath="..\..\incasm\mac\sound.mac">
-				</File>
-				<File
-					RelativePath="..\..\incasm\mac\sprite.mac">
-				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
 				Filter="*.inc">
-				<File
-					RelativePath="..\..\incasm\func\blit.inc">
-				</File>
 				<File
 					RelativePath="..\..\incasm\func\bus.inc">
 				</File>
@@ -832,9 +633,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\func\cpu.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\func\draw.inc">
 				</File>
 				<File
 					RelativePath="..\..\incasm\func\fellow.inc">
@@ -849,24 +647,12 @@
 					RelativePath="..\..\incasm\func\gameport.inc">
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\graph.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\func\kbd.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\func\sound.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\func\sprite.inc">
 				</File>
 			</Filter>
 			<Filter
 				Name="Data"
 				Filter="*.inc">
-				<File
-					RelativePath="..\..\incasm\data\blit.inc">
-				</File>
 				<File
 					RelativePath="..\..\incasm\data\bus.inc">
 				</File>
@@ -878,9 +664,6 @@
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\cpu.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\draw.inc">
 				</File>
 				<File
 					RelativePath="..\..\incasm\data\fellow.inc">
@@ -898,15 +681,6 @@
 					RelativePath="..\..\incasm\data\gameport.inc">
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\graph.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\sound.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\data\sprite.inc">
-				</File>
-				<File
 					RelativePath="..\..\incasm\data\timer.inc">
 				</File>
 			</Filter>
@@ -915,9 +689,6 @@
 				Filter="*.inc">
 				<File
 					RelativePath="..\..\incasm\generic\defs.inc">
-				</File>
-				<File
-					RelativePath="..\..\incasm\generic\sound.inc">
 				</File>
 			</Filter>
 		</Filter>

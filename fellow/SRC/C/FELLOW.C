@@ -1,12 +1,12 @@
-/* @(#) $Id: FELLOW.C,v 1.20 2004-06-12 15:39:19 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.11 2005-05-06 15:21:44 worfje Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                      */
+/* Fellow Amiga Emulator                                                   */
 /*                                                                         */
-/* This file has overall control over starting and stopping Fellow            */
-/* Everything starts here                                                     */
-/*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
-/*                                                                            */
+/* This file has overall control over starting and stopping Fellow         */
+/* Everything starts here                                                  */
+/*                                                                         */
+/* Author: Petter Schau (peschau@online.no)                                */
+/*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */
@@ -147,7 +147,7 @@ static BOOLE fellowGetLogFirstTime(void) {
   return fellow_log_first_time;
 }
 
-static void fellowAddLog2(STR *msg) {
+void fellowAddLog2(STR *msg) {
   FILE *F;
 
   if (!fellowGetLogEnabled()) return;
@@ -217,7 +217,8 @@ char *fellowGetVersionString(void)
     if(!(result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4)))
         return NULL;
 
-    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+//    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+	sprintf(result, "%s", FELLOWVERSION);
     return result;
 }
 
@@ -533,7 +534,7 @@ int main(int argc, char *argv[]) {
 
   sysinfoLogSysInfo();
   fellowPreStartReset(TRUE);
-  fellowSetMMXDetected(detectMMX());
+  fellowSetMMXDetected(sysinfoDetectMMX());
   fellowModulesStartup(argc, argv);
   while (!wguiEnter())
     fellowRun();

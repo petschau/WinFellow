@@ -891,6 +891,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 	{
 	  mouseDrvToggleFocus();
 	  joyDrvToggleFocus();
+    //spriteSetDebugging();
 	  break;
 	}
 	

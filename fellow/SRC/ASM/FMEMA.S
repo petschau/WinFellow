@@ -29,12 +29,7 @@ FDATASECTIONSTART
 
 
 %include "data/fmem.inc"
-%include "data/floppy.inc"
-%include "data/sound.inc"
-%include "data/graph.inc"
 %include "data/bus.inc"
-%include "data/blit.inc"
-%include "data/draw.inc"
 %include "data/cpu.inc"
 	
 FDATASECTIONEND
@@ -47,20 +42,10 @@ _memorystart_:			; Used to check code alignment
 
 
 %include "func/cpu.inc"
-%include "func/sound.inc"
-%include "func/draw.inc"
-%include "func/graph.inc"
-%include "func/copper.inc"
-%include "func/blit.inc"
 %include "func/cia.inc"
-%include "func/floppy.inc"
-%include "func/gameport.inc"
 %include "func/fmem.inc"
 %include "mac/fmem.mac"
 %include "mac/cia.mac"
-%include "mac/floppy.mac"
-%include "mac/graph.mac"
-%include "mac/gameport.mac"
 		
 		
 ;==============================================================================
@@ -309,6 +294,51 @@ _memoryChipWriteLong_:
 		ret
 
 
+; -----------------------------
+; ROM overlayed to $000000 bank 
+; -----------------------------
+
+
+		FALIGN32
+
+global _memoryOVLReadByte_
+_memoryOVLReadByte_:	
+		and	ecx, 0ffffffh
+		movzx	edx, byte [memory_kick + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadWord_
+_memoryOVLReadWord_:	
+		and	ecx, 0ffffffh
+		xor	edx, edx
+		mov	dh, byte [memory_kick + ecx]
+		mov	dl, byte [memory_kick + 1 + ecx]
+		ret
+
+
+		FALIGN32
+
+global _memoryOVLReadLong_
+_memoryOVLReadLong_:
+		and	ecx, 0ffffffh
+		mov	edx, dword [memory_kick + ecx]
+		bswap	edx
+		ret
+
+		FALIGN32
+
+global _memoryOVLWriteByte_
+global _memoryOVLWriteWord_
+global _memoryOVLWriteLong_
+_memoryOVLWriteByte_:
+_memoryOVLWriteWord_:
+_memoryOVLWriteLong_:
+		mov	ecx, dword [memory_wriorgadr]
+		ret
+	
 ; ---------
 ; Fast bank 
 ; ---------
@@ -691,7 +721,14 @@ global _memoryIOReadByte_
 _memoryIOReadByte_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		test	ecx, 1
 		jnz	rrb1
@@ -706,7 +743,14 @@ global _memoryIOReadWord_
 _memoryIOReadWord_:
 		push	ecx
 		and	ecx, 01feh
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		ret
 
@@ -718,10 +762,24 @@ _memoryIOReadLong_:
 		push	ecx
 		and	ecx, 01feh
 		push	ecx
+
+
+		push eax
 		call	dword [memory_iobank_read + ecx*2]
+		mov edx, eax
+		pop eax
+
+	
 		pop	ecx
 		push	edx
+
+
+		push eax
 		call	dword [memory_iobank_read + 4 + ecx*2]
+		mov edx, eax
+		pop eax
+
+
 		pop	ecx
 		shl	ecx, 16
 		or	edx, ecx
@@ -745,13 +803,29 @@ _memoryIOWriteByte_:
 
 		and	ecx, 01feh
 		and	edx, 0ff00h
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 wrbodd:
 		and	ecx, 01feh
 		and	edx, 0ffh
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -764,7 +838,15 @@ _memoryIOWriteWord_:
 		push	ecx
 		and	ecx, 01feh
 		and	edx, 0ffffh		; No extra bits
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
 
@@ -781,254 +863,29 @@ _memoryIOWriteLong_:
 		add	ecx, 2
 		and	ecx, 01feh	; Unreal writes long to $1fe
 		and	edx, 0ffffh   ; No extra bits here
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		pop	edx
 		shr	edx, 16		; No extra bits! Good!
+
+		pushad
+		push ecx ; needed when using C code to perform stub functions
+		push edx
 		call	dword [memory_iobank_write + ecx*2]
+		pop edx
+		pop ecx
+		popad
+
 		pop	ecx
 		ret
-
-
-; ----------------------------
-; Chip read register functions	
-; ---------------------------- 
-
-; SERDATR
-; $dff018
-
-global _rserdatr_
-_rserdatr_:	xor	edx, edx
-		ret
-
-; INTENAR
-; $dff01c
-		FALIGN32
-
-global _rintenar_
-_rintenar_:	mov	edx, dword [intenar]
-		ret
-
-; INTREQR
-; $dff01e
-		FALIGN32
-
-global _rintreqr_
-_rintreqr_:	mov	edx, dword [intreq]
-		ret
-
-; To simulate noise, return 0 and -1 every second time.
-; Why? Bugged demos test write-only registers for various bit-values
-; and to break out of loops, both 0 and 1 values must be returned.
-
-		FALIGN32
-
-global _rdefault_
-_rdefault_:
-;		mov	dword [memory_wriorgadr], ecx
-;		pushad
-;		call	memoryLogUndefinedIOReads
-;		popad
-  		inc	dword [memory_noise_counter]
-		mov	edx, dword [memory_noise_counter]
-		and	edx, 1
-		mov	edx, dword [memory_noise + 4*edx]
-		ret
-
-
-; -----------------------------
-; Chip write register functions	 
-; ----------------------------- 
-
-;========
-; INTENA
-;========
-; $dff09a  - Leses fra $dff01c
-; If master bit is off, then INTENA is 0, else INTENA = INTENAR
-; The master bit can not be read, the memory test in the kickstart
-; depends on this.
-		FALIGN32
-
-global _wintena_
-_wintena_:	mov	ecx, dword [intenar]	   ; Les inn status
-		test	edx, 08000h
-		jz	wine1
-		and	edx, 7fffh		 ; Sett bits
-		or	ecx, edx
-		mov	dword [intenar], ecx
-		test	ecx, 00004000h
-		jnz	wintenanorm
-		xor	ecx, ecx
-		mov	dword [intena], ecx
-		ret
-wintenanorm:	mov	dword [intena], ecx
-		call	_cpuRaiseInterrupt_
-		ret
-wine1:		and	edx, 7fffh		 ; Slett bits
-		not	edx
-		and	ecx, edx			  ; Slett bits
-		mov	dword [intenar], ecx
-		test	ecx, 00004000h
-		jnz	wintenanorm
-		xor	ecx, ecx
-		mov	dword [intena], ecx
-		ret
-
-;========
-; INTREQ
-;========
-
-
-		FALIGN32
-
-global _wintreq_
-_wintreq_:	mov	ecx, dword [intreq]	 ; Les inn status
-		test	edx, 08000h
-		jz	winr1
-		and	edx, 7fffh		 ; Sett bits
-		or	ecx, edx
-		mov	dword [intreq], ecx
-		call	_cpuRaiseInterrupt_
-		ret
-winr1:		and	edx, 7fffh		 ; Slett bits
-		not	edx
-		and	ecx, edx			  ; Slett bits
-		mov	dword [intreq], ecx
-		ret
-;========
-; ADCON
-;========
-
-; $dff09e  - Leses fra $dff010
-		FALIGN32
-
-global _wadcon_
-_wadcon_:	mov	ecx, dword [adcon]	; Les inn status
-		test	edx, 08000h
-		jz	adcr1
-		and	edx, 7fffh		 ; Sett bits
-		or	ecx, edx
-		mov	dword [adcon], ecx
-		ret
-adcr1:		and	edx, 7fffh		 ; Slett bits
-		not	edx
-		and	ecx, edx			  ; Slett bits
-		mov	dword [adcon], ecx
-		ret
-
-global _wdefault_
-_wdefault_:	inc	dword [memory_undefined_io_write_counter]
-;		mov	dword [memory_wriorgadr], ecx
-;		pushad
-;		call	memoryLogUndefinedIOWrites
-;		popad
-		ret
-
-
-
-;==============================================================================
-; Assembly code wrapper functions for various C-implemented memory access stubs
-; These are used in the memory access tables.
-; Wrapper macros exists for these calls which handles the calling convention
-; to these functions, while maintaining another calling convention
-; (register based) for the assembly code
-; Since some of these functions are called via a jump table, hard copies 
-; are found here.
-;==============================================================================
-
-
-;==============================================================================
-; Some hardware IO-register access wrappers, calls routines in C
-;==============================================================================
-
-
-		FALIGN32
-
-global _rdskbytr_
-_rdskbytr_:
-		RDSKBYTR_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdskpth_
-_wdskpth_:
-		WDSKPTH_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdskptl_
-_wdskptl_:
-		WDSKPTL_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdsklen_
-_wdsklen_:
-		WDSKLEN_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wdsksync_
-_wdsksync_:
-		WDSKSYNC_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _rjoy0dat_
-_rjoy0dat_:
-		RJOY0DAT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _rjoy1dat_
-_rjoy1dat_:
-		RJOY1DAT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _rpot0dat_
-_rpot0dat_:
-		RPOT0DAT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _rpot1dat_
-_rpot1dat_:
-		RPOT1DAT_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _rpotgor_
-_rpotgor_:
-		RPOTGOR_CWRAP
-		ret
-
-
-		FALIGN32
-
-global _wjoytest_
-_wjoytest_:
-		WJOYTEST_CWRAP
-		ret
-
 
 		FALIGN32
 

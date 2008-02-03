@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb.h,v 1.6 2004-05-28 09:45:02 carfesh Exp $
+  @(#) $Id: fsdb.h,v 1.3.2.3 2004-05-28 09:44:15 carfesh Exp $
 
    FELLOW IN (END)------------------- */
 
