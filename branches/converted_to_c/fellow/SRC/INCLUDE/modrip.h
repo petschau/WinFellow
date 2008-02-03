@@ -1,4 +1,4 @@
-/* @(#) $Id: modrip.h,v 1.3.2.4 2004-06-08 14:05:36 carfesh Exp $ */
+/* @(#) $Id: modrip.h,v 1.3.2.4.4.1 2008-02-03 12:37:45 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -30,7 +30,7 @@
 #define MODRIP_MAXMODLEN (1024 * 1024)
 
 /* memory access wrapper functions */
-typedef ULO (*MemoryAccessFunc)(ULO);
+typedef UBY (*MemoryAccessFunc)(ULO);
 
 /* module type detection functions */
 typedef void (*ModuleDetectFunc)(ULO, MemoryAccessFunc); 

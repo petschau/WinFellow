@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.14.2.20 2005-01-01 00:28:10 worfje Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.14.2.20.4.1 2008-02-03 12:37:31 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -25,9 +25,6 @@
 /*=========================================================================*/
 
 #include <io.h>
-
-#include "portable.h"
-#include "renaming.h"
 
 #include "defs.h"
 #include "fellow.h"
@@ -114,8 +111,9 @@ void floppyLogValue(STR *text, ULO v, ULO ticks)
 /* $dff01a  */
 /*----------*/
 
-ULO rdskbytrC(ULO address) {
-  ULO tmp = floppy_DMA_started<<14;
+UWO rdskbytr(ULO address)
+{
+  UWO tmp = (UWO)(floppy_DMA_started<<14);
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
   tmp |= dskbytr;
@@ -129,8 +127,9 @@ ULO rdskbytrC(ULO address) {
 /* $dff020  */
 /*----------*/
 
-void wdskpthC(ULO data, ULO address) {
-  *(((UWO *) &dskpt) + 1) = (UWO) (data & 0x1f);
+void wdskpth(UWO data, ULO address)
+{
+  *(((UWO *) &dskpt) + 1) = data & 0x1f;
 }
 
 /*----------*/
@@ -138,8 +137,9 @@ void wdskpthC(ULO data, ULO address) {
 /* $dff022  */
 /*----------*/
 
-void wdskptlC(ULO data, ULO address) {
-  *((UWO *) &dskpt) = (UWO) (data & 0xfffe);
+void wdskptl(UWO data, ULO address)
+{
+  *((UWO *) &dskpt) = data & 0xfffe;
 }
 
 /*----------*/
@@ -147,7 +147,8 @@ void wdskptlC(ULO data, ULO address) {
 /* $dff024  */
 /*----------*/
 
-void wdsklenC(ULO data, ULO address) {
+void wdsklen(UWO data, ULO address)
+{
   dsklen = data;
   if (data & 0x8000)
     if (++diskDMAen >= 2)
@@ -159,7 +160,8 @@ void wdsklenC(ULO data, ULO address) {
 /* $dff07e  */
 /*----------*/
 
-void wdsksyncC(ULO data, ULO address) {
+void wdsksync(UWO data, ULO address)
+{
   dsksync = data;
   //floppyLogValue("dsksync", dsksync, -1);
 }
@@ -905,15 +907,17 @@ void floppyTimeBufDataFree(void) {
 /* Install IO register stubs  */
 /*============================*/
 
-void floppyIOHandlersInstall(void) {
-  memorySetIOReadStub(0x1a, rdskbytrC);
-  memorySetIOWriteStub(0x20, wdskpthC);
-  memorySetIOWriteStub(0x22, wdskptlC);
-  memorySetIOWriteStub(0x24, wdsklenC);
-  memorySetIOWriteStub(0x7e, wdsksyncC);
+void floppyIOHandlersInstall(void)
+{
+  memorySetIoReadStub(0x1a, rdskbytr);
+  memorySetIoWriteStub(0x20, wdskpth);
+  memorySetIoWriteStub(0x22, wdskptl);
+  memorySetIoWriteStub(0x24, wdsklen);
+  memorySetIoWriteStub(0x7e, wdsksync);
 }
 
-void floppyIORegistersClear(void) {
+void floppyIORegistersClear(void)
+{
   dskpt = 0;
   dsklen = 0;
   dsksync = 0;
@@ -978,7 +982,7 @@ void floppyDMAReadInit(ULO drive) {
   floppy_DMA.wait_for_sync = (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
 			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
   floppy_DMA.sync_found = FALSE;
-  floppy_DMA.dont_use_gap = ((cpuGetPC(pc) & 0xf80000) == 0xf80000);
+  floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
   //floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
     floppy[drive].motor_ticks = 0;
@@ -1008,7 +1012,7 @@ void floppyDMAWriteInit(LON drive) {
   LON length = (dsklen & 0x3fff)*2;
   ULO pos = dskpt & 0x1ffffe;
   ULO track_lin;
-  BOOLE is_sync = FALSE, past_sync = FALSE, ended = FALSE;
+  BOOLE ended = FALSE;
   if ((drive == -1) || !floppyDMAChannelOn()) ended = TRUE;
   track_lin = floppyGetLinearTrack(drive);
   while (length > 0) {
@@ -1048,7 +1052,7 @@ void floppyDMAWrite(void) {
   if (--floppy_DMA.wait == 0) {
     floppy_DMA_started = FALSE;
     //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Write, irq not enabled)" : "DSKDONEIRQ (Write, irq enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
-    wriw(0x8002, 0xdff09c);
+    memoryWriteWord(0x8002, 0xdff09c);
   }
 }
 
@@ -1059,7 +1063,7 @@ BOOLE floppyCheckSync(UWO word_under_head) {
   if (found_sync)
   {
     //floppyLogValue(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", 0x9000, floppy[floppySelectedGet()].motor_ticks);
-    wriw(0x9000, 0xdff09c);
+    memoryWriteWord(0x9000, 0xdff09c);
   }
   floppy_has_sync = word_is_sync;
   return found_sync;
@@ -1077,7 +1081,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0) {
       //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
-      wriw(0x8002, 0xdff09c);
+      memoryWriteWord(0x8002, 0xdff09c);
       floppy_DMA_started = FALSE;
     }
   }
@@ -1204,7 +1208,7 @@ void floppyNextTick(ULO sel_drv, ULO track) {
 #endif
 }
 
-void floppyEndOfLineC(void) {
+void floppyEndOfLine(void) {
     LON sel_drv = floppySelectedGet();
     if (floppyDMAWriteStarted()) 
     {

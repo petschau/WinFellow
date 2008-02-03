@@ -20,6 +20,7 @@ extern void fellowSetUseGUI(BOOLE use_gui);
 extern BOOLE fellowGetUseGUI(void);
 extern void fellowPreStartReset(BOOLE reset);
 extern BOOLE fellowGetPreStartReset(void);
+extern void fellowSoftReset(void);
 extern void fellowHardReset(void);
 extern BOOLE fellowEmulationStart(void);
 extern void fellowEmulationStop(void);

@@ -8,9 +8,6 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "fellow.h"
 #include "sound.h"
