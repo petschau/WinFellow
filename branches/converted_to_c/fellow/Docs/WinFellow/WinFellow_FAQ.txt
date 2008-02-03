@@ -1,0 +1,319 @@
+WinFellow FAQ (Frequently Asked Questions) v0.107 (2001/04/20)
+==============================================================
+
+                                                                  written by
+                                         Torsten Enderling (carfesh@gmx.net)
+                                                     Worfje (worfje@gmx.net)
+
+
+Contents
+--------
+
+1.   Miscellaneous
+
+1.1. I can't get <put your favourite game or demo here> working.
+1.2. Where can I find/download the Kickstart ROM file?
+1.3. I installed Workbench, but it refuses to load up.
+
+2.   Floppy disk images
+
+2.1. Which file formats are supported?
+2.2. Saving games doesn't work.
+
+3.   Hardfiles
+
+3.1. What are hardfiles?
+3.2. How do I use a hardfile?
+3.3. Can I use my existing UAE hardfiles (*.hdf) with WinFellow?
+
+4.   Filesystems
+
+4.1. What are filesystems?
+4.2. How do I use a filesystem?
+
+5.   GUI
+
+5.1. How can I play a game that has more than one disk /
+     How can I switch a disk(image)?
+
+6.   Known Bugs
+
+6.1. The player is invisible in <insert your favourite game here>
+6.2. The player doesn't collide with other game objects
+
+7.   I still have questions!
+
+
+
+1. Miscellaneous
+----------------
+
+1.1. I can't get <put your favourite game or demo here> working.
+----------------------------------------------------------------
+
+Many older games require special settings. Generally if having trouble check
+the following check-list:
+- some Kickstart versions require special CPU models, so play around with
+  combinations of them; for example it is a bad idea to run Kickstart 1.2 on
+  a '030 CPU
+- some games are written for a fixed amount of Bogo or Chip memory, so try
+  setting them both to 512 kB or even disable Bogo memory completely
+- not all games behave nicely (some control the hardware directly) so that
+  you may run into trouble when using things like "Fast Disk-DMA" or the
+  immediate blitter
+- many old games only make use of the first floppy drive and some do the
+  strangest things when you try to use two drives
+- timing may be critical, as some games do timing delays not by the timer
+  but by delay loops; this will result in trouble when using CPU speeds
+  other than the original 7 MHz
+
+If in doubt, use a default A500 setting like:
+- 68000 CPU at 7 MHz
+- 1 floppy drive (disable the others!), leave "Fast Disk-DMA" unchecked
+- 512 kB Chip and eventually 512 kB Bogo RAM
+- Kickstart 1.3 or 1.2
+- normal, delayed OCS blitter
+- no filesystems or hardfiles, "Disable Autoconfig-devices"
+
+If this configuration doesn't work and it's really an A500 game (not an AGA
+thing or such) it's possibly a WinFellow problem.
+
+1.2. Where can I find/download the Kickstart ROM file?
+------------------------------------------------------
+
+You can buy the Kickstart ROM at: http://www.cloanto.com
+
+1.3 I installed Workbench, but it refuses to load up.
+-----------------------------------------------------
+
+Though it is possible to install Workbench into a directory  you  must  make
+sure that you install it into your hardfile or filesystem root directory.
+
+
+2. Floppy disk images
+---------------------
+
+Floppy disk images are used to  simulate  floppy  drives  connected  to  the
+emulated Amiga. This is necessary as a PC can't read Amiga floppy disks.
+
+2.1. Which file formats are supported?
+--------------------------------------
+
+WinFellow supports *.adf disk images and the compressed *.adz,  *.adf.gz  or
+*.dms  images;  support  for these is built into WinFellow so you don't need
+any additional executables.
+
+ADF images
+----------
+
+Normal *.adf files are similar to a hardfile; they contain the  contents  of
+an Amiga floppy disk dumped into a file and thus are always 880 kb large for
+normal DD floppies. WinFellow can handle these without problems.
+
+Note that there is also an "Extended" ADF file  format  which  is  used  for
+example  by the games you may download at the Factor 5 homepage; these files
+contain some tracks which are specially encoded (they still contain the copy
+protection  I think); you can recognize these by their file size as they are
+always larger than 880 kB. WinFellow currently does NOT  support  these  and
+will crash if you try to use them.
+
+ADZ and DMS images
+------------------
+
+ADZ and DMS images may be regarded  as  normal  ADF  files  that  have  been
+compressed  to  reduce  their  size;  when  inserting  such  files WinFellow
+temporarily decompresses them into a temporary ADF file which is  then  used
+for your emulation session. Note that any changes saved to compressed images
+will be lost as soon as you quit the emulator. So to write changes to a disk
+decompress it manually before starting to work on it.
+
+2.2. Saving games doesn't work.
+-------------------------------
+
+When trying to save games there are some things you should take care of:
+- make sure the savedisk file is not write protected (when copied from a
+  CD-ROM to your HD the file ususally is write protected)
+- the file must not be compressed (see section about floppy image file
+  formats); when saving to a compressed image the changes are only saved to
+  the uncompressed temporary image which becomes deleted when you quit the
+  emulator
+- take care of the compatibility information described in section 1.1; often
+  savedisk problems go away when using a more compatible setting as disk
+  access is always a time critical thing
+- some games require savedisks to be formatted in a special way; sometimes a
+  fresh formatted empty AmigaDOS floppy will do, sometimes you have to
+  create a disk in the game; if possible try using the savedisk that comes
+  with the game or get a working one
+
+
+3. Filesystems and hardfiles
+----------------------------
+
+3.1. What are hardfiles?
+------------------------
+
+Most of you probably already know this and may skip this paragraph. For  the
+ones that are new to emulation here a short description:
+
+A hardfile is used to simulate a harddrive connected to the emulated  Amiga.
+Technically  a  hardfile  is a 1:1 copy of the contents of an Amiga harddisk
+partition into a file. Having this in mind the restriction  a  hardfile  has
+comes clear: a hardfile is of a fixed size and doesn't grow as it is written
+to (like perhaps the Amiga RAM disk). When creating a hardfile you  have  to
+specify  the  size the hardfile shall have, i.e. the amount of storage space
+you will be able to use  on  the  simulated  Amiga  harddrive.  This  device
+supports  all  features  a  real Amiga harddrive has (so you may for example
+defrag it).
+
+3.2. How do I use a hardfile?
+-----------------------------
+
+First of all you need a hardfile that is to be  used.  Perhaps  you  already
+have  one from UAE or DOSFellow; if you don't have one you may now create it
+in the configuration menu under the hardfile tab. Note that a newly  created
+hardfile  is  just  a  file containing scratch; you need to format it on the
+Amiga side to be able to write any data to it.
+
+Add the hardfile to your config in the configuration  menu's  hardfile  tab.
+Make  sure  that  "Disable  Autoconfig-devices"  (section  Various) is _not_
+checked.  The  Autoconfig  functionality  is  needed  for   the   Amiga   to
+automatically detect and initialize the device.
+
+Also make sure you use a Kickstart version 2.0 or newer; with Kickstart  1.x
+the  only  way  to  use hardfiles is by the use of mount files (perhaps I'll
+explain this in a later version  of  the  FAQ)  and  booting  from  them  is
+impossible (since the old Kickstart versions don't support Autoconfig).
+
+You should now be able to use the file.  If  you  have  configured  a  newly
+created file, you should insert a Workbench disk file fitting the configured
+Kickstart, boot it and format the hardfile the way  you  want  it  (it  will
+appear as FELLOW0).
+
+If you're going to use an already existing file (and this file  is  bootable
+and  not  only  a  data partition) eject all inserted floppy images and boot
+from it (again you should make sure the used Kickstart version fits the  one
+the hardfile has been installed with).
+
+3.3. Can I use my existing UAE hardfiles (*.hdf) with WinFellow?
+----------------------------------------------------------------
+
+Yes, WinFellow uses UAE's hardfile format. When using  hardfiles  from  UAE,
+these  must  not make use of the Picasso96 uaegfx-driver, as this one is not
+yet supported by WinFellow. It also must not make use of AGA screenmodes.
+
+
+4. Filesystems
+--------------
+
+4.1. What are filesystems?
+--------------------------
+
+Like a hardfile a filesystem is also used to simulate some  kind  of  device
+connected  to  the emulated Amiga. But instead of using a file you configure
+WinFellow to use a directory on one your windows devices that shall be  used
+to store or read data.
+
+This has the advantage that you don't have to care about the amount of  data
+you want to store.
+But this also has disadvantages: though on  the  first  look  the  simulated
+device  looks  like  a  harddisk,  it  misses  some  features: formatting or
+defragging a filesystem device is absolutely impossible (and would not  make
+sense  either).  To defrag it you'll have to run the windows defrag over the
+harddrive you stored the files on.
+Another disadvantage lies in the differences between  the  Windows  and  the
+Amiga  filesystem.  The  Amiga  filesystem  makes use of 8 different storage
+flags (e.g. executable, writable, ...). The Windows filesystem only supports
+3  flags,  but  even  these  aren't  really  usable for this purpose so that
+actually only the windows archive flag is used to represent Amiga flags.
+For an Amiga filenames like " " or ".. " are fine; Windows  runs  into  some
+serious  trouble  when  you try to use such names. Just try to create a file
+named CON, then you'll know what I mean... ;)
+To get rid of this problem, a technique called  fsdb  (FileSystem  DataBase)
+has  been  introduced  in UAE (and WinFellow, as WinFellow uses UAE code for
+filesystem support).
+Everytime a file has a name not supported by windows, uses flags that  can't
+be  stored  or has a comment, an entry for this file is created in a special
+database file.  This  file  stores  the  local  name,  the  according  Amiga
+filename,  the  optional comment and the flags that are used. That way it is
+possible to use the device exactly the same way an  Amiga  device  could  be
+used,  allowing  to even boot from a filesystem (this was impossible without
+the fsdb).
+
+Now to what I really wanted to say: WinUAE uses a slightly different way  of
+storing  the  flag  information as it makes also use of the write protection
+bit to represent the Amiga's writable and deletable flags; we regarded  this
+way  as  a  bad  solution  and  made  it  another  way.  This means that the
+filesystem  support  from  WinUAE  is  not   necessarily   compatible   with
+WinFellow's  support.  So  be careful when exchanging data over a filesystem
+between them both.
+
+4.2. How do I use a filesystem?
+-------------------------------
+
+Configure the filesystem in the configuration menu on  tab  filesystem.  You
+might  also  check "Automount Windows-drives"; this will automatically mount
+all hard disks, connected network drives and CD-ROMs as  Amiga  devices  (so
+you don't have to configure anything manually).
+
+Make sure that  "Disable  Autoconfig-devices"  (section  Various)  is  _not_
+checked.   The   Autoconfig   functionality  is  needed  for  the  Amiga  to
+automatically detect and initialize the device.
+
+Again make sure you use a Kickstart version 2.0 or greater.
+
+Now you need something you may boot from. I suggest a Workbench  disk  or  a
+hardfile.  The  device  will  appear  under the name you configured. Install
+Workbench to the filesystem if you like and try booting without  the  floppy
+inserted.
+
+
+5. GUI
+------
+
+5.1. How can I play a game that has more than one disk /
+     How can I switch a disk(image)?
+--------------------------------------------------------
+
+You can switch disks(images) at runtime in WinFellow. You  can  do  this  by
+pressing the function key <F11> during the emulation. After pressing the key
+you can see  the  main  window  again  and  this  way  you  can  change  the
+disk(images).  By clicking the "Start Emulation" button you can continue the
+emulation at the point you pressed the function key.
+
+
+6. Known Bugs
+-------------
+
+6.1. The player is invisible in <insert your favourite game here>
+-----------------------------------------------------------------
+
+There  are  certain  games  in  which  sprites  aren't  rendered  correctly,
+resulting  in  invisible  objects.  Known  games  having  this  problem  are
+Stardust, SuperFrog, Robocop 2, Zool, Alien Breed and Fire And Ice.
+
+6.2. The player doesn't collide with other game objects
+-------------------------------------------------------
+
+Not all collision types are properly implemented in WinFellow;  for  example
+in  Transplant  the  spacecraft never collides with the rocks flying around.
+Known to have this problem is Transplant, but there probably are  much  more
+titles having this problem.
+
+
+7. I still have questions!
+--------------------------
+
+If you have questions not covered in this FAQ, find problems  not  mentioned
+here  or  simply  don't understand something written here, don't hesitate to
+mail me. This FAQ is still a draft and to be able to maintain it I need your
+input.
+
+For general questions about Amiga emulation you might also want to check the
+Amiga emulation FAQ which can be found at:
+
+http://www.geocities.com/CapeCanaveral/Lab/1473/faq.html
+
+Laurent Clévy runs a detailed FAQ about the Amiga Filesystem you can find at
+
+http://perso.club-internet.fr/lclevy/adflib/faq.html
+

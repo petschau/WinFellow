@@ -1,0 +1,1049 @@
+
+******************************************************************************
+                                    F E L L O W
+                          EMULATOR KOMPUTERA COMMODORE AMIGA
+                      AUTOR Petter Schau (pettersc@ifi.uio.no)
+              Dokumentacja i FAQ - Brett Eden (revere@sub.net.au)
+         T³umaczenie na jêzyk polski - Pawe³ Jêdrak (mail@cconline.com.pl)
+******************************************************************************
+
+     **** PROSZÊ, PRZECZYTAJ TEN TEKST DOK£ADNIE ZANIM URUCHOMISZ FELLOW ****
+
+Archiwum zawiera emulator Fellow V0.3.2a,
+
+Emulator zosta³ napisany przez:
+
+(C) Petter Schau 1996/1997.  (pettersc@ifi.uio.no)
+
+Dodatkowa pomoc przy programowaniu:
+
+(C) Roman Dolejsi 1997          (roman@sorry.vse.cz)
+(C) David Voracek 1997          (assassin@paru.cas.cz)
+(C) Rainer Sinsch 1998          (sinsch@stud.uni-frankfurt.de)
+
+
+Warunki u¿ywania i dystrybucji niniejszego emulatora:
+--------------------------------------------------------
+
+Prawa do tego programu nale¿¹ do Pettera Schau i osób, które pomog³y w jego powstaniu.
+
+Mo¿esz u¿ywaæ ten emulator za darmo.
+
+Swobodna dystrybucja jest dopuszczalna, jakkolwiek z pewnymi ograniczeniami.
+
+Program ten mo¿na swobodnie dystrybuowaæ tak d³ugo, jak zawartoœæ niniejszego archiwum
+pozostanie nienaruszona i nie zmodyfikowana, jak równie¿ nie bêd¹ pobierane ¿adne op³aty
+przy jego dystrybucji jedynie poza kosztami noœnika
+
+Redystrybucja nie wp³ywa na zmianê zasad, na jakich program 
+jest u¿ytkowany i redystrybuowany.
+
+Umieszczenie tego programu w kolekcjach na CD-ROMach z innymi wolnymi 
+do bezp³atnej dystrybucji programami jest dopuszczalne.
+
+Dystrybucja, która narusza zasadê wolnego od odp³atnoœci korzystania z Fellow
+wymaga zezwolenia od autorów tego programu.
+
+Emulator jest udostêpniony w postaci "jak jest" do u¿ytku na w³asne ryzyko.
+Autor nie ponosi odpowiedzialnoœci i nie udziela wsparcia technicznego 
+w przypadku powstania jakichkolwiek problemów w zwi¹zku z u¿ywaniem tego emulatora.
+
+U¿ywaj¹c tego programu potwierdzasz, ¿e zgadzasz siê z tym, i¿ autor programu nie
+mo¿e byæ poci¹gany do odpowiedzialnoœci z powodu jakichkolwiek problemów wynik³ych 
+z u¿ytkowania tego programu.
+Program ten ma charakter eksperymentalny i u¿ywasz go na w³asne ryzyko.
+
+Powy¿sze warunki maj¹ tak¿e zastosowanie do kodu Ÿród³owego emulatora
+
+Dodatkowe warunki dotycz¹ce korzystania z kodu Ÿród³owego:
+
+Mo¿esz dowolnie modyfikowaæ kod dla w³asnego u¿ytku
+
+Jeœli cos zmienisz lub dodasz, co mo¿e okazaæ siê u¿ytecznym dla innych
+u¿ytkowników tego programu bardzo prosimy o przes³anie nam tej poprawki, 
+w celu w³¹czenia jej do nastêpnej, oficjalnej wersji kodu
+
+Umieszczanie czêœci kodu Ÿród³owego w innych swobodnie dytrybuowalnych programach
+jest dozwolone w przypadku powiadamienia o tym przed faktem autorów i zamieszczenia
+informacji o autorach kodu.
+
+
+"AMIGA", "AmigaOS", "Kickstart" i "Workbench" s¹ zarejestrowanymi znakami towarowymi
+Amiga International.  Inne wspomniane tu i zarejestrowane nazwy handlowe pozostaj¹
+w³asnoœci¹ ich posiadaczy.
+
+
+Spis Treœci:
+---------
+
+1       Wstêp
+2       Wymagania Systemowe
+3       Podstawowe wymagania
+3.1       Obraz Kickstart'u
+3.1.1       U¿ywanie programu TransROM
+3.2       Obraz dyskietki (Disk image)
+3.2.1       U¿ywanie programu Transdisk
+3.3       Kopiowanie plików z PC -> AMIGA i AMIGA -> PC
+4       Uruchamianie Fellow
+5       Menu system
+5.1       Opcja Run
+5.2       Soft Reset
+5.3       Hard Reset
+6       Debugger
+6.1       Opcja Step
+6.2       Opcja Step over
+6.3       Opcja Breakpoint
+6.3.1       Opcja Set Breakpoint
+6.3.2       Opcja Until Line 312
+6.3.3       Opcja Until Event
+6.4       Opcje Pamiêci (Memory option)
+6.5       Opcja Cia
+6.6       Opcja Io
+6.7       Opcja Trace on
+6.8       Opcja Trace off
+6.9      Opcja Show trace
+6.10      Opcja Evlog config
+6.11      Opcja Show evlog
+6.12     Zgrywanie Wav'ów (Wav capture)
+7       Konfiguracja
+7.1       Konfiguracja dysku (disk configuration)
+7.1.1       Obraz dysku w  DF(x)(diskimage)
+7.1.2       Status napêdu (x)
+7.1.3       Prêdkoœæ DMA Dysku (disk-DMA speed)
+7.1.4       Alt-N cycling
+7.1.5       File-requester
+7.2       Konfiguracja ekranu (Screen configuration)
+7.2.1       Rozdzielczoœæ ekranu
+7.2.2       Odœwie¿anie ekranu (Frame-skip ratio)
+7.2.3       Ustawienie maksymalnej liczby wyœwietlonych klatek (Maximum frame-  rate)
+7.2.4       Wyœwietlanie bez przeplotu (Flicker-free interlace)
+7.2.5       Cycle exact drawing
+7.2.6       Scale Y
+7.3       Konfiguracja pamiêci (Memory)
+7.3.1       Chip-memory
+7.3.2       Fast-memory
+7.3.3       Bogo-memory
+7.3.4       Kickstart-image
+7.3.5       Keyfile
+7.4       Konfiguracja dŸwiêku (Sound configuration)
+7.4.1       Emulacja dŸwiêku (Sound-emulation)
+7.4.2       Jakoœæ dŸwiêku
+7.4.3       Filtr Low-pass
+7.5       Konfiguracja Cpu
+7.5.1       Typ Cpu
+7.5.2       Prêdkoœæ Cpu
+7.6       Konfiguracja obrazu dysku twardego (Hardfile configuration)
+7.6.1       Status urz¹dzenia hardfile (Hardfile device state)
+7.6.2       Nazwa pliku z hardfile (Hardfile filename)
+7.7       Konfiguracja pozosta³ych ustawieñ (Various configuration)
+7.7.1       Porty Joysticków 1 & 2
+7.7.2       Diody zasilania i napedu dyskietek
+7.7.3       Wydajnoœæ wyœwietlona na ekranie
+7.7.4       Zachowanie ustawieñ Menu przy wyjœciu z emulatora.
+7.7.5       Automatyczne uruchamianie po podaniu komend (Automatic run after commands)
+8           Interfej linii poleceñ (Command-line interface)
+9           PIERWSZE KROKI - PROSTY PRZEWODNIK 
+10          Klawisze skrótu
+10.1          Klawisze skrótu w interfejsie u¿ytkownika
+10.2          Klawisze skrótu podczas emulacji
+
+
+
+1 Wstêp
+---------------
+
+Witamy w programie Fellow - emulatora komputera Commodore Amiga dla komputerów
+kompatybilnych z IBM.
+
+Dokument ten opisuje u¿ytkowanie i cechy Fellow w wersji 0.3.1 jak równie¿ 
+informacjê jak program ten konfigurowaæ i wykorzystaæ w jak najwiêkszym stopniu
+mo¿liwoœci przezeñ oferowane. Emulacja za pomoc¹ Fellow odbywa siê tylko na 
+bazie programowej.
+
+Fellow jest podobny do UAE - innego emulatora Amigi autorstwa Bernda Schmidta 
+i pozosta³ych osób, które przyczyni³y siê do jego powstania.
+Fellow zasadniczo ró¿ni siê od UAE tym, ¿e zosta³ napisany specjalnie dla œrodowiska
+MS-DOS (UAE oryginalnie zosta³ napisany pod UNIX i póŸniej powsta³ port dla 
+MS-DOS i WINDOWS - p.t³umacza)z najistotniejszymi czêœciami kodu napisanymi w 
+assemblerze x86, co daje zdecydowan¹ przewagê Fellow nad UAE pod wzglêdem szybkoœci,
+jakkolwiek na tym etapie zaawansowania, Fellow nadal ustêpujê UAE pod wzglêdem 
+pewnych mo¿liwoœci emulowania systemu operacyjnego Amigi.
+
+Fellow dzia³a w bardzo podobny sposób jak UAE dla DOS-u. Jeœli u¿ywa³eœ wczeœniej tego
+w³aœnie emulatora, nie powinieneœ miêæ ¿adnych problemów z obs³ug¹ Fellow. Jeœli
+chcesz wiedzieæ wiêcej o emulacji Amigi, gor¹co zachêcamy do zapoznania siê z dokumentacj¹
+UAE - jest ona znacznie szersza od tej, któr¹ czytasz.
+
+
+
+2 WYMAGANIA SYSTEMOWE
+---------------------
+
+Aby uruchomiæ Fellow na swoim komputerze, Twój system musi spe³niaæ nastêpuj¹ce
+minimalne wymagania:
+
+* Komputer kompatybilny z IBM z procesorem 486 lub szybszym
+* MS-DOS w wersji 5.00 lub póŸniejszej
+* 11 Megabajtów pamiêci RAM
+* Karta graficzna VGA
+* Mysz
+
+Zalecany setup dla optymalnego wykorzystania mo¿liwoœci fellow:
+
+* Komputer kompatybilny z IBM z procesorem 486 lub szybszym taktowanym zegarem min 100 Mhz
+* MS-DOS w wersji 5.00 lub póŸniejszej
+* 16-20 Megabajtów pamiêci RAM (Fellow wykorzysta do 28 MB RAM - jeœli tylko bêdzie dostêpne).
+* Karta graficzna SVGA w standardzie PCI z obs³ug¹ standardu VBE 2.0
+* Karta dŸwiêkowa Soundblaster lub kompatybilna
+* Opcjonalnie, Procesor z obs³ug¹ MMX w pewnych przypadkach równie¿ bêdzie wykorzystany.
+
+Jeœli Twoja karta graficzna nie obs³uguje rozszerzenia BIOS-u VESA 2.0 bêdziesz potrzebowa³
+odpowiedniego dla Twojej karty sterownika DOS VBE 2.0 (polecamy zajrzeæ na stronê WWW producenta
+karty) lub u¿ycie programu Display Doctor firmy Scitech, który jest 
+dostêpny w internecie
+
+Bez zainstalowanej obs³ugi VBE 2.0 nie bêdzie mo¿liwym uzyskanie wszystkich rozdzielczoœci
+podczas pracy emulatora.
+
+Dzia³anie Fellow jest w du¿ym stopniu uzale¿nione od mocy procesora. Jeœli
+chcesz u¿ywaæ aplikacji wykorzystuj¹cych intensywnie grafikê przy zachowaniu prêdkoœci
+prawdziwej Amigi, bêdziesz potrzebowa³ procesora klasy Pentium 133 ->150 i szybkiej karty
+graficznej PCI. Inne elementy, jak na przyk³ad prêdkoœæ pamiêci RAM, równie¿ nie pozostaj¹
+bez znaczenia dla wyników (zwa¿ywszy chocia¿by fakt, i¿ pamiêæ DIMM charakteryzuje siê 
+czasem dostêpu 12ns, a klasyczna pamiêæ SIMM (EDO i standard) odpowiednio 60 i 70 ns.
+
+
+3 ZANIM ZACZNIESZ - PODSTAWOWE WYMAGANIA
+----------------------------------------
+
+Zanim zaczniesz u¿ywaæ Fellow, bêdziesz potrzebowa³ dwóch rzeczy:
+
+
+3.1 Obraz Kickstartu
+---------------------
+
+Potrzebujesz kopii zawartoœci ROM czyli Kickstaru AmigaDOS, zaczerpniêtej z 
+prawdziwej Amigi. Zgranie zawartoœci ROM mo¿liwe jest dziêki programowi
+"TransROM", który jest do³¹czony do Fellow. Kickstart jest przedmiotem praw 
+autorskich Amiga International i z oczywistych przyczyn niemo¿liwym jest
+do³¹czenie go do emulatora. Prawid³owym sposobem na uzyskanie tego pliku jest
+zgranie go z Amigi, któr¹ posiadasz.
+
+
+3.1.1 U¯YWANIE TRANSROM
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Aby uzyskaæ kopiê kickstart ROM i zapisaæ j¹ w postaci pliku, program TransROM 
+musi zostaæ skopiowany i uruchomiony na prawdziwej Amidze.
+
+CLI> transrom >RAM:kick.rom
+
+Polecenie to skopiuje zawartoœæ pamiêci ROM zawieraj¹cej kickstart do pliku
+w wirtualnym dysku RAM: pod nazw¹ "kick.rom".
+Plik ten musi zostaæ skopiowany na PC i umieszczony w katalogu Fellow (jakkolwiek 
+mo¿na umieœciæ go w innym katalogu).
+
+
+3.2 Obraz dyskietki (Disk-Image)
+--------------------------------
+
+Bêdziesz równie¿ potrzebowa³ "obrazu" prawdziwej amigowej dyskietki zawieraj¹cej
+grê/demo, które chcesz uruchomiæ korzystaj¹c z Fellow.
+Uzyskiwanie takich "obrazów" prawdziwych dyskietek z programami na Amige mo¿liwe jest
+dziêki programowi "Transdisk", który równie¿ do³¹czony jest do Fellow.
+
+Obraz dyskietki jest plikiem, który zawiera dane normalnie zapisane na dyskietce.
+
+Napêd dyskietek w komputerach PC NIE MOZE odczytywaæ dyskietek zapisanych na Amidze, st¹d
+te¿ MUSISZ mieæ obraz prawdziwego dysku Amigi.
+
+
+3.2.1 U¯YWANIE TRANSDISK
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+Jak TransROM, Transdisk musi najpierw zostaæ skopiowany i uruchomiony na prawdziwej Amidze,
+aby mo¿liwe by³o z niego korzystanie.
+
+Transdisk uruchomiony z linii poleceñ AmigaDOS skopiuje ca³¹ dyskietkê, œcie¿ka po œcie¿ce,
+do pliku, który mo¿e byæ nastêpnie czytany przez Fellow.
+
+CLI> transdisk >RAM:df0.adf
+
+Polecenie to spowoduje utworzenie obrazu dyskietki w³o¿onej do napêdu DF0: w RAM dysku.
+Oczywiœcie obraz taki nie musi nazywaæ siê "df0.adf" - mo¿esz u¿yæ dowolnej nazwy.
+
+
+3.3 KOPIOWANIE PLIKÓW PC -> AMIGA i AMIGA -> PC
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+1. U¿ywaj¹c kabla null-modem - mo¿esz dokonaæ transferu plików pomiêdzy PC a Amig¹
+przy wykorzystaniu protoko³u Zmodem. Po prostu pod³¹cz kabel do portów szeregowych
+ka¿dego komputera, za³aduj program terminalowy jak Terminus, NComm lub Term na Amidze i 
+Terminate, Telemate, Telix (lub HyperTermianl dla Windows 95, jeœli chcesz) na PC 
+i rozpocznij sesje upload na Amidze z w³¹czonym protoko³em Zmodem. Jeœli skonfigurowa³eœ 
+poprawnie po³aczenie (Zmodem powinien ustawiæ siê automatycznie na maszynie, na któr¹
+uploadujesz plik) Pecet automatycznie zaakceptuje upload i œci¹gnie pliki na dysk twardy.
+
+Aby osi¹gn¹æ najlepsze rezultaty, uzyskaj kopiê "BaudBandit serial.device replacement"
+dla Amigi i ustaw prêdkoœæ transmisji na obu maszynach na 57.600 bodów. BaudBandit powinien
+pozowliæ na transfer z prêdkoœci¹ 5500 cps z Amigi opartej na procesorze 68000 - jest 
+dostêpny w AmiNET.
+
+Jeœli jesteœ jedn¹ z tych osób, które posiadaj¹ Amigê 500 z AmigaOS w wersji 1.2/1.3 z 
+jednym napêdem dyskietek mo¿esz mieæ k³opot. Jeœli nie masz programu terminala na dyskietce, 
+któr¹ mo¿esz bootowaæi u¿ywaæ w drugim napêdzie dyskietek, nie ma mo¿liwoœci na korzystanie 
+z kabla null-modem celem nawi¹zania komunikacji z pecetem (co jest podstaw¹ do przegrania 
+programów jak transdisk lub transrom na amigow¹ dyskietkê). Najlepszym, co mo¿esz zrobiæ 
+to nawi¹zaæ kontakt z innymi u¿ytkownikami Amigi, która bêdzie mog³a zaopatrzyæ Ciê w napêd,
+lub, jeœli masz szczêœcie, mo¿e uda Ci siê znaleŸæ dystrybutora osprzêtu dla Amigi.
+
+Uwaga: Niektóre Amigi nie pozwalaj¹ na zablokowanie portu szeregowego na prêdkoœci
+115.200 bodów. W du¿ym stopniu zale¿y to od samego komputera - wersji p³yty g³ównej
+i procesora. Zablokowanie portu na takiej prêdkoœci ma tê zaletê, ¿e pozwala na 
+efektywny transfer plików z prêdkoœci¹ ponad 10.000 cps.
+
+
+2. Jeœli nie dysponujesz kablem null-modem lub jeœli nie za bardzo chcesz takowy nabyæ
+mo¿esz przenosiæ pliki pomiêdzy Amig¹ i pecetem u¿ywaj¹c dyskietek sformatowanych pod 
+pecetem na 720K. Workbench od wersji 2.1 zosta³ wyposa¿ony w program CrossDOS, który 
+pozwala na czytanie przez Amige dyskietek sformatowanych na pececie o pojemnoœci 720 Kb.
+Jeœli nie masz CrossDOS'a (n.p. nie masz dostêpu do Workbencha w wersji 2.1 lub wy¿szej)
+mo¿esz równie¿ u¿yæ programu MessyDOS, który jest dostêpny w AmiNET. Poni¿ej znajdziesz
+krok po kroku wyjaœnione jak przenosiæ pliki korzystaj¹c z dyskietek:
+
+     i)Zdob¹dŸ dyskietkê 720Kb. Sformatuj j¹ na pececie lub u¿ywaj¹ CrossDOS
+
+     ii) Stwórz plik .ADF  lub obraz  Kickstartu ROM u¿ywaj¹c metod opisanych
+         wczeœniej
+
+     iii) Spakuj otrzymany plik u¿ywaj¹c LhA lub Zipa (Upewnij siê, ¿e masz te programy
+         na pececie ¿ebyœ móg³ je odczytaæ kiedy przeniesiesz dyskietkê)
+
+     iv) Skopiuj zawartoœæ tak utworzonego archiwum u¿ywaj¹ CrossDOS lub MessyDOS.
+
+
+     v) Przenieœ dysk na peceta, skopiuj archiwum na twardy dysk i rozpakuj je.
+        Skopiuj .adf albo obraz Kickstartu do katalogu Fellow i gotowe!
+
+
+
+4 URUCHAMIANIE FELLOW
+~~~~~~~~~~~~~~~~~~~~~
+
+Fellow zaczyna dzia³anie przez uruchomienie pliku FELLOW.EXE w linii poleceñ DOSu.
+Kiedy program ju¿ siê uruchomi zobaczysz ekran menu. Œrodkowa sekcja pokazuje dyski (obrazy dyskietek) przypisane do poszczególnych napêdów, jak równie¿ to czy obraz Kickstartu jest zainstalowany, czy nie.
+
+
+5 System Menu
+-------------
+
+W dolnej prawej czêœci ekranu znajduje siê system menu. U¿yj klawiszy kursora
+aby poruszaæ siê w menu. Podœwietlone na zielono skróty s¹ równie¿ dostêpne. 
+Naciœniecie Escape przeniesie Ciê na poprzedni/wy¿szy poziom w menu.
+System menu jest podzielony nastêpuj¹co:
+
+Run
+Debugger
+Configuration
+Soft Reset
+Hard Reset
+Quit
+
+
+Opcjom "debugger" i "configuration" poœwiêcono osobne sekcje w dalszej czêœci dokumentacji
+
+
+5.1 Opcja Run (Uruchamianie)
+----------------------------
+
+Wybranie tej opcji spowoduje uruchomienie trybu emulacji Amigi i emulator
+dokona próby uruchomienia dysku (obrazu dyskietki) przypisanego do napêdu DF0:
+
+5.2 Soft Reset
+--------------
+
+Opcja ta spowoduje "ciep³y start" emulowanej Amigi.
+Zachowana zostanie zawartoœæ pamiêci, co pozwoli przetrwaæ programom rezydentnym, jakkolwiek nie mam 100% pewnoœci, ¿e funkcja ta dzia³a, jak to zaplanowa³em.
+
+Opcja soft reset mo¿e czasem nie przynieœæ spodziewanych efektów - do przypadków
+takich zaliczyæ nale¿y sytuacjê  pojawienia siê komunikatu GURU lub tê, kiedy
+Amig¹ zaw³adnie jakiœ z³oœliwy program.  
+
+Je¿eli ¿aden obraz Kickstartu nie jest za³adowany, opcja ta spowoduje procedurê 
+bootowania systemu emulowanej Amigi z dysku (obrazu dyskietki), który zosta³ 
+zainstalowany w napêdzie DF0:
+
+W niektórych przypadkach mo¿e to doprowadziæ do uruchomienia programów nie korzystaj¹cych z Kickstartu. Jeœli obraz dyskietki zosta³ zmieniony przed rozpoczêciem emulacji lub po ostatnim resecie, reset musi zostaæ przeprowadzony ponownie. 
+
+
+5.3 Hard Reset
+--------------
+
+Powoduje ca³kowite wykasowanie pamiêci emulowanej Amigi, jak równie¿ reinicjalizacjê emulatora
+
+Je¿eli ¿aden obraz Kickstartu nie jest za³adowany, równie¿ ta opcja ta spowoduje procedurê 
+bootowania systemu emulowanej Amigi z dysku (obrazu dyskietki), który zosta³ 
+zainstalowany w napêdzie DF0:
+
+W niektórych przypadkach mo¿e to doprowadziæ do uruchomienia programów nie korzystaj¹cych z Kickstartu. Jeœli obraz dyskietki zosta³ zmieniony przed rozpoczêciem emulacji lub po ostatnim resecie, reset musi zostaæ przeprowadzony ponownie. 
+
+
+6 Debugger 
+----------
+
+Normalny u¿ytkownik prawdopodobnie nie bêdzie korzysta³ z debuggera, wiêc
+jeœli nie rozumiesz opisanych tutaj rzeczy - po prostu pomiñ ten rozdzia³.
+
+Debugger jest prostym œrodowiskiem, gdzie poza innymi rzeczami, mo¿esz 
+podejrzeæ obecny stan emulowanej Amigi. Zawiera on prosty disassembler, który
+pokazuje kod wykonywanego programu i stan emulowanej Motorili 68000.
+Mo¿liwe jest wykonywanie programu pojedynczymi krokami (sigle-stepped) lub 
+zadanie zatrzymania przy okreœlonym punkcie zatrzymania (run until breakpoint) 
+Mo¿liwe jest przegl¹danie zawartoœci pamiêci, jak równie¿ rejestrów specjalizowanych uk³adów Amigi
+
+Podzia³ menu debuggera przedstawia siê nastêpuj¹co:
+
+Step
+Step Over
+Breakpoint
+Memory
+Cia
+Wav Capture
+Trace on (*)
+Trace off (*) 
+Show trace (*) 
+Evlog config (*)
+Show evlog (*)
+
+
+6.1 Opcja Step 
+--------------
+
+Wykonuje nastêpn¹ instrukcjê (przeskocz 1 instrukcjê do przodu)
+
+
+6.2 Opcja Step over
+-------------------
+
+Ustawia punkt zatrzymania na nastêpnej instrukcji i emulator bêdzie wykonywa³
+program do czasu napotkania takiej instrukcji (U¿yteczne do przeskakiwania 
+pêtli i instrukcji jsr/bst)
+
+
+6.3 Opcja Breakpoint 
+--------------------
+
+Opcja ta prowadzi do sub-menu, gdzie emulator bêdzie wykonywa³ program do czasu 
+spe³nienia okreœlonego warunku.
+
+Podzia³ menu opcji Breakpoint przedstawia siê nastêpuj¹co:
+
+Set Breakpoint
+Until line 312
+Until Event
+
+
+6.3.1 Opcja Set Breakpoint
+--------------------------
+
+Pozwala na wprowadzenie adresu instrukcji, gdzie wykonywanie programu ma zostaæ 
+przerwane. Po ustawieniu punktu zatrzymania (breakpoint) wykonywanie programu 
+uruchamia siê.
+
+
+6.3.2 Opcja Until Line 312
+--------------------------
+
+Program bêdzie wykonywany do czasu a¿ linia 312 (raster-beam position)
+zostanie osi¹gniêta
+
+
+6.3.3 Opcja Until Event
+-----------------------
+
+Program bêdzie wykonywany do czasu zaistnienia wydarzenia Kontrola logów wydarzeñ
+znajduje siê w "Evlog config" - w najwy¿szym poziomie menu debuggera.
+                        
+
+6.4 Opcja Memory
+----------------
+
+Podgl¹d pamiêci. U¿ywaj klawiszy kursora i Page Up/Down do nawigacji.
+"h" i "a" ustawiaj¹ format hex lub ascii.
+
+
+6.5 Opcja Cia
+-------------
+
+Pokazuje stan rejestrów w chipach Cia.
+
+
+6.6 IO option
+-------------
+
+Pokazuje stan rejestrów uk³adów specjalizowanych Amigi. Wybranie tej opcji spowoduje pojawienie siê sub-menu, gdzie mo¿na dokonaæ wyboru rejestrów.
+
+
+6.7 Opcja Trace on
+------------------
+
+Pozwala obejrzeæ historiê wykonanych przez procesor instrukcji. Zapamiêtane
+zosatnie ostatnie 1/2 miliona instrukcji.
+
+
+6.8 Opcja Trace off
+-------------------
+
+Wy³¹cza zapamiêtywanie wykonywanych przez procesor instrukcji.
+
+
+6.9 Opcja Show trace
+--------------------
+
+Wyœwietla historiê wykonanych przez procesor instrukcji.
+
+
+6.10 Opcja Evlog config
+-----------------------
+
+Konfiguracja logów wydarzeñ, przerwania i wyj¹tki mog¹ byæ logowane
+
+
+6.11 Opcja Show evlog
+---------------------
+
+Wyœwietla zalogowane wydarzenia
+
+
+6.12 Zgrywanie Wav'ów (Wav capture)
+-----------------------------------
+
+Pozwala na przekierowanie emulowanego dŸwiêku do pliku, który zostanie zapisany w
+katalogu instalacyjnym emulatora. Nagrywanie odbywa siê z czêstotliwoœci¹ 44100 hz w 16 bitach, stereo. Dzia³a równie¿ z kart¹ dŸwiêkow¹.
+
+Plik jest zapisywany w formacie Wav. Funkcja ta jest nadal eksperymentalna - nie
+wszystkie programy do edycji dŸwiêku bêd¹ mog³y odczytaæ tak wygenerowane pliki, 
+prawdopodobnie ze wzglêdu na header. (Cool-edit czyta te pliki)
+
+Uwaga: Plik stanie siê bardzo du¿y bardzo szybko. Potrzebujesz oko³o 11 MB na minutê zapisu.
+
+
+7 Konfiguracja
+---------------
+
+Menu konfiguracji sk³ada siê z kilku sub-menu, które pozwalaj¹ na regulacjê
+szeregu ustawieñ emulatora.
+
+
+7.1 Konfiguracja dysku (Disk Configuration)
+-------------------------------------------
+
+To sub-menu pozwala na zmianê wielu ustawieñ w konfiguracji emulowanych za pomoc¹ obrazów dyskietek, dysków zainstalowanych w emulatorze.
+
+
+7.1.1 Obraz dyskietki w DF(x) (Diskimage in DF(x))
+--------------------------------------------------
+
+Gdzie: (x) przyjmuje wartoœæ 0,1,2 lub 3 - pozwala to na przypisanie poszczególnych obrazów dyskietek do jednego z 4 wirtualnych napêdów dostêpnych w Fellow. Kiedy uruchamiasz emulator, wymagane jest by jakikolwiek dysk (obraz dyskietki) by³ przypisany do napêdu DF0:, jeœli oczywiœcie chcesz startowaæ system w³aœnie z tej dyskietki.
+
+Naciœniêcie DEL w tym menu spowoduje wyjêcie wirtualnego obrazu dyskietki z napêdu.
+
+Naciœniêcie ALT-0 do 9 w tym menu spowoduje "w³o¿enie" wybranego obrazu dyskietki, którego nazwa jest zachowana w jednym z 10 rejestrów pamiêci emulatora. (Wiêcej na ten temat w sekcji File-requester).
+
+Obrazy dyskietek, które s¹ skompresowane programami gzip oraz bzip zostan¹ zdekompresowane do katalogu ustawionego przez zmienne systemowe TEMP lub TMP.
+Zmiany skompresowanych plików nie s¹ mo¿liwe. Mo¿liwa jest jedynie zmiana ju¿ rozpakowanego pliku typu TEMP.
+
+
+7.1.2 Status napêdu (x) (Drive (x) status)
+------------------------------------------
+
+Gdzie (x) przyjmuje wartoœci 0,1,2 lub 3. Opcje te pozwalaj¹ na wy³¹czenie danego napêdu tak, ¿e emulowana Amiga go nie widzi. U¿ytecznoœæ tej funkcji sprowadza siê do tego, ¿e AmigaOS nie bêdzie alokowa³ bufora dla tego napêdu, a  co za tym idzie - pozwala to na zaoszczêdzenie kilku Kb cennej pamiêci.
+
+Przeznaczenie tej opcji jest takie, ¿e jej uaktywnienie mo¿e pomóc w uruchomieniu starych dem, które maj¹ niesprawny cruncher.
+
+W normalnym u¿ytkowaniu - pozostaw wszystkie napêdy w³¹czone.
+
+
+7.1.3 Prêdkoœæ DMA Dysku (Disk-DMA speed)
+-----------------------------------------
+
+Pozwala na wybranie prêdkoœci z jak¹ obrazy dyskietek bêd¹ odczytywane przez wirtualny napêd. Oryginalnie transfer z dysku jest niski ale emulator pozwala na jego znaczne przyspieszenie.
+
+Dostêpne wartoœci to "Original" (prêdkoœæ oryginalna) i "Fast" (szybki transfer)
+
+Pamiêtaj, ¿e niektóre programy nie uruchomi¹ siê przy w³¹czonym trybie "Fast".
+
+
+7.1.4 Alt-N cycling
+-------------------
+
+Pokazuje jak daleko przeskoczy kursor kiedy zostanie wciœniête DEL lub jeœli obraz dyskietki jest wywo³any z rejestru pamiêci emulatora.
+
+
+7.1.5 File-requester
+--------------------
+
+"File Requester" jest uruchamiany w momencie wybrania opcji "Diskimage in DF(x)", czyli podczas "wk³adania" wirtualnej dyskietki do napêdu.
+Przegl¹daj katalogi, kiedy znajdziesz plik, który ma zostaæ "w³o¿ony" do napêdu, naciœnij ENTER.
+
+Oto niektóre specjalne funkcje dostêpne w ramach "File Requestera"
+
+
+Quickfind:  (szybkie szukanie) Zacznij wpisywaæ nazwê pliku, kursor przeskoczy do najbardziej       
+            podobnego (pod wzglêdem nazwy) pliku. 
+
+ALT-(x):    Gdzie (x) jest liter¹ oznaczaj¹ca dysk peceta - zostanie wykonany skok do tego dysku 
+
+Ustawienia rejestrów pamiêci emulatora:
+
+Naciœniêcie ALY-0 do 9 na nazwie pliku (kiedy jest podœwietlona) spowoduje jego zapamiêtanie tak, ¿e mo¿liwe bêdzie bezpoœrednie do niego odwo³anie (za³adowanie), jak to zosta³o opisane powy¿ej.
+
+Naciœniêcie ALT-| (klawisz na lewo od "1") spowoduje wykasowanie ca³ej pamiêci rejestrów emulatora (nie myliæ z rejestrami emulowanej Amigi!)
+
+7.2 Konfiguracja ekranu (Screen configuration)
+----------------------------------------------
+
+To sub-menu pozwala na regulacjê ustawieñ dotycz¹cych graficznej strony emulacji.
+
+7.2.1 Rozdzielczoœæ ekranu (Screen resolution)
+----------------------------------------------
+
+Pozwala na ustawienie w jakiej rozdzielczoœci bêdzie pracowa³ emulator. 
+Mo¿liwe do ustawienia rozdzielczoœci s¹ warunkowane tym jakie tryby graficzne obs³uguje zainstalowany driver VESA.
+
+
+7.2.2 Odœwie¿anie ekranu (Frame-skip ratio)
+--------------------------------------------
+
+Pozwala na ustawienie jak czêsto emulator bêdzie odœwie¿a³ ekran. Ustaw 1/1 kiedy tylko to bêdzie mo¿liwe.
+
+Ustawienie ni¿szej czêstotliwoœci odœwie¿ania ekranu spowoduje znaczny spadek jakoœci wyœwietlanych animacji itd, ale spowoduje równie¿ wygospodarowanie wiêkszej iloœci czasu na pozosta³e elementy emulacji.
+
+
+7.2.3 Ustawienie maksymalnej liczby wyœwietlonych klatek (Maximum frame-rate)
+---------------------------------------------------------------------
+
+Pozwala na ustawienie limitu odœwie¿ania wymuszonego na emulatorze.
+
+"Unlimited" - usunie wszelkie ograniczenia i pozwoli emulatorowi na odœwie¿anie ekranu tak szybko, jak to jest mo¿liwe. Ma to tak¿e wp³yw na prêdkoœæ powtarzania przy nacisniêtym jakimkolwiek klawiszu. Mo¿e okazaæ siê niemo¿liwym korzystanie z klawiatury, jeœli Twój komputer jest za szybki.
+
+"50 hz" - limituje czêstotliwoœæ odœwie¿ania do normalnej dla A500 pracuj¹cej w systemie PAL.
+
+
+"Synch with VGA-card" spowoduje próbê zsynchronizowania odœwie¿ania ekranu z czêstotliwoœci¹ odœwie¿ania Twojej karty VGA. W pewnych przypadkach mo¿e to doprowadziæ do absolutnie p³ynnej animacji. Ze wzglêdu na to, ¿e odœwie¿anie w systemie PAL nie do koñca odpowiada temu w standardzie VGA, mo¿e to spowodowaæ zaburzenia w emulacji dŸwiêku i ogólnego procesu emulacji danej aplikacji.
+
+Ustawienie to jest ignorowane, kiedy emulacja dŸwiêku jest ustawiona w trybie zsynchronizowanym z emulacj¹ (Sychronized with emulation)
+
+7.2.4 Wyœwietlanie bez przeplotu (Flicker-free interlace)
+--------------------------------------------------------
+
+Przy w³¹czonej tej funkcji zostanie podjêta próba zmiany wyœwietlanego ekranu z przeplotem na bez przeplotu.
+
+Funkcja ta dzia³a jedynie w rozdzielczoœci ustawionej na 800x600.
+
+7.2.5 Cycle exact drawing
+-------------------------
+
+Ta opcja ma charakter BARDZO eksperymentalny. Jeœli jest w³¹czona pozwoli m.in. na poprawn¹ emulacjê efektu plazmy itd.
+
+Opcja ta, jak na razie, ma dzia³anie ograniczone jedynie do zmian kolorów. Ma g³ównie na celu umo¿liwienie zobaczenia jak mo¿e zostaæ to przeprowadzone bez koniecznoœci przeprojektowywania ca³ego systemu graficznego.
+Póki co, mo¿liwe jest jej uaktywnienie tylko w rozdzielczoœci 800x600. W momencie kiedy zostanie dopracowana, obs³ugiwaæ te¿ bêdzie pozosta³e rozdzielczoœci.
+
+UWAGA: Pozostawienie tej opcji w³¹czonej traktuj jako ostatecznoœæ. Funkcja ta wymaga jeszcze sporo pracy, by funkcjonowa³a poprawnie. Rekomenduje siê w³¹czanie jej tylko w przypadku, jeœli chcesz zobaczyæ jakiœ okreœlony efekt graficzny.
+
+7.2.6 Scale Y
+-------------
+
+Wybranie tej opcji spowoduje, ¿e sterownik karty VGA bêdzie u¿ywany do wyœwietlania ekranu Amigi z bardziej poprawnym po³o¿eniem ekranu. Opcja ta dzia³a tylko w niektórych rozdzielczoœciach (800x600, 640X480, 640x400, 640x350).
+
+Jeœli Twoja karta graficzna jest kompatybilna z VESA, ale nie obs³uguje rejestrów VGA - nie korzystaj z tej opcji.
+
+7.3 Konfiguracja pamiêci (Memory)
+---------------------------------
+
+To submenu pozwala na zmianê typu i wielkoœci pamiêci emulowanej Amigi.
+
+
+7.3.1 Chip-memory
+-----------------
+
+Pozwala wybraæ jak du¿o pamiêci chip bêdzie emulowane. Dostêpne s¹ ustawienia z przedzia³u 256Kb - 2048 Kb.
+
+
+7.3.2 Fast-memory
+-----------------
+
+Pozwala wybraæ jak du¿o pamiêci fast bêdzie emulowane. Dostêpne s¹ nastêpuj¹ce ustawienia:
+0,1,2,4 i 8 MB.
+
+
+7.3.3 Bogo-memory
+-----------------
+
+Pozwala wybraæ jak du¿o pamiêci bogo (znanej równie¿ jako slow) bêdzie emulowane. To jest trzeci typ pamiêci, jaki zwyk³o siê instalowaæ w slocie na spodzie Amigi 500. Dostêpne s¹ ustawienia z zakresu 0Kb - 1792 Kb.
+
+
+7.3.4 Obraz Kickstartu (Kickstart-image)
+----------------------------------------
+
+Pozwala wybraæ œcie¿kê dostêpu do obrazu ROMu AmigaOS (wymagane dla programów startuj¹cych z Workbencha lub dla uruchomienia samego Workbencha)
+Wybranie tej opcji wywo³a prosty file-requester,z poziomu którego bêdziesz móg³ zlokalizowaæ i wybraæ obraz Kickstaru.
+Fellow domyœlnie bêdzie poszukiwa³ pliku "kick.rom"
+Plik mo¿e nazywaæ siê dowolnie, musi jednak mieæ rozszerzenie .rom.
+
+7.3.5 Keyfile
+-------------
+
+Pozwala na wybranie Keyfile, który s³u¿y do odkodowywania zakodowanych Kickstartów.
+
+
+7.4 Konfiguracja dŸwiêku (Sound configuration)
+----------------------------------------------
+
+To sub-menu pozwala na regulacjê ró¿nych aspektów emulacji dŸwiêku.
+Nie uzyskasz ¿adnego dŸwiêku, jeœli emulator nie znajdzie obs³ugiwanej przezeñ karty dŸwiêkowej.
+
+
+7.4.1 Emulacja dŸwiêku (Sound-emulation)
+----------------------------------------
+
+Mo¿esz wybraæ nastêpuj¹ce typy emulacji dŸwiêku:
+
+"No sound"             - dŸwiêk nie jest emulowany i generowany
+
+"Emulated, not played" - dŸwiêk jest emulowany, ale nie generowany
+
+(Te ustawienia s¹ zawsze dostêpne)
+
+"Normal, synchronized with emulation" - najbardziej optymalne ustawienie
+
+"Normal, synchronized with real-time" - mo¿e pracowaæ lepiej na s³abszych komputerach, ale                                      p³ynnoœæ odtwarzania mo¿e zostaæ zachwiana. Tak czy                                     inaczej - generowanie dŸwiêku powinno byæ bliskie                                       p³ynnemu.
+
+Rekomenduje siê ustawienie  - "Normal, synchronized with emulation".
+
+Generowanie dŸwiêku w oparciu o ustawienie "Normal, synchronized with real-time" mo¿e spowodowaæ powstanie znacznych zniekszta³ceñ. Prêdkoœæ odtwarzania mo¿e byæ z³a i mo¿e równie¿ wahaæ siê w zale¿noœci od aktualnej prêdkoœci emulacji.
+To ustawienie pracuje ca³kiem dobrze w systemach z procesorami Pentium, natomiast AMD K6 nie radzi sobie z zachowaniem odpowiedniej prêdkoœci.
+
+
+7.4.2 Jakoœæ dŸwiêku (Sound-quality)
+------------------------------------
+
+Pozwala na wybór jakoœci generowanego dŸwiêku. Mo¿na ustawiaæ ró¿ne czêstotliwoœci próbkowania, dŸwiêk 8 i 16 bitowy, mono/stereo w zale¿noœci od mo¿liwoœci posiadanej przez Ciebie wersji SoundBlastera.
+
+UWAGA: ustawienie 44100 hz jest niepotrzebnym obci¹¿aniem procesora. Optymalnym pod wzglêdem pogodzenia jakoœci i prêdkoœci emulacji jest ustawienie 31300 hz.
+
+Zmiana ustawieñ w zakresie dŸwiêku 8/16 bit oraz mono/stereo - w marginalnym stopniu wp³ywa na prêdkoœæ emulacji
+
+
+7.4.3 Low-pass filter
+---------------------
+
+Umo¿liwia konfigurcjê ustawienia filtru low-pass. Pracuj¹cy z czêstotliwoœci¹ 7000 hz filtr low-pass wprowadzony zosta³ celem zapobie¿enia powstawaniu efektu alliasingu, by³ te¿ równie¿ odpowiedzialny za charakterystyczn¹ mo¿liwoœæ w³¹czania i wy³¹czania diody oznaczaj¹cej zasilanie.
+
+Mo¿liwe ustawienia to: Original (oryginalne) / Always (zawsze) / Never (nigdy).
+
+"Original" (default) filtr bêdzie dzia³a³ jak w prawdziwej amidze - istnieje mo¿liwoœæ w³¹czania i wy³¹czania go przez programy.
+
+"Always" filtr bêdzie zawsze aktywny.
+
+"Never", filtr nigdy nie bêdzie u¿ywany (czyli dŸwiêk bêdzie emulowany jak w poprzedniej wersji emulatora.
+
+Implementacja zosta³a wykonana przez Rainera Sinscha i jest to nowoœæ w wersji 0.3.2a, potrzebny jest koprocesor
+
+
+7.5 Konfiguracja procesora (Cpu configuration)
+----------------------------------------------
+
+To sub-menu pozwala na regulacjê niektórych aspektów zwi¹zanych z emulacj¹ procesora Amigi.
+
+
+7.5.1 Typ procesora (Cpu-type)
+------------------------------
+
+
+Obecnie jedyna dzia³aj¹c¹ opcj¹ jest 68000. Prace nad 68030 trwaj¹ *opcja ta jest dostêpna, jednak nie dzia³a).
+
+
+7.5.2 Prêdkoœæ procesora (Cpu-speed)
+------------------------------------
+
+Pozwala na kontrolê prêdkoœci wirtualnego procesora. Nie myl tego z rzeczywist¹ wydajnoœci¹ emulacji.
+
+Dostêpne opcje to "original/oryginalny" - prêdkoœæ 7.14 mhz oraz "fast/szybki" - prêdkoœæ 28 mhz (ustawienie trybu fast wp³ywa na b³yskawiczne wykonywanie operacji przez blitter, z du¿¹ oszczêdnoœci¹ czasu).
+
+
+7.6 Konfiguracja obrazu dysku twardego (Hardfile configuration)- dalej zwane "hardfiles"
+----------------------------------------------------------------------------------------
+
+Hardfile 0 jest prób¹ zostosowania bardziej pojemnego noœnika danych dla emulowanej Amigi. Jest to du¿y plik, który jest u¿ywany jako twardy dysk i mo¿e mieæ dowolny rozmiar.
+
+Hardfiles mog¹ byæ u¿ywane jedynie z Kickstartem w wersji 2.0 lub nowszym.
+
+Pamiêtaj, aby sformatowaæ nowo utworzony hardfile.
+
+Mo¿esz startowaæ system z jakiegokolwiek Hardfile - maj¹ ni¿szy priorytet przy startowaniu od DF0:, ale wy¿szy od DF1:
+
+Mo¿esz równie¿ zamiast hardfiles u¿ywaæ nieskompresowanych plików ADF.
+
+Kolejne hardfiles nazywane s¹ FELLOW0, FELLOW1 itd.
+
+UWAGA:Zmiana w ustawieniu bie¿¹cego hardfile spowoduje automatyczny twardy reset emulowanej Amigi.
+
+7.6.1 Stan urz¹dzenia hardfile (Hardfile device state)
+------------------------------------------------------
+
+Hardfiles mog¹ byæ w³¹czone lub wy³¹czone.
+
+7.6.2 Nazwa pliku z hardfile (Hardfile filename)
+----------------------------------------------
+
+Opcja ta spowoduje uruchomienie file-requestera. Przegl¹daj dostêpne pliki i wybierz hardfile lub plik ADF, którego chcesz u¿ywaæ.
+
+
+7.7 Konfiguracja pozosta³ych ustawieñ (Various configuration)
+-------------------------------------------------------------
+
+W tym menu mo¿esz ustawiaæ inne parametry emulacji.
+
+
+7.7.1 Porty Joysticków 1 & 2
+----------------------------
+
+Mo¿liwa jest nastêpuj¹ca zmiana ustawieñ urz¹dzeñ pod³¹czonych do obu portów joysticka w emulowanej Amidze:
+
+Disabled (wy³¹czone), Mouse (mysz), Analog Joystick (Joystick analogowy), Keyboard Joystick Replacement 1 & 2 (substytut joysticka na klawiaturze)
+                      
+Klawisze substytutu joysticka:
+
+Klawisze kursora z prawym CTRL jako fire1 i lewym ALT, jako fire2.
+
+lub
+
+'D' lewo, 'F' dó³, 'G' prawo, 'R' góra, lewy CTRL fire1, lewy ALT fire2.
+
+U¿ywanie joysticka analogowego jest doœæ k³opotliwe (aby go skalibrowaæ - wykonaj obrót joyem podczas emulacji).
+
+Jeœli masz k³opoty z poprawnym korzystaniem z joysticka analogowego w Fellow, mo¿esz spróbowaæ u¿yæ programu Joyemu, który zapewnia bardziej komfortowe z niego korzystanie (do œci¹gniêcia pod adresem:http://www.dsi.unive.it/~szanella/index.htm ).
+
+
+7.7.2 Diody zasilania i napêdu dyskietek 
+----------------------------------------
+
+Pozwala na ustawienie, gdzie bêd¹ wyœwietlane diody zasilania i napêdu dyskietek (wykorzystywane bêd¹ diody oznaczaj¹ce w³¹czenie Capslock, Numlock i Scrollock
+
+
+7.7.3 Wyœwietlanie prêdkoœci emulacji na ekranie 
+------------------------------------------------
+
+Pokazuje prêdkoœæ emulacji w procentach prêdkoœci prawdziwej Amigi. Wynik jest wyœwietlany w prawym, górnym rogu ekranu (prawdziwa Amiga wyœwietla normalnie 50 klatek na sekundê).
+Podany wynik jest jedynie przybli¿eniem.
+
+
+7.7.4 Zachowanie ustawieñ Menu przy wyjœciu z emulatora.
+--------------------------------------------------------
+
+Ta opcja ma charakter eksperymentalny. Kiedy jest uaktywniona Twoje ruchy w menu zostan¹ zachowane (coœ jak makro) przy wyjœciu z emulatora i odtworzone w momencie jego ponownego uruchomienia.
+
+
+7.7.5 Automatyczne uruchamianie po podaniu komend (Automatic run after commands)
+--------------------------------------------------------------------------------
+
+Opcja Autorun mo¿e byæ uaktywniona po wydaniu niektórych komend.
+
+
+8  Interfejs linii poleceñ (Command-line interface)
+---------------------------------------------------
+
+Wszystkie opcje konfiguracyjne mo¿na równie¿ osi¹gn¹æ przez odpowiednie komendy linii poleceñ.
+
+Poni¿ej znajduje siê ogólna lista dostêpnych komend. W przypadku w¹tpliwoœci co do komend to¿samych z opcjami dostêpnymi w menu - szukaj wiêcej informacji w sekcjach wy¿ej.
+
+
+Ro¿ne ustawienia:
+
+-h                         This command-line option summary
+-log                       Generacja logu - u¿yj tej komendy by zobaczyæ jak emulator                      rozpoznaje konfiguracje Twojego komputera.
+-nogui                     Pomiñ wywo³anie GUI.
+-config file               U¿yj pliki zamiast domyœlnego pliku konfiguracyjnego fellow, który                      nosi nazwê fellow.cfg.
+-ns                        Nie zapisuj ustawieñ przy wyjœciu z emulatora.
+
+Ustawienia dotycz¹ce obrazów dysków:
+
+-0 file                    Obraz w df0
+-1 file                    Obraz w df1
+-2 file                    Obraz w df2
+-3 file                    Obraz w df3
+                           Opisane w 7.1.1
+
+-0e +|-                    w³¹cz/wy³¹cz df0
+-1e +|-                    w³¹cz/wy³¹cz df1
+-2e +|-                    w³¹cz/wy³¹cz df2
+-3e +|-                    w³¹cz/wy³¹cz df3
+                           Opisane w 7.1.2
+
+-ds +|-                    w³¹cz/wy³¹cz szybki transfer z obrazu dyskietki
+                           Opisane w 7.1.3
+
+-dmX file                  Pamiêæ dysków X (0..9)
+                           Opisane w 7.1.4
+
+-dpath dir/file            Aktualna œcie¿ka dostêpu. File requester zacznie szukanie w tym                         katalogu
+-rmpos +|-                 w³¹cz/wy³¹cz zapamiêtywanie zmian w menu
+                           Opisane w 7.1.4
+-mpos /../...              Wska¿ aktywne pozycje w menu
+                           Opisane w 7.1.4
+
+Ustawienia dotycz¹ce Hardfiles:
+
+-hf file                   Nazwa pliku Hardfile, opisane w  7.6.2
+-he +|-                    w³¹cz/wy³¹cz Hardfile, opisane w  7.6.1
+-hi size                   Stwórz (wyma¿) dany hardfile (siz = rozmiar w MB)
+
+
+Ustawienia dotycz¹ce pamiêci:
+
+-c size                    Rozmiar pamiêci chip, size*256k, domyœlnie: 2MB
+                           Opisane w 7.3.1
+-fm size                   Rozmiar pamiêci Fast, size w MB, (0,1,2,4,8)
+                           Opisane w 7.3.2
+-b size                    Rozmiar pamiêci Bogo (Slow), size*256k, domyœlnie: 1.75MB
+                           Opisane w 7.3.3
+-r file                    Plik z obrazem Kickstartu
+                           Opisane w 7.3.4
+-K file                    Plik z obrazem zakodowanego Kickstartu.
+                           Opisane w 7.3.5
+
+Ustawienia joysticka:
+
+-j1 n|a|m|k1|k2
+-j2 n|a|m|k1|k2            Joystick w porcie 1 lub 2:
+                           n - brak, a - joystick analogowy
+                           m - mysz, k1 - substytut klawiatury 1
+                           k2 - substytut klawiatury 2
+                           Opisane w 7.7.1
+
+
+Ustawienia dŸwiêku:
+
+-s d|n|c|e                 d - wy³¹cz n - normalny c - p³ynny
+                           e - emulowany, ale nie generowany
+                           Opisane w 7.4.1
+-sf quality                jakoœæ: 44100,31300,22050,15650
+-ss on|off                 Stereo, on (w³) off (wy³)
+-sb bits                   8 lub 16 bitów
+                           -sf,ss,sb opisane w  7.4.2
+-s1                        Force Soundblaster V1.0 driver
+
+
+Ustawienia ekranu:
+
+-res 320200b|320200|320240|640350|640400|640480|800600
+                           Rozdzielczoœæ, domyœlnie: 800600
+                           Opisane w 7.2.1
+-v none|50|vga             limit czêst. odœwie¿ania: none (¿aden), 50 - 50hz, vga - z karty
+                           Opisane w 7.2.3
+-f number                  Przeskocz 1/number liczby klatek.
+                           Opisane w  7.2.2
+-i on|off                  tryb bez przeplotu w rozdzielczoœci 800x600 on (w³) off(wy³)
+                           Opisane w 7.2.4
+
+
+Ustawienia procesora:
+
+-cpu 0|3                   Typ procesora 0 - 68000  3 - 68030
+                           Opisane w 7.5.1
+-cs normal|max             Prêdkoœæ zegara emulowanych M68000 i  Blittera.
+                           Opisane w 7.5.2
+
+
+Pozosta³e ustawienia:
+
+-p on|off                  Wyœwietlanie na ekranie prêdkoœci emulacji on(w³) off(wy³)
+                           Opisane w 7.7.3
+-l scr|kb?|lp?|lp?m|off    Zasilanie/napêd - sposób wyœwietlania:
+                           scr - na ekranie (800x600 only)
+                           kb1 - na klawiaturze (napêd 0, 1, 2)
+                           kb2 - na klawiaturze (zasilanie, napêd 0, 1)
+                           kb3 - na klawiaturze (zasilanie, napêd 0+1, 2+3)
+                           lp1/2/3 - na port równoleg³y
+                           lp1/2/3m - jw. (mirrored)
+                           Opisane w 7.7.2
+-lk ncs|nsc...             U¿ywa diod z klawiatury w nastêpuj¹cej kolejnoœci
+                           (Num lock = N, Caps lock = C, Scroll lock = S)
+                           Opisane w 7.7.2
+-altn 1..4                 Alt-N Cycling
+                           Opisane w 7.7.4
+-arun none|altn|res        Automatyczne uruchamianie po wydaniu komendy
+                           Opisane w 7.7.5
+
+
+9 PIERWSZE KROKI - PROSTY PRZEWODNIK
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Kiedy ju¿ skopiowa³eœ oryginalny dysk Amigi do pliku .adf i przegra³eœ go na swojego peceta - uruchom Fellow i przypisz ten plik (obraz dyskietki) do napêdu DF0:
+
+Je¿eli jest to dysk korzystaj¹cy z Workbencha upewnij siê, ¿e skopiowa³eœ obraz Kickstart ROM do pliku, który jest usytuowany w katalogu Fellow i nazywa siê kick.rom lub, ¿e wybra³eœ do niego odpowiedni¹ œcie¿kê dostêpu w menu konfiguracyjnym.
+
+Je¿eli obraz Kickstartu nie bêdzie obecny, Fellow pominie normaln¹ procedurê bootowania i spróbuje bez Kickstartu. Dzia³aæ to bêdzie z kilkoma grami i demami, które ignoruj¹ procedury Kickstartu - nie potrzebuj¹ go do uruchomienia. Aby doprowadziæ do bootowania mo¿esz nacisn¹æ wybraæ "RESET" po "wsadzeniu" obrazu dyskietki do wirtualnego napêdu emulatora.
+
+Wybierz wielkoœæ RAMu, jak¹ chcesz u¿ytkowaæ, skonfiguruj dŸwiêk tak by odpowiada³ ustawieniom i mo¿liwoœciom karty dŸwiêkowej i wybierz opcjê "RUN" z g³ównego menu.
+
+Jeœli wszystko zrobi³eœ dobrze - Fellow powinien uruchomiæ program.
+
+
+10 Klawisze skrótu
+------------------
+
+Niektóre klawisze skrótu dostêpne s¹ w interfejsie u¿ytkownika (system menu), a niektóre dostêpne s¹ podczas emulacji.
+
+10.1 Klawisze skrótu w interfejsie u¿ytkownika
+----------------------------------------------
+
+     F5: Soft Reset
+     F7: Hard Reset
+     F9: Start
+    F11: Debugger
+  Alt-D: Zmiana ustawieñ wirtualnych napêdów dyskietek
+  Alt-F: regulacja czêstotliwoœci odœwie¿ania
+  Alt-H: Ustawienia hardfile
+  Alt-J: Ustawienia joysticka
+  Alt-L: Ustawienia LED
+  Alt-M: Ustawienia Pamiêci
+  Alt-R: Ustawienia rozdzielczoœci
+  Alt-S: Ustawienia dŸwiêku
+  ESC  : Spowoduje ruch do poprzedniego poziomu menu (w najwy¿szym menu uruchomi emulacjê)
+
+
+10.2 Klawisze skrótu podczas emulacji
+-------------------------------------
+
+F12                     - Powrót do interfejsu u¿ytkownika (do systemu menu).
+HOME + PGUP/PGDOWN      - Zmiana rozdzielczoœci
+HOME +klawisze kursora - Centruje ekran w niskich rozdzielczoœciach VGA.
+HOME + F11              - Zrzuca ekran do pliku BMP.
+HOME + F1/F2/F3/F4      - "w³ó¿" obraz dyskietki do wirtualnego napêdu.
+END  + F1/F2/F3/F4      - jw. - "usuñ"
+END  + PGUP/PGDOWN      - W³¹cz/wy³¹cz podwójne wyœwietlanie linii (line-doubling)- dzia³a                        tylko w niektórych trybach SVGA i ma tê sam¹ funkcjê co opcja "Scale                    Y"
+                          
+
+
+-------------------------------------------------------------------------------------------
+
+T³umaczenie: Pawe³ Jêdrak (mail@cconline.com.pl)
+
+Jeœli szukasz najnowszej wersji Fellow i innych informacji o emulacji zajrzyj na http://www.cconline.com.pl
+
+
+                                     !!!!  UWAGA   !!!!
+
+PROSZÊ PRZECZYTAJ TEN TEKST ZANIM ZDECYDYUJESZ SIÊ PISAÆ Z PROŒB¥ O POMOC!!!
+
+1. Tekst dokumentacji Fellow zosta³ przeze mnie przet³umaczony ca³kowicie niezale¿nie  w stosunku do jego autorów, jak równie¿ autorów emulatora. St¹d te¿ proszê NIE PISZ do mnie z proœb¹ o pomoc w kwestiach technicznych, które nie s¹ opisane w tej dokumentacji. 
+2. T³umaczenie udostêpniane jest w postaci "jak jest" i nie biorê odpowiedzialnoœci za jakiekolwiek problemy wynik³e ze stosowania informacji znajduj¹cych siê w dokumentacji Jeœli masz konstruktywne uwagi co do t³umaczenia - zg³oœ je.
+3. Jeœli nie mo¿esz sobie poradziæ z jakimœ problemem, a DOK£ADNIE  przeczyta³eœ ca³¹ instrukcjê mo¿esz napisaæ (niestety w jêzyku angielskim ) do jednego z autorów emulatora - adresy znajdziesz na oficjalnej stronie Fellow : http://www.geocities.com/SiliconValley/Peaks/5244/
+
+
+
+
+
+
