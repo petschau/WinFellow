@@ -452,7 +452,7 @@ void joyDrvDInputInitialize(void) {
 
 		num_joy_attached = MAX_JOY_PORT;
 
-		if ((res = IDirectInput2_EnumDevices( joy_drv_lpDI, DIDEVTYPE_JOYSTICK,
+		if ((res = IDirectInput2_EnumDevices( joy_drv_lpDI, DI8DEVTYPE_JOYSTICK,
 					InitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY )) != DI_OK) {
 			joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices() ", res );
 			joy_drv_failed = TRUE;
