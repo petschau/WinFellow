@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.20 2004-06-12 15:39:19 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.21 2008-02-09 19:53:51 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /*                                                                         */
@@ -54,10 +54,13 @@
 #include "ini.h"
 #include "cpudis.h"
 #include "sysinfo.h"
+#include "fileops.h"
 
 BOOLE fellow_request_emulation_stop;
 BOOLE fellow_request_emulation_stop_immediately;
+BOOLE fellow_use_logfilename;
 
+char fellowlogfilename[MAX_PATH];
 
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
@@ -150,12 +153,25 @@ static BOOLE fellowGetLogFirstTime(void) {
 static void fellowAddLog2(STR *msg) {
   FILE *F;
 
-  if (!fellowGetLogEnabled()) return;
+  if (!fellowGetLogEnabled()) 
+    return;
+
   if (fellowGetLogFirstTime()) {
-    F = fopen("fellow.log", "w");
+    fellow_use_logfilename = fileopsGetFellowLogfileName(fellowlogfilename);
+    if(fellow_use_logfilename)
+      F = fopen(fellowlogfilename, "w");
+    else
+      F = fopen("fellow.log", "w");
+
     fellowSetLogFirstTime(FALSE);
   }
-  else F = fopen("fellow.log", "a");
+  else {
+    if(use_fellowlogfilename)
+      F = fopen(fellowlogfilename, "a");
+    else
+      F = fopen("fellow.log", "a");
+  }
+
   if (F != NULL) {
     fprintf(F, "%s", msg);
     fflush(F);
@@ -184,13 +200,16 @@ void fellowAddLog(const char *format,...)
 
     va_start (parms, format);
     count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	if(fellow_newlogline)
-		fellowLogDateTime();
-	fellowAddLog2(buffer);
-	if(buffer[strlen(buffer)-1] == '\n')
-		fellow_newlogline = TRUE;
-	else
-		fellow_newlogline = FALSE;
+	
+    if(fellow_newlogline)
+      fellowLogDateTime();
+
+    fellowAddLog2(buffer);
+	
+    if(buffer[strlen(buffer)-1] == '\n')
+      fellow_newlogline = TRUE;
+    else
+      fellow_newlogline = FALSE;
     va_end (parms);
 }
 
@@ -202,11 +221,14 @@ void fellowAddTimelessLog(const char *format,...)
 
     va_start (parms, format);
     count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	fellowAddLog2(buffer);
-	if(buffer[strlen(buffer)-1] == '\n')
-		fellow_newlogline = TRUE;
-	else
-		fellow_newlogline = FALSE;
+	
+    fellowAddLog2(buffer);
+	
+    if(buffer[strlen(buffer)-1] == '\n')
+      fellow_newlogline = TRUE;
+    else
+      fellow_newlogline = FALSE;
+
     va_end (parms);
 }
 
