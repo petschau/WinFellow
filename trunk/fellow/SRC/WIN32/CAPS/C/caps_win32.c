@@ -1,9 +1,9 @@
-/* @(#) $Id: caps_win32.c,v 1.3 2004-06-08 13:20:38 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.4 2008-02-10 12:07:37 carfesh Exp $          */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
 /* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
-/* http://www.caps-project.org                                             */
+/* http://www.softpres.org                                                 */
 /*                                                                         */
 /* (w)2004 by Torsten Enderling (carfesh@gmx.net)                          */
 /*                                                                         */
@@ -32,6 +32,7 @@
 #include "wgui.h"
 #include "fellow.h"
 #include "floppy.h"
+#include "fileops.h"
 
 #include "ComType.h"
 #include "CapsAPI.h"
@@ -39,7 +40,11 @@
 #define CAPS_USER
 #include "CapsLib.h"
 
+#ifdef _DEBUG
 #define TRACECAPS 1
+#else
+#define TRACECAPS 0
+#endif
 
 /* static int    capsFlags = DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD; */
 static int    capsFlags = DI_LOCK_INDEX | DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD;
@@ -64,7 +69,7 @@ BOOLE capsStartup(void)
 	        return FALSE;
         else
         {
-            wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.caps-project.org/download.shtml");
+            wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.softpres.org/download");
             capsUserIsNotified = TRUE;
             fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
 	        return FALSE;
@@ -77,7 +82,7 @@ BOOLE capsStartup(void)
 	        return FALSE;
         else
         {
-	        wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.caps-project.org/download.shtml");
+	        wguiRequester("IPF Images need a current C.A.P.S. Plug-In!", "You can download it from:", "http://www.softpres.org/download");
 	        capsUserIsNotified = TRUE;
             fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
 	        return FALSE;
@@ -248,7 +253,11 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 
 #if TRACECAPS
     {
-	    FILE *f = fopen("CAPSDump.txt","wb");
+      FILE *f;
+      char filename[MAX_PATH];
+
+	    fileopsGetGenericFileName(filename, "CAPSDump.txt");
+      f = fopen(filename, "wb");
 	    fwrite(capsTrackInfo.trackdata[0], len, 1, f);
 	    fclose(f);
     }
