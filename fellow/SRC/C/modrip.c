@@ -1,4 +1,4 @@
-/* @(#) $Id: modrip.c,v 1.25 2004-06-08 14:10:32 carfesh Exp $ */
+/* @(#) $Id: modrip.c,v 1.26 2008-02-10 12:40:46 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -33,6 +33,7 @@
 #include "fmem.h"
 #include "floppy.h"
 #include "fellow.h"
+#include "fileops.h"
 
 /* own includes */
 #include <stdio.h>
@@ -914,16 +915,35 @@ void modripChipDump(void)
   BOOLE Saved = FALSE;
 
   if(modripGuiDumpChipMem()) {
-    Saved = modripSaveChipMem("chip.mem");
-    if(memoryGetBogoSize()) modripSaveBogoMem("bogo.mem");
-    if(memoryGetFastSize()) modripSaveFastMem("fast.mem");
-  }
-  if(Saved) {
-    if(!access("prowiz.exe", 04)) {
-      /* prowiz.exe has been found */
-      if(modripGuiRunProWiz())
-        system("prowiz.exe chip.mem");
-	}
+    char filenamechip[MAX_PATH];
+
+    fileopsGetGenericFileName(filenamechip, "chip.mem");
+    Saved = modripSaveChipMem(filenamechip);
+    if(memoryGetBogoSize())
+    {
+      char filename[MAX_PATH];
+      fileopsGetGenericFileName(filename, "bogo.mem");
+      modripSaveBogoMem(filename);
+    }
+    if(memoryGetFastSize())
+    {
+      char filename[MAX_PATH];
+      fileopsGetGenericFileName(filename, "fast.mem");
+      modripSaveFastMem(filename);
+    }
+    if(Saved) {
+      if(!access("prowiz.exe", 04)) {
+        /* prowiz.exe has been found */
+        if(modripGuiRunProWiz()) {
+          char commandline[MAX_PATH];
+          int result;
+          sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
+          fellowAddLog("Running Pro-Wizard: %s ...\n", commandline);
+          result = system(commandline);
+          fellowAddLog("Pro-Wizard call returned: %d\n", result);
+        }
+	    }
+    }
   }
 }
 
