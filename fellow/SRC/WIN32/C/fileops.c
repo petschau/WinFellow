@@ -1,4 +1,4 @@
-/* @(#) $Id: fileops.c,v 1.1 2008-02-09 19:47:46 carfesh Exp $ */
+/* @(#) $Id: fileops.c,v 1.2 2008-02-10 09:26:18 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -29,23 +29,34 @@
 
 #include "defs.h"
 
-/* fileopsGetFellowLogfileName                                      */
-/* build fellow.log filename pointing to Application Data\WinFellow */
+/* fileopsGetGenericFileName                                        */
+/* build generic filename pointing to Application Data\WinFellow    */
+/* return TRUE if successfull, FALSE otherwise                      */
 
-BOOLE fileopsGetFellowLogfileName(char *szPath)
+BOOLE fileopsGetGenericFileName(char *szPath, const char *filename)
 {
   HRESULT hr;
 
-  if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                // hWnd	
-                                               CSIDL_APPDATA | CSIDL_FLAG_CREATE,       // csidl
-                                               NULL,                // hToken
-                                               SHGFP_TYPE_CURRENT,  // dwFlags
-                                               TEXT("WinFellow"),    // pszSubDir
-                                               szPath)))             // pszPath
+  if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                              // hWnd	
+                                               CSIDL_APPDATA | CSIDL_FLAG_CREATE, // csidl
+                                               NULL,                              // hToken
+                                               SHGFP_TYPE_CURRENT,                // dwFlags
+                                               TEXT("WinFellow"),                 // pszSubDir
+                                               szPath)))                          // pszPath
   {
-	  PathAppend(szPath, TEXT("fellow.log"));
+	  PathAppend(szPath, TEXT(filename));
     return TRUE;
   }
   else
     return FALSE;
 }
+
+/* fileopsGetFellowLogfileName                                      */
+/* build fellow.log filename pointing to Application Data\WinFellow */
+/* return TRUE if successfull, FALSE otherwise                      */
+
+BOOLE fileopsGetFellowLogfileName(char *szPath)
+{
+  return fileopsGetGenericFileName(szPath, "fellow.log");
+}
+
