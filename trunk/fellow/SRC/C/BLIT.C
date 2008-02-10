@@ -18,6 +18,7 @@
 #include "draw.h"
 #include "cpu.h"
 #include "bus.h"
+#include "fileops.h"
 
 /*#define BLIT_TSC_PROFILE*/
 
@@ -132,7 +133,11 @@ BOOLE blitterGetOperationLog(void) {
 
 void blitterOperationLog(void) {
   if (blitter_operation_log) {
-    FILE *F = fopen("blitterops.log", (blitter_operation_log_first) ? "w" : "a");
+    FILE *F;
+    char filename[MAX_PATH];
+
+    fileopsGetGenericFileName(filename, "blitterops.log");
+    F = fopen(filename, (blitter_operation_log_first) ? "w" : "a");
     if (blitter_operation_log_first) {
       blitter_operation_log_first = FALSE;
       fprintf(F, "FRAME\tY\tX\tPC\tBLTCON0\tBLTCON1\tBLTAFWM\tBLTALWM\tBLTAPT\tBLTBPT\tBLTCPT\tBLTDPT\tBLTAMOD\tBLTBMOD\tBLTCMOD\tBLTDMOD\tBLTADAT\tBLTBDAT\tBLTCDAT\tHEIGHT\tWIDTH\n");
@@ -794,13 +799,18 @@ void blitterStartup(void) {
 }
 
 void blitterShutdown(void) {
+
 #ifdef BLIT_TSC_PROFILE
   {
-  FILE *F = fopen("blitprofile.txt", "w");
-  fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tWORDS\tWORDSPERCALL\tCYCLESPERWORD\n");
-  fprintf(F, "blitter copy\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", blit_tsc, blit_tsc_times, (blit_tsc_times == 0) ? 0 : (blit_tsc / blit_tsc_times), blit_tsc_words, (blit_tsc_times == 0) ? 0 : (blit_tsc_words / blit_tsc_times), (blit_tsc_words == 0) ? 0 : (blit_tsc / blit_tsc_words));  
-  {ULO i; for (i = 0; i < 256; i++) if (blit_minterm_seen[i]) fprintf(F, "%.2X\n", i);}
-  fclose(F);
+    FILE *F;
+    char filename[MAX_PATH];
+
+    fileopsGetGenericFileName(filename, "blitprofile.txt");
+    F = fopen(filename, "w");
+    fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tWORDS\tWORDSPERCALL\tCYCLESPERWORD\n");
+    fprintf(F, "blitter copy\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", blit_tsc, blit_tsc_times, (blit_tsc_times == 0) ? 0 : (blit_tsc / blit_tsc_times), blit_tsc_words, (blit_tsc_times == 0) ? 0 : (blit_tsc_words / blit_tsc_times), (blit_tsc_words == 0) ? 0 : (blit_tsc / blit_tsc_words));  
+    {ULO i; for (i = 0; i < 256; i++) if (blit_minterm_seen[i]) fprintf(F, "%.2X\n", i);}
+    fclose(F);
   }
 #endif
 }
