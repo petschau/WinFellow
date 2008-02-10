@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.21 2008-02-09 19:53:51 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.22 2008-02-10 09:19:21 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /*                                                                         */
@@ -166,7 +166,7 @@ static void fellowAddLog2(STR *msg) {
     fellowSetLogFirstTime(FALSE);
   }
   else {
-    if(use_fellowlogfilename)
+    if(fellow_use_logfilename)
       F = fopen(fellowlogfilename, "a");
     else
       F = fopen("fellow.log", "a");
