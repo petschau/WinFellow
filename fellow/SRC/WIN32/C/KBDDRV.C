@@ -1,3 +1,4 @@
+/* @(#) $Id: KBDDRV.C,v 1.10 2008-02-10 11:38:09 carfesh Exp $               */
 /*===========================================================================*/
 /* Fellow Amiga Emulator                                                     */
 /* Keyboard driver for Windows                                               */
@@ -31,6 +32,9 @@ Tuesday, September 05, 2000: nova
 
 Sunday, February 03, 2008: carfesh
 - rebuild to use DirectInput8Create instead of DirectInputCreate
+
+Sunday, February 10, 2008: carfesh
+- move mapping.key to application data
 */
 
 #include "defs.h"
@@ -43,8 +47,8 @@ Sunday, February 03, 2008: carfesh
 #include "windrv.h"
 #include "kbdparser.h"
 #include "fellow.h"
-
 #include "dxver.h"
+#include "fileops.h"
 
 #define MAX_KEYS	256
 
@@ -56,15 +60,16 @@ Sunday, February 03, 2008: carfesh
 /* Keyboard specific data                                                    */
 /*===========================================================================*/
 
-BOOLE			kbd_drv_active;
-BOOLE                   kbd_drv_in_use;
-LPDIRECTINPUT		kbd_drv_lpDI;
+BOOLE			          kbd_drv_active;
+BOOLE               kbd_drv_in_use;
+LPDIRECTINPUT		    kbd_drv_lpDI;
 LPDIRECTINPUTDEVICE	kbd_drv_lpDID;
-HANDLE			kbd_drv_DIevent;
-BYTE			keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
-BYTE			prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
-BOOLE     kbd_drv_initialization_failed;
-BOOLE     prs_rewrite_mapping_file;
+HANDLE			        kbd_drv_DIevent;
+BYTE			          keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
+BYTE			          prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
+BOOLE               kbd_drv_initialization_failed;
+BOOLE               prs_rewrite_mapping_file;
+char                kbd_drv_mapping_filename[MAX_PATH];
 
 
 /*===========================================================================*/
@@ -1403,7 +1408,9 @@ void kbdDrvStartup(void) {
   kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
 
-  prs_rewrite_mapping_file = prsReadFile( MAPPING_FILENAME, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
+  fileopsGetGenericFileName(kbd_drv_mapping_filename, MAPPING_FILENAME);
+
+  prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 
   for (port = 0; port < 2; port++)
     for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
@@ -1427,5 +1434,5 @@ void kbdDrvStartup(void) {
 
 void kbdDrvShutdown(void) {
   if( prs_rewrite_mapping_file )
-    prsWriteFile( MAPPING_FILENAME, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
+    prsWriteFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 }
