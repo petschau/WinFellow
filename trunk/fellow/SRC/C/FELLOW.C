@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.22 2008-02-10 09:19:21 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.23 2008-02-10 11:39:15 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /*                                                                         */
@@ -58,7 +58,6 @@
 
 BOOLE fellow_request_emulation_stop;
 BOOLE fellow_request_emulation_stop_immediately;
-BOOLE fellow_use_logfilename;
 
 char fellowlogfilename[MAX_PATH];
 
@@ -157,19 +156,12 @@ static void fellowAddLog2(STR *msg) {
     return;
 
   if (fellowGetLogFirstTime()) {
-    fellow_use_logfilename = fileopsGetFellowLogfileName(fellowlogfilename);
-    if(fellow_use_logfilename)
-      F = fopen(fellowlogfilename, "w");
-    else
-      F = fopen("fellow.log", "w");
-
+    fileopsGetFellowLogfileName(fellowlogfilename);
+    F = fopen(fellowlogfilename, "w");
     fellowSetLogFirstTime(FALSE);
   }
   else {
-    if(fellow_use_logfilename)
-      F = fopen(fellowlogfilename, "a");
-    else
-      F = fopen("fellow.log", "a");
+    F = fopen(fellowlogfilename, "a");
   }
 
   if (F != NULL) {

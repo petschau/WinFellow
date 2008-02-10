@@ -27,6 +27,7 @@
 #include "defs.h"
 #include "fellow.h"
 #include "ffilesys.h"
+#include "fileops.h"
 
 #ifdef UAE_FILESYS
 #include "filesys.h"
@@ -132,7 +133,11 @@ void ffilesysClear(void)
 void ffilesysDumpConfig(void)
 {
   ULO i;
-  FILE *F = fopen("fsysdump.txt", "w");
+  char filename[MAX_PATH];
+  FILE *F;
+
+  fileopsGetGenericFileName(filename, "fsysdump.txt");
+  F = fopen(filename, "w");
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fprintf(F, "Slot: %d, %s, %s, %s\n",

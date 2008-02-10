@@ -1,4 +1,4 @@
-/* @(#) $Id: fileops.c,v 1.2 2008-02-10 09:26:18 carfesh Exp $             */
+/* @(#) $Id: fileops.c,v 1.3 2008-02-10 11:38:09 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -48,7 +48,10 @@ BOOLE fileopsGetGenericFileName(char *szPath, const char *filename)
     return TRUE;
   }
   else
+  {
+    strcpy(szPath, filename);
     return FALSE;
+  }
 }
 
 /* fileopsGetFellowLogfileName                                      */
@@ -60,3 +63,28 @@ BOOLE fileopsGetFellowLogfileName(char *szPath)
   return fileopsGetGenericFileName(szPath, "fellow.log");
 }
 
+/* fileopsGetDefaultConfigFileName                                  */
+/* build default.wfc filename pointing to                           */
+/* Application Data\WinFellow\configurations                        */
+/* return TRUE if successfull, FALSE otherwise                      */
+
+BOOLE fileopsGetDefaultConfigFileName(char *szPath)
+{
+  HRESULT hr;
+
+  if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                              // hWnd	
+                                               CSIDL_APPDATA | CSIDL_FLAG_CREATE, // csidl
+                                               NULL,                              // hToken
+                                               SHGFP_TYPE_CURRENT,                // dwFlags
+                                               TEXT("WinFellow\\configurations"), // pszSubDir
+                                               szPath)))                          // pszPath
+  {
+	  PathAppend(szPath, TEXT("default.wfc"));
+    return TRUE;
+  }
+  else
+  {
+    strcpy(szPath, "./configurations/default.wfc");
+    return FALSE;
+  }
+}

@@ -12,12 +12,17 @@
 #include "ini.h"
 #include "draw.h"
 #include "fellow.h"
+#include "fileops.h"
+
+#define INI_FILENAME "WinFellow.ini"
 
 /*============================================================================*/
 /* The actual iniManager instance                                             */
 /*============================================================================*/
 
 iniManager ini_manager;
+char       ini_filename[MAX_PATH];
+char       ini_default_config_filename[MAX_PATH];
 
 /*============================================================================*/
 /* Remove unwanted newline chars on the end of a string                       */
@@ -225,7 +230,8 @@ void iniSetDefaults(ini *initdata) {
   /* Default configuration filename                                           */
   /*==========================================================================*/ 
 
-  iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
+  fileopsGetDefaultConfigFileName(ini_default_config_filename);
+  iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
 
   /*==========================================================================*/
   /* Default kickimage and key directories                                    */
@@ -306,18 +312,19 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
     /* Standard initialization options */
 
     if (stricmp(option, "last_used_configuration") == 0) {
-		if (strcmp(value, "") == 0) {
-			iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
-			_mkdir("./configurations");
-		} else {
+		  if (strcmp(value, "") == 0) {
+        fileopsGetDefaultConfigFileName(ini_default_config_filename);
+			  iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+		  } else {
 			if (stat(value,&bla) != 0) {
-				iniSetCurrentConfigurationFilename(initdata, "./configurations/default.wfc");
-				_mkdir("./configurations");
-			} else {
+        fileopsGetDefaultConfigFileName(ini_default_config_filename);
+				iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+			} 
+      else {
 				iniSetCurrentConfigurationFilename(initdata, value);
-			}
-		}
-    }
+		  }
+	  }
+  }
 	else if (stricmp(option, "last_used_cfg_dir") == 0) {
       iniSetLastUsedCfgDir(initdata, value);
 	}
@@ -407,11 +414,13 @@ void iniManagerStartup(iniManager *initdatamanager) {
   ini *initdata = iniManagerGetNewIni(initdatamanager);
   iniManagerSetCurrentInitdata(initdatamanager, initdata);
   
+  fileopsGetGenericFileName(ini_filename, INI_FILENAME);
+
   // load the ini-file into the m_current_initdata data structure
-  if (iniLoadIniFromFilename(initdata, "winfellow.ini") == FALSE) {
-	fellowAddLog("ini-file not found\n");
+  if (iniLoadIniFromFilename(initdata, ini_filename) == FALSE) {
+	  fellowAddLog("ini-file not found\n");
   } else {
-	fellowAddLog("ini-file succesfully loaded\n");
+	  fellowAddLog("ini-file succesfully loaded\n");
   }
 
   initdata = iniManagerGetNewIni(initdatamanager);
@@ -421,7 +430,7 @@ void iniManagerStartup(iniManager *initdatamanager) {
 void iniManagerShutdown(iniManager *initdatamanager) {
   
   // save the m_current_initdata data structure to the ini-file
-  iniSaveToFilename(iniManagerGetCurrentInitdata(initdatamanager), "winfellow.ini");
+  iniSaveToFilename(iniManagerGetCurrentInitdata(initdatamanager), ini_filename);
 
   iniManagerFreeIni(initdatamanager, initdatamanager->m_default_ini);
   iniManagerFreeIni(initdatamanager, initdatamanager->m_current_ini);
