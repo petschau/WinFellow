@@ -55,8 +55,8 @@ ULO memory_fastallocatedsize;
 UBY memory_emem[0x10000];
 memoryEmemCardInitFunc memory_ememard_initfunc[EMEM_MAXARDS];
 memoryEmemCardMapFunc memory_ememard_mapfunc[EMEM_MAXARDS];
-ULO memory_ememardount;                                /* Number of cards */
-ULO memory_ememards_finishedount;                         /* Current card */
+ULO memory_ememardcount;                                /* Number of cards */
+ULO memory_ememards_finishedcount;                         /* Current card */
 
 
 /*============================================================================*/
@@ -387,11 +387,11 @@ void memoryEmemClear(void)
 void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
 		       memoryEmemCardMapFunc cardmap)
 {
-  if (memory_ememardount < EMEM_MAXARDS)
+  if (memory_ememardcount < EMEM_MAXARDS)
   {
-    memory_ememard_initfunc[memory_ememardount] = cardinit;
-    memory_ememard_mapfunc[memory_ememardount] = cardmap;
-    memory_ememardount++;
+    memory_ememard_initfunc[memory_ememardcount] = cardinit;
+    memory_ememard_mapfunc[memory_ememardcount] = cardmap;
+    memory_ememardcount++;
   }
 }
 
@@ -401,7 +401,7 @@ void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
 
 void memoryEmemCardNext(void)
 {
-  memory_ememards_finishedount++;
+  memory_ememards_finishedcount++;
 }
 
 
@@ -412,8 +412,8 @@ void memoryEmemCardNext(void)
 void memoryEmemCardInit(void)
 {
   memoryEmemClear();
-  if (memory_ememards_finishedount != memory_ememardount)
-    memory_ememard_initfunc[memory_ememards_finishedount]();
+  if (memory_ememards_finishedcount != memory_ememardcount)
+    memory_ememard_initfunc[memory_ememards_finishedcount]();
 } 
 
 /*============================================================================*/
@@ -423,10 +423,10 @@ void memoryEmemCardInit(void)
 
 void memoryEmemCardMap(ULO mapping)
 {
-  if (memory_ememards_finishedount == memory_ememardount)
+  if (memory_ememards_finishedcount == memory_ememardcount)
     memoryEmemClear();
   else
-    memory_ememard_mapfunc[memory_ememards_finishedount](mapping);
+    memory_ememard_mapfunc[memory_ememards_finishedcount](mapping);
 }
 
 /*============================================================================*/
@@ -435,7 +435,7 @@ void memoryEmemCardMap(ULO mapping)
 
 void memoryEmemCardsReset(void)
 {
-  memory_ememards_finishedount = 0;
+  memory_ememards_finishedcount = 0;
   memoryEmemCardInit();
 }
 
@@ -445,7 +445,7 @@ void memoryEmemCardsReset(void)
 
 void memoryEmemCardsRemove(void)
 {
-  memory_ememardount = memory_ememards_finishedount = 0;
+  memory_ememardcount = memory_ememards_finishedcount = 0;
 }
 
 /*============================================================================*/
