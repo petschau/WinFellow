@@ -141,7 +141,7 @@ static ULO cpuDis05(ULO regno, ULO pcp, STR *sdata, STR *soperands)
 
 static ULO cpuDis06Brief(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, STR *sdata, STR *soperands)
 {
-  ULO scale[4] = {1, 2, 4, 8};
+  STR *scale[4] = {"", "*2", "*4", "*8"};
   STR indexregtype = (STR) ((ext & 0x8000) ? 'A' : 'D');
   STR indexsize = (STR) ((ext & 0x0800) ? 'L' : 'W');
   ULO indexregno = (ext >> 12) & 7;
@@ -164,11 +164,11 @@ static ULO cpuDis06Brief(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, STR 
   {
     if (!is_pc_indirect)
     {
-      sprintf(cpuDisEoS(soperands), "$%.2X(A%1d,%c%1d.%c*%d)", offset, regno, indexregtype, indexregno, indexsize, scale[scalefactor]);
+      sprintf(cpuDisEoS(soperands), "$%.2X(A%1d,%c%1d.%c%s)", offset, regno, indexregtype, indexregno, indexsize, scale[scalefactor]);
     }
     else
     {
-      sprintf(cpuDisEoS(soperands), "$%.2X(PC,%c%1d.%c*%d)", offset, indexregtype, indexregno, indexsize, scale[scalefactor]);
+      sprintf(cpuDisEoS(soperands), "$%.2X(PC,%c%1d.%c%s)", offset, indexregtype, indexregno, indexsize, scale[scalefactor]);
     }
   }
   return pcp;
@@ -197,7 +197,7 @@ static ULO cpuDis06Od(ULO pcp, BOOLE wordsize, STR *sdata, STR *soperands)
 
 static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, STR *sdata, STR *soperands)
 {
-  ULO scale[4] = {1, 2, 4, 8};
+  STR *scale[4] = {"", "*2", "*4", "*8"};
   STR indexregtype = (STR) ((ext & 0x8000) ? 'A' : 'D');
   STR indexsize = (STR)((ext & 0x0800) ? 'L' : 'W');
   ULO indexregno = (ext >> 12) & 7;
@@ -207,10 +207,15 @@ static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, S
   ULO bd;
   BOOLE is = !!(ext & 0x0040);
   BOOLE bs = !!(ext & 0x0080);
-  STR baseregstr[10];
-  STR indexstr[10];
-  STR basedispstr[10];
-  STR outerdispstr[10];
+  STR baseregstr[32];
+  STR indexstr[32];
+  STR basedispstr[32];
+  STR outerdispstr[32];
+
+  baseregstr[0] = '\0';
+  indexstr[0] = '\0';
+  basedispstr[0] = '\0';
+  outerdispstr[0] = '\0';
   
   /* Print extension word */
   
@@ -242,7 +247,7 @@ static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, S
   }
   else
   {    /* Index included */
-    sprintf(indexstr, "%c%d.%c*%d", indexregtype, indexregno, indexsize, scale[scalefactor]);
+    sprintf(indexstr, "%c%d.%c%s", indexregtype, indexregno, indexsize, scale[scalefactor]);
   }
   
   /* Base displacement */
@@ -337,7 +342,7 @@ static ULO cpuDis70(ULO pcp, STR *sdata, STR *soperands)
   ULO absadr = memoryReadWord(pcp);
 
   cpuDisWordAppend(absadr, sdata);
-  sprintf(cpuDisEoS(soperands), "$%.4X.W", absadr);
+  sprintf(cpuDisEoS(soperands), "$%.4X", absadr);
   return pcp + 2;
 }
 
@@ -346,7 +351,7 @@ static ULO cpuDis71(ULO pcp, STR *sdata, STR *soperands)
   ULO absadr = memoryReadLong(pcp);
 
   cpuDisLongAppend(absadr, sdata);
-  sprintf(cpuDisEoS(soperands), "$%.8X.W", absadr);
+  sprintf(cpuDisEoS(soperands), "$%.8X", absadr);
   return pcp + 4;
 }
 
@@ -596,12 +601,12 @@ static ULO cpuDisShift(ULO prc, UWO opc, ULO nr, STR *sdata, STR *sinstruction, 
       {
 	dreg = 8;
       }
-      sprintf(sinstruction, "%s%c.%c", cpu_dis_a5nr[nr], rl, sc);
+      sprintf(sinstruction, "%s%c.%c", cpu_dis_shnr[nr], rl, sc);
       sprintf(soperands, "#$%1X,D%1d", dreg, eareg);
     }
     else
     {
-      sprintf(sinstruction, "%s%c.%c", cpu_dis_a5nr[nr], rl, sc);
+      sprintf(sinstruction, "%s%c.%c", cpu_dis_shnr[nr], rl, sc);
       sprintf(soperands, "D%1d,D%1d", dreg, eareg);
     }
     prc += 2;
@@ -1654,9 +1659,9 @@ static cpuDisFunc cpu_dis_index[100] =
   cpuDisAndi,
   cpuDisAsx,
   cpuDisBcc,	  // 10
-  cpuDisBf,
-  cpuDisBkpt,
   cpuDisBt,
+  cpuDisBkpt,
+  cpuDisBf,
   cpuDisCallm,
   cpuDisCas,	  // 15
   cpuDisChk,
