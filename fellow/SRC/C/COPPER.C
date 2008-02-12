@@ -332,7 +332,7 @@ void copperEmulate(void)
   bswapRegC = memoryChipReadWord(copper_ptr);
   bswapRegD = memoryChipReadWord(copper_ptr + 2);
   copper_ptr = ((copper_ptr + 4) & 0x1ffffe);
-  if (bswapRegC != 0xfffffffe)
+  if (bswapRegC != 0xffff || bswapRegD != 0xfffe)
   {
     // check bit 0 of first instruction word, zero is move
     if ((bswapRegC & 0x1) == 0x0)
@@ -363,7 +363,7 @@ void copperEmulate(void)
   	}
 	else
 	{
-	  copperInsertEvent(blitterEvent.cycle);
+	  copperInsertEvent(blitterEvent.cycle + 4);
 	}
       }
       else
@@ -521,132 +521,132 @@ void copperEmulate(void)
 	      if (correctLine == TRUE)
 	      {
 		if (bswapRegD < graph_raster_x)
-								{
-									// get unmasked bits from current x
-									copperInsertEvent(waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4);
-								}
-								else
-								{
-									// copwaitnotsameline
-									copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
-								}
-							}
-							else
-							{
-								// copwaitnotsameline
-								copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
-							}
-						}
-						else
-						{
-							// position reached, set up next instruction immediately
-							// cexit
-
-							// to help the copper to wait line 256, do some tests here
-							// Here we have detected a wait position that we are past.
-							// Check if current line is 255, then if line we are supposed
-							// to wait for are less than 60, do the wait afterall.
-
-							// Here we have detected a wait that has been passed.
-							
-							// do some tests if line is 255
-							if (graph_raster_y != 255)
-							{
-								// ctrueexit
-								//Here we must do a new copper access immediately (in 4 cycles)
-								copperInsertEvent(bus_cycle + 4);
-							}
-							else
-							{
-								// test line to be waited for
-								if ((bswapRegC >> 8) > 0x40)
-								{
-									// line is 256-313, wrong to not wait
-									// ctrueexit
-									//Here we must do a new copper access immediately (in 4 cycles)
-									copperInsertEvent(bus_cycle + 4);
-								}
-								else
-								{
-									// better to do the wait afterall
-									// here we recalculate the wait stuff
-									
-									// invert masks
-									bswapRegD = ~bswapRegD;
-
-									// get missing bits
-									maskedY = (graph_raster_y | 0x100);
-									*((UBY*) &maskedY) &= (bswapRegD >> 8);
-									// mask them into vertical position
-									*((UBY*) &maskedY) |= (bswapRegC >> 8);
-									maskedY *= BUS_CYCLE_PER_LINE;
-									bswapRegC &= 0xfe;
-									bswapRegD &= 0xfe;
-									
-									maskedX = (graph_raster_x & bswapRegD);
-									// mask in horizontal
-									bswapRegC |= maskedX;
-									bswapRegC = bswapRegC + maskedY + 4;
-									if (bswapRegC <= bus_cycle)
-									{
-										// fix
-										bswapRegC = bus_cycle + 4;
-									}
-									copperInsertEvent(bswapRegC);
-								} 
-							}
-						}
-					}
-				}
-				else
-				{
-					// SKIP instruction
-
-					// new skip, copied from cwait just to try something
-					// cskip
-				
-					// calculate our line, masked with vmask
-					// bl - masked graph_raster_y 
-
-					// use mask on graph_raster_y
-					bswapRegD |= 0x8000;
-					// used to indicate correct line or not
-					correctLine = FALSE;
-					maskedY = graph_raster_y;
-					*((UBY*) &maskedY) &= ((bswapRegD >> 8));
-					if (*((UBY*) &maskedY) > (UBY) (bswapRegC >> 8))
-					{
-						// do skip
-						// we have passed the line, set up next instruction immediately
-						copper_ptr += 4;
-						copperInsertEvent(bus_cycle + 4);
-					}
-					else if (*((UBY *) &maskedY) < (UBY) (bswapRegC >> 8))
-					{
-						// above line, don't skip
-						copperInsertEvent(bus_cycle + 4);
-					}
-					else
-					{
-						// here we are on the correct line
-
-						// calculate our xposition, masked with hmask
-						// al - masked graph_raster_x
-						correctLine = TRUE;		
-						
-						// use mask on graph_raster_x
-						// Compare masked x with wait x
-						maskedX = graph_raster_x;
-						*((UBY*) &maskedX) &= bswapRegD;
-						if (*((UBY*) &maskedX) >= (UBY) (bswapRegC & 0xff))
-						{
-							// position reached, set up next instruction immediately
-							copper_ptr += 4;
-						}
-						copperInsertEvent(bus_cycle + 4);
-					}
-				}
-			}
+		{
+		  // get unmasked bits from current x
+		  copperInsertEvent(waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4);
 		}
+		else
+		{
+		  // copwaitnotsameline
+		  copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+		}
+	      }
+	      else
+	      {
+		// copwaitnotsameline
+		copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+	      }
+	    }
+	    else
+	    {
+	      // position reached, set up next instruction immediately
+	      // cexit
+
+	      // to help the copper to wait line 256, do some tests here
+	      // Here we have detected a wait position that we are past.
+	      // Check if current line is 255, then if line we are supposed
+	      // to wait for are less than 60, do the wait afterall.
+
+	      // Here we have detected a wait that has been passed.
+							
+	      // do some tests if line is 255
+	      if (graph_raster_y != 255)
+	      {
+		// ctrueexit
+		//Here we must do a new copper access immediately (in 4 cycles)
+		copperInsertEvent(bus_cycle + 4);
+	      }
+	      else
+	      {
+		// test line to be waited for
+		if ((bswapRegC >> 8) > 0x40)
+		{
+		  // line is 256-313, wrong to not wait
+		  // ctrueexit
+		  //Here we must do a new copper access immediately (in 4 cycles)
+		  copperInsertEvent(bus_cycle + 4);
+		}
+		else
+		{
+		  // better to do the wait afterall
+		  // here we recalculate the wait stuff
+									
+		  // invert masks
+		  bswapRegD = ~bswapRegD;
+
+		  // get missing bits
+		  maskedY = (graph_raster_y | 0x100);
+		  *((UBY*) &maskedY) &= (bswapRegD >> 8);
+		  // mask them into vertical position
+		  *((UBY*) &maskedY) |= (bswapRegC >> 8);
+		  maskedY *= BUS_CYCLE_PER_LINE;
+		  bswapRegC &= 0xfe;
+		  bswapRegD &= 0xfe;
+									
+		  maskedX = (graph_raster_x & bswapRegD);
+		  // mask in horizontal
+		  bswapRegC |= maskedX;
+		  bswapRegC = bswapRegC + maskedY + 4;
+		  if (bswapRegC <= bus_cycle)
+		  {
+		    // fix
+		    bswapRegC = bus_cycle + 4;
+		  }
+		  copperInsertEvent(bswapRegC);
+		} 
+	      }
+	    }
+	  }
+	}
+	else
+	{
+	  // SKIP instruction
+
+	  // new skip, copied from cwait just to try something
+	  // cskip
+				
+	  // calculate our line, masked with vmask
+	  // bl - masked graph_raster_y 
+
+	  // use mask on graph_raster_y
+	  bswapRegD |= 0x8000;
+	  // used to indicate correct line or not
+	  correctLine = FALSE;
+	  maskedY = graph_raster_y;
+	  *((UBY*) &maskedY) &= ((bswapRegD >> 8));
+	  if (*((UBY*) &maskedY) > (UBY) (bswapRegC >> 8))
+	  {
+	    // do skip
+	    // we have passed the line, set up next instruction immediately
+	    copper_ptr += 4;
+	    copperInsertEvent(bus_cycle + 4);
+	  }
+	  else if (*((UBY *) &maskedY) < (UBY) (bswapRegC >> 8))
+	  {
+	    // above line, don't skip
+	    copperInsertEvent(bus_cycle + 4);
+	  }
+	  else
+	  {
+	    // here we are on the correct line
+
+	    // calculate our xposition, masked with hmask
+	    // al - masked graph_raster_x
+	    correctLine = TRUE;		
+						
+	    // use mask on graph_raster_x
+	    // Compare masked x with wait x
+	    maskedX = graph_raster_x;
+	    *((UBY*) &maskedX) &= bswapRegD;
+	    if (*((UBY*) &maskedX) >= (UBY) (bswapRegC & 0xff))
+	    {
+	      // position reached, set up next instruction immediately
+	      copper_ptr += 4;
+	    }
+	    copperInsertEvent(bus_cycle + 4);
+	  }
+	}
+      }
+    }
   }
 }
