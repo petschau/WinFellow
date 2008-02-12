@@ -4,6 +4,7 @@
 #include "cpu.h"
 #include "bus.h"
 
+
 #define CPU_EXCEPTION_ILLEGAL 0x10
 
 /* M68k registers */
@@ -71,6 +72,11 @@ void cpuSetModelMask(UBY model_mask) {cpu_model_mask = model_mask;}
 
 /* Private help functions */
 static void cpuSetDRegWord(ULO regno, UWO val) {*((WOR*)&cpu_regs[0][regno]) = val;}
+static void cpuSetDRegByte(ULO regno, UBY val) {*((UBY*)&cpu_regs[0][regno]) = val;}
+static UWO cpuGetDRegWord(ULO regno) {return (UWO)cpu_regs[0][regno];}
+static UBY cpuGetDRegByte(ULO regno) {return (UBY)cpu_regs[0][regno];}
+static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
+
 static ULO cpuSignExt8(UBY v) {return (ULO)(LON)(BYT) v;}
 static ULO cpuSignExt16(UWO v) {return (ULO)(LON)(WOR) v;}
 static ULO cpuJoin16(UWO upper, UWO lower) {return (upper << 16) | lower;}
@@ -722,18 +728,6 @@ static ULO cpuEA71()
 	  return reg_value + index_value + ((ULO)(LON)(BYT)ext); // Normal exit
         }
 
-	/* Truth table Variables GE True when 0X0X or 1X1X */
-	static BOOLE cpu_ccctt[16] = {1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1};
-
-	/* Truth table Variables LT True when 0X1X or 1X0X */
-	static BOOLE cpu_ccdtt[16] = {0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0};
-
-	/* Truth table Variables GT True when 000X or 101X */
-	static BOOLE cpu_ccett[16] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0};
-
-	/* Truth table Variables LE True when X1XX 1X0X or 0X1X */
-	static BOOLE cpu_ccftt[16] = {0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1};
-
         /// <summary>
         /// Calculates the values for the condition codes.
         /// </summary>
@@ -800,44 +794,48 @@ static ULO cpuEA71()
 
 	static BOOLE cpuCalculateConditionCode12(void)
 	{
-	  return cpu_ccctt[cpu_sr&0xf];// GE - (N && V) || (!N && !V)
+	  UWO tmp = cpu_sr & 0xa;
+	  return (tmp == 0xa) || (tmp == 0);  // GE - (N && V) || (!N && !V)
 	}
 
 	static BOOLE cpuCalculateConditionCode13(void)
 	{
-	  return cpu_ccdtt[cpu_sr&0xf];// LT - (N && !V) || (!N && V)
+	  UWO tmp = cpu_sr & 0xa;
+	  return (tmp == 0x8) || (tmp == 0x2);	// LT - (N && !V) || (!N && V)
 	}
 
 	static BOOLE cpuCalculateConditionCode14(void)
 	{
-	  return cpu_ccett[cpu_sr&0xf];// GT - (N && V && !Z) || (!N && !V && !Z) 
+	  UWO tmp = cpu_sr & 0xa;
+	  return (!(cpu_sr & 0x4)) && ((tmp == 0xa) || (tmp == 0)); // GT - (N && V && !Z) || (!N && !V && !Z) 
 	}
 
 	static BOOLE cpuCalculateConditionCode15(void)
 	{
-	  return cpu_ccftt[cpu_sr&0xf];// LE - Z || (N && !V) || (!N && V)
+	  UWO tmp = cpu_sr & 0xa;
+	  return (cpu_sr & 0x4) || (tmp == 0x8) || (tmp == 2);// LE - Z || (N && !V) || (!N && V)
 	}
 
 	static _inline BOOLE cpuCalculateConditionCode(ULO cc)
 	{
 	  switch (cc&0xf)
 	  {
-	    case 0: return TRUE;	      // TRUE
-	    case 1: return FALSE;	      // FALSE
-	    case 2: return !(cpu_sr & 5);     // HI - !C && !Z
-	    case 3: return cpu_sr & 5;	      // LS - C || Z
-	    case 4: return ~cpu_sr & 1;	      // CC - !C
-	    case 5: return cpu_sr & 1;	      // CS - C
-	    case 6: return ~cpu_sr & 4;	      // NE - !Z
-	    case 7: return cpu_sr & 4;	      // EQ - Z
-	    case 8: return ~cpu_sr & 2;	      // VC - !V
-	    case 9: return cpu_sr & 2;	      // VS - V
-	    case 10: return ~cpu_sr & 8;      // PL - !N
-	    case 11: return cpu_sr & 8;	      // MI - N
-	    case 12: return cpu_ccctt[cpu_sr&0xf];// GE - (N && V) || (!N && !V)
-	    case 13: return cpu_ccdtt[cpu_sr&0xf];// LT - (N && !V) || (!N && V)
-	    case 14: return cpu_ccett[cpu_sr&0xf];// GT - (N && V && !Z) || (!N && !V && !Z) 
-	    case 15: return cpu_ccftt[cpu_sr&0xf];// LE - Z || (N && !V) || (!N && V)
+	    case 0: return cpuCalculateConditionCode0();
+	    case 1: return cpuCalculateConditionCode1();
+	    case 2: return cpuCalculateConditionCode2();
+	    case 3: return cpuCalculateConditionCode3();
+	    case 4: return cpuCalculateConditionCode4();
+	    case 5: return cpuCalculateConditionCode5();
+	    case 6: return cpuCalculateConditionCode6();
+	    case 7: return cpuCalculateConditionCode7();
+	    case 8: return cpuCalculateConditionCode8();
+	    case 9: return cpuCalculateConditionCode9();
+	    case 10: return cpuCalculateConditionCode10();
+	    case 11: return cpuCalculateConditionCode11();
+	    case 12: return cpuCalculateConditionCode12();
+	    case 13: return cpuCalculateConditionCode13();
+	    case 14: return cpuCalculateConditionCode14();
+	    case 15: return cpuCalculateConditionCode15();
 	  }
 	}
 
@@ -1346,8 +1344,8 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuPeaL(ULO ea)
         {
-	  cpu_regs[1][7] -= 4;
-	  memoryWriteLong(ea, cpu_regs[1][7]);
+	  cpuSetAReg(7, cpuGetAReg(7) - 4);
+	  memoryWriteLong(ea, cpuGetAReg(7));
         }
 
 	/// <summary>
@@ -1364,8 +1362,8 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuJsr(ULO ea)
         {
-	  cpu_regs[1][7] -= 4;
-	  memoryWriteLong(cpuGetPC(), cpu_regs[1][7]);
+	  cpuSetAReg(7, cpuGetAReg(7) - 4);
+	  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 	  cpuSetPC(ea);
 	  cpuReadPrefetch();
         }
@@ -1438,8 +1436,8 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuBsrB(ULO offset)
         {
-	  cpu_regs[1][7] -= 4;
-	  memoryWriteLong(cpuGetPC(), cpu_regs[1][7]);
+	  cpuSetAReg(7, cpuGetAReg(7) - 4);
+	  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 	  cpuSetPC(cpuGetPC() + offset);
 	  cpuReadPrefetch();
 	  cpuSetInstructionTime(18);
@@ -1452,8 +1450,8 @@ static ULO cpuEA71()
         {
 	  ULO tmp_pc = cpuGetPC();
 	  ULO offset = (ULO)(LON)(WOR)cpuGetNextOpcode16();
-	  cpu_regs[1][7] -= 4;
-	  memoryWriteLong(cpuGetPC(), cpu_regs[1][7]);
+	  cpuSetAReg(7, cpuGetAReg(7) - 4);
+	  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 	  cpuSetPC(tmp_pc + offset);
 	  cpuReadPrefetch();
 	  cpuSetInstructionTime(18);
@@ -1469,8 +1467,8 @@ static ULO cpuEA71()
 	  {
 	    ULO tmp_pc = cpuGetPC();
 	    ULO offset = (ULO)(LON)cpuGetNextOpcode32();
-	    cpu_regs[1][7] -= 4;
-	    memoryWriteLong(cpuGetPC(), cpu_regs[1][7]);
+	    cpuSetAReg(7, cpuGetAReg(7) - 4);
+	    memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 	    cpuSetPC(tmp_pc + offset);
 	    cpuReadPrefetch();
 	  }
@@ -1541,7 +1539,7 @@ static ULO cpuEA71()
         {
 	  if (!cc)
 	  {
-	    WOR val = (WOR)cpu_regs[0][reg];
+	    WOR val = (WOR)cpuGetDRegWord(reg);
 	    val--;
 	    cpuSetDRegWord(reg, val);
 	    if (val != -1)
@@ -1699,8 +1697,8 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuRts()
         {
-	  cpuSetPC(memoryReadLong(cpu_regs[1][7]));
-	  cpu_regs[1][7] += 4;
+	  cpuSetPC(memoryReadLong(cpuGetAReg(7)));
+	  cpuSetAReg(7, cpuGetAReg(7) + 4);
 	  cpuReadPrefetch();
 	  cpuSetInstructionTime(16);
         }
@@ -1710,10 +1708,10 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuRtr()
         {
-	  cpu_sr = (cpu_sr & 0xffe0) | (memoryReadWord(cpu_regs[1][7]) & 0x1f);
-	  cpu_regs[1][7] += 2;
-	  cpuSetPC(memoryReadLong(cpu_regs[1][7]));
-	  cpu_regs[1][7] += 4;
+	  cpu_sr = (cpu_sr & 0xffe0) | (memoryReadWord(cpuGetAReg(7)) & 0x1f);
+	  cpuSetAReg(7, cpuGetAReg(7) + 2);
+	  cpuSetPC(memoryReadLong(cpuGetAReg(7)));
+	  cpuSetAReg(7, cpuGetAReg(7) + 4);
 	  cpuReadPrefetch();
 	  cpuSetInstructionTime(20);
         }
@@ -2573,7 +2571,7 @@ static ULO cpuEA71()
 	    BOOLE redo = TRUE;
 	    do
 	    {
-	      UWO newsr = (UWO)memoryReadWord(cpu_regs[1][7]);
+	      UWO newsr = memoryReadWord(cpu_regs[1][7]);
 	      cpu_regs[1][7] += 2;
   	    
 	      cpuSetPC(memoryReadLong(cpu_regs[1][7]));
@@ -2731,7 +2729,8 @@ static ULO cpuEA71()
 	      if (regs & index)
 	      {
 		dstea -= 2;
-		if (cpu_major >= 2) cpu_regs[1][reg] -= 2;
+		if (cpu_major >= 2) 
+		  cpu_regs[1][reg] -= 2;
 		memoryWriteWord((UWO)cpu_regs[i][j], dstea);
 		cycles += 4;
 	      }
@@ -2760,7 +2759,8 @@ static ULO cpuEA71()
 	      if (regs & index)
 	      {
 		dstea -= 4;
-		if (cpu_major >= 2) cpu_regs[1][reg] -= 4;
+		if (cpu_major >= 2) 
+		  cpu_regs[1][reg] -= 4;
 		memoryWriteLong(cpu_regs[i][j], dstea);
 		cycles += 8;
 	      }
@@ -2981,9 +2981,9 @@ static ULO cpuEA71()
         /// </summary>
 	static void cpuCmpMB(ULO regx, ULO regy)
 	{
-	  UBY src = memoryReadByte(cpu_regs[1][regy]++);
-	  UBY dst = memoryReadByte(cpu_regs[1][regx]++);
-          UBY res = dst - src;
+	  UBY src = memoryReadByte(cpuEA03(regy, 1));
+	  UBY dst = memoryReadByte(cpuEA03(regx, 1));
+	  UBY res = dst - src;
 	  cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
 	  cpuSetInstructionTime(12);
 	}
@@ -2993,9 +2993,9 @@ static ULO cpuEA71()
         /// </summary>
 	static void cpuCmpMW(ULO regx, ULO regy)
 	{
-	  UWO src = memoryReadWord(cpu_regs[1][regy]++);
-	  UWO dst = memoryReadWord(cpu_regs[1][regx]++);
-          UWO res = dst - src;
+	  UWO src = memoryReadWord(cpuEA03(regy, 2));
+	  UWO dst = memoryReadWord(cpuEA03(regx, 2));
+	  UWO res = dst - src;
 	  cpuSetFlagsCmp(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW(src));
 	  cpuSetInstructionTime(12);
 	}
@@ -3005,9 +3005,9 @@ static ULO cpuEA71()
         /// </summary>
 	static void cpuCmpML(ULO regx, ULO regy)
 	{
-	  ULO src = memoryReadLong(cpu_regs[1][regy]++);
-	  ULO dst = memoryReadLong(cpu_regs[1][regx]++);
-          ULO res = dst - src;
+	  ULO src = memoryReadLong(cpuEA03(regy, 4));
+	  ULO dst = memoryReadLong(cpuEA03(regx, 4));
+	  ULO res = dst - src;
 	  cpuSetFlagsCmp(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(src));
 	  cpuSetInstructionTime(20);
 	}
@@ -3234,9 +3234,9 @@ static ULO cpuEA71()
 	static void cpuSetBfRegBytes(UBY *bytes, ULO regno)
 	{
 	  cpu_regs[0][regno] = (((ULO)bytes[0]) << 24)
-	                     || (((ULO)bytes[1]) << 16)
-	                     || (((ULO)bytes[2]) << 16)
-	                     || ((ULO)bytes[3]);
+	                     | (((ULO)bytes[1]) << 16)
+	                     | (((ULO)bytes[2]) << 8)
+	                     | ((ULO)bytes[3]);
 	}
 
 	static void cpuSetBfEaBytes(UBY *bytes, ULO address, ULO count)
@@ -3334,7 +3334,7 @@ static ULO cpuEA71()
 	  }
 	  if (has_ea)
 	  {
-	    bf_data->base_address = val + (bf_data->offset >> 8);
+	    bf_data->base_address = val + (bf_data->offset >> 3);
 	    cpuGetBfEaBytes(&bf_data->b[0], bf_data->base_address, bf_data->byte_count);
 	  }
 	  else
@@ -3680,10 +3680,8 @@ static ULO cpuEA71()
         static void cpuPackReg(ULO yreg, ULO xreg)
         {
 	  UWO adjustment = cpuGetNextOpcode16();
-	  UWO src = ((UWO) cpu_regs[0][xreg]) + adjustment;
-	  cpu_regs[0][yreg] = (cpu_regs[0][yreg] & 0xffffff00)
-	                     | ((ULO)((src >> 4) & 0xf0))
-			     | ((ULO)(src & 0xf));
+	  UWO src = cpuGetDRegWord(xreg) + adjustment;
+	  cpuSetDRegByte(yreg, (UBY) (((src >> 4) & 0xf0) | (src & 0xf)));
 	}
 
 	/// <summary>
@@ -3861,7 +3859,7 @@ static ULO cpuEA71()
 	      UBY data = memoryReadByte(ea);
 	      if (da == 0)
 	      {
-		cpu_regs[0][regno] = (cpu_regs[0][regno] & 0xffffff00) | (ULO) data;
+		cpuSetDRegByte(regno, data);
 	      }
 	      else
 	      {
@@ -3939,7 +3937,6 @@ static ULO cpuEA71()
         /// </summary>
         static void cpuTrapcc(ULO cc)
         {
-	  //if (cpuCalculateConditionCode(cc))
 	  if (cc)
 	  {
 	      cpuPrepareException(0x1C, cpuGetPC(), FALSE);
@@ -3954,7 +3951,6 @@ static ULO cpuEA71()
         static void cpuTrapccW(ULO cc)
         {
 	  UWO imm = cpuGetNextOpcode16();
-	  //if (cpuCalculateConditionCode(cc))
 	  if (cc)
 	  {
 	      cpuPrepareException(0x1C, cpuGetPC(), FALSE);
@@ -4131,16 +4127,16 @@ static ULO cpuEA71()
 	  BOOLE c, z;
 	  if (da == 1)
 	  {
-	    ULO lb = (ULO)(LON)(BYT)memoryReadByte(ea);
-	    ULO ub = (ULO)(LON)(BYT)memoryReadByte(ea + 1);
+	    ULO ub = (ULO)(LON)(BYT)memoryReadByte(ea);
+	    ULO lb = (ULO)(LON)(BYT)memoryReadByte(ea + 1);
 	    ULO rn = cpu_regs[1][rn_regno];
 	    z = (rn == lb || rn == ub);
 	    c = (rn < lb || rn > ub);
 	  }
 	  else
 	  {
-	    UBY lb = memoryReadByte(ea);
-	    UBY ub = memoryReadByte(ea + 1);
+	    UBY ub = memoryReadByte(ea);
+	    UBY lb = memoryReadByte(ea + 1);
 	    UBY rn = (UBY)cpu_regs[0][rn_regno];
 	    z = (rn == lb || rn == ub);
 	    c = (rn < lb || rn > ub);
@@ -4166,16 +4162,16 @@ static ULO cpuEA71()
 	  BOOLE c, z;
 	  if (da == 1)
 	  {
-	    ULO lb = (ULO)(LON)(WOR)memoryReadWord(ea);
-	    ULO ub = (ULO)(LON)(WOR)memoryReadWord(ea + 2);
+	    ULO ub = (ULO)(LON)(WOR)memoryReadWord(ea);
+	    ULO lb = (ULO)(LON)(WOR)memoryReadWord(ea + 2);
 	    ULO rn = cpu_regs[1][rn_regno];
 	    z = (rn == lb || rn == ub);
 	    c = (rn < lb || rn > ub);
 	  }
 	  else
 	  {
-	    UWO lb = (UWO)memoryReadWord(ea);
-	    UWO ub = (UWO)memoryReadWord(ea + 2);
+	    UWO ub = (UWO)memoryReadWord(ea);
+	    UWO lb = (UWO)memoryReadWord(ea + 2);
 	    UWO rn = (UWO)cpu_regs[0][rn_regno];
 	    z = (rn == lb || rn == ub);
 	    c = (rn < lb || rn > ub);
@@ -4199,8 +4195,8 @@ static ULO cpuEA71()
 	  ULO rn_regno = (ULO) (extension >> 12) & 7;
 	  BOOLE is_chk2 = (extension & 0x0800);
 	  BOOLE c, z;
-	  ULO lb = memoryReadLong(ea);
-	  ULO ub = memoryReadLong(ea + 4);
+	  ULO ub = memoryReadLong(ea);
+	  ULO lb = memoryReadLong(ea + 4);
 	  ULO rn = cpu_regs[da][rn_regno];
 	  z = (rn == lb || rn == ub);
 	  c = (rn < lb || rn > ub);
@@ -5050,18 +5046,18 @@ void cpuHardReset(void) {
 #include "cpucode.h"
 
 extern FILE *BUSLOG;
-BOOLE cpu_log = FALSE;
+BOOLE cpu_log = TRUE;
 
-void cpuEventLog(bus_event *e)
+void cpuEventLog(bus_event *e, UWO opcode)
 {
   char saddress[256], sdata[256], sinstruction[256], soperands[256];
   if (!cpu_log) return;
   if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
-
-
-  cpuDisOpcode(cpuGetPC()-2, saddress, sdata, sinstruction, soperands);
-
-  fprintf(BUSLOG, "%d %.8X %s %s %s\n", e->cycle, cpuGetAReg(7), saddress, sdata, sinstruction);
+  if ((cpu_opcode_model_mask[opcode] & 0x4) && !(cpu_opcode_model_mask[opcode] & 0x1))
+  {
+    cpuDisOpcode(cpuGetPC()-2, saddress, sdata, sinstruction, soperands);
+    fprintf(BUSLOG, "%d %.8X %s %s %s %s\n", e->cycle, cpuGetAReg(7), saddress, sdata, sinstruction, soperands);
+  }
 }
 
 ULO cpuExecuteInstruction(void)
@@ -5069,7 +5065,7 @@ ULO cpuExecuteInstruction(void)
   UWO oldSr = cpu_sr;
   UWO opcode = cpuGetNextOpcode16();
 
-  //cpuEventLog(&cpuEvent, opcode);
+  cpuEventLog(&cpuEvent, opcode);
 
   cpu_instruction_time = 0;
   if (cpu_opcode_model_mask[opcode] & cpu_model_mask)
