@@ -1,0 +1,19 @@
+%ifndef LINUX_MAC_RENAMING_MAC
+%define LINUX_MAC_RENAMING_MAC
+
+;==============================================================================
+; Defines renaming macros for importing C functions and data to assembly
+; GCC
+;==============================================================================
+
+%macro CFUNCEXTERN 1
+extern %1
+%endmacro
+
+%macro CDATAEXTERN 1
+extern %1
+%endmacro
+
+%endif
+
+
