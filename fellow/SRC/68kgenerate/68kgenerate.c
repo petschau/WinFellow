@@ -349,10 +349,13 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
     // Read source value from an immediate word. Bit number for BCHG etc.
     fprintf(codef, "%scpuGetNextOpcode16();\n", cgCastSize(size));
   }
-  else if (eano < 2)
+  else if (eano == 1)
   {
-    // Read source value from a register.
-    fprintf(codef, "%scpu_regs[%d][opc_data[%d]];\n", (size == 4) ? "" : ((size == 1) ? "(UBY)" : "(UWO)"), eano, eareg_cpu_data_index);
+    fprintf(codef, "cpuGetAReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
+  }
+  else if (eano == 0)
+  {
+    fprintf(codef, "cpuGetDReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
   }
   else if (eano >= 3 && eano <= 4)
   {
@@ -409,9 +412,13 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   {
     fprintf(codef, "%scpuGetNextOpcode%d();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? 16 : 32);
   }
-  else if (eano < 2)
+  else if (eano == 1)
   {
-    fprintf(codef, "%scpu_regs[%d][opc_data[%d]];\n", (eano == 1 || size == 4) ? "" : ((size == 1) ? "(UBY)" : "(UWO)"), eano, eareg_cpu_data_index);
+    fprintf(codef, "cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
+  }
+  else if (eano == 0)
+  {
+    fprintf(codef, "cpuGetDReg%s(opc_data[%d]);\n", (size == 1) ? "Byte" : ((size == 2) ? "Word" : ""), eareg_cpu_data_index);
   }
   else if (eano >= 2 && eano < 11)
   {
@@ -428,15 +435,21 @@ void cgStoreDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
 {
   if (eano == 0 && size == 1)
   {
-    fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffffff00) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
+    //fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffffff00) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDRegByte(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano == 0 && size == 2)
   {
-    fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffff0000) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDRegWord(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+//    fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffff0000) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
   }
-  else if ((eano == 0 && size == 4) || (eano == 1))
+  else if (eano == 0 && size == 4)
   {
-    fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = %s;\n", eano, eareg_cpu_data_index, dstname);
+    fprintf(codef, "\tcpuSetDReg(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
+  }
+  else if (eano == 1)
+  {
+    fprintf(codef, "\tcpuSetAReg(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano >= 2 && eano < 9)
   {
@@ -516,7 +529,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  {
 	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextOpcode16();\n");
 	    cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
-	    cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
+	    if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
 	  }
  	}
 	else
@@ -1211,7 +1224,7 @@ unsigned int cgBCC(cpu_data *cpudata, cpu_instruction_info i)
   unsigned int reg2_cpu_data_index = 1;
   unsigned int icount = 0;
   unsigned int size = atoi(i.size);
-  unsigned int offset, cc;
+  unsigned int offset;
   char fname[32];
 
   cgMakeFunctionName(fname, i.instruction_name, base_opcode);
