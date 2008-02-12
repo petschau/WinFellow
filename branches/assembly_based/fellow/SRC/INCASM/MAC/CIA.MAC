@@ -1,0 +1,126 @@
+%ifndef CIA_MAC
+%define CIA_MAC
+
+
+;==============================================================================
+; Macros to call CIA C functions from assembly
+;==============================================================================
+
+;==============================================================================
+; Write data to CIA
+;
+; Assembly calling convention:
+; In:  edx - Data, ecx - Address
+; Out: Nothing
+;==============================================================================
+
+%macro CIAWRITEBYTE_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	ciaWriteByteC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro CIAWRITEWORD_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	ciaWriteWordC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+%macro CIAWRITELONG_CWRAP 0
+		mov	ecx, dword [memory_wriorgadr]
+		CCALLCONV_IN_EDXECX
+		call	ciaWriteLongC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+;==============================================================================
+; Read data from CIA
+;
+; Assembly calling convention:
+; In:  ecx - Address
+; Out: edx - data
+;==============================================================================
+
+%macro CIAREADBYTE_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	ciaReadByteC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+%macro CIAREADWORD_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	ciaReadWordC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+%macro CIAREADLONG_CWRAP 0
+		CCALLCONV_IN_ECX
+		call	ciaReadLongC
+		CCALLCONV_OUT_EDX	1
+%endmacro
+
+
+;==============================================================================
+; ciaHandleEvent()
+;
+; Assembly calling convention:
+; In:  Nothing
+; Out: Nothing
+;==============================================================================
+
+%macro CIA_HANDLE_EVENT_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	ciaHandleEventC
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+;==============================================================================
+; ciaUpdateTimersEOF()
+;
+; Assembly calling convention:
+; In:  Nothing
+; Out: Nothing
+;==============================================================================
+
+%macro CIA_UPDATE_TIMERS_EOF_CWRAP 0
+		CCALLCONV_IN_NONE
+		call	ciaUpdateTimersEOFC
+		CCALLCONV_OUT_NONE	0
+%endmacro
+
+
+;==============================================================================
+; ciaUpdateEventCounter()
+;
+; Assembly calling convention:
+; In:  eax - CIA number (0/1)
+; Out: Nothing
+;==============================================================================
+
+%macro CIA_UPDATE_EVENTCOUNTER_CWRAP 0
+		CCALLCONV_IN_EAX
+		call	ciaUpdateEventCounterC
+		CCALLCONV_OUT_NONE	1
+%endmacro
+
+
+;==============================================================================
+; ciaRaiseIRQ()
+;
+; Assembly calling convention:
+; In:  eax - CIA number (0/1), edx - irqs
+; Out: Nothing
+;==============================================================================
+
+%macro CIA_RAISE_IRQ_CWRAP 0
+		CCALLCONV_IN_EAXEDX
+		call	ciaRaiseIRQC
+		CCALLCONV_OUT_NONE	2
+%endmacro
+
+
+%endif

@@ -1,0 +1,256 @@
+%ifndef MAC_PLAN2C_MAC
+%define MAC_PLAN2C_MAC
+
+; All the MMX macros assumes that eax and ebx are zeroed
+; and that esi is loaded with a pointer to the temporary line
+
+%macro LOAD_BITPLANE_WORD_MMX 2 ; BITPLANEPTR, DECOTABLE
+		psubd	mm0, mm0
+		psubd	mm1, mm1
+		test	word [memory_chip + %1], 0ffffh
+		jz	near %%skipword
+		mov	al, byte [memory_chip + %1]
+		mov	bl, byte [memory_chip + 1 + %1]
+		movq	mm0, [%2 + 8*eax]
+		movq	mm1, [%2 + 8*ebx]
+%%skipword:	add	%1, 2
+%endmacro
+
+%macro LOAD_BITPLANE_WORD 2 ; BITPLANEPTR, DECOTABLE
+		xor	eax, eax
+		xor	ebx, ebx
+		xor	edi, edi
+		xor	ebp, ebp
+		mov	ecx, dword [%1]
+		test	word [memory_chip + ecx], 0ffffh
+		jz	near %%skipword
+		mov	dl, byte [memory_chip + ecx]
+		mov	eax, dword [%2 + 8*edx]
+		mov	ebx, dword [%2 + 4 + 8*edx]
+		mov	dl, byte [memory_chip + 1 + ecx]
+		mov	edi, dword [%2 + 8*edx]
+		mov	ebp, dword [%2 + 4 + 8*edx]
+%%skipword:	add	dword [%1], 2
+%endmacro
+
+%macro LOAD_BITPLANE_WORD_320 2 ; BITPLANEPTR, DECOTABLE
+		xor	edi, edi
+		xor	ebp, ebp
+		mov	ecx, dword [%1]
+		test	word [memory_chip + ecx], 0ffffh
+		jz	near %%skipword
+		mov	dl, byte [memory_chip + ecx]
+		mov	edi, dword [%2 + 4*edx]
+		mov	dl, byte [memory_chip + 1 + ecx]
+		mov	ebp, dword [%2 + 4*edx]
+%%skipword:	add	dword [%1], 2
+%endmacro
+
+%macro OR_BITPLANE_WORD_MMX 2 ; BITPLANEPTR, DECOTABLE
+		test	word [memory_chip + %1], 0ffffh
+		jz	near %%skipword
+		mov	al, byte [memory_chip + %1]
+		mov	bl, byte [memory_chip + 1 + %1]
+		por	mm0, [%2 + 8*eax]
+		por	mm1, [%2 + 8*ebx]
+%%skipword:	add	%1, 2
+%endmacro
+
+%macro OR_BITPLANE_WORD 2 ; BITPLANEPTR, DECOTABLE
+		mov	ecx, dword [%1]
+		test	word [memory_chip + ecx], 0ffffh
+		jz	near %%skipword
+		mov	dl, byte [memory_chip + ecx]
+		or	eax, dword [%2 + 8*edx]
+		or	ebx, dword [%2 + 4 + 8*edx]
+		mov	dl, byte [memory_chip + 1 + ecx]
+		or	edi, dword [%2 + 8*edx]
+		or	ebp, dword [%2 + 4 + 8*edx]
+%%skipword:	add	dword [%1], 2
+%endmacro
+
+%macro OR_BITPLANE_WORD_320 2 ; BITPLANEPTR, DECOTABLE
+		mov	ecx, dword [%1]
+		test	word [memory_chip + ecx], 0ffffh
+		jz	near %%skipword
+		mov	dl, byte [memory_chip + ecx]
+		or	edi, dword [%2 + 4*edx]
+		mov	dl, byte [memory_chip + 1 + ecx]
+		or	ebp, dword [%2 + 4*edx]
+%%skipword:	add	dword [%1], 2
+%endmacro
+
+%macro STORE_DECODED_DATA_MMX 0
+		movq	[esi], mm0
+		movq	[8 + esi], mm1
+		add	esi, 16
+%endmacro
+
+%macro STORE_DECODED_DATA 0
+		mov	dword [esi], eax
+		mov	dword [4 + esi], ebx
+		mov	dword [8 + esi], edi
+		mov	dword [12 + esi], ebp
+		add	esi, 16
+%endmacro
+
+%macro STORE_DECODED_DATA_320 0
+		mov	dword [esi], edi
+		mov	dword [4 + esi], ebp
+		add	esi, 8
+%endmacro
+
+%macro OR_DECODED_DATA_MMX 0
+		por	mm0, [esi]
+		por	mm1, [8 + esi]
+		movq	[esi], mm0
+		movq	[8 + esi], mm1
+		add	esi, 16
+%endmacro
+
+%macro OR_DECODED_DATA 0
+		or	dword [esi], eax
+		or	dword [4 + esi], ebx
+		or	dword [8 + esi], edi
+		or	dword [12 + esi], ebp
+		add	esi, 16
+%endmacro
+
+%macro OR_DECODED_DATA_320 0
+		or	dword [esi], edi
+		or	dword [4 + esi], ebp
+		add	esi, 8
+%endmacro
+
+%macro SETUP_LOOP_MMX 2 ; SCROLL, TMPLINE
+		mov	esi, dword [graph_DDF_word_count]
+		mov	dword [graph_decode_tmp], esi
+		mov	esi, %2
+		xor	eax, eax
+		add	esi, dword [graph_DDF_start]
+		xor	ebx, ebx
+		add	esi, dword [%1]
+%endmacro
+
+%macro SETUP_LOOP 2 ; SCROLL, TMPLINE
+		mov	esi, dword [graph_DDF_word_count]
+		mov	dword [graph_decode_tmp], esi
+		mov	esi, %2
+		xor	edx, edx
+		add	esi, dword [graph_DDF_start]
+		add	esi, dword [%1]
+%endmacro
+
+%macro SETUP_LOOP_320 2 ; SCROLL, TMPLINE
+		mov	esi, dword [graph_DDF_word_count]
+		mov	dword [graph_decode_tmp], esi
+		mov	esi, dword [graph_DDF_start]
+		shr	esi, 1
+		add	esi, %2
+		mov	edx, dword [%1]
+		shr	edx, 1
+		add	esi, edx
+		xor	edx, edx
+%endmacro
+
+%macro ITERATE_LOOP 1 ; THE_LABEL
+		dec	dword [graph_decode_tmp]
+		jnz	near %1
+%endmacro
+
+%macro LOAD_BITPLANE_PTR 2 ; REGISTER, PTR
+		mov	%1, dword [%2]
+%endmacro
+
+%macro SAVE_BITPLANE_PTR 2 ; REGISTER, PTR
+		mov	dword [%2], %1
+%endmacro
+
+%macro TEST_HIRES 1 ; THE_LABEL
+		test	byte [bplcon0 + 1], 080h
+		jnz	near %1
+%endmacro
+
+%macro TEST_MMX 1 ; THE_LABEL
+		test	byte [fellow_mmx_detected], 0ffh
+		jnz	near %1
+%endmacro
+
+%macro LOAD_WORDS_TO_DECODE 1 ; NO_WORK_LABEL
+		mov	eax, dword [graph_DDF_word_count]
+		test	eax, eax
+		jz	near %1
+%endmacro
+
+%macro DECIDE_ODDEVEN_EQUAL 3 ; EQUAL_LABEL, OSCROLL, ESCROLL
+		mov	eax, dword [%2]
+		cmp	eax, dword [%3]
+		je	near %1
+%endmacro
+
+%macro MODULO_ODD_SETUP 0
+		mov	esi, dword [bpl1mod]
+%endmacro
+
+%macro MODULO_EVEN_SETUP 0
+		mov	edi, dword [bpl2mod]
+%endmacro
+
+%macro MODULO 2 ; BPLPTR, MODULO
+		mov	eax, dword [%1]
+		add	eax, %2
+		and	eax, 01fffffh
+		mov	dword [%1], eax
+%endmacro
+
+%macro MODULO1 0
+		MODULO_ODD_SETUP
+		MODULO			bpl1pt, esi
+%endmacro
+
+%macro MODULO2 0
+		MODULO_ODD_SETUP
+		MODULO_EVEN_SETUP
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+%endmacro
+
+%macro MODULO3 0
+		MODULO_ODD_SETUP
+		MODULO_EVEN_SETUP
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+%endmacro
+
+%macro MODULO4 0
+		MODULO_ODD_SETUP
+		MODULO_EVEN_SETUP
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
+%endmacro
+
+%macro MODULO5 0
+		MODULO_ODD_SETUP
+		MODULO_EVEN_SETUP
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
+		MODULO			bpl5pt, esi
+%endmacro
+
+%macro MODULO6 0
+		MODULO_ODD_SETUP
+		MODULO_EVEN_SETUP
+		MODULO			bpl1pt, esi
+		MODULO			bpl2pt, edi
+		MODULO			bpl3pt, esi
+		MODULO			bpl4pt, edi
+		MODULO			bpl5pt, esi
+		MODULO			bpl6pt, edi
+%endmacro
+
+%endif

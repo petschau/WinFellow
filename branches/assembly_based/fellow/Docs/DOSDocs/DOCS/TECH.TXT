@@ -1,0 +1,64 @@
+Reference platform:
+-------------------
+
+The Fellow Emulator V0.3.3 emulates something that is
+approximately an Amiga 500. This means that the Amiga 500
+model was used as a reference platform and the emulator
+is tuned to provide the CPU and graphics performance of
+this particular Amiga. The emulator can however be
+configured to provide more CPU power or less graphics
+performance.
+
+
+The virtual hardware emulation-model includes:
+----------------------------------------------
+
+-Motorola 68000/010/20/30 CPU instruction set emulation
+-OCS graphics (PAL only. All graphics modes. DMA-driven sprites only)
+-OCS/ECS blitter
+-4 channel stereo 8-bit sound (DMA-driven only)
+-Cia emulation (Some minor details omitted)
+-OCS Copper emulation.
+-4 virtual floppy drives.
+-Joystick and mouse emulation.
+-Keyboard emulation.
+-Up to 11.75 MB Amiga-memory.
+
+Operatingsystem-level drivers:
+------------------------------
+-Harddisk emulation with hardfiles
+-Virtual filesystem
+
+
+Left to do in emulation core (lots of minor details):
+-----------------------------------------------------
+
+-Graphics are line-oriented.  This is sufficient for most programs.
+-CPU and Copper-driven sprites. The current implementation only
+ supports 8 sprites per line driven by DMA. Normally only games
+ multiplex more than 8 sprites horisontally on the same line.
+ Sprites in dual hires are not entirely correct at the moment.
+-Sprite collisions.
+-Blitter has a couple of rare special cases that is not correct.
+-Copper timing is not correct in some special cases.
+-Support for CPU-driven sound, and attached channels.
+-Parallell/serial ports. Can probably be done as a serial.device replacement.
+
+
+Work in progress:
+-----------------
+
+-Win32 port
+
+
+Contributions:
+--------------
+
+You are welcome to make programming contributions. It is however best
+if you find something you want to do rather than mailing us and
+ask to given some task. Since Fellow is developed on an idealistic
+basis, the basic idea is that everyone do something they like.
+
+When you start doing something it is wise to mail some of us to make
+sure no one is doing double work.
+
