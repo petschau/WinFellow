@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.15.2.11 2005-05-06 15:21:44 worfje Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.15.2.12 2008-02-13 19:24:31 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -25,8 +25,6 @@
 /*=========================================================================*/
 
 #include <time.h>
-#include "portable.h"
-#include "renaming.h"
 
 #include "defs.h"
 #include "fellow.h"
@@ -49,7 +47,6 @@
 #include "timer.h"
 #include "config.h"
 #include "wgui.h"
-#include "mmx.h"
 #include "ffilesys.h"
 #include "ini.h"
 #include "cpudis.h"
@@ -212,9 +209,9 @@ void fellowAddTimelessLog(const char *format,...)
 
 char *fellowGetVersionString(void)
 {
-    char *result;
+    char *result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4);
     
-    if(!(result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4)))
+    if(!result)
         return NULL;
 
 //    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
@@ -250,7 +247,7 @@ void fellowSoftReset(void) {
   drawHardReset();
   kbdHardReset();
   gameportHardReset();
-  busHardReset();
+  busSoftReset();
   soundHardReset();
   blitterHardReset();
   copperHardReset();
@@ -376,7 +373,8 @@ void fellowRun(void) {
   fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_run();
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+    busRunNew();
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
@@ -388,10 +386,12 @@ void fellowRun(void) {
 /*============================================================================*/
 
 void fellowStepOne(void) {
-  fellowRequestEmulationStopImmediately();
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) bus_debug();
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+    busDebugNew();
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
@@ -403,15 +403,19 @@ void fellowStepOne(void) {
 /*============================================================================*/
 
 void fellowStepOver(void) {
-  char s[128];
-  fellowRequestEmulationStopImmediately();
+  char saddress[128];
+  char sdata[128];
+  char sinstruction[128];
+  char soperands[128];
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) {
-    ULO current_pc = cpuGetPC(pc);
-    ULO over_pc = disOpcode(current_pc, s);
-    while ((cpuGetPC(pc) != over_pc) && !fellow_request_emulation_stop)
-      bus_debug();
+    ULO current_pc = cpuGetPC();
+    ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
+    while ((cpuGetPC() != over_pc) && (cpuGetPC() != 0xf80360) && !fellow_request_emulation_stop)
+      busDebugNew();
   }
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
@@ -424,12 +428,13 @@ void fellowStepOver(void) {
 /*============================================================================*/
 
 void fellowRunDebug(ULO breakpoint) {
-  fellowRequestEmulationStopImmediately();
+  fellowRequestEmulationStopImmediatelyClear();
+  fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
-    while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC(pc)))
-      bus_debug();
+    while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
+      busDebugNew();
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
@@ -523,7 +528,7 @@ static void fellowModulesShutdown(void) {
 /* main....                                                                   */
 /*============================================================================*/
 
-int main(int argc, char *argv[]) {
+int __cdecl main(int argc, char *argv[]) {
 
   #ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);

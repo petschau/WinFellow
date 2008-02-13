@@ -1,4 +1,4 @@
-/* @(#) $Id: kbdparser.c,v 1.4.2.2 2004-06-04 04:44:17 carfesh Exp $ */
+/* @(#) $Id: kbdparser.c,v 1.4.2.3 2008-02-13 19:24:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -321,7 +321,7 @@ int prsGetKeyIndex( STR *szKey, STR *Keys[], int MaxKeys )
 
 STR *prsTrim( STR *line )
 {
-	int i = 0, j = strlen( line ) - 1;
+	size_t i = 0, j = strlen( line ) - 1;
 	STR *p = line;
 
 	// trim starting space and tab
@@ -351,7 +351,7 @@ STR *prsTrim( STR *line )
 
 BOOLE prsGetAmigaName( STR *line, STR **pAm, STR **pWin )
 {
-	int i = 0, j = 0;
+	int i = 0;
 	*pAm = line;
 
 	while( line[i] && (line[i] != '=')) i++;
@@ -434,7 +434,7 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 BOOLE prsWriteFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8] )
 {
 	FILE *f = NULL;
-	char line[256], *pAmigaName = NULL, *pWinName = NULL;
+	char line[256];
 	int AmigaIndex, PcIndex;
 
 	f = fopen( szFilename, "w" );

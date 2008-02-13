@@ -1,4 +1,4 @@
-/* @(#) $Id: FHFILE.C,v 1.6.2.3 2004-06-08 14:05:35 carfesh Exp $ */
+/* @(#) $Id: FHFILE.C,v 1.6.2.4 2008-02-13 19:24:31 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -23,9 +23,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#include "portable.h"
-#include "renaming.h"
 
 #include "defs.h"
 #include "fellow.h"
@@ -190,30 +187,29 @@ static void fhfileSetLed(BOOLE state) {
 /*==================*/
 
 static void fhfileIgnore(ULO index) {
-  wril(0, cpuGetAReg(1) + 32);
+  memoryWriteLong(0, cpuGetAReg(1) + 32);
   cpuSetDReg(0, 0);
 }
 
-
-static LON fhfileRead(ULO index) {
-  ULO dest = fetl(cpuGetAReg(1) + 40);
-  ULO offset = fetl(cpuGetAReg(1) + 44);
-  ULO length = fetl(cpuGetAReg(1) + 36);
+static BYT fhfileRead(ULO index) {
+  ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
+  ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
+  ULO length = memoryReadLong(cpuGetAReg(1) + 36);
   
   if ((offset + length) > fhfile_devs[index].size)
     return -3;
   fhfileSetLed(TRUE);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fread(memoryAddressToPtr(dest), 1, length, fhfile_devs[index].F);
-  wril(length, cpuGetAReg(1) + 32);
+  memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(FALSE);
   return 0;
 }
 
-static LON fhfileWrite(ULO index) {
-  ULO dest = fetl(cpuGetAReg(1) + 40);
-  ULO offset = fetl(cpuGetAReg(1) + 44);
-  ULO length = fetl(cpuGetAReg(1) + 36);
+static BYT fhfileWrite(ULO index) {
+  ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
+  ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
+  ULO length = memoryReadLong(cpuGetAReg(1) + 36);
 
   if (fhfile_devs[index].readonly ||
       ((offset + length) > fhfile_devs[index].size))
@@ -221,21 +217,21 @@ static LON fhfileWrite(ULO index) {
   fhfileSetLed(TRUE);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fwrite(memoryAddressToPtr(dest),1, length, fhfile_devs[index].F);
-  wril(length, cpuGetAReg(1) + 32);
+  memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(FALSE);
   return 0;
 }
 
 static void fhfileGetNumberOfTracks(ULO index) {
-  wril(fhfile_devs[index].tracks, cpuGetAReg(1) + 32);
+  memoryWriteLong(fhfile_devs[index].tracks, cpuGetAReg(1) + 32);
 }
 
 static void fhfileGetDriveType(ULO index) {
-  wril(1, cpuGetAReg(1) + 32);
+  memoryWriteLong(1, cpuGetAReg(1) + 32);
 }
 
 static void fhfileWriteProt(ULO index) {
-  wril(fhfile_devs[index].readonly, cpuGetAReg(1) + 32);
+  memoryWriteLong(fhfile_devs[index].readonly, cpuGetAReg(1) + 32);
 }
 
 
@@ -247,7 +243,8 @@ static void fhfileWriteProt(ULO index) {
 /* For later use when filling out the bootnode          */
 /*======================================================*/
 
-void fhfileDiag(void) {
+void fhfileDiag(void)
+{
   fhfile_configdev = cpuGetAReg(3);
   memoryDmemSetLongNoCounter(FHFILE_MAX_DEVICES, 4088);
   memoryDmemSetLongNoCounter(fhfile_configdev, 4092);
@@ -261,21 +258,21 @@ void fhfileDiag(void) {
 
 static void fhfileOpen(void) {
   if (cpuGetDReg(0) < FHFILE_MAX_DEVICES) {
-    wrib(7, cpuGetAReg(1) + 8);                     /* ln_type (NT_REPLYMSG) */
-    wrib(0, cpuGetAReg(1) + 31);                    /* io_error */
-    wril(cpuGetDReg(0), cpuGetAReg(1) + 24);                 /* io_unit */
-    wril(fetl(cpuGetAReg(6) + 32) + 1, cpuGetAReg(6) + 32);  /* LIB_OPENCNT */
+    memoryWriteByte(7, cpuGetAReg(1) + 8);                     /* ln_type (NT_REPLYMSG) */
+    memoryWriteByte(0, cpuGetAReg(1) + 31);                    /* io_error */
+    memoryWriteLong(cpuGetDReg(0), cpuGetAReg(1) + 24);                 /* io_unit */
+    memoryWriteLong(memoryReadLong(cpuGetAReg(6) + 32) + 1, cpuGetAReg(6) + 32);  /* LIB_OPENCNT */
     cpuSetDReg(0, 0);                              /* ? */
   }
   else {
-    wril(-1, cpuGetAReg(1) + 20);            
-    wrib(-1, cpuGetAReg(1) + 31);                   /* io_error */
+    memoryWriteLong(-1, cpuGetAReg(1) + 20);            
+    memoryWriteByte(-1, cpuGetAReg(1) + 31);                   /* io_error */
     cpuSetDReg(0, -1);                             /* ? */
   }
 }
 
 static void fhfileClose(void) {
-  wril(fetl(cpuGetAReg(6) + 32) - 1, cpuGetAReg(6) + 32);    /* LIB_OPENCNT */
+  memoryWriteLong(memoryReadLong(cpuGetAReg(6) + 32) - 1, cpuGetAReg(6) + 32);    /* LIB_OPENCNT */
   cpuSetDReg(0, 0);                                /* ? */
 }
 
@@ -286,10 +283,10 @@ static void fhfileExpunge(void) {
 static void fhfileNULL(void) {}
 
 static void fhfileBeginIO(void) {
-  LON error = 0;
-  ULO unit = fetl(cpuGetAReg(1) + 24);
+  BYT error = 0;
+  ULO unit = memoryReadLong(cpuGetAReg(1) + 24);
 
-  switch (fetw(cpuGetAReg(1) + 28)) {
+  switch (memoryReadWord(cpuGetAReg(1) + 28)) {
     case 2:
       error = fhfileRead(unit);
       break;
@@ -322,8 +319,8 @@ static void fhfileBeginIO(void) {
       cpuSetDReg(0, 0);
       break;
   }
-  wrib(5, cpuGetAReg(1) + 8);      /* ln_type */
-  wrib(error, cpuGetAReg(1) + 31); /* ln_error */
+  memoryWriteByte(5, cpuGetAReg(1) + 8);      /* ln_type */
+  memoryWriteByte(error, cpuGetAReg(1) + 31); /* ln_error */
 }
 
 
@@ -395,6 +392,41 @@ void fhfileCardInit(void) {
   memoryEmemMirror(0x1000, fhfile_rom + 0x1000, 0xa0);
 }
 
+/*============================================================================*/
+/* Functions to get and set data in the fhfile memory area                    */
+/*============================================================================*/
+
+UBY fhfileReadByte(ULO address)
+{
+  return fhfile_rom[address & 0xffff];
+}
+
+UWO fhfileReadWord(ULO address)
+{
+  UBY *p = fhfile_rom + (address & 0xffff);
+  return (((UWO)p[0]) << 8) | ((UWO)p[1]);
+}
+
+ULO fhfileReadLong(ULO address)
+{
+  UBY *p = fhfile_rom + (address & 0xffff);
+  return (((ULO)p[0]) << 24) | (((ULO)p[1]) << 16) | (((ULO)p[2]) << 8) | ((ULO)p[3]);
+}
+
+void fhfileWriteByte(UBY data, ULO address)
+{
+  // NOP
+}
+
+void fhfileWriteWord(UWO data, ULO address)
+{
+  // NOP
+}
+
+void fhfileWriteLong(ULO data, ULO address)
+{
+  // NOP
+}
 
 /*====================================================*/
 /* fhfile_card_map                                    */
@@ -410,13 +442,12 @@ void fhfileCardMap(ULO mapping) {
   memoryBankSet(fhfileReadByte,
 		fhfileReadWord,
 		fhfileReadLong,
-		memoryNAWriteByte,
-		memoryNAWriteWord,
-		memoryNAWriteLong,
+		fhfileWriteByte,
+		fhfileWriteWord,
+		fhfileWriteLong,
 		fhfile_rom,
 		bank,
-		bank,
-		FALSE);
+		bank);
 }
 
 
@@ -445,7 +476,7 @@ static void fhfileMakeDOSDevPacket(ULO devno, ULO unitnameptr, ULO devnameptr){
     memoryDmemSetLong(0);				     /* 60 Number of buffers */
     memoryDmemSetLong(0);				     /* 64 Type of memory for buffers */
     memoryDmemSetLong(0x7fffffff);			     /* 68 Largest transfer */
-    memoryDmemSetLong(~1);				     /* 72 Add mask */
+    memoryDmemSetLong(~1U);				     /* 72 Add mask */
     memoryDmemSetLong(-1);				     /* 76 Boot priority */
     memoryDmemSetLong(0x444f5300);			     /* 80 DOS file handler name */
     memoryDmemSetLong(0);

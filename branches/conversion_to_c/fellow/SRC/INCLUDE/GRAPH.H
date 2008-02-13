@@ -1,153 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
-/* Rename assembly functions */
-
-#define graphSpriteHack ASMRENAME(graphSpriteHack)
-#define graphComposeLineOutputSmart ASMRENAME(graphComposeLineOutputSmart)
-#define graphComposeLineOutput ASMRENAME(graphComposeLineOutput)
-#define spritesDecode ASMRENAME(spritesDecode)
-#define spritesMerge ASMRENAME(spritesMerge)
-#define graphCompareCopy ASMRENAME(graphCompareCopy)
-#define graphLinedescMakeSmart ASMRENAME(graphLinedescMakeSmart)
-
-#define graphLinedescColorsSmart ASMRENAME(graphLinedescColorsSmart)
-#define graphLinedescGeometrySmart ASMRENAME(graphLinedescGeometrySmart)
-#define graphLinedescRoutinesSmart ASMRENAME(graphLinedescRoutinesSmart)
-
-#define graphemstart ASMRENAME(graphemstart)
-#define graphDecode0 ASMRENAME(graphDecode0)
-#define graphDecode1 ASMRENAME(graphDecode1)
-#define graphDecode2 ASMRENAME(graphDecode2)
-#define graphDecode3 ASMRENAME(graphDecode3)
-#define graphDecode4 ASMRENAME(graphDecode4)
-#define graphDecode5 ASMRENAME(graphDecode5)
-#define graphDecode6 ASMRENAME(graphDecode6)
-#define graphDecode2Dual ASMRENAME(graphDecode2Dual)
-#define graphDecode3Dual ASMRENAME(graphDecode3Dual)
-#define graphDecode4Dual ASMRENAME(graphDecode4Dual)
-#define graphDecode5Dual ASMRENAME(graphDecode5Dual)
-#define graphDecode6Dual ASMRENAME(graphDecode6Dual)
-#define graphDecode0Hi320 ASMRENAME(graphDecode0Hi320)
-#define graphDecode1Hi320 ASMRENAME(graphDecode1Hi320)
-#define graphDecode2Hi320 ASMRENAME(graphDecode2Hi320)
-#define graphDecode3Hi320 ASMRENAME(graphDecode3Hi320)
-#define graphDecode4Hi320 ASMRENAME(graphDecode4Hi320)
-
-#define graphDecode0Hi ASMRENAME(graphDecode0Hi)
-#define graphDecode1Hi ASMRENAME(graphDecode1Hi)
-#define graphDecode2Hi ASMRENAME(graphDecode2Hi)
-#define graphDecode3Hi ASMRENAME(graphDecode3Hi)
-#define graphDecode4Hi ASMRENAME(graphDecode4Hi)
-
-
-#define graphDecode2HiDual320 ASMRENAME(graphDecode2HiDual320)
-#define graphDecode3HiDual320 ASMRENAME(graphDecode3HiDual320)
-#define graphDecode4HiDual320 ASMRENAME(graphDecode4HiDual320)
-//#define wcolor ASMRENAME(wcolor)
-#define wdiwstrt ASMRENAME(wdiwstrt)
-#define wdiwstop ASMRENAME(wdiwstop)
-#define wddfstrt ASMRENAME(wddfstrt)
-#define wddfstop ASMRENAME(wddfstop)
-#define wbpl1pth ASMRENAME(wbpl1pth)
-#define wbpl1ptl ASMRENAME(wbpl1ptl)
-#define wbpl2pth ASMRENAME(wbpl2pth)
-#define wbpl2ptl ASMRENAME(wbpl2ptl)
-#define wbpl3pth ASMRENAME(wbpl3pth)
-#define wbpl3ptl ASMRENAME(wbpl3ptl)
-#define wbpl4pth ASMRENAME(wbpl4pth)
-#define wbpl4ptl ASMRENAME(wbpl4ptl)
-#define wbpl5pth ASMRENAME(wbpl5pth)
-#define wbpl5ptl ASMRENAME(wbpl5ptl)
-#define wbpl6pth ASMRENAME(wbpl6pth)
-#define wbpl6ptl ASMRENAME(wbpl6ptl)
-#define wbplcon0 ASMRENAME(wbplcon0)
-#define wbplcon1 ASMRENAME(wbplcon1)
-#define wbplcon2 ASMRENAME(wbplcon2)
-#define wbpl1mod ASMRENAME(wbpl1mod)
-#define wbpl2mod ASMRENAME(wbpl2mod)
-#define wvpos ASMRENAME(wvpos)
-#define rid ASMRENAME(rid)
-#define rvhposr ASMRENAME(rvhposr)
-#define rvposr ASMRENAME(rvposr)
-#define rdmaconr ASMRENAME(rdmaconr)
-
-/* Declare asm functions */
-
-extern void graphemstart(void); /* Code alignment check label */
-extern void graphDecode0(void);
-extern void graphDecode1(void);
-extern void graphDecode2(void);
-extern void graphDecode3(void);
-extern void graphDecode4(void);
-extern void graphDecode5(void);
-extern void graphDecode6(void);
-extern void graphDecode2Dual(void);
-extern void graphDecode3Dual(void);
-extern void graphDecode4Dual(void);
-extern void graphDecode5Dual(void);
-extern void graphDecode6Dual(void);
-extern void graphDecode0Hi320(void);
-extern void graphDecode1Hi320(void);
-extern void graphDecode2Hi320(void);
-extern void graphDecode3Hi320(void);
-extern void graphDecode4Hi320(void);
-
-extern void graphDecode0Hi(void);
-extern void graphDecode1Hi(void);
-extern void graphDecode2Hi(void);
-extern void graphDecode3Hi(void);
-extern void graphDecode4Hi(void);
-
-extern void graphDecode2HiDual320(void);
-extern void graphDecode3HiDual320(void);
-extern void graphDecode4HiDual320(void);
-//extern void wcolor(ULO data, ULO address);
-extern void wdiwstrt(ULO,ULO);
-extern void wdiwstop(ULO,ULO);
-extern void wddfstrt(ULO,ULO);
-extern void wddfstop(ULO,ULO);
-extern void wbpl1pth(ULO,ULO);
-extern void wbpl1ptl(ULO,ULO);
-extern void wbpl2pth(ULO,ULO);
-extern void wbpl2ptl(ULO,ULO);
-extern void wbpl3pth(ULO,ULO);
-extern void wbpl3ptl(ULO,ULO);
-extern void wbpl4pth(ULO,ULO);
-extern void wbpl4ptl(ULO,ULO);
-extern void wbpl5pth(ULO,ULO);
-extern void wbpl5ptl(ULO,ULO);
-extern void wbpl6pth(ULO,ULO);
-extern void wbpl6ptl(ULO,ULO);
-extern void wbplcon0(ULO data, ULO address);
-extern void wbplcon1(ULO data, ULO address);
-extern void wbplcon2(ULO data, ULO address);
-extern void wbpl1mod(ULO data, ULO address);
-extern void wbpl2mod(ULO data, ULO address);
-extern void wvpos(ULO,ULO);
-extern ULO rid(ULO);
-extern ULO rvhposr(ULO);
-extern ULO rvposr(ULO);
-extern ULO rdmaconr(ULO);
-
-extern void graphSpriteHack(void);
-extern void graphComposeLineOutputSmart(void);
-extern void graphComposeLineOutput(void);
-extern void spritesDecode(void);
-extern void spritesMerge(void);
-extern void graphCompareCopy(void);
-extern void graphLinedescMakeSmart(void);
-
-extern void graphLinedescColorsSmart(void);
-extern void graphLinedescGeometrySmart(void);
-extern void graphLinedescRoutinesSmart(void);
-
 /* C declarations */
-
-extern void wsprxpos(ULO,ULO);
-extern void wsprxctl(ULO,ULO);
-extern void wsprxdata(ULO,ULO);
-extern void wsprxdatb(ULO,ULO);
 
 extern void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip);
 extern BOOLE graphGetAllowBplLineSkip(void);
@@ -162,9 +16,10 @@ extern void graphEmulationStart(void);
 extern void graphEmulationStop(void);
 extern void graphStartup(void);
 extern void graphShutdown(void);
-void graphCalculateWindow_C(void);
-void graphCalculateWindowHires_C(void);
-void graphEndOfLine_C(void);
+extern void graphCalculateWindow(void);
+extern void graphCalculateWindowHires(void);
+extern void graphEndOfLine(void);
+extern void graphEndOfFrame(void);
 extern void graphPlayfieldOnOff(void);
 
 void graphDecode0_C(void);
@@ -191,40 +46,40 @@ void graphDecodeHi3Dual_C(void);
 void graphDecodeHi4Dual_C(void);
 
 
-ULO rdmaconr_C(ULO address);
-ULO rvposr_C(ULO address);
-ULO rvhposr_C(ULO address);
-ULO rid_C(ULO address);
+/* IO register read and write */
 
+UWO rdmaconr(ULO address);
+UWO rvposr(ULO address);
+UWO rvhposr(ULO address);
+UWO rid(ULO address);
 
+void wvpos(UWO data, ULO address);
+void wdiwstrt(UWO data, ULO address);
+void wdiwstop(UWO data, ULO address);
+void wserdat(UWO data, ULO address);
+void wserper(UWO data, ULO address);
+void wddfstrt(UWO data, ULO address);
+void wddfstop(UWO data, ULO address);
+void wdmacon(UWO data, ULO address);
 
-void wvpos_C(ULO data, ULO address);
-void wdiwstrt_C(ULO data, ULO address);
-void wdiwstop_C(ULO data, ULO address);
-void wserdat_C(ULO data, ULO address);
-void wserper_C(ULO data, ULO address);
-void wddfstrt_C(ULO data, ULO address);
-void wddfstop_C(ULO data, ULO address);
-void wdmacon_C(ULO data, ULO address);
-
-void wbpl1pth_C(ULO data, ULO address);
-void wbpl1ptl_C(ULO data, ULO address);
-void wbpl2pth_C(ULO data, ULO address);
-void wbpl2ptl_C(ULO data, ULO address);
-void wbpl3pth_C(ULO data, ULO address);
-void wbpl3ptl_C(ULO data, ULO address);
-void wbpl4pth_C(ULO data, ULO address);
-void wbpl4ptl_C(ULO data, ULO address);
-void wbpl5pth_C(ULO data, ULO address);
-void wbpl5ptl_C(ULO data, ULO address);
-void wbpl6pth_C(ULO data, ULO address);
-void wbpl6ptl_C(ULO data, ULO address);
-void wbplcon0_C(ULO data, ULO address);
-void wbplcon1_C(ULO data, ULO address);
-void wbplcon2_C(ULO data, ULO address);
-void wbpl1mod_C(ULO data, ULO address);
-void wbpl2mod_C(ULO data, ULO address);
-void wcolor_C(ULO data, ULO address);
+void wbpl1pth(UWO data, ULO address);
+void wbpl1ptl(UWO data, ULO address);
+void wbpl2pth(UWO data, ULO address);
+void wbpl2ptl(UWO data, ULO address);
+void wbpl3pth(UWO data, ULO address);
+void wbpl3ptl(UWO data, ULO address);
+void wbpl4pth(UWO data, ULO address);
+void wbpl4ptl(UWO data, ULO address);
+void wbpl5pth(UWO data, ULO address);
+void wbpl5ptl(UWO data, ULO address);
+void wbpl6pth(UWO data, ULO address);
+void wbpl6ptl(UWO data, ULO address);
+void wbplcon0(UWO data, ULO address);
+void wbplcon1(UWO data, ULO address);
+void wbplcon2(UWO data, ULO address);
+void wbpl1mod(UWO data, ULO address);
+void wbpl2mod(UWO data, ULO address);
+void wcolor(UWO data, ULO address);
 
 extern planar2chunkyroutine graph_decode_line_ptr;
 extern planar2chunkyroutine graph_decode_line_tab[16];

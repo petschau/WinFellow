@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.26.2.5 2004-08-22 17:58:04 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.26.2.6 2008-02-13 19:24:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -72,7 +72,7 @@ extern ULO bltcmod, bltdmod, bltadat, bltbdat, bltcdat, bltzero;
 
 /* copper.c */
 extern ULO copcon, cop1lc, cop2lc;
-extern ULO copper_ptr, copper_next;
+extern ULO copper_ptr;
 
 /* floppy.c */
 extern ULO dsklen, dsksync, dskpt;
@@ -167,7 +167,7 @@ wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
 /* debugger main dialog proc */
 /*===========================*/
 
-int wdbgSessionMainDialog(void)
+INT_PTR wdbgSessionMainDialog(void)
 {
   int i;
   PROPSHEETPAGE propertysheets[DEBUG_PROP_SHEETS];
@@ -224,9 +224,9 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
 {
   sprintf(s,
 	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %d y: %d x: %d",
-	  (sr & 0x2000) ? usp : cpuGetAReg(7),
-	  (sr & 0x2000) ? cpuGetAReg(7) : ssp,
-	  sr, draw_frame_count, graph_raster_y, graph_raster_x);
+	  (cpuGetSR() & 0x2000) ? cpu_usp : cpuGetAReg(7),
+	  (cpuGetSR() & 0x2000) ? cpuGetAReg(7) : cpu_ssp,
+	  cpuGetSR(), draw_frame_count, graph_raster_y, graph_raster_x);
   return s;
 }
 
@@ -249,14 +249,14 @@ ULO wdbgLineOut(HDC hDC, STR * s, ULO x, ULO y)
   struct tagSIZE text_size;
   SetBkMode(hDC, OPAQUE);
   wdbgExtendStringTo80Columns(s);
-  TextOut(hDC, x, y, s, strlen(s));
-  GetTextExtentPoint32(hDC, s, strlen(s), (LPSIZE) & text_size);
+  TextOut(hDC, x, y, s, (int) strlen(s));
+  GetTextExtentPoint32(hDC, s, (int) strlen(s), (LPSIZE) & text_size);
   return y + text_size.cy;
 }
 
 STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
 {
-  *disasm_pc = disOpcode(*disasm_pc, s);
+//  *disasm_pc = cpuDisOpcode(*disasm_pc, s);
   return s;
 }
 
@@ -304,9 +304,12 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     y = WDBG_DISASSEMBLY_Y;
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
-    disasm_pc = cpuGetPC(pc);
+    disasm_pc = cpuGetPC();
     for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++)
       y = wdbgLineOut(hDC, wdbgGetDisassemblyLineStr(s, &disasm_pc), x, y);
+
+    
+
     DeleteDC(hDC_image);
     DeleteObject(myarrow);
     DeleteObject(myfont);
@@ -365,13 +368,13 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
       if (memory_ascii) {
 	sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
 		(memory_adress + i * 16) & 0xffffff,
-		fetl(memory_adress + i * 16 + 0),
-		fetl(memory_adress + i * 16 + 4),
-		fetl(memory_adress + i * 16 + 8),
-		fetl(memory_adress + i * 16 + 12));
+		memoryReadLong(memory_adress + i * 16 + 0),
+		memoryReadLong(memory_adress + i * 16 + 4),
+		memoryReadLong(memory_adress + i * 16 + 8),
+		memoryReadLong(memory_adress + i * 16 + 12));
 
 	for (j = 0; j < 16; j++) {
-	  k = (UBY) fetb(memory_adress + i * 16 + j) & 0xff;
+	  k = memoryReadByte(memory_adress + i * 16 + j) & 0xff;
 	  if (k < 32)
 	    st[j + 41] = '.';
 	  else
@@ -383,14 +386,14 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
       else {
 	sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
 		(memory_adress + i * 32) & 0xffffff,
-		fetl(memory_adress + i * 32),
-		fetl(memory_adress + i * 32 + 4),
-		fetl(memory_adress + i * 32 + 8),
-		fetl(memory_adress + i * 32 + 12),
-		fetl(memory_adress + i * 32 + 16),
-		fetl(memory_adress + i * 32 + 20),
-		fetl(memory_adress + i * 32 + 24),
-		fetl(memory_adress + i * 32 + 28));
+		memoryReadLong(memory_adress + i * 32),
+		memoryReadLong(memory_adress + i * 32 + 4),
+		memoryReadLong(memory_adress + i * 32 + 8),
+		memoryReadLong(memory_adress + i * 32 + 12),
+		memoryReadLong(memory_adress + i * 32 + 16),
+		memoryReadLong(memory_adress + i * 32 + 20),
+		memoryReadLong(memory_adress + i * 32 + 24),
+		memoryReadLong(memory_adress + i * 32 + 28));
 	y = wdbgLineOut(hDC, st, x, y);
       }
     }
@@ -724,9 +727,9 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 	    cop2lc, copcon, copper_ptr);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next cycle - %d  Y - %d  X - %d", copper_next,
-	    (copper_next != -1) ? (copper_next / 228) : 0,
-	    (copper_next != -1) ? (copper_next % 228) : 0);
+    sprintf(s, "Next cycle - %d  Y - %d  X - %d", copperEvent.cycle,
+	    (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0,
+	    (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "List 1:        List 2:        At PC:");
@@ -734,9 +737,9 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
     for (i = 0; i < 16; i++) {
       sprintf(s, "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X",
-	      fetw(list1),
-	      fetw(list1 + 2),
-	      fetw(list2), fetw(list2 + 2), fetw(atpc), fetw(atpc + 2));
+	      memoryReadWord(list1),
+	      memoryReadWord(list1 + 2),
+	      memoryReadWord(list2), memoryReadWord(list2 + 2), memoryReadWord(atpc), memoryReadWord(atpc + 2));
       y = wdbgLineOut(hDC, s, x, y);
       list1 += 4;
       list2 += 4;
@@ -959,37 +962,22 @@ void wdbgUpdateEventState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    sprintf(s, "Next Cpu      - %d", cpu_next);
+    sprintf(s, "Next Cpu      - %d", cpuEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next Copper   - %d", copper_next);
+    sprintf(s, "Next Copper   - %d", copperEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next EOL      - %d", eol_next);
+    sprintf(s, "Next EOL      - %d", eolEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next Blitter  - %d", blitend);
+    sprintf(s, "Next Blitter  - %d", blitterEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next IRQ      - %d", irq_next);
+    sprintf(s, "Next IRQ      - %d", irqEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next EOF      - %d", eof_next);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Lvl2 - %d", lvl2_next);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Lvl3 - %d", lvl3_next);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Lvl4 - %d", lvl4_next);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Lvl5 - %d", lvl5_next);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Lvl6 - %d", lvl6_next);
+    sprintf(s, "Next EOF      - %d", eofEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
     DeleteDC(hDC_image);
@@ -1045,10 +1033,11 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
+/*
     sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", soundState0, soundState1,
 	    soundState2, soundState3, soundState5);
     y = wdbgLineOut(hDC, s, x, y);
-
+*/
     for (i = 0; i < 4; i++) {
       sprintf(s,
 	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
@@ -1400,6 +1389,8 @@ BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
   return FALSE;
 }
 
+
+
 /*============================================================================*/
 /* Runs the debugger                                                          */
 /*============================================================================*/
@@ -1422,6 +1413,359 @@ void wdbgDebugSessionRun(HWND parent)
   }
   else
     MessageBox(parent, "Specified KickImage does not exist", "Configuration Error", 0);
+}
+
+
+HWND wdeb_hDialog = 0;
+ULO WDEB_DISASM_LINES = 54;
+
+enum wdeb_actions
+{
+  WDEB_NO_ACTION,
+  WDEB_INIT_DIALOG,
+  WDEB_EXIT
+};
+
+enum wdeb_actions wdeb_action;
+
+void wdebInitInstructionColumns()
+{
+  ULO i;
+  LV_COLUMN lv_col;
+  LV_ITEM lv_item;
+  HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
+  memset(&lv_col, 0, sizeof(lv_col));
+  lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+  lv_col.pszText = "Address";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 0;
+  ListView_InsertColumn(hList, 0, &lv_col);
+
+  lv_col.pszText = "Opcode data";
+  lv_col.cx = 128;
+  lv_col.iSubItem = 1;
+  ListView_InsertColumn(hList, 1, &lv_col);
+
+  lv_col.pszText = "Instruction";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 2;
+  ListView_InsertColumn(hList, 2, &lv_col);
+
+  lv_col.pszText = "Operands";
+  lv_col.cx = 128;
+  lv_col.iSubItem = 3;
+  ListView_InsertColumn(hList, 3, &lv_col);
+
+  memset(&lv_item, 0, sizeof(lv_item));
+  lv_item.mask = LVIF_TEXT;
+  for (i = 0; i < WDEB_DISASM_LINES; ++i)
+  {
+    lv_item.pszText = "x";
+    lv_item.iItem = i;
+    lv_item.iSubItem = 0;
+    ListView_InsertItem(hList, &lv_item);
+
+    lv_item.pszText = "y";
+    lv_item.iItem = i;
+    lv_item.iSubItem = 1;
+    ListView_SetItem(hList, &lv_item);
+
+    lv_item.pszText = "z";
+    lv_item.iItem = i;
+    lv_item.iSubItem = 2;
+    ListView_SetItem(hList, &lv_item);
+  }
+
+}
+
+STR *wdbg_registernames[] = 
+{"D0","D1","D2","D3","D4","D5","D6","D7",
+"A0","A1","A2","A3","A4","A5","A6","A7",
+"PC","USP","SSP","MSP","ISP","VBR","SR"};
+
+void wdebInitRegisterColumns()
+{
+  ULO i;
+  LV_COLUMN lv_col;
+  LV_ITEM lv_item;
+  HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
+  memset(&lv_col, 0, sizeof(lv_col));
+  lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+  lv_col.pszText = "Register";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 0;
+  ListView_InsertColumn(hList, 0, &lv_col);
+
+  lv_col.pszText = "Value";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 1;
+  ListView_InsertColumn(hList, 1, &lv_col);
+
+  memset(&lv_item, 0, sizeof(lv_item));
+  lv_item.mask = LVIF_TEXT;
+  for (i = 0; i < 23; ++i)
+  {
+    lv_item.pszText = wdbg_registernames[i];
+    lv_item.iItem = i;
+    lv_item.iSubItem = 0;
+    ListView_InsertItem(hList, &lv_item);
+
+    lv_item.pszText = "";
+    lv_item.iItem = i;
+    lv_item.iSubItem = 1;
+    ListView_SetItem(hList, &lv_item);
+  }
+}
+
+void wdebInitInfoColumns()
+{
+  LV_COLUMN lv_col;
+  HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INFO);
+  memset(&lv_col, 0, sizeof(lv_col));
+  lv_col.mask = LVCF_TEXT | LVCF_WIDTH | LVCF_SUBITEM;
+
+  lv_col.pszText = "Name";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 0;
+  ListView_InsertColumn(hList, 0, &lv_col);
+
+  lv_col.pszText = "Value";
+  lv_col.cx = 64;
+  lv_col.iSubItem = 1;
+  ListView_InsertColumn(hList, 1, &lv_col);
+}
+
+void wdebUpdateInstructionColumns()
+{
+  ULO i;
+  LV_ITEM lv_item;
+  HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_INSTRUCTIONS);
+  ULO disasm_pc = cpuGetPC();
+  STR inst_address[256];
+  STR inst_data[256];
+  STR inst_name[256];
+  STR inst_operands[256];
+
+  memset(&lv_item, 0, sizeof(lv_item));
+  lv_item.mask = LVIF_TEXT;
+  for (i = 0; i < WDEB_DISASM_LINES; i++)
+  {
+    inst_address[0] = '\0';
+    inst_data[0] = '\0';
+    inst_name[0] = '\0';
+    inst_operands[0] = '\0';
+    disasm_pc = cpuDisOpcode(disasm_pc, inst_address, inst_data, inst_name, inst_operands);
+    lv_item.pszText = inst_address;
+    lv_item.iItem = i;
+    lv_item.iSubItem = 0;
+    ListView_SetItem(hList, &lv_item);
+    lv_item.pszText = inst_data;
+    lv_item.iItem = i;
+    lv_item.iSubItem = 1;
+    ListView_SetItem(hList, &lv_item);
+    lv_item.pszText = inst_name;
+    lv_item.iItem = i;
+    lv_item.iSubItem = 2;
+    ListView_SetItem(hList, &lv_item);
+    lv_item.pszText = inst_operands;
+    lv_item.iItem = i;
+    lv_item.iSubItem = 3;
+    ListView_SetItem(hList, &lv_item);
+  }
+}
+
+void wdebUpdateRegisterColumns()
+{
+  ULO i, j, col;
+  LV_ITEM lv_item;
+  HWND hList=GetDlgItem(wdeb_hDialog, IDC_LST_REGISTERS);
+  ULO disasm_pc = cpuGetPC();
+  STR tmp[16];
+
+  memset(&lv_item, 0, sizeof(lv_item));
+  lv_item.mask = LVIF_TEXT;
+
+  col = 0;
+
+  for (j = 0; j < 2; j++)
+  {
+    for (i = 0; i < 8; i++)
+    {
+      sprintf(tmp, "%.8X", cpuGetReg(j, i));
+      lv_item.pszText = tmp;
+      lv_item.iItem = col++;
+      lv_item.iSubItem = 1;
+      ListView_SetItem(hList, &lv_item);
+    }
+  }
+  sprintf(tmp, "%.8X", cpuGetPC());
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.8X", cpu_usp);
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.8X", cpu_ssp);
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.8X", cpu_msp);
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.8X", cpu_ssp);
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.8X", cpuGetVbr());
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+  sprintf(tmp, "%.4X", cpuGetSR());
+  lv_item.pszText = tmp;
+  lv_item.iItem = col++;
+  lv_item.iSubItem = 1;
+  ListView_SetItem(hList, &lv_item);
+
+}
+
+void wdebUpdateCpuDisplay()
+{
+  wdebUpdateInstructionColumns();
+  wdebUpdateRegisterColumns();
+}
+
+INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg,
+				     UINT uMsg,
+				     WPARAM wParam,
+				     LPARAM lParam)
+{
+  switch (uMsg)
+  {
+    case WM_INITDIALOG:
+      wdeb_action = WDEB_INIT_DIALOG;
+      return TRUE;
+    case WM_PAINT:
+      wdebUpdateCpuDisplay();
+      break;
+    case WM_DESTROY:
+      break;
+    case WM_COMMAND:
+      if (HIWORD(wParam) == BN_CLICKED)
+      {
+	switch (LOWORD(wParam))
+	{
+	  case IDC_BTN_STEP1:
+	    winDrvDebugStart(DBG_STEP, hwndDlg);
+	    wdebUpdateCpuDisplay();
+	    break;
+	  case IDC_BTN_STEP_OVER:
+	    winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
+	    wdebUpdateCpuDisplay();
+	    break;
+	  case IDC_BTN_RUN:
+	    winDrvDebugStart(DBG_RUN, hwndDlg);
+	    wdebUpdateCpuDisplay();
+	    break;
+	  case IDC_BTN_BREAK:
+	    fellowRequestEmulationStop();
+	    break;
+	  case IDOK:
+	  case IDCANCEL:
+	    wdeb_action = WDEB_EXIT;
+	    break;
+	  default:
+	    break;
+	}
+      }
+      break;
+    default:
+      break;
+  }
+  return FALSE;
+}
+
+void wdebCreateDialog()
+{
+  wdeb_hDialog = CreateDialog(win_drv_hInstance, MAKEINTRESOURCE(IDD_DEBUGGER), NULL, wdebDebuggerDialogProc); 
+  ShowWindow(wdeb_hDialog, win_drv_nCmdShow);
+}
+
+void wdebDoMessages()
+{
+  BOOLE end_loop = FALSE;
+  MSG myMsg;
+  while (!end_loop)
+  {
+    if (GetMessage(&myMsg, wdeb_hDialog, 0, 0))
+    {
+      if (!IsDialogMessage(wdeb_hDialog, &myMsg))
+      {
+	TranslateMessage(&myMsg);
+	DispatchMessage(&myMsg);
+      }
+    }
+    switch (wdeb_action)
+    {
+      case WDEB_INIT_DIALOG:
+	wdebInitInstructionColumns();
+	wdebInitRegisterColumns();
+	wdebInitInfoColumns();
+	wdebUpdateCpuDisplay();
+	break;
+      case WDEB_EXIT:
+	end_loop = TRUE;
+	break;
+      default:
+	break;
+    }
+    wdeb_action = WDEB_NO_ACTION;
+  }
+}
+
+void wdebCloseDialog()
+{
+  DestroyWindow(wdeb_hDialog);
+  wdeb_hDialog = 0;
+}
+
+void wdebDebug()
+{
+  /* The configuration has been activated, but we must prepare the modules */
+  /* for emulation ourselves */
+
+  if (wguiCheckEmulationNecessities())
+  {
+    fellowEmulationStart();
+    if (fellowGetPreStartReset())
+      fellowHardReset();
+
+    wdeb_action = WDEB_NO_ACTION;
+    wdebCreateDialog();
+    wdebDoMessages();
+    wdebCloseDialog();
+
+    fellowEmulationStop();
+  }
+  else
+    MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
+
+
 }
 
 #endif /* WGUI */

@@ -106,12 +106,9 @@ extern void kbdStartup(void);
 extern void kbdShutdown(void);
 
 
-void kbdQueueHandlerC(void);
-void kbdEventEOLHandlerC(void);
-void kbdEventEOFHandlerC(void);
-
-#define kbdQueueHandler ASMRENAME(kbdQueueHandler)
-#define kbdEventEOLHandler ASMRENAME(kbdEventEOLHandler)
+void kbdQueueHandler(void);
+void kbdEventEOLHandler(void);
+void kbdEventEOFHandler(void);
 
 extern void kbdQueueHandler(void);
 extern void kbdEventEOLHandler(void);

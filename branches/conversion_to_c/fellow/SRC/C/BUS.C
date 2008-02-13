@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.1.1.1.2.11 2005-01-23 18:23:57 worfje Exp $ */
+/* @(#) $Id: BUS.C,v 1.1.1.1.2.12 2008-02-13 19:24:31 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -23,9 +23,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "cpu.h"
 #include "cia.h"
@@ -38,18 +35,12 @@
 #include "kbd.h"
 #include "sound.h"
 #include "kbd.h"
-
+#include "sprite.h"
+#include "timer.h"
+#include "draw.h"
 
 ULO debugging;
-ULO curcycle;
-ULO eol_next, eof_next;
-ULO lvl2_next;
-ULO lvl3_next;
-ULO lvl4_next;
-ULO lvl5_next;
-ULO lvl6_next;
-ULO lvl7_next;
-buseventfunc lvl2_ptr, lvl3_ptr, lvl4_ptr, lvl5_ptr, lvl6_ptr, lvl7_ptr;
+ULO bus_cycle;
 
 UWO bus_cycle_to_ypos[0x20000];
 UBY bus_cycle_to_xpos[0x20000];
@@ -58,57 +49,395 @@ extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip_factor;
 extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
 extern LON draw_frame_skip;
 
+/* Draft of a new and cleaner bus-event handling */
+
+bus_event cpuEvent;
+bus_event copperEvent;
+bus_event eolEvent;
+bus_event eofEvent;
+bus_event ciaEvent;
+bus_event blitterEvent;
+bus_event irqEvent;
+bus_event *bus_events;
+
+/*==============================================================================*/
+/* Global end of line handler                                                   */
+/*==============================================================================*/
+
+void busEndOfLine(void)
+{
+
+  /*==============================================================*/
+  /* Handles graphics planar to chunky conversion                 */
+  /* and updates the graphics emulation for a new line            */
+  /*==============================================================*/
+  graphEndOfLine(); 
+  spriteEndOfLine();
+
+  /*==============================================================*/
+  /* Update the CIA B event counter                               */
+  /*==============================================================*/
+  ciaUpdateEventCounter(1);
+
+  /*==============================================================*/
+  /* Handles disk DMA if it is running                            */
+  /*==============================================================*/
+  floppyEndOfLine();
+
+  /*==============================================================*/
+  /* Update the sound emulation                                   */
+  /*==============================================================*/
+  soundEndOfLine();
+
+  /*==============================================================*/
+  /* Handle keyboard events                                       */
+  /*==============================================================*/
+  kbdQueueHandler();
+  kbdEventEOLHandler();
+
+  /*==============================================================*/
+  /* Set up the next end of line event                            */
+  /*==============================================================*/
+  eolEvent.cycle += BUS_CYCLE_PER_LINE;
+  busInsertEvent(&eolEvent);
+}
+
+/*==============================================================================*/
+/* Global end of frame handler                                                  */
+/*==============================================================================*/
+
+void busEndOfFrame(void)
+{
+  /*==============================================================*/
+  /* Draw the frame in the host buffer                            */
+  /*==============================================================*/
+  drawEndOfFramePre();
+
+  /*==============================================================*/
+  /* Handle keyboard events                                       */
+  /*==============================================================*/
+  kbdEventEOFHandler();
+
+  /*==============================================================*/
+  /* Reset some aspects of the graphics emulation                 */
+  /*==============================================================*/
+  lof = lof ^ 0x8000;	// short/long frame
+  
+  /*==============================================================*/
+  /* Restart copper                                               */
+  /*==============================================================*/
+  copperEndOfFrame();
+
+  /*==============================================================*/
+  /* Update frame counters                                        */
+  /*==============================================================*/
+  draw_frame_count++; // count frames
+  draw_frame_skip--;  // frame skipping
+
+  if (draw_frame_skip < 0) 
+  {
+    draw_frame_skip = draw_frame_skip_factor;
+  }
+
+  /*==============================================================*/
+  /* Update CIA timer counters                                    */
+  /*==============================================================*/
+  ciaUpdateTimersEOF();
+
+  /*==============================================================*/
+  /* Sprite end of frame updates                                  */
+  /*==============================================================*/
+  spriteEndOfFrame();
+
+  /*==============================================================*/
+  /* Recalculate blitter finished time                            */
+  /*==============================================================*/
+  blitterEndOfFrame();
+
+  /*==============================================================*/
+  /* Flag vertical refresh IRQ                                    */
+  /*==============================================================*/
+
+  memoryWriteWord(0x8020, 0xdff09c);
+
+  /*==============================================================*/
+  /* Set up next end of line event                                */
+  /*==============================================================*/
+
+  busRemoveEvent(&eolEvent);
+  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
+  busInsertEvent(&eolEvent);
+
+  /*==============================================================*/
+  /* Update next CPU instruction time                             */
+  /*==============================================================*/
+
+  if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    //busRemoveEvent(&cpuEvent);
+    cpuEvent.cycle -= BUS_CYCLE_PER_FRAME;
+    //busInsertEvent(&cpuEvent);
+  }
+
+  /*==============================================================*/
+  /* Update next IRQ time                                         */
+  /*==============================================================*/
+  if (irqEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    busRemoveEvent(&irqEvent);
+    irqEvent.cycle -= BUS_CYCLE_PER_FRAME;
+    busInsertEvent(&irqEvent);
+  }
+
+  /*==============================================================*/
+  /* Perform graphics end of frame                                */
+  /*==============================================================*/
+  graphEndOfFrame();
+  timerEndOfFrame();
+
+  busInsertEvent(&eofEvent);	  
+}
+
+void busMsg(STR *msg)
+{
+  MessageBox(0, msg, msg, 0);
+}
+
+void busRemoveEvent(bus_event *ev)
+{
+  bus_event *tmp;
+  BOOLE found = FALSE;
+  for (tmp = bus_events; tmp != NULL; tmp = tmp->next)
+  {
+    if (tmp == ev)
+    {
+      found = TRUE;
+      break;
+    }
+  }
+  if (!found)
+  {
+    busMsg("Removing event that is not in the queue!");
+    return;
+  }
+
+  if (ev->prev == NULL)
+  {
+    bus_events = ev->next;
+  }
+  else
+  {
+    ev->prev->next = ev->next;
+  }
+  if (ev->next != NULL) ev->next->prev = ev->prev;
+  ev->prev = ev->next = NULL;
+}
+
+void busInsertEvent(bus_event *ev)
+{
+  if (bus_events == NULL)
+  {
+    ev->prev = ev->next = NULL;
+    bus_events = ev;
+  }
+  else
+  {
+    bus_event *tmp;
+    bus_event *tmp_prev = NULL;
+    for (tmp = bus_events; tmp != NULL; tmp = tmp->next)
+    {
+      if (ev->cycle < tmp->cycle)
+      {
+	ev->next = tmp;
+	ev->prev = tmp_prev;
+	tmp->prev = ev;
+	if (tmp_prev == NULL) bus_events = ev; /* In front */
+	else tmp_prev->next = ev;
+	return;
+      }
+      tmp_prev = tmp;
+    }
+    tmp_prev->next = ev; /* At end */
+    ev->prev = tmp_prev;
+    ev->next = NULL;
+  }
+}
+
+bus_event *busPopEvent(void)
+{
+  if (bus_events->cycle >= cpuEvent.cycle)
+  {
+    return &cpuEvent;
+  }
+  else
+  {
+    bus_event *tmp = bus_events;
+    bus_events = tmp->next;
+    bus_events->prev = NULL;
+    return tmp;
+  }
+}
+
+FILE *BUSLOG = NULL;
+BOOLE bus_log = FALSE;
+
+void busEventLog(bus_event *e)
+{
+  if (!bus_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  if (e == &copperEvent)
+    fprintf(BUSLOG, "%d copper\n", e->cycle);
+  else if (e == &ciaEvent)
+    fprintf(BUSLOG, "%d cia\n", e->cycle);
+  else if (e == &irqEvent)
+    fprintf(BUSLOG, "%d irq\n", e->cycle);
+  else if (e == &blitterEvent)
+    fprintf(BUSLOG, "%d blitter\n", e->cycle);
+  else if (e == &eolEvent)
+    fprintf(BUSLOG, "%d eol\n", e->cycle);
+  else if (e == &eofEvent)
+    fprintf(BUSLOG, "%d eof\n", e->cycle);
+}
+
+void busLogCpu(STR *s)
+{
+  if (!bus_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("c:\\buslog.txt", "a");
+  fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
+}
+
+void busLogCpuException(STR *s)
+{
+  /*
+  if (!bus_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("c:\\buslog.txt", "a");
+  fprintf(BUSLOG, "%d: %s for opcode %.4X at PC %.8X from PC %.8X\n", cpuEvent.cycle, s, cpu_current_opcode, cpu_original_pc, pc);
+  */
+}
+
+void busUpdateCycleClock(ULO cycle)
+{
+  bus_cycle = cycle;
+  graph_raster_y = bus_cycle_to_ypos[cycle>>2] & 0x1ff;
+  graph_raster_x = bus_cycle_to_xpos[cycle] & 0xff;
+}
+
+extern jmp_buf cpu_exception_buffer;
+
+void busRunNew(void)
+{
+  while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+  {
+    if (setjmp(cpu_exception_buffer) == 0)
+    {
+      while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+      {
+	bus_event *e = busPopEvent();
+	//busEventLog(e);
+	busUpdateCycleClock(e->cycle);
+	e->handler();
+      }
+    }
+    else
+    {
+      // Came out of an CPU exception. Keep on working.
+      cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
+      //busInsertEvent(&cpuEvent);
+      cpu_chip_cycles = 0;
+    }
+  }
+}
+
+void busDebugNew(void)
+{
+  while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+  {
+    if (setjmp(cpu_exception_buffer) == 0)
+    {
+      while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+      {
+	bus_event *e = busPopEvent();
+	busEventLog(e);
+	busUpdateCycleClock(e->cycle);
+	e->handler();
+	if (e == &cpuEvent) return;
+      }
+    }
+    else
+    {
+      // Came out of an CPU exception. Keep on working.
+      cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
+      //busInsertEvent(&cpuEvent);
+      cpu_chip_cycles = 0;
+    }
+  }
+}
+
+void busInitializeQueue(BOOLE insert_cpu_event)
+{
+  memset(&cpuEvent, 0, sizeof(bus_event));
+  memset(&copperEvent, 0, sizeof(bus_event));
+  memset(&eolEvent, 0, sizeof(bus_event));
+  memset(&eofEvent, 0, sizeof(bus_event));
+  memset(&ciaEvent, 0, sizeof(bus_event));
+  memset(&blitterEvent, 0, sizeof(bus_event));
+  memset(&irqEvent, 0, sizeof(bus_event));
+  bus_events = NULL;
+
+  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
+  eolEvent.handler = busEndOfLine;
+  eofEvent.cycle = BUS_CYCLE_PER_FRAME;
+  eofEvent.handler = busEndOfFrame;
+  ciaEvent.cycle = BUS_CYCLE_DISABLE;
+  ciaEvent.handler = ciaHandleEvent;
+  irqEvent.cycle = BUS_CYCLE_DISABLE;
+  irqEvent.handler = cpuSetUpInterrupt;
+  copperEvent.cycle = BUS_CYCLE_DISABLE;
+  copperEvent.handler = copperEmulate;
+  blitterEvent.cycle = BUS_CYCLE_DISABLE;
+  blitterEvent.handler = blitFinishBlit;
+  cpuEvent.cycle = 0;
+  cpuEvent.handler = cpuEventHandler;
+  busInsertEvent(&eofEvent);
+  busInsertEvent(&eolEvent);
+//  if (insert_cpu_event) busInsertEvent(&cpuEvent);
+}
+
 /*===========================================================================*/
 /* Cycle counter to raster beam position table                               */
 /*===========================================================================*/
 
-void busCycleToRasterPosTableInit(void) {
-  int i;
+void busCycleToRasterPosTableInit(void)
+{
+  ULO i;
 
-  for (i = 0; i < 0x20000; i++) {
+  for (i = 0; i < 0x20000; i++)
+  {
     bus_cycle_to_ypos[i>>2] = (UWO) (i / 228);
     bus_cycle_to_xpos[i] = (UBY) (i % 228);
   }
 }
 
-
-/*===========================================================================*/
-/* Set up events for initial execution                                       */
-/*===========================================================================*/
-
-void busEventlistClear(void) {
-  lvl7_next = CYCLESPERFRAME;
-  lvl7_ptr = endOfFrameC;
-  lvl6_next = CYCLESPERFRAME;
-  lvl6_ptr = endOfFrameC;
-  lvl5_next = CYCLESPERFRAME;
-  lvl5_ptr = endOfFrameC;
-  lvl4_next = CYCLESPERFRAME;
-  lvl4_ptr = endOfFrameC;
-  lvl3_next = CYCLESPERLINE - 1;
-  lvl3_ptr = endOfLineC;
-  lvl2_next = CYCLESPERLINE - 1;
-  lvl2_ptr = endOfLineC;
-}
-
-
 /*===========================================================================*/
 /* Called on emulation start / stop and reset                                */
 /*===========================================================================*/
 
-void busEmulationStart(void) {
+void busEmulationStart(void)
+{
 }
 
-void busEmulationStop(void) {
+void busEmulationStop(void)
+{
 }
 
-void busHardReset(void) {
-  busEventlistClear();
-  irq_next = 0xffffffff;
-  curcycle = 0;
-  cpu_next = 0;
-  eol_next = CYCLESPERLINE - 1;
-  eof_next = CYCLESPERFRAME;
+void busSoftReset(void)
+{
+  busInitializeQueue(FALSE);
+}
+
+void busHardReset(void)
+{
+  busInitializeQueue(TRUE);
 }
 
 
@@ -116,295 +445,12 @@ void busHardReset(void) {
 /* Called on emulator startup / shutdown                                     */
 /*===========================================================================*/
 
-void busStartup(void) {
+void busStartup(void)
+{
   busCycleToRasterPosTableInit();
-  curcycle = 0;
 }
 
-void busShutdown(void) {
-}
-
-void busScanLevel6(ULO* lvlx_next, buseventfunc* lvlx_ptr)
-{ 
-  if ((*lvlx_next) > (ULO) cia_next_event_time)
-  {
-    *lvlx_next = cia_next_event_time;
-    *lvlx_ptr = ciaHandleEventC;
-  }
-  lvl6_next = *lvlx_next;
-  lvl6_ptr = *lvlx_ptr; 
-}
-
-void busScanLevel5(ULO* lvlx_next, buseventfunc* lvlx_ptr)
-{ 
-  if ((*lvlx_next) > irq_next)
-  {
-    *lvlx_next = irq_next;
-    *lvlx_ptr = cpuSetUpInterrupt;
-  }
-  lvl5_next = *lvlx_next;
-  lvl5_ptr = *lvlx_ptr; 
-}
-
-void busScanLevel4(ULO* lvlx_next, buseventfunc* lvlx_ptr)
-{ 
-  if ((*lvlx_next) > blitend)
-  {
-    *lvlx_next = blitend;
-    *lvlx_ptr = blitFinishBlit;
-  }
-  lvl4_next = *lvlx_next;
-  lvl4_ptr = *lvlx_ptr; 
-}
-
-void busScanLevel3(ULO* lvlx_next, buseventfunc* lvlx_ptr)
-{ 
-  if ((*lvlx_next) > eol_next)
-  {
-    *lvlx_next = eol_next;
-    *lvlx_ptr = endOfLineC;
-  }
-  lvl3_next = *lvlx_next;
-  lvl3_ptr = *lvlx_ptr; 
-}
-
-void busScanLevel2(ULO* lvlx_next, buseventfunc* lvlx_ptr)
-{ 
-  if ((*lvlx_next) > copper_next)
-  {
-    *lvlx_next = copper_next;
-    *lvlx_ptr = copperEmulateC;
-  }
-  lvl2_next = *lvlx_next;
-  lvl2_ptr = *lvlx_ptr; 
-}
-
-void busScanEventsLevel2(void)
-{ 
-  ULO lvlx_next;
-  buseventfunc lvlx_ptr;
-
-  lvlx_next = lvl3_next;
-  lvlx_ptr = lvl3_ptr;
-
-  busScanLevel2(&lvlx_next, &lvlx_ptr);
-}
-
-void busScanEventsLevel3(void)
-{ 
-  ULO lvlx_next;
-  buseventfunc lvlx_ptr;
-
-  lvlx_next = lvl4_next;
-  lvlx_ptr = lvl4_ptr;
-
-  busScanLevel3(&lvlx_next, &lvlx_ptr);
-  busScanLevel2(&lvlx_next, &lvlx_ptr);
-}
-
-void busScanEventsLevel4(void)
-{ 
-  ULO lvlx_next;
-  buseventfunc lvlx_ptr;
-
-  lvlx_next = lvl5_next;
-  lvlx_ptr = lvl5_ptr;
-
-  busScanLevel4(&lvlx_next, &lvlx_ptr);
-  busScanLevel3(&lvlx_next, &lvlx_ptr);
-  busScanLevel2(&lvlx_next, &lvlx_ptr);
-}
-
-void busScanEventsLevel5(void)
-{ 
-  ULO lvlx_next;
-  buseventfunc lvlx_ptr;
-
-  lvlx_next = lvl6_next;
-  lvlx_ptr = lvl6_ptr;
-
-  busScanLevel5(&lvlx_next, &lvlx_ptr);
-  busScanLevel4(&lvlx_next, &lvlx_ptr);
-  busScanLevel3(&lvlx_next, &lvlx_ptr);
-  busScanLevel2(&lvlx_next, &lvlx_ptr);
-}
-
-void busScanEventsLevel6(void)
-{ 
-  ULO lvlx_next;
-  buseventfunc lvlx_ptr;
-
-  lvlx_next = CYCLESPERFRAME;
-  lvlx_ptr = endOfFrameC;
-
-  busScanLevel6(&lvlx_next, &lvlx_ptr);
-  busScanLevel5(&lvlx_next, &lvlx_ptr);
-  busScanLevel4(&lvlx_next, &lvlx_ptr);
-  busScanLevel3(&lvlx_next, &lvlx_ptr);
-  busScanLevel2(&lvlx_next, &lvlx_ptr);
-}
-
-
-/*==============================================================================*/
-/* Global end of line handler                                                   */
-/*==============================================================================*/
-
-void endOfLineC(void)
+void busShutdown(void)
 {
-
-	/*==============================================================*/
-	/* Handles graphics planar to chunky conversion                 */
-	/* and updates the graphics emulation for a new line            */
-	/*==============================================================*/
-	graphEndOfLine_C(); 
-	spriteEndOfLine();
-
-	/*==============================================================*/
-	/* Update the CIA B event counter                               */
-	/*==============================================================*/
-	ciaUpdateEventCounterC(1);
-
-	/*==============================================================*/
-	/* Handles disk DMA if it is running                            */
-	/*==============================================================*/
-	floppyEndOfLineC();
-
-	/*==============================================================*/
-	/* Update the sound emulation                                   */
-	/*==============================================================*/
-	soundEndOfLine();
-
-	/*==============================================================*/
-	/* Handle keyboard events                                       */
-	/*==============================================================*/
-	kbdQueueHandlerC();
-	kbdEventEOLHandlerC();
-
-	/*==============================================================*/
-	/* Set up the next end of line event                            */
-	/*==============================================================*/
-	eol_next += CYCLESPERLINE;
-	busScanEventsLevel3();
-}
-
-/*==============================================================================*/
-/* Global end of frame handler                                                  */
-/*==============================================================================*/
-
-void endOfFrameC(void)
-{
-	/*==============================================================*/
-	/* Draw the frame in the host buffer                            */
-	/*==============================================================*/
-	drawEndOfFramePreC();
-
-	/*==============================================================*/
-	/* Handle keyboard events                                       */
-	/*==============================================================*/
-	kbdEventEOFHandlerC();
-
-	/*==============================================================*/
-	/* Reset some aspects of the graphics emulation                 */
-	/*==============================================================*/
-	lof = lof ^ 0x8000;	// short/long frame
-	
-
-	/*==============================================================*/
-	/* Restart copper                                               */
-	/*==============================================================*/
-	copperEndOfFrame();
-
-	/*==============================================================*/
-	/* Update frame counters                                        */
-	/*==============================================================*/
-	draw_frame_count++; // count frames
-	draw_frame_skip--;  // frame skipping
-
-	if (draw_frame_skip < 0) 
-	{
-		draw_frame_skip = draw_frame_skip_factor;
-	}
-
-	/*==============================================================*/
-	/* Update CIA timer counters                                    */
-	/*==============================================================*/
-	ciaUpdateTimersEOFC();
-
-	/*==============================================================*/
-	/* Sprite end of frame updates                                  */
-	/*==============================================================*/
-	spriteEndOfFrame();
-
-	/*==============================================================*/
-	/* Recalculate blitter finished time                            */
-	/*==============================================================*/
-	//graph_playfield_on = FALSE;
-	if (blitend >= 0)
-	{
-		blitend -= CYCLESPERFRAME;
-	}
-	
-
-	/*==============================================================*/
-	/* Flag vertical refresh IRQ                                    */
-	/*==============================================================*/
-	memory_iobank_write[78](0x8020, 0);
-
-
-	/*==============================================================*/
-	/* Set up next end of line event                                */
-	/*==============================================================*/
-	eol_next = CYCLESPERLINE - 1;
-
-	/*==============================================================*/
-	/* Update next CPU instruction time                             */
-	/*==============================================================*/
-	if (cpu_next >= 0)
-	{
-		cpu_next -= CYCLESPERFRAME;
-	}
-
-	/*==============================================================*/
-	/* Update next IRQ time                                         */
-	/*==============================================================*/
-	if (irq_next >= 0)
-	{
-		irq_next -= CYCLESPERFRAME;
-	}
-
-	/*==============================================================*/
-	/* Perform graphics end of frame                                */
-	/*==============================================================*/
-	graphEndOfFrame();
-	timerEndOfFrame();
-
-	/*==============================================================*/
-	/* Recalculate the entire event queue                           */
-	/*==============================================================*/
-	busScanEventsLevel6();
-		
-	/*==============================================================*/
-	/* Bail out of emulation if we're asked to                      */
-	/*==============================================================*/
-
-	/*
-	if (fellow_request_emulation_stop == TRUE)
-	{
-		_asm
-		{
-			mov	esp, exceptionstack
-		}
-	}
-	else
-	{
-		if (fellow_request_emulation_stop_immediately == TRUE)
-		{
-			_asm
-			{
-				mov	esp, exceptionstack
-			}	
-		}
-	}
-	*/
-	endOfFrameASM();
+  if (BUSLOG != NULL) fclose(BUSLOG);
 }

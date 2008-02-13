@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.1.2.15 2004-06-08 13:20:17 carfesh Exp $ */
+/* @(#) $Id: caps_win32.c,v 1.1.2.16 2008-02-13 19:24:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -147,7 +147,7 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive)
             sprintf(TypeString, "ciitFDD (floppy disk)");
             break;
         default:
-            sprintf(TypeString, "N/A (%d)");
+            sprintf(TypeString, "N/A (%s)", "N/A");
             break;
     }
 

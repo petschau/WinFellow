@@ -10,8 +10,6 @@
 
 #include <math.h>
 
-#include "portable.h"
-#include "renaming.h"
 #include "defs.h"
 #include "fellow.h"
 #include "draw.h"
@@ -584,7 +582,7 @@ ULO draw_8bit_to_color[256];
 /*============================================================================*/
 /* profiling help functions                                                   */
 /*============================================================================*/
-
+/*
 static __inline drawTscBefore(LLO* a)
 {
   LLO local_a = *a;
@@ -630,7 +628,7 @@ static __inline drawTscAfter(LLO* a, LLO* b, ULO* c)
   *b = local_b;
   *c = local_c;
 }
- 
+*/ 
 /*============================================================================*/
 /* Initializes the dual playfield translation table                           */
 /*============================================================================*/
@@ -1281,42 +1279,37 @@ static void drawHAMTableInit(draw_mode *dm) {
 /* Selects drawing routines for the current mode                              */
 /*============================================================================*/
 
-static void drawModeTablesInitialize(draw_mode *dm) {
-	ULO i;
-	ULO fi_hscale; // function index horizontal scale
-	ULO fi_vscale; // function index vertical scale
-	ULO fi_cdepth; // function index color depth
+static void drawModeTablesInitialize(draw_mode *dm)
+{
+  ULO fi_hscale; // function index horizontal scale
+  ULO fi_vscale; // function index vertical scale
+  ULO fi_cdepth; // function index color depth
 
-	// initialize some values
-	draw_buffer_draw = 0;
-	draw_buffer_show = 0;
-	for (i = 0x180; i < 0x1c0; i += 2) 
-	{
-		memorySetIOWriteStub(i, wcolor_C);
-	}
+  // initialize some values
+  draw_buffer_draw = 0;
+  draw_buffer_show = 0;
 
-	// determine which draw functions to use
-	fi_hscale = (draw_hscale == 1) ? 0 : 1;
-	fi_vscale = ((draw_vscale == 2) && (draw_vscale_strategy == 0)) ? 1 : 0;
-	fi_cdepth = ((dm->bits + 1) / 8) - 1;
+  // determine which draw functions to use
+  fi_hscale = (draw_hscale == 1) ? 0 : 1;
+  fi_vscale = ((draw_vscale == 2) && (draw_vscale_strategy == 0)) ? 1 : 0;
+  fi_cdepth = ((dm->bits + 1) / 8) - 1;
 	
-	draw_line_BPL_manage_routine = draw_line_BPL_manage_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_routine = draw_line_BG_routine = draw_line_BG_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_BPL_res_routine = draw_line_lores_routine = draw_line_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_hires_routine = draw_line_hires_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_dual_lores_routine = draw_line_dual_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_dual_hires_routine = draw_line_dual_hires_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	draw_line_HAM_lores_routine = draw_line_HAM_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
-	if (draw_hscale == 1) graphP2C1XInit();
-	else graphP2C2XInit();
-	wriw(bplcon0,0xdff100);
-	drawAmigaScreenGeometry(draw_mode_current);
-	drawColorTranslationInitialize();
-	graphInitializeShadowColors();
-	draw_buffer_current_ptr = draw_buffer_top_ptr;
-	drawHAMTableInit(draw_mode_current);
+  draw_line_BPL_manage_routine = draw_line_BPL_manage_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_routine = draw_line_BG_routine = draw_line_BG_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_BPL_res_routine = draw_line_lores_routine = draw_line_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_hires_routine = draw_line_hires_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_dual_lores_routine = draw_line_dual_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_dual_hires_routine = draw_line_dual_hires_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  draw_line_HAM_lores_routine = draw_line_HAM_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
+  if (draw_hscale == 1) graphP2C1XInit();
+  else graphP2C2XInit();
+  memoryWriteWord((UWO) bplcon0, 0xdff100);
+  drawAmigaScreenGeometry(draw_mode_current);
+  drawColorTranslationInitialize();
+  graphInitializeShadowColors();
+  draw_buffer_current_ptr = draw_buffer_top_ptr;
+  drawHAMTableInit(draw_mode_current);
 }
-
 
 /*============================================================================*/
 /* This routine flips to another drawing buffer, display the next complete    */
@@ -1513,7 +1506,8 @@ BOOLE drawEmulationStartPost(void) {
   BOOLE result;
   
   draw_buffer_count = gfxDrvEmulationStartPost();
-  if ((result = (draw_buffer_count != 0))) {
+  result = (draw_buffer_count != 0);
+  if (result) {
     drawModeTablesInitialize(draw_mode_current);
     draw_buffer_show = 0;
     draw_buffer_draw = draw_buffer_count - 1;
@@ -1691,13 +1685,12 @@ void drawUpdateDrawmode(void)
 /* Drawing end of frame handler                                                 */
 /*==============================================================================*/
 
-void drawEndOfFramePreC(void)
+void drawEndOfFramePre(void)
 {
   ULO graph_raster_y_local; // esi
   ULO next_line_offset;
   LON i;
   graph_line * graph_frame_ptr;
-  void * draw_line_routine_ptr;
   UBY* draw_buffer_current_ptr_local;
 
   if (draw_frame_skip == 0)
@@ -3259,7 +3252,7 @@ void drawLineDual1xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
 	UBY *source_line1_ptr;
 	UBY *source_line2_ptr;
 	UBY *draw_dual_translate_ptr;
-	ULO decoded_color, decoded_color_a, decoded_color_b, decoded_color_c, decoded_color_d;
+	ULO decoded_color, decoded_color_a, decoded_color_b, decoded_color_c;
 
 	source_line1_ptr = linedescription->line1 + linedescription->DIW_first_draw;
 	source_line2_ptr = linedescription->line2 + linedescription->DIW_first_draw;

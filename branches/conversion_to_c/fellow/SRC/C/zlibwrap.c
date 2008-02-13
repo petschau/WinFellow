@@ -1,4 +1,4 @@
-/* @(#) $Id: zlibwrap.c,v 1.2.2.2 2004-06-02 11:27:40 carfesh Exp $ */
+/* @(#) $Id: zlibwrap.c,v 1.2.2.3 2008-02-13 19:24:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator - zlib wrapper                                    */
 /*                                                                         */
@@ -67,7 +67,7 @@ BOOLE gzPack(const char *src, const char *dest)
 	gzFile output;
 	char outmode[20];
 	char buffer[1<<14];
-    int length;
+    size_t length;
 
     strcpy(outmode, "wb9 ");
 

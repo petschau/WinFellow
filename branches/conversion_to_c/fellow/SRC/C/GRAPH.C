@@ -9,14 +9,11 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
 #include "defs.h"
 #include "fellow.h"
 #include "draw.h"
 #include "cpu.h"
 #include "fmem.h"
-#include "graphm.h"            /* Macros used */
 #include "kbd.h"
 #include "copper.h"
 #include "blit.h"
@@ -155,7 +152,8 @@ void graphP2CTablesInit(void) {
 /* Called from the draw module                                               */
 /*===========================================================================*/
 
-void graphP2C1XInit(void) {
+void graphP2C1XInit(void)
+{
   graph_decode_line_tab[0] = graphDecode0_C;
   graph_decode_line_tab[1] = graphDecode1_C;
   graph_decode_line_tab[2] = graphDecode2_C;
@@ -199,7 +197,8 @@ void graphP2C1XInit(void) {
 /* Called from the draw module                                               */
 /*===========================================================================*/
 
-void graphP2C2XInit(void) {
+void graphP2C2XInit(void)
+{
   graph_decode_line_tab[0] = graphDecode0_C;
   graph_decode_line_tab[1] = graphDecode1_C;
   graph_decode_line_tab[2] = graphDecode2_C;
@@ -242,7 +241,8 @@ void graphP2C2XInit(void) {
 /* the emulator is stopped mid-line. It must create a valid dummy array.     */
 /*===========================================================================*/
 
-void graphLineDescClear(void) {
+void graphLineDescClear(void)
+{
   int frame, line;
 
   memset(graph_frame, 0, sizeof(graph_line)*3*314);
@@ -263,7 +263,8 @@ void graphLineDescClear(void) {
 /* Removes all the SKIP tags.                                                */
 /*===========================================================================*/
 
-void graphLineDescClearSkips(void) {
+void graphLineDescClearSkips(void)
+{
   int frame, line;
 
   for (frame = 0; frame < 3; frame++)
@@ -352,44 +353,6 @@ BOOLE graphGetAllowBplLineSkip(void) {
 }
 
 /*===========================================================================*/
-/* Registers the graphics IO register handlers                               */
-/*===========================================================================*/
-
-void graphIOHandlersInstall(void) {
-  ULO i;
-
-  memorySetIOReadStub(0x002, rdmaconr_C);
-  memorySetIOReadStub(0x004, rvposr_C);
-  memorySetIOReadStub(0x006, rvhposr_C);
-  memorySetIOReadStub(0x07c, rid_C);
-  memorySetIOWriteStub(0x02a, wvpos_C);
-  memorySetIOWriteStub(0x08e, wdiwstrt_C);
-  memorySetIOWriteStub(0x090, wdiwstop_C);
-  memorySetIOWriteStub(0x092, wddfstrt_C);
-  memorySetIOWriteStub(0x094, wddfstop_C);
-  memorySetIOWriteStub(0x096, wdmacon_C);
-  memorySetIOWriteStub(0x0e0, wbpl1pth_C);
-  memorySetIOWriteStub(0x0e2, wbpl1ptl_C);
-  memorySetIOWriteStub(0x0e4, wbpl2pth_C);
-  memorySetIOWriteStub(0x0e6, wbpl2ptl_C);
-  memorySetIOWriteStub(0x0e8, wbpl3pth_C);
-  memorySetIOWriteStub(0x0ea, wbpl3ptl_C);
-  memorySetIOWriteStub(0x0ec, wbpl4pth_C);
-  memorySetIOWriteStub(0x0ee, wbpl4ptl_C);
-  memorySetIOWriteStub(0x0f0, wbpl5pth_C);
-  memorySetIOWriteStub(0x0f2, wbpl5ptl_C);
-  memorySetIOWriteStub(0x0f4, wbpl6pth_C);
-  memorySetIOWriteStub(0x0f6, wbpl6ptl_C);
-  memorySetIOWriteStub(0x100, wbplcon0_C);
-  memorySetIOWriteStub(0x102, wbplcon1_C);
-  memorySetIOWriteStub(0x104, wbplcon2_C);
-  memorySetIOWriteStub(0x108, wbpl1mod_C);
-  memorySetIOWriteStub(0x10a, wbpl2mod_C);
-  for (i = 0x180; i < 0x1c0; i += 2) memorySetIOWriteStub(i, wcolor_C);
-}
-
-
-/*===========================================================================*/
 /* Graphics Register Access routines                                         */
 /*===========================================================================*/
 
@@ -399,13 +362,13 @@ void graphIOHandlersInstall(void) {
 /* return dmaconr | ((!((WOR)bltzero))<<13);                                 */
 /*===========================================================================*/
 
-ULO rdmaconr_C(ULO address)
+UWO rdmaconr(ULO address)
 {
   if ((bltzero & 0x0000FFFF) != 0x00000000)
   {
-    return dmaconr;
+    return (UWO) dmaconr;
   }
-  return (dmaconr | 0x00002000);
+  return (UWO) (dmaconr | 0x00002000);
 }
 
 /*===========================================================================*/
@@ -414,13 +377,13 @@ ULO rdmaconr_C(ULO address)
 /* return lof | (graph_raster_y>>8);                                         */
 /*===========================================================================*/
 
-ULO rvposr_C(ULO address)
+UWO rvposr(ULO address)
 {
   if (blitter_ECS == 1)
   {
-    return (lof | (graph_raster_y  >> 8)) | 0x2000;
+    return (UWO) ((lof | (graph_raster_y  >> 8)) | 0x2000);
   }
-  return (lof | (graph_raster_y >> 8));  
+  return (UWO) (lof | (graph_raster_y >> 8));  
 }
 
 /*===========================================================================*/
@@ -429,9 +392,9 @@ ULO rvposr_C(ULO address)
 /* return (graph_raster_x>>1) | ((graph_raster_y & 0xff)<<8);                */
 /*===========================================================================*/
 
-ULO rvhposr_C(ULO address)
+UWO rvhposr(ULO address)
 {
-  return (graph_raster_x >> 1) | ((graph_raster_y & 0x000000FF) << 8);
+  return (UWO) ((graph_raster_x >> 1) | ((graph_raster_y & 0x000000FF) << 8));
 }
 
 /*===========================================================================*/
@@ -440,9 +403,9 @@ ULO rvhposr_C(ULO address)
 /* return 0xffff                                                             */
 /*===========================================================================*/
 
-ULO rid_C(ULO address)
+UWO rid(ULO address)
 {
-  return 0x0000FFFF;
+  return 0xFFFF;
 }
 
 /*===========================================================================*/
@@ -451,9 +414,9 @@ ULO rid_C(ULO address)
 /* lof = data & 0x8000;                                                      */
 /*===========================================================================*/
 
-void wvpos_C(ULO data, ULO address)
+void wvpos(UWO data, ULO address)
 {
-  lof = data & 0x00008000;
+  lof = (ULO) (data & 0x8000);
 }
 
 /*===========================================================================*/
@@ -462,7 +425,7 @@ void wvpos_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wserdat_C(ULO data, ULO address)
+void wserdat(UWO data, ULO address)
 {
 }
 
@@ -472,7 +435,7 @@ void wserdat_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wserper_C(ULO data, ULO address)
+void wserper(UWO data, ULO address)
 {
 }
 
@@ -482,7 +445,7 @@ void wserper_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wdiwstrt_C(ULO data, ULO address)
+void wdiwstrt(UWO data, ULO address)
 {
   diwstrt = data;
   diwytop = (data >> 8) & 0x000000FF;
@@ -494,7 +457,7 @@ void wdiwstrt_C(ULO data, ULO address)
   {
     diwxleft = data & 0x000000FF;
   }
-  graphCalculateWindow_C();
+  graphCalculateWindow();
   graphPlayfieldOnOff();
 }
 
@@ -502,7 +465,7 @@ void wdiwstrt_C(ULO data, ULO address)
 /* DIWSTOP - $dff090 Write                                                   */
 /*===========================================================================*/
 
-void wdiwstop_C(ULO data, ULO address)
+void wdiwstop(UWO data, ULO address)
 {
   diwstop = data;
   if ((((data >> 8) & 0xff) & 0x80) == 0x0)
@@ -524,7 +487,7 @@ void wdiwstop_C(ULO data, ULO address)
     diwxleft = 88;
     diwxright = 472;
   }
-  graphCalculateWindow_C();
+  graphCalculateWindow();
   graphPlayfieldOnOff();
 }
 
@@ -536,7 +499,7 @@ void wdiwstop_C(ULO data, ULO address)
 /* _wbplcon1_ calls _graphCalculateWindow_ so we don't need to here             */                                                           
 /*==============================================================================*/
 
-void wddfstrt_C(ULO data, ULO address)
+void wddfstrt(UWO data, ULO address)
 {
   if ((data & 0xfc) < 0x18)
   {
@@ -547,7 +510,7 @@ void wddfstrt_C(ULO data, ULO address)
     ddfstrt = data & 0xfc;
   }
   sprite_ddf_kill = (data & 0xfc) - 0x14;
-  wbplcon1_C(bplcon1, address);
+  wbplcon1((UWO)bplcon1, address);
 }
 
 /*==============================================================================*/
@@ -558,7 +521,7 @@ void wddfstrt_C(ULO data, ULO address)
 /* (quote from 'Amiga Hardware Reference Manual')                               */
 /*==============================================================================*/
 
-void wddfstop_C(ULO data, ULO address)
+void wddfstop(UWO data, ULO address)
 {
   if ((data & 0xfc) > 0xd8)
   {
@@ -568,7 +531,7 @@ void wddfstop_C(ULO data, ULO address)
   {
     ddfstop = data & 0xfc;
   }
-  graphCalculateWindow_C();
+  graphCalculateWindow();
 }
 
 /*===========================================================================*/
@@ -579,7 +542,7 @@ void wddfstop_C(ULO data, ULO address)
 /* dmaconr - is always correct.                                              */
 /*===========================================================================*/
 
-void wdmacon_C(ULO data, ULO address)
+void wdmacon(UWO data, ULO address)
 {
   ULO local_data;
   ULO prev_dmacon;
@@ -599,12 +562,12 @@ void wdmacon_C(ULO data, ULO address)
         // BLTPRI was turned off before and therefor
         // BLTPRI got turned on, stop CPU until a blit is 
         // finished if this is a blit that uses all cycles
-        if (blitend != -1)
+        if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
         {
           if (blit_cycle_free == 0x0)
           {
             // below delays CPU additionally cycles
-            thiscycle = thiscycle + (blitend - curcycle);
+            cpu_chip_cycles = cpu_chip_cycles + (blitterEvent.cycle - bus_cycle);
           }
         }
       }
@@ -670,7 +633,7 @@ void wdmacon_C(ULO data, ULO address)
     {
       if ((blit_started & 0xff) != 0x0)
       {
-        blitFinishBlit();
+        blitForceFinish();
       }
     }
     
@@ -706,9 +669,9 @@ void wdmacon_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1pth_C(ULO data, ULO address)
+void wbpl1pth(UWO data, ULO address)
 {
-  bpl1pt = (bpl1pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl1pt = (bpl1pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -716,9 +679,9 @@ void wbpl1pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1ptl_C(ULO data, ULO address)
+void wbpl1ptl(UWO data, ULO address)
 {
-  bpl1pt = (bpl1pt & 0xffff0000) | (data & 0x0fffe);
+  bpl1pt = (bpl1pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -726,9 +689,9 @@ void wbpl1ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2pth_C(ULO data, ULO address)
+void wbpl2pth(UWO data, ULO address)
 {
-  bpl2pt = (bpl2pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl2pt = (bpl2pt & 0x0000ffff) | ((UWO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -736,9 +699,9 @@ void wbpl2pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2ptl_C(ULO data, ULO address)
+void wbpl2ptl(UWO data, ULO address)
 {
-  bpl2pt = (bpl2pt & 0xffff0000) | (data & 0x0fffe);
+  bpl2pt = (bpl2pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -746,9 +709,9 @@ void wbpl2ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3pth_C(ULO data, ULO address)
+void wbpl3pth(UWO data, ULO address)
 {
-  bpl3pt = (bpl3pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl3pt = (bpl3pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -756,9 +719,9 @@ void wbpl3pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl3ptl_C(ULO data, ULO address)
+void wbpl3ptl(UWO data, ULO address)
 {
-  bpl3pt = (bpl3pt & 0xffff0000) | (data & 0x0fffe);
+  bpl3pt = (bpl3pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -766,9 +729,9 @@ void wbpl3ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4pth_C(ULO data, ULO address)
+void wbpl4pth(UWO data, ULO address)
 {
-  bpl4pt = (bpl4pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl4pt = (bpl4pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -776,9 +739,9 @@ void wbpl4pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl4ptl_C(ULO data, ULO address)
+void wbpl4ptl(UWO data, ULO address)
 {
-  bpl4pt = (bpl4pt & 0xffff0000) | (data & 0x0fffe);
+  bpl4pt = (bpl4pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -786,9 +749,9 @@ void wbpl4ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5pth_C(ULO data, ULO address)
+void wbpl5pth(UWO data, ULO address)
 {
-  bpl5pt = (bpl5pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl5pt = (bpl5pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -796,9 +759,9 @@ void wbpl5pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl5ptl_C(ULO data, ULO address)
+void wbpl5ptl(UWO data, ULO address)
 {
-  bpl5pt = (bpl5pt & 0xffff0000) | (data & 0x0fffe);
+  bpl5pt = (bpl5pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -806,9 +769,9 @@ void wbpl5ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6pth_C(ULO data, ULO address)
+void wbpl6pth(UWO data, ULO address)
 {
-  bpl6pt = (bpl6pt & 0x0000ffff) | (data & 0x01f) << 16;
+  bpl6pt = (bpl6pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
 /*===========================================================================*/
@@ -816,9 +779,9 @@ void wbpl6pth_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl6ptl_C(ULO data, ULO address)
+void wbpl6ptl(UWO data, ULO address)
 {
-  bpl6pt = (bpl6pt & 0xffff0000) | (data & 0x0fffe);
+  bpl6pt = (bpl6pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
 /*===========================================================================*/
@@ -826,7 +789,7 @@ void wbpl6ptl_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbplcon0_C(ULO data, ULO address)
+void wbplcon0(UWO data, ULO address)
 {
   ULO local_data;
 
@@ -879,7 +842,7 @@ void wbplcon0_C(ULO data, ULO address)
       }
     }
   }
-  graphCalculateWindow_C();
+  graphCalculateWindow();
 }
 
 // when ddfstrt is (mod 8)+4, shift order is 8-f,0-7 (lores) (Example: New Zealand Story)
@@ -896,7 +859,7 @@ void wbplcon0_C(ULO data, ULO address)
 /* evenhiscroll - dword with the even hires scrollvalue                      */
 /*===========================================================================*/
 
-void wbplcon1_C(ULO data, ULO address)
+void wbplcon1(UWO data, ULO address)
 {
   bplcon1 = data & 0xff;
 
@@ -940,7 +903,7 @@ void wbplcon1_C(ULO data, ULO address)
     evenhiscroll = (evenscroll & 0x07) << 1;
   }
 
-  graphCalculateWindow_C();
+  graphCalculateWindow();
 }
 	
 /*===========================================================================*/
@@ -948,7 +911,7 @@ void wbplcon1_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbplcon2_C(ULO data, ULO address)
+void wbplcon2(UWO data, ULO address)
 {
   bplcon2 = data;
 }
@@ -958,9 +921,9 @@ void wbplcon2_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl1mod_C(ULO data, ULO address)
+void wbpl1mod(UWO data, ULO address)
 {
-  bpl1mod = (ULO)(LON)(WOR)(data & 0x0000fffe);
+  bpl1mod = (ULO)(LON)(WOR)(data & 0xfffe);
 }
 
 /*===========================================================================*/
@@ -968,9 +931,9 @@ void wbpl1mod_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wbpl2mod_C(ULO data, ULO address)
+void wbpl2mod(UWO data, ULO address)
 {
-  bpl2mod = (ULO)(LON)(WOR)(data & 0x0000fffe);
+  bpl2mod = (ULO)(LON)(WOR)(data & 0xfffe);
 }
 
 /*===========================================================================*/
@@ -978,7 +941,7 @@ void wbpl2mod_C(ULO data, ULO address)
 /*                                                                           */
 /*===========================================================================*/
 
-void wcolor_C(ULO data, ULO address)
+void wcolor(UWO data, ULO address)
 {
   // normal mode
   graph_color[((address & 0x1ff) - 0x180) >> 1] = (UWO) (data & 0x0fff);
@@ -988,19 +951,56 @@ void wcolor_C(ULO data, ULO address)
   graph_color_shadow[(((address & 0x1ff) - 0x180) >> 1) + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
 }
 
+/*===========================================================================*/
+/* Registers the graphics IO register handlers                               */
+/*===========================================================================*/
+
+void graphIOHandlersInstall(void)
+{
+  ULO i;
+
+  memorySetIoReadStub(0x002, rdmaconr);
+  memorySetIoReadStub(0x004, rvposr);
+  memorySetIoReadStub(0x006, rvhposr);
+  memorySetIoReadStub(0x07c, rid);
+  memorySetIoWriteStub(0x02a, wvpos);
+  memorySetIoWriteStub(0x08e, wdiwstrt);
+  memorySetIoWriteStub(0x090, wdiwstop);
+  memorySetIoWriteStub(0x092, wddfstrt);
+  memorySetIoWriteStub(0x094, wddfstop);
+  memorySetIoWriteStub(0x096, wdmacon);
+  memorySetIoWriteStub(0x0e0, wbpl1pth);
+  memorySetIoWriteStub(0x0e2, wbpl1ptl);
+  memorySetIoWriteStub(0x0e4, wbpl2pth);
+  memorySetIoWriteStub(0x0e6, wbpl2ptl);
+  memorySetIoWriteStub(0x0e8, wbpl3pth);
+  memorySetIoWriteStub(0x0ea, wbpl3ptl);
+  memorySetIoWriteStub(0x0ec, wbpl4pth);
+  memorySetIoWriteStub(0x0ee, wbpl4ptl);
+  memorySetIoWriteStub(0x0f0, wbpl5pth);
+  memorySetIoWriteStub(0x0f2, wbpl5ptl);
+  memorySetIoWriteStub(0x0f4, wbpl6pth);
+  memorySetIoWriteStub(0x0f6, wbpl6ptl);
+  memorySetIoWriteStub(0x100, wbplcon0);
+  memorySetIoWriteStub(0x102, wbplcon1);
+  memorySetIoWriteStub(0x104, wbplcon2);
+  memorySetIoWriteStub(0x108, wbpl1mod);
+  memorySetIoWriteStub(0x10a, wbpl2mod);
+  for (i = 0x180; i < 0x1c0; i += 2) memorySetIoWriteStub(i, wcolor);
+}
 
 /*===========================================================================*/
 /* Called on emulation end of frame                                          */
 /*===========================================================================*/
 
-void graphEndOfFrame(void) {
+void graphEndOfFrame(void)
+{
   graph_playfield_on = FALSE;
   if (graph_buffer_lost == TRUE)
   {
 	graphLineDescClear();
 	graph_buffer_lost = FALSE;
   }
-  gfxDrvDebugging();
 }
 
 /*===========================================================================*/
@@ -1819,14 +1819,13 @@ void graphDecodeHi6Dual_C(void)
 /*       Though it somehow works, so just leave it and hope it does not break*/
 /*===========================================================================*/
 
-
-void graphCalculateWindow_C(void) 
+void graphCalculateWindow(void) 
 {
 	ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
 	if ((bplcon0 & 0x8000) == 0x8000) // check if Hires bit is set (bit 15 of BPLCON0)
 	{
-		graphCalculateWindowHires_C();
+		graphCalculateWindowHires();
 	} 
 	else 
 	{
@@ -1910,7 +1909,7 @@ void graphCalculateWindow_C(void)
 	}
 }
 
-void graphCalculateWindowHires_C(void)
+void graphCalculateWindowHires(void)
 {
 	ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
@@ -2045,7 +2044,7 @@ void graphDecodeNOP_C(void)
 /* End of line handler for graphics                                          */
 /*===========================================================================*/
 
-void graphEndOfLine_C(void)
+void graphEndOfLine(void)
 {
 	graph_line* current_graph_line;
 
@@ -2068,7 +2067,8 @@ void graphEndOfLine_C(void)
 				if (graph_raster_y >= 0x18) 
 				{
 					spritesDMASpriteHandler();
-					spriteProcessActionList(current_graph_line);
+					//spriteProcessActionList(current_graph_line);
+					spriteProcessActionList();
 				}
 				else
 				{
@@ -2126,10 +2126,6 @@ void graphEndOfLine_C(void)
 void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
 {
   BOOLE line_desc_changed;
-  ULO local_DIW_first_draw;
-  ULO local_DIW_pixel_count;
-  UBY* local_line1;
-  UBY* local_line2;
 
   line_desc_changed = FALSE;
 
@@ -2157,7 +2153,7 @@ void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
     if (sprites_online == 1)
     {
       line_desc_changed = TRUE;
-	  spritesMerge_C(current_graph_line);
+	  spritesMerge(current_graph_line);
 	  sprites_online = 0;
     }
     
@@ -2375,7 +2371,7 @@ void graphComposeLineOutput_C(graph_line* current_graph_line)
 		/*================================================================*/
 		if (sprites_online == 1)
 		{
-		  spritesMerge_C(current_graph_line);
+		  spritesMerge(current_graph_line);
 		  sprites_online = 0;
 		}
 

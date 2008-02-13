@@ -1,29 +1,27 @@
 #ifndef COPPER_H
 #define COPPER_H
 
-void wcopcon_C(ULO data, ULO address);
-void wcop1lch_C(ULO data, ULO address);
-void wcop1lcl_C(ULO data, ULO address);
-void wcop2lch_C(ULO data, ULO address);
-void wcop2lcl_C(ULO data, ULO address);
-void wcopjmp1_C(ULO data, ULO address);
-void wcopjmp2_C(ULO data, ULO address);
-ULO rcopjmp1_C(ULO address);
-ULO rcopjmp2_C(ULO address);
-
-/* C-declarations */
+void wcopcon(UWO data, ULO address);
+void wcop1lch(UWO data, ULO address);
+void wcop1lcl(UWO data, ULO address);
+void wcop2lch(UWO data, ULO address);
+void wcop2lcl(UWO data, ULO address);
+void wcopjmp1(UWO data, ULO address);
+void wcopjmp2(UWO data, ULO address);
+UWO rcopjmp1(ULO address);
+UWO rcopjmp2(ULO address);
 
 void copperUpdateDMA(void);
 
+extern void copperEndOfFrame(void);
 extern void copperHardReset(void);
 extern void copperEmulationStart(void);
 extern void copperEmulationStop(void);
 extern void copperStartup(void);
 extern void copperShutdown(void);
 
-void copperLoad1C(void);
-void copperLoad2C(void);
-void copperEmulateC(void);
-
+void copperLoad1(void);
+void copperLoad2(void);
+void copperEmulate(void);
 
 #endif

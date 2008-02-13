@@ -19,7 +19,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: EXPANSIO.C,v 1.1.1.1.2.3 2004-05-27 09:44:38 carfesh Exp $
+  @(#) $Id: EXPANSIO.C,v 1.1.1.1.2.4 2008-02-13 19:24:36 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -228,7 +228,7 @@ addrbank filesys_bank = {
 
 /* FELLOW IN (START)----------------- */
 
-ULO filesys_lgetC(ULO addr)
+ULO filesys_lget(ULO addr)
 {
     uae_u8 *m;
     addr -= filesys_start & 65535;
@@ -237,33 +237,33 @@ ULO filesys_lgetC(ULO addr)
     return do_get_mem_long ((uae_u32 *)m);
 }
 
-ULO filesys_wgetC(ULO addr)
+UWO filesys_wget(ULO addr)
 {
     uae_u8 *m;
     addr -= filesys_start & 65535;
     addr &= 65535;
     m = filesysory + addr;
-    return do_get_mem_word ((uae_u16 *)m);
+    return (UWO) do_get_mem_word ((uae_u16 *)m);
 }
 
-ULO filesys_bgetC(ULO addr)
+UBY filesys_bget(ULO addr)
 {
     addr -= filesys_start & 65535;
     addr &= 65535;
     return filesysory[addr];
 }
 
-void filesys_lputC(ULO l, ULO addr)
+void filesys_lput(ULO l, ULO addr)
 {
     write_log ("filesys_lput called\n");
 }
 
-void filesys_wputC(ULO w, ULO addr)
+void filesys_wput(UWO w, ULO addr)
 {
     write_log ("filesys_wput called\n");
 }
 
-void filesys_bputC(ULO b, ULO addr)
+void filesys_bput(UBY b, ULO addr)
 {
     write_log ("filesys_bput called. This usually means that you are using\n");
     /* FELLOW CHANGE (START)-------------
@@ -304,8 +304,8 @@ void expamem_map_filesys (ULO mapping)
 
     filesys_start = (mapping<<8) & (RTAREA_BASE + 0xf0000);
     bank = filesys_start>>16;
-    memoryBankSet(filesys_bgetASM, filesys_wgetASM, filesys_lgetASM, filesys_bputASM,
-                  filesys_wputASM, filesys_lputASM, filesysory, bank, bank, FALSE);
+    memoryBankSet(filesys_bget, filesys_wget, filesys_lget, filesys_bput,
+                  filesys_wput, filesys_lput, filesysory, bank, bank);
     /* FELLOW IN (END) ----------------------*/
     
     /* FELLOW OUT (START)------------------------

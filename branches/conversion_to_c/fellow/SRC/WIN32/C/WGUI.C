@@ -685,7 +685,7 @@ BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = NULL;
-  ofn.lCustData = (long) NULL;
+  ofn.lCustData = 0;
   ofn.lpfnHook = NULL;
   ofn.lpTemplateName = NULL;
   return GetOpenFileName(&ofn);
@@ -752,7 +752,7 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize,
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = &".wfc";
-  ofn.lCustData = (long) NULL;
+  ofn.lCustData = (LPARAM) 0;
   ofn.lpfnHook = NULL;
   ofn.lpTemplateName = NULL;
   return GetSaveFileName(&ofn);
@@ -935,7 +935,7 @@ void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
 	ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[cfgGetCPUType(conf)]);
 
   /* Set CPU speed */
-  ccwSliderSetRange(hwndDlg, IDC_SLIDER_CPU_SPEED, 0, 3);
+  ccwSliderSetRange(hwndDlg, IDC_SLIDER_CPU_SPEED, 0, 4);
   switch (cfgGetCPUSpeed(conf)) {
     case 8:
       slidervalue = 0;
@@ -949,6 +949,9 @@ void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
       break;
     case 1:
       slidervalue = 3;
+      break;
+    case 0:
+      slidervalue = 4;
       break;
   }
 	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_CPU_SPEED, (LPARAM) slidervalue);
@@ -977,6 +980,9 @@ void wguiExtractCPUConfig(HWND hwndDlg, cfg *conf) {
       break;
     case 3:
       cfgSetCPUSpeed(conf, 1);
+      break;
+    case 4:
+      cfgSetCPUSpeed(conf, 0);
       break;
   }
 }
@@ -1351,37 +1357,37 @@ void wguiHardfileUpdate(HWND lvHWND, cfg_hardfile *hf, ULO i, BOOL add) {
   sprintf(stmp, "FELLOW%d", i);
   lvi.iItem = i;
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 0;
   if (!add) ListView_SetItem(lvHWND, &lvi);
   else ListView_InsertItem(lvHWND, &lvi);
   lvi.pszText = hf->filename;
-  lvi.cchTextMax = strlen(hf->filename);
+  lvi.cchTextMax = (int) strlen(hf->filename);
   lvi.iSubItem = 1;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%s", (hf->readonly) ? "R" : "RW");
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 2;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%d", hf->sectorspertrack);
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 3;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%d", hf->surfaces);
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 4;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%d", hf->reservedblocks);
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 5;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%d", hf->bytespersector);
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 6;
   ListView_SetItem(lvHWND, &lvi);
 }
@@ -1412,7 +1418,7 @@ void wguiInstallHardfileConfig(HWND hwndDlg, cfg *conf) {
     else if (i == 1) colwidth += 216;
     else colwidth += 16;
     lvc.pszText = colheads[i];
-    lvc.cchTextMax = strlen(colheads[i]);
+    lvc.cchTextMax = (int) strlen(colheads[i]);
     lvc.cx = colwidth;
     ListView_InsertColumn(lvHWND, i, &lvc);
   }
@@ -1483,21 +1489,21 @@ void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add) {
   sprintf(stmp, "DH%d", i);
   lvi.iItem = i;
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 0;
   if (!add) ListView_SetItem(lvHWND, &lvi);
   else ListView_InsertItem(lvHWND, &lvi);
   lvi.pszText = fs->volumename;
-  lvi.cchTextMax = strlen(fs->volumename);
+  lvi.cchTextMax = (int) strlen(fs->volumename);
   lvi.iSubItem = 1;
   ListView_SetItem(lvHWND, &lvi);
   lvi.pszText = fs->rootpath;
-  lvi.cchTextMax = strlen(fs->rootpath);
+  lvi.cchTextMax = (int) strlen(fs->rootpath);
   lvi.iSubItem = 2;
   ListView_SetItem(lvHWND, &lvi);
   sprintf(stmp, "%s", (fs->readonly) ? "R" : "RW");
   lvi.pszText = stmp;
-  lvi.cchTextMax = strlen(stmp);
+  lvi.cchTextMax = (int) strlen(stmp);
   lvi.iSubItem = 3;
   ListView_SetItem(lvHWND, &lvi);
 }
@@ -1525,7 +1531,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf) {
     else if (i == 2) colwidth += 164;
     else colwidth += 16;
     lvc.pszText = colheads[i];
-    lvc.cchTextMax = strlen(colheads[i]);
+    lvc.cchTextMax = (int) strlen(colheads[i]);
     lvc.cx = colwidth;
     ListView_InsertColumn(lvHWND, i, &lvc);
   }
@@ -2061,7 +2067,7 @@ BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
       wguiExtractSoundConfig(hwndDlg, wgui_cfg);
       break;
 	case WM_NOTIFY:
-	  buffer_length = SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0);
+	  buffer_length = (long) SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0);
 	  sprintf(buffer, "%d", buffer_length);
 	  ccwStaticSetText(hwndDlg, IDC_STATIC_BUFFER_LENGTH, buffer);
 	  break;
@@ -2924,7 +2930,8 @@ BOOLE wguiEnter(void) {
     DestroyWindow(wgui_hDialog);
     if (!quit_emulator && debugger_start) {
       debugger_start = FALSE;
-      wdbgDebugSessionRun(NULL);
+      //wdbgDebugSessionRun(NULL);
+      wdebDebug();
     }
     else if (!quit_emulator) winDrvEmulationStart();
   } while (!quit_emulator);

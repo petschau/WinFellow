@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.11.2.8 2005-01-30 10:17:22 worfje Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.11.2.9 2008-02-13 19:24:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -33,8 +33,7 @@
 #include <excpt.h>
 #include "defs.h"
 #include "fellow.h"
-#include "mmx.h"
-#include "sse.h"
+#include "sysinfo.h"
 
 /* Older compilers do not support CPUID and RDTSC properly */
 #define cpuid _asm _emit 0x0f _asm _emit 0xa2

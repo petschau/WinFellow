@@ -1,101 +1,151 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="8.00"
 	Name="WinFellow"
 	ProjectGUID="{B7683EB0-2BCD-40C5-BF39-57D896269140}"
-	SccProjectName=""
-	SccLocalPath="">
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE"
-			WholeProgramOptimization="TRUE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			WholeProgramOptimization="1"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Release/WinFellow.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
-				ImproveFloatingPointConsistency="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				OptimizeForProcessor="2"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				EnableEnhancedInstructionSet="0"
 				PrecompiledHeaderFile=".\Release/WinFellow.pch"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Release/WinFellow.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
 				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Release/WinFellow.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Dx3 Debug|Win32"
 			OutputDirectory=".\Dx3Debug"
 			IntermediateDirectory=".\Dx3Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Dx3Debug/WinFellow.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="1"
 				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
 				RuntimeLibrary="1"
@@ -106,199 +156,261 @@
 				ProgramDataBaseFileName=".\Dx3Debug/"
 				BrowseInformation="1"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				DebugInformationFormat="4"
-				CompileAs="0"/>
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib dsound.lib ddraw.lib dinput.lib CAPSImg.lib"
 				OutputFile=".\Dx3Debug/WinFellow.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
 				DelayLoadDLLs="CAPSImg.dll"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Dx3Debug/WinFellow.pdb"
-				GenerateMapFile="TRUE"
+				GenerateMapFile="true"
 				MapFileName=".\Dx3Debug/WinFellow.map"
 				SubSystem="2"
 				StackReserveSize="2097152"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Dx3Debug/WinFellow.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Dx3 Release|Win32"
 			OutputDirectory=".\Dx3Release"
 			IntermediateDirectory=".\Dx3Release"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="NDEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Dx3Release/WinFellow.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				GlobalOptimizations="TRUE"
 				InlineFunctionExpansion="2"
-				EnableIntrinsicFunctions="TRUE"
-				ImproveFloatingPointConsistency="TRUE"
+				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
-				OptimizeForProcessor="2"
-				OptimizeForWindowsApplication="TRUE"
 				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX3;FELLOW_SUPPORT_CAPS"
-				StringPooling="TRUE"
+				StringPooling="true"
 				RuntimeLibrary="0"
-				EnableFunctionLevelLinking="TRUE"
+				EnableFunctionLevelLinking="true"
 				PrecompiledHeaderFile=".\Dx3Release/WinFellow.pch"
 				AssemblerListingLocation=".\Dx3Release/"
 				ObjectFile=".\Dx3Release/"
 				ProgramDataBaseFileName=".\Dx3Release/"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				CompileAs="0"/>
+				SuppressStartupBanner="true"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="NDEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib winmm.lib comctl32.lib ddraw.lib dinput.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Dx3Release/WinFellow.exe"
 				LinkIncremental="1"
-				SuppressStartupBanner="TRUE"
+				SuppressStartupBanner="true"
 				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
 				DelayLoadDLLs="CAPSImg.dll"
 				ProgramDatabaseFile=".\Dx3Release/WinFellow.pdb"
 				SubSystem="2"
 				StackReserveSize="2097152"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Dx3Release/WinFellow.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
-			ATLMinimizesCRunTimeLibraryUsage="FALSE">
+			ATLMinimizesCRunTimeLibraryUsage="false"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+				PreprocessorDefinitions="_DEBUG"
+				MkTypLibCompatible="true"
+				SuppressStartupBanner="true"
+				TargetEnvironment="1"
+				TypeLibraryName=".\Debug/WinFellow.tlb"
+				HeaderFileName=""
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				OptimizeForProcessor="1"
-				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
+				AdditionalIncludeDirectories="../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;&quot;D:\Program Files\Microsoft DirectX SDK (April 2007)\Include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
-				BufferSecurityCheck="TRUE"
-				RuntimeTypeInfo="TRUE"
+				BufferSecurityCheck="true"
+				RuntimeTypeInfo="true"
 				PrecompiledHeaderFile=".\Debug/WinFellow.pch"
-				AssemblerOutput="2"
+				AssemblerOutput="0"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
 				ProgramDataBaseFileName=".\Debug/"
-				BrowseInformation="1"
+				BrowseInformation="0"
 				WarningLevel="3"
-				SuppressStartupBanner="TRUE"
-				DebugInformationFormat="4"
-				CompileAs="0"/>
+				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
+				CompileAs="0"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+				PreprocessorDefinitions="_DEBUG"
+				Culture="1033"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
-				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps"
+				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps;&quot;D:\Program Files\Microsoft DirectX SDK (April 2007)\Lib\x86&quot;"
 				DelayLoadDLLs="CAPSImg.dll"
-				GenerateDebugInformation="TRUE"
+				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/WinFellow.pdb"
-				GenerateMapFile="TRUE"
+				GenerateMapFile="true"
 				MapFileName=".\Debug/WinFellow.map"
 				SubSystem="2"
 				StackReserveSize="2097152"
-				TargetMachine="1"/>
+				TargetMachine="1"
+			/>
 			<Tool
-				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="TRUE"
-				SuppressStartupBanner="TRUE"
-				TargetEnvironment="1"
-				TypeLibraryName=".\Debug/WinFellow.tlb"
-				HeaderFileName=""/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
+				Name="VCWebDeploymentTool"
+			/>
 			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -306,3538 +418,4272 @@
 	<Files>
 		<Filter
 			Name="Assembly Files"
-			Filter="*.s">
+			Filter="*.s"
+			>
 			<File
-				RelativePath="..\..\asm\busa.s">
+				RelativePath="..\..\asm\busa.s"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\busa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\busa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\busa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\busa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\busa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\busa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\busa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\busa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\busa.obj"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\ciaa.s">
+				RelativePath="..\..\asm\ciaa.s"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\ciaa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\ciaa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\ciaa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\ciaa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\ciaa.obj"/>
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\ciaa.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\ciaa.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\asm\coppera.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\coppera.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\coppera.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\coppera.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\coppera.obj"/>
+						CommandLine="nasmw -o $(IntDir)\ciaa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\ciaa.obj"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\cpua.s">
+				RelativePath="..\..\asm\cpua.s"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\cpua.obj"/>
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\cpua.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\cpua.obj"/>
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\cpua.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\cpua.obj"/>
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\cpua.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\cpua.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\asm\fhfilea.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fhfilea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fhfilea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fhfilea.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fhfilea.obj"/>
+						CommandLine="nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\cpua.obj"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\asm\fmema.s">
+				RelativePath="..\..\asm\fhfilea.s"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fmema.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fhfilea.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fmema.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fhfilea.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fmema.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fhfilea.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\fmema.obj"/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\asm\mmx.s">
-				<FileConfiguration
-					Name="Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\mmx.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\mmx.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\mmx.obj"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|Win32">
-					<Tool
-						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\mmx.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fhfilea.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fhfilea.obj"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\Asm\Sse.s">
+				RelativePath="..\..\asm\fmema.s"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sse.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fmema.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sse.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fmema.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sse.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fmema.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCustomBuildTool"
-						CommandLine="nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)
-"
-						Outputs="$(IntDir)\sse.obj"/>
+						CommandLine="nasmw -o $(IntDir)\fmema.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ $(InputPath)&#x0D;&#x0A;"
+						Outputs="$(IntDir)\fmema.obj"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="Assembly Include Files"
-			Filter="">
+			>
 			<Filter
 				Name="Macros"
-				Filter="*.mac">
+				Filter="*.mac"
+				>
 				<File
-					RelativePath="..\..\incasm\mac\bus.mac">
+					RelativePath="..\..\incasm\mac\bus.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\cia.mac">
+					RelativePath="..\..\incasm\mac\cia.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\cpu.mac">
+					RelativePath="..\..\incasm\mac\cpu.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\floppy.mac">
+					RelativePath="..\..\incasm\mac\floppy.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\fmem.mac">
+					RelativePath="..\..\incasm\mac\fmem.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\gameport.mac">
+					RelativePath="..\..\incasm\mac\gameport.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\kbd.mac">
+					RelativePath="..\..\incasm\mac\kbd.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\mac\nasm.mac">
+					RelativePath="..\..\incasm\mac\nasm.mac"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Functions"
-				Filter="*.inc">
+				Filter="*.inc"
+				>
 				<File
-					RelativePath="..\..\incasm\func\bus.inc">
+					RelativePath="..\..\incasm\func\bus.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\cia.inc">
+					RelativePath="..\..\incasm\func\cia.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\copper.inc">
+					RelativePath="..\..\incasm\func\copper.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\cpu.inc">
+					RelativePath="..\..\incasm\func\cpu.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\fellow.inc">
+					RelativePath="..\..\incasm\func\fellow.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\floppy.inc">
+					RelativePath="..\..\incasm\func\floppy.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\fmem.inc">
+					RelativePath="..\..\incasm\func\fmem.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\gameport.inc">
+					RelativePath="..\..\incasm\func\gameport.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\func\kbd.inc">
+					RelativePath="..\..\incasm\func\kbd.inc"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Data"
-				Filter="*.inc">
+				Filter="*.inc"
+				>
 				<File
-					RelativePath="..\..\incasm\data\bus.inc">
+					RelativePath="..\..\incasm\data\bus.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\cia.inc">
+					RelativePath="..\..\incasm\data\cia.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\copper.inc">
+					RelativePath="..\..\incasm\data\copper.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\cpu.inc">
+					RelativePath="..\..\incasm\data\cpu.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\fellow.inc">
+					RelativePath="..\..\incasm\data\fellow.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\fhfile.inc">
+					RelativePath="..\..\incasm\data\fhfile.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\floppy.inc">
+					RelativePath="..\..\incasm\data\floppy.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\fmem.inc">
+					RelativePath="..\..\incasm\data\fmem.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\gameport.inc">
+					RelativePath="..\..\incasm\data\gameport.inc"
+					>
 				</File>
 				<File
-					RelativePath="..\..\incasm\data\timer.inc">
+					RelativePath="..\..\incasm\data\timer.inc"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="Generic"
-				Filter="*.inc">
+				Filter="*.inc"
+				>
 				<File
-					RelativePath="..\..\incasm\generic\defs.inc">
+					RelativePath="..\..\incasm\generic\defs.inc"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="core C Files"
-			Filter="*.c">
+			Filter="*.c"
+			>
 			<File
-				RelativePath="..\..\c\blit.c">
+				RelativePath="..\..\c\blit.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\bus.c">
+				RelativePath="..\..\c\bus.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cia.c">
+				RelativePath="..\..\c\cia.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\config.c">
+				RelativePath="..\..\c\config.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\copper.c">
+				RelativePath="..\..\c\copper.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cpu.c">
+				RelativePath="..\..\c\cpu.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cpudis.c">
+				RelativePath="..\..\c\cpudis.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\draw.c">
+				RelativePath="..\..\c\draw.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fellow.c">
+				RelativePath="..\..\c\fellow.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						ExceptionHandling="FALSE"/>
+						ExceptionHandling="0"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						ExceptionHandling="FALSE"
-						BrowseInformation="1"/>
+						ExceptionHandling="0"
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						ExceptionHandling="FALSE"/>
+						ExceptionHandling="0"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						ExceptionHandling="FALSE"
-						BrowseInformation="1"/>
+						ExceptionHandling="0"
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\ffilesys.c">
+				RelativePath="..\..\c\ffilesys.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fhfile.c">
+				RelativePath="..\..\c\fhfile.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\floppy.c">
+				RelativePath="..\..\c\floppy.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fmem.c">
+				RelativePath="..\..\c\fmem.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fsnavig.c">
+				RelativePath="..\..\c\fsnavig.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\fsysamnt.c">
+				RelativePath="..\C\fsysamnt.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\gameport.c">
+				RelativePath="..\..\c\gameport.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\graph.c">
+				RelativePath="..\..\c\graph.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\Ini.c">
+				RelativePath="..\C\Ini.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\kbd.c">
+				RelativePath="..\..\c\kbd.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\listtree.c">
+				RelativePath="..\..\c\listtree.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\C\modrip.c">
+				RelativePath="..\..\C\modrip.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\sound.c">
+				RelativePath="..\..\c\sound.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\sprite.c">
+				RelativePath="..\..\c\sprite.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\wav.c">
+				RelativePath="..\..\c\wav.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\C\zlibwrap.c">
+				RelativePath="..\..\C\zlibwrap.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="core C Header Files"
-			Filter="*.h">
+			Filter="*.h"
+			>
 			<File
-				RelativePath="C:\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h">
+				RelativePath="C:\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\blit.h">
+				RelativePath="..\..\include\blit.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\bus.h">
+				RelativePath="..\..\include\bus.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\cia.h">
+				RelativePath="..\..\include\cia.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\config.h">
+				RelativePath="..\..\include\config.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\copper.h">
+				RelativePath="..\..\include\copper.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\cpu.h">
+				RelativePath="..\..\include\cpu.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\cpudis.h">
+				RelativePath="..\..\include\cpudis.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\defs.h">
+				RelativePath="..\..\include\defs.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\draw.h">
+				RelativePath="..\..\include\draw.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Include\dxver.h">
+				RelativePath="..\Include\dxver.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\eventid.h">
+				RelativePath="..\..\include\eventid.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\fellow.h">
+				RelativePath="..\..\include\fellow.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\ffilesys.h">
+				RelativePath="..\..\include\ffilesys.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\fhfile.h">
+				RelativePath="..\..\include\fhfile.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\floppy.h">
+				RelativePath="..\..\include\floppy.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\fmem.h">
+				RelativePath="..\..\include\fmem.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\fonts.h">
+				RelativePath="..\..\include\fonts.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\fsnavig.h">
+				RelativePath="..\..\include\fsnavig.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\gameport.h">
+				RelativePath="..\..\include\gameport.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\graph.h">
+				RelativePath="..\..\include\graph.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\graphm.h">
+				RelativePath="..\..\include\graphm.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\Include\Ini.h">
+				RelativePath="..\..\Include\Ini.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\keycodes.h">
+				RelativePath="..\..\include\keycodes.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\listtree.h">
+				RelativePath="..\..\include\listtree.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\memorya.h">
+				RelativePath="..\..\include\memorya.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\mmx.h">
+				RelativePath="..\..\include\mmx.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\Include\modrip.h">
+				RelativePath="..\..\Include\modrip.h"
+				>
 			</File>
 			<File
-				RelativePath="..\include\msvc\portable.h">
+				RelativePath="..\include\msvc\portable.h"
+				>
 			</File>
 			<File
-				RelativePath="..\include\msvc\renaming.h">
+				RelativePath="..\include\msvc\renaming.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\sprite.h">
+				RelativePath="..\..\include\sprite.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\Include\Sse.h">
+				RelativePath="..\..\Include\Sse.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\wav.h">
+				RelativePath="..\..\include\wav.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\Include\zlibwrap.h">
+				RelativePath="..\..\Include\zlibwrap.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Win32 C Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\Caps\include\caps_win32.h">
+				RelativePath="..\Caps\include\caps_win32.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Include\commoncontrol_wrap.h">
+				RelativePath="..\Include\commoncontrol_wrap.h"
+				>
 			</File>
 			<File
-				RelativePath="..\include\fswrap.h">
+				RelativePath="..\include\fswrap.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\gfxdrv.h">
+				RelativePath="..\..\include\gfxdrv.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\joydrv.h">
+				RelativePath="..\..\include\joydrv.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\kbd.h">
+				RelativePath="..\..\include\kbd.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\kbddrv.h">
+				RelativePath="..\..\include\kbddrv.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Include\kbdparser.h">
+				RelativePath="..\Include\kbdparser.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Include\modrip_win32.h">
+				RelativePath="..\Include\modrip_win32.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\mousedrv.h">
+				RelativePath="..\..\include\mousedrv.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\sound.h">
+				RelativePath="..\..\include\sound.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\sounddrv.h">
+				RelativePath="..\..\include\sounddrv.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Include\sysinfo.h">
+				RelativePath="..\Include\sysinfo.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\timer.h">
+				RelativePath="..\..\include\timer.h"
+				>
 			</File>
 			<File
-				RelativePath="..\include\wdbg.h">
+				RelativePath="..\include\wdbg.h"
+				>
 			</File>
 			<File
-				RelativePath="..\..\include\wgui.h">
+				RelativePath="..\..\include\wgui.h"
+				>
 			</File>
 			<File
-				RelativePath="..\include\windrv.h">
+				RelativePath="..\include\windrv.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Win32 Assembly Include Files"
-			Filter="">
+			>
 			<Filter
 				Name="Macro"
-				Filter="">
+				>
 				<File
-					RelativePath="..\incasm\mac\callconv.mac">
+					RelativePath="..\incasm\mac\callconv.mac"
+					>
 				</File>
 				<File
-					RelativePath="..\incasm\mac\renaming.mac">
+					RelativePath="..\incasm\mac\renaming.mac"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="Win32 C Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\Caps\C\caps_win32.c">
+				RelativePath="..\Caps\C\caps_win32.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+						ObjectFile="$(IntDir)/$(InputName)1.obj"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\commoncontrol_wrap.c">
+				RelativePath="..\C\commoncontrol_wrap.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\fswrap.c">
+				RelativePath="..\C\fswrap.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\gfxdrv.c">
+				RelativePath="..\C\gfxdrv.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\joydrv.c">
+				RelativePath="..\C\joydrv.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\kbddrv.c">
+				RelativePath="..\C\kbddrv.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\kbdparser.c">
+				RelativePath="..\C\kbdparser.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\modrip_win32.c">
+				RelativePath="..\C\modrip_win32.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\mousedrv.c">
+				RelativePath="..\C\mousedrv.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\sounddrv.c">
+				RelativePath="..\C\sounddrv.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\sysinfo.c">
+				RelativePath="..\C\sysinfo.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\timer.c">
+				RelativePath="..\c\timer.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\wdbg.c">
+				RelativePath="..\c\wdbg.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\wgui.c">
+				RelativePath="..\c\wgui.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\winmain.c">
+				RelativePath="..\c\winmain.c"
+				>
 				<FileConfiguration
-					Name="Release|Win32">
+					Name="Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Debug|Win32">
+					Name="Dx3 Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Dx3 Release|Win32">
+					Name="Dx3 Release|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="2"
 						AdditionalIncludeDirectories=""
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
-					Name="Debug|Win32">
+					Name="Debug|Win32"
+					>
 					<Tool
 						Name="VCCLCompilerTool"
 						Optimization="0"
 						AdditionalIncludeDirectories=""
 						PreprocessorDefinitions=""
-						BrowseInformation="1"/>
+						BrowseInformation="1"
+					/>
 				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="UAE Filesystem Files"
-			Filter="">
+			>
 			<Filter
 				Name="UAE Filesystem C Files (Win32)"
-				Filter="">
+				>
 				<File
-					RelativePath="..\uae\c\autoconf.c">
+					RelativePath="..\uae\c\autoconf.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\expansio.c">
+					RelativePath="..\uae\c\expansio.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\filesys.c">
+					RelativePath="..\uae\c\filesys.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\filesys_win32.c">
+					RelativePath="..\Uae\C\filesys_win32.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\fsdb.c">
+					RelativePath="..\Uae\C\fsdb.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\fsdb_win32.c">
+					RelativePath="..\Uae\C\fsdb_win32.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\fsusage.c">
+					RelativePath="..\uae\c\fsusage.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\hardfile.c">
+					RelativePath="..\uae\c\hardfile.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\uaesupp.c">
+					RelativePath="..\uae\c\uaesupp.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="UAE Filesystem Header Files"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\uae\include\autoconf.h">
+					RelativePath="..\..\uae\include\autoconf.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\execlib.h">
+					RelativePath="..\..\uae\include\execlib.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\filesys.h">
+					RelativePath="..\..\uae\include\filesys.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\Uae\Include\filesys_win32.h">
+					RelativePath="..\..\Uae\Include\filesys_win32.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\Uae\Include\fsdb.h">
+					RelativePath="..\..\Uae\Include\fsdb.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\fsusage.h">
+					RelativePath="..\..\uae\include\fsusage.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\penguin.h">
+					RelativePath="..\..\uae\include\penguin.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\uae2fell.h">
+					RelativePath="..\..\uae\include\uae2fell.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="UAE Filesystem Assembly Files"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\uae\asm\uaesuppa.s">
+					RelativePath="..\..\uae\asm\uaesuppa.s"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
-"
-							Outputs="$(IntDir)\uaesuppa.obj"/>
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(IntDir)\uaesuppa.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
-"
-							Outputs="$(IntDir)\uaesuppa.obj"/>
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(IntDir)\uaesuppa.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
-"
-							Outputs="$(IntDir)\uaesuppa.obj"/>
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(IntDir)\uaesuppa.obj"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCustomBuildTool"
-							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)
-"
-							Outputs="$(IntDir)\uaesuppa.obj"/>
+							CommandLine="nasmw -o $(IntDir)\uaesuppa.obj -f win32 -i$(ProjectDir)..\..\incasm\ -i$(ProjectDir)..\incasm\ -i$(ProjectDir)..\..\uae\incasm\ $(InputPath)&#x0D;&#x0A;"
+							Outputs="$(IntDir)\uaesuppa.obj"
+						/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="UAE Filesystem Assembly Includ"
-				Filter="">
+				>
 				<File
-					RelativePath="..\..\uae\incasm\func\uaesupp.inc">
+					RelativePath="..\..\uae\incasm\func\uaesupp.inc"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="ADF Compression Files"
-			Filter="">
+			>
 			<Filter
 				Name="xDMS C Files"
-				Filter=".c">
+				Filter=".c"
+				>
 				<File
-					RelativePath="..\..\xdms\C\crc_csum.c">
+					RelativePath="..\..\xdms\C\crc_csum.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\getbits.c">
+					RelativePath="..\..\xdms\C\getbits.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\maketbl.c">
+					RelativePath="..\..\xdms\C\maketbl.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\pfile.c">
+					RelativePath="..\..\xdms\C\pfile.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\tables.c">
+					RelativePath="..\..\xdms\C\tables.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_deep.c">
+					RelativePath="..\..\xdms\C\u_deep.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_heavy.c">
+					RelativePath="..\..\xdms\C\u_heavy.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_init.c">
+					RelativePath="..\..\xdms\C\u_init.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_medium.c">
+					RelativePath="..\..\xdms\C\u_medium.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_quick.c">
+					RelativePath="..\..\xdms\C\u_quick.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\u_rle.c">
+					RelativePath="..\..\xdms\C\u_rle.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\xdms\C\xdms.c">
+					RelativePath="..\..\xdms\C\xdms.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="xDMS Header Files"
-				Filter=".h">
+				Filter=".h"
+				>
 				<File
-					RelativePath="..\..\xdms\include\cdata.h">
+					RelativePath="..\..\xdms\include\cdata.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\crc_csum.h">
+					RelativePath="..\..\xdms\include\crc_csum.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\getbits.h">
+					RelativePath="..\..\xdms\include\getbits.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\maketbl.h">
+					RelativePath="..\..\xdms\include\maketbl.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\pfile.h">
+					RelativePath="..\..\xdms\include\pfile.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\tables.h">
+					RelativePath="..\..\xdms\include\tables.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_deep.h">
+					RelativePath="..\..\xdms\include\u_deep.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_heavy.h">
+					RelativePath="..\..\xdms\include\u_heavy.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_init.h">
+					RelativePath="..\..\xdms\include\u_init.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_medium.h">
+					RelativePath="..\..\xdms\include\u_medium.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_quick.h">
+					RelativePath="..\..\xdms\include\u_quick.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\u_rle.h">
+					RelativePath="..\..\xdms\include\u_rle.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\xdms\include\xdms.h">
+					RelativePath="..\..\xdms\include\xdms.h"
+					>
 				</File>
 			</Filter>
 			<Filter
 				Name="zlib C Files"
-				Filter=".c">
+				Filter=".c"
+				>
 				<File
-					RelativePath="..\..\zlib\C\adler32.c">
+					RelativePath="..\..\zlib\C\adler32.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\compress.c">
+					RelativePath="..\..\zlib\C\compress.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\crc32.c">
+					RelativePath="..\..\zlib\C\crc32.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\deflate.c">
+					RelativePath="..\..\zlib\C\deflate.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\gzio.c">
+					RelativePath="..\..\zlib\C\gzio.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\inffast.c">
+					RelativePath="..\..\zlib\C\inffast.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\inflate.c">
+					RelativePath="..\..\zlib\C\inflate.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\inftrees.c">
+					RelativePath="..\..\zlib\C\inftrees.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\trees.c">
+					RelativePath="..\..\zlib\C\trees.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\uncompr.c">
+					RelativePath="..\..\zlib\C\uncompr.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\..\zlib\C\zutil.c">
+					RelativePath="..\..\zlib\C\zutil.c"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Debug|Win32">
+						Name="Dx3 Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Dx3 Release|Win32">
+						Name="Dx3 Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="2"
 							AdditionalIncludeDirectories=""
-							PreprocessorDefinitions=""/>
+							PreprocessorDefinitions=""
+						/>
 					</FileConfiguration>
 					<FileConfiguration
-						Name="Debug|Win32">
+						Name="Debug|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
 							Optimization="0"
 							AdditionalIncludeDirectories=""
 							PreprocessorDefinitions=""
-							BrowseInformation="1"/>
+							BrowseInformation="1"
+						/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="zlib Header Files"
-				Filter=".h">
+				Filter=".h"
+				>
 				<File
-					RelativePath="..\..\zlib\include\crc32.h">
+					RelativePath="..\..\zlib\include\crc32.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\deflate.h">
+					RelativePath="..\..\zlib\include\deflate.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inffast.h">
+					RelativePath="..\..\zlib\include\inffast.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inffixed.h">
+					RelativePath="..\..\zlib\include\inffixed.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inflate.h">
+					RelativePath="..\..\zlib\include\inflate.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\inftrees.h">
+					RelativePath="..\..\zlib\include\inftrees.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\trees.h">
+					RelativePath="..\..\zlib\include\trees.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\zconf.h">
+					RelativePath="..\..\zlib\include\zconf.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\zlib.h">
+					RelativePath="..\..\zlib\include\zlib.h"
+					>
 				</File>
 				<File
-					RelativePath="..\..\zlib\include\zutil.h">
+					RelativePath="..\..\zlib\include\zutil.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<Filter
 			Name="bitmaps"
-			Filter="">
+			>
 			<File
-				RelativePath="disk_led_disabled_cool.bmp">
+				RelativePath="disk_led_disabled_cool.bmp"
+				>
 			</File>
 			<File
-				RelativePath="disk_led_off_cool.bmp">
+				RelativePath="disk_led_off_cool.bmp"
+				>
 			</File>
 			<File
-				RelativePath="disk_led_on_cool.bmp">
+				RelativePath="disk_led_on_cool.bmp"
+				>
 			</File>
 			<File
-				RelativePath="power_led_off_cool.bmp">
+				RelativePath="power_led_off_cool.bmp"
+				>
 			</File>
 			<File
-				RelativePath="power_led_on_cool.bmp">
+				RelativePath="power_led_on_cool.bmp"
+				>
 			</File>
 			<File
-				RelativePath="winfellow_logo_small.bmp">
+				RelativePath="winfellow_logo_small.bmp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="">
+			>
 			<File
-				RelativePath="gui_debugger.h">
+				RelativePath="gui_debugger.h"
+				>
 			</File>
 			<File
-				RelativePath="GUI_debugger.rc">
+				RelativePath="GUI_debugger.rc"
+				>
 				<FileConfiguration
 					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Debug|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Dx3 Release|Win32"
-					ExcludedFromBuild="TRUE">
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""/>
+						PreprocessorDefinitions=""
+					/>
 				</FileConfiguration>
 				<FileConfiguration
 					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="gui_general.h">
-			</File>
-			<File
-				RelativePath="GUI_general.rc">
-				<FileConfiguration
-					Name="Release|Win32">
+					ExcludedFromBuild="true"
+					>
 					<Tool
 						Name="VCResourceCompilerTool"
 						PreprocessorDefinitions=""
-						Culture="1047"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Debug|Win32">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-						Culture="1047"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Dx3 Release|Win32">
-					<Tool
-						Name="VCResourceCompilerTool"
-						PreprocessorDefinitions=""
-						Culture="1047"/>
+					/>
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\WinFellow.exe.manifest">
+				RelativePath="gui_general.h"
+				>
+			</File>
+			<File
+				RelativePath="GUI_general.rc"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						Culture="1047"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Debug|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						Culture="1047"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Dx3 Release|Win32"
+					>
+					<Tool
+						Name="VCResourceCompilerTool"
+						PreprocessorDefinitions=""
+						Culture="1047"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
 			Name="icons"
-			Filter="">
+			>
 			<File
-				RelativePath="..\icons\cpu.ico">
+				RelativePath="..\icons\cpu.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\dfloppy.ico">
+				RelativePath="..\icons\dfloppy.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\display.ico">
+				RelativePath="..\icons\display.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\filesystem.ico">
+				RelativePath="..\icons\filesystem.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\floppy.ico">
+				RelativePath="..\icons\floppy.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\harddrives.ico">
+				RelativePath="..\icons\harddrives.ico"
+				>
 			</File>
 			<File
-				RelativePath="..\icons\sound.ico">
+				RelativePath="..\icons\sound.ico"
+				>
 			</File>
 			<File
-				RelativePath="winfellow.ico">
+				RelativePath="winfellow.ico"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="CAPS Header Files"
-			Filter="">
+			>
 			<File
-				RelativePath="..\Caps\include\CapsAPI.h">
+				RelativePath="..\Caps\include\CapsAPI.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\CapsLib.h">
+				RelativePath="..\Caps\include\CapsLib.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\Comlib.h">
+				RelativePath="..\Caps\include\Comlib.h"
+				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\Comtype.h">
+				RelativePath="..\Caps\include\Comtype.h"
+				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\icons\arrow.bmp"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

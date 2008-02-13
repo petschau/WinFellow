@@ -14,9 +14,6 @@ Tuesday, September 19, 2000
 - changed ciaReadApra in order to support autofire
 */
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "bus.h"
 #include "gameport.h"
@@ -38,7 +35,9 @@ Tuesday, September 19, 2000
 
 #define CIA_BUS_CYCLE_RATIO 5
 
-LON cia_next_event_time; /* Cycle for cia-event, measured from sof */
+typedef UBY (*ciaFetchFunc)(ULO i);
+typedef void (*ciaWriteFunc)(ULO i, UBY data);
+
 ULO cia_next_event_type; /* What type of event */
 
 /* Cia registers, index 0 is Cia A, index 1 is Cia B */
@@ -51,8 +50,6 @@ ULO cia_talatch[2];
 ULO cia_tblatch[2];          
 LON cia_taleft[2];
 LON cia_tbleft[2];
-ULO cia_icrreq[2];
-ULO cia_icrmsk[2];           
 ULO cia_evalarm[2];          
 ULO cia_evlatch[2];               
 ULO cia_evlatching[2];
@@ -61,28 +58,30 @@ ULO cia_evwritelatching[2];
 ULO cia_evalarmlatch[2];
 ULO cia_evalarmlatching[2];
 ULO cia_ev[2];
-ULO cia_cra[2];              
-ULO cia_crb[2];              
-ULO cia_pra[2];
-ULO cia_prb[2];              
-ULO cia_ddra[2];             
-ULO cia_ddrb[2];             
-ULO cia_sp[2];               
+UBY cia_icrreq[2];
+UBY cia_icrmsk[2];           
+UBY cia_cra[2];              
+UBY cia_crb[2];              
+UBY cia_pra[2];
+UBY cia_prb[2];              
+UBY cia_ddra[2];             
+UBY cia_ddrb[2];             
+UBY cia_sp[2];               
 
 /* Translate timer -> cycles until timeout from current sof, start of frame */
 
 ULO ciaUnstabilizeValue(ULO value, ULO remainder) {
-  return (value*CIA_BUS_CYCLE_RATIO) + curcycle + remainder;
+  return (value*CIA_BUS_CYCLE_RATIO) + bus_cycle + remainder;
 }
 
 /* Translate cycles until timeout from current sof -> timer value */
 
 ULO ciaStabilizeValue(ULO value) {
-  return (value - curcycle) / CIA_BUS_CYCLE_RATIO;
+  return (value - bus_cycle) / CIA_BUS_CYCLE_RATIO;
 }
 
 ULO ciaStabilizeValueRemainder(ULO value) {
-  return (value - curcycle) % CIA_BUS_CYCLE_RATIO;
+  return (value - bus_cycle) % CIA_BUS_CYCLE_RATIO;
 }
 
 void ciaTAStabilize(ULO i) {
@@ -126,17 +125,21 @@ void ciaUnstabilize(ULO i) {
 /* the irq line from the CIA high (off), but the bit in INTREQ */
 /* should probably remain set until it is cleared by other means. */
 
-void ciaUpdateIRQ(ULO i) {
-  if (cia_icrreq[i] & cia_icrmsk[i]) {
+void ciaUpdateIRQ(ULO i)
+{
+  if (cia_icrreq[i] & cia_icrmsk[i])
+  {
+    // This CIA wants IRQ.
     cia_icrreq[i] |= 0x80;
-    wriw((i == 0) ? 0x8008 : 0xa000, 0xdff09c);
+    memoryWriteWord((i == 0) ? 0x8008 : 0xa000, 0xdff09c);
   }
-  else { /* Spaceballs State of the Art requires this. */
-    wriw((i == 0) ? 8 : 0x2000, 0xdff09c);
+  else
+  { // Spaceballs State of the Art requires this. Or is this because there is problem elsewhere?
+    //memoryWriteWord((i == 0) ? 8 : 0x2000, 0xdff09c);
   }
 }  
 
-void ciaRaiseIRQC(ULO i, ULO req) {
+void ciaRaiseIRQ(ULO i, ULO req) {
   cia_icrreq[i] |= (req & 0x1f);
   ciaUpdateIRQ(i);
 }
@@ -144,7 +147,7 @@ void ciaRaiseIRQC(ULO i, ULO req) {
 /* Helps the floppy loader, Cia B Flag IRQ */
 
 void ciaRaiseIndexIRQ(void) {
-  ciaRaiseIRQC(1, CIA_FLAG_IRQ);
+  ciaRaiseIRQ(1, CIA_FLAG_IRQ);
 }
 
 /* Timeout handlers */
@@ -158,7 +161,7 @@ void ciaHandleTBTimeout(ULO i) {
   }
   else if (!(cia_crb[i] & 0x40))   /* Continuous mode, no attach */
     cia_tbleft[i] = ciaUnstabilizeValue(cia_tb[i], 0);
-  ciaRaiseIRQC(i, CIA_TB_IRQ);     /* Raise irq */
+  ciaRaiseIRQ(i, CIA_TB_IRQ);     /* Raise irq */
 }
 
 void ciaHandleTATimeout(ULO i) {
@@ -175,41 +178,57 @@ void ciaHandleTATimeout(ULO i) {
   }
   else                             /* Continuous mode */
     cia_taleft[i] = ciaUnstabilizeValue(cia_ta[i], 0);
-  ciaRaiseIRQC(i, CIA_TA_IRQ);    /* Raise irq */
+  ciaRaiseIRQ(i, CIA_TA_IRQ);    /* Raise irq */
 }
 
 /* Called from eol-handler (B) or eof handler (A) */
 
-void ciaUpdateEventCounterC(ULO i) {
-  if (!cia_evwritelatching[i]) {
+void ciaUpdateEventCounter(ULO i)
+{
+  if (!cia_evwritelatching[i])
+  {
     cia_ev[i] = (cia_ev[i] + 1) & 0xffffff;
     if (cia_evalarm[i] == cia_ev[i])
-      ciaRaiseIRQC(i, CIA_ALARM_IRQ);
+      ciaRaiseIRQ(i, CIA_ALARM_IRQ);
   }
 }
 
 /* Called from the eof-handler to update timers */
 
-void ciaUpdateTimersEOFC(void) {
+void ciaUpdateTimersEOF(void)
+{
   int i;
-  for (i = 0; i < 2; i++) {
+  for (i = 0; i < 2; i++)
+  {
     if (cia_taleft[i] >= 0)
-      if ((cia_taleft[i] -= CYCLESPERFRAME) < 0)
+      if ((cia_taleft[i] -= BUS_CYCLE_PER_FRAME) < 0)
 	cia_taleft[i] = 0;
     if (cia_tbleft[i] >= 0)
-      if ((cia_tbleft[i] -= CYCLESPERFRAME) < 0)
+      if ((cia_tbleft[i] -= BUS_CYCLE_PER_FRAME) < 0)
 	cia_tbleft[i] = 0;
   }
-  if (cia_next_event_time >= 0)
-    if ((cia_next_event_time -= CYCLESPERFRAME) < 0)
-      cia_next_event_time = 0;
-  ciaUpdateEventCounterC(0);
+  if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    if ((ciaEvent.cycle -= BUS_CYCLE_PER_FRAME) < 0)
+      ciaEvent.cycle = 0;
+    busRemoveEvent(&ciaEvent);
+    busInsertEvent(&ciaEvent);
+  }
+  ciaUpdateEventCounter(0);
 }
 
 /* Record next timer timeout */
 
+void ciaEventSetup(void)
+{
+  if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    busInsertEvent(&ciaEvent);
+  }
+}
+
 void ciaSetupNextEvent(void) {
-  ULO nextevtime = 0xffffffff, nextevtype = CIA_NO_EVENT, j;
+  ULO nextevtime = BUS_CYCLE_DISABLE, nextevtype = CIA_NO_EVENT, j;
   for (j = 0; j < 2; j++) {
     if (((ULO) cia_taleft[j]) < nextevtime) {
       nextevtime = cia_taleft[j];
@@ -219,36 +238,45 @@ void ciaSetupNextEvent(void) {
       nextevtime = cia_tbleft[j];
       nextevtype = (j*2) + 2;
     }
-  }  
-  cia_next_event_time = nextevtime;
+  }
+  if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    busRemoveEvent(&ciaEvent);
+    ciaEvent.cycle = BUS_CYCLE_DISABLE;
+  }
+  ciaEvent.cycle = nextevtime;
   cia_next_event_type = nextevtype;
-  busScanEventsLevel6();
+  ciaEventSetup();
 }
 
-void ciaHandleEventC(void) {
-  switch (cia_next_event_type) {
-  case CIAA_TA_TIMEOUT_EVENT:
-    ciaHandleTATimeout(0);
-    break;
-  case CIAA_TB_TIMEOUT_EVENT:
-    ciaHandleTBTimeout(0);
-    break;
-  case CIAB_TA_TIMEOUT_EVENT:
-    ciaHandleTATimeout(1);
-    break;
-  case CIAB_TB_TIMEOUT_EVENT:
-    ciaHandleTBTimeout(1);
-    break;
-  default:
-    break;
+void ciaHandleEvent(void)
+{
+  ciaEvent.cycle = BUS_CYCLE_DISABLE;
+  switch (cia_next_event_type)
+  {
+    case CIAA_TA_TIMEOUT_EVENT:
+      ciaHandleTATimeout(0);
+      break;
+    case CIAA_TB_TIMEOUT_EVENT:
+      ciaHandleTBTimeout(0);
+      break;
+    case CIAB_TA_TIMEOUT_EVENT:
+      ciaHandleTATimeout(1);
+      break;
+    case CIAB_TB_TIMEOUT_EVENT:
+      ciaHandleTBTimeout(1);
+      break;
+    default:
+      break;
   }
   ciaSetupNextEvent();
 }
 
 /* PRA */
 
-ULO ciaReadApra(void) {
-  ULO result = 0;
+UBY ciaReadApra(void)
+{
+  UBY result = 0;
   ULO drivesel;
   
   if( gameport_autofire0[0] )
@@ -273,30 +301,31 @@ ULO ciaReadApra(void) {
     if (!floppyIsChanged(drivesel))
       result |= 4;
   }
-  return result | (cia_pra[0] & 2);
+  return result | (UBY)(cia_pra[0] & 2);
 }
 
-ULO ciaReadpra(ULO i) {
+UBY ciaReadpra(ULO i)
+{
   if (i == 0)
     return ciaReadApra();
-  return cia_pra[1];
+  return (UBY) cia_pra[1];
 }
 
-void ciaWriteApra(ULO data) {
+void ciaWriteApra(UBY data)
+{
   if ((data & 0x1) && !(cia_pra[0] & 0x1))
   {
     memoryChipMap(TRUE);
-//    fellowAddLog("OVL turned ON\n");
   }
   else if ((cia_pra[0] & 0x1) && !(data & 0x1))
   {
     memoryChipMap(FALSE);
-//    fellowAddLog("OVL turned OFF\n");
   }
   cia_pra[0] = data;
 }
 
-void ciaWritepra(ULO i, ULO data) {
+void ciaWritepra(ULO i, UBY data)
+{
   if (i == 0)
     ciaWriteApra(data);
   else
@@ -305,13 +334,15 @@ void ciaWritepra(ULO i, ULO data) {
 
 /* PRB */
 
-ULO ciaReadprb(ULO i) {
+UBY ciaReadprb(ULO i)
+{
   return cia_prb[i];
 }
 
 /* Motor, drive latches this value when SEL goes from high to low */
 
-void ciaWriteBprb(ULO data) {
+void ciaWriteBprb(UBY data)
+{
   int i, j;
 
   j = 0;
@@ -325,7 +356,8 @@ void ciaWriteBprb(ULO data) {
   floppyStepSet(data & 1);
 }
 
-void ciaWriteprb(ULO i, ULO data) {
+void ciaWriteprb(ULO i, UBY data)
+{
   if (i == 0)
     cia_prb[0] = data;
   else
@@ -334,59 +366,70 @@ void ciaWriteprb(ULO i, ULO data) {
 
 /* DDRA */
 
-ULO ciaReadddra(ULO i) {
+UBY ciaReadddra(ULO i)
+{
   if (i == 0)
     return 3;
   return 0xff;
 }
 
-void ciaWriteddra(ULO i, ULO data) {
+void ciaWriteddra(ULO i, UBY data)
+{
 }
 
 /* DDRB */
 
-ULO ciaReadddrb(ULO i) {
+UBY ciaReadddrb(ULO i)
+{
   if (i == 0)
     return cia_ddrb[0];
   return 0xff;
 }
 
-void ciaWriteddrb(ULO i, ULO data) {
+void ciaWriteddrb(ULO i, UBY data)
+{
   if (i == 0)
     cia_ddrb[0] = data;
 }
 
 /* SP (Keyboard serial data on Cia A) */
 
-ULO ciaReadsp(ULO i) {
+UBY ciaReadsp(ULO i)
+{
   return cia_sp[i];
 }
 
-void ciaWritesp(ULO i, ULO data) {
+void ciaWritesp(ULO i, UBY data)
+{
   cia_sp[i] = data;
 }
 
 /* Timer A */
 
-ULO ciaReadtalo(ULO i) {
+UBY ciaReadtalo(ULO i)
+{
   if (cia_cra[i] & 1)
-    return ciaStabilizeValue(cia_taleft[i]) & 0xff;
-  return cia_ta[i] & 0xff;
+    return (UBY) ciaStabilizeValue(cia_taleft[i]);
+  return (UBY) cia_ta[i];
 }
 
-ULO ciaReadtahi(ULO i) {
+UBY ciaReadtahi(ULO i)
+{
   if (cia_cra[i] & 1)
-    return (ciaStabilizeValue(cia_taleft[i])>>8) & 0xff;
-  return (cia_ta[i]>>8) & 0xff;
+    return (UBY)(ciaStabilizeValue(cia_taleft[i])>>8);
+  return (UBY)(cia_ta[i]>>8);
 }  
 
-void ciaWritetalo(ULO i, ULO data) {
-  cia_talatch[i] = (cia_talatch[i] & 0xff00) | (data & 0xff);
+void ciaWritetalo(ULO i, UBY data)
+{
+  cia_talatch[i] = (cia_talatch[i] & 0xff00) | (ULO)data;
 }
 
-void ciaWritetahi(ULO i, ULO data) {
-  cia_talatch[i] = (cia_talatch[i] & 0xff) | ((data & 0xff)<<8);
-  if ((cia_cra[i] & 8) || !(cia_cra[i] & 1)) {
+void ciaWritetahi(ULO i, UBY data)
+{
+  cia_talatch[i] = (cia_talatch[i] & 0xff) | (((ULO)data)<<8);
+  if ((cia_cra[i] & 8) || !(cia_cra[i] & 1))
+  {
     ciaStabilize(i);
     cia_ta[i] = cia_talatch[i];
     cia_ta_rem[i] = 0;
@@ -399,25 +442,30 @@ void ciaWritetahi(ULO i, ULO data) {
 
 /* Timer B */
 
-ULO ciaReadtblo(ULO i) {
+UBY ciaReadtblo(ULO i)
+{
   if ((cia_crb[i] & 1) && !(cia_crb[i] & 0x40))
-    return ciaStabilizeValue(cia_tbleft[i]) & 0xff;
-  return cia_tb[i] & 0xff;
+    return (UBY)ciaStabilizeValue(cia_tbleft[i]);
+  return (UBY)cia_tb[i];
 }
 
-ULO ciaReadtbhi(ULO i) {
+UBY ciaReadtbhi(ULO i)
+{
   if ((cia_crb[i] & 1) && !(cia_crb[i] & 0x40))
-    return (ciaStabilizeValue(cia_tbleft[i])>>8) & 0xff;
-  return (cia_tb[i]>>8) & 0xff;
+    return (UBY)(ciaStabilizeValue(cia_tbleft[i])>>8);
+  return (UBY)(cia_tb[i]>>8);
 }
 
-void ciaWritetblo(ULO i, ULO data) {
-  cia_tblatch[i] = (cia_tblatch[i] & 0xff00) | (data & 0xff);
+void ciaWritetblo(ULO i, UBY data)
+{
+  cia_tblatch[i] = (cia_tblatch[i] & 0xff00) | ((ULO)data);
 }
 
-void ciaWritetbhi(ULO i, ULO data) {
-  cia_tblatch[i] = (cia_tblatch[i] & 0xff) | ((data & 0xff)<<8);
-  if ((cia_crb[i] & 8) || !(cia_crb[i] & 1)) {
+void ciaWritetbhi(ULO i, UBY data)
+{
+  cia_tblatch[i] = (cia_tblatch[i] & 0xff) | (((ULO)data)<<8);
+  if ((cia_crb[i] & 8) || !(cia_crb[i] & 1))
+  {
     ciaStabilize(i);
     cia_tb[i] = cia_tblatch[i];
     cia_tb_rem[i] = 0;
@@ -431,130 +479,147 @@ void ciaWritetbhi(ULO i, ULO data) {
 
 /* Event counter */
 
-ULO ciaReadevlo(ULO i) {
-  if (cia_evlatching[i]) {
-    cia_evlatching[i] = FALSE;
-    return cia_evlatch[i] & 0xff;
-  }
-  return cia_ev[i] & 0xff;
-}
-
-ULO ciaReadevmi(ULO i) {
+UBY ciaReadevlo(ULO i)
+{
   if (cia_evlatching[i])
-    return (cia_evlatch[i]>>8) & 0xff;
-  return (cia_ev[i]>>8) & 0xff;
+  {
+    cia_evlatching[i] = FALSE;
+    return (UBY)cia_evlatch[i];
+  }
+  return (UBY)cia_ev[i];
 }
 
-ULO ciaReadevhi(ULO i) {
+UBY ciaReadevmi(ULO i)
+{
+  if (cia_evlatching[i])
+    return (UBY)(cia_evlatch[i]>>8);
+  return (UBY)(cia_ev[i]>>8);
+}
+
+UBY ciaReadevhi(ULO i)
+{
   cia_evlatching[i] = TRUE;
   cia_evlatch[i] = cia_ev[i];
-  return (cia_ev[i]>>16) & 0xff;
+  return (UBY)(cia_ev[i]>>16);
 }
 
-void ciaWriteevlo(ULO i, ULO data) {
+void ciaWriteevlo(ULO i, UBY data)
+{
   cia_evwritelatching[i] = FALSE;
-  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xffff00) | (data & 0xff);
+  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xffff00) | ((ULO)data);
   if (cia_crb[i] & 0x80)
     cia_evalarm[i] = cia_evwritelatch[i];
   else
     cia_ev[i] = cia_evwritelatch[i];
   if (cia_ev[i] == cia_evalarm[i])
-    ciaRaiseIRQC(i, CIA_ALARM_IRQ);
+    ciaRaiseIRQ(i, CIA_ALARM_IRQ);
 }
 
-void ciaWriteevmi(ULO i, ULO data) {
+void ciaWriteevmi(ULO i, UBY data)
+{
   cia_evwritelatching[i] = TRUE;
-  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xff00ff) | ((data & 0xff)<<8);
+  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xff00ff) | (((ULO)data)<<8);
 }
 
-void ciaWriteevhi(ULO i, ULO data) {
+void ciaWriteevhi(ULO i, UBY data)
+{
   cia_evwritelatching[i] = TRUE;
-  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xffff) | ((data & 0xff)<<16);
+  cia_evwritelatch[i] = (cia_evwritelatch[i] & 0xffff) | (((ULO)data)<<16);
 }
 
 /* ICR */
 
-ULO ciaReadicr(ULO i) {
-  int tmp = cia_icrreq[i];
+UBY ciaReadicr(ULO i)
+{
+  UBY tmp = cia_icrreq[i];
   cia_icrreq[i] = 0;
   return tmp;
 }
 
-void ciaWriteicr(ULO i, ULO data) {
-  if (data & 0x80) {
+void ciaWriteicr(ULO i, UBY data)
+{
+  if (data & 0x80)
+  {
     cia_icrmsk[i] |= (data & 0x1f);
-    if (cia_icrreq[i] & cia_icrmsk[i])
-      ciaRaiseIRQC(i, 0);
+//    if (cia_icrreq[i] & cia_icrmsk[i])
+//      ciaRaiseIRQC(i, 0);
   }
-  else {
+  else
+  {
     cia_icrmsk[i] &= ~(data & 0x1f);
-    ciaUpdateIRQ(i);
+//    ciaUpdateIRQ(i);
   }
 }
 
 /* CRA */
 
-ULO ciaReadcra(ULO i) {
-  return cia_cra[i] & 0xff;
+UBY ciaReadcra(ULO i)
+{
+  return cia_cra[i];
 }
 
-void ciaWritecra(ULO i, ULO data) {
+void ciaWritecra(ULO i, UBY data)
+{
   ciaStabilize(i);
-  if (data & 0x10) {
+  if (data & 0x10)
+  {
     cia_ta[i] = cia_talatch[i];
     cia_ta_rem[i] = 0;
     if (cia_ta[i] == 0) cia_ta[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
-  cia_cra[i] = data & 0xff;
+  cia_cra[i] = data;
   ciaUnstabilize(i);
   ciaSetupNextEvent();
 }  
 
 /* CRB */
 
-ULO ciaReadcrb(ULO i) {
-  return cia_crb[i] & 0xff;
+UBY ciaReadcrb(ULO i)
+{
+  return cia_crb[i];
 }
 
-void ciaWritecrb(ULO i, ULO data) {
+void ciaWritecrb(ULO i, UBY data)
+{
   ciaStabilize(i);
-  if (data & 0x10) {
+  if (data & 0x10)
+  {
     cia_tb[i] = cia_tblatch[i];
     cia_tb_rem[i] = 0;
     if (cia_tb[i] == 0) cia_tb[i] = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
   }
-  cia_crb[i] = data & 0xff;
+  cia_crb[i] = data;
   ciaUnstabilize(i);
   ciaSetupNextEvent();
 }  
 
 /* Dummy read and write */
 
-ULO ciaReadnothing(ULO i) {
+UBY ciaReadNothing(ULO i)
+{
   return 0xff;
 }
 
-void ciaWritenothing(ULO i, ULO data) {
+void ciaWriteNothing(ULO i, UBY data)
+{
 }
 	
 /* Table of CIA read/write functions */
 
-ciareadfunc cia_read[16] = {ciaReadpra, ciaReadprb, ciaReadddra,ciaReadddrb,
+ciaFetchFunc cia_read[16] = {ciaReadpra, ciaReadprb, ciaReadddra,ciaReadddrb,
 			    ciaReadtalo,ciaReadtahi,ciaReadtblo,ciaReadtbhi,
-			    ciaReadevlo,ciaReadevmi,ciaReadevhi,ciaReadnothing,
+			    ciaReadevlo,ciaReadevmi,ciaReadevhi,ciaReadNothing,
 			    ciaReadsp,  ciaReadicr, ciaReadcra, ciaReadcrb};
-ciawritefunc cia_write[16]={
+ciaWriteFunc cia_write[16]={
                          ciaWritepra, ciaWriteprb, ciaWriteddra,ciaWriteddrb,
 			 ciaWritetalo,ciaWritetahi,ciaWritetblo,ciaWritetbhi,
-			 ciaWriteevlo,ciaWriteevmi,ciaWriteevhi,ciaWritenothing,
+			 ciaWriteevlo,ciaWriteevmi,ciaWriteevhi,ciaWriteNothing,
 			 ciaWritesp,  ciaWriteicr, ciaWritecra, ciaWritecrb};
 
-/* Routine callbacks called by memory system, these are in C, but have */
-/* assembly wrappers that are called first                             */
-
-ULO ciaReadByteC(ULO address) {
+UBY ciaReadByte(ULO address)
+{
   if ((address & 0xa01001) == 0xa00001)
     return cia_read[(address & 0xf00)>>8](0);
   else if ((address & 0xa02001) == 0xa00000)
@@ -562,40 +627,45 @@ ULO ciaReadByteC(ULO address) {
   return 0xff;
 }
 
-ULO ciaReadWordC(ULO address) {
-  return (ciaReadByteC(address)<<8) | ciaReadByteC(address + 1);
+UWO ciaReadWord(ULO address)
+{
+  return (((UWO)ciaReadByte(address))<<8) | ((UWO)ciaReadByte(address + 1));
 }
 
-ULO ciaReadLongC(ULO address) {
-  return (ciaReadByteC(address)<<24)    | (ciaReadByteC(address + 1)<<16) |
-         (ciaReadByteC(address + 2)<<8) | ciaReadByteC(address + 3);
+ULO ciaReadLong(ULO address)
+{
+  return (((ULO)ciaReadByte(address))<<24)    | (((ULO)ciaReadByte(address + 1))<<16) |
+         (((ULO)ciaReadByte(address + 2))<<8) | ((ULO)ciaReadByte(address + 3));
 }
 
-void ciaWriteByteC(ULO data, ULO address) {
-   if ((memory_wriorgadr & 0xa01001) == 0xa00001)
-    cia_write[(memory_wriorgadr & 0xf00)>>8](0, data & 0xff);
-  else if ((memory_wriorgadr & 0xa02001) == 0xa00000)
-    cia_write[(memory_wriorgadr & 0xf00)>>8](1, data & 0xff);
+void ciaWriteByte(UBY data, ULO address)
+{
+   if ((address & 0xa01001) == 0xa00001)
+    cia_write[(address & 0xf00)>>8](0, data);
+  else if ((address & 0xa02001) == 0xa00000)
+    cia_write[(address & 0xf00)>>8](1, data);
 }
 
-void ciaWriteWordC(ULO data, ULO address) {
-  ciaWriteByteC(memory_wriorgadr, data>>8);
-  ciaWriteByteC(memory_wriorgadr + 1, data);
+void ciaWriteWord(UWO data, ULO address)
+{
+  ciaWriteByte((UBY) (data>>8), address);
+  ciaWriteByte((UBY) data, address + 1);
 }
 
-void ciaWriteLongC(ULO data, ULO address) {
-  ciaWriteByteC(memory_wriorgadr, data>>24);
-  ciaWriteByteC(memory_wriorgadr + 1, data>>16);
-  ciaWriteByteC(memory_wriorgadr + 2, data>>8);
-  ciaWriteByteC(memory_wriorgadr + 3, data);
+void ciaWriteLong(ULO data, ULO address)
+{
+  ciaWriteByte((UBY) (data>>24), address);
+  ciaWriteByte((UBY) (data>>16), address + 1);
+  ciaWriteByte((UBY) (data>>8), address + 2);
+  ciaWriteByte((UBY) data, address + 3);
 }
-
 
 /*============================================================================*/
 /* Map cia banks into the memory table                                        */
 /*============================================================================*/
 
-void ciaMemoryMap(void) {
+void ciaMemoryMap(void)
+{
   ULO bank;
 
   for (bank = 0xa00000>>16; bank < (0xc00000>>16); bank++)
@@ -607,10 +677,8 @@ void ciaMemoryMap(void) {
 		  ciaWriteLong,
 		  NULL,
 		  bank,
-		  0xa00000>>16,
-		  FALSE);
+		  0xa00000>>16);
 }
-
 
 /*============================================================================*/
 /* Cia state zeroing                                                          */
@@ -643,7 +711,6 @@ void ciaStateClear(void) {
     cia_cra[i] = 0;
     cia_crb[i] = 0;
   }
-  cia_next_event_time = -1;
   cia_next_event_type = 0;
 }
 
