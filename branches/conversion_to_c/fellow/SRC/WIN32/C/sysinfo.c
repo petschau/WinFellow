@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.11.2.9 2008-02-13 19:24:35 peschau Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.11.2.10 2008-02-13 20:31:45 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -437,6 +437,7 @@ static void sysinfoCPUGetFeatures(void)
   /* initialization */
   memset(&sysinfo_cpu_id, 0, sizeof(sysinfo_cpu_id));
 
+#ifndef X64
   _asm
   {
     /* *INDENT-OFF* */
@@ -557,6 +558,7 @@ not_amd:
 id_done:
 	/* *INDENT-ON* */
   }
+#endif
 }
 
 static float sysinfoCPUSpeed(void)
@@ -571,6 +573,8 @@ static float sysinfoCPUSpeed(void)
   /* get a precise timer if available */
   if (!QueryPerformanceFrequency (&Counter_Frequency))
     return 0;
+
+#ifndef X64
 
   /* store thread and process information */
   Priority_Process = GetPriorityClass (GetCurrentProcess ());
@@ -650,7 +654,7 @@ static float sysinfoCPUSpeed(void)
   // restore the thread priority
   SetPriorityClass (GetCurrentProcess (), Priority_Process);
   SetThreadPriority (GetCurrentThread (), Priority_Thread);
-
+#endif
   return (((float) SumResults) / 3);
 }
 
@@ -1061,6 +1065,7 @@ BOOL sysinfoDetectMMX(void)
 	BOOL mmxFound;
 
 	mmxFound = 0;
+#ifndef X64
 	_asm
 	{
 		pushad
@@ -1087,6 +1092,7 @@ no_mmx:
 outt:		
 		mov mmxFound, eax
 	}
+#endif
 	return mmxFound;
 }
 
@@ -1095,7 +1101,7 @@ BOOL sysinfoDetectSSE(void)
 	BOOL sseFound;
 
 	sseFound = 0;
-
+#ifndef X64
 	_asm 
 	{
 		pushad
@@ -1122,6 +1128,7 @@ no_sse:
 outt:		
 		mov sseFound, eax;
 	}
+#endif
 	return sseFound;
 }
 
