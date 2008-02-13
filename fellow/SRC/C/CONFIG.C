@@ -10,9 +10,6 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "floppy.h"
 #include "fmem.h"
@@ -45,7 +42,7 @@ cfgManager cfg_manager;
 /*============================================================================*/
 
 void cfgSetDescription(cfg *config, STR *description) {
-  strcpy(config->m_description, description);
+  strncpy(config->m_description, description, 255);
 }
 
 STR *cfgGetDescription(cfg *config) {
@@ -713,10 +710,6 @@ static cpu_types cfgGetCPUTypeFromString(STR *value) {
   else if (stricmp(value, "68ec20/68881") == 0) return M68EC20; /* Unsupp */
   else if (stricmp(value, "68030") == 0)        return M68030;
   else if (stricmp(value, "68ec30") == 0)       return M68EC30;
-  else if (stricmp(value, "68040") == 0)        return M68040;  /* Unsupp */
-  else if (stricmp(value, "68ec40") == 0)       return M68EC40; /* Unsupp */
-  else if (stricmp(value, "68060") == 0)        return M68060;  /* Unsupp */
-  else if (stricmp(value, "68ec60") == 0)       return M68EC60; /* Unsupp */
   return M68000;
 }
 
@@ -728,10 +721,6 @@ static STR *cfgGetCPUTypeToString(cpu_types cputype) {
     case M68EC20: return "68ec20";
     case M68030:  return "68030";
     case M68EC30: return "68ec30";
-    case M68040:  return "68040";
-    case M68EC40: return "68ec40";
-    case M68060:  return "68060";
-    case M68EC60: return "68ec60";
   }
   return "68000";
 }
@@ -742,8 +731,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value) {
   if (stricmp(value, "real") == 0) return 4;
   else if (stricmp(value, "max") == 0) return 1;
   speed = cfgGetULOFromString(value);
-  if (speed < 1) speed = 1;
-  else if (speed > 20) speed = 8;
+  if (speed > 20) speed = 8;
   return speed;
 }
 
@@ -1265,11 +1253,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 	  cfgGetGameportToString(cfgGetGameport(config, 1)));
   fprintf(cfgfile, "usegui=%s\n", cfgGetBOOLEToString(cfgGetUseGUI(config)));
   fprintf(cfgfile, "cpu_speed=%d\n", cfgGetCPUSpeed(config));
-#ifdef PREFETCH
   fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(TRUE));
-#else
-  fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(FALSE));
-#endif
   fprintf(cfgfile, "cpu_type=%s\n", 
 	  cfgGetCPUTypeToString(cfgGetCPUType(config)));
   fprintf(cfgfile, "sound_output=%s\n", 
@@ -1344,7 +1328,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 /*============================================================================*/
 
 static void cfgStripTrailingNewlines(STR *line) {
-  LON length = strlen(line);
+  size_t length = strlen(line);
   while ((length > 0) && 
 	 ((line[length - 1] == '\n') || (line[length - 1] == '\r')))
     line[--length] = '\0';
@@ -1493,7 +1477,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   needreset |= memorySetUseAutoconfig(cfgGetUseAutoconfig(config));
   needreset |= memorySetChipSize(cfgGetChipSize(config));
   needreset |= memorySetFastSize(cfgGetFastSize(config));
-  needreset |= memorySetBogoSize(cfgGetBogoSize(config));
+  needreset |= memorySetSlowSize(cfgGetBogoSize(config));
   memorySetKey(cfgGetKey(config));
   needreset |= memorySetKickImage(cfgGetKickImage(config));
   needreset |= memorySetAddress32Bit(cfgGetAddress32Bit(config));

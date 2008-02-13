@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.5.2.6 2004-05-28 12:55:25 carfesh Exp $
+  @(#) $Id: FILESYS.C,v 1.5.2.7 2008-02-13 19:24:36 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -88,7 +88,7 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 {
     /* @@@ use strcasecmp for some targets.  */
     if (strlen (path) > 0 && strncmp (file, path, strlen (path)) == 0) {
-	    int l;
+	    size_t l;
 	    char *p = xmalloc (strlen (file) + strlen (subst) + 2);
 	    strcpy (p, subst);
 	    l = strlen (p);
@@ -801,7 +801,7 @@ static void recycle_aino (Unit *unit, a_inode *new_aino)
 
 static void update_child_names (Unit *unit, a_inode *a, a_inode *parent)
 {
-    int l0 = strlen (parent->nname) + 2;
+    size_t l0 = strlen (parent->nname) + 2;
 
     while (a != 0) {
 	char *name_start;
@@ -1129,7 +1129,7 @@ static a_inode *create_child_aino (Unit *unit, a_inode *base, char *rel, int isd
 static a_inode *lookup_child_aino (Unit *unit, a_inode *base, char *rel, uae_u32 *err)
 {
     a_inode *c = base->child;
-    int l0 = strlen (rel);
+    size_t l0 = strlen (rel);
 
     if (base->dir == 0) {
 	*err = ERROR_OBJECT_WRONG_TYPE;
@@ -1137,7 +1137,7 @@ static a_inode *lookup_child_aino (Unit *unit, a_inode *base, char *rel, uae_u32
     }
 
     while (c != 0) {
-	int l1 = strlen (c->aname);
+	size_t l1 = strlen (c->aname);
 	if (l0 <= l1 && same_aname (rel, c->aname + l1 - l0)
 	    && (l0 == l1 || c->aname[l1-l0-1] == '/'))
 	    break;
@@ -1155,11 +1155,11 @@ static a_inode *lookup_child_aino (Unit *unit, a_inode *base, char *rel, uae_u32
 static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *rel, uae_u32 *err)
 {
     a_inode *c = base->child;
-    int l0 = strlen (rel);
+    size_t l0 = strlen (rel);
 
     *err = 0;
     while (c != 0) {
-	int l1 = strlen (c->nname);
+	size_t l1 = strlen (c->nname);
 	/* Note: using strcmp here.  */
 	if (l0 <= l1 && strcmp (rel, c->nname + l1 - l0) == 0
 	    && (l0 == l1 || c->nname[l1-l0-1] == FSDB_DIR_SEPARATOR))
@@ -1255,7 +1255,8 @@ static uae_u32 startup_handler (void)
     uaecptr dos_info = get_long (rootnode + 24) << 2;
     uaecptr pkt = m68k_dreg (regs, 3);
     uaecptr arg2 = get_long (pkt + dp_Arg2);
-    int i, namelen;
+    int i;
+    size_t namelen, j;
     char* devname = bstr1 (get_long (pkt + dp_Arg1) << 2);
     char* s;
     Unit *unit;
@@ -1361,9 +1362,9 @@ static uae_u32 startup_handler (void)
     put_long (unit->volume + 28, 0); /* lock list */
     put_long (unit->volume + 40, (unit->volume + 44) >> 2); /* Name */
     namelen = strlen (unit->ui.volname);
-    put_byte (unit->volume + 44, namelen);
-    for (i = 0; i < namelen; i++)
-	put_byte (unit->volume + 45 + i, unit->ui.volname[i]);
+    put_byte (unit->volume + 44, (UBY)namelen);
+    for (j = 0; j < namelen; j++)
+	put_byte (unit->volume + 45 + j, unit->ui.volname[j]);
 
     /* link into DOS list */
     put_long (unit->volume, get_long (dos_info + 4));
@@ -1664,11 +1665,11 @@ get_time (time_t t, long* days, long* mins, long* ticks)
     /* ticks past minute @ 50Hz */
 
     t -= diff;
-    *days = t / secs_per_day;
+    *days = (long) (t / secs_per_day);
     t -= *days * secs_per_day;
-    *mins = t / 60;
+    *mins = (long) (t / 60);
     t -= *mins * 60;
-    *ticks = t * 50;
+    *ticks = (long) (t * 50);
 }
 
 static time_t
@@ -1777,7 +1778,8 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
 {
     struct stat statbuf;
     long days, mins, ticks;
-    int i, n;
+    int i;
+    size_t n;
     char *x;
 
     /* No error checks - this had better work. */
@@ -1798,7 +1800,7 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
     if (n > 106)
 	n = 106;
     i = 8;
-    put_byte (info + i, n); i++;
+    put_byte (info + i, (UBY)n); i++;
     while (n--)
 	put_byte (info + i, *x), i++, x++;
     while (i < 108)
@@ -1826,7 +1828,7 @@ get_fileinfo (Unit *unit, dpacket packet, uaecptr info, a_inode *aino)
 	n = strlen (x);
 	if (n > 78)
 	    n = 78;
-	put_byte (info + i, n); i++;
+	put_byte (info + i, (UBY)n); i++;
 	while (n--)
 	    put_byte (info + i, *x), i++, x++;
 	while (i < 224)
@@ -2972,8 +2974,8 @@ static uae_u32 exter_int_helper (void)
 	uip[unit_no].self->cmds_acked = uip[unit_no].self->cmds_sent;
 	port = uip[unit_no].self->port;
 	if (port) {
-	    m68k_areg (regs, 0) = port;
-	    m68k_areg (regs, 1) = find_unit (port)->dummy_message;
+	    cpuSetAReg(0, port);
+	    cpuSetAReg(1, find_unit (port)->dummy_message);
 	    unit_no++;
 	    return 1;
 	}
@@ -3331,7 +3333,7 @@ static uae_u32 filesys_diagentry (void)
     put_word (resaddr + 2, RTS);
 	/* @@@@@ FELLOW TODO: new 68k code here */
 
-    m68k_areg (regs, 0) = residents;
+    cpuSetAReg(0, residents);
     return 1;
 }
 

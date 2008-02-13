@@ -75,7 +75,7 @@ void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text) {
 
 ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier) {
 
-	return SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
+	return (ULO) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
 }
 
 void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position) {

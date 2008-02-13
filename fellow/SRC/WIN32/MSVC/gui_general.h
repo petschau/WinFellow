@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
@@ -46,6 +46,7 @@
 #define IDI_ICON_HARDFILE               169
 #define IDI_ICON_FILESYSTEM             170
 #define IDI_ICON_CPU                    171
+#define IDD_DEBUGGER                    181
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -69,11 +70,13 @@
 #define IDC_EDIT_HARDFILE_ADD_RESERVED  1026
 #define IDC_RADIO_68EC40                1027
 #define IDC_BUTTON1                     1028
+#define IDC_BTN_STEP1                   1028
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1029
 #define IDC_BUTTON_HARDFILE_CREATE      1030
 #define IDC_RADIO_68EC60                1031
 #define IDC_BUTTON_DF1_SWAP             1032
 #define IDC_BUTTON2                     1033
+#define IDC_BTN_STEP_OVER               1033
 #define IDC_BUTTON_KEYFILE_FILEDIALOG   1034
 #define IDC_CHECK_DF0_ENABLED           1042
 #define IDC_BUTTON_DF0_FILEDIALOG       1043
@@ -168,11 +171,16 @@
 #define IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG 1136
 #define IDC_STATIC_VERSION              1137
 #define IDC_STATIC_ABOUT_VERSION        1138
+#define IDC_LST_REGISTERS               1140
+#define IDC_LST_INFO                    1141
+#define IDC_LST_INSTRUCTIONS            1142
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BUTTON3                     2001
+#define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
 #define IDC_BUTTON_DF3_SWAP             2003
 #define IDC_BUTTON4                     2004
+#define IDC_BTN_BREAK                   2004
 #define IDC_BUTTON_DF3_FILEDIALOG       2005
 #define IDC_BUTTON_TURBO_LOAD           2006
 #define IDC_CHECK1                      2007
@@ -229,7 +237,6 @@
 #define IDC_RADIO12                     2060
 #define IDC_RADIO_SOUND_FILTER_ORIGINAL 2061
 #define IDC_RADIO13                     2062
-#define IDC_LIST1                       2063
 #define IDC_RADIO_SOUND_FILTER_ALWAYS   2064
 #define IDC_LIST_FILESYSTEMS            2065
 #define IDC_RADIO14                     2066
@@ -261,9 +268,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        181
+#define _APS_NEXT_RESOURCE_VALUE        182
 #define _APS_NEXT_COMMAND_VALUE         40011
-#define _APS_NEXT_CONTROL_VALUE         1140
+#define _APS_NEXT_CONTROL_VALUE         1143
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

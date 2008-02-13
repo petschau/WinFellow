@@ -2,17 +2,12 @@
 #define DEFS_H
 
 #include "portable.h"
-#include "renaming.h"
-
-/* Defines, some must be set also in include\asm\defs.inc */
-
 
 /*===========================================================================*/
 /* Add UAE filesystem to the executable                                      */
 /*===========================================================================*/
 
 #define UAE_FILESYS
-
 
 /*===========================================================================*/
 /* Add GUI support to compiled binary                                        */
@@ -28,23 +23,6 @@
 /*===========================================================================*/
 
 #define WITH_OS_TIMER
-
-/*========================================*/
-/* 68000 prefetch word emulation          */
-/* Slower, but some programs need it      */
-/* Should not be enabled if the intention */
-/* is to run 010++ binaries.              */
-/*========================================*/
-
-#define PREFETCH
-
-/*================================*/
-/* Use direct memory PC-pointer   */
-/* Visibly faster than controlled */
-/* memory access.                 */
-/*================================*/
-
-//#define PC_PTR
 
 /*================================*/
 /* The rest is not wise to change */
@@ -75,7 +53,6 @@ typedef int BOOLE;
 #define TRUE  1
 typedef char STR;
 
-
 /* Filename length used throughout the code */
 
 #define CFG_FILENAME_LENGTH 256
@@ -83,9 +60,7 @@ typedef char STR;
 
 /* Various function type prototypes */
 
-typedef ULO amigaadress;
-typedef ULO (*ciareadfunc)(ULO i);
-typedef void (*ciawritefunc)(ULO i, ULO data);
+//typedef ULO amigaadress;
 
 /*------------------------------------*/
 /* The decode routines have this type */
@@ -113,15 +88,15 @@ typedef void (*playbuffer_routine)(void);
 typedef void (*sound_before_emu_routine)(void);
 typedef void (*sound_after_emu_routine)(void);
 
+/*
 typedef ULO (*eareadfunc)(ULO);
 typedef void (*eawritefunc)(ULO,ULO);
 typedef ULO (*eacalcfunc)(ULO);
 typedef void (*eac063isfunc)(void);
+*/
 
 typedef void (*buseventfunc)(void);
 
-#define CYCLESPERLINE    228
-#define CYCLESPERFRAME 71364
 #define LINESPERFRAME    313
 
 #define FELLOWVERSION        "WinFellow alpha v0.4.4 build 2"

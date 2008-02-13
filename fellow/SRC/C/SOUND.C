@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.4.2.7 2005-01-23 16:30:20 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.4.2.8 2008-02-13 19:24:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -22,9 +22,6 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-
-#include "portable.h"
-#include "renaming.h"
 
 #include "defs.h"
 #include "fmem.h"
@@ -151,16 +148,16 @@ ULO soundGetChannelNumber(ULO address)
  $dff0a0,b0,c0,d0
 */
 
-void waudXpth(ULO data, ULO address)
+void waudXpth(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audpt[ch] = (audpt[ch] & 0xffff) | ((data & 0x1f) << 16);
+  audpt[ch] = (audpt[ch] & 0xffff) | (((ULO)(data & 0x1f)) << 16);
 }
 
-void waudXptl(ULO data, ULO address)
+void waudXptl(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audpt[ch] = (audpt[ch] & 0x1f0000) | (data & 0xfffe);
+  audpt[ch] = (audpt[ch] & 0x1f0000) | (ULO)(data & 0xfffe);
 }
 
 /*
@@ -170,10 +167,10 @@ void waudXptl(ULO data, ULO address)
  $dff0a4,b4,c4,d4
 */
 
-void waudXlen(ULO data, ULO address)
+void waudXlen(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audlen[ch] = data & 0xffff;
+  audlen[ch] = data;
 }
 
 /*
@@ -183,10 +180,10 @@ void waudXlen(ULO data, ULO address)
  $dff0a6,b6,c6,d6
 */
 
-void waudXper(ULO data, ULO address)
+void waudXper(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audper[ch] = periodtable[data & 0xffff];
+  audper[ch] = periodtable[data];
 }
 
 /*
@@ -197,7 +194,7 @@ void waudXper(ULO data, ULO address)
 
 */
 
-void waudXvol(ULO data, ULO address)
+void waudXvol(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   /*Replay routines sometimes access volume as a byte register at $dff0X9...*/
@@ -215,7 +212,7 @@ void waudXvol(ULO data, ULO address)
  Not used right now.
 */
 
-void waudXdat(ULO data, ULO address)
+void waudXdat(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
   auddat[ch] = data & 0xff;
@@ -263,7 +260,7 @@ void soundState1(ULO ch)
 
   if (audlenw[ch] != 1) audlenw[ch]--; 
   audstate[ch] = soundState5;
-  wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+  memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
 }
 
 /*==============================================================================
@@ -319,7 +316,7 @@ void soundState3(ULO ch)
     {
       audlenw[ch] = audlen[ch];
       audptw[ch] = audpt[ch];
-      wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+      memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
     }
   }
   else
@@ -364,7 +361,7 @@ void soundState5(ULO ch)
   {
     audlenw[ch] = audlen[ch];
     audptw[ch] = audpt[ch];
-    wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+    memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
   }
 }
 
@@ -453,7 +450,7 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
   }
   else
   {
-    if ((intreq & audioirqmask[ch]) == 0) wriw(audioirqmask[ch] | 0x8000, 0xdff09c);
+    if ((intreq & audioirqmask[ch]) == 0) memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
     if (!halfscale) samples_added = count;
     else 
       for (i = 0; i < count; ++i)
@@ -669,8 +666,8 @@ void soundPeriodTableInitialize(ULO outputrate) {
 /* Sets up sound emulation for a specific quality                            */
 /*===========================================================================*/
 
-void soundPlaybackInitialize(void) {
-  ULO samplewidth = (soundGet16Bits()) ? 2 : 1;
+void soundPlaybackInitialize(void)
+{
   audiocounter = 0;
   if (soundGetEmulation() > SOUND_NONE) {                      /* Play sound */
     soundPeriodTableInitialize(soundGetRateReal());
@@ -699,12 +696,12 @@ void soundIOHandlersInstall(void) {
   ULO i;
 
   for (i = 0; i < 4; i++) {
-    memorySetIOWriteStub(0xa0 + 16*i, waudXpth);
-    memorySetIOWriteStub(0xa2 + 16*i, waudXptl);
-    memorySetIOWriteStub(0xa4 + 16*i, waudXlen);
-    memorySetIOWriteStub(0xa6 + 16*i, waudXper);
-    memorySetIOWriteStub(0xa8 + 16*i, waudXvol);
-    memorySetIOWriteStub(0xaa + 16*i, waudXdat);
+    memorySetIoWriteStub(0xa0 + 16*i, waudXpth);
+    memorySetIoWriteStub(0xa2 + 16*i, waudXptl);
+    memorySetIoWriteStub(0xa4 + 16*i, waudXlen);
+    memorySetIoWriteStub(0xa6 + 16*i, waudXper);
+    memorySetIoWriteStub(0xa8 + 16*i, waudXvol);
+    memorySetIoWriteStub(0xaa + 16*i, waudXdat);
   }
 }
 
