@@ -1,4 +1,4 @@
-/* @(#) $Id: fileops.h,v 1.3 2008-02-10 11:38:41 carfesh Exp $             */
+/* @(#) $Id: fileops.h,v 1.4 2008-02-17 16:05:24 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -28,6 +28,6 @@
 
 BOOLE fileopsGetFellowLogfileName(char *);
 BOOLE fileopsGetGenericFileName(char *, const char*);
-BOOLE fileopsGetDefaultConfigFilename(char *);
+BOOLE fileopsGetDefaultConfigFileName(char *);
 
 #endif // FILEOPS_H
