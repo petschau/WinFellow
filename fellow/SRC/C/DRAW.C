@@ -1206,7 +1206,6 @@ static void drawAmigaScreenHeight(draw_mode *dm) {
     draw_top = 313 - draw_height_amiga;
   }
   draw_height_amiga_real = draw_height_amiga*totalscale;
-  if (totalscale > 1) draw_height_amiga_real += totalscale - 1;
 }
 
 
@@ -1216,7 +1215,7 @@ static void drawAmigaScreenHeight(draw_mode *dm) {
 
 static void drawAmigaScreenCenter(draw_mode *dm) {
   draw_hoffset = ((dm->width - draw_width_amiga_real)/2) & (~7);
-  draw_voffset = (dm->height - draw_height_amiga_real)/2;
+  draw_voffset = (dm->height - draw_height_amiga_real)/2 & (~1);
 }
 
 
@@ -1748,7 +1747,7 @@ void drawEndOfFramePre(void)
     if (draw_buffer_top_ptr != NULL)
     {
       draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-      for (i = 0; i <= (draw_bottom - draw_top); i++) {
+      for (i = 0; i < (draw_bottom - draw_top); i++) {
         graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
         if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
         {

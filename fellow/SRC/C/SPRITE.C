@@ -263,11 +263,6 @@ UBY sprite_deco32[256][8];
 UBY sprite_deco03[256][8];
 UBY sprite_deco04[256][8];
 
-ULO sprite4_0[4] = {(ULO) sprite_deco01, (ULO) sprite_deco11,
-                    (ULO) sprite_deco21, (ULO) sprite_deco31};
-ULO sprite4_1[4] = {(ULO) sprite_deco02, (ULO) sprite_deco12,
-                    (ULO) sprite_deco22, (ULO) sprite_deco32};
-
 typedef union sprite_deco_
 {
   UBY i8[8];
@@ -2154,7 +2149,7 @@ static void spriteMergeLores(graph_line* current_graph_line)
 					sprite_data = next_item->sprite_data;
 
 					// determine whetever this sprite is in front or behind the playfield
-					in_front = ((bplcon2 & 0x38) > (4 * sprnr)) ? 1 : 0;
+					in_front = ((bplcon2 & 0x38) > (4 * (ULO)sprnr)) ? 1 : 0;
 
   					// merge sprite data within the line
 					for (i = 0; i < 16; ++i)
