@@ -15,7 +15,7 @@
 #include "joydrv.h"
 #include "kbddrv.h"
 
-extern int main(int, char **);
+extern int __cdecl main(int, char **);
 
 
 /*===========================================================================*/
@@ -118,7 +118,7 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 
    __try
    {
-      RaiseException( 0x406D1388, 0, sizeof(info)/sizeof(DWORD), (DWORD*)&info );
+       RaiseException(0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info);
    }
    __except(EXCEPTION_CONTINUE_EXECUTION)
    {
@@ -265,7 +265,7 @@ void winDrvSetKey(char *path, char *name, char *value) {
 		  0,
 		  REG_SZ,
 		  value,
-		  strlen(value));
+		  (DWORD)strlen(value));
     RegCloseKey(hkey);
   }
 }

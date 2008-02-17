@@ -16,9 +16,6 @@ Tuesday, September 19, 2000
 - added autofire support
 */
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "fellow.h"
 #include "draw.h"
@@ -105,32 +102,37 @@ static ULO rjoydat(ULO i) {
 
 /* JOY0DATR - $A */
 
-ULO rjoy0datC(ULO address) {
-  return rjoydat(0);
+UWO rjoy0dat(ULO address)
+{
+  return (UWO) rjoydat(0);
 }
 
 /* JOY1DATR - $C */
 
-ULO rjoy1datC(ULO address) {
-  return rjoydat(1);
+UWO rjoy1dat(ULO address)
+{
+  return (UWO) rjoydat(1);
 }
 
 /* POT0DATR - $12 */
 
-ULO rpot0datC(ULO address) {
-  return potdat[0];
+UWO rpot0dat(ULO address)
+{
+  return (UWO) potdat[0];
 }
 
 /* POT1DATR - $14 */
 
-ULO rpot1datC(ULO address) {
-  return potdat[1];
+UWO rpot1dat(ULO address)
+{
+  return (UWO) potdat[1];
 }
 
 /* POTGOR - $16 */
 
-ULO rpotgorC(ULO address) {
-  ULO val = potgor & 0xbbff;
+UWO rpotgor(ULO address)
+{
+  UWO val = potgor & 0xbbff;
 
   if( gameport_autofire1[0] )
 	gameport_fire1[0] = !gameport_fire1[0];
@@ -146,7 +148,8 @@ ULO rpotgorC(ULO address) {
 
 /* JOYTEST $36 */
 
-void wjoytestC(ULO data, ULO address) {
+void wjoytest(UWO data, ULO address)
+{
   ULO i;
 
   for (i = 0; i < 2; i++) {
@@ -154,7 +157,6 @@ void wjoytestC(ULO data, ULO address) {
     gameport_y[i] = gameport_y_last_read[i] = (BYT) ((data>>8) & 0xff);
   }
 }
-
 
 /*===========================================================================*/
 /* Mouse movement handler                                                    */
@@ -220,20 +222,19 @@ void gameportJoystickHandler(gameport_inputs joydev,
 		}
 }
 
-
 /*===========================================================================*/
 /* Initialize the register stubs for the gameports                           */
 /*===========================================================================*/
 
-void gameportIOHandlersInstall(void) {
-  memorySetIOReadStub(0xa, rjoy0dat);
-  memorySetIOReadStub(0xc, rjoy1dat);
-  memorySetIOReadStub(0x12, rpot0dat);
-  memorySetIOReadStub(0x14, rpot1dat);
-  memorySetIOReadStub(0x16, rpotgor);
-  memorySetIOWriteStub(0x36, wjoytest);
+void gameportIOHandlersInstall(void)
+{
+  memorySetIoReadStub(0xa, rjoy0dat);
+  memorySetIoReadStub(0xc, rjoy1dat);
+  memorySetIoReadStub(0x12, rpot0dat);
+  memorySetIoReadStub(0x14, rpot1dat);
+  memorySetIoReadStub(0x16, rpotgor);
+  memorySetIoWriteStub(0x36, wjoytest);
 }
-
 
 /*===========================================================================*/
 /* Clear all gameport state                                                  */

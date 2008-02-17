@@ -1,4 +1,4 @@
-/* @(#) $Id: fsysamnt.c,v 1.4 2004-06-08 13:20:38 carfesh Exp $ */
+/* @(#) $Id: fsysamnt.c,v 1.5 2008-02-17 12:57:05 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -152,7 +152,6 @@ BOOLE CheckRM(char *DriveName)
 
 /* This function makes sure the volume-name being requested is not already in use, or any of the following
    illegal values: */
-
 
 int valid_volumename( struct uaedev_mount_info *mountinfo, char *volumename, int fullcheck )
 {

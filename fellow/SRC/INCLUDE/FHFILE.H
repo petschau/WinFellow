@@ -1,21 +1,6 @@
 #ifndef FHFILE_H
 #define FHFILE_H
 
-/* Rename assembly functions */
-
-#define fhfileReadByte ASMRENAME(fhfileReadByte)
-#define fhfileReadWord ASMRENAME(fhfileReadWord)
-#define fhfileReadLong ASMRENAME(fhfileReadLong)
-
-/* Declare assembly functions */
-
-extern ULO fhfileReadByte(ULO ea);
-extern ULO fhfileReadWord(ULO ea);
-extern ULO fhfileReadLong(ULO ea);
-
-/* End of assembly function declarations */
-
-
 #define FHFILE_MAX_DEVICES 20
 
 typedef enum {

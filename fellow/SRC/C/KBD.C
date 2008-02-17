@@ -256,8 +256,8 @@ void kbdQueueHandler(void) {
 					 KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
-        ciaWritesp(0, ~(((scode >> 7) & 1) | (scode << 1)));
-        ciaRaiseIRQC(0, 8);
+        ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+        ciaRaiseIRQ(0, 8);
       }
     }
   }

@@ -16,7 +16,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: fsdb_win32.c,v 1.10 2004-05-27 12:30:24 carfesh Exp $
+  @(#) $Id: fsdb_win32.c,v 1.11 2008-02-17 12:57:12 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -54,6 +54,8 @@
 #include "filesys.h"
 #include "autoconf.h"
 #include "fsusage.h"
+
+
 /* FELLOW IN (END)---------------- */
 
 /* these are deadly (but I think allowed on the Amiga): */
@@ -68,7 +70,7 @@ int fsdb_name_invalid (const char *n)
     char b = (a == '\0' ? a : n[1]);
     char c = (b == '\0' ? b : n[2]);
     char d = (c == '\0' ? c : n[3]);
-    int l = strlen (n);
+    size_t l = strlen (n);
 
     if (a >= 'a' && a <= 'z')
         a -= 32;
@@ -89,8 +91,8 @@ int fsdb_name_invalid (const char *n)
     /* spaces and periods at the beginning or the end are a no-no */
     if(n[0] == '.' || n[0] == ' ')
         return 1;
-    i = strlen(n) - 1;
-    if(n[i] == '.' || n[i] == ' ')
+    l = strlen(n) - 1;
+    if(n[l] == '.' || n[l] == ' ')
         return 1;
 
     /* these characters are *never* allowed */

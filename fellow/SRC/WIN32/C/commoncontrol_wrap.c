@@ -75,7 +75,7 @@ void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text) {
 
 ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier) {
 
-	return SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
+	return (ULO) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
 }
 
 void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position) {
@@ -103,14 +103,14 @@ void ccwEditEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE en
 	Edit_Enable(GetDlgItem(windowHandle, controlIdentifier), enable);
 }
 
-void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, int resourceIdentifierFirst, int resourceIdentifierSecond, BOOLE setFirst) {
+void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst) {
 
 	if (setFirst) {
 		SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, 
-		(LPARAM) LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(resourceIdentifierFirst)));
+		(LPARAM) bitmapFirst);
 	} else {
 		SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, 
-		(LPARAM) LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(resourceIdentifierSecond)));
+		(LPARAM) bitmapSecond);
 	}
 }
 

@@ -7,25 +7,6 @@ Tuesday, September 19, 2000: nova
 */
 
 /*===========================================================================*/
-/* From assembly                                                             */
-/*===========================================================================*/
-
-#define rjoy0dat ASMRENAME(rjoy0dat)
-#define rjoy1dat ASMRENAME(rjoy1dat)
-#define rpot0dat ASMRENAME(rpot0dat)
-#define rpot1dat ASMRENAME(rpot1dat)
-#define rpotgor ASMRENAME(rpotgor)
-#define wjoytest ASMRENAME(wjoytest)
-
-extern ULO rjoy0dat(ULO address);
-extern ULO rjoy1dat(ULO address);
-extern ULO rpot0dat(ULO address);
-extern ULO rpot1dat(ULO address);
-extern ULO rpotgor(ULO address);
-extern void wjoytest(ULO data, ULO address);
-
-
-/*===========================================================================*/
 /* Joystickdata                                                              */
 /* TRUE or FALSE                                                             */
 /*===========================================================================*/

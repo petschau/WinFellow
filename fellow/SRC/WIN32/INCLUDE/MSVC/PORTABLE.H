@@ -1,11 +1,12 @@
 #ifndef PORTABLE_H
 #define PORTABLE_H
 
-
 /*====================================================*/
 /* Wrapper definitions for system dependent functions */
 /* Windows, MSVC++                                    */
 /*====================================================*/
+
+#define _CRT_SECURE_NO_WARNINGS 1
 
 #include <windows.h>
 
@@ -14,7 +15,10 @@
 /*=======*/
 
 #include <stdio.h>
+#include <io.h>
+
 #define fileno _fileno
+#define access _access
 
 /*================================*/
 /* stat structure and field names */
@@ -29,7 +33,9 @@
 #include <string.h>
 
 #define strcmpi _strcmpi
+#define stricmp _stricmp
 #define strnicmp _strnicmp
+#define strlwr _strlwr
 
 
 /*====================================*/
