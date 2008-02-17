@@ -75,6 +75,7 @@ typedef struct {
   ULO   m_frameskipratio;
   ULO   m_horizontalscale;
   ULO   m_verticalscale;
+  ULO   m_verticalscalestrategy;
   BOOLE m_scanlines;
   BOOLE m_deinterlace;
   BOOLE m_measurespeed;
@@ -207,16 +208,18 @@ extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *);
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
 
-extern void cfgSetFrameskipRatio(cfg *config, ULO frameskipratio);
-extern ULO cfgGetFrameskipRatio(cfg *config);
-extern void cfgSetHorizontalScale(cfg *config, ULO horisontalscale);
-extern ULO cfgGetHorizontalScale(cfg *config);
-extern void cfgSetVerticalScale(cfg *config, ULO verticalscale);
-extern ULO cfgGetVerticalScale(cfg *config);
-extern void cfgSetScanlines(cfg *config, BOOLE scanlines);
-extern BOOLE cfgGetScanlines(cfg *config);
-extern void cfgSetDeinterlace(cfg *config, BOOLE deinterlace);
-extern BOOLE cfgGetDeinterlace(cfg *config);
+extern void  cfgSetFrameskipRatio (cfg *config, ULO frameskipratio);
+extern ULO   cfgGetFrameskipRatio (cfg *config);
+extern void  cfgSetHorizontalScale(cfg *config, ULO horisontalscale);
+extern ULO   cfgGetHorizontalScale(cfg *config);
+extern void  cfgSetVerticalScale  (cfg *config, ULO verticalscale);
+extern ULO   cfgGetVerticalScale  (cfg *config);
+extern void  cfgSetVerticalScaleStrategy(cfg *config, ULO verticalscalestrategy);
+extern ULO   cfgGetVerticalScaleStrategy(cfg *config);
+extern void  cfgSetScanlines      (cfg *config, BOOLE scanlines);
+extern BOOLE cfgGetScanlines      (cfg *config);
+extern void  cfgSetDeinterlace    (cfg *config, BOOLE deinterlace);
+extern BOOLE cfgGetDeinterlace    (cfg *config);
 
 
 /*============================================================================*/

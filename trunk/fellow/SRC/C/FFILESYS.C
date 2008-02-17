@@ -21,9 +21,6 @@
 /* 07/11/2000: fixed up checks using filesys device status                    */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "fellow.h"
 #include "ffilesys.h"
@@ -79,7 +76,7 @@ void ffilesysSetFilesys(ffilesys_dev filesys, ULO index)
 
 BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
 {
-  ULO len;
+  size_t len;
 
   if (index >= FFILESYS_MAX_DEVICES)
     return FALSE;
@@ -157,7 +154,8 @@ void ffilesysDumpConfig(void)
 
 void ffilesysInstall(void)
 {
-  ULO i, len;
+  ULO i;
+  size_t len;
 
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED) {

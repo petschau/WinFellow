@@ -108,6 +108,13 @@ extern void kbdShutdown(void);
 extern void kbdQueueHandler(void);
 extern void kbdEventEOLHandler(void);
 
+void kbdQueueHandler(void);
+void kbdEventEOLHandler(void);
+void kbdEventEOFHandler(void);
+
+extern void kbdQueueHandler(void);
+extern void kbdEventEOLHandler(void);
+
 extern volatile ULO f12pressed;
 extern UBY insert_dfX[4];
 

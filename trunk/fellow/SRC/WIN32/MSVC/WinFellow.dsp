@@ -45,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
-# ADD CPP /nologo /G5 /MT /W2 /GX /O2 /Ob2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FR /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /Ob2 /I "../CAPS/include" /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /Fr /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
@@ -56,7 +56,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /machine:I386
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput.lib comctl32.lib dsound.lib /nologo /stack:0x200000 /subsystem:windows /debug /machine:I386
 
 !ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
 
@@ -101,7 +101,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MTd /Gm /GX /Zi /Od /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX5" /FAcs /FR /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /I "../include/msvc" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX3" /D "_FELLOW_DEBUG_CRT_MALLOC" /FAcs /FR /FD /c
+# ADD CPP /nologo /G5 /MTd /GX /ZI /Od /I "../CAPS/include" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /I "../include/msvc" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "USE_DX3" /D "_FELLOW_DEBUG_CRT_MALLOC" /FAcs /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o /win32 "NUL"
@@ -130,7 +130,7 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../include/msvc" /I "../../include" /I "../include" /I "../../uae/include" /I "." /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX5" /FD /c
 # SUBTRACT BASE CPP /YX
-# ADD CPP /nologo /G5 /MT /GX /O2 /I "win32/include" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /I "../include/msvc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX3" /D "_FELLOW_DEBUG_CRT_MALLOC" /FD /c
+# ADD CPP /nologo /G5 /MT /GX /O2 /I "../CAPS/include" /I "win32/include" /I "../../include" /I "../include" /I "../../uae/include" /I "../../xdms/include" /I "../../zlib/include" /I "." /I "../include/msvc" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "USE_DX3" /D "_FELLOW_DEBUG_CRT_MALLOC" /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o /win32 "NUL"
@@ -154,61 +154,6 @@ LINK32=link.exe
 # Begin Group "Assembly Files"
 
 # PROP Default_Filter "*.s"
-# Begin Source File
-
-SOURCE=..\..\asm\blita.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\blita.s
-
-"$(IntDir)\blita.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\blita.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\asm\busa.s
@@ -321,61 +266,6 @@ InputPath=..\..\asm\ciaa.s
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\asm\coppera.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\coppera.s
-
-"$(IntDir)\coppera.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\coppera.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\asm\cpua.s
 
 !IF  "$(CFG)" == "WinFellow - Win32 Release"
@@ -423,61 +313,6 @@ InputPath=..\..\asm\cpua.s
 
 "$(IntDir)\cpua.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
 	nasmw -o $(IntDir)\cpua.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\drawa.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\drawa.s
-
-"$(IntDir)\drawa.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\drawa.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
 
 # End Custom Build
 
@@ -594,281 +429,6 @@ InputPath=..\..\asm\fmema.s
 !ENDIF 
 
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\grapha.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\grapha.s
-
-"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\grapha.s
-
-"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\grapha.s
-
-"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\grapha.s
-
-"$(IntDir)\grapha.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\grapha.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\mmx.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\mmx.s
-
-"$(IntDir)\mmx.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\mmx.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\sounda.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\sounda.s
-
-"$(IntDir)\sounda.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sounda.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\asm\spritea.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\asm\spritea.s
-
-"$(IntDir)\spritea.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\spritea.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Asm\Sse.s
-
-!IF  "$(CFG)" == "WinFellow - Win32 Release"
-
-# Begin Custom Build
-IntDir=.\Release
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Debug"
-
-# Begin Custom Build
-IntDir=.\Debug
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Debug"
-
-# Begin Custom Build
-IntDir=.\Dx3Debug
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ELSEIF  "$(CFG)" == "WinFellow - Win32 Dx3 Release"
-
-# Begin Custom Build
-IntDir=.\Dx3Release
-ProjDir=.
-InputPath=..\..\Asm\Sse.s
-
-"$(IntDir)\sse.obj" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	nasmw -o $(IntDir)\sse.obj -f win32 -i$(ProjDir)\..\..\incasm\               -i$(ProjDir)\..\incasm\ $(InputPath)
-
-# End Custom Build
-
-!ENDIF 
-
-# End Source File
 # End Group
 # Begin Group "Assembly Include Files"
 
@@ -876,10 +436,6 @@ InputPath=..\..\Asm\Sse.s
 # Begin Group "Macros"
 
 # PROP Default_Filter "*.mac"
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\blit.mac
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\mac\bus.mac
@@ -894,56 +450,16 @@ SOURCE=..\..\incasm\mac\cpu.mac
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\mac\draw.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\drawmode.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\floppy.mac
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\mac\fmem.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\gameport.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\graph.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\kbd.mac
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\mac\nasm.mac
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\plan2c.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\sound.mac
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\mac\sprite.mac
-# End Source File
 # End Group
 # Begin Group "Functions"
 
 # PROP Default_Filter "*.inc"
-# Begin Source File
-
-SOURCE=..\..\incasm\func\blit.inc
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\func\bus.inc
@@ -954,56 +470,16 @@ SOURCE=..\..\incasm\func\cia.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\func\copper.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\func\cpu.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\draw.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\fellow.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\floppy.inc
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\func\fmem.inc
 # End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\gameport.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\graph.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\kbd.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\sound.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\func\sprite.inc
-# End Source File
 # End Group
 # Begin Group "Data"
 
 # PROP Default_Filter "*.inc"
-# Begin Source File
-
-SOURCE=..\..\incasm\data\blit.inc
-# End Source File
 # Begin Source File
 
 SOURCE=..\..\incasm\data\bus.inc
@@ -1014,15 +490,7 @@ SOURCE=..\..\incasm\data\cia.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\data\copper.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\data\cpu.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\draw.inc
 # End Source File
 # Begin Source File
 
@@ -1034,31 +502,7 @@ SOURCE=..\..\incasm\data\fhfile.inc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\incasm\data\floppy.inc
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\incasm\data\fmem.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\gameport.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\graph.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\sound.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\sprite.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\data\timer.inc
 # End Source File
 # End Group
 # Begin Group "Generic"
@@ -1067,10 +511,6 @@ SOURCE=..\..\incasm\data\timer.inc
 # Begin Source File
 
 SOURCE=..\..\incasm\generic\defs.inc
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\incasm\generic\sound.inc
 # End Source File
 # End Group
 # End Group
@@ -1918,5 +1358,13 @@ SOURCE=..\icons\sound.ico
 SOURCE=.\winfellow.ico
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\WinFellow.exe.manifest
+# End Source File
+# Begin Source File
+
+SOURCE=..\icons\winfellow_logo_small.bmp
+# End Source File
 # End Target
 # End Project

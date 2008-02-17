@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.10 2008-02-10 11:38:09 carfesh Exp $               */
+/* @(#) $Id: KBDDRV.C,v 1.11 2008-02-17 12:57:03 peschau Exp $               */
 /*===========================================================================*/
 /* Fellow Amiga Emulator                                                     */
 /* Keyboard driver for Windows                                               */
@@ -47,6 +47,7 @@ Sunday, February 10, 2008: carfesh
 #include "windrv.h"
 #include "kbdparser.h"
 #include "fellow.h"
+
 #include "dxver.h"
 #include "fileops.h"
 
@@ -655,7 +656,8 @@ void kbdDrvDInputUnacquire(void) {
   
   fellowAddLog("kbdDrvDInputUnacquire()\n");
   if (kbd_drv_lpDID == NULL) return;
-  if ((res = IDirectInputDevice_Unacquire(kbd_drv_lpDID)))
+  res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
+  if (res)
     kbdDrvDInputFailure("kbdDrvDInputUnacquire(): ", res);
 }
 
@@ -903,6 +905,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 	{
 	  mouseDrvToggleFocus();
 	  joyDrvToggleFocus();
+    //spriteSetDebugging();
 	  break;
 	}
 	

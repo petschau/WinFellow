@@ -10,9 +10,6 @@
 /* This file is under the GNU Public License (GPL)                            */
 /*============================================================================*/
 
-#include "portable.h"
-#include "renaming.h"
-
 #include "defs.h"
 #include "floppy.h"
 #include "fmem.h"
@@ -45,7 +42,7 @@ cfgManager cfg_manager;
 /*============================================================================*/
 
 void cfgSetDescription(cfg *config, STR *description) {
-  strcpy(config->m_description, description);
+  strncpy(config->m_description, description, 255);
 }
 
 STR *cfgGetDescription(cfg *config) {
@@ -257,6 +254,14 @@ void cfgSetVerticalScale(cfg *config, ULO verticalscale) {
 
 ULO cfgGetVerticalScale(cfg *config) {
   return config->m_verticalscale;
+}
+
+void cfgSetVerticalScaleStrategy(cfg *config, ULO strategy) {
+  config->m_verticalscalestrategy = strategy;
+}
+
+ULO cfgGetVerticalScaleStrategy(cfg *config) {
+  return config->m_verticalscalestrategy;
 }
 
 void cfgSetScanlines(cfg *config, BOOLE scanlines) {
@@ -583,6 +588,7 @@ void cfgSetDefaults(cfg *config) {
   cfgSetFrameskipRatio(config, 0);
   cfgSetHorizontalScale(config, 0);
   cfgSetVerticalScale(config, 1);
+  cfgSetVerticalScaleStrategy(config, 0);
   cfgSetDeinterlace(config, FALSE);
   cfgSetScanlines(config, FALSE);
 
@@ -704,10 +710,6 @@ static cpu_types cfgGetCPUTypeFromString(STR *value) {
   else if (stricmp(value, "68ec20/68881") == 0) return M68EC20; /* Unsupp */
   else if (stricmp(value, "68030") == 0)        return M68030;
   else if (stricmp(value, "68ec30") == 0)       return M68EC30;
-  else if (stricmp(value, "68040") == 0)        return M68040;  /* Unsupp */
-  else if (stricmp(value, "68ec40") == 0)       return M68EC40; /* Unsupp */
-  else if (stricmp(value, "68060") == 0)        return M68060;  /* Unsupp */
-  else if (stricmp(value, "68ec60") == 0)       return M68EC60; /* Unsupp */
   return M68000;
 }
 
@@ -719,10 +721,6 @@ static STR *cfgGetCPUTypeToString(cpu_types cputype) {
     case M68EC20: return "68ec20";
     case M68030:  return "68030";
     case M68EC30: return "68ec30";
-    case M68040:  return "68040";
-    case M68EC40: return "68ec40";
-    case M68060:  return "68060";
-    case M68EC60: return "68ec60";
   }
   return "68000";
 }
@@ -733,8 +731,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value) {
   if (stricmp(value, "real") == 0) return 4;
   else if (stricmp(value, "max") == 0) return 1;
   speed = cfgGetULOFromString(value);
-  if (speed < 1) speed = 1;
-  else if (speed > 20) speed = 8;
+  if (speed > 20) speed = 8;
   return speed;
 }
 
@@ -849,6 +846,12 @@ static ULO cfgGetVerticalScaleFromString(STR *value) {
   return 1;
 }
 
+static ULO cfgGetVerticalScaleStrategyFromString(STR *value) {
+  if (stricmp(value, "exact") == 0) return 0;
+  if (stricmp(value, "dxstretch") == 0) return 1;
+  return 0;
+}
+
 static ULO cfgGetColorBitsFromString(STR *value) {
   if ((stricmp(value, "8bit") == 0) ||
       (stricmp(value, "8") == 0)) return 8;
@@ -886,6 +889,16 @@ static STR *cfgGetLinemodeToString(ULO verticalscale, BOOLE scanlines) {
   if (scanlines) return "scanlines";
   if (verticalscale == 2) return "double";
   return "none";
+}
+
+static STR *cfgGetLinemodeStrategyToString(ULO verticalscalestrategy) {
+	
+	switch (verticalscalestrategy) 
+	{
+	case 0: return "exact";
+	case 1: return "dxstretch";
+	}
+	return "exact";
 }
 
 static BOOLE cfgGetECSFromString(STR *value) {
@@ -1092,9 +1105,12 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if (stricmp(option, "gfx_linemode") == 0) {
       cfgSetScanlines(config, cfgGetScanlinesFromString(value));
       if (!cfgGetScanlines(config))
-	cfgSetVerticalScale(config, cfgGetVerticalScaleFromString(value));
+        cfgSetVerticalScale(config, cfgGetVerticalScaleFromString(value));
       else cfgSetVerticalScale(config, 1);
     }
+	else if (stricmp(option, "gfx_linemode_strategy") == 0) {
+		cfgSetVerticalScaleStrategy(config, cfgGetVerticalScaleStrategyFromString(value));
+	}
     else if (stricmp(option, "gfx_framerate") == 0) {
       cfgSetFrameskipRatio(config, cfgGetULOFromString(value));
     }
@@ -1237,11 +1253,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 	  cfgGetGameportToString(cfgGetGameport(config, 1)));
   fprintf(cfgfile, "usegui=%s\n", cfgGetBOOLEToString(cfgGetUseGUI(config)));
   fprintf(cfgfile, "cpu_speed=%d\n", cfgGetCPUSpeed(config));
-#ifdef PREFETCH
   fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(TRUE));
-#else
-  fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(FALSE));
-#endif
   fprintf(cfgfile, "cpu_type=%s\n", 
 	  cfgGetCPUTypeToString(cfgGetCPUType(config)));
   fprintf(cfgfile, "sound_output=%s\n", 
@@ -1280,6 +1292,8 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "gfx_linemode=%s\n", 
 	  cfgGetLinemodeToString(cfgGetVerticalScale(config), 
 				 cfgGetScanlines(config)));
+  fprintf(cfgfile, "gfx_linemode_strategy=%s\n", 
+	  cfgGetLinemodeStrategyToString(cfgGetVerticalScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%d\n", cfgGetFrameskipRatio(config));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetBOOLEToString(cfgGetScreenDrawLEDs(config)));
   fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n",
@@ -1314,7 +1328,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
 /*============================================================================*/
 
 static void cfgStripTrailingNewlines(STR *line) {
-  LON length = strlen(line);
+  size_t length = strlen(line);
   while ((length > 0) && 
 	 ((line[length - 1] == '\n') || (line[length - 1] == '\r')))
     line[--length] = '\0';
@@ -1451,7 +1465,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
     floppySetDiskImage(i, cfgGetDiskImage(config, i));
     floppySetEnabled(i, cfgGetDiskEnabled(config, i));
     if(!floppyIsWriteProtected(i))  /* IPF images are marked read-only by the floppy module itself */
-    floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
+        floppySetReadOnly(i, cfgGetDiskReadOnly(config, i));
   }
   floppySetFastDMA(cfgGetDiskFast(config));
   
@@ -1463,7 +1477,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   needreset |= memorySetUseAutoconfig(cfgGetUseAutoconfig(config));
   needreset |= memorySetChipSize(cfgGetChipSize(config));
   needreset |= memorySetFastSize(cfgGetFastSize(config));
-  needreset |= memorySetBogoSize(cfgGetBogoSize(config));
+  needreset |= memorySetSlowSize(cfgGetBogoSize(config));
   memorySetKey(cfgGetKey(config));
   needreset |= memorySetKickImage(cfgGetKickImage(config));
   needreset |= memorySetAddress32Bit(cfgGetAddress32Bit(config));
@@ -1481,8 +1495,9 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetHorisontalScale(cfgGetHorizontalScale(config));
+  drawSetHorizontalScale(cfgGetHorizontalScale(config));
   drawSetVerticalScale(cfgGetVerticalScale(config));
+  drawSetVerticalScaleStrategy(cfgGetVerticalScaleStrategy(config));
   drawSetScanlines(cfgGetScanlines(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
 	drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));

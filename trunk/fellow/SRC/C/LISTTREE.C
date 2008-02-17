@@ -17,6 +17,9 @@
 /* Generic list */
 /*==============*/
 
+/*==============================================================================*/
+/* node = pointer to variable which must already be allocted in memory          */
+/*==============================================================================*/
 felist *listNew(void *node) {
   felist *l;
   
@@ -72,6 +75,11 @@ felist *listAddLast(felist *root, felist *l) {
   return l;
 }
 
+/*==============================================================================*/
+/* root = pointer to list object in which we want to add an object              */
+/* l = pointer to list object which we want to add                              */
+/* comp = pointer to a function which perform the compare for the sort          */
+/*==============================================================================*/
 felist *listAddSorted(felist *root, felist *l, int (*comp)(void *, void *)) {
   felist *tmp;
 
@@ -114,6 +122,9 @@ ULO listCount(felist *l) {
   return i;
 }
 
+/*==============================================================================*/
+/* listRemove removes the node from the list and connects the neighbours        */
+/*==============================================================================*/
 void listRemove(felist *l) {
   if (l != NULL) {
     if (l->prev != NULL) l->prev->next = l->next;
@@ -121,9 +132,17 @@ void listRemove(felist *l) {
   }
 }
 
-void listFree(felist *node) {
+/*==============================================================================*/
+/* listFree removes the node from the list and memory                           */
+/*==============================================================================*/
+felist *listFree(felist *node) {
+	felist *t;
+
+	if (node != NULL)
+		t = node->next;
   listRemove(node);
   if (node != NULL) free(node);
+	return t;
 }
 
 felist *listIndex(felist *l, ULO index) {

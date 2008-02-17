@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.16 2008-02-12 18:52:22 carfesh Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.17 2008-02-17 12:57:06 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /*                                                                         */
@@ -33,8 +33,7 @@
 #include <excpt.h>
 #include "defs.h"
 #include "fellow.h"
-#include "mmx.h"
-#include "sse.h"
+#include "sysinfo.h"
 
 /* Older compilers do not support CPUID and RDTSC properly */
 #define cpuid _asm _emit 0x0f _asm _emit 0xa2
@@ -436,6 +435,7 @@ static void sysinfoCPUGetFeatures(void)
   /* initialization */
   memset(&sysinfo_cpu_id, 0, sizeof(sysinfo_cpu_id));
 
+#ifndef X64
   _asm
   {
     /* *INDENT-OFF* */
@@ -556,6 +556,7 @@ not_amd:
 id_done:
 	/* *INDENT-ON* */
   }
+#endif
 }
 
 static float sysinfoCPUSpeed(void)
@@ -570,6 +571,8 @@ static float sysinfoCPUSpeed(void)
   /* get a precise timer if available */
   if (!QueryPerformanceFrequency (&Counter_Frequency))
     return 0;
+
+#ifndef X64
 
   /* store thread and process information */
   Priority_Process = GetPriorityClass (GetCurrentProcess ());
@@ -649,7 +652,7 @@ static float sysinfoCPUSpeed(void)
   // restore the thread priority
   SetPriorityClass (GetCurrentProcess (), Priority_Process);
   SetThreadPriority (GetCurrentThread (), Priority_Thread);
-
+#endif
   return (((float) SumResults) / 3);
 }
 
@@ -997,6 +1000,7 @@ static void sysinfoDetectCPU (void) {
   fellowAddTimelessLog("\tlevel 1 cache: \t%d KB\n", l1_cache);
   fellowAddTimelessLog("\tlevel 2 cache: \t%d KB\n", l2_cache);
 
+/*
   __try
   {
     speed = sysinfoCPUSpeed();
@@ -1006,15 +1010,18 @@ static void sysinfoDetectCPU (void) {
   {
 	  exception = TRUE;
   }
+*/
 
+	speed = 0;
+	exception = TRUE;
   if (exception == FALSE) {
 	fellowAddTimelessLog("\tCPU clock: \t%3.0f MHz\n", speed);
   }
   
-  if (detectMMX() == 1) {
+  if (sysinfoDetectMMX() == 1) {
 	fellowAddTimelessLog("\tCPU supports: \tMMX instruction set\n");
   }
-  if (detectSSE() == 1) {
+  if (sysinfoDetectSSE() == 1) {
 	fellowAddTimelessLog("\tCPU supports: \tSSE instruction set\n");
   }
 
@@ -1050,3 +1057,76 @@ void sysinfoLogSysInfo(void)
   sysinfoDetectCPU();
   fellowAddTimelessLog("\n\ndebug information:\n\n");
 }
+
+BOOL sysinfoDetectMMX(void)
+{	
+	BOOL mmxFound;
+
+	mmxFound = 0;
+#ifndef X64
+	_asm
+	{
+		pushad
+		pushfd
+		pop	eax
+		mov     ebx, eax
+		xor     eax, 00200000h
+		push    eax
+		popfd
+		pushfd
+		pop     eax
+		cmp     eax, ebx
+		jz      no_mmx
+		mov     eax, 1
+		cpuid
+		test    edx, 0800000h
+		jz      no_mmx
+		popad
+		mov     eax, 1
+		jmp     outt
+no_mmx:	
+		popad
+		xor     eax, eax
+outt:		
+		mov mmxFound, eax
+	}
+#endif
+	return mmxFound;
+}
+
+BOOL sysinfoDetectSSE(void)
+{
+	BOOL sseFound;
+
+	sseFound = 0;
+#ifndef X64
+	_asm 
+	{
+		pushad
+		pushfd
+		pop	eax
+		mov     ebx, eax
+		xor     eax, 00200000h
+		push    eax
+		popfd
+		pushfd
+		pop     eax
+		cmp     eax, ebx
+		jz      no_sse
+		mov     eax, 1
+		cpuid
+		test    edx, 02000000h
+		jz      no_sse
+		popad
+		mov     eax, 1
+		jmp     outt
+no_sse:	
+		popad
+		xor     eax, eax
+outt:		
+		mov sseFound, eax;
+	}
+#endif
+	return sseFound;
+}
+
