@@ -1770,7 +1770,11 @@ ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
 	if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) 
 	{
 		ddraw_device->use_blitter = 
-			((ddraw_device->mode->windowed) || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))|| (ddraw_device->no_dd_hardware) || (gfx_drv_stretch_always));
+			((ddraw_device->mode->windowed)
+			 || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))
+			 || (ddraw_device->no_dd_hardware) 
+			 || (gfx_drv_stretch_always));
+
 		if (!ddraw_device->mode->windowed) 
 		{
 			gfx_drv_ddraw_mode *mode;
@@ -2012,7 +2016,7 @@ void gfxDrvEndOfFrame(void) {
 /*==========================================================================*/
 
 BOOLE gfxDrvStartup(void) {
-  gfxDrvSetStretchAlways(TRUE);
+  gfxDrvSetStretchAlways(FALSE);
   gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
