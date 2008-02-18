@@ -758,6 +758,8 @@ void blitterLineMode(void)
   bltcon = bltcon & 0x0FFFFFFBF;
   if (decision_is_signed) bltcon |= 0x00000040;
 
+  blit_a_shift_asc = blit_a_shift_local;
+  blit_a_shift_desc = 16 - blit_a_shift_asc;
   bltapt = decision_variable;
   bltcpt = bltcpt_local;
   bltdpt = bltdpt_local;
