@@ -1,11 +1,11 @@
-/* @(#) $Id: BUS.C,v 1.3 2008-02-17 12:56:47 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.4 2008-02-20 23:56:27 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                      */
+/* Fellow							           */
 /*                                                                         */
-/* Bus Event Scheduler Initialization                                         */
-/*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
-/*                                                                            */
+/* Bus Event Scheduler                                                     */
+/*                                                                         */
+/* Author: Petter Schau                                                    */
+/*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */
@@ -38,6 +38,7 @@
 #include "sprite.h"
 #include "timer.h"
 #include "draw.h"
+#include "fileops.h"
 
 ULO debugging;
 ULO bus_cycle;
@@ -48,8 +49,6 @@ UBY bus_cycle_to_xpos[0x20000];
 extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip_factor;
 extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
 extern LON draw_frame_skip;
-
-/* Draft of a new and cleaner bus-event handling */
 
 bus_event cpuEvent;
 bus_event copperEvent;
@@ -198,10 +197,12 @@ void busEndOfFrame(void)
   busInsertEvent(&eofEvent);	  
 }
 
+/*
 void busMsg(STR *msg)
 {
   MessageBox(0, msg, msg, 0);
 }
+*/
 
 void busRemoveEvent(bus_event *ev)
 {
@@ -217,7 +218,7 @@ void busRemoveEvent(bus_event *ev)
   }
   if (!found)
   {
-    busMsg("Removing event that is not in the queue!");
+    //busMsg("Removing event that is not in the queue!");
     return;
   }
 
@@ -281,10 +282,22 @@ bus_event *busPopEvent(void)
 FILE *BUSLOG = NULL;
 BOOLE bus_log = FALSE;
 
+FILE *busOpenLog(void)
+{
+  char filename[MAX_PATH];
+  fileopsGetGenericFileName(filename, "bus.log");
+  return fopen(filename, "w");
+}
+
+void busCloseLog(void)
+{
+  if (BUSLOG) fclose(BUSLOG);
+}
+
 void busEventLog(bus_event *e)
 {
   if (!bus_log) return;
-  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  if (BUSLOG == NULL) BUSLOG = busOpenLog();
   if (e == &copperEvent)
     fprintf(BUSLOG, "%d copper\n", e->cycle);
   else if (e == &ciaEvent)
@@ -302,17 +315,8 @@ void busEventLog(bus_event *e)
 void busLogCpu(STR *s)
 {
   if (!bus_log) return;
-  if (BUSLOG == NULL) BUSLOG = fopen("c:\\buslog.txt", "a");
-  fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
-}
-
-void busLogCpuException(STR *s)
-{
-  /*
-  if (!bus_log) return;
-  if (BUSLOG == NULL) BUSLOG = fopen("c:\\buslog.txt", "a");
-  fprintf(BUSLOG, "%d: %s for opcode %.4X at PC %.8X from PC %.8X\n", cpuEvent.cycle, s, cpu_current_opcode, cpu_original_pc, pc);
-  */
+  if (BUSLOG == NULL) BUSLOG = busOpenLog();
+  if (BUSLOG) fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
 }
 
 void busUpdateCycleClock(ULO cycle)
@@ -333,7 +337,7 @@ void busRunNew(void)
       while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
       {
 	bus_event *e = busPopEvent();
-	//busEventLog(e);
+	busEventLog(e);
 	busUpdateCycleClock(e->cycle);
 	e->handler();
       }
@@ -342,7 +346,6 @@ void busRunNew(void)
     {
       // Came out of an CPU exception. Keep on working.
       cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
-      //busInsertEvent(&cpuEvent);
       cpu_chip_cycles = 0;
     }
   }
@@ -367,13 +370,12 @@ void busDebugNew(void)
     {
       // Came out of an CPU exception. Keep on working.
       cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
-      //busInsertEvent(&cpuEvent);
       cpu_chip_cycles = 0;
     }
   }
 }
 
-void busInitializeQueue(BOOLE insert_cpu_event)
+void busInitializeQueue(void)
 {
   memset(&cpuEvent, 0, sizeof(bus_event));
   memset(&copperEvent, 0, sizeof(bus_event));
@@ -400,7 +402,6 @@ void busInitializeQueue(BOOLE insert_cpu_event)
   cpuEvent.handler = cpuEventHandler;
   busInsertEvent(&eofEvent);
   busInsertEvent(&eolEvent);
-//  if (insert_cpu_event) busInsertEvent(&cpuEvent);
 }
 
 /*===========================================================================*/
@@ -432,12 +433,12 @@ void busEmulationStop(void)
 
 void busSoftReset(void)
 {
-  busInitializeQueue(FALSE);
+  busInitializeQueue();
 }
 
 void busHardReset(void)
 {
-  busInitializeQueue(TRUE);
+  busInitializeQueue();
 }
 
 
@@ -452,5 +453,5 @@ void busStartup(void)
 
 void busShutdown(void)
 {
-  if (BUSLOG != NULL) fclose(BUSLOG);
+  busCloseLog();
 }

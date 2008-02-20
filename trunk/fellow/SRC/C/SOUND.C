@@ -1,10 +1,10 @@
-/* @(#) $Id: SOUND.C,v 1.6 2008-02-17 12:56:50 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.7 2008-02-20 23:56:30 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Sound emulation                                                         */
 /*                                                                         */
-/* Author: Petter Schau (peschau@online.no)                                */
+/* Author: Petter Schau                                                    */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */

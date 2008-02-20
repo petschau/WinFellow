@@ -1,12 +1,12 @@
-/* @(#) $Id: FELLOW.C,v 1.24 2008-02-17 12:56:48 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.25 2008-02-20 23:56:28 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                      */
+/* Fellow                                                                  */
 /*                                                                         */
-/* This file has overall control over starting and stopping Fellow            */
-/* Everything starts here                                                     */
-/*                                                                            */
-/* Author: Petter Schau (peschau@online.no)                                   */
-/*                                                                            */
+/* This file has overall control over starting and stopping Fellow         */
+/* Everything starts here                                                  */
+/*                                                                         */
+/* Author: Petter Schau                                                    */
+/*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */

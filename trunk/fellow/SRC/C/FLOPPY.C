@@ -1,10 +1,10 @@
-/* @(#) $Id: FLOPPY.C,v 1.18 2008-02-17 12:56:49 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.19 2008-02-20 23:56:29 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Floppy Emulation                                                        */
 /*                                                                         */
-/* Authors: Petter Schau (peschau@online.no)                               */
+/* Authors: Petter Schau                                                   */
 /*          Torsten Enderling (carfesh@gmx.net)                            */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
@@ -76,12 +76,11 @@ BOOLE floppy_has_sync;
 ULO dsklen, dsksync, dskpt, adcon, dskbytr;       /* Registers */
 ULO diskDMAen;                           /* Write counter for dsklen */
 
-/*
 void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
   FILE *F = fopen("floppy.log", "a");
   if (F == 0) return;
-  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d length %d ticks %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, track, side, length, ticks);
+  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, track, side, dskpt, length, ticks);
   fclose(F);
 }
 
@@ -91,6 +90,10 @@ void floppyLogStep(ULO drive, ULO from, ULO to)
   if (F == 0) return;
   fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, from, to);
   fclose(F);
+  if (draw_frame_count == 31577)
+  {
+    int ijk = 0;
+  }
 }
 
 void floppyLogValue(STR *text, ULO v, ULO ticks)
@@ -100,7 +103,6 @@ void floppyLogValue(STR *text, ULO v, ULO ticks)
   fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, graph_raster_y, graph_raster_x, v, ticks);
   fclose(F);
 }
-*/
 
 /*=======================*/
 /* Register access stubs */
@@ -130,6 +132,7 @@ UWO rdskbytr(ULO address)
 void wdskpth(UWO data, ULO address)
 {
   *(((UWO *) &dskpt) + 1) = data & 0x1f;
+  floppyLogValue("dskpth", dskpt, -1);
 }
 
 /*----------*/
@@ -140,6 +143,7 @@ void wdskpth(UWO data, ULO address)
 void wdskptl(UWO data, ULO address)
 {
   *((UWO *) &dskpt) = data & 0xfffe;
+  floppyLogValue("dskptl", dskpt, -1);
 }
 
 /*----------*/
@@ -254,13 +258,14 @@ void floppyStepSet(BOOLE stp) {
       if (!floppy[i].step && !stp) {
         if (!floppy[i].dir) 
 	{
-	  //floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
-	  floppy[i].track++;
+	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+	  //if (floppy[i].track < (floppy[i].tracks - 1))
+	    floppy[i].track++;
         }
         else {
           if (floppy[i].track > 0) 
 	  {
-	    //floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
+	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
 	    floppy[i].track--;
 	  }
         }
@@ -983,7 +988,7 @@ void floppyDMAReadInit(ULO drive) {
 			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
-  //floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
+  floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
     floppy[drive].motor_ticks = 0;
 }
@@ -1080,7 +1085,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
     floppy_DMA.dskpt = (floppy_DMA.dskpt + 2) & 0x1ffffe;
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0) {
-      //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
+      floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
       memoryWriteWord(0x8002, 0xdff09c);
       floppy_DMA_started = FALSE;
     }
