@@ -1,3 +1,28 @@
+/* @(#) $Id: cpufunc.c,v 1.3 2008-02-20 23:57:50 peschau Exp $ */
+/*=========================================================================*/
+/* Fellow                                                                  */
+/* CPU 68k functions                                                       */
+/*                                                                         */
+/* Author: Petter Schau                                                    */
+/*                                                                         */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
+
 #include "defs.h"
 #include "fellow.h"
 #include "fmem.h"
@@ -24,7 +49,7 @@ static ULO cpu_cacr;
 static ULO cpu_caar;
 
 /* Exception stack frame jmptables */
-typedef void(*cpuStackFrameFunc)(ULO, ULO);
+typedef void(*cpuStackFrameFunc)(UWO, ULO);
 static cpuStackFrameFunc cpu_stack_frame_gen[64];
 
 /* Irq management */
@@ -1881,7 +1906,8 @@ static ULO cpuEA71()
 	  ULO result;
 	  if (src1 == 0)
 	  {
-	    cpuPrepareException(0x14, cpuGetPC() - 2, TRUE);
+	    // Alcatraz odyssey assumes that PC in this exception points after the instruction.
+	    cpuPrepareException(0x14, cpuGetPC(), TRUE);
 	    result = dst;
 	  }
 	  else
@@ -1912,7 +1938,8 @@ static ULO cpuEA71()
 	  ULO result;
 	  if (src1 == 0)
 	  {
-	    cpuPrepareException(0x14, cpuGetPC() - 2, TRUE);
+	    // Alcatraz odyssey assumes that PC in this exception points after the instruction.
+	    cpuPrepareException(0x14, cpuGetPC(), TRUE);
 	    result = dst;
 	  }
 	  else
@@ -2011,7 +2038,7 @@ static ULO cpuEA71()
 	  }
 	  else
 	  {
-	    cpuPrepareException(0x14, cpuGetPC() - 4, FALSE);
+	    cpuPrepareException(0x14, cpuGetPC(), FALSE);
 	  }
 	}
 
@@ -2800,6 +2827,8 @@ static ULO cpuEA71()
 	  ULO dstea = cpuGetAReg(reg);
 	  ULO index = 1;
 	  LON i, j;
+	  BOOLE ea_reg_seen = FALSE;
+	  ULO ea_reg_ea = 0;
 
 	  for (i = 1; i >= 0; i--)
 	  {
@@ -2808,13 +2837,23 @@ static ULO cpuEA71()
 	      if (regs & index)
 	      {
 		dstea -= 2;
-		if (cpu_major >= 2) 
-		  cpuSetAReg(reg, dstea);
-		memoryWriteWord(cpuGetRegWord(i, j), dstea);
+		if (cpu_major >= 2 && i == 1 && j == reg)
+		{
+		  ea_reg_seen = TRUE;
+		  ea_reg_ea = dstea;
+		}
+		else
+		{
+		  memoryWriteWord(cpuGetRegWord(i, j), dstea);
+		}
 		cycles += 4;
 	      }
 	      index = index << 1;
 	    }
+	  }
+	  if (cpu_major >= 2 && ea_reg_seen)
+	  {
+	    memoryWriteWord((UWO)dstea, ea_reg_ea);
 	  }
 	  cpuSetAReg(reg, dstea);
 	  cpuSetInstructionTime(cycles);
@@ -2830,6 +2869,8 @@ static ULO cpuEA71()
 	  ULO dstea = cpuGetAReg(reg);
 	  ULO index = 1;
 	  LON i, j;
+	  BOOLE ea_reg_seen = FALSE;
+	  ULO ea_reg_ea = 0;
 
 	  for (i = 1; i >= 0; i--)
 	  {
@@ -2838,13 +2879,23 @@ static ULO cpuEA71()
 	      if (regs & index)
 	      {
 		dstea -= 4;
-		if (cpu_major >= 2) 
-		  cpuSetAReg(reg, dstea);
-		memoryWriteLong(cpuGetReg(i, j), dstea);
+		if (cpu_major >= 2 && i == 1 && j == reg)
+		{
+		  ea_reg_seen = TRUE;
+		  ea_reg_ea = dstea;
+		}
+		else
+		{
+		  memoryWriteLong(cpuGetReg(i, j), dstea);
+		}
 		cycles += 8;
 	      }
 	      index = index << 1;
 	    }
+	  }
+	  if (cpu_major >= 2 && ea_reg_seen)
+	  {
+	    memoryWriteLong(dstea, ea_reg_ea);
 	  }
 	  cpuSetAReg(reg, dstea);
 	  cpuSetInstructionTime(cycles);
@@ -4408,12 +4459,13 @@ ULO cpuActivateSSP(void)
   Sets up an exception - ebx - offset of vector
   ===============================================*/
 
+void cpuLogException(STR *s);
+
 void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp)
 {
   ULO currentSP;
   ULO readMemory;
 
-  
   // DEBUG start
   char *exname;
 
@@ -4433,7 +4485,9 @@ void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp)
   else if (vectorOffset == 0x38) exname = "Exception: 14 - Format error";
   else if (vectorOffset >= 0x80 && vectorOffset <= 0xbc) exname = "Exception: TRAP"; 
   else exname = "Exception: Unknown";
-  busLogCpuException(exname);
+
+  cpuLogException(exname);
+
   // DEBUG end
   
   currentSP = cpuActivateSSP();
@@ -4483,6 +4537,7 @@ void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp)
 
 void cpuPrivilegeViolation(void)
 {
+  // The kickstart excpects pc in the stack frame to be the opcode PC.
   cpuPrepareException(0x20, cpuGetPC() - 2, FALSE);
 }
 
@@ -4495,15 +4550,15 @@ void cpuPrivilegeViolation(void)
 ; and that SR has been updated to whatever it should contain
 ;========================================================================*/
 
-void cpuGroup1C(ULO variableVbr, ULO pcPtr)
+void cpuFrameGroup1(UWO vector, ULO pcPtr)
 {
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(pcPtr, cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(pcPtr, cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpu_sr, cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4517,22 +4572,22 @@ void cpuGroup1C(ULO variableVbr, ULO pcPtr)
 ; memory_fault_read is TRUE if the access was a read
 ;========================================================================*/
 	
-void cpuGroup2C(ULO variableVbr, ULO pcPtr)
+void cpuFrameGroup2(UWO vector, ULO pcPtr)
 {
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(pcPtr, cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(pcPtr, cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 
-	// fault address, skip ireg
-	cpuSetAReg(7, cpuGetAReg(7) - 6);
-	memoryWriteLong(memory_fault_address, cpuGetAReg(7));
+  // fault address, skip ireg
+  cpuSetAReg(7, cpuGetAReg(7) - 6);
+  memoryWriteLong(memory_fault_address, cpuGetAReg(7));
 
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteLong(memory_fault_read << 4, cpuGetAReg(7));
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteLong(memory_fault_read << 4, cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4554,24 +4609,22 @@ void cpuGroup2C(ULO variableVbr, ULO pcPtr)
 ; 060:	Irq, Format error, Trap #N, Illegal inst., A-line, F-line,
 ;	Priv. violation, FPU preinst, Unimpl. Integer, Unimpl. EA
 ;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
 ;========================================================================
 */
 
-void cpuFrame0C(ULO variableVbr, ULO pcPtr)
+void cpuFrame0(UWO vector, ULO pcPtr)
 {
-	// save vector word
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord((UWO)variableVbr, cpuGetAReg(7));
+  // save vector word
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(pcPtr, cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(pcPtr, cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4588,23 +4641,21 @@ void cpuFrame0C(ULO variableVbr, ULO pcPtr)
 ; 030:	Same as for 020
 ; 040:	Same as for 020
 ;
-; Assumes esi is loaded with correct pc ptr wherever it should point
-; and that SR has been updated to whatever it should contain
 ;========================================================================*/
 
-void cpuFrame1C(ULO variableVbr, ULO pcPtr)
+void cpuFrame1(UWO vector, ULO pcPtr)
 {
-	// save vector word
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetVbr() | 0x1000, cpuGetAReg(7));
+  // save vector word
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(0x1000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(pcPtr, cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4617,28 +4668,25 @@ void cpuFrame1C(ULO variableVbr, ULO pcPtr)
 ;	Unimplemented FPU inst. 
 ; 060:	Same as for 040
 ;
-; Assumes esi is loaded with correct pc ptr wherever it should point,
-; that SR has been updated to whatever it should contain
-; and that _pc contains the start of the current instruction
 ;========================================================================*/
 
-void cpuFrame2C(ULO variableVbr, ULO pcPtr)
+void cpuFrame2(UWO vector, ULO pcPtr)
 {
-	// save inst address
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save inst address
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save vector word
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetVbr() | 0x2000, cpuGetAReg(7));
+  // save vector word
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(0x2000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4650,19 +4698,19 @@ void cpuFrame2C(ULO variableVbr, ULO pcPtr)
 ; Fellow never generates this frame
 ;========================================================================*/
 
-void cpuFrame3C(ULO variableVbr, ULO pcPtr)
+void cpuFrame3(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 6);
-	memoryWriteWord(cpuGetVbr() | 0x3000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 6);
+  memoryWriteWord(0x3000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4671,21 +4719,22 @@ void cpuFrame3C(ULO variableVbr, ULO pcPtr)
 ; 040:	Unimplemented FPU inst. on EC040 and LC040
 ; 060:	FPU Disabled, Bus error
 ;
+; Not generated in Fellow
 ;========================================================================*/
 
-void cpuFrame4C(ULO variableVbr, ULO pcPtr)
+void cpuFrame4(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 10);
-	memoryWriteWord(cpuGetVbr() | 0x4000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 10);
+  memoryWriteWord(0x4000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4693,21 +4742,22 @@ void cpuFrame4C(ULO variableVbr, ULO pcPtr)
 ;
 ; 040:	Address error for non-inst word accesses
 ;
+; Not generated in Fellow
 ;========================================================================*/
 
-void cpuFrame7C(ULO variableVbr, ULO pcPtr)
+void cpuFrame7(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 54);
-	memoryWriteWord(cpuGetVbr() | 0x7000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 54);
+  memoryWriteWord(0x7000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 	
 /*========================================================================
@@ -4717,19 +4767,19 @@ void cpuFrame7C(ULO variableVbr, ULO pcPtr)
 ;
 ;========================================================================*/
 
-void cpuFrame8C(ULO variableVbr, ULO pcPtr)
+void cpuFrame8(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 52);
-	memoryWriteWord(cpuGetVbr() & 0x8000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 52);
+  memoryWriteWord(0x8000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*============================================================================
@@ -4741,24 +4791,23 @@ void cpuFrame8C(ULO variableVbr, ULO pcPtr)
 ; Not generated in Fellow
 ;========================================================================*/
 
-void cpuFrame9C(ULO variableVbr, ULO pcPtr)
+void cpuFrame9(UWO vector, ULO pcPtr)
 {
+  // save inst address
+  cpuSetAReg(7, cpuGetAReg(7) - 12);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save inst address
-	cpuSetAReg(7, cpuGetAReg(7) - 12);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(0x9000 | vector, cpuGetAReg(7));
 
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetVbr() & 0x9000, cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
-
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4767,26 +4816,23 @@ void cpuFrame9C(ULO variableVbr, ULO pcPtr)
 ; 020:	Address or bus-error on instruction boundrary
 ; 030:	Same as for 020
 ;
-; Assumes that SR has been updated to whatever it should contain
-; and that _pc contains the start of the current instruction
-;
 ; Will not set any values beyond the format/offset word
 ; Fellow will always generate this frame for bus/address errors
 ;========================================================================*/
 
-void cpuFrameAC(ULO variableVbr, ULO pcPtr)
+void cpuFrameA(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 26);
-	memoryWriteWord(cpuGetVbr() & 0xa000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 26);
+  memoryWriteWord(0xa000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -4798,19 +4844,19 @@ void cpuFrameAC(ULO variableVbr, ULO pcPtr)
 ; Fellow will not generate this frame for bus/address errors
 ;========================================================================*/
 
-void cpuFrameBC(ULO variableVbr, ULO pcPtr)
+void cpuFrameB(UWO vector, ULO pcPtr)
 {
-	// save vector offset
-	cpuSetAReg(7, cpuGetAReg(7) - 84);
-	memoryWriteWord(cpuGetVbr() & 0xb000, cpuGetAReg(7));
+  // save vector offset
+  cpuSetAReg(7, cpuGetAReg(7) - 84);
+  memoryWriteWord(0xb000 | vector, cpuGetAReg(7));
 
-	// save PC
-	cpuSetAReg(7, cpuGetAReg(7) - 4);
-	memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  // save PC
+  cpuSetAReg(7, cpuGetAReg(7) - 4);
+  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
 
-	// save SR
-	cpuSetAReg(7, cpuGetAReg(7) - 2);
-	memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  // save SR
+  cpuSetAReg(7, cpuGetAReg(7) - 2);
+  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
 }
 
 /*
@@ -4886,70 +4932,70 @@ void cpuStackFrameInit000(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuGroup1C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuGroup2C;  /* 2 - Bus error */
-  cpu_stack_frame_gen[3] = cpuGroup2C;  /* 3 - Address error */
+    cpu_stack_frame_gen[i] = cpuFrameGroup1;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameGroup2;  /* 2 - Bus error */
+  cpu_stack_frame_gen[3] = cpuFrameGroup2;  /* 3 - Address error */
 }
 
 void cpuStackFrameInit010(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrame8C;  /* 2 - Bus error */
-  cpu_stack_frame_gen[3] = cpuFrame8C;  /* 3 - Address error */
+    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrame8;  /* 2 - Bus error */
+  cpu_stack_frame_gen[3] = cpuFrame8;  /* 3 - Address error */
 }
 
 void cpuStackFrameInit020(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit030(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit040(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrameAC;  /* 2  - Bus Error */
-  cpu_stack_frame_gen[3] = cpuFrameAC;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrameA;  /* 2  - Bus Error */
+  cpu_stack_frame_gen[3] = cpuFrameA;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
 }
 
 void cpuStackFrameInit060(void) {
   ULO i;
 
   for (i = 0; i < 64; i++)
-    cpu_stack_frame_gen[i] = cpuFrame0C;/* Avoid NULL ptrs */
-  cpu_stack_frame_gen[2] = cpuFrame4C;  /* 2  - Access Fault */
-  cpu_stack_frame_gen[3] = cpuFrame2C;  /* 3  - Addrss Error */
-  cpu_stack_frame_gen[5] = cpuFrame2C;  /* 5  - Zero Divide */
-  cpu_stack_frame_gen[6] = cpuFrame2C;  /* 6  - CHK, CHK2 */
-  cpu_stack_frame_gen[7] = cpuFrame2C;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
-  cpu_stack_frame_gen[9] = cpuFrame2C;  /* 9  - Trace */
+    cpu_stack_frame_gen[i] = cpuFrame0;/* Avoid NULL ptrs */
+  cpu_stack_frame_gen[2] = cpuFrame4;  /* 2  - Access Fault */
+  cpu_stack_frame_gen[3] = cpuFrame2;  /* 3  - Addrss Error */
+  cpu_stack_frame_gen[5] = cpuFrame2;  /* 5  - Zero Divide */
+  cpu_stack_frame_gen[6] = cpuFrame2;  /* 6  - CHK, CHK2 */
+  cpu_stack_frame_gen[7] = cpuFrame2;  /* 7  - TRAPV, TRAPcc, cpTRAPcc */
+  cpu_stack_frame_gen[9] = cpuFrame2;  /* 9  - Trace */
   /* Unfinished */
 }
 
@@ -5080,30 +5126,46 @@ void cpuHardReset(void) {
 #include "cpucode.h"
 
 extern FILE *BUSLOG;
-BOOLE cpu_log = TRUE;
+BOOLE cpu_log = FALSE;
 
 void cpuEventLog(bus_event *e, UWO opcode)
 {
   char saddress[256], sdata[256], sinstruction[256], soperands[256];
   if (!cpu_log) return;
   if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
-  if ((cpu_opcode_model_mask[opcode] & 0x4) && !(cpu_opcode_model_mask[opcode] & 0x1))
-  {
-    saddress[0] = '\0';
-    sdata[0] = '\0';
-    sinstruction[0] = '\0';
-    soperands[0] = '\0';
-    cpuDisOpcode(cpuGetPC()-2, saddress, sdata, sinstruction, soperands);
-    fprintf(BUSLOG, "%d %.8X %s %s %s %s\n", e->cycle, cpuGetAReg(7), saddress, sdata, sinstruction, soperands);
-  }
+
+  saddress[0] = '\0';
+  sdata[0] = '\0';
+  sinstruction[0] = '\0';
+  soperands[0] = '\0';
+  cpuDisOpcode(cpuGetPC()-2, saddress, sdata, sinstruction, soperands);
+  fprintf(BUSLOG, "%.5d %.8X %s %s\t%s\t%s\n", e->cycle, cpuGetAReg(7), saddress, sdata, sinstruction, soperands);
+}
+
+UWO cpu_current_opcode;
+ULO cpu_original_pc;
+extern ULO draw_frame_count;
+
+void cpuLogException(STR *s)
+{
+  if (!cpu_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  fprintf(BUSLOG, "%.5d: %s for opcode %.4X at PC %.8X from PC %.8X\n", cpuEvent.cycle, s, cpu_current_opcode, cpu_original_pc, cpuGetPC());
 }
 
 ULO cpuExecuteInstruction(void)
 {
   UWO oldSr = cpu_sr;
-  UWO opcode = cpuGetNextOpcode16();
+  UWO opcode;
+  
+  cpu_original_pc = cpuGetPC(); // For logging
+  opcode = cpu_current_opcode = cpuGetNextOpcode16();
 
-//  cpuEventLog(&cpuEvent, opcode);
+  if (cpu_original_pc == 0xC08F4A)// && bus_cycle == 65736)
+  {
+    int hjkhj = 0;
+  }
+  cpuEventLog(&cpuEvent, opcode);
 
   cpu_instruction_time = 0;
   if (cpu_opcode_model_mask[opcode] & cpu_model_mask)
