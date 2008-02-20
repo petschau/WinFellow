@@ -1,6 +1,6 @@
-/* @(#) $Id: modrip.c,v 1.27 2008-02-17 12:56:50 peschau Exp $ */
+/* @(#) $Id: modrip.c,v 1.28 2008-02-20 23:56:31 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Portable parts of the module ripper                                     */
 /*                                                                         */

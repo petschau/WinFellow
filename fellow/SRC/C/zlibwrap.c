@@ -1,6 +1,6 @@
-/* @(#) $Id: zlibwrap.c,v 1.5 2008-02-17 12:56:50 peschau Exp $ */
+/* @(#) $Id: zlibwrap.c,v 1.6 2008-02-20 23:56:31 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator - zlib wrapper                                    */
+/* Fellow - zlib wrapper                                                   */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*         (Wraps zlib code to have one simple call for decompression.)    */
