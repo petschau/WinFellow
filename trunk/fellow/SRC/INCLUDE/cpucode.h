@@ -11367,8 +11367,8 @@ static void ADDX_D180(ULO*opc_data)
 }
 static void ADDX_D108(ULO*opc_data)
 {
-	UBY src = memoryReadByte(cpuEA03(opc_data[0],1));
-	ULO dstea = cpuEA03(opc_data[1], 1);
+	UBY src = memoryReadByte(cpuEA04(opc_data[0],1));
+	ULO dstea = cpuEA04(opc_data[1], 1);
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuAddXB(dst, src);
 	memoryWriteByte(dst, dstea);
@@ -11376,8 +11376,8 @@ static void ADDX_D108(ULO*opc_data)
 }
 static void ADDX_D148(ULO*opc_data)
 {
-	UWO src = memoryReadWord(cpuEA03(opc_data[0],2));
-	ULO dstea = cpuEA03(opc_data[1], 2);
+	UWO src = memoryReadWord(cpuEA04(opc_data[0],2));
+	ULO dstea = cpuEA04(opc_data[1], 2);
 	UWO dst = memoryReadWord(dstea);
 	dst = cpuAddXW(dst, src);
 	memoryWriteWord(dst, dstea);
@@ -11385,8 +11385,8 @@ static void ADDX_D148(ULO*opc_data)
 }
 static void ADDX_D188(ULO*opc_data)
 {
-	ULO src = memoryReadLong(cpuEA03(opc_data[0],4));
-	ULO dstea = cpuEA03(opc_data[1], 4);
+	ULO src = memoryReadLong(cpuEA04(opc_data[0],4));
+	ULO dstea = cpuEA04(opc_data[1], 4);
 	ULO dst = memoryReadLong(dstea);
 	dst = cpuAddXL(dst, src);
 	memoryWriteLong(dst, dstea);
@@ -11453,8 +11453,8 @@ static void ABCD_C100(ULO*opc_data)
 }
 static void ABCD_C108(ULO*opc_data)
 {
-	UBY src = memoryReadByte(cpuEA03(opc_data[0],1));
-	ULO dstea = cpuEA03(opc_data[1], 1);
+	UBY src = memoryReadByte(cpuEA04(opc_data[0],1));
+	ULO dstea = cpuEA04(opc_data[1], 1);
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuAbcdB(dst, src);
 	memoryWriteByte(dst, dstea);
