@@ -57,11 +57,6 @@ typedef char STR;
 
 #define CFG_FILENAME_LENGTH 256
 
-
-/* Various function type prototypes */
-
-//typedef ULO amigaadress;
-
 /*------------------------------------*/
 /* The decode routines have this type */
 /*------------------------------------*/
