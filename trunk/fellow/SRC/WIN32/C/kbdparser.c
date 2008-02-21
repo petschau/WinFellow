@@ -1,6 +1,6 @@
-/* @(#) $Id: kbdparser.c,v 1.6 2008-02-17 12:57:06 peschau Exp $ */
+/* @(#) $Id: kbdparser.c,v 1.7 2008-02-21 00:05:46 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Keyboard mapping file parser                                            */
 /*                                                                         */

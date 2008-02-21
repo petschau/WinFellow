@@ -1,6 +1,6 @@
-/* @(#) $Id: WDBG.H,v 1.3 2004-06-08 14:10:32 carfesh Exp $ */
+/* @(#) $Id: WDBG.H,v 1.4 2008-02-21 00:08:24 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /*                                                                         */

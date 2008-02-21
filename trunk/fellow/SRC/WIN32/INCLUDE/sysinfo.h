@@ -1,6 +1,6 @@
-/* @(#) $Id: sysinfo.h,v 1.2 2004-06-08 14:41:09 carfesh Exp $ */
+/* @(#) $Id: sysinfo.h,v 1.3 2008-02-21 00:08:24 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* System information retrieval                                            */
 /*                                                                         */

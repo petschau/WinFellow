@@ -1,6 +1,6 @@
-/* @(#) $Id: UAE2FELL.H,v 1.12 2008-02-17 12:57:01 peschau Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.13 2008-02-21 00:03:18 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* UAE to Fellow bridge header file                                        */
 /*                                                                         */
