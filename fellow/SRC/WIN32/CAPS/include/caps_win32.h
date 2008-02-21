@@ -1,6 +1,6 @@
-/* @(#) $Id: caps_win32.h,v 1.3 2004-06-08 13:20:38 carfesh Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.4 2008-02-21 00:06:46 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
 /* http://www.caps-project.org                                             */

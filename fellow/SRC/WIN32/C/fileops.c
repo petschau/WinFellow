@@ -1,6 +1,6 @@
-/* @(#) $Id: fileops.c,v 1.3 2008-02-10 11:38:09 carfesh Exp $             */
+/* @(#) $Id: fileops.c,v 1.4 2008-02-21 00:05:46 peschau Exp $             */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* This file contains filesystem abstraction code to handle OS specific    */
 /* filesystem requirements.                                                */

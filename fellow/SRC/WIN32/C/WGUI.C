@@ -1,12 +1,26 @@
-/*============================================================================*/
-/* Fellow Amiga Emulator                                                      */
-/* Windows GUI code                                                           */
-/* Author: Petter Schau (peschau@online.no)                                   */
-/* Author: Worfje (worfje@gmx.net)                                            */
-/*                                                                            */
-/* This file is under the GNU Public License (GPL)                            */
-/*============================================================================*/
-
+/* @(#) $Id: WGUI.C,v 1.32 2008-02-21 00:05:46 peschau Exp $ */
+/*=========================================================================*/
+/* Fellow                                                                  */
+/* Windows GUI code                                                        */
+/* Author: Petter Schau                                                    */
+/* Author: Worfje (worfje@gmx.net)                                         */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
 #include "defs.h"
 
 #ifdef WGUI
@@ -1874,7 +1888,7 @@ BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
       if (HIWORD(wParam) == BN_CLICKED)
 	switch (LOWORD(wParam)) {
 	  case IDC_BUTTON_KICKSTART_FILEDIALOG:
-	    if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Kickstart ROM File", FSEL_ROM)) {
+	    if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select ROM File", FSEL_ROM)) {
 	      cfgSetKickImage(wgui_cfg, filename);
 	      iniSetLastUsedKickImageDir(wgui_ini, wguiExtractPath(filename));
 		  ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART, cfgGetKickImage(wgui_cfg));

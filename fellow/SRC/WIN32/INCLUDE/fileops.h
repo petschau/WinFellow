@@ -1,6 +1,6 @@
-/* @(#) $Id: fileops.h,v 1.4 2008-02-17 16:05:24 carfesh Exp $             */
+/* @(#) $Id: fileops.h,v 1.5 2008-02-21 00:08:24 peschau Exp $             */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Filesystem operations                                                   */
 /*                                                                         */

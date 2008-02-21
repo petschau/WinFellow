@@ -1,6 +1,6 @@
-/* @(#) $Id: fsysamnt.c,v 1.5 2008-02-17 12:57:05 peschau Exp $ */
+/* @(#) $Id: fsysamnt.c,v 1.6 2008-02-21 00:05:46 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Filesys autmount functionality; moved here from WinUAE 0.8.8 filesys.c  */
 /* to keep the UAE filesys.c as original as possible                       */ 

@@ -1,11 +1,11 @@
-/* @(#) $Id: WDBG.C,v 1.29 2008-02-17 12:57:04 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.30 2008-02-21 00:05:46 peschau Exp $ */
 /*=========================================================================*/
-/* Fellow Amiga Emulator                                                   */
+/* Fellow                                                                  */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /*                                                                         */
 /* Authors: Torsten Enderling (carfesh@gmx.net)                            */
-/*          Petter Schau (peschau@online.no)                               */
+/*          Petter Schau                                                   */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
