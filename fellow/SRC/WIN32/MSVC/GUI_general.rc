@@ -13,7 +13,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (U.S.) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 #ifdef _WIN32
@@ -30,7 +30,6 @@ IDD_MAIN DIALOGEX 0, 0, 312, 170
 STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_NOPARENTNOTIFY
 CAPTION "WinFellow alpha v0.4.4"
-
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -190,10 +189,10 @@ BEGIN
     PUSHBUTTON      "&Create",IDC_BUTTON_HARDFILE_CREATE,7,134,54,15
 END
 
-IDD_MEMORY DIALOG  0, 0, 235, 156
+IDD_MEMORY DIALOGEX 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "memory"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     GROUPBOX        "memory size",IDC_STATIC,10,10,90,65
     LTEXT           "chip",IDC_STATIC,15,25,14,8
@@ -202,7 +201,7 @@ BEGIN
     COMBOBOX        IDC_COMBO_CHIP,40,26,55,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_FAST,40,40,55,47,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_BOGO,40,55,55,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "kickstart",IDC_STATIC,10,80,215,55
+    GROUPBOX        "rom",IDC_STATIC,10,80,215,55
     LTEXT           "image",IDC_STATIC,15,95,20,8
     LTEXT           "key",IDC_STATIC,15,110,12,8
     EDITTEXT        IDC_EDIT_KICKSTART,40,95,155,12,ES_AUTOHSCROLL
@@ -625,6 +624,7 @@ BEGIN
     END
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // String Table
@@ -635,7 +635,7 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
@@ -709,3 +709,4 @@ IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+
