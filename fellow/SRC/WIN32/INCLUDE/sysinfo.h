@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.h,v 1.3 2008-02-21 00:08:24 peschau Exp $ */
+/* @(#) $Id: sysinfo.h,v 1.4 2008-02-23 20:45:11 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -33,5 +33,7 @@
 #define _SYSINFO_H_
 
 void sysinfoLogSysInfo(void);
+BOOL sysinfoDetectMMX(void);
+BOOL sysinfoDetectSSE(void);
 
 #endif
