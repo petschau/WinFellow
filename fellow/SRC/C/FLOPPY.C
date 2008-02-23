@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.19 2008-02-20 23:56:29 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.20 2008-02-23 21:13:11 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -35,6 +35,7 @@
 #include "fswrap.h"
 #include "graph.h"
 #include "cia.h"
+#include "fileops.h"
 
 #include "xdms.h"
 #include "zlibwrap.h"
@@ -68,6 +69,7 @@ floppyDMAinfostruct floppy_DMA;          /* Info about a DMA transfer */
 BOOLE floppy_DMA_started;                /* Disk DMA started */
 BOOLE floppy_DMA_read;                   /* DMA read or write */
 BOOLE floppy_has_sync;
+char floppylogfilename[MAX_PATH];
 
 /*-----------------------------------*/
 /* Disk registers and help variables */
@@ -78,7 +80,7 @@ ULO diskDMAen;                           /* Write counter for dsklen */
 
 void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
-  FILE *F = fopen("floppy.log", "a");
+  FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
   fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, track, side, dskpt, length, ticks);
   fclose(F);
@@ -86,7 +88,7 @@ void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 
 void floppyLogStep(ULO drive, ULO from, ULO to)
 {
-  FILE *F = fopen("floppy.log", "a");
+  FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
   fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, from, to);
   fclose(F);
@@ -98,7 +100,7 @@ void floppyLogStep(ULO drive, ULO from, ULO to)
 
 void floppyLogValue(STR *text, ULO v, ULO ticks)
 {
-  FILE *F = fopen("floppy.log", "a");
+  FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
   fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, graph_raster_y, graph_raster_x, v, ticks);
   fclose(F);
@@ -132,7 +134,9 @@ UWO rdskbytr(ULO address)
 void wdskpth(UWO data, ULO address)
 {
   *(((UWO *) &dskpt) + 1) = data & 0x1f;
+#ifdef _DEBUG
   floppyLogValue("dskpth", dskpt, -1);
+#endif
 }
 
 /*----------*/
@@ -143,7 +147,9 @@ void wdskpth(UWO data, ULO address)
 void wdskptl(UWO data, ULO address)
 {
   *((UWO *) &dskpt) = data & 0xfffe;
+#ifdef _DEBUG
   floppyLogValue("dskptl", dskpt, -1);
+#endif
 }
 
 /*----------*/
@@ -258,14 +264,18 @@ void floppyStepSet(BOOLE stp) {
       if (!floppy[i].step && !stp) {
         if (!floppy[i].dir) 
 	{
+#ifdef _DEBUG
 	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+#endif
 	  //if (floppy[i].track < (floppy[i].tracks - 1))
 	    floppy[i].track++;
         }
         else {
           if (floppy[i].track > 0) 
 	  {
+#ifdef _DEBUG
 	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
+#endif
 	    floppy[i].track--;
 	  }
         }
@@ -988,7 +998,9 @@ void floppyDMAReadInit(ULO drive) {
 			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
+#ifdef _DEBUG
   floppyLog(drive, floppy[drive].track, floppy[drive].side, floppy_DMA.wordsleft, floppy[drive].motor_ticks);
+#endif
   if (floppy_DMA.dont_use_gap && (floppy[drive].motor_ticks >= 11968))
     floppy[drive].motor_ticks = 0;
 }
@@ -1261,6 +1273,7 @@ void floppyHardReset(void) {
 
 void floppyEmulationStart(void) {
   floppyIOHandlersInstall();
+  fileopsGetGenericFileName(floppylogfilename, "floppy.log");
 }
 
 void floppyEmulationStop(void) {
