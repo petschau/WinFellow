@@ -1,4 +1,4 @@
-/* @(#) $Id: CONFIG.C,v 1.17 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: CONFIG.C,v 1.18 2008-02-24 11:54:28 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
@@ -24,6 +24,12 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#endif
+
 #include "defs.h"
 #include "floppy.h"
 #include "fmem.h"
