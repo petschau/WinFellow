@@ -1,4 +1,4 @@
-/* @(#) $Id: WGUI.C,v 1.32 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: WGUI.C,v 1.33 2008-02-24 10:26:41 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -2252,7 +2252,7 @@ BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
 				ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, hfile.filename, 256);
 
 				strncpy(fname, hfile.filename, CFG_FILENAME_LENGTH);
-				strupr(fname);
+				_strupr(fname);
 				if (strrchr(fname, '.HDF') == NULL) {
 					if (strlen(hfile.filename) > 252) {
 						MessageBox(hwndDlg, "Hardfile name too long, maximum is 252 characters", "Create Hardfile", 0);
