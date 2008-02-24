@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.3 2008-02-20 23:54:49 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.4 2008-02-24 21:23:44 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -460,13 +460,11 @@ void cgStoreDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
 {
   if (eano == 0 && size == 1)
   {
-    //fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffffff00) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
     fprintf(codef, "\tcpuSetDRegByte(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
   }
   else if (eano == 0 && size == 2)
   {
     fprintf(codef, "\tcpuSetDRegWord(opc_data[%d], %s);\n", eareg_cpu_data_index, dstname);
-//    fprintf(codef, "\tcpu_regs[%d][opc_data[%d]] = (cpu_regs[%d][opc_data[%d]] & 0xffff0000) | %s;\n", eano, eareg_cpu_data_index, eano, eareg_cpu_data_index, dstname);
   }
   else if (eano == 0 && size == 4)
   {
@@ -564,7 +562,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	}
 	if (stricmp(i.instruction_name, "LEA") == 0)
 	{
-	  fprintf(codef, "\tcpu_regs[1][opc_data[%d]] = dstea;\n", reg_cpu_data_index);
+	  fprintf(codef, "\tcpuSetAReg(opc_data[%d], dstea);\n", reg_cpu_data_index);
 	}
 	else if (regtype == 'C' || (stricmp(i.instruction_name, "CMPA") == 0) || (stricmp(i.instruction_name, "CMPI") == 0) || (stricmp(i.instruction_name, "BTST") == 0)) 
 	{
@@ -830,8 +828,8 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (size == 2) fprintf(codef, "\tcpu_regs[1][opc_data[%d]] = (ULO)(LON)(WOR)src;\n", dstreg_cpu_data_index);
-	    else fprintf(codef, "\tcpu_regs[1][opc_data[%d]] = src;\n", dstreg_cpu_data_index);
+	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (ULO)(LON)(WOR)src);\n", dstreg_cpu_data_index);
+	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
 	  }
 	  cgMakeInstructionTime(time_cpu_data_index);
 	  cgMakeFunctionFooter(templ_name);
@@ -936,7 +934,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	if (stricmp(i.instruction_name, "TST") == 0 && size == 2 && eano == 1)
 	{
 	  // Special case, TST.W Ax
-	  fprintf(codef, "\tUWO dst = (UWO)cpu_regs[1][opc_data[%d]];\n", eareg_cpu_data_index);
+	  fprintf(codef, "\tUWO dst = (UWO)cpuGetAReg(opc_data[%d]);\n", eareg_cpu_data_index);
 	}
 	else
 	{
@@ -1116,7 +1114,7 @@ unsigned int cgMoveQ(cpu_data *cpudata, cpu_instruction_info i)
   cgDeclareFunction(fname);
   cgMakeFunctionHeader(fname, templ_name);
 
-  fprintf(codef, "\tcpu_regs[0][opc_data[%d]] = opc_data[%d];\n", reg_cpu_data_index, imm_cpu_data_index);
+  fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
   fprintf(codef, "\tcpuSetFlagsAbs((UWO)opc_data[%d]);\n", flags_cpu_data_index);
   cgMakeInstructionTimeAbs(4);
   cgMakeFunctionFooter(templ_name);
@@ -1476,9 +1474,9 @@ unsigned int cgShift(cpu_data *cpudata, cpu_instruction_info i)
       {
 	fprintf(codef, "\tdst = %s(dst, opc_data[%d], opc_data[%d]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
       }
-      else if (regtype == 'D') /* Shift from register */
+      else if (regtype == 'D') /* Shift count in a register */
       {
-	fprintf(codef, "\tdst = %s(dst, cpu_regs[0][opc_data[%d]], opc_data[%d]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
+	fprintf(codef, "\tdst = %s(dst, cpuGetDReg(opc_data[%d]), opc_data[%d]);\n", i.function, shift_cpu_data_index, time_cpu_data_index);
       }
       else /* Shift one */
       {
