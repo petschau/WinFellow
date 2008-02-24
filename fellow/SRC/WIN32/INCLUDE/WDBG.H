@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.H,v 1.4 2008-02-21 00:08:24 peschau Exp $ */
+/* @(#) $Id: WDBG.H,v 1.5 2008-02-24 10:26:41 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -28,6 +28,7 @@
 #define wdbg_H
 
 extern void wdbgDebugSessionRun(HWND parent);
+extern void wdebDebug();
 
 typedef enum {
   DBG_STEP,
