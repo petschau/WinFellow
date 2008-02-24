@@ -36,6 +36,7 @@ extern void cpuStackFrameInit(void);
 extern ULO cpuExecuteInstruction(void);
 
 extern ULO cpu_chip_cycles;
+extern ULO cpu_chip_slowdown;
 extern ULO cpu_instruction_time;
 
 extern void cpuSetPC(ULO address);
@@ -73,6 +74,7 @@ extern void cpuSetUpInterrupt(void);
 extern void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp);
 extern void cpuPrivilegeViolation(void);
 extern void cpuUpdateSr(UWO new_sr);
+extern ULO cpuDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);
 
 extern void cpuHardReset(void);
 extern void cpuEmulationStart(void);

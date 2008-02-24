@@ -1,27 +1,12 @@
-/* @(#) $Id: BLIT.C,v 1.12 2008-02-20 00:11:25 peschau Exp $ */
-/*=========================================================================*/
-/* Fellow                                                                  */
-/* Blitter Implementation                                                  */
-/*                                                                         */
-/* Authors: Petter Schau                                                   */
-/*          Worfje                                                         */
-/*                                                                         */
-/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
-/*                                                                         */
-/* This program is free software; you can redistribute it and/or modify    */
-/* it under the terms of the GNU General Public License as published by    */
-/* the Free Software Foundation; either version 2, or (at your option)     */
-/* any later version.                                                      */
-/*                                                                         */
-/* This program is distributed in the hope that it will be useful,         */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
-/* GNU General Public License for more details.                            */
-/*                                                                         */
-/* You should have received a copy of the GNU General Public License       */
-/* along with this program; if not, write to the Free Software Foundation, */
-/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
-/*=========================================================================*/
+/*============================================================================*/
+/* Fellow Amiga Emulator                                                      */
+/* Blitter Initialization                                                     */
+/*                                                                            */
+/* Authors: Petter Schau                                                      */
+/*          Worfje                                                            */
+/*                                                                            */
+/* This file is under the GNU Public License (GPL)                            */
+/*============================================================================*/
 
 #include "defs.h"
 #include "fellow.h"
@@ -798,7 +783,7 @@ void blitInitiate(void)
     if (bltcon & 1)
     {
       cycle_free = 2;
-      if (!(channels & 1)) cycle_free++;
+      //if (!(channels & 1)) cycle_free++;
       if (!(channels & 2)) cycle_free++;
       cycle_length = 4*blit_height;
       cycle_free *= blit_height;
@@ -822,16 +807,28 @@ void blitInitiate(void)
 
   if (cycle_free == 0)
   {
-    if (!(dmaconr & 0x400))
+    if ((dmaconr & 0x400))
     {
-      cycle_length += (cycle_length/5);
-      cycle_free = (cycle_length/5);
+      cpu_chip_cycles = cycle_length; // Delay CPU for the entire time during the blit.
+    }
+    else
+    {
+      cycle_free = cycle_length / 5;
+      cycle_length += cycle_free;
     }
   }
   blit_cycle_length = cycle_length;
   blit_cycle_free = cycle_free;
+  if (blit_cycle_free != 0)
+  {
+    cpu_chip_slowdown = blit_cycle_length / blit_cycle_free;
+    if (cpu_chip_slowdown > 1) cpu_chip_slowdown--;
+  }
+  else
+  {
+    cpu_chip_slowdown = 1;
+  }
   blit_started = TRUE;
-  cpu_chip_cycles = blit_cycle_length - blit_cycle_free;
   dmaconr |= 0x4000; /* Blitter busy bit */
   blitterInsertEvent(cycle_length + bus_cycle);
 }
@@ -844,6 +841,7 @@ void blitFinishBlit(void)
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
   blitterdmawaiting = 0;
   blit_started = FALSE;
+  cpu_chip_slowdown = 1;
   dmaconr = dmaconr & 0x0000bfff;
   if ((bltcon & 0x00000001) == 0x00000001)
   {

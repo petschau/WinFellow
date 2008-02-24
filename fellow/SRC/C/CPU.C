@@ -1,4 +1,4 @@
-/* @(#) $Id: CPU.C,v 1.7 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: CPU.C,v 1.8 2008-02-24 21:23:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -38,6 +38,7 @@ ULO cpu_int_to_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
 /* Cycles spent by chips (Blitter) as a result of an instruction */
 
 ULO cpu_chip_cycles;
+ULO cpu_chip_slowdown;
 
 /*===========================================================================*/
 /* CPU properties                                                            */
@@ -152,6 +153,7 @@ void cpuStartup(void)
 {
   cpuSetType(M68000);
   cpu_opcode_table_is_invalid = TRUE;
+  cpu_chip_slowdown = 1;
   cpuSetStop(FALSE);
 }
 
@@ -195,7 +197,7 @@ void cpuRaiseInterrupt(void)
 	{
 	  cpuSetIrqLevel(highest_chip_level);
 	  cpuSetIrqAddress(memoryReadLong(cpuGetVbr() + 0x60 + highest_chip_level*4));
-	  irqEvent.cycle = bus_cycle + 1;
+	  irqEvent.cycle = bus_cycle + 10;
 	  busInsertEvent(&irqEvent);
 	  break;
 	}
@@ -246,6 +248,7 @@ void cpuEventHandler(void)
   do
   {
     cycles = cpuExecuteInstruction();
+    cycles = cycles*cpu_chip_slowdown;
     if (cpu_major > 1) cycles = 4;
     time_used += (cpu_chip_cycles<<12) + (cycles<<cpu_speed);
   }

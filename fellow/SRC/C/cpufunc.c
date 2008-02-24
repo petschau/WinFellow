@@ -1,4 +1,4 @@
-/* @(#) $Id: cpufunc.c,v 1.3 2008-02-20 23:57:50 peschau Exp $ */
+/* @(#) $Id: cpufunc.c,v 1.4 2008-02-24 21:23:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -29,6 +29,10 @@
 #include "cpu.h"
 #include "bus.h"
 
+#ifdef UAE_FILESYS
+#include "uae2fell.h"
+#include "autoconf.h"
+#endif
 
 #define CPU_EXCEPTION_ILLEGAL 0x10
 
@@ -368,6 +372,14 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	}
 
         /// <summary>
+        /// Clear the V flag.
+        /// </summary>
+	static void cpuClearFlagV()
+	{
+	  cpu_sr = cpu_sr & 0xfffd;
+	}
+
+        /// <summary>
         /// Get the V flag.
         /// </summary>
 	static BOOLE cpuGetFlagV()
@@ -391,6 +403,14 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	static void cpuSetFlagZ(BOOLE f)
 	{
 	  cpu_sr = (cpu_sr & 0xfffb) | ((f) ? 4 : 0);
+	}
+
+        /// <summary>
+        /// Clear the Z flag.
+        /// </summary>
+	static void cpuClearFlagZ()
+	{
+	  cpu_sr = cpu_sr & 0xfffb;
 	}
 
         /// <summary>
@@ -418,6 +438,14 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	}
 
         /// <summary>
+        /// Clear V and C.
+        /// </summary>
+	static void cpuClearFlagsVC()
+	{
+	  cpu_sr = cpu_sr & 0xfffc;
+	}
+
+         /// <summary>
         /// Set the flags NZVC.
         /// </summary>
         /// <param name="z">The Z flag.</param>        
@@ -482,7 +510,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
         /// <param name="sm">The MSB of the source.</param>        
 	static void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 	{
-	  if (!z) cpuSetFlagZ(0);
+	  if (!z) cpuClearFlagZ();
 	  cpuSetFlagN(rm);
 	  cpuSetFlagXC(cpuMakeFlagCAdd(rm, dm, sm));
 	  cpuSetFlagV(cpuMakeFlagVAdd(rm, dm, sm));
@@ -497,7 +525,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
         /// <param name="sm">The MSB of the source.</param>        
 	static void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 	{
-	  if (!z) cpuSetFlagZ(0);
+	  if (!z) cpuClearFlagZ();
 	  cpuSetFlagN(rm);
 	  cpuSetFlagXC(cpuMakeFlagCSub(rm, dm, sm));
 	  cpuSetFlagV(cpuMakeFlagVSub(rm, dm, sm));
@@ -513,7 +541,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	{
 	  cpuSetFlagZ(z);
 	  cpuSetFlagN(rm);
-	  cpuSetFlagXC(dm || rm);
+	  cpuSetFlagXC(!z);
 	  cpuSetFlagV(dm && rm);
 	}
 
@@ -525,7 +553,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
         /// <param name="dm">The MSB of the destination source.</param>        
 	static void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm)
 	{
-	  if (!z) cpuSetFlagZ(0);
+	  if (!z) cpuClearFlagZ();
 	  cpuSetFlagN(rm);
 	  cpuSetFlagXC(dm || rm);
 	  cpuSetFlagV(dm && rm);
@@ -555,8 +583,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	{
 	  cpuSetFlagZ(z);
 	  cpuSetFlagN(rm);
-	  cpuSetFlagC(0);
-	  cpuSetFlagV(0);
+	  cpuClearFlagsVC();
 	}
 
         /// <summary>
@@ -585,7 +612,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	  cpuSetFlagZ(z);
 	  cpuSetFlagN(rm);
 	  cpuSetFlagC(c);
-	  cpuSetFlagV(0);
+	  cpuClearFlagV();
 	}
 
 	/// <summary>
@@ -599,7 +626,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	  cpuSetFlagZ(z);
 	  cpuSetFlagN(rm);
 	  cpuSetFlagXC(x);
-	  cpuSetFlagV(0);
+	  cpuClearFlagV();
 	}
 
 	/// <summary>
@@ -611,8 +638,7 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	{
 	  cpuSetFlagZ(z);
 	  cpuSetFlagN(rm);
-	  cpuSetFlagC(FALSE);
-	  cpuSetFlagV(FALSE);
+	  cpuClearFlagsVC();
 	}
 
         /// <summary>
@@ -933,6 +959,7 @@ static ULO cpuEA71()
 	    case 14: return cpuCalculateConditionCode14();
 	    case 15: return cpuCalculateConditionCode15();
 	  }
+	  return FALSE;
 	}
 
 	static void cpuIllegal(void)
@@ -1827,7 +1854,7 @@ static ULO cpuEA71()
         {
 	  if (cpuGetFlagV())
 	  {
-	    cpuPrepareException(0x1c, cpuGetPC() - 2, FALSE);
+	    cpuPrepareException(0x1c, cpuGetPC(), FALSE);
 	  }
 	  cpuSetInstructionTime(4);
         }
@@ -3350,10 +3377,10 @@ static ULO cpuEA71()
 	// Bit field functions
 	static void cpuGetBfRegBytes(UBY *bytes, ULO regno)
 	{
-	  bytes[0] = (UBY)(cpu_regs[0][regno] >> 24);
-	  bytes[1] = (UBY)(cpu_regs[0][regno] >> 16);
-	  bytes[2] = (UBY)(cpu_regs[0][regno] >> 8);
-	  bytes[3] = (UBY)cpu_regs[0][regno];
+	  bytes[0] = (UBY)(cpuGetDReg(regno) >> 24);
+	  bytes[1] = (UBY)(cpuGetDReg(regno) >> 16);
+	  bytes[2] = (UBY)(cpuGetDReg(regno) >> 8);
+	  bytes[3] = (UBY)cpuGetDReg(regno);
 	}
 
 	static void cpuGetBfEaBytes(UBY *bytes, ULO address, ULO count)
@@ -3367,10 +3394,7 @@ static ULO cpuEA71()
 
 	static void cpuSetBfRegBytes(UBY *bytes, ULO regno)
 	{
-	  cpu_regs[0][regno] = (((ULO)bytes[0]) << 24)
-	                     | (((ULO)bytes[1]) << 16)
-	                     | (((ULO)bytes[2]) << 8)
-	                     | ((ULO)bytes[3]);
+	  cpuSetDReg(regno, cpuJoinByteToLong(bytes[0], bytes[1], bytes[2], bytes[3]));
 	}
 
 	static void cpuSetBfEaBytes(UBY *bytes, ULO address, ULO count)
@@ -3387,7 +3411,7 @@ static ULO cpuEA71()
 	  LON offset = (ext >> 6) & 0x1f;
 	  if (offsetIsDr)
 	  {
-	    offset = (LON) cpu_regs[0][offset & 7];
+	    offset = (LON) cpuGetDReg(offset & 7);
 	  }
 	  return offset;
 	}
@@ -3397,7 +3421,7 @@ static ULO cpuEA71()
 	  ULO width = (ext & 0x1f);
 	  if (widthIsDr)
 	  {
-	    width = (cpu_regs[0][width & 7] & 0x1f);
+	    width = (cpuGetDReg(width & 7) & 0x1f);
 	  }
 	  if (width == 0)
 	  {
@@ -3422,7 +3446,7 @@ static ULO cpuEA71()
 	{
 	  ULO i;
 
-	  bytes[byte_count - 1] = (field << (8 - end_offset)) | (bytes[byte_count - 1] & (UBY)~(field_mask << (8 - end_offset)));
+	  bytes[byte_count - 1] = (UBY)((field << (8 - end_offset)) | (bytes[byte_count - 1] & (UBY)~(field_mask << (8 - end_offset))));
 	  for (i = 1; i < byte_count - 1; ++i)
 	  {
 	    bytes[byte_count - i - 1] = (UBY)(field >> (end_offset + 8*(i-1) ));
@@ -3564,7 +3588,7 @@ static ULO cpuEA71()
 	  {
 	    bf_data.field = ~bf_data.field_mask | bf_data.field;
 	  }
-	  cpu_regs[0][bf_data.dn] = bf_data.field;
+	  cpuSetDReg(bf_data.dn, bf_data.field);
 	}
 
 	/// <summary>
@@ -3592,7 +3616,7 @@ static ULO cpuEA71()
 	  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
 	  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
 	  cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
-	  cpu_regs[0][bf_data.dn] = bf_data.field;
+	  cpuSetDReg(bf_data.dn, bf_data.field);
 	}
 
 	/// <summary>
@@ -3626,7 +3650,7 @@ static ULO cpuEA71()
 	    if (bf_data.field & (0x1 << (bf_data.width - i - 1)))
 	      break;
 	  }
-	  cpu_regs[0][bf_data.dn] = bf_data.offset + i;
+	  cpuSetDReg(bf_data.dn, bf_data.offset + i);
 	}
 
 	/// <summary>
@@ -3654,7 +3678,7 @@ static ULO cpuEA71()
 	  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
 	  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
 	  cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
-	  bf_data.field = cpu_regs[0][bf_data.dn] & bf_data.field_mask;
+	  bf_data.field = cpuGetDReg(bf_data.dn) & bf_data.field_mask;
 	  cpuSetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field, bf_data.field_mask);
 	  if (has_ea)
 	  {
@@ -3851,10 +3875,10 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpu_regs[da][regno] = cpuGetSfc(); break;
-		case 0x001: cpu_regs[da][regno] = cpuGetDfc(); break;
-		case 0x800: cpu_regs[da][regno] = cpu_usp; break;
-		case 0x801: cpu_regs[da][regno] = cpuGetVbr(); break;
+		case 0x000: cpuSetReg(da, regno, cpuGetSfc()); break;
+		case 0x001: cpuSetReg(da, regno, cpuGetDfc()); break;
+		case 0x800: cpuSetReg(da, regno, cpu_usp); break; // In supervisor mode, usp is up to date.
+		case 0x801: cpuSetReg(da, regno, cpuGetVbr()); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3862,14 +3886,14 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpu_regs[da][regno] = cpuGetSfc(); break;
-		case 0x001: cpu_regs[da][regno] = cpuGetDfc(); break;
-		case 0x002: cpu_regs[da][regno] = cpuGetCacr(); break;
-		case 0x800: cpu_regs[da][regno] = cpu_usp; break; // In supervisor mode, usp is up to date.
-		case 0x801: cpu_regs[da][regno] = cpuGetVbr(); break;
-		case 0x802: cpu_regs[da][regno] = cpuGetCaar() & 0xfc; break;
-		case 0x803: cpu_regs[da][regno] = cpuGetMsp(); break;
-		case 0x804: cpu_regs[da][regno] = cpuGetIsp(); break;
+		case 0x000: cpuSetReg(da, regno, cpuGetSfc()); break;
+		case 0x001: cpuSetReg(da, regno, cpuGetDfc()); break;
+		case 0x002: cpuSetReg(da, regno, cpuGetCacr()); break;
+		case 0x800: cpuSetReg(da, regno, cpu_usp); break; // In supervisor mode, usp is up to date.
+		case 0x801: cpuSetReg(da, regno, cpuGetVbr()); break;
+		case 0x802: cpuSetReg(da, regno, cpuGetCaar() & 0xfc); break;
+		case 0x803: cpuSetReg(da, regno, cpuGetMsp()); break;
+		case 0x804: cpuSetReg(da, regno, cpuGetIsp()); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3877,14 +3901,14 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpu_regs[da][regno] = cpuGetSfc(); break;
-		case 0x001: cpu_regs[da][regno] = cpuGetDfc(); break;
-		case 0x002: cpu_regs[da][regno] = cpuGetCacr(); break;
-		case 0x800: cpu_regs[da][regno] = cpu_usp; break; // In supervisor mode, usp is up to date.
-		case 0x801: cpu_regs[da][regno] = cpuGetVbr(); break;
-		case 0x802: cpu_regs[da][regno] = cpuGetCaar() & 0xfc; break;
-		case 0x803: cpu_regs[da][regno] = cpuGetMsp(); break;
-		case 0x804: cpu_regs[da][regno] = cpuGetIsp(); break;
+		case 0x000: cpuSetReg(da, regno, cpuGetSfc()); break;
+		case 0x001: cpuSetReg(da, regno, cpuGetDfc()); break;
+		case 0x002: cpuSetReg(da, regno, cpuGetCacr()); break;
+		case 0x800: cpuSetReg(da, regno, cpu_usp); break; // In supervisor mode, usp is up to date.
+		case 0x801: cpuSetReg(da, regno, cpuGetVbr()); break;
+		case 0x802: cpuSetReg(da, regno, cpuGetCaar() & 0xfc); break;
+		case 0x803: cpuSetReg(da, regno, cpuGetMsp()); break;
+		case 0x804: cpuSetReg(da, regno, cpuGetIsp()); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3912,10 +3936,10 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpuSetSfc(cpu_regs[da][regno] & 7); break;
-		case 0x001: cpuSetDfc(cpu_regs[da][regno] & 7); break;
-		case 0x800: cpu_usp = cpu_regs[da][regno]; break;
-		case 0x801: cpuSetVbr(cpu_regs[da][regno]); break;
+		case 0x000: cpuSetSfc(cpuGetReg(da, regno) & 7); break;
+		case 0x001: cpuSetDfc(cpuGetReg(da, regno) & 7); break;
+		case 0x800: cpu_usp = cpuGetReg(da, regno); break;
+		case 0x801: cpuSetVbr(cpuGetReg(da, regno)); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3923,14 +3947,14 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpuSetSfc(cpu_regs[da][regno] & 7); break;
-		case 0x001: cpuSetDfc(cpu_regs[da][regno] & 7); break;
-		case 0x002: cpuSetCacr(cpu_regs[da][regno] & 0x3); break;
-		case 0x800: cpu_usp = cpu_regs[da][regno]; break;
-		case 0x801: cpuSetVbr(cpu_regs[da][regno]); break;
-		case 0x802: cpuSetCaar(cpu_regs[da][regno] & 0x00fc); break;
-		case 0x803: cpuSetMsp(cpu_regs[da][regno]); break;
-		case 0x804: cpuSetIsp(cpu_regs[da][regno]); break;
+		case 0x000: cpuSetSfc(cpuGetReg(da, regno) & 7); break;
+		case 0x001: cpuSetDfc(cpuGetReg(da, regno) & 7); break;
+		case 0x002: cpuSetCacr(cpuGetReg(da, regno) & 0x3); break;
+		case 0x800: cpu_usp = cpuGetReg(da, regno); break;
+		case 0x801: cpuSetVbr(cpuGetReg(da, regno)); break;
+		case 0x802: cpuSetCaar(cpuGetReg(da, regno) & 0x00fc); break;
+		case 0x803: cpuSetMsp(cpuGetReg(da, regno)); break;
+		case 0x804: cpuSetIsp(cpuGetReg(da, regno)); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3938,14 +3962,14 @@ static ULO cpuEA71()
 	    {
 	      switch (ctrl_regno)
 	      {
-		case 0x000: cpuSetSfc(cpu_regs[da][regno] & 7); break;
-		case 0x001: cpuSetDfc(cpu_regs[da][regno] & 7); break;
-		case 0x002: cpuSetCacr(cpu_regs[da][regno] & 0x3313); break;
-		case 0x800: cpu_usp = cpu_regs[da][regno]; break;
-		case 0x801: cpuSetVbr(cpu_regs[da][regno]); break;
-		case 0x802: cpuSetCaar(cpu_regs[da][regno] & 0x00fc); break;
-		case 0x803: cpuSetMsp(cpu_regs[da][regno]); break;
-		case 0x804: cpuSetIsp(cpu_regs[da][regno]); break;
+		case 0x000: cpuSetSfc(cpuGetReg(da, regno) & 7); break;
+		case 0x001: cpuSetDfc(cpuGetReg(da, regno) & 7); break;
+		case 0x002: cpuSetCacr(cpuGetReg(da, regno) & 0x3313); break;
+		case 0x800: cpu_usp = cpuGetReg(da, regno); break;
+		case 0x801: cpuSetVbr(cpuGetReg(da, regno)); break;
+		case 0x802: cpuSetCaar(cpuGetReg(da, regno) & 0x00fc); break;
+		case 0x803: cpuSetMsp(cpuGetReg(da, regno)); break;
+		case 0x804: cpuSetIsp(cpuGetReg(da, regno)); break;
 		default:  cpuPrepareException(0x10, cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
 	      }
 	    }
@@ -3969,7 +3993,7 @@ static ULO cpuEA71()
 	    ULO regno = (extension >> 12) & 7;
 	    if (extension & 0x0800) // From Rn to ea (in dfc)
 	    {
-	      memoryWriteByte((UBY)cpu_regs[da][regno], ea);
+	      memoryWriteByte((UBY)cpuGetReg(da, regno), ea);
 	    }
 	    else  // From ea to Rn (in sfc)
 	    {
@@ -3980,7 +4004,7 @@ static ULO cpuEA71()
 	      }
 	      else
 	      {
-		cpu_regs[1][regno] = (ULO)(LON)(BYT) data;
+		cpuSetAReg(regno, (ULO)(LON)(BYT) data);
 	      }
 	    }
 	  }
@@ -4002,7 +4026,7 @@ static ULO cpuEA71()
 	    ULO regno = (extension >> 12) & 7;
 	    if (extension & 0x0800) // From Rn to ea (in dfc)
 	    {
-	      memoryWriteWord((UWO)cpu_regs[da][regno], ea);
+	      memoryWriteWord((UWO)cpuGetReg(da, regno), ea);
 	    }
 	    else  // From ea to Rn (in sfc)
 	    {
@@ -4013,7 +4037,7 @@ static ULO cpuEA71()
 	      }
 	      else
 	      {
-		cpu_regs[1][regno] = (ULO)(LON)(WOR) data;
+		cpuSetAReg(regno, (ULO)(LON)(WOR) data);
 	      }
 	    }
 	  }
@@ -4035,11 +4059,11 @@ static ULO cpuEA71()
 	    ULO regno = (extension >> 12) & 7;
 	    if (extension & 0x0800) // From Rn to ea (in dfc)
 	    {
-	      memoryWriteLong(cpu_regs[da][regno], ea);
+	      memoryWriteLong(cpuGetReg(da, regno), ea);
 	    }
 	    else  // From ea to Rn (in sfc)
 	    {
-	      cpu_regs[0][regno] = memoryReadLong(ea);
+	      cpuSetDReg(regno, memoryReadLong(ea));
 	    }
 	  }
 	  else
@@ -4097,17 +4121,17 @@ static ULO cpuEA71()
         {
 	  UBY dst = memoryReadByte(ea);
 	  ULO cmp_regno = extension & 7;
-	  UBY res = dst - (UBY) cpu_regs[0][cmp_regno];
+	  UBY res = dst - cpuGetDRegByte(cmp_regno);
 
-	  cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB((UBY) cpu_regs[0][cmp_regno]));
+	  cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(cpuGetDRegByte(cmp_regno)));
 
 	  if (cpuIsZeroB(res))
 	  {
-	    memoryWriteByte((UBY)cpu_regs[0][(extension >> 6) & 7], ea);
+	    memoryWriteByte(cpuGetDRegByte((extension >> 6) & 7), ea);
 	  }
 	  else
 	  {
-	    cpu_regs[0][cmp_regno] = (cpu_regs[0][cmp_regno] & 0xffffff00) | dst;
+	    cpuSetDRegByte(cmp_regno, dst);
 	  }
 	  cpuSetInstructionTime(4);
 	}
@@ -4119,13 +4143,13 @@ static ULO cpuEA71()
         {
 	  UWO dst = memoryReadWord(ea);
 	  ULO cmp_regno = extension & 7;
-	  UWO res = dst - (UWO) cpu_regs[0][cmp_regno];
+	  UWO res = dst - cpuGetDRegWord(cmp_regno);
 
-	  cpuSetFlagsCmp(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW((UWO) cpu_regs[0][cmp_regno]));
+	  cpuSetFlagsCmp(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW(cpuGetDRegWord(cmp_regno)));
 
 	  if (cpuIsZeroW(res))
 	  {
-	    memoryWriteWord((UWO)cpu_regs[0][(extension >> 6) & 7], ea);
+	    memoryWriteWord(cpuGetDRegWord((extension >> 6) & 7), ea);
 	  }
 	  else
 	  {
@@ -4141,17 +4165,17 @@ static ULO cpuEA71()
         {
 	  ULO dst = memoryReadLong(ea);
 	  ULO cmp_regno = extension & 7;
-	  ULO res = dst - cpu_regs[0][cmp_regno];
+	  ULO res = dst - cpuGetDReg(cmp_regno);
 
-	  cpuSetFlagsCmp(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(cpu_regs[0][cmp_regno]));
+	  cpuSetFlagsCmp(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(cpuGetDReg(cmp_regno)));
 
 	  if (cpuIsZeroL(res))
 	  {
-	    memoryWriteLong(cpu_regs[0][(extension >> 6) & 7], ea);
+	    memoryWriteLong(cpuGetDReg((extension >> 6) & 7), ea);
 	  }
 	  else
 	  {
-	    cpu_regs[0][cmp_regno] = dst;
+	    cpuSetDReg(cmp_regno, dst);
 	  }
 	  cpuSetInstructionTime(4);
 	}
@@ -4163,28 +4187,28 @@ static ULO cpuEA71()
         {
 	  UWO extension1 = cpuGetNextOpcode16();
 	  UWO extension2 = cpuGetNextOpcode16();
-	  ULO ea1 = cpu_regs[extension1 >> 15][(extension1 >> 12) & 7];
-	  ULO ea2 = cpu_regs[extension2 >> 15][(extension2 >> 12) & 7];
+	  ULO ea1 = cpuGetReg(extension1 >> 15, (extension1 >> 12) & 7);
+	  ULO ea2 = cpuGetReg(extension2 >> 15, (extension2 >> 12) & 7);
 	  UWO dst1 = memoryReadWord(ea1);
 	  UWO dst2 = memoryReadWord(ea2);
 	  ULO cmp1_regno = extension1 & 7;
 	  ULO cmp2_regno = extension2 & 7;
-	  UWO res1 = dst1 - (UWO) cpu_regs[0][cmp1_regno];
-	  UWO res2 = dst2 - (UWO) cpu_regs[0][cmp2_regno];
+	  UWO res1 = dst1 - cpuGetDRegWord(cmp1_regno);
+	  UWO res2 = dst2 - cpuGetDRegWord(cmp2_regno);
 
 	  if (cpuIsZeroW(res1))
 	  {
-	    cpuSetFlagsCmp(cpuIsZeroW(res2), cpuMsbW(res2), cpuMsbW(dst2), cpuMsbW((UWO) cpu_regs[0][cmp2_regno]));
+	    cpuSetFlagsCmp(cpuIsZeroW(res2), cpuMsbW(res2), cpuMsbW(dst2), cpuMsbW(cpuGetDRegWord(cmp2_regno)));
 	  }
 	  else
 	  {
-	    cpuSetFlagsCmp(cpuIsZeroW(res1), cpuMsbW(res1), cpuMsbW(dst1), cpuMsbW((UWO) cpu_regs[0][cmp1_regno]));
+	    cpuSetFlagsCmp(cpuIsZeroW(res1), cpuMsbW(res1), cpuMsbW(dst1), cpuMsbW(cpuGetDRegWord(cmp1_regno)));
 	  }
 
 	  if (cpuIsZeroW(res1) && cpuIsZeroW(res2))
 	  {
-	    memoryWriteWord((UWO)cpu_regs[0][(extension1 >> 6) & 7], ea1);
-	    memoryWriteWord((UWO)cpu_regs[0][(extension2 >> 6) & 7], ea2);
+	    memoryWriteWord(cpuGetDRegWord((extension1 >> 6) & 7), ea1);
+	    memoryWriteWord(cpuGetDRegWord((extension2 >> 6) & 7), ea2);
 	  }
 	  else
 	  {
@@ -4201,33 +4225,33 @@ static ULO cpuEA71()
         {
 	  UWO extension1 = cpuGetNextOpcode16();
 	  UWO extension2 = cpuGetNextOpcode16();
-	  ULO ea1 = cpu_regs[extension1 >> 15][(extension1 >> 12) & 7];
-	  ULO ea2 = cpu_regs[extension2 >> 15][(extension2 >> 12) & 7];
+	  ULO ea1 = cpuGetReg(extension1 >> 15, (extension1 >> 12) & 7);
+	  ULO ea2 = cpuGetReg(extension2 >> 15, (extension2 >> 12) & 7);
 	  ULO dst1 = memoryReadLong(ea1);
 	  ULO dst2 = memoryReadLong(ea2);
 	  ULO cmp1_regno = extension1 & 7;
 	  ULO cmp2_regno = extension2 & 7;
-	  ULO res1 = dst1 - cpu_regs[0][cmp1_regno];
-	  ULO res2 = dst2 - cpu_regs[0][cmp2_regno];
+	  ULO res1 = dst1 - cpuGetDReg(cmp1_regno);
+	  ULO res2 = dst2 - cpuGetDReg(cmp2_regno);
 
 	  if (cpuIsZeroL(res1))
 	  {
-	    cpuSetFlagsCmp(cpuIsZeroL(res2), cpuMsbL(res2), cpuMsbL(dst2), cpuMsbL(cpu_regs[0][cmp2_regno]));
+	    cpuSetFlagsCmp(cpuIsZeroL(res2), cpuMsbL(res2), cpuMsbL(dst2), cpuMsbL(cpuGetDReg(cmp2_regno)));
 	  }
 	  else
 	  {
-	    cpuSetFlagsCmp(cpuIsZeroL(res1), cpuMsbL(res1), cpuMsbL(dst1), cpuMsbL(cpu_regs[0][cmp1_regno]));
+	    cpuSetFlagsCmp(cpuIsZeroL(res1), cpuMsbL(res1), cpuMsbL(dst1), cpuMsbL(cpuGetDReg(cmp1_regno)));
 	  }
 
 	  if (cpuIsZeroL(res1) && cpuIsZeroL(res2))
 	  {
-	    memoryWriteLong(cpu_regs[0][(extension1 >> 6) & 7], ea1);
-	    memoryWriteLong(cpu_regs[0][(extension2 >> 6) & 7], ea2);
+	    memoryWriteLong(cpuGetDReg((extension1 >> 6) & 7), ea1);
+	    memoryWriteLong(cpuGetDReg((extension2 >> 6) & 7), ea2);
 	  }
 	  else
 	  {
-	    cpu_regs[0][cmp1_regno] = dst1;
-	    cpu_regs[0][cmp2_regno] = dst2;
+	    cpuSetDReg(cmp1_regno, dst1);
+	    cpuSetDReg(cmp2_regno, dst2);
 	  }
 	  cpuSetInstructionTime(4);
 	}
@@ -4434,7 +4458,7 @@ static ULO cpuEA71()
 ULO cpuActivateSSP(void)
 {
   ULO currentSP;
-  currentSP = cpu_regs[1][7];
+  currentSP = cpuGetAReg(7);
 
   // check supervisor bit number (bit 13) within the system byte of the status register
   if (!cpuGetFlagSupervisor())
@@ -4450,7 +4474,7 @@ ULO cpuActivateSSP(void)
         currentSP = cpu_msp;
       }
     }
-    cpu_regs[1][7] = currentSP;
+    cpuSetAReg(7, currentSP);
   }
   return currentSP;
 }
@@ -5104,6 +5128,8 @@ void cpuReset060(void) {
 
 void cpuHardReset(void) {
   cpu_stop = FALSE;
+  cpu_chip_slowdown = 1;
+  cpu_chip_cycles = 0;
   switch (cpu_major) {
     case 0:
       cpuReset000();
