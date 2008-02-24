@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.20 2008-02-23 21:13:11 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.21 2008-02-24 11:36:31 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -25,6 +25,12 @@
 /*=========================================================================*/
 
 #include <io.h>
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
 
 #include "defs.h"
 #include "fellow.h"
