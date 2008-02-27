@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.7 2008-02-20 23:56:29 peschau Exp $ */
+/* @(#) $Id: FMEM.C,v 1.8 2008-02-27 18:22:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -177,6 +177,11 @@ void wdefault(UWO data, ULO address)
 
   Paula
 */
+
+UWO radcon(ULO address)
+{
+  return adcon;
+}
 
 void wadcon(UWO data, ULO address)
 {
@@ -1857,11 +1862,13 @@ void memoryBankSettingsClear(void)
 
 void memoryIoHandlersInstall(void)
 {
+  memorySetIoReadStub(0x010, radcon);
   memorySetIoReadStub(0x018, rserdatr);
   memorySetIoReadStub(0x01c, rintenar);
   memorySetIoReadStub(0x01e, rintreqr);
   memorySetIoWriteStub(0x09a, wintena);
   memorySetIoWriteStub(0x09c, wintreq);
+  memorySetIoWriteStub(0x09e, wadcon);
 }
 
 /*==============*/
