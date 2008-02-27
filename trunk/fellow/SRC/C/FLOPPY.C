@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.21 2008-02-24 11:36:31 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.22 2008-02-27 18:22:49 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -83,6 +83,9 @@ char floppylogfilename[MAX_PATH];
 
 ULO dsklen, dsksync, dskpt, adcon, dskbytr;       /* Registers */
 ULO diskDMAen;                           /* Write counter for dsklen */
+UWO dskbyt_tmp = 0;
+BOOLE dskbyt1_read = FALSE;
+BOOLE dskbyt2_read = FALSE;
 
 void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
@@ -126,8 +129,18 @@ UWO rdskbytr(ULO address)
   UWO tmp = (UWO)(floppy_DMA_started<<14);
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
-  tmp |= dskbytr;
-  dskbytr = 0;
+  if (graph_raster_x < 128 && !dskbyt1_read)
+  {
+    tmp |= 0x8000 | (dskbyt_tmp>>8);
+    dskbyt1_read = TRUE;
+  }
+  else if (graph_raster_x >= 128 && !dskbyt2_read)
+  {
+    tmp |= 0x8000 | (dskbyt_tmp & 0xff);
+    dskbyt2_read = TRUE;
+  }
+//  tmp |= dskbytr;
+//  dskbytr = 0;
   //floppyLogValue("dskbytr", tmp, -1);
   return tmp;
 }
@@ -999,9 +1012,7 @@ void floppyDMAReadInit(ULO drive) {
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt & 0x1ffffe;
-  // Workaround for North and south: Require disksync = 0x4489 for normal adf images
-  floppy_DMA.wait_for_sync = (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
-			     (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489);
+  floppy_DMA.wait_for_sync = (adcon & 0x0400);
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
 #ifdef _DEBUG
@@ -1081,15 +1092,19 @@ void floppyDMAWrite(void) {
 
 /* Returns TRUE is sync is seen for the first time */
 BOOLE floppyCheckSync(UWO word_under_head) {
-  BOOLE word_is_sync = (word_under_head == dsksync);
-  BOOLE found_sync = !floppy_has_sync && word_is_sync;
-  if (found_sync)
+  if (adcon & 0x0400)
   {
-    //floppyLogValue(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", 0x9000, floppy[floppySelectedGet()].motor_ticks);
-    memoryWriteWord(0x9000, 0xdff09c);
+    BOOLE word_is_sync = (word_under_head == dsksync);
+    BOOLE found_sync = !floppy_has_sync && word_is_sync;
+    if (found_sync)
+    {
+      //floppyLogValue(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", 0x9000, floppy[floppySelectedGet()].motor_ticks);
+      memoryWriteWord(0x9000, 0xdff09c);
+    }
+    floppy_has_sync = word_is_sync;
+    return found_sync;
   }
-  floppy_has_sync = word_is_sync;
-  return found_sync;
+  return FALSE;  // Not using sync.
 }
 
 void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
@@ -1183,7 +1198,10 @@ void floppyEndOfLine(void) {
                 found_sync = floppyCheckSync(word_under_head);
 			}
 			prev_byte_under_head = word_under_head & 0xff;
-			dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
+			dskbyt_tmp = word_under_head;
+			dskbyt1_read = FALSE;
+			dskbyt2_read = FALSE;
+			//dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
 
             if (floppyDMAReadStarted()) 
                 floppyReadWord(word_under_head, found_sync);
