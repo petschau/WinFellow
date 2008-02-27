@@ -830,6 +830,7 @@ void blitInitiate(void)
   }
   blit_started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
+  intreq &= 0xffbf;
   blitterInsertEvent(cycle_length + bus_cycle);
 }
 
