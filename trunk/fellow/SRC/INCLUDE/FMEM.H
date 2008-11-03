@@ -138,8 +138,6 @@ extern UBY memory_emem[];
 extern ULO intenar,intena,intreq;
 extern ULO potgor;
 
-extern ULO adcon;
-
 extern ULO memory_fault_address;
 extern BOOLE memory_fault_read;
 

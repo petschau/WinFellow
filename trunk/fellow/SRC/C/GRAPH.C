@@ -1,4 +1,4 @@
-/* @(#) $Id: GRAPH.C,v 1.5 2008-02-20 23:56:30 peschau Exp $ */
+/* @(#) $Id: GRAPH.C,v 1.6 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Convert graphics data to temporary format suitable for fast             */
@@ -36,12 +36,6 @@
 #include "graph.h"
 #include "sprite.h"
 
-/*=======================================================*/
-/* external references not exported by the include files */
-/*=======================================================*/
-
-extern ULO sprite_ddf_kill;
-
 /*======================================================================*/
 /* flag that handles loss of surface content due to DirectX malfunction */
 /*======================================================================*/
@@ -71,11 +65,6 @@ ULO graph_deco320hi1[256];
 ULO graph_deco320hi2[256];
 ULO graph_deco320hi3[256];
 ULO graph_deco320hi4[256];
-
-ULO graph_decode_tmp;
-
-ULO serper_debug_register_ecx;
-ULO serper_debug_register_edx;
 
 UBY graph_line1_tmp[1024];
 UBY graph_line2_tmp[1024];
@@ -113,7 +102,6 @@ ULO lof, ddfstrt, ddfstop, bplcon0, bplcon1, bplcon2, bpl1mod, bpl2mod;
 ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
 ULO diwstrt, diwstop; 
 ULO diwxleft, diwxright, diwytop, diwybottom;
-ULO graph_raster_x, graph_raster_y;
 ULO dmaconr, dmacon;
 
 
@@ -153,97 +141,6 @@ void graphP2CTablesInit(void) {
     graph_deco320hi3[i] = graph_deco320hi1[i]<<2;
     graph_deco320hi4[i] = graph_deco320hi1[i]<<3;
   }
-  graph_decode_tmp = 0;
-}
-
-
-/*===========================================================================*/
-/* Decode tables for horizontal scale                                        */
-/* 1x scaling Lores                                                          */
-/* 0.5x scaling Hires                                                        */
-/* Called from the draw module                                               */
-/*===========================================================================*/
-
-void graphP2C1XInit(void)
-{
-  graph_decode_line_tab[0] = graphDecode0_C;
-  graph_decode_line_tab[1] = graphDecode1_C;
-  graph_decode_line_tab[2] = graphDecode2_C;
-  graph_decode_line_tab[3] = graphDecode3_C;
-  graph_decode_line_tab[4] = graphDecode4_C;
-  graph_decode_line_tab[5] = graphDecode5_C;
-  graph_decode_line_tab[6] = graphDecode6_C;
-  graph_decode_line_tab[7] = graphDecode0_C;
-  graph_decode_line_tab[8] = graphDecode0_C;
-  graph_decode_line_tab[9] = graphDecodeHi1_C;
-  graph_decode_line_tab[10] = graphDecodeHi2_C;
-  graph_decode_line_tab[11] = graphDecodeHi3_C;
-  graph_decode_line_tab[12] = graphDecodeHi4_C;
-  graph_decode_line_tab[13] = graphDecode0_C;
-  graph_decode_line_tab[14] = graphDecode0_C;
-  graph_decode_line_tab[15] = graphDecode0_C;
-  graph_decode_line_dual_tab[0] = graphDecode0_C;
-  graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
-  graph_decode_line_dual_tab[7] = graphDecode0_C;
-  graph_decode_line_dual_tab[8] = graphDecode0_C;
-  graph_decode_line_dual_tab[9] = graphDecodeHi1_C;
-  graph_decode_line_dual_tab[10] = graphDecodeHi2Dual_C;
-  graph_decode_line_dual_tab[11] = graphDecodeHi3Dual_C;
-  graph_decode_line_dual_tab[12] = graphDecodeHi4Dual_C;
-  graph_decode_line_dual_tab[13] = graphDecode0_C;
-  graph_decode_line_dual_tab[14] = graphDecode0_C;
-  graph_decode_line_dual_tab[15] = graphDecode0_C;
-  graph_decode_line_ptr = graphDecode0_C;
-}
-
-
-/*===========================================================================*/
-/* Decode tables for horizontal scale                                        */
-/* 1x scaling Lores                                                          */
-/* 1x scaling Hires                                                          */
-/* Called from the draw module                                               */
-/*===========================================================================*/
-
-void graphP2C2XInit(void)
-{
-  graph_decode_line_tab[0] = graphDecode0_C;
-  graph_decode_line_tab[1] = graphDecode1_C;
-  graph_decode_line_tab[2] = graphDecode2_C;
-  graph_decode_line_tab[3] = graphDecode3_C;
-  graph_decode_line_tab[4] = graphDecode4_C;
-  graph_decode_line_tab[5] = graphDecode5_C;
-  graph_decode_line_tab[6] = graphDecode6_C;
-  graph_decode_line_tab[7] = graphDecode0_C;
-  graph_decode_line_tab[8] = graphDecode0_C;
-  graph_decode_line_tab[9] = graphDecode1_C;
-  graph_decode_line_tab[10] = graphDecode2_C;
-  graph_decode_line_tab[11] = graphDecode3_C;
-  graph_decode_line_tab[12] = graphDecode4_C;
-  graph_decode_line_tab[13] = graphDecode0_C;
-  graph_decode_line_tab[14] = graphDecode0_C;
-  graph_decode_line_tab[15] = graphDecode0_C;
-  graph_decode_line_dual_tab[0] = graphDecode0_C;
-  graph_decode_line_dual_tab[1] = graphDecode1_C;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual_C;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual_C;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual_C;
-  graph_decode_line_dual_tab[7] = graphDecode0_C;
-  graph_decode_line_dual_tab[8] = graphDecode0_C;
-  graph_decode_line_dual_tab[9] = graphDecode1_C;
-  graph_decode_line_dual_tab[10] = graphDecode2Dual_C;
-  graph_decode_line_dual_tab[11] = graphDecode3Dual_C;
-  graph_decode_line_dual_tab[12] = graphDecode4Dual_C;
-  graph_decode_line_dual_tab[13] = graphDecode0_C;
-  graph_decode_line_dual_tab[14] = graphDecode0_C;
-  graph_decode_line_dual_tab[15] = graphDecode0_C;
-  graph_decode_line_ptr = graphDecode0_C;
 }
 
 
@@ -341,8 +238,6 @@ static void graphIORegistersClear(void) {
   diwybottom = 0;
   graph_DIW_first_visible = 256;
   graph_DIW_last_visible = 256;
-  graph_raster_x = 0;
-  graph_raster_y = 0;
   evenscroll = 0;
   evenhiscroll = 0;
   oddscroll = 0;
@@ -391,11 +286,11 @@ UWO rdmaconr(ULO address)
 
 UWO rvposr(ULO address)
 {
-  if (blitter_ECS == 1)
+  if (blitter_ECS)
   {
-    return (UWO) ((lof | (graph_raster_y  >> 8)) | 0x2000);
+    return (UWO) ((lof | (busGetRasterY() >> 8)) | 0x2000);
   }
-  return (UWO) (lof | (graph_raster_y >> 8));  
+  return (UWO) (lof | (busGetRasterY() >> 8));  
 }
 
 /*===========================================================================*/
@@ -406,7 +301,7 @@ UWO rvposr(ULO address)
 
 UWO rvhposr(ULO address)
 {
-  return (UWO) ((graph_raster_x >> 1) | ((graph_raster_y & 0x000000FF) << 8));
+  return (UWO) ((busGetRasterX() >> 1) | ((busGetRasterY() & 0x000000FF) << 8));
 }
 
 /*===========================================================================*/
@@ -1010,8 +905,8 @@ void graphEndOfFrame(void)
   graph_playfield_on = FALSE;
   if (graph_buffer_lost == TRUE)
   {
-	graphLineDescClear();
-	graph_buffer_lost = FALSE;
+    graphLineDescClear();
+    graph_buffer_lost = FALSE;
   }
 }
 
@@ -1024,7 +919,6 @@ void graphHardReset(void) {
   graphLineDescClear();
 }
 
-
 /*===========================================================================*/
 /* Called on emulation start                                                 */
 /*===========================================================================*/
@@ -1035,14 +929,12 @@ void graphEmulationStart(void) {
   graphIOHandlersInstall();
 }
 
-
 /*===========================================================================*/
 /* Called on emulation stop                                                  */
 /*===========================================================================*/
 
 void graphEmulationStop(void) {
 }
-
 
 /*===========================================================================*/
 /* Initializes the graphics module                                           */
@@ -1054,7 +946,6 @@ void graphStartup(void) {
   graphIORegistersClear();
   graphSetAllowBplLineSkip(TRUE);
 }
-
 
 /*===========================================================================*/
 /* Release resources taken by the graphics module                            */
@@ -1076,7 +967,7 @@ static __inline ULO graphDecodeOdd1(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
     case 2: return graph_deco1[dat1][0]; 
     case 3:
     case 4: return graph_deco1[dat1][0] | graph_deco3[dat3][0]; 
-	  case 5:
+    case 5:
     case 6: return graph_deco1[dat1][0] | graph_deco3[dat3][0] | graph_deco5[dat5][0]; 
   }
   return 0;
@@ -1091,7 +982,7 @@ static __inline ULO graphDecodeOdd2(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
     case 2: return graph_deco1[dat1][1]; 
     case 3:
     case 4: return graph_deco1[dat1][1] | graph_deco3[dat3][1]; 
-	  case 5:
+    case 5:
     case 6: return graph_deco1[dat1][1] | graph_deco3[dat3][1] | graph_deco5[dat5][1]; 
   }
   return 0;
@@ -1107,8 +998,7 @@ static __inline ULO graphDecodeEven1(int bitplanes, ULO dat2, ULO dat4, ULO dat6
     case 3: return graph_deco2[dat2][0]; 
     case 4: 
     case 5: return graph_deco2[dat2][0] | graph_deco4[dat4][0];  
-    case 6: return graph_deco2[dat2][0] | graph_deco4[dat4][0] | graph_deco6[dat6][0]; 
-
+    case 6: return graph_deco2[dat2][0] | graph_deco4[dat4][0] | graph_deco6[dat6][0];
   }
   return 0;
 }
@@ -1122,7 +1012,7 @@ static __inline ULO graphDecodeEven2(int bitplanes, ULO dat2, ULO dat4, ULO dat6
     case 2:
     case 3: return graph_deco2[dat2][1]; 
     case 4:  
-  	case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1]; 
+    case 5: return graph_deco2[dat2][1] | graph_deco4[dat4][1]; 
     case 6: return graph_deco2[dat2][1] | graph_deco4[dat4][1] | graph_deco6[dat6][1]; 
   }
   return 0;
@@ -1138,8 +1028,7 @@ static __inline ULO graphDecodeDualOdd1(int bitplanes, ULO datA, ULO datB, ULO d
     case 3: 
     case 4: return graph_deco1[datA][0] | graph_deco2[datB][0];  
     case 5: 
-    case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0]; 
-
+    case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0];
   }
   return 0;
 }
@@ -1153,7 +1042,7 @@ static __inline ULO graphDecodeDualOdd2(int bitplanes, ULO datA, ULO datB, ULO d
     case 2: return graph_deco1[datA][1]; 
     case 3: 
     case 4: return graph_deco1[datA][1] | graph_deco2[datB][1];  
-  	case 5: 
+    case 5: 
     case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
   }
   return 0;
@@ -1170,7 +1059,6 @@ static __inline ULO graphDecodeDualEven1(int bitplanes, ULO datA, ULO datB, ULO 
     case 4: 
     case 5: return graph_deco1[datA][0] | graph_deco2[datB][0];  
     case 6: return graph_deco1[datA][0] | graph_deco2[datB][0] | graph_deco3[datC][0]; 
-
   }
   return 0;
 }
@@ -1184,7 +1072,7 @@ static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO 
     case 2:
     case 3: return graph_deco1[datA][1]; 
     case 4:  
-  	case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
+    case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
     case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
   }
   return 0;
@@ -1199,7 +1087,7 @@ static __inline ULO graphDecodeHiOdd(int bitplanes, ULO dat1, ULO dat3, ULO dat5
     case 2: return graph_deco320hi1[dat1]; 
     case 3:
     case 4: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
-	  case 5:
+    case 5:
     case 6: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
   }
   return 0;
@@ -1215,8 +1103,7 @@ static __inline ULO graphDecodeHiEven(int bitplanes, ULO dat2, ULO dat4, ULO dat
     case 3: return graph_deco320hi2[dat2]; 
     case 4: 
     case 5: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4];  
-    case 6: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4]; 
-
+    case 6: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4];
   }
   return 0;
 }
@@ -1230,7 +1117,7 @@ static __inline ULO graphDecodeHiDualOdd(int bitplanes, ULO datA, ULO datB, ULO 
     case 2: return graph_deco320hi1[datA]; 
     case 3: 
     case 4: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
-  	case 5: 
+    case 5: 
     case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC]; 
   }
   return 0;
@@ -1246,8 +1133,7 @@ static __inline ULO graphDecodeHiDualEven(int bitplanes, ULO datA, ULO datB, ULO
     case 3: return graph_deco320hi1[datA]; 
     case 4: 
     case 5: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
-    case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC]; 
-
+    case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC];
   }
   return 0;
 }
@@ -1266,6 +1152,23 @@ static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
   }
 }
 
+static void graphSetLinePointers(UBY **line1, UBY **line2)
+{
+  // make function compatible for no line skipping
+  if (graph_allow_bpl_line_skip)
+  {
+    // Dummy lines
+    *line1 = graph_line1_tmp;
+    *line2 = graph_line2_tmp;
+  }
+  else
+  {
+    ULO currentY = busGetRasterY();
+    *line1 = graph_frame[draw_buffer_draw][currentY].line1;
+    *line2 = graph_frame[draw_buffer_draw][currentY].line2;
+  }
+}
+
 static __inline void graphDecodeGeneric(int bitplanes)
 {
   ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
@@ -1280,68 +1183,58 @@ static __inline void graphDecodeGeneric(int bitplanes)
     ULO *end_even;
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-  	int maxscroll;
-  	ULO temp = 0;
+    int maxscroll;
+    ULO temp = 0;
     UBY *line1;
     UBY *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
-    
-    // make function compatible for no line skipping
-    if (graph_allow_bpl_line_skip)
+
+    graphSetLinePointers(&line1, &line2);
+
+    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
     {
-      line1 = graph_line1_tmp;
-      line2 = graph_line2_tmp;
-    }
-    else
+      // high resolution
+      dest_odd = (ULO*) (line1 + graph_DDF_start + oddhiscroll);		
+
+      // Find out how many pixels the bitplane is scrolled
+      // the first pixels must then be zeroed to avoid garbage.
+      maxscroll = (evenhiscroll > oddhiscroll) ? evenhiscroll : oddhiscroll; 
+    } 
+    else 
     {
-      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
-      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
+      dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
+
+      // Find out how many pixels the bitplane is scrolled
+      // the first pixels must then be zeroed to avoid garbage.
+      maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
     }
-
-	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-	  {
-		  // high resolution
-		  dest_odd = (ULO*) (line1 + graph_DDF_start + oddhiscroll);		
-
-		  // Find out how many pixels the bitplane is scrolled
-		  // the first pixels must then be zeroed to avoid garbage.
-		  maxscroll = (evenhiscroll > oddhiscroll) ? evenhiscroll : oddhiscroll; 
-	  } 
-	  else 
-	  {
-		  dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
-
-		  // Find out how many pixels the bitplane is scrolled
-		  // the first pixels must then be zeroed to avoid garbage.
-		  maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
-	  }
 
     // clear edges
-	  while (maxscroll > 0)
-	  {
-	    line1[graph_DDF_start + temp] = 0;
-	    line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-	    maxscroll--;
-	    temp++;
-	  }
+    while (maxscroll > 0)
+    {
+      line1[graph_DDF_start + temp] = 0;
+      line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+      maxscroll--;
+      temp++;
+    }
 
     // setup loop
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
-	  if (bitplanes > 1)
+    if (bitplanes > 1)
     {
-		  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-		  {
-			  // high resolution
-			  dest_even = (ULO*) (line1 + graph_DDF_start + evenhiscroll);
-		  }
-		  else
-		  {
-			  // low resolution
-			  dest_even = (ULO*) (line1 + graph_DDF_start + evenscroll);
-		  }
-		  end_even = dest_even + bpl_length_in_bytes * 2; 
+      if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+      {
+	// high resolution
+	dest_even = (ULO*) (line1 + graph_DDF_start + evenhiscroll);
+      }
+      else
+      {
+        // low resolution
+        dest_even = (ULO*) (line1 + graph_DDF_start + evenscroll);
+      }
+      end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
     switch (bitplanes)
@@ -1356,9 +1249,15 @@ static __inline void graphDecodeGeneric(int bitplanes)
 
     for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2) 
     {
-      if (bitplanes >= 1) dat1 = *pt1_tmp++;
-      if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
+      switch (bitplanes)
+      {
+	case 6:
+	case 5:	dat5 = *pt5_tmp++;
+	case 4:
+	case 3:	dat3 = *pt3_tmp++;
+	case 2:
+	case 1:	dat1 = *pt1_tmp++;
+      }
       dest_tmp[0] = graphDecodeOdd1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeOdd2(bitplanes, dat1, dat3, dat5);
     }
@@ -1367,11 +1266,16 @@ static __inline void graphDecodeGeneric(int bitplanes)
     {
       for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 2)
       {
-        if (bitplanes >= 2) dat2 = *pt2_tmp++;
-        if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			  dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
-			  dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
+	switch (bitplanes)
+	{
+	  case 6:	dat6 = *pt6_tmp++;
+	  case 5:
+	  case 4:	dat4 = *pt4_tmp++;
+	  case 3:
+	  case 2:	dat2 = *pt2_tmp++;
+	}
+	dest_tmp[0] |= graphDecodeEven1(bitplanes, dat2, dat4, dat6);
+	dest_tmp[1] |= graphDecodeEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1392,47 +1296,38 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
     ULO dat1, dat2, dat3, dat4, dat5, dat6; 
   
-	  int maxscroll;
-	  ULO temp;
+    int maxscroll;
+    ULO temp;
     UBY *line1;
     UBY *line2;
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
-    // make function compatible for no line skipping
-    if (graph_allow_bpl_line_skip)
-    {
-      line1 = graph_line1_tmp;
-      line2 = graph_line2_tmp;
-    }
-    else
-    {
-      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
-      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
-    }
+    graphSetLinePointers(&line1, &line2);
 
-	  // clear edges
+    // clear edges
     maxscroll = (evenscroll > oddscroll) ? evenscroll : oddscroll; 
 
-	  temp = 0;
-	  while (maxscroll > 0) {
-		  line1[graph_DDF_start + temp] = 0;
-		  line2[graph_DDF_start + temp] = 0;
-		  line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		  line2[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
-		  maxscroll--;
-		  temp++;
-	  }
+    temp = 0;
+    while (maxscroll > 0)
+    {
+      line1[graph_DDF_start + temp] = 0;
+      line2[graph_DDF_start + temp] = 0;
+      line1[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+      line2[graph_DDF_start + (graph_DDF_word_count << 4) + temp] = 0;
+      maxscroll--;
+      temp++;
+    }
 	  
-	  // setup loop
-	  dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
+    // setup loop
+    dest_odd = (ULO*) (line1 + graph_DDF_start + oddscroll);			
     end_odd = dest_odd + bpl_length_in_bytes * 2; 
     
-	  if (bitplanes > 1)
+    if (bitplanes > 1)
     {
-		  // low resolution
-		  dest_even = (ULO*) (line2 + graph_DDF_start + evenscroll);
-		  end_even = dest_even + bpl_length_in_bytes * 2; 
+      // low resolution
+      dest_even = (ULO*) (line2 + graph_DDF_start + evenscroll);
+      end_even = dest_even + bpl_length_in_bytes * 2; 
     }
 
     switch (bitplanes)
@@ -1447,9 +1342,15 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
 
     for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 2) 
     {
-      if (bitplanes >= 1) dat1 = *pt1_tmp++;
-      if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
+      switch (bitplanes)
+      {
+	case 6:
+	case 5:	dat5 = *pt5_tmp++;
+	case 4:
+	case 3:	dat3 = *pt3_tmp++;
+	case 2:
+	case 1:	dat1 = *pt1_tmp++;
+      }
       dest_tmp[0] = graphDecodeDualOdd1(bitplanes, dat1, dat3, dat5);
       dest_tmp[1] = graphDecodeDualOdd2(bitplanes, dat1, dat3, dat5);
     }
@@ -1458,11 +1359,16 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
     {
       for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 2)
       {
-        if (bitplanes >= 2) dat2 = *pt2_tmp++;
-        if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			  dest_tmp[0] = graphDecodeDualEven1(bitplanes, dat2, dat4, dat6);
-			  dest_tmp[1] = graphDecodeDualEven2(bitplanes, dat2, dat4, dat6);
+	switch (bitplanes)
+	{
+	  case 6:	dat6 = *pt6_tmp++;
+	  case 5:
+	  case 4:	dat4 = *pt4_tmp++;
+	  case 3:
+	  case 2:	dat2 = *pt2_tmp++;
+	}
+        dest_tmp[0] = graphDecodeDualEven1(bitplanes, dat2, dat4, dat6);
+        dest_tmp[1] = graphDecodeDualEven2(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1488,31 +1394,21 @@ static __inline void graphDecodeHi320Generic(int bitplanes)
 
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
     
-    // make function compatible for no line skipping
-    if (graph_allow_bpl_line_skip)
-    {
-      line1 = graph_line1_tmp;
-      line2 = graph_line2_tmp;
-    }
-    else
-    {
-      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
-      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
-    }
+    graphSetLinePointers(&line1, &line2);
 
-	  if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-	  {
-		  // high resolution
-		  dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
+    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+    {
+      // high resolution
+      dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
 	   
       // setup loop
       end_odd = dest_odd + bpl_length_in_bytes; 
     
-	    if (bitplanes > 1)
+      if (bitplanes > 1)
       {
-		    // high resolution
-			  dest_even = (ULO*) (line1 + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
-		    end_even = dest_even + bpl_length_in_bytes; 
+        // high resolution
+        dest_even = (ULO*) (line1 + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
+        end_even = dest_even + bpl_length_in_bytes; 
       }
 
       switch (bitplanes)
@@ -1527,9 +1423,15 @@ static __inline void graphDecodeHi320Generic(int bitplanes)
 
       for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
       {
-        if (bitplanes >= 1) dat1 = *pt1_tmp++;
-        if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	      if (bitplanes >= 5) dat5 = *pt5_tmp++;
+	switch (bitplanes)
+	{
+	  case 6:
+	  case 5:	dat5 = *pt5_tmp++;
+	  case 4:
+	  case 3:	dat3 = *pt3_tmp++;
+	  case 2:
+	  case 1:	dat1 = *pt1_tmp++;
+	}
         dest_tmp[0] = graphDecodeHiOdd(bitplanes, dat1, dat3, dat5);
       }
 
@@ -1537,10 +1439,15 @@ static __inline void graphDecodeHi320Generic(int bitplanes)
       {
         for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
         {
-          if (bitplanes >= 2) dat2 = *pt2_tmp++;
-          if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		      if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			    dest_tmp[0] |= graphDecodeHiEven(bitplanes, dat2, dat4, dat6);
+	  switch (bitplanes)
+	  {
+	    case 6:	dat6 = *pt6_tmp++;
+	    case 5:
+	    case 4:	dat4 = *pt4_tmp++;
+	    case 3:
+	    case 2:	dat2 = *pt2_tmp++;
+	  }
+          dest_tmp[0] |= graphDecodeHiEven(bitplanes, dat2, dat4, dat6);
         }
       }
     }
@@ -1567,27 +1474,17 @@ static __inline void graphDecodeDualHi320Generic(int bitplanes)
     
     dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
 
-    // make function compatible for no line skipping
-    if (graph_allow_bpl_line_skip)
-    {
-      line1 = graph_line1_tmp;
-      line2 = graph_line2_tmp;
-    }
-    else
-    {
-      line1 = graph_frame[draw_buffer_draw][graph_raster_y].line1;
-      line2 = graph_frame[draw_buffer_draw][graph_raster_y].line2;
-    }
+    graphSetLinePointers(&line1, &line2);
 
-	  // setup loop
-	  dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddscroll >> 1));			
+    // setup loop
+    dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddscroll >> 1));			
     end_odd = dest_odd + bpl_length_in_bytes; 
     
-	  if (bitplanes > 1)
+    if (bitplanes > 1)
     {
-		  // low resolution
-		  dest_even = (ULO*) (line2 + (graph_DDF_start >> 1)+ (evenscroll >> 1));
-		  end_even = dest_even + bpl_length_in_bytes; 
+      // low resolution
+      dest_even = (ULO*) (line2 + (graph_DDF_start >> 1)+ (evenscroll >> 1));
+      end_even = dest_even + bpl_length_in_bytes; 
     }
 
     switch (bitplanes)
@@ -1602,9 +1499,15 @@ static __inline void graphDecodeDualHi320Generic(int bitplanes)
 
     for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
     {
-      if (bitplanes >= 1) dat1 = *pt1_tmp++;
-      if (bitplanes >= 3) dat3 = *pt3_tmp++;
-	    if (bitplanes >= 5) dat5 = *pt5_tmp++;
+      switch (bitplanes)
+      {
+        case 6:
+        case 5:	dat5 = *pt5_tmp++;
+        case 4:
+        case 3:	dat3 = *pt3_tmp++;
+        case 2:
+        case 1:	dat1 = *pt1_tmp++;
+      }
       dest_tmp[0] = graphDecodeHiDualOdd(bitplanes, dat1, dat3, dat5);
     }
 
@@ -1612,10 +1515,15 @@ static __inline void graphDecodeDualHi320Generic(int bitplanes)
     {
       for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
       {
-        if (bitplanes >= 2) dat2 = *pt2_tmp++;
-        if (bitplanes >= 4) dat4 = *pt4_tmp++;
-		    if (bitplanes >= 6) dat6 = *pt6_tmp++;
-			  dest_tmp[0] = graphDecodeHiDualEven(bitplanes, dat2, dat4, dat6);
+        switch (bitplanes)
+        {
+          case 6:	dat6 = *pt6_tmp++;
+          case 5:
+          case 4:	dat4 = *pt4_tmp++;
+          case 3:
+          case 2:	dat2 = *pt2_tmp++;
+        }
+        dest_tmp[0] = graphDecodeHiDualEven(bitplanes, dat2, dat4, dat6);
       }
     }
   }
@@ -1626,7 +1534,7 @@ static __inline void graphDecodeDualHi320Generic(int bitplanes)
 /* Planar to chunky conversion, 1 bitplane hires or lores                    */
 /*===========================================================================*/
 
-void graphDecode0_C(void)
+void graphDecode0(void)
 {
   graphDecodeGeneric(0);
 }
@@ -1635,7 +1543,7 @@ void graphDecode0_C(void)
 /* Planar to chunky conversion, 1 bitplane hires or lores                    */
 /*===========================================================================*/
 
-void graphDecode1_C(void)
+void graphDecode1(void)
 {
   graphDecodeGeneric(1);
 }
@@ -1644,7 +1552,7 @@ void graphDecode1_C(void)
 /* Planar to chunky conversion, 2 bitplanes hires or lores                   */
 /*===========================================================================*/
 
-void graphDecode2_C(void)
+void graphDecode2(void)
 {
   graphDecodeGeneric(2);
 }
@@ -1653,7 +1561,7 @@ void graphDecode2_C(void)
 /* Planar to chunky conversion, 3 bitplanes hires or lores                   */
 /*===========================================================================*/
 
-void graphDecode3_C(void)
+void graphDecode3(void)
 {
   graphDecodeGeneric(3);
 }
@@ -1662,7 +1570,7 @@ void graphDecode3_C(void)
 /* Planar to chunky conversion, 4 bitplanes hires or lores                   */
 /*===========================================================================*/
 
-void graphDecode4_C(void)
+void graphDecode4(void)
 {
   graphDecodeGeneric(4);
 }
@@ -1671,7 +1579,7 @@ void graphDecode4_C(void)
 /* Planar to chunky conversion, 5 bitplanes hires or lores                   */
 /*===========================================================================*/
 
-void graphDecode5_C(void)
+void graphDecode5(void)
 {
   graphDecodeGeneric(5);
 }
@@ -1680,7 +1588,7 @@ void graphDecode5_C(void)
 /* Planar to chunky conversion, 6 bitplanes hires or lores                   */
 /*===========================================================================*/
 
-void graphDecode6_C(void)
+void graphDecode6(void)
 {
   graphDecodeGeneric(6);
 }
@@ -1689,7 +1597,7 @@ void graphDecode6_C(void)
 /* Planar to chunky conversion, 1 bitplane hires to 320                      */
 /*===========================================================================*/
 
-void graphDecodeHi1_C(void)
+void graphDecodeHi1(void)
 {
   graphDecodeHi320Generic(1);
 }
@@ -1698,7 +1606,7 @@ void graphDecodeHi1_C(void)
 /* Planar to chunky conversion, 2 bitplanes hires to 320                     */
 /*===========================================================================*/
 
-void graphDecodeHi2_C(void)
+void graphDecodeHi2(void)
 {
   graphDecodeHi320Generic(2);
 }
@@ -1707,7 +1615,7 @@ void graphDecodeHi2_C(void)
 /* Planar to chunky conversion, 3 bitplanes hires to 320                     */
 /*===========================================================================*/
 
-void graphDecodeHi3_C(void)
+void graphDecodeHi3(void)
 {
   graphDecodeHi320Generic(3);
 }
@@ -1716,7 +1624,7 @@ void graphDecodeHi3_C(void)
 /* Planar to chunky conversion, 4 bitplanes hires to 320                     */
 /*===========================================================================*/
 
-void graphDecodeHi4_C(void)
+void graphDecodeHi4(void)
 {
   graphDecodeHi320Generic(4);
 }
@@ -1725,7 +1633,7 @@ void graphDecodeHi4_C(void)
 /* Planar to chunky conversion, 5 bitplanes hires to 320                     */
 /*===========================================================================*/
 
-void graphDecodeHi5_C(void)
+void graphDecodeHi5(void)
 {
   graphDecodeHi320Generic(5);
 }
@@ -1734,7 +1642,7 @@ void graphDecodeHi5_C(void)
 /* Planar to chunky conversion, 6 bitplanes hires to 320                     */
 /*===========================================================================*/
 
-void graphDecodeHi6_C(void)
+void graphDecodeHi6(void)
 {
   graphDecodeHi320Generic(6);
 }
@@ -1742,81 +1650,81 @@ void graphDecodeHi6_C(void)
 /*===========================================================================*/
 /* Planar to chunky conversion, 2 bitplanes lores, dual playfield            */
 /*===========================================================================*/
-void graphDecode2Dual_C(void)
+void graphDecode2Dual(void)
 {
-	graphDecodeDualGeneric(2);
+  graphDecodeDualGeneric(2);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 3 bitplanes lores, dual playfield            */
 /*===========================================================================*/
-void graphDecode3Dual_C(void)
+void graphDecode3Dual(void)
 {
-	graphDecodeDualGeneric(3);
+  graphDecodeDualGeneric(3);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 4 bitplanes lores, dual playfield            */
 /*===========================================================================*/
-void graphDecode4Dual_C(void)
+void graphDecode4Dual(void)
 {
-	graphDecodeDualGeneric(4);
+  graphDecodeDualGeneric(4);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 5 bitplanes lores, dual playfield            */
 /*===========================================================================*/
-void graphDecode5Dual_C(void)
+void graphDecode5Dual(void)
 {
-	graphDecodeDualGeneric(5);
+  graphDecodeDualGeneric(5);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 6 bitplanes lores, dual playfield            */
 /*===========================================================================*/
-void graphDecode6Dual_C(void)
+void graphDecode6Dual(void)
 {
-	graphDecodeDualGeneric(6);
+  graphDecodeDualGeneric(6);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 2 bitplanes hires, dual playfield            */
 /*===========================================================================*/
-void graphDecodeHi2Dual_C(void)
+void graphDecodeHi2Dual(void)
 {
-	graphDecodeDualHi320Generic(2);
+  graphDecodeDualHi320Generic(2);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 3 bitplanes hires, dual playfield            */
 /*===========================================================================*/
-void graphDecodeHi3Dual_C(void)
+void graphDecodeHi3Dual(void)
 {
-	graphDecodeDualHi320Generic(3);
+  graphDecodeDualHi320Generic(3);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 4 bitplanes hires, dual playfield            */
 /*===========================================================================*/
-void graphDecodeHi4Dual_C(void)
+void graphDecodeHi4Dual(void)
 {
-	graphDecodeDualHi320Generic(4);
+  graphDecodeDualHi320Generic(4);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 5 bitplanes hires, dual playfield            */
 /*===========================================================================*/
-void graphDecodeHi5Dual_C(void)
+void graphDecodeHi5Dual(void)
 {
-	graphDecodeDualHi320Generic(5);
+  graphDecodeDualHi320Generic(5);
 }
 
 /*===========================================================================*/
 /* Planar to chunky conversion, 6 bitplanes hires, dual playfield            */
 /*===========================================================================*/
-void graphDecodeHi6Dual_C(void)
+void graphDecodeHi6Dual(void)
 {
-	graphDecodeDualHi320Generic(6);
+  graphDecodeDualHi320Generic(6);
 }
 
 /*===========================================================================*/
@@ -1833,92 +1741,101 @@ void graphDecodeHi6Dual_C(void)
 
 void graphCalculateWindow(void) 
 {
-	ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
+  ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
-	if ((bplcon0 & 0x8000) == 0x8000) // check if Hires bit is set (bit 15 of BPLCON0)
-	{
-		graphCalculateWindowHires();
-	} 
-	else 
-	{
-		// set DDF (Display Data Fetch Start) variables
-		if (ddfstop < ddfstrt) 
-		{
-			graph_DDF_start = graph_DDF_word_count = 0;
-			graph_DIW_first_visible = graph_DIW_last_visible = 256;
+  if ((bplcon0 & 0x8000) == 0x8000) // check if Hires bit is set (bit 15 of BPLCON0)
+  {
+    graphCalculateWindowHires();
+  } 
+  else 
+  {
+    // set DDF (Display Data Fetch Start) variables
+    if (ddfstop < ddfstrt) 
+    {
+      graph_DDF_start = graph_DDF_word_count = 0;
+      graph_DIW_first_visible = graph_DIW_last_visible = 256;
       return;
-		}
+    }
 		
-		ddfstop_aligned = ddfstop & 0x07;
-		ddfstrt_aligned = ddfstrt & 0x07;
+    ddfstop_aligned = ddfstop & 0x07;
+    ddfstrt_aligned = ddfstrt & 0x07;
 
-		graph_DDF_word_count = ((ddfstop - ddfstrt) >> 3) + 1;
-		if (ddfstop_aligned != ddfstrt_aligned) 
-		{
-			graph_DDF_word_count++;
-		} 
-		
-		graph_DDF_start = ((ddfstrt << 1) + 0x11);	// 0x11 = 17 pixels = 8.5 bus cycles
+    if (ddfstop >= ddfstrt) 
+    {
+      graph_DDF_word_count = ((ddfstop - ddfstrt) >> 3) + 1;
+    }
+    else
+    {
+      graph_DDF_word_count = ((0xd8 - ddfstrt) >> 3) + 1;
+      ddfstop_aligned = 0;
+    }
 
-		// set DIW (Display Window Start) variables (only used with drawing routines)
-		
-		if (diwxleft >= diwxright) 
-		{
-			graph_DDF_start = graph_DDF_word_count = 0;
-			graph_DIW_first_visible = graph_DIW_last_visible = 256;
-		}
+    if (ddfstop_aligned != ddfstrt_aligned) 
+    {
+      graph_DDF_word_count++;
+    } 
+    		
+    graph_DDF_start = ((ddfstrt << 1) + 0x11);	// 0x11 = 17 pixels = 8.5 bus cycles
 
-		graph_DIW_first_visible = draw_left;
-		if (diwxleft < graph_DDF_start) // cmp dword[diwxleft], dword[graph_DDF_start]
-		{  
-			// jb  .cwdiwless
-			if (graph_DDF_start > draw_left) // cmp dword[graph_DDF_start], dword[draw_left]
-			{  
-				// ja  .cwdiwnoclip2
-				graph_DIW_first_visible = graph_DDF_start;
-			} 
-		} 
-		else 
-		{
-			if (diwxleft > draw_left) // cmp word[diwxleft], word[draw_left]
-			{  
-				// ja  .cwdiwnoclip
-				graph_DIW_first_visible = diwxleft;
-			} 
-		}
+    // set DIW (Display Window Start) variables (only used with drawing routines)
+    		
+    if (diwxleft >= diwxright) 
+    {
+      graph_DDF_start = graph_DDF_word_count = 0;
+      graph_DIW_first_visible = graph_DIW_last_visible = 256;
+    }
 
-		// .cwdiwlastpos:
-		last_position_in_line = (graph_DDF_word_count << 4) + graph_DDF_start;
-		if (oddscroll > evenscroll) // cmp word[oddscroll], word[evenscroll]
-		{
-			// ja  .cwaddodd
-			last_position_in_line += oddscroll;
-		} 
-		else 
-		{
-			last_position_in_line += evenscroll;
-		}
+    graph_DIW_first_visible = draw_left;
+    if (diwxleft < graph_DDF_start) // cmp dword[diwxleft], dword[graph_DDF_start]
+    {  
+      // jb  .cwdiwless
+      if (graph_DDF_start > draw_left) // cmp dword[graph_DDF_start], dword[draw_left]
+      {  
+	// ja  .cwdiwnoclip2
+	graph_DIW_first_visible = graph_DDF_start;
+      } 
+    } 
+    else 
+    {
+      if (diwxleft > draw_left) // cmp word[diwxleft], word[draw_left]
+      {  
+	// ja  .cwdiwnoclip
+	graph_DIW_first_visible = diwxleft;
+      } 
+    }
 
-		// .cwdiwlastpos2:
-		graph_DIW_last_visible = draw_right;
-		if (last_position_in_line < diwxright) // cmp ecx, word[diwxright]
-		{
-			// jb  .cwdiwxx
-			if (last_position_in_line < draw_right) // cmp ecx, word[draw_right]
-			{
-				// jb  .cwdiwnoclip4
-				graph_DIW_last_visible = last_position_in_line;
-			}
-		} 
-		else 
-		{
-			if (diwxright < draw_right) // cmp word[diwxright], word[draw_right]
-			{
-				// jb  .cwdiwnoclip3
-				graph_DIW_last_visible = diwxright;
-			}
-		}
-	}
+    // .cwdiwlastpos:
+    last_position_in_line = (graph_DDF_word_count << 4) + graph_DDF_start;
+    if (oddscroll > evenscroll) // cmp word[oddscroll], word[evenscroll]
+    {
+      // ja  .cwaddodd
+      last_position_in_line += oddscroll;
+    } 
+    else 
+    {
+      last_position_in_line += evenscroll;
+    }
+
+    // .cwdiwlastpos2:
+    graph_DIW_last_visible = draw_right;
+    if (last_position_in_line < diwxright) // cmp ecx, word[diwxright]
+    {
+      // jb  .cwdiwxx
+      if (last_position_in_line < draw_right) // cmp ecx, word[draw_right]
+      {
+	// jb  .cwdiwnoclip4
+	graph_DIW_last_visible = last_position_in_line;
+      }
+    } 
+    else 
+    {
+      if (diwxright < draw_right) // cmp word[diwxright], word[draw_right]
+      {
+	// jb  .cwdiwnoclip3
+	graph_DIW_last_visible = diwxright;
+      }
+    }
+  }
 }
 
 void graphCalculateWindowHires(void)
@@ -1935,7 +1852,16 @@ void graphCalculateWindowHires(void)
 	ddfstop_aligned = ddfstop & 0x07;
 	ddfstrt_aligned = ddfstrt & 0x07;
 
-	graph_DDF_word_count = (((ddfstop - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
+	if (ddfstop >= ddfstrt)
+	{
+	  graph_DDF_word_count = (((ddfstop - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
+	}
+	else
+	{
+	  graph_DDF_word_count = (((0xd8 - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
+	  ddfstop_aligned = 0;
+	}
+
 	graph_DDF_start = (ddfstrt << 2) + 18;
 
 	// DDF variables done, now check DIW variables
@@ -2006,32 +1932,32 @@ void graphCalculateWindowHires(void)
 
 void graphPlayfieldOnOff(void)
 {
-	if (graph_playfield_on != 0) 
-	{
-		// Playfield on, check if top has moved below graph_raster_y
-		// Playfield on, check if playfield is turned off at this line
-		if (!(graph_raster_y != diwybottom))
-		{
-			// %%nopfspecial:
-			graph_playfield_on = 0;
-		}
-	} 
-	else 
-	{
-		// Playfield off, Check if playfield is turned on at this line
-		if (!(graph_raster_y != diwytop))
-		{
-			// Don't turn on when top > bottom
-			if (diwytop < diwybottom)
-			{
-				graph_playfield_on = 1;
-			}
-		}
-	}
-	// OK, here the state of the playfield is taken care of
+  ULO currentY = busGetRasterY();
+  if (graph_playfield_on != 0) 
+  {
+    // Playfield on, check if top has moved below graph_raster_y
+    // Playfield on, check if playfield is turned off at this line
+    if (!(currentY != diwybottom))
+    {
+      graph_playfield_on = 0;
+    }
+  } 
+  else 
+  {
+    // Playfield off, Check if playfield is turned on at this line
+    if (!(currentY != diwytop))
+    {
+      // Don't turn on when top > bottom
+      if (diwytop < diwybottom)
+      {
+	graph_playfield_on = 1;
+      }
+    }
+  }
+  // OK, here the state of the playfield is taken care of
 }
 
-void graphDecodeNOP_C(void)
+void graphDecodeNOP(void)
 {
     switch ((bplcon0 >> 12) & 0x07) {
     case 0:
@@ -2052,142 +1978,13 @@ void graphDecodeNOP_C(void)
     }
 }
 
-/*===========================================================================*/
-/* End of line handler for graphics                                          */
-/*===========================================================================*/
-
-void graphEndOfLine(void)
-{
-	graph_line* current_graph_line;
-
-	// skip this frame?
-	if (draw_frame_skip == 0) 
-	{
-		// update diw state
-		graphPlayfieldOnOff();
-
-		// skip lines before line $12
-		if (graph_raster_y >= 0x12) {
-
-			// make pointer to linedesc for this line
-			current_graph_line = &graph_frame[draw_buffer_draw][graph_raster_y];
-			// (graph_raster_y * graph_line_end) + (graph_line_end * 314 * draw_buffer_draw));
-
-			// decode sprites if DMA is enabled and raster is after line $18
-			if ((dmacon & 0x20) == 0x20)
-			{
-				if (graph_raster_y >= 0x18) 
-				{
-					spritesDMASpriteHandler();
-					//spriteProcessActionList(current_graph_line);
-					spriteProcessActionList();
-				}
-				else
-				{
-					//spriteProcessActionList();
-				}
-			}
-			
-			// sprites decoded, sprites_onlineflag is set if there are any
-			// update pointer to drawing routine
-			drawUpdateDrawmode();
-		  
-			// check if we are clipped
-			if ((graph_raster_y >= draw_top) || (graph_raster_y < draw_bottom))
-			{
-
-				// visible line, either background or bitplanes
-				if (graph_allow_bpl_line_skip == 0) 
-				{
-				  graphComposeLineOutput_C(current_graph_line);
-				}
-				else
-				{
-  		    graphComposeLineOutputSmart_C(current_graph_line);
-				}
-			}
-			else
-			{
-				// do nop decoding, no screen output needed
-				if (draw_line_BG_routine != draw_line_routine)
-				{
-					graphDecodeNOP_C();
-				}
-			}
-
-			// if diw state changing from background to bitplane output,
-	    // set new drawing routine pointer
-
-			// .draw_end
-			if (draw_switch_bg_to_bpl != 0) 
-      {
-				draw_line_BPL_manage_routine = draw_line_routine;
-				draw_switch_bg_to_bpl = 0;
-			}
-		}
-	}
-
-	// .skip_frame
-}
-
-/*===========================================================================*/
-/* Smart compose the visible layout of the line                              */
-/* [4 + esp] - linedesc struct                                               */
-/*===========================================================================*/
-
-void graphComposeLineOutputSmart_C(graph_line* current_graph_line)
-{
-  BOOLE line_desc_changed;
-
-  line_desc_changed = FALSE;
-
-  // remember the basic properties of the line
-  line_desc_changed = graphLinedescMakeSmart_C(current_graph_line);
- 
-	// check if we need to decode bitplane data
-  if (draw_line_BG_routine != draw_line_routine)
-  {
-  	// do the planar to chunky conversion
-		// stuff the data into a temporary array
-		// then copy it and compare
-    graph_decode_line_ptr();
-   
-  	// compare line data to old data  
-    line_desc_changed |= graphCompareCopy_C(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), (ULO *) (current_graph_line->line1), (ULO *) graph_line1_tmp);
-
-  	// if the line is dual playfield, compare second playfield too
-    if ((bplcon0 & 0x0400) != 0x0)
-    {
-      line_desc_changed |= graphCompareCopy_C(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), (ULO *) (current_graph_line->line2), (ULO *) graph_line2_tmp);
-    }
-  
-	// add sprites to the line image
-    if (sprites_online == 1)
-    {
-      line_desc_changed = TRUE;
-	  spritesMerge(current_graph_line);
-	  sprites_online = 0;
-    }
-    
-    // final test for line skip
-    if (line_desc_changed == TRUE)
-    {
-      current_graph_line->linetype = GRAPH_LINE_BPL;
-    }
-    else
-    {
-      current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
-    }
-  }
-}
-
 /*-------------------------------------------------------------------------------
 /* Copy color block to line description
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
 
-void graphLinedescColors_C(graph_line* current_graph_line)
+void graphLinedescColors(graph_line* current_graph_line)
 {
   ULO color;
 
@@ -2205,13 +2002,13 @@ void graphLinedescColors_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphLinedescRoutines_C(graph_line* current_graph_line)
+void graphLinedescRoutines(graph_line* current_graph_line)
 {
-		/*==============================================================
-		/* Set drawing routines
-		/*==============================================================*/
-    current_graph_line->draw_line_routine = draw_line_routine;
-    current_graph_line->draw_line_BPL_res_routine = draw_line_BPL_res_routine;
+  /*==============================================================
+  /* Set drawing routines
+  /*==============================================================*/
+  current_graph_line->draw_line_routine = draw_line_routine;
+  current_graph_line->draw_line_BPL_res_routine = draw_line_BPL_res_routine;
 }
   
 /*-------------------------------------------------------------------------------
@@ -2219,7 +2016,7 @@ void graphLinedescRoutines_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphLinedescGeometry_C(graph_line* current_graph_line)
+void graphLinedescGeometry(graph_line* current_graph_line)
 {
   ULO local_graph_DIW_first_visible;
   LON local_graph_DIW_last_visible;
@@ -2293,7 +2090,7 @@ void graphLinedescGeometry_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphLinedescMake_C(graph_line* current_graph_line)
+void graphLinedescMake(graph_line* current_graph_line)
 {
   /*==========================================================*/
 	/* Is this a bitplane or background line?                   */
@@ -2304,9 +2101,9 @@ void graphLinedescMake_C(graph_line* current_graph_line)
 	  /* This is a bitplane line                   */
     /*===========================================*/
     current_graph_line->linetype = GRAPH_LINE_BPL;
-    graphLinedescColors_C(current_graph_line);
-		graphLinedescGeometry_C(current_graph_line);
-		graphLinedescRoutines_C(current_graph_line);
+    graphLinedescColors(current_graph_line);
+    graphLinedescGeometry(current_graph_line);
+    graphLinedescRoutines(current_graph_line);
   }
   else
   {
@@ -2356,7 +2153,7 @@ void graphLinedescMake_C(graph_line* current_graph_line)
     {
       current_graph_line->frames_left_until_BG_skip = 1;
     }
-    graphLinedescRoutines_C(current_graph_line);
+    graphLinedescRoutines(current_graph_line);
   }
 }
 
@@ -2365,7 +2162,7 @@ void graphLinedescMake_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /*-------------------------------------------------------------------------------*/
 
-void graphComposeLineOutput_C(graph_line* current_graph_line)
+void graphComposeLineOutput(graph_line* current_graph_line)
 {
 	/*==================================================================*/
 	/* Check if we need to decode bitplane data                         */
@@ -2391,110 +2188,7 @@ void graphComposeLineOutput_C(graph_line* current_graph_line)
 		/* Remember line geometry for later drawing                       */
 		/*================================================================*/
   }
-  graphLinedescMake_C(current_graph_line);
-}
-
-/*-------------------------------------------------------------------------------
-/* Smart makes a description of this line
-/* [4 + esp] - linedesc struct
-/* Return 1 if linedesc has changed (eax)
-/*-------------------------------------------------------------------------------*/
-
-BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line)
-{
-  BOOLE line_desc_changed;
-
-  line_desc_changed = FALSE;
-
-  /*==========================================================*/
-	/* Is this a bitplane or background line?                   */
-  /*==========================================================*/
-  if (draw_line_BG_routine != draw_line_routine)
-  {
-    /*===========================================*/
-	  /* This is a bitplane line                   */
-    /*===========================================*/
-    if (current_graph_line->linetype != GRAPH_LINE_BPL)
-    {
-      if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
-      {
-        current_graph_line->linetype = GRAPH_LINE_BPL;
-        graphLinedescColors_C(current_graph_line);
-		    graphLinedescGeometry_C(current_graph_line);
-		    graphLinedescRoutines_C(current_graph_line);
-        line_desc_changed = TRUE;
-        return line_desc_changed;
-      }
-    }
-    line_desc_changed = graphLinedescColorsSmart_C(current_graph_line);
-    line_desc_changed |= graphLinedescGeometrySmart_C(current_graph_line);
-		line_desc_changed |= graphLinedescRoutinesSmart_C(current_graph_line);
-    return line_desc_changed;
-  }
-  else
-  {
-    /*===========================================*/
-		/* This is a background line                 */
-		/*===========================================*/
-    if (graph_color_shadow[0] == current_graph_line->colors[0])
-    {
-      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
-      {
-        line_desc_changed = FALSE;
-        return line_desc_changed;
-      }
-      if (current_graph_line->linetype == GRAPH_LINE_BG)
-      {
-        /*==================================================================*/
-    		/* This line was a "background" line during the last drawing of     */
-		    /* this frame buffer,                                               */
-		    /* and it has the same color as last time.                          */
-		    /* We might be able to skip drawing it, we need to check the        */
-		    /* flag that says it has been drawn in all of our buffers.          */
-		    /* The flag is only of importance when "deinterlacing"              */
-		    /*==================================================================*/
-        if (current_graph_line->frames_left_until_BG_skip == 0)
-        {
-          current_graph_line->linetype = GRAPH_LINE_SKIP;
-          line_desc_changed = FALSE;
-          return line_desc_changed;
-        }
-        else
-        {
-          current_graph_line->frames_left_until_BG_skip--;
-          line_desc_changed = TRUE;
-          return line_desc_changed;
-        }
-      }
-    }
-    
-    /*==================================================================*/
-		/* This background line is different from the one in the buffer     */
-		/*==================================================================*/
-    current_graph_line->linetype = GRAPH_LINE_BG;
-    current_graph_line->colors[0] = graph_color_shadow[0];
-    if (draw_deinterlace == 0)
-    {
-      // dword [draw_buffer_count]
-      current_graph_line->frames_left_until_BG_skip = 0;
-    }
-    else
-    {
-      current_graph_line->frames_left_until_BG_skip = 1;
-    }
-    graphLinedescRoutines_C(current_graph_line);
-    /*
-    __asm {
-      pushad
-      push current_graph_line
-      call graphLinedescRoutines
-      pop edx
-      popad
-    }
-    */
-    line_desc_changed = TRUE;
-  }
-  return line_desc_changed;
+  graphLinedescMake(current_graph_line);
 }
 
 /*-------------------------------------------------------------------------------
@@ -2502,13 +2196,13 @@ BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /* Return 1 if routines have changed (eax)
 /*-------------------------------------------------------------------------------*/
-BOOLE graphLinedescRoutinesSmart_C(graph_line* current_graph_line)
+BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 {
   BOOLE result;
 
   /*==============================================================*/
-	/* Set drawing routines                                         */
-	/*==============================================================*/
+  /* Set drawing routines                                         */
+  /*==============================================================*/
 
   result = FALSE;
   if (current_graph_line->draw_line_routine != draw_line_routine)
@@ -2530,9 +2224,9 @@ BOOLE graphLinedescRoutinesSmart_C(graph_line* current_graph_line)
 /* [4 + esp] - linedesc struct
 /* Return 1 if geometry has changed (eax)
 /*-------------------------------------------------------------------------------*/
-BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line)
+BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 {
-	ULO local_graph_DIW_first_visible;
+  ULO local_graph_DIW_first_visible;
   LON local_graph_DIW_last_visible;
   ULO local_graph_DDF_start;
   ULO local_draw_left;
@@ -2616,7 +2310,7 @@ BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line)
   current_graph_line->BG_pad_back = local_draw_right;
 
   /*==========================================================*/
-	/* Need to remember playfield priorities to sort dual pf    */
+  /* Need to remember playfield priorities to sort dual pf    */
   /*==========================================================*/
 
   if (current_graph_line->bplcon2 != bplcon2)
@@ -2633,30 +2327,57 @@ BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line)
 /* Return 1 if colors have changed (eax)
 /*-------------------------------------------------------------------------------*/
 
-BOOLE graphLinedescColorsSmart_C(graph_line* current_graph_line)
+BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
 {
-  BOOLE result;
+  BOOLE result = FALSE;
   ULO i;
-
-  result = FALSE;
 
   // check full brightness colors
   for (i = 0; i < 32; i++)
   {
     if (graph_color_shadow[i] != current_graph_line->colors[i])
     {
-      result = TRUE;
-    }
-    current_graph_line->colors[i] = graph_color_shadow[i];
-  }
-  if (result == TRUE)
-  {
-    for (i = 32; i < 64; i++)
-    {
       current_graph_line->colors[i] = graph_color_shadow[i];
+      current_graph_line->colors[i + 32] = graph_color_shadow[i + 32];
+      result = TRUE;
     }
   }
   return result;
+}
+
+/*-------------------------------------------------------------------------------
+/* Copy remainder of the data, data changed, no need to compare anymore.
+/* Return TRUE = not equal
+/*-------------------------------------------------------------------------------*/
+
+static BOOLE graphCompareCopyRest(ULO first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
+{
+  // line has changed, copy the rest
+  while ((first_pixel & 0x3) != 0)
+  {
+    dest_line[first_pixel] = source_line[first_pixel];
+    first_pixel++;
+    pixel_count--;
+    if (pixel_count == 0)
+    {
+      return TRUE;
+    }
+  }
+
+  while (pixel_count >= 4)
+  {
+    *((ULO *) (dest_line + first_pixel)) = *((ULO *) (source_line + first_pixel));
+    first_pixel += 4;
+    pixel_count -= 4;
+  }
+
+  while (pixel_count > 0)
+  {
+    dest_line[first_pixel] = source_line[first_pixel];
+    first_pixel++;
+    pixel_count--;
+  }
+  return TRUE;
 }
 
 /*-------------------------------------------------------------------------------
@@ -2668,17 +2389,16 @@ BOOLE graphLinedescColorsSmart_C(graph_line* current_graph_line)
 /* Return 1 = not equal (eax), 0 = equal
 /*-------------------------------------------------------------------------------*/
 
-BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* source_line)
+static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
 {
-  BOOLE result;
+  BOOLE result = FALSE;
 
-  result = FALSE;
   if (pixel_count > 0)
   {
     // align to 4-byte boundary
     while ((first_pixel & 0x3) != 0)
     {
-      if (*((UBY *) dest_line + first_pixel) == *((UBY *) source_line + first_pixel))
+      if (dest_line[first_pixel] == source_line[first_pixel])
       {
         first_pixel++;
         pixel_count--;
@@ -2690,38 +2410,14 @@ BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* 
       else
       {
         // line has changed, copy the rest
-        while ((first_pixel & 0x3) != 0)
-        {
-          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
-          first_pixel++;
-          pixel_count--;
-          if (pixel_count == 0)
-          {
-            return TRUE;
-          }
-        }
-
-        while (pixel_count >= 4)
-        {
-          *((ULO *) ((UBY *) dest_line + first_pixel)) = *((ULO *) ((UBY *) source_line + first_pixel));
-          first_pixel += 4;
-          pixel_count -= 4;
-        }
-
-        while (pixel_count >= 0)
-        {
-          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
-          first_pixel++;
-          pixel_count--;
-        }
-        return TRUE;
+	return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
       }
     }
 
-    // compare byte aligned values
+    // compare dword aligned values
     while (pixel_count >= 4)
     {
-      if (*((ULO *) ((UBY *) source_line + first_pixel)) == *((ULO *) ((UBY *) dest_line + first_pixel)))
+      if (*((ULO *) (source_line + first_pixel)) == *((ULO *) (dest_line + first_pixel)))
       {
         first_pixel += 4;
         pixel_count -= 4;
@@ -2729,31 +2425,14 @@ BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* 
       else
       {
         // line has changed, copy the rest
-        while (pixel_count >= 4)
-        {
-          *((ULO *) ((UBY *) dest_line + first_pixel)) = *((ULO *) ((UBY *) source_line + first_pixel));
-          first_pixel += 4;
-          pixel_count -= 4;
-        }
-
-        while (pixel_count >= 0)
-        {
-          *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
-          first_pixel++;
-          pixel_count--;
-        }
-        return TRUE;
+	return graphCompareCopyRest(first_pixel, pixel_count, dest_line, source_line);
       }
-    }
-    if (pixel_count == 0)
-    {
-      return FALSE;
     }
       
     // compare last couple of bytes
-    while (pixel_count >= 0)
+    while (pixel_count > 0)
     {
-      if (*((UBY *) source_line + first_pixel) == *((UBY *) dest_line + first_pixel))
+      if (source_line[first_pixel] == dest_line[first_pixel])
       {
         first_pixel++;
         pixel_count--;
@@ -2761,13 +2440,314 @@ BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* 
       else
       {
         result = TRUE;
-        *((UBY *) dest_line + first_pixel) = *((UBY *) source_line + first_pixel);
+        dest_line[first_pixel] = source_line[first_pixel];
+        first_pixel++;
+        pixel_count--;
       }
     }
-    return result;
   }
-  return FALSE;
+  return result;
+}
+
+/*-------------------------------------------------------------------------------
+/* Smart makes a description of this line
+/* [4 + esp] - linedesc struct
+/* Return 1 if linedesc has changed (eax)
+/*-------------------------------------------------------------------------------*/
+
+BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
+{
+  BOOLE line_desc_changed;
+
+  line_desc_changed = FALSE;
+
+  /*==========================================================*/
+  /* Is this a bitplane or background line?                   */
+  /*==========================================================*/
+  if (draw_line_BG_routine != draw_line_routine)
+  {
+    /*===========================================*/
+    /* This is a bitplane line                   */
+    /*===========================================*/
+    if (current_graph_line->linetype != GRAPH_LINE_BPL)
+    {
+      if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
+      {
+        current_graph_line->linetype = GRAPH_LINE_BPL;
+        graphLinedescColors(current_graph_line);
+	graphLinedescGeometry(current_graph_line);
+	graphLinedescRoutines(current_graph_line);
+        return TRUE;
+      }
+    }
+    line_desc_changed = graphLinedescColorsSmart(current_graph_line);
+    line_desc_changed |= graphLinedescGeometrySmart(current_graph_line);
+    line_desc_changed |= graphLinedescRoutinesSmart(current_graph_line);
+    return line_desc_changed;
+  }
+  else
+  {
+    /*===========================================*/
+    /* This is a background line                 */
+    /*===========================================*/
+    if (graph_color_shadow[0] == current_graph_line->colors[0])
+    {
+      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
+      {
+        line_desc_changed = FALSE;
+        return line_desc_changed;
+      }
+      if (current_graph_line->linetype == GRAPH_LINE_BG)
+      {
+        /*==================================================================*/
+    	/* This line was a "background" line during the last drawing of     */
+        /* this frame buffer,                                               */
+        /* and it has the same color as last time.                          */
+        /* We might be able to skip drawing it, we need to check the        */
+        /* flag that says it has been drawn in all of our buffers.          */
+        /* The flag is only of importance when "deinterlacing"              */
+        /*==================================================================*/
+        if (current_graph_line->frames_left_until_BG_skip == 0)
+        {
+          current_graph_line->linetype = GRAPH_LINE_SKIP;
+          line_desc_changed = FALSE;
+          return line_desc_changed;
+        }
+        else
+        {
+          current_graph_line->frames_left_until_BG_skip--;
+          line_desc_changed = TRUE;
+          return line_desc_changed;
+        }
+      }
+    }
+    
+    /*==================================================================*/
+    /* This background line is different from the one in the buffer     */
+    /*==================================================================*/
+    current_graph_line->linetype = GRAPH_LINE_BG;
+    current_graph_line->colors[0] = graph_color_shadow[0];
+    if (draw_deinterlace == 0)
+    {
+      // dword [draw_buffer_count]
+      current_graph_line->frames_left_until_BG_skip = 0;
+    }
+    else
+    {
+      current_graph_line->frames_left_until_BG_skip = 1;
+    }
+    graphLinedescRoutines(current_graph_line);
+    line_desc_changed = TRUE;
+  }
+  return line_desc_changed;
+}
+
+/*===========================================================================*/
+/* Smart compose the visible layout of the line                              */
+/* [4 + esp] - linedesc struct                                               */
+/*===========================================================================*/
+
+void graphComposeLineOutputSmart(graph_line* current_graph_line)
+{
+  // remember the basic properties of the line
+  BOOLE line_desc_changed = graphLinedescMakeSmart(current_graph_line);
+ 
+  // check if we need to decode bitplane data
+  if (draw_line_BG_routine != draw_line_routine)
+  {
+    // do the planar to chunky conversion
+    // stuff the data into a temporary array
+    // then copy it and compare
+    graph_decode_line_ptr();
+   
+    // compare line data to old data  
+    line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line1, graph_line1_tmp);
+
+    // if the line is dual playfield, compare second playfield too
+    if ((bplcon0 & 0x0400) != 0x0)
+    {
+      line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
+    }
+  
+    // add sprites to the line image
+    if (sprites_online)
+    {
+      line_desc_changed = TRUE;
+      spritesMerge(current_graph_line);
+      sprites_online = FALSE;
+    }
+    
+    // final test for line skip
+    if (line_desc_changed)
+    {
+      current_graph_line->linetype = GRAPH_LINE_BPL;
+    }
+    else
+    {
+      current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
+    }
+  }
+}
+
+/*===========================================================================*/
+/* Decode tables for horizontal scale                                        */
+/* 1x scaling Lores                                                          */
+/* 0.5x scaling Hires                                                        */
+/* Called from the draw module                                               */
+/*===========================================================================*/
+
+void graphP2C1XInit(void)
+{
+  graph_decode_line_tab[0] = graphDecode0;
+  graph_decode_line_tab[1] = graphDecode1;
+  graph_decode_line_tab[2] = graphDecode2;
+  graph_decode_line_tab[3] = graphDecode3;
+  graph_decode_line_tab[4] = graphDecode4;
+  graph_decode_line_tab[5] = graphDecode5;
+  graph_decode_line_tab[6] = graphDecode6;
+  graph_decode_line_tab[7] = graphDecode0;
+  graph_decode_line_tab[8] = graphDecode0;
+  graph_decode_line_tab[9] = graphDecodeHi1;
+  graph_decode_line_tab[10] = graphDecodeHi2;
+  graph_decode_line_tab[11] = graphDecodeHi3;
+  graph_decode_line_tab[12] = graphDecodeHi4;
+  graph_decode_line_tab[13] = graphDecode0;
+  graph_decode_line_tab[14] = graphDecode0;
+  graph_decode_line_tab[15] = graphDecode0;
+  graph_decode_line_dual_tab[0] = graphDecode0;
+  graph_decode_line_dual_tab[1] = graphDecode1;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual;
+  graph_decode_line_dual_tab[7] = graphDecode0;
+  graph_decode_line_dual_tab[8] = graphDecode0;
+  graph_decode_line_dual_tab[9] = graphDecodeHi1;
+  graph_decode_line_dual_tab[10] = graphDecodeHi2Dual;
+  graph_decode_line_dual_tab[11] = graphDecodeHi3Dual;
+  graph_decode_line_dual_tab[12] = graphDecodeHi4Dual;
+  graph_decode_line_dual_tab[13] = graphDecode0;
+  graph_decode_line_dual_tab[14] = graphDecode0;
+  graph_decode_line_dual_tab[15] = graphDecode0;
+  graph_decode_line_ptr = graphDecode0;
 }
 
 
-		
+/*===========================================================================*/
+/* Decode tables for horizontal scale                                        */
+/* 1x scaling Lores                                                          */
+/* 1x scaling Hires                                                          */
+/* Called from the draw module                                               */
+/*===========================================================================*/
+
+void graphP2C2XInit(void)
+{
+  graph_decode_line_tab[0] = graphDecode0;
+  graph_decode_line_tab[1] = graphDecode1;
+  graph_decode_line_tab[2] = graphDecode2;
+  graph_decode_line_tab[3] = graphDecode3;
+  graph_decode_line_tab[4] = graphDecode4;
+  graph_decode_line_tab[5] = graphDecode5;
+  graph_decode_line_tab[6] = graphDecode6;
+  graph_decode_line_tab[7] = graphDecode0;
+  graph_decode_line_tab[8] = graphDecode0;
+  graph_decode_line_tab[9] = graphDecode1;
+  graph_decode_line_tab[10] = graphDecode2;
+  graph_decode_line_tab[11] = graphDecode3;
+  graph_decode_line_tab[12] = graphDecode4;
+  graph_decode_line_tab[13] = graphDecode0;
+  graph_decode_line_tab[14] = graphDecode0;
+  graph_decode_line_tab[15] = graphDecode0;
+  graph_decode_line_dual_tab[0] = graphDecode0;
+  graph_decode_line_dual_tab[1] = graphDecode1;
+  graph_decode_line_dual_tab[2] = graphDecode2Dual;
+  graph_decode_line_dual_tab[3] = graphDecode3Dual;
+  graph_decode_line_dual_tab[4] = graphDecode4Dual;
+  graph_decode_line_dual_tab[5] = graphDecode5Dual;
+  graph_decode_line_dual_tab[6] = graphDecode6Dual;
+  graph_decode_line_dual_tab[7] = graphDecode0;
+  graph_decode_line_dual_tab[8] = graphDecode0;
+  graph_decode_line_dual_tab[9] = graphDecode1;
+  graph_decode_line_dual_tab[10] = graphDecode2Dual;
+  graph_decode_line_dual_tab[11] = graphDecode3Dual;
+  graph_decode_line_dual_tab[12] = graphDecode4Dual;
+  graph_decode_line_dual_tab[13] = graphDecode0;
+  graph_decode_line_dual_tab[14] = graphDecode0;
+  graph_decode_line_dual_tab[15] = graphDecode0;
+  graph_decode_line_ptr = graphDecode0;
+}
+
+/*===========================================================================*/
+/* End of line handler for graphics                                          */
+/*===========================================================================*/
+
+void graphEndOfLine(void)
+{
+  graph_line* current_graph_line;
+
+  // skip this frame?
+  if (draw_frame_skip == 0) 
+  {
+    ULO currentY = busGetRasterY();
+    // update diw state
+    graphPlayfieldOnOff();
+
+    // skip lines before line $12
+    if (currentY >= 0x12)
+    {
+      // make pointer to linedesc for this line
+      current_graph_line = &graph_frame[draw_buffer_draw][currentY];
+
+      // decode sprites if DMA is enabled and raster is after line $18
+      if ((dmacon & 0x20) == 0x20)
+      {
+	if (currentY >= 0x18) 
+	{
+	  spritesDMASpriteHandler();
+	  spriteProcessActionList();
+	}
+	else
+	{
+	  //spriteProcessActionList();
+	}
+      }
+			
+      // sprites decoded, sprites_onlineflag is set if there are any
+      // update pointer to drawing routine
+      drawUpdateDrawmode();
+		  
+      // check if we are clipped
+      if ((currentY >= draw_top) || (currentY < draw_bottom))
+      {
+
+	// visible line, either background or bitplanes
+	if (graph_allow_bpl_line_skip == 0) 
+	{
+	  graphComposeLineOutput(current_graph_line);
+	}
+	else
+	{
+  	  graphComposeLineOutputSmart(current_graph_line);
+	}
+      }
+      else
+      {
+	// do nop decoding, no screen output needed
+	if (draw_line_BG_routine != draw_line_routine)
+	{
+	  graphDecodeNOP();
+	}
+      }
+
+      // if diw state changing from background to bitplane output,
+      // set new drawing routine pointer
+
+      if (draw_switch_bg_to_bpl != 0) 
+      {
+	draw_line_BPL_manage_routine = draw_line_routine;
+	draw_switch_bg_to_bpl = 0;
+      }
+    }
+  }
+}

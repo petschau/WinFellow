@@ -1,4 +1,4 @@
-/* @(#) $Id: COPPER.C,v 1.3 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: COPPER.C,v 1.4 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Copper Emulation Initialization                                         */
@@ -336,6 +336,8 @@ void copperEmulate(void)
   ULO maskedY;
   ULO maskedX;
   ULO waitY;
+  ULO currentY = busGetRasterY();
+  ULO currentX = busGetRasterX();
 
   copperEvent.cycle = BUS_CYCLE_DISABLE;
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
@@ -400,7 +402,9 @@ void copperEmulate(void)
 	  correctLine = FALSE;
 
 	  // compare masked y with wait line
-	  maskedY = graph_raster_y;
+	  //maskedY = graph_raster_y;
+	  maskedY = currentY;
+
 	  *((UBY*) &maskedY) &= (UBY) (bswapRegD >> 8);
 	  if (*((UBY*) &maskedY) > ((UBY) (bswapRegC >> 8)))
 	  {
@@ -414,7 +418,7 @@ void copperEmulate(void)
 	    // Here we have detected a wait that has been passed.
 						
 	    // do some tests if line is 255
-	    if (graph_raster_y != 255)
+	    if (currentY != 255)
 	    {
 	      // ctrueexit
 	      //Here we must do a new copper access immediately (in 4 cycles)
@@ -439,7 +443,7 @@ void copperEmulate(void)
 		bswapRegD = ~bswapRegD;
 
 		// get missing bits
-		maskedY = (graph_raster_y | 0x100);
+		maskedY = (currentY | 0x100);
 		*((UBY*) &maskedY) &= (bswapRegD >> 8);
 		// mask them into vertical position
 		*((UBY*) &maskedY) |= (bswapRegC >> 8);
@@ -447,7 +451,7 @@ void copperEmulate(void)
 		bswapRegC &= 0xfe;
 		bswapRegD &= 0xfe;
 							
-		maskedX = (graph_raster_x & bswapRegD);
+		maskedX = (currentX & bswapRegD);
 		// mask in horizontal
 		bswapRegC |= maskedX;
 		bswapRegC = bswapRegC + maskedY + 4;
@@ -469,7 +473,7 @@ void copperEmulate(void)
 	    bswapRegD = ~bswapRegD;
 
 	    // get bits that is not masked out
-	    maskedY = graph_raster_y;
+	    maskedY = currentY;
 	    *((UBY*) &maskedY) &= (bswapRegD >> 8);
 	    // mask in bits from waitgraph_raster_y
 	    *((UBY*) &maskedY) |= (bswapRegC >> 8);
@@ -482,10 +486,10 @@ void copperEmulate(void)
 	    bswapRegD &= 0xfe;
 	    if (correctLine == TRUE)
 	    {
-	      if (bswapRegD < graph_raster_x)
+	      if (bswapRegD < currentX)
 	      {
 		// get unmasked bits from current x
-		copperInsertEvent(waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4);
+		copperInsertEvent(waitY + ((bswapRegD & currentX) | bswapRegC) + 4);
 	      }
 	      else
 	      {
@@ -507,7 +511,7 @@ void copperEmulate(void)
 
 	    correctLine = TRUE;
 	    // use mask on graph_raster_x
-	    maskedX = graph_raster_x;
+	    maskedX = currentX;
 	    *((UBY*) &maskedX) &= (bswapRegD & 0xff);
 	    // compare masked x with wait x
 	    if (*((UBY*) &maskedX) < (UBY) (bswapRegC & 0xff))
@@ -521,7 +525,7 @@ void copperEmulate(void)
 	      //bswapRegD &= 0xffff;
 
 	      // get bits that is not masked out
-	      maskedY = graph_raster_y;
+	      maskedY = currentY;
 	      *((UBY*) &maskedY) &= (UBY) (bswapRegD >> 8);
 	      // mask in bits from waitgraph_raster_y
 	      *((UBY*) &maskedY) |= (UBY) (bswapRegC >> 8);
@@ -535,10 +539,10 @@ void copperEmulate(void)
 	      bswapRegD &= 0xfe;
 	      if (correctLine == TRUE)
 	      {
-		if (bswapRegD < graph_raster_x)
+		if (bswapRegD < currentX)
 		{
 		  // get unmasked bits from current x
-		  copperInsertEvent(waitY + ((bswapRegD & graph_raster_x) | bswapRegC) + 4);
+		  copperInsertEvent(waitY + ((bswapRegD & currentX) | bswapRegC) + 4);
 		}
 		else
 		{
@@ -565,7 +569,7 @@ void copperEmulate(void)
 	      // Here we have detected a wait that has been passed.
 							
 	      // do some tests if line is 255
-	      if (graph_raster_y != 255)
+	      if (currentY != 255)
 	      {
 		// ctrueexit
 		//Here we must do a new copper access immediately (in 4 cycles)
@@ -590,7 +594,7 @@ void copperEmulate(void)
 		  bswapRegD = ~bswapRegD;
 
 		  // get missing bits
-		  maskedY = (graph_raster_y | 0x100);
+		  maskedY = (currentY | 0x100);
 		  *((UBY*) &maskedY) &= (bswapRegD >> 8);
 		  // mask them into vertical position
 		  *((UBY*) &maskedY) |= (bswapRegC >> 8);
@@ -598,7 +602,7 @@ void copperEmulate(void)
 		  bswapRegC &= 0xfe;
 		  bswapRegD &= 0xfe;
 									
-		  maskedX = (graph_raster_x & bswapRegD);
+		  maskedX = (currentX & bswapRegD);
 		  // mask in horizontal
 		  bswapRegC |= maskedX;
 		  bswapRegC = bswapRegC + maskedY + 4;
@@ -627,7 +631,7 @@ void copperEmulate(void)
 	  bswapRegD |= 0x8000;
 	  // used to indicate correct line or not
 	  correctLine = FALSE;
-	  maskedY = graph_raster_y;
+	  maskedY = currentY;
 	  *((UBY*) &maskedY) &= ((bswapRegD >> 8));
 	  if (*((UBY*) &maskedY) > (UBY) (bswapRegC >> 8))
 	  {
@@ -651,7 +655,7 @@ void copperEmulate(void)
 						
 	    // use mask on graph_raster_x
 	    // Compare masked x with wait x
-	    maskedX = graph_raster_x;
+	    maskedX = currentX;
 	    *((UBY*) &maskedX) &= bswapRegD;
 	    if (*((UBY*) &maskedX) >= (UBY) (bswapRegC & 0xff))
 	    {

@@ -1,4 +1,4 @@
-/* @(#) $Id: cpufunc.c,v 1.4 2008-02-24 21:23:44 peschau Exp $ */
+/* @(#) $Id: cpufunc.c,v 1.5 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -445,6 +445,14 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 	  cpu_sr = cpu_sr & 0xfffc;
 	}
 
+	static UWO cpuGetZFlagB(UBY res) {return (UWO)((res) ? 4 : 0);}
+	static UWO cpuGetZFlagW(UWO res) {return (UWO)((res) ? 4 : 0);}
+	static UWO cpuGetZFlagL(ULO res) {return (UWO)((res) ? 4 : 0);}
+
+	static UWO cpuGetNFlagB(UBY res) {return (UWO)((res & 0x80) >> 4);}
+	static UWO cpuGetNFlagW(UWO res) {return (UWO)((res & 0x8000) >> 12);}
+	static UWO cpuGetNFlagL(ULO res) {return (UWO)((res & 0x80000000) >> 28);}
+
          /// <summary>
         /// Set the flags NZVC.
         /// </summary>
@@ -620,13 +628,10 @@ static UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
         /// </summary>
         /// <param name="z">The Z flag.</param>        
         /// <param name="rm">The MSB of the result.</param>        
-        /// <param name="c">The extend bit of the result.</param>        
-	static void cpuSetFlagsRotateX(BOOLE z, BOOLE rm, BOOLE x)
+        /// <param name="c">The extend bit and carry of the result.</param>        
+	static void cpuSetFlagsRotateX(UWO z, UWO rm, UWO x)
 	{
-	  cpuSetFlagZ(z);
-	  cpuSetFlagN(rm);
-	  cpuSetFlagXC(x);
-	  cpuClearFlagV();
+	  cpu_sr = (cpu_sr & 0xffe0) | z | rm | x;
 	}
 
 	/// <summary>
@@ -2548,7 +2553,7 @@ static ULO cpuEA71()
 	    res = (res << 1) | ((x) ? 1:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroB(res), cpuMsbB(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagB(res), cpuGetNFlagB(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -2569,7 +2574,7 @@ static ULO cpuEA71()
 	    res = (res << 1) | ((x) ? 1:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroW(res), cpuMsbW(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagW(res), cpuGetNFlagW(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -2590,7 +2595,7 @@ static ULO cpuEA71()
 	    res = (res << 1) | ((x) ? 1:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroL(res), cpuMsbL(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagL(res), cpuGetNFlagL(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -2611,7 +2616,7 @@ static ULO cpuEA71()
 	    res = (res >> 1) | ((x) ? 0x80:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroB(res), cpuMsbB(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagB(res), cpuGetNFlagB(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -2632,7 +2637,7 @@ static ULO cpuEA71()
 	    res = (res >> 1) | ((x) ? 0x8000:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroW(res), cpuMsbW(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagW(res), cpuGetNFlagW(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -2653,7 +2658,7 @@ static ULO cpuEA71()
 	    res = (res >> 1) | ((x) ? 0x80000000:0);
 	    x = x_temp;
 	  }
-	  cpuSetFlagsRotateX(cpuIsZeroL(res), cpuMsbL(res), x);
+	  cpuSetFlagsRotateX(cpuGetZFlagL(res), cpuGetNFlagL(res), (x) ? 0x11 : 0);
 	  cpuSetInstructionTime(cycles + sh*2);
 	  return res;
 	}
@@ -3099,7 +3104,7 @@ static ULO cpuEA71()
         /// </summary>
 	static void cpuTrap(ULO vectorno)
 	{
-	  // PC written to the exception frame must be pc + 2. Jesus on E's depends on that.
+	  // PC written to the exception frame must be pc + 2, the address of the next instruction.
 	  cpuPrepareException(0x80 + vectorno*4, cpuGetPC(), FALSE);
 	}
 
@@ -3433,11 +3438,11 @@ static ULO cpuEA71()
 	static ULO cpuGetBfField(UBY *bytes, ULO end_offset, ULO byte_count, ULO field_mask)
 	{
 	  ULO i;
-	  ULO field = ((ULO)bytes[byte_count - 1]) >> (8 - end_offset);
+	  ULO field = ((ULO)bytes[byte_count - 1]) >> end_offset;
 
 	  for (i = 1; i < byte_count; i++)
 	  {
-	    field |= ((ULO)bytes[byte_count - i - 1]) << (end_offset + 8*(i-1)); 
+	    field |= ((ULO)bytes[byte_count - i - 1]) << (8*i - end_offset); 
 	  }
 	  return field & field_mask;
 	}
@@ -3446,14 +3451,14 @@ static ULO cpuEA71()
 	{
 	  ULO i;
 
-	  bytes[byte_count - 1] = (UBY)((field << (8 - end_offset)) | (bytes[byte_count - 1] & (UBY)~(field_mask << (8 - end_offset))));
+	  bytes[byte_count - 1] = (UBY)((field << end_offset) | (bytes[byte_count - 1] & (UBY)~(field_mask << end_offset)));
 	  for (i = 1; i < byte_count - 1; ++i)
 	  {
-	    bytes[byte_count - i - 1] = (UBY)(field >> (end_offset + 8*(i-1) ));
+	    bytes[byte_count - i - 1] = (UBY)(field >> (end_offset + 8*i));
 	  }
 	  if (i < byte_count)
 	  {
-	    bytes[0] = (bytes[0] & (UBY)~(field_mask >> (end_offset + 8*(i-1))) | (UBY)(field >> (end_offset + 8*(i-1))));
+	    bytes[0] = (bytes[0] & (UBY)~(field_mask >> (end_offset + 8*i)) | (UBY)(field >> (end_offset + 8*i)));
 	  }
 	}
 
@@ -3482,8 +3487,8 @@ static ULO cpuEA71()
 	  bf_data->offset = cpuGetBfOffset(bf_data->ext, bf_data->offsetIsDr);
 	  bf_data->width = cpuGetBfWidth(bf_data->ext, bf_data->widthIsDr);
 	  bf_data->bit_offset = bf_data->offset & 7;
-	  bf_data->end_offset = (bf_data->offset + bf_data->width) & 7;
-	  bf_data->byte_count = ((bf_data->bit_offset + bf_data->width) >> 3) + 1;
+	  bf_data->byte_count = ((bf_data->bit_offset + bf_data->width + 7) >> 3);
+	  bf_data->end_offset = (bf_data->byte_count*8 - (bf_data->offset + bf_data->width)) & 7;
 	  bf_data->field = 0;
 	  bf_data->field_mask = 0xffffffff >> (32 - bf_data->width);
 	  if (has_dn)
@@ -3750,7 +3755,6 @@ static ULO cpuEA71()
 	{
 	  struct cpuBfData bf_data;
 	  cpuBfExtWord(&bf_data, val, FALSE, has_ea, ext);
-	  cpuGetBfEaBytes(&bf_data.b[0], bf_data.base_address, bf_data.byte_count);
 	  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
 	  cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 	}
@@ -4499,16 +4503,26 @@ void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp)
     exname = "Exception: 3 - Address error";
   else if (vectorOffset == 0x10)
     exname = "Exception: 4 - Illegal Instruction";
-  else if (vectorOffset == 0x14) exname = "Exception: 5 - Integer division by zero";
-  else if (vectorOffset == 0x18) exname = "Exception: 6 - CHK, CHK2";
-  else if (vectorOffset == 0x1c) exname = "Exception: 7 - FTRAPcc, TRAPcc, TRAPV";
-  else if (vectorOffset == 0x20) exname = "Exception: 8 - Privilege Violation";
-  else if (vectorOffset == 0x24) exname = "Exception: 9 - Trace";
-  else if (vectorOffset == 0x28) exname = "Exception: 10 - A-Line";
-  else if (vectorOffset == 0x2c) exname = "Exception: 11 - F-Line";
-  else if (vectorOffset == 0x38) exname = "Exception: 14 - Format error";
-  else if (vectorOffset >= 0x80 && vectorOffset <= 0xbc) exname = "Exception: TRAP"; 
-  else exname = "Exception: Unknown";
+  else if (vectorOffset == 0x14)
+    exname = "Exception: 5 - Integer division by zero";
+  else if (vectorOffset == 0x18) 
+    exname = "Exception: 6 - CHK, CHK2";
+  else if (vectorOffset == 0x1c) 
+    exname = "Exception: 7 - FTRAPcc, TRAPcc, TRAPV";
+  else if (vectorOffset == 0x20) 
+    exname = "Exception: 8 - Privilege Violation";
+  else if (vectorOffset == 0x24) 
+    exname = "Exception: 9 - Trace";
+  else if (vectorOffset == 0x28) 
+    exname = "Exception: 10 - A-Line";
+  else if (vectorOffset == 0x2c) 
+    exname = "Exception: 11 - F-Line";
+  else if (vectorOffset == 0x38) 
+    exname = "Exception: 14 - Format error";
+  else if (vectorOffset >= 0x80 && vectorOffset <= 0xbc)
+    exname = "Exception: TRAP"; 
+  else
+    exname = "Exception: Unknown";
 
   cpuLogException(exname);
 
@@ -4524,6 +4538,7 @@ void cpuPrepareException(ULO vectorOffset, ULO pcPtr, BOOLE executejmp)
   if (cpu_major < 2 && readMemory & 0x1 && vectorOffset == 0xc)
   {
     // Avoid endless loop that will crash the emulator.
+    // The (odd) address error exception vector contained an odd address.
     cpuReset();
     cpuHardReset();
   }
@@ -4898,6 +4913,8 @@ void cpuFrameB(UWO vector, ULO pcPtr)
 ; 8. Reschedule events
 ;============================================================
 */
+void cpuLogSetInterrupt(ULO level, ULO toPC);
+
 void cpuSetUpInterrupt(void)
 {
   ULO currentSP;
@@ -4909,6 +4926,9 @@ void cpuSetUpInterrupt(void)
   cpu_sr = cpu_sr & 0x38ff;
   cpu_sr = cpu_sr | 0x2000;
   cpu_sr = cpu_sr | (UWO)(cpuGetIrqLevel() << 8);
+
+  cpuLogSetInterrupt(cpuGetIrqLevel(), cpuGetIrqAddress());
+
   if (cpu_major >= 2 && cpu_major < 6)
   {
     ULO oldA7 = cpuGetAReg(7);
@@ -5179,6 +5199,20 @@ void cpuLogException(STR *s)
   fprintf(BUSLOG, "%.5d: %s for opcode %.4X at PC %.8X from PC %.8X\n", cpuEvent.cycle, s, cpu_current_opcode, cpu_original_pc, cpuGetPC());
 }
 
+void cpuLogSetInterrupt(ULO level, ULO toPC)
+{
+  if (!cpu_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  fprintf(BUSLOG, "Interrupt execute: %d to PC %.8X\n", level, toPC);
+}
+
+void cpuLogRaiseInterrupt(ULO bit)
+{
+  if (!cpu_log) return;
+  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  fprintf(BUSLOG, "Interrupt raise: bit %d\n", bit);
+}
+
 ULO cpuExecuteInstruction(void)
 {
   UWO oldSr = cpu_sr;
@@ -5187,11 +5221,7 @@ ULO cpuExecuteInstruction(void)
   cpu_original_pc = cpuGetPC(); // For logging
   opcode = cpu_current_opcode = cpuGetNextOpcode16();
 
-  if (cpu_original_pc == 0xC08F4A)// && bus_cycle == 65736)
-  {
-    int hjkhj = 0;
-  }
-  cpuEventLog(&cpuEvent, opcode);
+  //cpuEventLog(&cpuEvent, opcode);
 
   cpu_instruction_time = 0;
   if (cpu_opcode_model_mask[opcode] & cpu_model_mask)

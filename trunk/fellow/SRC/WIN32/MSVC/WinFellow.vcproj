@@ -57,7 +57,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;d:\Program Files\Microsoft DirectX SDK (April 2007)\Include&quot;;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DIRECTX;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -66,7 +66,7 @@
 				EnableEnhancedInstructionSet="2"
 				FloatingPointModel="2"
 				PrecompiledHeaderFile=".\Release/WinFellow.pch"
-				AssemblerOutput="0"
+				AssemblerOutput="4"
 				AssemblerListingLocation=".\Release/"
 				ObjectFile=".\Release/"
 				ProgramDataBaseFileName=".\Release/"
@@ -90,7 +90,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib shlwapi.lib "
+				AdditionalDependencies="shlwapi.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -168,7 +168,7 @@
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
 				AdditionalIncludeDirectories="&quot;d:\Program Files\Microsoft DirectX SDK (April 2007)\Include&quot;;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DIRECTX;_CRT_SECURE_NO_WARNINGS;X64"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;USE_DX5;_CRT_SECURE_NO_WARNINGS;X64"
 				StringPooling="true"
 				ExceptionHandling="0"
 				RuntimeLibrary="0"
@@ -201,7 +201,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib shlwapi.lib "
+				AdditionalDependencies="shlwapi.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Release/WinFellow.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
@@ -273,9 +273,9 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				InlineFunctionExpansion="0"
 				AdditionalIncludeDirectories="&quot;d:\Program Files\Microsoft DirectX SDK (April 2007)\Include&quot;;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DIRECTX;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS"
+				ExceptionHandling="0"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="false"
@@ -289,7 +289,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="false"
-				DebugInformationFormat="3"
+				DebugInformationFormat="4"
 				CompileAs="0"
 			/>
 			<Tool
@@ -305,11 +305,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib shlwapi.lib "
+				AdditionalDependencies="shlwapi.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
-				AdditionalLibraryDirectories="../../../lib/win32/msvc/caps;&quot;d:\Program Files\Microsoft DirectX SDK (April 2007)\Lib\x86&quot;"
+				AdditionalLibraryDirectories="&quot;D:\Program Files\Microsoft DirectX SDK (April 2007)\Lib\x86&quot;;../../../lib/win32/msvc/caps"
 				DelayLoadDLLs="CAPSImg.dll"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile=".\Debug/WinFellow.pdb"
@@ -377,7 +377,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;d:\Program Files\Microsoft DirectX SDK (April 2007)\Include&quot;;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;."
-				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DIRECTX;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="1"
 				BufferSecurityCheck="false"
@@ -407,7 +407,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib shlwapi.lib "
+				AdditionalDependencies="shlwapi.lib odbc32.lib odbccp32.lib ddraw.lib winmm.lib dinput8.lib comctl32.lib dsound.lib CAPSImg.lib"
 				OutputFile=".\Debug/WinFellow.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
@@ -454,7 +454,7 @@
 			Filter="*.c"
 			>
 			<File
-				RelativePath="..\..\c\blit.c"
+				RelativePath="..\..\C\BLIT.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -500,7 +500,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\bus.c"
+				RelativePath="..\..\C\BUS.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -546,7 +546,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cia.c"
+				RelativePath="..\..\C\CIA.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -592,7 +592,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\config.c"
+				RelativePath="..\..\C\CONFIG.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -638,7 +638,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\copper.c"
+				RelativePath="..\..\C\COPPER.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -684,7 +684,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cpu.c"
+				RelativePath="..\..\C\CPU.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -730,7 +730,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\cpudis.c"
+				RelativePath="..\..\C\CPUDIS.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -780,7 +780,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\c\draw.c"
+				RelativePath="..\..\C\DRAW.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -826,7 +826,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fellow.c"
+				RelativePath="..\..\C\FELLOW.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -876,7 +876,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\ffilesys.c"
+				RelativePath="..\..\C\FFILESYS.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -922,7 +922,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fhfile.c"
+				RelativePath="..\..\C\FHFILE.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -968,7 +968,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\floppy.c"
+				RelativePath="..\..\C\FLOPPY.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1014,7 +1014,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fmem.c"
+				RelativePath="..\..\C\FMEM.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1060,7 +1060,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\fsnavig.c"
+				RelativePath="..\..\C\FSNAVIG.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1152,7 +1152,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\gameport.c"
+				RelativePath="..\..\C\GAMEPORT.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1198,7 +1198,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\graph.c"
+				RelativePath="..\..\C\GRAPH.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1290,7 +1290,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\kbd.c"
+				RelativePath="..\..\C\KBD.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1336,7 +1336,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\listtree.c"
+				RelativePath="..\..\C\LISTTREE.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1428,7 +1428,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\sound.c"
+				RelativePath="..\..\C\SOUND.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1474,7 +1474,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\sprite.c"
+				RelativePath="..\..\C\SPRITE.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1520,7 +1520,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\c\wav.c"
+				RelativePath="..\..\C\WAV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1621,39 +1621,39 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\blit.h"
+				RelativePath="..\..\INCLUDE\BLIT.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\bus.h"
+				RelativePath="..\..\INCLUDE\BUS.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\cia.h"
+				RelativePath="..\..\INCLUDE\CIA.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\config.h"
+				RelativePath="..\..\INCLUDE\CONFIG.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\copper.h"
+				RelativePath="..\..\INCLUDE\COPPER.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\cpu.h"
+				RelativePath="..\..\INCLUDE\CPU.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cpucode.h"
+				RelativePath="..\..\INCLUDE\cpucode.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cpudata.h"
+				RelativePath="..\..\INCLUDE\cpudata.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cpudecl.h"
+				RelativePath="..\..\INCLUDE\cpudecl.h"
 				>
 			</File>
 			<File
@@ -1665,91 +1665,87 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\cpuprofile.h"
+				RelativePath="..\..\INCLUDE\cpuprofile.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\defs.h"
+				RelativePath="..\..\INCLUDE\DEFS.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\draw.h"
+				RelativePath="..\..\INCLUDE\DRAW.H"
 				>
 			</File>
 			<File
-				RelativePath="..\Include\dxver.h"
+				RelativePath="..\..\INCLUDE\EVENTID.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\eventid.h"
+				RelativePath="..\..\INCLUDE\FELLOW.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\fellow.h"
+				RelativePath="..\..\INCLUDE\FFILESYS.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\ffilesys.h"
+				RelativePath="..\..\INCLUDE\FHFILE.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\fhfile.h"
+				RelativePath="..\..\INCLUDE\FLOPPY.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\floppy.h"
+				RelativePath="..\..\INCLUDE\FMEM.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\fmem.h"
+				RelativePath="..\..\INCLUDE\FONTS.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\fonts.h"
+				RelativePath="..\..\INCLUDE\FSNAVIG.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\fsnavig.h"
+				RelativePath="..\..\INCLUDE\GAMEPORT.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\gameport.h"
+				RelativePath="..\..\INCLUDE\GRAPH.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\graph.h"
+				RelativePath="..\..\INCLUDE\Ini.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\Ini.h"
+				RelativePath="..\..\INCLUDE\KEYCODES.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\keycodes.h"
+				RelativePath="..\..\INCLUDE\LISTTREE.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\listtree.h"
+				RelativePath="..\..\INCLUDE\modrip.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Include\modrip.h"
+				RelativePath="..\INCLUDE\MSVC\PORTABLE.H"
 				>
 			</File>
 			<File
-				RelativePath="..\include\msvc\portable.h"
+				RelativePath="..\..\INCLUDE\SPRITE.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\sprite.h"
+				RelativePath="..\..\INCLUDE\WAV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\wav.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Include\zlibwrap.h"
+				RelativePath="..\..\INCLUDE\zlibwrap.h"
 				>
 			</File>
 		</Filter>
@@ -1761,71 +1757,67 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Include\commoncontrol_wrap.h"
+				RelativePath="..\INCLUDE\commoncontrol_wrap.h"
 				>
 			</File>
 			<File
-				RelativePath="..\INCLUDE\fileops.h"
+				RelativePath="..\INCLUDE\FSWRAP.H"
 				>
 			</File>
 			<File
-				RelativePath="..\include\fswrap.h"
+				RelativePath="..\..\INCLUDE\GFXDRV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\gfxdrv.h"
+				RelativePath="..\..\INCLUDE\JOYDRV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\joydrv.h"
+				RelativePath="..\..\INCLUDE\KBD.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\kbd.h"
+				RelativePath="..\..\INCLUDE\KBDDRV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\kbddrv.h"
+				RelativePath="..\INCLUDE\kbdparser.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Include\kbdparser.h"
+				RelativePath="..\INCLUDE\modrip_win32.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Include\modrip_win32.h"
+				RelativePath="..\..\INCLUDE\MOUSEDRV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\mousedrv.h"
+				RelativePath="..\..\INCLUDE\SOUND.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\sound.h"
+				RelativePath="..\..\INCLUDE\SOUNDDRV.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\sounddrv.h"
+				RelativePath="..\INCLUDE\sysinfo.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Include\sysinfo.h"
+				RelativePath="..\..\INCLUDE\TIMER.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\timer.h"
+				RelativePath="..\INCLUDE\WDBG.H"
 				>
 			</File>
 			<File
-				RelativePath="..\include\wdbg.h"
+				RelativePath="..\..\INCLUDE\WGUI.H"
 				>
 			</File>
 			<File
-				RelativePath="..\..\include\wgui.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\windrv.h"
+				RelativePath="..\INCLUDE\WINDRV.H"
 				>
 			</File>
 		</Filter>
@@ -1919,7 +1911,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\C\fswrap.c"
+				RelativePath="..\C\FSWRAP.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -1965,7 +1957,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\gfxdrv.c"
+				RelativePath="..\C\GFXDRV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2011,7 +2003,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\joydrv.c"
+				RelativePath="..\C\JOYDRV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2057,7 +2049,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\kbddrv.c"
+				RelativePath="..\C\KBDDRV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2195,7 +2187,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\mousedrv.c"
+				RelativePath="..\C\MOUSEDRV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2241,7 +2233,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\C\sounddrv.c"
+				RelativePath="..\C\SOUNDDRV.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2333,7 +2325,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\timer.c"
+				RelativePath="..\C\TIMER.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2379,7 +2371,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\wdbg.c"
+				RelativePath="..\C\WDBG.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2425,7 +2417,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\wgui.c"
+				RelativePath="..\C\WGUI.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2471,7 +2463,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\c\winmain.c"
+				RelativePath="..\C\WINMAIN.C"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -2524,7 +2516,7 @@
 				Name="UAE Filesystem C Files (Win32)"
 				>
 				<File
-					RelativePath="..\uae\c\autoconf.c"
+					RelativePath="..\UAE\C\AUTOCONF.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2570,7 +2562,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\expansio.c"
+					RelativePath="..\UAE\C\EXPANSIO.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2616,7 +2608,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\filesys.c"
+					RelativePath="..\UAE\C\FILESYS.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2662,7 +2654,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\filesys_win32.c"
+					RelativePath="..\UAE\C\filesys_win32.c"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2708,7 +2700,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\fsdb.c"
+					RelativePath="..\UAE\C\fsdb.c"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2754,7 +2746,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\Uae\C\fsdb_win32.c"
+					RelativePath="..\UAE\C\fsdb_win32.c"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2800,7 +2792,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\fsusage.c"
+					RelativePath="..\UAE\C\FSUSAGE.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2846,7 +2838,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\hardfile.c"
+					RelativePath="..\UAE\C\HARDFILE.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2892,7 +2884,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\uae\c\uaesupp.c"
+					RelativePath="..\UAE\C\UAESUPP.C"
 					>
 					<FileConfiguration
 						Name="Release|Win32"
@@ -2942,35 +2934,43 @@
 				Name="UAE Filesystem Header Files"
 				>
 				<File
-					RelativePath="..\..\uae\include\autoconf.h"
+					RelativePath="..\..\UAE\INCLUDE\AUTOCONF.H"
 					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\execlib.h"
+					RelativePath="..\..\UAE\INCLUDE\EXECLIB.H"
 					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\filesys.h"
+					RelativePath="..\..\UAE\INCLUDE\FILESYS.H"
 					>
 				</File>
 				<File
-					RelativePath="..\..\Uae\Include\filesys_win32.h"
+					RelativePath="..\..\UAE\INCLUDE\filesys_win32.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\Uae\Include\fsdb.h"
+					RelativePath="..\..\UAE\INCLUDE\fsdb.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\fsusage.h"
+					RelativePath="..\..\UAE\INCLUDE\FSUSAGE.H"
 					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\penguin.h"
+					RelativePath="..\..\UAE\INCLUDE\PENGUIN.H"
 					>
 				</File>
 				<File
-					RelativePath="..\..\uae\include\uae2fell.h"
+					RelativePath="..\..\UAE\INCLUDE\POSIXEMU.H"
+					>
+				</File>
+				<File
+					RelativePath="..\..\UAE\INCLUDE\UAE2FELL.H"
+					>
+				</File>
+				<File
+					RelativePath="..\..\UAE\INCLUDE\UAEFSYS.H"
 					>
 				</File>
 			</Filter>
@@ -4251,19 +4251,19 @@
 			Name="CAPS Header Files"
 			>
 			<File
-				RelativePath="..\Caps\include\CapsAPI.h"
+				RelativePath="..\CAPS\include\CapsAPI.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\CapsLib.h"
+				RelativePath="..\CAPS\include\CapsLib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\Comlib.h"
+				RelativePath="..\CAPS\include\Comlib.h"
 				>
 			</File>
 			<File
-				RelativePath="..\Caps\include\Comtype.h"
+				RelativePath="..\CAPS\include\Comtype.h"
 				>
 			</File>
 		</Filter>

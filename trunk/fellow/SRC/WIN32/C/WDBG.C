@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.30 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.31 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -226,7 +226,7 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
 	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %d y: %d x: %d",
 	  (cpuGetSR() & 0x2000) ? cpu_usp : cpuGetAReg(7),
 	  (cpuGetSR() & 0x2000) ? cpuGetAReg(7) : cpu_ssp,
-	  cpuGetSR(), draw_frame_count, graph_raster_y, graph_raster_x);
+	  cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
   return s;
 }
 
@@ -907,7 +907,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Raster beam position (x, y): (%d, %d)",
-	    graph_raster_x, graph_raster_y);
+	    busGetRasterX(), busGetRasterY());
     y = wdbgLineOut(hDC, s, x, y);    
     
     DeleteDC(hDC_image);

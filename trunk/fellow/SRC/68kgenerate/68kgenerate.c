@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.4 2008-02-24 21:23:44 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.5 2008-11-03 21:12:09 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -84,6 +84,9 @@ unsigned char cpu_opcode_model_mask[65536];
 cpu_instruction_info cpu_opcode_info[1000];
 unsigned int cpuinfo_count;
 
+char cg_profile_names[4000][32];
+int cg_profile_count = 0;
+
 #define M68000 0x01
 #define M68010 0x02
 #define M68020 0x04
@@ -99,9 +102,20 @@ void cgErrorMsg(char *templ_name)
 /* Profiling functions */
 /*=====================*/
 
+void cgProfileAdd(char *name)
+{
+  int i;
+  for (i = 0; i < cg_profile_count; ++i)
+    if (strcmp(name, cg_profile_names[i]) == 0)
+      return;
+  strcpy(cg_profile_names[i], name);
+  cg_profile_count++;
+}
+
 void cgProfileIn(char *name)
 {
   if (!cpu_profile) return;
+  cgProfileAdd(name);
   fprintf(codef, "\tcpuTscBefore(&%s_profile_tmp);\n{\n", name);
 }
 
@@ -145,8 +159,13 @@ void cgProfileLogLine(char *name)
 
 void cgProfileDeclarations()
 {
+  int i;
   if (!cpu_profile) return;
-  cgProfileDeclare("move");
+  for (i = 0; i < cg_profile_count; ++i)
+    cgProfileDeclare(cg_profile_names[i]);
+  for (i = 0; i < cg_profile_count; ++i)
+    cgProfileLogLine(cg_profile_names[i]);
+/*
   cgProfileDeclare("moveq");
   cgProfileDeclare("clr");
   cgProfileDeclare("add");
@@ -162,6 +181,7 @@ void cgProfileDeclarations()
   cgProfileLogLine("addx");
   cgProfileLogLine("shift");
   cgProfileLogLine("movep");
+  */
 }
 
 /*=======================*/
@@ -220,12 +240,14 @@ void cgMakeFunctionHeader(char *fname, char *templ_name)
 {
   fprintf(codef, "static void %s(ULO*opc_data)\n", fname);
   fprintf(codef, "{\n");
-  cgProfileIn(templ_name);
+  //cgProfileIn(templ_name);
+  cgProfileIn(fname);
 }
 
-void cgMakeFunctionFooter(char *templ_name)
+void cgMakeFunctionFooter(char *fname, char *templ_name)
 {
-  cgProfileOut(templ_name);
+//  cgProfileOut(templ_name);
+  cgProfileOut(fname);
   fprintf(codef, "}\n");
 }
 
@@ -522,7 +544,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
     cgMakeFunctionHeader(fname, templ_name);
     fprintf(codef, "\t%s();\n", i.function);
     cgMakeInstructionTimeAbs(20);
-    cgMakeFunctionFooter(templ_name);
+    cgMakeFunctionFooter(fname, templ_name);
     cgCopyFunctionName(fname, cpudata[opcode].name, templ_name);
     cgSetModelMask(opcode, i.cpu_model_mask);
     cgSetDisassemblyFunction(opcode, i.disasm_func_no);
@@ -587,7 +609,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  cgStoreDst((ea_is_dst) ? eano : ((regtype == 'A') ? 1 : 0), (ea_is_dst) ? eareg_cpu_data_index : reg_cpu_data_index, size, "dst");
 	}
 	cgMakeInstructionTime(time_cpu_data_index);
-	cgMakeFunctionFooter(templ_name);
+	cgMakeFunctionFooter(fname, templ_name);
 
 	// Cycle the registers to set function ptr, data/reg and eareg for each opcode.
 	for (reg = 0; (regtype != '2' && regtype != 'I' && (stricmp(i.instruction_name, "DIVL") != 0) && reg < 8) || ((regtype == '2' || regtype == 'I' || (stricmp(i.instruction_name, "DIVL") == 0)) && reg == 0); ++reg)
@@ -832,7 +854,7 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
 	  }
 	  cgMakeInstructionTime(time_cpu_data_index);
-	  cgMakeFunctionFooter(templ_name);
+	  cgMakeFunctionFooter(fname, templ_name);
 
 	  // Cycle the registers to set function ptr, data/reg and eareg for each opcode.
 	  for (dsteareg = 0; (dsteano < 7 && dsteareg < 8) || (dsteano >= 7 && dsteareg == 0); ++dsteareg)
@@ -1069,7 +1091,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	}
       }
 
-      cgMakeFunctionFooter(templ_name);
+      cgMakeFunctionFooter(fname, templ_name);
 
       // Cycle the registers to set function ptr, data/reg and eareg for each opcode.
       for (cc = 0; (regtype == 'C' && cc < 16) || cc == 0; ++cc)
@@ -1117,7 +1139,7 @@ unsigned int cgMoveQ(cpu_data *cpudata, cpu_instruction_info i)
   fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
   fprintf(codef, "\tcpuSetFlagsAbs((UWO)opc_data[%d]);\n", flags_cpu_data_index);
   cgMakeInstructionTimeAbs(4);
-  cgMakeFunctionFooter(templ_name);
+  cgMakeFunctionFooter(fname, templ_name);
 
   icount++;
 
@@ -1169,7 +1191,7 @@ unsigned int cgAddx(cpu_data *cpudata, cpu_instruction_info i)
   {
     cgMakeInstructionTimeAbs((regtype == 'D') ? ((size <= 2) ? 4:8) : ((size <= 2) ? 18:30));
   }
-  cgMakeFunctionFooter(templ_name);
+  cgMakeFunctionFooter(fname, templ_name);
   icount++;
 
   for (regx = 0; regx < 8; ++regx)
@@ -1206,7 +1228,7 @@ unsigned int cgMovep(cpu_data *cpudata, cpu_instruction_info i)
   cgMakeFunctionHeader(fname, templ_name);
 
   fprintf(codef, "\t%s(opc_data[%d], opc_data[%d]);\n", i.function, regy_cpu_data_index, regx_cpu_data_index);
-  cgMakeFunctionFooter(templ_name);
+  cgMakeFunctionFooter(fname, templ_name);
   icount++;
 
   for (regx = 0; regx < 8; ++regx)
@@ -1303,7 +1325,7 @@ unsigned int cgBCC(cpu_data *cpudata, cpu_instruction_info i)
   { // BRAWL, BSRWL
     fprintf(codef, "\t%s();\n", i.function);
   }
-  cgMakeFunctionFooter(templ_name);
+  cgMakeFunctionFooter(fname, templ_name);
   icount++;
 
   if ((stricmp(i.instruction_name, "BKPT") == 0)
@@ -1483,7 +1505,7 @@ unsigned int cgShift(cpu_data *cpudata, cpu_instruction_info i)
 	fprintf(codef, "\tdst = %s(dst, 1, opc_data[%d]);\n", i.function, time_cpu_data_index);
       }
       cgStoreDst(eano, eareg_cpu_data_index, size, "dst");
-      cgMakeFunctionFooter(templ_name);
+      cgMakeFunctionFooter(fname, templ_name);
 
       for (eareg = 0; (eano < 7 && eareg < 8) || (eano >= 7 && eareg == 0); eareg++)
       {
@@ -1687,13 +1709,12 @@ int cgMain(char *definition_file, char *include_path)
 
   cgClearCpuData();
 
-  cgProfileLogHeader();
-  cgProfileDeclarations();
-
   cgInstructions();
   cgData();
   cgDisFunc();
 
+  cgProfileLogHeader();
+  cgProfileDeclarations();
   cgProfileLogFooter();
 
   cgCloseFiles();

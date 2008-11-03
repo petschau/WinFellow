@@ -53,6 +53,8 @@ typedef int BOOLE;
 #define TRUE  1
 typedef char STR;
 
+#define PTR_TO_INT(i) ((ULO)i)
+
 /* Filename length used throughout the code */
 
 #define CFG_FILENAME_LENGTH 256
