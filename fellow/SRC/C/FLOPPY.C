@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.22 2008-02-27 18:22:49 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.23 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -41,6 +41,7 @@
 #include "fswrap.h"
 #include "graph.h"
 #include "cia.h"
+#include "bus.h"
 #include "fileops.h"
 
 #include "xdms.h"
@@ -81,7 +82,8 @@ char floppylogfilename[MAX_PATH];
 /* Disk registers and help variables */
 /*-----------------------------------*/
 
-ULO dsklen, dsksync, dskpt, adcon, dskbytr;       /* Registers */
+ULO dsklen, dsksync, dskpt, dskbytr;       /* Registers */
+UWO adcon;
 ULO diskDMAen;                           /* Write counter for dsklen */
 UWO dskbyt_tmp = 0;
 BOOLE dskbyt1_read = FALSE;
@@ -91,7 +93,7 @@ void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
   FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
-  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, track, side, dskpt, length, ticks);
+  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, track, side, dskpt, length, ticks);
   fclose(F);
 }
 
@@ -99,7 +101,7 @@ void floppyLogStep(ULO drive, ULO from, ULO to)
 {
   FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
-  fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, graph_raster_y, graph_raster_x, drive, from, to);
+  fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, from, to);
   fclose(F);
   if (draw_frame_count == 31577)
   {
@@ -111,13 +113,40 @@ void floppyLogValue(STR *text, ULO v, ULO ticks)
 {
   FILE *F = fopen(floppylogfilename, "a");
   if (F == 0) return;
-  fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, graph_raster_y, graph_raster_x, v, ticks);
+  fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, busGetRasterY(), busGetRasterX(), v, ticks);
   fclose(F);
 }
 
 /*=======================*/
 /* Register access stubs */
 /*=======================*/
+
+/*
+  =====
+  ADCON
+  =====
+
+  $dff09e - Read from $dff010
+
+  Paula
+*/
+
+UWO radcon(ULO address)
+{
+  return adcon;
+}
+
+void wadcon(UWO data, ULO address)
+{
+  if (data & 0x8000)
+  {
+    adcon = adcon | (data & 0x7fff);
+  }
+  else
+  {
+    adcon = adcon & ~(data & 0x7fff);
+  }
+}
 
 /*----------*/
 /* DSKBYTR  */
@@ -127,14 +156,15 @@ void floppyLogValue(STR *text, ULO v, ULO ticks)
 UWO rdskbytr(ULO address)
 {
   UWO tmp = (UWO)(floppy_DMA_started<<14);
+  ULO currentX = busGetRasterX();
   if (dsklen & 0x4000) tmp |= 0x2000;
   if (floppy_has_sync) tmp |= 0x1000;
-  if (graph_raster_x < 128 && !dskbyt1_read)
+  if (currentX < 114 && !dskbyt1_read)
   {
     tmp |= 0x8000 | (dskbyt_tmp>>8);
     dskbyt1_read = TRUE;
   }
-  else if (graph_raster_x >= 128 && !dskbyt2_read)
+  else if (currentX >= 114 && !dskbyt2_read)
   {
     tmp |= 0x8000 | (dskbyt_tmp & 0xff);
     dskbyt2_read = TRUE;
@@ -943,11 +973,13 @@ void floppyTimeBufDataFree(void) {
 
 void floppyIOHandlersInstall(void)
 {
+  memorySetIoReadStub(0x10, radcon);
   memorySetIoReadStub(0x1a, rdskbytr);
   memorySetIoWriteStub(0x20, wdskpth);
   memorySetIoWriteStub(0x22, wdskptl);
   memorySetIoWriteStub(0x24, wdsklen);
   memorySetIoWriteStub(0x7e, wdsksync);
+  memorySetIoWriteStub(0x9e, wadcon);
 }
 
 void floppyIORegistersClear(void)

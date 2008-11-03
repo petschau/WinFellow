@@ -22,30 +22,6 @@ extern void graphEndOfLine(void);
 extern void graphEndOfFrame(void);
 extern void graphPlayfieldOnOff(void);
 
-void graphDecode0_C(void);
-void graphDecode1_C(void);
-void graphDecode2_C(void);
-void graphDecode3_C(void);
-void graphDecode4_C(void);
-void graphDecode5_C(void);
-void graphDecode6_C(void);
-void graphDecode2Dual_C(void);
-void graphDecode3Dual_C(void);
-void graphDecode4Dual_C(void);
-void graphDecode5Dual_C(void);
-void graphDecode6Dual_C(void);
-void graphDecodeHi0_C(void);
-void graphDecodeHi1_C(void);
-void graphDecodeHi2_C(void);
-void graphDecodeHi3_C(void);
-void graphDecodeHi4_C(void);
-void graphDecodeHi5_C(void);
-void graphDecodeHi6_C(void);
-void graphDecodeHi2Dual_C(void);
-void graphDecodeHi3Dual_C(void);
-void graphDecodeHi4Dual_C(void);
-
-
 /* IO register read and write */
 
 UWO rdmaconr(ULO address);
@@ -113,17 +89,12 @@ extern ULO graph_DDF_start;
 extern ULO graph_DDF_word_count;
 extern ULO graph_DIW_first_visible;
 extern ULO graph_DIW_last_visible;
-extern ULO graph_raster_x;
-extern ULO graph_raster_y;
 extern ULO diwxleft;
 extern ULO diwxright;
 extern ULO diwytop;
 extern ULO diwybottom;
 
 extern ULO sprites_online;
-
-extern UBY graph_line1_tmp[1024];
-extern UBY graph_line2_tmp[1024];
 
 extern BOOLE graph_playfield_on;
 
@@ -171,7 +142,7 @@ extern BOOLE graph_buffer_lost;
 #define graph_line_reserved1                  2346
 #define graph_line_end                        2348
 
-
+/*
 void graphLinedescRoutines_C(graph_line* current_graph_line);
 void graphLinedescColors_C(graph_line* current_graph_line);
 void graphLinedescGeometry_C(graph_line* current_graph_line);
@@ -184,5 +155,5 @@ BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line);
 void graphComposeLineOutputSmart_C(graph_line* current_graph_line);
 BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* source_line);
 void graphSpriteHack_C(void);
-
+*/
 #endif

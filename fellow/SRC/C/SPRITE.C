@@ -1,4 +1,4 @@
-/* @(#) $Id: SPRITE.C,v 1.6 2008-02-20 23:56:30 peschau Exp $ */
+/* @(#) $Id: SPRITE.C,v 1.7 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Sprite emulation                                                        */
@@ -30,6 +30,7 @@
 #include "sprite.h"
 #include "draw.h"
 #include "listtree.h"
+#include "bus.h"
 
 
 //#define DRAW_TSC_PROFILE
@@ -754,34 +755,35 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
 
 static void spriteBuildItem(spr_action_list_item ** item)
 {
-  if (graph_raster_x >= 18) 
+  ULO currentX = busGetRasterX();
+  if (currentX >= 18) 
   {
     // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
     if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // hires (x position is cycle position times four)
-      (*item)->raster_x = (graph_raster_x - 16) * 4;
+      (*item)->raster_x = (currentX - 16) * 4;
     }
     else
     {
       // lores (x position is cycle position times two)
-      (*item)->raster_x = (graph_raster_x - 20) * 2;
+      (*item)->raster_x = (currentX - 20) * 2;
     }
   }
   else
   {
-		if ((bplcon0 & 0x8000) == 0x8000)
-		{
-			// hires
-			(*item)->raster_x = 8;
-		}
-		else
-		{
-			// lores
-			(*item)->raster_x = 4;
-		}
+    if ((bplcon0 & 0x8000) == 0x8000)
+    {
+      // hires
+      (*item)->raster_x = 8;
+    }
+    else
+    {
+      // lores
+      (*item)->raster_x = 4;
+    }
   }
-  (*item)->raster_y = graph_raster_y;
+  (*item)->raster_y = busGetRasterY();
 }
 
 /* SPRXPT */
@@ -807,7 +809,7 @@ void wsprpt(UWO data, ULO address)
   if (output_sprite_log == TRUE) {
     *((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = (UWO) data & 0x01f;
     sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
-			graph_raster_y, 2*(graph_raster_x - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+			busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -908,7 +910,7 @@ void wsprxpos(UWO data, ULO address)
   sprx_debug[sprnr] = (sprx_debug[sprnr] & 0x001) | ((data & 0xff) << 1);
   spry_debug[sprnr] = (spry_debug[sprnr] & 0x100) | ((data & 0xff00) >> 8);
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpos (sprx = %d, spry = %d)\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr, sprx_debug[sprnr], sprly_debug[sprnr]);
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpos (sprx = %d, spry = %d)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], sprly_debug[sprnr]);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -950,7 +952,7 @@ void wsprxctl(UWO data, ULO address)
   spry_debug[sprnr] = (spry_debug[sprnr] & 0x0ff) | ((data & 0x4) << 6);
   sprly_debug[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dctl (sprx = %d, spry = %d, sprly = %d)\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr, sprx_debug[sprnr], spry_debug[sprnr], sprly_debug[sprnr]);
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dctl (sprx = %d, spry = %d, sprly = %d)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], spry_debug[sprnr], sprly_debug[sprnr]);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -999,7 +1001,7 @@ void wsprxdata(UWO data, ULO address)
 
 	// for debugging only
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddata\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr);
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddata\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -1034,7 +1036,7 @@ void wsprxdatb(UWO data, ULO address)
 
 	// for debugging only
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddatb\n", graph_raster_y, 2*(graph_raster_x - 16), sprnr);
+    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddatb\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -1066,7 +1068,7 @@ void spritesLog(void) {
     char s[80];
 //    if (sprite_online[no]) {
       sprintf(s, "%d %d, sprite %d fy %d ly %d x %d state %d att %d atto %d pt %.6X\n", draw_frame_count,
-							graph_raster_y,
+							busGetRasterY(),
 							no,
 							spry[no],
 							sprly[no],
@@ -1349,6 +1351,7 @@ void spritesDMASpriteHandler(void) {
   ULO local_data_pos;
   ULO i, count;
   ULO sprnr;
+  ULO currentY = busGetRasterY();
 
   sprites_online = FALSE;
   sprnr = 0;
@@ -1409,7 +1412,7 @@ void spritesDMASpriteHandler(void) {
 	    sprpt[sprnr] = sprpt[sprnr] + 4; 
           }
 
-          if ((graph_raster_y < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+          if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
           {
             sprite_state[sprnr] = 0;
           }
@@ -1431,7 +1434,7 @@ void spritesDMASpriteHandler(void) {
 
     case 1: 
       // waiting for (graph_raster_y == spry)
-      if ((graph_raster_y >= spry[sprnr]) && (graph_raster_y < sprly[sprnr]))
+      if ((currentY >= spry[sprnr]) && (currentY < sprly[sprnr]))
       {
 	//if (graph_raster_y != sprly[sprnr])
 	if (TRUE)
@@ -1439,17 +1442,17 @@ void spritesDMASpriteHandler(void) {
 	  // we can start to display the first line of the sprite
    
 	  // insert a write to sprxdatb 
-	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 60, graph_raster_y);
+	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
 	  item->raster_x = 60;
-	  item->raster_y = graph_raster_y;
+	  item->raster_y = currentY;
 	  item->called_function = asprxdatb;
 	  item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	  item->address = sprnr << 3;
 
 	  // insert a write to sprxdata 
-	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 61, graph_raster_y);
+	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
 	  item->raster_x = 61;
-	  item->raster_y = graph_raster_y;
+	  item->raster_y = currentY;
 	  item->called_function = asprxdata;
 	  item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	  item->address = sprnr << 3;
@@ -1487,7 +1490,7 @@ void spritesDMASpriteHandler(void) {
 
     case 2: 
       // waiting for (graph_raster_y == sprly)
-      if (graph_raster_y == sprly[sprnr]) 
+      if (currentY == sprly[sprnr]) 
       {
 	// we interpret the next two data words as the next two control words
 	local_data_ctl = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
@@ -1500,17 +1503,17 @@ void spritesDMASpriteHandler(void) {
         if (TRUE)
 	{
 	  // insert a write to sprxpos at time raster_x
-	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 0, graph_raster_y);
+	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 0, currentY);
 	  item->raster_x = 0;
-	  item->raster_y = graph_raster_y;
+	  item->raster_y = currentY;
 	  item->called_function = asprxpos;
 	  item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	  item->address = sprnr << 3;
         
 	  // insert a write to sprxctl at time raster_x
-	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 1, graph_raster_y);
+	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 1, currentY);
 	  item->raster_x = 1;
-	  item->raster_y = graph_raster_y;
+	  item->raster_y = currentY;
 	  item->called_function = asprxctl;
 	  item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	  item->address = sprnr << 3;
@@ -1535,17 +1538,17 @@ void spritesDMASpriteHandler(void) {
       {
 	// we can continue to display the next line of the sprite
 	// insert a write to sprxdatb 
-	item = spriteActionListAddSorted(&spr_action_list[sprnr], 60, graph_raster_y);
+	item = spriteActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
 	item->raster_x = 60;
-	item->raster_y = graph_raster_y;
+	item->raster_y = currentY;
 	item->called_function = asprxdatb;
 	item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	item->address = sprnr << 3;
 
 	// insert a write to sprxdata 
-	item = spriteActionListAddSorted(&spr_action_list[sprnr], 61, graph_raster_y);
+	item = spriteActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
 	item->raster_x = 61;
-	item->raster_y = graph_raster_y;
+	item->raster_y = currentY;
 	item->called_function = asprxdata;
 	item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	item->address = sprnr << 3;
@@ -1603,7 +1606,7 @@ void spritesDMASpriteHandler(void) {
 	    sprpt[sprnr] = sprpt[sprnr] + 4; 
           }
 
-          if ((graph_raster_y < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+          if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
           {
             sprite_state[sprnr] = 0;
           }
@@ -1692,7 +1695,7 @@ void spriteProcessActionList(void)
 	      // for debugging only
 	      if (output_action_sprite_log == TRUE) {
 		sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
-				sprnr, graph_raster_y, sprx[sprnr]);
+				sprnr, busGetRasterY(), sprx[sprnr]);
 				fellowAddLog2(buffer);
 	      }
 	    }
@@ -1744,7 +1747,7 @@ void spriteProcessActionList(void)
 	// for debugging only
 	if (output_action_sprite_log == TRUE) {
 	  sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
-				sprnr, graph_raster_y, sprx[sprnr]);
+				sprnr, busGetRasterY(), sprx[sprnr]);
 				fellowAddLog2(buffer);
 	}
       }

@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.4 2008-02-20 23:56:27 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.5 2008-11-03 21:12:10 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -42,9 +42,6 @@
 
 ULO debugging;
 ULO bus_cycle;
-
-UWO bus_cycle_to_ypos[0x20000];
-UBY bus_cycle_to_xpos[0x20000];
 
 extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip_factor;
 extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
@@ -110,7 +107,7 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
   /*==============================================================*/
-  drawEndOfFramePre();
+  drawEndOfFrame();
 
   /*==============================================================*/
   /* Handle keyboard events                                       */
@@ -126,17 +123,6 @@ void busEndOfFrame(void)
   /* Restart copper                                               */
   /*==============================================================*/
   copperEndOfFrame();
-
-  /*==============================================================*/
-  /* Update frame counters                                        */
-  /*==============================================================*/
-  draw_frame_count++; // count frames
-  draw_frame_skip--;  // frame skipping
-
-  if (draw_frame_skip < 0) 
-  {
-    draw_frame_skip = draw_frame_skip_factor;
-  }
 
   /*==============================================================*/
   /* Update CIA timer counters                                    */
@@ -173,9 +159,8 @@ void busEndOfFrame(void)
 
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    //busRemoveEvent(&cpuEvent);
+    // The CPU is never in the queue
     cpuEvent.cycle -= BUS_CYCLE_PER_FRAME;
-    //busInsertEvent(&cpuEvent);
   }
 
   /*==============================================================*/
@@ -319,11 +304,20 @@ void busLogCpu(STR *s)
   if (BUSLOG) fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
 }
 
-void busUpdateCycleClock(ULO cycle)
+
+void busSetCycle(ULO cycle)
 {
   bus_cycle = cycle;
-  graph_raster_y = bus_cycle_to_ypos[cycle>>2] & 0x1ff;
-  graph_raster_x = bus_cycle_to_xpos[cycle] & 0xff;
+}
+
+ULO busGetRasterY(void)
+{
+  return bus_cycle / 228;
+}
+
+ULO busGetRasterX(void)
+{
+  return bus_cycle % 228;
 }
 
 extern jmp_buf cpu_exception_buffer;
@@ -338,7 +332,7 @@ void busRunNew(void)
       {
 	bus_event *e = busPopEvent();
 	busEventLog(e);
-	busUpdateCycleClock(e->cycle);
+	busSetCycle(e->cycle);
 	e->handler();
       }
     }
@@ -361,7 +355,7 @@ void busDebugNew(void)
       {
 	bus_event *e = busPopEvent();
 	busEventLog(e);
-	busUpdateCycleClock(e->cycle);
+	busSetCycle(e->cycle);
 	e->handler();
 	if (e == &cpuEvent) return;
       }
@@ -405,21 +399,6 @@ void busInitializeQueue(void)
 }
 
 /*===========================================================================*/
-/* Cycle counter to raster beam position table                               */
-/*===========================================================================*/
-
-void busCycleToRasterPosTableInit(void)
-{
-  ULO i;
-
-  for (i = 0; i < 0x20000; i++)
-  {
-    bus_cycle_to_ypos[i>>2] = (UWO) (i / 228);
-    bus_cycle_to_xpos[i] = (UBY) (i % 228);
-  }
-}
-
-/*===========================================================================*/
 /* Called on emulation start / stop and reset                                */
 /*===========================================================================*/
 
@@ -441,14 +420,12 @@ void busHardReset(void)
   busInitializeQueue();
 }
 
-
 /*===========================================================================*/
 /* Called on emulator startup / shutdown                                     */
 /*===========================================================================*/
 
 void busStartup(void)
 {
-  busCycleToRasterPosTableInit();
 }
 
 void busShutdown(void)

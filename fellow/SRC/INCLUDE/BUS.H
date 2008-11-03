@@ -32,6 +32,9 @@ extern void busRemoveEvent(bus_event *event);
 extern void busRunNew(void);
 extern void busDebugNew(void);
 
+extern ULO busGetRasterX(void);
+extern ULO busGetRasterY(void);
+
 #define BUS_CYCLE_PER_LINE 228
 #define BUS_CYCLE_PER_FRAME 71364
 #define BUS_CYCLE_DISABLE 0xffffffff

@@ -100,6 +100,8 @@ extern void spriteEmulationStop(void);
 extern void spriteStartup(void);
 extern void spriteShutdown(void);
 
+extern ULO sprite_ddf_kill;
+
 extern void spriteMergeHAM1x8(UBY *frameptr, graph_line *linedesc);
 extern void spriteMergeHAM2x8(UWO *frameptr, graph_line *linedesc);
 extern void spriteMergeHAM1x16(UWO *frameptr, graph_line *linedesc);
