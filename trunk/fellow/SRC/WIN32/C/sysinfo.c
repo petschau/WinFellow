@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.18 2008-02-21 00:05:47 peschau Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.19 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -561,12 +561,17 @@ id_done:
 
 static float sysinfoCPUSpeed(void)
 {
+#ifndef X64
   unsigned int Cycle_Start, Cycle_End, ticks, cycles;
-  unsigned int result0 = 0, result1 = 0, result2 = 0, SumResults;
+  unsigned int result0 = 0, result1 = 0, result2 = 0;
   long tries = 0;
-  LARGE_INTEGER Timer_Start, Timer_End, Counter_Frequency;
+  LARGE_INTEGER Timer_Start, Timer_End;
   unsigned int Priority_Process;
   long Priority_Thread;
+#endif
+
+  LARGE_INTEGER Counter_Frequency;
+  unsigned int SumResults;
 
   /* get a precise timer if available */
   if (!QueryPerformanceFrequency (&Counter_Frequency))

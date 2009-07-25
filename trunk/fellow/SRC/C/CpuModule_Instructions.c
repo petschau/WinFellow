@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.3 2009-07-25 10:23:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -39,12 +39,12 @@
 /*============================================================================*/
 
 #ifndef X64
-static __inline cpuTscBefore(LLO* a)
+static __inline void cpuTscBefore(LLO* a)
 {
   LLO local_a = *a;
   __asm 
   {
-    push    eax
+      push    eax
       push    edx
       push    ecx
       mov     ecx,10h
@@ -58,7 +58,7 @@ static __inline cpuTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline cpuTscAfter(LLO* a, LLO* b, ULO* c)
+static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
 {
   LLO local_a = *a;
   LLO local_b = *b;
@@ -66,18 +66,18 @@ static __inline cpuTscAfter(LLO* a, LLO* b, ULO* c)
 
   __asm 
   {
-    push    eax
+      push    eax
       push    edx
       push    ecx
       mov     ecx, 10h
       rdtsc
       pop     ecx
       sub     eax, dword ptr [local_a]
-    sbb     edx, dword ptr [local_a + 4]
-    add     dword ptr [local_b], eax
+      sbb     edx, dword ptr [local_a + 4]
+      add     dword ptr [local_b], eax
       adc     dword ptr [local_b + 4], edx
       inc     dword ptr [local_c]
-    pop     edx
+      pop     edx
       pop     eax
   }
   *a = local_a;

@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.13 2009-07-25 03:09:00 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.14 2009-07-25 10:24:00 peschau Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -1090,59 +1090,60 @@ STR *DikKeyString(int dikkey)
 /* Set joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey) {
-  switch (event) {
+void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey)
+{
+  switch (event)
+  {
   case EVENT_JOY0_UP_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_UP] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_DOWN_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_DOWN] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_LEFT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_LEFT] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_RIGHT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_RIGHT] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_FIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE0] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_FIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE1] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY0_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = symbolickey;
+    kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_UP_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_UP] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_DOWN_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_DOWN] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_LEFT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_LEFT] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_RIGHT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_RIGHT] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_FIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE0] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_FIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE1] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
     break;
   case EVENT_JOY1_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = symbolickey;
+    kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
     break;
   }
 }
-
 
 /*===========================================================================*/
 /* Get joystick replacement for a given joystick and direction               */

@@ -1,4 +1,4 @@
-/* @(#) $Id: LISTTREE.C,v 1.4 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: LISTTREE.C,v 1.5 2009-07-25 10:23:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* List and Tree                                                           */
@@ -148,7 +148,7 @@ void listRemove(felist *l) {
 /* listFree removes the node from the list and memory                           */
 /*==============================================================================*/
 felist *listFree(felist *node) {
-  felist *t;
+  felist *t = NULL;
 
   if (node != NULL)
     t = node->next;

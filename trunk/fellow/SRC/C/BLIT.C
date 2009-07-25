@@ -1,3 +1,4 @@
+/* @(#) $Id: BLIT.C,v 1.17 2009-07-25 10:23:59 peschau Exp $ */
 /*============================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /* Blitter Initialization                                                     */
@@ -293,7 +294,7 @@ void blitterOperationLog(void) {
 #define blitterMintermfc(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat);                       /* A + B */
 #define blitterMintermfd(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat | ~c_dat);              /* A + B + c */
 #define blitterMintermfe(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat | c_dat);               /* A + B + C */
-#define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (-1);                                  /* All 1 */
+#define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (0xffffffff);                          /* All 1 */
 
 #define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins) \
   /*blit_minterm_seen[mins] = TRUE;*/ \
