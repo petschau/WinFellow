@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Exceptions.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Exceptions.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k exception handling functions                                    */
@@ -136,47 +136,56 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
 
 void cpuThrowPrivilegeViolationException(void)
 {
-  // The kickstart excpects pc in the stack frame to be the opcode PC.
-  cpuThrowException(0x20, cpuGetPC() - 2, FALSE);
+  // The saved pc points to the instruction causing the violation
+  // (And the kickstart excpects pc in the stack frame to be the opcode PC.)
+  cpuThrowException(0x20, cpuGetOriginalPC(), FALSE);
 }
 
-void cpuThrowIllegalInstructionException(ULO pc, BOOLE executejmp)
+void cpuThrowIllegalInstructionException(BOOLE executejmp)
 {
-  cpuThrowException(0x10, pc, executejmp);
+  // The saved pc points to the illegal instruction
+  cpuThrowException(0x10, cpuGetOriginalPC(), executejmp);
 }
 
 void cpuThrowALineException(void)
 {
-  cpuThrowException(0x28, cpuGetPC() - 2, FALSE);
+  // The saved pc points to the a-line instruction
+  cpuThrowException(0x28, cpuGetOriginalPC(), FALSE);
 }
 
 void cpuThrowFLineException(void)
 {
-  cpuThrowException(0x2c, cpuGetPC() - 2, FALSE);
+  // The saved pc points to the f-line instruction
+  cpuThrowException(0x2c, cpuGetOriginalPC(), FALSE);
 }
 
 void cpuThrowTrapVException(void)
 {
+  // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x1c, cpuGetPC(), FALSE);
 }
 
 void cpuThrowDivisionByZeroException(BOOLE executejmp)
 {
+  // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x14, cpuGetPC(), executejmp);
 }
 
 void cpuThrowTrapException(ULO vector_no)
 {
+  // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);
 }
 
 void cpuThrowChkException(void)
 {
-  cpuThrowException(0x18, cpuGetPC() - 2, FALSE);
+  // The saved pc points to the next instruction, which is now in pc
+  cpuThrowException(0x18, cpuGetPC(), FALSE);
 }
 
 void cpuThrowTraceException(void)
 {
+  // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x24, cpuGetPC(), FALSE);
 }
 

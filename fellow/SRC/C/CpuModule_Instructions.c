@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -141,7 +141,7 @@ static void cpuIllegal(void)
   }
   else
   {
-    cpuThrowIllegalInstructionException(cpuGetPC() - 2, FALSE);
+    cpuThrowIllegalInstructionException(FALSE);
   }
 }
 
@@ -1878,10 +1878,11 @@ static void cpuRte()
       }
       else redo = FALSE;
 
+      cpuUpdateSr(newsr); // Because we can go from isp to msp here.
+
     } while (redo);
 
     cpuReadPrefetch();
-    cpuUpdateSr(newsr);
   }
   else
   {
@@ -2338,16 +2339,16 @@ static void cpuCmpML(ULO regx, ULO regy)
 /// Z is set from the register operand,
 /// V and C is always cleared.
 /// </summary>
-static void cpuChkW(UWO src2, UWO src1)
+static void cpuChkW(UWO value, UWO ub)
 {
-  cpuSetFlagZ(src2 == 0);
+  cpuSetFlagZ(value == 0);
   cpuSetFlagsVC(FALSE, FALSE);
-  if (((WOR)src1) < 0)
+  if (((WOR)value) < 0)
   {
     cpuSetFlagN(TRUE);
     cpuThrowChkException();
   }
-  else if (((WOR)src1) > ((WOR)src2))
+  else if (((WOR)value) > ((WOR)ub))
   {
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
@@ -2361,16 +2362,16 @@ static void cpuChkW(UWO src2, UWO src1)
 /// Z is set from the register operand,
 /// V and C is always cleared.
 /// </summary>
-static void cpuChkL(ULO src2, ULO src1)
+static void cpuChkL(ULO value, ULO ub)
 {
-  cpuSetFlagZ(src2 == 0);
+  cpuSetFlagZ(value == 0);
   cpuSetFlagsVC(FALSE, FALSE);
-  if (((LON)src1) < 0)
+  if (((LON)value) < 0)
   {
     cpuSetFlagN(TRUE);
     cpuThrowChkException();
   }
-  else if (((LON)src1) > ((LON)src2))
+  else if (((LON)value) > ((LON)ub))
   {
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
@@ -3035,7 +3036,7 @@ static void cpuMoveCFrom()
 	case 0x001: cpuSetReg(da, regno, cpuGetDfc()); break;
 	case 0x800: cpuSetReg(da, regno, cpuGetUspDirect()); break; // In supervisor mode, usp is up to date.
 	case 0x801: cpuSetReg(da, regno, cpuGetVbr()); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
     else if (cpuGetModelMajor() == 2)
@@ -3050,7 +3051,7 @@ static void cpuMoveCFrom()
 	case 0x802: cpuSetReg(da, regno, cpuGetCaar() & 0xfc); break;
 	case 0x803: cpuSetReg(da, regno, cpuGetMspAutoMap()); break;
 	case 0x804: cpuSetReg(da, regno, cpuGetIspAutoMap()); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
     else if (cpuGetModelMajor() == 3)
@@ -3065,7 +3066,7 @@ static void cpuMoveCFrom()
 	case 0x802: cpuSetReg(da, regno, cpuGetCaar() & 0xfc); break;
 	case 0x803: cpuSetReg(da, regno, cpuGetMspAutoMap()); break;
 	case 0x804: cpuSetReg(da, regno, cpuGetIspAutoMap()); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
   }
@@ -3096,7 +3097,7 @@ static void cpuMoveCTo()
 	case 0x001: cpuSetDfc(cpuGetReg(da, regno) & 7); break;
 	case 0x800: cpuSetUspDirect(cpuGetReg(da, regno)); break;
 	case 0x801: cpuSetVbr(cpuGetReg(da, regno)); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
     else if (cpuGetModelMajor() == 2)
@@ -3111,7 +3112,7 @@ static void cpuMoveCTo()
 	case 0x802: cpuSetCaar(cpuGetReg(da, regno) & 0x00fc); break;
 	case 0x803: cpuSetMspAutoMap(cpuGetReg(da, regno)); break;
 	case 0x804: cpuSetIspAutoMap(cpuGetReg(da, regno)); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
     else if (cpuGetModelMajor() == 3)
@@ -3126,7 +3127,7 @@ static void cpuMoveCTo()
 	case 0x802: cpuSetCaar(cpuGetReg(da, regno) & 0x00fc); break;
 	case 0x803: cpuSetMspAutoMap(cpuGetReg(da, regno)); break;
 	case 0x804: cpuSetIspAutoMap(cpuGetReg(da, regno)); break;
-	default:  cpuThrowIllegalInstructionException(cpuGetPC() - 4, FALSE); return;	  // Illegal instruction
+	default:  cpuThrowIllegalInstructionException(FALSE); return;	  // Illegal instruction
       }
     }
   }

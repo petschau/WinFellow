@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.5 2008-11-03 21:12:09 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.6 2009-07-25 09:40:59 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -233,7 +233,7 @@ void cgMakeFunctionName(char *fname, char *name, unsigned int opcode)
 
 void cgDeclareFunction(char *fname)
 {
-  fprintf(declf, "void %s(ULO*opc_data);\n", fname);
+  fprintf(declf, "static void %s(ULO*opc_data);\n", fname);
 }
 
 void cgMakeFunctionHeader(char *fname, char *templ_name)
@@ -1586,7 +1586,7 @@ void cgData()
   fprintf(dataf, "cpuOpcodeData cpu_opcode_data[65536] = {\n");
   for (i = 0; i < 65536; ++i)
   {
-    fprintf(dataf, "{%s,{%d,%d,%d}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
+    fprintf(dataf, "{%s,{%u,%u,%u}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
   }
   fprintf(dataf, "};\n");
   fprintf(dataf, "UBY cpu_opcode_model_mask[65536] = {\n");

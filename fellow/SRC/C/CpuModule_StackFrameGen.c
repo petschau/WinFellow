@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_StackFrameGen.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_StackFrameGen.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 stack frame generation                                            */
@@ -151,10 +151,9 @@ void cpuFrame1(UWO vector_offset, ULO pc)
 
 static void cpuFrame2(UWO vector_offset, ULO pc)
 {
-  // save inst address (?)
+  // save inst address
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
-
+  memoryWriteLong(cpuGetOriginalPC(), cpuGetAReg(7));
   cpuFrame4Words(0x2000, vector_offset, pc);
 }
 
@@ -168,7 +167,6 @@ static void cpuFrame2(UWO vector_offset, ULO pc)
 static void cpuFrame8(UWO vector_offset, ULO pc)
 {
   cpuSetAReg(7, cpuGetAReg(7) - 50);
-
   cpuFrame4Words(0x8000, vector_offset, pc);
 }
 
@@ -186,7 +184,6 @@ static void cpuFrameA(UWO vector_offset, ULO pc)
 {
   // save vector_offset offset
   cpuSetAReg(7, cpuGetAReg(7) - 24);
-
   cpuFrame4Words(0xa000, vector_offset, pc);
 }
 

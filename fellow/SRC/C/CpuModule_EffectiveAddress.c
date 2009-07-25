@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_EffectiveAddress.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_EffectiveAddress.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k effective address calculation functions                         */
@@ -60,70 +60,68 @@ ULO cpuEA05(ULO regno)
 }
 
 /* Calculates EA for disp8(Ax,Ri.size) with 68020 extended modes. */
-static ULO cpuEA06Ext(UWO ext, ULO reg_value, ULO index_value)
+static ULO cpuEA06Ext(UWO ext, ULO base_reg_value, ULO index_value)
 {
   ULO base_displacement;
   ULO outer_displacement;
   BOOLE index_register_suppressed = (ext & 0x0040);
+  BOOLE base_register_suppressed = (ext & 0x0080);
+  ULO base_displacement_size = (ext >> 4) & 3;
+  ULO memory_indirect_action = (ext & 7);
+
+  if (memory_indirect_action == 4 
+      || (memory_indirect_action > 4 && index_register_suppressed))
+  {
+      cpuThrowIllegalInstructionException(TRUE);	  /* Illegal instruction */
+      // Never returns
+  }
 
   if (index_register_suppressed)
   {
     index_value = 0;
   }
-  if (ext & 0x0080)
+
+  if (base_register_suppressed)
   {
-    reg_value = 0;		  /* Base register suppressed */
+    base_reg_value = 0;
   }
-  switch ((ext >> 4) & 3)
+
+  switch (base_displacement_size)
   {
     case 0:			  /* Reserved */
-      cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      cpuThrowIllegalInstructionException(TRUE);	  /* Illegal instruction */
       break;
-    case 1:			  /* Null displacement */
+    case 1:			  /* Null base displacement */
       base_displacement = 0;
       break;
-    case 2:			  /* Word displacement */
+    case 2:			  /* Word base displacement */
       base_displacement = cpuGetNextOpcode16SignExt();
       break;
-    case 3:			  /* Long displacement */
+    case 3:			  /* Long base displacement */
       base_displacement = cpuGetNextOpcode32();
       break;
   }
-  switch (ext & 7)
+
+  switch (memory_indirect_action)
   {
     case 0: /* No memory indirect action */
-      return reg_value + base_displacement + index_value;
+      return base_reg_value + base_displacement + index_value;
     case 1: /* Indirect preindexed with null outer displacement */
-      return memoryReadLong(reg_value + base_displacement + index_value);
+      return memoryReadLong(base_reg_value + base_displacement + index_value);
     case 2: /* Indirect preindexed with word outer displacement */
       outer_displacement = cpuGetNextOpcode16SignExt();
-      return memoryReadLong(reg_value + base_displacement + index_value) + outer_displacement;
+      return memoryReadLong(base_reg_value + base_displacement + index_value) + outer_displacement;
     case 3: /* Indirect preindexed with long outer displacement */
       outer_displacement = cpuGetNextOpcode32();
-      return memoryReadLong(reg_value + base_displacement + index_value) + outer_displacement;
-    case 4: /* Reserved */
-      cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
-      break;
+      return memoryReadLong(base_reg_value + base_displacement + index_value) + outer_displacement;
     case 5: /* Indirect postindexed with null outer displacement, reserved for index register suppressed */
-      if (index_register_suppressed)
-      {
-	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
-      }
-      return memoryReadLong(reg_value + base_displacement) + index_value;
+      return memoryReadLong(base_reg_value + base_displacement) + index_value;
     case 6: /* Indirect postindexed with word outer displacement, reserved for index register suppressed */
-      if (index_register_suppressed)
-      {
-	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
-      }
       outer_displacement = cpuGetNextOpcode16SignExt();
-      return memoryReadLong(reg_value + base_displacement) + index_value + outer_displacement;
+      return memoryReadLong(base_reg_value + base_displacement) + index_value + outer_displacement;
     case 7: /* Indirect postindexed with long outer displacement, reserved for index register suppressed */
-      if (index_register_suppressed)
-      {
-	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
-      }
       outer_displacement = cpuGetNextOpcode32();
-      return memoryReadLong(reg_value + base_displacement) + index_value + outer_displacement;
+      return memoryReadLong(base_reg_value + base_displacement) + index_value + outer_displacement;
   }
   return 0; /* Should never come here. */
 }
@@ -133,14 +131,14 @@ ULO cpuEA06(ULO regno)
 {
   ULO reg_value = cpuGetAReg(regno);
   UWO ext = cpuGetNextOpcode16();
-  ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 0x7);
+  ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 7);
   if (!(ext & 0x0800))
   {
     index_value = cpuSignExtWordToLong((UWO)index_value);
   }
   if (cpuGetModelMajor() >= 2)
   {
-    index_value = index_value << ((ext >> 9) & 0x3);	/* Scaling index value */
+    index_value = index_value << ((ext >> 9) & 3);	/* Scaling index value */
     if (ext & 0x0100)					/* Full extension word */
     {
       return cpuEA06Ext(ext, reg_value, index_value);
