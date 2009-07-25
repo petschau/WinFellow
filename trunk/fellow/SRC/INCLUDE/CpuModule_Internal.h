@@ -66,6 +66,7 @@ extern ULO cpuGetDRegWordSignExtLong(ULO regno);
 extern UWO cpuGetDRegByteSignExtWord(ULO regno);
 extern ULO cpuGetDRegByteSignExtLong(ULO regno);
 extern UWO cpuGetARegWord(ULO regno);
+extern UBY cpuGetARegByte(ULO regno);
 extern void cpuSetPrefetchDirect(UWO prefetch_word);
 extern UWO cpuGetPrefetch(void);
 extern void cpuReadPrefetch(void);
@@ -146,7 +147,7 @@ extern BOOLE cpuGetRaiseInterrupt(void);
 
 // Exceptions
 extern void cpuThrowPrivilegeViolationException(void);
-extern void cpuThrowIllegalInstructionException(ULO pc, BOOLE executejmp);
+extern void cpuThrowIllegalInstructionException(BOOLE executejmp);
 extern void cpuThrowFLineException(void);
 extern void cpuThrowALineException(void);
 extern void cpuThrowTrapVException(void);

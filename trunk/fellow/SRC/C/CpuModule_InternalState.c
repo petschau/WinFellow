@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -249,6 +249,7 @@ UWO cpuGetDRegByteSignExtWord(ULO regno) {return cpuSignExtByteToWord(cpuGetDReg
 ULO cpuGetDRegByteSignExtLong(ULO regno) {return cpuSignExtByteToLong(cpuGetDRegByte(regno));}
 
 UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
+UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 
 /* Reads the prefetch word from memory. */
 

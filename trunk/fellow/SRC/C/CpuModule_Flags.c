@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Flags.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Flags.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 flag and condition code handling                                  */
@@ -170,9 +170,9 @@ static void cpuClearFlagsVC(void)
   cpu_sr = cpu_sr & 0xfffc;
 }
 
-UWO cpuGetZFlagB(UBY res) {return (UWO)((res) ? 4 : 0);}
-UWO cpuGetZFlagW(UWO res) {return (UWO)((res) ? 4 : 0);}
-UWO cpuGetZFlagL(ULO res) {return (UWO)((res) ? 4 : 0);}
+UWO cpuGetZFlagB(UBY res) {return (UWO)((res) ? 0 : 4);}
+UWO cpuGetZFlagW(UWO res) {return (UWO)((res) ? 0 : 4);}
+UWO cpuGetZFlagL(ULO res) {return (UWO)((res) ? 0 : 4);}
 
 UWO cpuGetNFlagB(UBY res) {return (UWO)((res & 0x80) >> 4);}
 UWO cpuGetNFlagW(UWO res) {return (UWO)((res & 0x8000) >> 12);}
