@@ -1,4 +1,4 @@
-/* @(#) $Id: modrip.c,v 1.28 2008-02-20 23:56:31 peschau Exp $ */
+/* @(#) $Id: modrip.c,v 1.29 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -158,15 +158,15 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
   ULO i;
   int type;
   struct { char *ID; char *Desc; int channels; } formats[9] = {
-	  {"M.K.", "Noisetracker",  4},
-      {"N.T.", "Noisetracker",  4},
-      {"M!K!", "Protracker",    4},
-	  {"4CHN", "4 channel",     4},
-	  {"6CHN", "6 channel",     6},
-	  {"8CHN", "8 channel",     8},
-	  {"FLT4", "Startrekker 4", 4},
-	  {"FLT8", "Startrekker 8", 8},
-	  {"M&K!", "Noisetracker",  4}
+    {"M.K.", "Noisetracker",  4},
+    {"N.T.", "Noisetracker",  4},
+    {"M!K!", "Protracker",    4},
+    {"4CHN", "4 channel",     4},
+    {"6CHN", "6 channel",     6},
+    {"8CHN", "8 channel",     8},
+    {"FLT4", "Startrekker 4", 4},
+    {"FLT8", "Startrekker 8", 8},
+    {"M&K!", "Noisetracker",  4}
   };
   struct ModuleInfo info;
   BOOLE ScratchyName;
@@ -176,91 +176,91 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
       && ((*func)(address + 1) == formats[type].ID[1])
       && ((*func)(address + 2) == formats[type].ID[2])
       && ((*func)(address + 3) == formats[type].ID[3])
-       ) {
+      ) {
 
-      RIPLOG2("mod-ripper ProTracker %s match\n", formats[type].ID);
+	RIPLOG2("mod-ripper ProTracker %s match\n", formats[type].ID);
 
-      modripModuleInfoInitialize(&info);
+	modripModuleInfoInitialize(&info);
 
-      /* store general info */
-	  strncpy(info.typedesc, formats[type].Desc, 30);
-      strncpy(info.typesig, formats[type].ID, 4);
-      info.typesig[4] = '\0';
-      info.channels = formats[type].channels;
+	/* store general info */
+	strncpy(info.typedesc, formats[type].Desc, 30);
+	strncpy(info.typesig, formats[type].ID, 4);
+	info.typesig[4] = '\0';
+	info.channels = formats[type].channels;
 
-      /* searchstring found, now calc size */
-      info.start = address - 0x438;
+	/* searchstring found, now calc size */
+	info.start = address - 0x438;
 
-      /* get sample size */
-      info.samplesize = 0;		
+	/* get sample size */
+	info.samplesize = 0;		
 
-      for (i = 0; i <= 30; i++) {
-        info.samplesize += BEWORD(info.start + 0x2a + i*0x1e) * 2;
+	for (i = 0; i <= 30; i++) {
+	  info.samplesize += BEWORD(info.start + 0x2a + i*0x1e) * 2;
+	}
+
+	/* some disks like messing around :) */
+
+	RIPLOG2("samplesize = %u\n", info.samplesize);
+
+	if(info.samplesize > MODRIP_MAXMODLEN) return;
+
+	info.songlength = (*func)(info.start + 0x3b6);
+
+	RIPLOG2("songlength = %u\n", info.songlength);
+
+	if((info.songlength > MODRIP_MAXMODLEN) 
+	  || (info.songlength == 0)) return;
+
+	/* scan for max. amount of patterns */
+	info.maxpattern = 0;		
+
+	for (i = 0; i <= info.songlength; i++) {
+	  if (info.maxpattern < (*func)(info.start + 0x3b8 + i)) {
+	    info.maxpattern = (*func)(info.start + 0x3b8 + i);
 	  }
+	}
 
-	  /* some disks like messing around :) */
+	RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
-      RIPLOG2("samplesize = %u\n", info.samplesize);
+	if(info.maxpattern > 127) return;		/* @@@@@ is this value correct ? */
 
-      if(info.samplesize > MODRIP_MAXMODLEN) return;
+	info.patternsize = (info.maxpattern + 1) * 64 * 4 * info.channels;
 
-      info.songlength = (*func)(info.start + 0x3b6);
+	RIPLOG2("patternsize = %u\n", info.patternsize);
 
-	  RIPLOG2("songlength = %u\n", info.songlength);
+	if(info.patternsize > MODRIP_MAXMODLEN) return;
 
-      if((info.songlength > MODRIP_MAXMODLEN) 
-      || (info.songlength == 0)) return;
+	info.end = info.start + info.samplesize + info.patternsize + 0x43b;
 
-      /* scan for max. amount of patterns */
-      info.maxpattern = 0;		
+	if(info.end < info.start) return;
 
-      for (i = 0; i <= info.songlength; i++) {
-        if (info.maxpattern < (*func)(info.start + 0x3b8 + i)) {
-          info.maxpattern = (*func)(info.start + 0x3b8 + i);
-		}
+	if ((info.end - info.start < MODRIP_MAXMODLEN)) {
+	  /* get module name */
+	  for (i = 0; i < 20; i++) {
+	    info.modname[i] = (char)((*func)(info.start + i));
 	  }
+	  info.modname[20] = 0;	
 
-	  RIPLOG2("maxpattern = %u\n", info.maxpattern);
-
-	  if(info.maxpattern > 127) return;		/* @@@@@ is this value correct ? */
-
-      info.patternsize = (info.maxpattern + 1) * 64 * 4 * info.channels;
-
-	  RIPLOG2("patternsize = %u\n", info.patternsize);
-
-      if(info.patternsize > MODRIP_MAXMODLEN) return;
-
-      info.end = info.start + info.samplesize + info.patternsize + 0x43b;
-
-	  if(info.end < info.start) return;
-
-      if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-      /* get module name */
-      for (i = 0; i < 20; i++) {
-        info.modname[i] = (char)((*func)(info.start + i));
+	  /* set filename for the module file */
+	  if (strlen(info.modname) > 2) {
+	    ScratchyName = FALSE;
+	    for(i = 0; (i < 20) && (info.modname[i] != 0) ; i++) {
+	      if(!isprint(info.modname[i])) ScratchyName = TRUE;
+	    }
+	    if(!ScratchyName) {
+	      strcpy(info.filename, info.modname);
+	      strcat(info.filename, ".amod");
+	    }
+	    else
+	      sprintf(info.filename, "mod%d.amod", modripModsFound++);
 	  }
-      info.modname[20] = 0;	
-
-      /* set filename for the module file */
-      if (strlen(info.modname) > 2) {
-        ScratchyName = FALSE;
-        for(i = 0; (i < 20) && (info.modname[i] != 0) ; i++) {
-          if(!isprint(info.modname[i])) ScratchyName = TRUE;
-		 }
-         if(!ScratchyName) {
-          strcpy(info.filename, info.modname);
-          strcat(info.filename, ".amod");
-		}
-		else
-          sprintf(info.filename, "mod%d.amod", modripModsFound++);
-	  }
-    else {
-        sprintf(info.filename, "mod%d.mod", modripModsFound++);
+	  else {
+	    sprintf(info.filename, "mod%d.mod", modripModsFound++);
 	  }
 
 	  modripGuiSaveRequest(&info, func);
-	  }
 	}
+    }
   }
 }
 
@@ -277,7 +277,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
   ULO i, size, offset;
   unsigned patterns;
   struct ModuleInfo info;
-    
+
   if (((*func)(address + 0) == 'S') && ((*func)(address + 1) == 'O')) {
     modripModuleInfoInitialize(&info);
     if (((*func)(address + 2) == 'N') && ((*func)(address + 3) == 'G')) {
@@ -289,7 +289,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
       info.instruments = 15;
       strcpy(info.typedesc, "SoundFX 1.3");
       strcpy(info.typesig, "SONG");
-	}
+    }
     if (((*func)(address + 2) == '3') && ((*func)(address + 3) == '1')) {
 
       RIPLOG1("mod-ripper SoundFX 2.0 (SO31) match\n");
@@ -303,57 +303,57 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
     if (match) {
       offset = 0; size = 0;
 
-	  /* add instrument lengths to size */
+      /* add instrument lengths to size */
       for (i = 0; i < info.instruments; i++)
-        size += BEDWORD(info.start + i*4);
+	size += BEDWORD(info.start + i*4);
 
       /* move to instrument table */
       if (info.instruments == 15) {
-        /* SoundFX 1.3 */
-	    offset += 80;
-	    size += 80;
-	  }
+	/* SoundFX 1.3 */
+	offset += 80;
+	size += 80;
+      }
       else {
-        /* SoundFX 2.0 */
-        offset += 144;
-        size += 144;
-	  }
+	/* SoundFX 2.0 */
+	offset += 144;
+	size += 144;
+      }
 
-	  /* walk over instrument table */
+      /* walk over instrument table */
       for (i = 0; i < info.instruments; i++) {
-        offset += 30;
-        size += 30;
-	  }
+	offset += 30;
+	size += 30;
+      }
 
       patterns = (*func)(info.start + offset);
       if((patterns > MODRIP_MAXMODLEN) 
-      || (patterns == 0)) return;
+	|| (patterns == 0)) return;
 
       RIPLOG2("patterns = %u\n", patterns);
 
       offset += 2;
-	  size += 2;
+      size += 2;
 
       /* pattern table */
       for (i = 0; i < patterns; i++)
-        info.maxpattern = max(info.maxpattern, (*func)(info.start + offset + i));
+	info.maxpattern = max(info.maxpattern, (*func)(info.start + offset + i));
 
-  	  if((info.maxpattern > MODRIP_MAXMODLEN) ||
-         (info.maxpattern == 0)) return;
+      if((info.maxpattern > MODRIP_MAXMODLEN) ||
+	(info.maxpattern == 0)) return;
 
       RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
       size += 128 + ((info.maxpattern + 1) * 1024);
-	  info.end = info.start + size;
+      info.end = info.start + size;
 
-	  if(info.end < info.start) return;
-		
+      if(info.end < info.start) return;
+
       if (size < MODRIP_MAXMODLEN) {
-        /* set filename for the module file */
-        sprintf(info.filename, "SFX.Mod%d.amod", modripModsFound++);
+	/* set filename for the module file */
+	sprintf(info.filename, "SFX.Mod%d.amod", modripModsFound++);
 
-    modripGuiSaveRequest(&info, func);
- }
+	modripGuiSaveRequest(&info, func);
+      }
     }
   }
 }
@@ -372,34 +372,34 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   int version = 0;
   ULO offset = 0, patterns = 0;
   ULO temp = 0, i = 0;
-	
+
   if( ((*func)(address + 0) == 'B')
-   && ((*func)(address + 1) == 'P')
-   && ((*func)(address + 2) == 'S')
-   && ((*func)(address + 3) == 'M') ) {
-    FoundHeader = TRUE;
-    modripModuleInfoInitialize(&info);
-    strcpy(info.typedesc, "SoundMon v1.0");
-    strcpy(info.typesig, "BPSM");
-    version = 1;
+    && ((*func)(address + 1) == 'P')
+    && ((*func)(address + 2) == 'S')
+    && ((*func)(address + 3) == 'M') ) {
+      FoundHeader = TRUE;
+      modripModuleInfoInitialize(&info);
+      strcpy(info.typedesc, "SoundMon v1.0");
+      strcpy(info.typesig, "BPSM");
+      version = 1;
   }
   if( ((*func)(address + 0) == 'V')
-   && ((*func)(address + 1) == '.') ) {
-    modripModuleInfoInitialize(&info);
-    if( (*func)(address + 2) == '2' ) {
-      FoundHeader = TRUE;
+    && ((*func)(address + 1) == '.') ) {
       modripModuleInfoInitialize(&info);
-      strcpy(info.typedesc, "SoundMon v2.0");
-      strcpy(info.typesig, "V.2");
-      version = 2;
-	}
-    if( (*func)(address + 2) == '3' ) {
-      FoundHeader = TRUE;
-      modripModuleInfoInitialize(&info);
-      strcpy(info.typedesc, "SoundMon v2.2");
-      strcpy(info.typesig, "V.3");
-      version = 3;
-	}
+      if( (*func)(address + 2) == '2' ) {
+	FoundHeader = TRUE;
+	modripModuleInfoInitialize(&info);
+	strcpy(info.typedesc, "SoundMon v2.0");
+	strcpy(info.typesig, "V.2");
+	version = 2;
+      }
+      if( (*func)(address + 2) == '3' ) {
+	FoundHeader = TRUE;
+	modripModuleInfoInitialize(&info);
+	strcpy(info.typedesc, "SoundMon v2.2");
+	strcpy(info.typesig, "V.3");
+	version = 3;
+      }
   }
   if(!FoundHeader) return;
 
@@ -419,15 +419,15 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   RIPLOG2("patterns = %u\n", patterns);
 
   if((patterns > MODRIP_MAXMODLEN) 
-  || (patterns == 0)) return;
+    || (patterns == 0)) return;
 
   offset += 32;
   for(i = 0; i < 15; i++) {
     if( (*func)(info.start + offset) != 255 ) {
-	  temp = BEWORD(info.start + offset + 24) * 2;
+      temp = BEWORD(info.start + offset + 24) * 2;
       if(temp > 0)
-        info.end += temp;
-	}
+	info.end += temp;
+    }
     offset += 32;
   }
   info.end += 512;
@@ -440,7 +440,7 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
   RIPLOG2("maxpattern = %u\n", info.maxpattern);
 
   if((info.maxpattern > MODRIP_MAXMODLEN) 
-  || (info.maxpattern == 0)) return;
+    || (info.maxpattern == 0)) return;
 
   info.end += (patterns * 16 + info.maxpattern * 48);
   info.end += info.instruments * 64;
@@ -451,34 +451,34 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
     /* get song name */
     for (i = 0; i < 26; i++) {
       info.modname[i] = (char)((*func)(info.start + i));
-	}
+    }
     info.modname[26] = 0;	
 
     /* set filename */
     if (strlen(info.modname) > 2) {
       ScratchyName = FALSE;
       for(i = 0; (i < 26) && (info.modname[i] != 0) ; i++) {
-        if(!isprint(info.modname[i])) {
-          ScratchyName = TRUE;
-		  break;
-		}
-		if(isupper(info.modname[i]))
-		  info.modname[i] = tolower(info.modname[i]);
-	  }
+	if(!isprint(info.modname[i])) {
+	  ScratchyName = TRUE;
+	  break;
+	}
+	if(isupper(info.modname[i]))
+	  info.modname[i] = tolower(info.modname[i]);
+      }
       if(!ScratchyName) {
-		sprintf(info.filename, "BP.");
-        strcat(info.filename, info.modname);
-        strcat(info.filename, ".amod");
-	  }
-	  else
-        sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
-	  }
-     else {
+	sprintf(info.filename, "BP.");
+	strcat(info.filename, info.modname);
+	strcat(info.filename, ".amod");
+      }
+      else
+	sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
+    }
+    else {
       sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
-	 }
+    }
 
-   modripGuiSaveRequest(&info, func);  
- }     
+    modripGuiSaveRequest(&info, func);  
+  }     
 }
 
 /*==================================*/
@@ -503,27 +503,27 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
 
   /* Fred files start with a jump table */
   if(
-        (BEWORD(address +  0) == jmp_68k)
-	 && (BEWORD(address +  4) == jmp_68k)
-	 && (BEWORD(address +  8) == jmp_68k) 
-	 && (BEWORD(address + 12) == jmp_68k)
+    (BEWORD(address +  0) == jmp_68k)
+    && (BEWORD(address +  4) == jmp_68k)
+    && (BEWORD(address +  8) == jmp_68k) 
+    && (BEWORD(address + 12) == jmp_68k)
     ) {
 
-    RIPLOG1("mod-ripper possible match for FredEditor.\n");
+      RIPLOG1("mod-ripper possible match for FredEditor.\n");
 
-    offset = 2;
+      offset = 2;
 
-	/* search for beginning of init block */
-    for(i = 0; i < 64; i++) {
-      if(
-            (BEWORD (address + offset + 0) == mov_68k)
-         && (BEDWORD(address + offset + 4) == cmp_68k)
-        ) {
-			match = TRUE;
-			break;
-	  }
-      offset += 2;
-    }
+      /* search for beginning of init block */
+      for(i = 0; i < 64; i++) {
+	if(
+	  (BEWORD (address + offset + 0) == mov_68k)
+	  && (BEDWORD(address + offset + 4) == cmp_68k)
+	  ) {
+	    match = TRUE;
+	    break;
+	}
+	offset += 2;
+      }
   }
 
   if(!match) return;
@@ -538,10 +538,10 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   info.end = address;
 
   for(i = 0; 
-     (i < 512) 
-       && (BEWORD(address + i + 0) != 0x4bfa) 
-	   && (BEWORD(address + i + 4) != 0xdbfa);
-	  i+=2) ;
+    (i < 512) 
+    && (BEWORD(address + i + 0) != 0x4bfa) 
+    && (BEWORD(address + i + 4) != 0xdbfa);
+  i+=2) ;
 
   RIPLOG2("mod-ripper checkpoint i (%u)\n", i);
 
@@ -553,10 +553,10 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   instDataOffset = BEWORD(address + offset + 4) + offset + 4;
 
   for(j = 0;
-      (j < 254) 
-        && (BEWORD(address + i + j + 0) != 0x47fa)
-		&& (BEWORD(address + i + j + 4) != 0xd7fa);
-	  j+=2) ;
+    (j < 254) 
+    && (BEWORD(address + i + j + 0) != 0x47fa)
+    && (BEWORD(address + i + j + 4) != 0xd7fa);
+  j+=2) ;
 
   RIPLOG2("mod-ripper checkpoint j (%u)\n", j);
 
@@ -586,17 +586,17 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
       instMax = max((*func)(address + i + 1), (ULO)instMax);
   }
   instMax++;
- 
+
   for(i = 0; i < (ULO) instMax; i++) {
     sampDataOffset = BEDWORD(address + instData + i*64);
     if (
-        (BEWORD(address + instData + i*64 + 4) == 0)
-     && (sampDataOffset != 0) 
-     && (sampDataOffset < 0x2ffff) 
-       ) {
-            sampSize = BEWORD(address + instData + i*64 + 6);
-            sampMax = max(sampMax, (sampSize*2 + sampDataOffset));
-            instNo++;
+      (BEWORD(address + instData + i*64 + 4) == 0)
+      && (sampDataOffset != 0) 
+      && (sampDataOffset < 0x2ffff) 
+      ) {
+	sampSize = BEWORD(address + instData + i*64 + 6);
+	sampMax = max(sampMax, (sampSize*2 + sampDataOffset));
+	instNo++;
     }
   }
 
@@ -608,9 +608,9 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
     sprintf(info.filename, "FRED.Mod%d.amod", modripModsFound++);
 
-  modripGuiSaveRequest(&info, func);
-}
+    modripGuiSaveRequest(&info, func);
   }
+}
 
 /*==========================*/
 /* detect ProRunner 2.0     */
@@ -622,12 +622,12 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   ULO i;
   ULO sampSize = 0, sampPtr = 0;
   struct ModuleInfo info;
-  
+
   if(
-      (BYTE(address + 0) != 'S')
-   || (BYTE(address + 1) != 'N')
-   || (BYTE(address + 2) != 'T')
-   || (BYTE(address + 3) != '!')
+    (BYTE(address + 0) != 'S')
+    || (BYTE(address + 1) != 'N')
+    || (BYTE(address + 2) != 'T')
+    || (BYTE(address + 3) != '!')
     ) return;
 
   RIPLOG1("mod-ripper possible ProRunner 2.0 match...\n");
@@ -638,7 +638,7 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
     if(BYTE(address + 10 + 8*i) > 0xf)
       return;
   }
-  
+
   RIPLOG1("checkpoint 2: volume values...\n");
   /* check volume values */
   for(i = 0; i < 31; i++) {
@@ -664,7 +664,7 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
     sprintf(info.filename, "PR2.Mod%d.amod", modripModsFound++);
 
-  modripGuiSaveRequest(&info, func);
+    modripGuiSaveRequest(&info, func);
   }   
 }
 
@@ -684,27 +684,27 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   BOOLE match = FALSE;;
 
   if(
-      (BYTE(address + 0) == 'P') 
-   && (BYTE(address + 1) == '4')
-   ) {
-    RIPLOG1("mod-ripper found possible ThePlayer 4 match...\n");
-	
-	modripModuleInfoInitialize(&info);
+    (BYTE(address + 0) == 'P') 
+    && (BYTE(address + 1) == '4')
+    ) {
+      RIPLOG1("mod-ripper found possible ThePlayer 4 match...\n");
 
-	if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A') ) {
-	  match = TRUE;
-	  strcpy(info.typesig, "P40A");
-	}
-	if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'B') ) {
-      match = TRUE;
-	  strcpy(info.typesig, "P40B");
-	}
-	if( (BYTE(address + 2) == '1') && (BYTE(address + 3) == 'A') ) {
-	  match = TRUE;
-	  strcpy(info.typesig, "P41A");
-	}
+      modripModuleInfoInitialize(&info);
+
+      if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'A') ) {
+	match = TRUE;
+	strcpy(info.typesig, "P40A");
+      }
+      if( (BYTE(address + 2) == '0') && (BYTE(address + 3) == 'B') ) {
+	match = TRUE;
+	strcpy(info.typesig, "P40B");
+      }
+      if( (BYTE(address + 2) == '1') && (BYTE(address + 3) == 'A') ) {
+	match = TRUE;
+	strcpy(info.typesig, "P41A");
+      }
   }
-  
+
   if(!match) return;
 
   RIPLOG2("mod-ripper found possible ThePlayer 4 (%s) match...\n", info.typesig);
@@ -793,35 +793,35 @@ static void modripScanFellowMemory(void)
 
     RIPLOG1("mod-ripper now scanning memory...\n");
 
-	if(ChipSize) {
-	  RIPLOG2("mod-ripper running over chip memory (%u KB allocated)...\n",
-        ChipSize >> 10);
+    if(ChipSize) {
+      RIPLOG2("mod-ripper running over chip memory (%u KB allocated)...\n",
+	ChipSize >> 10);
 
-	  /* chip memory starts at amiga address $0 */
+      /* chip memory starts at amiga address $0 */
       for(i = 0; i < ChipSize; i++)
-        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-          (*DetectFunctions[j])(i, memoryReadByte);
-	}
+	for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	  (*DetectFunctions[j])(i, memoryReadByte);
+    }
 
-	if(BogoSize) {
-	  RIPLOG2("mod-ripper running over bogo memory (%u KB allocated)...\n", 
-        BogoSize >> 10);
+    if(BogoSize) {
+      RIPLOG2("mod-ripper running over bogo memory (%u KB allocated)...\n", 
+	BogoSize >> 10);
 
       /* bogo memory starts at amiga address $C00000 */
       for(i = 0xc00000; i < (0xc00000 + BogoSize); i++)
-        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-          (*DetectFunctions[j])(i, memoryReadByte);
-	}
+	for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	  (*DetectFunctions[j])(i, memoryReadByte);
+    }
 
-	if(FastSize) {
+    if(FastSize) {
       RIPLOG2("mod-ripper running over fast memory (%u KB allocated)...\n",
-	    FastSize >> 10);
+	FastSize >> 10);
 
       /* fast memory usually starts at amiga address $200000 */
-	  for(i = 0x200000; i < (0x200000 + FastSize); i++)
-        for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-	      (*DetectFunctions[j])(i, memoryReadByte);
-	}
+      for(i = 0x200000; i < (0x200000 + FastSize); i++)
+	for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	  (*DetectFunctions[j])(i, memoryReadByte);
+    }
   }
 }
 
@@ -854,11 +854,11 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
     if(readbytes = fread(cache, sizeof(char), MODRIP_ADFSIZE, f) != MODRIP_ADFSIZE) {
       fclose(f); 
       sprintf(message, "The disk image %s is of a wrong size (read %d bytes).", 
-        filename, readbytes);
-	  modripGuiError(message);
+	filename, readbytes);
+      modripGuiError(message);
       return FALSE;
-	}
-	fclose(f);
+    }
+    fclose(f);
     return TRUE;
   }
   else {
@@ -884,26 +884,26 @@ static void modripScanFellowFloppies(void)
   for(driveNo = 0; driveNo < 4; driveNo++) { /* for each drive */
     if(floppy[driveNo].inserted) { /* check if a floppy is inserted */
       if(modripGuiRipFloppy(driveNo)) { /* does the user want to rip? */
-        memset(cache, 0, MODRIP_FLOPCACHE);
-		Read = FALSE;
-        if(*floppy[driveNo].imagenamereal) {
-          RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagenamereal);
-          if(modripReadFloppyImage(floppy[driveNo].imagenamereal, cache))
-            Read = TRUE;
-		}
-		else if(*floppy[driveNo].imagename) {
-          RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagename);
-          if(modripReadFloppyImage(floppy[driveNo].imagename, cache))
-            Read = TRUE;
-		}
-        if(Read) {
-          /* now really begin the ripping */
-            for(i = 0; i <= MODRIP_ADFSIZE; i++)
-              for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
-                (*DetectFunctions[j])(i, modripFloppyCacheRead);
-		}
-	  }
+	memset(cache, 0, MODRIP_FLOPCACHE);
+	Read = FALSE;
+	if(*floppy[driveNo].imagenamereal) {
+	  RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagenamereal);
+	  if(modripReadFloppyImage(floppy[driveNo].imagenamereal, cache))
+	    Read = TRUE;
 	}
+	else if(*floppy[driveNo].imagename) {
+	  RIPLOG2("mod-ripper %s\n", floppy[driveNo].imagename);
+	  if(modripReadFloppyImage(floppy[driveNo].imagename, cache))
+	    Read = TRUE;
+	}
+	if(Read) {
+	  /* now really begin the ripping */
+	  for(i = 0; i <= MODRIP_ADFSIZE; i++)
+	    for(j = 0; j < MODRIP_KNOWNFORMATS; j++)
+	      (*DetectFunctions[j])(i, modripFloppyCacheRead);
+	}
+      }
+    }
   }
 }
 
@@ -934,16 +934,16 @@ void modripChipDump(void)
     }
     if(Saved) {
       if(!access("prowiz.exe", 04)) {
-        /* prowiz.exe has been found */
-        if(modripGuiRunProWiz()) {
-          char commandline[MAX_PATH];
-          int result;
-          sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
-          fellowAddLog("Running Pro-Wizard: %s ...\n", commandline);
-          result = system(commandline);
-          fellowAddLog("Pro-Wizard call returned: %d\n", result);
-        }
-	    }
+	/* prowiz.exe has been found */
+	if(modripGuiRunProWiz()) {
+	  char commandline[MAX_PATH];
+	  int result;
+	  sprintf(commandline, "prowiz.exe \"%s\"", filenamechip);
+	  fellowAddLog("Running Pro-Wizard: %s ...\n", commandline);
+	  result = system(commandline);
+	  fellowAddLog("Pro-Wizard call returned: %d\n", result);
+	}
+      }
     }
   }
 }

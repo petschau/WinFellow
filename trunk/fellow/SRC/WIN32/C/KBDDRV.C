@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.12 2008-02-21 00:05:46 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.13 2009-07-25 03:09:00 peschau Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -986,14 +986,13 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed) {
 	BOOLE keycode_pressed = pressed;
 	BOOLE keycode_was_pressed = prevkeys[keycode];
 
-	/* DEBUG info, not needed now
+	/* DEBUG info, not needed now*/
 	char szMsg[255];
 	sprintf( szMsg, "Keypress %s %s\n"
 	, kbdDrvKeyString( symbolic_key )
 	, ( pressed ? "pressed" : "released" )
 	);
 	fellowAddLog( szMsg );
-	*/
 
 	keys[keycode] = pressed;
 
@@ -1059,28 +1058,6 @@ void kbdDrvKeypressHandler(void)
   }
 }    
     
-
-/*===========================================================================*/
-/* Capture a key and return the symbolic key                                 */
-/*===========================================================================*/
-
-// I think this function is not used anywhere
-
-ULO kbdDrvCaptureKey(void) {
-  kbd_drv_capture = TRUE;
-  kbd_drv_captured_key = PCK_NONE;
-  kbdDrvEmulationStart();
-	kbdDrvStateHasChanged( TRUE );
-  while (kbd_drv_captured_key == PCK_NONE) {
-		kbdDrvKeypressHandler();  /* Busy loop.... :-( */
-		Sleep( 200 );							/* just not to waste 100% cpu % */
-	}
-  kbdDrvEmulationStop();
-  kbd_drv_capture = FALSE;
-  return kbd_drv_captured_key;
-}
-
-
 /*===========================================================================*/
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/

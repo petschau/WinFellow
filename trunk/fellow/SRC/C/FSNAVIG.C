@@ -1,4 +1,4 @@
-/* @(#) $Id: FSNAVIG.C,v 1.5 2008-02-20 23:56:29 peschau Exp $ */
+/* @(#) $Id: FSNAVIG.C,v 1.6 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Filesystem navigation                                                   */
@@ -155,6 +155,6 @@ void fsNavigShutdown(void) {
     free(fs_navig_install_dir);
   if (fs_navig_startup_dir != NULL)
     free(fs_navig_startup_dir);
-  
+
 }
 

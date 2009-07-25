@@ -1,19 +1,6 @@
 #ifndef BLIT_H
 #define BLIT_H
 
-/*==========================*/
-/* Global blitter variables */
-/*==========================*/
-
-extern LON blitend;
-extern ULO blitterstatus;
-extern ULO bltzero;
-extern BOOLE blitter_ECS;
-extern ULO blit_cycle_length;
-extern ULO blit_cycle_free;
-extern ULO blitterdmawaiting;
-extern BOOLE blit_started;
-
 /*===========================================================================*/
 /* Blitter-properties                                                        */
 /*===========================================================================*/
@@ -26,11 +13,17 @@ extern BOOLE blitterGetECS(void);
 extern void blitterSetOperationLog(BOOLE operation_log);
 extern BOOLE blitterGetOperationLog(void);
 
+extern BOOLE blitterGetDMAPending(void);
+extern BOOLE blitterGetZeroFlag(void);
+extern ULO blitterGetFreeCycles(void);
+extern BOOLE blitterIsStarted(void);
 
 /*===========================================================================*/
 /* Declare C blitter functions                                               */
 /*===========================================================================*/
 
+extern void blitterSaveState(FILE *F);
+extern void blitterLoadState(FILE *F);
 void blitterEndOfFrame(void);
 void blitterEmulationStart(void);
 void blitterEmulationStop(void);

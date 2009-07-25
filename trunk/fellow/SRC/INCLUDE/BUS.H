@@ -3,6 +3,8 @@
 
 /* Standard Fellow Module functions */
 
+extern void busSaveState(FILE *F);
+extern void busLoadState(FILE *F);
 extern void busEmulationStart(void);
 extern void busEmulationStop(void);
 extern void busSoftReset(void);
@@ -16,8 +18,6 @@ void busEndOfFrame(void);
 extern void busLogCpu(STR *s);
 extern void busLogCpuException(STR *s);
 
-extern ULO bus_cycle;
-
 typedef void (*busEventHandler)();
 typedef struct bus_event_struct
 {
@@ -29,6 +29,16 @@ typedef struct bus_event_struct
 
 extern void busInsertEvent(bus_event *event);
 extern void busRemoveEvent(bus_event *event);
+
+typedef struct bus_state_
+{
+  ULO frame_no;
+  ULO cycle;
+  bus_event *events;
+} bus_state;
+
+extern bus_state bus;
+
 extern void busRunNew(void);
 extern void busDebugNew(void);
 

@@ -1,4 +1,4 @@
-/* @(#) $Id: zlibwrap.c,v 1.6 2008-02-20 23:56:31 peschau Exp $ */
+/* @(#) $Id: zlibwrap.c,v 1.7 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow - zlib wrapper                                                   */
 /*                                                                         */
@@ -34,25 +34,25 @@
 
 BOOLE gzUnpack(const char *src, const char *dest)
 {
-    gzFile	input;
-    FILE	*output;
-    char	buffer[1<<14];
-    int		length;
+  gzFile	input;
+  FILE	*output;
+  char	buffer[1<<14];
+  int		length;
 
-    if((output = fopen(dest, "wb")) == NULL) return FALSE;
-    if((input  = gzopen(src, "rb")) == NULL) return FALSE;
+  if((output = fopen(dest, "wb")) == NULL) return FALSE;
+  if((input  = gzopen(src, "rb")) == NULL) return FALSE;
 
-	for(;;)
-	{
-        length = gzread(input, buffer, sizeof(buffer));
-        if(length < 0) return FALSE;
-        if(length == 0) break;
-        if((int)fwrite(buffer, 1, (unsigned)length, output) != length) return FALSE;
-    }
+  for(;;)
+  {
+    length = gzread(input, buffer, sizeof(buffer));
+    if(length < 0) return FALSE;
+    if(length == 0) break;
+    if((int)fwrite(buffer, 1, (unsigned)length, output) != length) return FALSE;
+  }
 
-    if(fclose(output)) return FALSE;
-    if(gzclose(input) != Z_OK) return FALSE;
-	return TRUE;
+  if(fclose(output)) return FALSE;
+  if(gzclose(input) != Z_OK) return FALSE;
+  return TRUE;
 }
 
 /*======================================================*/
@@ -63,27 +63,27 @@ BOOLE gzUnpack(const char *src, const char *dest)
 
 BOOLE gzPack(const char *src, const char *dest)
 {
-	FILE *input;
-	gzFile output;
-	char outmode[20];
-	char buffer[1<<14];
-      size_t length;
+  FILE *input;
+  gzFile output;
+  char outmode[20];
+  char buffer[1<<14];
+  size_t length;
 
-    strcpy(outmode, "wb9 ");
+  strcpy(outmode, "wb9 ");
 
-	if((input  = fopen(src, "rb"))      == NULL) return FALSE;
-    if((output = gzopen(dest, outmode)) == NULL) return FALSE;;
+  if((input  = fopen(src, "rb"))      == NULL) return FALSE;
+  if((output = gzopen(dest, outmode)) == NULL) return FALSE;;
 
-    for(;;) 
-	{
-        length = fread(buffer, 1, sizeof(buffer), input);
-        if(ferror(input)) return FALSE;
-        if(length == 0) break;
-        if(gzwrite(output, buffer, (unsigned)length) != length) return FALSE;
-    }
-	
-	if(fclose(input)) return FALSE;
-	if(gzclose(output) != Z_OK) return FALSE;
+  for(;;) 
+  {
+    length = fread(buffer, 1, sizeof(buffer), input);
+    if(ferror(input)) return FALSE;
+    if(length == 0) break;
+    if(gzwrite(output, buffer, (unsigned)length) != length) return FALSE;
+  }
 
-	return TRUE;
+  if(fclose(input)) return FALSE;
+  if(gzclose(output) != Z_OK) return FALSE;
+
+  return TRUE;
 }

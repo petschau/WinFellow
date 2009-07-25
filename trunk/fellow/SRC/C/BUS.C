@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.5 2008-11-03 21:12:10 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.6 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -24,7 +24,9 @@
 /*=========================================================================*/
 
 #include "defs.h"
-#include "cpu.h"
+#include "fellow.h"
+#include "CpuModule.h"
+#include "CpuIntegration.h"
 #include "cia.h"
 #include "copper.h"
 #include "fmem.h"
@@ -40,12 +42,7 @@
 #include "draw.h"
 #include "fileops.h"
 
-ULO debugging;
-ULO bus_cycle;
-
-extern ULO copper_ptr, copper_next, draw_frame_count, draw_frame_skip_factor;
-extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
-extern LON draw_frame_skip;
+bus_state bus;
 
 bus_event cpuEvent;
 bus_event copperEvent;
@@ -53,8 +50,6 @@ bus_event eolEvent;
 bus_event eofEvent;
 bus_event ciaEvent;
 bus_event blitterEvent;
-bus_event irqEvent;
-bus_event *bus_events;
 
 /*==============================================================================*/
 /* Global end of line handler                                                   */
@@ -118,7 +113,7 @@ void busEndOfFrame(void)
   /* Reset some aspects of the graphics emulation                 */
   /*==============================================================*/
   lof = lof ^ 0x8000;	// short/long frame
-  
+
   /*==============================================================*/
   /* Restart copper                                               */
   /*==============================================================*/
@@ -164,36 +159,20 @@ void busEndOfFrame(void)
   }
 
   /*==============================================================*/
-  /* Update next IRQ time                                         */
-  /*==============================================================*/
-  if (irqEvent.cycle != BUS_CYCLE_DISABLE)
-  {
-    busRemoveEvent(&irqEvent);
-    irqEvent.cycle -= BUS_CYCLE_PER_FRAME;
-    busInsertEvent(&irqEvent);
-  }
-
-  /*==============================================================*/
   /* Perform graphics end of frame                                */
   /*==============================================================*/
   graphEndOfFrame();
   timerEndOfFrame();
 
-  busInsertEvent(&eofEvent);	  
+  busInsertEvent(&eofEvent);
+  bus.frame_no++;
 }
-
-/*
-void busMsg(STR *msg)
-{
-  MessageBox(0, msg, msg, 0);
-}
-*/
 
 void busRemoveEvent(bus_event *ev)
 {
   bus_event *tmp;
   BOOLE found = FALSE;
-  for (tmp = bus_events; tmp != NULL; tmp = tmp->next)
+  for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
   {
     if (tmp == ev)
     {
@@ -203,13 +182,12 @@ void busRemoveEvent(bus_event *ev)
   }
   if (!found)
   {
-    //busMsg("Removing event that is not in the queue!");
     return;
   }
 
   if (ev->prev == NULL)
   {
-    bus_events = ev->next;
+    bus.events = ev->next;
   }
   else
   {
@@ -221,23 +199,23 @@ void busRemoveEvent(bus_event *ev)
 
 void busInsertEvent(bus_event *ev)
 {
-  if (bus_events == NULL)
+  if (bus.events == NULL)
   {
     ev->prev = ev->next = NULL;
-    bus_events = ev;
+    bus.events = ev;
   }
   else
   {
     bus_event *tmp;
     bus_event *tmp_prev = NULL;
-    for (tmp = bus_events; tmp != NULL; tmp = tmp->next)
+    for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
     {
       if (ev->cycle < tmp->cycle)
       {
 	ev->next = tmp;
 	ev->prev = tmp_prev;
 	tmp->prev = ev;
-	if (tmp_prev == NULL) bus_events = ev; /* In front */
+	if (tmp_prev == NULL) bus.events = ev; /* In front */
 	else tmp_prev->next = ev;
 	return;
       }
@@ -251,15 +229,15 @@ void busInsertEvent(bus_event *ev)
 
 bus_event *busPopEvent(void)
 {
-  if (bus_events->cycle >= cpuEvent.cycle)
+  if (bus.events->cycle >= cpuEvent.cycle)
   {
     return &cpuEvent;
   }
   else
   {
-    bus_event *tmp = bus_events;
-    bus_events = tmp->next;
-    bus_events->prev = NULL;
+    bus_event *tmp = bus.events;
+    bus.events = tmp->next;
+    bus.events->prev = NULL;
     return tmp;
   }
 }
@@ -287,8 +265,6 @@ void busEventLog(bus_event *e)
     fprintf(BUSLOG, "%d copper\n", e->cycle);
   else if (e == &ciaEvent)
     fprintf(BUSLOG, "%d cia\n", e->cycle);
-  else if (e == &irqEvent)
-    fprintf(BUSLOG, "%d irq\n", e->cycle);
   else if (e == &blitterEvent)
     fprintf(BUSLOG, "%d blitter\n", e->cycle);
   else if (e == &eolEvent)
@@ -304,29 +280,26 @@ void busLogCpu(STR *s)
   if (BUSLOG) fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
 }
 
-
 void busSetCycle(ULO cycle)
 {
-  bus_cycle = cycle;
+  bus.cycle = cycle;
 }
 
 ULO busGetRasterY(void)
 {
-  return bus_cycle / 228;
+  return bus.cycle / 228;
 }
 
 ULO busGetRasterX(void)
 {
-  return bus_cycle % 228;
+  return bus.cycle % 228;
 }
-
-extern jmp_buf cpu_exception_buffer;
 
 void busRunNew(void)
 {
   while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
   {
-    if (setjmp(cpu_exception_buffer) == 0)
+    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
     {
       while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
       {
@@ -339,8 +312,8 @@ void busRunNew(void)
     else
     {
       // Came out of an CPU exception. Keep on working.
-      cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
-      cpu_chip_cycles = 0;
+      cpuEvent.cycle = bus.cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+      cpuIntegrationSetChipCycles(0);
     }
   }
 }
@@ -349,7 +322,7 @@ void busDebugNew(void)
 {
   while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
   {
-    if (setjmp(cpu_exception_buffer) == 0)
+    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
     {
       while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
       {
@@ -363,8 +336,8 @@ void busDebugNew(void)
     else
     {
       // Came out of an CPU exception. Keep on working.
-      cpuEvent.cycle = bus_cycle + cpu_chip_cycles + (cpu_instruction_time >> cpu_speed);
-      cpu_chip_cycles = 0;
+      cpuEvent.cycle = bus.cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+      cpuIntegrationSetChipCycles(0);
     }
   }
 }
@@ -377,8 +350,7 @@ void busInitializeQueue(void)
   memset(&eofEvent, 0, sizeof(bus_event));
   memset(&ciaEvent, 0, sizeof(bus_event));
   memset(&blitterEvent, 0, sizeof(bus_event));
-  memset(&irqEvent, 0, sizeof(bus_event));
-  bus_events = NULL;
+  bus.events = NULL;
 
   eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
   eolEvent.handler = busEndOfLine;
@@ -386,14 +358,12 @@ void busInitializeQueue(void)
   eofEvent.handler = busEndOfFrame;
   ciaEvent.cycle = BUS_CYCLE_DISABLE;
   ciaEvent.handler = ciaHandleEvent;
-  irqEvent.cycle = BUS_CYCLE_DISABLE;
-  irqEvent.handler = cpuSetUpInterrupt;
   copperEvent.cycle = BUS_CYCLE_DISABLE;
   copperEvent.handler = copperEmulate;
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
   blitterEvent.handler = blitFinishBlit;
   cpuEvent.cycle = 0;
-  cpuEvent.handler = cpuEventHandler;
+  cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler;
   busInsertEvent(&eofEvent);
   busInsertEvent(&eolEvent);
 }
@@ -401,6 +371,38 @@ void busInitializeQueue(void)
 /*===========================================================================*/
 /* Called on emulation start / stop and reset                                */
 /*===========================================================================*/
+
+void busSaveState(FILE *F)
+{
+  fwrite(&bus.frame_no, sizeof(bus.frame_no), 1, F);
+  fwrite(&bus.cycle, sizeof(bus.cycle), 1, F);
+  fwrite(&cpuEvent.cycle, sizeof(cpuEvent.cycle), 1, F);
+  fwrite(&copperEvent.cycle, sizeof(copperEvent.cycle), 1, F);
+  fwrite(&eolEvent.cycle, sizeof(eolEvent.cycle), 1, F);
+  fwrite(&eofEvent.cycle, sizeof(eofEvent.cycle), 1, F);
+  fwrite(&ciaEvent.cycle, sizeof(ciaEvent.cycle), 1, F);
+  fwrite(&blitterEvent.cycle, sizeof(blitterEvent.cycle), 1, F);
+}
+
+void busLoadState(FILE *F)
+{
+  fread(&bus.frame_no, sizeof(bus.frame_no), 1, F);
+  fread(&bus.cycle, sizeof(bus.cycle), 1, F);
+  fread(&cpuEvent.cycle, sizeof(cpuEvent.cycle), 1, F);
+  fread(&copperEvent.cycle, sizeof(copperEvent.cycle), 1, F);
+  fread(&eolEvent.cycle, sizeof(eolEvent.cycle), 1, F);
+  fread(&eofEvent.cycle, sizeof(eofEvent.cycle), 1, F);
+  fread(&ciaEvent.cycle, sizeof(ciaEvent.cycle), 1, F);
+  fread(&blitterEvent.cycle, sizeof(blitterEvent.cycle), 1, F);
+
+  bus.events = NULL;
+  if (cpuEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&cpuEvent);
+  if (copperEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&copperEvent);
+  if (eolEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&eolEvent);
+  if (eofEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&eofEvent);
+  if (ciaEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&ciaEvent);
+  if (blitterEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&blitterEvent);
+}
 
 void busEmulationStart(void)
 {
@@ -426,6 +428,8 @@ void busHardReset(void)
 
 void busStartup(void)
 {
+  bus.frame_no = 0;
+  bus.cycle = 0;
 }
 
 void busShutdown(void)

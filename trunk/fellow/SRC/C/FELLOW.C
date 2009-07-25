@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.25 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.26 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,7 +29,8 @@
 #include "defs.h"
 #include "fellow.h"
 #include "draw.h"
-#include "cpu.h"
+#include "CpuModule.h"
+#include "CpuIntegration.h"
 #include "fmem.h"
 #include "eventid.h"
 #include "floppy.h"
@@ -170,67 +171,67 @@ void fellowAddLog2(STR *msg) {
 
 static void fellowLogDateTime(void)
 {
-	char tmp[255];
-	time_t thetime;
-	struct tm *timedata;
+  char tmp[255];
+  time_t thetime;
+  struct tm *timedata;
 
-	thetime = time(NULL);
-	timedata = localtime(&thetime);
+  thetime = time(NULL);
+  timedata = localtime(&thetime);
 
-	strftime(tmp, 255, "%c: ", timedata);
-	fellowAddLog2(tmp);
+  strftime(tmp, 255, "%c: ", timedata);
+  fellowAddLog2(tmp);
 }
 
 void fellowAddLog(const char *format,...)
 {
-    char buffer[WRITE_LOG_BUF_SIZE];
-    va_list parms;
-    int count = 0;
+  char buffer[WRITE_LOG_BUF_SIZE];
+  va_list parms;
+  int count = 0;
 
-    va_start (parms, format);
-    count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	
-    if(fellow_newlogline)
-      fellowLogDateTime();
+  va_start (parms, format);
+  count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
 
-    fellowAddLog2(buffer);
-	
-    if(buffer[strlen(buffer)-1] == '\n')
-      fellow_newlogline = TRUE;
-    else
-      fellow_newlogline = FALSE;
-    va_end (parms);
+  if(fellow_newlogline)
+    fellowLogDateTime();
+
+  fellowAddLog2(buffer);
+
+  if(buffer[strlen(buffer)-1] == '\n')
+    fellow_newlogline = TRUE;
+  else
+    fellow_newlogline = FALSE;
+  va_end (parms);
 }
 
 void fellowAddTimelessLog(const char *format,...)
 {
-    char buffer[WRITE_LOG_BUF_SIZE];
-    va_list parms;
-    int count = 0;
+  char buffer[WRITE_LOG_BUF_SIZE];
+  va_list parms;
+  int count = 0;
 
-    va_start (parms, format);
-    count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	
-    fellowAddLog2(buffer);
-	
-    if(buffer[strlen(buffer)-1] == '\n')
-      fellow_newlogline = TRUE;
-    else
-      fellow_newlogline = FALSE;
+  va_start (parms, format);
+  count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
 
-    va_end (parms);
+  fellowAddLog2(buffer);
+
+  if(buffer[strlen(buffer)-1] == '\n')
+    fellow_newlogline = TRUE;
+  else
+    fellow_newlogline = FALSE;
+
+  va_end (parms);
 }
 
 char *fellowGetVersionString(void)
 {
-    char *result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4);
-    
-    if(!result)
-        return NULL;
+  char *result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4);
 
-//    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
-	sprintf(result, "%s", FELLOWVERSION);
-    return result;
+  if(!result)
+    return NULL;
+
+  //    sprintf(result, "%s (%s)", FELLOWVERSION, __DATE__);
+  sprintf(result, "%s", FELLOWVERSION);
+  return result;
 }
 
 
@@ -242,8 +243,8 @@ static void fellowRuntimeErrorCheck(void) {
   switch (fellowGetRuntimeErrorCode()) {
     case FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
       wguiRequester("A serious emulation runtime error occured:",
-		    "The emulated CPU entered Amiga memory that can not hold",
-		    "executable data. Emulation could not continue.");
+	"The emulated CPU entered Amiga memory that can not hold",
+	"executable data. Emulation could not continue.");
       break;
   }
   fellowSetRuntimeErrorCode(FELLOW_RUNTIME_ERROR_NO_ERROR);
@@ -293,7 +294,7 @@ void fellowHardReset(void) {
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
-  cpuHardReset();
+  cpuIntegrationHardReset();
   fellowPreStartReset(FALSE);
 }
 
@@ -335,7 +336,7 @@ BOOLE fellowEmulationStart(void) {
   iniEmulationStart();
   memoryEmulationStart();
   ciaEmulationStart();
-  cpuEmulationStart();
+  cpuIntegrationEmulationStart();
   graphEmulationStart();
   spriteEmulationStart();
   blitterEmulationStart();
@@ -370,12 +371,11 @@ void fellowEmulationStop(void) {
   blitterEmulationStop();
   spriteEmulationStop();
   graphEmulationStop();
-  cpuEmulationStop();
+  cpuIntegrationEmulationStop();
   ciaEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
 }
-
 
 /*============================================================================*/
 /* Starts emulation                                                           */
@@ -425,10 +425,11 @@ void fellowStepOver(void) {
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
-  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR) {
+  if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
+  {
     ULO current_pc = cpuGetPC();
     ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
-    while ((cpuGetPC() != over_pc) && (cpuGetPC() != 0xf80360) && !fellow_request_emulation_stop)
+    while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
       busDebugNew();
   }
   fellowRequestEmulationStopImmediatelyClear();
@@ -475,17 +476,59 @@ void fellowNastyExit(void) {
 
 static void fellowDrawFailed(void) {
   wguiRequester("Graphics subsystem failed to start. ",
-                "Please check your OS graphics driver setup. ",
-		"Closing down application.");
+    "Please check your OS graphics driver setup. ",
+    "Closing down application.");
   exit(EXIT_FAILURE);
 }
 
+/*============================================================================*/
+/* Save statefile                                                             */
+/*============================================================================*/
+
+BOOLE fellowSaveState(STR *filename)
+{
+  FILE *F = fopen(filename, "wb");
+  
+  if (F == NULL) return FALSE;
+
+  cpuIntegrationSaveState(F);
+  memorySaveState(F);
+  copperSaveState(F);
+  busSaveState(F);
+  blitterSaveState(F);
+  ciaSaveState(F);
+
+  fclose(F);
+  return TRUE;
+}
+
+/*============================================================================*/
+/* Load statefile                                                             */
+/*============================================================================*/
+
+BOOLE fellowLoadState(STR *filename)
+{
+  FILE *F = fopen(filename, "rb");
+  
+  if (F == NULL) return FALSE;
+
+  cpuIntegrationLoadState(F);
+  memoryLoadState(F);
+  copperLoadState(F);
+  busLoadState(F);
+  blitterLoadState(F);
+  ciaLoadState(F);
+
+  fclose(F);
+  return TRUE;
+}
 
 /*============================================================================*/
 /* Inititalize all modules in the emulator, called on startup                 */
 /*============================================================================*/
 
-static void fellowModulesStartup(int argc, char *argv[]) {
+static void fellowModulesStartup(int argc, char *argv[])
+{
   timerStartup();
   fsNavigStartup(argv);
   fhfileStartup();
@@ -503,20 +546,20 @@ static void fellowModulesStartup(int argc, char *argv[]) {
   ciaStartup();
   memoryStartup();
   graphStartup();
-  cpuStartup();
+  cpuIntegrationStartup();
   cfgStartup(argc, argv);
   wguiStartup();
 }
-
 
 /*============================================================================*/
 /* Release all modules in the emulator, called on shutdown                    */
 /*============================================================================*/
 
-static void fellowModulesShutdown(void) {
+static void fellowModulesShutdown(void)
+{
   wguiShutdown();
   cfgShutdown();
-  cpuShutdown();
+  cpuIntegrationShutdown();
   graphShutdown();
   memoryShutdown();
   ciaShutdown();
@@ -544,9 +587,9 @@ static void fellowModulesShutdown(void) {
 
 int __cdecl main(int argc, char *argv[]) {
 
-  #ifdef _FELLOW_DEBUG_CRT_MALLOC
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-  #endif
+#endif
 
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);

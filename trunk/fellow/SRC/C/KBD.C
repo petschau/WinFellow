@@ -1,4 +1,4 @@
-/* @(#) $Id: KBD.C,v 1.8 2008-02-20 23:56:30 peschau Exp $ */
+/* @(#) $Id: KBD.C,v 1.9 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Emulator                                                         */
 /* Keyboard emulation                                                      */
@@ -57,10 +57,10 @@ UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 
 void kbdEventEOFHandler(void) {
   kbd_event thisev;
-  
+
   while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos) {
     thisev =(kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos &
-						  KBDBUFFERMASK]);
+      KBDBUFFERMASK]);
     switch (thisev) {
       case EVENT_INSERT_DF0:
 	insert_dfX[0] = 1;
@@ -127,14 +127,14 @@ void kbdEventEOLHandler(void) {
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
   BOOLE fire0_changed[2], fire1_changed[2];
   ULO i;
-  
+
   for (i = 0; i < 2; i++)
     left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] =
     fire0_changed[i] = fire1_changed[i] = FALSE;
 
   while (kbd_state.eventsEOL.outpos < kbd_state.eventsEOL.inpos) {
     thisev =(kbd_event)(kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.outpos &
-						  KBDBUFFERMASK]);
+      KBDBUFFERMASK]);
     switch (thisev) {
       case EVENT_JOY0_UP_ACTIVE:
       case EVENT_JOY0_UP_INACTIVE:
@@ -233,22 +233,22 @@ void kbdEventEOLHandler(void) {
   }
   for (i = 0; i < 2; i++)
     if (left_changed[i] ||
-	up_changed[i] ||
-	right_changed[i] ||
-	down_changed[i] ||
-	fire0_changed[i] ||
-	fire1_changed[i])
-	{
-		if(( gameport_input[i] == GP_JOYKEY0 )
-			|| ( gameport_input[i] == GP_JOYKEY1 ))
-			gameportJoystickHandler( gameport_input[i],
-			    (left_changed[i]) ? left[i] : gameport_left[i],
-			    (up_changed[i]) ? up[i] : gameport_up[i],
-			    (right_changed[i]) ? right[i] : gameport_right[i],
-			    (down_changed[i]) ? down[i] : gameport_down[i],
-			    (fire0_changed[i]) ? fire0[i] : gameport_fire0[i],
-			    (fire1_changed[i]) ? fire1[i] : gameport_fire1[i]);
-	}
+      up_changed[i] ||
+      right_changed[i] ||
+      down_changed[i] ||
+      fire0_changed[i] ||
+      fire1_changed[i])
+    {
+      if(( gameport_input[i] == GP_JOYKEY0 )
+	|| ( gameport_input[i] == GP_JOYKEY1 ))
+	gameportJoystickHandler( gameport_input[i],
+	(left_changed[i]) ? left[i] : gameport_left[i],
+	(up_changed[i]) ? up[i] : gameport_up[i],
+	(right_changed[i]) ? right[i] : gameport_right[i],
+	(down_changed[i]) ? down[i] : gameport_down[i],
+	(fire0_changed[i]) ? fire0[i] : gameport_fire0[i],
+	(fire1_changed[i]) ? fire1[i] : gameport_fire1[i]);
+    }
 
 }
 
@@ -265,11 +265,11 @@ void kbdQueueHandler(void) {
 
       kbd_time_to_wait = 10;
       scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos &
-					 KBDBUFFERMASK];
+	KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
-        ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
-        ciaRaiseIRQ(0, 8);
+	ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+	ciaRaiseIRQ(0, 8);
       }
     }
   }

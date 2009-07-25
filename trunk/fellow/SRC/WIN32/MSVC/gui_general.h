@@ -263,13 +263,20 @@
 #define ID_FILE_HISTORYCONFIGURATION3   40010
 #define ID_OPTIONS_EMULATIONSPEED_FASTESTPOSSIBLENOSOUND 40010
 #define ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS 40011
+#define ID_FILE_LOADSTATEFILE           40011
+#define ID_FILE_SAVESTATEFILE           40012
+#define ID_Menu                         40013
+#define ID_FILE_SAVESTATEFILE40014      40014
+#define ID_FILE_LOAD_STATE              40015
+#define ID_FILE_SAVESTATE               40016
+#define ID_FILE_SAVE_STATE              40017
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        182
-#define _APS_NEXT_COMMAND_VALUE         40011
+#define _APS_NEXT_COMMAND_VALUE         40018
 #define _APS_NEXT_CONTROL_VALUE         1143
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

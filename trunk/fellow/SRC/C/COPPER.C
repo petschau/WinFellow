@@ -1,4 +1,4 @@
-/* @(#) $Id: COPPER.C,v 1.4 2008-11-03 21:12:10 peschau Exp $ */
+/* @(#) $Id: COPPER.C,v 1.5 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Copper Emulation Initialization                                         */
@@ -51,7 +51,7 @@ ULO copper_ytable[512];
 ULO copper_ptr;                                     /* Copper program counter */
 BOOLE copper_dma;                                           /* Mirrors DMACON */
 ULO copper_suspended_wait;/* Position the copper should have been waiting for */
-                                          /* if copper DMA had been turned on */
+/* if copper DMA had been turned on */
 
 /*============================================================================*/
 /* Copper registers                                                           */
@@ -64,10 +64,10 @@ ULO copcon, cop1lc, cop2lc;
 /*---------------------------- */
 
 /*
-  ========
-   COPCON
-  ========
-  $dff02e
+========
+COPCON
+========
+$dff02e
 */
 
 void wcopcon(UWO data, ULO address)
@@ -76,10 +76,10 @@ void wcopcon(UWO data, ULO address)
 }
 
 /*
-  =======
-  COP1LC
-  =======
-  $dff080
+=======
+COP1LC
+=======
+$dff080
 */
 
 void wcop1lch(UWO data, ULO address)
@@ -97,11 +97,11 @@ void wcop1lcl(UWO data, ULO address)
 }
 
 /*
-  =======
-  COP2LC
-  =======
+=======
+COP2LC
+=======
 
-  $dff084
+$dff084
 */
 
 void wcop2lch(UWO data, ULO address)
@@ -119,10 +119,10 @@ void wcop2lcl(UWO data, ULO address)
 }
 
 /*
-  ========
-  COPJMP1
-  ========
-  $dff088
+========
+COPJMP1
+========
+$dff088
 */
 
 void wcopjmp1(UWO data, ULO address)
@@ -137,10 +137,10 @@ UWO rcopjmp1(ULO address)
 }
 
 /*
-  ========
-  COPJMP2
-  ========
-  $dff08A
+========
+COPJMP2
+========
+$dff08A
 */
 
 
@@ -189,6 +189,26 @@ void copperIOHandlersInstall(void) {
   memorySetIoWriteStub(0x08a, wcopjmp2);
   memorySetIoReadStub(0x088, rcopjmp1);
   memorySetIoReadStub(0x08a, rcopjmp2);
+}
+
+void copperSaveState(FILE *F)
+{
+  fwrite(&copcon, sizeof(copcon), 1, F);
+  fwrite(&cop1lc, sizeof(cop1lc), 1, F);
+  fwrite(&cop2lc, sizeof(cop2lc), 1, F);
+  fwrite(&copper_ptr, sizeof(copper_ptr), 1, F);
+  fwrite(&copper_dma, sizeof(copper_dma), 1, F);
+  fwrite(&copper_suspended_wait, sizeof(copper_suspended_wait), 1, F);
+}
+
+void copperLoadState(FILE *F)
+{
+  fread(&copcon, sizeof(copcon), 1, F);
+  fread(&cop1lc, sizeof(cop1lc), 1, F);
+  fread(&cop2lc, sizeof(cop2lc), 1, F);
+  fread(&copper_ptr, sizeof(copper_ptr), 1, F);
+  fread(&copper_dma, sizeof(copper_dma), 1, F);
+  fread(&copper_suspended_wait, sizeof(copper_suspended_wait), 1, F);
 }
 
 void copperEmulationStart(void) {
@@ -242,10 +262,10 @@ void copperLoad1(void)
   if (copper_dma == TRUE)
   {
     copperRemoveEvent();
-    copperInsertEvent(bus_cycle + 4);
+    copperInsertEvent(bus.cycle + 4);
   }
 }
-	
+
 void copperLoad2(void)
 {
   copper_ptr = cop2lc;
@@ -253,7 +273,7 @@ void copperLoad2(void)
   if (copper_dma == TRUE)
   {
     copperRemoveEvent();
-    copperInsertEvent(bus_cycle + 4);
+    copperInsertEvent(bus.cycle + 4);
   }
 }
 
@@ -290,9 +310,9 @@ void copperUpdateDMA(void)
       if (copper_suspended_wait != -1)
       {
 	// dma not hanging
-	if (copper_suspended_wait <= bus_cycle)
+	if (copper_suspended_wait <= bus.cycle)
 	{
-	  copperInsertEvent(bus_cycle + 4);
+	  copperInsertEvent(bus.cycle + 4);
 	}
 	else
 	{
@@ -344,7 +364,7 @@ void copperEmulate(void)
   {
     cpuEvent.cycle += 2;
   }
-	
+
   // retrieve Copper command (two words)
   bswapRegC = memoryChipReadWord(copper_ptr);
   bswapRegD = memoryChipReadWord(copper_ptr + 2);
@@ -360,9 +380,9 @@ void copperEmulate(void)
       // check if access to $40 - $7f (if so, Copper is using Blitter)
       if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((copcon & 0xffff) != 0x0)))
       {
-        // move data to Blitter register
-        copperInsertEvent(copper_cycletable[(bplcon0 >> 12) & 0xf] + bus_cycle);
-        memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
+	// move data to Blitter register
+	copperInsertEvent(copper_cycletable[(bplcon0 >> 12) & 0xf] + bus.cycle);
+	memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
       }
     }
     else
@@ -370,14 +390,14 @@ void copperEmulate(void)
       // wait instruction or skip instruction
       bswapRegC &= 0xfffe;
       // check bit BFD (Bit Finish Disable)
-      if (((bswapRegD & 0x8000) == 0x0) && (blit_started == TRUE))
+      if (((bswapRegD & 0x8000) == 0x0) && blitterIsStarted())
       {
-  	// Copper waits until Blitter is finished
+	// Copper waits until Blitter is finished
 	copper_ptr -= 4;
-	if ((blitterEvent.cycle + 4) <= bus_cycle)
+	if ((blitterEvent.cycle + 4) <= bus.cycle)
 	{
-  	  copperInsertEvent(bus_cycle + 4);
-  	}
+	  copperInsertEvent(bus.cycle + 4);
+	}
 	else
 	{
 	  copperInsertEvent(blitterEvent.cycle + 4);
@@ -416,13 +436,13 @@ void copperEmulate(void)
 	    // Check if current line is 255, then if line we are supposed
 	    // to wait for are less than 60, do the wait afterall.
 	    // Here we have detected a wait that has been passed.
-						
+
 	    // do some tests if line is 255
 	    if (currentY != 255)
 	    {
 	      // ctrueexit
 	      //Here we must do a new copper access immediately (in 4 cycles)
-	      copperInsertEvent(bus_cycle + 4);
+	      copperInsertEvent(bus.cycle + 4);
 	    }
 	    else
 	    {
@@ -432,13 +452,13 @@ void copperEmulate(void)
 		// line is 256-313, wrong to not wait
 		// ctrueexit
 		//Here we must do a new copper access immediately (in 4 cycles)
-		copperInsertEvent(bus_cycle + 4);
+		copperInsertEvent(bus.cycle + 4);
 	      }
 	      else
 	      {
 		// better to do the wait afterall
 		// here we recalculate the wait stuff
-								
+
 		// invert masks
 		bswapRegD = ~bswapRegD;
 
@@ -450,15 +470,15 @@ void copperEmulate(void)
 		maskedY *= BUS_CYCLE_PER_LINE;
 		bswapRegC &= 0xfe;
 		bswapRegD &= 0xfe;
-							
+
 		maskedX = (currentX & bswapRegD);
 		// mask in horizontal
 		bswapRegC |= maskedX;
 		bswapRegC = bswapRegC + maskedY + 4;
-		if (bswapRegC <= bus_cycle)
+		if (bswapRegC <= bus.cycle)
 		{
 		  // fix
-		  bswapRegC = bus_cycle + 4;
+		  bswapRegC = bus.cycle + 4;
 		}
 		copperInsertEvent(bswapRegC);
 	      } 
@@ -478,7 +498,7 @@ void copperEmulate(void)
 	    // mask in bits from waitgraph_raster_y
 	    *((UBY*) &maskedY) |= (bswapRegC >> 8);
 	    waitY = copper_ytable[maskedY];
-						
+
 	    // when wait is on same line, use masking stuff on graph_raster_x
 	    // else on graph_raster_x = 0
 	    // prepare waitxpos
@@ -530,7 +550,7 @@ void copperEmulate(void)
 	      // mask in bits from waitgraph_raster_y
 	      *((UBY*) &maskedY) |= (UBY) (bswapRegC >> 8);
 	      waitY = copper_ytable[maskedY];
-							
+
 	      // when wait is on same line, use masking stuff on graph_raster_x
 	      // else on graph_raster_x = 0
 
@@ -567,13 +587,13 @@ void copperEmulate(void)
 	      // to wait for are less than 60, do the wait afterall.
 
 	      // Here we have detected a wait that has been passed.
-							
+
 	      // do some tests if line is 255
 	      if (currentY != 255)
 	      {
 		// ctrueexit
 		//Here we must do a new copper access immediately (in 4 cycles)
-		copperInsertEvent(bus_cycle + 4);
+		copperInsertEvent(bus.cycle + 4);
 	      }
 	      else
 	      {
@@ -583,13 +603,13 @@ void copperEmulate(void)
 		  // line is 256-313, wrong to not wait
 		  // ctrueexit
 		  //Here we must do a new copper access immediately (in 4 cycles)
-		  copperInsertEvent(bus_cycle + 4);
+		  copperInsertEvent(bus.cycle + 4);
 		}
 		else
 		{
 		  // better to do the wait afterall
 		  // here we recalculate the wait stuff
-									
+
 		  // invert masks
 		  bswapRegD = ~bswapRegD;
 
@@ -601,15 +621,15 @@ void copperEmulate(void)
 		  maskedY *= BUS_CYCLE_PER_LINE;
 		  bswapRegC &= 0xfe;
 		  bswapRegD &= 0xfe;
-									
+
 		  maskedX = (currentX & bswapRegD);
 		  // mask in horizontal
 		  bswapRegC |= maskedX;
 		  bswapRegC = bswapRegC + maskedY + 4;
-		  if (bswapRegC <= bus_cycle)
+		  if (bswapRegC <= bus.cycle)
 		  {
 		    // fix
-		    bswapRegC = bus_cycle + 4;
+		    bswapRegC = bus.cycle + 4;
 		  }
 		  copperInsertEvent(bswapRegC);
 		} 
@@ -623,7 +643,7 @@ void copperEmulate(void)
 
 	  // new skip, copied from cwait just to try something
 	  // cskip
-				
+
 	  // calculate our line, masked with vmask
 	  // bl - masked graph_raster_y 
 
@@ -638,12 +658,12 @@ void copperEmulate(void)
 	    // do skip
 	    // we have passed the line, set up next instruction immediately
 	    copper_ptr += 4;
-	    copperInsertEvent(bus_cycle + 4);
+	    copperInsertEvent(bus.cycle + 4);
 	  }
 	  else if (*((UBY *) &maskedY) < (UBY) (bswapRegC >> 8))
 	  {
 	    // above line, don't skip
-	    copperInsertEvent(bus_cycle + 4);
+	    copperInsertEvent(bus.cycle + 4);
 	  }
 	  else
 	  {
@@ -652,7 +672,7 @@ void copperEmulate(void)
 	    // calculate our xposition, masked with hmask
 	    // al - masked graph_raster_x
 	    correctLine = TRUE;		
-						
+
 	    // use mask on graph_raster_x
 	    // Compare masked x with wait x
 	    maskedX = currentX;
@@ -662,7 +682,7 @@ void copperEmulate(void)
 	      // position reached, set up next instruction immediately
 	      copper_ptr += 4;
 	    }
-	    copperInsertEvent(bus_cycle + 4);
+	    copperInsertEvent(bus.cycle + 4);
 	  }
 	}
       }

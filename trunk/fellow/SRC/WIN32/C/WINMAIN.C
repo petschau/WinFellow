@@ -1,4 +1,4 @@
-/* @(#) $Id: WINMAIN.C,v 1.20 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: WINMAIN.C,v 1.21 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* This file is for whatever peculiarities we need to support on Windows   */
@@ -356,7 +356,7 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) {
       elements++;
     }
   }
-  argv = (char **) malloc(4*(elements + 2));
+  argv = (char **) malloc(sizeof(char**)*(elements + 2));
   argv[0] = "winfellow.exe";
   argend = lpCmdLine;
   for (i = 1; i <= elements; i++) {

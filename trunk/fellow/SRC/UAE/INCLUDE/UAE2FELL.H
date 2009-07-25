@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.13 2008-02-21 00:03:18 peschau Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.14 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -28,7 +28,7 @@
 #define UAE2FELLH
 
 #include "defs.h"
-#include "cpu.h"
+#include "CpuModule.h"
 #include "fhfile.h"
 #include "fmem.h"
 #include "fellow.h"
