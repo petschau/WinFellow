@@ -47,6 +47,8 @@ extern void memoryDmemClear(void);
 
 /* Module management functions */
 
+extern void memorySaveState(FILE *F);
+extern void memoryLoadState(FILE *F);
 extern void memorySoftReset(void);
 extern void memoryHardReset(void);
 extern void memoryHardResetPost(void);

@@ -23,7 +23,6 @@
 			OutputDirectory=".\Release"
 			IntermediateDirectory=".\Release"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			WholeProgramOptimization="1"
@@ -134,7 +133,6 @@
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			WholeProgramOptimization="1"
@@ -245,7 +243,6 @@
 			OutputDirectory=".\Debug"
 			IntermediateDirectory=".\Debug"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -348,7 +345,6 @@
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="1"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			>
@@ -684,7 +680,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\C\CPU.C"
+				RelativePath="..\..\C\CpuIntegration.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -730,7 +726,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\C\CPUDIS.C"
+				RelativePath="..\..\C\CpuModule.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Disassembler.c"
 				>
 				<FileConfiguration
 					Name="Release|Win32"
@@ -776,7 +776,35 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\C\cpufunc.c"
+				RelativePath="..\..\C\CpuModule_EffectiveAddress.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Exceptions.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Flags.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Instructions.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_InternalState.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Interrupts.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_Logging.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\C\CpuModule_StackFrameGen.c"
 				>
 			</File>
 			<File
@@ -1617,10 +1645,6 @@
 			Filter="*.h"
 			>
 			<File
-				RelativePath="C:\Program Files\Microsoft Visual Studio\Vc98\Include\Basetsd.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\INCLUDE\BLIT.H"
 				>
 			</File>
@@ -1641,10 +1665,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\INCLUDE\CPU.H"
-				>
-			</File>
-			<File
 				RelativePath="..\..\INCLUDE\cpucode.h"
 				>
 			</File>
@@ -1661,7 +1681,15 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\INCLUDE\cpuemu.h"
+				RelativePath="..\..\INCLUDE\CpuIntegration.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule_Internal.h"
 				>
 			</File>
 			<File

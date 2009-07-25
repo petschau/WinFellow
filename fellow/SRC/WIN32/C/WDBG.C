@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.31 2008-11-03 21:12:10 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.32 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -25,6 +25,7 @@
 /*=========================================================================*/
 
 #include "defs.h"
+#include "CpuModule.h"
 
 #ifdef WGUI
 
@@ -40,7 +41,6 @@
 #include "fellow.h"
 #include "windrv.h"
 #include "sound.h"
-#include "cpu.h"
 #include "listtree.h"
 #include "gameport.h"
 #include "fhfile.h"
@@ -65,10 +65,6 @@
 /*=======================================================*/
 /* external references not exported by the include files */
 /*=======================================================*/
-
-/* blit.c */
-extern ULO bltcon, bltafwm, bltalwm, bltapt, bltbpt, bltcpt, bltdpt, bltamod, bltbmod;
-extern ULO bltcmod, bltdmod, bltadat, bltbdat, bltcdat, bltzero;
 
 /* copper.c */
 extern ULO copcon, cop1lc, cop2lc;
@@ -224,9 +220,7 @@ STR *wdbgGetSpecialRegistersStr(STR * s)
 {
   sprintf(s,
 	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %d y: %d x: %d",
-	  (cpuGetSR() & 0x2000) ? cpu_usp : cpuGetAReg(7),
-	  (cpuGetSR() & 0x2000) ? cpuGetAReg(7) : cpu_ssp,
-	  cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
+	  cpuGetUspAutoMap(), cpuGetSspAutoMap(), cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
   return s;
 }
 
@@ -411,98 +405,98 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 
 void wdbgUpdateCIAState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
-  HDC hDC;
-  PAINTSTRUCT paint_struct;
+  //STR s[WDBG_STRLEN];
+  //HDC hDC;
+  //PAINTSTRUCT paint_struct;
 
-  hDC = BeginPaint(hwndDlg, &paint_struct);
-  if (hDC != NULL) {
+  //hDC = BeginPaint(hwndDlg, &paint_struct);
+  //if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i;
-    HFONT myfont = CreateFont(8,
-			      8,
-			      0,
-			      0,
-			      FW_NORMAL,
-			      FALSE,
-			      FALSE,
-			      FALSE,
-			      DEFAULT_CHARSET,
-			      OUT_DEFAULT_PRECIS,
-			      CLIP_DEFAULT_PRECIS,
-			      DEFAULT_QUALITY,
-			      FF_DONTCARE | FIXED_PITCH,
-			      "fixedsys");
+  //  ULO y = WDBG_CPU_REGISTERS_Y;
+  //  ULO x = WDBG_CPU_REGISTERS_X;
+  //  ULO i;
+  //  HFONT myfont = CreateFont(8,
+		//	      8,
+		//	      0,
+		//	      0,
+		//	      FW_NORMAL,
+		//	      FALSE,
+		//	      FALSE,
+		//	      FALSE,
+		//	      DEFAULT_CHARSET,
+		//	      OUT_DEFAULT_PRECIS,
+		//	      CLIP_DEFAULT_PRECIS,
+		//	      DEFAULT_QUALITY,
+		//	      FF_DONTCARE | FIXED_PITCH,
+		//	      "fixedsys");
 
-    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
-				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
-    HDC hDC_image = CreateCompatibleDC(hDC);
-    SelectObject(hDC_image, myarrow);
-    SelectObject(hDC, myfont);
-    SetBkMode(hDC, TRANSPARENT);
-    SetBkMode(hDC_image, TRANSPARENT);
-    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
-    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
-    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
-    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+  //  HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+		//		 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+  //  HDC hDC_image = CreateCompatibleDC(hDC);
+  //  SelectObject(hDC_image, myarrow);
+  //  SelectObject(hDC, myfont);
+  //  SetBkMode(hDC, TRANSPARENT);
+  //  SetBkMode(hDC_image, TRANSPARENT);
+  //  y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+  //  y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+  //  y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+  //  x = WDBG_DISASSEMBLY_X;
+  //  y = WDBG_DISASSEMBLY_Y;
+  //  BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+  //  x += WDBG_DISASSEMBLY_INDENT;
 
-    for (i = 0; i < 2; i++) {
-      sprintf(s, "Cia %s Registers:", (i == 0) ? "A" : "B");
-      y = wdbgLineOut(hDC, s, x, y);
+  //  for (i = 0; i < 2; i++) {
+  //    sprintf(s, "Cia %s Registers:", (i == 0) ? "A" : "B");
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "CRA-%.2X CRB-%.2X IREQ-%.2X IMSK-%.2X SP-%.2X",
-	      cia_cra[i], cia_crb[i], cia_icrreq[i], cia_icrmsk[i], cia_sp[i]);
-      y = wdbgLineOut(hDC, s, x, y);
+  //    sprintf(s, "CRA-%.2X CRB-%.2X IREQ-%.2X IMSK-%.2X SP-%.2X",
+	 //     cia_cra[i], cia_crb[i], cia_icrreq[i], cia_icrmsk[i], cia_sp[i]);
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "EV-%.8X ALARM-%.8X", cia_ev[i], cia_evalarm[i]);
-      y = wdbgLineOut(hDC, s, x, y);
+  //    sprintf(s, "EV-%.8X ALARM-%.8X", cia_ev[i], cia_evalarm[i]);
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "TA-%.4X TAHELP-%.8X TB-%.4X TBHELP-%.8X", cia_ta[i],
-	      cia_taleft[i], cia_tb[i], cia_tbleft[i]);
-      y = wdbgLineOut(hDC, s, x, y);
+  //    sprintf(s, "TA-%.4X TAHELP-%.8X TB-%.4X TBHELP-%.8X", cia_ta[i],
+	 //     cia_taleft[i], cia_tb[i], cia_tbleft[i]);
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "TALATCH-%.4X TBLATCH-%.4X", cia_talatch[i], cia_tblatch[i]);
-      y = wdbgLineOut(hDC, s, x, y);
+  //    sprintf(s, "TALATCH-%.4X TBLATCH-%.4X", cia_talatch[i], cia_tblatch[i]);
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      strcpy(s, "");
-      y = wdbgLineOut(hDC, s, x, y);
+  //    strcpy(s, "");
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      if (cia_cra[i] & 1)
-        strcpy(s, "Timer A started, ");
-      else
-        strcpy(s, "Timer A stopped, ");
+  //    if (cia_cra[i] & 1)
+  //      strcpy(s, "Timer A started, ");
+  //    else
+  //      strcpy(s, "Timer A stopped, ");
 
-      if (cia_cra[i] & 8)
-        strcat(s, "One-shot mode");
-      else
-        strcat(s, "Continuous");
+  //    if (cia_cra[i] & 8)
+  //      strcat(s, "One-shot mode");
+  //    else
+  //      strcat(s, "Continuous");
 
-      y = wdbgLineOut(hDC, s, x, y);
+  //    y = wdbgLineOut(hDC, s, x, y);
 
-      if (cia_crb[i] & 1)
-        strcpy(s, "Timer B started, ");
-      else
-        strcpy(s, "Timer B stopped, ");
+  //    if (cia_crb[i] & 1)
+  //      strcpy(s, "Timer B started, ");
+  //    else
+  //      strcpy(s, "Timer B stopped, ");
 
-      if (cia_crb[i] & 8)
-        strcat(s, "One-shot mode");
-      else
-        strcat(s, "Continuous");
+  //    if (cia_crb[i] & 8)
+  //      strcat(s, "One-shot mode");
+  //    else
+  //      strcat(s, "Continuous");
 
-      y = wdbgLineOut(hDC, s, x, y);
-      y++;
-    }
+  //    y = wdbgLineOut(hDC, s, x, y);
+  //    y++;
+  //  }
 
-    DeleteDC(hDC_image);
-    DeleteObject(myarrow);
-    DeleteObject(myfont);
-    EndPaint(hwndDlg, &paint_struct);
-  }
+  //  DeleteDC(hDC_image);
+  //  DeleteObject(myarrow);
+  //  DeleteObject(myfont);
+  //  EndPaint(hwndDlg, &paint_struct);
+  //}
 }
 
 /*============================================================================*/
@@ -607,69 +601,69 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
 void wdbgUpdateBlitterState(HWND hwndDlg)
 {
-  STR s[WDBG_STRLEN];
-  HDC hDC;
-  PAINTSTRUCT paint_struct;
+ // STR s[WDBG_STRLEN];
+ // HDC hDC;
+ // PAINTSTRUCT paint_struct;
 
-  hDC = BeginPaint(hwndDlg, &paint_struct);
-  if (hDC != NULL) {
+ // hDC = BeginPaint(hwndDlg, &paint_struct);
+ // if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
-    HFONT myfont = CreateFont(8,
-			      8,
-			      0,
-			      0,
-			      FW_NORMAL,
-			      FALSE,
-			      FALSE,
-			      FALSE,
-			      DEFAULT_CHARSET,
-			      OUT_DEFAULT_PRECIS,
-			      CLIP_DEFAULT_PRECIS,
-			      DEFAULT_QUALITY,
-			      FF_DONTCARE | FIXED_PITCH,
-			      "fixedsys");
+ //   ULO y = WDBG_CPU_REGISTERS_Y;
+ //   ULO x = WDBG_CPU_REGISTERS_X;
+ //   HFONT myfont = CreateFont(8,
+	//		      8,
+	//		      0,
+	//		      0,
+	//		      FW_NORMAL,
+	//		      FALSE,
+	//		      FALSE,
+	//		      FALSE,
+	//		      DEFAULT_CHARSET,
+	//		      OUT_DEFAULT_PRECIS,
+	//		      CLIP_DEFAULT_PRECIS,
+	//		      DEFAULT_QUALITY,
+	//		      FF_DONTCARE | FIXED_PITCH,
+	//		      "fixedsys");
 
-    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
-				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
-    HDC hDC_image = CreateCompatibleDC(hDC);
-    SelectObject(hDC_image, myarrow);
-    SelectObject(hDC, myfont);
-    SetBkMode(hDC, TRANSPARENT);
-    SetBkMode(hDC_image, TRANSPARENT);
-    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
-    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
-    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
-    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+ //   HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+	//			 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+ //   HDC hDC_image = CreateCompatibleDC(hDC);
+ //   SelectObject(hDC_image, myarrow);
+ //   SelectObject(hDC, myfont);
+ //   SetBkMode(hDC, TRANSPARENT);
+ //   SetBkMode(hDC_image, TRANSPARENT);
+ //   y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+ //   y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+ //   y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+ //   x = WDBG_DISASSEMBLY_X;
+ //   y = WDBG_DISASSEMBLY_Y;
+ //   BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+ //   x += WDBG_DISASSEMBLY_INDENT;
 
-    sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
-      bltcon, bltafwm, bltalwm);
-    y = wdbgLineOut(hDC, s, x, y);
+ //   sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
+ //     bltcon, bltafwm, bltalwm);
+ //   y = wdbgLineOut(hDC, s, x, y);
 
-	sprintf(s, "");
-    y = wdbgLineOut(hDC, s, x, y);
+	//sprintf(s, "");
+ //   y = wdbgLineOut(hDC, s, x, y);
 
-	sprintf(s, "bltapt:  %08X bltbpt:  %08X bltcpt:  %08X bltdpt:  %08X ",
-      bltapt, bltbpt, bltcpt, bltdpt);
-    y = wdbgLineOut(hDC, s, x, y);
+	//sprintf(s, "bltapt:  %08X bltbpt:  %08X bltcpt:  %08X bltdpt:  %08X ",
+ //     bltapt, bltbpt, bltcpt, bltdpt);
+ //   y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "bltamod: %08X bltbmod: %08X bltcmod: %08X bltdmod: %08X ",
-      bltamod, bltbmod, bltcmod, bltdmod);
-    y = wdbgLineOut(hDC, s, x, y);
+ //   sprintf(s, "bltamod: %08X bltbmod: %08X bltcmod: %08X bltdmod: %08X ",
+ //     bltamod, bltbmod, bltcmod, bltdmod);
+ //   y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "bltadat: %08X bltbdat: %08X bltcdat: %08X bltzero: %08X ",
-      bltadat, bltbdat, bltcdat, bltzero);
-    y = wdbgLineOut(hDC, s, x, y);
+ //   sprintf(s, "bltadat: %08X bltbdat: %08X bltcdat: %08X bltzero: %08X ",
+ //     bltadat, bltbdat, bltcdat, bltzero);
+ //   y = wdbgLineOut(hDC, s, x, y);
 
-    DeleteDC(hDC_image);
-    DeleteObject(myarrow);
-    DeleteObject(myfont);
-    EndPaint(hwndDlg, &paint_struct);
-  }
+ //   DeleteDC(hDC_image);
+ //   DeleteObject(myarrow);
+ //   DeleteObject(myfont);
+ //   EndPaint(hwndDlg, &paint_struct);
+ // }
 }
 
 /*============================================================================*/
@@ -972,9 +966,6 @@ void wdbgUpdateEventState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Next Blitter  - %d", blitterEvent.cycle);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    sprintf(s, "Next IRQ      - %d", irqEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Next EOF      - %d", eofEvent.cycle);
@@ -1606,25 +1597,25 @@ void wdebUpdateRegisterColumns()
   lv_item.iSubItem = 1;
   ListView_SetItem(hList, &lv_item);
 
-  sprintf(tmp, "%.8X", cpu_usp);
+  sprintf(tmp, "%.8X", cpuGetUspDirect());
   lv_item.pszText = tmp;
   lv_item.iItem = col++;
   lv_item.iSubItem = 1;
   ListView_SetItem(hList, &lv_item);
 
-  sprintf(tmp, "%.8X", cpu_ssp);
+  sprintf(tmp, "%.8X", cpuGetSspDirect());
   lv_item.pszText = tmp;
   lv_item.iItem = col++;
   lv_item.iSubItem = 1;
   ListView_SetItem(hList, &lv_item);
 
-  sprintf(tmp, "%.8X", cpu_msp);
+  sprintf(tmp, "%.8X", cpuGetMspDirect());
   lv_item.pszText = tmp;
   lv_item.iItem = col++;
   lv_item.iSubItem = 1;
   ListView_SetItem(hList, &lv_item);
 
-  sprintf(tmp, "%.8X", cpu_ssp);
+  sprintf(tmp, "%.8X", cpuGetSspDirect());
   lv_item.pszText = tmp;
   lv_item.iItem = col++;
   lv_item.iSubItem = 1;

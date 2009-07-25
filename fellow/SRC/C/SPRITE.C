@@ -1,4 +1,4 @@
-/* @(#) $Id: SPRITE.C,v 1.7 2008-11-03 21:12:10 peschau Exp $ */
+/* @(#) $Id: SPRITE.C,v 1.8 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Sprite emulation                                                        */
@@ -81,15 +81,15 @@ static __inline spriteTscBefore(LLO* a)
   __asm 
   {
     push    eax
-    push    edx
-    push    ecx
-    mov     ecx,10h
-    rdtsc
-    pop     ecx
-    mov     dword ptr [local_a], eax
-    mov     dword ptr [local_a + 4], edx
-    pop     edx
-    pop     eax
+      push    edx
+      push    ecx
+      mov     ecx,10h
+      rdtsc
+      pop     ecx
+      mov     dword ptr [local_a], eax
+      mov     dword ptr [local_a + 4], edx
+      pop     edx
+      pop     eax
   }
   *a = local_a;
 }
@@ -103,18 +103,18 @@ static __inline spriteTscAfter(LLO* a, LLO* b, ULO* c)
   __asm 
   {
     push    eax
-    push    edx
-    push    ecx
-    mov     ecx, 10h
-    rdtsc
-    pop     ecx
-    sub     eax, dword ptr [local_a]
+      push    edx
+      push    ecx
+      mov     ecx, 10h
+      rdtsc
+      pop     ecx
+      sub     eax, dword ptr [local_a]
     sbb     edx, dword ptr [local_a + 4]
     add     dword ptr [local_b], eax
-    adc     dword ptr [local_b + 4], edx
-    inc     dword ptr [local_c]
+      adc     dword ptr [local_b + 4], edx
+      inc     dword ptr [local_c]
     pop     edx
-    pop     eax
+      pop     eax
   }
   *a = local_a;
   *b = local_b;
@@ -219,26 +219,26 @@ void spriteMergeListClear(spr_merge_list_master* l)
 
 spr_register_func sprxptl_functions[8] =
 {
-	aspr0ptl,
-	aspr1ptl,
-	aspr2ptl,
-	aspr3ptl,
-	aspr4ptl,
-	aspr5ptl,
-	aspr6ptl,
-	aspr7ptl
+  aspr0ptl,
+  aspr1ptl,
+  aspr2ptl,
+  aspr3ptl,
+  aspr4ptl,
+  aspr5ptl,
+  aspr6ptl,
+  aspr7ptl
 };
 
 spr_register_func sprxpth_functions[8] =
 {
-	aspr0pth,
-	aspr1pth,
-	aspr2pth,
-	aspr3pth,
-	aspr4pth,
-	aspr5pth,
-	aspr6pth,
-	aspr7pth
+  aspr0pth,
+  aspr1pth,
+  aspr2pth,
+  aspr3pth,
+  aspr4pth,
+  aspr5pth,
+  aspr6pth,
+  aspr7pth
 };
 
 // NOT FOR COMMIT
@@ -312,9 +312,9 @@ void spriteTranslationTableInit(void) {
   for (k = 0; k < 2; k++)
     for (i = 0; i < 256; i++)
       for (j = 0; j < 256; j++) {
-        if (k == 0) l = (i == 0) ? j : i;
-        else l = (j == 0) ? i : j;
-        sprite_translate[k][i][j] = (UBY) l;
+	if (k == 0) l = (i == 0) ? j : i;
+	else l = (j == 0) ? i : j;
+	sprite_translate[k][i][j] = (UBY) l;
       }
 }
 
@@ -325,13 +325,13 @@ void spriteP2CTablesInitialize_ALSO(void)
   for (m = 0; m < 4; m++)
     for (n = 0; n < 2; n++)
       for (q = 0; q < 256; q++) 
-        for (p = 0; p < 8; p++)
-          sprite_deco4[m][n][q].i8[p] = (UBY) (((q & (0x80>>p)) == 0) ? 0 : (((m + 4)<<4) | (1<<(n + 2))));
+	for (p = 0; p < 8; p++)
+	  sprite_deco4[m][n][q].i8[p] = (UBY) (((q & (0x80>>p)) == 0) ? 0 : (((m + 4)<<4) | (1<<(n + 2))));
 
   for (n = 0; n < 4; n++)
     for (q = 0; q < 256; q++) 
       for (p = 0; p < 8; p++)
-        sprite_deco16[n][q].i8[p] = ((q & (0x80>>p)) == 0) ? 0 :  (64 | (1<<(n + 2)));
+	sprite_deco16[n][q].i8[p] = ((q & (0x80>>p)) == 0) ? 0 :  (64 | (1<<(n + 2)));
 }
 
 void spriteP2CTablesInitialize(void)
@@ -379,33 +379,33 @@ void spriteMergeHAM1x8(UBY *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    UBY *frame_ptr = frameptr + (first_visible_cylinder -
-					 DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      UBY *frame_ptr = frameptr + (first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-            while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) *frame_ptr = (UBY) graph_color_shadow[pixel>>2];
-	      frame_ptr++;
-	    }
-	  }					
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) *frame_ptr = (UBY) graph_color_shadow[pixel>>2];
+		frame_ptr++;
+	      }
+	    }					
 	}
       }
     }
@@ -424,33 +424,33 @@ void spriteMergeHAM2x8(UWO *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    UWO *frame_ptr = frameptr + (first_visible_cylinder -
-					 DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      UWO *frame_ptr = frameptr + (first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) *frame_ptr = (UWO) graph_color_shadow[pixel>>2];
-	      frame_ptr++;
-	    }
-	  }					
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) *frame_ptr = (UWO) graph_color_shadow[pixel>>2];
+		frame_ptr++;
+	      }
+	    }					
 	}
       }
     }
@@ -469,33 +469,33 @@ void spriteMergeHAM1x16(UWO *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    UWO *frame_ptr = frameptr + (first_visible_cylinder -
-					 DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      UWO *frame_ptr = frameptr + (first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) *frame_ptr = (UWO) graph_color_shadow[pixel>>2];
-	      frame_ptr++;
-	    }
-	  }					
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) *frame_ptr = (UWO) graph_color_shadow[pixel>>2];
+		frame_ptr++;
+	      }
+	    }					
 	}
       }
     }
@@ -514,33 +514,33 @@ void spriteMergeHAM2x16(ULO *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    ULO *frame_ptr = frameptr + (first_visible_cylinder -
-					 DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      ULO *frame_ptr = frameptr + (first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) *frame_ptr = (ULO) graph_color_shadow[pixel>>2];
-	      frame_ptr++;
-	    }
-	  }					
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) *frame_ptr = (ULO) graph_color_shadow[pixel>>2];
+		frame_ptr++;
+	      }
+	    }					
 	}
       }
     }
@@ -564,38 +564,38 @@ void spriteMergeHAM1x24(UBY *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    UBY *frame_ptr = frameptr + 3*(first_visible_cylinder -
-					   DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      UBY *frame_ptr = frameptr + 3*(first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) {
-		union sprham24helper color;
-		color.color_i = graph_color_shadow[pixel>>2];
-	        *frame_ptr++ = color.color_b[0];
-	        *frame_ptr++ = color.color_b[1];
-	        *frame_ptr++ = color.color_b[2];
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) {
+		  union sprham24helper color;
+		  color.color_i = graph_color_shadow[pixel>>2];
+		  *frame_ptr++ = color.color_b[0];
+		  *frame_ptr++ = color.color_b[1];
+		  *frame_ptr++ = color.color_b[2];
+		}
 	      }
-	    }
-	  }					
+	    }					
 	}
       }
     }
@@ -614,41 +614,41 @@ void spriteMergeHAM2x24(UBY *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    UBY *frame_ptr = frameptr + 6*(first_visible_cylinder -
-					   DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      UBY *frame_ptr = frameptr + 6*(first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) {
-		union sprham24helper color;
-		color.color_i = graph_color_shadow[pixel>>2];
-	        *frame_ptr++ = color.color_b[0];
-	        *frame_ptr++ = color.color_b[1];
-	        *frame_ptr++ = color.color_b[2];
-	        *frame_ptr++ = color.color_b[0];
-	        *frame_ptr++ = color.color_b[1];
-	        *frame_ptr++ = color.color_b[2];
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) {
+		  union sprham24helper color;
+		  color.color_i = graph_color_shadow[pixel>>2];
+		  *frame_ptr++ = color.color_b[0];
+		  *frame_ptr++ = color.color_b[1];
+		  *frame_ptr++ = color.color_b[2];
+		  *frame_ptr++ = color.color_b[0];
+		  *frame_ptr++ = color.color_b[1];
+		  *frame_ptr++ = color.color_b[2];
+		}
 	      }
-	    }
-	  }					
+	    }					
 	}
       }
     }
@@ -667,33 +667,33 @@ void spriteMergeHAM1x32(ULO *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    ULO *frame_ptr = frameptr + (first_visible_cylinder -
-					   DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      ULO *frame_ptr = frameptr + (first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) *frame_ptr = graph_color_shadow[pixel>>2];
-	      frame_ptr++;
-	    }
-	  }					
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) *frame_ptr = graph_color_shadow[pixel>>2];
+		frame_ptr++;
+	      }
+	    }					
 	}
       }
     }
@@ -712,37 +712,37 @@ void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc) {
     sprite_ham_slot *ham_slot = &sprite_ham_slots[linedesc->sprite_ham_slot];
     ULO DIW_first_visible = linedesc->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedesc->DIW_pixel_count;
-    
+
     linedesc->sprite_ham_slot = 0xffffffff;
     for (i = 0; i < 8; i++) {
       if (ham_slot->online[i]) {
-        if ((ham_slot->x[i] < DIW_last_visible) &&
-	    ((ham_slot->x[i] + 16) > DIW_first_visible)) {
-	  ULO first_visible_cylinder = ham_slot->x[i];
-	  ULO last_visible_cylinder = first_visible_cylinder + 16;
+	if ((ham_slot->x[i] < DIW_last_visible) &&
+	  ((ham_slot->x[i] + 16) > DIW_first_visible)) {
+	    ULO first_visible_cylinder = ham_slot->x[i];
+	    ULO last_visible_cylinder = first_visible_cylinder + 16;
 
-	  if (first_visible_cylinder < DIW_first_visible)
-	    first_visible_cylinder = DIW_first_visible;
-	  if (last_visible_cylinder > DIW_last_visible)
-	    last_visible_cylinder = DIW_last_visible;
-	  {
-	    UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
-	                                       ham_slot->x[i]]);
-	    /* frameptr points to the first visible HAM pixel in the framebuffer */
-	    ULO *frame_ptr = frameptr + 2*(first_visible_cylinder -
-					   DIW_first_visible);
-	    LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+	    if (first_visible_cylinder < DIW_first_visible)
+	      first_visible_cylinder = DIW_first_visible;
+	    if (last_visible_cylinder > DIW_last_visible)
+	      last_visible_cylinder = DIW_last_visible;
+	    {
+	      UBY *spr_ptr = &(ham_slot->data[i][first_visible_cylinder -
+		ham_slot->x[i]]);
+	      /* frameptr points to the first visible HAM pixel in the framebuffer */
+	      ULO *frame_ptr = frameptr + 2*(first_visible_cylinder -
+		DIW_first_visible);
+	      LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
-	    while (--pixel_count >= 0) {
-	      UBY pixel = *spr_ptr++;
-	      if (pixel != 0) {
-		ULO color = graph_color_shadow[pixel>>2];
-		*frame_ptr = color;
-		*(frame_ptr + 1) = color;
+	      while (--pixel_count >= 0) {
+		UBY pixel = *spr_ptr++;
+		if (pixel != 0) {
+		  ULO color = graph_color_shadow[pixel>>2];
+		  *frame_ptr = color;
+		  *(frame_ptr + 1) = color;
+		}
+		frame_ptr += 2;
 	      }
-	      frame_ptr += 2;
-	    }
-	  }			
+	    }			
 	}
       }
     }
@@ -809,7 +809,7 @@ void wsprpt(UWO data, ULO address)
   if (output_sprite_log == TRUE) {
     *((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = (UWO) data & 0x01f;
     sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
-			busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+      busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -978,7 +978,7 @@ void asprxctl(UWO data, ULO address) {
   spratt[sprnr] = !!(data & 0x80);
   sprly[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
 
-	spr_arm_data[sprnr] = FALSE;
+  spr_arm_data[sprnr] = FALSE;
 }
 
 /* SPRXDATA $dff144 to $dff17c */
@@ -999,7 +999,7 @@ void wsprxdata(UWO data, ULO address)
   item->data = data;
   item->address = address;
 
-	// for debugging only
+  // for debugging only
   if (output_sprite_log == TRUE) {
     sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddata\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
@@ -1015,7 +1015,7 @@ void asprxdata(UWO data, ULO address) {
   sprnr = (address >> 3) & 7;
   *((UWO *) &sprdat[sprnr]) = (UWO) data;
 
-	spr_arm_data[sprnr] = TRUE;
+  spr_arm_data[sprnr] = TRUE;
 }
 
 void wsprxdatb(UWO data, ULO address)
@@ -1034,7 +1034,7 @@ void wsprxdatb(UWO data, ULO address)
   item->data = data;
   item->address = address;
 
-	// for debugging only
+  // for debugging only
   if (output_sprite_log == TRUE) {
     sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddatb\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
@@ -1066,19 +1066,19 @@ void spritesLog(void) {
 
   for (no = 0; no < 8; no++) {
     char s[80];
-//    if (sprite_online[no]) {
-      sprintf(s, "%d %d, sprite %d fy %d ly %d x %d state %d att %d atto %d pt %.6X\n", draw_frame_count,
-							busGetRasterY(),
-							no,
-							spry[no],
-							sprly[no],
-							sprx[no],
-							sprite_state[no],
-							spratt[no & 6],
-							spratt[no | 1],
-							sprpt[no]);
-      fellowAddLog(s);
-  //  }
+    //    if (sprite_online[no]) {
+    sprintf(s, "%d %d, sprite %d fy %d ly %d x %d state %d att %d atto %d pt %.6X\n", draw_frame_count,
+      busGetRasterY(),
+      no,
+      spry[no],
+      sprly[no],
+      sprx[no],
+      sprite_state[no],
+      spratt[no & 6],
+      spratt[no | 1],
+      sprpt[no]);
+    fellowAddLog(s);
+    //  }
   }
 }
 
@@ -1121,13 +1121,13 @@ void spriteIORegistersClear(void) {
 
   for (i = 0; i < 8; i++) {
     sprpt[i] = 0;
-		sprpt_debug[i] = 0;
+    sprpt_debug[i] = 0;
     sprx[i] = 0;
     spry[i] = 0;
     sprly[i] = 0;
     spratt[i] = 0;
-		spr_arm_data[i] = FALSE;
-		spr_arm_comparator[i] = FALSE;
+    spr_arm_data[i] = FALSE;
+    spr_arm_comparator[i] = FALSE;
     for (j = 0; j < 2; j++) sprdat[i][j];
     sprite_state[i] = 0;
     sprite_state_old[i] = 0;
@@ -1194,10 +1194,10 @@ void spriteEndOfFrame(void) {
     spr_arm_comparator[i] = FALSE;
     spriteActionListClear(&spr_action_list[i]);
     spriteActionListClear(&spr_dma_action_list[i]);
-//    spriteDMAActionListClear(i);
+    //    spriteDMAActionListClear(i);
   }
   sprite_ham_slot_next = 0;
-//  spriteActionListsClear();
+  //  spriteActionListsClear();
 }
 
 
@@ -1233,10 +1233,10 @@ void spriteStartup(void) {
     spriteActionListClear(&spr_action_list[i]);
     spriteActionListClear(&spr_dma_action_list[i]);
     spriteMergeListClear(&spr_merge_list[i]);
-//    spriteDMAActionListClear(i);
+    //    spriteDMAActionListClear(i);
   }
   sprite_ham_slot_next = 0;
-//  spriteActionListsClear();
+  //  spriteActionListsClear();
 
 
   spriteP2CTablesInitialize();
@@ -1255,90 +1255,90 @@ void spriteStartup(void) {
 void spriteShutdown(void) {
 #ifdef DRAW_TSC_PROFILE
   {
-  FILE *F = fopen("spriteprofile.txt", "w");
-  fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\n");
-  fprintf(F, "SpriteMergeLores()\t%I64d\t%d\t%I64d\n", spritemergelores, spritemergelores_times, (spritemergelores_times == 0) ? 0 : (spritemergelores / spritemergelores_times));
-  fprintf(F, "SpriteMergeHires()\t%I64d\t%d\t%I64d\n", spritemergehires, spritemergehires_times, (spritemergehires_times == 0) ? 0 : (spritemergehires / spritemergehires_times));
-  fprintf(F, "SpriteMergeDual()\t%I64d\t%d\t%I64d\n", spritemergedual, spritemergedual_times, (spritemergedual_times == 0) ? 0 : (spritemergedual / spritemergedual_times));
-  fprintf(F, "WSPRPT()\t%I64d\t%d\t%I64d\n", spritewsprpt, spritewsprpt_times, (spritewsprpt_times == 0) ? 0 : (spritewsprpt / spritewsprpt_times));
-  fprintf(F, "WSPRPOS()\t%I64d\t%d\t%I64d\n", spritewsprpos, spritewsprpos_times, (spritewsprpos_times == 0) ? 0 : (spritewsprpos / spritewsprpos_times));
-  fprintf(F, "WSPRCTL()\t%I64d\t%d\t%I64d\n", spritewsprctl, spritewsprctl_times, (spritewsprctl_times == 0) ? 0 : (spritewsprctl / spritewsprctl_times));
-  fprintf(F, "WSPRDATA()\t%I64d\t%d\t%I64d\n", spritewsprdata, spritewsprdata_times, (spritewsprdata_times == 0) ? 0 : (spritewsprdata / spritewsprdata_times));
-  fprintf(F, "WSPRDATB()\t%I64d\t%d\t%I64d\n", spritewsprdatb, spritewsprdatb_times, (spritewsprdatb_times == 0) ? 0 : (spritewsprdatb / spritewsprdatb_times));
-  fclose(F);
+    FILE *F = fopen("spriteprofile.txt", "w");
+    fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\n");
+    fprintf(F, "SpriteMergeLores()\t%I64d\t%d\t%I64d\n", spritemergelores, spritemergelores_times, (spritemergelores_times == 0) ? 0 : (spritemergelores / spritemergelores_times));
+    fprintf(F, "SpriteMergeHires()\t%I64d\t%d\t%I64d\n", spritemergehires, spritemergehires_times, (spritemergehires_times == 0) ? 0 : (spritemergehires / spritemergehires_times));
+    fprintf(F, "SpriteMergeDual()\t%I64d\t%d\t%I64d\n", spritemergedual, spritemergedual_times, (spritemergedual_times == 0) ? 0 : (spritemergedual / spritemergedual_times));
+    fprintf(F, "WSPRPT()\t%I64d\t%d\t%I64d\n", spritewsprpt, spritewsprpt_times, (spritewsprpt_times == 0) ? 0 : (spritewsprpt / spritewsprpt_times));
+    fprintf(F, "WSPRPOS()\t%I64d\t%d\t%I64d\n", spritewsprpos, spritewsprpos_times, (spritewsprpos_times == 0) ? 0 : (spritewsprpos / spritewsprpos_times));
+    fprintf(F, "WSPRCTL()\t%I64d\t%d\t%I64d\n", spritewsprctl, spritewsprctl_times, (spritewsprctl_times == 0) ? 0 : (spritewsprctl / spritewsprctl_times));
+    fprintf(F, "WSPRDATA()\t%I64d\t%d\t%I64d\n", spritewsprdata, spritewsprdata_times, (spritewsprdata_times == 0) ? 0 : (spritewsprdata / spritewsprdata_times));
+    fprintf(F, "WSPRDATB()\t%I64d\t%d\t%I64d\n", spritewsprdatb, spritewsprdatb_times, (spritewsprdatb_times == 0) ? 0 : (spritewsprdatb / spritewsprdatb_times));
+    fclose(F);
   }
 #endif
 }
 
 void spriteDecode4Sprite_C(ULO sprnr)
 {
-	spr_merge_list_item * item;
-	ULO sprite_class = sprnr >> 1;
-	//ULO* chunky_dest = (ULO *) (&sprite[sprnr][0]);
-	ULO* chunky_dest;
-	UBY* word[2] = {
-		(UBY *) &sprdat[sprnr][0], 
-		(UBY *) &sprdat[sprnr][1]
-	};
-	ULO planardata;
+  spr_merge_list_item * item;
+  ULO sprite_class = sprnr >> 1;
+  //ULO* chunky_dest = (ULO *) (&sprite[sprnr][0]);
+  ULO* chunky_dest;
+  UBY* word[2] = {
+    (UBY *) &sprdat[sprnr][0], 
+    (UBY *) &sprdat[sprnr][1]
+  };
+  ULO planardata;
 
-	item = spriteMergeListAddLast(&spr_merge_list[sprnr]);
-	item->sprx = sprx[sprnr];
-	chunky_dest = (ULO *) (item->sprite_data);
+  item = spriteMergeListAddLast(&spr_merge_list[sprnr]);
+  item->sprx = sprx[sprnr];
+  chunky_dest = (ULO *) (item->sprite_data);
 
-	planardata = *word[0]++;
-	chunky_dest[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
-	chunky_dest[3] = sprite_deco4[sprite_class][0][planardata].i32[1];
+  planardata = *word[0]++;
+  chunky_dest[2] = sprite_deco4[sprite_class][0][planardata].i32[0];
+  chunky_dest[3] = sprite_deco4[sprite_class][0][planardata].i32[1];
 
-	planardata = *word[0];
-	chunky_dest[0] = sprite_deco4[sprite_class][0][planardata].i32[0];
-	chunky_dest[1] = sprite_deco4[sprite_class][0][planardata].i32[1];
+  planardata = *word[0];
+  chunky_dest[0] = sprite_deco4[sprite_class][0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco4[sprite_class][0][planardata].i32[1];
 
-	planardata = *word[1]++;
-	chunky_dest[2] |= sprite_deco4[sprite_class][1][planardata].i32[0];
-	chunky_dest[3] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+  planardata = *word[1]++;
+  chunky_dest[2] |= sprite_deco4[sprite_class][1][planardata].i32[0];
+  chunky_dest[3] |= sprite_deco4[sprite_class][1][planardata].i32[1];
 
-	planardata = *word[1];
-	chunky_dest[0] |= sprite_deco4[sprite_class][1][planardata].i32[0];
-	chunky_dest[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
+  planardata = *word[1];
+  chunky_dest[0] |= sprite_deco4[sprite_class][1][planardata].i32[0];
+  chunky_dest[1] |= sprite_deco4[sprite_class][1][planardata].i32[1];
 }
 
 void spriteDecode16Sprite_C(ULO sprnr)
 {
-	spr_merge_list_item * item;
-	//ULO *chunky_dest = (ULO *) (&sprite[sprnr][0]);
-	ULO *chunky_dest;
-	UBY *word[4] = {
-		(UBY*) &sprdat[sprnr & 0xfe][0], 
-		(UBY*) &sprdat[sprnr & 0xfe][1],
-		(UBY*) &sprdat[sprnr][0], 
-		(UBY*)&sprdat[sprnr][1]
-	};
-	ULO planardata;
-	UBY bpl;
+  spr_merge_list_item * item;
+  //ULO *chunky_dest = (ULO *) (&sprite[sprnr][0]);
+  ULO *chunky_dest;
+  UBY *word[4] = {
+    (UBY*) &sprdat[sprnr & 0xfe][0], 
+    (UBY*) &sprdat[sprnr & 0xfe][1],
+    (UBY*) &sprdat[sprnr][0], 
+    (UBY*)&sprdat[sprnr][1]
+  };
+  ULO planardata;
+  UBY bpl;
 
-	item = spriteMergeListAddLast(&spr_merge_list[sprnr]);
-	item->sprx = sprx[sprnr];
-	chunky_dest = (ULO *) (item->sprite_data);
+  item = spriteMergeListAddLast(&spr_merge_list[sprnr]);
+  item->sprx = sprx[sprnr];
+  chunky_dest = (ULO *) (item->sprite_data);
 
-	planardata = *word[0]++;
-	chunky_dest[2] = sprite_deco16[0][planardata].i32[0];
-	chunky_dest[3] = sprite_deco16[0][planardata].i32[1];
+  planardata = *word[0]++;
+  chunky_dest[2] = sprite_deco16[0][planardata].i32[0];
+  chunky_dest[3] = sprite_deco16[0][planardata].i32[1];
 
-	planardata = *word[0];
-	chunky_dest[0] = sprite_deco16[0][planardata].i32[0];
-	chunky_dest[1] = sprite_deco16[0][planardata].i32[1];
+  planardata = *word[0];
+  chunky_dest[0] = sprite_deco16[0][planardata].i32[0];
+  chunky_dest[1] = sprite_deco16[0][planardata].i32[1];
 
-	for (bpl = 1; bpl < 4; bpl++)
-	{  
-		planardata = *word[bpl]++;
-		chunky_dest[2] |= sprite_deco16[bpl][planardata].i32[0];
-		chunky_dest[3] |= sprite_deco16[bpl][planardata].i32[1];
+  for (bpl = 1; bpl < 4; bpl++)
+  {  
+    planardata = *word[bpl]++;
+    chunky_dest[2] |= sprite_deco16[bpl][planardata].i32[0];
+    chunky_dest[3] |= sprite_deco16[bpl][planardata].i32[1];
 
-		planardata = *word[bpl];
-		chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
-		chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
-	}
+    planardata = *word[bpl];
+    chunky_dest[0] |= sprite_deco16[bpl][planardata].i32[0];
+    chunky_dest[1] |= sprite_deco16[bpl][planardata].i32[1];
+  }
 }
 
 void spritesDMASpriteHandler(void) {
@@ -1355,7 +1355,7 @@ void spritesDMASpriteHandler(void) {
 
   sprites_online = FALSE;
   sprnr = 0;
-  
+
   while (sprnr < 8) 
   {
     switch(sprite_state[sprnr]) 
@@ -1365,38 +1365,38 @@ void spritesDMASpriteHandler(void) {
       // inactive (waiting for a write to sprxptl)
       for (i = 0; i < count; i++)
       {
-        // move through DMA action list
-        dma_action_item = spriteActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
-        {
-          // a write to sprxptl was made during this line, execute it now
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	// move through DMA action list
+	dma_action_item = spriteActionListGet(&spr_dma_action_list[sprnr], i);
+	// check if item is a write to register sprxptl
+	if (dma_action_item->called_function == sprxptl_functions[sprnr])
+	{
+	  // a write to sprxptl was made during this line, execute it now
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
 
-          // data from sprxpos
+	  // data from sprxpos
 	  local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	  local_spry = ((local_data_pos & 0xff00) >> 8);
-          local_sprx = ((local_data_pos & 0xff) << 1);
+	  local_sprx = ((local_data_pos & 0xff) << 1);
 
-          // data from sprxctl
+	  // data from sprxctl
 	  local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	  local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
-          local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+	  local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
 	  local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
 
 	  if (((local_spry < local_sprly) ) || ((local_data_ctl == 0) && (local_data_pos == 0)))
-            //((spr_action_list_item *) (dma_action_item->node))->raster_x < 71
-            //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
+	    //((spr_action_list_item *) (dma_action_item->node))->raster_x < 71
+	    //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
 	  {
 	    // insert a write to sprxpos at time raster_x
 	    item = spriteActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
-            
+
 	    item->raster_x = dma_action_item->raster_x;
 	    item->raster_y = dma_action_item->raster_y;
 	    item->called_function = asprxpos;
 	    item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	    item->address = sprnr << 3;
-            
+
 	    // insert a write to sprxctl at time raster_x
 	    item = spriteActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
 	    item->raster_x = dma_action_item->raster_x;
@@ -1406,28 +1406,28 @@ void spritesDMASpriteHandler(void) {
 	    item->address = sprnr << 3;
 	  }
 
-          if ((local_spry < local_sprly) && (local_sprx > 40))
-          {
-            // point to next two data words
+	  if ((local_spry < local_sprly) && (local_sprx > 40))
+	  {
+	    // point to next two data words
 	    sprpt[sprnr] = sprpt[sprnr] + 4; 
-          }
+	  }
 
-          if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
-          {
-            sprite_state[sprnr] = 0;
-          }
-          else
-          {
-            sprite_state[sprnr] = 1;
-          }
-        }
+	  if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+	  {
+	    sprite_state[sprnr] = 0;
+	  }
+	  else
+	  {
+	    sprite_state[sprnr] = 1;
+	  }
+	}
 
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
-        {
-          // update the sprxpth
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
-        }
+	// check if item is a write to register sprxpth
+	if (dma_action_item->called_function == sprxpth_functions[sprnr])
+	{
+	  // update the sprxpth
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	}
       }
       spriteActionListClear(&spr_dma_action_list[sprnr]);
       break;
@@ -1440,7 +1440,7 @@ void spritesDMASpriteHandler(void) {
 	if (TRUE)
 	{
 	  // we can start to display the first line of the sprite
-   
+
 	  // insert a write to sprxdatb 
 	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
 	  item->raster_x = 60;
@@ -1471,19 +1471,19 @@ void spritesDMASpriteHandler(void) {
       {
 	// move through DMA action list
 	dma_action_item = spriteActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
-        {
+	// check if item is a write to register sprxptl
+	if (dma_action_item->called_function == sprxptl_functions[sprnr])
+	{
 	  // a write to sprxptl was made during this line, execute it now
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
-        }
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	}
 
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
-        {
-          // update the sprxpth
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
-        }
+	// check if item is a write to register sprxpth
+	if (dma_action_item->called_function == sprxpth_functions[sprnr])
+	{
+	  // update the sprxpth
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	}
       }
       spriteActionListClear(&spr_dma_action_list[sprnr]);
       break;
@@ -1500,7 +1500,7 @@ void spritesDMASpriteHandler(void) {
 	local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
 
 	//if ((local_spry <= local_sprly) || ((local_data_ctl == 0) && (local_data_pos == 0)))
-        if (TRUE)
+	if (TRUE)
 	{
 	  // insert a write to sprxpos at time raster_x
 	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 0, currentY);
@@ -1509,7 +1509,7 @@ void spritesDMASpriteHandler(void) {
 	  item->called_function = asprxpos;
 	  item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	  item->address = sprnr << 3;
-        
+
 	  // insert a write to sprxctl at time raster_x
 	  item = spriteActionListAddSorted(&spr_action_list[sprnr], 1, currentY);
 	  item->raster_x = 1;
@@ -1517,22 +1517,22 @@ void spritesDMASpriteHandler(void) {
 	  item->called_function = asprxctl;
 	  item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	  item->address = sprnr << 3;
-        } 
- 
-        if (local_spry < local_sprly)
-        {
-          // point to next two data words
-	  sprpt[sprnr] = sprpt[sprnr] + 4; 
-        }
+	} 
 
-        if ((local_data_ctl == 0) && (local_data_pos == 0))
-        {
-          sprite_state[sprnr] = 0;
-        }
-        else
-        {
-          sprite_state[sprnr] = 1;
-        }
+	if (local_spry < local_sprly)
+	{
+	  // point to next two data words
+	  sprpt[sprnr] = sprpt[sprnr] + 4; 
+	}
+
+	if ((local_data_ctl == 0) && (local_data_pos == 0))
+	{
+	  sprite_state[sprnr] = 0;
+	}
+	else
+	{
+	  sprite_state[sprnr] = 1;
+	}
       }
       else
       {
@@ -1561,27 +1561,27 @@ void spritesDMASpriteHandler(void) {
       count = spriteActionListCount(&spr_dma_action_list[sprnr]);
       for (i = 0; i < count; i++)
       {
-        // move through DMA action list
-        dma_action_item = spriteActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
-        {
-          // a write to sprxptl was made during this line, execute it now
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	// move through DMA action list
+	dma_action_item = spriteActionListGet(&spr_dma_action_list[sprnr], i);
+	// check if item is a write to register sprxptl
+	if (dma_action_item->called_function == sprxptl_functions[sprnr])
+	{
+	  // a write to sprxptl was made during this line, execute it now
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
 
-          // data from sprxpos
+	  // data from sprxpos
 	  local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	  local_spry = ((local_data_pos & 0xff00) >> 8);
-          local_sprx = ((local_data_pos & 0xff) << 1);
+	  local_sprx = ((local_data_pos & 0xff) << 1);
 
-          // data from sprxctl
+	  // data from sprxctl
 	  local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
 	  local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
-          local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+	  local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
 	  local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
 
 	  if (((local_spry < local_sprly) ))
-          //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
+	    //if ((graph_raster_y < 24) || (((spr_action_list_item *) (dma_action_item->node))->raster_x < 71))
 	  {
 	    // insert a write to sprxpos at time raster_x
 	    item = spriteActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
@@ -1590,7 +1590,7 @@ void spritesDMASpriteHandler(void) {
 	    item->called_function = asprxpos;
 	    item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
 	    item->address = sprnr << 3;
-           
+
 	    // insert a write to sprxctl at time raster_x
 	    item = spriteActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x + 1, dma_action_item->raster_y);
 	    item->raster_x = dma_action_item->raster_x + 1;
@@ -1600,28 +1600,28 @@ void spritesDMASpriteHandler(void) {
 	    item->address = sprnr << 3;
 	  }
 
-          if ((local_spry < local_sprly) && (local_sprx > 40))
-          {
-            // point to next two data words
+	  if ((local_spry < local_sprly) && (local_sprx > 40))
+	  {
+	    // point to next two data words
 	    sprpt[sprnr] = sprpt[sprnr] + 4; 
-          }
+	  }
 
-          if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
-          {
-            sprite_state[sprnr] = 0;
-          }
-          else
-          {
+	  if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+	  {
+	    sprite_state[sprnr] = 0;
+	  }
+	  else
+	  {
 	    sprite_state[sprnr] = 1;
-          }					
-        }
+	  }					
+	}
 
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
-        {
-          // update the sprxpth
-          dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
-        }
+	// check if item is a write to register sprxpth
+	if (dma_action_item->called_function == sprxpth_functions[sprnr])
+	{
+	  // update the sprxpth
+	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
+	}
       }
       spriteActionListClear(&spr_dma_action_list[sprnr]);
       break;  
@@ -1665,10 +1665,10 @@ void spriteProcessActionList(void)
 		// even sprite 
 		if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
 		{
-		    // even sprite not attached to next odd sprite -> 3 color decode 
-		    spriteDecode4Sprite_C(sprnr);
-		    sprites_online = TRUE;
-		    sprite_online[sprnr] = TRUE;
+		  // even sprite not attached to next odd sprite -> 3 color decode 
+		  spriteDecode4Sprite_C(sprnr);
+		  sprites_online = TRUE;
+		  sprite_online[sprnr] = TRUE;
 		}
 	      }
 	      else
@@ -1695,8 +1695,8 @@ void spriteProcessActionList(void)
 	      // for debugging only
 	      if (output_action_sprite_log == TRUE) {
 		sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
-				sprnr, busGetRasterY(), sprx[sprnr]);
-				fellowAddLog2(buffer);
+		  sprnr, busGetRasterY(), sprx[sprnr]);
+		fellowAddLog2(buffer);
 	      }
 	    }
 	  }
@@ -1747,8 +1747,8 @@ void spriteProcessActionList(void)
 	// for debugging only
 	if (output_action_sprite_log == TRUE) {
 	  sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
-				sprnr, busGetRasterY(), sprx[sprnr]);
-				fellowAddLog2(buffer);
+	    sprnr, busGetRasterY(), sprx[sprnr]);
+	  fellowAddLog2(buffer);
 	}
       }
     }
@@ -1775,451 +1775,451 @@ void spriteSetDebugging()
 // current sprite is in front of playfield 2, and thus also in front of playfield 1
 static void spriteMergeDualLoresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr)
 {
-	ULO i, j;
-	UBY *line2; 
-	UBY *sprite_data; 
-	UBY line2_buildup[4];
-	spr_merge_list_item *next_item;
+  ULO i, j;
+  UBY *line2; 
+  UBY *sprite_data; 
+  UBY line2_buildup[4];
+  spr_merge_list_item *next_item;
 
-	ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
-	for (j = 0; j < count; j++)
-	{
-		next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
-		line2 = current_graph_line->line2 + next_item->sprx + 1;
-		sprite_data = next_item->sprite_data;
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line2 = current_graph_line->line2 + next_item->sprx + 1;
+    sprite_data = next_item->sprite_data;
 
-		for (i = 0; i < 4; i++)
-		{
-			*((ULO *) line2_buildup) = *((ULO *) line2);
-			if ((UBY) (*((ULO *) sprite_data)) != 0)
-			{
-				//cl = dl; 
-				line2_buildup[0] = (UBY) *((ULO *) sprite_data);
-			}
+    for (i = 0; i < 4; i++)
+    {
+      *((ULO *) line2_buildup) = *((ULO *) line2);
+      if ((UBY) (*((ULO *) sprite_data)) != 0)
+      {
+	//cl = dl; 
+	line2_buildup[0] = (UBY) *((ULO *) sprite_data);
+      }
 
-			// mdlpf21:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
-			{
-				//ch = dh; 
-				line2_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
-			}
+      // mdlpf21:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+      {
+	//ch = dh; 
+	line2_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+      }
 
-			// mdlph22:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
-			{
-				//cl = dl; 
-				line2_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
-			}
+      // mdlph22:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+      {
+	//cl = dl; 
+	line2_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+      }
 
-			// mdlpf23:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
-			{
-				//ch = dh; 
-				line2_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
-			}
+      // mdlpf23:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+      {
+	//ch = dh; 
+	line2_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+      }
 
-			// mdlpf24:
-			*((ULO *) line2) = *((ULO *) line2_buildup);
-			sprite_data += 4;
-			line2 += 4;
-		}
-	}
+      // mdlpf24:
+      *((ULO *) line2) = *((ULO *) line2_buildup);
+      sprite_data += 4;
+      line2 += 4;
+    }
+  }
 }
 
 // current sprite is behind of playfield 2, but in front of playfield 1
 static void spriteMergeDualLoresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr)
 {
-	ULO i, j;
-	UBY *line1; 
-	UBY *sprite_data; 
-	UBY line_buildup[4];
-	spr_merge_list_item *next_item;
+  ULO i, j;
+  UBY *line1; 
+  UBY *sprite_data; 
+  UBY line_buildup[4];
+  spr_merge_list_item *next_item;
 
-	ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
-	for (j = 0; j < count; j++)
-	{
-		next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
-		line1 = current_graph_line->line1 + next_item->sprx + 1;
-		sprite_data = next_item->sprite_data;
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line1 = current_graph_line->line1 + next_item->sprx + 1;
+    sprite_data = next_item->sprite_data;
 
-		for (i = 0; i < 4; i++)
-		{
-			*((ULO *) line_buildup) = *((ULO *) line1);
-			if ((UBY) (*((ULO *) sprite_data)) != 0)
-			{
-				//cl = dl; 
-				line_buildup[0] = (UBY) *((ULO *) sprite_data);
-			}
+    for (i = 0; i < 4; i++)
+    {
+      *((ULO *) line_buildup) = *((ULO *) line1);
+      if ((UBY) (*((ULO *) sprite_data)) != 0)
+      {
+	//cl = dl; 
+	line_buildup[0] = (UBY) *((ULO *) sprite_data);
+      }
 
-			// mdlpf21:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
-			{
-				//ch = dh; 
-				line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
-			}
+      // mdlpf21:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+      {
+	//ch = dh; 
+	line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+      }
 
-			// mdlph22:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
-			{
-				//cl = dl; 
-				line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
-			}
+      // mdlph22:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+      {
+	//cl = dl; 
+	line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+      }
 
-			// mdlpf23:
-			if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
-			{
-				//ch = dh; 
-				line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
-			}
+      // mdlpf23:
+      if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+      {
+	//ch = dh; 
+	line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+      }
 
-			// mdlpf24:
-			*((ULO *) line1) = *((ULO *) line_buildup);
-			sprite_data += 4;
-			line1 += 4;
-		}
-	}
+      // mdlpf24:
+      *((ULO *) line1) = *((ULO *) line_buildup);
+      sprite_data += 4;
+      line1 += 4;
+    }
+  }
 }
 
 // current sprite is behind of playfield 2, and also behind playfield 1
 static void spriteMergeDualLoresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr)
 {
-	ULO i, j;
-	UBY *line1;
-	UBY *sprite_data; 
-	UBY line_buildup[4];
-	spr_merge_list_item *next_item;
+  ULO i, j;
+  UBY *line1;
+  UBY *sprite_data; 
+  UBY line_buildup[4];
+  spr_merge_list_item *next_item;
 
-	ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
-	for (j = 0; j < count; j++)
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line1 = current_graph_line->line1 + next_item->sprx + 1;
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      *((ULO *) line_buildup) = *((ULO *) line1);
+      if ((UBY) (*((ULO *) line1)) == 0)
+      {
+	if ((UBY) (*((ULO *) sprite_data)) != 0)
 	{
-		next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
-		line1 = current_graph_line->line1 + next_item->sprx + 1;
-		sprite_data = next_item->sprite_data;
-
-		for (i = 0; i < 4; i++)
-		{
-			*((ULO *) line_buildup) = *((ULO *) line1);
-			if ((UBY) (*((ULO *) line1)) == 0)
-			{
-				if ((UBY) (*((ULO *) sprite_data)) != 0)
-				{
-					line_buildup[0] = (UBY) *((ULO *) sprite_data);
-				}
-			}
-
-			// mdlb1:
-			if ((UBY) ((*((ULO *) line1)) >> 8) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
-				{
-					//ch = dh; 
-					line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
-				}
-			}
-
-			// mdlb2:
-			if ((UBY) ((*((ULO *) line1)) >> 16) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
-				{
-					//cl = dl; 
-					line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
-				}
-			}
-
-			// mdlb3:
-			if ((UBY) ((*((ULO *) line1)) >> 24) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
-				{
-					//ch = dh; 
-					line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
-				}
-			}
-
-			// mdlb4:
-			*((ULO *) line1) = *((ULO *) line_buildup);
-			sprite_data += 4;
-			line1 += 4;
-		}
+	  line_buildup[0] = (UBY) *((ULO *) sprite_data);
 	}
+      }
+
+      // mdlb1:
+      if ((UBY) ((*((ULO *) line1)) >> 8) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+	{
+	  //ch = dh; 
+	  line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+	}
+      }
+
+      // mdlb2:
+      if ((UBY) ((*((ULO *) line1)) >> 16) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+	{
+	  //cl = dl; 
+	  line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+	}
+      }
+
+      // mdlb3:
+      if ((UBY) ((*((ULO *) line1)) >> 24) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+	{
+	  //ch = dh; 
+	  line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+	}
+      }
+
+      // mdlb4:
+      *((ULO *) line1) = *((ULO *) line_buildup);
+      sprite_data += 4;
+      line1 += 4;
+    }
+  }
 }
 
 // current sprite is in behind of playfield 2, and thus also behind playfield 1
 static void spriteMergeDualLoresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr)
 {
-	ULO i, j;
-	UBY *line2;
-	UBY *sprite_data; 
-	UBY line_buildup[4];
-	spr_merge_list_item *next_item;
+  ULO i, j;
+  UBY *line2;
+  UBY *sprite_data; 
+  UBY line_buildup[4];
+  spr_merge_list_item *next_item;
 
-	ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
-	for (j = 0; j < count; j++)
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line2 = current_graph_line->line2 + next_item->sprx + 1;
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      *((ULO *) line_buildup) = *((ULO *) line2);
+      if ((UBY) (*((ULO *) line2)) == 0)
+      {
+	if ((UBY) (*((ULO *) sprite_data)) != 0)
 	{
-		next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
-		line2 = current_graph_line->line2 + next_item->sprx + 1;
-		sprite_data = next_item->sprite_data;
-
-		for (i = 0; i < 4; i++)
-		{
-			*((ULO *) line_buildup) = *((ULO *) line2);
-			if ((UBY) (*((ULO *) line2)) == 0)
-			{
-				if ((UBY) (*((ULO *) sprite_data)) != 0)
-				{
-					line_buildup[0] = (UBY) *((ULO *) sprite_data);
-				}
-			}
-
-			// mdlpfb1:
-			if ((UBY) ((*((ULO *) line2)) >> 8) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
-				{
-					//ch = dh; 
-					line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
-				}
-			}
-
-			// mdlpfb2:
-			if ((UBY) ((*((ULO *) line2)) >> 16) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
-				{
-					//cl = dl; 
-					line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
-				}
-			}
-
-			// mdlpfb3:
-			if ((UBY) ((*((ULO *) line2)) >> 24) == 0)
-			{
-				if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
-				{
-					//ch = dh; 
-					line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
-				}
-			}
-
-			// mdlpfb4:
-			*((ULO *) line2) = *((ULO *) line_buildup);
-			sprite_data += 4;
-			line2 += 4;
-		}
+	  line_buildup[0] = (UBY) *((ULO *) sprite_data);
 	}
+      }
+
+      // mdlpfb1:
+      if ((UBY) ((*((ULO *) line2)) >> 8) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 8) != 0)
+	{
+	  //ch = dh; 
+	  line_buildup[1] = (UBY) ((*((ULO *) sprite_data) >> 8));
+	}
+      }
+
+      // mdlpfb2:
+      if ((UBY) ((*((ULO *) line2)) >> 16) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 16) != 0)
+	{
+	  //cl = dl; 
+	  line_buildup[2] = (UBY) ((*((ULO *) sprite_data) >> 16));
+	}
+      }
+
+      // mdlpfb3:
+      if ((UBY) ((*((ULO *) line2)) >> 24) == 0)
+      {
+	if ((UBY) ((*((ULO *) sprite_data)) >> 24) != 0)
+	{
+	  //ch = dh; 
+	  line_buildup[3] = (UBY) ((*((ULO *) sprite_data) >> 24));
+	}
+      }
+
+      // mdlpfb4:
+      *((ULO *) line2) = *((ULO *) line_buildup);
+      sprite_data += 4;
+      line2 += 4;
+    }
+  }
 }
 
 static void spriteMergeDualPlayfield(graph_line* current_graph_line)
 {
-	ULO sprnr;
+  ULO sprnr;
 
 #ifdef DRAW_TSC_PROFILE
-		spriteTscBefore(&spritemergedual_tmp);
-  #endif
+  spriteTscBefore(&spritemergedual_tmp);
+#endif
 
-	for (sprnr = 0; sprnr < 8; sprnr++)
+  for (sprnr = 0; sprnr < 8; sprnr++)
+  {
+    if (sprite_online[sprnr] == TRUE)
+    {
+      // there is sprite data waiting within this line
+      //if (sprx[sprnr] <= graph_DIW_last_visible)
+      //{
+      // set destination and source 
+      //line1 = ((current_graph_line->line1) + sprx[sprnr]);
+      //sprite_data = sprite[sprnr];
+
+      // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
+      if ((bplcon2 & 0x40) == 0x40)
+      {
+	// playfield 2 is in front of playfield 1
+	if ((bplcon2 & 0x38) > sprnr*4)
 	{
-		if (sprite_online[sprnr] == TRUE)
-		{
-			// there is sprite data waiting within this line
-			//if (sprx[sprnr] <= graph_DIW_last_visible)
-			//{
-				// set destination and source 
-				//line1 = ((current_graph_line->line1) + sprx[sprnr]);
-				//sprite_data = sprite[sprnr];
-
-				// determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
-				if ((bplcon2 & 0x40) == 0x40)
-				{
-					// playfield 2 is in front of playfield 1
-					if ((bplcon2 & 0x38) > sprnr*4)
-					{
-						// current sprite is in front of playfield 2, and thus also in front of playfield 1
-						spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
-					}
-					else
-					{
-						// current sprite is behind of playfield 2
-						if (((bplcon2 & 0x7) << 1) > sprnr)
-						{
-							// current sprite is behind of playfield 2, but in front of playfield 1
-							spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
-						}
-						else
-						{
-							// current sprite is behind of playfield 2, and also behind playfield 1
-							spriteMergeDualLoresPF1loopbehind2(current_graph_line, sprnr);
-						}
-					}
-				} 
-				else
-				{
-					// playfield 1 is in front of playfield 2
-					if (((bplcon2 & 0x7) << 1) > sprnr)
-					{
-						// current sprite is in front of playfield 1, and thus also in front of playfield 2
-						spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
-					}
-					else
-					{
-						if ((bplcon2 & 0x38) > sprnr*4)
-						{
-							// current sprite is in front of playfield 2, but behind playfield 1 (in between)
-							spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
-						}
-						else
-						{
-							// current sprite is in behind of playfield 2, and thus also behind playfield 1
-							spriteMergeDualLoresPF2loopbehind2(current_graph_line, sprnr);
-						}
-					}
-				}
-			//}
-		}
+	  // current sprite is in front of playfield 2, and thus also in front of playfield 1
+	  spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
 	}
-  #ifdef DRAW_TSC_PROFILE
-		spriteTscAfter(&spritemergedual_tmp, &spritemergedual, &spritemergedual_times);
-  #endif
+	else
+	{
+	  // current sprite is behind of playfield 2
+	  if (((bplcon2 & 0x7) << 1) > sprnr)
+	  {
+	    // current sprite is behind of playfield 2, but in front of playfield 1
+	    spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
+	  }
+	  else
+	  {
+	    // current sprite is behind of playfield 2, and also behind playfield 1
+	    spriteMergeDualLoresPF1loopbehind2(current_graph_line, sprnr);
+	  }
+	}
+      } 
+      else
+      {
+	// playfield 1 is in front of playfield 2
+	if (((bplcon2 & 0x7) << 1) > sprnr)
+	{
+	  // current sprite is in front of playfield 1, and thus also in front of playfield 2
+	  spriteMergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
+	}
+	else
+	{
+	  if ((bplcon2 & 0x38) > sprnr*4)
+	  {
+	    // current sprite is in front of playfield 2, but behind playfield 1 (in between)
+	    spriteMergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
+	  }
+	  else
+	  {
+	    // current sprite is in behind of playfield 2, and thus also behind playfield 1
+	    spriteMergeDualLoresPF2loopbehind2(current_graph_line, sprnr);
+	  }
+	}
+      }
+      //}
+    }
+  }
+#ifdef DRAW_TSC_PROFILE
+  spriteTscAfter(&spritemergedual_tmp, &spritemergedual, &spritemergedual_times);
+#endif
 }
 
 static void spriteMergeHires(graph_line* current_graph_line)
 {
-	ULO sprnr;
-	UBY *line1;
-	UBY *sprite_data;
-	spr_merge_list_item *next_item;
-	ULO i;
-	ULO in_front;
-	ULO j, count;
+  ULO sprnr;
+  UBY *line1;
+  UBY *sprite_data;
+  spr_merge_list_item *next_item;
+  ULO i;
+  ULO in_front;
+  ULO j, count;
 
-  #ifdef DRAW_TSC_PROFILE
-		spriteTscBefore(&spritemergehires_tmp);
-  #endif
+#ifdef DRAW_TSC_PROFILE
+  spriteTscBefore(&spritemergehires_tmp);
+#endif
 
-	for (sprnr = 0; sprnr < 8; sprnr++)
+  for (sprnr = 0; sprnr < 8; sprnr++)
+  {
+    if (sprite_online[sprnr] == TRUE)
+    {
+      count = spriteMergeListCount(&spr_merge_list[sprnr]);
+      for (j = 0; j < count; j++)
+      {
+	next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+
+	// there is sprite data waiting within this line
+	if (next_item->sprx <= graph_DIW_last_visible)
 	{
-		if (sprite_online[sprnr] == TRUE)
-		{
-			count = spriteMergeListCount(&spr_merge_list[sprnr]);
-			for (j = 0; j < count; j++)
-			{
-				next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+	  // set destination and source 
+	  line1 = (current_graph_line->line1 + 2*(next_item->sprx + 1));
+	  sprite_data = next_item->sprite_data;
 
-				// there is sprite data waiting within this line
-				if (next_item->sprx <= graph_DIW_last_visible)
-				{
-					// set destination and source 
-					line1 = (current_graph_line->line1 + 2*(next_item->sprx + 1));
-					sprite_data = next_item->sprite_data;
+	  // determine whetever this sprite is in front or behind the playfield
+	  in_front = ((bplcon2 & 0x38) > (4 * sprnr)) ? 1 : 0;
 
-					// determine whetever this sprite is in front or behind the playfield
-					in_front = ((bplcon2 & 0x38) > (4 * sprnr)) ? 1 : 0;
-
-					// merge sprite data within the line
-					for (i = 0; i < 16; ++i)
-					{
-						ULO sdat = *sprite_data++;
-						line1[0] = sprite_translate[in_front][line1[0]][sdat];
-						line1[1] = sprite_translate[in_front][line1[1]][sdat];
-						line1 += 2;
-					}
-				}
-			}
-		}
+	  // merge sprite data within the line
+	  for (i = 0; i < 16; ++i)
+	  {
+	    ULO sdat = *sprite_data++;
+	    line1[0] = sprite_translate[in_front][line1[0]][sdat];
+	    line1[1] = sprite_translate[in_front][line1[1]][sdat];
+	    line1 += 2;
+	  }
 	}
-  #ifdef DRAW_TSC_PROFILE
-		spriteTscAfter(&spritemergehires_tmp, &spritemergehires, &spritemergehires_times);
-  #endif
+      }
+    }
+  }
+#ifdef DRAW_TSC_PROFILE
+  spriteTscAfter(&spritemergehires_tmp, &spritemergehires, &spritemergehires_times);
+#endif
 }
 
 static void spriteMergeHires320(graph_line* current_graph_line)
 {
-	spriteMergeLores(current_graph_line);
+  spriteMergeLores(current_graph_line);
 }
 
 static void spriteMergeLores(graph_line* current_graph_line)
 {
-	BYT sprnr;
-	UBY *line1;
-	UBY *sprite_data;
-	spr_merge_list_item *next_item;
-	ULO i;
-	ULO in_front;
-	ULO j, count;
+  BYT sprnr;
+  UBY *line1;
+  UBY *sprite_data;
+  spr_merge_list_item *next_item;
+  ULO i;
+  ULO in_front;
+  ULO j, count;
 
-  #ifdef DRAW_TSC_PROFILE
-		spriteTscBefore(&spritemergelores_tmp);
-  #endif
+#ifdef DRAW_TSC_PROFILE
+  spriteTscBefore(&spritemergelores_tmp);
+#endif
 
-	for (sprnr = 7; sprnr >= 0; sprnr--)
+  for (sprnr = 7; sprnr >= 0; sprnr--)
+  {
+    if (sprite_online[sprnr] == TRUE)
+    {
+      count = spriteMergeListCount(&spr_merge_list[sprnr]);
+      for (j = 0; j < count; j++)
+      {
+	next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+	// there is sprite data waiting within this line
+	if (next_item->sprx <= graph_DIW_last_visible)
 	{
-		if (sprite_online[sprnr] == TRUE)
-		{
-			count = spriteMergeListCount(&spr_merge_list[sprnr]);
-			for (j = 0; j < count; j++)
-			{
-				next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
-				// there is sprite data waiting within this line
-				if (next_item->sprx <= graph_DIW_last_visible)
-				{
-					// set destination and source 
-					line1 = (current_graph_line->line1 + (next_item->sprx) + 1);
-					sprite_data = next_item->sprite_data;
+	  // set destination and source 
+	  line1 = (current_graph_line->line1 + (next_item->sprx) + 1);
+	  sprite_data = next_item->sprite_data;
 
-					// determine whetever this sprite is in front or behind the playfield
-					in_front = ((bplcon2 & 0x38) > (4 * (ULO)sprnr)) ? 1 : 0;
+	  // determine whetever this sprite is in front or behind the playfield
+	  in_front = ((bplcon2 & 0x38) > (4 * (ULO)sprnr)) ? 1 : 0;
 
-  					// merge sprite data within the line
-					for (i = 0; i < 16; ++i)
-					{
-					  *line1++ = sprite_translate[in_front][*line1][*sprite_data++];
-					}
-				}
-			}
-		}
+	  // merge sprite data within the line
+	  for (i = 0; i < 16; ++i)
+	  {
+	    *line1++ = sprite_translate[in_front][*line1][*sprite_data++];
+	  }
 	}
-  #ifdef DRAW_TSC_PROFILE
-		spriteTscAfter(&spritemergelores_tmp, &spritemergelores, &spritemergelores_times);
-  #endif
+      }
+    }
+  }
+#ifdef DRAW_TSC_PROFILE
+  spriteTscAfter(&spritemergelores_tmp, &spritemergelores, &spritemergelores_times);
+#endif
 
 }
 
 void spritesMerge(graph_line* current_graph_line)
 {
-	sprites_online = 0;
-	
-	if ((bplcon0 & 0x800) == 0x800)
-	{
-		// HAM mode bit is set
-		spriteMergeHAM(current_graph_line);
-		return;
-	}
+  sprites_online = 0;
 
-	if ((bplcon0 & 0x400) == 0x400)
-	{
-		// dual playfield bit is set
-		spriteMergeDualPlayfield(current_graph_line);
-		return;
-	}
+  if ((bplcon0 & 0x800) == 0x800)
+  {
+    // HAM mode bit is set
+    spriteMergeHAM(current_graph_line);
+    return;
+  }
 
-	if ((bplcon0 & 0x8000) == 0x8000)
-	{
-		// hires bit is set
-		if (draw_hscale == 2)
-		{
-			// scaling set to two times			
-			spriteMergeHires(current_graph_line);
-		}
-		else
-		{
-			// no scaling
-			spriteMergeHires320(current_graph_line);
-		}
-	}
-	else
-	{
-		// lores 
-		spriteMergeLores(current_graph_line);
-	}
+  if ((bplcon0 & 0x400) == 0x400)
+  {
+    // dual playfield bit is set
+    spriteMergeDualPlayfield(current_graph_line);
+    return;
+  }
+
+  if ((bplcon0 & 0x8000) == 0x8000)
+  {
+    // hires bit is set
+    if (draw_hscale == 2)
+    {
+      // scaling set to two times			
+      spriteMergeHires(current_graph_line);
+    }
+    else
+    {
+      // no scaling
+      spriteMergeHires320(current_graph_line);
+    }
+  }
+  else
+  {
+    // lores 
+    spriteMergeLores(current_graph_line);
+  }
 }

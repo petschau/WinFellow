@@ -1,4 +1,4 @@
-/* @(#) $Id: LISTTREE.C,v 1.3 2008-02-20 23:56:30 peschau Exp $ */
+/* @(#) $Id: LISTTREE.C,v 1.4 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* List and Tree                                                           */
@@ -34,7 +34,7 @@
 /*==============================================================================*/
 felist *listNew(void *node) {
   felist *l;
-  
+
   l = (felist *) malloc(sizeof(felist));
   l->next = l->prev = NULL;
   l->node = node;
@@ -110,7 +110,7 @@ felist *listAddSorted(felist *root, felist *l, int (*comp)(void *, void *)) {
 
 felist *listCat(felist *l1, felist *l2) {
   felist *t;
-  
+
   if (l1 == NULL) return l2;
   else if (l2 == NULL) return l1;
   else {
@@ -148,13 +148,13 @@ void listRemove(felist *l) {
 /* listFree removes the node from the list and memory                           */
 /*==============================================================================*/
 felist *listFree(felist *node) {
-	felist *t;
+  felist *t;
 
-	if (node != NULL)
-		t = node->next;
+  if (node != NULL)
+    t = node->next;
   listRemove(node);
   if (node != NULL) free(node);
-	return t;
+  return t;
 }
 
 felist *listIndex(felist *l, ULO index) {
@@ -187,7 +187,7 @@ void listFreeAll(felist *l, BOOLE freenodes) {
 
 tree *treeNew(tree *parent, void *node) {
   tree *t;
-  
+
   t = (tree *) malloc(sizeof(tree));
   t->parent = parent;
   t->node = node;
@@ -199,8 +199,8 @@ tree *treeNew(tree *parent, void *node) {
 void treeChildAdd(tree *t, tree *c) {
   if (t != NULL && c != NULL)
     t->child = (tree *) listNode(listAddLast((t->child != NULL) ?
-					     t->child->lnode : NULL,
-					     c->lnode));
+    t->child->lnode : NULL,
+    c->lnode));
 }
 
 tree *treeChild(tree *t) {

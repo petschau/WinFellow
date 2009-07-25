@@ -7,7 +7,6 @@ extern STR *symbol_pretty_name[106];
 
 extern STR *kbdDrvKeyString(ULO symbolickey);
 extern STR *kbdDrvKeyPrettyString(ULO symbolickey);
-extern ULO kbdDrvCaptureKey(void);
 extern void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey);
 extern ULO kbdDrvJoystickReplacementGet(kbd_event event);
 extern void kbdDrvHardReset(void);

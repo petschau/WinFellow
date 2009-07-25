@@ -13,6 +13,8 @@ UWO rcopjmp2(ULO address);
 
 void copperUpdateDMA(void);
 
+extern void copperSaveState(FILE *F);
+extern void copperLoadState(FILE *F);
 extern void copperEndOfFrame(void);
 extern void copperHardReset(void);
 extern void copperEmulationStart(void);

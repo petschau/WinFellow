@@ -1,4 +1,4 @@
-/* @(#) $Id: FHFILE.C,v 1.10 2008-02-20 23:56:29 peschau Exp $ */
+/* @(#) $Id: FHFILE.C,v 1.11 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,7 +29,7 @@
 #include "fhfile.h"
 #include "fmem.h"
 #include "draw.h"
-#include "cpu.h"
+#include "CpuModule.h"
 #include "fswrap.h"
 
 
@@ -90,11 +90,11 @@ static void fhfileInitializeHardfile(ULO index) {
     fhfile_devs[index].readonly |= (!fsnp->writeable);
     size = fsnp->size;
     fhfile_devs[index].F = fopen(fhfile_devs[index].filename,
-				 (fhfile_devs[index].readonly) ? "rb" : "r+b");
+      (fhfile_devs[index].readonly) ? "rb" : "r+b");
     if (fhfile_devs[index].F != NULL) {                          /* Open file */
       ULO track_size = (fhfile_devs[index].sectorspertrack *
-	                fhfile_devs[index].surfaces *
-		        fhfile_devs[index].bytespersector);
+	fhfile_devs[index].surfaces *
+	fhfile_devs[index].bytespersector);
       if (size < track_size) {
 	/* Error: File must be at least one track long */
 	fclose(fhfile_devs[index].F);
@@ -158,11 +158,11 @@ void fhfileSetHardfile(fhfile_dev hardfile, ULO index) {
 BOOLE fhfileCompareHardfile(fhfile_dev hardfile, ULO index) {
   if (index >= FHFILE_MAX_DEVICES) return FALSE;
   return (fhfile_devs[index].readonly_original == hardfile.readonly_original) &&
-         (fhfile_devs[index].bytespersector_original == hardfile.bytespersector_original) &&
-	 (fhfile_devs[index].sectorspertrack == hardfile.sectorspertrack) &&
-	 (fhfile_devs[index].surfaces == hardfile.surfaces) &&
-	 (fhfile_devs[index].reservedblocks_original == hardfile.reservedblocks_original) &&
-	 (strncmp(fhfile_devs[index].filename, hardfile.filename, CFG_FILENAME_LENGTH) == 0);
+    (fhfile_devs[index].bytespersector_original == hardfile.bytespersector_original) &&
+    (fhfile_devs[index].sectorspertrack == hardfile.sectorspertrack) &&
+    (fhfile_devs[index].surfaces == hardfile.surfaces) &&
+    (fhfile_devs[index].reservedblocks_original == hardfile.reservedblocks_original) &&
+    (strncmp(fhfile_devs[index].filename, hardfile.filename, CFG_FILENAME_LENGTH) == 0);
 }
 
 
@@ -195,7 +195,7 @@ static BYT fhfileRead(ULO index) {
   ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
   ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
-  
+
   if ((offset + length) > fhfile_devs[index].size)
     return -3;
   fhfileSetLed(TRUE);
@@ -212,7 +212,7 @@ static BYT fhfileWrite(ULO index) {
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
 
   if (fhfile_devs[index].readonly ||
-      ((offset + length) > fhfile_devs[index].size))
+    ((offset + length) > fhfile_devs[index].size))
     return -3;
   fhfileSetLed(TRUE);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
@@ -440,14 +440,14 @@ void fhfileCardMap(ULO mapping) {
   fhfile_romstart = (mapping<<8) & 0xff0000;
   bank = fhfile_romstart>>16;
   memoryBankSet(fhfileReadByte,
-		fhfileReadWord,
-		fhfileReadLong,
-		fhfileWriteByte,
-		fhfileWriteWord,
-		fhfileWriteLong,
-		fhfile_rom,
-		bank,
-		bank);
+    fhfileReadWord,
+    fhfileReadLong,
+    fhfileWriteByte,
+    fhfileWriteWord,
+    fhfileWriteLong,
+    fhfile_rom,
+    bank,
+    bank);
 }
 
 
@@ -509,299 +509,299 @@ void fhfileHardReset(void) {
   ULO i;
 
   if ((!fhfileHasZeroDevices()) &&
-      fhfileGetEnabled() && 
-      (memoryGetKickImageVersion() >= 36)) {
-    memoryDmemSetCounter(0);
+    fhfileGetEnabled() && 
+    (memoryGetKickImageVersion() >= 36)) {
+      memoryDmemSetCounter(0);
 
-    /* Device-name and ID string */
+      /* Device-name and ID string */
 
-    devicename = memoryDmemGetCounter();
-    memoryDmemSetString("fhfile.device");
-    idstr = memoryDmemGetCounter();
-    memoryDmemSetString("Fellow Hardfile device V3");
+      devicename = memoryDmemGetCounter();
+      memoryDmemSetString("fhfile.device");
+      idstr = memoryDmemGetCounter();
+      memoryDmemSetString("Fellow Hardfile device V3");
 
-    /* Device name as seen in Amiga DOS */
+      /* Device name as seen in Amiga DOS */
 
-    for (i = 0; i < FHFILE_MAX_DEVICES; i++) {
-      unitnames[i] = memoryDmemGetCounter();
-      sprintf(tmpunitname, "FELLOW%d", i);
-      memoryDmemSetString(tmpunitname);
-    }
-      
-    /* dos.library name */
+      for (i = 0; i < FHFILE_MAX_DEVICES; i++) {
+	unitnames[i] = memoryDmemGetCounter();
+	sprintf(tmpunitname, "FELLOW%d", i);
+	memoryDmemSetString(tmpunitname);
+      }
 
-    doslibname = memoryDmemGetCounter();
-    memoryDmemSetString("dos.library");
-    
-    /* fhfile.open */
+      /* dos.library name */
 
-    fhfile_t_open = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010002); memoryDmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
-    memoryDmemSetWord(0x4e75);					/* rts */
+      doslibname = memoryDmemGetCounter();
+      memoryDmemSetString("dos.library");
 
-    /* fhfile.close */
+      /* fhfile.open */
 
-    fhfile_t_close = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010003); memoryDmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
-    memoryDmemSetWord(0x4e75);					/* rts */
+      fhfile_t_open = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010002); memoryDmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
+      memoryDmemSetWord(0x4e75);					/* rts */
 
-    /* fhfile.expunge */
+      /* fhfile.close */
 
-    fhfile_t_expunge = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010004); memoryDmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
-    memoryDmemSetWord(0x4e75);					/* rts */
+      fhfile_t_close = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010003); memoryDmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
+      memoryDmemSetWord(0x4e75);					/* rts */
 
-    /* fhfile.null */
+      /* fhfile.expunge */
 
-    fhfile_t_null = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010005); memoryDmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
-    memoryDmemSetWord(0x4e75);                                  /* rts */
+      fhfile_t_expunge = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010004); memoryDmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
+      memoryDmemSetWord(0x4e75);					/* rts */
 
-    /* fhfile.beginio */
+      /* fhfile.null */
 
-    fhfile_t_beginio = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010006); memoryDmemSetLong(0xf40000); /* move.l #$00010006,$f40000 */
-    memoryDmemSetLong(0x48e78002);				/* movem.l d0/a6,-(a7) */
-    memoryDmemSetLong(0x08290000); memoryDmemSetWord(0x001e);   /* btst   #$0,30(a1)   */
-    memoryDmemSetWord(0x6608);					/* bne    (to rts)     */
-    memoryDmemSetLong(0x2c780004);				/* move.l $4.w,a6      */
-    memoryDmemSetLong(0x4eaefe86);				/* jsr    -378(a6)     */
-    memoryDmemSetLong(0x4cdf4001);				/* movem.l (a7)+,d0/a6 */
-    memoryDmemSetWord(0x4e75);					/* rts */
+      fhfile_t_null = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010005); memoryDmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
+      memoryDmemSetWord(0x4e75);                                  /* rts */
 
-    /* fhfile.abortio */
+      /* fhfile.beginio */
 
-    fhfile_t_abortio = memoryDmemGetCounter();
-    memoryDmemSetWord(0x23fc);
-    memoryDmemSetLong(0x00010007); memoryDmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
-    memoryDmemSetWord(0x4e75);					/* rts */
+      fhfile_t_beginio = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010006); memoryDmemSetLong(0xf40000); /* move.l #$00010006,$f40000 */
+      memoryDmemSetLong(0x48e78002);				/* movem.l d0/a6,-(a7) */
+      memoryDmemSetLong(0x08290000); memoryDmemSetWord(0x001e);   /* btst   #$0,30(a1)   */
+      memoryDmemSetWord(0x6608);					/* bne    (to rts)     */
+      memoryDmemSetLong(0x2c780004);				/* move.l $4.w,a6      */
+      memoryDmemSetLong(0x4eaefe86);				/* jsr    -378(a6)     */
+      memoryDmemSetLong(0x4cdf4001);				/* movem.l (a7)+,d0/a6 */
+      memoryDmemSetWord(0x4e75);					/* rts */
 
-    /* Func-table */
+      /* fhfile.abortio */
 
-    functable = memoryDmemGetCounter();
-    memoryDmemSetLong(fhfile_t_open);
-    memoryDmemSetLong(fhfile_t_close);
-    memoryDmemSetLong(fhfile_t_expunge);
-    memoryDmemSetLong(fhfile_t_null);
-    memoryDmemSetLong(fhfile_t_beginio);
-    memoryDmemSetLong(fhfile_t_abortio);
-    memoryDmemSetLong(0xffffffff);
+      fhfile_t_abortio = memoryDmemGetCounter();
+      memoryDmemSetWord(0x23fc);
+      memoryDmemSetLong(0x00010007); memoryDmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
+      memoryDmemSetWord(0x4e75);					/* rts */
 
-    /* Data-table */
+      /* Func-table */
 
-    datatable = memoryDmemGetCounter();
-    memoryDmemSetWord(0xE000);          /* INITBYTE */
-    memoryDmemSetWord(0x0008);          /* LN_TYPE */
-    memoryDmemSetWord(0x0300);          /* NT_DEVICE */
-    memoryDmemSetWord(0xC000);          /* INITLONG */
-    memoryDmemSetWord(0x000A);          /* LN_NAME */
-    memoryDmemSetLong(devicename);
-    memoryDmemSetWord(0xE000);          /* INITBYTE */
-    memoryDmemSetWord(0x000E);          /* LIB_FLAGS */
-    memoryDmemSetWord(0x0600);          /* LIBF_SUMUSED+LIBF_CHANGED */
-    memoryDmemSetWord(0xD000);          /* INITWORD */
-    memoryDmemSetWord(0x0014);          /* LIB_VERSION */
-    memoryDmemSetWord(0x0002);
-    memoryDmemSetWord(0xD000);          /* INITWORD */
-    memoryDmemSetWord(0x0016);          /* LIB_REVISION */
-    memoryDmemSetWord(0x0000);
-    memoryDmemSetWord(0xC000);          /* INITLONG */
-    memoryDmemSetWord(0x0018);          /* LIB_IDSTRING */
-    memoryDmemSetLong(idstr);
-    memoryDmemSetLong(0);               /* END */
+      functable = memoryDmemGetCounter();
+      memoryDmemSetLong(fhfile_t_open);
+      memoryDmemSetLong(fhfile_t_close);
+      memoryDmemSetLong(fhfile_t_expunge);
+      memoryDmemSetLong(fhfile_t_null);
+      memoryDmemSetLong(fhfile_t_beginio);
+      memoryDmemSetLong(fhfile_t_abortio);
+      memoryDmemSetLong(0xffffffff);
 
-    /* bootcode */
+      /* Data-table */
 
-    fhfile_bootcode = memoryDmemGetCounter();
-    memoryDmemSetWord(0x227c); memoryDmemSetLong(doslibname); /* move.l #doslibname,a1 */
-    memoryDmemSetLong(0x4eaeffa0);			      /* jsr    -96(a6) */
-    memoryDmemSetWord(0x2040);				      /* move.l d0,a0 */
-    memoryDmemSetLong(0x20280016);			      /* move.l 22(a0),d0 */
-    memoryDmemSetWord(0x2040);				      /* move.l d0,a0 */
-    memoryDmemSetWord(0x4e90);				      /* jsr    (a0) */
-    memoryDmemSetWord(0x4e75);				      /* rts */
-    
-    /* fhfile.init */
+      datatable = memoryDmemGetCounter();
+      memoryDmemSetWord(0xE000);          /* INITBYTE */
+      memoryDmemSetWord(0x0008);          /* LN_TYPE */
+      memoryDmemSetWord(0x0300);          /* NT_DEVICE */
+      memoryDmemSetWord(0xC000);          /* INITLONG */
+      memoryDmemSetWord(0x000A);          /* LN_NAME */
+      memoryDmemSetLong(devicename);
+      memoryDmemSetWord(0xE000);          /* INITBYTE */
+      memoryDmemSetWord(0x000E);          /* LIB_FLAGS */
+      memoryDmemSetWord(0x0600);          /* LIBF_SUMUSED+LIBF_CHANGED */
+      memoryDmemSetWord(0xD000);          /* INITWORD */
+      memoryDmemSetWord(0x0014);          /* LIB_VERSION */
+      memoryDmemSetWord(0x0002);
+      memoryDmemSetWord(0xD000);          /* INITWORD */
+      memoryDmemSetWord(0x0016);          /* LIB_REVISION */
+      memoryDmemSetWord(0x0000);
+      memoryDmemSetWord(0xC000);          /* INITLONG */
+      memoryDmemSetWord(0x0018);          /* LIB_IDSTRING */
+      memoryDmemSetLong(idstr);
+      memoryDmemSetLong(0);               /* END */
 
-    fhfile_t_init = memoryDmemGetCounter();
+      /* bootcode */
 
-    memoryDmemSetByte(0x48); memoryDmemSetByte(0xE7);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0xFE);
-    memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
-    memoryDmemSetByte(0x43); memoryDmemSetByte(0xFA);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0xA6);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0xFE); memoryDmemSetByte(0x68);
-    memoryDmemSetByte(0x28); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x41); memoryDmemSetByte(0xFA);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0x2E); memoryDmemSetByte(0x08);
-    memoryDmemSetByte(0x20); memoryDmemSetByte(0x47);
-    memoryDmemSetByte(0x4A); memoryDmemSetByte(0x90);
-    memoryDmemSetByte(0x6B); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x82);
-    memoryDmemSetByte(0x58); memoryDmemSetByte(0x87);
-    memoryDmemSetByte(0x20); memoryDmemSetByte(0x3C);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x58);
-    memoryDmemSetByte(0x72); memoryDmemSetByte(0x01);
-    memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0x3A);
-    memoryDmemSetByte(0x2A); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x20); memoryDmemSetByte(0x47);
-    memoryDmemSetByte(0x70); memoryDmemSetByte(0x54);
-    memoryDmemSetByte(0x2B); memoryDmemSetByte(0xB0);
-    memoryDmemSetByte(0x08); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x08); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x59); memoryDmemSetByte(0x80);
-    memoryDmemSetByte(0x64); memoryDmemSetByte(0xF6);
-    memoryDmemSetByte(0x20); memoryDmemSetByte(0x4D);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAC);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0x70);
-    memoryDmemSetByte(0x26); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x70); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
-    memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x10);
-    memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x20);
-    memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
-    memoryDmemSetByte(0x70); memoryDmemSetByte(0x14);
-    memoryDmemSetByte(0x72); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0x3A);
-    memoryDmemSetByte(0x22); memoryDmemSetByte(0x47);
-    memoryDmemSetByte(0x2C); memoryDmemSetByte(0x29);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0xFC);
-    memoryDmemSetByte(0x22); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x70); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x22); memoryDmemSetByte(0x80);
-    memoryDmemSetByte(0x23); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
-    memoryDmemSetByte(0x33); memoryDmemSetByte(0x40);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x0E);
-    memoryDmemSetByte(0x33); memoryDmemSetByte(0x7C);
-    memoryDmemSetByte(0x10); memoryDmemSetByte(0xFF);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
-    memoryDmemSetByte(0x9D); memoryDmemSetByte(0x69);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
-    memoryDmemSetByte(0x23); memoryDmemSetByte(0x79);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0xF4);
-    memoryDmemSetByte(0x0F); memoryDmemSetByte(0xFC);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x0A);
-    memoryDmemSetByte(0x23); memoryDmemSetByte(0x4B);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x10);
-    memoryDmemSetByte(0x41); memoryDmemSetByte(0xEC);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x4A);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0xFE); memoryDmemSetByte(0xF2);
-    memoryDmemSetByte(0x06); memoryDmemSetByte(0x87);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x58);
-    memoryDmemSetByte(0x60); memoryDmemSetByte(0x00);
-    memoryDmemSetByte(0xFF); memoryDmemSetByte(0x7A);
-    memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
-    memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
-    memoryDmemSetByte(0x22); memoryDmemSetByte(0x4C);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
-    memoryDmemSetByte(0xFE); memoryDmemSetByte(0x62);
-    memoryDmemSetByte(0x4C); memoryDmemSetByte(0xDF);
-    memoryDmemSetByte(0x7F); memoryDmemSetByte(0xFF);
-    memoryDmemSetByte(0x4E); memoryDmemSetByte(0x75);
-    memoryDmemSetByte(0x65); memoryDmemSetByte(0x78);
-    memoryDmemSetByte(0x70); memoryDmemSetByte(0x61);
-    memoryDmemSetByte(0x6E); memoryDmemSetByte(0x73);
-    memoryDmemSetByte(0x69); memoryDmemSetByte(0x6F);
-    memoryDmemSetByte(0x6E); memoryDmemSetByte(0x2E);
-    memoryDmemSetByte(0x6C); memoryDmemSetByte(0x69);
-    memoryDmemSetByte(0x62); memoryDmemSetByte(0x72);
-    memoryDmemSetByte(0x61); memoryDmemSetByte(0x72);
-    memoryDmemSetByte(0x79); memoryDmemSetByte(0x00);
+      fhfile_bootcode = memoryDmemGetCounter();
+      memoryDmemSetWord(0x227c); memoryDmemSetLong(doslibname); /* move.l #doslibname,a1 */
+      memoryDmemSetLong(0x4eaeffa0);			      /* jsr    -96(a6) */
+      memoryDmemSetWord(0x2040);				      /* move.l d0,a0 */
+      memoryDmemSetLong(0x20280016);			      /* move.l 22(a0),d0 */
+      memoryDmemSetWord(0x2040);				      /* move.l d0,a0 */
+      memoryDmemSetWord(0x4e90);				      /* jsr    (a0) */
+      memoryDmemSetWord(0x4e75);				      /* rts */
+
+      /* fhfile.init */
+
+      fhfile_t_init = memoryDmemGetCounter();
+
+      memoryDmemSetByte(0x48); memoryDmemSetByte(0xE7);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0xFE);
+      memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
+      memoryDmemSetByte(0x43); memoryDmemSetByte(0xFA);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0xA6);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0xFE); memoryDmemSetByte(0x68);
+      memoryDmemSetByte(0x28); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x41); memoryDmemSetByte(0xFA);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0x2E); memoryDmemSetByte(0x08);
+      memoryDmemSetByte(0x20); memoryDmemSetByte(0x47);
+      memoryDmemSetByte(0x4A); memoryDmemSetByte(0x90);
+      memoryDmemSetByte(0x6B); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x82);
+      memoryDmemSetByte(0x58); memoryDmemSetByte(0x87);
+      memoryDmemSetByte(0x20); memoryDmemSetByte(0x3C);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x58);
+      memoryDmemSetByte(0x72); memoryDmemSetByte(0x01);
+      memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0x3A);
+      memoryDmemSetByte(0x2A); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x20); memoryDmemSetByte(0x47);
+      memoryDmemSetByte(0x70); memoryDmemSetByte(0x54);
+      memoryDmemSetByte(0x2B); memoryDmemSetByte(0xB0);
+      memoryDmemSetByte(0x08); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x08); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x59); memoryDmemSetByte(0x80);
+      memoryDmemSetByte(0x64); memoryDmemSetByte(0xF6);
+      memoryDmemSetByte(0x20); memoryDmemSetByte(0x4D);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAC);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0x70);
+      memoryDmemSetByte(0x26); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x70); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
+      memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x10);
+      memoryDmemSetByte(0x27); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x20);
+      memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
+      memoryDmemSetByte(0x70); memoryDmemSetByte(0x14);
+      memoryDmemSetByte(0x72); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0x3A);
+      memoryDmemSetByte(0x22); memoryDmemSetByte(0x47);
+      memoryDmemSetByte(0x2C); memoryDmemSetByte(0x29);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0xFC);
+      memoryDmemSetByte(0x22); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x70); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x22); memoryDmemSetByte(0x80);
+      memoryDmemSetByte(0x23); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
+      memoryDmemSetByte(0x33); memoryDmemSetByte(0x40);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x0E);
+      memoryDmemSetByte(0x33); memoryDmemSetByte(0x7C);
+      memoryDmemSetByte(0x10); memoryDmemSetByte(0xFF);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
+      memoryDmemSetByte(0x9D); memoryDmemSetByte(0x69);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x08);
+      memoryDmemSetByte(0x23); memoryDmemSetByte(0x79);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0xF4);
+      memoryDmemSetByte(0x0F); memoryDmemSetByte(0xFC);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x0A);
+      memoryDmemSetByte(0x23); memoryDmemSetByte(0x4B);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x10);
+      memoryDmemSetByte(0x41); memoryDmemSetByte(0xEC);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x4A);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0xFE); memoryDmemSetByte(0xF2);
+      memoryDmemSetByte(0x06); memoryDmemSetByte(0x87);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x58);
+      memoryDmemSetByte(0x60); memoryDmemSetByte(0x00);
+      memoryDmemSetByte(0xFF); memoryDmemSetByte(0x7A);
+      memoryDmemSetByte(0x2C); memoryDmemSetByte(0x78);
+      memoryDmemSetByte(0x00); memoryDmemSetByte(0x04);
+      memoryDmemSetByte(0x22); memoryDmemSetByte(0x4C);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0xAE);
+      memoryDmemSetByte(0xFE); memoryDmemSetByte(0x62);
+      memoryDmemSetByte(0x4C); memoryDmemSetByte(0xDF);
+      memoryDmemSetByte(0x7F); memoryDmemSetByte(0xFF);
+      memoryDmemSetByte(0x4E); memoryDmemSetByte(0x75);
+      memoryDmemSetByte(0x65); memoryDmemSetByte(0x78);
+      memoryDmemSetByte(0x70); memoryDmemSetByte(0x61);
+      memoryDmemSetByte(0x6E); memoryDmemSetByte(0x73);
+      memoryDmemSetByte(0x69); memoryDmemSetByte(0x6F);
+      memoryDmemSetByte(0x6E); memoryDmemSetByte(0x2E);
+      memoryDmemSetByte(0x6C); memoryDmemSetByte(0x69);
+      memoryDmemSetByte(0x62); memoryDmemSetByte(0x72);
+      memoryDmemSetByte(0x61); memoryDmemSetByte(0x72);
+      memoryDmemSetByte(0x79); memoryDmemSetByte(0x00);
 
 
 
-    /* The mkdosdev packets */
+      /* The mkdosdev packets */
 
-    for (i = 0; i < FHFILE_MAX_DEVICES; i++)
-      fhfileMakeDOSDevPacket(i, unitnames[i], devicename);
+      for (i = 0; i < FHFILE_MAX_DEVICES; i++)
+	fhfileMakeDOSDevPacket(i, unitnames[i], devicename);
 
-    /* Init-struct */
+      /* Init-struct */
 
-    initstruct = memoryDmemGetCounter();
-    memoryDmemSetLong(0x100);                   /* Data-space size, min LIB_SIZE */
-    memoryDmemSetLong(functable);               /* Function-table */
-    memoryDmemSetLong(datatable);               /* Data-table */
-    memoryDmemSetLong(fhfile_t_init);           /* Init-routine */
+      initstruct = memoryDmemGetCounter();
+      memoryDmemSetLong(0x100);                   /* Data-space size, min LIB_SIZE */
+      memoryDmemSetLong(functable);               /* Function-table */
+      memoryDmemSetLong(datatable);               /* Data-table */
+      memoryDmemSetLong(fhfile_t_init);           /* Init-routine */
 
-    /* RomTag structure */
+      /* RomTag structure */
 
-    romtagstart = memoryDmemGetCounter();
-    memoryDmemSetWord(0x4afc);                  /* Start of structure */
-    memoryDmemSetLong(romtagstart);             /* Pointer to start of structure */
-    memoryDmemSetLong(romtagstart+26);          /* Pointer to end of code */
-    memoryDmemSetByte(0x81);                    /* Flags, AUTOINIT+COLDSTART */
-    memoryDmemSetByte(0x1);                     /* Version */
-    memoryDmemSetByte(3);                       /* DEVICE */
-    memoryDmemSetByte(0);                       /* Priority */
-    memoryDmemSetLong(devicename);              /* Pointer to name (used in opendev)*/
-    memoryDmemSetLong(idstr);                   /* ID string */
-    memoryDmemSetLong(initstruct);              /* Init_struct */
+      romtagstart = memoryDmemGetCounter();
+      memoryDmemSetWord(0x4afc);                  /* Start of structure */
+      memoryDmemSetLong(romtagstart);             /* Pointer to start of structure */
+      memoryDmemSetLong(romtagstart+26);          /* Pointer to end of code */
+      memoryDmemSetByte(0x81);                    /* Flags, AUTOINIT+COLDSTART */
+      memoryDmemSetByte(0x1);                     /* Version */
+      memoryDmemSetByte(3);                       /* DEVICE */
+      memoryDmemSetByte(0);                       /* Priority */
+      memoryDmemSetLong(devicename);              /* Pointer to name (used in opendev)*/
+      memoryDmemSetLong(idstr);                   /* ID string */
+      memoryDmemSetLong(initstruct);              /* Init_struct */
 
-    /* Clear hardfile rom */
+      /* Clear hardfile rom */
 
-    memset(fhfile_rom, 0, 65536);
+      memset(fhfile_rom, 0, 65536);
 
-    /* Struct DiagArea */
-  
-    fhfile_rom[0x1000] = 0x90; /* da_Config */
-    fhfile_rom[0x1001] = 0;    /* da_Flags */
-    fhfile_rom[0x1002] = 0;    /* da_Size */
-    fhfile_rom[0x1003] = 0x96;
-    fhfile_rom[0x1004] = 0;    /* da_DiagPoint */
-    fhfile_rom[0x1005] = 0x80;
-    fhfile_rom[0x1006] = 0;    /* da_BootPoint */
-    fhfile_rom[0x1007] = 0x90;
-    fhfile_rom[0x1008] = 0;    /* da_Name */
-    fhfile_rom[0x1009] = 0;
-    fhfile_rom[0x100a] = 0;    /* da_Reserved01 */
-    fhfile_rom[0x100b] = 0;
-    fhfile_rom[0x100c] = 0;    /* da_Reserved02 */
-    fhfile_rom[0x100d] = 0;
-    
-    fhfile_rom[0x1080] = 0x23; /* DiagPoint */
-    fhfile_rom[0x1081] = 0xfc; /* move.l #$00010001,$f40000 */
-    fhfile_rom[0x1082] = 0x00;
-    fhfile_rom[0x1083] = 0x01;
-    fhfile_rom[0x1084] = 0x00;
-    fhfile_rom[0x1085] = 0x01;
-    fhfile_rom[0x1086] = 0x00;
-    fhfile_rom[0x1087] = 0xf4;
-    fhfile_rom[0x1088] = 0x00;
-    fhfile_rom[0x1089] = 0x00;
-    fhfile_rom[0x108a] = 0x4e; /* rts */
-    fhfile_rom[0x108b] = 0x75;
+      /* Struct DiagArea */
 
-    fhfile_rom[0x1090] = 0x4e; /* BootPoint */
-    fhfile_rom[0x1091] = 0xf9; /* JMP fhfile_bootcode */
-    fhfile_rom[0x1092] = (UBY) (fhfile_bootcode>>24);
-    fhfile_rom[0x1093] = (UBY) (fhfile_bootcode>>16);
-    fhfile_rom[0x1094] = (UBY) (fhfile_bootcode>>8);
-    fhfile_rom[0x1095] = (UBY) fhfile_bootcode;
+      fhfile_rom[0x1000] = 0x90; /* da_Config */
+      fhfile_rom[0x1001] = 0;    /* da_Flags */
+      fhfile_rom[0x1002] = 0;    /* da_Size */
+      fhfile_rom[0x1003] = 0x96;
+      fhfile_rom[0x1004] = 0;    /* da_DiagPoint */
+      fhfile_rom[0x1005] = 0x80;
+      fhfile_rom[0x1006] = 0;    /* da_BootPoint */
+      fhfile_rom[0x1007] = 0x90;
+      fhfile_rom[0x1008] = 0;    /* da_Name */
+      fhfile_rom[0x1009] = 0;
+      fhfile_rom[0x100a] = 0;    /* da_Reserved01 */
+      fhfile_rom[0x100b] = 0;
+      fhfile_rom[0x100c] = 0;    /* da_Reserved02 */
+      fhfile_rom[0x100d] = 0;
 
-    /* NULLIFY pointer to configdev */
-    
-    memoryDmemSetLongNoCounter(0, 4092);
-    memoryEmemCardAdd(fhfileCardInit, fhfileCardMap);
+      fhfile_rom[0x1080] = 0x23; /* DiagPoint */
+      fhfile_rom[0x1081] = 0xfc; /* move.l #$00010001,$f40000 */
+      fhfile_rom[0x1082] = 0x00;
+      fhfile_rom[0x1083] = 0x01;
+      fhfile_rom[0x1084] = 0x00;
+      fhfile_rom[0x1085] = 0x01;
+      fhfile_rom[0x1086] = 0x00;
+      fhfile_rom[0x1087] = 0xf4;
+      fhfile_rom[0x1088] = 0x00;
+      fhfile_rom[0x1089] = 0x00;
+      fhfile_rom[0x108a] = 0x4e; /* rts */
+      fhfile_rom[0x108b] = 0x75;
+
+      fhfile_rom[0x1090] = 0x4e; /* BootPoint */
+      fhfile_rom[0x1091] = 0xf9; /* JMP fhfile_bootcode */
+      fhfile_rom[0x1092] = (UBY) (fhfile_bootcode>>24);
+      fhfile_rom[0x1093] = (UBY) (fhfile_bootcode>>16);
+      fhfile_rom[0x1094] = (UBY) (fhfile_bootcode>>8);
+      fhfile_rom[0x1095] = (UBY) fhfile_bootcode;
+
+      /* NULLIFY pointer to configdev */
+
+      memoryDmemSetLongNoCounter(0, 4092);
+      memoryEmemCardAdd(fhfileCardInit, fhfileCardMap);
   }
   else
     memoryDmemClear();
@@ -833,64 +833,64 @@ void fhfileShutdown(void) {
 
 BOOLE fhfileCreate(fhfile_dev hfile)
 {
-    BOOLE result = FALSE;
+  BOOLE result = FALSE;
 
 #ifdef WIN32
-	HANDLE hf;
-        
-	if(*hfile.filename && hfile.size) 
-    {   
-	    if((hf = CreateFile(hfile.filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
-        {
-            if( SetFilePointer(hf, hfile.size, NULL, FILE_BEGIN) == hfile.size )
-                result = SetEndOfFile(hf);
-            else
-                fellowAddLog("SetFilePointer() failure.\n");
-            CloseHandle(hf);
-        }
-        else
-            fellowAddLog("CreateFile() failed.\n");
+  HANDLE hf;
+
+  if(*hfile.filename && hfile.size) 
+  {   
+    if((hf = CreateFile(hfile.filename, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
+    {
+      if( SetFilePointer(hf, hfile.size, NULL, FILE_BEGIN) == hfile.size )
+	result = SetEndOfFile(hf);
+      else
+	fellowAddLog("SetFilePointer() failure.\n");
+      CloseHandle(hf);
     }
-    return result;
+    else
+      fellowAddLog("CreateFile() failed.\n");
+  }
+  return result;
 #else	/* os independent implementation */
 #define BUFSIZE 32768
-	ULO tobewritten;
-	char buffer[BUFSIZE];
-	FILE *hf;
+  ULO tobewritten;
+  char buffer[BUFSIZE];
+  FILE *hf;
 
-	tobewritten = hfile.size;
-	errno = 0;
+  tobewritten = hfile.size;
+  errno = 0;
 
-	if(*hfile.filename && hfile.size) 
-    {   
-		if(hf = fopen(hfile.filename, "wb"))
-		{
-			memset(buffer, 0, sizeof(buffer));
+  if(*hfile.filename && hfile.size) 
+  {   
+    if(hf = fopen(hfile.filename, "wb"))
+    {
+      memset(buffer, 0, sizeof(buffer));
 
-			while(tobewritten >= BUFSIZE)
-			{
-				fwrite(buffer, sizeof(char), BUFSIZE, hf);
-				if (errno != 0)
-				{
-					fellowAddLog("Creating hardfile failed. Check the available space.\n");
-					fclose(hf);
-					return result;
-				}
-				tobewritten -= BUFSIZE;
-			}
-			fwrite(buffer, sizeof(char), tobewritten, hf);
-			if (errno != 0)
-			{
-				fellowAddLog("Creating hardfile failed. Check the available space.\n");
-				fclose(hf);
-				return result;
-			}
-			fclose(hf);
-			result = TRUE;
-		}
-		else
-			fellowAddLog("fhfileCreate is unable to open output file.\n");
+      while(tobewritten >= BUFSIZE)
+      {
+	fwrite(buffer, sizeof(char), BUFSIZE, hf);
+	if (errno != 0)
+	{
+	  fellowAddLog("Creating hardfile failed. Check the available space.\n");
+	  fclose(hf);
+	  return result;
 	}
+	tobewritten -= BUFSIZE;
+      }
+      fwrite(buffer, sizeof(char), tobewritten, hf);
+      if (errno != 0)
+      {
+	fellowAddLog("Creating hardfile failed. Check the available space.\n");
+	fclose(hf);
 	return result;
+      }
+      fclose(hf);
+      result = TRUE;
+    }
+    else
+      fellowAddLog("fhfileCreate is unable to open output file.\n");
+  }
+  return result;
 #endif
 }

@@ -1,0 +1,196 @@
+/* @(#) $Id: CpuModule_EffectiveAddress.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/*=========================================================================*/
+/* Fellow                                                                  */
+/* CPU 68k effective address calculation functions                         */
+/*                                                                         */
+/* Author: Petter Schau                                                    */
+/*                                                                         */
+/*                                                                         */
+/* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
+/*                                                                         */
+/* This program is free software; you can redistribute it and/or modify    */
+/* it under the terms of the GNU General Public License as published by    */
+/* the Free Software Foundation; either version 2, or (at your option)     */
+/* any later version.                                                      */
+/*                                                                         */
+/* This program is distributed in the hope that it will be useful,         */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty of          */
+/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           */
+/* GNU General Public License for more details.                            */
+/*                                                                         */
+/* You should have received a copy of the GNU General Public License       */
+/* along with this program; if not, write to the Free Software Foundation, */
+/* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+/*=========================================================================*/
+
+#include "defs.h"
+#include "fellow.h"
+#include "fmem.h"
+
+#include "CpuModule.h"
+#include "CpuModule_Internal.h"
+
+/* Calculates EA for (Ax). */
+ULO cpuEA02(ULO regno)
+{
+  return cpuGetAReg(regno);
+}
+
+/* Calculates EA for (Ax)+ */
+ULO cpuEA03(ULO regno, ULO size)
+{
+  ULO tmp = cpuGetAReg(regno);
+  if (regno == 7 && size == 1) size++;
+  cpuSetAReg(regno, tmp + size);
+  return tmp;
+}
+
+/* Calculates EA for -(Ax) */
+ULO cpuEA04(ULO regno, ULO size)
+{
+  if (regno == 7 && size == 1) size++;
+  cpuSetAReg(regno, cpuGetAReg(regno) - size);
+  return cpuGetAReg(regno);
+}
+
+/* Calculates EA for disp16(Ax) */
+ULO cpuEA05(ULO regno)
+{
+  return cpuGetAReg(regno) + cpuGetNextOpcode16SignExt();
+}
+
+/* Calculates EA for disp8(Ax,Ri.size) with 68020 extended modes. */
+static ULO cpuEA06Ext(UWO ext, ULO reg_value, ULO index_value)
+{
+  ULO base_displacement;
+  ULO outer_displacement;
+  BOOLE index_register_suppressed = (ext & 0x0040);
+
+  if (index_register_suppressed)
+  {
+    index_value = 0;
+  }
+  if (ext & 0x0080)
+  {
+    reg_value = 0;		  /* Base register suppressed */
+  }
+  switch ((ext >> 4) & 3)
+  {
+    case 0:			  /* Reserved */
+      cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      break;
+    case 1:			  /* Null displacement */
+      base_displacement = 0;
+      break;
+    case 2:			  /* Word displacement */
+      base_displacement = cpuGetNextOpcode16SignExt();
+      break;
+    case 3:			  /* Long displacement */
+      base_displacement = cpuGetNextOpcode32();
+      break;
+  }
+  switch (ext & 7)
+  {
+    case 0: /* No memory indirect action */
+      return reg_value + base_displacement + index_value;
+    case 1: /* Indirect preindexed with null outer displacement */
+      return memoryReadLong(reg_value + base_displacement + index_value);
+    case 2: /* Indirect preindexed with word outer displacement */
+      outer_displacement = cpuGetNextOpcode16SignExt();
+      return memoryReadLong(reg_value + base_displacement + index_value) + outer_displacement;
+    case 3: /* Indirect preindexed with long outer displacement */
+      outer_displacement = cpuGetNextOpcode32();
+      return memoryReadLong(reg_value + base_displacement + index_value) + outer_displacement;
+    case 4: /* Reserved */
+      cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      break;
+    case 5: /* Indirect postindexed with null outer displacement, reserved for index register suppressed */
+      if (index_register_suppressed)
+      {
+	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      }
+      return memoryReadLong(reg_value + base_displacement) + index_value;
+    case 6: /* Indirect postindexed with word outer displacement, reserved for index register suppressed */
+      if (index_register_suppressed)
+      {
+	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      }
+      outer_displacement = cpuGetNextOpcode16SignExt();
+      return memoryReadLong(reg_value + base_displacement) + index_value + outer_displacement;
+    case 7: /* Indirect postindexed with long outer displacement, reserved for index register suppressed */
+      if (index_register_suppressed)
+      {
+	cpuThrowIllegalInstructionException(cpuGetPC() - 2, TRUE);	  /* Illegal instruction */
+      }
+      outer_displacement = cpuGetNextOpcode32();
+      return memoryReadLong(reg_value + base_displacement) + index_value + outer_displacement;
+  }
+  return 0; /* Should never come here. */
+}
+
+/* Calculates EA for disp8(Ax,Ri.size), calls cpuEA06Ext() for 68020 extended modes. */
+ULO cpuEA06(ULO regno)
+{
+  ULO reg_value = cpuGetAReg(regno);
+  UWO ext = cpuGetNextOpcode16();
+  ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 0x7);
+  if (!(ext & 0x0800))
+  {
+    index_value = cpuSignExtWordToLong((UWO)index_value);
+  }
+  if (cpuGetModelMajor() >= 2)
+  {
+    index_value = index_value << ((ext >> 9) & 0x3);	/* Scaling index value */
+    if (ext & 0x0100)					/* Full extension word */
+    {
+      return cpuEA06Ext(ext, reg_value, index_value);
+    }
+  }
+  return reg_value + index_value + cpuSignExtByteToLong((UBY)ext);
+}
+
+/* Calculates EA for xxxx.W */
+ULO cpuEA70(void)
+{
+  return cpuGetNextOpcode16SignExt();
+}
+
+/* Calculates EA for xxxxxxxx.L */
+ULO cpuEA71(void)
+{
+  return cpuGetNextOpcode32();
+}
+
+/// <summary>
+/// Calculates EA for disp16(PC)
+/// </summary>
+/// <returns>Address</returns>
+ULO cpuEA72(void)
+{
+  ULO pc_tmp = cpuGetPC();
+  return pc_tmp + cpuGetNextOpcode16SignExt();
+}
+
+/// <summary>
+/// Calculates EA for disp8(PC,Ri.size). Calls cpuEA06Ext() to calculate extended 68020 modes.
+/// </summary>
+/// <returns>Address</returns>
+ULO cpuEA73(void)
+{
+  ULO reg_value = cpuGetPC();
+  UWO ext = cpuGetNextOpcode16();
+  ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 0x7);
+  if (!(ext & 0x0800))
+  {
+    index_value = cpuSignExtWordToLong((UWO)index_value);
+  }
+  if (cpuGetModelMajor() >= 2)
+  {
+    index_value = index_value << ((ext >> 9) & 0x3);	// Scaling index value
+    if (ext & 0x0100)					// Full extension word
+    {
+      return cpuEA06Ext(ext, reg_value, index_value);
+    }
+  }
+  return reg_value + index_value + cpuSignExtByteToLong((UBY)ext);
+}

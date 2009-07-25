@@ -1,4 +1,4 @@
-/* @(#) $Id: GAMEPORT.C,v 1.8 2008-02-20 23:56:29 peschau Exp $ */
+/* @(#) $Id: GAMEPORT.C,v 1.9 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick and Mouse                                                      */
@@ -101,8 +101,8 @@ static ULO rjoydat(ULO i) {
 
     if (gameport_left[i])
       retval |= 0x300;
-    
-	if (gameport_up[i])
+
+    if (gameport_up[i])
       retval ^= 0x100;
 
     if (gameport_down[i])
@@ -147,10 +147,10 @@ UWO rpotgor(ULO address)
   UWO val = potgor & 0xbbff;
 
   if( gameport_autofire1[0] )
-	gameport_fire1[0] = !gameport_fire1[0];
+    gameport_fire1[0] = !gameport_fire1[0];
 
   if( gameport_autofire1[1] )
-	gameport_fire1[1] = !gameport_fire1[1];
+    gameport_fire1[1] = !gameport_fire1[1];
 
   if (!gameport_fire1[0])
     val |= 0x400;
@@ -187,18 +187,18 @@ void gameportMouseHandler(gameport_inputs mousedev,
 			  BOOLE button1,
 			  BOOLE button2,
 			  BOOLE button3) {
-  ULO i;
+			    ULO i;
 
-  for (i = 0; i < 2; i++) {
-    if (gameport_input[i] == mousedev) {
-      if ((!gameport_fire1[i]) && button3)
-		  potdat[i] = (potdat[i] + 0x100) & 0xffff; 
-      gameport_fire0[i] = button1;
-      gameport_fire1[i] = button3;
-      gameport_x[i] += x;
-      gameport_y[i] += y;
-    }
-  }
+			    for (i = 0; i < 2; i++) {
+			      if (gameport_input[i] == mousedev) {
+				if ((!gameport_fire1[i]) && button3)
+				  potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+				gameport_fire0[i] = button1;
+				gameport_fire1[i] = button3;
+				gameport_x[i] += x;
+				gameport_y[i] += y;
+			      }
+			    }
 }
 
 /*===========================================================================*/
@@ -217,21 +217,21 @@ void gameportJoystickHandler(gameport_inputs joydev,
 			     BOOLE down,
 			     BOOLE button1,
 			     BOOLE button2) {
-	ULO i;
+			       ULO i;
 
-	for (i = 0; i < 2; i++)
-		if (gameport_input[i] == joydev)
-		{
-			if ((!gameport_fire1[i]) && button2)
-				potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+			       for (i = 0; i < 2; i++)
+				 if (gameport_input[i] == joydev)
+				 {
+				   if ((!gameport_fire1[i]) && button2)
+				     potdat[i] = (potdat[i] + 0x100) & 0xffff; 
 
-			gameport_fire0[i] = button1;
-			gameport_fire1[i] = button2;
-			gameport_left[i] = left;
-			gameport_up[i] = up;
-			gameport_right[i] = right;
-			gameport_down[i] = down;
-		}
+				   gameport_fire0[i] = button1;
+				   gameport_fire1[i] = button2;
+				   gameport_left[i] = left;
+				   gameport_up[i] = up;
+				   gameport_right[i] = right;
+				   gameport_down[i] = down;
+				 }
 }
 
 /*===========================================================================*/
@@ -258,8 +258,8 @@ void gameportIORegistersClear(BOOLE clear_pot) {
   if (clear_pot) potgor = 0xffff;
   for (i = 0; i < 2; i++) {
     if (clear_pot) potdat[i] = 0;
-	gameport_autofire0[i] = FALSE;
-	gameport_autofire1[i] = FALSE;
+    gameport_autofire0[i] = FALSE;
+    gameport_autofire1[i] = FALSE;
     gameport_fire0[i] = FALSE;
     gameport_fire1[i] = FALSE;
     gameport_left[i] = FALSE;

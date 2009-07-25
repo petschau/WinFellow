@@ -2,7 +2,7 @@
 #define CONFIG_H
 
 #include "sound.h"
-#include "cpu.h"
+#include "CpuIntegration.h"
 #include "gameport.h"
 #include "listtree.h"
 
@@ -104,7 +104,7 @@ typedef struct {
   /* CPU configuration                                                        */
   /*==========================================================================*/
 
-  cpu_types m_CPUtype;
+  cpu_integration_models m_CPUtype;
   ULO m_CPUspeed;
 
 
@@ -248,8 +248,8 @@ extern ULO cfgGetSoundBufferLength(cfg *config);
 /* CPU configuration property access                                          */
 /*============================================================================*/
 
-extern void cfgSetCPUType(cfg *config, cpu_types CPUtype);
-extern cpu_types cfgGetCPUType(cfg *config);
+extern void cfgSetCPUType(cfg *config, cpu_integration_models CPUtype);
+extern cpu_integration_models cfgGetCPUType(cfg *config);
 extern void cfgSetCPUSpeed(cfg *config, ULO CPUspeed);
 extern ULO cfgGetCPUSpeed(cfg *config);
 

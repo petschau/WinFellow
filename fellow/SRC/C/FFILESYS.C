@@ -1,4 +1,4 @@
-/* @(#) $Id: FFILESYS.C,v 1.14 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: FFILESYS.C,v 1.15 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Filesystem wrapper                                                      */
@@ -98,15 +98,15 @@ BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
 
   len = strlen(filesys.rootpath) - 1;
   if (filesys.rootpath[len] == '\\')
-	filesys.rootpath[len] = '\0';
+    filesys.rootpath[len] = '\0';
 
   return (ffilesys_devs[index].readonly == filesys.readonly) &&
     (strncmp
-     (ffilesys_devs[index].volumename, filesys.volumename,
-      FFILESYS_MAX_VOLUMENAME) == 0) &&
+    (ffilesys_devs[index].volumename, filesys.volumename,
+    FFILESYS_MAX_VOLUMENAME) == 0) &&
     (strncmp
-     (ffilesys_devs[index].rootpath, filesys.rootpath,
-      CFG_FILENAME_LENGTH) == 0);
+    (ffilesys_devs[index].rootpath, filesys.rootpath,
+    CFG_FILENAME_LENGTH) == 0);
 }
 
 void ffilesysSetAutomountDrives(BOOLE automount_drives)
@@ -153,10 +153,10 @@ void ffilesysDumpConfig(void)
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fprintf(F, "Slot: %d, %s, %s, %s\n",
-	      i,
-	      ffilesys_devs[i].volumename,
-	      ffilesys_devs[i].rootpath,
-	      (ffilesys_devs[i].readonly) ? "R" : "RW");
+      i,
+      ffilesys_devs[i].volumename,
+      ffilesys_devs[i].rootpath,
+      (ffilesys_devs[i].readonly) ? "R" : "RW");
     else
       fprintf(F, "Slot: %d, No filesystem defined.\n", i);
   }
@@ -179,9 +179,9 @@ void ffilesysInstall(void)
 	ffilesys_devs[i].rootpath[len] = '\0';
       }
       add_filesys_unit(&mountinfo,
-		       ffilesys_devs[i].volumename,
-		       ffilesys_devs[i].rootpath,
-		       ffilesys_devs[i].readonly, 0, 0, 0, 0);
+	ffilesys_devs[i].volumename,
+	ffilesys_devs[i].rootpath,
+	ffilesys_devs[i].readonly, 0, 0, 0, 0);
     }
 }
 
@@ -193,17 +193,17 @@ void ffilesysHardReset(void)
 {
 #ifdef UAE_FILESYS
   if ((!ffilesysHasZeroDevices()) &&
-      ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
-	rtarea_setup();		/* Maps the trap memory area into memory */
-    rtarea_init();		/* Sets up a lot of traps */
-    hardfile_install();
-    filesys_install();		/* Sets some traps and information in the trap memory area */
-    filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
-    filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
-    filesys_reset();		/* More cleaning up(?) */
-    ffilesysInstall();		/* Install user defined filesystems */
-    filesys_start_threads();	/* Installs registersed filesystems mounts */
-    memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
+    ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
+      rtarea_setup();		/* Maps the trap memory area into memory */
+      rtarea_init();		/* Sets up a lot of traps */
+      hardfile_install();
+      filesys_install();		/* Sets some traps and information in the trap memory area */
+      filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
+      filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
+      filesys_reset();		/* More cleaning up(?) */
+      ffilesysInstall();		/* Install user defined filesystems */
+      filesys_start_threads();	/* Installs registersed filesystems mounts */
+      memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
   }
 #endif
 }
@@ -225,10 +225,10 @@ void ffilesysEmulationStart(void)
 
 void ffilesysEmulationStop(void)
 {
-	/*
-	filesys_prepare_reset();
-	filesys_reset();	
-	*/
+  /*
+  filesys_prepare_reset();
+  filesys_reset();	
+  */
 }
 
 /*============================================================================*/

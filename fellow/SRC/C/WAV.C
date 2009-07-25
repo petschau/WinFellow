@@ -1,4 +1,4 @@
-/* @(#) $Id: WAV.C,v 1.4 2008-02-20 23:56:31 peschau Exp $ */
+/* @(#) $Id: WAV.C,v 1.5 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Wav file sound dump                                                     */
@@ -114,7 +114,7 @@ void wavHeaderWrite(void) {
   ULO blockalign = (wav_stereo + 1)*(wav_16bits + 1);
 
   /* This must still be wrong since wav-editors only reluctantly reads it */
-  
+
   if ((wav_FILE = fopen(wav_filename, "wb")) != NULL) {
     wav_filelength = 36;
     fwrite(wav_RIFF, 4, 1, wav_FILE);           /* 0  RIFF signature */
@@ -159,15 +159,15 @@ void wavLengthUpdate(void) {
 
 void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo) {
   if ((wav_rate != rate) ||
-      (wav_16bits != bits16) ||
-      (wav_stereo != stereo)) {
-    sprintf(wav_filename, "FWAV%d.WAV", wav_serial++);
-    wav_rate = rate;
-    wav_rate_real = soundGetRateReal();
-    wav_16bits = bits16;
-    wav_stereo = stereo;
-    wav_filelength = 0;
-    wavHeaderWrite();
+    (wav_16bits != bits16) ||
+    (wav_stereo != stereo)) {
+      sprintf(wav_filename, "FWAV%d.WAV", wav_serial++);
+      wav_rate = rate;
+      wav_rate_real = soundGetRateReal();
+      wav_16bits = bits16;
+      wav_stereo = stereo;
+      wav_filelength = 0;
+      wavHeaderWrite();
   }
   wav_FILE = fopen(wav_filename, "r+b");
   if (wav_FILE != NULL) fseek(wav_FILE, 0, SEEK_END);
@@ -189,7 +189,7 @@ void wavPlay(WOR *left, WOR *right, ULO sample_count) {
     wav8BitsMonoAdd(left, right, sample_count);
 }
 
-    
+
 /*===========================================================================*/
 /* Emulation start and stop                                                  */
 /*                                                                           */
@@ -202,7 +202,7 @@ void wavEmulationStart(sound_rates rate,
 		       BOOLE bits16,
 		       BOOLE stereo,
 		       ULO buffersamplecountmax) {
-  wavFileInit(rate, bits16, stereo);
+			 wavFileInit(rate, bits16, stereo);
 }
 
 void wavEmulationStop(void) {

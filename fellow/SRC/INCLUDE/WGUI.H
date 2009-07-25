@@ -10,7 +10,8 @@ typedef enum {
   FSEL_KEY = 2,
   FSEL_HDF = 3,
   FSEL_WFC = 4,
-  FSEL_MOD = 5
+  FSEL_MOD = 5,
+  FSEL_FST = 6
 } SelectFileFlags;
 
 typedef struct {

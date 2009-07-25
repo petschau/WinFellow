@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.23 2008-11-03 21:12:10 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.24 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -35,13 +35,13 @@
 #include "defs.h"
 #include "fellow.h"
 #include "fmem.h"
-#include "cpu.h"
 #include "floppy.h"
 #include "draw.h"
 #include "fswrap.h"
 #include "graph.h"
 #include "cia.h"
 #include "bus.h"
+#include "CpuModule.h"
 #include "fileops.h"
 
 #include "xdms.h"
@@ -103,10 +103,6 @@ void floppyLogStep(ULO drive, ULO from, ULO to)
   if (F == 0) return;
   fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, from, to);
   fclose(F);
-  if (draw_frame_count == 31577)
-  {
-    int ijk = 0;
-  }
 }
 
 void floppyLogValue(STR *text, ULO v, ULO ticks)
@@ -122,13 +118,13 @@ void floppyLogValue(STR *text, ULO v, ULO ticks)
 /*=======================*/
 
 /*
-  =====
-  ADCON
-  =====
+=====
+ADCON
+=====
 
-  $dff09e - Read from $dff010
+$dff09e - Read from $dff010
 
-  Paula
+Paula
 */
 
 UWO radcon(ULO address)
@@ -169,8 +165,8 @@ UWO rdskbytr(ULO address)
     tmp |= 0x8000 | (dskbyt_tmp & 0xff);
     dskbyt2_read = TRUE;
   }
-//  tmp |= dskbytr;
-//  dskbytr = 0;
+  //  tmp |= dskbytr;
+  //  dskbytr = 0;
   //floppyLogValue("dskbytr", tmp, -1);
   return tmp;
 }
@@ -264,11 +260,11 @@ BOOLE floppyIsReady(ULO drive) {
   if (drive != -1)
     if (floppy[drive].enabled) {
       if (floppy[drive].idmode)
-        return (floppy[drive].idcount++ < 32);
+	return (floppy[drive].idcount++ < 32);
       else
-        return (floppy[drive].motor && floppy[drive].inserted);
+	return (floppy[drive].motor && floppy[drive].inserted);
     }
-  return FALSE;
+    return FALSE;
 }
 
 BOOLE floppyIsChanged(ULO drive) {
@@ -297,7 +293,7 @@ void floppySideSet(BOOLE s) {
   ULO i;
   for (i = 0; i < 4; i++) floppy[i].side = !s;
 }
-    
+
 void floppyDirSet(BOOLE dr) {
   ULO i;
   for (i = 0; i < 4; i++) floppy[i].dir = dr;
@@ -308,26 +304,26 @@ void floppyStepSet(BOOLE stp) {
   for (i = 0; i < 4; i++) {
     if (floppy[i].sel) {
       if (!stp && floppy[i].changed && floppy[i].inserted &&
-	  ((draw_frame_count - floppy[i].insertedframe) > FLOPPY_INSERTED_DELAY))
+	((draw_frame_count - floppy[i].insertedframe) > FLOPPY_INSERTED_DELAY))
 	floppy[i].changed = FALSE;
       if (!floppy[i].step && !stp) {
-        if (!floppy[i].dir) 
+	if (!floppy[i].dir) 
 	{
 #ifdef _DEBUG
 	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
 #endif
 	  //if (floppy[i].track < (floppy[i].tracks - 1))
-	    floppy[i].track++;
-        }
-        else {
-          if (floppy[i].track > 0) 
+	  floppy[i].track++;
+	}
+	else {
+	  if (floppy[i].track > 0) 
 	  {
 #ifdef _DEBUG
 	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
 #endif
 	    floppy[i].track--;
 	  }
-        }
+	}
       }
       floppy[i].step = !stp;
     }
@@ -385,7 +381,7 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
 
   for(x = 8; x < 48; x += 4)
     hck ^= (((ULO) *(dest + x))<<24) | (((ULO) *(dest + x + 1))<<16) |
-           (((ULO) *(dest + x + 2))<<8) |  ((ULO) *(dest + x + 3));
+    (((ULO) *(dest + x + 2))<<8) |  ((ULO) *(dest + x + 3));
   even = odd = hck; 
   odd >>= 1;
   even |= MFM_FILLL;
@@ -403,7 +399,7 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
 
   for(x = 64; x < 1088; x += 4)
     dck ^= (((ULO) *(dest + x))<<24) | (((ULO) *(dest + x + 1))<<16) |
-           (((ULO) *(dest + x + 2))<< 8) |  ((ULO) *(dest + x + 3));
+    (((ULO) *(dest + x + 2))<< 8) |  ((ULO) *(dest + x + 3));
   even = odd = dck;
   odd >>= 1;
   even |= MFM_FILLL;
@@ -464,7 +460,7 @@ BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc) {
   if (!floppy[drive].writeprot) {
     if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11) {
       fseek(floppy[drive].F,
-	    floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
+	floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
       fwrite(tmptrack, 1, 512, floppy[drive].F);
       memcpy(floppy[drive].trackinfo[track].mfm_data + sector*1088, mfmsrc - 8, 1088);
     }
@@ -532,7 +528,7 @@ static char *TemporaryFilename(void)
   if( tempvar != NULL )
     result = tempnam(tempvar, "wftemp");
   else
-	result = tmpnam(NULL);
+    result = tmpnam(NULL);
   return result;
 }
 
@@ -547,7 +543,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive) {
   if( (gzname = TemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
-	return FALSE;
+    return FALSE;
   }
 
   sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
@@ -567,7 +563,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive) {
   if( (gzname = TemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
-	return FALSE;
+    return FALSE;
   }
 
   if(dmsUnpack(diskname, gzname) != 0) return FALSE;
@@ -587,7 +583,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
   if( (gzname = TemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
-	return FALSE;
+    return FALSE;
   }
 
   if(!gzUnpack(diskname, gzname)) return FALSE;
@@ -606,24 +602,24 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive) {
 
 void floppyImageCompressedRemove(ULO drive) {
   if (floppy[drive].zipped) {
-	if( (!floppy[drive].writeprot) && 
-        ((access(floppy[drive].imagename, 2 )) != -1 )) {
-      STR *dotptr = strrchr(floppy[drive].imagename, '.');
-      if (dotptr != NULL) {
-        if ((strcmpi(dotptr, ".gz") == 0) ||
-	       (strcmpi(dotptr, ".z") == 0) ||
-		   (strcmpi(dotptr, ".adz") == 0)) {
-          if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
-		    fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
-              floppy[drive].imagename);
-          else
-            fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
-		    floppy[drive].imagename);
-		}
+    if( (!floppy[drive].writeprot) && 
+      ((access(floppy[drive].imagename, 2 )) != -1 )) {
+	STR *dotptr = strrchr(floppy[drive].imagename, '.');
+	if (dotptr != NULL) {
+	  if ((strcmpi(dotptr, ".gz") == 0) ||
+	    (strcmpi(dotptr, ".z") == 0) ||
+	    (strcmpi(dotptr, ".adz") == 0)) {
+	      if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
+		fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
+		floppy[drive].imagename);
+	      else
+		fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
+		floppy[drive].imagename);
 	  }
 	}
-	floppy[drive].zipped = FALSE;
-	remove(floppy[drive].imagenamereal);
+    }
+    floppy[drive].zipped = FALSE;
+    remove(floppy[drive].imagenamereal);
   }
 }
 
@@ -637,11 +633,11 @@ BOOLE floppyImageCompressedPrepare(STR *diskname, ULO drive) {
   STR *dotptr = strrchr(diskname, '.');
   if (dotptr == NULL) return FALSE;
   if((strcmpi(dotptr, ".bz2") == 0) ||
-     (strcmpi(dotptr, ".bz") == 0))
+    (strcmpi(dotptr, ".bz") == 0))
     return floppyImageCompressedBZipPrepare(diskname, drive);
   else if ((strcmpi(dotptr, ".gz") == 0) ||
-	   (strcmpi(dotptr, ".z") == 0) ||
-	   (strcmpi(dotptr, ".adz") == 0))
+    (strcmpi(dotptr, ".z") == 0) ||
+    (strcmpi(dotptr, ".adz") == 0))
     return floppyImageCompressedGZipPrepare(diskname, drive);
   else if (strcmpi(dotptr, ".dms") == 0)
     return floppyImageCompressedDMSPrepare(diskname, drive);
@@ -658,9 +654,9 @@ void floppyImageRemove(ULO drive) {
     floppy[drive].F = NULL;
   }
   if (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK ||
-      floppy[drive].imagestatus == FLOPPY_STATUS_EXTENDED_OK) {
-    if (floppy[drive].zipped)
-      floppyImageCompressedRemove(drive);
+    floppy[drive].imagestatus == FLOPPY_STATUS_EXTENDED_OK) {
+      if (floppy[drive].zipped)
+	floppyImageCompressedRemove(drive);
   }
 #ifdef FELLOW_SUPPORT_CAPS
   else if(floppy[drive].imagestatus == FLOPPY_STATUS_IPF_OK) {
@@ -785,33 +781,33 @@ void floppyImageExtendedLoad(ULO drive) {
 /*=======================*/
 
 void floppyImageIPFLoad(ULO drive) {
-    ULO i;
-    UBY *LastTrackMFMData = floppy[drive].mfm_data;
+  ULO i;
+  UBY *LastTrackMFMData = floppy[drive].mfm_data;
 
-    if(!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
-    {
-        fellowAddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
-        return;
-    }
+  if(!capsLoadImage(drive, floppy[drive].F, &floppy[drive].tracks))
+  {
+    fellowAddLog("floppyImageIPFLoad(): Unable to load CAPS IPF Image. Is the Plug-In installed correctly?\n");
+    return;
+  }
 
-    for (i = 0; i < floppy[drive].tracks*2; i++) {
-        ULO maxtracklength;
-        floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
+  for (i = 0; i < floppy[drive].tracks*2; i++) {
+    ULO maxtracklength;
+    floppy[drive].trackinfo[i].mfm_data = LastTrackMFMData; 
 
-        capsLoadTrack(drive,
-            i,
-            floppy[drive].trackinfo[i].mfm_data,
-            &floppy[drive].trackinfo[i].mfm_length, 
-            &maxtracklength,
-            floppy[drive].timebuf,
-            &floppy[drive].flakey);
-        LastTrackMFMData += maxtracklength;
-        floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
-    }
+    capsLoadTrack(drive,
+      i,
+      floppy[drive].trackinfo[i].mfm_data,
+      &floppy[drive].trackinfo[i].mfm_length, 
+      &maxtracklength,
+      floppy[drive].timebuf,
+      &floppy[drive].flakey);
+    LastTrackMFMData += maxtracklength;
+    floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
+  }
 
-    floppy[drive].writeprot = TRUE;
-    floppy[drive].inserted = TRUE;
-    floppy[drive].insertedframe = draw_frame_count;
+  floppy[drive].writeprot = TRUE;
+  floppy[drive].inserted = TRUE;
+  floppy[drive].insertedframe = draw_frame_count;
 }
 #endif
 
@@ -820,58 +816,58 @@ void floppyImageIPFLoad(ULO drive) {
 /*==============================*/
 
 void floppySetDiskImage(ULO drive, STR *diskname) {
-    fs_navig_point *fsnp;
-    if (strcmp(diskname, floppy[drive].imagename) == 0) 
-        return; /* Same image */
-    floppyImageRemove(drive);
-    if (strcmp(diskname, "") == 0) {
-        floppy[drive].inserted = FALSE;
-        floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
-        strcpy(floppy[drive].imagename, "");
-    }
+  fs_navig_point *fsnp;
+  if (strcmp(diskname, floppy[drive].imagename) == 0) 
+    return; /* Same image */
+  floppyImageRemove(drive);
+  if (strcmp(diskname, "") == 0) {
+    floppy[drive].inserted = FALSE;
+    floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
+    strcpy(floppy[drive].imagename, "");
+  }
+  else {
+    if ((fsnp = fsWrapMakePoint(diskname)) == NULL)
+      floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
     else {
-        if ((fsnp = fsWrapMakePoint(diskname)) == NULL)
-            floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
-        else {
-            if (fsnp->type != FS_NAVIG_FILE)
-	            floppyError(drive, FLOPPY_ERROR_FILE);
-             else {
-	            floppyImagePrepare(diskname, drive);
-	            if (floppy[drive].zipped) {
-	                free(fsnp);
-	                if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
-	                    floppyError(drive, FLOPPY_ERROR_COMPRESS);
-	            }
-	            if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
-	                floppy[drive].writeprot = !fsnp->writeable;
-	                if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-			            (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
-	                    floppyError(drive, (floppy[drive].zipped) ?
-				        FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-	                else {
-	                    strcpy(floppy[drive].imagename, diskname);
-	                    switch (floppyImageGeometryCheck(fsnp, drive)) {
-	                        case FLOPPY_STATUS_NORMAL_OK:
-		                        floppyImageNormalLoad(drive);
-		                        break;
-	                        case FLOPPY_STATUS_EXTENDED_OK:
-		                        floppyImageExtendedLoad(drive);
-		                        break;
+      if (fsnp->type != FS_NAVIG_FILE)
+	floppyError(drive, FLOPPY_ERROR_FILE);
+      else {
+	floppyImagePrepare(diskname, drive);
+	if (floppy[drive].zipped) {
+	  free(fsnp);
+	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
+	    floppyError(drive, FLOPPY_ERROR_COMPRESS);
+	}
+	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
+	  floppy[drive].writeprot = !fsnp->writeable;
+	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
+	    (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
+	    floppyError(drive, (floppy[drive].zipped) ?
+FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+	  else {
+	    strcpy(floppy[drive].imagename, diskname);
+	    switch (floppyImageGeometryCheck(fsnp, drive)) {
+				case FLOPPY_STATUS_NORMAL_OK:
+				  floppyImageNormalLoad(drive);
+				  break;
+				case FLOPPY_STATUS_EXTENDED_OK:
+				  floppyImageExtendedLoad(drive);
+				  break;
 #ifdef FELLOW_SUPPORT_CAPS
-                            case FLOPPY_STATUS_IPF_OK:
-                                floppyImageIPFLoad(drive);
-                                break;
+				case FLOPPY_STATUS_IPF_OK:
+				  floppyImageIPFLoad(drive);
+				  break;
 #endif
-	                        default:
-		                        /* Error already set by floppyImageGeometryCheck() */
-		                        break;
-                        }
-                    }	
-                }
-             }
-             free(fsnp);
-        }
+				default:
+				  /* Error already set by floppyImageGeometryCheck() */
+				  break;
+	    }
+	  }	
+	}
+      }
+      free(fsnp);
     }
+  }
 }
 
 /*============================================================================*/
@@ -1087,8 +1083,8 @@ void floppyDMAWriteInit(LON drive) {
     pos += next_after_sync_offset;
     if (length > 0) {
       if (floppySectorSave(drive, track_lin, memory_chip + pos)) {
-        length -= 1080;
-        pos += 1080;
+	length -= 1080;
+	pos += 1080;
       }
     }
   }
@@ -1150,7 +1146,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync) {
     floppy_DMA.dskpt = (floppy_DMA.dskpt + 2) & 0x1ffffe;
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0) {
-      floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
+      //floppyLogValue(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", 0x8002, floppy[floppySelectedGet()].motor_ticks);
       memoryWriteWord(0x8002, 0xdff09c);
       floppy_DMA_started = FALSE;
     }
@@ -1167,79 +1163,79 @@ UWO floppyGetByteUnderHead(ULO sel_drv, ULO track)
 }
 
 void floppyNextByte(ULO sel_drv, ULO track) {
-    ULO modulo;
+  ULO modulo;
 #ifdef FELLOW_SUPPORT_CAPS
-    ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
-    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
-        modulo = floppy[sel_drv].trackinfo[track].mfm_length;
-    else
+  ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
+  if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
+    modulo = floppy[sel_drv].trackinfo[track].mfm_length;
+  else
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
-								     floppy[sel_drv].trackinfo[track].mfm_length;
-    if (modulo == 0) modulo = 1;
-    floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 1) % modulo;
-	if (floppyHasIndex(sel_drv)) ciaRaiseIndexIRQ();
+    floppy[sel_drv].trackinfo[track].mfm_length;
+  if (modulo == 0) modulo = 1;
+  floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 1) % modulo;
+  if (floppyHasIndex(sel_drv)) ciaRaiseIndexIRQ();
 
 #ifdef FELLOW_SUPPORT_CAPS
-    if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
-        if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
-        && floppy[sel_drv].flakey)
-            {
-                ULO track = floppy[sel_drv].track;    
-                capsLoadNextRevolution(
-                    sel_drv, 
-                    floppy[sel_drv].track, 
-                    floppy[sel_drv].trackinfo[track].mfm_data, 
-                    &floppy[sel_drv].trackinfo[track].mfm_length);
-            }
+  if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
+    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
+      && floppy[sel_drv].flakey)
+    {
+      ULO track = floppy[sel_drv].track;    
+      capsLoadNextRevolution(
+	sel_drv, 
+	floppy[sel_drv].track, 
+	floppy[sel_drv].trackinfo[track].mfm_data, 
+	&floppy[sel_drv].trackinfo[track].mfm_length);
+    }
 #endif
 }
 
 /* Note: Inside FLOPPY_TEST_BYTE_ALIGNMENT */
 UWO prev_byte_under_head = 0;
 void floppyEndOfLine(void) {
-    LON sel_drv = floppySelectedGet();
-    if (floppyDMAWriteStarted()) 
+  LON sel_drv = floppySelectedGet();
+  if (floppyDMAWriteStarted()) 
+  {
+    floppyDMAWrite(); 
+    floppy_has_sync = FALSE; 
+    return;
+  }
+  if (sel_drv == -1) 
+  {
+    floppy_has_sync = FALSE; 
+    return;
+  }
+  if (floppyIsSpinning(sel_drv)) 
+  {
+    ULO i;
+    ULO track = floppyGetLinearTrack(sel_drv);
+    ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+    for (i = 0; i < words; i++) 
     {
-        floppyDMAWrite(); 
-        floppy_has_sync = FALSE; 
-        return;
-    }
-    if (sel_drv == -1) 
-    {
-        floppy_has_sync = FALSE; 
-        return;
-    }
-    if (floppyIsSpinning(sel_drv)) 
-    {
-        ULO i;
-        ULO track = floppyGetLinearTrack(sel_drv);
-        ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-        for (i = 0; i < words; i++) 
-        {
-			UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
-			UWO tmpb2;
-			UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
-            BOOLE found_sync = floppyCheckSync(word_under_head);
-			floppyNextByte(sel_drv, track);
-			if (!found_sync) // Odd aligned sync, temporary solution
-			{
-				tmpb2 = floppyGetByteUnderHead(sel_drv, track);
-				floppyNextByte(sel_drv, track);
-				word_under_head = (tmpb1 << 8) | tmpb2;
-                found_sync = floppyCheckSync(word_under_head);
-			}
-			prev_byte_under_head = word_under_head & 0xff;
-			dskbyt_tmp = word_under_head;
-			dskbyt1_read = FALSE;
-			dskbyt2_read = FALSE;
-			//dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
+      UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
+      UWO tmpb2;
+      UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
+      BOOLE found_sync = floppyCheckSync(word_under_head);
+      floppyNextByte(sel_drv, track);
+      if (!found_sync) // Odd aligned sync, temporary solution
+      {
+	tmpb2 = floppyGetByteUnderHead(sel_drv, track);
+	floppyNextByte(sel_drv, track);
+	word_under_head = (tmpb1 << 8) | tmpb2;
+	found_sync = floppyCheckSync(word_under_head);
+      }
+      prev_byte_under_head = word_under_head & 0xff;
+      dskbyt_tmp = word_under_head;
+      dskbyt1_read = FALSE;
+      dskbyt2_read = FALSE;
+      //dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
 
-            if (floppyDMAReadStarted()) 
-                floppyReadWord(word_under_head, found_sync);
-        }
+      if (floppyDMAReadStarted()) 
+	floppyReadWord(word_under_head, found_sync);
     }
-    else floppy_has_sync = FALSE;
+  }
+  else floppy_has_sync = FALSE;
 }
 
 
@@ -1251,67 +1247,67 @@ void floppyEndOfLine(void) {
 UWO floppyGetWordUnderHead(ULO sel_drv, ULO track) {
   if ((track/2) >= floppy[sel_drv].tracks) return 0x7272; /* What is correct? Noise? */
   else return ((floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks] << 8) |
-          floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks + 1]);
+    floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks + 1]);
 }
 
 void floppyNextTick(ULO sel_drv, ULO track) {
-    ULO modulo;
+  ULO modulo;
 #ifdef FELLOW_SUPPORT_CAPS
-    ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
-    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
-        modulo = ((floppy[sel_drv].trackinfo[track].mfm_length + 1) / 2) * 2;
-    else
+  ULO previous_motor_ticks = floppy[sel_drv].motor_ticks;
+  if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK) 
+    modulo = ((floppy[sel_drv].trackinfo[track].mfm_length + 1) / 2) * 2;
+  else
 #endif
     modulo = (floppyDMAReadStarted() && floppy_DMA.dont_use_gap) ? ((11968 < floppy[sel_drv].trackinfo[track].mfm_length) ? 11968 : floppy[sel_drv].trackinfo[track].mfm_length) :
-     floppy[sel_drv].trackinfo[track].mfm_length;
-    if (modulo == 0) modulo = 1;
-    floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
+    floppy[sel_drv].trackinfo[track].mfm_length;
+  if (modulo == 0) modulo = 1;
+  floppy[sel_drv].motor_ticks = (floppy[sel_drv].motor_ticks + 2) % modulo;
 #ifdef FELLOW_SUPPORT_CAPS
-    if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
-        if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
-        && floppy[sel_drv].flakey)
-            {
-                ULO track = floppy[sel_drv].track;    
-                capsLoadNextRevolution(
-                    sel_drv, 
-                    floppy[sel_drv].track, 
-                    floppy[sel_drv].trackinfo[track].mfm_data, 
-                    &floppy[sel_drv].trackinfo[track].mfm_length);
-            }
+  if(previous_motor_ticks > floppy[sel_drv].motor_ticks)
+    if(floppy[sel_drv].imagestatus == FLOPPY_STATUS_IPF_OK
+      && floppy[sel_drv].flakey)
+    {
+      ULO track = floppy[sel_drv].track;    
+      capsLoadNextRevolution(
+	sel_drv, 
+	floppy[sel_drv].track, 
+	floppy[sel_drv].trackinfo[track].mfm_data, 
+	&floppy[sel_drv].trackinfo[track].mfm_length);
+    }
 #endif
 }
 
 void floppyEndOfLine(void) {
-    LON sel_drv = floppySelectedGet();
-    if (floppyDMAWriteStarted()) 
+  LON sel_drv = floppySelectedGet();
+  if (floppyDMAWriteStarted()) 
+  {
+    floppyDMAWrite(); 
+    floppy_has_sync = FALSE; 
+    return;
+  }
+  if (sel_drv == -1) 
+  {
+    floppy_has_sync = FALSE; 
+    return;
+  }
+  if (floppyIsSpinning(sel_drv)) 
+  {
+    ULO i;
+    ULO track = floppyGetLinearTrack(sel_drv);
+    ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
+    for (i = 0; i < words; i++) 
     {
-        floppyDMAWrite(); 
-        floppy_has_sync = FALSE; 
-        return;
+      UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
+      BOOLE found_sync = floppyCheckSync(word_under_head);
+      dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
+      if (floppyHasIndex(sel_drv)) 
+	ciaRaiseIndexIRQ();
+      if (floppyDMAReadStarted()) 
+	floppyReadWord(word_under_head, found_sync);
+      floppyNextTick(sel_drv, track);
     }
-    if (sel_drv == -1) 
-    {
-        floppy_has_sync = FALSE; 
-        return;
-    }
-    if (floppyIsSpinning(sel_drv)) 
-    {
-        ULO i;
-        ULO track = floppyGetLinearTrack(sel_drv);
-        ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
-        for (i = 0; i < words; i++) 
-        {
-            UWO word_under_head = floppyGetWordUnderHead(sel_drv, track);
-            BOOLE found_sync = floppyCheckSync(word_under_head);
-	    dskbytr = 0x8000 | (word_under_head & 0xff); /* Fix this later, it should report every byte */
-            if (floppyHasIndex(sel_drv)) 
-                ciaRaiseIndexIRQ();
-            if (floppyDMAReadStarted()) 
-                floppyReadWord(word_under_head, found_sync);
-            floppyNextTick(sel_drv, track);
-        }
-    }
-    else floppy_has_sync = FALSE;
+  }
+  else floppy_has_sync = FALSE;
 }
 
 #endif
@@ -1342,14 +1338,14 @@ void floppyStartup(void) {
 }
 
 void floppyShutdown(void) {
-    ULO i;
-  
-    for (i = 0; i < 4; i++)
-        floppyImageRemove(i);
-    floppyMfmDataFree();
+  ULO i;
+
+  for (i = 0; i < 4; i++)
+    floppyImageRemove(i);
+  floppyMfmDataFree();
 #ifdef FELLOW_SUPPORT_CAPS
-    floppyTimeBufDataFree();
-    fellowAddLog("Unloading CAPS Image library...\n");
-    capsShutdown();
+  floppyTimeBufDataFree();
+  fellowAddLog("Unloading CAPS Image library...\n");
+  capsShutdown();
 #endif
 }

@@ -1,4 +1,4 @@
-/* @(#) $Id: CPUDIS.C,v 1.4 2008-02-20 23:56:28 peschau Exp $ */
+/* @(#) $Id: CpuModule_Disassembler.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU disassembly                                                         */
@@ -24,7 +24,7 @@
 /*=========================================================================*/
 #include "defs.h"
 #include "fmem.h"
-#include "cpu.h"
+#include "CpuModule.h"
 #include "cpudisfunc.h"
 
 typedef ULO (*cpuDisFunc)(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *soperands);  
@@ -69,10 +69,10 @@ static ULO cpuDisGetSize(UWO opcode)
   ULO result = 0;
   switch ((opcode >> 6) & 3)
   {
-    case 0: result = 8; break;
-    case 1: result = 16; break;
-    case 2: result = 32; break;
-    case 3: result = 64; break;
+  case 0: result = 8; break;
+  case 1: result = 16; break;
+  case 2: result = 32; break;
+  case 3: result = 64; break;
   }
   return result;
 }
@@ -82,8 +82,8 @@ static ULO cpuDisGetSize2(UWO opcode)
   ULO result = 0;
   switch ((opcode >> 8) & 1)
   {
-    case 0: result = 16; break;
-    case 1: result = 32; break;
+  case 0: result = 16; break;
+  case 1: result = 32; break;
   }
   return result;
 }
@@ -107,7 +107,7 @@ static STR cpuDisSizeChar(ULO size)
 }
 
 static STR *cpu_dis_btab[16] = {"RA", "SR", "HI", "LS", "CC", "CS", "NE", "EQ", "VC", "VS",
-			        "PL", "MI", "GE", "LT", "GT", "LE"};
+"PL", "MI", "GE", "LT", "GT", "LE"};
 
 static ULO cpuDisGetBranchType(UWO opc)
 {
@@ -115,15 +115,15 @@ static ULO cpuDisGetBranchType(UWO opc)
 }
 
 /*===========================================================================
-  Disassembly of the address-modes
-  Parameters:
-   ULO reg  - The register used in the address-mode
-   ULO pcp  - The address of the next byte not used.
-   STR *st - The string to write the dissassembly to.
-   ULO *pos - The position in the string where the hex-words used are written
-  Returnvalue:
-   PC after possible extension words
-  ===========================================================================*/
+Disassembly of the address-modes
+Parameters:
+ULO reg  - The register used in the address-mode
+ULO pcp  - The address of the next byte not used.
+STR *st - The string to write the dissassembly to.
+ULO *pos - The position in the string where the hex-words used are written
+Returnvalue:
+PC after possible extension words
+===========================================================================*/
 
 static STR* cpuDisEoS(STR *s)
 {
@@ -148,7 +148,7 @@ static void cpuDisLongAppend(ULO data, STR *sdata)
 static ULO cpuDis05(ULO regno, ULO pcp, STR *sdata, STR *soperands)
 {
   ULO disp = memoryReadWord(pcp);
-  
+
   cpuDisWordAppend(disp, sdata);
   sprintf(cpuDisEoS(soperands), "$%.4X(A%1d)", disp, regno);
   return pcp + 2;
@@ -162,9 +162,9 @@ static ULO cpuDis06Brief(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, STR 
   ULO indexregno = (ext >> 12) & 7;
   ULO offset = ext & 0xff;
   ULO scalefactor = (ext >> 9) & 3;
-  
+
   cpuDisWordAppend(ext, sdata);
-  if (cpuGetType() < 2)
+  if (cpuGetModelMajor() < 2)
   {
     if (!is_pc_indirect)
     {
@@ -231,9 +231,9 @@ static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, S
   indexstr[0] = '\0';
   basedispstr[0] = '\0';
   outerdispstr[0] = '\0';
-  
+
   /* Print extension word */
-  
+
   cpuDisWordAppend(ext, sdata);
 
   /* Base register */
@@ -264,9 +264,9 @@ static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, S
   {    /* Index included */
     sprintf(indexstr, "%c%d.%c%s", indexregtype, indexregno, indexsize, scale[scalefactor]);
   }
-  
+
   /* Base displacement */
-  
+
   if (bdsize < 2)
   {
     basedispstr[0] = '\0';
@@ -285,58 +285,58 @@ static ULO cpuDis06Extended(ULO regno, ULO pcp, ULO ext, BOOLE is_pc_indirect, S
     cpuDisLongAppend(bd, sdata);
     sprintf(basedispstr, "$%.8X", bd);
   }
-  
+
   switch (iis)
   { /* Evaluate and add index operand */
-    case 0:           /* No memory indirect action */
-      sprintf(cpuDisEoS(soperands), "(%s,%s,%s)", basedispstr, baseregstr, indexstr);
-      break;
-    case 1:           /* Preindexed with null outer displacement */
-      sprintf(cpuDisEoS(soperands), "([%s,%s,%s])", basedispstr, baseregstr, indexstr);
-      break;
-    case 2:           /* Preindexed with word outer displacement */
-      pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-      sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-      break;
-    case 3:           /* Preindexed with long outer displacement */
-      pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-      sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-      break;
-    case 4:           /* Reserved ie. Illegal */
+  case 0:           /* No memory indirect action */
+    sprintf(cpuDisEoS(soperands), "(%s,%s,%s)", basedispstr, baseregstr, indexstr);
+    break;
+  case 1:           /* Preindexed with null outer displacement */
+    sprintf(cpuDisEoS(soperands), "([%s,%s,%s])", basedispstr, baseregstr, indexstr);
+    break;
+  case 2:           /* Preindexed with word outer displacement */
+    pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+    sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+    break;
+  case 3:           /* Preindexed with long outer displacement */
+    pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+    sprintf(cpuDisEoS(soperands), "([%s,%s,%s],%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+    break;
+  case 4:           /* Reserved ie. Illegal */
+    sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+    break;
+  case 5:           /* Postindexed with null outer displacement */
+    if (is)
+    {
       sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-      break;
-    case 5:           /* Postindexed with null outer displacement */
-      if (is)
-      {
-	sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-      }
-      else
-      {
-        sprintf(cpuDisEoS(soperands), "([%s,%s],%s)", basedispstr, baseregstr, indexstr);
-      }
-      break;
-    case 6:           /* Postindexed with word outer displacement */
-      if (is)
-      {
-	sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-      }
-      else
-      {
-        pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-        sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-      }
-      break;
-    case 7:           /* Postindexed with long outer displacement */
-      if (is)
-      {
-	sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
-      }
-      else
-      {
-        pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
-        sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
-      }
-      break;
+    }
+    else
+    {
+      sprintf(cpuDisEoS(soperands), "([%s,%s],%s)", basedispstr, baseregstr, indexstr);
+    }
+    break;
+  case 6:           /* Postindexed with word outer displacement */
+    if (is)
+    {
+      sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+    }
+    else
+    {
+      pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+      sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+    }
+    break;
+  case 7:           /* Postindexed with long outer displacement */
+    if (is)
+    {
+      sprintf(cpuDisEoS(soperands), "RESERVED/ILLEGAL");
+    }
+    else
+    {
+      pcp = cpuDis06Od(pcp, TRUE, sdata, outerdispstr);
+      sprintf(cpuDisEoS(soperands), "([%s,%s],%s,%s)", basedispstr, baseregstr, indexstr, outerdispstr);
+    }
+    break;
   }
   return pcp;
 }
@@ -346,7 +346,7 @@ static ULO cpuDis06(ULO regno, ULO pcp, STR *sdata, STR *soperands)
 {
   ULO ext = memoryReadWord(pcp);
 
-  if (cpuGetType() < 2 || !(ext & 0x0100))
+  if (cpuGetModelMajor() < 2 || !(ext & 0x0100))
     return cpuDis06Brief(regno, pcp + 2, ext, FALSE, sdata, soperands);
   else
     return cpuDis06Extended(regno, pcp + 2, ext, FALSE, sdata, soperands);
@@ -383,7 +383,7 @@ static ULO cpuDis73(ULO pcp, STR *sdata, STR *soperands)
 {
   ULO ext = memoryReadWord(pcp);
 
-  if (cpuGetType() < 2 || !(ext & 0x0100))
+  if (cpuGetModelMajor() < 2 || !(ext & 0x0100))
     return cpuDis06Brief(0, pcp + 2, ext, TRUE, sdata, soperands);
   else
     return cpuDis06Extended(0, pcp + 2, ext, TRUE, sdata, soperands);
@@ -442,19 +442,19 @@ static ULO cpuDisAdrMode(ULO eamode, ULO earegno, ULO pcp, ULO size, STR *sdata,
 {
   switch (eamode)
   {
-    case 0:
-    case 1:  cpuDisRegCat(eamode == 0, earegno, soperands); break;
-    case 2:
-    case 3:
-    case 4:  cpuDisIndRegCat(eamode, earegno, soperands); break;
-    case 5:  return cpuDis05(earegno, pcp, sdata, soperands);
-    case 6:  return cpuDis06(earegno, pcp, sdata, soperands);
-    case 7:  return cpuDis70(pcp, sdata, soperands);
-    case 8:  return cpuDis71(pcp, sdata, soperands);
-    case 9:  return cpuDis72(pcp, sdata, soperands);
-    case 10: return cpuDis73(pcp, sdata, soperands);
-    case 11: return cpuDis74(size, pcp, sdata, soperands);
-    default: return pcp;
+  case 0:
+  case 1:  cpuDisRegCat(eamode == 0, earegno, soperands); break;
+  case 2:
+  case 3:
+  case 4:  cpuDisIndRegCat(eamode, earegno, soperands); break;
+  case 5:  return cpuDis05(earegno, pcp, sdata, soperands);
+  case 6:  return cpuDis06(earegno, pcp, sdata, soperands);
+  case 7:  return cpuDis70(pcp, sdata, soperands);
+  case 8:  return cpuDis71(pcp, sdata, soperands);
+  case 9:  return cpuDis72(pcp, sdata, soperands);
+  case 10: return cpuDis73(pcp, sdata, soperands);
+  case 11: return cpuDis74(size, pcp, sdata, soperands);
+  default: return pcp;
   }
   return pcp;
 }
@@ -577,15 +577,15 @@ static ULO cpuDisArith5(ULO prc, UWO opc, ULO nr, STR *sinstruction, STR *sopera
 
   sprintf(sinstruction, "%s.%c", cpu_dis_a5nr[nr], cpuDisSizeChar(cpuDisGetSize(opc)));
   sprintf(soperands,
-	  ((!bit3) ?
-                "%sD%d%s,%sD%d%s":
-                "%s(A%d)%s,%s(A%d)%s"),
-	  minus,
-	  cpuDisGetSourceRegister(opc),
-	  plus,
-	  minus,
-	  cpuDisGetDestinationRegister(opc),
-	  plus);
+    ((!bit3) ?
+    "%sD%d%s,%sD%d%s":
+  "%s(A%d)%s,%s(A%d)%s"),
+    minus,
+    cpuDisGetSourceRegister(opc),
+    plus,
+    minus,
+    cpuDisGetDestinationRegister(opc),
+    plus);
   return prc + 2;
 }
 
@@ -752,7 +752,7 @@ static ULO cpuDisBcc(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *soper
     cpuDisWordAppend(disp2, sdata);
     adr = (disp2 > 32767) ? (prc + disp2 - 65536) : (prc + disp2);
   }
-  else if (disp == -1 && cpu_major >= 2)
+  else if (disp == -1 && cpuGetModelMajor() >= 2)
   {
     prc += 2;
     disp2 = memoryReadLong(prc);
@@ -984,7 +984,7 @@ static ULO cpuDisMovem(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *sop
   ULO size;
   ULO dir = cpuDisGetBit(opc, 10);
   ULO regmask;
-  
+
   size = (!cpuDisGetBit(opc, 6)) ? 16 : 32;
   regmask = memoryReadWord(prc + 2);
   cpuDisWordAppend(regmask, sdata);
@@ -1266,15 +1266,15 @@ static ULO cpuDisCas(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *soper
     sprintf(sinstruction, "CAS2.%c", cpuDisSizeChar(size));
 
     sprintf(soperands,
-	    "D%d:D%d,D%d:D%d,(%s%d):(%s%d)",
-	    ext & 7, 
-	    ext2 & 7,
-	    (ext >> 6) & 7, 
-	    (ext2 >> 6) & 7, 
-	    (ext & 0x8000) ? "A" : "D",
-            (ext >> 12) & 7, 
-	    (ext2 & 0x8000) ? "A" : "D", 
-	    (ext2 >> 12) & 7);
+      "D%d:D%d,D%d:D%d,(%s%d):(%s%d)",
+      ext & 7, 
+      ext2 & 7,
+      (ext >> 6) & 7, 
+      (ext2 >> 6) & 7, 
+      (ext & 0x8000) ? "A" : "D",
+      (ext >> 12) & 7, 
+      (ext2 & 0x8000) ? "A" : "D", 
+      (ext2 >> 12) & 7);
     prc += 6;
   }
   else
@@ -1318,7 +1318,7 @@ static ULO cpuDisDivl(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *sope
   ULO dq;
   ULO dr;
   STR stmp[16];
-  
+
   cpuDisWordAppend(ext, sdata);
   dq = (ext >> 12) & 7;
   dr = ext & 7;
@@ -1374,37 +1374,37 @@ static ULO cpuDisMovec(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *sop
     strcat(soperands, stmp);
   }
   creg = extw & 0xfff;
-  if (cpu_major == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
-			       (creg != 0x801))) creg = 0xfff;
+  if (cpuGetModelMajor() == 1 && ((creg != 0) && (creg != 1) && (creg != 0x800) &&
+    (creg != 0x801))) creg = 0xfff;
   switch (creg)
   {
-    case 0x000:    /* SFC, Source function code X12346*/
-      strcat(soperands, "SFC");
-      break;
-    case 0x001:    /* DFC, Destination function code X12346 */
-      strcat(soperands, "DFC");
-      break;
-    case 0x800:    /* USP, User stack pointer X12346 */
-      strcat(soperands, "USP");
-      break;
-    case 0x801:    /* VBR, Vector base register X12346 */
-      strcat(soperands, "VBR");
-      break;
-    case 0x002:    /* CACR, Cache control register XX2346 */
-      strcat(soperands, "CACR");
-      break;
-    case 0x802:    /* CAAR, Cache adress register XX2346 */
-      strcat(soperands, "CAAR");
-      break;
-    case 0x803:    /* MSP, Master stack pointer XX234X */
-      strcat(soperands, "MSP");
-      break;
-    case 0x804:    /* ISP, Interrupt stack pointer XX234X */
-      strcat(soperands, "ISP");
-      break;
-    default:
-      strcat(soperands, "ILLEGAL");
-      break;
+  case 0x000:    /* SFC, Source function code X12346*/
+    strcat(soperands, "SFC");
+    break;
+  case 0x001:    /* DFC, Destination function code X12346 */
+    strcat(soperands, "DFC");
+    break;
+  case 0x800:    /* USP, User stack pointer X12346 */
+    strcat(soperands, "USP");
+    break;
+  case 0x801:    /* VBR, Vector base register X12346 */
+    strcat(soperands, "VBR");
+    break;
+  case 0x002:    /* CACR, Cache control register XX2346 */
+    strcat(soperands, "CACR");
+    break;
+  case 0x802:    /* CAAR, Cache adress register XX2346 */
+    strcat(soperands, "CAAR");
+    break;
+  case 0x803:    /* MSP, Master stack pointer XX234X */
+    strcat(soperands, "MSP");
+    break;
+  case 0x804:    /* ISP, Interrupt stack pointer XX234X */
+    strcat(soperands, "ISP");
+    break;
+  default:
+    strcat(soperands, "ILLEGAL");
+    break;
   }
   if (!(opc & 1))
   { /* From control register */
@@ -1420,7 +1420,7 @@ static ULO cpuDisMoves(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *sop
   ULO ext = memoryReadWord(prc + 2);
   ULO size = cpuDisGetSize(opc);
   STR stmp[16];
- 
+
   cpuDisWordAppend(ext, sdata);
   sprintf(sinstruction, "MOVES.%c", cpuDisSizeChar(size));
   if (ext & 0x800)
@@ -1444,7 +1444,7 @@ static ULO cpuDisMull(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *sope
   ULO dl;
   ULO dh;
   STR stmp[16];
-  
+
   dl = (ext>>12) & 7;
   dh = ext & 7;
   cpuDisWordAppend(ext, sdata);
@@ -1509,7 +1509,7 @@ static ULO cpuDisPflush030(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR 
   ULO mask = ext & 0x1f;
   ULO op = (ext >> 13) & 7;
   STR stmp[16]; 
-  
+
   cpuDisWordAppend(ext, sdata);
   if (op == 0x1)
   {
@@ -1519,14 +1519,14 @@ static ULO cpuDisPflush030(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR 
       prc += 4;
       if (mode != 1)
       {
-        cpuDisPflush030PrintFc(soperands, fcode);
-        sprintf(stmp, "%.3X", mask);
-        strcat(soperands, stmp);
-        if (mode == 6)
+	cpuDisPflush030PrintFc(soperands, fcode);
+	sprintf(stmp, "%.3X", mask);
+	strcat(soperands, stmp);
+	if (mode == 6)
 	{
 	  cpuDisCommaAppend(soperands);
-          prc = cpuDisAdrMode(eamode, eareg, prc, 16, sdata, soperands);
-        }
+	  prc = cpuDisAdrMode(eamode, eareg, prc, 16, sdata, soperands);
+	}
       }
     }
     else
@@ -1562,20 +1562,20 @@ static ULO cpuDisPflush040(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR 
 
   switch (opmode)
   {
-    case 0:
-      sprintf(sinstruction, "PFLUSHN");
-      sprintf(soperands, "(A%d)", reg);
-      break;
-    case 1:
-      sprintf(sinstruction, "PFLUSH");
-      sprintf(soperands, "(A%d)", reg);
-      break;
-    case 2:
-      sprintf(sinstruction, "PFLUSHAN");
-      break;
-    case 3:
-      sprintf(sinstruction, "PFLUSHA");
-      break;
+  case 0:
+    sprintf(sinstruction, "PFLUSHN");
+    sprintf(soperands, "(A%d)", reg);
+    break;
+  case 1:
+    sprintf(sinstruction, "PFLUSH");
+    sprintf(soperands, "(A%d)", reg);
+    break;
+  case 2:
+    sprintf(sinstruction, "PFLUSHAN");
+    break;
+  case 3:
+    sprintf(sinstruction, "PFLUSHA");
+    break;
   }      
   return prc + 2;
 }
@@ -1586,7 +1586,7 @@ static ULO cpuDisPtest040(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *
 {
   ULO reg = cpuDisGetSourceRegister(opc);
   ULO rw = cpuDisGetBit(opc, 5);
-  
+
   sprintf(sinstruction, "PTEST%c", (rw) ? 'R' : 'W');
   sprintf(soperands, "(A%d)", reg);
   return prc + 2;

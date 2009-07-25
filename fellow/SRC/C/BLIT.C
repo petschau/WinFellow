@@ -14,9 +14,9 @@
 #include "fmem.h"
 #include "graph.h"
 #include "draw.h"
-#include "cpu.h"
 #include "bus.h"
 #include "fileops.h"
+#include "CpuIntegration.h"
 
 //#define BLIT_TSC_PROFILE
 
@@ -31,10 +31,49 @@ ULO blit_tsc_words = 0;
 /* Blitter registers                                                          */
 /*============================================================================*/
 
-BOOLE blit_on = TRUE;
+typedef struct blitter_state_
+{
+  // Actual registers
+  ULO bltcon;
+  ULO bltafwm;
+  ULO bltalwm;
+  ULO bltapt;
+  ULO bltbpt;
+  ULO bltcpt;
+  ULO bltdpt;
+  ULO bltamod;
+  ULO bltbmod;
+  ULO bltcmod;
+  ULO bltdmod;
+  ULO bltadat;
+  ULO bltbdat;
+  ULO bltbdat_original;
+  ULO bltcdat;
+  ULO bltzero;
 
-ULO bltcon, bltafwm, bltalwm, bltapt, bltbpt, bltcpt, bltdpt, bltamod, bltbmod;
-ULO bltcmod, bltdmod, bltadat, bltbdat, bltbdat_original, bltcdat, bltzero;
+  // Calculated by the set-functions based on the state above
+  ULO height;
+  ULO width;
+
+  // Line mode alters these and the state remains after the line is done.
+  // ie. the next line continues where the last left off if the shifts are not re-initialised
+  // by Amiga code.
+  ULO a_shift_asc;
+  ULO a_shift_desc;
+  ULO b_shift_asc;
+  ULO b_shift_desc;
+
+  // Information about an ongoing blit
+  // dma_pending is a flag showing that a blit has been activated (a write to BLTSIZE)
+  // but at the time of activation the blit DMA was turned off
+  BOOLE started;
+  BOOLE dma_pending; 
+  ULO cycle_length; // Estimate for how many cycles the started blit will take
+  ULO cycle_free;   // How many of these cycles are free to use by the CPU
+
+} blitter_state;
+
+blitter_state blitter;
 
 /*============================================================================*/
 /* Blitter cycle usage table                                                  */
@@ -42,37 +81,19 @@ ULO bltcmod, bltdmod, bltadat, bltbdat, bltbdat_original, bltcdat, bltzero;
 /*============================================================================*/
 
 ULO blit_cyclelength[16] = {2, 2, 2, 3, /* How long it takes for a blit to complete */
-			    3, 3, 3, 4, 
-			    2, 2, 2, 3, 
-			    3, 3, 3, 4};
+3, 3, 3, 4, 
+2, 2, 2, 3, 
+3, 3, 3, 4};
 ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
-			  2, 1, 1, 1, 
-			  1, 0, 0, 0, 
-			  1, 0, 0, 0};
+2, 1, 1, 1, 
+1, 0, 0, 0, 
+1, 0, 0, 0};
 
 /*============================================================================*/
 /* Blitter fill-mode lookup tables                                            */
 /*============================================================================*/
 
 UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
-
-/*============================================================================*/
-/* Various blitter variables                                                  */
-/*============================================================================*/
-
-ULO blit_height, blit_width;
-
-// flag showing that a blit has been activated (a write to BLTSIZE)
-// but at the time of activation the blit DMA was turned of
-ULO blitterdmawaiting; 
-
-BOOLE blitter_operation_log, blitter_operation_log_first;
-ULO blit_a_shift_asc, blit_a_shift_desc;
-ULO blit_b_shift_asc, blit_b_shift_desc;
-ULO blit_minterm;
-BOOLE blit_desc;
-BOOLE blit_started;
-ULO blit_cycle_length, blit_cycle_free;
 
 #ifdef BLIT_TSC_PROFILE
 BOOLE blit_minterm_seen[256];
@@ -81,6 +102,9 @@ BOOLE blit_minterm_seen[256];
 /*===========================================================================*/
 /* Blitter properties                                                        */
 /*===========================================================================*/
+
+BOOLE blitter_operation_log;
+BOOLE blitter_operation_log_first;
 
 BOOLE blitter_fast;   /* Blitter finishes in zero time */
 BOOLE blitter_ECS;    /* Enable long blits */
@@ -103,6 +127,31 @@ void blitterSetECS(BOOLE ECS)
 BOOLE blitterGetECS(void)
 {
   return blitter_ECS;
+}
+
+BOOLE blitterGetDMAPending(void)
+{
+  return blitter.dma_pending;
+}
+
+BOOLE blitterGetZeroFlag(void)
+{
+  return (blitter.bltzero & 0xffff) == 0;
+}
+
+ULO blitterGetFreeCycles(void)
+{
+  return blitter.cycle_free;
+}
+
+BOOLE blitterIsStarted(void)
+{
+  return blitter.started;
+}
+
+BOOLE blitterIsDescending(void)
+{
+  return (blitter.bltcon & 2);
 }
 
 /*============================================================================*/
@@ -154,8 +203,8 @@ void blitterOperationLog(void) {
     }
     if (F)
     {
-      fprintf(F, "%.7d\t%.3d\t%.3d\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n",
-	      draw_frame_count, busGetRasterY(), busGetRasterX(), cpuGetPC(), (bltcon >> 16) & 0xffff, bltcon & 0xffff, bltafwm & 0xffff, bltalwm & 0xffff, bltapt, bltbpt, bltcpt, bltdpt, bltamod & 0xffff, bltbmod & 0xffff, bltcmod & 0xffff, bltdmod & 0xffff, bltadat & 0xffff, bltbdat & 0xffff, bltcdat & 0xffff, blit_height, blit_width);
+      fprintf(F, "%.7d\t%.3d\t%.3d\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n",
+	draw_frame_count, busGetRasterY(), busGetRasterX(), (blitter.bltcon >> 16) & 0xffff, blitter.bltcon & 0xffff, blitter.bltafwm & 0xffff, blitter.bltalwm & 0xffff, blitter.bltapt, blitter.bltbpt, blitter.bltcpt, blitter.bltdpt, blitter.bltamod & 0xffff, blitter.bltbmod & 0xffff, blitter.bltcmod & 0xffff, blitter.bltdmod & 0xffff, blitter.bltadat & 0xffff, blitter.bltbdat & 0xffff, blitter.bltcdat & 0xffff, blitter.height, blitter.width);
       fclose(F);
     }
   }
@@ -260,93 +309,93 @@ void blitterOperationLog(void) {
 
 #define blitterMinterms(a_dat, b_dat, c_dat, d_dat, mins) \
   switch (mins) \
-  { \
-    case 0x00: blitterMinterm00(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x01: blitterMinterm01(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x02: blitterMinterm02(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x03: blitterMinterm03(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x04: blitterMinterm04(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x05: blitterMinterm05(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x06: blitterMinterm06(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x07: blitterMinterm07(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x08: blitterMinterm08(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x09: blitterMinterm09(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0a: blitterMinterm0a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0b: blitterMinterm0b(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0c: blitterMinterm0c(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0d: blitterMinterm0d(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0e: blitterMinterm0e(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x0f: blitterMinterm0f(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x10: blitterMinterm10(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x11: blitterMinterm11(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x12: blitterMinterm12(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x13: blitterMinterm13(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x16: blitterMinterm16(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x1a: blitterMinterm1a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x1f: blitterMinterm1f(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x20: blitterMinterm20(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x21: blitterMinterm21(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x22: blitterMinterm22(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x23: blitterMinterm23(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x2a: blitterMinterm2a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x30: blitterMinterm30(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x31: blitterMinterm31(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x32: blitterMinterm32(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x42: blitterMinterm42(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x54: blitterMinterm54(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x88: blitterMinterm88(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x8a: blitterMinterm8a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x96: blitterMinterm96(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0x9a: blitterMinterm9a(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xb8: blitterMintermb8(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xc0: blitterMintermc0(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xca: blitterMintermca(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xcc: blitterMintermcc(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xcd: blitterMintermcd(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xce: blitterMintermce(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xcf: blitterMintermcf(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xd8: blitterMintermd8(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xdc: blitterMintermdc(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xdd: blitterMintermdd(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xde: blitterMintermde(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xdf: blitterMintermdf(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xe2: blitterMinterme2(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xe8: blitterMinterme8(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xea: blitterMintermea(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xec: blitterMintermec(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xed: blitterMintermed(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xee: blitterMintermee(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xef: blitterMintermef(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf0: blitterMintermf0(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf1: blitterMintermf1(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf2: blitterMintermf2(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf3: blitterMintermf3(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf4: blitterMintermf4(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf5: blitterMintermf5(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf6: blitterMintermf6(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf7: blitterMintermf7(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf8: blitterMintermf8(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xf9: blitterMintermf9(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xfa: blitterMintermfa(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xfb: blitterMintermfb(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xfc: blitterMintermfc(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xfd: blitterMintermfd(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xfe: blitterMintermfe(a_dat, b_dat, c_dat, d_dat); break; \
-    case 0xff: blitterMintermff(a_dat, b_dat, c_dat, d_dat); break; \
-    default: blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins); break; \
-  }
+{ \
+  case 0x00: blitterMinterm00(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x01: blitterMinterm01(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x02: blitterMinterm02(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x03: blitterMinterm03(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x04: blitterMinterm04(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x05: blitterMinterm05(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x06: blitterMinterm06(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x07: blitterMinterm07(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x08: blitterMinterm08(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x09: blitterMinterm09(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0a: blitterMinterm0a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0b: blitterMinterm0b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0c: blitterMinterm0c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0d: blitterMinterm0d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0e: blitterMinterm0e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x0f: blitterMinterm0f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x10: blitterMinterm10(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x11: blitterMinterm11(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x12: blitterMinterm12(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x13: blitterMinterm13(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x16: blitterMinterm16(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1a: blitterMinterm1a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1f: blitterMinterm1f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x20: blitterMinterm20(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x21: blitterMinterm21(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x22: blitterMinterm22(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x23: blitterMinterm23(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2a: blitterMinterm2a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x30: blitterMinterm30(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x31: blitterMinterm31(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x32: blitterMinterm32(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x42: blitterMinterm42(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x54: blitterMinterm54(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x88: blitterMinterm88(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8a: blitterMinterm8a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x96: blitterMinterm96(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9a: blitterMinterm9a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb8: blitterMintermb8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc0: blitterMintermc0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xca: blitterMintermca(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xcc: blitterMintermcc(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xcd: blitterMintermcd(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xce: blitterMintermce(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xcf: blitterMintermcf(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd8: blitterMintermd8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xdc: blitterMintermdc(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xdd: blitterMintermdd(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xde: blitterMintermde(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xdf: blitterMintermdf(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe2: blitterMinterme2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe8: blitterMinterme8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xea: blitterMintermea(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xec: blitterMintermec(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xed: blitterMintermed(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xee: blitterMintermee(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xef: blitterMintermef(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf0: blitterMintermf0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf1: blitterMintermf1(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf2: blitterMintermf2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf3: blitterMintermf3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf4: blitterMintermf4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf5: blitterMintermf5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf6: blitterMintermf6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf7: blitterMintermf7(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf8: blitterMintermf8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xf9: blitterMintermf9(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xfa: blitterMintermfa(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xfb: blitterMintermfb(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xfc: blitterMintermfc(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xfd: blitterMintermfd(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xfe: blitterMintermfe(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xff: blitterMintermff(a_dat, b_dat, c_dat, d_dat); break; \
+  default: blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins); break; \
+}
 
 #define blitterReadWordEnabled(pt, dat, ascending) \
   dat = (((ULO) memory_chip[pt]) << 8) | (ULO) memory_chip[pt + 1]; \
@@ -355,10 +404,10 @@ void blitterOperationLog(void) {
 
 #define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending) \
   if (pt_tmp != 0xffffffff) \
-  { \
-    memory_chip[pt_tmp] = (UBY) (dat >> 8); \
-    memory_chip[pt_tmp + 1] = (UBY) dat; \
-  } \
+{ \
+  memory_chip[pt_tmp] = (UBY) (dat >> 8); \
+  memory_chip[pt_tmp + 1] = (UBY) dat; \
+} \
   pt_tmp = pt; \
   if (!ascending) pt = (pt - 2) & 0x1ffffe; \
   if (ascending) pt = (pt + 2) & 0x1ffffe;
@@ -392,10 +441,10 @@ void blitterOperationLog(void) {
 }
 
 #define blitterReadB(pt, dat, dat_preload, enabled, ascending, shift, prev) \
-if (enabled) { \
+  if (enabled) { \
   blitterReadWord(pt, dat_preload, dat_preload, enabled, ascending); \
   blitterShiftWord(dat, dat_preload, ascending, shift, prev); \
-}
+  }
 
 #define blitterReadC(pt, dat, enabled, ascending) \
   if (enabled) blitterReadWord(pt, dat, dat, enabled, ascending);
@@ -415,178 +464,178 @@ if (enabled) { \
 #define blitterFill(dat, fill, exclusive, fc) \
 { \
   if (fill) \
-  { \
-    UBY dat1 = (UBY) dat; \
-    UBY dat2 = (UBY) (dat >> 8); \
-    ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
-    dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
-    fc = blit_fill[exclusive][fc2][dat2][0]; \
-  } \
+{ \
+  UBY dat1 = (UBY) dat; \
+  UBY dat2 = (UBY) (dat >> 8); \
+  ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
+  dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
+  fc = blit_fill[exclusive][fc2][dat2][0]; \
+} \
 }
 
 #define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill) \
 { \
   LON x, y; \
-  ULO a_pt = bltapt; \
-  ULO b_pt = bltbpt; \
-  ULO c_pt = bltcpt; \
-  ULO d_pt = bltdpt; \
+  ULO a_pt = blitter.bltapt; \
+  ULO b_pt = blitter.bltbpt; \
+  ULO c_pt = blitter.bltcpt; \
+  ULO d_pt = blitter.bltdpt; \
   ULO d_pt_tmp = 0xffffffff; \
-  ULO a_shift = (ascending) ? blit_a_shift_asc : blit_a_shift_desc; \
-  ULO b_shift = (ascending) ? blit_b_shift_asc : blit_b_shift_desc; \
-  ULO a_dat, b_dat = (b_enabled) ? 0 : bltbdat, c_dat = bltcdat, d_dat; \
-  ULO a_dat_preload = bltadat; \
+  ULO a_shift = (ascending) ? blitter.a_shift_asc : blitter.a_shift_desc; \
+  ULO b_shift = (ascending) ? blitter.b_shift_asc : blitter.b_shift_desc; \
+  ULO a_dat, b_dat = (b_enabled) ? 0 : blitter.bltbdat, c_dat = blitter.bltcdat, d_dat; \
+  ULO a_dat_preload = blitter.bltadat; \
   ULO b_dat_preload = 0; \
   ULO a_prev = 0; \
   ULO b_prev = 0; \
-  ULO a_mod = (ascending) ? bltamod : ((ULO) - (LON) bltamod); \
-  ULO b_mod = (ascending) ? bltbmod : ((ULO) - (LON) bltbmod); \
-  ULO c_mod = (ascending) ? bltcmod : ((ULO) - (LON) bltcmod); \
-  ULO d_mod = (ascending) ? bltdmod : ((ULO) - (LON) bltdmod); \
+  ULO a_mod = (ascending) ? blitter.bltamod : ((ULO) - (LON) blitter.bltamod); \
+  ULO b_mod = (ascending) ? blitter.bltbmod : ((ULO) - (LON) blitter.bltbmod); \
+  ULO c_mod = (ascending) ? blitter.bltcmod : ((ULO) - (LON) blitter.bltcmod); \
+  ULO d_mod = (ascending) ? blitter.bltdmod : ((ULO) - (LON) blitter.bltdmod); \
   ULO fwm[2]; \
   ULO lwm[2]; \
-  UBY minterms = (UBY) blit_minterm; \
-  ULO fill_exclusive = (bltcon & 0x8) ? 0 : 1; \
+  UBY minterms = (UBY) (blitter.bltcon >> 16); \
+  ULO fill_exclusive = (blitter.bltcon & 0x8) ? 0 : 1; \
   ULO zero_flag = 0; \
-  LON height = blit_height; \
-  LON width = blit_width; \
-  BOOLE fc_original = !!(bltcon & 0x4); \
+  LON height = blitter.height; \
+  LON width = blitter.width; \
+  BOOLE fc_original = !!(blitter.bltcon & 0x4); \
   BOOLE fill_carry; \
   fwm[0] = lwm[0] = 0xffff; \
-  fwm[1] = bltafwm; \
-  lwm[1] = bltalwm; \
+  fwm[1] = blitter.bltafwm; \
+  lwm[1] = blitter.bltalwm; \
   /*if (!fill) blit_tsc_words += height*width;*/ \
   for (y = height; y > 0; y--) \
-  { \
-    blitterFillCarryReload(fill, fill_carry, fc_original); \
-    for (x = width; x > 0; x--) \
-    { \
-      blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm); \
-      blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev); \
-      blitterReadC(c_pt, c_dat, c_enabled, ascending); \
-      blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
-      blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms); \
-      blitterFill(d_dat, fill, fill_exclusive, fill_carry); \
-      blitterMakeZeroFlag(d_dat, zero_flag); \
-    } \
-    blitterModulo(a_pt, a_mod, a_enabled); \
-    blitterModulo(b_pt, b_mod, b_enabled); \
-    blitterModulo(c_pt, c_mod, c_enabled); \
-    blitterModulo(d_pt, d_mod, d_enabled); \
-  } \
+{ \
+  blitterFillCarryReload(fill, fill_carry, fc_original); \
+  for (x = width; x > 0; x--) \
+{ \
+  blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm); \
+  blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev); \
+  blitterReadC(c_pt, c_dat, c_enabled, ascending); \
+  blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
+  blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms); \
+  blitterFill(d_dat, fill, fill_exclusive, fill_carry); \
+  blitterMakeZeroFlag(d_dat, zero_flag); \
+} \
+  blitterModulo(a_pt, a_mod, a_enabled); \
+  blitterModulo(b_pt, b_mod, b_enabled); \
+  blitterModulo(c_pt, c_mod, c_enabled); \
+  blitterModulo(d_pt, d_mod, d_enabled); \
+} \
   blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
   if (a_enabled) { \
-    bltadat = a_dat_preload; \
-    bltapt = a_pt; \
+  blitter.bltadat = a_dat_preload; \
+  blitter.bltapt = a_pt; \
   } \
   if (b_enabled) { \
-    ULO x_tmp = 0; \
-    blitterShiftWord(bltbdat, b_dat_preload, ascending, b_shift, x_tmp); \
-    bltbdat_original = b_dat_preload; \
-    bltbpt = b_pt; \
+  ULO x_tmp = 0; \
+  blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp); \
+  blitter.bltbdat_original = b_dat_preload; \
+  blitter.bltbpt = b_pt; \
   } \
   if (c_enabled) { \
-    bltcdat = c_dat; \
-    bltcpt = c_pt; \
+  blitter.bltcdat = c_dat; \
+  blitter.bltcpt = c_pt; \
   } \
-  if (d_enabled) bltdpt = d_pt_tmp; \
-  bltzero = zero_flag; \
+  if (d_enabled) blitter.bltdpt = d_pt_tmp; \
+  blitter.bltzero = zero_flag; \
   memoryWriteWord(0x8040, 0xdff09c); \
 }
 
 void blitterCopyABCD(void)
 {
-  if (bltcon & 0x18)
+  if (blitter.bltcon & 0x18)
   { /* Fill */
-    if (blit_desc)
+    if (blitterIsDescending())
     { /* Decending mode */
-      switch ((bltcon >> 24) & 0xf)
+      switch ((blitter.bltcon >> 24) & 0xf)
       {
-	case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE); break;
-	case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE); break;
-	case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, FALSE, TRUE); break;
-	case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE); break;
-	case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE); break;
-	case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE); break;
-	case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE); break;
-	case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE); break;
-	case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE); break;
-	case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, FALSE, TRUE); break;
-	case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, FALSE, TRUE); break;
-	case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE); break;
-	case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, FALSE, TRUE); break;
-	case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE); break;
-	case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, FALSE, TRUE); break;
-	case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE); break;
+      case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, FALSE, TRUE); break;
+      case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE); break;
+      case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, FALSE, TRUE); break;
+      case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE); break;
+      case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, FALSE, TRUE); break;
+      case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE); break;
+      case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, FALSE, TRUE); break;
+      case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, FALSE, TRUE); break;
+      case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, FALSE, TRUE); break;
+      case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, FALSE, TRUE); break;
+      case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, FALSE, TRUE); break;
+      case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, FALSE, TRUE); break;
+      case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, FALSE, TRUE); break;
+      case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, FALSE, TRUE); break;
+      case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, FALSE, TRUE); break;
+      case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, FALSE, TRUE); break;
       }
     }
     else
     { /* Ascending mode */
-      switch ((bltcon >> 24) & 0xf)
+      switch ((blitter.bltcon >> 24) & 0xf)
       {
-	case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE); break;
-	case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, TRUE, TRUE); break;
-	case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, TRUE, TRUE); break;
-	case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, TRUE, TRUE); break;
-	case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, TRUE, TRUE); break;
-	case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, TRUE, TRUE); break;
-	case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, TRUE, TRUE); break;
-	case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE); break;
-	case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, TRUE, TRUE); break;
-	case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, TRUE, TRUE); break;
-	case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE); break;
-	case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, TRUE, TRUE); break;
-	case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE); break;
-	case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, TRUE, TRUE); break;
-	case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE); break;
-	case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE); break;
+      case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, TRUE, TRUE); break;
+      case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, TRUE, TRUE); break;
+      case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, TRUE, TRUE); break;
+      case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, TRUE, TRUE); break;
+      case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, TRUE, TRUE); break;
+      case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, TRUE, TRUE); break;
+      case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, TRUE, TRUE); break;
+      case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, TRUE, TRUE); break;
+      case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, TRUE, TRUE); break;
+      case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, TRUE, TRUE); break;
+      case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, TRUE, TRUE); break;
+      case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, TRUE, TRUE); break;
+      case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, TRUE, TRUE); break;
+      case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, TRUE, TRUE); break;
+      case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, TRUE, TRUE); break;
+      case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, TRUE, TRUE); break;
       }
     }
   }
   else
   { /* Copy */
-    if (blit_desc)
+    if (blitterIsDescending())
     { /* Decending mode */
-      switch ((bltcon >> 24) & 0xf)
+      switch ((blitter.bltcon >> 24) & 0xf)
       {
-	case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE); break;
-	case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE); break;
-	case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, FALSE, FALSE); break;
-	case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE); break;
-	case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE); break;
-	case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, FALSE, FALSE); break;
-	case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, FALSE, FALSE); break;
-	case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, FALSE, FALSE); break;
-	case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE); break;
-	case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE); break;
-	case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE); break;
-	case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE); break;
-	case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE); break;
-	case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, FALSE, FALSE); break;
-	case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE); break;
-	case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE); break;
+      case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, FALSE, FALSE); break;
+      case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE); break;
+      case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, FALSE, FALSE); break;
+      case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, FALSE, FALSE); break;
+      case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, FALSE, FALSE); break;
+      case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, FALSE, FALSE); break;
+      case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, FALSE, FALSE); break;
+      case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, FALSE, FALSE); break;
+      case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, FALSE, FALSE); break;
+      case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, FALSE, FALSE); break;
+      case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, FALSE, FALSE); break;
+      case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, FALSE, FALSE); break;
+      case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE); break;
+      case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, FALSE, FALSE); break;
+      case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, FALSE, FALSE); break;
+      case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, FALSE, FALSE); break;
       }
     }
     else
     { /* Ascending mode */
-      switch ((bltcon >> 24) & 0xf)
+      switch ((blitter.bltcon >> 24) & 0xf)
       {
-	case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE); break;
-	case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, TRUE, FALSE); break;
-	case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, TRUE, FALSE); break;
-	case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, TRUE, FALSE); break;
-	case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, TRUE, FALSE); break;
-	case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, TRUE, FALSE); break;
-	case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, TRUE, FALSE); break;
-	case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE); break;
-	case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, TRUE, FALSE); break;
-	case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, TRUE, FALSE); break;
-	case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, TRUE, FALSE); break;
-	case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, TRUE, FALSE); break;
-	case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, TRUE, FALSE); break;
-	case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, TRUE, FALSE); break;
-	case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE); break;
-	case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE); break;
+      case 0: blitterBlit(FALSE, FALSE, FALSE, FALSE, TRUE, FALSE); break;
+      case 1: blitterBlit(FALSE, FALSE, FALSE, TRUE, TRUE, FALSE); break;
+      case 2: blitterBlit(FALSE, FALSE, TRUE, FALSE, TRUE, FALSE); break;
+      case 3: blitterBlit(FALSE, FALSE, TRUE, TRUE, TRUE, FALSE); break;
+      case 4: blitterBlit(FALSE, TRUE, FALSE, FALSE, TRUE, FALSE); break;
+      case 5: blitterBlit(FALSE, TRUE, FALSE, TRUE, TRUE, FALSE); break;
+      case 6: blitterBlit(FALSE, TRUE, TRUE, FALSE, TRUE, FALSE); break;
+      case 7: blitterBlit(FALSE, TRUE, TRUE, TRUE, TRUE, FALSE); break;
+      case 8: blitterBlit(TRUE, FALSE, FALSE, FALSE, TRUE, FALSE); break;
+      case 9: blitterBlit(TRUE, FALSE, FALSE, TRUE, TRUE, FALSE); break;
+      case 10: blitterBlit(TRUE, FALSE, TRUE, FALSE, TRUE, FALSE); break;
+      case 11: blitterBlit(TRUE, FALSE, TRUE, TRUE, TRUE, FALSE); break;
+      case 12: blitterBlit(TRUE, TRUE, FALSE, FALSE, TRUE, FALSE); break;
+      case 13: blitterBlit(TRUE, TRUE, FALSE, TRUE, TRUE, FALSE); break;
+      case 14: blitterBlit(TRUE, TRUE, TRUE, FALSE, TRUE, FALSE); break;
+      case 15: blitterBlit(TRUE, TRUE, TRUE, TRUE, TRUE, FALSE); break;
       }
     }
   }
@@ -595,26 +644,26 @@ void blitterCopyABCD(void)
 #define blitterLineIncreaseX(a_shift, cpt) \
   if (a_shift < 15) a_shift++; \
   else \
-  { \
-    a_shift = 0; \
-    cpt = (cpt + 2) & 0x1ffffe; \
-  }
+{ \
+  a_shift = 0; \
+  cpt = (cpt + 2) & 0x1ffffe; \
+}
 
 #define blitterLineDecreaseX(a_shift, cpt) \
 { \
   if (a_shift == 0) \
-  { \
-    a_shift = 16; \
-    cpt = (cpt - 2) & 0x1ffffe; \
-  } \
+{ \
+  a_shift = 16; \
+  cpt = (cpt - 2) & 0x1ffffe; \
+} \
   a_shift--; \
 }
 
 #define blitterLineIncreaseY(cpt, cmod) \
-    cpt = (cpt + cmod) & 0x1ffffe;
+  cpt = (cpt + cmod) & 0x1ffffe;
 
 #define blitterLineDecreaseY(cpt, cmod) \
-    cpt = (cpt - cmod) & 0x1ffffe;
+  cpt = (cpt - cmod) & 0x1ffffe;
 
 /*================================================*/
 /* blitterLineMode                                */
@@ -626,48 +675,49 @@ void blitterLineMode(void)
 {
   ULO bltadat_local;
   ULO bltbdat_local;
-  ULO bltcdat_local = bltcdat;
+  ULO bltcdat_local = blitter.bltcdat;
   ULO bltddat_local;
-  UWO mask = (UWO) ((bltbdat_original >> blit_b_shift_asc) | (bltbdat_original << (16 - blit_b_shift_asc)));
+  UWO mask = (UWO) ((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
 
-  BOOLE decision_is_signed = (((bltcon >> 6) & 1) == 1);
-  WOR decision_variable = (WOR) bltapt;
-  WOR decision_inc_signed = (bltcon & 0x08000000) ? ((WOR) bltbmod) : 0;
-  WOR decision_inc_unsigned = (bltcon & 0x08000000) ? ((WOR) bltamod) : 0;
-  
-  ULO bltcpt_local = bltcpt;
-  ULO bltdpt_local = bltdpt;
-  ULO blit_a_shift_local = blit_a_shift_asc;
+  BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
+  WOR decision_variable = (WOR) blitter.bltapt;
+  WOR decision_inc_signed = (blitter.bltcon & 0x08000000) ? ((WOR) blitter.bltbmod) : 0;
+  WOR decision_inc_unsigned = (blitter.bltcon & 0x08000000) ? ((WOR) blitter.bltamod) : 0;
+
+  ULO bltcpt_local = blitter.bltcpt;
+  ULO bltdpt_local = blitter.bltdpt;
+  ULO blit_a_shift_local = blitter.a_shift_asc;
   ULO bltzero_local = 0;
   ULO i;
 
-  ULO sulsudaul = (bltcon >> 2) & 0x7;
+  ULO sulsudaul = (blitter.bltcon >> 2) & 0x7;
   BOOLE x_independent = (sulsudaul & 4);
   BOOLE x_inc = ((!x_independent) && !(sulsudaul & 2)) || (x_independent && !(sulsudaul & 1));
   BOOLE y_inc = ((!x_independent) && !(sulsudaul & 1)) || (x_independent && !(sulsudaul & 2));
   BOOLE single_dot = FALSE;
+  UBY minterm = (UBY) (blitter.bltcon >> 16);
 
-  for (i = 0; i < blit_height; ++i)
+  for (i = 0; i < blitter.height; ++i)
   {
     // Read C-data from memory if the C-channel is enabled
-    if (bltcon & 0x02000000) bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
+    if (blitter.bltcon & 0x02000000) bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
 
     // Calculate data for the A-channel
-    bltadat_local = (bltadat & bltafwm) >> blit_a_shift_local;
+    bltadat_local = (blitter.bltadat & blitter.bltafwm) >> blit_a_shift_local;
 
     // Check for single dot
     if (x_independent) 
     {
-      if (bltcon & 0x00000002)
+      if (blitter.bltcon & 0x00000002)
       {
-        if (single_dot) 
-        {
-          bltadat_local = 0;
-        }
-        else
-        {
-          single_dot = TRUE;
-        }
+	if (single_dot) 
+	{
+	  bltadat_local = 0;
+	}
+	else
+	{
+	  single_dot = TRUE;
+	}
       }
     }
 
@@ -675,7 +725,7 @@ void blitterLineMode(void)
     bltbdat_local = (mask & 1) ? 0xffff : 0;
 
     // Calculate result
-    blitterMinterms(bltadat_local, bltbdat_local, bltcdat_local, bltddat_local, blit_minterm);
+    blitterMinterms(bltadat_local, bltbdat_local, bltcdat_local, bltddat_local, minterm);
 
     // Save result to D-channel
     memory_chip[bltdpt_local] = (UBY) (bltddat_local >> 8);
@@ -706,26 +756,26 @@ void blitterLineMode(void)
 
       if (!x_independent)
       {
-        if (x_inc)
-        {
-          blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
-        }
-        else
-        {
-          blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
-        }
+	if (x_inc)
+	{
+	  blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
+	}
+	else
+	{
+	  blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
+	}
       }
       else
       {
-        if (y_inc)
-        {
-          blitterLineIncreaseY(bltcpt_local, bltcmod);
-        }
-        else
-        {
-          blitterLineDecreaseY(bltcpt_local, bltcmod);
-        }
-        single_dot = FALSE;
+	if (y_inc)
+	{
+	  blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
+	}
+	else
+	{
+	  blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
+	}
+	single_dot = FALSE;
       }
     }
     decision_is_signed = (decision_variable < 0);
@@ -735,44 +785,44 @@ void blitterLineMode(void)
       // decrease/increase y
       if (y_inc) 
       {
-        blitterLineIncreaseY(bltcpt_local, bltcmod);
+	blitterLineIncreaseY(bltcpt_local, blitter.bltcmod);
       }
       else
       {
-        blitterLineDecreaseY(bltcpt_local, bltcmod);
+	blitterLineDecreaseY(bltcpt_local, blitter.bltcmod);
       }
     }
     else
     {
       if (x_inc) 
       {
-        blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
+	blitterLineIncreaseX(blit_a_shift_local, bltcpt_local);
       }
       else
       {
-        blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
+	blitterLineDecreaseX(blit_a_shift_local, bltcpt_local);
       }
     }
     bltdpt_local = bltcpt_local;
   }
-  bltcon = bltcon & 0x0FFFFFFBF;
-  if (decision_is_signed) bltcon |= 0x00000040;
+  blitter.bltcon = blitter.bltcon & 0x0FFFFFFBF;
+  if (decision_is_signed) blitter.bltcon |= 0x00000040;
 
-  blit_a_shift_asc = blit_a_shift_local;
-  blit_a_shift_desc = 16 - blit_a_shift_asc;
-  bltapt = decision_variable;
-  bltcpt = bltcpt_local;
-  bltdpt = bltdpt_local;
-  bltzero = bltzero_local;
+  blitter.a_shift_asc = blit_a_shift_local;
+  blitter.a_shift_desc = 16 - blitter.a_shift_asc;
+  blitter.bltapt = decision_variable;
+  blitter.bltcpt = bltcpt_local;
+  blitter.bltdpt = bltdpt_local;
+  blitter.bltzero = bltzero_local;
   memoryWriteWord(0x8040, 0x00DFF09C);
 }
 
 void blitInitiate(void)
 {
-  ULO channels = (bltcon >> 24) & 0xf;
+  ULO channels = (blitter.bltcon >> 24) & 0xf;
   ULO cycle_length, cycle_free;
   if (blitter_operation_log) blitterOperationLog();
-  bltzero = 0;
+  blitter.bltzero = 0;
   if (blitter_fast)
   {
     cycle_length = 3;
@@ -780,18 +830,17 @@ void blitInitiate(void)
   }
   else
   {
-    if (bltcon & 1)
+    if (blitter.bltcon & 1)
     {
       cycle_free = 2;
-      //if (!(channels & 1)) cycle_free++;
       if (!(channels & 2)) cycle_free++;
-      cycle_length = 4*blit_height;
-      cycle_free *= blit_height;
+      cycle_length = 4*blitter.height;
+      cycle_free *= blitter.height;
     }
     else
     {
-      cycle_length = blit_cyclelength[channels]*blit_width*blit_height;
-      cycle_free = blit_cyclefree[channels]*blit_width*blit_height;
+      cycle_length = blit_cyclelength[channels]*blitter.width*blitter.height;
+      cycle_free = blit_cyclefree[channels]*blitter.width*blitter.height;
     }
   }
 
@@ -809,7 +858,7 @@ void blitInitiate(void)
   {
     if ((dmaconr & 0x400))
     {
-      cpu_chip_cycles = cycle_length; // Delay CPU for the entire time during the blit.
+      cpuIntegrationSetChipCycles(cycle_length); // Delay CPU for the entire time during the blit.
     }
     else
     {
@@ -817,21 +866,22 @@ void blitInitiate(void)
       cycle_length += cycle_free;
     }
   }
-  blit_cycle_length = cycle_length;
-  blit_cycle_free = cycle_free;
-  if (blit_cycle_free != 0)
+  blitter.cycle_length = cycle_length;
+  blitter.cycle_free = cycle_free;
+  if (blitter.cycle_free != 0)
   {
-    cpu_chip_slowdown = blit_cycle_length / blit_cycle_free;
-    if (cpu_chip_slowdown > 1) cpu_chip_slowdown--;
+    ULO chip_slowdown = (blitter.cycle_length / blitter.cycle_free);
+    if (chip_slowdown > 1) chip_slowdown--;
+    cpuIntegrationSetChipSlowdown(chip_slowdown);
   }
   else
   {
-    cpu_chip_slowdown = 1;
+    cpuIntegrationSetChipSlowdown(1);
   }
-  blit_started = TRUE;
+  blitter.started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
   intreq &= 0xffbf;
-  blitterInsertEvent(cycle_length + bus_cycle);
+  blitterInsertEvent(cycle_length + bus.cycle);
 }
 
 // Handles a blitter event.
@@ -840,11 +890,11 @@ void blitInitiate(void)
 void blitFinishBlit(void) 
 {
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
-  blitterdmawaiting = 0;
-  blit_started = FALSE;
-  cpu_chip_slowdown = 1;
+  blitter.dma_pending = FALSE;
+  blitter.started = FALSE;
+  cpuIntegrationSetChipSlowdown(1);
   dmaconr = dmaconr & 0x0000bfff;
-  if ((bltcon & 0x00000001) == 0x00000001)
+  if ((blitter.bltcon & 0x00000001) == 0x00000001)
   {
     blitterLineMode();
   }
@@ -856,7 +906,7 @@ void blitFinishBlit(void)
 
 void blitForceFinish(void)
 {
-  if (blit_started == TRUE) 
+  if (blitterIsStarted()) 
   {
     blitterRemoveEvent();
     blitFinishBlit();
@@ -866,15 +916,6 @@ void blitForceFinish(void)
 void blitterCopy(void) 
 {
   blitInitiate();
-}
-
-/*=============================*/
-/* Blitter IO register stubs   */
-/*=============================*/
-
-void blitMinitermsSet(UWO data)
-{
-  blit_minterm = data & 0x000000FF;
 }
 
 /*======================================================*/
@@ -890,10 +931,9 @@ void blitMinitermsSet(UWO data)
 void wbltcon0(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcon = (bltcon & 0x0000FFFF) | (((ULO)data) << 16);
-  blitMinitermsSet(data);
-  blit_a_shift_asc = data >> 12;
-  blit_a_shift_desc = 16 - blit_a_shift_asc;
+  blitter.bltcon = (blitter.bltcon & 0x0000FFFF) | (((ULO)data) << 16);
+  blitter.a_shift_asc = data >> 12;
+  blitter.a_shift_desc = 16 - blitter.a_shift_asc;
 }
 
 /*======================================================*/
@@ -909,19 +949,9 @@ void wbltcon0(UWO data, ULO address)
 void wbltcon1(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcon = (bltcon & 0xFFFF0000) | ((ULO)data);
-  if ((data & 0x00000002) == 0x00000000)
-  {
-    // ascending mode 
-    blit_desc = 0;
-  }
-  else
-  {
-    // descending mode 
-    blit_desc = 1;
-  }
-  blit_b_shift_asc = data >> 12;
-  blit_b_shift_desc = 16 - blit_b_shift_asc;
+  blitter.bltcon = (blitter.bltcon & 0xFFFF0000) | ((ULO)data);
+  blitter.b_shift_asc = data >> 12;
+  blitter.b_shift_desc = 16 - blitter.b_shift_asc;
 }
 
 /*======================================================*/
@@ -937,7 +967,7 @@ void wbltcon1(UWO data, ULO address)
 void wbltafwm(UWO data, ULO address)
 {
   blitForceFinish();
-  bltafwm = data;  
+  blitter.bltafwm = data;  
 }
 
 /*======================================================*/
@@ -953,7 +983,7 @@ void wbltafwm(UWO data, ULO address)
 void wbltalwm(UWO data, ULO address)
 {
   blitForceFinish();
-  bltalwm = data;  
+  blitter.bltalwm = data;  
 }
 
 /*======================================================*/
@@ -970,17 +1000,17 @@ void wbltcpth(UWO data, ULO address)
 {
   blitForceFinish();
   // CAUTION, BELOW IS VERY SLOW IN DEBUG MODE
-  bltcpt = (bltcpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltcpt = (blitter.bltcpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
 
   // THIS IS AN ALTERNATIVE FOR SPEED IN DEBUG MODE
   /*
   __asm 
   {
-    push edx
-    mov edx, DWORD PTR [data]
-    and edx, 0x01F
-    mov WORD PTR [bltcpt+2], dx
-    pop edx
+  push edx
+  mov edx, DWORD PTR [data]
+  and edx, 0x01F
+  mov WORD PTR [bltcpt+2], dx
+  pop edx
   }
   */
 }
@@ -998,7 +1028,7 @@ void wbltcpth(UWO data, ULO address)
 void wbltcptl(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcpt = (bltcpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltcpt = (blitter.bltcpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
 }
 
 /*======================================================*/
@@ -1014,7 +1044,7 @@ void wbltcptl(UWO data, ULO address)
 void wbltbpth(UWO data, ULO address)
 {
   blitForceFinish();
-  bltbpt = (bltbpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltbpt = (blitter.bltbpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
 }
 
 /*=========================================================*/
@@ -1030,7 +1060,7 @@ void wbltbpth(UWO data, ULO address)
 void wbltbptl(UWO data, ULO address)
 {
   blitForceFinish();
-  bltbpt = (bltbpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltbpt = (blitter.bltbpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
 }
 
 /*======================================================*/
@@ -1046,7 +1076,7 @@ void wbltbptl(UWO data, ULO address)
 void wbltapth(UWO data, ULO address)
 {
   blitForceFinish();
-  bltapt = (bltapt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltapt = (blitter.bltapt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
 }
 
 /*=========================================================*/
@@ -1062,7 +1092,7 @@ void wbltapth(UWO data, ULO address)
 void wbltaptl(UWO data, ULO address)
 {
   blitForceFinish();
-  bltapt = (bltapt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltapt = (blitter.bltapt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
 }
 
 /*===========================================================*/
@@ -1078,7 +1108,7 @@ void wbltaptl(UWO data, ULO address)
 void wbltdpth(UWO data, ULO address)
 {
   blitForceFinish();
-  bltdpt = (bltdpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltdpt = (blitter.bltdpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
 }
 
 /*==============================================================*/
@@ -1094,7 +1124,7 @@ void wbltdpth(UWO data, ULO address)
 void wbltdptl(UWO data, ULO address)
 {
   blitForceFinish();
-  bltdpt = (bltdpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltdpt = (blitter.bltdpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
 }
 
 /*==============================================================*/
@@ -1109,34 +1139,31 @@ void wbltdptl(UWO data, ULO address)
 
 void wbltsize(UWO data, ULO address)
 {
-  if (blit_on)
+  blitForceFinish();
+  if ((data & 0x003F) != 0)
   {
-    blitForceFinish();
-    if ((data & 0x003F) != 0)
-    {
-      blit_width = data & 0x0000003F;
-    }
-    else
-    {
-      blit_width = 64;
-    }
-    if (((data >> 6) & 0x000003FF) != 0)
-    {
-      blit_height = (data >> 6) & 0x000003FF;
-    }
-    else
-    {
-      blit_height = 1024;
-    }
-    // check if blitter DMA is on
-    if ((dmacon & 0x00000040) != 0) 
-    {
-      blitterCopy();
-    }
-    else
-    {
-      blitterdmawaiting = 1;
-    }
+    blitter.width = data & 0x0000003F;
+  }
+  else
+  {
+    blitter.width = 64;
+  }
+  if (((data >> 6) & 0x000003FF) != 0)
+  {
+    blitter.height = (data >> 6) & 0x000003FF;
+  }
+  else
+  {
+    blitter.height = 1024;
+  }
+  // check if blitter DMA is on
+  if ((dmacon & 0x00000040) != 0) 
+  {
+    blitterCopy();
+  }
+  else
+  {
+    blitter.dma_pending = TRUE;
   }
 }
 
@@ -1153,8 +1180,7 @@ void wbltsize(UWO data, ULO address)
 void wbltcon0l(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcon = (bltcon & 0xFF00FFFF) | ((((ULO)data) << 16) & 0x00FF0000);
-  blitMinitermsSet(data);
+  blitter.bltcon = (blitter.bltcon & 0xFF00FFFF) | ((((ULO)data) << 16) & 0x00FF0000);
 }
 
 /*==============================================================*/
@@ -1172,11 +1198,11 @@ void wbltsizv(UWO data, ULO address)
   blitForceFinish();
   if ((data & 0x00007FFF) != 0)
   {
-    blit_height = data & 0x00007FFF;
+    blitter.height = data & 0x00007FFF;
   }
   else
   {
-    blit_height = 0x00008000; 
+    blitter.height = 0x00008000; 
     // ECS increased possible blit height to 32768 lines
     // OCS is limited to a blit height of 1024 lines
   }
@@ -1197,11 +1223,11 @@ void wbltsizh(UWO data, ULO address)
   blitForceFinish();
   if ((data & 0x000007FF) != 0)
   {
-    blit_width = data & 0x000007FF;
+    blitter.width = data & 0x000007FF;
   }
   else
   {
-    blit_width = 0x00000800; 
+    blitter.width = 0x00000800; 
     // ECS increased possible blit width to 2048
     // OCS is limited to a blit height of 1024
   }
@@ -1211,7 +1237,7 @@ void wbltsizh(UWO data, ULO address)
   }
   else
   {
-    blitterdmawaiting = 1;
+    blitter.dma_pending = TRUE;
   }
 }
 
@@ -1228,7 +1254,7 @@ void wbltsizh(UWO data, ULO address)
 void wbltcmod(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltcmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1244,7 +1270,7 @@ void wbltcmod(UWO data, ULO address)
 void wbltbmod(UWO data, ULO address)
 {
   blitForceFinish();
-  bltbmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltbmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1260,7 +1286,7 @@ void wbltbmod(UWO data, ULO address)
 void wbltamod(UWO data, ULO address)
 {
   blitForceFinish();
-  bltamod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltamod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1276,7 +1302,7 @@ void wbltamod(UWO data, ULO address)
 void wbltdmod(UWO data, ULO address)
 {
   blitForceFinish();
-  bltdmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
+  blitter.bltdmod = (ULO)(LON)(WOR)(data & 0x0000FFFE);
 }
 
 /*==============================================================*/
@@ -1292,7 +1318,7 @@ void wbltdmod(UWO data, ULO address)
 void wbltcdat(UWO data, ULO address)
 {
   blitForceFinish();
-  bltcdat = data;
+  blitter.bltcdat = data;
 }
 
 /*==============================================================*/
@@ -1308,14 +1334,14 @@ void wbltcdat(UWO data, ULO address)
 void wbltbdat(UWO data, ULO address)
 {
   blitForceFinish();
-  bltbdat_original = (ULO) (data & 0x0000FFFF);
-  if ((blit_desc == 1) != 0)
+  blitter.bltbdat_original = (ULO) (data & 0x0000FFFF);
+  if (blitterIsDescending())
   {
-    bltbdat = (bltbdat_original << blit_b_shift_asc);
+    blitter.bltbdat = (blitter.bltbdat_original << blitter.b_shift_asc);
   }
   else
   {
-    bltbdat = (bltbdat_original >> blit_b_shift_asc);
+    blitter.bltbdat = (blitter.bltbdat_original >> blitter.b_shift_asc);
   }
 }
 
@@ -1332,7 +1358,7 @@ void wbltbdat(UWO data, ULO address)
 void wbltadat(UWO data, ULO address)
 {
   blitForceFinish();
-  bltadat = data;
+  blitter.bltadat = data;
 }
 
 /*============================================================================*/
@@ -1400,31 +1426,31 @@ static void blitterIOHandlersInstall(void)
 
 static void blitterIORegistersClear(void)
 {
-  bltapt = 0;
-  bltbpt = 0;
-  bltcpt = 0;
-  bltdpt = 0;
-  bltcon = 0;
-  bltafwm = bltalwm = 0;
-  bltamod = 0;
-  bltbmod = 0;
-  bltcmod = 0;
-  bltdmod = 0;
-  bltadat = 0;
-  bltbdat = 0;
-  bltbdat_original = 0;
-  bltcdat = 0;
-  bltzero = 0;
-  blitterdmawaiting = 0;
-  blit_width = 0;
-  blit_height = 0;
-  blit_minterm = 0;
-  blit_a_shift_asc = 0;
-  blit_a_shift_desc = 0;
-  blit_b_shift_asc = 0;
-  blit_b_shift_desc = 0;
-  blit_desc = FALSE;
-  blit_started = FALSE;
+  blitter.bltapt = 0;
+  blitter.bltbpt = 0;
+  blitter.bltcpt = 0;
+  blitter.bltdpt = 0;
+  blitter.bltcon = 0;
+  blitter.bltafwm = 0;
+  blitter.bltalwm = 0;
+  blitter.bltamod = 0;
+  blitter.bltbmod = 0;
+  blitter.bltcmod = 0;
+  blitter.bltdmod = 0;
+  blitter.bltadat = 0;
+  blitter.bltbdat = 0;
+  blitter.bltbdat_original = 0;
+  blitter.bltcdat = 0;
+  blitter.bltzero = 0;
+
+  blitter.width = 0;
+  blitter.height = 0;
+  blitter.a_shift_asc = 0;
+  blitter.a_shift_desc = 0;
+  blitter.b_shift_asc = 0;
+  blitter.b_shift_desc = 0;
+  blitter.started = FALSE;
+  blitter.dma_pending = FALSE;
 }
 
 /*============================================================================*/
@@ -1449,6 +1475,72 @@ void blitterEndOfFrame(void)
 /*===========================================================================*/
 /* Called on emulator start / stop                                           */
 /*===========================================================================*/
+
+void blitterSaveState(FILE *F)
+{
+  fwrite(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
+  fwrite(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);
+  fwrite(&blitter.bltalwm, sizeof(blitter.bltalwm), 1, F);
+  fwrite(&blitter.bltapt, sizeof(blitter.bltapt), 1, F);
+  fwrite(&blitter.bltbpt, sizeof(blitter.bltbpt), 1, F);
+  fwrite(&blitter.bltcpt, sizeof(blitter.bltcpt), 1, F);
+  fwrite(&blitter.bltdpt, sizeof(blitter.bltdpt), 1, F);
+  fwrite(&blitter.bltamod, sizeof(blitter.bltamod), 1, F);
+  fwrite(&blitter.bltbmod, sizeof(blitter.bltbmod), 1, F);
+  fwrite(&blitter.bltcmod, sizeof(blitter.bltcmod), 1, F);
+  fwrite(&blitter.bltdmod, sizeof(blitter.bltdmod), 1, F);
+  fwrite(&blitter.bltadat, sizeof(blitter.bltadat), 1, F);
+  fwrite(&blitter.bltbdat, sizeof(blitter.bltbdat), 1, F);
+  fwrite(&blitter.bltbdat_original, sizeof(blitter.bltbdat_original), 1, F);
+  fwrite(&blitter.bltcdat, sizeof(blitter.bltcdat), 1, F);
+  fwrite(&blitter.bltzero, sizeof(blitter.bltzero), 1, F);
+
+  fwrite(&blitter.height, sizeof(blitter.height), 1, F);
+  fwrite(&blitter.width, sizeof(blitter.width), 1, F);
+
+  fwrite(&blitter.a_shift_asc, sizeof(blitter.a_shift_asc), 1, F);
+  fwrite(&blitter.a_shift_desc, sizeof(blitter.a_shift_desc), 1, F);
+  fwrite(&blitter.b_shift_asc, sizeof(blitter.b_shift_asc), 1, F);
+  fwrite(&blitter.b_shift_desc, sizeof(blitter.b_shift_desc), 1, F);
+
+  fwrite(&blitter.started, sizeof(blitter.started), 1, F);
+  fwrite(&blitter.dma_pending, sizeof(blitter.dma_pending), 1, F);
+  fwrite(&blitter.cycle_length, sizeof(blitter.cycle_length), 1, F);
+  fwrite(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
+}
+
+void blitterLoadState(FILE *F)
+{
+  fread(&blitter.bltcon, sizeof(blitter.bltcon), 1, F);
+  fread(&blitter.bltafwm, sizeof(blitter.bltafwm), 1, F);
+  fread(&blitter.bltalwm, sizeof(blitter.bltalwm), 1, F);
+  fread(&blitter.bltapt, sizeof(blitter.bltapt), 1, F);
+  fread(&blitter.bltbpt, sizeof(blitter.bltbpt), 1, F);
+  fread(&blitter.bltcpt, sizeof(blitter.bltcpt), 1, F);
+  fread(&blitter.bltdpt, sizeof(blitter.bltdpt), 1, F);
+  fread(&blitter.bltamod, sizeof(blitter.bltamod), 1, F);
+  fread(&blitter.bltbmod, sizeof(blitter.bltbmod), 1, F);
+  fread(&blitter.bltcmod, sizeof(blitter.bltcmod), 1, F);
+  fread(&blitter.bltdmod, sizeof(blitter.bltdmod), 1, F);
+  fread(&blitter.bltadat, sizeof(blitter.bltadat), 1, F);
+  fread(&blitter.bltbdat, sizeof(blitter.bltbdat), 1, F);
+  fread(&blitter.bltbdat_original, sizeof(blitter.bltbdat_original), 1, F);
+  fread(&blitter.bltcdat, sizeof(blitter.bltcdat), 1, F);
+  fread(&blitter.bltzero, sizeof(blitter.bltzero), 1, F);
+
+  fread(&blitter.height, sizeof(blitter.height), 1, F);
+  fread(&blitter.width, sizeof(blitter.width), 1, F);
+
+  fread(&blitter.a_shift_asc, sizeof(blitter.a_shift_asc), 1, F);
+  fread(&blitter.a_shift_desc, sizeof(blitter.a_shift_desc), 1, F);
+  fread(&blitter.b_shift_asc, sizeof(blitter.b_shift_asc), 1, F);
+  fread(&blitter.b_shift_desc, sizeof(blitter.b_shift_desc), 1, F);
+
+  fread(&blitter.started, sizeof(blitter.started), 1, F);
+  fread(&blitter.dma_pending, sizeof(blitter.dma_pending), 1, F);
+  fread(&blitter.cycle_length, sizeof(blitter.cycle_length), 1, F);
+  fread(&blitter.cycle_free, sizeof(blitter.cycle_free), 1, F);
+}
 
 void blitterEmulationStart(void)
 {
@@ -1484,10 +1576,10 @@ void verifyMinterms()
     char s[40];
     for (a_dat = 0; a_dat < 256; a_dat++)
       for (b_dat = 0; b_dat < 256; b_dat++)
-        for (c_dat = 0; c_dat < 256; c_dat++)
+	for (c_dat = 0; c_dat < 256; c_dat++)
 	  minterm_had_error |= (correctMinterms(minterm, a_dat, b_dat, c_dat) != optimizedMinterms(minterm, a_dat, b_dat, c_dat));
-      sprintf(s, "Minterm %X was %s", minterm, (minterm_had_error) ? "incorrect" : "correct");
-      MessageBox(0, s, "Minterm check", 0);
+    sprintf(s, "Minterm %X was %s", minterm, (minterm_had_error) ? "incorrect" : "correct");
+    MessageBox(0, s, "Minterm check", 0);
   }
 }
 
@@ -1502,14 +1594,14 @@ void blitterStartup(void)
   ULO i;
   for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
 #endif
-  
+
   blitterFillTableInit();
   blitterSetFast(FALSE);
   blitterSetECS(FALSE);
   blitterIORegistersClear();
   blitterSetOperationLog(FALSE);
   blitter_operation_log_first = TRUE;
-//  verifyMinterms();
+  //  verifyMinterms();
 }
 
 void blitterShutdown(void) {
