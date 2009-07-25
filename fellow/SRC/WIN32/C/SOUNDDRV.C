@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUNDDRV.C,v 1.14 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: SOUNDDRV.C,v 1.15 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Sound driver for Windows                                                */
@@ -113,7 +113,7 @@ void soundDrvPollBufferPosition(void);
 /* Multimedia Callback fnc. Used when DirectSound notification unsupported  */
 /*==========================================================================*/
 
-void CALLBACK timercb(UINT uID, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
   soundDrvPollBufferPosition();
 }
@@ -600,7 +600,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 	  return FALSE;
 	}
 
-	mmres = timeSetEvent(1, 0, timercb, 0, TIME_PERIODIC);
+	mmres = timeSetEvent(1, 0, timercb, (DWORD_PTR)0, (UINT) TIME_PERIODIC);
 	if(mmres == 0) {
       fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeSetEvent() failed\n");
       soundDrvDSoundSecondaryBufferRelease(dsound_device);

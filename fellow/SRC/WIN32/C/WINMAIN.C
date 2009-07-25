@@ -1,4 +1,4 @@
-/* @(#) $Id: WINMAIN.C,v 1.21 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: WINMAIN.C,v 1.22 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* This file is for whatever peculiarities we need to support on Windows   */
@@ -61,7 +61,7 @@ HANDLE win_drv_emulation_ended;
 
 /* Thread entry points */
 
-DWORD WINAPI winDrvFellowRunStart(void* in)
+DWORD WINAPI winDrvFellowRunStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowRun()");
   fellowRun();
@@ -69,7 +69,7 @@ DWORD WINAPI winDrvFellowRunStart(void* in)
   return 0;
 }
 
-DWORD WINAPI winDrvFellowStepOneStart(void* in)
+DWORD WINAPI winDrvFellowStepOneStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowStepOne()");
   fellowStepOne();
@@ -77,7 +77,7 @@ DWORD WINAPI winDrvFellowStepOneStart(void* in)
   return 0;
 }
 
-DWORD WINAPI winDrvFellowStepOverStart(void* in)
+DWORD WINAPI winDrvFellowStepOverStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowStepOver()");
   fellowStepOver();
@@ -85,7 +85,7 @@ DWORD WINAPI winDrvFellowStepOverStart(void* in)
   return 0;
 }
 
-DWORD WINAPI winDrvFellowRunDebugStart(void* in)
+DWORD WINAPI winDrvFellowRunDebugStart(LPVOID in)
 {
   winDrvSetThreadName(-1, "fellowRunDebug()");
   fellowRunDebug((ULO) in);
@@ -143,7 +143,7 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
    }
 }
 
-void winDrvEmulate(void *startfunc, void *param)
+void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 {
   DWORD dwThreadId;
   MSG myMsg;
@@ -214,7 +214,7 @@ void winDrvEmulationStart(void) {
 /* Controls multi-threaded execution of debugger.                            */
 /*===========================================================================*/
 
-DWORD WINAPI winDrvFellowStepOne(void* in)
+DWORD WINAPI winDrvFellowStepOne(LPVOID in)
 {
   winDrvEmulate(winDrvFellowStepOneStart, NULL);
   SetEvent(win_drv_emulation_ended);
@@ -222,14 +222,14 @@ DWORD WINAPI winDrvFellowStepOne(void* in)
 }
 
 
-DWORD WINAPI winDrvFellowStepOver(void* in)
+DWORD WINAPI winDrvFellowStepOver(LPVOID in)
 {
   winDrvEmulate(winDrvFellowStepOverStart, NULL);
   SetEvent(win_drv_emulation_ended);
   return 0;
 }
 
-DWORD WINAPI winDrvFellowRunDebug(void* in)
+DWORD WINAPI winDrvFellowRunDebug(LPVOID in)
 {
   winDrvEmulate(winDrvFellowRunDebugStart, in);
   SetEvent(win_drv_emulation_ended);
@@ -240,9 +240,9 @@ DWORD WINAPI winDrvFellowRunDebug(void* in)
 BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) {
 
   switch (operation) {
-    case DBG_STEP:      winDrvFellowStepOne((void*) 1); break;
-    case DBG_STEP_OVER: winDrvFellowStepOver((void*) 1); break;
-    case DBG_RUN:       winDrvFellowRunDebug((void*) 0); break;
+    case DBG_STEP:      winDrvFellowStepOne((LPVOID) 1); break;
+    case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID) 1); break;
+    case DBG_RUN:       winDrvFellowRunDebug((LPVOID) 0); break;
     default:            return FALSE;
   }
   return TRUE;
@@ -255,7 +255,6 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) {
 
 void winDrvHandleInputDevices(void) {
   joyDrvMovementHandler();
-//  kbdDrvKeypressHandler();
 }
 
 /*===========================================================================*/
@@ -282,7 +281,7 @@ void winDrvSetKey(char *path, char *name, char *value) {
 		  name,
 		  0,
 		  REG_SZ,
-		  value,
+		  (BYTE*)value,
 		  (DWORD)strlen(value));
     RegCloseKey(hkey);
   }

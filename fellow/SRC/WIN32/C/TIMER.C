@@ -1,4 +1,4 @@
-/* @(#) $Id: TIMER.C,v 1.6 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: TIMER.C,v 1.7 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Provides timer routines                                                 */
@@ -59,7 +59,7 @@ BOOLE timerGetUse50HzTimer(void)
 /* Multimedia Callback fnc.                                                 */
 /*==========================================================================*/
 
-void CALLBACK timerCallback(UINT uID, UINT uMsg, DWORD dwUser, DWORD dw1, DWORD dw2)
+void CALLBACK timerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
   if (timer_ticks < 20)
   {
@@ -112,7 +112,7 @@ void timerEmulationStart(void)
       return;
     }
 
-    mmres = timeSetEvent(1, 0, timerCallback, 0, TIME_PERIODIC);
+    mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
     if(mmres == 0)
     {
       fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");

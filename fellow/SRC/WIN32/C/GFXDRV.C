@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.26 2009-07-25 09:40:59 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.27 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -1065,7 +1065,7 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device) {
   
   id = 0;
   for (l = ddraw_device->modes; l != NULL; l = listNext(l)) {
-    gfx_drv_ddraw_mode *ddmode = listNode(l);
+    gfx_drv_ddraw_mode *ddmode = (gfx_drv_ddraw_mode *) listNode(l);
     draw_mode *mode = (draw_mode *) malloc(sizeof(draw_mode));
     
     mode->width = ddmode->width;
@@ -1733,7 +1733,7 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch) {
 		}
 	}
 	*pitch = lpDDSD->lPitch;  
-	return lpDDSD->lpSurface;
+	return (UBY*) lpDDSD->lpSurface;
 }
 
 
