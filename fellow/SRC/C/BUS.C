@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.6 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.7 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -285,14 +285,24 @@ void busSetCycle(ULO cycle)
   bus.cycle = cycle;
 }
 
+ULO busGetCycle(void)
+{
+  return bus.cycle;
+}
+
 ULO busGetRasterY(void)
 {
-  return bus.cycle / 228;
+  return bus.cycle / BUS_CYCLE_PER_LINE;
 }
 
 ULO busGetRasterX(void)
 {
-  return bus.cycle % 228;
+  return bus.cycle % BUS_CYCLE_PER_LINE;
+}
+
+ULL busGetRasterFrameCount(void)
+{
+  return bus.frame_no;
 }
 
 void busRunNew(void)

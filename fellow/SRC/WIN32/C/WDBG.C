@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.32 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.33 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -46,7 +46,7 @@
 #include "fhfile.h"
 #include "config.h"
 #include "draw.h"
-#include "cpudis.h"
+#include "CpuModule_Disassembler.h"
 #include "kbd.h"
 #include "fmem.h"
 #include "cia.h"
@@ -116,25 +116,25 @@ static BOOLE memory_ascii = FALSE;
 /* Prototypes */
 /*============*/
 
-BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgCPUDialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgMemoryDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgCIADialogProc(HWND hwndDlg, UINT uMsg,
 				WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgFloppyDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgBlitterDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgCopperDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgSpriteDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgScreenDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgScreenDialogProc(HWND hwndDlg, UINT uMsg,
 				   WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgEventDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgEventDialogProc(HWND hwndDlg, UINT uMsg,
 				  WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg,
+INT_PTR CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg,
 				  WPARAM wParam, LPARAM lParam);
 
 /*==============================================================*/
@@ -150,7 +150,7 @@ UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
   IDD_DEBUG_SOUND
 };
 
-typedef BOOL(CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
+typedef INT_PTR (CALLBACK * wdbgDlgProc) (HWND, UINT, WPARAM, LPARAM);
 
 wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
   wdbgCPUDialogProc,    wdbgMemoryDialogProc,  wdbgCIADialogProc,
@@ -1056,7 +1056,7 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 /* DialogProc for our CPU dialog                                              */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgCPUDialogProc(HWND hwndDlg,
 				UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1103,7 +1103,7 @@ BOOL CALLBACK wdbgCPUDialogProc(HWND hwndDlg,
 /* DialogProc for our memory dialog                                           */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgMemoryDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1160,7 +1160,7 @@ BOOL CALLBACK wdbgMemoryDialogProc(HWND hwndDlg,
 /* DialogProc for our CIA dialog                                              */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgCIADialogProc(HWND hwndDlg,
 				UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1187,7 +1187,7 @@ BOOL CALLBACK wdbgCIADialogProc(HWND hwndDlg,
 /* DialogProc for our floppy dialog                                           */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1214,7 +1214,7 @@ BOOL CALLBACK wdbgFloppyDialogProc(HWND hwndDlg,
 /* DialogProc for our blitter dialog                                          */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1245,7 +1245,7 @@ BOOL CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
 /* DialogProc for our copper dialog                                           */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgCopperDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1272,7 +1272,7 @@ BOOL CALLBACK wdbgCopperDialogProc(HWND hwndDlg,
 /* DialogProc for our sprite dialog                                           */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgSpriteDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1299,7 +1299,7 @@ BOOL CALLBACK wdbgSpriteDialogProc(HWND hwndDlg,
 /* DialogProc for our screen dialog                                           */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgScreenDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgScreenDialogProc(HWND hwndDlg,
 				   UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1326,7 +1326,7 @@ BOOL CALLBACK wdbgScreenDialogProc(HWND hwndDlg,
 /* DialogProc for our event dialog                                            */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgEventDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgEventDialogProc(HWND hwndDlg,
 				  UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {
@@ -1353,7 +1353,7 @@ BOOL CALLBACK wdbgEventDialogProc(HWND hwndDlg,
 /* DialogProc for our sound dialog                                            */
 /*============================================================================*/
 
-BOOL CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
+INT_PTR CALLBACK wdbgSoundDialogProc(HWND hwndDlg,
 				  UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
   switch (uMsg) {

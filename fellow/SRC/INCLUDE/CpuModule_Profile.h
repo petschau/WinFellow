@@ -1,0 +1,4 @@
+#ifndef CPUMODULE_PROFILE_H
+#define CPUMODULE_PROFILE_H
+
+#endif

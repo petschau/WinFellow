@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.6 2009-07-25 09:40:59 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.7 2009-07-26 22:56:07 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1655,16 +1655,16 @@ int cgOpenFiles()
   res = (codef != NULL && dataf != NULL && declf != NULL && profilef != NULL && disfuncf != NULL);
   if (!res) cgCloseFiles();
 
-  fprintf(dataf, "#ifndef CPU_DATA_H\n");
-  fprintf(dataf, "#define CPU_DATA_H\n\n");
-  fprintf(codef, "#ifndef CPU_CODE_H\n");
-  fprintf(codef, "#define CPU_CODE_H\n\n");
-  fprintf(declf, "#ifndef CPU_DECL_H\n");
-  fprintf(declf, "#define CPU_DECL_H\n\n");
-  fprintf(profilef, "#ifndef CPU_PROFILE_H\n");
-  fprintf(profilef, "#define CPU_PROFILE_H\n\n");
-  fprintf(disfuncf, "#ifndef CPU_DISFUNC_H\n");
-  fprintf(disfuncf, "#define CPU_DISFUNC_H\n\n");
+  fprintf(dataf, "#ifndef CPUMODULE_DATA_H\n");
+  fprintf(dataf, "#define CPUMODULE_DATA_H\n\n");
+  fprintf(codef, "#ifndef CPUMODULE_CODE_H\n");
+  fprintf(codef, "#define CPUMODULE_CODE_H\n\n");
+  fprintf(declf, "#ifndef CPUMODULE_DECL_H\n");
+  fprintf(declf, "#define CPUMODULE_DECL_H\n\n");
+  fprintf(profilef, "#ifndef CPUMODULE_PROFILE_H\n");
+  fprintf(profilef, "#define CPUMODULE_PROFILE_H\n\n");
+  fprintf(disfuncf, "#ifndef CPUMODULE_DISASSEMBLERFUNC_H\n");
+  fprintf(disfuncf, "#define CPUMODULE_DISASSEMBLERFUNC_H\n\n");
 
   return res;
 }
@@ -1698,11 +1698,11 @@ int cgReadControlFile(char *filename)
 
 int cgMain(char *definition_file, char *include_path)
 {
-  sprintf(cpucode_path, "%s\\cpucode.h", include_path);
-  sprintf(cpudata_path, "%s\\cpudata.h", include_path);
-  sprintf(cpudecl_path, "%s\\cpudecl.h", include_path);
-  sprintf(cpuprofile_path, "%s\\cpuprofile.h", include_path);
-  sprintf(cpudisfunc_path, "%s\\cpudisfunc.h", include_path);
+  sprintf(cpucode_path, "%s\\CpuModule_Code.h", include_path);
+  sprintf(cpudata_path, "%s\\CpuModule_Data.h", include_path);
+  sprintf(cpudecl_path, "%s\\CpuModule_Decl.h", include_path);
+  sprintf(cpuprofile_path, "%s\\CpuModule_Profile.h", include_path);
+  sprintf(cpudisfunc_path, "%s\\CpuModule_DisassemblerFunc.h", include_path);
 
   if (!cgReadControlFile(definition_file)) return 0;
   if (!cgOpenFiles()) return 0;

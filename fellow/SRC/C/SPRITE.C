@@ -1,4 +1,4 @@
-/* @(#) $Id: SPRITE.C,v 1.8 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: SPRITE.C,v 1.9 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Sprite emulation                                                        */
@@ -242,7 +242,7 @@ spr_register_func sprxpth_functions[8] =
 };
 
 // NOT FOR COMMIT
-UBY buffer[128];
+STR buffer[128];
 // END NOT FOR COMMIT
 
 ULO sprite_state[8];
@@ -264,7 +264,7 @@ typedef struct {
   BOOLE online[8];
 } sprite_ham_slot;
 
-sprite_ham_slot sprite_ham_slots[313];
+sprite_ham_slot sprite_ham_slots[BUS_LINES_PER_FRAME];
 ULO sprite_ham_slot_next;
 
 ULO sprite_delay;

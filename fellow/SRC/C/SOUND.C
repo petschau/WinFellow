@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUND.C,v 1.8 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: SOUND.C,v 1.9 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -650,10 +650,12 @@ void soundPeriodTableInitialize(ULO outputrate) {
 
   if (outputrate < 29000)
     outputrate *= 2;   /* Internally, can not run slower than max Amiga rate */
-  soundSetScale((ULO) (((double)(65536.0*2.0*31300.0))/((double) outputrate)));
+  soundSetScale((ULO) (((double)(65536.0*2.0*31200.0))/((double) outputrate)));
+
   soundSetPeriodValue(0, 0x10000);
   for (i = 1; i < 65536; i++) {
-    j = 3568200 / i;                                          /* Sample rate */
+    //j = 3568200 / i;                                          /* Sample rate */
+    j = 3546895 / i;                                          /* Sample rate */
     periodvalue = (ULO) ((j*65536) / outputrate);
     if (periodvalue > 0x10000)
       periodvalue = 0x10000;

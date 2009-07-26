@@ -1,4 +1,4 @@
-/* @(#) $Id: GRAPH.C,v 1.7 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: GRAPH.C,v 1.8 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Convert graphics data to temporary format suitable for fast             */
@@ -2050,7 +2050,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > local_draw_right)
+  if (local_graph_DIW_last_visible > (LON) local_draw_right)
   {
     local_graph_DIW_last_visible = (LON) local_draw_right;
   }
@@ -2260,7 +2260,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > local_draw_right)
+  if (local_graph_DIW_last_visible > (LON) local_draw_right)
   {
     local_graph_DIW_last_visible = (LON) local_draw_right;
   }

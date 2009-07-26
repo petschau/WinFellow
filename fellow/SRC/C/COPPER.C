@@ -1,4 +1,4 @@
-/* @(#) $Id: COPPER.C,v 1.5 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: COPPER.C,v 1.6 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Copper Emulation Initialization                                         */
@@ -163,7 +163,7 @@ void copperYTableInit(void) {
   int i, ex = 16;
   spriteSetDelay(40);
   for (i = 0; i < 512; i++) {
-    copper_ytable[i] = i*228 + ex;
+    copper_ytable[i] = i*BUS_CYCLE_PER_LINE + ex;
   }
 }
 
@@ -346,7 +346,6 @@ void copperEndOfFrame(void)
 /*-------------------------------------------------------------------------------
 ; Emulates one copper instruction
 ;-------------------------------------------------------------------------------*/
-
 
 void copperEmulate(void)
 {
