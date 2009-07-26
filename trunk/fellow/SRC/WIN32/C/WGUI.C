@@ -1,4 +1,4 @@
-/* @(#) $Id: WGUI.C,v 1.34 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: WGUI.C,v 1.35 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -251,18 +251,18 @@ wguiActions wgui_action;
 /* Forward declarations for each property sheet dialog procedure              */
 /*============================================================================*/
 
-BOOL CALLBACK wguiCPUDialogProc			(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiFloppyDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiMemoryDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiDisplayDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiSoundDialogProc		(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-BOOL CALLBACK wguiVariousDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiCPUDialogProc			(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFloppyDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiMemoryDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiDisplayDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiSoundDialogProc		(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiVariousDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*============================================================================*/
 /* The following tables defines the data needed to create the property        */
@@ -301,7 +301,7 @@ UINT wgui_propsheetICON[PROP_SHEETS] = {
 };
 
 
-typedef BOOL (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
+typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
 wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
   wguiCPUDialogProc,
@@ -1818,7 +1818,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the CPU property sheet                                */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiCPUDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiCPUDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -1853,7 +1853,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
   }
 
-  BOOL CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -1911,7 +1911,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the memory property sheet                             */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiMemoryDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -1969,7 +1969,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return pwgui_dm->numberof8bit;
   }
 
-  BOOL CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2104,7 +2104,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the sound property sheet                              */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  INT_PTR CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     long buffer_length;
     STR buffer[16];
 
@@ -2131,7 +2131,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the filesystem property sheet                         */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -2182,7 +2182,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   }
 
 
-  BOOL CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2268,7 +2268,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the hardfile property sheet                           */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2335,7 +2335,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       return FALSE;
   }
 
-  BOOL CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     STR stmp[16];
 
     switch (uMsg) {
@@ -2413,7 +2413,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   }
 
 
-  BOOL CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2509,7 +2509,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the gameport property sheet                           */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiGameportDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiGameportDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2560,7 +2560,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the various property sheet                            */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiVariousDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiVariousDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam)
@@ -2585,7 +2585,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* This process also creates and runs the dialog.                             */
   /*============================================================================*/
 
-  int wguiConfigurationDialog()
+  INT_PTR wguiConfigurationDialog()
   {
     int i;
     PROPSHEETPAGE propertysheets[PROP_SHEETS];
@@ -2635,7 +2635,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* DialogProc for the About box                                               */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiAboutDialogProc(HWND hwndDlg,
+  INT_PTR CALLBACK wguiAboutDialogProc(HWND hwndDlg,
     UINT uMsg,
     WPARAM wParam,
     LPARAM lParam) {
@@ -2685,7 +2685,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* DialogProc for our main Dialog                                             */
   /*============================================================================*/
 
-  BOOL CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+  INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     STR l_diskimage[CFG_FILENAME_LENGTH];
     char *versionstring;

@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.27 2009-07-25 10:24:00 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.28 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -1275,6 +1275,7 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device) {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 400, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(768, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       gfxDrvDDrawModeInformationRegister(ddraw_device);
     }
   }

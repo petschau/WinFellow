@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Disassembler.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Disassembler.c,v 1.2 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU disassembly                                                         */
@@ -25,7 +25,7 @@
 #include "defs.h"
 #include "fmem.h"
 #include "CpuModule.h"
-#include "cpudisfunc.h"
+#include "CpuModule_DisassemblerFunc.h"
 
 typedef ULO (*cpuDisFunc)(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *soperands);  
 

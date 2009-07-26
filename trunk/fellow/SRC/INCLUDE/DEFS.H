@@ -53,7 +53,12 @@ typedef int BOOLE;
 #define TRUE  1
 typedef char STR;
 
+#ifndef X64
 #define PTR_TO_INT(i) ((ULO)i)
+#endif
+#ifdef X64
+#define PTR_TO_INT(i) ((ULL)i)
+#endif
 
 /* Filename length used throughout the code */
 
@@ -76,9 +81,6 @@ typedef union {
           UBY bval[4];
           } ptunion;
 
-#define LORES 1
-#define HIRES 2
-
 typedef void (*planar2chunkyroutine)(void);
 
 typedef void (*playbuffer_routine)(void);
@@ -86,8 +88,6 @@ typedef void (*sound_before_emu_routine)(void);
 typedef void (*sound_after_emu_routine)(void);
 
 typedef void (*buseventfunc)(void);
-
-#define LINESPERFRAME    313
 
 #define FELLOWVERSION        "WinFellow alpha v0.4.4 build 2 (CVS)"
 #define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.4.4 - CVS" 

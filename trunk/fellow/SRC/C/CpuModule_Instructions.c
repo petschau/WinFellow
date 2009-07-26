@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.3 2009-07-25 10:23:59 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.4 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -90,11 +90,9 @@ static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
 
 void cpuUpdateSr(UWO new_sr)
 {
-  BOOLE trace_was_set = !!(cpuGetSR() & 0xc000);
   BOOLE supermode_was_set = cpuGetFlagSupervisor();
   BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
 
-  BOOLE trace_is_set = !!(new_sr & 0xc000);
   BOOLE supermode_is_set = !!(new_sr & 0x2000);
   BOOLE master_is_set = (cpuGetModelMajor() >= 2) && !!(new_sr & 0x1000);
 
@@ -3618,10 +3616,10 @@ static void cpuPtest040(ULO rw, ULO regno)
   cpuSetInstructionTime(4);
 }
 
-#include "cpudecl.h"
-#include "cpudata.h"
-#include "cpuprofile.h"
-#include "cpucode.h"
+#include "CpuModule_Decl.h"
+#include "CpuModule_Data.h"
+#include "CpuModule_Profile.h"
+#include "CpuModule_Code.h"
 
 ULO cpuExecuteInstruction(void)
 {

@@ -1665,22 +1665,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\INCLUDE\cpucode.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\INCLUDE\cpudata.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\INCLUDE\cpudecl.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\INCLUDE\cpudisfunc.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\INCLUDE\CpuIntegration.h"
 				>
 			</File>
@@ -1689,11 +1673,31 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\INCLUDE\CpuModule_Code.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule_Data.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule_Decl.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule_Disassembler.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\INCLUDE\CpuModule_DisassemblerFunc.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\INCLUDE\CpuModule_Internal.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\INCLUDE\cpuprofile.h"
+				RelativePath="..\..\INCLUDE\CpuModule_Profile.h"
 				>
 			</File>
 			<File

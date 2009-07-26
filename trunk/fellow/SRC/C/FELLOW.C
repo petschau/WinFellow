@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.26 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.27 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -30,6 +30,7 @@
 #include "fellow.h"
 #include "draw.h"
 #include "CpuModule.h"
+#include "CpuModule_Disassembler.h"
 #include "CpuIntegration.h"
 #include "fmem.h"
 #include "eventid.h"
@@ -50,7 +51,6 @@
 #include "wgui.h"
 #include "ffilesys.h"
 #include "ini.h"
-#include "cpudis.h"
 #include "sysinfo.h"
 #include "fileops.h"
 
@@ -386,7 +386,7 @@ void fellowEmulationStop(void) {
 void fellowRun(void) {
   fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
-  fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     busRunNew();
   fellowRequestEmulationStopImmediatelyClear();
@@ -403,7 +403,7 @@ void fellowStepOne(void) {
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
-  fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     busDebugNew();
   fellowRequestEmulationStopImmediatelyClear();
@@ -446,7 +446,7 @@ void fellowRunDebug(ULO breakpoint) {
   fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
-  fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
       busDebugNew();
