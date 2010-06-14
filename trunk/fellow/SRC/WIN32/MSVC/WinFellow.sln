@@ -1,8 +1,8 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinFellow", "WinFellow.vcproj", "{B7683EB0-2BCD-40C5-BF39-57D896269140}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinFellow", "WinFellow.vcxproj", "{B7683EB0-2BCD-40C5-BF39-57D896269140}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "68kgenerate", "68kgenerate.vcproj", "{96C88A01-1EBD-4B93-BB70-CF96C8F5F158}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "68kgenerate", "68kgenerate.vcxproj", "{96C88A01-1EBD-4B93-BB70-CF96C8F5F158}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
