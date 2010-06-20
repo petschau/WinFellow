@@ -1,4 +1,4 @@
-/* @(#) $Id: DRAW.C,v 1.17 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: DRAW.C,v 1.18 2010-06-20 17:25:40 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Draws an Amiga screen in a host display buffer                          */
@@ -1024,6 +1024,10 @@ void drawSetHorizontalScale(ULO horizontalscale) {
   draw_hscale = horizontalscale;
 }
 
+ULO drawGetHorizontalScale(void) {
+  return draw_hscale;
+}
+
 void drawSetVerticalScale(ULO verticalscale) {
   draw_vscale = verticalscale;
 }
@@ -1178,7 +1182,7 @@ static void drawColorTranslationInitialize(void) {
 static void drawAmigaScreenWidth(draw_mode *dm) {
   ULO totalscale;
 
-  totalscale = draw_hscale; /* Base scale */
+  totalscale = drawGetHorizontalScale(); /* Base scale */
   draw_width_amiga = dm->width/totalscale;
   if (draw_width_amiga > 384)
     draw_width_amiga = 384;
@@ -1204,12 +1208,17 @@ static void drawAmigaScreenHeight(draw_mode *dm) {
   ULO totalscale;
 
   totalscale = 1; /* Base scale */
-  if (drawGetVerticalScale() == 2) //&& (drawGetVerticalScaleStrategy() == 1))
-    totalscale *= 2;        /* DirectX vertical 2x stretch */
-  if (drawGetScanlines())
-    totalscale *= 2;        /* Scanlines */
   if (drawGetDeinterlace())
+  {
     totalscale *= 2;        /* Interlace compensation */
+  }
+  else // Do not combine deinterlace with other scaling strategies
+  {
+    if (drawGetVerticalScale() == 2) //&& (drawGetVerticalScaleStrategy() == 1))
+      totalscale *= 2;        /* DirectX vertical 2x stretch */
+    if (drawGetScanlines())
+      totalscale *= 2;        /* Scanlines */
+  }
   draw_height_amiga = dm->height/totalscale;
   if (draw_height_amiga > 287)
     draw_height_amiga = 287;
@@ -1305,8 +1314,10 @@ static void drawModeTablesInitialize(draw_mode *dm)
   draw_buffer_show = 0;
 
   // determine which draw functions to use
-  fi_hscale = (draw_hscale == 1) ? 0 : 1;
-  fi_vscale = ((draw_vscale == 2) && (draw_vscale_strategy == 0)) ? 1 : 0;
+  fi_hscale = (drawGetHorizontalScale() == 1) ? 0 : 1;
+
+  // Do not combine deinterlace with other scaling strategies
+  fi_vscale = ((drawGetVerticalScale() == 2) && (drawGetVerticalScaleStrategy() == 0) && !drawGetDeinterlace()) ? 1 : 0;
   fi_cdepth = ((dm->bits + 1) / 8) - 1;
 
   draw_line_BPL_manage_routine = draw_line_BPL_manage_funcs[fi_cdepth][fi_hscale][fi_vscale];
@@ -1316,8 +1327,16 @@ static void drawModeTablesInitialize(draw_mode *dm)
   draw_line_dual_lores_routine = draw_line_dual_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
   draw_line_dual_hires_routine = draw_line_dual_hires_funcs[fi_cdepth][fi_hscale][fi_vscale];
   draw_line_HAM_lores_routine = draw_line_HAM_lores_funcs[fi_cdepth][fi_hscale][fi_vscale];
-  if (draw_hscale == 1) graphP2C1XInit();
-  else graphP2C2XInit();
+  
+  if (drawGetHorizontalScale() == 1)
+  {
+    graphP2C1XInit();
+  }
+  else
+  {
+    graphP2C2XInit();
+  }
+
   memoryWriteWord((UWO) bplcon0, 0xdff100);
   drawAmigaScreenGeometry(draw_mode_current);
   drawColorTranslationInitialize();
@@ -1448,24 +1467,27 @@ ULO drawValidateBufferPointer(ULO amiga_line_number) {
   }
 
   scale = 1;  /* Solid scaling is handled by the graphics driver */
-  if (drawGetScanlines()) 
-  {
-    scale *= 2;
-  }
   if (drawGetDeinterlace()) 
   {
     scale *= 2;
   }
-  if ((drawGetVerticalScale() == 2) && (drawGetVerticalScaleStrategy() == 0))
+  else  // Do not combine deinterlace with other scaling strategies
   {
-    scale *= 2;
+    if (drawGetScanlines()) 
+    {
+      scale *= 2;
+    }
+    if ((drawGetVerticalScale() == 2) && (drawGetVerticalScaleStrategy() == 0))
+    {
+      scale *= 2;
+    }
   }
 
   draw_buffer_current_ptr = 
     draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
     (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
 
-  if (drawGetDeinterlace() && !lof) 
+  if (drawGetDeinterlace() && lof) 
   {
     draw_buffer_current_ptr += (scale / 2) * draw_mode_current->pitch;
   }
@@ -1495,9 +1517,10 @@ void drawHardReset(void) {
 /*============================================================================*/
 
 void drawEmulationStart(void) {
+  int gfxModeVerticalScale = (drawGetDeinterlace()) ? 1 : drawGetVerticalScale(); // Do not combine deinterlace with vertical scaling
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;
-  gfxDrvSetMode(draw_mode_current, drawGetVerticalScale(), drawGetVerticalScaleStrategy());
+  gfxDrvSetMode(draw_mode_current, gfxModeVerticalScale, drawGetVerticalScaleStrategy());
   /* Use 1 buffer when deinterlacing, else 3 */
   gfxDrvEmulationStart((drawGetDeinterlace() || (!drawGetAllowMultipleBuffers())) ? 1 : 3);
   drawStatClear();
