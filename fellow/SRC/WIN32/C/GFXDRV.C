@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.28 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.29 2010-06-20 14:30:50 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -2031,7 +2031,7 @@ void gfxDrvEndOfFrame(void) {
 /*==========================================================================*/
 
 BOOLE gfxDrvStartup(void) {
-  gfxDrvSetStretchAlways(TRUE);
+  gfxDrvSetStretchAlways(FALSE);
   gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
   gfx_drv_initialized = FALSE;
   gfx_drv_app_run = NULL;
