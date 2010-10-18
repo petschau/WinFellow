@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.2 2010-10-18 19:00:52 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -47,7 +47,7 @@ static ULO cpu_integration_chip_slowdown;
 
 ULO cpu_integration_speed; // The speed as expressed in the fellow configuration settings
 ULO cpu_integration_speed_multiplier; // The cycle multiplier used to adjust the cpu-speed, calculated from cpu_integration_speed
-ULO cpu_integration_model; // The cpu model as expressed in the fellow configuration settings
+cpu_integration_models cpu_integration_model; // The cpu model as expressed in the fellow configuration settings
 
 /*===========================================================================*/
 /* CPU properties                                                            */
