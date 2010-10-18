@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.7 2009-07-26 22:56:07 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.8 2010-10-18 19:00:51 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -984,7 +984,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	{
 	  fprintf(codef, "\t%s(dstea, ext);\n", i.function);
 	}
-	else if (stricmp(i.instruction_name, "MULL") == 0)
+	else if (stricmp(i.instruction_name, "MULL") == 0 || stricmp(i.instruction_name, "MOVES") == 0)
 	{
 	  fprintf(codef, "\t%s(src, ext);\n", i.function);
 	}

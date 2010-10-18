@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule.c,v 1.2 2010-10-18 19:00:52 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -67,6 +67,7 @@ void cpuClearEverything(void)
 void cpuHardReset(void)
 {
   cpuThrowResetException();
+  cpuSetRaiseInterrupt(FALSE);
 }
 
 void cpuStartup(void)
