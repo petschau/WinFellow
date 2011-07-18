@@ -1,6 +1,8 @@
 #ifndef BUS_H
 #define BUS_H
 
+//#define ENABLE_BUS_EVENT_LOGGING
+
 /* Standard Fellow Module functions */
 
 extern void busSaveState(FILE *F);
@@ -15,8 +17,10 @@ extern void busShutdown(void);
 void busEndOfLine(void);
 void busEndOfFrame(void);
 
+#ifdef ENABLE_BUS_EVENT_LOGGING
 extern void busLogCpu(STR *s);
 extern void busLogCpuException(STR *s);
+#endif
 
 typedef void (*busEventHandler)();
 typedef struct bus_event_struct
@@ -28,6 +32,7 @@ typedef struct bus_event_struct
   busEventHandler handler;
 } bus_event;
 
+extern void busInsertEventWithNullCheck(bus_event *ev);
 extern void busInsertEvent(bus_event *event);
 extern void busRemoveEvent(bus_event *event);
 

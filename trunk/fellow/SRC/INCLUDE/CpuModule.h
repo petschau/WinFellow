@@ -3,6 +3,8 @@
 
 // This header file defines the internal interfaces of the CPU module.
 
+//#define ENABLE_INSTRUCTION_LOGGING
+
 // Function to check if there are any external interrupt sources wanting to issue interrupts
 typedef BOOLE (*cpuCheckPendingInterruptsFunc)(void);
 extern void cpuSetCheckPendingInterruptsFunc(cpuCheckPendingInterruptsFunc func);
@@ -10,12 +12,16 @@ extern void cpuCheckPendingInterrupts(void);
 extern void cpuSetUpInterrupt(void);
 
 // Logging interface
+#ifdef ENABLE_INSTRUCTION_LOGGING
+
 typedef void (*cpuInstructionLoggingFunc)(void);
 extern void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func);
 typedef void (*cpuExceptionLoggingFunc)(STR *description, ULO original_pc, UWO opcode);
 extern void cpuSetExceptionLoggingFunc(cpuExceptionLoggingFunc func);
 typedef void (*cpuInterruptLoggingFunc)(ULO level, ULO vector_address);
 extern void cpuSetInterruptLoggingFunc(cpuInterruptLoggingFunc func);
+
+#endif
 
 // CPU register and control properties
 extern void cpuSetPC(ULO pc);
@@ -31,8 +37,8 @@ extern ULO cpuGetDReg(ULO i);
 extern void cpuSetAReg(ULO i, ULO value);
 extern ULO cpuGetAReg(ULO i);
 
-extern void cpuSetSR(UWO sr);
-extern UWO cpuGetSR(void);
+extern void cpuSetSR(ULO sr);
+extern ULO cpuGetSR(void);
 
 extern void cpuSetUspDirect(ULO usp);
 extern ULO cpuGetUspDirect(void);

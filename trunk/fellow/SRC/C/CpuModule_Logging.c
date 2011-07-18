@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Logging.c,v 1.1 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Logging.c,v 1.2 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k logging functions                                               */
@@ -27,6 +27,8 @@
 #include "fellow.h"
 
 #include "CpuModule.h"
+
+#ifdef ENABLE_INSTRUCTION_LOGGING
 
 /* Function for logging the intruction execution */
 static cpuInstructionLoggingFunc cpu_instruction_logging_func;
@@ -65,3 +67,5 @@ void cpuCallInterruptLoggingFunc(ULO level, ULO vector_address)
   if (cpu_interrupt_logging_func != NULL)
     cpu_interrupt_logging_func(level, vector_address);
 }
+
+#endif

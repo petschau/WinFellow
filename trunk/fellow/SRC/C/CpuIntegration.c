@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.2 2010-10-18 19:00:52 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -230,6 +230,8 @@ void cpuIntegrationResetExceptionFunc(void)
 /* Logging */
 /*=========*/
 
+#ifdef ENABLE_INSTRUCTION_LOGGING
+
 extern FILE *BUSLOG;
 
 void cpuIntegrationPrintBusCycle(void)
@@ -287,16 +289,35 @@ void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
   fprintf(BUSLOG, "Irq %d to %.6X (%s)\n", level, vector_address, cpuIntegrationGetInterruptName(cpuIntegrationGetIrqSource()));
 }
 
-void cpuIntegrationExecuteInstructionEventHandler(void)
+#endif ENABLE_INSTRUCTION_LOGGING
+
+void cpuIntegrationExecuteInstructionEventHandler68000(void)
 {
   ULO cycles = 0;
   ULO time_used = 0;
   do
   {
     cycles = cpuExecuteInstruction();
-    cycles = cycles*cpuIntegrationGetChipSlowdown();
-    if (cpuGetModelMajor() > 1) cycles = 4;
+    cycles = cycles*cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
     time_used += (cpuIntegrationGetChipCycles()<<12) + (cycles<<cpuIntegrationGetSpeedMultiplier());
+  }
+  while (time_used < 8192 && !cpuGetStop());
+
+  if (cpuGetStop()) cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  else  
+  {
+    cpuEvent.cycle = bus.cycle + (time_used>>12);
+  }
+  cpuIntegrationSetChipCycles(0);
+}
+
+void cpuIntegrationExecuteInstructionEventHandler68020(void)
+{
+  ULO time_used = 0;
+  do
+  {
+    cpuExecuteInstruction();
+    time_used += (cpuIntegrationGetChipCycles()<<12) + (4<<cpuIntegrationGetSpeedMultiplier());
   }
   while (time_used < 8192 && !cpuGetStop());
 
@@ -319,9 +340,11 @@ void cpuIntegrationSetDefaultConfig(void)
   cpuSetMidInstructionExceptionFunc(cpuIntegrationMidInstructionExceptionFunc);
   cpuSetResetExceptionFunc(cpuIntegrationResetExceptionFunc);
 
-  //cpuSetInstructionLoggingFunc(cpuIntegrationInstructionLogging);
-  //cpuSetExceptionLoggingFunc(cpuIntegrationExceptionLogging);
-  //cpuSetInterruptLoggingFunc(cpuIntegrationInterruptLogging);
+#ifdef ENABLE_INSTRUCTION_LOGGING
+  cpuSetInstructionLoggingFunc(cpuIntegrationInstructionLogging);
+  cpuSetExceptionLoggingFunc(cpuIntegrationExceptionLogging);
+  cpuSetInterruptLoggingFunc(cpuIntegrationInterruptLogging);
+#endif
 }
 
 /*=========================*/
@@ -367,7 +390,9 @@ void cpuIntegrationStartup(void)
   cpuStartup();
   cpuIntegrationSetDefaultConfig();
 }
+//extern void cpuProfileWrite();
 
 void cpuIntegrationShutdown(void)
 {
+//  cpuProfileWrite();
 }

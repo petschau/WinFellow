@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Flags.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
+/* @(#) $Id: CpuModule_Flags.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 flag and condition code handling                                  */
@@ -23,50 +23,80 @@
 /*=========================================================================*/
 #include "defs.h"
 #include "fellow.h"
+#include "CpuModule.h"
 #include "CpuModule_Internal.h"
 
-/// <summary>
-/// Calculate C flag of an add operation.
-/// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
-static BOOLE cpuMakeFlagCAdd(BOOLE rm, BOOLE dm, BOOLE sm)
+
+/// Sets the Z flag for bit operations
+void cpuSetZFlagBitOpsB(UBY res)
 {
-  return (sm && dm) || (dm && (!rm)) || (sm && (!rm));
+  ULO flags = cpu_sr & 0xfffb;
+  if (res == 0) flags |= 4;
+  cpu_sr = flags;
 }
 
-/// <summary>
-/// Calculate C flag of a sub operation.
-/// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
-static BOOLE cpuMakeFlagCSub(BOOLE rm, BOOLE dm, BOOLE sm)
+/// Sets the Z flag for bit operations
+void cpuSetZFlagBitOpsL(ULO res)
 {
-  return (sm && (!dm)) || (rm && (!dm)) || (sm && rm);
+  ULO flags = cpu_sr & 0xfffb;
+  if (res == 0) flags |= 4;
+  cpu_sr = flags;
 }
 
-/// <summary>
-/// Calculate the overflow, V flag of an add operation.
-/// </summary>
-/// <param name="rm">The MSB of the result.</param>        
-/// <param name="dm">The MSB of the destination source.</param>        
-/// <param name="sm">The MSB of the source.</param>        
-static BOOLE cpuMakeFlagVAdd(BOOLE rm, BOOLE dm, BOOLE sm)
-{
-  return (sm && dm && (!rm)) || ((!sm) && (!dm) && rm);
-}
+// rm,dm,sm
+ULO cpu_xnvc_flag_add_table[2][2][2] = { 0,0x11,0x11,0x13,0xa,8,8,0x19};
 
 /// <summary>
-/// Calculate the overflow, V flag of a sub operation.
+/// Calculate XNVC flags of an add operation.
 /// </summary>
 /// <param name="rm">The MSB of the result.</param>        
 /// <param name="dm">The MSB of the destination source.</param>        
 /// <param name="sm">The MSB of the source.</param>        
-static BOOLE cpuMakeFlagVSub(BOOLE rm, BOOLE dm, BOOLE sm)
+static ULO cpuMakeFlagXNVCAdd(BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  return ((!sm) && dm && (!rm)) || (sm && (!dm) && rm);
+  return cpu_xnvc_flag_add_table[rm][dm][sm];
+}
+
+// rm,dm,sm
+ULO cpu_nvc_flag_add_table[2][2][2] = { 0,1,1,3,0xa,8,8,9};
+
+/// <summary>
+/// Calculate NVC flags of an add operation for instructions not setting X.
+/// </summary>
+/// <param name="rm">The MSB of the result.</param>        
+/// <param name="dm">The MSB of the destination source.</param>        
+/// <param name="sm">The MSB of the source.</param>        
+static ULO cpuMakeFlagNVCAdd(BOOLE rm, BOOLE dm, BOOLE sm)
+{
+  return cpu_nvc_flag_add_table[rm][dm][sm];
+}
+
+// rm,dm,sm
+ULO cpu_xnvc_flag_sub_table[2][2][2] = { 0,0x11,2,0,0x19,0x1b,8,0x19};
+
+/// <summary>
+/// Calculate XNVC flags of a sub operation.
+/// </summary>
+/// <param name="rm">The MSB of the result.</param>        
+/// <param name="dm">The MSB of the destination source.</param>        
+/// <param name="sm">The MSB of the source.</param>        
+static ULO cpuMakeFlagXNVCSub(BOOLE rm, BOOLE dm, BOOLE sm)
+{
+  return cpu_xnvc_flag_sub_table[rm][dm][sm];
+}
+
+// rm,dm,sm
+ULO cpu_nvc_flag_sub_table[2][2][2] = { 0,1,2,0,9,0xb,8,9};
+
+/// <summary>
+/// Calculate NVC flags of a sub operation for instructions not setting X.
+/// </summary>
+/// <param name="rm">The MSB of the result.</param>        
+/// <param name="dm">The MSB of the destination source.</param>        
+/// <param name="sm">The MSB of the source.</param>        
+static ULO cpuMakeFlagNVCSub(BOOLE rm, BOOLE dm, BOOLE sm)
+{
+  return cpu_nvc_flag_sub_table[rm][dm][sm];
 }
 
 /// <summary>
@@ -187,10 +217,12 @@ UWO cpuGetNFlagL(ULO res) {return (UWO)((res & 0x80000000) >> 28);}
 /// <param name="c">The C flag.</param>        
 void cpuSetFlagsNZVC(BOOLE z, BOOLE n, BOOLE v, BOOLE c)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(n);
-  cpuSetFlagV(v);
-  cpuSetFlagC(c);
+  ULO flags = cpu_sr & 0xfff0;
+  if (n) flags |= 8;
+  else if (z) flags |= 4;
+  if (v) flags |= 2;
+  if (c) flags |= 1;
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -200,8 +232,10 @@ void cpuSetFlagsNZVC(BOOLE z, BOOLE n, BOOLE v, BOOLE c)
 /// <param name="c">The C flag.</param>        
 void cpuSetFlagsVC(BOOLE v, BOOLE c)
 {
-  cpuSetFlagV(v);
-  cpuSetFlagC(c);
+  ULO flags = cpu_sr & 0xfffc;
+  if (v) flags |= 2;
+  if (c) flags |= 1;
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -213,10 +247,10 @@ void cpuSetFlagsVC(BOOLE v, BOOLE c)
 /// <param name="sm">The MSB of the source.</param>        
 void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(cpuMakeFlagCAdd(rm, dm, sm));
-  cpuSetFlagV(cpuMakeFlagVAdd(rm, dm, sm));
+  ULO flags = cpu_sr & 0xffe0;
+  if (z) flags |= 4;
+  flags |= cpuMakeFlagXNVCAdd(rm, dm, sm);
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -228,10 +262,10 @@ void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <param name="sm">The MSB of the source.</param>        
 void cpuSetFlagsSub(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(cpuMakeFlagCSub(rm, dm, sm));
-  cpuSetFlagV(cpuMakeFlagVSub(rm, dm, sm));
+  ULO flags = cpu_sr & 0xffe0;
+  if (z) flags |= 4;
+  flags |= cpuMakeFlagXNVCSub(rm, dm, sm);
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -243,10 +277,9 @@ void cpuSetFlagsSub(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <param name="sm">The MSB of the source.</param>        
 void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  if (!z) cpuClearFlagZ();
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(cpuMakeFlagCAdd(rm, dm, sm));
-  cpuSetFlagV(cpuMakeFlagVAdd(rm, dm, sm));
+  ULO flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
+  flags |= cpuMakeFlagXNVCAdd(rm, dm, sm);
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -258,10 +291,9 @@ void cpuSetFlagsAddX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <param name="sm">The MSB of the source.</param>        
 void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  if (!z) cpuClearFlagZ();
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(cpuMakeFlagCSub(rm, dm, sm));
-  cpuSetFlagV(cpuMakeFlagVSub(rm, dm, sm));
+  ULO flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
+  flags |= cpuMakeFlagXNVCSub(rm, dm, sm);
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -272,10 +304,18 @@ void cpuSetFlagsSubX(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <param name="dm">The MSB of the destination source.</param>        
 void cpuSetFlagsNeg(BOOLE z, BOOLE rm, BOOLE dm)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(!z);
-  cpuSetFlagV(dm && rm);
+  ULO flags = cpu_sr & 0xffe0;
+  if (z) flags |= 4;
+  else
+  {
+    flags |= 0x11; // set XC if result is non-zero
+    if (rm)
+    {
+	flags |= 8;
+	if (dm) flags |= 2; // V
+    }
+  }
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -286,10 +326,17 @@ void cpuSetFlagsNeg(BOOLE z, BOOLE rm, BOOLE dm)
 /// <param name="dm">The MSB of the destination source.</param>        
 void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm)
 {
-  if (!z) cpuClearFlagZ();
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(dm || rm);
-  cpuSetFlagV(dm && rm);
+  ULO flags = cpu_sr & ((z) ? 0xffe4 : 0xffe0); // Clear z if result is non-zero
+  if (dm || rm)
+  {
+    flags |= 0x11; // XC
+    if (rm)
+    {
+      flags |= 8;
+      if (dm) flags |= 2; // V
+    }
+  }
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -301,10 +348,10 @@ void cpuSetFlagsNegx(BOOLE z, BOOLE rm, BOOLE dm)
 /// <param name="sm">The MSB of the source.</param>        
 void cpuSetFlagsCmp(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagC(cpuMakeFlagCSub(rm, dm, sm));
-  cpuSetFlagV(cpuMakeFlagVSub(rm, dm, sm));
+  ULO flags = cpu_sr & 0xfff0;
+  if (z) flags |= 4;    
+  flags |= cpuMakeFlagNVCSub(rm, dm, sm);
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -314,9 +361,10 @@ void cpuSetFlagsCmp(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm)
 /// <param name="rm">The MSB of the result.</param>        
 void cpuSetFlagsShiftZero(BOOLE z, BOOLE rm)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuClearFlagsVC();
+  ULO flags = cpu_sr & 0xfff0; // Always clearing the VC flag
+  if (rm) flags |= 8;
+  else if (z) flags |= 4;  
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -328,10 +376,12 @@ void cpuSetFlagsShiftZero(BOOLE z, BOOLE rm)
 /// <param name="c">The overflow of the result.</param>        
 void cpuSetFlagsShift(BOOLE z, BOOLE rm, BOOLE c, BOOLE v)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagXC(c);
-  cpuSetFlagV(v);
+  ULO flags = cpu_sr & 0xffe0;
+  if (rm) flags |= 8;
+  else if (z) flags |= 4;
+  if (v) flags |= 2;
+  if (c) flags |= 0x11;
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -342,10 +392,13 @@ void cpuSetFlagsShift(BOOLE z, BOOLE rm, BOOLE c, BOOLE v)
 /// <param name="c">The carry of the result.</param>        
 void cpuSetFlagsRotate(BOOLE z, BOOLE rm, BOOLE c)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuSetFlagC(c);
-  cpuClearFlagV();
+  ULO flags = cpu_sr & 0xfff0; // Always clearing the V flag
+  
+  if (rm) flags |= 8;
+  else if (z) flags |= 4;
+  if (c) flags |= 1;
+  
+  cpu_sr = flags;
 }
 
 /// <summary>
@@ -362,13 +415,45 @@ void cpuSetFlagsRotateX(UWO z, UWO rm, UWO x)
 /// <summary>
 /// Set the flags (ZN00).
 /// </summary>
-/// <param name="z">The Z flag.</param>        
-/// <param name="rm">The MSB of the result.</param>        
-void cpuSetFlagsNZ00(BOOLE z, BOOLE rm)
+void cpuSetFlagsNZ00NewB(UBY res)
 {
-  cpuSetFlagZ(z);
-  cpuSetFlagN(rm);
-  cpuClearFlagsVC();
+  ULO flag = cpu_sr & 0xfff0;
+  if (res & 0x80) flag |= 0x8;
+  else if (res == 0) flag |= 0x4;
+  cpu_sr = flag;
+}
+
+/// <summary>
+/// Set the flags (ZN00).
+/// </summary>
+void cpuSetFlagsNZ00NewW(UWO res)
+{
+  ULO flag = cpu_sr & 0xfff0;
+  if (res & 0x8000) flag |= 0x8;
+  else if (res == 0) flag |= 0x4;
+  cpu_sr = flag;
+}
+
+/// <summary>
+/// Set the flags (ZN00).
+/// </summary>
+void cpuSetFlagsNZ00NewL(ULO res)
+{
+  ULO flag = cpu_sr & 0xfff0;
+  if (res & 0x80000000) flag |= 0x8;
+  else if (res == 0) flag |= 0x4;
+  cpu_sr = flag;
+}
+
+/// <summary>
+/// Set the flags (ZN00).
+/// </summary>
+void cpuSetFlagsNZ00New64(LLO res)
+{
+  ULO flag = cpu_sr & 0xfff0;
+  if (res < 0) flag |= 0x8;
+  else if (res == 0) flag |= 0x4;
+  cpu_sr = flag;
 }
 
 /// <summary>
@@ -446,25 +531,25 @@ BOOLE cpuCalculateConditionCode11(void)
 
 BOOLE cpuCalculateConditionCode12(void)
 {
-  UWO tmp = cpu_sr & 0xa;
+  ULO tmp = cpu_sr & 0xa;
   return (tmp == 0xa) || (tmp == 0);  // GE - (N && V) || (!N && !V)
 }
 
 BOOLE cpuCalculateConditionCode13(void)
 {
-  UWO tmp = cpu_sr & 0xa;
+  ULO tmp = cpu_sr & 0xa;
   return (tmp == 0x8) || (tmp == 0x2);	// LT - (N && !V) || (!N && V)
 }
 
 BOOLE cpuCalculateConditionCode14(void)
 {
-  UWO tmp = cpu_sr & 0xa;
+  ULO tmp = cpu_sr & 0xa;
   return (!(cpu_sr & 0x4)) && ((tmp == 0xa) || (tmp == 0)); // GT - (N && V && !Z) || (!N && !V && !Z) 
 }
 
 BOOLE cpuCalculateConditionCode15(void)
 {
-  UWO tmp = cpu_sr & 0xa;
+  ULO tmp = cpu_sr & 0xa;
   return (cpu_sr & 0x4) || (tmp == 0x8) || (tmp == 2);// LE - Z || (N && !V) || (!N && V)
 }
 

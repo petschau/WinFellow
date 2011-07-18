@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_StackFrameGen.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
+/* @(#) $Id: CpuModule_StackFrameGen.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 stack frame generation                                            */
@@ -51,7 +51,7 @@ static void cpuFrameGroup1(UWO vector_offset, ULO pcPtr)
 
   // save SR
   cpuSetAReg(7, cpuGetAReg(7) - 2);
-  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  memoryWriteWord((UWO)cpuGetSR(), cpuGetAReg(7));
 }
 
 /*========================================================================
@@ -71,7 +71,7 @@ static void cpuFrameGroup2(UWO vector_offset, ULO pcPtr)
 
   // save SR
   cpuSetAReg(7, cpuGetAReg(7) - 2);
-  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  memoryWriteWord((UWO)cpuGetSR(), cpuGetAReg(7));
 
   // fault address, skip ireg
   cpuSetAReg(7, cpuGetAReg(7) - 6);
@@ -93,7 +93,7 @@ static void cpuFrame4Words(UWO frame_code, UWO vector_offset, ULO pc)
 
   // save SR
   cpuSetAReg(7, cpuGetAReg(7) - 2);
-  memoryWriteWord(cpuGetSR(), cpuGetAReg(7));
+  memoryWriteWord((UWO)cpuGetSR(), cpuGetAReg(7));
 }
 
 

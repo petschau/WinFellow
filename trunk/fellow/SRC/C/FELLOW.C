@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.27 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.28 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -55,7 +55,6 @@
 #include "fileops.h"
 
 BOOLE fellow_request_emulation_stop;
-BOOLE fellow_request_emulation_stop_immediately;
 
 char fellowlogfilename[MAX_PATH];
 
@@ -314,19 +313,6 @@ void fellowRequestEmulationStopClear(void) {
 
 
 /*============================================================================*/
-/* Modules can use this to request that emulation stop immediately            */
-/* Only the debugger should use this.                                         */
-/*============================================================================*/
-
-void fellowRequestEmulationStopImmediately(void) {
-  fellow_request_emulation_stop_immediately = TRUE;
-}
-
-void fellowRequestEmulationStopImmediatelyClear(void) {
-  fellow_request_emulation_stop_immediately = FALSE;
-}
-
-/*============================================================================*/
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
@@ -384,12 +370,10 @@ void fellowEmulationStop(void) {
 /*============================================================================*/
 
 void fellowRun(void) {
-  fellowRequestEmulationStopImmediatelyClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     busRunNew();
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -400,13 +384,11 @@ void fellowRun(void) {
 /*============================================================================*/
 
 void fellowStepOne(void) {
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     busDebugNew();
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -421,7 +403,6 @@ void fellowStepOver(void) {
   char sdata[128];
   char sinstruction[128];
   char soperands[128];
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
@@ -432,7 +413,6 @@ void fellowStepOver(void) {
     while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
       busDebugNew();
   }
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -443,14 +423,12 @@ void fellowStepOver(void) {
 /*============================================================================*/
 
 void fellowRunDebug(ULO breakpoint) {
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
       busDebugNew();
-  fellowRequestEmulationStopImmediatelyClear();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }

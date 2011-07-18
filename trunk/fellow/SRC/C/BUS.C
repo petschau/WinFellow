@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.7 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.8 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -146,7 +146,7 @@ void busEndOfFrame(void)
 
   busRemoveEvent(&eolEvent);
   eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
-  busInsertEvent(&eolEvent);
+  busInsertEventWithNullCheck(&eolEvent);
 
   /*==============================================================*/
   /* Update next CPU instruction time                             */
@@ -197,7 +197,7 @@ void busRemoveEvent(bus_event *ev)
   ev->prev = ev->next = NULL;
 }
 
-void busInsertEvent(bus_event *ev)
+void busInsertEventWithNullCheck(bus_event *ev)
 {
   if (bus.events == NULL)
   {
@@ -206,25 +206,30 @@ void busInsertEvent(bus_event *ev)
   }
   else
   {
-    bus_event *tmp;
-    bus_event *tmp_prev = NULL;
-    for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
-    {
-      if (ev->cycle < tmp->cycle)
-      {
-	ev->next = tmp;
-	ev->prev = tmp_prev;
-	tmp->prev = ev;
-	if (tmp_prev == NULL) bus.events = ev; /* In front */
-	else tmp_prev->next = ev;
-	return;
-      }
-      tmp_prev = tmp;
-    }
-    tmp_prev->next = ev; /* At end */
-    ev->prev = tmp_prev;
-    ev->next = NULL;
+    busInsertEvent(ev);
   }
+}
+
+void busInsertEvent(bus_event *ev)
+{
+  bus_event *tmp;
+  bus_event *tmp_prev = NULL;
+  for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
+  {
+    if (ev->cycle < tmp->cycle)
+    {
+      ev->next = tmp;
+      ev->prev = tmp_prev;
+      tmp->prev = ev;
+      if (tmp_prev == NULL) bus.events = ev; /* In front */
+      else tmp_prev->next = ev;
+      return;
+    }
+    tmp_prev = tmp;
+  }
+  tmp_prev->next = ev; /* At end */
+  ev->prev = tmp_prev;
+  ev->next = NULL;
 }
 
 bus_event *busPopEvent(void)
@@ -241,6 +246,9 @@ bus_event *busPopEvent(void)
     return tmp;
   }
 }
+
+
+#ifdef ENABLE_BUS_EVENT_LOGGING
 
 FILE *BUSLOG = NULL;
 BOOLE bus_log = FALSE;
@@ -280,6 +288,8 @@ void busLogCpu(STR *s)
   if (BUSLOG) fprintf(BUSLOG, "%d %s\n", cpuEvent.cycle, s);
 }
 
+#endif
+
 void busSetCycle(ULO cycle)
 {
   bus.cycle = cycle;
@@ -307,14 +317,16 @@ ULL busGetRasterFrameCount(void)
 
 void busRunNew(void)
 {
-  while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+  while (!fellow_request_emulation_stop)
   {
     if (cpuIntegrationMidInstructionExceptionGuard() == 0)
     {
-      while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+      while (!fellow_request_emulation_stop)
       {
 	bus_event *e = busPopEvent();
+#ifdef ENABLE_BUS_EVENT_LOGGING
 	busEventLog(e);
+#endif
 	busSetCycle(e->cycle);
 	e->handler();
       }
@@ -330,14 +342,16 @@ void busRunNew(void)
 
 void busDebugNew(void)
 {
-  while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+  while (!fellow_request_emulation_stop)
   {
     if (cpuIntegrationMidInstructionExceptionGuard() == 0)
     {
-      while (!fellow_request_emulation_stop && !fellow_request_emulation_stop_immediately)
+      while (!fellow_request_emulation_stop)
       {
 	bus_event *e = busPopEvent();
+#ifdef ENABLE_BUS_EVENT_LOGGING
 	busEventLog(e);
+#endif
 	busSetCycle(e->cycle);
 	e->handler();
 	if (e == &cpuEvent) return;
@@ -373,8 +387,13 @@ void busInitializeQueue(void)
   blitterEvent.cycle = BUS_CYCLE_DISABLE;
   blitterEvent.handler = blitFinishBlit;
   cpuEvent.cycle = 0;
-  cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler;
-  busInsertEvent(&eofEvent);
+  
+  if (cpuGetModelMajor() <= 1) 
+    cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000;
+  else 
+    cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68020;
+
+  busInsertEventWithNullCheck(&eofEvent);
   busInsertEvent(&eolEvent);
 }
 
@@ -444,5 +463,7 @@ void busStartup(void)
 
 void busShutdown(void)
 {
+#ifdef ENABLE_BUS_EVENT_LOGGING
   busCloseLog();
+#endif
 }

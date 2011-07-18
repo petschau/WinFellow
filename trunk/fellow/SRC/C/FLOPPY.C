@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.24 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.25 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -91,26 +91,26 @@ BOOLE dskbyt2_read = FALSE;
 
 void floppyLog(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
-  FILE *F = fopen(floppylogfilename, "a");
-  if (F == 0) return;
-  fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, track, side, dskpt, length, ticks);
-  fclose(F);
+  //FILE *F = fopen(floppylogfilename, "a");
+  //if (F == 0) return;
+  //fprintf(F, "DMA Read: %d %.3d %.3d drive %d track %d side %d pt %.8X length %d ticks %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, track, side, dskpt, length, ticks);
+  //fclose(F);
 }
 
 void floppyLogStep(ULO drive, ULO from, ULO to)
 {
-  FILE *F = fopen(floppylogfilename, "a");
-  if (F == 0) return;
-  fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, from, to);
-  fclose(F);
+  //FILE *F = fopen(floppylogfilename, "a");
+  //if (F == 0) return;
+  //fprintf(F, "Step: %d %.3d %.3d drive %d from %d to %d\n", draw_frame_count, busGetRasterY(), busGetRasterX(), drive, from, to);
+  //fclose(F);
 }
 
 void floppyLogValue(STR *text, ULO v, ULO ticks)
 {
-  FILE *F = fopen(floppylogfilename, "a");
-  if (F == 0) return;
-  fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, busGetRasterY(), busGetRasterX(), v, ticks);
-  fclose(F);
+  //FILE *F = fopen(floppylogfilename, "a");
+  //if (F == 0) return;
+  //fprintf(F, "%s: %d %.3d %.3d %.8X %.5d\n", text, draw_frame_count, busGetRasterY(), busGetRasterX(), v, ticks);
+  //fclose(F);
 }
 
 /*=======================*/

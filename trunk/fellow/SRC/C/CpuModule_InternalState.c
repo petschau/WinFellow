@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.2 2009-07-25 09:40:59 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -34,7 +34,7 @@ static ULO cpu_ssp;
 static ULO cpu_msp;
 static ULO cpu_sfc;
 static ULO cpu_dfc;
-UWO cpu_sr; // Not static because flags calculation use it extensively
+ULO cpu_sr; // Not static because flags calculation use it extensively
 static ULO cpu_vbr;
 static UWO cpu_prefetch_word;
 static ULO cpu_cacr;
@@ -177,8 +177,8 @@ ULO cpuGetCacr(void) {return cpu_cacr;}
 void cpuSetCaar(ULO caar) {cpu_caar = caar;}
 ULO cpuGetCaar(void) {return cpu_caar;}
 
-void cpuSetSR(UWO sr) {cpu_sr = sr;}
-UWO cpuGetSR(void) {return cpu_sr;}
+void cpuSetSR(ULO sr) {cpu_sr = sr;}
+ULO cpuGetSR(void) {return cpu_sr;}
 
 void cpuSetIrqLevel(ULO irq_level) {cpu_irq_level = irq_level;}
 ULO cpuGetIrqLevel(void) {return cpu_irq_level;}

@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.10 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: FMEM.C,v 1.11 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -35,6 +35,8 @@
 #include "fswrap.h"
 #include "wgui.h"
 
+
+#define OPTIMIZE_USE_MEMORY_PTR
 
 /*============================================================================*/
 /* Holds configuration for memory                                             */
@@ -1591,7 +1593,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   static void memoryOddRead(ULO address)
   {
-    if ((address & 0x1) == 0x1)
+    if (address & 1)
     {
       if (cpuGetModelMajor() < 2)
       {
@@ -1604,7 +1606,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   static void memoryOddWrite(ULO address)
   {
-    if ((address & 0x1) == 0x1)
+    if (address & 1)
     {
       if (cpuGetModelMajor() < 2)
       {
@@ -1614,6 +1616,59 @@ const STR *memory_kickimage_versionstrings[14] = {
       }
     }
   }
+
+#ifdef OPTIMIZE_USE_MEMORY_PTR
+
+  UBY memoryReadByteViaBankHandler(ULO address)
+  {
+    return memory_bank_readbyte[address >> 16](address);
+  }
+
+__inline  UBY memoryReadByte(ULO address)
+  {
+    UBY *memory_ptr = memory_bank_pointer[address>>16];
+    if (memory_ptr == NULL)
+    {
+      return memoryReadByteViaBankHandler(address);
+    }
+    return memory_ptr[address];
+  }
+
+  UWO memoryReadWordViaBankHandler(ULO address)
+  {
+    memoryOddRead(address);
+    return memory_bank_readword[address >> 16](address);
+  }
+
+__inline  UWO memoryReadWord(ULO address)
+  {
+    UBY *memory_ptr = memory_bank_pointer[address>>16];
+    if ((memory_ptr == NULL) || (address & 1))
+    {
+      return memoryReadWordViaBankHandler(address);
+    }
+    memory_ptr += address;
+    return (((UWO)memory_ptr[0]) << 8) | ((UWO)memory_ptr[1]);
+  }
+
+  ULO memoryReadLongViaBankHandler(ULO address)
+  {
+    memoryOddRead(address);
+    return memory_bank_readlong[address >> 16](address);
+  }
+
+  __inline ULO memoryReadLong(ULO address)
+  {
+    UBY *memory_ptr = memory_bank_pointer[address>>16];
+    if ((memory_ptr == NULL) || (address & 1))
+    {
+      return memoryReadLongViaBankHandler(address);
+    }
+    memory_ptr += address;
+    return ( ((ULO)memory_ptr[0]) << 24) | ( ((ULO)memory_ptr[1]) << 16) | ( ((ULO)memory_ptr[2]) << 8) | ((ULO)memory_ptr[3]);
+  }
+
+#else // Not using OPTIMIZE_USE_MEMORY_PTR
 
   UBY memoryReadByte(ULO address)
   {
@@ -1631,6 +1686,8 @@ const STR *memory_kickimage_versionstrings[14] = {
     memoryOddRead(address);
     return memory_bank_readlong[address >> 16](address);
   }
+
+#endif
 
   void memoryWriteByte(UBY data, ULO address)
   {
