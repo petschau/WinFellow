@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule.c,v 1.2 2010-10-18 19:00:52 peschau Exp $ */
+/* @(#) $Id: CpuModule.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -57,9 +57,13 @@ void cpuClearEverything(void)
   cpuSetCurrentOpcode(0);
   cpuSetModel(0, 0);  // Also sets model-mask
   cpuSetCheckPendingInterruptsFunc(NULL);
+
+#ifdef ENABLE_INSTRUCTION_LOGGING
   cpuSetInstructionLoggingFunc(NULL);
   cpuSetExceptionLoggingFunc(NULL);
   cpuSetInterruptLoggingFunc(NULL);
+#endif
+
   cpuSetMidInstructionExceptionFunc(NULL);
   cpuSetResetExceptionFunc(NULL);
 }

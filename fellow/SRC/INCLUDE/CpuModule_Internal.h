@@ -8,7 +8,7 @@ extern void cpuStackFrameGenerate(UWO vector_no, ULO pc);
 extern void cpuStackFrameInit(void);
 
 // Registers
-extern UWO cpu_sr;  // Not static because the flags calculation uses it extensively
+extern ULO cpu_sr;  // Not static because the flags calculation uses it extensively
 extern BOOLE cpuGetFlagSupervisor(void);
 extern BOOLE cpuGetFlagMaster(void);
 extern void cpuSetUspDirect(ULO usp);
@@ -43,8 +43,8 @@ extern void cpuSetCacr(ULO cacr);
 extern ULO cpuGetCacr(void);
 extern void cpuSetCaar(ULO caar);
 extern ULO cpuGetCaar(void);
-extern void cpuSetSR(UWO sr);
-extern UWO cpuGetSR(void);
+extern void cpuSetSR(ULO sr);
+extern ULO cpuGetSR(void);
 extern void cpuSetIrqLevel(ULO irq_level);
 extern ULO cpuGetIrqLevel(void);
 extern void cpuSetIrqAddress(ULO irq_address);
@@ -89,7 +89,14 @@ extern ULO cpuEA73(void);
 extern void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
 extern void cpuSetFlagsSub(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
 extern void cpuSetFlagsCmp(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
-extern void cpuSetFlagsNZ00(BOOLE z, BOOLE rm);
+extern void cpuSetZFlagBitOpsB(UBY res);
+extern void cpuSetZFlagBitOpsL(ULO res);
+
+extern void cpuSetFlagsNZ00NewB(UBY res);
+extern void cpuSetFlagsNZ00NewW(UWO res);
+extern void cpuSetFlagsNZ00NewL(ULO res);
+extern void cpuSetFlagsNZ00New64(LLO res);
+
 extern void cpuSetFlagZ(BOOLE f);
 extern void cpuSetFlagN(BOOLE f);
 extern void cpuSetFlagV(BOOLE f);
@@ -135,9 +142,11 @@ extern BOOLE cpuCalculateConditionCode15(void);
 extern BOOLE cpuCalculateConditionCode(ULO cc);
 
 // Logging
+#ifdef ENABLE_INSTRUCTION_LOGGING
 extern void cpuCallInstructionLoggingFunc(void);
 extern void cpuCallExceptionLoggingFunc(STR *description, ULO original_pc, UWO opcode);
 extern void cpuCallInterruptLoggingFunc(ULO level, ULO vector_address);
+#endif
 
 // Interrupt
 extern void cpuCallCheckPendingInterruptsFunc(void);
@@ -166,9 +175,9 @@ static ULO cpuSignExtWordToLong(UWO v) {return (ULO)(LON)(WOR) v;}
 static ULO cpuJoinWordToLong(UWO upper, UWO lower) {return (((ULO)upper) << 16) | ((ULO)lower);}
 static ULO cpuJoinByteToLong(UBY upper, UBY midh, UBY midl, UBY lower) {return (((ULO)upper) << 24) | (((ULO)midh) << 16) | (((ULO)midl) << 8) | ((ULO)lower);}
 static UWO cpuJoinByteToWord(UBY upper, UBY lower) {return (((UWO)upper) << 8) | ((UWO)lower);}
-static UBY cpuMsbB(UBY v) {return v & 0x80;}
-static UWO cpuMsbW(UWO v) {return v & 0x8000;}
-static ULO cpuMsbL(ULO v) {return v & 0x80000000;}
+static BOOLE cpuMsbB(UBY v) {return v>>7;}
+static BOOLE cpuMsbW(UWO v) {return v>>15;}
+static BOOLE cpuMsbL(ULO v) {return v>>31;}
 static BOOLE cpuIsZeroB(UBY v) {return v == 0;}
 static BOOLE cpuIsZeroW(UWO v) {return v == 0;}
 static BOOLE cpuIsZeroL(ULO v) {return v == 0;}

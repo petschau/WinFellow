@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.19 2009-07-25 10:24:00 peschau Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.20 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -390,19 +390,19 @@ static void sysinfoParseRegistry(void) {
 }
 
 static void sysinfoParseMemoryStatus (void) {
-  MEMORYSTATUS MemoryStatus;
+  MEMORYSTATUSEX MemoryStatusEx;
 
-  ZeroMemory(&MemoryStatus, sizeof (MemoryStatus));
-  MemoryStatus.dwLength = sizeof (MEMORYSTATUS);
-  GlobalMemoryStatus(&MemoryStatus);
+  ZeroMemory(&MemoryStatusEx, sizeof (MemoryStatusEx));
+  MemoryStatusEx.dwLength = sizeof (MEMORYSTATUSEX);
+  GlobalMemoryStatusEx(&MemoryStatusEx);
 
-  fellowAddTimelessLog("\ttotal physical memory: \t%u MB\n", MemoryStatus.dwTotalPhys / 1024 / 1024);
-  fellowAddTimelessLog("\tfree physical memory: \t%u MB\n", MemoryStatus.dwAvailPhys / 1024 / 1024);
-  fellowAddTimelessLog("\tmemory in use: \t\t%u%%\n", MemoryStatus.dwMemoryLoad);
-  fellowAddTimelessLog("\ttotal size of pagefile: \t%u MB\n", MemoryStatus.dwTotalPageFile / 1024 / 1024);
-  fellowAddTimelessLog("\tfree size of pagefile: \t\t%u MB\n", MemoryStatus.dwAvailPageFile / 1024 / 1024);
-  fellowAddTimelessLog("\ttotal virtual address space: \t%u MB\n", MemoryStatus.dwTotalVirtual / 1024 / 1024);
-  fellowAddTimelessLog("\tfree virtual address space: \t%u MB\n", MemoryStatus.dwAvailVirtual / 1024 / 1024);
+  fellowAddTimelessLog("\ttotal physical memory: \t%I64d MB\n", MemoryStatusEx.ullTotalPhys / 1024 / 1024);
+  fellowAddTimelessLog("\tfree physical memory: \t%I64d MB\n", MemoryStatusEx.ullAvailPhys / 1024 / 1024);
+  fellowAddTimelessLog("\tmemory in use: \t\t%u%%\n", MemoryStatusEx.dwMemoryLoad);
+  fellowAddTimelessLog("\ttotal size of pagefile: \t%I64d MB\n", MemoryStatusEx.ullTotalPageFile / 1024 / 1024);
+  fellowAddTimelessLog("\tfree size of pagefile: \t\t%I64d MB\n", MemoryStatusEx.ullAvailPageFile / 1024 / 1024);
+  fellowAddTimelessLog("\ttotal virtual address space: \t%I64d MB\n", MemoryStatusEx.ullTotalVirtual / 1024 / 1024);
+  fellowAddTimelessLog("\tfree virtual address space: \t%I64d MB\n", MemoryStatusEx.ullAvailVirtual / 1024 / 1024);
 }
 
 static void sysinfoVersionInfo (void) {

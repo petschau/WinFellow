@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.4 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.5 2011-07-18 17:22:55 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -88,7 +88,7 @@ static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
 
 /* Maintains the integrity of the super/user state */
 
-void cpuUpdateSr(UWO new_sr)
+void cpuUpdateSr(ULO new_sr)
 {
   BOOLE supermode_was_set = cpuGetFlagSupervisor();
   BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
@@ -295,7 +295,7 @@ static void cpuCmpL(ULO src2, ULO src1)
 static UBY cpuAndB(UBY src2, UBY src1)
 {
   UBY res = src2 & src1;
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
   return res;
 }
 
@@ -306,7 +306,7 @@ static UBY cpuAndB(UBY src2, UBY src1)
 static UWO cpuAndW(UWO src2, UWO src1)
 {
   UWO res = src2 & src1;
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewW(res);
   return res;
 }
 
@@ -317,7 +317,7 @@ static UWO cpuAndW(UWO src2, UWO src1)
 static ULO cpuAndL(ULO src2, ULO src1)
 {
   ULO res = src2 & src1;
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -328,7 +328,7 @@ static ULO cpuAndL(ULO src2, ULO src1)
 static UBY cpuEorB(UBY src2, UBY src1)
 {
   UBY res = src2 ^ src1;
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
   return res;
 }
 
@@ -339,7 +339,7 @@ static UBY cpuEorB(UBY src2, UBY src1)
 static UWO cpuEorW(UWO src2, UWO src1)
 {
   UWO res = src2 ^ src1;
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -350,7 +350,7 @@ static UWO cpuEorW(UWO src2, UWO src1)
 static ULO cpuEorL(ULO src2, ULO src1)
 {
   ULO res = src2 ^ src1;
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -361,7 +361,7 @@ static ULO cpuEorL(ULO src2, ULO src1)
 static UBY cpuOrB(UBY src2, UBY src1)
 {
   UBY res = src2 | src1;
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
   return res;
 }
 
@@ -372,7 +372,7 @@ static UBY cpuOrB(UBY src2, UBY src1)
 static UWO cpuOrW(UWO src2, UWO src1)
 {
   UWO res = src2 | src1;
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -383,7 +383,7 @@ static UWO cpuOrW(UWO src2, UWO src1)
 static ULO cpuOrL(ULO src2, ULO src1)
 {
   ULO res = src2 | src1;
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -394,7 +394,7 @@ static ULO cpuOrL(ULO src2, ULO src1)
 static UBY cpuBchgB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsB(src & bit_mask);
   return src ^ bit_mask;
 }
 
@@ -405,7 +405,7 @@ static UBY cpuBchgB(UBY src, UBY bit)
 static ULO cpuBchgL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsL(src & bit_mask);
   return src ^ bit_mask;
 }
 
@@ -416,7 +416,7 @@ static ULO cpuBchgL(ULO src, ULO bit)
 static UBY cpuBclrB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsB(src & bit_mask);
   return src & ~bit_mask;
 }
 
@@ -427,7 +427,7 @@ static UBY cpuBclrB(UBY src, UBY bit)
 static ULO cpuBclrL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsL(src & bit_mask);
   return src & ~bit_mask;
 }
 
@@ -438,7 +438,7 @@ static ULO cpuBclrL(ULO src, ULO bit)
 static UBY cpuBsetB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsB(src & bit_mask);
   return src | bit_mask;
 }
 
@@ -449,7 +449,7 @@ static UBY cpuBsetB(UBY src, UBY bit)
 static ULO cpuBsetL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsL(src & bit_mask);
   return src | bit_mask;
 }
 
@@ -459,7 +459,7 @@ static ULO cpuBsetL(ULO src, ULO bit)
 static void cpuBtstB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsB(src & bit_mask);
 }
 
 /// <summary>
@@ -468,7 +468,7 @@ static void cpuBtstB(UBY src, UBY bit)
 static void cpuBtstL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
-  cpuSetFlagZ(!(src & bit_mask));
+  cpuSetZFlagBitOpsL(src & bit_mask);
 }
 
 /// <summary>
@@ -555,7 +555,7 @@ static ULO cpuNegxL(ULO src1)
 static UBY cpuNotB(UBY src1)
 {
   UBY res = ~src1;
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
   return res;
 }
 
@@ -566,29 +566,29 @@ static UBY cpuNotB(UBY src1)
 static UWO cpuNotW(UWO src1)
 {
   UWO res = ~src1;
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewW(res);
   return res;
 }
 
 /// <summary>
-/// Not src1. 
+/// Not src.
 /// </summary>
 /// <returns>The result</returns>
-static ULO cpuNotL(ULO src1)
+static ULO cpuNotL(ULO src)
 {
-  ULO res = ~src1;
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  ULO res = ~src;
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
 /// <summary>
-/// Tas src1. 
+/// Tas src. 
 /// </summary>
 /// <returns>The result</returns>
-static UBY cpuTas(UBY src1)
+static UBY cpuTas(UBY src)
 {
-  cpuSetFlagsNZ00(cpuIsZeroB(src1), cpuMsbB(src1));
-  return src1 | 0x80;
+  cpuSetFlagsNZ00NewB(src);
+  return src | 0x80;
 }
 
 /// <summary>
@@ -596,7 +596,7 @@ static UBY cpuTas(UBY src1)
 /// </summary>
 static void cpuTestB(UBY res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
 }
 
 /// <summary>
@@ -604,7 +604,7 @@ static void cpuTestB(UBY res)
 /// </summary>
 static void cpuTestW(UWO res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewW(res);
 }
 
 /// <summary>
@@ -612,7 +612,7 @@ static void cpuTestW(UWO res)
 /// </summary>
 static void cpuTestL(ULO res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
 }
 
 /// <summary>
@@ -650,7 +650,7 @@ static void cpuJsr(ULO ea)
 /// <returns>The result</returns>
 static void cpuMoveB(UBY res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroB(res), cpuMsbB(res));
+  cpuSetFlagsNZ00NewB(res);
 }
 
 /// <summary>
@@ -659,7 +659,7 @@ static void cpuMoveB(UBY res)
 /// <returns>The result</returns>
 static void cpuMoveW(UWO res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroW(res), cpuMsbW(res));
+  cpuSetFlagsNZ00NewW(res);
 }
 
 /// <summary>
@@ -668,7 +668,7 @@ static void cpuMoveW(UWO res)
 /// <returns>The result</returns>
 static void cpuMoveL(ULO res)
 {
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
 }
 
 /// <summary>
@@ -951,7 +951,7 @@ static UWO cpuMoveFromSr()
 {
   if (cpuGetModelMajor() == 0 || (cpuGetModelMajor() > 0 && cpuGetFlagSupervisor()))
   {
-    return cpuGetSR();
+    return (UWO) cpuGetSR();
   }
   else
   {
@@ -1027,7 +1027,7 @@ static void cpuMulL(ULO src1, UWO extension)
       ULO dh = extension & 7;
       cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetDReg(dl, (ULO)result);
-      cpuSetFlagsNZ00(result == 0, result < 0);
+      cpuSetFlagsNZ00New64(result);
     }
     else // 32bx32b=32b
     {
@@ -1048,7 +1048,7 @@ static void cpuMulL(ULO src1, UWO extension)
       ULO dh = extension & 7;
       cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetDReg(dl, (ULO)result);
-      cpuSetFlagsNZ00(result == 0, !!(result & 0x8000000000000000));
+      cpuSetFlagsNZ00New64(result);
     }
     else // 32bx32b=32b
     {
@@ -1065,7 +1065,7 @@ static void cpuMulL(ULO src1, UWO extension)
 static ULO cpuMulsW(UWO src2, UWO src1)
 {
   ULO res = (ULO)(((LON)(WOR)src2)*((LON)(WOR)src1));
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -1075,7 +1075,7 @@ static ULO cpuMulsW(UWO src2, UWO src1)
 static ULO cpuMuluW(UWO src2, UWO src1)
 {
   ULO res = ((ULO)src2)*((ULO)src1);
-  cpuSetFlagsNZ00(cpuIsZeroL(res), cpuMsbL(res));
+  cpuSetFlagsNZ00NewL(res);
   return res;
 }
 
@@ -1199,7 +1199,7 @@ static void cpuDivL(ULO divisor, ULO ext)
 	LLO rest_signed = (restsigned) ? (-(LLO)rest) : ((LLO)rest);
 	cpuSetDReg(dr_reg, (ULO) rest_signed);
 	cpuSetDReg(dq_reg, (ULO) result_signed);
-	cpuSetFlagsNZ00(cpuIsZeroL(cpuGetDReg(dq_reg)), cpuMsbL(cpuGetDReg(dq_reg)));
+	cpuSetFlagsNZ00NewL((ULO) result_signed);
       }
     }
     else
@@ -1213,7 +1213,7 @@ static void cpuDivL(ULO divisor, ULO ext)
       {
 	cpuSetDReg(dr_reg, (ULO) rest);
 	cpuSetDReg(dq_reg, (ULO) result);
-	cpuSetFlagsNZ00(cpuIsZeroL(cpuGetDReg(dq_reg)), cpuMsbL(cpuGetDReg(dq_reg)));
+	cpuSetFlagsNZ00NewL((ULO) result);
       }
     }
   }
@@ -1894,8 +1894,9 @@ static void cpuRte()
 /// </summary>
 static void cpuSwap(ULO reg)
 {
-  cpuSetDReg(reg, cpuJoinWordToLong((UWO)cpuGetDReg(reg), (UWO) (cpuGetDReg(reg) >> 16)));
-  cpuSetFlagsNZ00(cpuIsZeroL(cpuGetDReg(reg)), cpuMsbL(cpuGetDReg(reg)));
+  ULO res = cpuJoinWordToLong((UWO)cpuGetDReg(reg), (UWO) (cpuGetDReg(reg) >> 16));
+  cpuSetDReg(reg, res);
+  cpuSetFlagsNZ00NewL(res);
   cpuSetInstructionTime(4);
 }
 
@@ -1942,8 +1943,9 @@ static void cpuLinkL(ULO reg)
 /// </summary>
 static void cpuExtW(ULO reg)
 {
-  cpuSetDRegWord(reg, cpuGetDRegByteSignExtWord(reg));
-  cpuSetFlagsNZ00(cpuIsZeroW(cpuGetDRegWord(reg)), cpuMsbW(cpuGetDRegWord(reg)));
+  UWO res = cpuGetDRegByteSignExtWord(reg);
+  cpuSetDRegWord(reg, res);
+  cpuSetFlagsNZ00NewW(res);
   cpuSetInstructionTime(4);
 }
 
@@ -1952,8 +1954,9 @@ static void cpuExtW(ULO reg)
 /// </summary>
 static void cpuExtL(ULO reg)
 {
-  cpuSetDReg(reg, cpuGetDRegWordSignExtLong(reg));
-  cpuSetFlagsNZ00(cpuIsZeroL(cpuGetDReg(reg)), cpuMsbL(cpuGetDReg(reg)));
+  ULO res = cpuGetDRegWordSignExtLong(reg);
+  cpuSetDReg(reg, res);
+  cpuSetFlagsNZ00NewL(res);
   cpuSetInstructionTime(4);
 }
 
@@ -1962,8 +1965,9 @@ static void cpuExtL(ULO reg)
 /// </summary>
 static void cpuExtBL(ULO reg)
 {
-  cpuSetDReg(reg, cpuGetDRegByteSignExtLong(reg));
-  cpuSetFlagsNZ00(cpuIsZeroL(cpuGetDReg(reg)), cpuMsbL(cpuGetDReg(reg)));
+  ULO res = cpuGetDRegByteSignExtLong(reg);
+  cpuSetDReg(reg, res);
+  cpuSetFlagsNZ00NewL(res);
   cpuSetInstructionTime(4);
 }
 
@@ -3631,10 +3635,12 @@ ULO cpuExecuteInstruction(void)
   }
   else
   {
-    UWO oldSr = cpuGetSR();
+    ULO oldSr = cpuGetSR();
     UWO opcode;
 
+#ifdef ENABLE_INSTRUCTION_LOGGING
     cpuCallInstructionLoggingFunc();
+#endif
 
     cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
     opcode = cpuGetNextOpcode16();

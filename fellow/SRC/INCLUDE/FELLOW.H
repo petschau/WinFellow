@@ -6,7 +6,7 @@ typedef enum {
   FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK = 1
 } fellow_runtime_error_codes;
 
-extern BOOLE fellow_request_emulation_stop_immediately, fellow_request_emulation_stop;
+extern BOOLE fellow_request_emulation_stop;
 
 extern void fellowRun(void);
 extern void fellowStepOne(void);
@@ -29,7 +29,6 @@ extern void fellowHardReset(void);
 extern BOOLE fellowEmulationStart(void);
 extern void fellowEmulationStop(void);
 extern void fellowRequestEmulationStop(void);
-void fellowRequestEmulationStopImmediately(void);
 void fellowAddLog2(STR *msg);
 
 
