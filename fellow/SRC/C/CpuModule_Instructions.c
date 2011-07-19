@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.5 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.6 2011-07-19 23:33:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -3644,7 +3644,10 @@ ULO cpuExecuteInstruction(void)
 
     cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
     opcode = cpuGetNextOpcode16();
+
+#ifdef ENABLE_INSTRUCTION_LOGGING
     cpuSetCurrentOpcode(opcode);
+#endif
 
     cpuSetInstructionTime(0);
 

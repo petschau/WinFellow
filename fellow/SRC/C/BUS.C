@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.8 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.9 2011-07-19 23:33:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -388,8 +388,13 @@ void busInitializeQueue(void)
   blitterEvent.handler = blitFinishBlit;
   cpuEvent.cycle = 0;
   
-  if (cpuGetModelMajor() <= 1) 
-    cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000;
+  if (cpuGetModelMajor() <= 1)
+  {
+    if (cpuIntegrationGetSpeed() == 4)
+      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
+    else
+      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
+  }
   else 
     cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68020;
 
