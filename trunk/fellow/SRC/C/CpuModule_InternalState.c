@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.4 2011-07-19 23:33:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -58,7 +58,12 @@ static ULO cpu_model_minor;
 static UBY cpu_model_mask;
 
 /* For exception handling */
+#ifdef ENABLE_INSTRUCTION_LOGGING
+
 static UWO cpu_current_opcode;
+
+#endif
+
 static ULO cpu_original_pc;
 
 /* Number of cycles taken by the last intstruction */
@@ -192,8 +197,12 @@ ULO cpuGetInstructionTime(void) {return cpu_instruction_time;}
 void cpuSetOriginalPC(ULO pc) {cpu_original_pc = pc;}
 ULO cpuGetOriginalPC(void) {return cpu_original_pc;}
 
+#ifdef ENABLE_INSTRUCTION_LOGGING
+
 void cpuSetCurrentOpcode(UWO opcode) {cpu_current_opcode = opcode;}
 UWO cpuGetCurrentOpcode(void) {return cpu_current_opcode;}
+
+#endif
 
 void cpuSetRaiseInterrupt(BOOLE raise_irq) {cpu_raise_irq = raise_irq;}
 BOOLE cpuGetRaiseInterrupt(void) {return cpu_raise_irq;}

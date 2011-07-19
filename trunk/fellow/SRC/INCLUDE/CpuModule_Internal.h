@@ -53,8 +53,14 @@ extern void cpuSetInstructionTime(ULO cycles);
 extern ULO cpuGetInstructionTime(void);
 extern void cpuSetOriginalPC(ULO pc);
 extern ULO cpuGetOriginalPC(void);
+
+#ifdef ENABLE_INSTRUCTION_LOGGING
+
 extern void cpuSetCurrentOpcode(UWO opcode);
 extern UWO cpuGetCurrentOpcode(void);
+
+#endif
+
 extern void cpuSetModelMask(UBY model_mask);
 extern UBY cpuGetModelMask(void);
 extern void cpuSetDRegWord(ULO regno, UWO val);

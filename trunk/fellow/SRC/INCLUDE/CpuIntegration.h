@@ -11,7 +11,8 @@ typedef enum {
 } cpu_integration_models;
 
 extern void cpuIntegrationSetUpInterruptEventHandler(void);
-extern void cpuIntegrationExecuteInstructionEventHandler68000(void);
+extern void cpuIntegrationExecuteInstructionEventHandler68000Fast(void);
+extern void cpuIntegrationExecuteInstructionEventHandler68000General(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68020(void);
 extern void cpuIntegrationCheckPendingInterrupts(void);
 extern ULO cpuIntegrationDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);

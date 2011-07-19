@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.4 2011-07-19 23:33:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -291,7 +291,22 @@ void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
 
 #endif ENABLE_INSTRUCTION_LOGGING
 
-void cpuIntegrationExecuteInstructionEventHandler68000(void)
+void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
+{
+  ULO cycles = cpuExecuteInstruction();
+
+  if (cpuGetStop())
+  {
+      cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  }
+  else  
+  {
+    cpuEvent.cycle = bus.cycle + ((cycles*cpuIntegrationGetChipSlowdown())>>1) + cpuIntegrationGetChipCycles();
+  }
+  cpuIntegrationSetChipCycles(0);
+}
+
+void cpuIntegrationExecuteInstructionEventHandler68000General(void)
 {
   ULO cycles = 0;
   ULO time_used = 0;
