@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.9 2011-07-19 23:33:00 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.10 2011-07-20 02:30:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -234,17 +234,10 @@ void busInsertEvent(bus_event *ev)
 
 bus_event *busPopEvent(void)
 {
-  if (bus.events->cycle >= cpuEvent.cycle)
-  {
-    return &cpuEvent;
-  }
-  else
-  {
-    bus_event *tmp = bus.events;
-    bus.events = tmp->next;
-    bus.events->prev = NULL;
-    return tmp;
-  }
+  bus_event *tmp = bus.events;
+  bus.events = tmp->next;
+  bus.events->prev = NULL;
+  return tmp;
 }
 
 
@@ -323,17 +316,30 @@ void busRunNew(void)
     {
       while (!fellow_request_emulation_stop)
       {
-	bus_event *e = busPopEvent();
+	while (bus.events->cycle >= cpuEvent.cycle)
+	{
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	busEventLog(e);
+	  busEventLog(&cpuEvent);
 #endif
-	busSetCycle(e->cycle);
-	e->handler();
+	  busSetCycle(cpuEvent.cycle);
+	  cpuEvent.handler();
+	}
+	do
+	{
+	  bus_event *e = busPopEvent();
+
+#ifdef ENABLE_BUS_EVENT_LOGGING
+	  busEventLog(e);
+#endif
+	  busSetCycle(e->cycle);
+	  e->handler();
+	} while (bus.events->cycle < cpuEvent.cycle);
       }
     }
     else
     {
       // Came out of an CPU exception. Keep on working.
+      // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
       cpuEvent.cycle = bus.cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
       cpuIntegrationSetChipCycles(0);
     }

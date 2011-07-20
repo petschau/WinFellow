@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.4 2011-07-19 23:33:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.5 2011-07-20 02:30:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -160,7 +160,7 @@ void cpuSetIspAutoMap(ULO new_isp)
     cpuSetSspDirect(new_isp);
   }
 }
-	
+
 void cpuSetPC(ULO address) {cpu_pc = address;}
 ULO cpuGetPC(void) {return cpu_pc;}
 
@@ -260,6 +260,18 @@ ULO cpuGetDRegByteSignExtLong(ULO regno) {return cpuSignExtByteToLong(cpuGetDReg
 UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 
+static UWO cpuMemoryReadWord(ULO address)
+{
+  UBY *memory_ptr = memory_bank_pointer[address>>16] + address;
+  return (((UWO)memory_ptr[0]) << 8) | ((UWO)memory_ptr[1]);
+}
+
+static ULO cpuMemoryReadLong(ULO address)
+{
+  UBY *memory_ptr = memory_bank_pointer[address>>16] + address;
+  return ( ((ULO)memory_ptr[0]) << 24) | ( ((ULO)memory_ptr[1]) << 16) | ( ((ULO)memory_ptr[2]) << 8) | ((ULO)memory_ptr[3]);
+}
+
 /* Reads the prefetch word from memory. */
 
 void cpuSetPrefetchDirect(UWO prefetch_word)
@@ -275,7 +287,7 @@ UWO cpuGetPrefetch(void)
 
 void cpuReadPrefetch(void)
 {
-  cpuSetPrefetchDirect(memoryReadWord(cpuGetPC()));
+  cpu_prefetch_word = cpuMemoryReadWord(cpuGetPC());
 }
 
 /* Returns the next 16-bit data in the instruction stream. */
@@ -295,9 +307,10 @@ ULO cpuGetNextOpcode16SignExt(void)
 /* Returns the next 32-bit data in the instruction stream. */
 ULO cpuGetNextOpcode32(void)
 {
-  ULO tmp = cpuJoinWordToLong(cpuGetPrefetch(), memoryReadWord(cpuGetPC() + 2));
+  ULO data = cpuMemoryReadLong(cpuGetPC() + 2);
+  ULO tmp = cpuJoinWordToLong(cpuGetPrefetch(),  data >> 16);
   cpuSetPC(cpuGetPC() + 4);
-  cpuReadPrefetch();
+  cpuSetPrefetchDirect(data & 0xffff);
   return tmp;
 }
 

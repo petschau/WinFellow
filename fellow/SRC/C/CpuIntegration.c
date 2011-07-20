@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.4 2011-07-19 23:33:00 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.5 2011-07-20 02:30:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -301,7 +301,7 @@ void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
   }
   else  
   {
-    cpuEvent.cycle = bus.cycle + ((cycles*cpuIntegrationGetChipSlowdown())>>1) + cpuIntegrationGetChipCycles();
+    cpuEvent.cycle += ((cycles*cpuIntegrationGetChipSlowdown())>>1) + cpuIntegrationGetChipCycles();
   }
   cpuIntegrationSetChipCycles(0);
 }
@@ -318,10 +318,13 @@ void cpuIntegrationExecuteInstructionEventHandler68000General(void)
   }
   while (time_used < 8192 && !cpuGetStop());
 
-  if (cpuGetStop()) cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  if (cpuGetStop())
+  {
+    cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  }
   else  
   {
-    cpuEvent.cycle = bus.cycle + (time_used>>12);
+    cpuEvent.cycle += (time_used>>12);
   }
   cpuIntegrationSetChipCycles(0);
 }
@@ -336,10 +339,13 @@ void cpuIntegrationExecuteInstructionEventHandler68020(void)
   }
   while (time_used < 8192 && !cpuGetStop());
 
-  if (cpuGetStop()) cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  if (cpuGetStop())
+  {
+    cpuEvent.cycle = BUS_CYCLE_DISABLE;
+  }
   else  
   {
-    cpuEvent.cycle = bus.cycle + (time_used>>12);
+    cpuEvent.cycle += (time_used>>12);
   }
   cpuIntegrationSetChipCycles(0);
 }
