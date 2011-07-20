@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.6 2011-07-19 23:33:00 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.7 2011-07-20 02:30:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -3625,7 +3625,7 @@ static void cpuPtest040(ULO rw, ULO regno)
 #include "CpuModule_Profile.h"
 #include "CpuModule_Code.h"
 
-ULO cpuExecuteInstruction(void)
+__inline ULO cpuExecuteInstruction(void)
 {
   if (cpuGetRaiseInterrupt())
   {
