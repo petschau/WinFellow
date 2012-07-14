@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: AUTOCONF.C,v 1.5 2008-02-17 12:57:12 peschau Exp $
+  @(#) $Id: AUTOCONF.C,v 1.6 2012-07-14 18:50:50 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -575,7 +575,7 @@ void rtarea_setup(void)
     int bank = RTAREA_BASE >> 16;
 
     memoryBankSet(rtarea_bget, rtarea_wget, rtarea_lget, rtarea_bput,
-		  rtarea_wput, rtarea_lput, rtarea, bank, bank);
+		  rtarea_wput, rtarea_lput, rtarea, bank, bank, FALSE);
   }
     /* NOTE: No direct pointer must be used */
   /* FELLOW IN (END)------------------- */

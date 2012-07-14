@@ -19,7 +19,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: EXPANSIO.C,v 1.4 2008-02-17 12:57:12 peschau Exp $
+  @(#) $Id: EXPANSIO.C,v 1.5 2012-07-14 18:50:50 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -305,7 +305,7 @@ void expamem_map_filesys (ULO mapping)
     filesys_start = (mapping<<8) & (RTAREA_BASE + 0xf0000);
     bank = filesys_start>>16;
     memoryBankSet(filesys_bget, filesys_wget, filesys_lget, filesys_bput,
-                  filesys_wput, filesys_lput, filesysory, bank, bank);
+                  filesys_wput, filesys_lput, filesysory, bank, bank, FALSE);
     /* FELLOW IN (END) ----------------------*/
     
     /* FELLOW OUT (START)------------------------

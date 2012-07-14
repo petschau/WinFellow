@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.5 2011-07-20 02:30:21 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.6 2012-07-14 18:50:50 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -262,14 +262,12 @@ UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 
 static UWO cpuMemoryReadWord(ULO address)
 {
-  UBY *memory_ptr = memory_bank_pointer[address>>16] + address;
-  return (((UWO)memory_ptr[0]) << 8) | ((UWO)memory_ptr[1]);
+  return memoryReadWord(address);
 }
 
 static ULO cpuMemoryReadLong(ULO address)
 {
-  UBY *memory_ptr = memory_bank_pointer[address>>16] + address;
-  return ( ((ULO)memory_ptr[0]) << 24) | ( ((ULO)memory_ptr[1]) << 16) | ( ((ULO)memory_ptr[2]) << 8) | ((ULO)memory_ptr[3]);
+  return memoryReadLong(address);
 }
 
 /* Reads the prefetch word from memory. */
