@@ -1,4 +1,4 @@
-/* @(#) $Id: FHFILE.C,v 1.11 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: FHFILE.C,v 1.12 2012-07-14 18:50:50 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -447,7 +447,8 @@ void fhfileCardMap(ULO mapping) {
     fhfileWriteLong,
     fhfile_rom,
     bank,
-    bank);
+    bank,
+    FALSE);
 }
 
 

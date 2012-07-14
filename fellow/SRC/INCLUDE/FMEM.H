@@ -11,6 +11,7 @@ extern void memoryWriteWord(UWO data, ULO address);
 extern void memoryWriteLong(ULO data, ULO address);
 
 extern UWO memoryChipReadWord(ULO address);
+extern void memoryChipWriteWord(UWO data, ULO address);
 
 /* IO Bank functions */
 
@@ -84,7 +85,8 @@ extern void memoryBankSet(memoryReadByteFunc rb,
 			  memoryWriteLongFunc wl,
 			  UBY *basep,
 			  ULO bank, 
-			  ULO basebank);
+			  ULO basebank,
+			  BOOLE pointer_can_write);
 extern UBY *memoryAddressToPtr(ULO address);
 extern void memoryChipMap(BOOLE overlay);
 
