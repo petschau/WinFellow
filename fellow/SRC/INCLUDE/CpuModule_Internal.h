@@ -2,6 +2,7 @@
 #define CpuModule_Internal_H
 
 // This header file defines the internal interfaces of the CPU module.
+extern void cpuMakeOpcodeTableForModel(void);
 
 // StackFrameGen
 extern void cpuStackFrameGenerate(UWO vector_no, ULO pc);
@@ -73,12 +74,16 @@ extern UWO cpuGetDRegByteSignExtWord(ULO regno);
 extern ULO cpuGetDRegByteSignExtLong(ULO regno);
 extern UWO cpuGetARegWord(ULO regno);
 extern UBY cpuGetARegByte(ULO regno);
-extern void cpuSetPrefetchDirect(UWO prefetch_word);
-extern UWO cpuGetPrefetch(void);
-extern void cpuReadPrefetch(void);
-extern UWO cpuGetNextOpcode16(void);
-extern ULO cpuGetNextOpcode16SignExt(void);
-extern ULO cpuGetNextOpcode32(void);
+
+extern UWO cpuGetNextWord(void);
+extern ULO cpuGetNextWordSignExt(void);
+extern ULO cpuGetNextLong(void);
+extern void cpuSkipNextWord(void);
+extern void cpuSkipNextLong(void);
+extern void cpuClearPrefetch(void);
+extern void cpuValidateReadPointer(void);
+
+extern void cpuInitializeFromNewPC(ULO new_pc);
 
 // Effective address
 extern ULO cpuEA02(ULO regno);

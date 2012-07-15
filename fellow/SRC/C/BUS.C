@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.10 2011-07-20 02:30:21 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.11 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -308,7 +308,45 @@ ULL busGetRasterFrameCount(void)
   return bus.frame_no;
 }
 
-void busRunNew(void)
+void busRun68000Fast(void)
+{
+  while (!fellow_request_emulation_stop)
+  {
+    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
+    {
+      while (!fellow_request_emulation_stop)
+      {
+	while (bus.events->cycle >= cpuEvent.cycle)
+	{
+#ifdef ENABLE_BUS_EVENT_LOGGING
+	  busEventLog(&cpuEvent);
+#endif
+	  busSetCycle(cpuEvent.cycle);
+	  cpuIntegrationExecuteInstructionEventHandler68000Fast();
+	}
+	do
+	{
+	  bus_event *e = busPopEvent();
+
+#ifdef ENABLE_BUS_EVENT_LOGGING
+	  busEventLog(e);
+#endif
+	  busSetCycle(e->cycle);
+	  e->handler();
+	} while (bus.events->cycle < cpuEvent.cycle);
+      }
+    }
+    else
+    {
+      // Came out of an CPU exception. Keep on working.
+      // TODO: This looks wrong, shifting down with cpuIntegrationGetSpeed?
+      cpuEvent.cycle = bus.cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
+      cpuIntegrationSetChipCycles(0);
+    }
+  }
+}
+
+void busRunGeneric(void)
 {
   while (!fellow_request_emulation_stop)
   {
@@ -344,6 +382,22 @@ void busRunNew(void)
       cpuIntegrationSetChipCycles(0);
     }
   }
+}
+
+typedef void (*busRunHandlerFunc)(void);
+busRunHandlerFunc busGetRunHandler(void)
+{
+  if (cpuGetModelMajor() <= 1)
+  {
+    if (cpuIntegrationGetSpeed() == 4)
+      return busRun68000Fast;
+  }
+  return busRunGeneric;
+}
+
+void busRun(void)
+{
+  busGetRunHandler()();
 }
 
 void busDebugNew(void)

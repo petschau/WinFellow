@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.14 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.15 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -77,7 +77,7 @@ extern ULO hardfile_size;
 
 #define m68k_dreg(REGS, NR) (cpuGetDReg(NR))
 #define m68k_areg(REGS, NR) (cpuGetAReg(NR))
-#define m68k_setpc(I) (cpuSetPC(I))
+#define m68k_setpc(I) (cpuInitializeFromNewPC(I))
 extern void m68k_do_rts(void);
 
 /*------------------------*/
@@ -140,11 +140,11 @@ extern char warning_buffer[256];
 
 #define random rand
 
-/*==========*/
-/* Prefetch */
-/*==========*/
+/*========================================================================================*/
+/* Prefetch, NOP here, done as part of the cpuInitializeFromNewPC call done by m68k_setpc */
+/*========================================================================================*/
 
-#define fill_prefetch_0() cpuReadPrefetch()
+#define fill_prefetch_0()
 
 /*================================*/
 /* Taken from sysdeps.h on WinUAE */

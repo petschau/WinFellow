@@ -10,6 +10,7 @@ typedef BOOLE (*cpuCheckPendingInterruptsFunc)(void);
 extern void cpuSetCheckPendingInterruptsFunc(cpuCheckPendingInterruptsFunc func);
 extern void cpuCheckPendingInterrupts(void);
 extern void cpuSetUpInterrupt(void);
+extern void cpuInitializeFromNewPC(ULO new_pc);
 
 // Logging interface
 #ifdef ENABLE_INSTRUCTION_LOGGING
@@ -25,7 +26,6 @@ extern void cpuSetInterruptLoggingFunc(cpuInterruptLoggingFunc func);
 
 // CPU register and control properties
 extern void cpuSetPC(ULO pc);
-extern void cpuReadPrefetch(void);
 extern ULO cpuGetPC(void);
 
 extern void cpuSetReg(ULO da, ULO i, ULO value);

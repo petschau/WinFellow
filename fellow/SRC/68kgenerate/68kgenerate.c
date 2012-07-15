@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.8 2010-10-18 19:00:51 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.9 2012-07-15 22:20:35 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -165,23 +165,6 @@ void cgProfileDeclarations()
     cgProfileDeclare(cg_profile_names[i]);
   for (i = 0; i < cg_profile_count; ++i)
     cgProfileLogLine(cg_profile_names[i]);
-/*
-  cgProfileDeclare("moveq");
-  cgProfileDeclare("clr");
-  cgProfileDeclare("add");
-  cgProfileDeclare("bcc");
-  cgProfileDeclare("addx");
-  cgProfileDeclare("shift");
-  cgProfileDeclare("movep");
-  cgProfileLogLine("move");
-  cgProfileLogLine("moveq");
-  cgProfileLogLine("clr");
-  cgProfileLogLine("add");
-  cgProfileLogLine("bcc");
-  cgProfileLogLine("addx");
-  cgProfileLogLine("shift");
-  cgProfileLogLine("movep");
-  */
 }
 
 /*=======================*/
@@ -389,12 +372,12 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   if (regtype == 'I' || eano == 11)
   {
     // Read source value from an immediate word.
-    fprintf(codef, "%scpuGetNextOpcode%d();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? 16 : 32);
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (regtype == '2')
   {
     // Read source value from an immediate word. Bit number for BCHG etc.
-    fprintf(codef, "%scpuGetNextOpcode16();\n", cgCastSize(size));
+    fprintf(codef, "%scpuGetNextWord();\n", cgCastSize(size));
   }
   else if (eano == 1)
   {
@@ -457,7 +440,7 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   // Fetch operand
   if (eano == 11)
   {
-    fprintf(codef, "%scpuGetNextOpcode%d();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? 16 : 32);
+    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (eano == 1)
   {
@@ -572,7 +555,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextOpcode16();\n");
+	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
 	    cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
 	    if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
 	  }
@@ -923,7 +906,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
-	fprintf(codef, "\tUWO regs = cpuGetNextOpcode16();\n");
+	fprintf(codef, "\tUWO regs = cpuGetNextWord();\n");
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
 	       || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -934,7 +917,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	       || (strnicmp(i.instruction_name, "BF", 2) == 0))
       {
 	// Read extension word _before_ ea calculation.
-	  fprintf(codef, "\tUWO ext = cpuGetNextOpcode16();\n");
+	  fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
       }
 
       // Generate fetch
@@ -1278,7 +1261,7 @@ unsigned int cgBCC(cpu_data *cpudata, cpu_instruction_info i)
   
   if (stricmp(i.instruction_name, "STOP") == 0)
   {
-    fprintf(codef, "\t%s(cpuGetNextOpcode16());\n", i.function);
+    fprintf(codef, "\t%s(cpuGetNextWord());\n", i.function);
   }
   else if ((stricmp(i.instruction_name, "BKPT") == 0)
            || (stricmp(i.instruction_name, "SWAP") == 0)

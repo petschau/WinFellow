@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.28 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.29 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -373,7 +373,7 @@ void fellowRun(void) {
   if (fellow_pre_start_reset) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
-    busRunNew();
+    busRun();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }

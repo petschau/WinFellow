@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.6 2012-07-14 18:50:50 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.7 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -53,7 +53,7 @@ static ULO cpu_initial_sp;
 static BOOLE cpu_stop;
 
 /* The current CPU model */
-static ULO cpu_model_major;
+static ULO cpu_model_major = -1;
 static ULO cpu_model_minor;
 static UBY cpu_model_mask;
 
@@ -240,10 +240,12 @@ static void cpuCalculateModelMask(void)
 
 void cpuSetModel(ULO major, ULO minor)
 {
+  BOOLE makeOpcodeTable = (cpu_model_major != major);
   cpu_model_major = major;
   cpu_model_minor = minor;
   cpuCalculateModelMask();
   cpuStackFrameInit();
+  if (makeOpcodeTable) cpuMakeOpcodeTableForModel();
 }
 
 void cpuSetDRegWord(ULO regno, UWO val) {*((WOR*)&cpu_regs[0][regno]) = val;}
@@ -260,56 +262,134 @@ ULO cpuGetDRegByteSignExtLong(ULO regno) {return cpuSignExtByteToLong(cpuGetDReg
 UWO cpuGetARegWord(ULO regno) {return (UWO)cpu_regs[1][regno];}
 UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 
-static UWO cpuMemoryReadWord(ULO address)
+typedef UWO (*cpuGetWordFunc)(void);
+typedef ULO (*cpuGetLongFunc)(void);
+
+BOOLE cpu_pc_next_using_pointer = FALSE;
+UBY *cpu_pc_next_pointer_base = 0;
+UBY *cpu_pc_next_pointer = 0;
+ULO cpu_pc_next = 0;
+
+static UWO cpuGetNextWordInternal(void)
 {
-  return memoryReadWord(address);
+  if (cpu_pc_next_using_pointer)
+  {
+    UWO data = memoryReadWordFromPointer(cpu_pc_next_pointer);
+    cpu_pc_next_pointer += 2;
+    return data;
+  }
+  else
+  {
+    UWO data = memoryReadWord(cpu_pc_next);
+    cpu_pc_next += 2;
+    return data;
+  }
 }
 
-static ULO cpuMemoryReadLong(ULO address)
+static ULO cpuGetNextLongInternal(void)
 {
-  return memoryReadLong(address);
+  if (cpu_pc_next_using_pointer)
+  {
+    ULO data = memoryReadLongFromPointer(cpu_pc_next_pointer);
+    cpu_pc_next_pointer += 4;
+    return data;
+  }
+  else
+  {
+    ULO data = memoryReadLong(cpu_pc_next);
+    cpu_pc_next += 4;
+    return data;
+  }
 }
 
-/* Reads the prefetch word from memory. */
-
-void cpuSetPrefetchDirect(UWO prefetch_word)
+UWO cpuGetNextWord(void)
 {
-  cpu_prefetch_word = prefetch_word;
-}
-
-/* Returns the prefetch word. */
-UWO cpuGetPrefetch(void)
-{
-  return cpu_prefetch_word;
-}
-
-void cpuReadPrefetch(void)
-{
-  cpu_prefetch_word = cpuMemoryReadWord(cpuGetPC());
-}
-
-/* Returns the next 16-bit data in the instruction stream. */
-UWO cpuGetNextOpcode16(void)
-{
-  UWO tmp = cpuGetPrefetch();
+  UWO tmp = cpu_prefetch_word;
+  cpu_prefetch_word = cpuGetNextWordInternal();
   cpuSetPC(cpuGetPC() + 2);
-  cpuReadPrefetch();
   return tmp;
 }
 
-ULO cpuGetNextOpcode16SignExt(void)
+ULO cpuGetNextWordSignExt(void)
 {
-  return cpuSignExtWordToLong(cpuGetNextOpcode16());
+  return cpuSignExtWordToLong(cpuGetNextWord());
 }
 
-/* Returns the next 32-bit data in the instruction stream. */
-ULO cpuGetNextOpcode32(void)
+ULO cpuGetNextLong(void)
 {
-  ULO data = cpuMemoryReadLong(cpuGetPC() + 2);
-  ULO tmp = cpuJoinWordToLong(cpuGetPrefetch(),  data >> 16);
+  ULO tmp = cpu_prefetch_word << 16;
+  ULO data = cpuGetNextLongInternal();
+  cpu_prefetch_word = (UWO) data;
   cpuSetPC(cpuGetPC() + 4);
-  cpuSetPrefetchDirect(data & 0xffff);
-  return tmp;
+  return tmp | (data >> 16);
+}
+
+void cpuInitializePrefetch(void)
+{
+  cpu_prefetch_word = cpuGetNextWordInternal();
+}
+
+void cpuClearPrefetch(void)
+{
+  cpu_prefetch_word = 0;
+}
+
+void cpuSkipNextWord(void)
+{
+  cpuInitializePrefetch();
+  cpuSetPC(cpuGetPC() + 2);
+}
+
+void cpuSkipNextLong(void)
+{
+  if (cpu_pc_next_using_pointer)
+  {
+    cpu_pc_next_pointer += 2;
+  }
+  else
+  {
+    cpu_pc_next += 2;
+  }
+  cpuInitializePrefetch();
+  cpuSetPC(cpuGetPC() + 4);
+}
+
+void cpuInitializeReadPointers(void)
+{
+  ULO pc = cpuGetPC();
+  UBY *memory_ptr = memory_bank_pointer[pc>>16];
+  cpu_pc_next_using_pointer = (memory_ptr != NULL) && !(pc & 1);
+  if (cpu_pc_next_using_pointer)
+  {
+    cpu_pc_next_pointer = memory_ptr + pc;
+    cpu_pc_next_pointer_base = memory_ptr;
+  }
+  else
+  {
+    cpu_pc_next = pc;
+  }
+}
+
+void cpuValidateReadPointer(void)
+{
+  if (cpu_pc_next_using_pointer)
+  {
+    ULO pc = cpuGetPC();
+    UBY *memory_ptr = memory_bank_pointer[pc>>16];
+    if (memory_ptr != cpu_pc_next_pointer_base)
+    {
+      cpu_pc_next_using_pointer = FALSE;
+      cpu_pc_next = pc;
+      cpuInitializePrefetch();
+    }
+  }
+}
+
+void cpuInitializeFromNewPC(ULO new_pc)
+{
+  cpuSetPC(new_pc);
+  cpuInitializeReadPointers();
+  cpuInitializePrefetch();
 }
 
 void cpuSaveState(FILE *F)
