@@ -45,7 +45,7 @@ typedef struct bus_state_
 
 extern bus_state bus;
 
-extern void busRunNew(void);
+extern void busRun(void);
 extern void busDebugNew(void);
 
 extern ULO busGetCycle(void);

@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.12 2012-07-14 18:50:50 peschau Exp $ */
+/* @(#) $Id: FMEM.C,v 1.13 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -125,24 +125,8 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   ULO memory_mystery_value;          /* Pattern needed in an unknown bank (hmm) */
   ULO memory_noise[2];                     /* Returns alternating bitpattern in */
-  ULO memory_noiseounter;    /* unused IO-registers to keep apps from hanging */
-  ULO memory_undefined_io_writeounter = 0;
-
-
-  UBY memoryReadByteFromPointer(UBY *address)
-  {
-    return address[0];
-  }
-
-  UWO memoryReadWordFromPointer(UBY *address)
-  {
-    return (address[0] << 8) | address[1];
-  }
-
-  ULO memoryReadLongFromPointer(UBY *address)
-  {
-    return (address[0] << 24) | (address[1] << 16) | (address[2] << 8) | address[3];
-  }
+  ULO memory_noisecounter;    /* unused IO-registers to keep apps from hanging */
+  ULO memory_undefined_io_writecounter = 0;
 
   void memoryWriteByteToPointer(UBY data, UBY *address)
   {
@@ -194,13 +178,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UWO rdefault(ULO address)
   {
-    memory_noiseounter++;
-    return (UWO) memory_noise[memory_noiseounter & 0x1];
+    memory_noisecounter++;
+    return (UWO) memory_noise[memory_noisecounter & 0x1];
   }
 
   void wdefault(UWO data, ULO address)
   {
-    memory_undefined_io_writeounter++;
+    memory_undefined_io_writecounter++;
   }
 
   /*
@@ -524,17 +508,20 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryEmemReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_emem + (address & 0xffff));
+    UBY *p = memory_emem + (address & 0xffff);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryEmemReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_emem + (address & 0xffff));
+    UBY *p = memory_emem + (address & 0xffff);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryEmemReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_emem + (address & 0xffff));
+    UBY *p = memory_emem + (address & 0xffff);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryEmemWriteByte(UBY data, ULO address)
@@ -606,17 +593,20 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryDmemReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_dmem + (address & 0xffff));
+    UBY *p = memory_dmem + (address & 0xffff);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryDmemReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_dmem + (address & 0xffff));
+    UBY *p = memory_dmem + (address & 0xffff);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryDmemReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_dmem + (address & 0xffff));
+    UBY *p = memory_dmem + (address & 0xffff);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryDmemWriteByte(UBY data, ULO address)
@@ -726,32 +716,38 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryChipReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryChipReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryChipReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryChipWriteByte(UBY data, ULO address)
   {
-    memoryWriteByteToPointer(data, memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    memoryWriteByteToPointer(data, p);
   }
 
   void memoryChipWriteWord(UWO data, ULO address)
   {
-    memoryWriteWordToPointer(data, memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    memoryWriteWordToPointer(data, p);
   }
 
   void memoryChipWriteLong(ULO data, ULO address)
   {
-    memoryWriteLongToPointer(data, memory_chip + (address & 0x1fffff));
+    UBY *p = memory_chip + (address & 0x1fffff);
+    memoryWriteLongToPointer(data, p);
   }
 
   void memoryChipClear(void)
@@ -761,17 +757,20 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryOverlayReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_kick + (address & 0xffffff));
+    UBY *p = memory_kick + (address & 0xffffff);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryOverlayReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_kick + (address & 0xffffff));
+    UBY *p = memory_kick + (address & 0xffffff);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryOverlayReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_kick + (address & 0xffffff));
+    UBY *p = memory_kick + (address & 0xffffff);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryOverlayWriteByte(UBY data, ULO address)
@@ -830,32 +829,38 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryFastReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryFastReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryFastReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryFastWriteByte(UBY data, ULO address)
   {
-    memoryWriteByteToPointer(data, memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    memoryWriteByteToPointer(data, p);
   }
 
   void memoryFastWriteWord(UWO data, ULO address)
   {
-    memoryWriteWordToPointer(data, memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    memoryWriteWordToPointer(data, p);
   }
 
   void memoryFastWriteLong(ULO data, ULO address)
   {
-    memoryWriteLongToPointer(data, memory_fast + ((address & 0xffffff) - memory_fast_baseaddress));
+    UBY *p = memory_fast + ((address & 0xffffff) - memory_fast_baseaddress);
+    memoryWriteLongToPointer(data, p);
   }
 
   /*============================================================================*/
@@ -951,32 +956,38 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memorySlowReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memorySlowReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memorySlowReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    return memoryReadLongFromPointer(p);
   }
 
   void memorySlowWriteByte(UBY data, ULO address)
   {
-    memoryWriteByteToPointer(data, memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    memoryWriteByteToPointer(data, p);
   }
 
   void memorySlowWriteWord(UWO data, ULO address)
   {
-    memoryWriteWordToPointer(data, memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    memoryWriteWordToPointer(data, p);
   }
 
   void memorySlowWriteLong(ULO data, ULO address)
   {
-    memoryWriteLongToPointer(data, memory_slow + ((address & 0xffffff) - 0xc00000));
+    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    memoryWriteLongToPointer(data, p);
   }
 
   void memorySlowClear(void)
@@ -1179,17 +1190,20 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryKickReadByte(ULO address)
   {
-    return memoryReadByteFromPointer(memory_kick + ((address & 0xffffff) - 0xf80000));
+    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    return memoryReadByteFromPointer(p);
   }
 
   UWO memoryKickReadWord(ULO address)
   {
-    return memoryReadWordFromPointer(memory_kick + ((address & 0xffffff) - 0xf80000));
+    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    return memoryReadWordFromPointer(p);
   }
 
   ULO memoryKickReadLong(ULO address)
   {
-    return memoryReadLongFromPointer(memory_kick + ((address & 0xffffff) - 0xf80000));
+    UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    return memoryReadLongFromPointer(p);
   }
 
   void memoryKickWriteByte(UBY data, ULO address)
@@ -1293,7 +1307,8 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     sum = lastsum = 0;
     for (i = 0; i < 0x80000; i += 4) {
-      sum += memoryReadLongFromPointer(memory_kick + i);
+      UBY *p = memory_kick + i;
+      sum += memoryReadLongFromPointer(p);
       if (sum < lastsum) sum++;
       lastsum = sum;
     }
@@ -1340,7 +1355,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 	memory_kickimage_basebank = basebank;
 	memory_kickimage_none = FALSE;
 	memoryKickIdentify(memory_kickimage_versionstr);
-	memory_initial_PC = memoryReadLongFromPointer(memory_kick + 4);
+	memory_initial_PC = memoryReadLongFromPointer((memory_kick + 4));
 	memory_initial_SP = memoryReadLongFromPointer(memory_kick);
       }
       else
@@ -1625,7 +1640,8 @@ __inline  UBY memoryReadByte(ULO address)
     UBY *memory_ptr = memory_bank_pointer[address>>16];
     if (memory_ptr != NULL)
     {
-      return memoryReadByteFromPointer(memory_ptr + address);
+      UBY *p = memory_ptr + address;
+      return memoryReadByteFromPointer(p);
     }
     return memoryReadByteViaBankHandler(address);
   }
@@ -1641,7 +1657,8 @@ __inline  UWO memoryReadWord(ULO address)
     UBY *memory_ptr = memory_bank_pointer[address>>16];
     if ((memory_ptr != NULL) && !(address & 1))
     {
-      return memoryReadWordFromPointer(memory_ptr + address);
+      UBY *p = memory_ptr + address;
+      return memoryReadWordFromPointer(p);
     }
     return memoryReadWordViaBankHandler(address);
   }
@@ -1657,7 +1674,8 @@ __inline  UWO memoryReadWord(ULO address)
     UBY *memory_ptr = memory_bank_pointer[address>>16];
     if ((memory_ptr != NULL) && !(address & 1))
     {
-      return memoryReadLongFromPointer(memory_ptr + address);
+      UBY *p = memory_ptr + address;
+      return memoryReadLongFromPointer(p);
     }
     return memoryReadLongViaBankHandler(address);
   }
@@ -1888,7 +1906,7 @@ __inline  UWO memoryReadWord(ULO address)
   {
     memory_noise[0] = 0;
     memory_noise[1] = 0xffffffff;
-    memory_noiseounter = 0;
+    memory_noisecounter = 0;
   }
 
   void memoryMysterySettingsClear(void)

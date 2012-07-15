@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Exceptions.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuModule_Exceptions.c,v 1.4 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k exception handling functions                                    */
@@ -124,8 +124,7 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
     // restart cpu, if needed
     cpuSetStop(FALSE);
 
-    cpuSetPC(vector_address);
-    cpuReadPrefetch();
+    cpuInitializeFromNewPC(vector_address);
     cpuSetInstructionTime(40);
   }
 
@@ -206,8 +205,7 @@ static void cpuThrowResetException000(void)
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
   cpuSetVbr(0);
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
-  cpuSetPC(cpuGetInitialPC()); /* pc = fake vector 1 */
-  cpuReadPrefetch();
+  cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
 static void cpuThrowResetException010(void)
@@ -216,8 +214,7 @@ static void cpuThrowResetException010(void)
   cpuSetSR(cpuGetSR() | 0x2700); /* S = 1, ilvl = 7 */
   cpuSetVbr(0);
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
-  cpuSetPC(cpuGetInitialPC()); /* pc = fake vector 1 */
-  cpuReadPrefetch();
+  cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
 static void cpuThrowResetException020(void)
@@ -229,8 +226,7 @@ static void cpuThrowResetException020(void)
   cpuSetCaar(0);
   /* Invalidate cache, we don't have one */
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
-  cpuSetPC(cpuGetInitialPC()); /* pc = fake vector 1 */
-  cpuReadPrefetch();
+  cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
 static void cpuThrowResetException030(void)
@@ -242,8 +238,7 @@ static void cpuThrowResetException030(void)
   cpuSetCaar(0);
   /* Invalidate cache, we don't have one */
   cpuSetSspDirect(cpuGetInitialSP());        /* ssp = fake vector 0 */
-  cpuSetPC(cpuGetInitialPC()); /* pc = fake vector 1 */
-  cpuReadPrefetch();
+  cpuInitializeFromNewPC(cpuGetInitialPC()); /* pc = fake vector 1 */
 }
 
 /*============================*/

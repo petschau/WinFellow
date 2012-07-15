@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.5 2011-07-20 02:30:21 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.6 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -28,6 +28,7 @@
 #include "fmem.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
+#include "CpuModule_Internal.h"
 #include "bus.h"
 
 
@@ -293,7 +294,27 @@ void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
 
 void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
 {
-  ULO cycles = cpuExecuteInstruction();
+  ULO cycles;
+ 
+  if (cpuGetRaiseInterrupt())
+  {
+    cpuSetUpInterrupt();
+    cpuCheckPendingInterrupts();
+    cycles = 44;
+  }
+  else
+  {
+    BOOLE isTraced = (cpuGetSR() & 0xc000);
+
+    cpuValidateReadPointer();
+    cycles = cpuExecuteInstruction();
+
+    if (isTraced)
+    {
+      cpuThrowTraceException();
+      cycles += cpuGetInstructionTime();
+    }
+  }
 
   if (cpuGetStop())
   {
@@ -310,9 +331,28 @@ void cpuIntegrationExecuteInstructionEventHandler68000General(void)
 {
   ULO cycles = 0;
   ULO time_used = 0;
+
   do
   {
-    cycles = cpuExecuteInstruction();
+    if (cpuGetRaiseInterrupt())
+    {
+      cpuSetUpInterrupt();
+      cpuCheckPendingInterrupts();
+      cycles = 44;
+    }
+    else
+    {
+      BOOLE isTraced = (cpuGetSR() & 0xc000);
+
+      cpuValidateReadPointer();
+      cycles = cpuExecuteInstruction();
+
+      if (isTraced)
+      {
+	cpuThrowTraceException();
+	cycles += cpuGetInstructionTime();
+      }
+    }
     cycles = cycles*cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
     time_used += (cpuIntegrationGetChipCycles()<<12) + (cycles<<cpuIntegrationGetSpeedMultiplier());
   }
@@ -334,7 +374,23 @@ void cpuIntegrationExecuteInstructionEventHandler68020(void)
   ULO time_used = 0;
   do
   {
-    cpuExecuteInstruction();
+    if (cpuGetRaiseInterrupt())
+    {
+      cpuSetUpInterrupt();
+      cpuCheckPendingInterrupts();
+    }
+    else
+    {
+      BOOLE isTraced = (cpuGetSR() & 0xc000);
+
+      cpuValidateReadPointer();
+      cpuExecuteInstruction();
+
+      if (isTraced)
+      {
+	cpuThrowTraceException();
+      }
+    }
     time_used += (cpuIntegrationGetChipCycles()<<12) + (4<<cpuIntegrationGetSpeedMultiplier());
   }
   while (time_used < 8192 && !cpuGetStop());

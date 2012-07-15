@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Interrupts.c,v 1.3 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuModule_Interrupts.c,v 1.4 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 interrupt handling                                                */
@@ -101,8 +101,7 @@ void cpuSetUpInterrupt(void)
       cpuSetSR(cpuGetSR() & 0xefff);  // Clear master bit
     }
   }
-  cpuSetPC(cpuGetIrqAddress());
-  cpuReadPrefetch();
+  cpuInitializeFromNewPC(cpuGetIrqAddress());
   cpuSetStop(FALSE);
   cpuSetRaiseInterrupt(FALSE);
 }

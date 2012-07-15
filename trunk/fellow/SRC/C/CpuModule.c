@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule.c,v 1.4 2011-07-19 23:33:00 peschau Exp $ */
+/* @(#) $Id: CpuModule.c,v 1.5 2012-07-15 22:20:35 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -40,7 +40,7 @@ void cpuClearEverything(void)
   cpuSetSspDirect(0);
   cpuSetMspDirect(0);
   cpuSetPC(0);
-  cpuSetPrefetchDirect(0);
+  cpuClearPrefetch();
   cpuSetVbr(0);
   cpuSetSR(0);
   cpuSetCacr(0);
