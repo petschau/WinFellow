@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.6 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.7 2012-07-30 16:58:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -295,26 +295,7 @@ void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
 void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
 {
   ULO cycles;
- 
-  if (cpuGetRaiseInterrupt())
-  {
-    cpuSetUpInterrupt();
-    cpuCheckPendingInterrupts();
-    cycles = 44;
-  }
-  else
-  {
-    BOOLE isTraced = (cpuGetSR() & 0xc000);
-
-    cpuValidateReadPointer();
-    cycles = cpuExecuteInstruction();
-
-    if (isTraced)
-    {
-      cpuThrowTraceException();
-      cycles += cpuGetInstructionTime();
-    }
-  }
+  cycles = cpuExecuteInstruction();
 
   if (cpuGetStop())
   {
@@ -334,25 +315,7 @@ void cpuIntegrationExecuteInstructionEventHandler68000General(void)
 
   do
   {
-    if (cpuGetRaiseInterrupt())
-    {
-      cpuSetUpInterrupt();
-      cpuCheckPendingInterrupts();
-      cycles = 44;
-    }
-    else
-    {
-      BOOLE isTraced = (cpuGetSR() & 0xc000);
-
-      cpuValidateReadPointer();
-      cycles = cpuExecuteInstruction();
-
-      if (isTraced)
-      {
-	cpuThrowTraceException();
-	cycles += cpuGetInstructionTime();
-      }
-    }
+    cycles = cpuExecuteInstruction();
     cycles = cycles*cpuIntegrationGetChipSlowdown(); // Compensate for blitter time
     time_used += (cpuIntegrationGetChipCycles()<<12) + (cycles<<cpuIntegrationGetSpeedMultiplier());
   }
@@ -374,23 +337,7 @@ void cpuIntegrationExecuteInstructionEventHandler68020(void)
   ULO time_used = 0;
   do
   {
-    if (cpuGetRaiseInterrupt())
-    {
-      cpuSetUpInterrupt();
-      cpuCheckPendingInterrupts();
-    }
-    else
-    {
-      BOOLE isTraced = (cpuGetSR() & 0xc000);
-
-      cpuValidateReadPointer();
-      cpuExecuteInstruction();
-
-      if (isTraced)
-      {
-	cpuThrowTraceException();
-      }
-    }
+    cpuExecuteInstruction();
     time_used += (cpuIntegrationGetChipCycles()<<12) + (4<<cpuIntegrationGetSpeedMultiplier());
   }
   while (time_used < 8192 && !cpuGetStop());
