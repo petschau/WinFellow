@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.7 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.8 2012-07-30 16:58:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -22,6 +22,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include "defs.h"
+#include "CpuModule.h"
 #include "fellow.h"
 #include "fmem.h"
 #include "CpuModule_Internal.h"
@@ -265,41 +266,16 @@ UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 typedef UWO (*cpuGetWordFunc)(void);
 typedef ULO (*cpuGetLongFunc)(void);
 
-BOOLE cpu_pc_next_using_pointer = FALSE;
-UBY *cpu_pc_next_pointer_base = 0;
-UBY *cpu_pc_next_pointer = 0;
-ULO cpu_pc_next = 0;
-
 static UWO cpuGetNextWordInternal(void)
 {
-  if (cpu_pc_next_using_pointer)
-  {
-    UWO data = memoryReadWordFromPointer(cpu_pc_next_pointer);
-    cpu_pc_next_pointer += 2;
-    return data;
-  }
-  else
-  {
-    UWO data = memoryReadWord(cpu_pc_next);
-    cpu_pc_next += 2;
-    return data;
-  }
+  UWO data = memoryReadWord(cpuGetPC() + 2);
+  return data;
 }
 
 static ULO cpuGetNextLongInternal(void)
 {
-  if (cpu_pc_next_using_pointer)
-  {
-    ULO data = memoryReadLongFromPointer(cpu_pc_next_pointer);
-    cpu_pc_next_pointer += 4;
-    return data;
-  }
-  else
-  {
-    ULO data = memoryReadLong(cpu_pc_next);
-    cpu_pc_next += 4;
-    return data;
-  }
+  ULO data = memoryReadLong(cpuGetPC() + 2);
+  return data;
 }
 
 UWO cpuGetNextWord(void)
@@ -326,7 +302,7 @@ ULO cpuGetNextLong(void)
 
 void cpuInitializePrefetch(void)
 {
-  cpu_prefetch_word = cpuGetNextWordInternal();
+  cpu_prefetch_word = memoryReadWord(cpuGetPC());
 }
 
 void cpuClearPrefetch(void)
@@ -336,59 +312,19 @@ void cpuClearPrefetch(void)
 
 void cpuSkipNextWord(void)
 {
-  cpuInitializePrefetch();
   cpuSetPC(cpuGetPC() + 2);
+  cpuInitializePrefetch();
 }
 
 void cpuSkipNextLong(void)
 {
-  if (cpu_pc_next_using_pointer)
-  {
-    cpu_pc_next_pointer += 2;
-  }
-  else
-  {
-    cpu_pc_next += 2;
-  }
-  cpuInitializePrefetch();
   cpuSetPC(cpuGetPC() + 4);
-}
-
-void cpuInitializeReadPointers(void)
-{
-  ULO pc = cpuGetPC();
-  UBY *memory_ptr = memory_bank_pointer[pc>>16];
-  cpu_pc_next_using_pointer = (memory_ptr != NULL) && !(pc & 1);
-  if (cpu_pc_next_using_pointer)
-  {
-    cpu_pc_next_pointer = memory_ptr + pc;
-    cpu_pc_next_pointer_base = memory_ptr;
-  }
-  else
-  {
-    cpu_pc_next = pc;
-  }
-}
-
-void cpuValidateReadPointer(void)
-{
-  if (cpu_pc_next_using_pointer)
-  {
-    ULO pc = cpuGetPC();
-    UBY *memory_ptr = memory_bank_pointer[pc>>16];
-    if (memory_ptr != cpu_pc_next_pointer_base)
-    {
-      cpu_pc_next_using_pointer = FALSE;
-      cpu_pc_next = pc;
-      cpuInitializePrefetch();
-    }
-  }
+  cpuInitializePrefetch();
 }
 
 void cpuInitializeFromNewPC(ULO new_pc)
 {
   cpuSetPC(new_pc);
-  cpuInitializeReadPointers();
   cpuInitializePrefetch();
 }
 

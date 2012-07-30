@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule.c,v 1.5 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuModule.c,v 1.6 2012-07-30 16:58:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -21,11 +21,11 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
+
 #include "defs.h"
+#include "CpuModule.h"
 #include "fellow.h"
 #include "fmem.h"
-
-#include "CpuModule.h"
 #include "CpuModule_Internal.h"
 
 void cpuClearEverything(void)

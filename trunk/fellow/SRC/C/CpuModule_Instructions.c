@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.8 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.9 2012-07-30 16:58:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -88,42 +88,42 @@ static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
 
 /* Maintains the integrity of the super/user state */
 
-void cpuUpdateSr(ULO new_sr)
-{
-  BOOLE supermode_was_set = cpuGetFlagSupervisor();
-  BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
+void cpuUpdateSr(ULO new_sr) {
+	BOOLE supermode_was_set = cpuGetFlagSupervisor();
+	BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
 
-  BOOLE supermode_is_set = !!(new_sr & 0x2000);
-  BOOLE master_is_set = (cpuGetModelMajor() >= 2) && !!(new_sr & 0x1000);
+	BOOLE supermode_is_set = !!(new_sr & 0x2000);
+	BOOLE master_is_set = (cpuGetModelMajor() >= 2) && !!(new_sr & 0x1000);
 
-  ULO runlevel_old = (cpuGetSR() >> 8) & 7;
-  ULO runlevel_new = (new_sr >> 8) & 7;
+	ULO runlevel_old = (cpuGetSR() >> 8) & 7;
+	ULO runlevel_new = (new_sr >> 8) & 7;
 
-  if (!supermode_was_set) cpuSetUspDirect(cpuGetAReg(7));
-  else if (master_was_set) cpuSetMspDirect(cpuGetAReg(7));
-  else cpuSetSspDirect(cpuGetAReg(7));
+	if (!supermode_was_set)
+		cpuSetUspDirect(cpuGetAReg(7));
+	else if (master_was_set)
+		cpuSetMspDirect(cpuGetAReg(7));
+	else
+		cpuSetSspDirect(cpuGetAReg(7));
 
-  if (!supermode_is_set) cpuSetAReg(7, cpuGetUspDirect());
-  else if (master_is_set) cpuSetAReg(7, cpuGetMspDirect());
-  else cpuSetAReg(7, cpuGetSspDirect());
+	if (!supermode_is_set)
+		cpuSetAReg(7, cpuGetUspDirect());
+	else if (master_is_set)
+		cpuSetAReg(7, cpuGetMspDirect());
+	else
+		cpuSetAReg(7, cpuGetSspDirect());
 
-  cpuSetSR(new_sr);
+	cpuSetSR(new_sr);
 
-  if (runlevel_old != runlevel_new)
-  {
-    cpuCallCheckPendingInterruptsFunc();
-  }
+	if (runlevel_old != runlevel_new) {
+		cpuCallCheckPendingInterruptsFunc();
+	}
 }
 
-static void cpuIllegal(void)
-{
-  UWO opcode = memoryReadWord(cpuGetPC() - 2);
-  if ((opcode & 0xf000) == 0xf000)
-  {
-    cpuThrowFLineException();
-  }
-  else if ((opcode & 0xa000) == 0xa000)
-  {
+static void cpuIllegal(void) {
+	UWO opcode = memoryReadWord(cpuGetPC() - 2);
+	if ((opcode & 0xf000) == 0xf000) {
+		cpuThrowFLineException();
+	} else if ((opcode & 0xa000) == 0xa000) {
 #ifdef UAE_FILESYS
     if ((cpuGetPC() & 0xff0000) == 0xf00000)
     {
@@ -3653,21 +3653,39 @@ void cpuMakeOpcodeTableForModel(void)
 
 ULO cpuExecuteInstruction(void)
 {
-  UWO opcode;
+  if (cpuGetRaiseInterrupt())
+  {
+    cpuSetUpInterrupt();
+    cpuCheckPendingInterrupts();
+    return 44;
+  }
+  else
+  {
+    ULO oldSr = cpuGetSR();
+    UWO opcode;
 
 #ifdef ENABLE_INSTRUCTION_LOGGING
-  cpuCallInstructionLoggingFunc();
+    cpuCallInstructionLoggingFunc();
 #endif
 
-  cpuSetInstructionTime(0);
-  cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
-
-  opcode = cpuGetNextWord();
+    cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
+    opcode = cpuGetNextWord();
 
 #ifdef ENABLE_INSTRUCTION_LOGGING
-  cpuSetCurrentOpcode(opcode);
+    cpuSetCurrentOpcode(opcode);
 #endif
 
-  cpu_opcode_data_current[opcode].instruction_func(cpu_opcode_data_current[opcode].data);
-  return cpuGetInstructionTime();
+    cpuSetInstructionTime(0);
+
+	cpu_opcode_data_current[opcode].instruction_func(
+			cpu_opcode_data_current[opcode].data);
+    if (oldSr & 0xc000)
+    {
+      // This instruction was traced
+      ULO cycles = cpuGetInstructionTime();
+      cpuThrowTraceException();
+      cpuSetInstructionTime(cpuGetInstructionTime() + cycles);
+    }
+    return cpuGetInstructionTime();
+  }
 }

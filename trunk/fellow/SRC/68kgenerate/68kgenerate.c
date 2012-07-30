@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.9 2012-07-15 22:20:35 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.10 2012-07-30 16:58:02 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1569,7 +1569,7 @@ void cgData()
   fprintf(dataf, "cpuOpcodeData cpu_opcode_data[65536] = {\n");
   for (i = 0; i < 65536; ++i)
   {
-    fprintf(dataf, "{%s,{%u,%u,%u}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
+    fprintf(dataf, "{%s,{%uU,%uU,%uU}}%s\n", cpu_opcode_data[i].name, cpu_opcode_data[i].data[0], cpu_opcode_data[i].data[1], cpu_opcode_data[i].data[2], ((i == 65535) ? "" : ","));
   }
   fprintf(dataf, "};\n");
   fprintf(dataf, "UBY cpu_opcode_model_mask[65536] = {\n");
