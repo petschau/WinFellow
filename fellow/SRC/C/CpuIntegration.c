@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.7 2012-07-30 16:58:02 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.8 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -30,6 +30,7 @@
 #include "CpuIntegration.h"
 #include "CpuModule_Internal.h"
 #include "bus.h"
+#include "fileops.h"
 
 
 static jmp_buf cpu_integration_exception_buffer;
@@ -231,32 +232,48 @@ void cpuIntegrationResetExceptionFunc(void)
 /* Logging */
 /*=========*/
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
-extern FILE *BUSLOG;
+FILE *CPUINSTRUCTIONLOG;
+int cpu_disable_instruction_log = TRUE;
+
+void cpuInstructionLogOpen(void)
+{
+  if (CPUINSTRUCTIONLOG == NULL)
+  {
+    char filename[MAX_PATH];
+    fileopsGetGenericFileName(filename, "cpuinstructions.log");
+    CPUINSTRUCTIONLOG = fopen(filename, "w");
+  }
+}
 
 void cpuIntegrationPrintBusCycle(void)
 {
-  fprintf(BUSLOG, "%d:%.5d ", bus.frame_no, bus.cycle);
+  fprintf(CPUINSTRUCTIONLOG, "%d:%.5d ", bus.frame_no, bus.cycle);
 }
 
 void cpuIntegrationInstructionLogging(void)
 {
   char saddress[256], sdata[256], sinstruction[256], soperands[256];
-  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+
+  if (cpu_disable_instruction_log) return;
+  cpuInstructionLogOpen();
 
   saddress[0] = '\0';
   sdata[0] = '\0';
   sinstruction[0] = '\0';
   soperands[0] = '\0';
   cpuDisOpcode(cpuGetPC(), saddress, sdata, sinstruction, soperands);
-  fprintf(BUSLOG, "A7:%.6X SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetAReg(7), cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
+  fprintf(CPUINSTRUCTIONLOG, "A7:%.6X SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetAReg(7), cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
 }
 
 void cpuIntegrationExceptionLogging(STR *description, ULO original_pc, UWO opcode)
 {
-  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
-  fprintf(BUSLOG, "%.5d: %s for opcode %.4X at PC %.8X from PC %.8X\n", cpuEvent.cycle, description, opcode, original_pc, cpuGetPC());
+  if (cpu_disable_instruction_log) return;
+  cpuInstructionLogOpen();
+
+  cpuIntegrationPrintBusCycle();
+  fprintf(CPUINSTRUCTIONLOG, "%s for opcode %.4X at PC %.8X from PC %.8X\n", description, opcode, original_pc, cpuGetPC());
 }
 
 STR *cpuIntegrationGetInterruptName(ULO chip_irq_no)
@@ -285,12 +302,14 @@ STR *cpuIntegrationGetInterruptName(ULO chip_irq_no)
 
 void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
 {
-  if (BUSLOG == NULL) BUSLOG = fopen("buslog.txt", "w");
+  if (cpu_disable_instruction_log) return;
+  cpuInstructionLogOpen();
+
   cpuIntegrationPrintBusCycle();
-  fprintf(BUSLOG, "Irq %d to %.6X (%s)\n", level, vector_address, cpuIntegrationGetInterruptName(cpuIntegrationGetIrqSource()));
+  fprintf(CPUINSTRUCTIONLOG, "Irq %d to %.6X (%s)\n", level, vector_address, cpuIntegrationGetInterruptName(cpuIntegrationGetIrqSource()));
 }
 
-#endif ENABLE_INSTRUCTION_LOGGING
+#endif
 
 void cpuIntegrationExecuteInstructionEventHandler68000Fast(void)
 {
@@ -364,7 +383,7 @@ void cpuIntegrationSetDefaultConfig(void)
   cpuSetMidInstructionExceptionFunc(cpuIntegrationMidInstructionExceptionFunc);
   cpuSetResetExceptionFunc(cpuIntegrationResetExceptionFunc);
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
   cpuSetInstructionLoggingFunc(cpuIntegrationInstructionLogging);
   cpuSetExceptionLoggingFunc(cpuIntegrationExceptionLogging);
   cpuSetInterruptLoggingFunc(cpuIntegrationInterruptLogging);
@@ -413,10 +432,10 @@ void cpuIntegrationStartup(void)
 {
   cpuStartup();
   cpuIntegrationSetDefaultConfig();
+  cpuCreateMulTimeTables();
 }
-//extern void cpuProfileWrite();
 
 void cpuIntegrationShutdown(void)
 {
-//  cpuProfileWrite();
+  cpuProfileWrite();
 }

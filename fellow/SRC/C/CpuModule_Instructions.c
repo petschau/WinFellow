@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.9 2012-07-30 16:58:02 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.10 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -739,6 +739,7 @@ static void cpuBsrL()
     cpuSetAReg(7, cpuGetAReg(7) - 4);
     memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
     cpuInitializeFromNewPC(tmp_pc + offset);
+    cpuSetInstructionTime(4);
   }
 }
 
@@ -1045,23 +1046,62 @@ static void cpuMulL(ULO src1, UWO extension)
   cpuSetInstructionTime(4);
 }
 
+UBY cpuMuluTime[256];
+UBY cpuMulsTime[512];
+
+void cpuCreateMuluTimeTable(void)
+{
+  ULO i, j, k;
+
+  for (i = 0; i < 256; i++)
+  {
+    j = 0;
+    for (k = 0; k < 8; k++)
+      if (((i>>k) & 1) == 1)
+	j++;
+    cpuMuluTime[i] = (UBY) j*2;
+  }
+}
+
+void cpuCreateMulsTimeTable(void)
+{
+  ULO i, j, k;
+
+  for (i = 0; i < 512; i++)
+  {
+    j = 0;
+    for (k = 0; k < 9; k++)
+      if ((((i>>k) & 3) == 1) || (((i>>k) & 3) == 2))
+	j++; 
+    cpuMulsTime[i] = (UBY) j*2;
+  }
+}
+
+void cpuCreateMulTimeTables(void)
+{
+  cpuCreateMuluTimeTable();
+  cpuCreateMulsTimeTable();
+}
+
 /// <summary>
 /// Muls.w
 /// </summary>
-static ULO cpuMulsW(UWO src2, UWO src1)
+static ULO cpuMulsW(UWO src2, UWO src1, ULO eatime)
 {
   ULO res = (ULO)(((LON)(WOR)src2)*((LON)(WOR)src1));
   cpuSetFlagsNZ00NewL(res);
+  cpuSetInstructionTime(38 + eatime + cpuMulsTime[(src1 << 1) & 0x1ff] + cpuMulsTime[src1 >> 7]);
   return res;
 }
 
 /// <summary>
 /// Mulu.w
 /// </summary>
-static ULO cpuMuluW(UWO src2, UWO src1)
+static ULO cpuMuluW(UWO src2, UWO src1, ULO eatime)
 {
   ULO res = ((ULO)src2)*((ULO)src1);
   cpuSetFlagsNZ00NewL(res);
+  cpuSetInstructionTime(38 + eatime + cpuMuluTime[src1 & 0xff] + cpuMuluTime[src1 >> 8]);
   return res;
 }
 
@@ -1807,7 +1847,7 @@ static void cpuStop(UWO flags)
   {
     cpuSetStop(TRUE);
     cpuUpdateSr(flags);
-    cpuSetInstructionTime(16);
+    cpuSetInstructionTime(4);
   }
   else
   {
@@ -1905,7 +1945,7 @@ static void cpuLinkW(ULO reg)
   memoryWriteLong(cpuGetAReg(reg), cpuGetAReg(7));
   cpuSetAReg(reg, cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + disp);
-  cpuSetInstructionTime(18);
+  cpuSetInstructionTime(16);
 }
 
 /// <summary>
@@ -2987,6 +3027,7 @@ static void cpuPackReg(ULO yreg, ULO xreg)
   UWO adjustment = cpuGetNextWord();
   UWO src = cpuGetDRegWord(xreg) + adjustment;
   cpuSetDRegByte(yreg, (UBY) (((src >> 4) & 0xf0) | (src & 0xf)));
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -2999,6 +3040,7 @@ static void cpuPackEa(ULO yreg, ULO xreg)
   UBY b2 = memoryReadByte(cpuEA04(xreg, 1));
   UWO result = ((((UWO)b1) << 8) | (UWO) b2) + adjustment;
   memoryWriteByte((UBY) (((result >> 4) & 0xf0) | (result & 0xf)), cpuEA04(yreg, 1));
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3010,6 +3052,7 @@ static void cpuUnpkReg(ULO yreg, ULO xreg)
   UBY b1 = cpuGetDRegByte(xreg);
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   cpuSetDRegWord(yreg, result);
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3022,6 +3065,7 @@ static void cpuUnpkEa(ULO yreg, ULO xreg)
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   memoryWriteByte((UBY) (result >> 8), cpuEA04(yreg, 1));
   memoryWriteByte((UBY) result, cpuEA04(yreg, 1));
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3664,14 +3708,14 @@ ULO cpuExecuteInstruction(void)
     ULO oldSr = cpuGetSR();
     UWO opcode;
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
     cpuCallInstructionLoggingFunc();
 #endif
 
     cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
     opcode = cpuGetNextWord();
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
     cpuSetCurrentOpcode(opcode);
 #endif
 

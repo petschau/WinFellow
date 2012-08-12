@@ -3,6 +3,7 @@
 
 // This header file defines the internal interfaces of the CPU module.
 extern void cpuMakeOpcodeTableForModel(void);
+extern void cpuCreateMulTimeTables(void);
 
 // StackFrameGen
 extern void cpuStackFrameGenerate(UWO vector_no, ULO pc);
@@ -55,12 +56,14 @@ extern ULO cpuGetInstructionTime(void);
 extern void cpuSetOriginalPC(ULO pc);
 extern ULO cpuGetOriginalPC(void);
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
 extern void cpuSetCurrentOpcode(UWO opcode);
 extern UWO cpuGetCurrentOpcode(void);
 
 #endif
+
+extern void cpuProfileWrite(void);
 
 extern void cpuSetModelMask(UBY model_mask);
 extern UBY cpuGetModelMask(void);
@@ -153,7 +156,7 @@ extern BOOLE cpuCalculateConditionCode15(void);
 extern BOOLE cpuCalculateConditionCode(ULO cc);
 
 // Logging
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 extern void cpuCallInstructionLoggingFunc(void);
 extern void cpuCallExceptionLoggingFunc(STR *description, ULO original_pc, UWO opcode);
 extern void cpuCallInterruptLoggingFunc(ULO level, ULO vector_address);

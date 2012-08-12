@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Interrupts.c,v 1.4 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuModule_Interrupts.c,v 1.5 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 interrupt handling                                                */
@@ -86,7 +86,7 @@ void cpuSetUpInterrupt(void)
   cpuSetSR(cpuGetSR() | 0x2000);  // Set supervisor mode
   cpuSetSR(cpuGetSR() | (UWO)(cpuGetIrqLevel() << 8)); // Set interrupt level
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
   cpuCallInterruptLoggingFunc(cpuGetIrqLevel(), cpuGetIrqAddress());
 #endif
 

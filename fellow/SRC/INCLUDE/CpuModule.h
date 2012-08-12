@@ -3,7 +3,7 @@
 
 // This header file defines the internal interfaces of the CPU module.
 
-//#define ENABLE_INSTRUCTION_LOGGING
+#define CPU_INSTRUCTION_LOGGING
 
 // Function to check if there are any external interrupt sources wanting to issue interrupts
 typedef BOOLE (*cpuCheckPendingInterruptsFunc)(void);
@@ -13,7 +13,7 @@ extern void cpuSetUpInterrupt(void);
 extern void cpuInitializeFromNewPC(ULO new_pc);
 
 // Logging interface
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
 typedef void (*cpuInstructionLoggingFunc)(void);
 extern void cpuSetInstructionLoggingFunc(cpuInstructionLoggingFunc func);

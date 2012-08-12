@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.h,v 1.4 2008-02-21 00:06:46 peschau Exp $ */
+/* @(#) $Id: caps_win32.h,v 1.5 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,11 +29,6 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "defs.h"
-
-/* the following definitions are needed by the Comtype.h include file */
-typedef UBY BYTE;
-typedef UWO WORD;
-typedef ULO DWORD;
 
 /* function prototypes */
 

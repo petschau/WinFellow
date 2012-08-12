@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Exceptions.c,v 1.4 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: CpuModule_Exceptions.c,v 1.5 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k exception handling functions                                    */
@@ -98,7 +98,7 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
 {
   ULO vector_address;
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
   cpuCallExceptionLoggingFunc(cpuGetExceptionName(vector_offset), cpuGetOriginalPC(), cpuGetCurrentOpcode());
 #endif
 

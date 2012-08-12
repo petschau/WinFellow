@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Logging.c,v 1.2 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: CpuModule_Logging.c,v 1.3 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k logging functions                                               */
@@ -28,7 +28,7 @@
 
 #include "CpuModule.h"
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
 /* Function for logging the intruction execution */
 static cpuInstructionLoggingFunc cpu_instruction_logging_func;
