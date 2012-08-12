@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.8 2012-07-30 16:58:02 peschau Exp $ */
+/* @(#) $Id: CpuModule_InternalState.c,v 1.9 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -59,7 +59,7 @@ static ULO cpu_model_minor;
 static UBY cpu_model_mask;
 
 /* For exception handling */
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
 static UWO cpu_current_opcode;
 
@@ -198,7 +198,7 @@ ULO cpuGetInstructionTime(void) {return cpu_instruction_time;}
 void cpuSetOriginalPC(ULO pc) {cpu_original_pc = pc;}
 ULO cpuGetOriginalPC(void) {return cpu_original_pc;}
 
-#ifdef ENABLE_INSTRUCTION_LOGGING
+#ifdef CPU_INSTRUCTION_LOGGING
 
 void cpuSetCurrentOpcode(UWO opcode) {cpu_current_opcode = opcode;}
 UWO cpuGetCurrentOpcode(void) {return cpu_current_opcode;}

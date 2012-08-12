@@ -1,4 +1,4 @@
-/* @(#) $Id: 68kgenerate.c,v 1.10 2012-07-30 16:58:02 peschau Exp $          */
+/* @(#) $Id: 68kgenerate.c,v 1.11 2012-08-12 16:51:02 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -53,17 +53,20 @@ typedef struct
   int dis_func_no;
 } cpu_data;
 
-unsigned int cg_ea_time[3][12] = {{  0,  0,  4,  4,  6,  8, 10,  8, 12,  8, 10,  4},
-                                  {  0,  0,  4,  4,  6,  8, 10,  8, 12,  8, 10,  4},
-			          {  0,  0,  8,  8, 10, 12, 14, 12, 16, 12, 14,  8}};
+unsigned int cg_ea_time[3][12] =  {{  0,  0,  4,  4,  6,  8, 10,  8, 12,  8, 10,  4},
+                                   {  0,  0,  4,  4,  6,  8, 10,  8, 12,  8, 10,  4},
+			           {  0,  0,  8,  8, 10, 12, 14, 12, 16, 12, 14,  8}};
 
-unsigned int cg_lea_time[12] =    {  0,  0,  4,  0,  0,  8, 12,  8, 12,  8, 12,  0};
-unsigned int cg_pea_time[12] =    {  0,  0, 12,  0,  0, 16, 20, 16, 20, 16, 20,  0};
-unsigned int cg_jsr_time[12] =    {  0,  0, 16,  0,  0, 18, 22, 18, 20, 18, 22,  0};
-unsigned int cg_jmp_time[12] =    {  0,  0,  8,  0,  0, 10, 14, 10, 12, 10, 14,  0};
+unsigned int cg_lea_time[12] =     {  0,  0,  4,  0,  0,  8, 12,  8, 12,  8, 12,  0};
+unsigned int cg_pea_time[12] =     {  0,  0, 12,  0,  0, 16, 20, 16, 20, 16, 20,  0};
+unsigned int cg_jsr_time[12] =     {  0,  0, 16,  0,  0, 18, 22, 18, 20, 18, 22,  0};
+unsigned int cg_jmp_time[12] =     {  0,  0,  8,  0,  0, 10, 14, 10, 12, 10, 14,  0};
+unsigned int cg_movemtomem_time[12] = {  0,  0,  8,  0,  0, 12, 14, 12, 16,  0,  0,  0};
+unsigned int cg_movemtoreg_time[12] = {  0,  0, 12,  0,  0, 16, 18, 16, 20, 16, 18,  0};
 
-unsigned int cg_ea_memory[12] =   {  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1};
-unsigned int cg_ea_direct[12] =   {  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+unsigned int cg_ea_memory[12] =    {  0,  0,  1,  1,  1,  1,  1,  1,  1,  1,  1,  1};
+unsigned int cg_ea_direct[12] =    {  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0};
+unsigned int cg_ea_immediate[12] = {  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1};
 
 int cpu_profile = 0;
 
@@ -127,10 +130,19 @@ void cgProfileOut(char *name)
 
 void cgProfileLogHeader()
 {
-  if (!cpu_profile) return;
-  fprintf(profilef, "void cpuProfileWrite()\n");
+  fprintf(profilef, "#include \"fileops.h\"\n");
+  fprintf(profilef, "void cpuProfileWrite(void)\n");
   fprintf(profilef, "{\n");
-  fprintf(profilef, "\tFILE *F = fopen(\"cpuprofile.txt\", \"w\");\n");
+
+  if (!cpu_profile)
+  {
+    return;
+  }
+
+  fprintf(profilef, "\tchar filename[MAX_PATH];\n");
+  fprintf(profilef, "\tFILE *F = NULL;\n");
+  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"cpuprofile.txt\");\n");
+  fprintf(profilef, "\tF = fopen(filename, \"w\");\n");
   fprintf(profilef, "\tif (F != NULL)\n");
   fprintf(profilef, "\t{\n");
   fprintf(profilef, "\t\tfprintf(F, \"NAME\tTOTAL_CYCLES\tCALL_COUNT\tCYCLES_PER_CALL\\n\");\n");
@@ -138,7 +150,11 @@ void cgProfileLogHeader()
 
 void cgProfileLogFooter()
 {
-  if (!cpu_profile) return;
+  if (!cpu_profile)
+  {
+    fprintf(profilef, "}\n");
+    return;
+  }
   fprintf(profilef, "\t\tfclose(F);\n");
   fprintf(profilef, "\t}\n");
   fprintf(profilef, "}\n");
@@ -242,6 +258,11 @@ void cgMakeInstructionTime(unsigned int time_cpu_data_index)
 void cgMakeInstructionTimeAbs(unsigned int cycles)
 {
   fprintf(codef, "\tcpuSetInstructionTime(%d);\n", cycles);
+}
+
+void cgMakeInstructionTimeAbsExtraAdd(unsigned int cycles, char *extra_add)
+{
+  fprintf(codef, "\tcpuSetInstructionTime(%d%s);\n", cycles, extra_add);
 }
 
 void cgCopyFunctionName(char *fname, char *name, char *templ_name)
@@ -369,7 +390,7 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   }
 
   // Create fetch statement to read the source value.
-  if (regtype == 'I' || eano == 11)
+  if (regtype == 'I' || cg_ea_immediate[eano])
   {
     // Read source value from an immediate word.
     fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
@@ -438,7 +459,7 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   fprintf(codef, "\t%s dst = ", (eano == 1) ? "ULO" : cgSize(size));
 
   // Fetch operand
-  if (eano == 11)
+  if (cg_ea_immediate[eano])
   {
     fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
   }
@@ -490,6 +511,224 @@ void cgStoreDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
 }
 
 int totalcount = 0;
+
+unsigned int cgGetAddqSubqTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles;
+  if (eano == 1)
+  {
+    // Address register is always 32-bit
+    cycles = 8;
+  }
+  else
+  {
+    if (size <= 2)
+    {
+      if (eano == 0) cycles = 4;
+      else cycles = 8;
+    }
+    else
+    {
+      if (eano == 0) cycles = 8;
+      else cycles = 12;
+    }	
+  }
+  return cycles + cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+}
+
+unsigned int cgGetAddaSubaTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles;
+  if (size <= 2)
+  {
+    // Address register is always 32-bit
+    cycles = 8;
+  }
+  else
+  {
+    cycles = 6;
+    if (cg_ea_direct[eano] || cg_ea_immediate[eano])
+    {
+      // Increase to 8 if ea is direct or immediate
+      cycles += 2;
+    }
+  }
+  return cycles + cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+}
+
+unsigned int cgGetAddSubOrAndTime(unsigned int size, unsigned int eano, int ea_is_dst)
+{
+  unsigned int cycles = 4 + cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  if (size <= 2)
+  {
+    if (ea_is_dst && cg_ea_memory[eano]) cycles += 4;
+  }
+  else
+  {
+    // Size is long
+    if (!ea_is_dst)
+    {
+      cycles += 2;
+      if (cg_ea_direct[eano] || cg_ea_immediate[eano]) cycles += 2;
+    }
+    else
+    {
+      if (cg_ea_memory[eano]) cycles += 8;
+    }
+  }
+  return cycles;
+}
+
+unsigned int cgGetAddiSubiOriEoriTime(unsigned int size, unsigned int eano, char regtype)
+{
+  unsigned int cycles;
+  if (regtype == 'G')
+  {
+    // CCR/SR
+    cycles = 20;
+  }
+  else if (size <= 2)
+  {
+    if (eano <= 1) cycles = 8;
+    else cycles = 12;
+  }
+  else
+  {
+    if (eano <= 1) cycles = 16;
+    else cycles = 20;
+  }
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetCmpiTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles;
+  if (size <= 2)
+  {
+    cycles = 8;
+  }
+  else
+  {
+    if (eano <= 1) cycles = 14;
+    else cycles = 12;
+  }
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetAndiTime(unsigned int size, unsigned int eano, char regtype)
+{
+  unsigned int cycles = 0;
+  if (regtype == 'G')
+  {
+    // CCR/SR
+    cycles = 20;
+  }
+  else if (size <= 2)
+  {
+    if (eano <= 1) cycles = 8;
+    else cycles = 12;
+  }
+  else
+  {
+    if (eano <= 1) cycles = 14;
+    else cycles = 20;
+  }
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetEorTime(unsigned int size, unsigned int eano, int ea_is_dst)
+{
+  unsigned int cycles = 0;
+  if (size <= 2)
+  {
+    cycles = 4;
+    if (!ea_is_dst && cg_ea_memory[eano]) cycles += 4;
+  }
+  else 
+  {
+    cycles = 8;
+    if (!ea_is_dst && cg_ea_memory[eano]) cycles += 4;
+  }
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetCmpaTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles = 6;
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetCmpTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles = 0;
+  if (size <= 2) cycles = 4;
+  else cycles = 6;
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetChkTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles = 10;
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetBsetBchgTime(unsigned int size, unsigned int eano, char regtype)
+{
+  unsigned int cycles = 0;
+  if (size <= 2) cycles = 6;
+  else cycles = 10;
+
+  if (regtype != 'D') cycles += 2;
+
+  // There is also a run-time addition of 2 cycles if bit-no >= 16 and the bit-no is in a register
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetBclrTime(unsigned int size, unsigned int eano)
+{
+  unsigned int cycles = 0;
+  if (size <= 2)
+  {
+    cycles = 8;
+  }
+  else
+  {
+    cycles = 12;
+  }
+  // There is also a run-time addition of 2 cycles if bit-no >= 16 and the bit-no is in a register
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetBtstTime(unsigned int size, unsigned int eano, char regtype)
+{
+  unsigned int cycles = 0;
+  if (size <= 2)
+  {
+    if (regtype == 'D') cycles = 6;
+    else cycles = 4;
+  }
+  else
+  {
+    if (regtype == 'D') cycles = 10;
+    else cycles = 8;
+  }
+  cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
+  return cycles;
+}
+
+unsigned int cgGetLeaTime(unsigned int eano)
+{
+  return cg_lea_time[eano];
+}
 
 // ADD ADDA ADDI ADDQ
 // SUB SUBA SUBI SUBQ
@@ -569,7 +808,10 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	{
 	  fprintf(codef, "\tcpuSetAReg(opc_data[%d], dstea);\n", reg_cpu_data_index);
 	}
-	else if (regtype == 'C' || (stricmp(i.instruction_name, "CMPA") == 0) || (stricmp(i.instruction_name, "CMPI") == 0) || (stricmp(i.instruction_name, "BTST") == 0)) 
+	else if (regtype == 'C' || 
+	         (stricmp(i.instruction_name, "CMPA") == 0) || 
+		 (stricmp(i.instruction_name, "CMPI") == 0) || 
+		 (stricmp(i.instruction_name, "BTST") == 0)) 
 	{
 	  // This instruction does not produce a result value.
 	  fprintf(codef, "\t%s(dst, src);\n", i.function);
@@ -579,6 +821,12 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  if (stricmp(i.instruction_name, "DIVL") == 0)
 	  {
 	    fprintf(codef, "\t%s(src, ext);\n", i.function);
+	  }
+	  else if ((stricmp(i.instruction_name, "MULU") == 0) ||
+		   (stricmp(i.instruction_name, "MULS") == 0))
+	  {
+	    fprintf(codef, "\tULO res = %s(dst, src, %d);\n", i.function, cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
+	    cgStoreDst(0, reg_cpu_data_index, 4, "res");
 	  }
 	  else
 	  {
@@ -591,7 +839,91 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  fprintf(codef, "\tdst = %s(dst, src);\n", i.function);
 	  cgStoreDst((ea_is_dst) ? eano : ((regtype == 'A') ? 1 : 0), (ea_is_dst) ? eareg_cpu_data_index : reg_cpu_data_index, size, "dst");
 	}
-	cgMakeInstructionTime(time_cpu_data_index);
+
+	if ((stricmp(i.instruction_name, "ADDQ") == 0) ||
+	    (stricmp(i.instruction_name, "SUBQ") == 0))
+	{
+	  cgMakeInstructionTimeAbs(cgGetAddqSubqTime(size, eano));
+	}
+	else if ((stricmp(i.instruction_name, "ADDA") == 0) ||
+		 (stricmp(i.instruction_name, "SUBA") == 0))
+	{
+	  cgMakeInstructionTimeAbs(cgGetAddaSubaTime(size, eano));
+	}
+	else if ((stricmp(i.instruction_name, "ADD") == 0) ||
+		 (stricmp(i.instruction_name, "SUB") == 0) ||
+		 (stricmp(i.instruction_name, "OR") == 0) ||
+		 (stricmp(i.instruction_name, "AND") == 0))
+	{
+	  cgMakeInstructionTimeAbs(cgGetAddSubOrAndTime(size, eano, ea_is_dst));
+	}
+	else if (stricmp(i.instruction_name, "EOR") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetEorTime(size, eano, ea_is_dst));
+	}
+	else if (stricmp(i.instruction_name, "CHK") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetChkTime(size, eano));
+	}
+	else if (stricmp(i.instruction_name, "CMPA") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetCmpaTime(size, eano));
+	}
+	else if (stricmp(i.instruction_name, "CMP") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetCmpTime(size, eano));
+	}
+	else if ((stricmp(i.instruction_name, "ADDI") == 0) ||
+		 (stricmp(i.instruction_name, "SUBI") == 0) ||
+		 (stricmp(i.instruction_name, "ORI") == 0) ||
+		 (stricmp(i.instruction_name, "EORI") == 0))
+	{
+	  cgMakeInstructionTimeAbs(cgGetAddiSubiOriEoriTime(size, eano, regtype));
+	}
+	else if (stricmp(i.instruction_name, "CMPI") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetCmpiTime(size, eano));
+	}
+	else if (stricmp(i.instruction_name, "ANDI") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetAndiTime(size, eano, regtype));
+	}
+	else if ((stricmp(i.instruction_name, "BSET") == 0) ||
+		 (stricmp(i.instruction_name, "BCHG") == 0))
+	{
+	  if (size == 4 && regtype == 'D')
+	  {
+	    cgMakeInstructionTimeAbsExtraAdd(cgGetBsetBchgTime(size, eano, regtype), " + ((src >= 16) ? 2 : 0)");
+	  }
+	  else
+	  {
+	    cgMakeInstructionTimeAbs(cgGetBsetBchgTime(size, eano, regtype));
+	  }
+	}
+	else if (stricmp(i.instruction_name, "BCLR") == 0)
+	{
+	  if (size == 4 && regtype == 'D')
+	  {
+	    cgMakeInstructionTimeAbsExtraAdd(cgGetBclrTime(size, eano), " + ((src >= 16) ? 2 : 0)");
+	  }
+	  else
+	  {
+	    cgMakeInstructionTimeAbs(cgGetBclrTime(size, eano));
+	  }
+	}
+	else if (stricmp(i.instruction_name, "BTST") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetBtstTime(size, eano, regtype));
+	}
+	else if (stricmp(i.instruction_name, "LEA") == 0)
+	{
+	  cgMakeInstructionTimeAbs(cgGetLeaTime(eano));
+	}
+	else if ((stricmp(i.instruction_name, "MULU") != 0) &&
+		 (stricmp(i.instruction_name, "MULS") != 0))
+	{
+	  cgMakeInstructionTime(time_cpu_data_index);
+	}
 	cgMakeFunctionFooter(fname, templ_name);
 
 	// Cycle the registers to set function ptr, data/reg and eareg for each opcode.
@@ -604,182 +936,20 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	    cgCopyFunctionName(fname, cpudata[opcode2].name, templ_name);
 	    cgSetData(opcode2, eareg_cpu_data_index, (eano <7) ? eareg : 0);
 	    cgSetData(opcode2, reg_cpu_data_index, (regtype == 'Q' || regtype == 'B') ? ((reg == 0) ? 8 : reg) : reg);
-
-	    if ((stricmp(i.instruction_name, "ADDA") == 0) ||
-		(stricmp(i.instruction_name, "SUBA") == 0))
-	    {
-	      if (size <= 2) cycles = 8;
-	      else
-	      {
-		cycles = 6;
-		if (cg_ea_direct[eano]) cycles += 2;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if ((stricmp(i.instruction_name, "ADDQ") == 0) ||
-		     (stricmp(i.instruction_name, "SUBQ") == 0))
-	    {
-	      if (eano == 1) cycles = 8;
-	      else
-	      {
-		if (size <= 2)
-		{
-		  if (eano == 0) cycles = 4;
-		  else cycles = 8;
-		}
-		else
-		{
-		  if (eano == 0) cycles = 8;
-		  else cycles = 12;
-		}	
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if ((stricmp(i.instruction_name, "ADD") == 0) ||
-		     (stricmp(i.instruction_name, "SUB") == 0) ||
-		     (stricmp(i.instruction_name, "OR") == 0) ||
-		     (stricmp(i.instruction_name, "AND") == 0))
-	    {
-	      cycles = 4 + cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	      if (size <= 2)
-	      {
-		if (ea_is_dst && cg_ea_memory[eano]) cycles += 4;
-	      }
-	      else
-	      {
-		if (!ea_is_dst)
-		{
-		  cycles += 2;
-		  if (cg_ea_direct[eano]) cycles += 2;
-		}
-		else
-		{
-		  if (cg_ea_memory[eano]) cycles += 8;
-		}
-	      }
-	    }
-	    else if ((stricmp(i.instruction_name, "ADDI") == 0) ||
-		     (stricmp(i.instruction_name, "SUBI") == 0) ||
-		     (stricmp(i.instruction_name, "ORI") == 0) ||
-		     (stricmp(i.instruction_name, "EORI") == 0) ||
-		     (stricmp(i.instruction_name, "ANDI") == 0))
-	    {
-	      if (regtype == 'G') cycles = 20;
-	      else if (size <= 2)
-	      {
-		if (eano == 0) cycles = 8;
-		else cycles = 12;
-	      }
-	      else
-	      {
-		if (eano == 0) cycles = 16;
-		else cycles = 20;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "EOR") == 0)
-	    {
-	      if (size <= 2)
-	      {
-		cycles = 4;
-		if (!ea_is_dst && cg_ea_memory[eano]) cycles += 4;
-	      }
-	      else 
-	      {
-		cycles = 8;
-		if (!ea_is_dst && cg_ea_memory[eano]) cycles += 4;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "CHK") == 0)
-	    {
-	      cycles = 10;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "CMPA") == 0)
-	    {
-	      cycles = 6;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "CMP") == 0)
-	    {
-	      if (size <= 2) cycles = 4;
-	      else cycles = 6;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "CMPI") == 0)
-	    {
-	      if (size <= 2) cycles = 8;
-	      else
-	      {
-		if (eano <= 1) cycles = 14;
-		else cycles = 12;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "MULS") == 0)
+	    if (stricmp(i.instruction_name, "DIVS") == 0)
 	    {
 	      cycles = 70;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "MULU") == 0)
-	    {
-	      cycles = 70;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "DIVS") == 0)
-	    {
-	      cycles = 158;
 	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
 	    }
 	    else if (stricmp(i.instruction_name, "DIVU") == 0)
 	    {
-	      cycles = 140;
+	      cycles = 70;
 	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
 	    }
 	    else if (stricmp(i.instruction_name, "DIVL") == 0)
 	    {
 	      cycles = 4;
 	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if ((stricmp(i.instruction_name, "BCHG") == 0) ||
-		     (stricmp(i.instruction_name, "BSET") == 0))
-	    {
-	      if (size <= 2) cycles = 8;
-	      else cycles = 12;
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "BTST") == 0)
-	    {
-	      if (size <= 2)
-	      {
-		if (regtype == 'D') cycles = 6;
-		else cycles = 4;
-	      }
-	      else
-	      {
-		if (regtype == 'D') cycles = 10;
-		else cycles = 8;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "BCLR") == 0)
-	    {
-	      if (size <= 2)
-	      {
-		if (regtype == 'D') cycles = 10;
-		else cycles = 8;
-	      }
-	      else
-	      {
-		if (regtype == 'D') cycles = 14;
-		else cycles = 12;
-	      }
-	      cycles += cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)];
-	    }
-	    else if (stricmp(i.instruction_name, "LEA") == 0)
-	    {
-	      cycles = cg_lea_time[eano];
 	    }
 	    cgSetData(opcode2, time_cpu_data_index, cycles);
 	    cgSetModelMask(opcode2, i.cpu_model_mask);
@@ -791,6 +961,66 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
     }
   }
   return icount;
+}
+
+unsigned int move_time[3][12][9] = {
+  { // Byte
+  { 4, 4, 8, 8, 8,12,14,12,16},
+  { 4, 4, 8, 8, 8,12,14,12,16},
+  { 8, 8,12,12,12,16,18,16,20},
+  
+  { 8, 8,12,12,12,16,18,16,20},
+  {10,10,14,14,14,18,20,18,22},
+  {12,12,16,16,16,20,22,20,24},
+  
+  {14,14,18,18,18,22,24,22,26},
+  {12,12,16,16,16,20,22,20,24},
+  {16,16,20,20,20,24,26,24,28},
+  
+  {12,12,16,16,16,20,22,20,24},
+  {14,14,18,18,18,22,24,22,26},
+  { 8, 8,12,12,12,16,18,16,20}
+  },
+  { // Word
+  { 4, 4, 8, 8, 8,12,14,12,16},
+  { 4, 4, 8, 8, 8,12,14,12,16},
+  { 8, 8,12,12,12,16,18,16,20},
+  
+  { 8, 8,12,12,12,16,18,16,20},
+  {10,10,14,14,14,18,20,18,22},
+  {12,12,16,16,16,20,22,20,24},
+  
+  {14,14,18,18,18,22,24,22,26},
+  {12,12,16,16,16,20,22,20,24},
+  {16,16,20,20,20,24,26,24,28},
+  
+  {12,12,16,16,16,20,22,20,24},
+  {14,14,18,18,18,22,24,22,26},
+  { 8, 8,12,12,12,16,18,16,20}
+  },
+  { // Long
+  { 4, 4,12,12,12,16,18,16,20},
+  { 4, 4,12,12,12,16,18,16,20},
+  {12,12,20,20,20,24,26,24,28},
+  
+  {12,12,20,20,20,24,26,24,28},
+  {14,14,22,22,22,26,28,26,30},
+  {16,16,24,24,24,28,30,28,32},
+  
+  {18,18,26,26,26,30,32,30,34},
+  {16,16,24,24,24,28,30,28,32},
+  {20,20,28,28,28,32,34,32,36},
+  
+  {16,16,24,24,24,28,30,28,32},
+  {18,18,26,26,26,30,32,30,34},
+  {12,12,20,20,20,24,26,24,28}
+  }
+};
+
+unsigned int cgGetMoveTime(unsigned int size, unsigned int srceano, unsigned int dsteano)
+{
+  unsigned int time = move_time[cgGetSizeCycleIndex(size)][srceano][dsteano];
+  return time;
 }
 
 // MOVE
@@ -836,7 +1066,7 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (ULO)(LON)(WOR)src);\n", dstreg_cpu_data_index);
 	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
 	  }
-	  cgMakeInstructionTime(time_cpu_data_index);
+	  cgMakeInstructionTimeAbs(cgGetMoveTime(size, srceano, dsteano));
 	  cgMakeFunctionFooter(fname, templ_name);
 
 	  // Cycle the registers to set function ptr, data/reg and eareg for each opcode.
@@ -848,7 +1078,6 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	      cgCopyFunctionName(fname, cpudata[opcode2].name, templ_name);
 	      cgSetData(opcode2, srcreg_cpu_data_index, (srceano <7) ? srceareg : 0);
 	      cgSetData(opcode2, dstreg_cpu_data_index, (dsteano <7) ? dsteareg : 0);
-	      cgSetData(opcode2, time_cpu_data_index, 4 + cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(srceano, srceareg)] + cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(dsteano, dsteareg)]);
 	      cgSetModelMask(opcode2, i.cpu_model_mask);
 	      cgSetDisassemblyFunction(opcode2, i.disasm_func_no);
 	      totalcount++;
@@ -951,7 +1180,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
 	if (regtype == 'S')
-	  fprintf(codef, "\t%s(regs, dstea, opc_data[%d]);\n", i.function, eareg_cpu_data_index, eatime_cpu_data_index);
+	  fprintf(codef, "\t%s(regs, dstea, opc_data[%d]);\n", i.function, eatime_cpu_data_index);
 	else
 	  fprintf(codef, "\t%s(regs, opc_data[%d]);\n", i.function, eareg_cpu_data_index);
       }
@@ -1090,7 +1319,10 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	  if (stricmp(i.instruction_name, "MOVEM") == 0 && regtype == 'S')
 	  {
 	    // movem adds this to the time taken to move registers.
-	    cgSetData(opcode2, eatime_cpu_data_index, cg_ea_time[cgGetSizeCycleIndex(size)][cgGetEaNo(eano, eareg)]);
+	    if (stricmp(i.description, "RxToEa") == 0)
+	      cgSetData(opcode2, eatime_cpu_data_index, cg_movemtomem_time[cgGetEaNo(eano, eareg)]);
+	    else
+	      cgSetData(opcode2, eatime_cpu_data_index, cg_movemtoreg_time[cgGetEaNo(eano, eareg)]);
 	  }
 	  cgSetModelMask(opcode2, i.cpu_model_mask);
 	  cgSetDisassemblyFunction(opcode2, i.disasm_func_no);
@@ -1192,7 +1424,7 @@ unsigned int cgAddx(cpu_data *cpudata, cpu_instruction_info i)
   return icount;
 }
 
-// MOVEP, PACK, UNPK
+// MOVEP, PACK (020), UNPK (020)
 unsigned int cgMovep(cpu_data *cpudata, cpu_instruction_info i)
 {
   char *templ_name = "movep";
@@ -1388,7 +1620,9 @@ unsigned int cgBCC(cpu_data *cpudata, cpu_instruction_info i)
 	cgSetDisassemblyFunction(opcode2, i.disasm_func_no);
       }
   }
-  else if (size == 1 && ((stricmp(i.instruction_name, "BCCB") == 0) || (strnicmp(i.instruction_name, "BRA", 3) == 0) || (strnicmp(i.instruction_name, "BSR", 3) == 0)))
+  else if (size == 1 && ((stricmp(i.instruction_name, "BCCB") == 0) || 
+		         (strnicmp(i.instruction_name, "BRA", 3) == 0) || 
+			 (strnicmp(i.instruction_name, "BSR", 3) == 0)))
   {
     // BRAB, BSRB, BCCB (offset 1 - 254)
     for (offset = 1; offset < 255; ++offset)

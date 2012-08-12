@@ -30,7 +30,6 @@
 
 /*#define TSC_PROFILING*/
 
-
 /* Maximum values for memory, don't change */
 
 #define CHIPMEM 0x200000
@@ -42,11 +41,11 @@
 
 typedef unsigned char UBY;
 typedef unsigned short int UWO;
-typedef unsigned long ULO;
+typedef unsigned int ULO;
 typedef unsigned FELLOW_LONG_LONG ULL;
 typedef signed char BYT;
 typedef signed short int WOR;
-typedef signed long LON;
+typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;
 #define FALSE 0

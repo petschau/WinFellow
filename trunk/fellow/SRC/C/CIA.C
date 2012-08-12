@@ -1,4 +1,4 @@
-/* @(#) $Id: CIA.C,v 1.9 2012-07-14 18:50:50 peschau Exp $ */
+/* @(#) $Id: CIA.C,v 1.10 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Cia emulation                                                           */
@@ -231,7 +231,7 @@ void ciaUpdateTimersEOF(void)
   }
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    if ((ciaEvent.cycle -= BUS_CYCLE_PER_FRAME) < 0)
+    if (((LON)(ciaEvent.cycle -= BUS_CYCLE_PER_FRAME)) < 0)
       ciaEvent.cycle = 0;
     busRemoveEvent(&ciaEvent);
     busInsertEvent(&ciaEvent);

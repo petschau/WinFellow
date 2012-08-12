@@ -1,4 +1,4 @@
-/* @(#) $Id: BLIT.C,v 1.17 2009-07-25 10:23:59 peschau Exp $ */
+/* @(#) $Id: BLIT.C,v 1.18 2012-08-12 16:51:02 peschau Exp $ */
 /*============================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /* Blitter Initialization                                                     */
@@ -19,14 +19,8 @@
 #include "fileops.h"
 #include "CpuIntegration.h"
 
-//#define BLIT_TSC_PROFILE
-
-#ifdef BLIT_TSC_PROFILE
-LLO blit_tsc_tmp = 0;
-LLO blit_tsc = 0;
-LON blit_tsc_times = 0;
-ULO blit_tsc_words = 0;
-#endif
+//#define BLIT_VERIFY_MINTERMS
+//#define BLIT_OPERATION_LOG
 
 /*============================================================================*/
 /* Blitter registers                                                          */
@@ -96,16 +90,13 @@ ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
 
 UBY blit_fill[2][2][256][2];/* [inc,exc][fc][data][0 = next fc, 1 = filled data] */
 
-#ifdef BLIT_TSC_PROFILE
+#ifdef BLIT_VERIFY_MINTERMS
 BOOLE blit_minterm_seen[256];
 #endif
 
 /*===========================================================================*/
 /* Blitter properties                                                        */
 /*===========================================================================*/
-
-BOOLE blitter_operation_log;
-BOOLE blitter_operation_log_first;
 
 BOOLE blitter_fast;   /* Blitter finishes in zero time */
 BOOLE blitter_ECS;    /* Enable long blits */
@@ -181,6 +172,11 @@ void blitterInsertEvent(ULO cycle)
 /* Blitter operation log                                                      */
 /*============================================================================*/
 
+#ifdef BLIT_OPERATION_LOG
+
+BOOLE blitter_operation_log;
+BOOLE blitter_operation_log_first;
+
 void blitterSetOperationLog(BOOLE operation_log)
 {
   blitter_operation_log = operation_log;
@@ -210,6 +206,8 @@ void blitterOperationLog(void) {
     }
   }
 }
+
+#endif
 
 #define blitterMinterm00(a_dat, b_dat, c_dat, d_dat) d_dat = (0);                                   /* 0 */
 #define blitterMinterm01(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | b_dat | c_dat));            /* !(A+B+C) */
@@ -296,8 +294,14 @@ void blitterOperationLog(void) {
 #define blitterMintermfe(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat | c_dat);               /* A + B + C */
 #define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (0xffffffff);                          /* All 1 */
 
+#ifdef BLIT_VERIFY_MINTERMS
+#define blitterSetMintermSeen(minterm) blit_minterm_seen[mins] = TRUE
+#else
+#define blitterSetMintermSeen(minterm)
+#endif
+
 #define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins) \
-  /*blit_minterm_seen[mins] = TRUE;*/ \
+  blitterSetMintermSeen(mins); \
   d_dat = 0; \
   if (mins & 0x80) d_dat |= (a_dat & b_dat & c_dat); \
   if (mins & 0x40) d_dat |= (a_dat & b_dat & ~c_dat); \
@@ -405,10 +409,10 @@ void blitterOperationLog(void) {
 
 #define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending) \
   if (pt_tmp != 0xffffffff) \
-{ \
-  memory_chip[pt_tmp] = (UBY) (dat >> 8); \
-  memory_chip[pt_tmp + 1] = (UBY) dat; \
-} \
+  { \
+    memory_chip[pt_tmp] = (UBY) (dat >> 8); \
+    memory_chip[pt_tmp + 1] = (UBY) dat; \
+  } \
   pt_tmp = pt; \
   if (!ascending) pt = (pt - 2) & 0x1ffffe; \
   if (ascending) pt = (pt + 2) & 0x1ffffe;
@@ -443,8 +447,8 @@ void blitterOperationLog(void) {
 
 #define blitterReadB(pt, dat, dat_preload, enabled, ascending, shift, prev) \
   if (enabled) { \
-  blitterReadWord(pt, dat_preload, dat_preload, enabled, ascending); \
-  blitterShiftWord(dat, dat_preload, ascending, shift, prev); \
+    blitterReadWord(pt, dat_preload, dat_preload, enabled, ascending); \
+    blitterShiftWord(dat, dat_preload, ascending, shift, prev); \
   }
 
 #define blitterReadC(pt, dat, enabled, ascending) \
@@ -465,13 +469,13 @@ void blitterOperationLog(void) {
 #define blitterFill(dat, fill, exclusive, fc) \
 { \
   if (fill) \
-{ \
-  UBY dat1 = (UBY) dat; \
-  UBY dat2 = (UBY) (dat >> 8); \
-  ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
-  dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
-  fc = blit_fill[exclusive][fc2][dat2][0]; \
-} \
+  { \
+    UBY dat1 = (UBY) dat; \
+    UBY dat2 = (UBY) (dat >> 8); \
+    ULO fc2 = blit_fill[exclusive][fc][dat1][0]; \
+    dat = ((ULO) blit_fill[exclusive][fc][dat1][1]) | (((ULO) blit_fill[exclusive][fc2][dat2][1]) << 8); \
+    fc = blit_fill[exclusive][fc2][dat2][0]; \
+  } \
 }
 
 #define blitterBlit(a_enabled, b_enabled, c_enabled, d_enabled, ascending, fill) \
@@ -505,39 +509,38 @@ void blitterOperationLog(void) {
   fwm[0] = lwm[0] = 0xffff; \
   fwm[1] = blitter.bltafwm; \
   lwm[1] = blitter.bltalwm; \
-  /*if (!fill) blit_tsc_words += height*width;*/ \
   for (y = height; y > 0; y--) \
-{ \
-  blitterFillCarryReload(fill, fill_carry, fc_original); \
-  for (x = width; x > 0; x--) \
-{ \
-  blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm); \
-  blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev); \
-  blitterReadC(c_pt, c_dat, c_enabled, ascending); \
-  blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
-  blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms); \
-  blitterFill(d_dat, fill, fill_exclusive, fill_carry); \
-  blitterMakeZeroFlag(d_dat, zero_flag); \
-} \
-  blitterModulo(a_pt, a_mod, a_enabled); \
-  blitterModulo(b_pt, b_mod, b_enabled); \
-  blitterModulo(c_pt, c_mod, c_enabled); \
-  blitterModulo(d_pt, d_mod, d_enabled); \
-} \
+  { \
+    blitterFillCarryReload(fill, fill_carry, fc_original); \
+    for (x = width; x > 0; x--) \
+    { \
+      blitterReadA(a_pt, a_dat, a_dat_preload, a_enabled, ascending, a_shift, a_prev, (x == width), (x == 1), fwm, lwm); \
+      blitterReadB(b_pt, b_dat, b_dat_preload, b_enabled, ascending, b_shift, b_prev); \
+      blitterReadC(c_pt, c_dat, c_enabled, ascending); \
+      blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
+      blitterMinterms(a_dat, b_dat, c_dat, d_dat, minterms); \
+      blitterFill(d_dat, fill, fill_exclusive, fill_carry); \
+      blitterMakeZeroFlag(d_dat, zero_flag); \
+    } \
+    blitterModulo(a_pt, a_mod, a_enabled); \
+    blitterModulo(b_pt, b_mod, b_enabled); \
+    blitterModulo(c_pt, c_mod, c_enabled); \
+    blitterModulo(d_pt, d_mod, d_enabled); \
+  } \
   blitterWriteD(d_pt, d_pt_tmp, d_dat, d_enabled, ascending); \
   if (a_enabled) { \
-  blitter.bltadat = a_dat_preload; \
-  blitter.bltapt = a_pt; \
+    blitter.bltadat = a_dat_preload; \
+    blitter.bltapt = a_pt; \
   } \
   if (b_enabled) { \
-  ULO x_tmp = 0; \
-  blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp); \
-  blitter.bltbdat_original = b_dat_preload; \
-  blitter.bltbpt = b_pt; \
+    ULO x_tmp = 0; \
+    blitterShiftWord(blitter.bltbdat, b_dat_preload, ascending, b_shift, x_tmp); \
+    blitter.bltbdat_original = b_dat_preload; \
+    blitter.bltbpt = b_pt; \
   } \
   if (c_enabled) { \
-  blitter.bltcdat = c_dat; \
-  blitter.bltcpt = c_pt; \
+    blitter.bltcdat = c_dat; \
+    blitter.bltcpt = c_pt; \
   } \
   if (d_enabled) blitter.bltdpt = d_pt_tmp; \
   blitter.bltzero = zero_flag; \
@@ -679,11 +682,15 @@ void blitterLineMode(void)
   ULO bltcdat_local = blitter.bltcdat;
   ULO bltddat_local;
   UWO mask = (UWO) ((blitter.bltbdat_original >> blitter.b_shift_asc) | (blitter.bltbdat_original << (16 - blitter.b_shift_asc)));
+  BOOLE a_enabled = blitter.bltcon & 0x08000000;
+  BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  WOR decision_variable = (WOR) blitter.bltapt;
-  WOR decision_inc_signed = (blitter.bltcon & 0x08000000) ? ((WOR) blitter.bltbmod) : 0;
-  WOR decision_inc_unsigned = (blitter.bltcon & 0x08000000) ? ((WOR) blitter.bltamod) : 0;
+  LON decision_variable = (LON) blitter.bltapt;
+
+  // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
+  WOR decision_inc_signed = (a_enabled) ? ((WOR) blitter.bltbmod) : 0;
+  WOR decision_inc_unsigned = (a_enabled) ? ((WOR) blitter.bltamod) : 0;
 
   ULO bltcpt_local = blitter.bltcpt;
   ULO bltdpt_local = blitter.bltdpt;
@@ -701,7 +708,10 @@ void blitterLineMode(void)
   for (i = 0; i < blitter.height; ++i)
   {
     // Read C-data from memory if the C-channel is enabled
-    if (blitter.bltcon & 0x02000000) bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
+    if (c_enabled)
+    {
+      bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
+    }
 
     // Calculate data for the A-channel
     bltadat_local = (blitter.bltadat & blitter.bltafwm) >> blit_a_shift_local;
@@ -728,9 +738,12 @@ void blitterLineMode(void)
     // Calculate result
     blitterMinterms(bltadat_local, bltbdat_local, bltcdat_local, bltddat_local, minterm);
 
-    // Save result to D-channel
-    memory_chip[bltdpt_local] = (UBY) (bltddat_local >> 8);
-    memory_chip[bltdpt_local + 1] = (UBY) (bltddat_local);
+    // Save result to D-channel, same as the C ptr after first pixel. 
+    if (c_enabled) // C-channel must be enabled
+    {
+      memory_chip[bltdpt_local] = (UBY) (bltddat_local >> 8);
+      memory_chip[bltdpt_local + 1] = (UBY) (bltddat_local);
+    }
 
     // Remember zero result status
     bltzero_local = bltzero_local | bltddat_local;
@@ -779,7 +792,7 @@ void blitterLineMode(void)
 	single_dot = FALSE;
       }
     }
-    decision_is_signed = (decision_variable < 0);
+    decision_is_signed = ((WOR)decision_variable < 0);
 
     if (!x_independent)
     {
@@ -811,6 +824,7 @@ void blitterLineMode(void)
 
   blitter.a_shift_asc = blit_a_shift_local;
   blitter.a_shift_desc = 16 - blitter.a_shift_asc;
+  blitter.bltbdat = bltbdat_local;
   blitter.bltapt = decision_variable;
   blitter.bltcpt = bltcpt_local;
   blitter.bltdpt = bltdpt_local;
@@ -822,7 +836,11 @@ void blitInitiate(void)
 {
   ULO channels = (blitter.bltcon >> 24) & 0xf;
   ULO cycle_length, cycle_free;
+
+#ifdef BLIT_OPERATION_LOG
   if (blitter_operation_log) blitterOperationLog();
+#endif
+
   blitter.bltzero = 0;
   if (blitter_fast)
   {
@@ -1000,20 +1018,7 @@ void wbltalwm(UWO data, ULO address)
 void wbltcpth(UWO data, ULO address)
 {
   blitForceFinish();
-  // CAUTION, BELOW IS VERY SLOW IN DEBUG MODE
   blitter.bltcpt = (blitter.bltcpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
-
-  // THIS IS AN ALTERNATIVE FOR SPEED IN DEBUG MODE
-  /*
-  __asm 
-  {
-  push edx
-  mov edx, DWORD PTR [data]
-  and edx, 0x01F
-  mov WORD PTR [bltcpt+2], dx
-  pop edx
-  }
-  */
 }
 
 /*=========================================================*/
@@ -1232,6 +1237,7 @@ void wbltsizh(UWO data, ULO address)
     // ECS increased possible blit width to 2048
     // OCS is limited to a blit height of 1024
   }
+
   if ((dmacon & 0x00000040) != 0) 
   {
     blitterCopy();
@@ -1552,6 +1558,7 @@ void blitterEmulationStop(void)
 {
 }
 
+#ifdef BLIT_VERIFY_MINTERMS
 
 ULO optimizedMinterms(UBY minterm, ULO a_dat, ULO b_dat, ULO c_dat)
 {
@@ -1584,6 +1591,7 @@ void verifyMinterms()
   }
 }
 
+#endif
 
 /*===========================================================================*/
 /* Called on emulator startup / shutdown                                     */
@@ -1591,34 +1599,25 @@ void verifyMinterms()
 
 void blitterStartup(void)
 {
-#ifdef BLIT_TSC_PROFILE
-  ULO i;
-  for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
-#endif
-
   blitterFillTableInit();
   blitterSetFast(FALSE);
   blitterSetECS(FALSE);
   blitterIORegistersClear();
+
+#ifdef BLIT_OPERATION_LOG
   blitterSetOperationLog(FALSE);
   blitter_operation_log_first = TRUE;
-  //  verifyMinterms();
-}
+#endif
 
-void blitterShutdown(void) {
-
-#ifdef BLIT_TSC_PROFILE
+#ifdef BLIT_VERIFY_MINTERMS
   {
-    FILE *F;
-    char filename[MAX_PATH];
-
-    fileopsGetGenericFileName(filename, "blitprofile.txt");
-    F = fopen(filename, "w");
-    fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tWORDS\tWORDSPERCALL\tCYCLESPERWORD\n");
-    fprintf(F, "blitter copy\t%I64d\t%d\t%I64d\t%d\t%d\t%d\n", blit_tsc, blit_tsc_times, (blit_tsc_times == 0) ? 0 : (blit_tsc / blit_tsc_times), blit_tsc_words, (blit_tsc_times == 0) ? 0 : (blit_tsc_words / blit_tsc_times), (blit_tsc_words == 0) ? 0 : (blit_tsc / blit_tsc_words));  
-    {ULO i; for (i = 0; i < 256; i++) if (blit_minterm_seen[i]) fprintf(F, "%.2X\n", i);}
-    fclose(F);
+    ULO i;
+    for (i = 0; i < 256; i++) blit_minterm_seen[i] = FALSE;
+    verifyMinterms();
   }
 #endif
 }
 
+void blitterShutdown(void)
+{
+}

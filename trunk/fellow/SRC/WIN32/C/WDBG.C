@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.33 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.34 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1219,13 +1219,13 @@ INT_PTR CALLBACK wdbgBlitterDialogProc(HWND hwndDlg,
 {
   switch (uMsg) {
     case WM_INITDIALOG:
-	  Button_SetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT), blitterGetOperationLog());
+	  //Button_SetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT), blitterGetOperationLog());
       return TRUE;
     case WM_PAINT:
       wdbgUpdateBlitterState(hwndDlg);
       break;
 	case WM_DESTROY:
-	  blitterSetOperationLog(Button_GetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT)));
+	  //blitterSetOperationLog(Button_GetCheck(GetDlgItem(hwndDlg, IDC_DEBUG_LOGBLT)));
 	  break;
     case WM_COMMAND:
       switch (LOWORD(wParam)) {
