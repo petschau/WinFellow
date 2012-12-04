@@ -1,9 +1,9 @@
-/* @(#) $Id: FMEM.C,v 1.13 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: FMEM.C,v 1.14 2012-12-04 18:22:55 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
 /*                                                                         */
-/* Authors: Petter Schau                                                   */
+/* Authors: Petter Schau, Torsten Enderling                                */
 /*                                                                         */
 /* This program is free software; you can redistribute it and/or modify    */
 /* it under the terms of the GNU General Public License as published by    */
@@ -34,6 +34,10 @@
 #include "fmem.h"
 #include "fswrap.h"
 #include "wgui.h"
+
+#ifdef WIN32
+#include <tchar.h>
+#endif
 
 /*============================================================================*/
 /* Holds configuration for memory                                             */
@@ -1369,7 +1373,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   int memoryKickDecodeAF(STR *filename, STR *keyfile)
   {
-    STR *keybuffer;
+    STR *keybuffer = NULL;
     ULO keysize, filesize = 0, keypos = 0, c;
     FILE *KF, *RF;
 
@@ -1382,13 +1386,65 @@ const STR *memory_kickimage_versionstrings[14] = {
       keybuffer = malloc(keysize);
       if (keybuffer != NULL)
       {
-	fseek(KF, 0, SEEK_SET);
-	fread(keybuffer, 1, keysize, KF);
+	      fseek(KF, 0, SEEK_SET);
+	      fread(keybuffer, 1, keysize, KF);
       }
       fclose(KF);
     }
     else
-      return -1;
+    {
+#ifdef WIN32
+      HMODULE hAmigaForeverDLL;
+      STR *strLibName = TEXT("amigaforever.dll");
+      STR strPath[CFG_FILENAME_LENGTH];
+
+      hAmigaForeverDLL = LoadLibrary(strLibName);
+      if (!hAmigaForeverDLL)
+      {
+	      DWORD dwRet;
+        STR strAmigaForeverRoot[CFG_FILENAME_LENGTH];
+        dwRet = GetEnvironmentVariable("AMIGAFOREVERROOT", strAmigaForeverRoot, CFG_FILENAME_LENGTH);
+	      if(strAmigaForeverRoot) {
+		      TCHAR strTemp[CFG_FILENAME_LENGTH];
+		      _tcscpy(strTemp, strAmigaForeverRoot);
+        	if (strTemp[_tcslen(strTemp) - 1] == '/' || strTemp[_tcslen(strTemp) - 1] == '\\')
+        	_tcscat(strTemp, TEXT("\\"));
+		      _stprintf(strPath, TEXT("%sPlayer\\%s"), strTemp, strLibName);
+		      hAmigaForeverDLL = LoadLibrary(strPath);
+	      }
+
+	      if (hAmigaForeverDLL)
+        {
+	        typedef DWORD (STDAPICALLTYPE *PFN_GetKey)(LPVOID lpvBuffer, DWORD dwSize);
+				  PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
+				  if (pfnGetKey)
+				  {
+					  keysize = pfnGetKey(NULL, 0);
+					  if (keysize)
+					  {
+						  keybuffer = malloc(keysize);
+ 
+						  if (keybuffer)
+						  {
+							  if (pfnGetKey(keybuffer, keysize) == keysize)
+							  {
+								  // key successfully retrieved
+							  }
+						  }
+					  }
+				  }
+				  FreeLibrary(hAmigaForeverDLL);
+        }
+#endif
+      }
+
+      if (!keybuffer)
+      {
+        memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+        return -1;
+      }
+    }
+
     if (!keybuffer)
       return -1;  
 
@@ -1399,14 +1455,14 @@ const STR *memory_kickimage_versionstrings[14] = {
       fseek(RF, 11, SEEK_SET);
       while (((c = fgetc(RF)) != EOF) && filesize < 524288)
       {
-	if (keysize != 0)
-	  c ^= keybuffer[keypos++];
-	if (keypos == keysize)
-	  keypos = 0;
-	memory_kick[filesize++] = (UBY) c;
+	      if (keysize != 0)
+	        c ^= keybuffer[keypos++];
+	      if (keypos == keysize)
+	        keypos = 0;
+  	    memory_kick[filesize++] = (UBY) c;
       }
       while ((c = fgetc(RF)) != EOF)
-	filesize++;
+	      filesize++;
       fclose(RF);
       free(keybuffer);
       return filesize;
@@ -1425,7 +1481,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   {
     ULO version;
     STR IDString[12];
-    FILE *keyfile;
 
     fread(IDString, 11, 1, F);
     version = IDString[10] - '0';
@@ -1443,34 +1498,23 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 	fclose(F);
 
-	/* Test if keyfile exists */
-
-	if ((keyfile = fopen(memory_key, "rb")) == NULL)
+	size = memoryKickDecodeAF(memory_kickimage,
+	  memory_key);
+	if (size == -1)
 	{
-	  memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+	  memoryKickError(MEMORY_ROM_ERROR_AMIROM_READ, 0);
 	  return TRUE;
 	}
-	else
+	if (size != 262144 && size != 524288)
 	{
-	  fclose(keyfile);
-	  size = memoryKickDecodeAF(memory_kickimage,
-	    memory_key);
-	  if (size == -1)
-	  {
-	    memoryKickError(MEMORY_ROM_ERROR_AMIROM_READ, 0);
-	    return TRUE;
-	  }
-	  if (size != 262144 && size != 524288)
-	  {
-	    memoryKickError(MEMORY_ROM_ERROR_SIZE, size);
-	    return TRUE;
-	  }
-	  if (size == 262144)
-	    memcpy(memory_kick + 262144, memory_kick, 262144);
-	  memory_kickimage_none = FALSE;
-	  memoryKickIdentify(memory_kickimage_versionstr);
+	  memoryKickError(MEMORY_ROM_ERROR_SIZE, size);
 	  return TRUE;
 	}
+	if (size == 262144)
+	  memcpy(memory_kick + 262144, memory_kick, 262144);
+	memory_kickimage_none = FALSE;
+	memoryKickIdentify(memory_kickimage_versionstr);
+	return TRUE;
       }
     }
     /* Here, header was not recognized */
