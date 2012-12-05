@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.14 2012-12-04 18:22:55 carfesh Exp $ */
+/* @(#) $Id: FMEM.C,v 1.15 2012-12-05 09:58:56 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -1402,9 +1402,9 @@ const STR *memory_kickimage_versionstrings[14] = {
       if (!hAmigaForeverDLL)
       {
 	      DWORD dwRet;
-        STR strAmigaForeverRoot[CFG_FILENAME_LENGTH];
+        STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
         dwRet = GetEnvironmentVariable("AMIGAFOREVERROOT", strAmigaForeverRoot, CFG_FILENAME_LENGTH);
-	      if(strAmigaForeverRoot) {
+	      if((dwRet > 0) && strAmigaForeverRoot) {
 		      TCHAR strTemp[CFG_FILENAME_LENGTH];
 		      _tcscpy(strTemp, strAmigaForeverRoot);
         	if (strTemp[_tcslen(strTemp) - 1] == '/' || strTemp[_tcslen(strTemp) - 1] == '\\')
@@ -1430,6 +1430,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 							  {
 								  // key successfully retrieved
 							  }
+                else
+                {
+                  memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+                  return -1;
+                }
 						  }
 					  }
 				  }
