@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.14 2009-07-25 10:24:00 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.15 2012-12-07 14:05:43 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -1402,7 +1402,7 @@ void kbdDrvStartup(void) {
   kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
 
-  fileopsGetGenericFileName(kbd_drv_mapping_filename, MAPPING_FILENAME);
+  fileopsGetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
   prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
 

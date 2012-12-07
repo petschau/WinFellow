@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.6 2009-07-25 03:09:00 peschau Exp $          */
+/* @(#) $Id: caps_win32.c,v 1.7 2012-12-07 14:05:43 carfesh Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -256,7 +256,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
     FILE *f;
     char filename[MAX_PATH];
 
-    fileopsGetGenericFileName(filename, "CAPSDump.txt");
+    fileopsGetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
     f = fopen(filename, "wb");
     fwrite(capsTrackInfo.trackdata[0], len, 1, f);
     fclose(f);

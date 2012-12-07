@@ -1,4 +1,4 @@
-/* @(#) $Id: fileops.h,v 1.5 2008-02-21 00:08:24 peschau Exp $             */
+/* @(#) $Id: fileops.h,v 1.6 2012-12-07 14:05:43 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -27,7 +27,8 @@
 #define FILEOPS_H
 
 BOOLE fileopsGetFellowLogfileName(char *);
-BOOLE fileopsGetGenericFileName(char *, const char*);
+BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
 BOOLE fileopsGetDefaultConfigFileName(char *);
+BOOLE fileopsResolveVariables(const char *, char *);
 
 #endif // FILEOPS_H

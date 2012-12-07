@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.8 2012-08-12 16:51:02 peschau Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.9 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -242,7 +242,7 @@ void cpuInstructionLogOpen(void)
   if (CPUINSTRUCTIONLOG == NULL)
   {
     char filename[MAX_PATH];
-    fileopsGetGenericFileName(filename, "cpuinstructions.log");
+    fileopsGetGenericFileName(filename, "WinFellow", "cpuinstructions.log");
     CPUINSTRUCTIONLOG = fopen(filename, "w");
   }
 }

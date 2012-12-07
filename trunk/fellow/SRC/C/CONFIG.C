@@ -1,10 +1,9 @@
-/* @(#) $Id: CONFIG.C,v 1.19 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: CONFIG.C,v 1.20 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
 /*                                                                         */
-/* Author: Petter Schau                                                    */
-/* Author: Worfje (worfje@gmx.net)                                         */
+/* Author: Petter Schau, Worfje (worfje@gmx.net), Torsten Enderling        */
 /*                                                                         */
 /* Based on an Amiga emulator configuration format specified by Brian King */
 /*                                                                         */
@@ -47,6 +46,8 @@
 #include "ffilesys.h"
 #include "ini.h"
 #include "CpuIntegration.h"
+#include "fileops.h"
+#include "RetroPlatform.h"
 
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
@@ -945,7 +946,7 @@ static STR *cfgGetECSToString(BOOLE chipset) {
 
 void cfgSynopsis(cfg *config) {
   fprintf(stderr, 
-    "Synopsis: fellow [-h] | [[-f configfile] | [-s option=value]]*\n\n"
+    "Synopsis: WinFellow.exe [-h] | [[-f configfile] | [-s option=value]]*\n\n"
     "Command-line options:\n"
     "-h              : Print this command-line symmary, then stop.\n"
     "-f configfile   : Specify configuration file to use.\n"
@@ -1372,11 +1373,14 @@ static BOOLE cfgLoadFromFile(cfg *config, FILE *cfgfile) {
 BOOLE cfgLoadFromFilename(cfg *config, STR *filename) {
   FILE *cfgfile;
   BOOLE result;
+  STR newfilename[CFG_FILENAME_LENGTH];
+ 
+  fileopsResolveVariables(filename, newfilename);
 
-  // remove excisting hardfiles
+  // remove existing hardfiles
   cfgHardfilesFree(config);
   cfgFilesystemsFree(config);
-  cfgfile = fopen(filename, "r");
+  cfgfile = fopen(newfilename, "r");
   result = (cfgfile != NULL);
   if (result) {
     result = cfgLoadFromFile(config, cfgfile);
@@ -1412,37 +1416,92 @@ BOOLE cfgSaveToFilename(cfg *config, STR *filename) {
 /*============================================================================*/
 
 static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
-  int i = 1;
+  int i;
+
+  fellowAddLog("cfg: list of commandline parameters ");
+  for(i=1; i < argc; i++) {
+    fellowAddLog("%s ", argv[i]);
+  }
+  fellowAddLog("\n");
+  
+  i = 1;
   while (i < argc) {
+    // fellowAddLog("cfg: parsing parameter: %s\n", argv[i]);
     if (stricmp(argv[i], "-h") == 0) { /* Command line synposis */
       cfgSynopsis(config);
       return FALSE;
     }
+#ifdef RETRO_PLATFORM
+    else if (stricmp(argv[i], "-rphost") == 0)
+    {
+      i++;
+      if (i < argc) {
+        // fellowAddLog("cfg: RetroPlatform host ID: %s\n", argv[i]);
+        RetroPlatformSetMode(TRUE);
+        RetroPlatformSetHostID(argv[i]);
+      }
+      i++;
+    }
+    /* else if (stricmp(argv[i], "-datapath") == 0)
+    {
+      i++;
+      if (i < argc)
+        fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
+	    i++;
+    } */
+    else if (stricmp(argv[i], "-rpescapekey") == 0)
+    {
+      i++;
+      if (i < argc) {
+        RetroPlatformSetEscapeKey(argv[i]);
+        // fellowAddLog("cfg: RetroPlatform escape key: %s\n", argv[i]);
+      }
+	    i++;
+    }
+    else if (stricmp(argv[i], "-rpescapeholdtime") == 0)
+    {
+      i++;
+      if (i < argc) {
+        RetroPlatformSetEscapeHoldTime(argv[i]);
+        // fellowAddLog("cfg: RetroPlatform escape hold time: %s\n", argv[i]);
+      }
+	    i++;
+    }
+    else if (stricmp(argv[i], "-rpscreenmode") == 0)
+    {
+      i++;
+      if (i < argc) {
+        RetroPlatformSetScreenMode(argv[i]);
+        // fellowAddLog("cfg: RetroPlatform screen mode: %s\n", argv[i]);
+      }
+	    i++;
+    }
+    /* else if (stricmp(argv[i], "-logflush") == 0)
+    {
+      i++;
+      fellowAddLog("cfg: RetroPlatform log flush set.\n");
+    } */
+#endif
     else if (stricmp(argv[i], "-f") == 0) { /* Load configuration file */
       i++;
       if (i < argc) {
-	if (!cfgLoadFromFilename(config, argv[i]))
-	  fprintf(stderr, 
-	  "cfg: -f option, failed reading configuration file %s\n", 
-	  argv[i]);
-	else
-	  i++;
+        fellowAddLog("cfg: configuration file: %s\n", argv[i]);
+	      if (!cfgLoadFromFilename(config, argv[i]))
+	        fellowAddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
+	      i++;
       }
       else
-	fprintf(stderr, "cfg: -f option, please supply a filename\n");
+	      fellowAddLog("cfg: ERROR using -f option, please supply a filename\n");
     }
     else if (stricmp(argv[i], "-s") == 0) { /* Configuration option */
       i++;
       if (i < argc) {
-	if (!cfgSetOption(config, argv[i]))
-	  fprintf(stderr, 
-	  "cfg: -s option, unrecognized setting %s\n", argv[i]);
-	else
-	  i++;
+	      if (!cfgSetOption(config, argv[i]))
+	        fellowAddLog("cfg: -s option, unrecognized setting %s\n", argv[i]);
+	      i++;
       }
       else
-	fprintf(stderr, 
-	"cfg: -s option, please supply a configuration setting\n");
+	      fellowAddLog("cfg: -s option, please supply a configuration setting\n");
     }
   }
   return TRUE;

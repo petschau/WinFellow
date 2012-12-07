@@ -842,6 +842,7 @@
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\C\RetroPlatform.c" />
     <ClCompile Include="..\C\RetroPlatformGuestIPC.c" />
     <ClCompile Include="..\C\SOUNDDRV.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -1483,6 +1484,7 @@
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H" />
     <ClInclude Include="..\..\INCLUDE\LISTTREE.H" />
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
+    <ClInclude Include="..\INCLUDE\fileops.h" />
     <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H" />
     <ClInclude Include="..\..\INCLUDE\SPRITE.H" />
     <ClInclude Include="..\..\INCLUDE\WAV.H" />
@@ -1499,6 +1501,7 @@
     <ClInclude Include="..\..\INCLUDE\MOUSEDRV.H" />
     <ClInclude Include="..\..\INCLUDE\SOUND.H" />
     <ClInclude Include="..\..\INCLUDE\SOUNDDRV.H" />
+    <ClInclude Include="..\INCLUDE\RetroPlatform.h" />
     <ClInclude Include="..\INCLUDE\RetroPlatformGuestIPC.h" />
     <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h" />
     <ClInclude Include="..\INCLUDE\sysinfo.h" />

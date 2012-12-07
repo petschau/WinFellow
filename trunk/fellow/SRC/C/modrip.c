@@ -1,4 +1,4 @@
-/* @(#) $Id: modrip.c,v 1.29 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: modrip.c,v 1.30 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -918,18 +918,18 @@ void modripChipDump(void)
   if(modripGuiDumpChipMem()) {
     char filenamechip[MAX_PATH];
 
-    fileopsGetGenericFileName(filenamechip, "chip.mem");
+    fileopsGetGenericFileName(filenamechip, "WinFellow", "chip.mem");
     Saved = modripSaveChipMem(filenamechip);
     if(memoryGetSlowSize())
     {
       char filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "bogo.mem");
+      fileopsGetGenericFileName(filename, "WinFellow", "bogo.mem");
       modripSaveSlowMem(filename);
     }
     if(memoryGetFastSize())
     {
       char filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "fast.mem");
+      fileopsGetGenericFileName(filename, "WinFellow", "fast.mem");
       modripSaveFastMem(filename);
     }
     if(Saved) {

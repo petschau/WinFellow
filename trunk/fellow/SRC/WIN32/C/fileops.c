@@ -1,4 +1,4 @@
-/* @(#) $Id: fileops.c,v 1.4 2008-02-21 00:05:46 peschau Exp $             */
+/* @(#) $Id: fileops.c,v 1.5 2012-12-07 14:05:43 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,28 +29,57 @@
 
 #include "defs.h"
 
+/* fileopsResolveVariables                                          */
+/* resolve environment variables in file/folder names               */
+
+BOOLE fileopsResolveVariables(const char *szPath, char *szNewPath)
+{
+  DWORD nRet;
+
+  nRet = ExpandEnvironmentStrings(szPath, szNewPath, CFG_FILENAME_LENGTH);
+
+  if(nRet < CFG_FILENAME_LENGTH)
+    if( nRet )
+    {
+      szPath = szNewPath;
+      return TRUE;
+    }
+  szNewPath = NULL;
+  return FALSE;
+}
+
 /* fileopsGetGenericFileName                                        */
 /* build generic filename pointing to Application Data\WinFellow    */
+/* AmigaForever Amiga files path will be preferred over AppData     */
 /* return TRUE if successfull, FALSE otherwise                      */
 
-BOOLE fileopsGetGenericFileName(char *szPath, const char *filename)
+BOOLE fileopsGetGenericFileName(char *szPath, const char *szSubDir, const char *filename)
 {
   HRESULT hr;
-
-  if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                              // hWnd	
-                                               CSIDL_APPDATA | CSIDL_FLAG_CREATE, // csidl
-                                               NULL,                              // hToken
-                                               SHGFP_TYPE_CURRENT,                // dwFlags
-                                               TEXT("WinFellow"),                 // pszSubDir
-                                               szPath)))                          // pszPath
-  {
-	  PathAppend(szPath, TEXT(filename));
-    return TRUE;
+  
+  // first check if AmigaForever is installed, use Amiga files path first
+  if(!fileopsResolveVariables("%AMIGAFOREVERDATA%", szPath)) {
+    if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                              // hWnd	
+                                                 CSIDL_APPDATA | CSIDL_FLAG_CREATE, // csidl
+                                                 NULL,                              // hToken
+                                                 SHGFP_TYPE_CURRENT,                // dwFlags
+                                                 szSubDir,                          // pszSubDir
+                                                 szPath)))                          // pszPath
+    {
+	    PathAppend(szPath, TEXT(filename));
+      return TRUE;
+    }
+    else 
+    {
+      strcpy(szPath, filename);
+      return FALSE;
+    }
   }
-  else
+  else 
   {
-    strcpy(szPath, filename);
-    return FALSE;
+    PathAppend(szPath, szSubDir);
+    PathAppend(szPath, TEXT(filename));
+    return TRUE;
   }
 }
 
@@ -60,7 +89,7 @@ BOOLE fileopsGetGenericFileName(char *szPath, const char *filename)
 
 BOOLE fileopsGetFellowLogfileName(char *szPath)
 {
-  return fileopsGetGenericFileName(szPath, "fellow.log");
+  return fileopsGetGenericFileName(szPath, "WinFellow", "fellow.log");
 }
 
 /* fileopsGetDefaultConfigFileName                                  */
@@ -70,21 +99,5 @@ BOOLE fileopsGetFellowLogfileName(char *szPath)
 
 BOOLE fileopsGetDefaultConfigFileName(char *szPath)
 {
-  HRESULT hr;
-
-  if (SUCCEEDED (hr = SHGetFolderPathAndSubDir(NULL,                              // hWnd	
-                                               CSIDL_APPDATA | CSIDL_FLAG_CREATE, // csidl
-                                               NULL,                              // hToken
-                                               SHGFP_TYPE_CURRENT,                // dwFlags
-                                               TEXT("WinFellow\\configurations"), // pszSubDir
-                                               szPath)))                          // pszPath
-  {
-	  PathAppend(szPath, TEXT("default.wfc"));
-    return TRUE;
-  }
-  else
-  {
-    strcpy(szPath, "./configurations/default.wfc");
-    return FALSE;
-  }
+  return fileopsGetGenericFileName(szPath, "WinFellow\\configurations", "default.wfc");
 }

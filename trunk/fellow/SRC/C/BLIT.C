@@ -1,4 +1,4 @@
-/* @(#) $Id: BLIT.C,v 1.18 2012-08-12 16:51:02 peschau Exp $ */
+/* @(#) $Id: BLIT.C,v 1.19 2012-12-07 14:05:43 carfesh Exp $ */
 /*============================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /* Blitter Initialization                                                     */
@@ -192,7 +192,7 @@ void blitterOperationLog(void) {
     FILE *F;
     char filename[MAX_PATH];
 
-    fileopsGetGenericFileName(filename, "blitterops.log");
+    fileopsGetGenericFileName(filename, "WinFellow", "blitterops.log");
     F = fopen(filename, (blitter_operation_log_first) ? "w" : "a");
     if (blitter_operation_log_first) {
       blitter_operation_log_first = FALSE;

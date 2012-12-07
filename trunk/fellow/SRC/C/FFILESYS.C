@@ -1,4 +1,4 @@
-/* @(#) $Id: FFILESYS.C,v 1.15 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: FFILESYS.C,v 1.16 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Filesystem wrapper                                                      */
@@ -148,7 +148,7 @@ void ffilesysDumpConfig(void)
   char filename[MAX_PATH];
   FILE *F;
 
-  fileopsGetGenericFileName(filename, "fsysdump.txt");
+  fileopsGetGenericFileName(filename, "WinFellow", "fsysdump.txt");
   F = fopen(filename, "w");
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)

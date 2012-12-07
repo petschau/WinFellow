@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.26 2012-08-12 16:51:02 peschau Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.27 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1262,7 +1262,7 @@ void floppyEmulationStart(void) {
   floppyIOHandlersInstall();
 
 #ifdef FLOPPY_LOG
-  fileopsGetGenericFileName(floppylogfilename, "floppy.log");
+  fileopsGetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
 #endif
 }
 

@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.29 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.30 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -53,6 +53,7 @@
 #include "ini.h"
 #include "sysinfo.h"
 #include "fileops.h"
+#include "RetroPlatform.h"
 
 BOOLE fellow_request_emulation_stop;
 
@@ -576,8 +577,18 @@ int __cdecl main(int argc, char *argv[]) {
   fellowPreStartReset(TRUE);
   fellowSetMMXDetected(sysinfoDetectMMX());
   fellowModulesStartup(argc, argv);
-  while (!wguiEnter())
-    fellowRun();
+
+#ifdef RETRO_PLATFORM
+  if(!RetroPlatformGetMode())
+#endif
+    while (!wguiEnter())
+      fellowRun();
+#ifdef RETRO_PLATFORM
+  else
+    while (!RetroPlatformEnter())
+      fellowRun();
+#endif
+  
   fellowModulesShutdown();
   return EXIT_SUCCESS;
 }
