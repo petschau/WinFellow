@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.11 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.12 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -249,7 +249,7 @@ BOOLE bus_log = FALSE;
 FILE *busOpenLog(void)
 {
   char filename[MAX_PATH];
-  fileopsGetGenericFileName(filename, "bus.log");
+  fileopsGetGenericFileName(filename, "WinFellow", "bus.log");
   return fopen(filename, "w");
 }
 

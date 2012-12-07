@@ -1,4 +1,4 @@
-/* @(#) $Id: Ini.c,v 1.15 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: Ini.c,v 1.16 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* WinFellow                                                               */
 /* Ini file for Windows                                                    */
@@ -432,7 +432,7 @@ void iniManagerStartup(iniManager *initdatamanager) {
   ini *initdata = iniManagerGetNewIni(initdatamanager);
   iniManagerSetCurrentInitdata(initdatamanager, initdata);
 
-  fileopsGetGenericFileName(ini_filename, INI_FILENAME);
+  fileopsGetGenericFileName(ini_filename, "WinFellow", INI_FILENAME);
 
   // load the ini-file into the m_current_initdata data structure
   if (iniLoadIniFromFilename(initdata, ini_filename) == FALSE) {

@@ -306,6 +306,9 @@
     <ClCompile Include="..\C\RetroPlatformGuestIPC.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\C\RetroPlatform.c">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -582,6 +585,12 @@
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\fileops.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\RetroPlatform.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
