@@ -1,4 +1,4 @@
-/* @(#) $Id: CONFIG.C,v 1.20 2012-12-07 14:05:43 carfesh Exp $ */
+/* @(#) $Id: CONFIG.C,v 1.21 2012-12-08 05:34:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
@@ -1502,6 +1502,10 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
       }
       else
 	      fellowAddLog("cfg: -s option, please supply a configuration setting\n");
+    }
+    else { /* unrecognized configuration option */
+      fellowAddLog("cfg: parameter %s not recognized.\n", argv[i]);
+      i++;
     }
   }
   return TRUE;
