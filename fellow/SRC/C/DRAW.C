@@ -1,4 +1,4 @@
-/* @(#) $Id: DRAW.C,v 1.18 2010-06-20 17:25:40 peschau Exp $ */
+/* @(#) $Id: DRAW.C,v 1.19 2012-12-08 16:13:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Draws an Amiga screen in a host display buffer                          */
@@ -1593,7 +1593,10 @@ void drawShutdown(void) {
 
 #ifdef DRAW_TSC_PROFILE
   {
-    FILE *F = fopen("drawprofile.txt", "w");
+    char filename[MAX_PATH];
+
+    fileopsGetGenericFileName(filename, "WinFellow", "drawprofile.txt");
+    FILE *F = fopen(filename, "w");
     fprintf(F, "FUNCTION\tTOTALCYCLES\tCALLEDCOUNT\tAVGCYCLESPERCALL\tTOTALPIXELS\tPIXELSPERCALL\tCYCLESPERPIXEL\n");
 
     // drawing background lines
