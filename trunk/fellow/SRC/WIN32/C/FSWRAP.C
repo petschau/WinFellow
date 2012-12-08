@@ -1,4 +1,4 @@
-/* @(#) $Id: FSWRAP.C,v 1.6 2008-02-21 00:05:44 peschau Exp $ */
+/* @(#) $Id: FSWRAP.C,v 1.7 2012-12-08 16:13:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -28,6 +28,7 @@
 #include <direct.h>
 #include <windows.h>
 #include <winbase.h>
+#include <AclAPI.h>
 
 #include "portable.h"
 #include "defs.h"
@@ -99,7 +100,9 @@ void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
 fs_navig_point *fsWrapMakePoint(STR *point) {
   struct stat mystat;
   fs_navig_point *fsnp = NULL;
+  FILE *file_ptr;
 
+  // check file permissions
   if (stat(point, &mystat) == 0) {
     fsnp = (fs_navig_point *) malloc(sizeof(fs_navig_point));
     strcpy(fsnp->name, point);
@@ -110,6 +113,18 @@ fs_navig_point *fsWrapMakePoint(STR *point) {
     else
       fsnp->type = FS_NAVIG_OTHER;
     fsnp->writeable = !!(mystat.st_mode & _S_IWRITE);
+    if (fsnp->writeable)
+    {
+      file_ptr = fopen(point, "a");
+      if (file_ptr == NULL)
+      {
+	fsnp->writeable = FALSE;
+      }
+      else
+      {
+	fclose(file_ptr);
+      }
+    }
     fsnp->size = mystat.st_size;
     fsnp->drive = 0;
     fsnp->relative = FALSE;

@@ -1,4 +1,4 @@
-/* @(#) $Id: WAV.C,v 1.5 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: WAV.C,v 1.6 2012-12-08 16:13:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Wav file sound dump                                                     */
@@ -27,11 +27,10 @@
 #include "sound.h"
 #include "graph.h"
 #include "draw.h"
-
-
+#include "fileops.h"
 
 FILE *wav_FILE;
-STR wav_filename[16];
+STR wav_filename[MAX_PATH];
 ULO wav_serial;
 sound_rates wav_rate;
 ULO wav_rate_real;
@@ -157,11 +156,18 @@ void wavLengthUpdate(void) {
 /* Set up WAV file                                                           */
 /*===========================================================================*/
 
-void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo) {
+void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
+{
+  char generic_wav_filename[MAX_PATH];
+
   if ((wav_rate != rate) ||
     (wav_16bits != bits16) ||
     (wav_stereo != stereo)) {
       sprintf(wav_filename, "FWAV%d.WAV", wav_serial++);
+
+      fileopsGetGenericFileName(generic_wav_filename, "WinFellow", wav_filename);
+      strcpy(wav_filename, generic_wav_filename);
+
       wav_rate = rate;
       wav_rate_real = soundGetRateReal();
       wav_16bits = bits16;
