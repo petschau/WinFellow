@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.1 2012-12-07 14:07:13 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.2 2012-12-11 17:52:17 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -27,7 +27,15 @@
 #ifdef RETRO_PLATFORM
 
 #include "defs.h"
+
+#include "RetroPlatform.h"
+#include "RetroPlatformGuestIPC.h"
+#include "RetroPlatformIPC.h"
+
+#include "wgui.h"
+#include "config.h"
 #include "fellow.h"
+#include "windrv.h"
 
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
 BOOLE bRetroPlatformMode = FALSE;
@@ -38,9 +46,23 @@ LON iRetroPlatformEscapeHoldTime = 600;
 // LON iRetroPlatformLogging = 1;
 LON iRetroPlatformScreenMode = 0;
 
+static BOOLE bRetroPlatformInitialized;
+static RPGUESTINFO RetroPlatformGuestInfo;
+HINSTANCE hRetroPlatformWindowInstance = NULL;
+static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
+
+RetroPlatformActions RetroPlatformAction;
+
+cfg *RetroPlatformConfig; /* RetroPlatform copy of configuration */
 
 BOOLE RetroPlatformGetMode(void) {
   return bRetroPlatformMode;
+}
+
+void RetroPlatformSetAction(const RetroPlatformActions rpAction)
+{
+  RetroPlatformAction = rpAction;
+  fellowAddLog("RPAction %d\n", rpAction);
 }
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
@@ -69,155 +91,154 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
 }
 
 BOOLE RetroPlatformEnter(void) {
+  BOOLE quit_emulator = FALSE;
 
-  /*
-    BOOLE quit_emulator = FALSE;
-    BOOLE debugger_start = FALSE;
-    RECT dialogRect;
+  do {
+    BOOLE end_loop = FALSE;
+      
+    // RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
 
-    do {
-      MSG myMsg;
-      BOOLE end_loop = FALSE;
+    while (!end_loop) {
+	    switch (RetroPlatformAction) {
+	      case RETRO_PLATFORM_START_EMULATION:
+	        if (wguiCheckEmulationNecessities() == TRUE) {
+	          end_loop = TRUE;
+	          cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
+	          // check for manual or needed reset
+	          fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+	          break;
+	        }
+	        MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
+	        RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
+	        break;
+	     case RETRO_PLATFORM_QUIT_EMULATOR:
+	        end_loop = TRUE;
+	        quit_emulator = TRUE;
+	        break;
+	      case RETRO_PLATFORM_OPEN_CONFIGURATION:
+	        break;
+	      case RETRO_PLATFORM_SAVE_CONFIGURATION:
+	        break;
+	      case RETRO_PLATFORM_SAVE_CONFIGURATION_AS:
+	        RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
+	        break;
+	      case RETRO_PLATFORM_LOAD_STATE:
+	        RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
+	        break;
+	      case RETRO_PLATFORM_SAVE_STATE:
+	        RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
+	        break;
+	      default:
+	        break;
+	      }
+    }
+    if (!quit_emulator) 
+      winDrvEmulationStart(); 
+  } while (!quit_emulator);
+  return quit_emulator;
+}
 
-      wgui_action = WGUI_NO_ACTION;
+/*
 
-      if(!RetroplatformMode())
-      {
-        wgui_hDialog = CreateDialog(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), NULL, wguiDialogProc); 
-        SetWindowPos(wgui_hDialog, HWND_TOP, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
-        wguiStartupPost();
-        wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+static const STR *RetroPlatformGetMessageText(UBY iMsg)
+{
+	switch(iMsg)
+	{
+	case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
+	case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
+	case RP_IPC_TO_HOST_CLOSED:             return TEXT("RP_IPC_TO_HOST_CLOSED");
+	case RP_IPC_TO_HOST_ACTIVATED:          return TEXT("RP_IPC_TO_HOST_ACTIVATED");
+	case RP_IPC_TO_HOST_DEACTIVATED:        return TEXT("RP_IPC_TO_HOST_DEACTIVATED");
+	case RP_IPC_TO_HOST_SCREENMODE:         return TEXT("RP_IPC_TO_HOST_SCREENMODE");
+	case RP_IPC_TO_HOST_POWERLED:           return TEXT("RP_IPC_TO_HOST_POWERLED");
+	case RP_IPC_TO_HOST_DEVICES:            return TEXT("RP_IPC_TO_HOST_DEVICES");
+	case RP_IPC_TO_HOST_DEVICEACTIVITY:     return TEXT("RP_IPC_TO_HOST_DEVICEACTIVITY");
+	case RP_IPC_TO_HOST_MOUSECAPTURE:       return TEXT("RP_IPC_TO_HOST_MOUSECAPTURE");
+	case RP_IPC_TO_HOST_HOSTAPIVERSION:     return TEXT("RP_IPC_TO_HOST_HOSTAPIVERSION");
+	case RP_IPC_TO_HOST_PAUSE:              return TEXT("RP_IPC_TO_HOST_PAUSE");
+	case RP_IPC_TO_HOST_DEVICECONTENT:      return TEXT("RP_IPC_TO_HOST_DEVICECONTENT");
+	case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
+	case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
+	case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
+	case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+	case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
+	case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
+	case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
+	case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
+	case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
+	case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
 
-
-        // install history into menu
-        wguiInstallHistoryIntoMenu();
-        ShowWindow(wgui_hDialog, win_drv_nCmdShow);
-      }
-
-      while (!end_loop) {
-	if (GetMessage(&myMsg, wgui_hDialog, 0, 0))
-	  if (!IsDialogMessage(wgui_hDialog, &myMsg))
-	    DispatchMessage(&myMsg);
-	switch (wgui_action) {
-	case WGUI_START_EMULATION:
-	  if (wguiCheckEmulationNecessities() == TRUE) {
-	    end_loop = TRUE;
-	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	    // check for manual or needed reset
-	    fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
-	    break;
-	  }
-	  MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_QUIT_EMULATOR:
-	  end_loop = TRUE;
-	  quit_emulator = TRUE;
-	  break;
-	case WGUI_OPEN_CONFIGURATION:
-	  wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_CONFIGURATION:
-	  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));		  
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_CONFIGURATION_AS:
-	  wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
-	  wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY0:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(0);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
-	  }
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY1:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(1);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-	    wguiPutCfgInHistoryOnTop(1);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY2:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(2);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-	    wguiPutCfgInHistoryOnTop(2);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY3:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(3);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-	    wguiPutCfgInHistoryOnTop(3);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_STATE:
-	  wguiOpenStateFile(wgui_cfg, wgui_hDialog);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_STATE:
-	  wguiSaveStateFileAs(wgui_cfg, wgui_hDialog);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_DEBUGGER_START:
-	  end_loop = TRUE;
-	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	  fellowPreStartReset(fellowGetPreStartReset() |
-	    cfgManagerConfigurationActivate(&cfg_manager));
-	  debugger_start = TRUE;
-	default:
-	  break;
+	case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
+	case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
+	case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
+	case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
+	case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
+	case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
+	case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
+	case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
+	case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
+	case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+	case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
+	case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
+	case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
+	case RP_IPC_TO_GUEST_LOADSTATE:         return TEXT("RP_IPC_TO_GUEST_LOADSTATE");
+	case RP_IPC_TO_GUEST_FLUSH:             return TEXT("RP_IPC_TO_GUEST_FLUSH");
+	case RP_IPC_TO_GUEST_DEVICEREADWRITE:   return TEXT("RP_IPC_TO_GUEST_DEVICEREADWRITE");
+	case RP_IPC_TO_GUEST_QUERYSCREENMODE:   return TEXT("RP_IPC_TO_GUEST_QUERYSCREENMODE");
+	case RP_IPC_TO_GUEST_GUESTAPIVERSION :  return TEXT("RP_IPC_TO_GUEST_GUESTAPIVERSION");
+	default: return TEXT("UNKNOWN");
 	}
-      }
+}
 
-      // save main window position
-      GetWindowRect(wgui_hDialog, &dialogRect);
-      iniSetMainWindowPosition(wgui_ini, dialogRect.left, dialogRect.top);
+static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam,
+	LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult)
+{
+	BOOLE bResult = FALSE;
 
-      DestroyWindow(wgui_hDialog);
-      if (!quit_emulator && debugger_start) {
-	debugger_start = FALSE;
-	//wdbgDebugSessionRun(NULL);
-	wdebDebug();
-      }
-      else if (!quit_emulator) winDrvEmulationStart();
-    } while (!quit_emulator);
-    return quit_emulator;
+	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
 
-    */
+  fellowAddLog (TEXT("RetroPlatform sent [%d], %08x, %08x, %08x, %d)\n"),
+    RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData, dwDataSize);
+		if (bResult == FALSE)
+			fellowAddLog("ERROR %d\n", GetLastError());
+	return bResult;
+}
 
+static int RetroPlatformGetHostVersion (ULO *lMainVersion, ULO *lRevision, ULO *lBuild)
+{
+	ULO lResult = 0;
+	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
+		return 0;
+	*lMainVersion = RP_HOSTVERSION_MAJOR(lResult);
+	*lRevision    = RP_HOSTVERSION_MINOR(lResult);
+	*lBuild       = RP_HOSTVERSION_BUILD(lResult);
+	return 1;
+}
+
+*/
+
+void RetroPlatformStartup(void)
+{
+  fellowAddLog("RetroPlatform startup.\n");
+  RetroPlatformConfig = cfgManagerGetCurrentConfig(&cfg_manager);
+  
+  /*
+	ULO  lResult;
+
+	fellowAddLog("RetroPlatform startup.\n");
+	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, szRetroPlatformHostID, RPHostMsgFunction, 0);
+	if (SUCCEEDED (lResult)) {
+		bRetroPlatformInitialized = TRUE;
+
+		rp_hostversion (&rp_version, &rp_revision, &rp_build);
+		write_log (TEXT("rp_init('%s') succeeded. Version: %d.%d.%d\n"), rp_param, rp_version, rp_revision, rp_build);
+	} else {
+		write_log (TEXT("rp_init('%s') failed, error code %08x\n"), rp_param, hr);
+	}
+	xfree (rp_param);
+	rp_param = NULL;
+	mousecapture = 0;
+	return hr; */
 }
 
 #endif
