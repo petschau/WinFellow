@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.31 2012-12-23 14:42:26 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.32 2012-12-23 15:14:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -699,6 +699,11 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
   }
   fellowAddLog("gfxdrv: Window created\n");
   free(versionstring);
+
+#ifdef RETRO_PLATFORM
+  RetroPlatformSendScreenMode(gfx_drv_hwnd);
+#endif
+
   return (gfx_drv_hwnd != NULL);
 }
 
