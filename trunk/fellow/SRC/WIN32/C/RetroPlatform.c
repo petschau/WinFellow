@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.7 2012-12-23 14:42:26 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.8 2012-12-23 15:14:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -49,6 +49,7 @@ LON iRetroPlatformScreenMode = 0;
 static BOOLE bRetroPlatformInitialized;
 static RPGUESTINFO RetroPlatformGuestInfo;
 HINSTANCE hRetroPlatformWindowInstance = NULL;
+HWND      hRetroPlatformGuestWindow = NULL;
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static ULO lRetroPlatformRecursiveDevice;
 
@@ -263,6 +264,38 @@ void RetroPlatformSendFeatures(void)
     fellowAddLog("RetroPlatformSendFeatures successful, result was %d.\n", lResult);
   else
     fellowAddLog("RetroPlatformSendFeatures failed, result was %d.\n", lResult);
+}
+
+static void RetroPlatformDetermineScreenModeFromConfig(struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig)
+{
+  DWORD dwScreenMode = RP_SCREENMODE_SCALE_1X;
+	int iHeight = cfgGetScreenHeight(RetroPlatformConfig);
+  int iWidth = cfgGetScreenWidth(RetroPlatformConfig);
+
+  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
+
+  RetroPlatformScreenMode->lTargetHeight = iHeight;
+  RetroPlatformScreenMode->lTargetWidth  = iWidth;
+
+  RetroPlatformScreenMode->dwScreenMode = dwScreenMode;
+
+  RetroPlatformScreenMode->lClipLeft = -1;
+  RetroPlatformScreenMode->lClipTop = -1;
+  RetroPlatformScreenMode->lClipWidth = -1;
+  RetroPlatformScreenMode->lClipHeight = -1;
+  RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
+}
+
+
+void RetroPlatformSendScreenMode(HWND hWnd)
+{
+	struct RPScreenMode RetroPlatformScreenMode = { 0 };
+
+	if (!bRetroPlatformInitialized)
+		return;
+	hRetroPlatformGuestWindow = hWnd;
+	RetroPlatformDetermineScreenModeFromConfig(&RetroPlatformScreenMode, RetroPlatformConfig);
+	RetroPlatformSendMessage(RP_IPC_TO_HOST_SCREENMODE, 0, 0, &RetroPlatformScreenMode, sizeof RetroPlatformScreenMode, &RetroPlatformGuestInfo, NULL); 
 }
 
 void RetroPlatformActivate(const BOOLE bActive, const LPARAM lParam)

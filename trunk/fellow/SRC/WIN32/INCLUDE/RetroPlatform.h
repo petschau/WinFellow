@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.5 2012-12-23 14:42:26 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.6 2012-12-23 15:14:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -52,6 +52,7 @@ void  RetroPlatformEmulationStart(void);
 void  RetroPlatformEmulationStop(void);
 const STR *RetroPlatformGetActionName(const RetroPlatformActions);
 BOOLE RetroPlatformGetMode(void);
+void  RetroPlatformSendScreenMode(HWND);
 void  RetroPlatformSetAction(const RetroPlatformActions);
 void  RetroPlatformSetEmulationStatus(const BOOLE, const LPARAM);
 void  RetroPlatformSetEscapeKey(const char *);
