@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.4 2012-12-23 13:00:16 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.5 2012-12-23 13:21:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -156,7 +156,7 @@ const STR *RetroPlatformGetActionName(RetroPlatformActions lAction)
   }
 }
 
-static const STR *RetroPlatformGetMessageText(UBY iMsg)
+static const STR *RetroPlatformGetMessageText(ULO iMsg)
 {
 	switch(iMsg)
 	{
@@ -213,7 +213,7 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 
 	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
 
-  fellowAddLog (TEXT("RetroPlatform sent [%d], %08x, %08x, %08x, %d)\n"),
+  fellowAddLog (TEXT("RetroPlatform sent [%s], %08x, %08x, %08x, %d)\n"),
     RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData, dwDataSize);
 		if (bResult == FALSE)
 			fellowAddLog("ERROR %d\n", GetLastError());
@@ -241,6 +241,26 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 	return lResult;
 }
 
+void RetroPlatformSendFeatures(void)
+{
+	DWORD dFeatureFlags;
+
+	// dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
+
+  dFeatureFlags = RP_FEATURE_SCREEN1X;
+	/* dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
+	dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
+	dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYSTICK;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_GAMEPAD;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYPAD;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN; */
+
+	RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+}
+
 void RetroPlatformStartup(void)
 {
   ULO lResult;
@@ -254,8 +274,10 @@ void RetroPlatformStartup(void)
 	  bRetroPlatformInitialized = TRUE;
 
     RetroPlatformGetHostVersion(&lRetroPlatformMainVersion, &lRetroPlatformRevision, &lRetroPlatformBuild);
-    fellowAddLog("RetroPlatformStartup (host ID %s) succeeded. Host version: %d.%d.%d\n", szRetroPlatformHostID, 
+    fellowAddLog("RetroPlatformStartup (host ID %s) initialization succeeded. Host version: %d.%d.%d\n", szRetroPlatformHostID, 
       lRetroPlatformMainVersion, lRetroPlatformRevision, lRetroPlatformBuild);
+
+    RetroPlatformSendFeatures();
   } else {
     fellowAddLog("RetroPlatformStartup (host ID %s) failed, error code %08x\n", szRetroPlatformHostID, lResult);
   }
