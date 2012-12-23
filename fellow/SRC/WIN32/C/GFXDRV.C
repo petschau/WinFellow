@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.29 2010-06-20 14:30:50 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.30 2012-12-23 12:41:47 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -89,6 +89,10 @@
 #include "sounddrv.h"
 #include "wgui.h"
 #include "ini.h"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 ini *gfxdrv_ini; /* GFXDRV copy of initdata */
 
@@ -574,6 +578,9 @@ BOOLE gfxDrvWindowClassInitialize(void) {
   wc1.cbClsExtra = 0;
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
+#ifdef RETRO_PLATFORM
+  RetroPlatformSetWindowInstance(win_drv_hInstance);
+#endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc1.hbrBackground = (HBRUSH) GetStockObject(BLACK_BRUSH);

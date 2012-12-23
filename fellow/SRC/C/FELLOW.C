@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.31 2012-12-11 17:52:17 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.32 2012-12-23 12:41:47 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -587,7 +587,6 @@ int __cdecl main(int argc, char *argv[]) {
 #ifdef RETRO_PLATFORM
   else
   {
-    RetroPlatformSetAction(RETRO_PLATFORM_START_EMULATION);
     while (!RetroPlatformEnter())
       fellowRun();
   }
