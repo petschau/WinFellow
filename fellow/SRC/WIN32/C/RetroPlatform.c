@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.6 2012-12-23 14:33:11 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.7 2012-12-23 14:42:26 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -265,6 +265,11 @@ void RetroPlatformSendFeatures(void)
     fellowAddLog("RetroPlatformSendFeatures failed, result was %d.\n", lResult);
 }
 
+void RetroPlatformActivate(const BOOLE bActive, const LPARAM lParam)
+{
+	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+}
+
 void RetroPlatformStartup(void)
 {
   ULO lResult;
@@ -291,19 +296,12 @@ void RetroPlatformShutdown(void)
 {
 }
 
-void RetroPlatformSetEmulationStatus(const BOOLE bActive, const LPARAM lParam)
-{
-	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
-}
-
 void RetroPlatformEmulationStart(void)
 {
-  // RetroPlatformSetEmulationStatus(TRUE);
 }
 
 void RetroPlatformEmulationStop(void)
 {
-  // RetroPlatformSetEmulationStatus(FALSE);
 }
 
 #endif

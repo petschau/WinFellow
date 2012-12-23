@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.30 2012-12-23 12:41:47 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.31 2012-12-23 14:42:26 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -377,6 +377,11 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       /* Being de-activated */
       gfx_drv_syskey_down = FALSE;
     }
+
+#ifdef RETRO_PLATFORM
+		RetroPlatformActivate(wParam, lParam);
+#endif
+
     return 0;
 /*    gfx_drv_win_activateapp_pure = wParam;
       {*/

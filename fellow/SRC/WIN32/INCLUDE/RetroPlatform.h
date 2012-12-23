@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.4 2012-12-23 14:33:11 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.5 2012-12-23 14:42:26 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -47,6 +47,7 @@ typedef enum {
   RETRO_PLATFORM_SAVE_STATE
 } RetroPlatformActions;
 
+void  RetroPlatformActivate(const BOOLE, const LPARAM);
 void  RetroPlatformEmulationStart(void);
 void  RetroPlatformEmulationStop(void);
 const STR *RetroPlatformGetActionName(const RetroPlatformActions);
