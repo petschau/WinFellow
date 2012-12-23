@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.3 2012-12-23 12:41:47 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.4 2012-12-23 13:00:16 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -156,8 +156,6 @@ const STR *RetroPlatformGetActionName(RetroPlatformActions lAction)
   }
 }
 
-/*
-
 static const STR *RetroPlatformGetMessageText(UBY iMsg)
 {
 	switch(iMsg)
@@ -222,7 +220,7 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 	return bResult;
 }
 
-static int RetroPlatformGetHostVersion (ULO *lMainVersion, ULO *lRevision, ULO *lBuild)
+static int RetroPlatformGetHostVersion(ULO *lMainVersion, ULO *lRevision, ULO *lBuild)
 {
 	ULO lResult = 0;
 	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
@@ -232,8 +230,6 @@ static int RetroPlatformGetHostVersion (ULO *lMainVersion, ULO *lRevision, ULO *
 	*lBuild       = RP_HOSTVERSION_BUILD(lResult);
 	return 1;
 }
-
-*/
 
 static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
 	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
@@ -254,18 +250,15 @@ void RetroPlatformStartup(void)
   RetroPlatformSetAction(RETRO_PLATFORM_START_EMULATION);
   
 	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, szRetroPlatformHostID, RetroPlatformHostMessageFunction, 0);
-	if (SUCCEEDED (lResult)) {
-		bRetroPlatformInitialized = TRUE;
+  if (SUCCEEDED (lResult)) {
+	  bRetroPlatformInitialized = TRUE;
 
-// 		rp_hostversion (&rp_version, &rp_revision, &rp_build);
-//		write_log (TEXT("rp_init('%s') succeeded. Version: %d.%d.%d\n"), rp_param, rp_version, rp_revision, rp_build);
-// 	} else {
-//		write_log (TEXT("rp_init('%s') failed, error code %08x\n"), rp_param, hr);
+    RetroPlatformGetHostVersion(&lRetroPlatformMainVersion, &lRetroPlatformRevision, &lRetroPlatformBuild);
+    fellowAddLog("RetroPlatformStartup (host ID %s) succeeded. Host version: %d.%d.%d\n", szRetroPlatformHostID, 
+      lRetroPlatformMainVersion, lRetroPlatformRevision, lRetroPlatformBuild);
+  } else {
+    fellowAddLog("RetroPlatformStartup (host ID %s) failed, error code %08x\n", szRetroPlatformHostID, lResult);
   }
-//	xfree (rp_param);
-//	rp_param = NULL;
-	//mousecapture = 0;
-//	return hr;
 }
 
 #endif
