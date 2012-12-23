@@ -88,8 +88,8 @@ typedef void (*sound_after_emu_routine)(void);
 
 typedef void (*buseventfunc)(void);
 
-#define FELLOWVERSION        "WinFellow alpha v0.4.4 build 2 (CVS)"
-#define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.4.4 - CVS" 
-#define FELLOWNUMERICVERSION "0.4.4.2"
+#define FELLOWVERSION        "WinFellow alpha v0.5.0 build 0 (CVS)"
+#define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.5.0 - CVS" 
+#define FELLOWNUMERICVERSION "0.5.0.0"
 
 #endif

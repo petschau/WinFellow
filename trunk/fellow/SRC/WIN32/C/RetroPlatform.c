@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.2 2012-12-11 17:52:17 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.3 2012-12-23 12:41:47 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -50,6 +50,7 @@ static BOOLE bRetroPlatformInitialized;
 static RPGUESTINFO RetroPlatformGuestInfo;
 HINSTANCE hRetroPlatformWindowInstance = NULL;
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
+static ULO lRetroPlatformRecursiveDevice;
 
 RetroPlatformActions RetroPlatformAction;
 
@@ -59,10 +60,10 @@ BOOLE RetroPlatformGetMode(void) {
   return bRetroPlatformMode;
 }
 
-void RetroPlatformSetAction(const RetroPlatformActions rpAction)
+void RetroPlatformSetAction(const RetroPlatformActions lAction)
 {
-  RetroPlatformAction = rpAction;
-  fellowAddLog("RPAction %d\n", rpAction);
+  RetroPlatformAction = lAction;
+  fellowAddLog("RetroPlatformSetAction: %s\n", RetroPlatformGetActionName(lAction));
 }
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
@@ -90,6 +91,12 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
   fellowAddLog("RetroPlatform: screen mode configured to %d.\n", iRetroPlatformScreenMode);
 }
 
+void RetroPlatformSetWindowInstance(HINSTANCE hInstance)
+{
+  fellowAddLog("RetroPlatform: set window instance to %d.\n", hInstance);
+  hRetroPlatformWindowInstance = hInstance;
+}
+
 BOOLE RetroPlatformEnter(void) {
   BOOLE quit_emulator = FALSE;
 
@@ -110,6 +117,8 @@ BOOLE RetroPlatformEnter(void) {
 	        }
 	        MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
 	        RetroPlatformAction = RETRO_PLATFORM_NO_ACTION;
+          // end_loop = TRUE;
+          // quit_emulator = TRUE;
 	        break;
 	     case RETRO_PLATFORM_QUIT_EMULATOR:
 	        end_loop = TRUE;
@@ -130,12 +139,21 @@ BOOLE RetroPlatformEnter(void) {
 	        break;
 	      default:
 	        break;
-	      }
+	    }
     }
     if (!quit_emulator) 
       winDrvEmulationStart(); 
   } while (!quit_emulator);
   return quit_emulator;
+}
+
+const STR *RetroPlatformGetActionName(RetroPlatformActions lAction)
+{
+  switch(lAction)
+  {
+    case RETRO_PLATFORM_START_EMULATION:  return TEXT("RETRO_PLATFORM_START_EMULATION");
+    default:                              return TEXT("UNIDENTIFIED_RETRO_PLATFORM_ACTION");
+  }
 }
 
 /*
@@ -217,28 +235,37 @@ static int RetroPlatformGetHostVersion (ULO *lMainVersion, ULO *lRevision, ULO *
 
 */
 
+static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
+	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
+{
+	LRESULT lResult;
+	lRetroPlatformRecursiveDevice++;
+	// lResult = RPHostMsgFunction2(uMessage, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
+	lRetroPlatformRecursiveDevice--;
+	return lResult;
+}
+
 void RetroPlatformStartup(void)
 {
+  ULO lResult;
+
   fellowAddLog("RetroPlatform startup.\n");
   RetroPlatformConfig = cfgManagerGetCurrentConfig(&cfg_manager);
+  RetroPlatformSetAction(RETRO_PLATFORM_START_EMULATION);
   
-  /*
-	ULO  lResult;
-
-	fellowAddLog("RetroPlatform startup.\n");
-	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, szRetroPlatformHostID, RPHostMsgFunction, 0);
+	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, szRetroPlatformHostID, RetroPlatformHostMessageFunction, 0);
 	if (SUCCEEDED (lResult)) {
 		bRetroPlatformInitialized = TRUE;
 
-		rp_hostversion (&rp_version, &rp_revision, &rp_build);
-		write_log (TEXT("rp_init('%s') succeeded. Version: %d.%d.%d\n"), rp_param, rp_version, rp_revision, rp_build);
-	} else {
-		write_log (TEXT("rp_init('%s') failed, error code %08x\n"), rp_param, hr);
-	}
-	xfree (rp_param);
-	rp_param = NULL;
-	mousecapture = 0;
-	return hr; */
+// 		rp_hostversion (&rp_version, &rp_revision, &rp_build);
+//		write_log (TEXT("rp_init('%s') succeeded. Version: %d.%d.%d\n"), rp_param, rp_version, rp_revision, rp_build);
+// 	} else {
+//		write_log (TEXT("rp_init('%s') failed, error code %08x\n"), rp_param, hr);
+  }
+//	xfree (rp_param);
+//	rp_param = NULL;
+	//mousecapture = 0;
+//	return hr;
 }
 
 #endif
