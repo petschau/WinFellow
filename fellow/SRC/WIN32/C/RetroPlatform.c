@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.5 2012-12-23 13:21:01 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.6 2012-12-23 14:33:11 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -81,7 +81,7 @@ void RetroPlatformSetHostID(const char *szHostID) {
   fellowAddLog("RetroPlatform: host ID configured to %s.\n", szRetroPlatformHostID);
 }
 
-void RetroPlatformSetMode(BOOLE bRPMode) {
+void RetroPlatformSetMode(const BOOLE bRPMode) {
   bRetroPlatformMode = bRPMode;
   fellowAddLog("RetroPlatform: entering RetroPlatform (headless) mode.\n");
 }
@@ -244,11 +244,12 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 void RetroPlatformSendFeatures(void)
 {
 	DWORD dFeatureFlags;
+  LRESULT lResult;
 
-	// dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
+	dFeatureFlags = RP_FEATURE_SCREEN1X;
+  // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
 
-  dFeatureFlags = RP_FEATURE_SCREEN1X;
-	/* dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
+	/*dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
 	dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
 	dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
@@ -256,9 +257,12 @@ void RetroPlatformSendFeatures(void)
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_GAMEPAD;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYPAD;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN; */
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;*/
 
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+	if(RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
+    fellowAddLog("RetroPlatformSendFeatures successful, result was %d.\n", lResult);
+  else
+    fellowAddLog("RetroPlatformSendFeatures failed, result was %d.\n", lResult);
 }
 
 void RetroPlatformStartup(void)
@@ -281,6 +285,25 @@ void RetroPlatformStartup(void)
   } else {
     fellowAddLog("RetroPlatformStartup (host ID %s) failed, error code %08x\n", szRetroPlatformHostID, lResult);
   }
+}
+
+void RetroPlatformShutdown(void)
+{
+}
+
+void RetroPlatformSetEmulationStatus(const BOOLE bActive, const LPARAM lParam)
+{
+	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+}
+
+void RetroPlatformEmulationStart(void)
+{
+  // RetroPlatformSetEmulationStatus(TRUE);
+}
+
+void RetroPlatformEmulationStop(void)
+{
+  // RetroPlatformSetEmulationStatus(FALSE);
 }
 
 #endif
