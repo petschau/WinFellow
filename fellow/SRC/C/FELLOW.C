@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.33 2012-12-23 14:33:11 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.34 2012-12-24 13:27:13 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -337,7 +337,9 @@ BOOLE fellowEmulationStart(void) {
   floppyEmulationStart();
   ffilesysEmulationStart();
   timerEmulationStart();
+#ifdef RETRO_PLATFORM
   RetroPlatformEmulationStart();
+#endif
   return result && memoryGetKickImageOK();
 }
 
@@ -347,7 +349,9 @@ BOOLE fellowEmulationStart(void) {
 /*============================================================================*/
 
 void fellowEmulationStop(void) {
+#ifdef RETRO_PLATFORM
   RetroPlatformEmulationStop();
+#endif
   timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
@@ -530,7 +534,9 @@ static void fellowModulesStartup(int argc, char *argv[])
   cpuIntegrationStartup();
   cfgStartup(argc, argv);
   wguiStartup();
+#ifdef RETRO_PLATFORM
   RetroPlatformStartup();
+#endif
 }
 
 /*============================================================================*/
@@ -539,7 +545,9 @@ static void fellowModulesStartup(int argc, char *argv[])
 
 static void fellowModulesShutdown(void)
 {
+#ifdef RETRO_PLATFORM
   RetroPlatformShutdown();
+#endif
   wguiShutdown();
   cfgShutdown();
   cpuIntegrationShutdown();
