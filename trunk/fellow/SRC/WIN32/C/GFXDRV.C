@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.32 2012-12-23 15:14:01 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.33 2012-12-24 11:54:13 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -670,19 +670,31 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
     char *versionstring = fellowGetVersionString();
     
     if (ddraw_device->mode->windowed) {
-    gfx_drv_hwnd = CreateWindowEx(0,
-      "FellowWindowClass",
-      versionstring,
-      WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | ((gfx_drv_stretch_always) ? (WS_MAXIMIZEBOX | WS_SIZEBOX) : 0),
-      CW_USEDEFAULT,
-      SW_SHOW,
-      ddraw_device->drawmode->width,
-      ddraw_device->drawmode->height,
-      NULL,
-      NULL,
-      win_drv_hInstance,
-      NULL);
-  }
+      DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | ((gfx_drv_stretch_always) ? (WS_MAXIMIZEBOX | WS_SIZEBOX) : 0);
+      DWORD dwExStyle = 0;
+      HWND hParent = NULL;
+
+#ifdef RETRO_PLATFORM
+      if(RetroPlatformGetMode()) {
+        dwStyle = WS_POPUP;
+        dwExStyle = WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
+        hParent = RetroPlatformGetParentWindowHandle();
+      }
+#endif
+
+      gfx_drv_hwnd = CreateWindowEx(dwExStyle,
+        "FellowWindowClass",
+        versionstring,
+        dwStyle,
+        CW_USEDEFAULT,
+        SW_SHOW,
+        ddraw_device->drawmode->width,
+        ddraw_device->drawmode->height,
+        hParent,
+        NULL,
+        win_drv_hInstance,
+        NULL);
+    }
   else {
     gfx_drv_hwnd = CreateWindowEx(WS_EX_TOPMOST,
       "FellowWindowClass",

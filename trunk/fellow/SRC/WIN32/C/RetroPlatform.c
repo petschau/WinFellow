@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.8 2012-12-23 15:14:01 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.9 2012-12-24 11:54:13 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -301,6 +301,16 @@ void RetroPlatformSendScreenMode(HWND hWnd)
 void RetroPlatformActivate(const BOOLE bActive, const LPARAM lParam)
 {
 	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+}
+
+HWND RetroPlatformGetParentWindowHandle(void)
+{
+	LRESULT lResult;
+	if (!bRetroPlatformInitialized)
+		return NULL;
+	RetroPlatformSendMessage(RP_IPC_TO_HOST_PARENT, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
+  fellowAddLog("RetroPlatformGetParentWindowHandle: parent window handle returned was %d.\n", lResult);
+	return (HWND)lResult;
 }
 
 void RetroPlatformStartup(void)
