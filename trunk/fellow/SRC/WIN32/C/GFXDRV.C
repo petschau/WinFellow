@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.33 2012-12-24 11:54:13 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.34 2012-12-24 13:27:13 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -620,31 +620,34 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
   }
   else {
     RECT rc1;
+    ULO x = 0, y = 0;
+
+#ifdef RETRO_PLATFORM
+    // in RetroPlatform mode, the player will take care of showing the emulator's window
+    if(!RetroPlatformGetMode()){
+#endif
+      x = iniGetEmulationWindowXPos(gfxdrv_ini);
+      y = iniGetEmulationWindowYPos(gfxdrv_ini);
+
+      SetRect(&rc1, x, y, x + ddraw_device->drawmode->width, y + ddraw_device->drawmode->height);
     
-    SetRect(&rc1, iniGetEmulationWindowXPos(gfxdrv_ini), iniGetEmulationWindowYPos(gfxdrv_ini), 
-		ddraw_device->drawmode->width + iniGetEmulationWindowXPos(gfxdrv_ini), 
-		ddraw_device->drawmode->height + iniGetEmulationWindowYPos(gfxdrv_ini));
-//    SetRect(&rc1, 0, 0, ddraw_device->drawmode->width, ddraw_device->drawmode->height);
-    AdjustWindowRectEx(&rc1,
-      GetWindowStyle(gfx_drv_hwnd),
-      GetMenu(gfx_drv_hwnd) != NULL,
-      GetWindowExStyle(gfx_drv_hwnd));
-/*
-    MoveWindow(gfx_drv_hwnd,
-      0, 
-      0, 
-      rc1.right - rc1.left,
-      rc1.bottom - rc1.top,
-      FALSE);*/
-	MoveWindow(gfx_drv_hwnd,
-      iniGetEmulationWindowXPos(gfxdrv_ini),
-      iniGetEmulationWindowYPos(gfxdrv_ini), 
-      rc1.right - rc1.left,
-      rc1.bottom - rc1.top,
-      FALSE);
-    ShowWindow(gfx_drv_hwnd, SW_SHOWNORMAL);
-    UpdateWindow(gfx_drv_hwnd);
-    gfxDrvWindowFindClientRect(ddraw_device);
+      AdjustWindowRectEx(&rc1,
+        GetWindowStyle(gfx_drv_hwnd),
+        GetMenu(gfx_drv_hwnd) != NULL,
+        GetWindowExStyle(gfx_drv_hwnd));
+
+	    MoveWindow(gfx_drv_hwnd,
+        x,
+        y, 
+        rc1.right - rc1.left,
+        rc1.bottom - rc1.top,
+        FALSE);
+      ShowWindow(gfx_drv_hwnd, SW_SHOWNORMAL);
+      UpdateWindow(gfx_drv_hwnd);
+      gfxDrvWindowFindClientRect(ddraw_device);
+#ifdef RETRO_PLATFORM
+    }
+#endif 
   }
 }
 
@@ -673,10 +676,11 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
       DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | ((gfx_drv_stretch_always) ? (WS_MAXIMIZEBOX | WS_SIZEBOX) : 0);
       DWORD dwExStyle = 0;
       HWND hParent = NULL;
+      int x = 0, y = 0;
 
 #ifdef RETRO_PLATFORM
       if(RetroPlatformGetMode()) {
-        dwStyle = WS_POPUP;
+        dwStyle = WS_POPUP | WS_DISABLED;
         dwExStyle = WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
         hParent = RetroPlatformGetParentWindowHandle();
       }
@@ -686,8 +690,8 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
         "FellowWindowClass",
         versionstring,
         dwStyle,
-        CW_USEDEFAULT,
-        SW_SHOW,
+        0, // CW_USEDEFAULT,
+        0, // SW_SHOW,
         ddraw_device->drawmode->width,
         ddraw_device->drawmode->height,
         hParent,
