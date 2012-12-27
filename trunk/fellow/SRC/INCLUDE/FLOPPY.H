@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.7 2008-02-21 00:00:44 peschau Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.8 2012-12-27 03:54:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -127,6 +127,7 @@ extern void floppyMotorSet(ULO drive, BOOLE mtr);
 extern void floppySideSet(BOOLE s);
 extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
+extern void floppyImageRemove(ULO drive);
 
 extern void copy_bootblock(void);
 

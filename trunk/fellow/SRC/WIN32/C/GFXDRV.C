@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.34 2012-12-24 13:27:13 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.35 2012-12-27 03:54:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -364,6 +364,10 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 //	  fellowAddLog("SC_KEYMENU\n");
 	  return 0;
         default:
+#ifdef RETRO_PLATFORM
+				  if ((wParam & 0xfff0) == SC_CLOSE)
+					  RetroPlatformClose();
+#endif
           return DefWindowProc(hWnd, message, wParam, lParam);
       }
   case WM_ACTIVATEAPP:

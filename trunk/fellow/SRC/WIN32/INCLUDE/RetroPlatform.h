@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.7 2012-12-24 11:54:13 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.8 2012-12-27 03:54:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -47,25 +47,26 @@ typedef enum {
   RETRO_PLATFORM_SAVE_STATE
 } RetroPlatformActions;
 
-void  RetroPlatformActivate(const BOOLE, const LPARAM);
-void  RetroPlatformEmulationStart(void);
-void  RetroPlatformEmulationStop(void);
-const STR *RetroPlatformGetActionName(const RetroPlatformActions);
-BOOLE RetroPlatformGetMode(void);
-HWND  RetroPlatformGetParentWindowHandle(void);
-void  RetroPlatformSendScreenMode(HWND);
-void  RetroPlatformSetAction(const RetroPlatformActions);
-void  RetroPlatformSetEmulationStatus(const BOOLE, const LPARAM);
-void  RetroPlatformSetEscapeKey(const char *);
-void  RetroPlatformSetEscapeHoldTime(const char *);
-void  RetroPlatformSetHostID(const char *);
-void  RetroPlatformSetMode(const BOOLE);
-void  RetroPlatformSetScreenMode(const char *);
-void  RetroPlatformSetWindowInstance(HINSTANCE);
-void  RetroPlatformShutdown(void);
-void  RetroPlatformStartup(void);
+extern void  RetroPlatformActivate(const BOOLE, const LPARAM);
+extern void  RetroPlatformClose(void);
+extern void  RetroPlatformEmulationStart(void);
+extern void  RetroPlatformEmulationStop(void);
+extern const STR *RetroPlatformGetActionName(const RetroPlatformActions);
+extern BOOLE RetroPlatformGetMode(void);
+extern HWND  RetroPlatformGetParentWindowHandle(void);
+extern void  RetroPlatformSendScreenMode(HWND);
+extern void  RetroPlatformSetAction(const RetroPlatformActions);
+extern void  RetroPlatformSetEmulationStatus(const BOOLE, const LPARAM);
+extern void  RetroPlatformSetEscapeKey(const char *);
+extern void  RetroPlatformSetEscapeHoldTime(const char *);
+extern void  RetroPlatformSetHostID(const char *);
+extern void  RetroPlatformSetMode(const BOOLE);
+extern void  RetroPlatformSetScreenMode(const char *);
+extern void  RetroPlatformSetWindowInstance(HINSTANCE);
+extern void  RetroPlatformShutdown(void);
+extern void  RetroPlatformStartup(void);
 
-BOOLE RetroPlatformEnter(void);
+extern BOOLE RetroPlatformEnter(void);
 
 #endif
 
