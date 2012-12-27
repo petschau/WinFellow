@@ -101,7 +101,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
       </ExceptionHandling>
