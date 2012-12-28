@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.11 2012-12-28 12:36:05 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.12 2012-12-28 13:24:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -69,10 +69,10 @@ static ULO lRetroPlatformRecursiveDevice;
 #define RETROPLATFORMNUMEVENTTYPES 2
 enum RetroPlatformEventTypes {
   EmulationResume = 0, 
-  EmulationQuit   = 1
+  EmulationClose  = 1
 };
 
-HANDLE hRetroPlatformEventEmulationResume, hRetroPlatformEventEmulationQuit;
+HANDLE hRetroPlatformEventEmulationResume, hRetroPlatformEventEmulationClose;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
@@ -235,7 +235,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	case RP_IPC_TO_GUEST_PING:
 		return TRUE;
 	case RP_IPC_TO_GUEST_CLOSE:
-    SetEvent(hRetroPlatformEventEmulationQuit);
+    fellowRequestEmulationStop();
+    SetEvent(hRetroPlatformEventEmulationClose);
 		return TRUE;
 	case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_SOFT)
@@ -255,7 +256,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	case RP_IPC_TO_GUEST_PAUSE:
     if(wParam != 0) { // pause emulation
       fellowRequestEmulationStop();
-      return 2;
+      return 1;
     }
     else { // resume emulation
       // fellowRequestEmulationStopClear();
@@ -509,7 +510,7 @@ void RetroPlatformStartup(void)
     RetroPlatformSendFeatures();
 
     hRetroPlatformEventEmulationResume = CreateEvent(NULL, FALSE, FALSE, "Resume Emulation");
-    hRetroPlatformEventEmulationQuit   = CreateEvent(NULL, FALSE, FALSE, "Quit Emulation");
+    hRetroPlatformEventEmulationClose  = CreateEvent(NULL, FALSE, FALSE, "Close Emulation");
   } 
   else {
     fellowAddLog("RetroPlatformStartup (host ID %s) failed to initialize, error code %08x\n", szRetroPlatformHostID, lResult);
@@ -543,8 +544,8 @@ ULO RetroPlatformInitializeMultiEventArray(HANDLE *hMultiEvents,
 
   hMultiEvents[lEventCount] = hRetroPlatformEventEmulationResume;
   eEventMapping[lEventCount++] = EmulationResume;
-  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationQuit;
-  eEventMapping[lEventCount++] = EmulationQuit;
+  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationClose;
+  eEventMapping[lEventCount++] = EmulationClose;
 
   return lEventCount;
 }
@@ -613,8 +614,8 @@ void RetroPlatformEnter(void) {
             winDrvEmulationStartRP();
             RetroPlatformSetEmulationState(FALSE);
             break;
-          case EmulationQuit:
-            fellowAddLog("RetroPlatformEnter(): received emulation quit event.\n"),
+          case EmulationClose:
+            fellowAddLog("RetroPlatformEnter(): received emulation close event.\n"),
             bQuitEmulator = TRUE;
             break;
           default:
@@ -634,8 +635,8 @@ void RetroPlatformShutdown(void) {
 
   if(hRetroPlatformEventEmulationResume != NULL)
     CloseHandle(hRetroPlatformEventEmulationResume);
-  if(hRetroPlatformEventEmulationQuit != NULL)
-    CloseHandle(hRetroPlatformEventEmulationQuit);
+  if(hRetroPlatformEventEmulationClose != NULL)
+    CloseHandle(hRetroPlatformEventEmulationClose);
 
   RetroPlatformSendScreenMode(NULL);
   RetroPlatformPostMessage(RP_IPC_TO_HOST_CLOSED, 0, 0, &RetroPlatformGuestInfo);
