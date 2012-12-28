@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.12 2012-12-28 13:24:03 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.13 2012-12-28 17:13:49 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -76,6 +76,9 @@ HANDLE hRetroPlatformEventEmulationResume, hRetroPlatformEventEmulationClose;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
+/** Verify state of the emulation engine.
+ *  @return TRUE, if emulation session if active, FALSE if not.
+ */
 BOOLE RetroPlatformGetEmulationState(void) {
   return bRetroPlatformEmulationState;
 }
@@ -154,8 +157,8 @@ void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
 
 void RetroPlatformSetEmulationState(const BOOLE bNewState) {
   bRetroPlatformEmulationState = bNewState;
-  fellowAddLog("RetroPlatformSetEmulationState(): state set to %d.\n", bNewState);
-  RetroPlatformSendPowerLEDIntensity(bNewState ? 0 : 0x100);
+  fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
+  RetroPlatformSendPowerLEDIntensity(bNewState ? 0x100 : 0);
 }
 
 void RetroPlatformSetEscapeHoldTime(const char *szEscapeHoldTime) {
@@ -220,7 +223,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
 {
 	fellowAddLog("RetroPlatformHostMessageFunction2(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
-	RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
+	  RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
 	if (uMessage == RP_IPC_TO_GUEST_DEVICECONTENT) {
 		struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
 		fellowAddLog(" Cat=%d Num=%d Flags=%08x '%s'\n",
@@ -235,7 +238,12 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	case RP_IPC_TO_GUEST_PING:
 		return TRUE;
 	case RP_IPC_TO_GUEST_CLOSE:
-    fellowRequestEmulationStop();
+    fellowAddLog("RetroPlatformHostMessageFunction2: received close event.\n");
+    if(RetroPlatformGetEmulationState()) {
+      fellowAddLog("emulation engine active, stopping...\n");
+      fellowRequestEmulationStop();
+    }
+    fellowAddLog("requesting close of emulator.\n");
     SetEvent(hRetroPlatformEventEmulationClose);
 		return TRUE;
 	case RP_IPC_TO_GUEST_RESET:
@@ -255,12 +263,15 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 		return TRUE;
 	case RP_IPC_TO_GUEST_PAUSE:
     if(wParam != 0) { // pause emulation
-      fellowRequestEmulationStop();
+      fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
+      if(RetroPlatformGetEmulationState()) {
+        fellowAddLog("emulation engine active, stopping...\n");
+        fellowRequestEmulationStop();
+      }
       return 1;
     }
     else { // resume emulation
-      // fellowRequestEmulationStopClear();
-      // fellowEmulationStart();
+      fellowAddLog("RetroPlatformHostMessageFunction2: received resume event, requesting start.\n");
       SetEvent(hRetroPlatformEventEmulationResume);
       return 1;
     }
@@ -610,12 +621,14 @@ void RetroPlatformEnter(void) {
         switch (eEventMapping[dwResult - WAIT_OBJECT_0]) {
           case EmulationResume:
             fellowAddLog("RetroPlatformEnter(): received emulation resume event.\n");
-            RetroPlatformSetEmulationState(TRUE),
-            winDrvEmulationStartRP();
-            RetroPlatformSetEmulationState(FALSE);
+            if(!RetroPlatformGetEmulationState()) {
+              RetroPlatformSetEmulationState(TRUE);
+              winDrvEmulationStartRP();
+              RetroPlatformSetEmulationState(FALSE);
+            }
             break;
           case EmulationClose:
-            fellowAddLog("RetroPlatformEnter(): received emulation close event.\n"),
+            fellowAddLog("RetroPlatformEnter(): received emulation close event.\n");
             bQuitEmulator = TRUE;
             break;
           default:
