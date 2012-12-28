@@ -1,4 +1,4 @@
-/* @(#) $Id: WINMAIN.C,v 1.22 2009-07-25 10:24:00 peschau Exp $ */
+/* @(#) $Id: WINMAIN.C,v 1.23 2012-12-28 12:36:05 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* This file is for whatever peculiarities we need to support on Windows   */
@@ -207,6 +207,10 @@ void winDrvEmulationStart(void) {
   if (fellowEmulationStart()) winDrvEmulate(winDrvFellowRunStart, 0);
   else wguiRequester("Emulation session failed to start up", "", "");
   fellowEmulationStop();
+}
+
+void winDrvEmulationStartRP(void) {
+  winDrvEmulate(winDrvFellowRunStart, 0);
 }
 
 
