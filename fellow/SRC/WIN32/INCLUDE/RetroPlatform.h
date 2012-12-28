@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.8 2012-12-27 03:54:03 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.9 2012-12-28 12:36:05 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -29,31 +29,15 @@
 
 #ifdef RETRO_PLATFORM
 
-typedef enum {
-  RETRO_PLATFORM_NO_ACTION,
-  RETRO_PLATFORM_START_EMULATION,
-  RETRO_PLATFORM_QUIT_EMULATOR,
-  RETRO_PLATFORM_CONFIGURATION,
-  RETRO_PLATFORM_OPEN_CONFIGURATION,
-  RETRO_PLATFORM_SAVE_CONFIGURATION,
-  RETRO_PLATFORM_SAVE_CONFIGURATION_AS,
-  RETRO_PLATFORM_LOAD_HISTORY0,
-  RETRO_PLATFORM_LOAD_HISTORY1,
-  RETRO_PLATFORM_LOAD_HISTORY2,
-  RETRO_PLATFORM_LOAD_HISTORY3,
-  RETRO_PLATFORM_DEBUGGER_START,
-  RETRO_PLATFORM_ABOUT,
-  RETRO_PLATFORM_LOAD_STATE,
-  RETRO_PLATFORM_SAVE_STATE
-} RetroPlatformActions;
-
-extern void  RetroPlatformActivate(const BOOLE, const LPARAM);
-extern void  RetroPlatformClose(void);
 extern void  RetroPlatformEmulationStart(void);
 extern void  RetroPlatformEmulationStop(void);
+extern void  RetroPlatformEnter(void);
 extern const STR *RetroPlatformGetActionName(const RetroPlatformActions);
 extern BOOLE RetroPlatformGetMode(void);
 extern HWND  RetroPlatformGetParentWindowHandle(void);
+extern void  RetroPlatformSendActivate(const BOOLE, const LPARAM);
+extern void  RetroPlatformSendClose(void);
+extern void  RetroPlatformSendPowerLEDIntensity(const WPARAM);
 extern void  RetroPlatformSendScreenMode(HWND);
 extern void  RetroPlatformSetAction(const RetroPlatformActions);
 extern void  RetroPlatformSetEmulationStatus(const BOOLE, const LPARAM);
@@ -65,8 +49,6 @@ extern void  RetroPlatformSetScreenMode(const char *);
 extern void  RetroPlatformSetWindowInstance(HINSTANCE);
 extern void  RetroPlatformShutdown(void);
 extern void  RetroPlatformStartup(void);
-
-extern BOOLE RetroPlatformEnter(void);
 
 #endif
 

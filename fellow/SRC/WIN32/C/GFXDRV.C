@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.35 2012-12-27 03:54:03 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.36 2012-12-28 12:36:05 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -353,23 +353,24 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     PostMessage(hWnd, WM_DIACQUIRE, 0, 0L);
     return 0;
   case WM_SYSCOMMAND:
-//    fellowAddLog("WM_SYSCOMMAND\n");
+    //    fellowAddLog("WM_SYSCOMMAND\n");
     if (IsWindow(hWnd)) {
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     }
     switch (GET_WM_COMMAND_ID(wParam, lParam)) {
-        case SC_SCREENSAVE:
-	  return 0;
-	case SC_KEYMENU:
-//	  fellowAddLog("SC_KEYMENU\n");
-	  return 0;
-        default:
-#ifdef RETRO_PLATFORM
-				  if ((wParam & 0xfff0) == SC_CLOSE)
-					  RetroPlatformClose();
+      case SC_SCREENSAVE:
+	      return 0;
+	    case SC_KEYMENU:
+        //	  fellowAddLog("SC_KEYMENU\n");
+	    return 0;
+ #ifdef RETRO_PLATFORM
+      case SC_CLOSE:
+				RetroPlatformSendClose();
+        return 0;
 #endif
-          return DefWindowProc(hWnd, message, wParam, lParam);
-      }
+      default:
+        return DefWindowProc(hWnd, message, wParam, lParam);
+    }
   case WM_ACTIVATEAPP:
 //    fellowAddLog("WM_ACTIVATEAPP ");
 //    if (hWnd == gfx_drv_hwnd) fellowAddLog("Our window\n");
@@ -383,7 +384,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     }
 
 #ifdef RETRO_PLATFORM
-		RetroPlatformActivate(wParam, lParam);
+		RetroPlatformSendActivate(wParam, lParam);
 #endif
 
     return 0;
