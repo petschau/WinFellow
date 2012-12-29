@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.20 2012-12-29 13:48:19 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.21 2012-12-29 14:17:11 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -311,11 +311,13 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
       gfxDrvRunEventReset();
+      RetroPlatformSetEmulationState(FALSE);
       return 1;
     }
     else { // resume emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received resume event, requesting start.\n");
       gfxDrvRunEventSet();
+      RetroPlatformSetEmulationState(TRUE);
       return 1;
     }
 #else
@@ -600,7 +602,9 @@ void RetroPlatformEnter(void) {
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
+    RetroPlatformSetEmulationState(TRUE);
     winDrvEmulationStart();
+    RetroPlatformSetEmulationState(FALSE);
   }
   else
 	  MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
