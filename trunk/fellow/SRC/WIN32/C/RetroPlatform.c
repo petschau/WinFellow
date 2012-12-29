@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.16 2012-12-29 09:50:26 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.17 2012-12-29 11:10:57 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -48,6 +48,7 @@
 #include "fellow.h"
 #include "windrv.h"
 #include "floppy.h"
+#include "mousedrv.h"
 
 // #define RETRO_PLATFORM_SUPPORT_PAUSE
 
@@ -257,13 +258,10 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
       fellowHardReset();
 		return TRUE;
 	case RP_IPC_TO_GUEST_TURBO:
-		/*{
-			if (wParam & RP_TURBO_CPU)
-				warpmode ((lParam & RP_TURBO_CPU) ? 1 : 0);
-			if (wParam & RP_TURBO_FLOPPY)
-				changed_prefs.floppy_speed = (lParam & RP_TURBO_FLOPPY) ? 0 : 100;
-			config_changed = 1;
-		}*/
+			/* if (wParam & RP_TURBO_CPU)
+				warpmode ((lParam & RP_TURBO_CPU) ? 1 : 0); */
+    if (wParam & RP_TURBO_FLOPPY)
+      floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? TRUE : FALSE);
 		return TRUE;
 	case RP_IPC_TO_GUEST_PAUSE:
 #ifdef RETRO_PLATFORM_SUPPORT_PAUSE
@@ -288,10 +286,11 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 		set_volume (currprefs.sound_volume, 0);*/
 		return TRUE;
 	case RP_IPC_TO_GUEST_ESCAPEKEY:
-		/*rp_rpescapekey = wParam;
-		rp_rpescapeholdtime = lParam; */
+		iRetroPlatformEscapeKey      = wParam;
+		iRetroPlatformEscapeHoldTime = lParam;
 		return TRUE;
 	case RP_IPC_TO_GUEST_MOUSECAPTURE:
+    mouseDrvToggleFocus();
 		/*{
 			if (wParam & RP_MOUSECAPTURE_CAPTURED)
 				setmouseactive (1);
@@ -479,9 +478,20 @@ static void RetroPlatformDetermineScreenModeFromConfig(struct RPScreenMode *Retr
   RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
 }
 
-void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam)
-{
+void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
 	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+}
+
+void RetroPlatformSendMouseCapture(const BOOLE bActive) {
+  WPARAM wFlags = (WPARAM) 0;
+
+	if (!bRetroPlatformInitialized)
+		return;
+
+	if (bActive)
+		wFlags |= RP_MOUSECAPTURE_CAPTURED;
+
+	RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
 /** Control status of power LED in RetroPlatform player.
@@ -534,9 +544,8 @@ void RetroPlatformStartup(void)
     hRetroPlatformEventEmulationClose  = CreateEvent(NULL, FALSE, FALSE, "Close Emulation");
     hRetroPlatformEventEmulationResume = CreateEvent(NULL, FALSE, FALSE, "Resume Emulation");
   } 
-  else {
+  else
     fellowAddLog("RetroPlatformStartup (host ID %s) failed to initialize, error code %08x\n", szRetroPlatformHostID, lResult);
-  }
 }
 
 /** Verifies that the prerequisites to start the emulation are available.
