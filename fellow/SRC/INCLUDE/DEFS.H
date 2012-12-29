@@ -90,6 +90,6 @@ typedef void (*buseventfunc)(void);
 
 #define FELLOWVERSION        "WinFellow alpha v0.5.0 build 0 (CVS)"
 #define FELLOWLONGVERSION    "WinFellow Amiga Emulator alpha v0.5.0 - CVS" 
-#define FELLOWNUMERICVERSION "0.5.0.0"
+#define FELLOWNUMERICVERSION "0.5.0.$Revision: 1.10 $"
 
 #endif
