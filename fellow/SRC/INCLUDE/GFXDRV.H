@@ -1,5 +1,6 @@
 #ifndef GFXDRV_H
 
+#include "draw.h"
 
 /*===========================================================================*/
 /* Implementing these functions creates a graphics driver for Fellow         */
@@ -13,6 +14,8 @@ extern void gfxDrvInvalidateBufferPointer(void);
 extern BOOLE gfxDrvEmulationStart(ULO maxbuffercount);
 extern ULO gfxDrvEmulationStartPost(void);
 extern void gfxDrvEmulationStop(void);
+extern void gfxDrvRunEventSet(void);
+extern void gfxDrvRunEventReset(void);
 extern BOOLE gfxDrvStartup(void);
 extern void gfxDrvShutdown(void);
 

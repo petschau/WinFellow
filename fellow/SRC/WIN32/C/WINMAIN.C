@@ -1,4 +1,4 @@
-/* @(#) $Id: WINMAIN.C,v 1.23 2012-12-28 12:36:05 carfesh Exp $ */
+/* @(#) $Id: WINMAIN.C,v 1.24 2012-12-29 13:48:19 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* This file is for whatever peculiarities we need to support on Windows   */
@@ -32,6 +32,10 @@
 #include "kbd.h"
 #include "joydrv.h"
 #include "kbddrv.h"
+
+#ifdef RETRO_PLATFORM
+#include "retroplatform.h"
+#endif
 
 extern int __cdecl main(int, char **);
 
@@ -204,15 +208,12 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 }
 
 void winDrvEmulationStart(void) {
-  if (fellowEmulationStart()) winDrvEmulate(winDrvFellowRunStart, 0);
-  else wguiRequester("Emulation session failed to start up", "", "");
+  if (fellowEmulationStart())
+    winDrvEmulate(winDrvFellowRunStart, 0);
+  else 
+    wguiRequester("Emulation session failed to start up", "", "");
   fellowEmulationStop();
 }
-
-void winDrvEmulationStartRP(void) {
-  winDrvEmulate(winDrvFellowRunStart, 0);
-}
-
 
 /*===========================================================================*/
 /* Controls multi-threaded execution of debugger.                            */
