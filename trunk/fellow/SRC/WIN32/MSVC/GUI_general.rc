@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -91,7 +89,7 @@ BEGIN
     LTEXT           "Max",IDC_STATIC,145,58,14,8
 END
 
-IDD_FLOPPY DIALOG  0, 0, 235, 156
+IDD_FLOPPY DIALOG 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "floppy"
 FONT 8, "MS Sans Serif"
@@ -126,7 +124,7 @@ BEGIN
     PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT,135,65,25,12
 END
 
-IDD_SOUND DIALOG  0, 0, 235, 156
+IDD_SOUND DIALOG 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "sound"
 FONT 8, "MS Sans Serif"
@@ -162,7 +160,7 @@ BEGIN
     LTEXT           "ms",IDC_STATIC,180,130,10,8
 END
 
-IDD_FILESYSTEM DIALOG  0, 0, 235, 156
+IDD_FILESYSTEM DIALOG 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "filesystem"
 FONT 8, "MS Sans Serif"
@@ -176,7 +174,7 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,126,7,102,10
 END
 
-IDD_HARDFILE DIALOG  0, 0, 235, 156
+IDD_HARDFILE DIALOG 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "hardfile"
 FONT 8, "MS Sans Serif"
@@ -249,7 +247,7 @@ BEGIN
     LTEXT           "not set",IDC_GAMEPORT1_AUTOFIRE1,150,155,70,8
 END
 
-IDD_VARIOUS DIALOG  0, 0, 235, 156
+IDD_VARIOUS DIALOG 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "various"
 FONT 8, "MS Sans Serif"
@@ -330,7 +328,7 @@ BEGIN
     PUSHBUTTON      "...",IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG,141,10,15,15
 END
 
-IDD_DISPLAY DIALOG  0, 0, 242, 181
+IDD_DISPLAY DIALOG 0, 0, 242, 181
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "display"
 FONT 8, "MS Sans Serif"
@@ -371,7 +369,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_MAIN, DIALOG
     BEGIN
@@ -519,7 +517,7 @@ END
 // Menu
 //
 
-IDR_FELLOW_GUI_MENU MENU 
+IDR_FELLOW_GUI_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -595,8 +593,8 @@ IDB_WINFELLOW_LOGO      BITMAP                  "winfellow_logo_small.bmp"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,4,3,2
- PRODUCTVERSION 0,4,3,2
+ FILEVERSION 0,5,0,0
+ PRODUCTVERSION 0,5,0,0
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -613,12 +611,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://fellow.sourceforge.net"
             VALUE "FileDescription", "WinFellow Amiga Emulator"
-            VALUE "FileVersion", "0.4.3.2"
+            VALUE "FileVersion", "0.5.0.0"
             VALUE "InternalName", "WinFellow"
-            VALUE "LegalCopyright", "©1996-2004 under the GNU General Public License (GPL)"
+            VALUE "LegalCopyright", "©1996-2013 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
-            VALUE "ProductVersion", "0.4.3.2"
+            VALUE "ProductVersion", "0.5.0.0"
         END
     END
     BLOCK "VarFileInfo"
@@ -633,23 +631,21 @@ END
 // String Table
 //
 
-STRINGTABLE 
+STRINGTABLE
 BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // English (U.S.) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian (Bokmal) resources
+// Norwegisch, Bokmål (Norwegen) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
-#ifdef _WIN32
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -679,7 +675,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_DEBUGGER, DIALOG
     BEGIN
@@ -698,7 +694,7 @@ END
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegian (Bokmal) resources
+#endif    // Norwegisch, Bokmål (Norwegen) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
