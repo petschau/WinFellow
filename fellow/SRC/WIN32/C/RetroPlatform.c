@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.13 2012-12-28 17:13:49 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.14 2012-12-29 09:19:59 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -48,6 +48,8 @@
 #include "fellow.h"
 #include "windrv.h"
 #include "floppy.h"
+
+#define RETRO_PLATFORM_SUPPORT_PAUSE
 
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = ""; ///< host ID that was passed over by the RetroPlatform player
 BOOLE bRetroPlatformMode = FALSE;                    ///< flag to indicate that emulator operates in "headless" mode
@@ -156,9 +158,11 @@ void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
 }
 
 void RetroPlatformSetEmulationState(const BOOLE bNewState) {
-  bRetroPlatformEmulationState = bNewState;
-  fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
-  RetroPlatformSendPowerLEDIntensity(bNewState ? 0x100 : 0);
+  if(bRetroPlatformEmulationState != bNewState) {
+    bRetroPlatformEmulationState = bNewState;
+    fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
+    RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 100 : 0);
+  }
 }
 
 void RetroPlatformSetEscapeHoldTime(const char *szEscapeHoldTime) {
@@ -262,6 +266,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 		}*/
 		return TRUE;
 	case RP_IPC_TO_GUEST_PAUSE:
+#ifdef RETRO_PLATFORM_SUPPORT_PAUSE
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
       if(RetroPlatformGetEmulationState()) {
@@ -275,6 +280,9 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
       SetEvent(hRetroPlatformEventEmulationResume);
       return 1;
     }
+#else
+    return 1;
+#endif
 	case RP_IPC_TO_GUEST_VOLUME:
 		/*currprefs.sound_volume = changed_prefs.sound_volume = 100 - wParam;
 		set_volume (currprefs.sound_volume, 0);*/
@@ -430,7 +438,9 @@ void RetroPlatformSendFeatures(void)
   LRESULT lResult;
 
 	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
+#ifdef RETRO_PLATFORM_SUPPORT_PAUSE
   dFeatureFlags |= RP_FEATURE_PAUSE;
+#endif
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
 
 	/*dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
@@ -478,8 +488,9 @@ void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam)
  *
  * Examines the current on/off state of the emulator session and sends it to the RetroPlatform player.
  */
-void RetroPlatformSendPowerLEDIntensity(const WPARAM wIntensity) {
-    RetroPlatformSendMessage(RP_IPC_TO_HOST_POWERLED, wIntensity, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+void RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
+  if(wIntensityPercent <= 100 && wIntensityPercent >= 0)
+    RetroPlatformSendMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
 void RetroPlatformSendScreenMode(HWND hWnd)
