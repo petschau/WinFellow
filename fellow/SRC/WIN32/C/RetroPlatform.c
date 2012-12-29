@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.22 2012-12-29 14:34:40 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.23 2012-12-29 19:32:30 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -594,8 +594,8 @@ BOOLE RetroPlatformCheckEmulationNecessities(void)
 
 /** The main control function when operating in RetroPlatform headless mode.
  * 
- * This function performs the start of the emulator session.
- * 
+ * This function performs the start of the emulator session. On a reset event,
+ * winDrvEmulationStart will exit without bRetroPlatformEmulatorQuit being set.
  */
 void RetroPlatformEnter(void) {
   if (RetroPlatformCheckEmulationNecessities() == TRUE) {
