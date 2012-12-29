@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.17 2012-12-29 11:10:57 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.18 2012-12-29 11:45:33 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -35,6 +35,8 @@
  *  WinFellow's own GUI is not shown, the emulator operates in a headless mode.
  *  The configuration is received as a command line parameter, all control events 
  *  (start, shutdown, reset, ...) are sent via IPC.
+ *  @todo pausing the emulation causes a freeze in the main message loop, which is
+ *        why pausing is currently disabled.
  */
 
 #include "defs.h"
@@ -43,7 +45,6 @@
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 
-#include "wgui.h"
 #include "config.h"
 #include "fellow.h"
 #include "windrv.h"
@@ -79,6 +80,92 @@ HANDLE hRetroPlatformEventEmulationClose, hRetroPlatformEventEmulationResume;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
+static void RetroPlatformDetermineScreenModeFromConfig(
+  struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
+  DWORD dwScreenMode = RP_SCREENMODE_SCALE_1X;
+	int iHeight = cfgGetScreenHeight(RetroPlatformConfig);
+  int iWidth = cfgGetScreenWidth(RetroPlatformConfig);
+
+  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
+
+  RetroPlatformScreenMode->lTargetHeight = iHeight;
+  RetroPlatformScreenMode->lTargetWidth  = iWidth;
+
+  RetroPlatformScreenMode->dwScreenMode = dwScreenMode;
+
+  RetroPlatformScreenMode->lClipLeft = -1;
+  RetroPlatformScreenMode->lClipTop = -1;
+  RetroPlatformScreenMode->lClipWidth = -1;
+  RetroPlatformScreenMode->lClipHeight = -1;
+  RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
+}
+
+static const STR *RetroPlatformGetMessageText(ULO iMsg) {
+	switch(iMsg) {
+	  case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
+	  case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
+	  case RP_IPC_TO_HOST_CLOSED:             return TEXT("RP_IPC_TO_HOST_CLOSED");
+	  case RP_IPC_TO_HOST_ACTIVATED:          return TEXT("RP_IPC_TO_HOST_ACTIVATED");
+	  case RP_IPC_TO_HOST_DEACTIVATED:        return TEXT("RP_IPC_TO_HOST_DEACTIVATED");
+	  case RP_IPC_TO_HOST_SCREENMODE:         return TEXT("RP_IPC_TO_HOST_SCREENMODE");
+	  case RP_IPC_TO_HOST_POWERLED:           return TEXT("RP_IPC_TO_HOST_POWERLED");
+	  case RP_IPC_TO_HOST_DEVICES:            return TEXT("RP_IPC_TO_HOST_DEVICES");
+	  case RP_IPC_TO_HOST_DEVICEACTIVITY:     return TEXT("RP_IPC_TO_HOST_DEVICEACTIVITY");
+	  case RP_IPC_TO_HOST_MOUSECAPTURE:       return TEXT("RP_IPC_TO_HOST_MOUSECAPTURE");
+	  case RP_IPC_TO_HOST_HOSTAPIVERSION:     return TEXT("RP_IPC_TO_HOST_HOSTAPIVERSION");
+	  case RP_IPC_TO_HOST_PAUSE:              return TEXT("RP_IPC_TO_HOST_PAUSE");
+	  case RP_IPC_TO_HOST_DEVICECONTENT:      return TEXT("RP_IPC_TO_HOST_DEVICECONTENT");
+	  case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
+	  case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
+	  case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
+	  case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+	  case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
+	  case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
+	  case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
+	  case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
+	  case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
+	  case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
+
+	  case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
+	  case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
+	  case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
+	  case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
+	  case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
+	  case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
+	  case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
+	  case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
+	  case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
+	  case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+	  case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
+	  case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
+	  case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
+	  case RP_IPC_TO_GUEST_LOADSTATE:         return TEXT("RP_IPC_TO_GUEST_LOADSTATE");
+	  case RP_IPC_TO_GUEST_FLUSH:             return TEXT("RP_IPC_TO_GUEST_FLUSH");
+	  case RP_IPC_TO_GUEST_DEVICEREADWRITE:   return TEXT("RP_IPC_TO_GUEST_DEVICEREADWRITE");
+	  case RP_IPC_TO_GUEST_QUERYSCREENMODE:   return TEXT("RP_IPC_TO_GUEST_QUERYSCREENMODE");
+	  case RP_IPC_TO_GUEST_GUESTAPIVERSION :  return TEXT("RP_IPC_TO_GUEST_GUESTAPIVERSION");
+	  default: return TEXT("UNKNOWN");
+	}
+}
+
+/** Send an IPC message to RetroPlatform host.
+ * @return TRUE is sucessfully sent, FALSE otherwise.
+ */
+static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam,
+	LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult) {
+	BOOLE bResult;
+
+	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
+  
+  if(bResult)
+    fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
+      RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
+  else
+		fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
+	
+  return bResult;
+}
+
 /** Verify state of the emulation engine.
  *  @return TRUE, if emulation session if active, FALSE if not.
  */
@@ -86,53 +173,24 @@ BOOLE RetroPlatformGetEmulationState(void) {
   return bRetroPlatformEmulationState;
 }
 
-static const STR *RetroPlatformGetMessageText(ULO iMsg) {
-	switch(iMsg)
-	{
-	case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
-	case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
-	case RP_IPC_TO_HOST_CLOSED:             return TEXT("RP_IPC_TO_HOST_CLOSED");
-	case RP_IPC_TO_HOST_ACTIVATED:          return TEXT("RP_IPC_TO_HOST_ACTIVATED");
-	case RP_IPC_TO_HOST_DEACTIVATED:        return TEXT("RP_IPC_TO_HOST_DEACTIVATED");
-	case RP_IPC_TO_HOST_SCREENMODE:         return TEXT("RP_IPC_TO_HOST_SCREENMODE");
-	case RP_IPC_TO_HOST_POWERLED:           return TEXT("RP_IPC_TO_HOST_POWERLED");
-	case RP_IPC_TO_HOST_DEVICES:            return TEXT("RP_IPC_TO_HOST_DEVICES");
-	case RP_IPC_TO_HOST_DEVICEACTIVITY:     return TEXT("RP_IPC_TO_HOST_DEVICEACTIVITY");
-	case RP_IPC_TO_HOST_MOUSECAPTURE:       return TEXT("RP_IPC_TO_HOST_MOUSECAPTURE");
-	case RP_IPC_TO_HOST_HOSTAPIVERSION:     return TEXT("RP_IPC_TO_HOST_HOSTAPIVERSION");
-	case RP_IPC_TO_HOST_PAUSE:              return TEXT("RP_IPC_TO_HOST_PAUSE");
-	case RP_IPC_TO_HOST_DEVICECONTENT:      return TEXT("RP_IPC_TO_HOST_DEVICECONTENT");
-	case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
-	case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
-	case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
-	case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
-	case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
-	case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
-	case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
-	case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
-	case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
-	case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
+/** Determine the RetroPlatform host version.
+ * 
+ * @param[out] lpMainVersion main version number
+ * @param[out] lpRevisionrevision number
+ * @param[out] lpBuild build number
+ * @return TRUE is successful, FALSE otherwise.
+ */
+static BOOLE RetroPlatformGetHostVersion(ULO *lpMainVersion, ULO *lpRevision, 
+  ULO *lpBuild) {
+	ULO lResult = 0;
 
-	case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
-	case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
-	case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
-	case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
-	case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
-	case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
-	case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
-	case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
-	case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
-	case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
-	case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
-	case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
-	case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
-	case RP_IPC_TO_GUEST_LOADSTATE:         return TEXT("RP_IPC_TO_GUEST_LOADSTATE");
-	case RP_IPC_TO_GUEST_FLUSH:             return TEXT("RP_IPC_TO_GUEST_FLUSH");
-	case RP_IPC_TO_GUEST_DEVICEREADWRITE:   return TEXT("RP_IPC_TO_GUEST_DEVICEREADWRITE");
-	case RP_IPC_TO_GUEST_QUERYSCREENMODE:   return TEXT("RP_IPC_TO_GUEST_QUERYSCREENMODE");
-	case RP_IPC_TO_GUEST_GUESTAPIVERSION :  return TEXT("RP_IPC_TO_GUEST_GUESTAPIVERSION");
-	default: return TEXT("UNKNOWN");
-	}
+	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
+		return FALSE;
+
+	*lpMainVersion = RP_HOSTVERSION_MAJOR(lResult);
+	*lpRevision    = RP_HOSTVERSION_MINOR(lResult);
+	*lpBuild       = RP_HOSTVERSION_BUILD(lResult);
+	return TRUE;
 }
 
 BOOLE RetroPlatformGetMode(void) {
@@ -151,6 +209,21 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 		fellowAddLog("RetroPlatform could not post message, error: %d\n", GetLastError());
 
 	return bResult;
+}
+
+/** Control status of power LED in RetroPlatform player.
+ *
+ * Examines the current on/off state of the emulator session and sends it to the RetroPlatform player.
+ * @param[in] wIntensityPercent intensity of the power LED in percent, with 0 being off, 100 being full intensity.
+ * @return TRUE, if valid value was passed, FALSE if invalid value.
+ */
+static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
+  if(wIntensityPercent <= 0x100 && wIntensityPercent >= 0) {
+    RetroPlatformPostMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, &RetroPlatformGuestInfo);
+    return TRUE;
+  }
+  else
+    return FALSE;
 }
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
@@ -189,39 +262,6 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
 void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
   fellowAddLog("RetroPlatform: set window instance to %d.\n", hInstance);
   hRetroPlatformWindowInstance = hInstance;
-}
-
-static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam,
-	LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult)
-{
-	BOOLE bResult;
-
-	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
-  
-  if(bResult)
-    fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
-      RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
-  else
-		fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
-	
-  return bResult;
-}
-
-/** Determine the RetroPlatform host version.
- * 
- * @param[out] lpMainVersion main version number
- * @param[out] lpRevisionrevision number
- * @param[out] lpBuild build number
- * @return TRUE is successful, FALSE otherwise.
- */
-static BOOLE RetroPlatformGetHostVersion(ULO *lpMainVersion, ULO *lpRevision, ULO *lpBuild) {
-	ULO lResult = 0;
-	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
-		return FALSE;
-	*lpMainVersion = RP_HOSTVERSION_MAJOR(lResult);
-	*lpRevision    = RP_HOSTVERSION_MINOR(lResult);
-	*lpBuild       = RP_HOSTVERSION_BUILD(lResult);
-	return TRUE;
 }
 
 static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM wParam, LPARAM lParam,
@@ -417,6 +457,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	return FALSE;
 }
 
+/** host message function that is used for callback to receive IPC messages from the host.
+ */
 static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
 	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
 {
@@ -431,7 +473,13 @@ void RetroPlatformSendClose(void) {
 	RetroPlatformSendMessage(RP_IPC_TO_HOST_CLOSE, 0, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
-void RetroPlatformSendFeatures(void)
+/** Send list of features supported by the guest to the RetroPlatform host.
+ *
+ * An RP_IPC_TO_HOST_FEATURES message is sent to the host, with flags indicating the 
+ * features supported by the guest.
+ * @return TRUE if message was sent successfully, FALSE otherwise.
+ */
+BOOLE RetroPlatformSendFeatures(void)
 {
 	DWORD dFeatureFlags;
   LRESULT lResult;
@@ -452,30 +500,14 @@ void RetroPlatformSendFeatures(void)
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;*/
 
-	if(RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
+	if(RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult)) {
     fellowAddLog("RetroPlatformSendFeatures successful, result was %d.\n", lResult);
-  else
+    return TRUE;
+  }
+  else {
     fellowAddLog("RetroPlatformSendFeatures failed, result was %d.\n", lResult);
-}
-
-static void RetroPlatformDetermineScreenModeFromConfig(struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig)
-{
-  DWORD dwScreenMode = RP_SCREENMODE_SCALE_1X;
-	int iHeight = cfgGetScreenHeight(RetroPlatformConfig);
-  int iWidth = cfgGetScreenWidth(RetroPlatformConfig);
-
-  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
-
-  RetroPlatformScreenMode->lTargetHeight = iHeight;
-  RetroPlatformScreenMode->lTargetWidth  = iWidth;
-
-  RetroPlatformScreenMode->dwScreenMode = dwScreenMode;
-
-  RetroPlatformScreenMode->lClipLeft = -1;
-  RetroPlatformScreenMode->lClipTop = -1;
-  RetroPlatformScreenMode->lClipWidth = -1;
-  RetroPlatformScreenMode->lClipHeight = -1;
-  RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
+    return FALSE;
+  }
 }
 
 void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
@@ -492,15 +524,6 @@ void RetroPlatformSendMouseCapture(const BOOLE bActive) {
 		wFlags |= RP_MOUSECAPTURE_CAPTURED;
 
 	RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
-}
-
-/** Control status of power LED in RetroPlatform player.
- *
- * Examines the current on/off state of the emulator session and sends it to the RetroPlatform player.
- */
-void RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
-  if(wIntensityPercent <= 0x100 && wIntensityPercent >= 0)
-    RetroPlatformSendMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
 void RetroPlatformSendScreenMode(HWND hWnd)
