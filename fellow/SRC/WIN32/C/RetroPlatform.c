@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.14 2012-12-29 09:19:59 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.15 2012-12-29 09:46:38 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -49,7 +49,7 @@
 #include "windrv.h"
 #include "floppy.h"
 
-#define RETRO_PLATFORM_SUPPORT_PAUSE
+// #define RETRO_PLATFORM_SUPPORT_PAUSE
 
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = ""; ///< host ID that was passed over by the RetroPlatform player
 BOOLE bRetroPlatformMode = FALSE;                    ///< flag to indicate that emulator operates in "headless" mode
@@ -70,11 +70,11 @@ static ULO lRetroPlatformRecursiveDevice;
 
 #define RETROPLATFORMNUMEVENTTYPES 2
 enum RetroPlatformEventTypes {
-  EmulationResume = 0, 
-  EmulationClose  = 1
+  EmulationClose  = 0, 
+  EmulationResume = 1
 };
 
-HANDLE hRetroPlatformEventEmulationResume, hRetroPlatformEventEmulationClose;
+HANDLE hRetroPlatformEventEmulationClose, hRetroPlatformEventEmulationResume;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
@@ -531,8 +531,8 @@ void RetroPlatformStartup(void)
 
     RetroPlatformSendFeatures();
 
-    hRetroPlatformEventEmulationResume = CreateEvent(NULL, FALSE, FALSE, "Resume Emulation");
     hRetroPlatformEventEmulationClose  = CreateEvent(NULL, FALSE, FALSE, "Close Emulation");
+    hRetroPlatformEventEmulationResume = CreateEvent(NULL, FALSE, FALSE, "Resume Emulation");
   } 
   else {
     fellowAddLog("RetroPlatformStartup (host ID %s) failed to initialize, error code %08x\n", szRetroPlatformHostID, lResult);
@@ -564,10 +564,10 @@ ULO RetroPlatformInitializeMultiEventArray(HANDLE *hMultiEvents,
   enum RetroPlatformEventTypes *eEventMapping) {
   ULO lEventCount = 0;
 
-  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationResume;
-  eEventMapping[lEventCount++] = EmulationResume;
   hMultiEvents[lEventCount] = hRetroPlatformEventEmulationClose;
   eEventMapping[lEventCount++] = EmulationClose;
+  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationResume;
+  eEventMapping[lEventCount++] = EmulationResume;
 
   return lEventCount;
 }
@@ -593,7 +593,7 @@ void RetroPlatformEnter(void) {
   DWORD dwResult;
   ULO   lEventCount;
 
-  HANDLE hMultiEvents[RETROPLATFORMNUMEVENTTYPES];
+  HANDLE hMultiEvents[RETROPLATFORMNUMEVENTTYPES] = {0};
   enum RetroPlatformEventTypes eEventMapping[RETROPLATFORMNUMEVENTTYPES];
 
   do {
@@ -624,6 +624,8 @@ void RetroPlatformEnter(void) {
     }
 
     if (!bQuitEmulator) {
+      fellowAddLog("RetroPlatformEnter(): entering emulator control event loop, awaiting events...\n");
+
       dwResult = WaitForMultipleObjects(lEventCount, hMultiEvents, FALSE, INFINITE);
 
       fellowAddLog("RetroPlatformEnter(): received an emulator control event, dwResult=%d.\n", dwResult);
