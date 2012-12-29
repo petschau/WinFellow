@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.15 2012-12-29 09:46:38 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.16 2012-12-29 09:50:26 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -161,7 +161,7 @@ void RetroPlatformSetEmulationState(const BOOLE bNewState) {
   if(bRetroPlatformEmulationState != bNewState) {
     bRetroPlatformEmulationState = bNewState;
     fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
-    RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 100 : 0);
+    RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 0x100 : 0);
   }
 }
 
@@ -489,7 +489,7 @@ void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam)
  * Examines the current on/off state of the emulator session and sends it to the RetroPlatform player.
  */
 void RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
-  if(wIntensityPercent <= 100 && wIntensityPercent >= 0)
+  if(wIntensityPercent <= 0x100 && wIntensityPercent >= 0)
     RetroPlatformSendMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
