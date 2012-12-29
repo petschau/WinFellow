@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.36 2012-12-28 12:36:05 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.37 2012-12-29 09:46:38 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -686,7 +686,8 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
 #ifdef RETRO_PLATFORM
       if(RetroPlatformGetMode()) {
         dwStyle = WS_POPUP | WS_DISABLED;
-        dwExStyle = WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
+        // dwExStyle = WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
+        dwExStyle = WS_EX_TOOLWINDOW;
         hParent = RetroPlatformGetParentWindowHandle();
       }
 #endif
