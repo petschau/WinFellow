@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.21 2012-12-29 14:17:11 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.22 2012-12-29 14:34:40 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -65,6 +65,7 @@ LON iRetroPlatformScreenMode = 0;
 
 static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
+static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
 
 static RPGUESTINFO RetroPlatformGuestInfo;
 
@@ -293,12 +294,12 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
     fellowAddLog("RetroPlatformHostMessageFunction2: received close event.\n");
     fellowRequestEmulationStop();
     gfxDrvRunEventSet();
+    bRetroPlatformEmulatorQuit = TRUE;
 		return TRUE;
 	case RP_IPC_TO_GUEST_RESET:
-    if(wParam == RP_RESET_SOFT)
-      fellowSoftReset();
-    else
-      fellowHardReset();
+    if(wParam == RP_RESET_HARD)
+      fellowPreStartReset(TRUE);
+    fellowRequestEmulationStop();
 		return TRUE;
 	case RP_IPC_TO_GUEST_TURBO:
 			/* if (wParam & RP_TURBO_CPU)
@@ -602,9 +603,11 @@ void RetroPlatformEnter(void) {
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
-    RetroPlatformSetEmulationState(TRUE);
-    winDrvEmulationStart();
-    RetroPlatformSetEmulationState(FALSE);
+    while(!bRetroPlatformEmulatorQuit) {
+      RetroPlatformSetEmulationState(TRUE);
+      winDrvEmulationStart();
+      RetroPlatformSetEmulationState(FALSE);
+    }
   }
   else
 	  MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
