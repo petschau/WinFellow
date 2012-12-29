@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.18 2012-12-29 11:45:33 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.19 2012-12-29 11:58:51 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -176,7 +176,7 @@ BOOLE RetroPlatformGetEmulationState(void) {
 /** Determine the RetroPlatform host version.
  * 
  * @param[out] lpMainVersion main version number
- * @param[out] lpRevisionrevision number
+ * @param[out] lpRevision revision number
  * @param[out] lpBuild build number
  * @return TRUE is successful, FALSE otherwise.
  */
@@ -193,10 +193,21 @@ static BOOLE RetroPlatformGetHostVersion(ULO *lpMainVersion, ULO *lpRevision,
 	return TRUE;
 }
 
+/** Verify if the emulator is operating in RetroPlatform mode.
+ * 
+ * Checks the value of the bRetroPlatformMode flag. It is set to TRUE, if a
+ * RetroPlatform host ID has been passed along as a commandline parameter.
+ * @return TRUE if WinFellow was called from Cloanto RetroPlatform, FALSE if not.
+ */
 BOOLE RetroPlatformGetMode(void) {
   return bRetroPlatformMode;
 }
 
+/** Asynchronously post a message to the RetroPlatform host.
+ * 
+ * A message is posted to the host asynchronously, i.e. without waiting for
+ * results.
+ */
 static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo) {
 	BOOLE bResult;
 
