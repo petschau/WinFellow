@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.12 2012-12-29 11:45:33 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.13 2012-12-29 13:48:19 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -28,6 +28,8 @@
 #define RETROPLATFORM_H
 
 #ifdef RETRO_PLATFORM
+
+#include "gfxdrv.h"
 
 extern void  RetroPlatformEmulationStart(void);
 extern void  RetroPlatformEmulationStop(void);

@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.19 2012-12-29 11:58:51 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.20 2012-12-29 13:48:19 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -50,8 +50,9 @@
 #include "windrv.h"
 #include "floppy.h"
 #include "mousedrv.h"
+#include "gfxdrv.h"
 
-// #define RETRO_PLATFORM_SUPPORT_PAUSE
+#define RETRO_PLATFORM_SUPPORT_PAUSE
 
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = ""; ///< host ID that was passed over by the RetroPlatform player
 BOOLE bRetroPlatformMode = FALSE;                    ///< flag to indicate that emulator operates in "headless" mode
@@ -62,21 +63,16 @@ LON iRetroPlatformEscapeHoldTime = 600;
 // LON iRetroPlatformLogging = 1;
 LON iRetroPlatformScreenMode = 0;
 
-static BOOLE bRetroPlatformInitialized;
+static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
+
 static RPGUESTINFO RetroPlatformGuestInfo;
+
 HINSTANCE hRetroPlatformWindowInstance = NULL;
 HWND      hRetroPlatformGuestWindow = NULL;
+
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static ULO lRetroPlatformRecursiveDevice;
-
-#define RETROPLATFORMNUMEVENTTYPES 2
-enum RetroPlatformEventTypes {
-  EmulationClose  = 0, 
-  EmulationResume = 1
-};
-
-HANDLE hRetroPlatformEventEmulationClose, hRetroPlatformEventEmulationResume;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
@@ -295,12 +291,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 		return TRUE;
 	case RP_IPC_TO_GUEST_CLOSE:
     fellowAddLog("RetroPlatformHostMessageFunction2: received close event.\n");
-    if(RetroPlatformGetEmulationState()) {
-      fellowAddLog("emulation engine active, stopping...\n");
-      fellowRequestEmulationStop();
-    }
-    fellowAddLog("requesting close of emulator.\n");
-    SetEvent(hRetroPlatformEventEmulationClose);
+    fellowRequestEmulationStop();
+    gfxDrvRunEventSet();
 		return TRUE;
 	case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_SOFT)
@@ -318,15 +310,12 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 #ifdef RETRO_PLATFORM_SUPPORT_PAUSE
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
-      if(RetroPlatformGetEmulationState()) {
-        fellowAddLog("emulation engine active, stopping...\n");
-        fellowRequestEmulationStop();
-      }
+      gfxDrvRunEventReset();
       return 1;
     }
     else { // resume emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received resume event, requesting start.\n");
-      SetEvent(hRetroPlatformEventEmulationResume);
+      gfxDrvRunEventSet();
       return 1;
     }
 #else
@@ -574,9 +563,6 @@ void RetroPlatformStartup(void)
       lRetroPlatformMainVersion, lRetroPlatformRevision, lRetroPlatformBuild);
 
     RetroPlatformSendFeatures();
-
-    hRetroPlatformEventEmulationClose  = CreateEvent(NULL, FALSE, FALSE, "Close Emulation");
-    hRetroPlatformEventEmulationResume = CreateEvent(NULL, FALSE, FALSE, "Resume Emulation");
   } 
   else
     fellowAddLog("RetroPlatformStartup (host ID %s) failed to initialize, error code %08x\n", szRetroPlatformHostID, lResult);
@@ -603,109 +589,26 @@ BOOLE RetroPlatformCheckEmulationNecessities(void)
     return FALSE;
 }
 
-ULO RetroPlatformInitializeMultiEventArray(HANDLE *hMultiEvents, 
-  enum RetroPlatformEventTypes *eEventMapping) {
-  ULO lEventCount = 0;
-
-  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationClose;
-  eEventMapping[lEventCount++] = EmulationClose;
-  hMultiEvents[lEventCount] = hRetroPlatformEventEmulationResume;
-  eEventMapping[lEventCount++] = EmulationResume;
-
-  return lEventCount;
-}
-
 /** The main control function when operating in RetroPlatform headless mode.
  * 
- * This function performs the initial initialization and start of the emulator session.
- * Once the first session has ended, it will wait in a loop for emulator control events
- * received from the RetroPlatform player via the RetroPlatformHostMessageFunction
- * Those events can be to resume emulation, and to quit the emulator.
- * Pausing of the emulator is handled directly within the host message function.
+ * This function performs the start of the emulator session.
  * 
- * In contrast to the main Windows GUI, this method keeps the emulator session,
- * including it's window handle intact, which is important as the handle is known
- * to the RetroPlatform player and should not change. 
- * The main GUI destroys the session and creates a new one whenever the GUI mode is entered.
- * 
- * Once the main loop is exited (quit event), the emulator session will be destroyed.
  */
 void RetroPlatformEnter(void) {
-  BOOLE bQuitEmulator = FALSE;
-  BOOLE bFirstStart = TRUE;
-  DWORD dwResult;
-  ULO   lEventCount;
+  if (RetroPlatformCheckEmulationNecessities() == TRUE) {
+	  cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
+	  // check for manual or needed reset
+	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
-  HANDLE hMultiEvents[RETROPLATFORMNUMEVENTTYPES] = {0};
-  enum RetroPlatformEventTypes eEventMapping[RETROPLATFORMNUMEVENTTYPES];
-
-  do {
-    if(bFirstStart) {
-      lEventCount = RetroPlatformInitializeMultiEventArray(hMultiEvents, eEventMapping);
-
-      if (RetroPlatformCheckEmulationNecessities() == TRUE) {
-	      cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
-	      // check for manual or needed reset
-	      fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
-
-        if (!fellowEmulationStart()) {
-          bQuitEmulator = TRUE;
-          MessageBox(NULL, "Emulation session failed to start up", "", 0);
-        } 
-	    }
-      else {
-	      MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
-	      bQuitEmulator = TRUE;
-      }
-      bFirstStart = FALSE;
-
-      if(!bQuitEmulator) {
-        RetroPlatformSetEmulationState(TRUE),
-        winDrvEmulationStartRP();
-        RetroPlatformSetEmulationState(FALSE);
-      }
-    }
-
-    if (!bQuitEmulator) {
-      fellowAddLog("RetroPlatformEnter(): entering emulator control event loop, awaiting events...\n");
-
-      dwResult = WaitForMultipleObjects(lEventCount, hMultiEvents, FALSE, INFINITE);
-
-      fellowAddLog("RetroPlatformEnter(): received an emulator control event, dwResult=%d.\n", dwResult);
-
-      if ((dwResult >= WAIT_OBJECT_0) && (dwResult <= (WAIT_OBJECT_0 + lEventCount))) {
-        switch (eEventMapping[dwResult - WAIT_OBJECT_0]) {
-          case EmulationResume:
-            fellowAddLog("RetroPlatformEnter(): received emulation resume event.\n");
-            if(!RetroPlatformGetEmulationState()) {
-              RetroPlatformSetEmulationState(TRUE);
-              winDrvEmulationStartRP();
-              RetroPlatformSetEmulationState(FALSE);
-            }
-            break;
-          case EmulationClose:
-            fellowAddLog("RetroPlatformEnter(): received emulation close event.\n");
-            bQuitEmulator = TRUE;
-            break;
-          default:
-            fellowAddLog("RetroPlatformEnter(): received unknown event.\n");
-            bQuitEmulator = TRUE;
-        }
-      }
-    }
-  } while(!bQuitEmulator);
-
-  fellowEmulationStop();
+    winDrvEmulationStart();
+  }
+  else
+	  MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
 }
 
 void RetroPlatformShutdown(void) {
   if(!bRetroPlatformInitialized)
     return;
-
-  if(hRetroPlatformEventEmulationResume != NULL)
-    CloseHandle(hRetroPlatformEventEmulationResume);
-  if(hRetroPlatformEventEmulationClose != NULL)
-    CloseHandle(hRetroPlatformEventEmulationClose);
 
   RetroPlatformSendScreenMode(NULL);
   RetroPlatformPostMessage(RP_IPC_TO_HOST_CLOSED, 0, 0, &RetroPlatformGuestInfo);

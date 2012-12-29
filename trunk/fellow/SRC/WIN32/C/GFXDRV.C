@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.37 2012-12-29 09:46:38 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.38 2012-12-29 13:48:19 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -214,24 +214,31 @@ void gfxDrvEvaluateActiveStatus(void) {
   gfx_drv_win_active = (gfx_drv_win_active_original &&
                        !gfx_drv_win_minimized_original &&
 		        !gfx_drv_syskey_down);
-  if (gfx_drv_win_active) {
-    //fellowAddLog("App is currently active ");
-//    if (gfx_drv_win_minimized_original) fellowAddLog("minimized ");
-//    if (gfx_drv_win_active_original) fellowAddLog("active ");
-//    if (gfx_drv_syskey_down) fellowAddLog("syskey_down ");
-//    else fellowAddLog("syskey_up ");
-//    fellowAddLog("\n");
-    gfxDrvRunEventSet();
+
+#ifdef RETRO_PLATFORM
+  if(!RetroPlatformGetMode()) {
+#endif
+    if (gfx_drv_win_active) {
+      //fellowAddLog("App is currently active ");
+  //    if (gfx_drv_win_minimized_original) fellowAddLog("minimized ");
+  //    if (gfx_drv_win_active_original) fellowAddLog("active ");
+  //    if (gfx_drv_syskey_down) fellowAddLog("syskey_down ");
+  //    else fellowAddLog("syskey_up ");
+  //    fellowAddLog("\n");
+      gfxDrvRunEventSet();
+    }
+    else {
+  //    fellowAddLog("App is currently in-active ");
+  //    if (gfx_drv_win_minimized_original) fellowAddLog("minimized ");
+  //    if (gfx_drv_win_active_original) fellowAddLog("active ");
+  //    if (gfx_drv_syskey_down) fellowAddLog("syskey_down ");
+  //    else fellowAddLog("syskey_up ");
+  //    fellowAddLog("\n");
+      gfxDrvRunEventReset();
+    }
+#ifdef RETRO_PLATFORM
   }
-  else {
-//    fellowAddLog("App is currently in-active ");
-//    if (gfx_drv_win_minimized_original) fellowAddLog("minimized ");
-//    if (gfx_drv_win_active_original) fellowAddLog("active ");
-//    if (gfx_drv_syskey_down) fellowAddLog("syskey_down ");
-//    else fellowAddLog("syskey_up ");
-//    fellowAddLog("\n");
-    gfxDrvRunEventReset();
-  }
+#endif
 }
 
 
@@ -2030,6 +2037,12 @@ BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
 		fellowAddLog("gfxdrv: gfxDrvEmulationStart(): Failed to create window\n");
 		return FALSE;
 	}
+
+#ifdef RETRO_PLATFORM
+  // unpause emulation if in Retroplatform mode
+  if(RetroPlatformGetMode())
+    gfxDrvRunEventSet();
+#endif
 	return TRUE;
 }
 
