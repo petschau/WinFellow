@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.23 2012-12-29 19:32:30 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.24 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -49,31 +49,33 @@
 #include "fellow.h"
 #include "windrv.h"
 #include "floppy.h"
-#include "mousedrv.h"
 #include "gfxdrv.h"
+#include "mousedrv.h"
+#include "joydrv.h"
 
-#define RETRO_PLATFORM_SUPPORT_PAUSE
+/// host ID that was passed over by the RetroPlatform player
+STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
+/// flag to indicate that emulator operates in "headless" mode
+BOOLE bRetroPlatformMode = FALSE;
 
-STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = ""; ///< host ID that was passed over by the RetroPlatform player
-BOOLE bRetroPlatformMode = FALSE;                    ///< flag to indicate that emulator operates in "headless" mode
-
-LON iRetroPlatformEscapeKey = 0x01;
-LON iRetroPlatformEscapeHoldTime = 600;
-// LON iRetroPlatformInputMode = 0;
-// LON iRetroPlatformLogging = 1;
-LON iRetroPlatformScreenMode = 0;
+ULO lRetroPlatformEscapeKey                     = 1;
+ULO lRetroPlatformEscapeKeyHoldTime             = 600;
+ULONGLONG lRetroPlatformEscapeKeyTargetHoldTime = 0;
+ULO lRetroPlatformScreenMode                    = 0;
 
 static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
 static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
 
-static RPGUESTINFO RetroPlatformGuestInfo;
+static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
 HINSTANCE hRetroPlatformWindowInstance = NULL;
 HWND      hRetroPlatformGuestWindow = NULL;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
-static ULO lRetroPlatformRecursiveDevice;
+static ULO lRetroPlatformRecursiveDevice = 0;
+
+BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
@@ -145,6 +147,19 @@ static const STR *RetroPlatformGetMessageText(ULO iMsg) {
 	}
 }
 
+static ULONGLONG RetroPlatformGetTime(void) {
+	SYSTEMTIME st;
+	FILETIME ft;
+	ULARGE_INTEGER li;
+
+	GetSystemTime(&st);
+	if (!SystemTimeToFileTime (&st, &ft))
+		return 0;
+	li.LowPart = ft.dwLowDateTime;
+	li.HighPart = ft.dwHighDateTime;
+	return li.QuadPart / 10000;
+}
+
 /** Send an IPC message to RetroPlatform host.
  * @return TRUE is sucessfully sent, FALSE otherwise.
  */
@@ -168,6 +183,10 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
  */
 BOOLE RetroPlatformGetEmulationState(void) {
   return bRetroPlatformEmulationState;
+}
+
+BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void) {
+  return bRetroPlatformMouseCaptureRequestedByHost;
 }
 
 /** Determine the RetroPlatform host version.
@@ -235,8 +254,22 @@ static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPe
 }
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
-  iRetroPlatformEscapeKey = atoi(szEscapeKey);
-  fellowAddLog("RetroPlatform: escape key configured to %d.\n", iRetroPlatformEscapeKey);
+  lRetroPlatformEscapeKey = atoi(szEscapeKey);
+  fellowAddLog("RetroPlatform: escape key configured to %d.\n", lRetroPlatformEscapeKey);
+}
+
+void RetroPlatformSetEscapeKeyHoldTime(const char *szEscapeHoldTime) {
+  lRetroPlatformEscapeKeyHoldTime = atoi(szEscapeHoldTime);
+  fellowAddLog("RetroPlatform: escape hold time configured to %d.\n", lRetroPlatformEscapeKeyHoldTime);
+}
+
+void RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
+  if(bEscapeKeyHeld) {
+    if(lRetroPlatformEscapeKeyTargetHoldTime == 0)
+      lRetroPlatformEscapeKeyTargetHoldTime = RetroPlatformGetTime() + lRetroPlatformEscapeKeyHoldTime;
+  } 
+  else
+    lRetroPlatformEscapeKeyTargetHoldTime = 0;
 }
 
 void RetroPlatformSetEmulationState(const BOOLE bNewState) {
@@ -245,11 +278,6 @@ void RetroPlatformSetEmulationState(const BOOLE bNewState) {
     fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
     RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 0x100 : 0);
   }
-}
-
-void RetroPlatformSetEscapeHoldTime(const char *szEscapeHoldTime) {
-  iRetroPlatformEscapeHoldTime = atoi(szEscapeHoldTime);
-  fellowAddLog("RetroPlatform: escape hold time configured to %d.\n", iRetroPlatformEscapeHoldTime);
 }
 
 void RetroPlatformSetHostID(const char *szHostID) {
@@ -263,9 +291,10 @@ void RetroPlatformSetMode(const BOOLE bRPMode) {
 }
 
 void RetroPlatformSetScreenMode(const char *szScreenMode) {
-  iRetroPlatformScreenMode = atoi(szScreenMode);
-  fellowAddLog("RetroPlatform: screen mode configured to %d.\n", iRetroPlatformScreenMode);
+  lRetroPlatformScreenMode = atol(szScreenMode);
+  fellowAddLog("RetroPlatform: screen mode configured to %d.\n", lRetroPlatformScreenMode);
 }
+
 
 void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
   fellowAddLog("RetroPlatform: set window instance to %d.\n", hInstance);
@@ -308,7 +337,6 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
       floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? TRUE : FALSE);
 		return TRUE;
 	case RP_IPC_TO_GUEST_PAUSE:
-#ifdef RETRO_PLATFORM_SUPPORT_PAUSE
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
       gfxDrvRunEventReset();
@@ -321,25 +349,18 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
       RetroPlatformSetEmulationState(TRUE);
       return 1;
     }
-#else
-    return 1;
-#endif
 	case RP_IPC_TO_GUEST_VOLUME:
 		/*currprefs.sound_volume = changed_prefs.sound_volume = 100 - wParam;
 		set_volume (currprefs.sound_volume, 0);*/
 		return TRUE;
 	case RP_IPC_TO_GUEST_ESCAPEKEY:
-		iRetroPlatformEscapeKey      = wParam;
-		iRetroPlatformEscapeHoldTime = lParam;
+		lRetroPlatformEscapeKey         = wParam;
+		lRetroPlatformEscapeKeyHoldTime = lParam;
 		return TRUE;
 	case RP_IPC_TO_GUEST_MOUSECAPTURE:
+    bRetroPlatformMouseCaptureRequestedByHost = TRUE;
     mouseDrvToggleFocus();
-		/*{
-			if (wParam & RP_MOUSECAPTURE_CAPTURED)
-				setmouseactive (1);
-			else
-				setmouseactive (0);
-		}*/
+    bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 		return TRUE;
 	case RP_IPC_TO_GUEST_DEVICECONTENT:
 		{
@@ -627,6 +648,22 @@ void RetroPlatformEmulationStart(void) {
 }
 
 void RetroPlatformEmulationStop(void) {
+}
+
+void RetroPlatformEndOfFrame(void) {
+  if(lRetroPlatformEscapeKeyTargetHoldTime != 0) {
+    ULONGLONG t;
+
+    t = RetroPlatformGetTime();
+    if(t >= lRetroPlatformEscapeKeyTargetHoldTime) {
+      fellowAddLog("RetroPlatform: Escape key held longer than hold time.\n");
+      lRetroPlatformEscapeKeyTargetHoldTime = 0;
+
+      bRetroPlatformMouseCaptureRequestedByHost = FALSE;
+      mouseDrvToggleFocus();
+      joyDrvToggleFocus();
+    }
+  }
 }
 
 #endif

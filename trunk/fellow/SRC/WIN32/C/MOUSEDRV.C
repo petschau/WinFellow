@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.8 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.9 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -47,6 +47,10 @@ Sunday, February 03, 2008: carfesh
 
 #include <initguid.h>
 #include "dxver.h"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 #define DINPUT_BUFFERSIZE           16
 
@@ -304,6 +308,11 @@ void mouseDrvStateHasChanged(BOOLE active) {
 void mouseDrvToggleFocus(void) {
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    if(!RetroPlatformGetMouseCaptureRequestedByHost())
+      RetroPlatformSendMouseCapture(mouse_drv_focus);
+#endif
 }
 
 

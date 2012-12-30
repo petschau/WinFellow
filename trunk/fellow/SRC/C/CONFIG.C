@@ -1,4 +1,4 @@
-/* @(#) $Id: CONFIG.C,v 1.21 2012-12-08 05:34:37 carfesh Exp $ */
+/* @(#) $Id: CONFIG.C,v 1.22 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
@@ -1462,7 +1462,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
     {
       i++;
       if (i < argc) {
-        RetroPlatformSetEscapeHoldTime(argv[i]);
+        RetroPlatformSetEscapeKeyHoldTime(argv[i]);
         // fellowAddLog("cfg: RetroPlatform escape hold time: %s\n", argv[i]);
       }
 	    i++;

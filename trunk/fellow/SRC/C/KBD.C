@@ -1,4 +1,4 @@
-/* @(#) $Id: KBD.C,v 1.9 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: KBD.C,v 1.10 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Emulator                                                         */
 /* Keyboard emulation                                                      */
@@ -35,6 +35,10 @@ Tuesday, September 19, 2000: nova
 #include "cia.h"
 #include "draw.h"
 
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
+
 
 /*===========================================================================*/
 /* Data collected in struct, for easy locking in IRQs by kbddrv.c            */
@@ -63,54 +67,62 @@ void kbdEventEOFHandler(void) {
       KBDBUFFERMASK]);
     switch (thisev) {
       case EVENT_INSERT_DF0:
-	insert_dfX[0] = 1;
-	fellowRequestEmulationStop();
-	break;
+        insert_dfX[0] = 1;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_INSERT_DF1:
-	insert_dfX[1] = 1;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[1] = 1;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_INSERT_DF2:
-	insert_dfX[2] = 1;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[2] = 1;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_INSERT_DF3:
-	insert_dfX[3] = 1;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[3] = 1;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_EJECT_DF0:
-	insert_dfX[0] = 2;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[0] = 2;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_EJECT_DF1:
-	insert_dfX[1] = 2;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[1] = 2;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_EJECT_DF2:
-	insert_dfX[2] = 2;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[2] = 2;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_EJECT_DF3:
-	insert_dfX[3] = 2;
-	fellowRequestEmulationStop();
-	break;
+	      insert_dfX[3] = 2;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_EXIT:
-	fellowRequestEmulationStop();
-	break;
+	      fellowRequestEmulationStop();
+	      break;
       case EVENT_SCROLL_UP:
-	draw_view_scroll = 0x48;
-	break;
+	      draw_view_scroll = 0x48;
+	      break;
       case EVENT_SCROLL_DOWN:
-	draw_view_scroll = 0x50;
-	break;
+	      draw_view_scroll = 0x50;
+	      break;
       case EVENT_SCROLL_LEFT:
-	draw_view_scroll = 0x4b;
-	break;
+	      draw_view_scroll = 0x4b;
+	      break;
       case EVENT_SCROLL_RIGHT:
-	draw_view_scroll = 0x4d;
-	break;
+	      draw_view_scroll = 0x4d;
+	      break;
       case EVENT_HARD_RESET:
-	break;
+	      break;
+#ifdef RETRO_PLATFORM
+      case EVENT_RPESCAPE_ACTIVE:
+        RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
+        break;
+      case EVENT_RPESCAPE_INACTIVE:
+        RetroPlatformSetEscapeKeyTargetHoldTime(FALSE);
+        break;
+#endif
     }
     kbd_state.eventsEOF.outpos++;
   }
