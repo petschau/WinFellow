@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.12 2012-12-07 14:05:43 carfesh Exp $ */
+/* @(#) $Id: BUS.C,v 1.13 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -41,6 +41,10 @@
 #include "timer.h"
 #include "draw.h"
 #include "fileops.h"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 bus_state bus;
 
@@ -85,6 +89,14 @@ void busEndOfLine(void)
   /*==============================================================*/
   kbdQueueHandler();
   kbdEventEOLHandler();
+
+#ifdef RETRO_PLATFORM
+  /*==============================================================*/
+  /* Handle RetroPlatform events                                  */
+  /*==============================================================*/
+  if(RetroPlatformGetMode());
+    RetroPlatformEndOfFrame();
+#endif
 
   /*==============================================================*/
   /* Set up the next end of line event                            */

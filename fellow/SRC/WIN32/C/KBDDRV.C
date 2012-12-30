@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.15 2012-12-07 14:05:43 carfesh Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.16 2012-12-30 12:59:37 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -63,6 +63,10 @@ Sunday, February 10, 2008: carfesh
 
 #include "dxver.h"
 #include "fileops.h"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 #define MAX_KEYS	256
 
@@ -911,6 +915,16 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 		  issue_event( EVENT_SCALEY_PREV );
 	  }
 	}
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode()) {
+    if( pressed ( PCK_ESCAPE ))
+      issue_event( EVENT_RPESCAPE_ACTIVE );
+    if( released ( PCK_ESCAPE ))
+      issue_event( EVENT_RPESCAPE_INACTIVE );
+  }
+#endif
+
 	if( released( PCK_F11 ))
 	  issue_event( EVENT_EXIT );
 	
