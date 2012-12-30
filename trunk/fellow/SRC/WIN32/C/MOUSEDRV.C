@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.9 2012-12-30 12:59:37 carfesh Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.10 2012-12-30 13:52:53 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -310,8 +310,10 @@ void mouseDrvToggleFocus(void) {
   mouseDrvStateHasChanged(mouse_drv_active);
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode())
-    if(!RetroPlatformGetMouseCaptureRequestedByHost())
+    if(!RetroPlatformGetMouseCaptureRequestedByHost()) {
+      fellowAddLog("mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
       RetroPlatformSendMouseCapture(mouse_drv_focus);
+    }
 #endif
 }
 
