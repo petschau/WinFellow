@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.25 2012-12-30 13:05:08 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.26 2012-12-30 15:03:54 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -649,6 +649,7 @@ void RetroPlatformShutdown(void) {
 }
 
 void RetroPlatformEmulationStart(void) {
+  RetroPlatformSendMouseCapture(TRUE);
 }
 
 void RetroPlatformEmulationStop(void) {
