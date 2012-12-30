@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.24 2012-12-30 12:59:37 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.25 2012-12-30 13:05:08 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -559,6 +559,10 @@ void RetroPlatformSendScreenMode(HWND hWnd)
 	hRetroPlatformGuestWindow = hWnd;
 	RetroPlatformDetermineScreenModeFromConfig(&RetroPlatformScreenMode, RetroPlatformConfig);
 	RetroPlatformSendMessage(RP_IPC_TO_HOST_SCREENMODE, 0, 0, &RetroPlatformScreenMode, sizeof RetroPlatformScreenMode, &RetroPlatformGuestInfo, NULL); 
+}
+
+ULO RetroPlatformGetEscapeKey(void) {
+  return lRetroPlatformEscapeKey;
 }
 
 HWND RetroPlatformGetParentWindowHandle(void)
