@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.16 2012-12-30 12:59:37 carfesh Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.17 2012-12-30 13:05:08 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -918,9 +918,9 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode()) {
-    if( pressed ( PCK_ESCAPE ))
+    if( pressed ( RetroPlatformGetEscapeKey() ))
       issue_event( EVENT_RPESCAPE_ACTIVE );
-    if( released ( PCK_ESCAPE ))
+    if( released ( RetroPlatformGetEscapeKey() ))
       issue_event( EVENT_RPESCAPE_INACTIVE );
   }
 #endif
