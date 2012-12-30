@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.10 2012-12-30 13:52:53 carfesh Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.11 2012-12-30 14:07:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -439,6 +439,12 @@ void mouseDrvEmulationStop(void) {
 void mouseDrvStartup(void) {
   fellowAddLog("mouseDrvStartup\n");
   mouse_drv_active = FALSE;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    mouse_drv_focus = FALSE;
+  else
+#endif
   mouse_drv_focus = TRUE;
   mouse_drv_in_use = FALSE;
   mouse_drv_initialization_failed = TRUE;
