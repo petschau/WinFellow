@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.27 2012-12-07 14:05:43 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.28 2013-01-02 19:18:30 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -531,7 +531,7 @@ static char *TemporaryFilename(void)
 
   tempvar = getenv("TEMP");
   if( tempvar != NULL )
-    result = tempnam(tempvar, "wftemp");
+    result = _tempnam(tempvar, "wftemp");
   else
     result = tmpnam(NULL);
   return result;
