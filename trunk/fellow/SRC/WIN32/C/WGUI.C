@@ -1,4 +1,4 @@
-/* @(#) $Id: WGUI.C,v 1.35 2009-07-26 22:56:07 peschau Exp $ */
+/* @(#) $Id: WGUI.C,v 1.36 2013-01-02 17:33:00 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -589,7 +589,12 @@ wgui_drawmode *wguiMatchResolution() {
     }
   }
   // if no matching is found return pointer to first resolution of 8 colorbits
-  return listNode(pwgui_dm->res8bit);
+  if(listNode(pwgui_dm->res32bit) != NULL)
+    return listNode(pwgui_dm->res32bit);
+  else if(listNode(pwgui_dm->res16bit) != NULL)
+    return listNode(pwgui_dm->res16bit);
+  else
+    return listNode(pwgui_dm->res8bit);
 }
 
 /*============================================================================*/
