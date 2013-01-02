@@ -7,8 +7,13 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+#include "windows.h"
 #include "gui_debugger.h"
+
+#ifndef IDC_STATIC
+#define IDC_STATIC				-1
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
