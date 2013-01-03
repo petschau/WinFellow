@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.26 2012-12-30 15:03:54 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.27 2013-01-03 11:10:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -53,6 +53,8 @@
 #include "mousedrv.h"
 #include "joydrv.h"
 
+#define RETRO_PLATFORM_NUM_GAMEPORTS 2
+
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
 /// flag to indicate that emulator operates in "headless" mode
@@ -78,6 +80,51 @@ static ULO lRetroPlatformRecursiveDevice = 0;
 BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
+
+/** Attach input devices to gameports during runtime of the emulator.
+ * 
+ * The device is selected in the RetroPlatform player and passed to the emulator
+ * in form of an IPC message.
+ */
+static BOOLE RetroPlatformConnectInputDeviceToPort(int inputmap_port, int devicetype, DWORD flags, const TCHAR *name) {
+	/* int devicetype2;
+
+	write_log (L"port_insert %d '%s'\n", inputmap_port, name);
+
+	if (inputmap_port < 0 || inputmap_port >= maxjports)
+		return FALSE;
+	
+	inputdevice_compa_clear (&changed_prefs, inputmap_port);
+	
+	if (_tcslen (name) == 0) {
+		inputdevice_joyport_config (&changed_prefs, _T("none"), inputmap_port, 0, 0);
+		return TRUE;
+	}
+	devicetype2 = -1;
+	for (int i = 0; inputdevmode[i * 2]; i++) {
+		if (inputdevmode[i * 2 + 0] == devicetype) {
+			devicetype2 = inputdevmode[i * 2 + 1];
+			break;
+		}
+	}
+	if (devicetype2 < 0)
+		return FALSE;
+
+	if (!_tcsncmp (name, KEYBOARDCUSTOM, _tcslen (KEYBOARDCUSTOM))) {
+		return port_insert_custom (inputmap_port, devicetype, flags, name + _tcslen (KEYBOARDCUSTOM));
+	}
+
+	for (int i = 0; i < 10; i++) {
+		TCHAR tmp2[100];
+		_stprintf (tmp2, _T("KeyboardLayout%d"), i);
+		if (!_tcscmp (tmp2, name)) {
+			_stprintf (tmp2, _T("kbd%d"), i + 1);
+			return inputdevice_joyport_config (&changed_prefs, tmp2, inputmap_port, devicetype2, 0);
+		}
+	}
+	return inputdevice_joyport_config (&changed_prefs, name, inputmap_port, devicetype2, 1); */
+  return FALSE;
+}
 
 static void RetroPlatformDetermineScreenModeFromConfig(
   struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
@@ -301,10 +348,12 @@ void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
   hRetroPlatformWindowInstance = hInstance;
 }
 
-static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM wParam, LPARAM lParam,
+/** host message function that is used as callback to receive IPC messages from the host.
+ */
+static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
 	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
 {
-	fellowAddLog("RetroPlatformHostMessageFunction2(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
+	fellowAddLog("RetroPlatformHostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
 	  RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
 	if (uMessage == RP_IPC_TO_GUEST_DEVICECONTENT) {
 		struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
@@ -315,12 +364,12 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	switch (uMessage)
 	{
 	default:
-		fellowAddLog("RetroPlatformHostMessageFunction2: Unknown or unsupported command %x\n", uMessage);
+		fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command %x\n", uMessage);
 		break;
 	case RP_IPC_TO_GUEST_PING:
 		return TRUE;
 	case RP_IPC_TO_GUEST_CLOSE:
-    fellowAddLog("RetroPlatformHostMessageFunction2: received close event.\n");
+    fellowAddLog("RetroPlatformHostMessageFunction: received close event.\n");
     fellowRequestEmulationStop();
     gfxDrvRunEventSet();
     bRetroPlatformEmulatorQuit = TRUE;
@@ -338,13 +387,13 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 		return TRUE;
 	case RP_IPC_TO_GUEST_PAUSE:
     if(wParam != 0) { // pause emulation
-      fellowAddLog("RetroPlatformHostMessageFunction2: received pause event.\n");
+      fellowAddLog("RetroPlatformHostMessageFunction: received pause event.\n");
       gfxDrvRunEventReset();
       RetroPlatformSetEmulationState(FALSE);
       return 1;
     }
     else { // resume emulation
-      fellowAddLog("RetroPlatformHostMessageFunction2: received resume event, requesting start.\n");
+      fellowAddLog("RetroPlatformHostMessageFunction: received resume event, requesting start.\n");
       gfxDrvRunEventSet();
       RetroPlatformSetEmulationState(TRUE);
       return 1;
@@ -368,25 +417,22 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 			STR *n = (STR *)dc->szContent;
 			int num = dc->btDeviceNumber;
 			int ok = FALSE;
-			switch (dc->btDeviceCategory)
-			{
-			case RP_DEVICECATEGORY_FLOPPY:
-				if (n == NULL || n[0] == 0)
-					floppyImageRemove(num);
-				else
-          floppySetDiskImage(num, n);
-				ok = TRUE;
-				break;
-     /*
-			case RP_DEVICECATEGORY_INPUTPORT:
-				ok = port_insert (num, dc->dwInputDevice, dc->dwFlags, n);
-				if (ok)
-					inputdevice_updateconfig (&currprefs);
-				break;
-			case RP_DEVICECATEGORY_CD:
-				ok = cd_insert (num, n);
-				break;
-        */
+			switch (dc->btDeviceCategory) {
+			  case RP_DEVICECATEGORY_FLOPPY:
+				  if (n == NULL || n[0] == 0)
+					  floppyImageRemove(num);
+				  else
+            floppySetDiskImage(num, n);
+				  ok = TRUE;
+				  break;
+			  case RP_DEVICECATEGORY_INPUTPORT:
+				  ok = RetroPlatformConnectInputDeviceToPort(num, dc->dwInputDevice, dc->dwFlags, n);
+				  if(ok)
+					  // inputdevice_updateconfig (&currprefs);
+				  break;
+			  case RP_DEVICECATEGORY_CD:
+				  ok = FALSE;
+				  break;
 			} 
 			return ok;
 		}
@@ -481,16 +527,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction2(UINT uMessage, WPARAM 
 	return FALSE;
 }
 
-/** host message function that is used for callback to receive IPC messages from the host.
- */
-static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
-	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
-{
-	LRESULT lResult;
-	lRetroPlatformRecursiveDevice++;
-	lResult = RetroPlatformHostMessageFunction2(uMessage, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
-	lRetroPlatformRecursiveDevice--;
-	return lResult;
+void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
+	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
 void RetroPlatformSendClose(void) {
@@ -503,8 +541,7 @@ void RetroPlatformSendClose(void) {
  * features supported by the guest.
  * @return TRUE if message was sent successfully, FALSE otherwise.
  */
-BOOLE RetroPlatformSendFeatures(void)
-{
+BOOLE RetroPlatformSendFeatures(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
 
@@ -534,8 +571,48 @@ BOOLE RetroPlatformSendFeatures(void)
   }
 }
 
-void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
-	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+/** Send list of enabled floppy drives to the RetroPlatform host.
+ *
+ * An RP_IPC_TO_HOST_DEVICES message is sent to the host, indicating the floppy drives 
+ * enabled in the guest. Must be called after the activation of the config, and before
+ * sending the screen mode.
+ * @return TRUE if message was sent successfully, FALSE otherwise.
+ */
+static BOOLE RetroPlatformSendFloppies(void) {
+	DWORD dFeatureFlags;
+  LRESULT lResult;
+  int i;
+
+	dFeatureFlags = 0;
+	for(i = 0; i < 4; i++) {
+    fellowAddLog("floppy drive %d is %s.\n", i, floppy[i].enabled ? "enabled" : "disabled");
+		if(floppy[i].enabled)
+			dFeatureFlags |= 1 << i;
+	}
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_FLOPPY, dFeatureFlags, NULL, 0, 
+    &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendFloppies successful, result was %d.\n", lResult);
+    return(TRUE);
+  }
+  else {
+    fellowAddLog("RetroPlatformSendFloppies failed, result was %d.\n", lResult);
+    return(FALSE);
+  }
+}
+
+static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
+  LRESULT lResult;
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_INPUTPORT, (1 << lNumGameports) - 1, NULL, 0, 
+    &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendGameports successful, result was %d.\n", lResult);
+    return(TRUE);
+  }
+  else {
+    fellowAddLog("RetroPlatformSendGameports failed, result was %d.\n", lResult);
+    return(FALSE);
+  }
 }
 
 void RetroPlatformSendMouseCapture(const BOOLE bActive) {
@@ -547,11 +624,15 @@ void RetroPlatformSendMouseCapture(const BOOLE bActive) {
 	if (bActive)
 		wFlags |= RP_MOUSECAPTURE_CAPTURED;
 
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+	RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0, 
+    &RetroPlatformGuestInfo, NULL);
 }
 
-void RetroPlatformSendScreenMode(HWND hWnd)
-{
+/** Send screen mode to the player.
+ *
+ * This step finalizes the transfer of guest features to the player and will enable the emulation.
+ */
+void RetroPlatformSendScreenMode(HWND hWnd) {
 	struct RPScreenMode RetroPlatformScreenMode = { 0 };
 
 	if (!bRetroPlatformInitialized)
@@ -627,6 +708,9 @@ void RetroPlatformEnter(void) {
 	  cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+
+    RetroPlatformSendFloppies();
+    RetroPlatformSendGameports(RETRO_PLATFORM_NUM_GAMEPORTS);
 
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
