@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.27 2013-01-03 11:10:03 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.28 2013-01-03 14:41:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -535,13 +535,34 @@ void RetroPlatformSendClose(void) {
 	RetroPlatformSendMessage(RP_IPC_TO_HOST_CLOSE, 0, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
 }
 
+/** Send enable/disable messages to the RetroPlatform player.
+ * 
+ * These are sent on WM_ENABLE messages.
+ */
+BOOLE RetroPlatformSendEnable(const BOOLE bEnabled) {
+  LRESULT lResult;
+
+  if (!bRetroPlatformInitialized)
+		return FALSE;
+
+	if(RetroPlatformSendMessage(bEnabled ? RP_IPC_TO_HOST_ENABLED : RP_IPC_TO_HOST_DISABLED, 0, 0, NULL, 0, 
+    &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendEnable successful, result was %d.\n", lResult);
+    return TRUE;
+  }
+  else {
+    fellowAddLog("RetroPlatformSendEnable failed, result was %d.\n", lResult);
+    return FALSE;
+  }
+}
+
 /** Send list of features supported by the guest to the RetroPlatform host.
  *
  * An RP_IPC_TO_HOST_FEATURES message is sent to the host, with flags indicating the 
  * features supported by the guest.
  * @return TRUE if message was sent successfully, FALSE otherwise.
  */
-BOOLE RetroPlatformSendFeatures(void) {
+static BOOLE RetroPlatformSendFeatures(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
 
@@ -550,16 +571,15 @@ BOOLE RetroPlatformSendFeatures(void) {
   dFeatureFlags |= RP_FEATURE_PAUSE;
 #endif
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-
-	/*dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
-	dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
-	dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
+	// dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
+	// dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
+	// dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYSTICK;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_GAMEPAD;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYPAD;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;*/
+	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_GAMEPAD;
+	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYPAD;
+	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
+	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;
 
 	if(RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult)) {
     fellowAddLog("RetroPlatformSendFeatures successful, result was %d.\n", lResult);
@@ -613,6 +633,41 @@ static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
     fellowAddLog("RetroPlatformSendGameports failed, result was %d.\n", lResult);
     return(FALSE);
   }
+}
+
+static BOOLE RetroPlatformSendInputDevices(void) {
+  LRESULT lResult;
+  BOOLE bResult = TRUE;
+
+	struct RPInputDeviceDescription rpInputDevDesc;
+
+  // begin with the basics - the Windows mouse
+  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_MOUSE;
+  wcscpy(rpInputDevDesc.szHostInputName, L"Windows Mouse");
+  rpInputDevDesc.dwHostInputVendorID = 0;
+  rpInputDevDesc.dwHostInputProductID = 0;
+  rpInputDevDesc.dwInputDeviceFeatures = RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_LIGHTPEN;
+  rpInputDevDesc.dwFlags = RP_HOSTINPUTFLAGS_MOUSE_SMART;
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
+    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendInputDevices - mouse successful, result was %d.\n", lResult);
+  }
+  else {
+    fellowAddLog("RetroPlatformSendInputDevices - mouse failed, result was %d.\n", lResult);
+    bResult = FALSE;
+  }
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, RP_HOSTINPUT_END, 0, NULL, 0,
+    &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendInputDevices - END successful, result was %d.\n", lResult);
+  }
+  else {
+    fellowAddLog("RetroPlatformSendInputDevices - END failed, result was %d.\n", lResult);
+    bResult = FALSE;
+  }
+
+  return bResult;
 }
 
 void RetroPlatformSendMouseCapture(const BOOLE bActive) {
@@ -711,6 +766,7 @@ void RetroPlatformEnter(void) {
 
     RetroPlatformSendFloppies();
     RetroPlatformSendGameports(RETRO_PLATFORM_NUM_GAMEPORTS);
+    RetroPlatformSendInputDevices();
 
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
