@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.39 2012-12-30 12:59:37 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.40 2013-01-03 14:41:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -451,7 +451,13 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       fellowRequestEmulationStop();
       return 0; /* We handled this message */ 
 
-      
+#ifdef RETRO_PLATFORM
+      if(RetroPlatformGetMode()) {
+        RetroPlatformSendEnable(wParam ? 1 : 0);
+        return 0;
+      }
+#endif
+
   }
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
