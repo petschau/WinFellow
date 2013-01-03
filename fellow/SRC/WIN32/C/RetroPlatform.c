@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.28 2013-01-03 14:41:01 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.29 2013-01-03 14:57:07 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -658,8 +658,13 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     bResult = FALSE;
   }
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, RP_HOSTINPUT_END, 0, NULL, 0,
-    &RetroPlatformGuestInfo, &lResult)) {
+  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_END;
+  wcscpy(rpInputDevDesc.szHostInputName, L"");
+  rpInputDevDesc.dwInputDeviceFeatures = 0;
+  rpInputDevDesc.dwFlags = 0;
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0,
+    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
     fellowAddLog("RetroPlatformSendInputDevices - END successful, result was %d.\n", lResult);
   }
   else {
