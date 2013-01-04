@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.H,v 1.8 2012-12-27 03:54:03 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.H,v 1.9 2013-01-04 19:43:25 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -110,7 +110,7 @@ extern floppyinfostruct floppy[4];
 extern floppyDMAinfostruct floppy_DMA;
 extern BOOLE floppy_fast;
 extern BOOLE floppy_DMA_started;
-extern ULO diskdmaen;   /* Counts the number of writes to dsklen */
+extern ULO diskDMAen;   /* Counts the number of writes to dsklen */
 
 extern void floppyCacheAllocate(void);
 extern void floppyCacheFree(void);

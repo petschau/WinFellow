@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.30 2013-01-04 13:04:23 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.31 2013-01-04 19:43:25 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -61,6 +61,10 @@
 #include "joydrv.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
+
+#ifdef _DEBUG
+#define RETRO_PLATFORM_LOG_VERBOSE
+#endif
 
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
@@ -221,15 +225,23 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 	LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult) {
 	BOOLE bResult;
 
-	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
+#ifndef RETRO_PLATFORM_LOG_VERBOSE
+  if(iMessage != RP_IPC_TO_HOST_DEVICESEEK) {
+#endif
+
+	  bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
   
-  if(bResult)
-    fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
-      RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
-  else
-		fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
+    if(bResult)
+      fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
+        RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
+    else
+		  fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
 	
-  return bResult;
+    return bResult;
+
+#ifndef RETRO_PLATFORM_LOG_VERBOSE
+  }
+#endif
 }
 
 /** Verify state of the emulation engine.
@@ -290,6 +302,46 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 		fellowAddLog("RetroPlatform could not post message, error: %d\n", GetLastError());
 
 	return bResult;
+}
+
+
+/** Control status of the RetroPlatform floppy drive LEDs.
+ *
+ * Only sends status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages.
+ * Called at the end of every frame.
+ */
+static BOOLE RetroPlatformSendFloppyDriveLEDStatus(ULO lFloppyDriveNo) {
+	BOOLE bWriteActivity = diskDMAen == 3 && !((floppy[lFloppyDriveNo].sel | !floppy[lFloppyDriveNo].enabled) & (1 << lFloppyDriveNo));
+  BOOLE bLedOnOff; 
+  static BOOLE bLedOnOffOld[4];
+
+  if(lFloppyDriveNo > 3) 
+    return FALSE;
+
+  bLedOnOff = floppy[lFloppyDriveNo].motor;
+  if(bLedOnOffOld[lFloppyDriveNo] == bLedOnOff) 
+    return TRUE;
+
+  bLedOnOffOld[lFloppyDriveNo] = bLedOnOff;
+
+  return RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD (RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo),
+			MAKELONG (bLedOnOff ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ) , &RetroPlatformGuestInfo);
+}
+
+/**
+ * Send floppy drive seek events to RetroPlatform host.
+ * 
+ * Will notify the RetroPlatform player about changes in the drive head position.
+ * @param[in] lFloppyDriveNo index of floppy drive
+ * @param[in] lTrackNo index of floppy track
+ * @return TRUE is successful, FALSE otherwise.
+ */
+BOOLE RetroPlatformSendFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrackNo) {
+	if (!bRetroPlatformInitialized)
+		return FALSE;
+
+	return RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICESEEK, 
+    MAKEWORD (RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), lTrackNo, &RetroPlatformGuestInfo);
 }
 
 /** Control status of power LED in RetroPlatform player.
@@ -808,6 +860,8 @@ void RetroPlatformEmulationStop(void) {
 }
 
 void RetroPlatformEndOfFrame(void) {
+  int i;
+
   if(lRetroPlatformEscapeKeyTargetHoldTime != 0) {
     ULONGLONG t;
 
@@ -821,6 +875,10 @@ void RetroPlatformEndOfFrame(void) {
       joyDrvToggleFocus();
     }
   }
+
+  for(i = 0; i < 4; i++)
+    if(floppy[i].enabled)
+      RetroPlatformSendFloppyDriveLEDStatus(i);
 }
 
 #endif

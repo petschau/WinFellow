@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.28 2013-01-02 19:18:30 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.29 2013-01-04 19:43:25 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -49,6 +49,10 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
+#endif
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
 #endif
 
 #define MFM_FILLB 0xaa
@@ -319,6 +323,11 @@ void floppyStepSet(BOOLE stp) {
 	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
 #endif
 	  floppy[i].track++;
+
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+      RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+#endif
 	}
 	else {
 	  if (floppy[i].track > 0) 
@@ -327,6 +336,11 @@ void floppyStepSet(BOOLE stp) {
 	    floppyLogStep(i, floppy[i].track, floppy[i].track - 1);
 #endif
 	    floppy[i].track--;
+
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+      RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+#endif
 	  }
 	}
       }

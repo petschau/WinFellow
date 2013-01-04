@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.17 2013-01-03 14:41:01 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.18 2013-01-04 19:43:25 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -42,6 +42,7 @@ extern HWND  RetroPlatformGetParentWindowHandle(void);
 extern void  RetroPlatformSendActivate(const BOOLE, const LPARAM);
 extern void  RetroPlatformSendClose(void);
 extern BOOLE RetroPlatformSendEnable(const BOOLE);
+extern BOOLE RetroPlatformSendFloppyDriveSeek(const ULO, const ULO);
 extern void  RetroPlatformSendMouseCapture(const BOOLE);
 extern void  RetroPlatformSendScreenMode(HWND);
 extern void  RetroPlatformSetEscapeKey(const char *);
