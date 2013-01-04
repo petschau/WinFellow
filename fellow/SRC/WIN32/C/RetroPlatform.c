@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.29 2013-01-03 14:57:07 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.30 2013-01-04 13:04:23 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -35,8 +35,15 @@
  *  WinFellow's own GUI is not shown, the emulator operates in a headless mode.
  *  The configuration is received as a command line parameter, all control events 
  *  (start, shutdown, reset, ...) are sent via IPC.
- *  @todo pausing the emulation causes a freeze in the main message loop, which is
- *        why pausing is currently disabled.
+ * 
+ *  @todo free allocated elements, cfgmanager, ... in RetroPlatform module
+ *  @todo make resolution configurable via config file dynamically instead of from the fixed set available from the GUI
+ *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
+ *  @todo fullscreen resolution support for RetroPlatform
+ *  @bug  reset functionality not fully implemented, test soft- & hard reset
+ *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
+ *  @bug  power LED status changes are not visible
+ *  @bug  State of the Art demo will freeze after first screen (hand)
  */
 
 #include "defs.h"
