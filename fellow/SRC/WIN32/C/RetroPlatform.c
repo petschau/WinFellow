@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.31 2013-01-04 19:43:25 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.32 2013-01-04 19:48:22 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -43,7 +43,7 @@
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
  *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
  *  @bug  power LED status changes are not visible
- *  @bug  State of the Art demo will freeze after first screen (hand)
+ *  @bug  Global Trash demo will freeze after 15-20 seconds, when showing Global Trash logo
  */
 
 #include "defs.h"
