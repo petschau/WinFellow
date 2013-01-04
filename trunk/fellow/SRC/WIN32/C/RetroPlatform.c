@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.32 2013-01-04 19:48:22 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.33 2013-01-04 20:32:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -36,14 +36,18 @@
  *  The configuration is received as a command line parameter, all control events 
  *  (start, shutdown, reset, ...) are sent via IPC.
  * 
+ *  Drive sounds are output by the emulator. The player only sends messages to control the volume.
+ * 
  *  @todo free allocated elements, cfgmanager, ... in RetroPlatform module
  *  @todo make resolution configurable via config file dynamically instead of from the fixed set available from the GUI
  *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
  *  @todo fullscreen resolution support for RetroPlatform
+ *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
  *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
  *  @bug  power LED status changes are not visible
  *  @bug  Global Trash demo will freeze after 15-20 seconds, when showing Global Trash logo
+ *  @bug  the sound stops while the window does not have focus, while the rest of the emulation continues
  */
 
 #include "defs.h"
@@ -137,6 +141,8 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(int inputmap_port, int device
   return FALSE;
 }
 
+/** Translate the screenmode configured in the configuration file and pass it along to the RetroPlatform Player.
+ */
 static void RetroPlatformDetermineScreenModeFromConfig(
   struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
   DWORD dwScreenMode = RP_SCREENMODE_SCALE_1X;
@@ -157,6 +163,8 @@ static void RetroPlatformDetermineScreenModeFromConfig(
   RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
 }
 
+/** Translate a RetroPlatform IPC message code into readable text.
+ */
 static const STR *RetroPlatformGetMessageText(ULO iMsg) {
 	switch(iMsg) {
 	  case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
@@ -205,6 +213,8 @@ static const STR *RetroPlatformGetMessageText(ULO iMsg) {
 	}
 }
 
+/** Determine a timestamp for the current time.
+ */
 static ULONGLONG RetroPlatformGetTime(void) {
 	SYSTEMTIME st;
 	FILETIME ft;
@@ -225,23 +235,15 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 	LPCVOID pData, DWORD dwDataSize, const RPGUESTINFO *pGuestInfo, LRESULT *plResult) {
 	BOOLE bResult;
 
-#ifndef RETRO_PLATFORM_LOG_VERBOSE
-  if(iMessage != RP_IPC_TO_HOST_DEVICESEEK) {
-#endif
-
-	  bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
+	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
   
-    if(bResult)
-      fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
-        RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
-    else
-		  fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
+  if(bResult)
+    fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
+      RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
+  else
+		fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
 	
-    return bResult;
-
-#ifndef RETRO_PLATFORM_LOG_VERBOSE
-  }
-#endif
+  return bResult;
 }
 
 /** Verify state of the emulation engine.
@@ -293,6 +295,10 @@ BOOLE RetroPlatformGetMode(void) {
 static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo) {
 	BOOLE bResult;
 
+#ifndef RETRO_PLATFORM_LOG_VERBOSE
+  if(iMessage != RP_IPC_TO_HOST_DEVICESEEK) {
+#endif
+
 	bResult = RPPostMessage(iMessage, wParam, lParam, pGuestInfo);
 
   if(bResult)
@@ -302,8 +308,12 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 		fellowAddLog("RetroPlatform could not post message, error: %d\n", GetLastError());
 
 	return bResult;
-}
 
+#ifndef RETRO_PLATFORM_LOG_VERBOSE
+  }
+  else return TRUE;
+#endif
+}
 
 /** Control status of the RetroPlatform floppy drive LEDs.
  *
