@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.36 2013-01-02 19:16:06 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.37 2013-01-04 17:49:33 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -125,7 +125,7 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 /* The run-time log                                                           */
 /*============================================================================*/
 
-#define WRITE_LOG_BUF_SIZE 128
+#define WRITE_LOG_BUF_SIZE 512
 
 static BOOLE fellow_log_first_time = TRUE;
 static BOOLE fellow_log_enabled;
