@@ -40,8 +40,8 @@ Confirm any UAC prompts that appear.
 
 The installation of colortbl.sty failed on my system (from the ftp.uni-erlangen.de mirror), as colortbl.cab could not be found online (404 error).
 
-Abort the execution if that happens, and start the MiKTeX Package Manager (Admin). Synchronize the package repository, search for the file name colortbl.sty and enter the package that is shown below (right click, install).
+Abort the execution if that happens, and start the MiKTeX Package Manager (Admin). Synchronize the package repository, search for the file name colortbl.sty and select the package that is shown below (right click, install).
 
-The installation should now work, so close the package manager and the restart the batch file. After all missing packages have been installed, the batch should finished. The documentation should then be found as WinFellow-doxygen.pdf within the doxygen directory. 
+The installation should now work, so close the package manager and then restart the batch file. After all missing packages have been installed, the batch should finished. The documentation should then be found as WinFellow-doxygen.pdf within the doxygen directory. 
 
 Run the MiKTeX Update (Admin) tool to update all existing MiKTeX packages to the current version. The first run should update miktex-bin-2.9, the second run should update further packages. Repeat until no more updates are found.
