@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.35 2013-01-05 11:41:09 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.36 2013-01-05 15:24:47 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -47,6 +47,7 @@
  *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
  *  @todo fullscreen resolution support for RetroPlatform
  *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
+ *  @todo input devices are not enumerated properly yet, instead the internal dummy IDs are passed around instead of Windows devices
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
  *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
  *  @bug  power LED status changes are not visible
@@ -105,44 +106,28 @@ cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
  * The device is selected in the RetroPlatform player and passed to the emulator
  * in form of an IPC message.
  */
-static BOOLE RetroPlatformConnectInputDeviceToPort(int inputmap_port, int devicetype, DWORD flags, const TCHAR *name) {
-	/* int devicetype2;
+static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport, 
+  const ULO lDeviceType, DWORD dwFlags, const STR *szName) {
 
-	write_log (L"port_insert %d '%s'\n", inputmap_port, name);
-
-	if (inputmap_port < 0 || inputmap_port >= maxjports)
-		return FALSE;
-	
-	inputdevice_compa_clear (&changed_prefs, inputmap_port);
-	
-	if (_tcslen (name) == 0) {
-		inputdevice_joyport_config (&changed_prefs, _T("none"), inputmap_port, 0, 0);
-		return TRUE;
-	}
-	devicetype2 = -1;
-	for (int i = 0; inputdevmode[i * 2]; i++) {
-		if (inputdevmode[i * 2 + 0] == devicetype) {
-			devicetype2 = inputdevmode[i * 2 + 1];
-			break;
-		}
-	}
-	if (devicetype2 < 0)
+	if (lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)
 		return FALSE;
 
-	if (!_tcsncmp (name, KEYBOARDCUSTOM, _tcslen (KEYBOARDCUSTOM))) {
-		return port_insert_custom (inputmap_port, devicetype, flags, name + _tcslen (KEYBOARDCUSTOM));
-	}
+  fellowAddLog("RetroPlatformConnectInputDeviceToPort(): port %d, devicetype %d, '%s'\n", 
+    lGameport, lDeviceType, szName);
 
-	for (int i = 0; i < 10; i++) {
-		TCHAR tmp2[100];
-		_stprintf (tmp2, _T("KeyboardLayout%d"), i);
-		if (!_tcscmp (tmp2, name)) {
-			_stprintf (tmp2, _T("kbd%d"), i + 1);
-			return inputdevice_joyport_config (&changed_prefs, tmp2, inputmap_port, devicetype2, 0);
-		}
-	}
-	return inputdevice_joyport_config (&changed_prefs, name, inputmap_port, devicetype2, 1); */
-  return FALSE;
+  switch(lDeviceType) {
+    case RP_INPUTDEVICE_MOUSE:
+      fellowAddLog(" Attaching mouse device..\n");
+      gameportSetInput(lGameport, GP_MOUSE0);
+      return TRUE;
+    case RP_INPUTDEVICE_JOYSTICK:
+      fellowAddLog(" Attaching joystick..\n");
+      gameportSetInput(lGameport, GP_ANALOG0);
+      return TRUE;
+    default:
+      fellowAddLog(" Unsupported input device type detected.\n");
+      return FALSE;
+  }
 }
 
 /** Translate the screenmode configured in the configuration file and pass it along to the RetroPlatform Player.
@@ -778,8 +763,9 @@ static BOOLE RetroPlatformSendInputDevices(void) {
 	struct RPInputDeviceDescription rpInputDevDesc;
 
   // begin with the basics - the Windows mouse
-  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_MOUSE;
+  wcscpy(rpInputDevDesc.szHostInputID, L"GP_MOUSE0");
   wcscpy(rpInputDevDesc.szHostInputName, L"Windows Mouse");
+  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_MOUSE;
   rpInputDevDesc.dwHostInputVendorID = 0;
   rpInputDevDesc.dwHostInputProductID = 0;
   rpInputDevDesc.dwInputDeviceFeatures = RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_LIGHTPEN;
@@ -787,10 +773,27 @@ static BOOLE RetroPlatformSendInputDevices(void) {
 
   if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
     &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevices - mouse successful, result was %d.\n", lResult);
+    fellowAddLog("RetroPlatformSendInputDevices() - Windows Mouse successful, result was %d.\n", lResult);
   }
   else {
-    fellowAddLog("RetroPlatformSendInputDevices - mouse failed, result was %d.\n", lResult);
+    fellowAddLog("RetroPlatformSendInputDevices() - Windows Mouse failed, result was %d.\n", lResult);
+    bResult = FALSE;
+  }
+
+  wcscpy(rpInputDevDesc.szHostInputID, L"GP_ANALOG0");
+  wcscpy(rpInputDevDesc.szHostInputName, L"Analog Joystick 1");
+  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_JOYSTICK;
+  rpInputDevDesc.dwHostInputVendorID = 0;
+  rpInputDevDesc.dwHostInputProductID = 0;
+  rpInputDevDesc.dwInputDeviceFeatures = RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD;
+  rpInputDevDesc.dwFlags = 0;
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
+    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
+    fellowAddLog("RetroPlatformSendInputDevices() - Analog Joystick 1 successful, result was %d.\n", lResult);
+  }
+  else {
+    fellowAddLog("RetroPlatformSendInputDevices() - Analog Joystick 1 failed, result was %d.\n", lResult);
     bResult = FALSE;
   }
 
@@ -801,10 +804,10 @@ static BOOLE RetroPlatformSendInputDevices(void) {
 
   if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0,
     &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevices - END successful, result was %d.\n", lResult);
+    fellowAddLog("RetroPlatformSendInputDevices() - END successful, result was %d.\n", lResult);
   }
   else {
-    fellowAddLog("RetroPlatformSendInputDevices - END failed, result was %d.\n", lResult);
+    fellowAddLog("RetroPlatformSendInputDevices() - END failed, result was %d.\n", lResult);
     bResult = FALSE;
   }
 
