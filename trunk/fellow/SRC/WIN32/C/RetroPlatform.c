@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.34 2013-01-05 08:25:30 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.35 2013-01-05 11:41:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -35,6 +35,10 @@
  *  WinFellow's own GUI is not shown, the emulator operates in a headless mode.
  *  The configuration is received as a command line parameter, all control events 
  *  (start, shutdown, reset, ...) are sent via IPC.
+ * 
+ *  *Important Note:* The Cloanto modules make heavy use of wide character strings.
+ *  As WinFellow uses normal strings, conversion is usually required (using, for example,
+ *  wsctombs and mbstowcs).
  * 
  *  Drive sounds are output by the emulator. The player only sends messages to control the volume.
  * 
@@ -295,11 +299,11 @@ BOOLE RetroPlatformGetMode(void) {
 static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo) {
 	BOOLE bResult;
 
-#ifndef RETRO_PLATFORM_LOG_VERBOSE
-  if(iMessage != RP_IPC_TO_HOST_DEVICESEEK) {
-#endif
+  bResult = RPPostMessage(iMessage, wParam, lParam, pGuestInfo);
 
-	bResult = RPPostMessage(iMessage, wParam, lParam, pGuestInfo);
+#ifndef RETRO_PLATFORM_LOG_VERBOSE
+  if(iMessage != RP_IPC_TO_HOST_DEVICESEEK && iMessage != RP_IPC_TO_HOST_DEVICEACTIVITY) {
+#endif
 
   if(bResult)
     fellowAddLog("RetroPlatform posted message ([%s], %08x, %08x, %08x)\n",
@@ -307,12 +311,11 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
   else
 		fellowAddLog("RetroPlatform could not post message, error: %d\n", GetLastError());
 
-	return bResult;
-
 #ifndef RETRO_PLATFORM_LOG_VERBOSE
   }
-  else return TRUE;
 #endif
+
+	return bResult;
 }
 
 /** Control status of the RetroPlatform floppy drive LEDs.
@@ -329,13 +332,82 @@ BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMot
 			MAKELONG (bMotorActive ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ) , &RetroPlatformGuestInfo);
 }
 
+/** Send content of floppy drive to RetroPlatform host.
+ * The read-only state is determined and sent here, however at this point 
+ * it is usually wrong, as floppySetDiskImage only reflects the ability to write
+ * to the file in the writeprot flag.
+ * The actual state within the config is configured in a separate call within 
+ * cfgManagerConfigurationActivate - therefore an update message is sent later.
+ * @param[in] lFloppyDriveNo floppy drive index (0-3)
+ * @param[in] szImageName ANSI string containing the floppy image name
+ * @param[in] bWriteProtected flag indicating the read-only state of the drive
+ * @return TRUE if message sent successfully, FALSE otherwise.
+ * @sa RetroPlatformSendFloppyDriveReadOnly
+ * @callergraph
+ */
+BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *szImageName, const BOOLE bWriteProtected) {
+  struct RPDeviceContent rpDeviceContent = { 0 };
+  
+  if (!bRetroPlatformInitialized)
+		return FALSE;
+
+	rpDeviceContent.btDeviceCategory = RP_DEVICECATEGORY_FLOPPY;
+	rpDeviceContent.btDeviceNumber = lFloppyDriveNo;
+	rpDeviceContent.dwInputDevice = 0;
+	if (szImageName)
+		mbstowcs(rpDeviceContent.szContent, szImageName, CFG_FILENAME_LENGTH);
+  else
+    wcscpy(rpDeviceContent.szContent, L"");
+  rpDeviceContent.dwFlags = (bWriteProtected ? RP_DEVICEFLAGS_RW_READONLY : RP_DEVICEFLAGS_RW_READWRITE);
+
+	fellowAddLog("RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n",
+	rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, 
+  rpDeviceContent.dwInputDevice, rpDeviceContent.szContent);
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, &rpDeviceContent, 
+    sizeof(struct RPDeviceContent), &RetroPlatformGuestInfo, NULL)) {
+    fellowAddLog("RetroPlatformSendFloppyDriveContent(): message uccessfully sent.\n");
+    return TRUE;
+  }
+  else {
+    fellowAddLog("RetroPlatformSendFloppyDriveContent(): failed to send message.\n");
+    return FALSE;
+  }
+}
+
+/** Send actual write protection state of drive to RetroPlatform host.
+ * Ignores drives that are not enabled.
+ * @param[in] lFloppyDriveNo floppy drive index (0-3)
+ * @param[in] bWriteProtected flag indicating the read-only state of the drive
+ * @return TRUE if message sent successfully, FALSE otherwise.
+ * @callergraph
+ */
+BOOLE RetroPlatformSendFloppyDriveReadOnly(const ULO lFloppyDriveNo, const BOOLE bWriteProtected) {
+  if(!bRetroPlatformInitialized)
+    return FALSE;
+
+  if(!floppy[lFloppyDriveNo].enabled)
+    return FALSE;
+
+  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICEREADWRITE, MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), 
+    bWriteProtected ? RP_DEVICE_READONLY : RP_DEVICE_READWRITE, NULL, 0, &RetroPlatformGuestInfo, NULL)) {
+    fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): message successfully sent.\n");
+    return TRUE;
+  }
+  else {
+    fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): failed to send message.\n");
+    return FALSE;
+  }
+}
+
 /**
  * Send floppy drive seek events to RetroPlatform host.
  * 
  * Will notify the RetroPlatform player about changes in the drive head position.
  * @param[in] lFloppyDriveNo index of floppy drive
  * @param[in] lTrackNo index of floppy track
- * @return TRUE is successful, FALSE otherwise.
+ * @return TRUE if message sent successfully, FALSE otherwise.
+ * @callergraph
  */
 BOOLE RetroPlatformSendFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrackNo) {
 	if (!bRetroPlatformInitialized)
@@ -474,15 +546,21 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 	case RP_IPC_TO_GUEST_DEVICECONTENT:
 		{
 			struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
-			STR *n = (STR *)dc->szContent;
+			STR n[CFG_FILENAME_LENGTH] = "";
 			int num = dc->btDeviceNumber;
 			int ok = FALSE;
+      wcstombs(n, dc->szContent, CFG_FILENAME_LENGTH);
 			switch (dc->btDeviceCategory) {
 			  case RP_DEVICECATEGORY_FLOPPY:
-				  if (n == NULL || n[0] == 0)
+				  if (n == NULL || n[0] == 0) {
+            fellowAddLog("RetroPlatformHostMessageFunction: remove floppy disk from drive %d.\n", num);
 					  floppyImageRemove(num);
-				  else
+          }
+				  else {
+            fellowAddLog("RetroPlatformHostMessageFunction: set floppy image for drive %d to %s.\n",
+              num, n);
             floppySetDiskImage(num, n);
+          }
 				  ok = TRUE;
 				  break;
 			  case RP_DEVICECATEGORY_INPUTPORT:
@@ -627,11 +705,9 @@ static BOOLE RetroPlatformSendFeatures(void) {
   LRESULT lResult;
 
 	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
-#ifdef RETRO_PLATFORM_SUPPORT_PAUSE
-  dFeatureFlags |= RP_FEATURE_PAUSE;
-#endif
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-	// dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
+  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY;
+  // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
 	// dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
 	// dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
@@ -658,7 +734,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
  * sending the screen mode.
  * @return TRUE if message was sent successfully, FALSE otherwise.
  */
-static BOOLE RetroPlatformSendFloppies(void) {
+static BOOLE RetroPlatformSendEnabledFloppyDrives(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
   int i;
@@ -829,7 +905,7 @@ void RetroPlatformEnter(void) {
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
-    RetroPlatformSendFloppies();
+    RetroPlatformSendEnabledFloppyDrives();
     RetroPlatformSendGameports(RETRO_PLATFORM_NUM_GAMEPORTS);
     RetroPlatformSendInputDevices();
 

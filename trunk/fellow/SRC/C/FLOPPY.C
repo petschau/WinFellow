@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.30 2013-01-05 08:25:30 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.31 2013-01-05 11:41:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,6 +23,25 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
+
+/** @file
+ * The floppy module handles floppy disc drive emulation.
+ * It supports the use of .adf files, and is able to handle gzip (via embedded 
+ * zlib code) and xdms (also embedded) compressed disc images.
+ * 
+ * It contains experimental support for .ipf files originating from the C.A.P.S. 
+ * project <a href="http://www.softpres.org">Software Preservation Society</a>). 
+ * CAPS  * support is not yet fully functional, because timings are not emulated 
+ * correctly to support copy-protected ("flakey") images.
+ * 
+ * CAPS support is only available for the 32 bit version, since no 64 bit version 
+ * of the library is available. CAPS support is only enabled, when the preprocessor 
+ * definition FELLOW_SUPPORT_CAPS is set - this should be disabled for 64 bit builds.
+ * 
+ * @todo CAPS has been renamed to SPS, and a 64 bit version is available;
+ *       update to a current version
+ * @todo enhance timing for flakey image support
+ */
 
 #include <io.h>
 
@@ -315,6 +334,8 @@ void floppyDirSet(BOOLE dr) {
   for (i = 0; i < 4; i++) floppy[i].dir = dr;
 }
 
+/** Move the floppy head to a given position (step).
+ */
 void floppyStepSet(BOOLE stp) {
   ULO i;
   for (i = 0; i < 4; i++) {
@@ -688,6 +709,10 @@ void floppyImageRemove(ULO drive) {
     capsUnloadImage(drive);
   }
 #endif
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    RetroPlatformSendFloppyDriveContent(drive, "", floppy[drive].writeprot);
+#endif
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
   floppy[drive].inserted = FALSE;
   floppy[drive].changed = TRUE;
@@ -836,10 +861,8 @@ void floppyImageIPFLoad(ULO drive) {
 }
 #endif
 
-/*==============================*/
-/* Insert an image into a drive */
-/*==============================*/
-
+/** Insert an image into a floppy drive
+ */
 void floppySetDiskImage(ULO drive, STR *diskname) {
   fs_navig_point *fsnp;
   if (strcmp(diskname, floppy[drive].imagename) == 0) 
@@ -855,40 +878,43 @@ void floppySetDiskImage(ULO drive, STR *diskname) {
       floppyError(drive, FLOPPY_ERROR_EXISTS_NOT);
     else {
       if (fsnp->type != FS_NAVIG_FILE)
-	floppyError(drive, FLOPPY_ERROR_FILE);
+        floppyError(drive, FLOPPY_ERROR_FILE);
       else {
-	floppyImagePrepare(diskname, drive);
-	if (floppy[drive].zipped) {
-	  free(fsnp);
-	  if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
-	    floppyError(drive, FLOPPY_ERROR_COMPRESS);
-	}
-	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
-	  floppy[drive].writeprot = !fsnp->writeable;
-	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-	    (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
-	    floppyError(drive, (floppy[drive].zipped) ?
-FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
-	  else {
-	    strcpy(floppy[drive].imagename, diskname);
-	    switch (floppyImageGeometryCheck(fsnp, drive)) {
-				case FLOPPY_STATUS_NORMAL_OK:
-				  floppyImageNormalLoad(drive);
-				  break;
-				case FLOPPY_STATUS_EXTENDED_OK:
-				  floppyImageExtendedLoad(drive);
-				  break;
-#ifdef FELLOW_SUPPORT_CAPS
-				case FLOPPY_STATUS_IPF_OK:
-				  floppyImageIPFLoad(drive);
-				  break;
+	      floppyImagePrepare(diskname, drive);
+	      if (floppy[drive].zipped) {
+	        free(fsnp);
+	        if ((fsnp = fsWrapMakePoint(floppy[drive].imagenamereal)) == NULL)
+	          floppyError(drive, FLOPPY_ERROR_COMPRESS);
+	      }
+	      if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR) {
+	        floppy[drive].writeprot = !fsnp->writeable;
+	        if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
+	          (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
+	          floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
+	        else {
+            strcpy(floppy[drive].imagename, diskname);
+	          switch (floppyImageGeometryCheck(fsnp, drive)) {
+				      case FLOPPY_STATUS_NORMAL_OK:
+				        floppyImageNormalLoad(drive);
+				        break;
+				      case FLOPPY_STATUS_EXTENDED_OK:
+				        floppyImageExtendedLoad(drive);
+				        break;
+  #ifdef FELLOW_SUPPORT_CAPS
+				      case FLOPPY_STATUS_IPF_OK:
+				        floppyImageIPFLoad(drive);
+				        break;
+  #endif
+				      default:
+				        /* Error already set by floppyImageGeometryCheck() */
+				        break;
+	          }
+#ifdef RETRO_PLATFORM
+            if(RetroPlatformGetMode())
+              RetroPlatformSendFloppyDriveContent(drive, diskname, floppy[drive].writeprot);
 #endif
-				default:
-				  /* Error already set by floppyImageGeometryCheck() */
-				  break;
-	    }
-	  }	
-	}
+	        }
+	      }
       }
       free(fsnp);
     }
@@ -903,12 +929,15 @@ void floppySetEnabled(ULO drive, BOOLE enabled) {
   floppy[drive].enabled = enabled;
 }
 
-/*============================================================================*/
-/* Set read-only flag for a drive                                             */
-/*============================================================================*/
-
+/** Set read-only flag for a drive.
+ */
 void floppySetReadOnly(ULO drive, BOOLE readonly) {
   floppy[drive].writeprot = readonly;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    RetroPlatformSendFloppyDriveReadOnly(drive, readonly);
+#endif
 }
 
 /*============================================================================*/

@@ -142,7 +142,7 @@ At any time, there will always be at least two events in the queue, End of line 
 
 This model is chosen to reflect the fact that at any one time, there are many things going on in parallell inside an Amiga. It is more efficient and a lot cleaner that the different modules schedule their own tasks through this mechanism than the more obvious one where the main loop would have to ask each module in turn, do you want to do something now? Mostly, the answer would have been no, and a lot of wasted CPU-time.
 
-The module also contains the handlers for End of line and End of frame, these two events do a lot of bookkeeping work for various modules (by means of calling <ModuleName>EndOfFrame() and <ModuleName>EndOfLine() functions, for instance, indirectly, these events drive the sound, floppy and graphics emulation.
+The module also contains the handlers for End of line and End of frame, these two events do a lot of bookkeeping work for various modules (by means of calling EndOfFrame() and EndOfLine() functions, for instance, indirectly, these events drive the sound, floppy and graphics emulation.
 
 ###CIA Chips Emulation Module Overview###
 
@@ -188,7 +188,7 @@ The graphics handling is divided in three. The custom registers for graphics and
 
 The overall process of rendering a line of the Amiga screen is as follows:
 
-* At the end of each virtual line, the current state of the custom registers define the appearance of the line. The rendering is one line at the time, which does not capture some special effects accurately L The EndOfFrame() handler cause rendering to happen.
+* At the end of each virtual line, the current state of the custom registers define the appearance of the line. The rendering is one line at the time, which does not capture some special effects accurately. The EndOfFrame() handler cause rendering to happen.
 * The appearance of the line is rendered into a temporary buffer in a format that is preprocessed to aid fast drawing later. This includes translating the planar Amiga graphics to chunky pixels which describe the color for each pixel on the line. Calculations involve location of the horisontal borders, and possible hidden pixels that must be skipped, but not shown. Or the line might be a line that shows the vertical border. In any case, the temporary buffer contains a full Amiga line rendered as chunky pixels. There are also some flags to catch special cases, such as a line with no bitmap pixels, in that case the color of the entire line is remembered.
 * Sprites are added to the temporary line. Similar calculations about location or absense of sprites are done to figure out where they are.
 * For each virtual line we repeat this process, building a temporary buffer for the entire screen.
