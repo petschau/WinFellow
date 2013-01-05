@@ -1,4 +1,4 @@
-/* @(#) $Id: FLOPPY.C,v 1.29 2013-01-04 19:43:25 carfesh Exp $ */
+/* @(#) $Id: FLOPPY.C,v 1.30 2013-01-05 08:25:30 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -295,7 +295,13 @@ void floppyMotorSet(ULO drive, BOOLE mtr) {
     floppy[drive].idmode = FALSE;
     floppy[drive].motor_ticks = 0;
   }
-  if (floppy[drive].motor != (!mtr)) drawSetLED(drive, !mtr);
+  if (floppy[drive].motor != (!mtr)) {
+    drawSetLED(drive, !mtr);
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+      RetroPlatformSendFloppyDriveLED(drive, !mtr);
+#endif
+  }
   floppy[drive].motor = !mtr;
 }
 

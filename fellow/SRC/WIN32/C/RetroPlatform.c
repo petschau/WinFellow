@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.33 2013-01-04 20:32:01 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.34 2013-01-05 08:25:30 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -318,24 +318,15 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 /** Control status of the RetroPlatform floppy drive LEDs.
  *
  * Only sends status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages.
- * Called at the end of every frame.
  */
-static BOOLE RetroPlatformSendFloppyDriveLEDStatus(ULO lFloppyDriveNo) {
+BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMotorActive) {
 	BOOLE bWriteActivity = diskDMAen == 3 && !((floppy[lFloppyDriveNo].sel | !floppy[lFloppyDriveNo].enabled) & (1 << lFloppyDriveNo));
-  BOOLE bLedOnOff; 
-  static BOOLE bLedOnOffOld[4];
 
   if(lFloppyDriveNo > 3) 
     return FALSE;
 
-  bLedOnOff = floppy[lFloppyDriveNo].motor;
-  if(bLedOnOffOld[lFloppyDriveNo] == bLedOnOff) 
-    return TRUE;
-
-  bLedOnOffOld[lFloppyDriveNo] = bLedOnOff;
-
   return RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD (RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo),
-			MAKELONG (bLedOnOff ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ) , &RetroPlatformGuestInfo);
+			MAKELONG (bMotorActive ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ) , &RetroPlatformGuestInfo);
 }
 
 /**
@@ -870,8 +861,6 @@ void RetroPlatformEmulationStop(void) {
 }
 
 void RetroPlatformEndOfFrame(void) {
-  int i;
-
   if(lRetroPlatformEscapeKeyTargetHoldTime != 0) {
     ULONGLONG t;
 
@@ -885,10 +874,6 @@ void RetroPlatformEndOfFrame(void) {
       joyDrvToggleFocus();
     }
   }
-
-  for(i = 0; i < 4; i++)
-    if(floppy[i].enabled)
-      RetroPlatformSendFloppyDriveLEDStatus(i);
 }
 
 #endif
