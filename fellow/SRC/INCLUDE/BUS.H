@@ -54,7 +54,7 @@ extern ULO busGetRasterY(void);
 extern ULL busGetRasterFrameCount(void);
 
 #define BUS_CYCLE_PER_LINE 227
-#define BUS_LINES_PER_FRAME 312
+#define BUS_LINES_PER_FRAME 313
 #define BUS_CYCLE_PER_FRAME (BUS_CYCLE_PER_LINE*BUS_LINES_PER_FRAME)
 #define BUS_CYCLE_DISABLE 0xffffffff
 
