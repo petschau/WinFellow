@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.16 2013-01-06 09:21:05 carfesh Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.17 2013-01-06 10:55:46 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -323,7 +323,7 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst,
 { 
 	IDirectInput8 *pdi = (IDirectInput8*)pvRef; 
 
-	fellowAddLog( "**** Joystick %d ****\n", --num_joy_attached );
+	fellowAddLog( "**** Joystick %d **** '%s'\n", --num_joy_attached, pdinst->tszProductName );
 
 	if( !joyDrvDxCreateAndInitDevice( pdi, joy_drv_lpDID, pdinst->guidInstance, num_joy_attached ))
 	{
