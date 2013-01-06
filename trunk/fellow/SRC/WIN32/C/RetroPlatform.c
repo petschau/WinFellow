@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.36 2013-01-05 15:24:47 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.37 2013-01-06 11:27:46 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -756,61 +756,69 @@ static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
   }
 }
 
-static BOOLE RetroPlatformSendInputDevices(void) {
+/** Send a single input device to the RetroPlatform player.
+ */
+static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
+  const DWORD dwInputDeviceFeatures, const DWORD dwFlags,
+  const WCHAR *szHostInputID, const WCHAR *szHostInputName) {
   LRESULT lResult;
-  BOOLE bResult = TRUE;
 
 	struct RPInputDeviceDescription rpInputDevDesc;
 
   // begin with the basics - the Windows mouse
-  wcscpy(rpInputDevDesc.szHostInputID, L"GP_MOUSE0");
-  wcscpy(rpInputDevDesc.szHostInputName, L"Windows Mouse");
-  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_MOUSE;
+  wcscpy(rpInputDevDesc.szHostInputID, szHostInputID);
+  wcscpy(rpInputDevDesc.szHostInputName, szHostInputName);
+  rpInputDevDesc.dwHostInputType = dwHostInputType;
   rpInputDevDesc.dwHostInputVendorID = 0;
   rpInputDevDesc.dwHostInputProductID = 0;
-  rpInputDevDesc.dwInputDeviceFeatures = RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_LIGHTPEN;
-  rpInputDevDesc.dwFlags = RP_HOSTINPUTFLAGS_MOUSE_SMART;
+  rpInputDevDesc.dwInputDeviceFeatures = dwInputDeviceFeatures;
+  rpInputDevDesc.dwFlags = dwFlags;
 
   if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
     &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevices() - Windows Mouse successful, result was %d.\n", lResult);
+    fellowAddLog("RetroPlatformSendInputDevice() - '%s' successful, result was %d.\n", szHostInputName, lResult);
+    return TRUE;
   }
   else {
-    fellowAddLog("RetroPlatformSendInputDevices() - Windows Mouse failed, result was %d.\n", lResult);
-    bResult = FALSE;
+    fellowAddLog("RetroPlatformSendInputDevice() - '%s' failed, result was %d.\n", szHostInputName, lResult);
+    return FALSE;
   }
+}
 
-  wcscpy(rpInputDevDesc.szHostInputID, L"GP_ANALOG0");
-  wcscpy(rpInputDevDesc.szHostInputName, L"Analog Joystick 1");
-  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_JOYSTICK;
-  rpInputDevDesc.dwHostInputVendorID = 0;
-  rpInputDevDesc.dwHostInputProductID = 0;
-  rpInputDevDesc.dwInputDeviceFeatures = RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD;
-  rpInputDevDesc.dwFlags = 0;
+/** Send list of available input device options to the RetroPlatform player.
+ *
+ * The emulator is supposed to enumerate the Windows devices and identify
+ * them via unique IDs; joysticks are currently enumerated when the
+ * emulator session starts up (after this call), so no IDs or names are
+ * available yet.
+ */
+static BOOLE RetroPlatformSendInputDevices(void) {
+  BOOLE bResult = TRUE;
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
-    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevices() - Analog Joystick 1 successful, result was %d.\n", lResult);
-  }
-  else {
-    fellowAddLog("RetroPlatformSendInputDevices() - Analog Joystick 1 failed, result was %d.\n", lResult);
-    bResult = FALSE;
-  }
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_MOUSE, 
+    RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_LIGHTPEN,
+    RP_HOSTINPUTFLAGS_MOUSE_SMART,
+    L"GP_MOUSE0",
+    L"Windows Mouse")) bResult = FALSE;
 
-  rpInputDevDesc.dwHostInputType = RP_HOSTINPUT_END;
-  wcscpy(rpInputDevDesc.szHostInputName, L"");
-  rpInputDevDesc.dwInputDeviceFeatures = 0;
-  rpInputDevDesc.dwFlags = 0;
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+    0,
+    L"GP_ANALOG0",
+    L"Analog Joystick 1")) bResult = FALSE;
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0,
-    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevices() - END successful, result was %d.\n", lResult);
-  }
-  else {
-    fellowAddLog("RetroPlatformSendInputDevices() - END failed, result was %d.\n", lResult);
-    bResult = FALSE;
-  }
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+    0,
+    L"GP_ANALOG1",
+    L"Analog Joystick 2")) bResult = FALSE;
 
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
+    0,
+    0,
+    L"RP_END",
+    L"END")) bResult = FALSE;
+ 
   return bResult;
 }
 
