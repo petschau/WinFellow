@@ -1,4 +1,4 @@
-/* @(#) $Id: WGUI.C,v 1.36 2013-01-02 17:33:00 carfesh Exp $ */
+/* @(#) $Id: WGUI.C,v 1.37 2013-01-06 00:09:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -377,7 +377,7 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
   for (i=0; i < index; i++) {
     listnode = listNext(listnode);
   }
-  pwguicfgwdm = listNode(listnode);
+  pwguicfgwdm = (wgui_drawmode *)listNode(listnode);
   if (pwguicfgwdm != NULL) {
     sprintf(char_buffer, "%d by %d pixels", pwguicfgwdm->width, pwguicfgwdm->height);
   } else {
@@ -472,38 +472,38 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
   wdms->comboxbox32bitindex = -1;
 
   for (reslist = drawGetModes(); reslist != NULL; reslist = listNext(reslist)) {
-    dm = listNode(reslist);
+    dm = (draw_mode*)listNode(reslist);
     pwdm = (wgui_drawmode *) malloc(sizeof(wgui_drawmode));
     wguiConvertDrawModeNodeToGuiDrawNode(dm, pwdm);
     if (dm->windowed) {
       // windowed
       //pwdm->id = idw;
-      wdms->reswindowed = listAddSorted(wdms->reswindowed, listNew(pwdm), &wguiCompareScreenArea);
+      wdms->reswindowed = listAddSorted(wdms->reswindowed, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
       idw++;
     } else {
       // fullscreen
       switch(dm->bits) {
 				case 8:
 				  //pwdm->id = id8bit;
-				  wdms->res8bit = listAddSorted(wdms->res8bit, listNew(pwdm), &wguiCompareScreenArea);
+				  wdms->res8bit = listAddSorted(wdms->res8bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
 				  id8bit++;
 				  break;
 
 				case 16:
 				  //pwdm->id = id16bit;
-				  wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), &wguiCompareScreenArea);
+				  wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
 				  id16bit++;
 				  break;
 
 				case 24:
 				  //pwdm->id = id24bit;
-				  wdms->res24bit = listAddSorted(wdms->res24bit, listNew(pwdm), &wguiCompareScreenArea);
+				  wdms->res24bit = listAddSorted(wdms->res24bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
 				  id24bit++;
 				  break;
 
 				case 32:
 				  //pwdm->id = id32bit;
-				  wdms->res32bit = listAddSorted(wdms->res32bit, listNew(pwdm), &wguiCompareScreenArea);
+				  wdms->res32bit = listAddSorted(wdms->res32bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
 				  id32bit++;
 				  break;
       }
@@ -583,18 +583,18 @@ wgui_drawmode *wguiMatchResolution() {
 
   reslist = wguiGetMatchingList(windowed, colorbits);	
   for (i = reslist; i!=NULL; i = listNext(i)) {
-    dm = listNode(i);
+    dm = (wgui_drawmode *) listNode(i);
     if ((dm->height == height) && (dm->width == width)) {
       return dm;
     }
   }
   // if no matching is found return pointer to first resolution of 8 colorbits
   if(listNode(pwgui_dm->res32bit) != NULL)
-    return listNode(pwgui_dm->res32bit);
+    return (wgui_drawmode *) listNode(pwgui_dm->res32bit);
   else if(listNode(pwgui_dm->res16bit) != NULL)
-    return listNode(pwgui_dm->res16bit);
+    return (wgui_drawmode *) listNode(pwgui_dm->res16bit);
   else
-    return listNode(pwgui_dm->res8bit);
+    return (wgui_drawmode *) listNode(pwgui_dm->res8bit);
 }
 
 /*============================================================================*/
@@ -603,7 +603,7 @@ wgui_drawmode *wguiMatchResolution() {
 
 STR *wguiExtractFilename(STR *fullpathname) {
 
-  BYT *strpointer;
+  char *strpointer;
 
   strpointer = strrchr(fullpathname, '\\');
   strncpy(extractedfilename, fullpathname + strlen(fullpathname) - strlen(strpointer) + 1, strlen(fullpathname) - strlen(strpointer) - 1);
@@ -616,7 +616,7 @@ STR *wguiExtractFilename(STR *fullpathname) {
 
 STR *wguiExtractPath(STR *fullpathname) {
 
-  BYT *strpointer;
+  char *strpointer;
 
   strpointer = strrchr(fullpathname, '\\');
   strncpy(extractedpathname, fullpathname, strlen(fullpathname) - strlen(strpointer));
@@ -1020,7 +1020,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     /* get CPU type */
     for (i=0; i<NUMBER_OF_CPUS; i++) {
-      if (ccwButtonGetCheck(hwndDlg, wgui_cpus_cci[i])) { cfgSetCPUType(conf, i); }
+      if (ccwButtonGetCheck(hwndDlg, wgui_cpus_cci[i])) { cfgSetCPUType(conf, (cpu_integration_models) i); }
     }	
 
     /* get CPU speed */
@@ -1295,12 +1295,12 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     /* get current sound emulation type */
     for (i=0; i<NUMBER_OF_SOUND_EMULATIONS; i++) {
-      if (ccwButtonGetCheck(hwndDlg, wgui_sound_emulation_cci[i])) { cfgSetSoundEmulation(conf, i); }
+      if (ccwButtonGetCheck(hwndDlg, wgui_sound_emulation_cci[i])) { cfgSetSoundEmulation(conf, (sound_emulations) i); }
     }
 
     /* get current sound rate */
     for (i=0; i<NUMBER_OF_SOUND_RATES; i++) {
-      if (ccwButtonGetCheck(hwndDlg, wgui_sound_rates_cci[i])) { cfgSetSoundRate(conf, i); }
+      if (ccwButtonGetCheck(hwndDlg, wgui_sound_rates_cci[i])) { cfgSetSoundRate(conf, (sound_rates)i); }
     }
 
     /* get current sound channels */
@@ -1311,7 +1311,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     /* get current sound filter */
     for (i=0; i<NUMBER_OF_SOUND_FILTERS; i++) {
-      if (ccwButtonGetCheck(hwndDlg, wgui_sound_filters_cci[i])) { cfgSetSoundFilter(conf, i); }
+      if (ccwButtonGetCheck(hwndDlg, wgui_sound_filters_cci[i])) { cfgSetSoundFilter(conf, (sound_filters)i); }
     }
 
     /* get current sound WAV dump */
@@ -1360,8 +1360,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   void wguiExtractGameportConfig(HWND hwndDlg, cfg *conf) {
 
     /* get current gameport inputs */
-    cfgSetGameport(conf, 0, ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT1));
-    cfgSetGameport(conf, 1, ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT2));
+    cfgSetGameport(conf, 0, (gameport_inputs)ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT1));
+    cfgSetGameport(conf, 1, (gameport_inputs)ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_GAMEPORT2));
   }
 
 
@@ -1994,7 +1994,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	// the checkbox was unchecked - going to windowed
 	ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));					
 	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
-	pwgui_dm_match = listNode(pwgui_dm->reswindowed);
+	pwgui_dm_match = (wgui_drawmode *) listNode(pwgui_dm->reswindowed);
 	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 	ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
 	ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
@@ -2005,7 +2005,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
 	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
 	ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-	pwgui_dm_match = listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+	pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
 	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 	ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
 	Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
@@ -2020,7 +2020,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
       ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
       ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-      pwgui_dm_match = listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+      pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
       wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
       break;
       }
@@ -2820,11 +2820,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	case IDC_BUTTON_TURBO_LOAD:
 	  if (cfgGetSoundEmulation(wgui_cfg) != 1)
 	  {
-	    cfgSetSoundEmulation(wgui_cfg, 1);
+	    cfgSetSoundEmulation(wgui_cfg, SOUND_PLAY);
 	  }
 	  else
 	  {
-	    cfgSetSoundEmulation(wgui_cfg, 0);
+	    cfgSetSoundEmulation(wgui_cfg, SOUND_EMULATE);
 	  }
 	  break;
 	default:

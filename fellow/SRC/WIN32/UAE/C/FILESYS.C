@@ -31,7 +31,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FILESYS.C,v 1.12 2008-02-17 12:57:12 peschau Exp $
+  @(#) $Id: FILESYS.C,v 1.13 2013-01-06 00:09:02 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -89,7 +89,7 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
     /* @@@ use strcasecmp for some targets.  */
     if (strlen (path) > 0 && strncmp (file, path, strlen (path)) == 0) {
 	    size_t l;
-	    char *p = xmalloc (strlen (file) + strlen (subst) + 2);
+	    char *p = (char*)xmalloc (strlen (file) + strlen (subst) + 2);
 	    strcpy (p, subst);
 	    l = strlen (p);
 	    while (l > 0 && p[l - 1] == '/')

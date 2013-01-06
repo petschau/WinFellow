@@ -1,4 +1,4 @@
-/* @(#) $Id: kbdparser.c,v 1.7 2008-02-21 00:05:46 peschau Exp $ */
+/* @(#) $Id: kbdparser.c,v 1.8 2013-01-06 00:09:01 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -421,9 +421,9 @@ BOOLE prsReadFile( char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
 		else
 		{
 			if( ReplIndex < FIRST_KEY2_REPLACEMENT )
-				key_repl[0][ReplIndex] = symbol_to_DIK_kbddrv[ PcIndex ];
+				key_repl[0][ReplIndex] = (kbd_drv_pc_symbol)PcIndex;
 			else
-				key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = symbol_to_DIK_kbddrv[ PcIndex ];
+				key_repl[1][ReplIndex - FIRST_KEY2_REPLACEMENT] = (kbd_drv_pc_symbol)PcIndex;
 		}
 	}
 	fclose( f );

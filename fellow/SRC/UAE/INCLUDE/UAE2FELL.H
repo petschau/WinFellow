@@ -1,4 +1,4 @@
-/* @(#) $Id: UAE2FELL.H,v 1.15 2012-07-15 22:20:35 peschau Exp $ */
+/* @(#) $Id: UAE2FELL.H,v 1.16 2013-01-06 00:08:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -129,7 +129,7 @@ extern char warning_buffer[256];
 #define xcalloc calloc
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
-#define my_strdup(a) strcpy(malloc(strlen(a)+1), a)
+#define my_strdup(a) strcpy((char*)malloc(strlen(a)+1), a)
 #else
 #define my_strdup _strdup
 #endif

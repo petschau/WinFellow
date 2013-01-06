@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.15 2012-12-05 09:58:56 carfesh Exp $ */
+/* @(#) $Id: FMEM.C,v 1.16 2013-01-06 00:08:57 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -1383,7 +1383,7 @@ const STR *memory_kickimage_versionstrings[14] = {
     {
       fseek(KF, 0, SEEK_END);
       keysize = ftell(KF);
-      keybuffer = malloc(keysize);
+      keybuffer = (STR*)malloc(keysize);
       if (keybuffer != NULL)
       {
 	      fseek(KF, 0, SEEK_SET);
@@ -1422,7 +1422,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 					  keysize = pfnGetKey(NULL, 0);
 					  if (keysize)
 					  {
-						  keybuffer = malloc(keysize);
+						  keybuffer = (STR*)malloc(keysize);
  
 						  if (keybuffer)
 						  {

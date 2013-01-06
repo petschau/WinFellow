@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.18 2013-01-05 15:24:46 carfesh Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.19 2013-01-06 00:08:59 peschau Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -980,7 +980,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 		{
 		  // Here the gameport is set up for input from the specified set of joykeys 
 		  // Check each key for change
-		  kbd_drv_joykey_directions direction;
+		  int direction;
 		  for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
 			if (symbol_key == kbd_drv_joykey[setting][direction])
 			  if( pressed( symbol_key ) || released( symbol_key ))
@@ -1204,109 +1204,9 @@ ULO kbdDrvJoystickReplacementGet(kbd_event event) {
   return PC_NONE;
 }
 
-
-/*===========================================================================*/
-/* Hard Reset                                                                */
-/*===========================================================================*/
-
-void kbdDrvHardReset(void) {
-}
-
-
-/*===========================================================================*/
-/* Emulation Starting                                                        */
-/*===========================================================================*/
-
-void kbdDrvEmulationStart(void) {
-  ULO port;
-  
-  kbd_drv_home_pressed = FALSE;
-  kbd_drv_end_pressed = FALSE;
-  for (port = 0; port < 2; port++) {
-    kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == GP_JOYKEY0);
-    kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == GP_JOYKEY1);
-  }
-  
-  memset( prevkeys, 0, sizeof( prevkeys ));
-  memset( keys, 0, sizeof( keys ));
-  
-  kbdDrvDInputInitialize();
-}
-
-
-/*===========================================================================*/
-/* Emulation Stopping                                                        */
-/*===========================================================================*/
-
-void kbdDrvEmulationStop(void) {
-  kbdDrvDInputRelease();
-}
-
-/*===========================================================================*/
-/* Emulation Startup                                                         */
-/*===========================================================================*/
-
-void kbdDrvStartup(void) {
-  ULO port, setting;
+void kbdDrvInitializeDIKToSymbolKeyTable(void) {
   int i;
-  
-  kbd_drv_joykey_event[0][0][JOYKEY_UP] = EVENT_JOY0_UP_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_UP] = EVENT_JOY0_UP_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_UP] = EVENT_JOY1_UP_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_UP] = EVENT_JOY1_UP_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_DOWN] = EVENT_JOY0_DOWN_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_DOWN] = EVENT_JOY0_DOWN_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_DOWN] = EVENT_JOY1_DOWN_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_DOWN] = EVENT_JOY1_DOWN_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_LEFT] = EVENT_JOY0_LEFT_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_LEFT] = EVENT_JOY0_LEFT_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_LEFT] = EVENT_JOY1_LEFT_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_LEFT] = EVENT_JOY1_LEFT_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_RIGHT] = EVENT_JOY0_RIGHT_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_RIGHT] = EVENT_JOY0_RIGHT_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_RIGHT] = EVENT_JOY1_RIGHT_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_RIGHT] = EVENT_JOY1_RIGHT_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_FIRE0] = EVENT_JOY0_FIRE0_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_FIRE0] = EVENT_JOY0_FIRE0_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_FIRE0] = EVENT_JOY1_FIRE0_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_FIRE0] = EVENT_JOY1_FIRE0_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_ACTIVE;
-  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_INACTIVE;
-  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_ACTIVE;
-  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_INACTIVE;
-  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_ACTIVE;
-  
-  kbd_drv_joykey[0][JOYKEY_UP]    = DIK_UP;
-  kbd_drv_joykey[0][JOYKEY_DOWN]  = DIK_DOWN;
-  kbd_drv_joykey[0][JOYKEY_LEFT]  = DIK_LEFT;
-  kbd_drv_joykey[0][JOYKEY_RIGHT] = DIK_RIGHT;
-  kbd_drv_joykey[0][JOYKEY_FIRE0] = DIK_RCONTROL;
-  kbd_drv_joykey[0][JOYKEY_FIRE1] = DIK_RMENU;
-  kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = DIK_O;
-  kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = DIK_P;
-  kbd_drv_joykey[1][JOYKEY_UP]    = DIK_R;
-  kbd_drv_joykey[1][JOYKEY_DOWN]  = DIK_F;
-  kbd_drv_joykey[1][JOYKEY_LEFT]  = DIK_D;
-  kbd_drv_joykey[1][JOYKEY_RIGHT] = DIK_G;
-  kbd_drv_joykey[1][JOYKEY_FIRE0] = DIK_LCONTROL;
-  kbd_drv_joykey[1][JOYKEY_FIRE1] = DIK_LMENU;
-  kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = DIK_A;
-  kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = DIK_S;
-  
-  for (port = 0; port < 2; port++)
-    for (setting = 0; setting < 2; setting++)
-      kbd_drv_joykey_enabled[port][setting] = FALSE;
-    
-  kbd_drv_capture = FALSE;
-  kbd_drv_captured_key = FALSE;
-  
+
   for( i = 0; i < PCK_LAST_KEY; i++ )
     kbddrv_DIK_to_symbol[ i ] = PCK_NONE;
   
@@ -1418,21 +1318,114 @@ void kbdDrvStartup(void) {
   kbddrv_DIK_to_symbol[ DIK_RIGHT           ] = PCK_RIGHT;
   kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
+}
+
+/*===========================================================================*/
+/* Hard Reset                                                                */
+/*===========================================================================*/
+
+void kbdDrvHardReset(void) {
+}
+
+
+/*===========================================================================*/
+/* Emulation Starting                                                        */
+/*===========================================================================*/
+
+void kbdDrvEmulationStart(void) {
+  ULO port;
+  
+  kbd_drv_home_pressed = FALSE;
+  kbd_drv_end_pressed = FALSE;
+  for (port = 0; port < 2; port++) {
+    kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == GP_JOYKEY0);
+    kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == GP_JOYKEY1);
+  }
+  
+  memset( prevkeys, 0, sizeof( prevkeys ));
+  memset( keys, 0, sizeof( keys ));
+  
+  kbdDrvDInputInitialize();
+}
+
+
+/*===========================================================================*/
+/* Emulation Stopping                                                        */
+/*===========================================================================*/
+
+void kbdDrvEmulationStop(void) {
+  kbdDrvDInputRelease();
+}
+
+/*===========================================================================*/
+/* Emulation Startup                                                         */
+/*===========================================================================*/
+
+void kbdDrvStartup(void) {
+  ULO port, setting;
+  
+  kbd_drv_joykey_event[0][0][JOYKEY_UP] = EVENT_JOY0_UP_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_UP] = EVENT_JOY0_UP_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_UP] = EVENT_JOY1_UP_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_UP] = EVENT_JOY1_UP_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_DOWN] = EVENT_JOY0_DOWN_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_DOWN] = EVENT_JOY0_DOWN_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_DOWN] = EVENT_JOY1_DOWN_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_DOWN] = EVENT_JOY1_DOWN_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_LEFT] = EVENT_JOY0_LEFT_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_LEFT] = EVENT_JOY0_LEFT_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_LEFT] = EVENT_JOY1_LEFT_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_LEFT] = EVENT_JOY1_LEFT_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_RIGHT] = EVENT_JOY0_RIGHT_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_RIGHT] = EVENT_JOY0_RIGHT_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_RIGHT] = EVENT_JOY1_RIGHT_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_RIGHT] = EVENT_JOY1_RIGHT_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_FIRE0] = EVENT_JOY0_FIRE0_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_FIRE0] = EVENT_JOY0_FIRE0_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_FIRE0] = EVENT_JOY1_FIRE0_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_FIRE0] = EVENT_JOY1_FIRE0_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_FIRE1] = EVENT_JOY0_FIRE1_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_FIRE1] = EVENT_JOY1_FIRE1_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE0] = EVENT_JOY0_AUTOFIRE0_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE0] = EVENT_JOY1_AUTOFIRE0_ACTIVE;
+  kbd_drv_joykey_event[0][0][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_INACTIVE;
+  kbd_drv_joykey_event[0][1][JOYKEY_AUTOFIRE1] = EVENT_JOY0_AUTOFIRE1_ACTIVE;
+  kbd_drv_joykey_event[1][0][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_INACTIVE;
+  kbd_drv_joykey_event[1][1][JOYKEY_AUTOFIRE1] = EVENT_JOY1_AUTOFIRE1_ACTIVE;
+  
+  kbd_drv_joykey[0][JOYKEY_UP]    = PCK_UP;
+  kbd_drv_joykey[0][JOYKEY_DOWN]  = PCK_DOWN;
+  kbd_drv_joykey[0][JOYKEY_LEFT]  = PCK_LEFT;
+  kbd_drv_joykey[0][JOYKEY_RIGHT] = PCK_RIGHT;
+  kbd_drv_joykey[0][JOYKEY_FIRE0] = PCK_RIGHT_CTRL;
+  kbd_drv_joykey[0][JOYKEY_FIRE1] = PCK_RIGHT_ALT;
+  kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = PCK_O;
+  kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = PCK_P;
+  kbd_drv_joykey[1][JOYKEY_UP]    = PCK_R;
+  kbd_drv_joykey[1][JOYKEY_DOWN]  = PCK_F;
+  kbd_drv_joykey[1][JOYKEY_LEFT]  = PCK_D;
+  kbd_drv_joykey[1][JOYKEY_RIGHT] = PCK_G;
+  kbd_drv_joykey[1][JOYKEY_FIRE0] = PCK_LEFT_CTRL;
+  kbd_drv_joykey[1][JOYKEY_FIRE1] = PCK_LEFT_ALT;
+  kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = PCK_A;
+  kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = PCK_S;
+  
+  for (port = 0; port < 2; port++)
+    for (setting = 0; setting < 2; setting++)
+      kbd_drv_joykey_enabled[port][setting] = FALSE;
+    
+  kbd_drv_capture = FALSE;
+  kbd_drv_captured_key = PCK_NONE;
+
+  kbdDrvInitializeDIKToSymbolKeyTable();
 
   fileopsGetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
   prs_rewrite_mapping_file = prsReadFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
-
-  for (port = 0; port < 2; port++)
-    for (setting = 0; setting < MAX_JOYKEY_VALUE; setting++) {
-
-			kbd_drv_joykey[port][setting] = kbddrv_DIK_to_symbol[kbd_drv_joykey[port][setting]];
-
-#ifdef _DEBUG
-			fellowAddLog( "keyplacement port %d direction %d: %s\n", port, setting, kbdDrvKeyString( kbd_drv_joykey[port][setting] ));
-#endif
-
-		}
 
   kbd_drv_active = FALSE;
   kbd_drv_lpDI = NULL;

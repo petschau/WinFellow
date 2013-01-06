@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUNDDRV.C,v 1.15 2009-07-25 10:24:00 peschau Exp $ */
+/* @(#) $Id: SOUNDDRV.C,v 1.16 2013-01-06 00:08:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Sound driver for Windows                                                */
@@ -705,8 +705,8 @@ void soundDrvCopy8BitsMono(UBY *audio_buffer,
 }
 
 BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
-				 WOR *left,
-				 WOR *right,
+				 UWO *left,
+				 UWO *right,
 				 ULO sample_count,
 				 ULO buffer_half) {
   HRESULT res;
@@ -745,18 +745,18 @@ BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
   }
   if (soundGetStereo()) {
     if (soundGet16Bits()) {
-      soundDrvCopy16BitsStereo(lpvAudio, left, right, sample_count);
+      soundDrvCopy16BitsStereo((UWO*)lpvAudio, left, right, sample_count);
     }
     else {
-      soundDrvCopy8BitsStereo(lpvAudio, left, right, sample_count);
+      soundDrvCopy8BitsStereo((UBY*)lpvAudio, left, right, sample_count);
     }
   }
   else {
     if (soundGet16Bits()) {
-      soundDrvCopy16BitsMono(lpvAudio, left, right, sample_count);
+      soundDrvCopy16BitsMono((UWO*)lpvAudio, left, right, sample_count);
     }
     else {
-      soundDrvCopy8BitsMono(lpvAudio, left, right, sample_count);
+      soundDrvCopy8BitsMono((UBY*)lpvAudio, left, right, sample_count);
     }
   }
   IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpvAudio, dwBytes, NULL, 0);
@@ -775,8 +775,8 @@ void soundDrvPlay(WOR *left, WOR *right, ULO sample_count) {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
 //  fellowAddLog("soundDrvPlay() starting\n");
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);
-  dsound_device->pending_data_left = left;
-  dsound_device->pending_data_right = right;
+  dsound_device->pending_data_left = (UWO*)left;
+  dsound_device->pending_data_right = (UWO*)right;
   dsound_device->pending_data_sample_count = sample_count;
   ResetEvent(dsound_device->can_add_data);
   SetEvent(dsound_device->data_available);
