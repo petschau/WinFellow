@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.15 2008-02-21 00:05:44 peschau Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.16 2013-01-06 09:21:05 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -365,7 +365,7 @@ void joyDrvDInputInitialize(void) {
 
     num_joy_attached = MAX_JOY_PORT;
 
-		if ((res = IDirectInput8_EnumDevices( joy_drv_lpDI, DI8DEVTYPE_JOYSTICK,
+		if ((res = IDirectInput8_EnumDevices( joy_drv_lpDI, DI8DEVCLASS_GAMECTRL,
 					joyDrvInitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY )) != DI_OK) {
 			joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices() ", res );
 			joy_drv_failed = TRUE;
