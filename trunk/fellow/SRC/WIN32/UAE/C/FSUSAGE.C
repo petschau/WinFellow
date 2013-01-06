@@ -22,7 +22,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FSUSAGE.C,v 1.5 2004-05-27 12:30:24 carfesh Exp $
+  @(#) $Id: FSUSAGE.C,v 1.6 2013-01-06 00:09:02 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -48,9 +48,7 @@
    TOSIZE must be positive.  Return -1 if FROMSIZE is not positive.  */
 
 static long
-adjust_blocks (blocks, fromsize, tosize)
-     long blocks;
-     int fromsize, tosize;
+adjust_blocks (long blocks, int fromsize, int tosize)
 {
   if (tosize <= 0)
     abort ();
@@ -73,10 +71,7 @@ adjust_blocks (blocks, fromsize, tosize)
 #include <windows.h>
 
 int
-get_fs_usage (path, disk, fsp)
-     const char *path;
-     const char *disk;
-     struct fs_usage *fsp;
+get_fs_usage (const char *path, const char *disk, struct fs_usage *fsp)
 {
 	/* FELLOW REMOVE: char buf1[1024]; */
     char buf2[1024];

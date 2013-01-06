@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.10 2012-08-12 16:51:02 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.11 2013-01-06 00:08:52 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -3302,7 +3302,7 @@ static void cpuTrapcc(ULO cc)
 /// </summary>
 static void cpuTrapccW(ULO cc)
 {
-  UWO imm = cpuGetNextWord();
+  cpuGetNextWord();
   if (cc)
   {
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
@@ -3316,7 +3316,7 @@ static void cpuTrapccW(ULO cc)
 /// </summary>
 static void cpuTrapccL(ULO cc)
 {
-  ULO imm = cpuGetNextLong();
+  cpuGetNextLong();
   if (cc)
   {
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector

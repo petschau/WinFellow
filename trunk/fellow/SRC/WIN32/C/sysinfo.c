@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.20 2011-07-18 17:22:55 peschau Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.21 2013-01-06 00:09:01 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -647,9 +647,9 @@ static float sysinfoCPUSpeed(void)
 
       SumResults = result0 + result1 + result2;
     }
-  while ((tries < 10) && ((abs (3 * result0 - SumResults) > 3) ||
-			  (abs (3 * result1 - SumResults) > 3)
-			  || (abs (3 * result2 - SumResults) > 3)));
+  while ((tries < 10) && ((abs ((int)(3 * result0 - SumResults)) > 3) ||
+			  (abs ((int)(3 * result1 - SumResults)) > 3)
+			  || (abs ((int)(3 * result2 - SumResults)) > 3)));
 
   if (SumResults / 3 != (SumResults + 1) / 3)
     SumResults++;

@@ -14,7 +14,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: AUTOCONF.C,v 1.6 2012-07-14 18:50:50 peschau Exp $
+  @(#) $Id: AUTOCONF.C,v 1.7 2013-01-06 00:09:01 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -506,7 +506,7 @@ static uae_u32 getchipmemsize (void)
 
 static uae_u32 uae_puts (void)
 {
-    puts (get_real_address (m68k_areg (regs, 0)));
+    puts ((char*)get_real_address (m68k_areg (regs, 0)));
     return 0;
 }
 

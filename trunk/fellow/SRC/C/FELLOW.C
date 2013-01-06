@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.37 2013-01-04 17:49:33 carfesh Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.38 2013-01-06 00:08:57 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -414,7 +414,7 @@ void fellowStepOver(void) {
   char soperands[128];
   fellowRequestEmulationStopClear();
   if (fellow_pre_start_reset) fellowHardReset();
-  fellowSetRuntimeErrorCode(setjmp(fellow_runtime_error_env));
+  fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     ULO current_pc = cpuGetPC();
