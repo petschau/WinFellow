@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.37 2013-01-06 11:27:46 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.38 2013-01-06 13:05:57 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -48,6 +48,7 @@
  *  @todo fullscreen resolution support for RetroPlatform
  *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
  *  @todo input devices are not enumerated properly yet, instead the internal dummy IDs are passed around instead of Windows devices
+ *  @todo support all keyboard layouts, activation of keyboard layouts does not work yet
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
  *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
  *  @bug  power LED status changes are not visible
@@ -112,17 +113,31 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
 	if (lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)
 		return FALSE;
 
-  fellowAddLog("RetroPlatformConnectInputDeviceToPort(): port %d, devicetype %d, '%s'\n", 
-    lGameport, lDeviceType, szName);
+  fellowAddLog("RetroPlatformConnectInputDeviceToPort(): port %d, device type %d, flags %d, name '%s'\n", 
+    lGameport, lDeviceType, dwFlags, szName);
 
   switch(lDeviceType) {
     case RP_INPUTDEVICE_MOUSE:
-      fellowAddLog(" Attaching mouse device..\n");
+      fellowAddLog(" Attaching mouse device to gameport..\n");
       gameportSetInput(lGameport, GP_MOUSE0);
       return TRUE;
     case RP_INPUTDEVICE_JOYSTICK:
-      fellowAddLog(" Attaching joystick..\n");
-      gameportSetInput(lGameport, GP_ANALOG0);
+      if(strcmp(szName, "GP_ANALOG0") == 0) {
+        fellowAddLog(" Attaching joystick 1 to gameport..\n");
+        gameportSetInput(lGameport, GP_ANALOG0);
+      }
+      else if(strcmp(szName, "GP_ANALOG1") == 0) {
+        fellowAddLog(" Attaching joystick 2 to gameport..\n");
+        gameportSetInput(lGameport, GP_ANALOG1);
+      }
+      else if(strcmp(szName, "GP_JOYKEY0") == 0) {
+        fellowAddLog(" Attaching keyboard layout 1 to gameport..\n");
+        gameportSetInput(lGameport, GP_JOYKEY0);
+      }
+      else {
+        fellowAddLog (" Unknown input device name, ignoring..\n");
+        return FALSE;
+      }
       return TRUE;
     default:
       fellowAddLog(" Unsupported input device type detected.\n");
@@ -812,6 +827,18 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     0,
     L"GP_ANALOG1",
     L"Analog Joystick 2")) bResult = FALSE;
+
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_JOYPAD,
+    0,
+    L"GP_JOYKEY0",
+    L"Keyboard Layout 1")) bResult = FALSE;
+
+  /* if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYBOARD, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_JOYPAD,
+    0,
+    L"GP_JOYKEY1",
+    L"Keyboard Layout 2")) bResult = FALSE; */
 
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
     0,
