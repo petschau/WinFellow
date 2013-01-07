@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.39 2013-01-07 14:55:34 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.40 2013-01-07 17:26:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -67,6 +67,7 @@
 #include "gfxdrv.h"
 #include "mousedrv.h"
 #include "joydrv.h"
+#include "CpuIntegration.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
 
@@ -239,12 +240,14 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 
 	bResult = RPSendMessage(iMessage, wParam, lParam, pData, dwDataSize, pGuestInfo, plResult);
   
+#ifdef _DEBUG
   if(bResult)
     fellowAddLog("RetroPlatform sent message ([%s], %08x, %08x, %08x, %d)\n",
       RetroPlatformGetMessageText(iMessage), iMessage - WM_APP, wParam, lParam, pData);
   else
 		fellowAddLog("RetroPlatform could not send message, error: %d\n", GetLastError());
-	
+#endif
+
   return bResult;
 }
 
@@ -295,13 +298,14 @@ BOOLE RetroPlatformGetMode(void) {
  * results.
  */
 static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam, const RPGUESTINFO *pGuestInfo) {
-	BOOLE bResult;
+  BOOLE bResult;
 
   bResult = RPPostMessage(iMessage, wParam, lParam, pGuestInfo);
 
+#ifdef _DEBUG
 #ifndef RETRO_PLATFORM_LOG_VERBOSE
   if(iMessage != RP_IPC_TO_HOST_DEVICESEEK && iMessage != RP_IPC_TO_HOST_DEVICEACTIVITY) {
-#endif
+#endif !RETRO_PLATFORM_LOG_VERBOSE
 
   if(bResult)
     fellowAddLog("RetroPlatform posted message ([%s], %08x, %08x, %08x)\n",
@@ -313,6 +317,7 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
   }
 #endif
 
+#endif // _DEBUG
 	return bResult;
 }
 
@@ -344,10 +349,14 @@ BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMot
  * @callergraph
  */
 BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *szImageName, const BOOLE bWriteProtected) {
+  BOOLE bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
   
   if (!bRetroPlatformInitialized)
 		return FALSE;
+
+  if(!floppy[lFloppyDriveNo].enabled)
+    return FALSE;
 
 	rpDeviceContent.btDeviceCategory = RP_DEVICECATEGORY_FLOPPY;
 	rpDeviceContent.btDeviceNumber = lFloppyDriveNo;
@@ -358,19 +367,20 @@ BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *s
     wcscpy(rpDeviceContent.szContent, L"");
   rpDeviceContent.dwFlags = (bWriteProtected ? RP_DEVICEFLAGS_RW_READONLY : RP_DEVICEFLAGS_RW_READWRITE);
 
+#ifdef _DEBUG
 	fellowAddLog("RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n",
-	rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, 
-  rpDeviceContent.dwInputDevice, rpDeviceContent.szContent);
+	  rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, 
+    rpDeviceContent.dwInputDevice, rpDeviceContent.szContent);
+#endif
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, &rpDeviceContent, 
-    sizeof(struct RPDeviceContent), &RetroPlatformGuestInfo, NULL)) {
-    fellowAddLog("RetroPlatformSendFloppyDriveContent(): message uccessfully sent.\n");
-    return TRUE;
-  }
-  else {
-    fellowAddLog("RetroPlatformSendFloppyDriveContent(): failed to send message.\n");
-    return FALSE;
-  }
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, 
+    &rpDeviceContent, sizeof(struct RPDeviceContent), &RetroPlatformGuestInfo,
+    NULL);
+
+  fellowAddLog("RetroPlatformSendFloppyDriveContent(%d,%s): %s.\n",
+    lFloppyDriveNo, szImageName, bResult ? "successful" : "failed");
+  
+  return bResult;
 }
 
 /** Send actual write protection state of drive to RetroPlatform host.
@@ -381,21 +391,23 @@ BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *s
  * @callergraph
  */
 BOOLE RetroPlatformSendFloppyDriveReadOnly(const ULO lFloppyDriveNo, const BOOLE bWriteProtected) {
+  BOOLE bResult;
+
   if(!bRetroPlatformInitialized)
     return FALSE;
 
   if(!floppy[lFloppyDriveNo].enabled)
     return FALSE;
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICEREADWRITE, MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), 
-    bWriteProtected ? RP_DEVICE_READONLY : RP_DEVICE_READWRITE, NULL, 0, &RetroPlatformGuestInfo, NULL)) {
-    fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): message successfully sent.\n");
-    return TRUE;
-  }
-  else {
-    fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): failed to send message.\n");
-    return FALSE;
-  }
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICEREADWRITE, 
+    MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), 
+    bWriteProtected ? RP_DEVICE_READONLY : RP_DEVICE_READWRITE, NULL, 
+    0, &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): %s.\n",
+    bResult ? "successful" : "failed");
+    
+  return bResult;
 }
 
 /**
@@ -422,22 +434,21 @@ BOOLE RetroPlatformSendFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrac
  * @return TRUE, if valid value was passed, FALSE if invalid value.
  */
 static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
-  if(wIntensityPercent <= 100 && wIntensityPercent >= 0) {
-    RetroPlatformPostMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, &RetroPlatformGuestInfo);
-    return TRUE;
-  }
+  if(wIntensityPercent <= 100 && wIntensityPercent >= 0)
+    return RetroPlatformPostMessage(RP_IPC_TO_HOST_POWERLED, 
+      wIntensityPercent, 0, &RetroPlatformGuestInfo);
   else
     return FALSE;
 }
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
   lRetroPlatformEscapeKey = atoi(szEscapeKey);
-  fellowAddLog("RetroPlatform: escape key configured to %d.\n", lRetroPlatformEscapeKey);
+  fellowAddLog("RetroPlatformSetEscapeKey(): escape key configured to %d.\n", lRetroPlatformEscapeKey);
 }
 
 void RetroPlatformSetEscapeKeyHoldTime(const char *szEscapeHoldTime) {
   lRetroPlatformEscapeKeyHoldTime = atoi(szEscapeHoldTime);
-  fellowAddLog("RetroPlatform: escape hold time configured to %d.\n", lRetroPlatformEscapeKeyHoldTime);
+  fellowAddLog("RetroPlatformSetEscapeKeyHoldTime(): escape hold time configured to %d.\n", lRetroPlatformEscapeKeyHoldTime);
 }
 
 void RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
@@ -459,36 +470,41 @@ void RetroPlatformSetEmulationState(const BOOLE bNewState) {
 
 void RetroPlatformSetHostID(const char *szHostID) {
   strncpy(szRetroPlatformHostID, szHostID, CFG_FILENAME_LENGTH);
-  fellowAddLog("RetroPlatform: host ID configured to %s.\n", szRetroPlatformHostID);
+  fellowAddLog("RetroPlatformSetHostID(): host ID configured to %s.\n", szRetroPlatformHostID);
 }
 
 void RetroPlatformSetMode(const BOOLE bRPMode) {
   bRetroPlatformMode = bRPMode;
-  fellowAddLog("RetroPlatform: entering RetroPlatform (headless) mode.\n");
+  fellowAddLog("RetroPlatformSetMode(): entering RetroPlatform (headless) mode.\n");
 }
 
 void RetroPlatformSetScreenMode(const char *szScreenMode) {
   lRetroPlatformScreenMode = atol(szScreenMode);
-  fellowAddLog("RetroPlatform: screen mode configured to %d.\n", lRetroPlatformScreenMode);
+  fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %d.\n", lRetroPlatformScreenMode);
 }
 
-
 void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
-  fellowAddLog("RetroPlatform: set window instance to %d.\n", hInstance);
+  fellowAddLog("RetroPlatformSetWindowInstance():  window instance set to %d.\n", hInstance);
   hRetroPlatformWindowInstance = hInstance;
 }
 
 /** host message function that is used as callback to receive IPC messages from the host.
  */
 static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
-	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
-{
+	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
+
+#ifdef _DEBUG
 	fellowAddLog("RetroPlatformHostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
 	  RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
+#endif
+
 	if (uMessage == RP_IPC_TO_GUEST_DEVICECONTENT) {
 		struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
+
+#ifdef _DEBUG
 		fellowAddLog(" Cat=%d Num=%d Flags=%08x '%s'\n",
 			dc->btDeviceCategory, dc->btDeviceNumber, dc->dwFlags, dc->szContent);
+#endif
   }
 
 	switch (uMessage)
@@ -510,8 +526,9 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
     fellowRequestEmulationStop();
 		return TRUE;
 	case RP_IPC_TO_GUEST_TURBO:
-			/* if (wParam & RP_TURBO_CPU)
-				warpmode ((lParam & RP_TURBO_CPU) ? 1 : 0); */
+		// 0 equals max speed, 4 is default	
+    if (wParam & RP_TURBO_CPU)	
+      cpuIntegrationSetSpeed((lParam & RP_TURBO_CPU) ? 0 : 4);
     if (wParam & RP_TURBO_FLOPPY)
       floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? TRUE : FALSE);
 		return TRUE;
@@ -663,12 +680,26 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 	return FALSE;
 }
 
-void RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
-	RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+BOOLE RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
+  BOOLE bResult;
+
+	bResult = RetroPlatformSendMessage(bActive ? RP_IPC_TO_HOST_ACTIVATED : RP_IPC_TO_HOST_DEACTIVATED, 
+    0, lParam, NULL, 0, &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendActive(): %s.\n", bResult ? "successful" : "failed");
+
+  return bResult;
 }
 
-void RetroPlatformSendClose(void) {
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_CLOSE, 0, 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+BOOLE RetroPlatformSendClose(void) {
+  BOOLE bResult;
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_CLOSE, 0, 0, NULL, 0, 
+    &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendClose(): %s.\n", bResult ? "sucessful" : "failed");
+
+  return bResult;
 }
 
 /** Send enable/disable messages to the RetroPlatform player.
@@ -677,19 +708,18 @@ void RetroPlatformSendClose(void) {
  */
 BOOLE RetroPlatformSendEnable(const BOOLE bEnabled) {
   LRESULT lResult;
+  BOOLE bResult;
 
   if (!bRetroPlatformInitialized)
 		return FALSE;
 
-	if(RetroPlatformSendMessage(bEnabled ? RP_IPC_TO_HOST_ENABLED : RP_IPC_TO_HOST_DISABLED, 0, 0, NULL, 0, 
-    &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendEnable successful, result was %d.\n", lResult);
-    return TRUE;
-  }
-  else {
-    fellowAddLog("RetroPlatformSendEnable failed, result was %d.\n", lResult);
-    return FALSE;
-  }
+	bResult = RetroPlatformSendMessage(bEnabled ? RP_IPC_TO_HOST_ENABLED : RP_IPC_TO_HOST_DISABLED,
+    0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
+
+  fellowAddLog("RetroPlatformSendEnable() %s, result was %d.\n", 
+    bResult ? "successful" : "failed", lResult);
+  
+  return bResult;
 }
 
 /** Send list of features supported by the guest to the RetroPlatform host.
@@ -701,12 +731,14 @@ BOOLE RetroPlatformSendEnable(const BOOLE bEnabled) {
 static BOOLE RetroPlatformSendFeatures(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
+  BOOLE bResult;
 
 	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY;
+  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU| RP_FEATURE_TURBO_FLOPPY;
   // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
-	// dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
+	dFeatureFlags |= RP_FEATURE_SCANLINES;
+  // dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
 	// dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYSTICK;
@@ -715,14 +747,13 @@ static BOOLE RetroPlatformSendFeatures(void) {
 	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
 	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;
 
-	if(RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendFeatures successful, result was %d.\n", lResult);
-    return TRUE;
-  }
-  else {
-    fellowAddLog("RetroPlatformSendFeatures failed, result was %d.\n", lResult);
-    return FALSE;
-  }
+	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 
+    0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
+  
+  fellowAddLog("RetroPlatformSendFeatures() %s, result was %d.\n", 
+    bResult ? "successful" : "failed", lResult);
+ 
+  return bResult;
 }
 
 /** Send list of enabled floppy drives to the RetroPlatform host.
@@ -735,38 +766,39 @@ static BOOLE RetroPlatformSendFeatures(void) {
 static BOOLE RetroPlatformSendEnabledFloppyDrives(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
+  BOOLE bResult;
   int i;
 
 	dFeatureFlags = 0;
 	for(i = 0; i < 4; i++) {
+#ifdef _DEBUG
     fellowAddLog("floppy drive %d is %s.\n", i, floppy[i].enabled ? "enabled" : "disabled");
+#endif
 		if(floppy[i].enabled)
 			dFeatureFlags |= 1 << i;
 	}
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_FLOPPY, dFeatureFlags, NULL, 0, 
-    &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendFloppies successful, result was %d.\n", lResult);
-    return(TRUE);
-  }
-  else {
-    fellowAddLog("RetroPlatformSendFloppies failed, result was %d.\n", lResult);
-    return(FALSE);
-  }
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_FLOPPY, 
+    dFeatureFlags, NULL, 0, &RetroPlatformGuestInfo, &lResult);
+ 
+  fellowAddLog("RetroPlatformSendEnabledFloppyDrives() %s, result was %d.\n", 
+    bResult ? "successful" : "failed", lResult);
+
+  return bResult;
 }
 
 static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
   LRESULT lResult;
+  BOOLE bResult;
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_INPUTPORT, (1 << lNumGameports) - 1, NULL, 0, 
-    &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendGameports successful, result was %d.\n", lResult);
-    return(TRUE);
-  }
-  else {
-    fellowAddLog("RetroPlatformSendGameports failed, result was %d.\n", lResult);
-    return(FALSE);
-  }
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, 
+    RP_DEVICECATEGORY_INPUTPORT, (1 << lNumGameports) - 1, NULL, 0, 
+    &RetroPlatformGuestInfo, &lResult);
+
+  fellowAddLog("RetroPlatformSendGameports() %s, result was %d.\n", 
+    bResult ? "successful" : "failed", lResult);
+   
+  return bResult;
 }
 
 /** Send a single input device to the RetroPlatform player.
@@ -775,6 +807,8 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
   const DWORD dwInputDeviceFeatures, const DWORD dwFlags,
   const WCHAR *szHostInputID, const WCHAR *szHostInputName) {
   LRESULT lResult;
+  BOOLE bResult;
+  STR szHostInputNameA[CFG_FILENAME_LENGTH];
 
 	struct RPInputDeviceDescription rpInputDevDesc;
 
@@ -787,15 +821,17 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
   rpInputDevDesc.dwInputDeviceFeatures = dwInputDeviceFeatures;
   rpInputDevDesc.dwFlags = dwFlags;
 
-  if(RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
-    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult)) {
-    fellowAddLog("RetroPlatformSendInputDevice() - '%s' successful, result was %d.\n", szHostInputName, lResult);
-    return TRUE;
-  }
-  else {
-    fellowAddLog("RetroPlatformSendInputDevice() - '%s' failed, result was %d.\n", szHostInputName, lResult);
-    return FALSE;
-  }
+  wcstombs(szHostInputNameA, szHostInputName, CFG_FILENAME_LENGTH);
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_INPUTDEVICE, 0, 0, 
+    &rpInputDevDesc, sizeof rpInputDevDesc, &RetroPlatformGuestInfo, &lResult);
+  
+#ifdef _DEBUG
+    fellowAddLog("RetroPlatformSendInputDevice() - '%s' %s, result was %d.\n", 
+      bResult ? "successful" : "failed", szHostInputNameA, lResult);
+#endif
+   
+  return bResult;
 }
 
 /** Send list of available input device options to the RetroPlatform player.
@@ -832,81 +868,105 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     L"GP_JOYKEY0",
     L"Keyboard Layout 1")) bResult = FALSE;
 
-  /* if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYBOARD, 
-    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_JOYPAD,
-    0,
-    L"GP_JOYKEY1",
-    L"Keyboard Layout 2")) bResult = FALSE; */
-
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
     0,
     0,
     L"RP_END",
     L"END")) bResult = FALSE;
+
+  fellowAddLog("RetroPlatformSendInputDevices() %s.\n", bResult ? "successful" : "failed");
  
   return bResult;
 }
 
-void RetroPlatformSendMouseCapture(const BOOLE bActive) {
+BOOLE RetroPlatformSendMouseCapture(const BOOLE bActive) {
+  BOOLE bResult;
   WPARAM wFlags = (WPARAM) 0;
 
 	if (!bRetroPlatformInitialized)
-		return;
+		return FALSE;
 
 	if (bActive)
 		wFlags |= RP_MOUSECAPTURE_CAPTURED;
 
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0, 
+	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_MOUSECAPTURE, wFlags, 0, NULL, 0,
     &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendMouseCapture(): %s.\n",
+    bResult ? "successful" : "failed");
+
+  return bResult;
 }
 
 /** Send screen mode to the player.
  *
  * This step finalizes the transfer of guest features to the player and will enable the emulation.
  */
-void RetroPlatformSendScreenMode(HWND hWnd) {
+BOOLE RetroPlatformSendScreenMode(HWND hWnd) {
+  BOOLE bResult;
 	struct RPScreenMode RetroPlatformScreenMode = { 0 };
 
 	if (!bRetroPlatformInitialized)
-		return;
+		return FALSE;
+
 	hRetroPlatformGuestWindow = hWnd;
 	RetroPlatformDetermineScreenModeFromConfig(&RetroPlatformScreenMode, RetroPlatformConfig);
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_SCREENMODE, 0, 0, &RetroPlatformScreenMode, sizeof RetroPlatformScreenMode, &RetroPlatformGuestInfo, NULL); 
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_SCREENMODE, 0, 0, 
+    &RetroPlatformScreenMode, sizeof RetroPlatformScreenMode, 
+    &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendScreenMode(): %s.\n",
+    bResult ? "successful" : "failed");
+
+  return bResult;
 }
 
 ULO RetroPlatformGetEscapeKey(void) {
   return lRetroPlatformEscapeKey;
 }
 
-HWND RetroPlatformGetParentWindowHandle(void)
-{
+HWND RetroPlatformGetParentWindowHandle(void) {
 	LRESULT lResult;
+  BOOLE bResult;
+
 	if (!bRetroPlatformInitialized)
 		return NULL;
-	RetroPlatformSendMessage(RP_IPC_TO_HOST_PARENT, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
-  fellowAddLog("RetroPlatformGetParentWindowHandle: parent window handle returned was %d.\n", lResult);
-	return (HWND)lResult;
+
+	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_PARENT, 0, 0, NULL, 0, 
+    &RetroPlatformGuestInfo, &lResult);
+  
+  if(bResult) {
+    fellowAddLog("RetroPlatformGetParentWindowHandle(): parent window handle returned was %d.\n", 
+      lResult);
+	  return (HWND)lResult;
+  }
+  else
+    return NULL;
 }
 
-void RetroPlatformStartup(void)
-{
+void RetroPlatformStartup(void) {
   ULO lResult;
 
-  fellowAddLog("RetroPlatform startup.\n");
   RetroPlatformConfig = cfgManagerGetCurrentConfig(&cfg_manager);
   
-	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, szRetroPlatformHostID, RetroPlatformHostMessageFunction, 0);
+	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, 
+    szRetroPlatformHostID, RetroPlatformHostMessageFunction, 0);
+
   if (SUCCEEDED (lResult)) {
 	  bRetroPlatformInitialized = TRUE;
 
-    RetroPlatformGetHostVersion(&lRetroPlatformMainVersion, &lRetroPlatformRevision, &lRetroPlatformBuild);
-    fellowAddLog("RetroPlatformStartup (host ID %s) initialization succeeded. Host version: %d.%d.%d\n", szRetroPlatformHostID, 
-      lRetroPlatformMainVersion, lRetroPlatformRevision, lRetroPlatformBuild);
+    RetroPlatformGetHostVersion(&lRetroPlatformMainVersion, 
+      &lRetroPlatformRevision, &lRetroPlatformBuild);
+
+    fellowAddLog("RetroPlatformStartup(%s) successful. Host version: %d.%d.%d\n", 
+      szRetroPlatformHostID, lRetroPlatformMainVersion, lRetroPlatformRevision, lRetroPlatformBuild);
 
     RetroPlatformSendFeatures();
   } 
   else
-    fellowAddLog("RetroPlatformStartup (host ID %s) failed to initialize, error code %08x\n", szRetroPlatformHostID, lResult);
+    fellowAddLog("RetroPlatformStartup(%s) failed, error code %08x\n", 
+      szRetroPlatformHostID, lResult);
 }
 
 /** Verifies that the prerequisites to start the emulation are available.
@@ -915,8 +975,7 @@ void RetroPlatformStartup(void)
  * be opened successfully for reading.
  * @return TRUE, when Kickstart ROM can be opened successfully for reading; FALSE otherwise
  */
-BOOLE RetroPlatformCheckEmulationNecessities(void) 
-{
+BOOLE RetroPlatformCheckEmulationNecessities(void) {
   if(strcmp(cfgGetKickImage(RetroPlatformConfig), "") != 0) {
     FILE *F = fopen(cfgGetKickImage(RetroPlatformConfig), "rb");
     if (F != NULL)
