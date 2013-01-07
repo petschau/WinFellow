@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.41 2013-01-07 14:55:34 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.42 2013-01-07 15:42:54 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -251,40 +251,36 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 #ifdef RETRO_PLATFORM
   static BOOLE bIgnoreLeftMouseButton = FALSE;
 #endif
-/*
-	switch (message)
-	{
-	case 15:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");
-		break;
-	case 20:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");
-		break;
-	case 70:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING");
-		break;
-	case 71:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");
-		break;
-	case 133:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");
-		break;
-	case 256:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");
-		break;		
-	case 257:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");
-		break;		
-	case 275:
-		fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");
-		break;		
-	default:
-  		fellowAddLog("EmulationWindowProc got message %Xh\n", message);
-	}
-*/
 
-	switch (message) 
-	{
+#ifdef __DEBUG
+	switch(message) {
+  case WM_ACTIVATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATE");          break;
+  case WM_ACTIVATEAPP:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATEAPP");       break;
+  case WM_CREATE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_CREATE");            break;
+	case WM_ERASEBKGND:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");        break;
+  case WM_GETICON:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETICON");           break;
+  case WM_GETMINMAXINFO:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETMINMAXINFO");     break;
+  case WM_IME_NOTIFY:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_NOTIFY");        break;
+  case WM_IME_SETCONTEXT:     fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_SETCONTEXT");    break;
+	case WM_KEYDOWN:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");           break;
+  case WM_KEYUP:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");             break;
+  case WM_MOVE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOVE");              break;
+  case WM_NCPAINT:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");           break;
+  case WM_NCACTIVATE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCACTIVATE");        break;
+  case WM_NCCALCSIZE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCALCSIZE");        break;
+	case WM_PAINT:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");             break;
+  case WM_SETCURSOR:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETCURSOR");         break;
+  case WM_SETFOCUS:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETFOCUS");          break;
+  case WM_SIZE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_SIZE");              break;
+  case WM_SHOWWINDOW:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SHOWWINDOW");        break;
+  case WM_TIMER:            /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");*/           break;
+  case WM_WINDOWPOSCHANGING:  fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING"); break;
+	case WM_WINDOWPOSCHANGED:   fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");  break;
+	default:                    fellowAddLog("EmulationWindowProc got message %Xh\n", message);
+	}
+#endif
+
+	switch(message) {
 	case WM_ERASEBKGND:
 	case WM_NCPAINT:
 	case WM_PAINT:
@@ -388,7 +384,8 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     }
 
 #ifdef RETRO_PLATFORM
-		RetroPlatformSendActivate(wParam, lParam);
+		if(RetroPlatformGetMode())
+      RetroPlatformSendActivate(wParam, lParam);
 #endif
 
     return 0;
