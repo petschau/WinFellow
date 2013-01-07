@@ -13,6 +13,8 @@ pdflatex refman.tex
 cd ..
 
 taskkill /IM AcroRd32.exe
+taskkill /IM Acrobat.exe
+
 del  WinFellow-doxygen.pdf.bak
 ren  WinFellow-doxygen.pdf WinFellow-doxygen.pdf.bak
 copy latex\refman.pdf .\WinFellow-doxygen.pdf

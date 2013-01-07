@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.12 2012-12-30 15:03:54 carfesh Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.13 2013-01-07 14:55:34 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -402,6 +402,9 @@ void mouseDrvMovementHandler(void) {
   }
 }
 
+BOOLE mouseDrvGetFocus(void) {
+  return mouse_drv_focus;
+}
 
 /*===========================================================================*/
 /* Hard Reset                                                                */
