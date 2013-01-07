@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.21 2013-01-06 00:09:01 peschau Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.22 2013-01-07 10:03:01 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -415,9 +415,9 @@ static void sysinfoVersionInfo (void) {
 	#endif
 
 	#ifdef _DEBUG
-		fellowAddTimelessLog(" debug build)\n");
+		fellowAddTimelessLog(" (debug build)\n");
 	#else
-		fellowAddTimelessLog(" release build)\n");
+		fellowAddTimelessLog(" (release build)\n");
 	#endif
 }
 
