@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.38 2013-01-06 13:05:57 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.39 2013-01-07 14:55:34 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -47,12 +47,10 @@
  *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
  *  @todo fullscreen resolution support for RetroPlatform
  *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
- *  @todo input devices are not enumerated properly yet, instead the internal dummy IDs are passed around instead of Windows devices
- *  @todo support all keyboard layouts, activation of keyboard layouts does not work yet
+ *  @todo pick up implementation of input devices (keyboard joysticks) based on VICE 2.4.cloanto1 once it is available
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
  *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
  *  @bug  power LED status changes are not visible
- *  @bug  Global Trash demo will freeze after 15-20 seconds, when showing Global Trash logo
  *  @bug  the sound stops while the window does not have focus, while the rest of the emulation continues
  */
 
@@ -424,7 +422,7 @@ BOOLE RetroPlatformSendFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrac
  * @return TRUE, if valid value was passed, FALSE if invalid value.
  */
 static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPercent) {
-  if(wIntensityPercent <= 0x100 && wIntensityPercent >= 0) {
+  if(wIntensityPercent <= 100 && wIntensityPercent >= 0) {
     RetroPlatformPostMessage(RP_IPC_TO_HOST_POWERLED, wIntensityPercent, 0, &RetroPlatformGuestInfo);
     return TRUE;
   }
@@ -455,7 +453,7 @@ void RetroPlatformSetEmulationState(const BOOLE bNewState) {
   if(bRetroPlatformEmulationState != bNewState) {
     bRetroPlatformEmulationState = bNewState;
     fellowAddLog("RetroPlatformSetEmulationState(): state set to %s.\n", bNewState ? "active" : "inactive");
-    RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 0x100 : 0);
+    RetroPlatformSendPowerLEDIntensityPercent(bNewState ? 100 : 0);
   }
 }
 
@@ -968,7 +966,7 @@ void RetroPlatformShutdown(void) {
 }
 
 void RetroPlatformEmulationStart(void) {
-  RetroPlatformSendMouseCapture(TRUE);
+  RetroPlatformSendMouseCapture(FALSE);
 }
 
 void RetroPlatformEmulationStop(void) {

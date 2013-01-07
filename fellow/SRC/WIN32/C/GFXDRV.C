@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.40 2013-01-03 14:41:01 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.41 2013-01-07 14:55:34 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -22,46 +22,40 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-/*===========================================================================
-  Framebuffer modes of operation:
-
-  1. Using the primary buffer non-clipped, with possible back-buffers.
-     This applies to fullscreen mode with a framepointer.
-  
-  2. Using a secondary buffer to render and then applying the blitter
-     to the primary buffer. The primary buffer can be clipped (window)
-     or non-clipped (fullscreen). In this mode there are no backbuffers.
-    
-      
-  blitmode is used:
-  
-    1. When running on the desktop in a window.
-    2. In fullscreen mode with a primary surface that
-       can not supply a framebuffer pointer.
-					   
-			     
-  Windows:
-					       
-  Two types of windows: 1. Normal desktop window for desktop operation
-			2. Full-screen window for fullscreen mode
-						 
-						   
-  Windows are created and destroyed on emulation start and stop.
-						     
-						       
-  Buffers:
-							 
-  Buffers are created when emulation starts and destroyed
-  when emulation stops. (Recreated when lost also)
-							   
-  if blitmode, create single primary buffer
-  and a secondary buffer for actual rendering in system memory.
-  if windowed also add a clipper to the primary buffer
-							     
-  else create a primary buffer (with backbuffers)
-							       
-*/  
-
+/***********************************************************************//**
+ * @file                                                                   
+ * Graphics device module
+ *
+ * Framebuffer modes of operation:
+ *
+ * 1. Using the primary buffer non-clipped, with possible back-buffers.
+ *    This applies to fullscreen mode with a framepointer.
+ * 2. Using a secondary buffer to render and then applying the blitter
+ *    to the primary buffer. The primary buffer can be clipped (window)
+ *    or non-clipped (fullscreen). In this mode there are no backbuffers.
+ *  
+ * blitmode is used:
+ *  1. When running on the desktop in a window.
+ *  2. In fullscreen mode with a primary surface that
+ *     can not supply a framebuffer pointer.
+ *			    
+ * Windows:       
+ * Two types of windows: 
+ *  1. Normal desktop window for desktop operation
+ *  2. Full-screen window for fullscreen mode
+ *				 			   
+ * Windows are created and destroyed on emulation start and stop.
+ *				           
+ * Buffers:				 
+ * Buffers are created when emulation starts and destroyed
+ * when emulation stops. (Recreated when lost also)
+ *		   
+ * if blitmode, create single primary buffer
+ * and a secondary buffer for actual rendering in system memory.
+ * if windowed also add a clipper to the primary buffer
+ *					     
+ * else create a primary buffer (with backbuffers)				       
+ ***************************************************************************/
 
 #define INITGUID
 
@@ -94,7 +88,7 @@
 #include "RetroPlatform.h"
 #endif
 
-ini *gfxdrv_ini; /* GFXDRV copy of initdata */
+ini *gfxdrv_ini; ///< GFXDRV copy of ini data
 
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
@@ -121,9 +115,9 @@ typedef struct {
   LPSTR                lpDriverName;
   LPDIRECTDRAW         lpDD;
   LPDIRECTDRAW2        lpDD2;
-  LPDIRECTDRAWSURFACE  lpDDSPrimary;		/* Primary display surface        */
-  LPDIRECTDRAWSURFACE  lpDDSBack;               /* Current backbuffer for Primary */
-  LPDIRECTDRAWSURFACE  lpDDSSecondary;		/* Source surface in blitmode     */
+  LPDIRECTDRAWSURFACE  lpDDSPrimary;		        /*!< Primary display surface        */
+  LPDIRECTDRAWSURFACE  lpDDSBack;               /*!< Current backbuffer for Primary */
+  LPDIRECTDRAWSURFACE  lpDDSSecondary;		      /*!< Source surface in blitmode     */
   DDSURFACEDESC        ddsdPrimary;
   DDSURFACEDESC        ddsdBack;
   DDSURFACEDESC        ddsdSecondary;
@@ -162,19 +156,19 @@ HWND  gfx_drv_hwnd;
 BOOLE gfx_drv_displaychange;
 BOOLE gfx_drv_stretch_always;
 
-HANDLE gfx_drv_app_run;        /* Event indicating running or paused status */
+HANDLE gfx_drv_app_run;     /*!< Event indicating running or paused status */
 
 
-/*==========================================================================*/
-/* Master copy of the 8 bit palette                                         */
-/*==========================================================================*/
+/************************************************************************//**
+ * Master copy of the 8 bit palette
+ ***************************************************************************/
 
 PALETTEENTRY gfx_drv_palette[256];
 
 
-/*==========================================================================*/
-/* Initialize the run status event                                          */
-/*==========================================================================*/
+/***********************************************************************//**
+ * Initialize the run status event
+ ***************************************************************************/
 
 BOOLE gfxDrvRunEventInitialize(void) {
   gfx_drv_app_run = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -241,19 +235,22 @@ void gfxDrvEvaluateActiveStatus(void) {
 #endif
 }
 
-
-/*==========================================================================*/
-/* Window procedure for the emulation window                                */
-/* Distributes events to mouse and keyboard drivers as well                 */
-/*==========================================================================*/
-
 void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device);
 BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
+/***********************************************************************//**
+ * Window procedure for the emulation window.
+ *
+ * Distributes events to mouse and keyboard drivers as well.
+ ***************************************************************************/
 
 LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	RECT emulationRect;
 	BOOLE diacquire_sent = FALSE;
+
+#ifdef RETRO_PLATFORM
+  static BOOLE bIgnoreLeftMouseButton = FALSE;
+#endif
 /*
 	switch (message)
 	{
@@ -452,10 +449,31 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       return 0; /* We handled this message */ 
 
 #ifdef RETRO_PLATFORM
+    case WM_ENABLE:
+      fellowAddLog("WM_ENABLE\n");
       if(RetroPlatformGetMode()) {
         RetroPlatformSendEnable(wParam ? 1 : 0);
         return 0;
       }
+    case WM_MOUSEACTIVATE:
+      fellowAddLog("WM_MOUSEACTIVATE\n");
+      if(RetroPlatformGetMode())
+		    // if(!mouseDrvGetFocus())
+			    bIgnoreLeftMouseButton = TRUE;
+		  break;
+    case WM_LBUTTONDOWN:
+      fellowAddLog("WM_LBUTTONDOWN\n");
+    case WM_LBUTTONDBLCLK:
+      fellowAddLog("WM_LBUTTONDBLCLK\n");
+		  if(RetroPlatformGetMode()) {
+			  // borderless = do not capture with single-click
+			  if(bIgnoreLeftMouseButton) {
+				  bIgnoreLeftMouseButton = FALSE;
+				  return 0;
+        }
+      }
+		  return 0;
+
 #endif
 
   }
@@ -625,10 +643,12 @@ void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device) {
 }
 
 
-/*==========================================================================*/
-/* Show window hosting the amiga display                                    */
-/* Called on every emulation startup                                        */
-/*==========================================================================*/
+/***********************************************************************//**
+ * Show window hosting the amiga display.
+ *
+ * Called on every emulation startup. In RetroPlatform mode, the player will
+ * take care of showing the emulator's window.
+ ***************************************************************************/
 
 void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
   fellowAddLog("gfxdrv: gfxDrvWindowShow()\n");
@@ -641,7 +661,6 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
     ULO x = 0, y = 0;
 
 #ifdef RETRO_PLATFORM
-    // in RetroPlatform mode, the player will take care of showing the emulator's window
     if(!RetroPlatformGetMode()){
 #endif
       x = iniGetEmulationWindowXPos(gfxdrv_ini);
@@ -2003,19 +2022,19 @@ void gfxDrvSetMode(draw_mode *dm, ULO vertical_scale, ULO vertical_scale_strateg
   gfx_drv_ddraw_device_current->mode = (gfx_drv_ddraw_mode *) listNode(listIndex(gfx_drv_ddraw_device_current->modes, dm->id));
 }
 
-
-/*==========================================================================*/
-/* Emulation is starting                                                    */
-/* Called on emulation start                                                */
-/* Subtlety: In exclusive mode, the window that is attached to the device   */
-/* appears to become activated, even if it is not shown at the time.        */
-/* The WM_ACTIVATE message triggers DirectInput acquisition, which means    */
-/* that the DirectInput object needs to have been created at that time.     */
-/* Unfortunately, the window must be created as well in order to attach DI  */
-/* objects to it. So we create window, create DI objects in between and then*/
-/* do the rest of the gfx init.                                             */
-/* That is why the gfxDrvEmulationStart is split in two.                    */
-/*==========================================================================*/
+/************************************************************************//**
+ * Emulation is starting.
+ *
+ * Called on emulation start.
+ * Subtlety: In exclusive mode, the window that is attached to the device
+ * appears to become activated, even if it is not shown at the time.
+ * The WM_ACTIVATE message triggers DirectInput acquisition, which means
+ * that the DirectInput object needs to have been created at that time.
+ * Unfortunately, the window must be created as well in order to attach DI
+ * objects to it. So we create window, create DI objects in between and then
+ * do the rest of the gfx init.
+ * That is why gfxDrvEmulationStart is split in two.
+ ***************************************************************************/
 
 BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
 	gfxDrvRunEventReset();                    /* At this point, app is paused */
@@ -2051,6 +2070,11 @@ BOOLE gfxDrvEmulationStart(ULO maxbuffercount) {
 #endif
 	return TRUE;
 }
+
+
+/************************************************************************//**
+ * Emulation is starting, post                                                   
+ ***************************************************************************/
 
 ULO gfxDrvEmulationStartPost(void) {
   ULO buffers;
