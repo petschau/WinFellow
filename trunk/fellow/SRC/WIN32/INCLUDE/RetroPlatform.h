@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.h,v 1.20 2013-01-05 11:41:09 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.h,v 1.21 2013-01-07 17:26:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -39,15 +39,15 @@ extern ULO   RetroPlatformGetEscapeKey(void);
 extern BOOLE RetroPlatformGetMode(void);
 extern BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void);
 extern HWND  RetroPlatformGetParentWindowHandle(void);
-extern void  RetroPlatformSendActivate(const BOOLE, const LPARAM);
-extern void  RetroPlatformSendClose(void);
+extern BOOLE RetroPlatformSendActivate(const BOOLE, const LPARAM);
+extern BOOLE RetroPlatformSendClose(void);
 extern BOOLE RetroPlatformSendEnable(const BOOLE);
 extern BOOLE RetroPlatformSendFloppyDriveContent(const ULO, const STR *szImageName, const BOOLE);
 extern BOOLE RetroPlatformSendFloppyDriveLED(const ULO, const BOOLE);
 extern BOOLE RetroPlatformSendFloppyDriveReadOnly(const ULO, const BOOLE);
 extern BOOLE RetroPlatformSendFloppyDriveSeek(const ULO, const ULO);
-extern void  RetroPlatformSendMouseCapture(const BOOLE);
-extern void  RetroPlatformSendScreenMode(HWND);
+extern BOOLE RetroPlatformSendMouseCapture(const BOOLE);
+extern BOOLE RetroPlatformSendScreenMode(HWND);
 extern void  RetroPlatformSetEscapeKey(const char *);
 extern void  RetroPlatformSetEscapeKeyHoldTime(const char *);
 extern void  RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE);

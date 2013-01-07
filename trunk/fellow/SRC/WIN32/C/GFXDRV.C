@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.42 2013-01-07 15:42:54 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.43 2013-01-07 17:26:03 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -252,11 +252,15 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
   static BOOLE bIgnoreLeftMouseButton = FALSE;
 #endif
 
-#ifdef __DEBUG
+#ifdef GFXDRV_DEBUG_WINDOW_MESSAGES
 	switch(message) {
+  case WM_SETFONT:
   case WM_ACTIVATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATE");          break;
   case WM_ACTIVATEAPP:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATEAPP");       break;
   case WM_CREATE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_CREATE");            break;
+  case WM_CLOSE:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_CLOSE");             break;
+  case WM_DESTROY:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_DESTROY");           break;
+  case WM_ENABLE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_ENABLE");            break;
 	case WM_ERASEBKGND:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_ERASEBKGND");        break;
   case WM_GETICON:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETICON");           break;
   case WM_GETMINMAXINFO:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_GETMINMAXINFO");     break;
@@ -264,15 +268,25 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
   case WM_IME_SETCONTEXT:     fellowAddLog("EmulationWindowProc got message %s\n", "WM_IME_SETCONTEXT");    break;
 	case WM_KEYDOWN:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");           break;
   case WM_KEYUP:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");             break;
+  case WM_KILLFOCUS:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_KILLFOCUS");         break;
+  case WM_LBUTTONDOWN:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDOWN");       break;
+  case WM_LBUTTONDBLCLK:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDBLCLK");     break;
   case WM_MOVE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOVE");              break;
+  case WM_MOUSEACTIVATE:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEACTIVATE");     break;
   case WM_NCPAINT:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");           break;
   case WM_NCACTIVATE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCACTIVATE");        break;
   case WM_NCCALCSIZE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCALCSIZE");        break;
+  case WM_NCCREATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCREATE");          break;
+  case WM_NCDESTROY:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCDESTROY");         break;
 	case WM_PAINT:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_PAINT");             break;
   case WM_SETCURSOR:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETCURSOR");         break;
   case WM_SETFOCUS:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_SETFOCUS");          break;
   case WM_SIZE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_SIZE");              break;
   case WM_SHOWWINDOW:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SHOWWINDOW");        break;
+  case WM_SYNCPAINT:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYNCPAINT");         break;
+  case WM_SYSCOMMAND:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSCOMMAND");        break;
+  case WM_SYSKEYDOWN:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYDOWN");        break;
+  case WM_SYSKEYUP:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_SYSKEYUP");          break;
   case WM_TIMER:            /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_TIMER");*/           break;
   case WM_WINDOWPOSCHANGING:  fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGING"); break;
 	case WM_WINDOWPOSCHANGED:   fellowAddLog("EmulationWindowProc got message %s\n", "WM_WINDOWPOSCHANGED");  break;

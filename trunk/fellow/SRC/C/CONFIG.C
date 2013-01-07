@@ -1,4 +1,4 @@
-/* @(#) $Id: CONFIG.C,v 1.22 2012-12-30 12:59:37 carfesh Exp $ */
+/* @(#) $Id: CONFIG.C,v 1.23 2013-01-07 17:26:02 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
@@ -1436,25 +1436,21 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
     {
       i++;
       if (i < argc) {
-        // fellowAddLog("cfg: RetroPlatform host ID: %s\n", argv[i]);
         RetroPlatformSetMode(TRUE);
         RetroPlatformSetHostID(argv[i]);
       }
       i++;
     }
-    /* else if (stricmp(argv[i], "-datapath") == 0)
-    {
+    else if (stricmp(argv[i], "-datapath") == 0) {
       i++;
       if (i < argc)
         fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
 	    i++;
-    } */
-    else if (stricmp(argv[i], "-rpescapekey") == 0)
-    {
+    }
+    else if (stricmp(argv[i], "-rpescapekey") == 0) {
       i++;
       if (i < argc) {
         RetroPlatformSetEscapeKey(argv[i]);
-        // fellowAddLog("cfg: RetroPlatform escape key: %s\n", argv[i]);
       }
 	    i++;
     }
@@ -1463,7 +1459,6 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
       i++;
       if (i < argc) {
         RetroPlatformSetEscapeKeyHoldTime(argv[i]);
-        // fellowAddLog("cfg: RetroPlatform escape hold time: %s\n", argv[i]);
       }
 	    i++;
     }
@@ -1472,7 +1467,6 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
       i++;
       if (i < argc) {
         RetroPlatformSetScreenMode(argv[i]);
-        // fellowAddLog("cfg: RetroPlatform screen mode: %s\n", argv[i]);
       }
 	    i++;
     }
