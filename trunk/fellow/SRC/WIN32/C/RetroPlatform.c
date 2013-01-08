@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.42 2013-01-08 09:48:16 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.43 2013-01-08 11:07:33 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1002,6 +1002,7 @@ void RetroPlatformEnter(void) {
 
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
+      SetCapture(gfx_drv_hwnd);
       winDrvEmulationStart();
       RetroPlatformSetEmulationState(FALSE);
     }
@@ -1039,7 +1040,7 @@ void RetroPlatformEndOfFrame(void) {
       bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
       mouseDrvToggleFocus();
-      // joyDrvToggleFocus();
+      joyDrvToggleFocus();
       gfxDrvChangeDInputDeviceStates(FALSE);
       ReleaseCapture();
     }
