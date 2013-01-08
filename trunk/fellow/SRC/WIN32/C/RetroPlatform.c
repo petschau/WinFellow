@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.41 2013-01-08 08:08:31 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.42 2013-01-08 09:48:16 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1041,6 +1041,7 @@ void RetroPlatformEndOfFrame(void) {
       mouseDrvToggleFocus();
       // joyDrvToggleFocus();
       gfxDrvChangeDInputDeviceStates(FALSE);
+      ReleaseCapture();
     }
   }
 }

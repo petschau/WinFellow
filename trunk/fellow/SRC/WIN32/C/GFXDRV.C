@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.44 2013-01-08 08:08:31 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.45 2013-01-08 09:48:16 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -269,10 +269,12 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	case WM_KEYDOWN:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYDOWN");           break;
   case WM_KEYUP:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_KEYUP");             break;
   case WM_KILLFOCUS:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_KILLFOCUS");         break;
-  case WM_LBUTTONDOWN:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDOWN");       break;
   case WM_LBUTTONDBLCLK:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDBLCLK");     break;
+  case WM_LBUTTONDOWN:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONDOWN");       break;
+  case WM_LBUTTONUP:          fellowAddLog("EmulationWindowProc got message %s\n", "WM_LBUTTONUP");         break;
   case WM_MOVE:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOVE");              break;
   case WM_MOUSEACTIVATE:      fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEACTIVATE");     break;
+  case WM_MOUSEMOVE:        /*fellowAddLog("EmulationWindowProc got message %s\n", "WM_MOUSEMOVE");*/       break;
   case WM_NCPAINT:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCPAINT");           break;
   case WM_NCACTIVATE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCACTIVATE");        break;
   case WM_NCCALCSIZE:         fellowAddLog("EmulationWindowProc got message %s\n", "WM_NCCALCSIZE");        break;
@@ -354,7 +356,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 		                   ((LOWORD(wParam)) == WA_CLICKACTIVE));
     gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
 #ifdef RETRO_PLATFORM
-    // if(!RetroPlatformGetMode())
+    if(!RetroPlatformGetMode())
 #endif
     gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     gfxDrvEvaluateActiveStatus();
@@ -463,6 +465,11 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       return 0; /* We handled this message */ 
 
 #ifdef RETRO_PLATFORM
+    case WM_SETFOCUS:
+      if(RetroPlatformGetMode()) {
+        gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
+        return 0;  
+      }
     case WM_ENABLE:
       if(RetroPlatformGetMode()) {
         RetroPlatformSendEnable(wParam ? 1 : 0);
@@ -482,7 +489,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 				  return 0;
         }
       }
-		  return 0;
+      return 0;
 
 #endif
 
@@ -2090,6 +2097,10 @@ ULO gfxDrvEmulationStartPost(void) {
     if(!RetroPlatformGetMode())
 #endif
      gfxDrvWindowShow(gfx_drv_ddraw_device_current);
+#ifdef RETRO_PLATFORM
+  // capture the mouse!
+  SetCapture(gfx_drv_hwnd);
+#endif
   return buffers;
 }
 
