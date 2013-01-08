@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.13 2012-12-30 12:59:37 carfesh Exp $ */
+/* @(#) $Id: BUS.C,v 1.14 2013-01-08 19:06:21 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -324,7 +324,7 @@ void busRun68000Fast(void)
 {
   while (!fellow_request_emulation_stop)
   {
-    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
+    if (setjmp(cpu_integration_exception_buffer) == 0)
     {
       while (!fellow_request_emulation_stop)
       {
@@ -362,7 +362,7 @@ void busRunGeneric(void)
 {
   while (!fellow_request_emulation_stop)
   {
-    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
+    if (setjmp(cpu_integration_exception_buffer) == 0)
     {
       while (!fellow_request_emulation_stop)
       {
@@ -416,7 +416,7 @@ void busDebugNew(void)
 {
   while (!fellow_request_emulation_stop)
   {
-    if (cpuIntegrationMidInstructionExceptionGuard() == 0)
+    if (setjmp(cpu_integration_exception_buffer) == 0)
     {
       while (!fellow_request_emulation_stop)
       {
