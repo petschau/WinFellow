@@ -30,7 +30,7 @@ extern ULO cpuIntegrationGetChipCycles(void);
 extern void cpuIntegrationSetChipSlowdown(ULO chip_slowdown);
 extern ULO cpuIntegrationGetChipSlowdown(void);
 
-extern LON cpuIntegrationMidInstructionExceptionGuard(void);
+extern jmp_buf cpu_integration_exception_buffer;
 
 // Fellow limecycle events
 extern void cpuIntegrationSaveState(FILE *F);
