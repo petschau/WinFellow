@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.45 2013-01-08 09:48:16 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.46 2013-01-08 11:07:33 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -477,7 +477,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       }
     case WM_MOUSEACTIVATE:
       if(RetroPlatformGetMode())
-		    if(!mouseDrvGetFocus())
+		    // if(!mouseDrvGetFocus())
 			    bIgnoreLeftMouseButton = TRUE;
 		  break;
     case WM_LBUTTONDOWN:
@@ -2097,10 +2097,6 @@ ULO gfxDrvEmulationStartPost(void) {
     if(!RetroPlatformGetMode())
 #endif
      gfxDrvWindowShow(gfx_drv_ddraw_device_current);
-#ifdef RETRO_PLATFORM
-  // capture the mouse!
-  SetCapture(gfx_drv_hwnd);
-#endif
   return buffers;
 }
 
