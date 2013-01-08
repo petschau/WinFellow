@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.11 2013-01-06 00:08:52 peschau Exp $ */
+/* @(#) $Id: CpuModule_Instructions.c,v 1.12 2013-01-08 18:55:48 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -339,7 +339,7 @@ static UBY cpuEorB(UBY src2, UBY src1)
 static UWO cpuEorW(UWO src2, UWO src1)
 {
   UWO res = src2 ^ src1;
-  cpuSetFlagsNZ00NewL(res);
+  cpuSetFlagsNZ00NewW(res);
   return res;
 }
 
@@ -372,7 +372,7 @@ static UBY cpuOrB(UBY src2, UBY src1)
 static UWO cpuOrW(UWO src2, UWO src1)
 {
   UWO res = src2 | src1;
-  cpuSetFlagsNZ00NewL(res);
+  cpuSetFlagsNZ00NewW(res);
   return res;
 }
 
