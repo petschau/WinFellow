@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.13 2013-01-07 14:55:34 carfesh Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.14 2013-01-08 08:08:31 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -240,7 +240,7 @@ BOOLE mouseDrvDInputInitialize(void) {
 
   /* Set cooperative level */
   
-  if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID,
+   if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID,
 						    gfx_drv_hwnd,
 						    DISCL_EXCLUSIVE |
 						    DISCL_FOREGROUND)) != DI_OK) {
