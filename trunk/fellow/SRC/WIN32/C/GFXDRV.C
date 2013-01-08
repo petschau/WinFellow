@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.43 2013-01-07 17:26:03 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.44 2013-01-08 08:08:31 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -293,7 +293,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	default:                    fellowAddLog("EmulationWindowProc got message %Xh\n", message);
 	}
 #endif
-
+ 
 	switch(message) {
 	case WM_ERASEBKGND:
 	case WM_NCPAINT:
@@ -353,6 +353,9 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     gfx_drv_win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) ||
 		                   ((LOWORD(wParam)) == WA_CLICKACTIVE));
     gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
+#ifdef RETRO_PLATFORM
+    // if(!RetroPlatformGetMode())
+#endif
     gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     gfxDrvEvaluateActiveStatus();
     return 0; /* We processed this message */
@@ -461,21 +464,17 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 #ifdef RETRO_PLATFORM
     case WM_ENABLE:
-      fellowAddLog("WM_ENABLE\n");
       if(RetroPlatformGetMode()) {
         RetroPlatformSendEnable(wParam ? 1 : 0);
         return 0;
       }
     case WM_MOUSEACTIVATE:
-      fellowAddLog("WM_MOUSEACTIVATE\n");
       if(RetroPlatformGetMode())
-		    // if(!mouseDrvGetFocus())
+		    if(!mouseDrvGetFocus())
 			    bIgnoreLeftMouseButton = TRUE;
 		  break;
     case WM_LBUTTONDOWN:
-      fellowAddLog("WM_LBUTTONDOWN\n");
     case WM_LBUTTONDBLCLK:
-      fellowAddLog("WM_LBUTTONDBLCLK\n");
 		  if(RetroPlatformGetMode()) {
 			  // borderless = do not capture with single-click
 			  if(bIgnoreLeftMouseButton) {
@@ -631,7 +630,8 @@ BOOLE gfxDrvWindowClassInitialize(void) {
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
 #ifdef RETRO_PLATFORM
-  RetroPlatformSetWindowInstance(win_drv_hInstance);
+  if(RetroPlatformGetMode())
+    RetroPlatformSetWindowInstance(win_drv_hInstance);
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -671,31 +671,25 @@ void gfxDrvWindowShow(gfx_drv_ddraw_device *ddraw_device) {
     RECT rc1;
     ULO x = 0, y = 0;
 
-#ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode()){
-#endif
-      x = iniGetEmulationWindowXPos(gfxdrv_ini);
-      y = iniGetEmulationWindowYPos(gfxdrv_ini);
+    x = iniGetEmulationWindowXPos(gfxdrv_ini);
+    y = iniGetEmulationWindowYPos(gfxdrv_ini);
 
-      SetRect(&rc1, x, y, x + ddraw_device->drawmode->width, y + ddraw_device->drawmode->height);
+    SetRect(&rc1, x, y, x + ddraw_device->drawmode->width, y + ddraw_device->drawmode->height);
     
-      AdjustWindowRectEx(&rc1,
-        GetWindowStyle(gfx_drv_hwnd),
-        GetMenu(gfx_drv_hwnd) != NULL,
-        GetWindowExStyle(gfx_drv_hwnd));
+    AdjustWindowRectEx(&rc1,
+      GetWindowStyle(gfx_drv_hwnd),
+      GetMenu(gfx_drv_hwnd) != NULL,
+      GetWindowExStyle(gfx_drv_hwnd));
 
-	    MoveWindow(gfx_drv_hwnd,
-        x,
-        y, 
-        rc1.right - rc1.left,
-        rc1.bottom - rc1.top,
-        FALSE);
-      ShowWindow(gfx_drv_hwnd, SW_SHOWNORMAL);
-      UpdateWindow(gfx_drv_hwnd);
-      gfxDrvWindowFindClientRect(ddraw_device);
-#ifdef RETRO_PLATFORM
-    }
-#endif 
+	  MoveWindow(gfx_drv_hwnd,
+      x,
+      y, 
+      rc1.right - rc1.left,
+      rc1.bottom - rc1.top,
+      FALSE);
+    ShowWindow(gfx_drv_hwnd, SW_SHOWNORMAL);
+    UpdateWindow(gfx_drv_hwnd);
+    gfxDrvWindowFindClientRect(ddraw_device);
   }
 }
 
@@ -729,7 +723,6 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
 #ifdef RETRO_PLATFORM
       if(RetroPlatformGetMode()) {
         dwStyle = WS_POPUP | WS_DISABLED;
-        // dwExStyle = WS_EX_TOOLWINDOW | WS_EX_TOPMOST;
         dwExStyle = WS_EX_TOOLWINDOW;
         hParent = RetroPlatformGetParentWindowHandle();
       }
@@ -2093,7 +2086,10 @@ ULO gfxDrvEmulationStartPost(void) {
   if ((buffers = gfxDrvDDrawSetMode(gfx_drv_ddraw_device_current)) == 0)
     fellowAddLog("gfxdrv: gfxDrvEmulationStart(): Zero buffers, gfxDrvDDSetMode() failed\n");
   if (gfx_drv_hwnd != NULL)
-    gfxDrvWindowShow(gfx_drv_ddraw_device_current);
+#ifdef RETRO_PLATFORM
+    if(!RetroPlatformGetMode())
+#endif
+     gfxDrvWindowShow(gfx_drv_ddraw_device_current);
   return buffers;
 }
 

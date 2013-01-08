@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.40 2013-01-07 17:26:03 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.41 2013-01-08 08:08:31 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -70,10 +70,6 @@
 #include "CpuIntegration.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
-
-#ifdef _DEBUG
-#define RETRO_PLATFORM_LOG_VERBOSE
-#endif
 
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
@@ -1037,12 +1033,14 @@ void RetroPlatformEndOfFrame(void) {
 
     t = RetroPlatformGetTime();
     if(t >= lRetroPlatformEscapeKeyTargetHoldTime) {
-      fellowAddLog("RetroPlatform: Escape key held longer than hold time.\n");
+      fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
       lRetroPlatformEscapeKeyTargetHoldTime = 0;
 
       bRetroPlatformMouseCaptureRequestedByHost = FALSE;
+
       mouseDrvToggleFocus();
-      joyDrvToggleFocus();
+      // joyDrvToggleFocus();
+      gfxDrvChangeDInputDeviceStates(FALSE);
     }
   }
 }

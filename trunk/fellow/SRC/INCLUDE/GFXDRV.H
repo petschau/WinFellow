@@ -18,5 +18,6 @@ extern void gfxDrvRunEventSet(void);
 extern void gfxDrvRunEventReset(void);
 extern BOOLE gfxDrvStartup(void);
 extern void gfxDrvShutdown(void);
+extern void gfxDrvChangeDInputDeviceStates(BOOLE);
 
 #endif
