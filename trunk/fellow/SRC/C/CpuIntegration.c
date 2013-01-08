@@ -1,4 +1,4 @@
-/* @(#) $Id: CpuIntegration.c,v 1.9 2012-12-07 14:05:43 carfesh Exp $ */
+/* @(#) $Id: CpuIntegration.c,v 1.10 2013-01-08 19:17:33 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Initialization of 68000 core                                            */
@@ -33,7 +33,7 @@
 #include "fileops.h"
 
 
-static jmp_buf cpu_integration_exception_buffer;
+jmp_buf cpu_integration_exception_buffer;
 
 /* custom chip intreq bit-number to irq-level */
 static ULO cpu_integration_int_to_level[16] = {1,1,1,2, 3,3,3,4, 4,4,4,5, 5,6,6,7};
@@ -214,11 +214,6 @@ void cpuIntegrationMidInstructionExceptionFunc(void)
   longjmp(cpu_integration_exception_buffer, -1);
 }
 
-LON cpuIntegrationMidInstructionExceptionGuard(void)
-{
-  return setjmp(cpu_integration_exception_buffer);
-}
-
 /*===================================================*/
 /* Handles reset exception event from the cpu-module */
 /*===================================================*/
@@ -258,13 +253,35 @@ void cpuIntegrationInstructionLogging(void)
 
   if (cpu_disable_instruction_log) return;
   cpuInstructionLogOpen();
+  /*
+  fprintf(CPUINSTRUCTIONLOG, 
+	  "D0:%.8X D1:%.8X D2:%.8X D3:%.8X D4:%.8X D5:%.8X D6:%.8X D7:%.8X\n", 
+	  cpuGetDReg(0),
+	  cpuGetDReg(1),
+	  cpuGetDReg(2),
+	  cpuGetDReg(3),
+	  cpuGetDReg(4),
+	  cpuGetDReg(5),
+	  cpuGetDReg(6),
+	  cpuGetDReg(7));
 
+  fprintf(CPUINSTRUCTIONLOG, 
+	  "A0:%.8X A1:%.8X A2:%.8X A3:%.8X A4:%.8X A5:%.8X A6:%.8X A7:%.8X\n", 
+	  cpuGetAReg(0),
+	  cpuGetAReg(1),
+	  cpuGetAReg(2),
+	  cpuGetAReg(3),
+	  cpuGetAReg(4),
+	  cpuGetAReg(5),
+	  cpuGetAReg(6),
+	  cpuGetAReg(7));
+	  */
   saddress[0] = '\0';
   sdata[0] = '\0';
   sinstruction[0] = '\0';
   soperands[0] = '\0';
   cpuDisOpcode(cpuGetPC(), saddress, sdata, sinstruction, soperands);
-  fprintf(CPUINSTRUCTIONLOG, "A7:%.6X SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetAReg(7), cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
+  fprintf(CPUINSTRUCTIONLOG, "SSP:%.6X USP:%.6X SP:%.4X %s %s\t%s\t%s\n", cpuGetSspDirect(), cpuGetUspDirect(), cpuGetSR(), saddress, sdata, sinstruction, soperands);
 }
 
 void cpuIntegrationExceptionLogging(STR *description, ULO original_pc, UWO opcode)
