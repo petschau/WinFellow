@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.46 2013-01-08 11:07:33 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.47 2013-01-08 12:43:36 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -257,6 +257,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
   case WM_SETFONT:
   case WM_ACTIVATE:           fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATE");          break;
   case WM_ACTIVATEAPP:        fellowAddLog("EmulationWindowProc got message %s\n", "WM_ACTIVATEAPP");       break;
+  case WM_CHAR:               fellowAddLog("EmulationWindowProc got message %s\n", "WM_CHAR");              break;
   case WM_CREATE:             fellowAddLog("EmulationWindowProc got message %s\n", "WM_CREATE");            break;
   case WM_CLOSE:              fellowAddLog("EmulationWindowProc got message %s\n", "WM_CLOSE");             break;
   case WM_DESTROY:            fellowAddLog("EmulationWindowProc got message %s\n", "WM_DESTROY");           break;
@@ -466,8 +467,13 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 #ifdef RETRO_PLATFORM
     case WM_SETFOCUS:
+      SetCapture(gfx_drv_hwnd);
+      break;
+    case WM_LBUTTONUP:
       if(RetroPlatformGetMode()) {
         gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
+        // mouseDrvToggleFocus();
+        RetroPlatformSendMouseCapture(TRUE);
         return 0;  
       }
     case WM_ENABLE:
@@ -475,12 +481,12 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
         RetroPlatformSendEnable(wParam ? 1 : 0);
         return 0;
       }
-    case WM_MOUSEACTIVATE:
+   /*  case WM_MOUSEACTIVATE:
       if(RetroPlatformGetMode())
 		    // if(!mouseDrvGetFocus())
 			    bIgnoreLeftMouseButton = TRUE;
-		  break;
-    case WM_LBUTTONDOWN:
+		  break; */
+   /*  case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK:
 		  if(RetroPlatformGetMode()) {
 			  // borderless = do not capture with single-click
@@ -489,7 +495,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 				  return 0;
         }
       }
-      return 0;
+      return 0; */
 
 #endif
 

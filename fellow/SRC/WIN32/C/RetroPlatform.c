@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.43 2013-01-08 11:07:33 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.44 2013-01-08 12:43:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1002,7 +1002,6 @@ void RetroPlatformEnter(void) {
 
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
-      SetCapture(gfx_drv_hwnd);
       winDrvEmulationStart();
       RetroPlatformSetEmulationState(FALSE);
     }
@@ -1037,12 +1036,7 @@ void RetroPlatformEndOfFrame(void) {
       fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
       lRetroPlatformEscapeKeyTargetHoldTime = 0;
 
-      bRetroPlatformMouseCaptureRequestedByHost = FALSE;
-
-      mouseDrvToggleFocus();
-      joyDrvToggleFocus();
-      gfxDrvChangeDInputDeviceStates(FALSE);
-      ReleaseCapture();
+      RetroPlatformPostMessage(RP_IPC_TO_HOST_ESCAPED, 0, 0, &RetroPlatformGuestInfo);
     }
   }
 }
