@@ -15,12 +15,18 @@ The following setup files were used to generate the WinFellow documentation on W
 Windows 8 will work, but causes warnings, as it is an untested Windows version.
 
 - doxygen: doxygen-1.8.3-setup.exe (http://www.stack.nl/~dimitri/doxygen/download.html)
-- MiKTeX: basic-miktex-2.9.4521.exe (http://miktex.org/2.9/setup)
+- TeX Live: texlive2012.iso (http://www.tug.org/texlive/acquire-iso.html)
 - GhostScript: gs905w32.exe (http://www.ghostscript.com/GPL_Ghostscript_9.05.html)
 - Graphviz: graphviz-2.28.0.msi (http://www.graphviz.org/Download_windows.php)
 
 1. Install doxygen using the default settings.
-2. Install MiKTeX (32 bit Windows Basic version) using the default settings (preferred paper size is A4, missing packages will be installed "on-the-fly"). 
+2. Install TeX Live (the full DVD iso installation is hazzle-free)
+   using the default settings (preferred paper size is A4).
+   After installation, update the installation by executing the commands
+   `tlmgr update --self` 
+   and 
+   `tlmgr update --all`
+   in a commandline (it does NOT need to be elevated, any authenticated user is able to update TeX Live by default). 
 3. Install GhostScript (32 bit Windows version) using the default settings. Append the directory "C:\Program Files (x86)\gs\gs9.05\bin" to the PATH environment variable, separated by a semicolon.
 4. Install Graphviz using the default settings. Confirm any UAC (user account control) prompts you might encounter.
 5. Verify that the following files can be executed from the commandline (directories need to be included in PATH - if one of them does not work, try logging off and back on again):
@@ -34,14 +40,5 @@ The doxygen environment should now be properly configured to build the WinFellow
 
 To build the documentation, enter the doxygen directory and execute the file Build-Doxygen-Documentation.cmd.
 
-On the first execution, you will be prompted to install several missing MiKTeX packages. Install them from the nearest package repository, and for anyone who uses this computer.
+The documentation should be found as WinFellow-doxygen.pdf within the doxygen directory. 
 
-Confirm any UAC prompts that appear.
-
-The installation of colortbl.sty failed on my system (from the ftp.uni-erlangen.de mirror), as colortbl.cab could not be found online (404 error).
-
-Abort the execution if that happens, and start the MiKTeX Package Manager (Admin). Synchronize the package repository, search for the file name colortbl.sty and select the package that is shown below (right click, install).
-
-The installation should now work, so close the package manager and then restart the batch file. After all missing packages have been installed, the batch should finished. The documentation should then be found as WinFellow-doxygen.pdf within the doxygen directory. 
-
-Run the MiKTeX Update (Admin) tool to update all existing MiKTeX packages to the current version. The first run should update miktex-bin-2.9, the second run should update further packages. Repeat until no more updates are found.
