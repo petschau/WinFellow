@@ -1,4 +1,4 @@
-WinFellow FAQ (Frequently Asked Questions) v0.107 (2001/04/20)
+WinFellow FAQ (Frequently Asked Questions) v0.109 (2013/01/09)
 ==============================================================
 
                                                                   written by
@@ -14,6 +14,8 @@ Contents
 1.1. I can't get <put your favourite game or demo here> working.
 1.2. Where can I find/download the Kickstart ROM file?
 1.3. I installed Workbench, but it refuses to load up.
+1.4. The keys O and P aren't working, why is this?
+1.5. How to play games and run applications with WinFellow?
 
 2.   Floppy disk images
 
@@ -88,6 +90,29 @@ You can buy the Kickstart ROM at: http://www.cloanto.com
 
 Though it is possible to install Workbench into a directory  you  must  make
 sure that you install it into your hardfile or filesystem root directory.
+
+1.4. The keys O and P aren't working, why is this?
+-----------------------------------------------------
+
+Since the 'enable autofire' is placed on those keys, the keys aren't used as 
+input for the Amiga keybuffer. Just remove Keyboard Layout 1 from gameport 
+1 or 2 and the P and O keys will work again. 
+
+1.5. How to play games and run applications with WinFellow?
+-----------------------------------------------------
+
+This is the general procedure to play a game or run applications on WinFellow:
+
+	1. start WinFellow
+	2. click on the configuration button
+	3. select the memory propertysheet
+	4. select a KickROM in the kickstart image edit control
+	5. click the OK button to return to the main window
+	6. select a ADF image containing your game
+	7. start the emulation by clicking start emulation
+			
+That's it, you should see the emulation window booting the KickROM (switching 
+from dark gray, light gray to white and then loading from the disk.
 
 
 2. Floppy disk images
@@ -308,12 +333,7 @@ here  or  simply  don't understand something written here, don't hesitate to
 mail me. This FAQ is still a draft and to be able to maintain it I need your
 input.
 
-For general questions about Amiga emulation you might also want to check the
-Amiga emulation FAQ which can be found at:
+You can also post a question to the WinFellow support forum:
 
-http://www.geocities.com/CapeCanaveral/Lab/1473/faq.html
-
-Laurent Clévy runs a detailed FAQ about the Amiga Filesystem you can find at
-
-http://perso.club-internet.fr/lclevy/adflib/faq.html
+http://eab.abime.net/forumdisplay.php?f=28
 
