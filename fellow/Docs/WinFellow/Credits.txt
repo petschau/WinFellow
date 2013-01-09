@@ -1,0 +1,100 @@
+The WinFellow team:
+-------------------
+
+Created and programmed by Petter Schau (petschau@gmail.com)
+
+with help from
+
+Worfje (worfje@gmx.net)
+Torsten Enderling (carfesh@gmx.net)
+
+
+Special thanks go out to our beta tester team:
+----------------------------------------------
+Brian Andreasen
+Giuseppe Bagnato
+BenniP
+Attila Borsanyi
+Jan Brockmann
+Matthew Bushell
+Jim Durdan
+Andreas Eibach
+Damien Green
+Marco Sascha Sven Hoppe
+Paul Irvine
+Malc Jennings (ale@emuhq.com)
+Magnus Jensen
+Nick K. Kalogeras
+Nick Lamburn
+Marcelo Nogueira Magri
+Tarnyko Rasty
+Andy Riley
+Dominik Schmidt
+Bryn Thompson
+Tomasz Tomaszek
+Phil Underhill
+Robert van Buren
+Christos Vasdekis
+Andy Voss
+Tim Wilson aka Emulator Chicken
+
+
+Programming contributions from:
+-------------------------------
+
+TedMaul (dan@dillinja.org)
+	partially porting Fellow to linux
+
+Mnd (novamarco@hotmail.com)
+	Win32 keyboard, joystick & mouse module	
+
+Roman Dolejsi (roman@sorry.vse.cz) & David Voracek (assassin@paru.cas.cz)
+	Various improvements in GUI,
+	KBD-led code
+	Main design and partial implementation of 68010/20/30 instruction set emulation
+	makeadf (David)
+	Generalized BMP dump code + various other improvements
+
+Rainer Sinsch (sinsh@stud.uni-frankfurt.de)
+	MOD-ripper
+	Low-pass filter
+	Wav-capture patch
+
+
+Thanks go to:
+-------------
+Andreas Axelsson, Brett Eden, Hetz Ben Hamo, Masashi Yamaguchi, Jeremy 
+Crawford and the DOS Documentation Crew: Roberto Gasparrini, Laurent Dugois, 
+Andreas Eibach, Lou C. Fer, Kenneth Vestergaard Schmidt, Pawel Jedrak, Peter Stolk and 
+Marcelo Gurgacz as well as numerous others for taking interest in the emulator.
+
+
+Website translations:
+---------------------
+Mnd (Italian), Wizard (German), Sha! (French), Bachfire (Danish), 
+Petter (Norwegian), Apple (Finnish), Solamnic (Greek), Leon (Turkish),
+SewerRat (Portuguese), Szatan (Polish), Bigma (Dutch), OrB (Spanish)
+
+
+Libraries used:
+---------------
+
+zlib:  	      
+
+  Copyright (C) 1995-1998 Jean-loup Gailly and Mark Adler
+
+
+Other sources used:
+-------------------
+
+UAE Filesystem handler:
+
+  Copyright (C) 1996-2000 Bernd Schmidt, Ed Hanway, Gustavo Goedert
+  and other UAE contributors. UAE filesystem sources are under the GNU GPL;
+  used with permission.
+
+xDMS:
+
+  The xDMS v1.3 portable DMS archive unpacker is public domain software
+  written by Andre Rodrigues de la Rocha used with his kind permission.
+
