@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.47 2013-01-08 12:43:36 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.48 2013-01-11 08:40:11 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -385,7 +385,8 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 	    return 0;
 #ifdef RETRO_PLATFORM
       case SC_CLOSE:
-				RetroPlatformSendClose();
+        if(RetroPlatformGetMode())
+				  RetroPlatformSendClose();
         return 0;
 #endif
       default:
@@ -467,7 +468,8 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 
 #ifdef RETRO_PLATFORM
     case WM_SETFOCUS:
-      SetCapture(gfx_drv_hwnd);
+      if(RetroPlatformGetMode())
+        SetCapture(gfx_drv_hwnd);
       break;
     case WM_LBUTTONUP:
       if(RetroPlatformGetMode()) {
