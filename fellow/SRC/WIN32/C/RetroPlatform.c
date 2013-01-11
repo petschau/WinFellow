@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.44 2013-01-08 12:43:37 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.45 2013-01-11 12:25:36 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -70,6 +70,11 @@
 #include "CpuIntegration.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
+
+/*
+#define RETRO_PLATFORM_JOYKEYLAYOUT_COUNT 4
+static const STR *szRetroPlatformJoyKeyLayoutID[RETRO_PLATFORM_JOYKEYLAYOUT_COUNT] = { "KeyboardLayout1", "KeyboardLayout2", "KeyboardLayout3", "KeyboardCustom" };
+*/
 
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
@@ -824,7 +829,7 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
   
 #ifdef _DEBUG
     fellowAddLog("RetroPlatformSendInputDevice() - '%s' %s, result was %d.\n", 
-      bResult ? "successful" : "failed", szHostInputNameA, lResult);
+      szHostInputNameA, bResult ? "successful" : "failed", lResult);
 #endif
    
   return bResult;
@@ -839,7 +844,14 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
  */
 static BOOLE RetroPlatformSendInputDevices(void) {
   BOOLE bResult = TRUE;
+  /* static DWORD dwJoyKeyHostInputType[RETRO_PLATFORM_JOYKEYLAYOUT_COUNT] = { 
+    RP_HOSTINPUT_KEYJOY_MAP1, 
+    RP_HOSTINPUT_KEYJOY_MAP2, 
+    RP_HOSTINPUT_KEYJOY_MAP3, 
+    RP_HOSTINPUT_KEYBOARD                                                 };
+  int i; */
 
+  // Windows mouse
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_MOUSE, 
     RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_LIGHTPEN,
     RP_HOSTINPUTFLAGS_MOUSE_SMART,
@@ -859,10 +871,23 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     L"Analog Joystick 2")) bResult = FALSE;
 
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
-    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_JOYPAD,
+    RP_FEATURE_INPUTDEVICE_JOYSTICK,
     0,
     L"GP_JOYKEY0",
     L"Keyboard Layout 1")) bResult = FALSE;
+
+  /*
+  // report available keyboard joystick replacements
+  for (i = 0; i < RETRO_PLATFORM_JOYKEYLAYOUT_COUNT; i++) {
+    WCHAR szJoyKeyLayoutID[CFG_FILENAME_LENGTH];
+
+    mbstowcs(szJoyKeyLayoutID, szRetroPlatformJoyKeyLayoutID[i], CFG_FILENAME_LENGTH);
+    RetroPlatformSendInputDevice(dwJoyKeyHostInputType[i], 
+      RP_FEATURE_INPUTDEVICE_JOYSTICK,
+      0,
+      szJoyKeyLayoutID, szJoyKeyLayoutID);
+  } 
+  */
 
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
     0,
