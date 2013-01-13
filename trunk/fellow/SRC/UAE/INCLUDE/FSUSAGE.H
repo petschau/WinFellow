@@ -22,7 +22,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FSUSAGE.H,v 1.3 2004-05-27 12:29:50 carfesh Exp $
+  @(#) $Id: FSUSAGE.H,v 1.4 2013-01-13 18:31:09 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -36,13 +36,5 @@ struct fs_usage
   long fsu_ffree;		/* Free file nodes. */
 };
 
-#ifndef __P
-#if defined (__GNUC__) || (defined (__STDC__) && __STDC__)
-#define __P(args) args
-#else
-#define __P(args) ()
-#endif  /* GCC.  */
-#endif  /* Not __P.  */
-
-int get_fs_usage __P ((const char *path, const char *disk,
-		       struct fs_usage *fsp));
+int get_fs_usage (const char *path, const char *disk,
+		       struct fs_usage *fsp);

@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.48 2013-01-11 08:40:11 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.49 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -1041,9 +1041,10 @@ BOOLE gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device) {
   HRESULT err;
   
   ddraw_device->lpDD2 = NULL;
-  if ((err = IDirectDraw_QueryInterface(ddraw_device->lpDD,
-    &IID_IDirectDraw2,
-    (LPVOID *) &(ddraw_device->lpDD2))) != DD_OK) {
+  err = IDirectDraw_QueryInterface(ddraw_device->lpDD,
+				   &IID_IDirectDraw2,
+				   (LPVOID *) &(ddraw_device->lpDD2));
+  if (err != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDraw2ObjectInitialize(): ", err);
     return FALSE;
   }
@@ -1291,7 +1292,7 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeNew(ULO width,
 /* Called on emulator startup                                               */
 /*==========================================================================*/
 
-BOOL WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
+HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
 				     LPVOID lpContext) {
   winDrvSetThreadName(-1, "gfxDrvDDrawModeEnumerate()");
   if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) &&
@@ -1330,11 +1331,12 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device) {
   BOOLE result;
   
   ddraw_device->modes = NULL;
-  if ((err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
-    DDEDM_REFRESHRATES,
-    NULL,
-    (LPVOID) ddraw_device,
-    gfxDrvDDrawModeEnumerate)) != DD_OK) {
+  err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
+				      DDEDM_REFRESHRATES,
+				      NULL,
+				      (LPVOID) ddraw_device,
+				      gfxDrvDDrawModeEnumerate);
+  if (err != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDrawModeInformationInitialize(): ", err);
     result = FALSE;
   }
@@ -1869,41 +1871,43 @@ void gfxDrvDDrawFlip(gfx_drv_ddraw_device *ddraw_device) {
 /*==========================================================================*/
 
 ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
-	BOOLE result = TRUE;
-	ULO buffers = 0;
+  BOOLE result = TRUE;
+  ULO buffers = 0;
 
-	if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) 
-	{
-		ddraw_device->use_blitter = 
-			((ddraw_device->mode->windowed)
-			 || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))
-			 || (ddraw_device->no_dd_hardware) 
-			 || (gfx_drv_stretch_always));
+  if (gfxDrvDDrawSetCooperativeLevel(ddraw_device)) 
+  {
+    ddraw_device->use_blitter = 
+	    ((ddraw_device->mode->windowed)
+	      || ((ddraw_device->vertical_scale > 1) && (ddraw_device->vertical_scale_strategy == 1))
+	      || (ddraw_device->no_dd_hardware) 
+	      || (gfx_drv_stretch_always));
 
-		if (!ddraw_device->mode->windowed) 
-		{
-			gfx_drv_ddraw_mode *mode;
-			HRESULT err;
-			DDSURFACEDESC myDDSDesc;
+    if (!ddraw_device->mode->windowed) 
+    {
+      gfx_drv_ddraw_mode *mode;
+      HRESULT err;
+      DDSURFACEDESC myDDSDesc;
 
-			mode = (gfx_drv_ddraw_mode *) listNode(listIndex(ddraw_device->modes, ddraw_device->drawmode->id));
-			memset(&myDDSDesc, 0, sizeof(myDDSDesc));
-			myDDSDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
-			if ((err = ddraw_device->lpDD2->lpVtbl->SetDisplayMode(ddraw_device->lpDD2, mode->width, mode->height, mode->depth,	mode->refresh, 0)) != DD_OK) 
-			{
-				gfxDrvDDrawFailure("gfxDrvDDrawSetMode(): ", err);
-				result = FALSE;
-			}
-		}
-		if (result) {
-			gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device_current);
-			if ((buffers = gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device_current)) == 0)
-			{
-				gfxDrvDDrawSetCooperativeLevelNormal(gfx_drv_ddraw_device_current);
-			}
-		}
-	}
-	return buffers;
+      mode = (gfx_drv_ddraw_mode *) listNode(listIndex(ddraw_device->modes, ddraw_device->drawmode->id));
+      memset(&myDDSDesc, 0, sizeof(myDDSDesc));
+      myDDSDesc.dwFlags = DDSD_WIDTH | DDSD_HEIGHT;
+      err = IDirectDraw2_SetDisplayMode(ddraw_device->lpDD2, mode->width, mode->height, mode->depth, mode->refresh, 0);
+      if (err != DD_OK) 
+      {
+	gfxDrvDDrawFailure("gfxDrvDDrawSetMode(): ", err);
+	result = FALSE;
+      }
+    }
+    if (result) {
+      gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device_current);
+      buffers = gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device_current);
+      if (buffers == 0)
+      {
+	gfxDrvDDrawSetCooperativeLevelNormal(gfx_drv_ddraw_device_current);
+      }
+    }
+  }
+  return buffers;
 }
 
 

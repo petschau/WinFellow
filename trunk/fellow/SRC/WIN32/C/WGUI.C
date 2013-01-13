@@ -1,4 +1,4 @@
-/* @(#) $Id: WGUI.C,v 1.37 2013-01-06 00:09:00 peschau Exp $ */
+/* @(#) $Id: WGUI.C,v 1.38 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -2990,8 +2990,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	case WGUI_DEBUGGER_START:
 	  end_loop = TRUE;
 	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	  fellowPreStartReset(fellowGetPreStartReset() |
-	    cfgManagerConfigurationActivate(&cfg_manager));
+	  fellowPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	  debugger_start = TRUE;
 	default:
 	  break;

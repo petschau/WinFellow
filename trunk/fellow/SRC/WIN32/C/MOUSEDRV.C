@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.14 2013-01-08 08:08:31 carfesh Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.15 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -198,11 +198,12 @@ BOOLE mouseDrvDInputInitialize(void) {
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
   mouse_drv_initialization_failed = FALSE;
-  if ((res = DirectInput8Create(win_drv_hInstance,
-                               DIRECTINPUT_VERSION,
-                               &IID_IDirectInput8,
-                               (void**)&mouse_drv_lpDI,
-							   NULL)) != DI_OK) {
+  res = DirectInput8Create(win_drv_hInstance,
+                           DIRECTINPUT_VERSION,
+                           &IID_IDirectInput8,
+                           (void**)&mouse_drv_lpDI,
+			   NULL);
+  if (res != DI_OK) {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -218,10 +219,11 @@ BOOLE mouseDrvDInputInitialize(void) {
   
   /* Create Direct Input 1 mouse device */
   
-  if ((res = IDirectInput_CreateDevice(mouse_drv_lpDI,
-                                       &GUID_SysMouse,
-                                       &mouse_drv_lpDID,
-                                       NULL)) != DI_OK) {
+  res = IDirectInput_CreateDevice(mouse_drv_lpDI,
+                                  &GUID_SysMouse,
+                                  &mouse_drv_lpDID,
+                                  NULL);
+  if (res != DI_OK) {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): CreateDevice() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();

@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.14 2013-01-08 19:06:21 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.15 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -412,7 +412,8 @@ void busRun(void)
   busGetRunHandler()();
 }
 
-void busDebugNew(void)
+/* Steps one instruction forward */
+void busDebugStepOneInstruction(void)
 {
   while (!fellow_request_emulation_stop)
   {
@@ -420,20 +421,33 @@ void busDebugNew(void)
     {
       while (!fellow_request_emulation_stop)
       {
-	bus_event *e = busPopEvent();
+	if (bus.events->cycle >= cpuEvent.cycle)
+	{
 #ifdef ENABLE_BUS_EVENT_LOGGING
-	busEventLog(e);
+	  busEventLog(&cpuEvent);
 #endif
-	busSetCycle(e->cycle);
-	e->handler();
-	if (e == &cpuEvent) return;
+	  busSetCycle(cpuEvent.cycle);
+	  cpuEvent.handler();
+	  return;
+	}
+	do
+	{
+	  bus_event *e = busPopEvent();
+
+#ifdef ENABLE_BUS_EVENT_LOGGING
+	  busEventLog(e);
+#endif
+	  busSetCycle(e->cycle);
+	  e->handler();
+	} while (bus.events->cycle < cpuEvent.cycle);
       }
     }
     else
     {
-      // Came out of an CPU exception. Keep on working.
+      // Came out of an CPU exception. Return to debugger after setting the cycle count
       cpuEvent.cycle = bus.cycle + cpuIntegrationGetChipCycles() + (cpuGetInstructionTime() >> cpuIntegrationGetSpeed());
       cpuIntegrationSetChipCycles(0);
+      return;
     }
   }
 }
