@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.49 2013-01-13 18:31:09 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.50 2013-01-13 21:42:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -1042,7 +1042,7 @@ BOOLE gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device) {
   
   ddraw_device->lpDD2 = NULL;
   err = IDirectDraw_QueryInterface(ddraw_device->lpDD,
-				   &IID_IDirectDraw2,
+				   IID_IDirectDraw2,
 				   (LPVOID *) &(ddraw_device->lpDD2));
   if (err != DD_OK) {
     gfxDrvDDrawFailure("gfxDrvDDraw2ObjectInitialize(): ", err);

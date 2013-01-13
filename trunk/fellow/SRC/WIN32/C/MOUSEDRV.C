@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.15 2013-01-13 18:31:09 peschau Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.16 2013-01-13 21:42:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -200,7 +200,7 @@ BOOLE mouseDrvDInputInitialize(void) {
   mouse_drv_initialization_failed = FALSE;
   res = DirectInput8Create(win_drv_hInstance,
                            DIRECTINPUT_VERSION,
-                           &IID_IDirectInput8,
+                           IID_IDirectInput8,
                            (void**)&mouse_drv_lpDI,
 			   NULL);
   if (res != DI_OK) {
@@ -220,7 +220,7 @@ BOOLE mouseDrvDInputInitialize(void) {
   /* Create Direct Input 1 mouse device */
   
   res = IDirectInput_CreateDevice(mouse_drv_lpDI,
-                                  &GUID_SysMouse,
+                                  GUID_SysMouse,
                                   &mouse_drv_lpDID,
                                   NULL);
   if (res != DI_OK) {

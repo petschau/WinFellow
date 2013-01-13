@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUNDDRV.C,v 1.17 2013-01-13 18:31:09 peschau Exp $ */
+/* @(#) $Id: SOUNDDRV.C,v 1.18 2013-01-13 21:42:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Sound driver for Windows                                                */
@@ -542,7 +542,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
     /* Get notification interface */
   
     res = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
-					    &IID_IDirectSoundNotify,
+					    IID_IDirectSoundNotify,
 					    (LPVOID * FAR) &dsound_device->lpDSN);
     if (res != DS_OK) {
       soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): QueryInterface(IID_IDirectSoundNotify), ", res);

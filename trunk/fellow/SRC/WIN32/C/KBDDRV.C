@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.20 2013-01-13 18:31:09 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.21 2013-01-13 21:42:34 peschau Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -725,7 +725,7 @@ void kbdDrvDInputInitializeOld(void) {
   if(!kbd_drv_lpDI) {
     res = DirectInput8Create(win_drv_hInstance,
 			     DIRECTINPUT_VERSION,
-			     &IID_IDirectInput8,
+			     IID_IDirectInput8,
 			     (void**)&kbd_drv_lpDI,
 			     NULL);
     if(res != DI_OK )
@@ -738,7 +738,7 @@ void kbdDrvDInputInitializeOld(void) {
   if( !kbd_drv_lpDID )
   {
     res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-				    &GUID_SysKeyboard,
+				    GUID_SysKeyboard,
 				    &kbd_drv_lpDID,
 				    NULL );
     if( res != DI_OK )
@@ -778,7 +778,7 @@ BOOLE kbdDrvDInputInitialize(void) {
   kbd_drv_initialization_failed = FALSE;
   res = DirectInput8Create(win_drv_hInstance,
                            DIRECTINPUT_VERSION,
-                           &IID_IDirectInput8,
+                           IID_IDirectInput8,
                            (void**)&kbd_drv_lpDI,
 			   NULL);
   if (res != DI_OK) {
@@ -791,7 +791,7 @@ BOOLE kbdDrvDInputInitialize(void) {
   /* Create Direct Input 1 keyboard device */
 
   res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-                                  &GUID_SysKeyboard,
+                                  GUID_SysKeyboard,
                                   &kbd_drv_lpDID,
                                   NULL);
   if (res != DI_OK) {
