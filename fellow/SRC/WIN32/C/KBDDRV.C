@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.19 2013-01-06 00:08:59 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.20 2013-01-13 18:31:09 peschau Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -723,11 +723,12 @@ void kbdDrvDInputInitializeOld(void) {
   
   fellowAddLog("kbdDrvDInputInitialize()\n");
   if(!kbd_drv_lpDI) {
-    if(( res = DirectInput8Create(win_drv_hInstance,
-      DIRECTINPUT_VERSION,
-      &IID_IDirectInput8,
-      (void**)&kbd_drv_lpDI,
-	  NULL)) != DI_OK )
+    res = DirectInput8Create(win_drv_hInstance,
+			     DIRECTINPUT_VERSION,
+			     &IID_IDirectInput8,
+			     (void**)&kbd_drv_lpDI,
+			     NULL);
+    if(res != DI_OK )
     {
       kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
       return;
@@ -737,9 +738,9 @@ void kbdDrvDInputInitializeOld(void) {
   if( !kbd_drv_lpDID )
   {
     res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-      &GUID_SysKeyboard,
-      &kbd_drv_lpDID,
-      NULL );
+				    &GUID_SysKeyboard,
+				    &kbd_drv_lpDID,
+				    NULL );
     if( res != DI_OK )
     {
       kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
@@ -775,11 +776,12 @@ BOOLE kbdDrvDInputInitialize(void) {
   kbd_drv_lpDID = NULL;
   kbd_drv_DIevent = NULL;
   kbd_drv_initialization_failed = FALSE;
-  if ((res = DirectInput8Create(win_drv_hInstance,
-                               DIRECTINPUT_VERSION,
-                               &IID_IDirectInput8,
-                               (void**)&kbd_drv_lpDI,
-							   NULL)) != DI_OK) {
+  res = DirectInput8Create(win_drv_hInstance,
+                           DIRECTINPUT_VERSION,
+                           &IID_IDirectInput8,
+                           (void**)&kbd_drv_lpDI,
+			   NULL);
+  if (res != DI_OK) {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -787,11 +789,12 @@ BOOLE kbdDrvDInputInitialize(void) {
   }
   
   /* Create Direct Input 1 keyboard device */
-  
-  if ((res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-                                       &GUID_SysKeyboard,
-                                       &kbd_drv_lpDID,
-                                       NULL)) != DI_OK) {
+
+  res = IDirectInput_CreateDevice(kbd_drv_lpDI,
+                                  &GUID_SysKeyboard,
+                                  &kbd_drv_lpDID,
+                                  NULL);
+  if (res != DI_OK) {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();

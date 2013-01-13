@@ -1,4 +1,4 @@
-/* @(#) $Id: FELLOW.C,v 1.38 2013-01-06 00:08:57 peschau Exp $ */
+/* @(#) $Id: FELLOW.C,v 1.39 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -392,12 +392,18 @@ void fellowRun(void) {
 /* Steps one CPU instruction                                                  */
 /*============================================================================*/
 
-void fellowStepOne(void) {
+void fellowStepOne(void)
+{
   fellowRequestEmulationStopClear();
-  if (fellow_pre_start_reset) fellowHardReset();
+  if (fellow_pre_start_reset)
+  {
+    fellowHardReset();
+  }
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
-    busDebugNew();
+  {
+    busDebugStepOneInstruction();
+  }
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }
@@ -407,20 +413,28 @@ void fellowStepOne(void) {
 /* Steps over a CPU instruction                                               */
 /*============================================================================*/
 
-void fellowStepOver(void) {
+void fellowStepOver(void)
+{
   char saddress[128];
   char sdata[128];
   char sinstruction[128];
   char soperands[128];
+
   fellowRequestEmulationStopClear();
-  if (fellow_pre_start_reset) fellowHardReset();
+  if (fellow_pre_start_reset)
+  {
+    fellowHardReset();
+  }
+  
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes)setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
   {
     ULO current_pc = cpuGetPC();
     ULO over_pc = cpuDisOpcode(current_pc, saddress, sdata, sinstruction, soperands);
     while ((cpuGetPC() != over_pc) && !fellow_request_emulation_stop)
-      busDebugNew();
+    {
+      busDebugStepOneInstruction();
+    }
   }
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
@@ -437,7 +451,7 @@ void fellowRunDebug(ULO breakpoint) {
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
-      busDebugNew();
+      busDebugStepOneInstruction();
   fellowRequestEmulationStopClear();
   fellowRuntimeErrorCheck();
 }

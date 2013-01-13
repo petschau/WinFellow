@@ -1,4 +1,4 @@
-/* @(#) $Id: FMEM.C,v 1.16 2013-01-06 00:08:57 peschau Exp $ */
+/* @(#) $Id: FMEM.C,v 1.17 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -2049,7 +2049,7 @@ __inline  UWO memoryReadWord(ULO address)
   void memoryHardReset(void)
   {
     memoryChipClear(),
-      memoryFastClear();
+    memoryFastClear();
     memorySlowClear();
     memoryDmemClear();
     memoryEmemClear();

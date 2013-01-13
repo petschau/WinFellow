@@ -182,7 +182,10 @@
 #define IDC_BUTTON4                     2004
 #define IDC_BTN_BREAK                   2004
 #define IDC_BUTTON_DF3_FILEDIALOG       2005
+#define IDC_BTN_DUMPCHIP                2005
 #define IDC_BUTTON_TURBO_LOAD           2006
+#define IDC_DEBUG_RIP                   2006
+#define IDC_BTN_MODRIP                  2006
 #define IDC_CHECK1                      2007
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 2008
 #define IDC_CHECK_VARIOUS_LED           2009

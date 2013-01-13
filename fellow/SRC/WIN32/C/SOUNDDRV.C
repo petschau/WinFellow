@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUNDDRV.C,v 1.16 2013-01-06 00:08:59 peschau Exp $ */
+/* @(#) $Id: SOUNDDRV.C,v 1.17 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Sound driver for Windows                                                */
@@ -493,7 +493,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
 				0,
 				dsbdesc.dwBufferBytes,
-				&lpAudio,
+				(LPVOID*) &lpAudio,
 				&dwBytes,
 				NULL,
 				NULL,
@@ -502,15 +502,15 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   if (res == DSERR_BUFFERLOST)
   {
     /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
-      IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
-	  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
-				0,
-				dsbdesc.dwBufferBytes,
-				&lpAudio,
-				&dwBytes,
-				NULL,
-				NULL,
-				0);
+    IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+    res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+				  0,
+				  dsbdesc.dwBufferBytes,
+				  (LPVOID*)&lpAudio,
+				  &dwBytes,
+				  NULL,
+				  NULL,
+				  0);
   }
 
   if (res != DS_OK) {
@@ -520,7 +520,7 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 
   for (i = 0; i < dwBytes; i++)
   {
-	 lpAudio[i] = 0;
+    lpAudio[i] = 0;
   }
 
   IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpAudio, dwBytes, NULL, 0);
@@ -534,27 +534,21 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
     return FALSE;
   }
 
-  {
-	  char s[80];
-	  sprintf(s, "DirectSoundBuffer caps: 0x%x\n", dsbcaps.dwFlags);
-	  fellowAddLog(s);
-  }
-
   dsound_device->notification_supported = (!!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY)) && (soundGetNotification() == SOUND_DSOUND_NOTIFICATION);
   if(dsound_device->notification_supported)
   {
     /* Notification supported AND selected */
 
-	/* Get notification interface */
+    /* Get notification interface */
   
     res = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
-                                          &IID_IDirectSoundNotify,
-										  (LPVOID * FAR) &dsound_device->lpDSN);
+					    &IID_IDirectSoundNotify,
+					    (LPVOID * FAR) &dsound_device->lpDSN);
     if (res != DS_OK) {
       soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): QueryInterface(IID_IDirectSoundNotify), ", res);
       soundDrvDSoundSecondaryBufferRelease(dsound_device);
       return FALSE;
-	}
+    }
 
     /* Attach notification objects to buffer */
   
@@ -565,53 +559,50 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
                            (dsound_device->mode_current->buffer_sample_count*2 - 1);
     rgdscbpn[1].hEventNotify = dsound_device->notifications[1];
 
-    res = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN,
-                                                      2,
-												    rgdscbpn);
+    res = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN, 2, rgdscbpn);
     if (res != DS_OK) {
       soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): SetNotificationPositions(), ", res);
       soundDrvDSoundSecondaryBufferRelease(dsound_device);
       return FALSE;
-	}
+    }
   }
   else {
     /* Notification not supported */
 
-	char s[80];
-	TIMECAPS timecaps;
-	MMRESULT mmres;
+    char s[80];
+    TIMECAPS timecaps;
+    MMRESULT mmres;
 
-	mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
-	if(mmres != TIMERR_NOERROR) {
+    mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+    if(mmres != TIMERR_NOERROR) {
       fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeGetDevCaps() failed\n");
       soundDrvDSoundSecondaryBufferRelease(dsound_device);
-	  return FALSE;
-	}
+      return FALSE;
+    }
 
-	sprintf(s, "timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
-	fellowAddLog(s);
+    sprintf(s, "timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+    fellowAddLog(s);
 
-	dsound_device->mmresolution = timecaps.wPeriodMin;
+    dsound_device->mmresolution = timecaps.wPeriodMin;
 
-	mmres = timeBeginPeriod(dsound_device->mmresolution);
-	if(mmres != TIMERR_NOERROR) {
+    mmres = timeBeginPeriod(dsound_device->mmresolution);
+    if(mmres != TIMERR_NOERROR) {
       fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeBeginPeriod() failed\n");
       soundDrvDSoundSecondaryBufferRelease(dsound_device);
-	  return FALSE;
-	}
+      return FALSE;
+    }
 
-	mmres = timeSetEvent(1, 0, timercb, (DWORD_PTR)0, (UINT) TIME_PERIODIC);
-	if(mmres == 0) {
+    mmres = timeSetEvent(1, 0, timercb, (DWORD_PTR)0, (UINT) TIME_PERIODIC);
+    if(mmres == 0) {
       fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeSetEvent() failed\n");
       soundDrvDSoundSecondaryBufferRelease(dsound_device);
-	  return FALSE;
-	}
-	dsound_device->mmtimer = mmres;
+      return FALSE;
+    }
+    dsound_device->mmtimer = mmres;
   }
 
   /* When we get here, all is well */
 
-  //fellowAddLog("All is well for secondary buffer\n");
   return TRUE;
 }
 

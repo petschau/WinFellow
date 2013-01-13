@@ -1,4 +1,4 @@
-/* @(#) $Id: WDBG.C,v 1.34 2012-08-12 16:51:02 peschau Exp $ */
+/* @(#) $Id: WDBG.C,v 1.35 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1408,7 +1408,7 @@ void wdbgDebugSessionRun(HWND parent)
 
 
 HWND wdeb_hDialog = 0;
-ULO WDEB_DISASM_LINES = 54;
+ULO WDEB_DISASM_LINES = 42;
 
 enum wdeb_actions
 {
@@ -1641,6 +1641,8 @@ void wdebUpdateCpuDisplay()
   wdebUpdateRegisterColumns();
 }
 
+BOOLE wdeb_is_working = FALSE;
+
 INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg,
 				     UINT uMsg,
 				     WPARAM wParam,
@@ -1662,19 +1664,43 @@ INT_PTR CALLBACK wdebDebuggerDialogProc(HWND hwndDlg,
 	switch (LOWORD(wParam))
 	{
 	  case IDC_BTN_STEP1:
-	    winDrvDebugStart(DBG_STEP, hwndDlg);
-	    wdebUpdateCpuDisplay();
+	    if (!wdeb_is_working)
+	    {
+	      wdeb_is_working = TRUE;
+	      winDrvDebugStart(DBG_STEP, hwndDlg);
+	      wdebUpdateCpuDisplay();
+	      wdeb_is_working = FALSE;
+	    }
 	    break;
 	  case IDC_BTN_STEP_OVER:
-	    winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
-	    wdebUpdateCpuDisplay();
+	    if (!wdeb_is_working)
+	    {
+	      wdeb_is_working = TRUE;
+	      winDrvDebugStart(DBG_STEP_OVER, hwndDlg);
+	      wdebUpdateCpuDisplay();
+	      wdeb_is_working = FALSE;
+	    }
 	    break;
 	  case IDC_BTN_RUN:
-	    winDrvDebugStart(DBG_RUN, hwndDlg);
-	    wdebUpdateCpuDisplay();
+	    if (!wdeb_is_working)
+	    {
+	      wdeb_is_working = TRUE;
+	      winDrvDebugStart(DBG_RUN, hwndDlg);
+	      wdebUpdateCpuDisplay();
+	      wdeb_is_working = FALSE;
+	    }
 	    break;
+	  case IDC_BTN_MODRIP:
+	    modripRIP();
+	    break;
+	  case IDC_BTN_DUMPCHIP:
+	    modripChipDump();
+            break;
 	  case IDC_BTN_BREAK:
-	    fellowRequestEmulationStop();
+	    if (wdeb_is_working)
+	    {
+	      fellowRequestEmulationStop();
+	    }
 	    break;
 	  case IDOK:
 	  case IDCANCEL:
@@ -1744,8 +1770,9 @@ void wdebDebug()
   {
     fellowEmulationStart();
     if (fellowGetPreStartReset())
+    {
       fellowHardReset();
-
+    }
     wdeb_action = WDEB_NO_ACTION;
     wdebCreateDialog();
     wdebDoMessages();
@@ -1754,9 +1781,9 @@ void wdebDebug()
     fellowEmulationStop();
   }
   else
+  {
     MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
-
-
+  }
 }
 
 #endif /* WGUI */

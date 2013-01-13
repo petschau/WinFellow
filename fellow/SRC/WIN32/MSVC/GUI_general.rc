@@ -7,18 +7,13 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "windows.h"
+#include "afxres.h"
 #include "gui_debugger.h"
-
-#ifndef IDC_STATIC
-#define IDC_STATIC				-1
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -641,12 +636,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegisch, Bokmål (Norwegen) resources
+// Norwegian, Bokmål (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -657,20 +652,21 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 // Dialog
 //
 
-IDD_DEBUGGER DIALOGEX 0, 0, 577, 524
+IDD_DEBUGGER DIALOGEX 0, 0, 577, 417
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Debugger"
+CAPTION "WinFellow Debugger"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,468,503,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,520,503,50,14
-    CONTROL         "",IDC_LST_INSTRUCTIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,30,456,487
-    CONTROL         "",IDC_LST_REGISTERS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,7,103,288
-    CONTROL         "",IDC_LST_INFO,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,298,103,178
+    PUSHBUTTON      "Exit Debugger",IDCANCEL,502,396,68,14
+    CONTROL         "",IDC_LST_INSTRUCTIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,27,456,382
+    CONTROL         "",IDC_LST_REGISTERS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,7,103,235
+    CONTROL         "",IDC_LST_INFO,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,244,103,143
     PUSHBUTTON      "Step One",IDC_BTN_STEP1,7,7,50,14
     PUSHBUTTON      "Step Over",IDC_BTN_STEP_OVER,67,7,50,14
     PUSHBUTTON      "Run",IDC_BTN_RUN,127,7,50,14
     PUSHBUTTON      "Break",IDC_BTN_BREAK,187,7,50,14
+    PUSHBUTTON      "Dump Chip-memory",IDC_BTN_DUMPCHIP,392,7,71,14
+    PUSHBUTTON      "Rip Modules",IDC_BTN_MODRIP,335,7,50,14
 END
 
 
@@ -687,7 +683,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 570
         TOPMARGIN, 7
-        BOTTOMMARGIN, 517
+        BOTTOMMARGIN, 410
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -699,7 +695,7 @@ END
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegisch, Bokmål (Norwegen) resources
+#endif    // Norwegian, Bokmål (Norway) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

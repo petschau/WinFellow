@@ -22,7 +22,7 @@
 
   Torsten Enderling (carfesh@gmx.net) 2004
 
-  @(#) $Id: FSUSAGE.C,v 1.6 2013-01-06 00:09:02 peschau Exp $
+  @(#) $Id: FSUSAGE.C,v 1.7 2013-01-13 18:31:10 peschau Exp $
 
    FELLOW IN (END)------------------- */
 
@@ -188,10 +188,7 @@ safe_read (desc, ptr, len)
    ERRNO is either a system error value, or zero if DISK is NULL
    on a system that requires a non-NULL value.  */
 int
-get_fs_usage (path, disk, fsp)
-     const char *path;
-     const char *disk;
-     struct fs_usage *fsp;
+get_fs_usage (const char *path, const char *disk, struct fs_usage *fsp)
 {
 #ifdef STAT_STATFS3_OSF1
 # define CONVERT_BLOCKS(B) adjust_blocks ((B), fsd.f_fsize, 512)

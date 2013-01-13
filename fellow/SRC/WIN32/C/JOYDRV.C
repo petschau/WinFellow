@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.17 2013-01-06 10:55:46 carfesh Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.18 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -292,28 +292,31 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
   HRESULT res;
 
   if (!pDiD[port]) {
-		if ((res = CoCreateInstance(&CLSID_DirectInputDevice8,
-																NULL,
-																CLSCTX_INPROC_SERVER,
-																&IID_IDirectInputDevice8,
-																&(pDiD[port]))) != DI_OK) {
-			joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
-			return TRUE;
-		}
-		
-		if ((res = IDirectInputDevice8_Initialize(pDiD[port],
-																							win_drv_hInstance,
-																							DIRECTINPUT_VERSION,
-																							&guid )) != DI_OK) {
-			joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
-			return TRUE;
-		}
-	}
+    res = CoCreateInstance(&CLSID_DirectInputDevice8,
+			   NULL,
+			   CLSCTX_INPROC_SERVER,
+			   &IID_IDirectInputDevice8,
+			   (LPVOID*) &(pDiD[port]));
+    if (res != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
+      return TRUE;
+    }
 
-	if ((res = IDirectInputDevice8_SetDataFormat( pDiD[port], &c_dfDIJoystick )) != DI_OK) {
-		joyDrvDInputFailure("joyDrvDInputInitialize(): SetDataFormat() ", res );
-		return TRUE;
-	}
+    res = IDirectInputDevice8_Initialize(pDiD[port],
+					 win_drv_hInstance,
+					 DIRECTINPUT_VERSION,
+					 &guid );
+    if (res != DI_OK) {
+	    joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
+	    return TRUE;
+    }
+  }
+
+  res = IDirectInputDevice8_SetDataFormat( pDiD[port], &c_dfDIJoystick );
+  if (res != DI_OK) {
+    joyDrvDInputFailure("joyDrvDInputInitialize(): SetDataFormat() ", res );
+    return TRUE;
+  }
 		
   return FALSE;
 } // joyDrvDxCreateAndInitDevice
@@ -341,40 +344,43 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst,
 /*===========================================================================*/
 
 void joyDrvDInputInitialize(void) {
-	HRESULT res;
-	fellowAddLog("joyDrvDInputInitialize()\n");
+  HRESULT res;
+  fellowAddLog("joyDrvDInputInitialize()\n");
 
-	if (!joy_drv_lpDI) {
-	  if ((res = CoCreateInstance(&CLSID_DirectInput8,
-				   NULL,
-				   CLSCTX_INPROC_SERVER,
-				   &IID_IDirectInput8,
-				   &joy_drv_lpDI)) != DI_OK) {
-		  joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance() ", res );
-		  joy_drv_failed = TRUE;
-		  return;
-	  }
+  if (!joy_drv_lpDI) {
+    res = CoCreateInstance(&CLSID_DirectInput8,
+			   NULL,
+			   CLSCTX_INPROC_SERVER,
+			   &IID_IDirectInput8,
+			   (LPVOID*) &joy_drv_lpDI);
+    if (res != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
 
-	  if ((res = IDirectInput8_Initialize(joy_drv_lpDI,
+    res = IDirectInput8_Initialize(joy_drv_lpDI,
 				   win_drv_hInstance,
-				   DIRECTINPUT_VERSION)) != DI_OK) {
-		  joyDrvDInputFailure("joyDrvDInputInitialize(): Initialize() ", res );
-		  joy_drv_failed = TRUE;
-		  return;
-	  }
+				   DIRECTINPUT_VERSION);
+    if (res != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): Initialize() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
 
     num_joy_attached = MAX_JOY_PORT;
 
-		if ((res = IDirectInput8_EnumDevices( joy_drv_lpDI, DI8DEVCLASS_GAMECTRL,
-					joyDrvInitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY )) != DI_OK) {
-			joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices() ", res );
-			joy_drv_failed = TRUE;
-			return;
-		}
+    res = IDirectInput8_EnumDevices(joy_drv_lpDI, DI8DEVCLASS_GAMECTRL,
+				    joyDrvInitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY);
+    if (res != DI_OK) {
+      joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices() ", res );
+      joy_drv_failed = TRUE;
+      return;
+    }
 
-		num_joy_attached = MAX_JOY_PORT - num_joy_attached;
-		fellowAddLog( "njoy: %d\n", num_joy_attached );
-	}
+    num_joy_attached = MAX_JOY_PORT - num_joy_attached;
+    fellowAddLog( "njoy: %d\n", num_joy_attached );
+  }
 }
 
 
