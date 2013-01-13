@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.45 2013-01-11 12:25:36 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.46 2013-01-13 21:42:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -274,7 +274,7 @@ static BOOLE RetroPlatformGetHostVersion(ULO *lpMainVersion, ULO *lpRevision,
   ULO *lpBuild) {
 	ULO lResult = 0;
 
-	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, &lResult))
+	if (!RetroPlatformSendMessage(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &RetroPlatformGuestInfo, (LRESULT*) &lResult))
 		return FALSE;
 
 	*lpMainVersion = RP_HOSTVERSION_MAJOR(lResult);

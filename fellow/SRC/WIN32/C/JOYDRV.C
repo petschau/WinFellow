@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.18 2013-01-13 18:31:09 peschau Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.19 2013-01-13 21:42:34 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -292,10 +292,10 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
   HRESULT res;
 
   if (!pDiD[port]) {
-    res = CoCreateInstance(&CLSID_DirectInputDevice8,
+    res = CoCreateInstance(CLSID_DirectInputDevice8,
 			   NULL,
 			   CLSCTX_INPROC_SERVER,
-			   &IID_IDirectInputDevice8,
+			   IID_IDirectInputDevice8,
 			   (LPVOID*) &(pDiD[port]));
     if (res != DI_OK) {
       joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
@@ -305,7 +305,7 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
     res = IDirectInputDevice8_Initialize(pDiD[port],
 					 win_drv_hInstance,
 					 DIRECTINPUT_VERSION,
-					 &guid );
+					 guid );
     if (res != DI_OK) {
 	    joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
 	    return TRUE;
@@ -348,10 +348,10 @@ void joyDrvDInputInitialize(void) {
   fellowAddLog("joyDrvDInputInitialize()\n");
 
   if (!joy_drv_lpDI) {
-    res = CoCreateInstance(&CLSID_DirectInput8,
+    res = CoCreateInstance(CLSID_DirectInput8,
 			   NULL,
 			   CLSCTX_INPROC_SERVER,
-			   &IID_IDirectInput8,
+			   IID_IDirectInput8,
 			   (LPVOID*) &joy_drv_lpDI);
     if (res != DI_OK) {
       joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance() ", res );

@@ -1,4 +1,4 @@
-/* @(#) $Id: caps_win32.c,v 1.8 2013-01-11 08:28:33 carfesh Exp $          */
+/* @(#) $Id: caps_win32.c,v 1.9 2013-01-13 21:42:34 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -34,11 +34,20 @@
 #include "floppy.h"
 #include "fileops.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ComType.h"
 #include "CapsAPI.h"
 
 #define CAPS_USER
 #include "CapsLib.h"
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #ifdef _DEBUG
 #define TRACECAPS 1
