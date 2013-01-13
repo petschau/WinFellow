@@ -1,4 +1,4 @@
-/* @(#) $Id: sysinfo.c,v 1.22 2013-01-07 10:03:01 carfesh Exp $ */
+/* @(#) $Id: sysinfo.c,v 1.23 2013-01-13 11:42:38 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -339,6 +339,19 @@ static void sysinfoParseOSVersionInfo(void) {
 				fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
 			}
 			break;
+    case 6:
+      switch (osInfo.dwMinorVersion) {
+      case 0:
+        fellowAddTimelessLog("\toperating system: \tWindows Vista\n");
+        break;
+      case 1:
+        fellowAddTimelessLog("\toperating system: \tWindows 7\n");
+        break;
+      case 2:
+        fellowAddTimelessLog("\toperating system: \tWindows 8\n");
+        break;
+      }
+      break;
 		default:
 			fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
 		}
@@ -347,9 +360,9 @@ static void sysinfoParseOSVersionInfo(void) {
 		fellowAddTimelessLog("\toperating system: \tunknown\n");
 	}
 
-  fellowAddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", osInfo.dwMajorVersion,
-	  osInfo.dwMinorVersion, osInfo.dwBuildNumber,
-	  (osInfo.szCSDVersion ? osInfo.szCSDVersion : "--"));
+  fellowAddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", 
+    osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
+	  strcmp(osInfo.szCSDVersion, "") != 0 ? osInfo.szCSDVersion : "no servicepack");
 }
 
 static void sysinfoParseRegistry(void) {
