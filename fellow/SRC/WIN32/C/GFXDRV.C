@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.50 2013-01-13 21:42:34 peschau Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.51 2013-01-14 17:59:15 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -467,10 +467,10 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       return 0; /* We handled this message */ 
 
 #ifdef RETRO_PLATFORM
-    case WM_SETFOCUS:
+    /* case WM_SETFOCUS:
       if(RetroPlatformGetMode())
         SetCapture(gfx_drv_hwnd);
-      break;
+      break; */
     case WM_LBUTTONUP:
       if(RetroPlatformGetMode()) {
         gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
