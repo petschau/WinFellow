@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.46 2013-01-13 21:42:34 peschau Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.47 2013-01-14 17:59:15 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -70,6 +70,12 @@
 #include "CpuIntegration.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
+
+/// the following imports are required for detection of the number of connected joysticks
+/// in RetroPlatformSendInputDevices()
+extern int num_joy_attached;
+extern void joyDrvDInputInitialize(void);
+extern void joyDrvDInputRelease(void);
 
 /*
 #define RETRO_PLATFORM_JOYKEYLAYOUT_COUNT 4
@@ -844,6 +850,7 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
  */
 static BOOLE RetroPlatformSendInputDevices(void) {
   BOOLE bResult = TRUE;
+
   /* static DWORD dwJoyKeyHostInputType[RETRO_PLATFORM_JOYKEYLAYOUT_COUNT] = { 
     RP_HOSTINPUT_KEYJOY_MAP1, 
     RP_HOSTINPUT_KEYJOY_MAP2, 
@@ -857,18 +864,26 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     RP_HOSTINPUTFLAGS_MOUSE_SMART,
     L"GP_MOUSE0",
     L"Windows Mouse")) bResult = FALSE;
+  
+  joyDrvDInputInitialize();
 
-  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-    0,
-    L"GP_ANALOG0",
-    L"Analog Joystick 1")) bResult = FALSE;
+  fellowAddLog("Number of detected joysticks: %d.\n", num_joy_attached);
 
-  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-    0,
-    L"GP_ANALOG1",
-    L"Analog Joystick 2")) bResult = FALSE;
+  joyDrvDInputRelease();
+
+  if(num_joy_attached > 0) 
+    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+      0,
+      L"GP_ANALOG0",
+      L"Analog Joystick 1")) bResult = FALSE;
+
+  if(num_joy_attached > 1)
+    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+      0,
+      L"GP_ANALOG1",
+      L"Analog Joystick 2")) bResult = FALSE;
 
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
     RP_FEATURE_INPUTDEVICE_JOYSTICK,
