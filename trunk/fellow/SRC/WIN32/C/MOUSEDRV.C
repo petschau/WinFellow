@@ -1,4 +1,4 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.16 2013-01-13 21:42:34 peschau Exp $ */
+/* @(#) $Id: MOUSEDRV.C,v 1.17 2013-01-15 18:50:12 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -37,6 +37,10 @@ Sunday, July 9, 2000
 Sunday, February 03, 2008: carfesh
 - rebuild to use DirectInput8Create instead of DirectInputCreate
 */
+
+/** @file
+ * Mouse driver for Windows
+ */
 
 #include "defs.h"
 #include <windows.h>
@@ -311,14 +315,38 @@ void mouseDrvToggleFocus(void) {
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    if(!RetroPlatformGetMouseCaptureRequestedByHost()) {
-      fellowAddLog("mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
-      RetroPlatformSendMouseCapture(mouse_drv_focus);
-    }
+  if(RetroPlatformGetMode()) {
+    fellowAddLog("mouseDrvToggleFocus(): mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
+    RetroPlatformSendMouseCapture(mouse_drv_focus);
+  }
 #endif
 }
 
+/**
+ * Mouse set focus
+ *
+ * Used by the RetroPlatform module to control the mouse focus state;
+ * the player is notified of the state change only if a change was not requested 
+ * by the player itself.
+ * @callergraph
+ */
+void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) {
+  if(bNewFocus != mouse_drv_focus) {
+    fellowAddLog("mouseDrvSetFocus(%s)\n", bNewFocus ? "true" : "false");
+    
+    mouse_drv_focus = bNewFocus;
+    mouseDrvStateHasChanged(mouse_drv_active);
+
+  #ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+      if(!bRequestedByRPHost) {
+        fellowAddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", 
+          bNewFocus ? "true" : "false");
+        RetroPlatformSendMouseCapture(mouse_drv_focus);
+      }
+  #endif
+  }
+}
 
 /*===========================================================================*/
 /* Mouse movement handler                                                    */
