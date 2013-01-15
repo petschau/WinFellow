@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.47 2013-01-14 17:59:15 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.48 2013-01-15 18:50:12 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -561,10 +561,9 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 		lRetroPlatformEscapeKeyHoldTime = lParam;
 		return TRUE;
 	case RP_IPC_TO_GUEST_MOUSECAPTURE:
-    bRetroPlatformMouseCaptureRequestedByHost = TRUE;
-    mouseDrvToggleFocus();
-    bRetroPlatformMouseCaptureRequestedByHost = FALSE;
-		return TRUE;
+    fellowAddLog("hostmsgfunction: mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
+    mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? TRUE : FALSE, TRUE);
+    return TRUE;
 	case RP_IPC_TO_GUEST_DEVICECONTENT:
 		{
 			struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;

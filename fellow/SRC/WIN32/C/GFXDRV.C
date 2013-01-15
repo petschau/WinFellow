@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.51 2013-01-14 17:59:15 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.52 2013-01-15 18:50:12 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -357,7 +357,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 		                   ((LOWORD(wParam)) == WA_CLICKACTIVE));
     gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
 #ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode())
+    // if(!RetroPlatformGetMode())
 #endif
     gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     gfxDrvEvaluateActiveStatus();
@@ -467,7 +467,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       return 0; /* We handled this message */ 
 
 #ifdef RETRO_PLATFORM
-    /* case WM_SETFOCUS:
+    /* case WM_SETCURSOR:
       if(RetroPlatformGetMode())
         SetCapture(gfx_drv_hwnd);
       break; */

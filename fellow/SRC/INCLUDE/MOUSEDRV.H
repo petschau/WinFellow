@@ -10,5 +10,6 @@ extern void  mouseDrvShutdown(void);
 extern void  mouseDrvStateHasChanged(BOOLE);
 extern void  mouseDrvToggleFocus(void);
 extern void  mouseDrvMovementHandler(void);
+extern void  mouseDrvSetFocus(const BOOLE, const BOOLE);
 
 #endif
