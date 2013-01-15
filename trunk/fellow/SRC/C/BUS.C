@@ -1,4 +1,4 @@
-/* @(#) $Id: BUS.C,v 1.15 2013-01-13 18:31:09 peschau Exp $ */
+/* @(#) $Id: BUS.C,v 1.16 2013-01-15 18:40:44 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -94,7 +94,7 @@ void busEndOfLine(void)
   /*==============================================================*/
   /* Handle RetroPlatform events                                  */
   /*==============================================================*/
-  if(RetroPlatformGetMode());
+  if(RetroPlatformGetMode())
     RetroPlatformEndOfFrame();
 #endif
 
