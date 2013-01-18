@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.48 2013-01-15 18:50:12 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.49 2013-01-18 15:14:39 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -47,10 +47,8 @@
  *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
  *  @todo fullscreen resolution support for RetroPlatform
  *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
- *  @todo pick up implementation of input devices (keyboard joysticks) based on VICE 2.4.cloanto1 once it is available
+ *  @todo pick up implementation of input devices (keyboard joysticks) based on VICE implementation once it is available
  *  @bug  reset functionality not fully implemented, test soft- & hard reset
- *  @bug  mouse cursor not visible in emulator window after escape key has been held to escape
- *  @bug  power LED status changes are not visible
  *  @bug  the sound stops while the window does not have focus, while the rest of the emulation continues
  */
 
@@ -70,12 +68,6 @@
 #include "CpuIntegration.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
-
-/// the following imports are required for detection of the number of connected joysticks
-/// in RetroPlatformSendInputDevices()
-extern int num_joy_attached;
-extern void joyDrvDInputInitialize(void);
-extern void joyDrvDInputRelease(void);
 
 /*
 #define RETRO_PLATFORM_JOYKEYLAYOUT_COUNT 4
@@ -809,7 +801,7 @@ static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
 
 /** Send a single input device to the RetroPlatform player.
  */
-static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
+BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
   const DWORD dwInputDeviceFeatures, const DWORD dwFlags,
   const WCHAR *szHostInputID, const WCHAR *szHostInputName) {
   LRESULT lResult;
@@ -843,9 +835,8 @@ static BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
 /** Send list of available input device options to the RetroPlatform player.
  *
  * The emulator is supposed to enumerate the Windows devices and identify
- * them via unique IDs; joysticks are currently enumerated when the
- * emulator session starts up (after this call), so no IDs or names are
- * available yet.
+ * them via unique IDs; joysticks are sent after enumeration during
+ * emulator session start, other devices are sent here
  */
 static BOOLE RetroPlatformSendInputDevices(void) {
   BOOLE bResult = TRUE;
@@ -864,26 +855,6 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     L"GP_MOUSE0",
     L"Windows Mouse")) bResult = FALSE;
   
-  joyDrvDInputInitialize();
-
-  fellowAddLog("Number of detected joysticks: %d.\n", num_joy_attached);
-
-  joyDrvDInputRelease();
-
-  if(num_joy_attached > 0) 
-    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-      0,
-      L"GP_ANALOG0",
-      L"Analog Joystick 1")) bResult = FALSE;
-
-  if(num_joy_attached > 1)
-    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-      0,
-      L"GP_ANALOG1",
-      L"Analog Joystick 2")) bResult = FALSE;
-
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
     RP_FEATURE_INPUTDEVICE_JOYSTICK,
     0,
