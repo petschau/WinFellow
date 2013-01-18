@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.19 2013-01-13 21:42:34 peschau Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.20 2013-01-18 15:14:39 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -82,6 +82,10 @@ Monday, February 04, 2008
 
 #ifdef _DEBUG
 #define JOYDRVDEBUG
+#endif
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
 #endif
 
 /*===========================================================================*/
@@ -380,6 +384,28 @@ void joyDrvDInputInitialize(void) {
 
     num_joy_attached = MAX_JOY_PORT - num_joy_attached;
     fellowAddLog( "njoy: %d\n", num_joy_attached );
+
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode()) {
+      BOOLE bResult = TRUE;
+
+      if(num_joy_attached > 0) 
+        if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+          RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+          0,
+          L"GP_ANALOG0",
+          L"Analog Joystick 1")) bResult = FALSE;
+
+      if(num_joy_attached > 1)
+        if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+          RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+          0,
+          L"GP_ANALOG1",
+          L"Analog Joystick 2")) bResult = FALSE;
+
+      fellowAddLog("joyDrvDInputInitialize() send joystick info %s.\n", bResult ? "successful" : "failed");
+    }
+#endif
   }
 }
 
