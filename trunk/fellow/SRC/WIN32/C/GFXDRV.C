@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.53 2013-01-18 15:14:39 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.54 2013-01-21 16:48:46 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -356,9 +356,6 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     gfx_drv_win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) ||
 		                   ((LOWORD(wParam)) == WA_CLICKACTIVE));
     gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
-#ifdef RETRO_PLATFORM
-    // if(!RetroPlatformGetMode())
-#endif
     gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
     gfxDrvEvaluateActiveStatus();
     return 0; /* We processed this message */
@@ -467,15 +464,8 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       return 0; /* We handled this message */ 
 
 #ifdef RETRO_PLATFORM
-    case WM_SETCURSOR:
-      if(RetroPlatformGetMode())
-        if(GetCursor() != NULL)
-			    SetCursor(NULL);
-        // SetCapture(gfx_drv_hwnd);
-      break;
     case WM_LBUTTONUP:
       if(RetroPlatformGetMode()) {
-        // gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
         if(!mouseDrvGetFocus())
           mouseDrvSetFocus(TRUE, FALSE);
         return 0;  
@@ -485,22 +475,6 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
         RetroPlatformSendEnable(wParam ? 1 : 0);
         return 0;
       }
-   /*  case WM_MOUSEACTIVATE:
-      if(RetroPlatformGetMode())
-		    // if(!mouseDrvGetFocus())
-			    bIgnoreLeftMouseButton = TRUE;
-		  break; */
-   /*  case WM_LBUTTONDOWN:
-    case WM_LBUTTONDBLCLK:
-		  if(RetroPlatformGetMode()) {
-			  // borderless = do not capture with single-click
-			  if(bIgnoreLeftMouseButton) {
-				  bIgnoreLeftMouseButton = FALSE;
-				  return 0;
-        }
-      }
-      return 0; */
-
 #endif
 
   }
@@ -739,7 +713,7 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
 
 #ifdef RETRO_PLATFORM
       if(RetroPlatformGetMode()) {
-        dwStyle = WS_POPUP | WS_DISABLED;
+        dwStyle = WS_POPUP;
         dwExStyle = WS_EX_TOOLWINDOW;
         hParent = RetroPlatformGetParentWindowHandle();
       }
