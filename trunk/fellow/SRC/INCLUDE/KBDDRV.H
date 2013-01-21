@@ -1,7 +1,13 @@
 #ifndef KBDDRV_H
 #define KBDDRV_H
 
+#include "KEYCODES.H"
+#include "KBD.H"
+
+#define MAX_KEYS	256
 #define MAX_JOYKEY_VALUE	8
+
+extern kbd_drv_pc_symbol kbddrv_DIK_to_symbol[MAX_KEYS];
 
 extern STR *symbol_pretty_name[106];
 
