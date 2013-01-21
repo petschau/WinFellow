@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.49 2013-01-18 15:14:39 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.50 2013-01-21 18:26:14 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -66,6 +66,7 @@
 #include "mousedrv.h"
 #include "joydrv.h"
 #include "CpuIntegration.h"
+#include "kbddrv.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2
 
@@ -442,6 +443,7 @@ static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPe
 
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
   lRetroPlatformEscapeKey = atoi(szEscapeKey);
+  lRetroPlatformEscapeKey = kbddrv_DIK_to_symbol[lRetroPlatformEscapeKey];
   fellowAddLog("RetroPlatformSetEscapeKey(): escape key configured to %d.\n", lRetroPlatformEscapeKey);
 }
 
