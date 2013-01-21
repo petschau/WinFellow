@@ -1,4 +1,4 @@
-/* @(#) $Id: KBDDRV.C,v 1.21 2013-01-13 21:42:34 peschau Exp $             */
+/* @(#) $Id: KBDDRV.C,v 1.22 2013-01-21 16:48:46 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -934,6 +934,9 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 	if( released( PCK_F11 ))
 	  issue_event( EVENT_EXIT );
 	
+#ifdef RETRO_PLATFORM
+  if(!RetroPlatformGetMode())
+#endif
 	if( released( PCK_F12 ))
 	{
 	  mouseDrvToggleFocus();
