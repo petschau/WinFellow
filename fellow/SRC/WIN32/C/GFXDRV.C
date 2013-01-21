@@ -1,4 +1,4 @@
-/* @(#) $Id: GFXDRV.C,v 1.55 2013-01-21 17:10:24 carfesh Exp $ */
+/* @(#) $Id: GFXDRV.C,v 1.56 2013-01-21 17:18:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Host framebuffer driver                                                 */
@@ -466,8 +466,11 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 #ifdef RETRO_PLATFORM
     case WM_LBUTTONUP:
       if(RetroPlatformGetMode()) {
-        gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
-        if(!mouseDrvGetFocus())
+        if(mouseDrvGetFocus()) {
+          gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
+          RetroPlatformSendMouseCapture(TRUE);
+        }
+        else
           mouseDrvSetFocus(TRUE, FALSE);
         return 0;  
       }
