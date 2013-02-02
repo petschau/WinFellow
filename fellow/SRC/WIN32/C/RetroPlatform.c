@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.50 2013-01-21 18:26:14 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.51 2013-02-02 12:35:29 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -40,8 +40,6 @@
  *  As WinFellow uses normal strings, conversion is usually required (using, for example,
  *  wsctombs and mbstowcs).
  * 
- *  Drive sounds are output by the emulator. The player only sends messages to control the volume.
- * 
  *  @todo free allocated elements, cfgmanager, ... in RetroPlatform module
  *  @todo make resolution configurable via config file dynamically instead of from the fixed set available from the GUI
  *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
@@ -68,7 +66,11 @@
 #include "CpuIntegration.h"
 #include "kbddrv.h"
 
-#define RETRO_PLATFORM_NUM_GAMEPORTS 2
+#define RETRO_PLATFORM_NUM_GAMEPORTS 2 // gameport 1 & 2
+#define RETRO_PLATFORM_KEYSET_COUNT  5 // north, east, south, west, fire
+
+static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire" };
+extern BOOLE kbd_drv_joykey_enabled[2][2];	// For each port, the enabled joykeys
 
 /*
 #define RETRO_PLATFORM_JOYKEYLAYOUT_COUNT 4
@@ -101,6 +103,51 @@ BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
+
+/** configure keyboard layout to custom key mappings
+ *
+ * Gameport 0 is statically mapped to internal keyboard layout GP_JOYKEY0, 
+ * gameport 1 to GP_JOYKEY1 as we reconfigure them anyway
+ */
+void RetroPlatformSetCustomKeyboardLayout(const ULO lGameport, const STR *pszKeys) {
+  int l[RETRO_PLATFORM_KEYSET_COUNT], n;
+  STR *psz;
+  size_t ln;
+
+  fellowAddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
+
+  while(*pszKeys) {
+	  for (; *pszKeys == ' '; pszKeys++); // skip spaces
+
+	  for (n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++) {
+		  ln = strlen(RetroPlatformCustomLayoutKeys[n]);
+		  if (strnicmp(pszKeys, RetroPlatformCustomLayoutKeys[n], ln) == 0 && *(pszKeys + ln) == '=')
+			  break;
+	  }
+	  if (n < RETRO_PLATFORM_KEYSET_COUNT) {
+		  pszKeys += ln + 1;
+
+		  l[n] = kbddrv_DIK_to_symbol[strtoul(pszKeys, &psz, 0)]; // convert DIK_* DirectInput key codes to symbolic keycodes
+		 
+      // perform the individual mappings
+      if(strnicmp(RetroPlatformCustomLayoutKeys[n], "up", strlen("up")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_UP_ACTIVE : EVENT_JOY0_UP_ACTIVE, l[n]);
+      else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "down", strlen("down")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_DOWN_ACTIVE : EVENT_JOY0_DOWN_ACTIVE, l[n]);
+      else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "left", strlen("left")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_LEFT_ACTIVE : EVENT_JOY0_LEFT_ACTIVE, l[n]);
+      else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "right", strlen("right")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_RIGHT_ACTIVE : EVENT_JOY0_RIGHT_ACTIVE, l[n]);
+      else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "fire", strlen("fire")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_FIRE0_ACTIVE : EVENT_JOY0_FIRE0_ACTIVE, l[n]);
+	  }
+	  for (; *pszKeys != ' ' && *pszKeys != 0; pszKeys++); // reach next key definition
+	}
+
+  for(n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++)
+    fellowAddLog(" Direction %s mapped to key %d.\n", RetroPlatformCustomLayoutKeys[n], l[n]);
+}
+
 /** Attach input devices to gameports during runtime of the emulator.
  * 
  * The device is selected in the RetroPlatform player and passed to the emulator
@@ -129,12 +176,24 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
         fellowAddLog(" Attaching joystick 2 to gameport..\n");
         gameportSetInput(lGameport, GP_ANALOG1);
       }
-      else if(strcmp(szName, "GP_JOYKEY0") == 0) {
+      /* else if(strcmp(szName, "GP_JOYKEY0") == 0) {
         fellowAddLog(" Attaching keyboard layout 1 to gameport..\n");
         gameportSetInput(lGameport, GP_JOYKEY0);
+      } */
+      else if(_strnicmp(szName, "GP_JOYKEYCUSTOM", strlen("GP_JOYKEYCUSTOM")) == 0) { // custom layout
+        RetroPlatformSetCustomKeyboardLayout(lGameport, szName + strlen("GP_JOYKEYCUSTOM") + 1);
+        gameportSetInput(lGameport, (lGameport == 1) ? GP_JOYKEY1 : GP_JOYKEY0);
+        if(lGameport == 0) {
+          kbd_drv_joykey_enabled[lGameport][0] = TRUE;
+          kbd_drv_joykey_enabled[lGameport][1] = FALSE;
+        }
+        else if(lGameport == 1) {
+          kbd_drv_joykey_enabled[lGameport][0] = FALSE;
+          kbd_drv_joykey_enabled[lGameport][1] = TRUE;
+        }
       }
       else {
-        fellowAddLog (" Unknown input device name, ignoring..\n");
+        fellowAddLog (" Unknown joystick input device name, ignoring..\n");
         return FALSE;
       }
       return TRUE;
@@ -857,11 +916,17 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     L"GP_MOUSE0",
     L"Windows Mouse")) bResult = FALSE;
   
-  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
+  /* if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
     RP_FEATURE_INPUTDEVICE_JOYSTICK,
     0,
     L"GP_JOYKEY0",
-    L"Keyboard Layout 1")) bResult = FALSE;
+    L"Keyboard Layout 1")) bResult = FALSE; */
+
+  if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYBOARD, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK,
+    0,
+    L"GP_JOYKEYCUSTOM",
+    L"KeyboardCustom")) bResult = FALSE;
 
   /*
   // report available keyboard joystick replacements
