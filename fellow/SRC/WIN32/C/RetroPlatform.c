@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.51 2013-02-02 12:35:29 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.52 2013-02-04 18:04:15 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -67,9 +67,9 @@
 #include "kbddrv.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 // gameport 1 & 2
-#define RETRO_PLATFORM_KEYSET_COUNT  5 // north, east, south, west, fire
+#define RETRO_PLATFORM_KEYSET_COUNT  6 // north, east, south, west, fire, autofire
 
-static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire" };
+static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
 extern BOOLE kbd_drv_joykey_enabled[2][2];	// For each port, the enabled joykeys
 
 /*
@@ -103,6 +103,23 @@ BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
+/** Determine the number of joysticks connected to the system.
+ */
+int RetroPlatformGetNumberOfConnectedJoysticks(void) {
+  JOYINFOEX joyinfoex;
+  int njoyId = 0;
+  int njoyCount = 0;
+  MMRESULT dwResult;   
+
+  while ((dwResult = joyGetPosEx(njoyId++, &joyinfoex)) != JOYERR_PARMS)
+    if (dwResult == JOYERR_NOERROR)
+      njoyCount++;
+
+  fellowAddLog("RetroPlatformGetNumberOfConnectedJoysticks: detected %d joystick(s).\n", 
+    njoyCount);
+
+  return njoyCount;
+}
 
 /** configure keyboard layout to custom key mappings
  *
@@ -140,12 +157,15 @@ void RetroPlatformSetCustomKeyboardLayout(const ULO lGameport, const STR *pszKey
         kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_RIGHT_ACTIVE : EVENT_JOY0_RIGHT_ACTIVE, l[n]);
       else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "fire", strlen("fire")) == 0)
         kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_FIRE0_ACTIVE : EVENT_JOY0_FIRE0_ACTIVE, l[n]);
+      else if(strnicmp(RetroPlatformCustomLayoutKeys[n], "fire.autorepeat", strlen("fire.autorepeat")) == 0)
+        kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_AUTOFIRE0_ACTIVE : EVENT_JOY0_AUTOFIRE0_ACTIVE, l[n]);
 	  }
 	  for (; *pszKeys != ' ' && *pszKeys != 0; pszKeys++); // reach next key definition
 	}
 
   for(n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++)
-    fellowAddLog(" Direction %s mapped to key %d.\n", RetroPlatformCustomLayoutKeys[n], l[n]);
+    fellowAddLog(" Direction %s mapped to key %s.\n", 
+      RetroPlatformCustomLayoutKeys[n], kbdDrvKeyString(l[n]));
 }
 
 /** Attach input devices to gameports during runtime of the emulator.
@@ -901,13 +921,9 @@ BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
  */
 static BOOLE RetroPlatformSendInputDevices(void) {
   BOOLE bResult = TRUE;
+  int num_joy_attached;
 
-  /* static DWORD dwJoyKeyHostInputType[RETRO_PLATFORM_JOYKEYLAYOUT_COUNT] = { 
-    RP_HOSTINPUT_KEYJOY_MAP1, 
-    RP_HOSTINPUT_KEYJOY_MAP2, 
-    RP_HOSTINPUT_KEYJOY_MAP3, 
-    RP_HOSTINPUT_KEYBOARD                                                 };
-  int i; */
+  num_joy_attached = RetroPlatformGetNumberOfConnectedJoysticks();
 
   // Windows mouse
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_MOUSE, 
@@ -915,32 +931,30 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     RP_HOSTINPUTFLAGS_MOUSE_SMART,
     L"GP_MOUSE0",
     L"Windows Mouse")) bResult = FALSE;
-  
-  /* if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYJOY_MAP2, 
-    RP_FEATURE_INPUTDEVICE_JOYSTICK,
-    0,
-    L"GP_JOYKEY0",
-    L"Keyboard Layout 1")) bResult = FALSE; */
 
+  // report custom keyboard layout support
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_KEYBOARD, 
     RP_FEATURE_INPUTDEVICE_JOYSTICK,
     0,
     L"GP_JOYKEYCUSTOM",
     L"KeyboardCustom")) bResult = FALSE;
 
-  /*
-  // report available keyboard joystick replacements
-  for (i = 0; i < RETRO_PLATFORM_JOYKEYLAYOUT_COUNT; i++) {
-    WCHAR szJoyKeyLayoutID[CFG_FILENAME_LENGTH];
-
-    mbstowcs(szJoyKeyLayoutID, szRetroPlatformJoyKeyLayoutID[i], CFG_FILENAME_LENGTH);
-    RetroPlatformSendInputDevice(dwJoyKeyHostInputType[i], 
-      RP_FEATURE_INPUTDEVICE_JOYSTICK,
+  // report available joysticks
+  if(num_joy_attached > 0) 
+    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
       0,
-      szJoyKeyLayoutID, szJoyKeyLayoutID);
-  } 
-  */
+      L"GP_ANALOG0",
+      L"Analog Joystick 1")) bResult = FALSE;
 
+  if(num_joy_attached > 1)
+    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+      0,
+      L"GP_ANALOG1",
+      L"Analog Joystick 2")) bResult = FALSE;
+
+  // end enumeration
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
     0,
     0,
