@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.53 2013-02-08 10:48:09 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.54 2013-02-08 12:20:27 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -807,13 +807,14 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 	case RP_IPC_TO_GUEST_DEVICEREADWRITE:
 		{
 			DWORD ret = FALSE;
-      /* int device = LOBYTE(wParam);
+      int device = LOBYTE(wParam);
 			if (device == RP_DEVICECATEGORY_FLOPPY) {
 				int num = HIBYTE(wParam);
 				if (lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) {
-					ret = disk_setwriteprotect (&currprefs, num, currprefs.floppyslots[num].df, lParam == RP_DEVICE_READONLY);
+          floppySetReadOnly(num, lParam == RP_DEVICE_READONLY ? TRUE : FALSE);
+					ret = TRUE;
 				}
-			} */
+			} 
 			return ret ? (LPARAM)1 : 0;
 		}
 	case RP_IPC_TO_GUEST_FLUSH:
@@ -890,7 +891,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
   dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU| RP_FEATURE_TURBO_FLOPPY;
   // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
-	dFeatureFlags |= RP_FEATURE_SCANLINES;
+	dFeatureFlags |= RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   // dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
 	// dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
 	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
