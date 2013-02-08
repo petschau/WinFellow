@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.21 2013-02-04 18:04:15 carfesh Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.22 2013-02-08 10:48:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -440,7 +440,7 @@ void joyDrvToggleFocus(void) {
 }
 
 
-BOOLE joyDrvCheckJoyMovement( int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Right,
+BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Right,
 						BOOLE *Button1, BOOLE *Button2 ) {
   DIJOYSTATE dims;
   HRESULT res;
@@ -514,15 +514,15 @@ BOOLE joyDrvCheckJoyMovement( int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOO
 /*===========================================================================*/
 
 void joyDrvMovementHandler(void) {
-  int port;
+  int gameport, joystickNo;
   
   if ( joy_drv_failed || !joy_drv_in_use )
 	  return;
 
-  for( port = MAX_JOY_PORT - num_joy_attached; port < MAX_JOY_PORT; port++ )
+  for( gameport = 0; gameport < 2; gameport++ )
   {
-	  if (( gameport_input[port] == GP_ANALOG0) ||
-	      ( gameport_input[port] == GP_ANALOG1)) 
+	  if (( gameport_input[gameport] == GP_ANALOG0) ||
+	      ( gameport_input[gameport] == GP_ANALOG1)) 
     {
 	    BOOLE Button1;
 	    BOOLE Button2;
@@ -533,31 +533,32 @@ void joyDrvMovementHandler(void) {
   	  
 	    Button1 = Button2 = Left = Right = Up = Down = FALSE;
   	  
-	    if( joyDrvCheckJoyMovement( port, &Up, &Down, &Left, &Right, &Button1, &Button2 )) {
+      if(gameport_input[gameport] == GP_ANALOG0)
+        joystickNo = 0;
+      if(gameport_input[gameport] == GP_ANALOG1)
+        joystickNo = 1;
+
+	    if( joyDrvCheckJoyMovement( joystickNo, &Up, &Down, &Left, &Right, &Button1, &Button2 )) {
 		    fellowAddLog( "joyDrvCheckJoyMovement failed\n" );
 		    return;
 	    }
 
-	    if(( gameport_input[port] == GP_ANALOG0 )
-		  || ( gameport_input[port] == GP_ANALOG1 ))
-	    {
-		    if( gameport_left[port] != Left ||
-		      gameport_right[port] != Right ||
-		      gameport_up[port] != Up ||
-		      gameport_down[port] != Down ||
-		      gameport_fire0[port] != Button1 ||
-		      gameport_fire1[port] != Button2 )
-		    {
-		      gameportJoystickHandler( gameport_input[port]
-			    , Left
-			    , Up
-			    , Right
-			    , Down
-			    , Button1
-			    , Button2
-			    );
-		    }
-	    }
+		  if( gameport_left[gameport] != Left ||
+		    gameport_right[gameport] != Right ||
+		    gameport_up[gameport] != Up ||
+		    gameport_down[gameport] != Down ||
+		    gameport_fire0[gameport] != Button1 ||
+		    gameport_fire1[gameport] != Button2 )
+		  {
+		    gameportJoystickHandler( gameport_input[gameport]
+			  , Left
+			  , Up
+			  , Right
+			  , Down
+			  , Button1
+			  , Button2
+			  );
+		  }
 	  }
   }
 }
