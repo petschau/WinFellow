@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.52 2013-02-04 18:04:15 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.53 2013-02-08 10:48:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -65,6 +65,7 @@
 #include "joydrv.h"
 #include "CpuIntegration.h"
 #include "kbddrv.h"
+#include "dxver.h" ///< needed for DirectInput based joystick detection code
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 // gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 // north, east, south, west, fire, autofire
@@ -72,10 +73,8 @@
 static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
 extern BOOLE kbd_drv_joykey_enabled[2][2];	// For each port, the enabled joykeys
 
-/*
-#define RETRO_PLATFORM_JOYKEYLAYOUT_COUNT 4
-static const STR *szRetroPlatformJoyKeyLayoutID[RETRO_PLATFORM_JOYKEYLAYOUT_COUNT] = { "KeyboardLayout1", "KeyboardLayout2", "KeyboardLayout3", "KeyboardCustom" };
-*/
+#define	MAX_JOY_PORT  2 ///< maximum number of physically attached joysticks; the value originates from joydrv.c, as we emulate the enumeration behaviour
+int RetroPlatformNumberOfJoysticksAttached;
 
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
@@ -103,19 +102,94 @@ BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
+
+/** Joystick enumeration function.
+ */
+BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, 
+                                  LPVOID pvRef) {
+	STR strHostInputID[CFG_FILENAME_LENGTH];
+  WCHAR szHostInputID[CFG_FILENAME_LENGTH];
+  WCHAR szHostInputName[CFG_FILENAME_LENGTH];
+                                    
+  fellowAddLog( "**** Joystick %d **** '%s'\n",
+    --RetroPlatformNumberOfJoysticksAttached, pdinst->tszProductName);
+
+  sprintf(strHostInputID, "GP_ANALOG%d", RetroPlatformNumberOfJoysticksAttached);
+  mbstowcs(szHostInputID, strHostInputID, CFG_FILENAME_LENGTH);
+  mbstowcs(szHostInputName, pdinst->tszProductName, CFG_FILENAME_LENGTH);
+
+  RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
+    RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
+    0, szHostInputID, szHostInputName);
+
+	if(RetroPlatformNumberOfJoysticksAttached == 0)
+		return DIENUM_STOP;
+	else
+		return DIENUM_CONTINUE; 
+}
+
 /** Determine the number of joysticks connected to the system.
  */
-int RetroPlatformGetNumberOfConnectedJoysticks(void) {
+int RetroPlatformEnumerateJoysticks(void) {
+  int njoyCount = 0;
+
+#ifdef RETRO_PLATFORM_USE_ALTERNATE_JOYSTICK_ENUMERATION
   JOYINFOEX joyinfoex;
   int njoyId = 0;
-  int njoyCount = 0;
   MMRESULT dwResult;   
 
   while ((dwResult = joyGetPosEx(njoyId++, &joyinfoex)) != JOYERR_PARMS)
     if (dwResult == JOYERR_NOERROR)
       njoyCount++;
+#else
+  HRESULT hResult;
+  IDirectInput8 *RP_lpDI = NULL;
 
-  fellowAddLog("RetroPlatformGetNumberOfConnectedJoysticks: detected %d joystick(s).\n", 
+  fellowAddLog("RetroPlatformEnumerateJoysticks()\n");
+
+  if (!RP_lpDI) {
+    hResult = CoCreateInstance(CLSID_DirectInput8,
+			   NULL,
+			   CLSCTX_INPROC_SERVER,
+			   IID_IDirectInput8,
+			   (LPVOID*) &RP_lpDI);
+    if (hResult != DI_OK) {
+      fellowAddLog("RetroPlatformEnumerateJoysticks(): CoCreateInstance() failed, errorcode %d\n", 
+        hResult);
+     return 0;
+    }
+
+    hResult = IDirectInput8_Initialize(RP_lpDI,
+				   win_drv_hInstance,
+				   DIRECTINPUT_VERSION);
+    if (hResult != DI_OK) {
+      fellowAddLog("RetroPlatformEnumerateJoysticks(): Initialize() failed, errorcode %d\n", 
+        hResult);
+      return 0;
+    }
+
+    RetroPlatformNumberOfJoysticksAttached = MAX_JOY_PORT;
+
+    hResult = IDirectInput8_EnumDevices(RP_lpDI, DI8DEVCLASS_GAMECTRL,
+				    RetroPlatformEnumerateJoystick, RP_lpDI, DIEDFL_ATTACHEDONLY);
+    if (hResult != DI_OK) {
+      fellowAddLog("RetroPlatformEnumerateJoysticks(): EnumDevices() failed, errorcode %d\n", 
+        hResult);
+      return 0;
+    }
+
+    RetroPlatformNumberOfJoysticksAttached = MAX_JOY_PORT - RetroPlatformNumberOfJoysticksAttached;
+
+    njoyCount = RetroPlatformNumberOfJoysticksAttached;
+
+    if (RP_lpDI != NULL) {
+	    IDirectInput8_Release(RP_lpDI);
+      RP_lpDI = NULL;
+    }
+  }
+#endif
+
+  fellowAddLog("RetroPlatformEnumerateJoysticks: detected %d joystick(s).\n", 
     njoyCount);
 
   return njoyCount;
@@ -921,9 +995,6 @@ BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
  */
 static BOOLE RetroPlatformSendInputDevices(void) {
   BOOLE bResult = TRUE;
-  int num_joy_attached;
-
-  num_joy_attached = RetroPlatformGetNumberOfConnectedJoysticks();
 
   // Windows mouse
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_MOUSE, 
@@ -940,19 +1011,7 @@ static BOOLE RetroPlatformSendInputDevices(void) {
     L"KeyboardCustom")) bResult = FALSE;
 
   // report available joysticks
-  if(num_joy_attached > 0) 
-    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-      0,
-      L"GP_ANALOG0",
-      L"Analog Joystick 1")) bResult = FALSE;
-
-  if(num_joy_attached > 1)
-    if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_JOYSTICK, 
-      RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
-      0,
-      L"GP_ANALOG1",
-      L"Analog Joystick 2")) bResult = FALSE;
+  RetroPlatformEnumerateJoysticks();
 
   // end enumeration
   if(!RetroPlatformSendInputDevice(RP_HOSTINPUT_END, 
