@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.54 2013-02-08 12:20:27 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.55 2013-02-09 09:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -67,11 +67,11 @@
 #include "kbddrv.h"
 #include "dxver.h" ///< needed for DirectInput based joystick detection code
 
-#define RETRO_PLATFORM_NUM_GAMEPORTS 2 // gameport 1 & 2
-#define RETRO_PLATFORM_KEYSET_COUNT  6 // north, east, south, west, fire, autofire
+#define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
+#define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
 
 static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
-extern BOOLE kbd_drv_joykey_enabled[2][2];	// For each port, the enabled joykeys
+extern BOOLE kbd_drv_joykey_enabled[2][2];	///< For each port, the enabled joykeys
 
 #define	MAX_JOY_PORT  2 ///< maximum number of physically attached joysticks; the value originates from joydrv.c, as we emulate the enumeration behaviour
 int RetroPlatformNumberOfJoysticksAttached;
@@ -89,16 +89,16 @@ ULO lRetroPlatformScreenMode                    = 0;
 static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
 static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
+static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
+
+static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
+static ULO lRetroPlatformRecursiveDevice = 0;
+static ULO lRetroPlatformGameportMask[RETRO_PLATFORM_NUM_GAMEPORTS];
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
 HINSTANCE hRetroPlatformWindowInstance = NULL;
 HWND      hRetroPlatformGuestWindow = NULL;
-
-static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
-static ULO lRetroPlatformRecursiveDevice = 0;
-
-BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 
@@ -578,6 +578,28 @@ BOOLE RetroPlatformSendFloppyDriveSeek(const ULO lFloppyDriveNo, const ULO lTrac
 
 	return RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICESEEK, 
     MAKEWORD (RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), lTrackNo, &RetroPlatformGuestInfo);
+}
+
+/** 
+ * Send gameport activity to RetroPlatform host.
+ */
+BOOLE RetroPlatformSendGameportActivity(const ULO lGameport, const ULO lGameportMask) {
+	if (!bRetroPlatformInitialized)
+		return FALSE;
+
+	if (lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)
+		return FALSE;
+
+	ULO old = lRetroPlatformGameportMask[lGameport];
+
+	lRetroPlatformGameportMask[lGameport] = lGameportMask;
+
+	if (old != lRetroPlatformGameportMask[lGameport]) {
+		RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD(RP_DEVICECATEGORY_INPUTPORT, lGameport),
+			lRetroPlatformGameportMask[lGameport], &RetroPlatformGuestInfo);
+	}
+
+  return TRUE;
 }
 
 /** Control status of power LED in RetroPlatform player.
@@ -1143,6 +1165,12 @@ BOOLE RetroPlatformCheckEmulationNecessities(void) {
  */
 void RetroPlatformEnter(void) {
   if (RetroPlatformCheckEmulationNecessities() == TRUE) {
+    int i;
+
+    // gameport mask used for gameport device activity reporting
+    for(i = 0; i < RETRO_PLATFORM_NUM_GAMEPORTS; i++)
+      lRetroPlatformGameportMask[i] = 0;
+
 	  cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
