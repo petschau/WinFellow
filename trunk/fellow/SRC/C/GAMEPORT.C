@@ -1,4 +1,4 @@
-/* @(#) $Id: GAMEPORT.C,v 1.9 2009-07-25 03:09:00 peschau Exp $ */
+/* @(#) $Id: GAMEPORT.C,v 1.10 2013-02-09 09:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick and Mouse                                                      */
@@ -35,6 +35,9 @@ Tuesday, September 19, 2000
 #include "gameport.h"
 #include "mousedrv.h"
 #include "joydrv.h"
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 /*===========================================================================*/
 /* IO-Registers                                                              */
@@ -211,27 +214,41 @@ void gameportMouseHandler(gameport_inputs mousedev,
 /*===========================================================================*/
 
 void gameportJoystickHandler(gameport_inputs joydev,
-			     BOOLE left,
-			     BOOLE up,
-			     BOOLE right,
-			     BOOLE down,
-			     BOOLE button1,
-			     BOOLE button2) {
-			       ULO i;
+	BOOLE left,
+	BOOLE up,
+	BOOLE right,
+	BOOLE down,
+	BOOLE button1,
+	BOOLE button2) {
+  ULO i;
 
-			       for (i = 0; i < 2; i++)
-				 if (gameport_input[i] == joydev)
-				 {
-				   if ((!gameport_fire1[i]) && button2)
-				     potdat[i] = (potdat[i] + 0x100) & 0xffff; 
+  for (i = 0; i < 2; i++)
+    if (gameport_input[i] == joydev)
+    {
+	    if ((!gameport_fire1[i]) && button2)
+		    potdat[i] = (potdat[i] + 0x100) & 0xffff; 
 
-				   gameport_fire0[i] = button1;
-				   gameport_fire1[i] = button2;
-				   gameport_left[i] = left;
-				   gameport_up[i] = up;
-				   gameport_right[i] = right;
-				   gameport_down[i] = down;
-				 }
+	    gameport_fire0[i] = button1;
+	    gameport_fire1[i] = button2;
+	    gameport_left[i] = left;
+	    gameport_up[i] = up;
+	    gameport_right[i] = right;
+	    gameport_down[i] = down;
+
+#ifdef RETRO_PLATFORM
+      if(RetroPlatformGetMode()) {
+        ULO lMask = 0;
+        if(button1) lMask |= RP_JOYSTICK_BUTTON1;
+        if(button2) lMask |= RP_JOYSTICK_BUTTON2;
+        if(left)    lMask |= RP_JOYSTICK_LEFT;
+        if(up)      lMask |= RP_JOYSTICK_UP;
+        if(right)   lMask |= RP_JOYSTICK_RIGHT;
+        if(down)    lMask |= RP_JOYSTICK_DOWN;
+
+        RetroPlatformSendGameportActivity(i, lMask);
+      }
+#endif
+    }
 }
 
 /*===========================================================================*/
