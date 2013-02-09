@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.55 2013-02-09 09:59:37 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.56 2013-02-09 10:30:40 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -93,7 +93,6 @@ static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static ULO lRetroPlatformRecursiveDevice = 0;
-static ULO lRetroPlatformGameportMask[RETRO_PLATFORM_NUM_GAMEPORTS];
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
@@ -590,14 +589,8 @@ BOOLE RetroPlatformSendGameportActivity(const ULO lGameport, const ULO lGameport
 	if (lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)
 		return FALSE;
 
-	ULO old = lRetroPlatformGameportMask[lGameport];
-
-	lRetroPlatformGameportMask[lGameport] = lGameportMask;
-
-	if (old != lRetroPlatformGameportMask[lGameport]) {
-		RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD(RP_DEVICECATEGORY_INPUTPORT, lGameport),
-			lRetroPlatformGameportMask[lGameport], &RetroPlatformGuestInfo);
-	}
+	RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD(RP_DEVICECATEGORY_INPUTPORT, lGameport),
+		lGameportMask, &RetroPlatformGuestInfo);
 
   return TRUE;
 }
@@ -1165,12 +1158,6 @@ BOOLE RetroPlatformCheckEmulationNecessities(void) {
  */
 void RetroPlatformEnter(void) {
   if (RetroPlatformCheckEmulationNecessities() == TRUE) {
-    int i;
-
-    // gameport mask used for gameport device activity reporting
-    for(i = 0; i < RETRO_PLATFORM_NUM_GAMEPORTS; i++)
-      lRetroPlatformGameportMask[i] = 0;
-
 	  cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
 	  // check for manual or needed reset
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
