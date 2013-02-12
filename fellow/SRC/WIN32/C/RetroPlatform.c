@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.56 2013-02-09 10:30:40 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.57 2013-02-12 17:36:54 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -206,6 +206,11 @@ void RetroPlatformSetCustomKeyboardLayout(const ULO lGameport, const STR *pszKey
 
   fellowAddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
 
+  // keys not (always) configured via custom layouts
+  kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_FIRE1_ACTIVE     : EVENT_JOY0_FIRE1_ACTIVE,     0);
+  kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_AUTOFIRE0_ACTIVE : EVENT_JOY0_AUTOFIRE0_ACTIVE, 0);
+  kbdDrvJoystickReplacementSet((lGameport == 1) ? EVENT_JOY1_AUTOFIRE1_ACTIVE : EVENT_JOY0_AUTOFIRE1_ACTIVE, 0);
+  
   while(*pszKeys) {
 	  for (; *pszKeys == ' '; pszKeys++); // skip spaces
 
@@ -256,6 +261,11 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
     lGameport, lDeviceType, dwFlags, szName);
 
   switch(lDeviceType) {
+    case RP_INPUTDEVICE_EMPTY:
+      fellowAddLog(" Removing input device from gameport..\n");
+      gameportSetInput(lGameport, GP_NONE);
+      kbd_drv_joykey_enabled[lGameport][lGameport] = FALSE;
+      return TRUE;
     case RP_INPUTDEVICE_MOUSE:
       fellowAddLog(" Attaching mouse device to gameport..\n");
       gameportSetInput(lGameport, GP_MOUSE0);
@@ -269,10 +279,6 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
         fellowAddLog(" Attaching joystick 2 to gameport..\n");
         gameportSetInput(lGameport, GP_ANALOG1);
       }
-      /* else if(strcmp(szName, "GP_JOYKEY0") == 0) {
-        fellowAddLog(" Attaching keyboard layout 1 to gameport..\n");
-        gameportSetInput(lGameport, GP_JOYKEY0);
-      } */
       else if(_strnicmp(szName, "GP_JOYKEYCUSTOM", strlen("GP_JOYKEYCUSTOM")) == 0) { // custom layout
         RetroPlatformSetCustomKeyboardLayout(lGameport, szName + strlen("GP_JOYKEYCUSTOM") + 1);
         gameportSetInput(lGameport, (lGameport == 1) ? GP_JOYKEY1 : GP_JOYKEY0);
@@ -676,7 +682,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 #endif
   }
 
-	switch (uMessage)
+	switch(uMessage)
 	{
 	default:
 		fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command %x\n", uMessage);
