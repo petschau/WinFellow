@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.57 2013-02-12 17:36:54 carfesh Exp $ */
+/* @(#) $Id: RetroPlatform.c,v 1.58 2013-02-16 11:52:20 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -111,9 +111,9 @@ BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst,
   WCHAR szHostInputName[CFG_FILENAME_LENGTH];
                                     
   fellowAddLog( "**** Joystick %d **** '%s'\n",
-    --RetroPlatformNumberOfJoysticksAttached, pdinst->tszProductName);
+    ++RetroPlatformNumberOfJoysticksAttached, pdinst->tszProductName);
 
-  sprintf(strHostInputID, "GP_ANALOG%d", RetroPlatformNumberOfJoysticksAttached);
+  sprintf(strHostInputID, "GP_ANALOG%d", RetroPlatformNumberOfJoysticksAttached - 1);
   mbstowcs(szHostInputID, strHostInputID, CFG_FILENAME_LENGTH);
   mbstowcs(szHostInputName, pdinst->tszProductName, CFG_FILENAME_LENGTH);
 
@@ -121,7 +121,7 @@ BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst,
     RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
     0, szHostInputID, szHostInputName);
 
-	if(RetroPlatformNumberOfJoysticksAttached == 0)
+	if(RetroPlatformNumberOfJoysticksAttached == 2)
 		return DIENUM_STOP;
 	else
 		return DIENUM_CONTINUE; 
@@ -167,7 +167,7 @@ int RetroPlatformEnumerateJoysticks(void) {
       return 0;
     }
 
-    RetroPlatformNumberOfJoysticksAttached = MAX_JOY_PORT;
+    RetroPlatformNumberOfJoysticksAttached = 0;
 
     hResult = IDirectInput8_EnumDevices(RP_lpDI, DI8DEVCLASS_GAMECTRL,
 				    RetroPlatformEnumerateJoystick, RP_lpDI, DIEDFL_ATTACHEDONLY);
@@ -176,8 +176,6 @@ int RetroPlatformEnumerateJoysticks(void) {
         hResult);
       return 0;
     }
-
-    RetroPlatformNumberOfJoysticksAttached = MAX_JOY_PORT - RetroPlatformNumberOfJoysticksAttached;
 
     njoyCount = RetroPlatformNumberOfJoysticksAttached;
 

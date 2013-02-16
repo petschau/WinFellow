@@ -1,4 +1,4 @@
-/* @(#) $Id: JOYDRV.C,v 1.22 2013-02-08 10:48:09 carfesh Exp $ */
+/* @(#) $Id: JOYDRV.C,v 1.23 2013-02-16 11:52:20 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Joystick driver for Windows                                             */
@@ -262,6 +262,7 @@ void joyDrvDInputUnacquire(int port) {
   if (!joy_drv_failed) {
     HRESULT res;
 
+    
     if ((res = IDirectInputDevice8_Unacquire( joy_drv_lpDID[port] )) != DI_OK)
       joyDrvDInputFailure("joyDrvDInputUnacquire(): ", res);
   }
@@ -326,11 +327,11 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst,
 { 
 	IDirectInput8 *pdi = (IDirectInput8*)pvRef; 
 
-	fellowAddLog( "**** Joystick %d **** '%s'\n", --num_joy_attached, pdinst->tszProductName );
+	fellowAddLog( "**** Joystick %d **** '%s'\n", num_joy_attached, pdinst->tszProductName );
 
-	if( !joyDrvDxCreateAndInitDevice( pdi, joy_drv_lpDID, pdinst->guidInstance, num_joy_attached ))
+	if( !joyDrvDxCreateAndInitDevice( pdi, joy_drv_lpDID, pdinst->guidInstance, num_joy_attached++ ))
 	{
-		if( num_joy_attached == 0 )
+		if( num_joy_attached == 2 )
 			return DIENUM_STOP;
 		else
 			return DIENUM_CONTINUE; 
@@ -368,7 +369,7 @@ void joyDrvDInputInitialize(void) {
       return;
     }
 
-    num_joy_attached = MAX_JOY_PORT;
+    num_joy_attached = 0;
 
     res = IDirectInput8_EnumDevices(joy_drv_lpDI, DI8DEVCLASS_GAMECTRL,
 				    joyDrvInitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY);
@@ -378,7 +379,6 @@ void joyDrvDInputInitialize(void) {
       return;
     }
 
-    num_joy_attached = MAX_JOY_PORT - num_joy_attached;
     fellowAddLog( "njoy: %d\n", num_joy_attached );
   }
 }
@@ -425,8 +425,9 @@ void joyDrvStateHasChanged(BOOLE active) {
 		joy_drv_in_use = FALSE;
 	}
 
-	for( port = MAX_JOY_PORT - num_joy_attached; port < MAX_JOY_PORT; port++ )
-		joyDrvDInputAcquire(port);
+	for( port = 0; port < MAX_JOY_PORT; port++ )
+    if(joy_drv_lpDID[port] != NULL)
+		  joyDrvDInputAcquire(port);
 }
 
 
@@ -537,6 +538,9 @@ void joyDrvMovementHandler(void) {
         joystickNo = 0;
       if(gameport_input[gameport] == GP_ANALOG1)
         joystickNo = 1;
+
+      if(joy_drv_lpDID[joystickNo] == NULL)
+        return;
 
 	    if( joyDrvCheckJoyMovement( joystickNo, &Up, &Down, &Left, &Right, &Button1, &Button2 )) {
 		    fellowAddLog( "joyDrvCheckJoyMovement failed\n" );
