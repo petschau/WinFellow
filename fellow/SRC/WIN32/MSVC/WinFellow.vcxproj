@@ -145,6 +145,12 @@
       <Profile>false</Profile>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
+    <PreBuildEvent>
+      <Command>SubWCREV.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>generate SVN version information include</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -247,6 +253,12 @@
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
+    <PreBuildEvent>
+      <Command>SubWCREV.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>generate SVN version information include</Message>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -1555,6 +1567,7 @@
     <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h" />
     <ClInclude Include="..\INCLUDE\sysinfo.h" />
     <ClInclude Include="..\..\INCLUDE\TIMER.H" />
+    <ClInclude Include="..\INCLUDE\versioninfo-wcrev.h" />
     <ClInclude Include="..\INCLUDE\WDBG.H" />
     <ClInclude Include="..\..\INCLUDE\WGUI.H" />
     <ClInclude Include="..\INCLUDE\WINDRV.H" />

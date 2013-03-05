@@ -30,6 +30,7 @@
 #endif
 
 #include "defs.h"
+#include "versioninfo.h"
 #include "floppy.h"
 #include "fmem.h"
 #include "gameport.h"
