@@ -27,6 +27,7 @@
 #include <time.h>
 
 #include "defs.h"
+#include "versioninfo.h"
 #include "fellow.h"
 #include "draw.h"
 #include "CpuModule.h"

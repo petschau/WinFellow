@@ -4,6 +4,7 @@ HOWTO: Preparing WinFellow for a new public release
 This HOWTO describes the steps necessary to prepare a new public WinFellow release. This is to ensure that a uniform process is used that results in the same quality of release archives, whoever takes care of building and spreading the release. This HOWTO should always be updated as necessary.
 
 * Make sure that there are no open issues left in the <a href="http://sourceforge.net/tracker/?group_id=3431&atid=658580">WinFellow Pre-Release Agenda</a>
+* Ensure that the subwcrev.exe output in the buildlog does not list any local modifications.
 * There may be testing steps defined in the Pre-Release Agenda that should be tested when preparing for a new release - these should not be closed!
 * For compiling the new release, the build environment should be setup like recommended here (\ref howtodevenvsetup).
 * Verify that no unnecessary debug/trace logs are written (floppy.log, capsdump.txt, ...)
