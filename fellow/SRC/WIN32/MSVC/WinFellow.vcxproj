@@ -146,7 +146,8 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCREV.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
+      <Command>SubWCRev.exe ..\..\..\ .\GUI_general-wcrev.rc .\GUI_general.rc -n
+SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
@@ -254,7 +255,8 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCREV.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
+      <Command>SubWCRev.exe ..\..\..\ .\GUI_general-wcrev.rc .\GUI_general.rc
+SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
