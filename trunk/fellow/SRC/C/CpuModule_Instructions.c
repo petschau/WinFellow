@@ -1870,6 +1870,7 @@ static void cpuReset()
 static void cpuRtd()
 {
   ULO displacement = cpuGetNextWordSignExt();
+  cpuInitializeFromNewPC(memoryReadLong(cpuGetAReg(7))); 
   cpuSetAReg(7, cpuGetAReg(7) + 4 + displacement);
   cpuSetInstructionTime(4);
 }
