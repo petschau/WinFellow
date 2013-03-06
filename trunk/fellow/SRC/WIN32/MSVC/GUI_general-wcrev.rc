@@ -31,7 +31,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 IDD_MAIN DIALOGEX 0, 0, 312, 170
 STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
 EXSTYLE WS_EX_NOPARENTNOTIFY
-CAPTION "WinFellow alpha v0.4.4"
+CAPTION "WinFellow alpha v0.5.0"
 MENU IDR_FELLOW_GUI_MENU
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
@@ -308,7 +308,7 @@ CAPTION "About WinFellow"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
-    CTEXT           "WinFellow alpha v0.4.4.1 - CVS",IDC_STATIC_ABOUT_VERSION,17,50,180,8
+    CTEXT           "WinFellow alpha v0.5.0.$WCREV$ - SVN",IDC_STATIC_ABOUT_VERSION,17,50,180,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,94,8,SS_NOTIFY
     CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,WS_EX_TRANSPARENT
@@ -597,8 +597,9 @@ IDB_WINFELLOW_LOGO      BITMAP                  "winfellow_logo_small.bmp"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,5,0,0
- PRODUCTVERSION 0,5,0,0
+ FILEVERSION 0,5,0,$WCREV$
+ PRODUCTVERSION 0,5,0,$WCREV$
+ PRODUCTVERSION 0,5,0,$WCREV$
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -615,12 +616,12 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://fellow.sourceforge.net"
             VALUE "FileDescription", "WinFellow Amiga Emulator"
-            VALUE "FileVersion", "0.5.0.0"
+            VALUE "FileVersion", "0.5.0.$WCREV$"
             VALUE "InternalName", "WinFellow"
             VALUE "LegalCopyright", "©1996-2013 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
-            VALUE "ProductVersion", "0.5.0.0"
+            VALUE "ProductVersion", "0.5.0.$WCREV$"
         END
     END
     BLOCK "VarFileInfo"
