@@ -86,9 +86,13 @@
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
+#include "config.h"
 #endif
 
 ini *gfxdrv_ini; ///< GFXDRV copy of ini data
+#ifdef RETRO_PLATFORM
+cfg *gfxdrv_config;
+#endif
 
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
@@ -2127,7 +2131,28 @@ BOOLE gfxDrvStartup(void) {
   if (gfxDrvRunEventInitialize())
     if (gfxDrvWindowClassInitialize())
       gfx_drv_initialized = gfxDrvDDrawInitialize();
-  if (!gfx_drv_initialized) gfxDrvRunEventRelease();
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode()) {
+    ULO lHeight, lWidth;
+    gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
+    // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
+    lWidth  = cfgGetScreenWidth (gfxdrv_config) / 2;
+    lHeight = cfgGetScreenHeight(gfxdrv_config);
+
+    fellowAddLog("gfxdrv: as operating in RetroPlatform mode, inject resolution %dx%d into list of valid screen resolutions...\n",
+      lWidth, lHeight);
+
+    listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+    gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
+
+    cfgSetScreenWidth(gfxdrv_config, lWidth);
+  }
+#endif
+
+  if (!gfx_drv_initialized) 
+    gfxDrvRunEventRelease();
+  
   return gfx_drv_initialized;
 }
 

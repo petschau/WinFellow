@@ -537,8 +537,10 @@ static void fellowModulesStartup(int argc, char *argv[])
   ffilesysStartup();
   spriteStartup();
   iniStartup();
-  if (!drawStartup()) fellowDrawFailed();
   kbdStartup();
+  cfgStartup(argc, argv);
+  if (!drawStartup()) 
+    fellowDrawFailed();
   gameportStartup();
   busStartup();
   soundStartup();
@@ -549,7 +551,6 @@ static void fellowModulesStartup(int argc, char *argv[])
   memoryStartup();
   graphStartup();
   cpuIntegrationStartup();
-  cfgStartup(argc, argv);
   wguiStartup();
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode())
@@ -568,7 +569,6 @@ static void fellowModulesShutdown(void)
 	  RetroPlatformShutdown();
 #endif
   wguiShutdown();
-  cfgShutdown();
   cpuIntegrationShutdown();
   graphShutdown();
   memoryShutdown();
@@ -579,8 +579,9 @@ static void fellowModulesShutdown(void)
   soundShutdown();
   busShutdown();
   gameportShutdown();
-  kbdShutdown();
   drawShutdown();
+  cfgShutdown();
+  kbdShutdown();
   iniShutdown();
   spriteShutdown();
   ffilesysShutdown();

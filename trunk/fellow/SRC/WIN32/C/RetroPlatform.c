@@ -613,10 +613,15 @@ static BOOLE RetroPlatformSendPowerLEDIntensityPercent(const WPARAM wIntensityPe
     return FALSE;
 }
 
+/** Set RetroPlatform escape key.
+ * 
+ * Called during parsing of the command-line parameters, which is why the keyboard modules
+ * have to be initialized before the config modules, as we use the key mappings here.
+ */
 void RetroPlatformSetEscapeKey(const char *szEscapeKey) {
   lRetroPlatformEscapeKey = atoi(szEscapeKey);
   lRetroPlatformEscapeKey = kbddrv_DIK_to_symbol[lRetroPlatformEscapeKey];
-  fellowAddLog("RetroPlatformSetEscapeKey(): escape key configured to %d.\n", lRetroPlatformEscapeKey);
+  fellowAddLog("RetroPlatformSetEscapeKey(): escape key configured to %s.\n", kbdDrvKeyString(lRetroPlatformEscapeKey));
 }
 
 void RetroPlatformSetEscapeKeyHoldTime(const char *szEscapeHoldTime) {
