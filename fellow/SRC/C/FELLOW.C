@@ -25,6 +25,8 @@
 /*=========================================================================*/
 
 #include <time.h>
+#include <Windows.h>
+#include <Dbghelp.h>
 
 #include "defs.h"
 #include "versioninfo.h"
@@ -591,12 +593,64 @@ static void fellowModulesShutdown(void)
   timerShutdown();
 }
 
+void fellowWriteMinidump(EXCEPTION_POINTERS* e) {
+  char name[MAX_PATH], filename[MAX_PATH];
+  auto hDbgHelp = LoadLibraryA("dbghelp");
+  SYSTEMTIME t;
+
+  if(hDbgHelp == nullptr)
+      return;
+
+  auto pMiniDumpWriteDump = (decltype(&MiniDumpWriteDump))GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+
+  if(pMiniDumpWriteDump == nullptr)
+      return;
+
+  GetSystemTime(&t);
+
+  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp", 
+    FELLOWNUMERICVERSION, 
+    t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+
+  fileopsGetGenericFileName(name, "WinFellow", filename);
+
+  fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
+
+  auto hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+  if(hFile == INVALID_HANDLE_VALUE)
+      return;
+
+  MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+  exceptionInfo.ThreadId = GetCurrentThreadId();
+  exceptionInfo.ExceptionPointers = e;
+  exceptionInfo.ClientPointers = FALSE;
+
+  auto dumped = pMiniDumpWriteDump(
+    GetCurrentProcess(),
+    GetCurrentProcessId(),
+    hFile,
+    MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
+    e ? &exceptionInfo : nullptr,
+    nullptr,
+    nullptr);
+
+  CloseHandle(hFile);
+
+  return;
+}
+
+LONG CALLBACK fellowUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
+  fellowWriteMinidump(e);
+  return EXCEPTION_CONTINUE_SEARCH;
+}
 
 /*============================================================================*/
 /* main....                                                                   */
 /*============================================================================*/
 
 int __cdecl main(int argc, char *argv[]) {
+ SetUnhandledExceptionFilter(fellowUnhandledExceptionHandler);
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
