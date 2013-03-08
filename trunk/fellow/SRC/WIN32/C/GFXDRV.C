@@ -2136,17 +2136,21 @@ BOOLE gfxDrvStartup(void) {
   if(RetroPlatformGetMode()) {
     ULO lHeight, lWidth;
     gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
-    // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
-    lWidth  = cfgGetScreenWidth (gfxdrv_config) / 2;
+    
     lHeight = cfgGetScreenHeight(gfxdrv_config);
+    lWidth  = cfgGetScreenWidth (gfxdrv_config);
 
-    fellowAddLog("gfxdrv: as operating in RetroPlatform mode, inject resolution %dx%d into list of valid screen resolutions...\n",
+    if(lWidth > 768) {
+      // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
+      lWidth  = cfgGetScreenWidth (gfxdrv_config) / 2;
+      cfgSetScreenWidth(gfxdrv_config, lWidth);
+    }
+    
+    fellowAddLog("gfxdrv: operating in RetroPlatform mode, insert resolution %dx%d into list of valid screen resolutions...\n",
       lWidth, lHeight);
 
     listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
     gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
-
-    cfgSetScreenWidth(gfxdrv_config, lWidth);
   }
 #endif
 

@@ -22,3 +22,5 @@ copy latex\refman.pdf .\WinFellow-doxygen.pdf
 del latex /S /Q
 rmdir latex
 del *.tmp /Q
+
+pause

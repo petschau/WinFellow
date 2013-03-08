@@ -1378,6 +1378,8 @@ BOOLE cfgLoadFromFilename(cfg *config, STR *filename) {
  
   fileopsResolveVariables(filename, newfilename);
 
+  fellowAddLog("cfg: loading configuration filename %s...\n", filename);
+  
   // remove existing hardfiles
   cfgHardfilesFree(config);
   cfgFilesystemsFree(config);
@@ -1419,7 +1421,7 @@ BOOLE cfgSaveToFilename(cfg *config, STR *filename) {
 static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[]) {
   int i;
 
-  fellowAddLog("cfg: list of commandline parameters ");
+  fellowAddLog("cfg: list of commandline parameters: ");
   for(i=1; i < argc; i++) {
     fellowAddLog("%s ", argv[i]);
   }
