@@ -117,8 +117,7 @@
       <PrecompiledHeaderOutputFile>.\Release/WinFellow.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>
-      </DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnablePREfast>false</EnablePREfast>
@@ -133,7 +132,7 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;d:\Program Files\Microsoft DirectX SDK (April 2007)\Lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>CAPSImg.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/WinFellow.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
