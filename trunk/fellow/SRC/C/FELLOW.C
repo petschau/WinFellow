@@ -25,8 +25,11 @@
 /*=========================================================================*/
 
 #include <time.h>
+
+#ifdef NDEBUG
 #include <Windows.h>
 #include <Dbghelp.h>
+#endif
 
 #include "defs.h"
 #include "versioninfo.h"
@@ -593,18 +596,34 @@ static void fellowModulesShutdown(void)
   timerShutdown();
 }
 
+/*============================================================================*/
+/* exception handling to generate minidumps                                   */
+/*============================================================================*/
+
+#ifdef NDEBUG
+
+typedef BOOL (__stdcall *tMDWD)(
+  IN HANDLE hProcess,
+  IN DWORD ProcessId,
+  IN HANDLE hFile,
+  IN MINIDUMP_TYPE DumpType,
+  IN CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, OPTIONAL
+  IN CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, OPTIONAL
+  IN CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam OPTIONAL
+  );
+
 void fellowWriteMinidump(EXCEPTION_POINTERS* e) {
   char name[MAX_PATH], filename[MAX_PATH];
-  auto hDbgHelp = LoadLibraryA("dbghelp");
+  HINSTANCE hDbgHelp = LoadLibraryA("dbghelp.dll");
   SYSTEMTIME t;
 
-  if(hDbgHelp == nullptr)
-      return;
+  if(hDbgHelp == NULL)
+    return;
 
-  auto pMiniDumpWriteDump = (decltype(&MiniDumpWriteDump))GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+  tMDWD pMiniDumpWriteDump = (tMDWD) GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
 
-  if(pMiniDumpWriteDump == nullptr)
-      return;
+  if(pMiniDumpWriteDump == NULL)
+    return;
 
   GetSystemTime(&t);
 
@@ -616,7 +635,7 @@ void fellowWriteMinidump(EXCEPTION_POINTERS* e) {
 
   fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
 
-  auto hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+  HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
 
   if(hFile == INVALID_HANDLE_VALUE)
       return;
@@ -626,14 +645,14 @@ void fellowWriteMinidump(EXCEPTION_POINTERS* e) {
   exceptionInfo.ExceptionPointers = e;
   exceptionInfo.ClientPointers = FALSE;
 
-  auto dumped = pMiniDumpWriteDump(
+  pMiniDumpWriteDump(
     GetCurrentProcess(),
     GetCurrentProcessId(),
     hFile,
     MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
-    e ? &exceptionInfo : nullptr,
-    nullptr,
-    nullptr);
+    e ? &exceptionInfo : NULL,
+    NULL,
+    NULL);
 
   CloseHandle(hFile);
 
@@ -645,12 +664,16 @@ LONG CALLBACK fellowUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
+#endif
+
 /*============================================================================*/
 /* main....                                                                   */
 /*============================================================================*/
 
 int __cdecl main(int argc, char *argv[]) {
+#ifdef NDEBUG
  SetUnhandledExceptionFilter(fellowUnhandledExceptionHandler);
+#endif
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
