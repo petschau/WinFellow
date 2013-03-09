@@ -152,13 +152,13 @@ void ffilesysDumpConfig(void)
   F = fopen(filename, "w");
   for (i = 0; i < FFILESYS_MAX_DEVICES; i++) {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
-      fprintf(F, "Slot: %d, %s, %s, %s\n",
+      fprintf(F, "Slot: %u, %s, %s, %s\n",
       i,
       ffilesys_devs[i].volumename,
       ffilesys_devs[i].rootpath,
       (ffilesys_devs[i].readonly) ? "R" : "RW");
     else
-      fprintf(F, "Slot: %d, No filesystem defined.\n", i);
+      fprintf(F, "Slot: %u, No filesystem defined.\n", i);
   }
   fclose(F);
 }

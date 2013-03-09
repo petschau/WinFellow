@@ -525,7 +525,7 @@ void fhfileHardReset(void) {
 
       for (i = 0; i < FHFILE_MAX_DEVICES; i++) {
 	unitnames[i] = memoryDmemGetCounter();
-	sprintf(tmpunitname, "FELLOW%d", i);
+	sprintf(tmpunitname, "FELLOW%u", i);
 	memoryDmemSetString(tmpunitname);
       }
 

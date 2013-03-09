@@ -805,11 +805,17 @@ void wsprpt(UWO data, ULO address)
   item->data = data;
   item->address = address;
 
-  // for debugging only
-  if (output_sprite_log == TRUE) {
+  if (output_sprite_log == TRUE)
+  {
     *((UWO *) ((UBY *) sprpt_debug + sprnr * 4 + 2)) = (UWO) data & 0x01f;
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpth (sprx = %d, spry = %d, sprly = %d)\n", 
-      busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+    sprintf(buffer, 
+	    "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n", 
+	    busGetRasterY(), 
+	    2*(busGetRasterX() - 16), 
+	    sprnr, 
+	    (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), 
+	    memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), 
+	    memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -910,7 +916,7 @@ void wsprxpos(UWO data, ULO address)
   sprx_debug[sprnr] = (sprx_debug[sprnr] & 0x001) | ((data & 0xff) << 1);
   spry_debug[sprnr] = (spry_debug[sprnr] & 0x100) | ((data & 0xff00) >> 8);
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dpos (sprx = %d, spry = %d)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], sprly_debug[sprnr]);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], sprly_debug[sprnr]);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -1001,7 +1007,7 @@ void wsprxdata(UWO data, ULO address)
 
   // for debugging only
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddata\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -1036,7 +1042,7 @@ void wsprxdatb(UWO data, ULO address)
 
   // for debugging only
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%ddatb\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -1067,7 +1073,7 @@ void spritesLog(void) {
   for (no = 0; no < 8; no++) {
     char s[80];
     //    if (sprite_online[no]) {
-    sprintf(s, "%d %d, sprite %d fy %d ly %d x %d state %d att %d atto %d pt %.6X\n", draw_frame_count,
+    sprintf(s, "%u %u, sprite %u fy %u ly %u x %u state %u att %u atto %u pt %.6X\n", draw_frame_count,
       busGetRasterY(),
       no,
       spry[no],
@@ -1149,7 +1155,7 @@ void spriteLogActiveSprites(void) {
   int i;
   for (i = 0; i < 8; i++) {
     if (sprite_online[i]) {
-      sprintf(s, "Sprite %d position %d\n", i, sprx[i]);
+      sprintf(s, "Sprite %d position %u\n", i, sprx[i]);
       fellowAddLog(s);
     }
   }
@@ -1694,7 +1700,7 @@ void spriteProcessActionList(void)
 
 	      // for debugging only
 	      if (output_action_sprite_log == TRUE) {
-		sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
+		sprintf((char *) &buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", 
 		  sprnr, busGetRasterY(), sprx[sprnr]);
 		fellowAddLog2(buffer);
 	      }
@@ -1746,7 +1752,7 @@ void spriteProcessActionList(void)
 
 	// for debugging only
 	if (output_action_sprite_log == TRUE) {
-	  sprintf((char *) &buffer, "sprite %d data displayed on (y, x) = (%d, %d)\n", 
+	  sprintf((char *) &buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", 
 	    sprnr, busGetRasterY(), sprx[sprnr]);
 	  fellowAddLog2(buffer);
 	}

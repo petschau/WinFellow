@@ -1261,11 +1261,11 @@ const STR *memory_kickimage_versionstrings[14] = {
     {
     case MEMORY_ROM_ERROR_SIZE:
       sprintf(error3,
-	"Illegal size: %d bytes, size must be either 256K or 512K",
+	"Illegal size: %u bytes, size must be either 256K or 512K",
 	data);
       break;
     case MEMORY_ROM_ERROR_AMIROM_VERSION:
-      sprintf(error3, "Unsupported encryption method, version found was %d",
+      sprintf(error3, "Unsupported encryption method, version found was %u",
 	data);
       break;
     case MEMORY_ROM_ERROR_AMIROM_READ:
@@ -1335,7 +1335,7 @@ const STR *memory_kickimage_versionstrings[14] = {
     else if (ver > 41) memory_kickimage_version = 41;
     else memory_kickimage_version = ver;
     sprintf(s, 
-      "%s (%d.%d)",
+      "%s (%u.%u)",
       memory_kickimage_versionstrings[memory_kickimage_version - 28],
       ver,
       rev);

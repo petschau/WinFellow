@@ -252,10 +252,10 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
 	      strcat(info.filename, ".amod");
 	    }
 	    else
-	      sprintf(info.filename, "mod%d.amod", modripModsFound++);
+	      sprintf(info.filename, "mod%u.amod", modripModsFound++);
 	  }
 	  else {
-	    sprintf(info.filename, "mod%d.mod", modripModsFound++);
+	    sprintf(info.filename, "mod%u.mod", modripModsFound++);
 	  }
 
 	  modripGuiSaveRequest(&info, func);
@@ -350,7 +350,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
 
       if (size < MODRIP_MAXMODLEN) {
 	/* set filename for the module file */
-	sprintf(info.filename, "SFX.Mod%d.amod", modripModsFound++);
+	sprintf(info.filename, "SFX.Mod%u.amod", modripModsFound++);
 
 	modripGuiSaveRequest(&info, func);
       }
@@ -471,10 +471,10 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
 	strcat(info.filename, ".amod");
       }
       else
-	sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
+	sprintf(info.filename, "BP.Mod%u.amod", modripModsFound++);
     }
     else {
-      sprintf(info.filename, "BP.Mod%d.amod", modripModsFound++);
+      sprintf(info.filename, "BP.Mod%u.amod", modripModsFound++);
     }
 
     modripGuiSaveRequest(&info, func);  
@@ -606,7 +606,7 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
     info.end += instData + instMax * 64;
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "FRED.Mod%d.amod", modripModsFound++);
+    sprintf(info.filename, "FRED.Mod%u.amod", modripModsFound++);
 
     modripGuiSaveRequest(&info, func);
   }
@@ -662,7 +662,7 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   info.end += sampPtr + sampSize;
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "PR2.Mod%d.amod", modripModsFound++);
+    sprintf(info.filename, "PR2.Mod%u.amod", modripModsFound++);
 
     modripGuiSaveRequest(&info, func);
   }   
@@ -753,7 +753,7 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   info.end = info.start + sampDataPtr + sampSize + (loopSizeCurr << 1);
 
   if ((info.end - info.start < MODRIP_MAXMODLEN)) {
-    sprintf(info.filename, "%s.Mod%d.amod", info.typesig, modripModsFound++);
+    sprintf(info.filename, "%s.Mod%u.amod", info.typesig, modripModsFound++);
     modripGuiSaveRequest(&info, func);
   }   
 }

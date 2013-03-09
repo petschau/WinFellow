@@ -958,7 +958,7 @@ static void drawFpsCounter(void) {
   if (draw_fps_counter_enabled) {
     STR s[16];
 
-    sprintf(s, "%d", drawStatLast50FramesFps());
+    sprintf(s, "%u", drawStatLast50FramesFps());
     drawFpsText(s);
     switch (draw_mode_current->bits) {
       case 8:

@@ -1260,10 +1260,10 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "autoconfig=%s\n",
     cfgGetBOOLEToString(cfgGetUseAutoconfig(config)));
   for (i = 0; i < 4; i++) {
-    fprintf(cfgfile, "floppy%d=%s\n", i, cfgGetDiskImage(config, i));
-    fprintf(cfgfile, "fellow.floppy%d_enabled=%s\n", 
+    fprintf(cfgfile, "floppy%u=%s\n", i, cfgGetDiskImage(config, i));
+    fprintf(cfgfile, "fellow.floppy%u_enabled=%s\n", 
       i, cfgGetBOOLEToString(cfgGetDiskEnabled(config, i)));
-    fprintf(cfgfile, "fellow.floppy%d_readonly=%s\n", 
+    fprintf(cfgfile, "fellow.floppy%u_readonly=%s\n", 
       i, cfgGetBOOLEToString(cfgGetDiskReadOnly(config, i)));
   }
   fprintf(cfgfile, "fellow.floppy_fast_dma=%s\n", 
@@ -1274,7 +1274,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "joyport1=%s\n", 
     cfgGetGameportToString(cfgGetGameport(config, 1)));
   fprintf(cfgfile, "usegui=%s\n", cfgGetBOOLEToString(cfgGetUseGUI(config)));
-  fprintf(cfgfile, "cpu_speed=%d\n", cfgGetCPUSpeed(config));
+  fprintf(cfgfile, "cpu_speed=%u\n", cfgGetCPUSpeed(config));
   fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(TRUE));
   fprintf(cfgfile, "cpu_type=%s\n", 
     cfgGetCPUTypeToString(cfgGetCPUType(config)));
@@ -1291,22 +1291,22 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
   fprintf(cfgfile, "fellow.sound_filter=%s\n", 
     cfgGetSoundFilterToString(cfgGetSoundFilter(config)));
   fprintf(cfgfile, "sound_notification=%s\n", cfgGetSoundNotificationToString(cfgGetSoundNotification(config)));
-  fprintf(cfgfile, "sound_buffer_length=%d\n", cfgGetSoundBufferLength(config));
-  fprintf(cfgfile, "chipmem_size=%d\n", cfgGetChipSize(config) / 262144);
-  fprintf(cfgfile, "fastmem_size=%d\n", cfgGetFastSize(config) / 1048576);
-  fprintf(cfgfile, "bogomem_size=%d\n", cfgGetBogoSize(config) / 262144);
+  fprintf(cfgfile, "sound_buffer_length=%u\n", cfgGetSoundBufferLength(config));
+  fprintf(cfgfile, "chipmem_size=%u\n", cfgGetChipSize(config) / 262144);
+  fprintf(cfgfile, "fastmem_size=%u\n", cfgGetFastSize(config) / 1048576);
+  fprintf(cfgfile, "bogomem_size=%u\n", cfgGetBogoSize(config) / 262144);
   fprintf(cfgfile, "kickstart_rom_file=%s\n", cfgGetKickImage(config));
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", 
     cfgGetBOOLEToString(cfgGetBlitterFast(config)));
   fprintf(cfgfile, "gfx_chipset=%s\n", 
     cfgGetECSToString(cfgGetECSBlitter(config)));
-  fprintf(cfgfile, "gfx_width=%d\n", cfgGetScreenWidth(config));
-  fprintf(cfgfile, "gfx_height=%d\n", cfgGetScreenHeight(config));
+  fprintf(cfgfile, "gfx_width=%u\n", cfgGetScreenWidth(config));
+  fprintf(cfgfile, "gfx_height=%u\n", cfgGetScreenHeight(config));
   fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", 
     cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
-  fprintf(cfgfile, "fellow.gfx_refresh=%d\n", cfgGetScreenRefresh(config));
+  fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", 
     cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
   fprintf(cfgfile, "gfx_lores=%s\n", 
@@ -1316,7 +1316,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
     cfgGetScanlines(config)));
   fprintf(cfgfile, "gfx_linemode_strategy=%s\n", 
     cfgGetLinemodeStrategyToString(cfgGetVerticalScaleStrategy(config)));
-  fprintf(cfgfile, "gfx_framerate=%d\n", cfgGetFrameskipRatio(config));
+  fprintf(cfgfile, "gfx_framerate=%u\n", cfgGetFrameskipRatio(config));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetBOOLEToString(cfgGetScreenDrawLEDs(config)));
   fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n",
     cfgGetBOOLEToString(cfgGetDeinterlace(config)));
@@ -1326,7 +1326,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
     cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));
   for (i = 0; i < cfgGetHardfileCount(config); i++) {
     cfg_hardfile hf = cfgGetHardfile(config, i);
-    fprintf(cfgfile, "hardfile=%s,%d,%d,%d,%d,%s\n",
+    fprintf(cfgfile, "hardfile=%s,%u,%u,%u,%u,%s\n",
       (hf.readonly) ? "ro" : "rw",
       hf.sectorspertrack,
       hf.surfaces,
