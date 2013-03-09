@@ -149,7 +149,7 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive) {
 
   /* extract the date from information */
   capsDateTimeExt = &capsImageInfo->crdt;
-  sprintf(DateString, "%02d.%02d.%04d %02d:%02d:%02d", 
+  sprintf(DateString, "%02u.%02u.%04u %02u:%02u:%02u", 
     capsDateTimeExt->day, 
     capsDateTimeExt->month,
     capsDateTimeExt->year,

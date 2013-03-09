@@ -632,7 +632,7 @@ bool soundDrvInitializeSecondaryBufferNotification(sound_drv_dsound_device *dsou
       return false;
     }
 
-    sprintf(s, "timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+    sprintf(s, "timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
     fellowAddLog(s);
 
     dsound_device->mmresolution = timecaps.wPeriodMin;

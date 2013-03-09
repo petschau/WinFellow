@@ -99,7 +99,7 @@ void timerEmulationStart(void)
       return;
     }
 
-    sprintf(s, "timer: timerEmulationStart() timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+    sprintf(s, "timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
     fellowAddLog(s);
 
     timer_mmresolution = timecaps.wPeriodMin;
