@@ -1243,7 +1243,19 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     }
     else if (stricmp(option, "cpu_24bit_addressing") == 0) {     /* Redundant */
     }
-    else result = FALSE;
+    else
+ #ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode()) {
+    if (stricmp(option, "gfx_offset_left") == 0) {
+      RetroPlatformSetClippingOffsetLeft(cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_offset_top") == 0) {
+      RetroPlatformSetClippingOffsetTop(cfgGetULOFromString(value));
+    }
+  }
+  else
+#endif
+      result = FALSE;
   }
   else result = FALSE;
   return result;
