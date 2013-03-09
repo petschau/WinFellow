@@ -44,8 +44,8 @@
 typedef struct 
 {
   ULO rate;
-  BOOLE bits16;
-  BOOLE stereo;
+  bool bits16;
+  bool stereo;
   ULO buffer_sample_count;
   ULO buffer_block_align;
 } sound_drv_dsound_mode;
@@ -68,7 +68,7 @@ typedef struct
   ULO pending_data_sample_count;
   HANDLE thread;
   DWORD thread_id;
-  BOOLE notification_supported;
+  bool notification_supported;
   ULO mmtimer;
   ULO mmresolution;
   DWORD lastreadpos;
@@ -168,10 +168,10 @@ void soundDrvDSoundRelease(void)
 /* Initialize DirectSound                                                    */
 /*===========================================================================*/
 
-BOOLE soundDrvDSoundInitialize(void) {
+bool soundDrvDSoundInitialize(void)
+{
   ULO i;
 
-  //fellowAddLog("Setting lpDSB to NULL\n");
   sound_drv_dsound_device_current.modes = NULL;
   sound_drv_dsound_device_current.lpDS = NULL;
   sound_drv_dsound_device_current.lpDSB = NULL;
@@ -184,11 +184,11 @@ BOOLE soundDrvDSoundInitialize(void) {
   sound_drv_dsound_device_current.data_available = NULL;
   sound_drv_dsound_device_current.can_add_data = NULL;
   sound_drv_dsound_device_current.thread = NULL;
-  HRESULT res = DirectSoundCreate(NULL, &sound_drv_dsound_device_current.lpDS, NULL);
-  if (res != DS_OK)
+  HRESULT directSoundCreateResult = DirectSoundCreate(NULL, &sound_drv_dsound_device_current.lpDS, NULL);
+  if (directSoundCreateResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundInitialize: ", res);
-    return FALSE;
+    soundDrvDSoundFailure("soundDrvDSoundInitialize: DirectSoundCreate - ", directSoundCreateResult);
+    return false;
   }
   for (i = 0; i < 3; i++)
   {
@@ -196,7 +196,7 @@ BOOLE soundDrvDSoundInitialize(void) {
   }
   sound_drv_dsound_device_current.data_available = CreateEvent(0, 0, 0, 0);
   sound_drv_dsound_device_current.can_add_data = CreateEvent(0, 0, 0, 0);
-  return TRUE;
+  return true;
 }
 
 
@@ -205,8 +205,8 @@ BOOLE soundDrvDSoundInitialize(void) {
 /*===========================================================================*/
 
 void soundDrvAddMode(sound_drv_dsound_device *dsound_device,
-		     BOOLE stereo,
-		     BOOLE bits16,
+		     bool stereo,
+		     bool bits16,
 		     ULO rate)
 {
   sound_drv_dsound_mode *dsound_mode = (sound_drv_dsound_mode *) malloc(sizeof(sound_drv_dsound_mode));
@@ -223,8 +223,8 @@ void soundDrvAddMode(sound_drv_dsound_device *dsound_device,
 /*===========================================================================*/
 
 sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
-					BOOLE stereo,
-					BOOLE bits16,
+					bool stereo,
+					bool bits16,
 					ULO rate)
 {
   for (felist *fl = dsound_device->modes; fl != NULL; fl = listNext(fl))
@@ -254,29 +254,28 @@ void soundDrvDSoundModeInformationRelease(sound_drv_dsound_device *dsound_device
 /* Initialize DirectSound mode information                                   */
 /*===========================================================================*/
 
-void soundDrvYesNoLog(STR *intro, BOOLE pred)
+void soundDrvYesNoLog(STR *intro, bool pred)
 {
   fellowAddLog(intro);
   fellowAddLog((pred) ? " - Yes\n" : " - No\n");
 }
 
-BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_device)
+bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_device)
 {
-  HRESULT res;
   DSCAPS dscaps;
-  BOOLE stereo, mono, bits8, bits16;
-  BOOLE secondary_stereo, secondary_mono, secondary_bits8, secondary_bits16;
-  BOOLE continuous_rate, emulated_driver, certified_driver;
+  bool stereo, mono, bits8, bits16;
+  bool secondary_stereo, secondary_mono, secondary_bits8, secondary_bits16;
+  bool continuous_rate, emulated_driver, certified_driver;
   ULO minrate, maxrate;
   char s[80];
 
   memset(&dscaps, 0, sizeof(dscaps));
   dscaps.dwSize = sizeof(dscaps);
-  res = IDirectSound_GetCaps(dsound_device->lpDS, &dscaps);
-  if (res != DS_OK)
+  HRESULT getCapsResult = IDirectSound_GetCaps(dsound_device->lpDS, &dscaps);
+  if (getCapsResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundModeInformationInitialize: ", res);
-    return FALSE;
+    soundDrvDSoundFailure("soundDrvDSoundModeInformationInitialize: ", getCapsResult);
+    return false;
   }
   stereo = !!(dscaps.dwFlags & DSCAPS_PRIMARYSTEREO);
   soundDrvYesNoLog("DSCAPS_PRIMARYSTEREO", stereo);
@@ -305,9 +304,9 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
 
   minrate = dscaps.dwMinSecondarySampleRate;
   maxrate = dscaps.dwMaxSecondarySampleRate;
-  sprintf(s, "ddscaps.dwMinSecondarySampleRate - %d\n", minrate);
+  sprintf(s, "ddscaps.dwMinSecondarySampleRate - %u\n", minrate);
   fellowAddLog(s);
-  sprintf(s, "ddscaps.dwMaxSecondarySampleRate - %d\n", maxrate);
+  sprintf(s, "ddscaps.dwMaxSecondarySampleRate - %u\n", maxrate);
   fellowAddLog(s);
 
   /* Set maximum sample rate to 44100 if it cannot be determined
@@ -317,7 +316,7 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
   if (maxrate == 0)
   {
     maxrate = 44100;
-    sprintf(s, "ddscaps.dwMaxSecondarySampleRate correction applied - %d\n", maxrate);
+    sprintf(s, "ddscaps.dwMaxSecondarySampleRate correction applied - %u\n", maxrate);
     fellowAddLog(s);
   }
 
@@ -356,7 +355,7 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
     }
   }
 
-  return TRUE;
+  return true;
 }
 
 
@@ -365,19 +364,19 @@ BOOLE soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_de
 /* Ref: Microsoft Press, Inside DirectX, page 210                            */
 /*===========================================================================*/
 
-BOOLE soundDrvDSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device)
+bool soundDrvDSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device)
 {
   /* We need the HWND of the amiga emulation window, which means sound is    */
   /* initialized after the gfx stuff */
 
-  HRESULT res = IDirectSound_SetCooperativeLevel(dsound_device->lpDS,
-						 gfx_drv_hwnd,
-						 DSSCL_PRIORITY);
-  if (res != DS_OK)
+  HRESULT setCooperativeLevelResult = IDirectSound_SetCooperativeLevel(dsound_device->lpDS,
+								       gfx_drv_hwnd,
+								       DSSCL_PRIORITY);
+  if (setCooperativeLevelResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundSetCooperativeLevel", res);
+    soundDrvDSoundFailure("soundDrvDSoundSetCooperativeLevel", setCooperativeLevelResult);
   }
-  return (res == DS_OK);
+  return (setCooperativeLevelResult == DS_OK);
 }
 
 
@@ -391,7 +390,6 @@ void soundDrvDSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device)
   {
     IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, 0);
     IDirectSoundBuffer_Release(dsound_device->lpDSB);
-    //fellowAddLog("soundDrvDSoundPrimaryBufferRelease(), setting lpDSB to NULL");
     dsound_device->lpDSB = NULL;
   }
 }
@@ -405,7 +403,7 @@ void soundDrvDSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device)
 /* Ref: Microsoft Press, Inside DirectX, page 212                            */
 /*===========================================================================*/
 
-BOOLE soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_device)
+bool soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_device)
 {
   DSBUFFERDESC dsbdesc;
   WAVEFORMATEX wfm;
@@ -427,29 +425,27 @@ BOOLE soundDrvDSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_devi
   wfm.nAvgBytesPerSec = wfm.nSamplesPerSec * wfm.nBlockAlign;
   dsound_device->mode_current->buffer_block_align = wfm.nBlockAlign;
 
-  HRESULT res = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
-					       &dsbdesc,
-					       &dsound_device->lpDSB,
-					       NULL);
-  if (res != DS_OK)
+  HRESULT createSoundBufferResult = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
+								   &dsbdesc,
+								   &dsound_device->lpDSB,
+								   NULL);
+  if (createSoundBufferResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundPrimaryBufferInitialize(): CreateSoundBuffer(), ", res);
-    return FALSE;
+    soundDrvDSoundFailure("soundDrvDSoundPrimaryBufferInitialize(): CreateSoundBuffer(), ", createSoundBufferResult);
+    return false;
   }
 
   /* Set format of primary buffer */
 
-  res = IDirectSoundBuffer_SetFormat(dsound_device->lpDSB, &wfm);
-  if (res != DS_OK)
+  HRESULT setFormatResult = IDirectSoundBuffer_SetFormat(dsound_device->lpDSB, &wfm);
+  if (setFormatResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundPrimaryBufferInitialize(): SetFormat(), ", res);
+    soundDrvDSoundFailure("soundDrvDSoundPrimaryBufferInitialize(): SetFormat(), ", setFormatResult);
     soundDrvDSoundPrimaryBufferRelease(dsound_device);
-    return FALSE;
+    return false;
   }
 
-  /* When we get here, all is well */
-
-  return TRUE;
+  return true;
 }
 
 
@@ -472,36 +468,17 @@ void soundDrvDSoundSecondaryBufferRelease(sound_drv_dsound_device *dsound_device
   }
   if (!dsound_device->notification_supported)
   {
-    MMRESULT mmres;
-    mmres = timeKillEvent(dsound_device->mmtimer);
-  
-    mmres = timeEndPeriod(dsound_device->mmresolution);
-    if(mmres != TIMERR_NOERROR)
-    {
-      fellowAddLog("soundDrvDSoundSecondaryBufferRelease(): timeEndPeriod() failed");
-    }
+    timeKillEvent(dsound_device->mmtimer); 
+    timeEndPeriod(dsound_device->mmresolution);
   }
 }
 
 
-/*===========================================================================*/
-/* Get a secondary buffer                                                    */
-/* Ref: Microsoft Press, Inside DirectX, page 212, 229-232                   */
-/*===========================================================================*/
-
-BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_device)
+bool soundDrvCreateSecondaryBuffer(sound_drv_dsound_device *dsound_device)
 {
-  DSBCAPS dsbcaps;
-  DSBUFFERDESC dsbdesc;
   WAVEFORMATEX wfm;
-  HRESULT res;
-  DSBPOSITIONNOTIFY rgdscbpn[2];
-  char* lpAudio;
-  DWORD dwBytes;
-  DWORD i;
+  DSBUFFERDESC dsbdesc;
 
-  /* Create sound buffer */
-  
   memset(&wfm, 0, sizeof(wfm));
   wfm.wFormatTag = WAVE_FORMAT_PCM;
   wfm.nChannels = (dsound_device->mode_current->stereo) ? 2 : 1;
@@ -517,77 +494,111 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
-  res = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
-                                       &dsbdesc,
-				       &dsound_device->lpDSBS,
-				       NULL);
-  if (res != DS_OK)
+  HRESULT createSoundBufferResult = IDirectSound_CreateSoundBuffer(dsound_device->lpDS,
+								   &dsbdesc,
+								   &dsound_device->lpDSBS,
+								   NULL);
+  if (createSoundBufferResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: CreateSoundBuffer(), ", res);
-    return FALSE;
+    soundDrvDSoundFailure("soundDrvCreateSecondaryBuffer: CreateSoundBuffer(), ", createSoundBufferResult);
+    return false;
+  }
+  return true;
+}
+
+bool soundDrvClearSecondaryBuffer(sound_drv_dsound_device *dsound_device)
+{
+  char* lpAudio;
+  DWORD dwBytes;
+
+  HRESULT lock1Result = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+						0,
+						0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
+						(LPVOID*) &lpAudio,
+						&dwBytes,
+						NULL,
+						NULL,
+						DSBLOCK_ENTIREBUFFER);
+
+  if (lock1Result != DS_OK)
+  {
+    soundDrvDSoundFailure("soundDrvClearSecondaryBuffer: Lock(), ", lock1Result);
+
+    if (lock1Result == DSERR_BUFFERLOST)
+    {
+      /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
+      HRESULT restoreResult = IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+      if (restoreResult != DS_OK)
+      {
+	soundDrvDSoundFailure("soundDrvClearSecondaryBuffer: Restore(), ", restoreResult);
+	return false;
+      }
+
+      HRESULT lock2Result = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+						    0,
+						    0, // Ignored because we pass DSBLOCK_ENTIREBUFFER
+						    (LPVOID*)&lpAudio,
+						    &dwBytes,
+						    NULL,
+						    NULL,
+						    DSBLOCK_ENTIREBUFFER);
+      if (lock2Result != DS_OK)
+      {
+	// Here we give up
+	soundDrvDSoundFailure("soundDrvClearSecondaryBuffer: Lock(), ", lock2Result);
+	return false;
+      }
+    }
   }
 
-  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
-				0,
-				dsbdesc.dwBufferBytes,
-				(LPVOID*) &lpAudio,
-				&dwBytes,
-				NULL,
-				NULL,
-				0);
-
-  if (res == DSERR_BUFFERLOST)
-  {
-    /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
-    IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
-    res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
-				  0,
-				  dsbdesc.dwBufferBytes,
-				  (LPVOID*)&lpAudio,
-				  &dwBytes,
-				  NULL,
-				  NULL,
-				  0);
-  }
-
-  if (res != DS_OK)
-  {
-    soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: Lock(), ", res);
-    return FALSE;
-  }
-
-  for (i = 0; i < dwBytes; i++)
+  for (DWORD i = 0; i < dwBytes; i++)
   {
     lpAudio[i] = 0;
   }
 
-  IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpAudio, dwBytes, NULL, 0);
-
-  /* Get buffer caps */
-  memset(&dsbcaps, 0, sizeof(dsbcaps));
-  dsbcaps.dwSize = sizeof(dsbcaps);
-  res = IDirectSoundBuffer_GetCaps(dsound_device->lpDSBS, &dsbcaps);
-  if (res != DS_OK)
+  HRESULT unlockResult = IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpAudio, dwBytes, NULL, 0);
+  if (unlockResult != DS_OK)
   {
-    soundDrvDSoundFailure("soundDrvDSoundSetSecondaryBuffer: GetCaps(), ", res);
-    return FALSE;
+    // Here we give up
+    soundDrvDSoundFailure("soundDrvClearSecondaryBuffer: Unlock(), ", unlockResult);
+    return false;
   }
 
-  dsound_device->notification_supported = (!!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY)) && (soundGetNotification() == SOUND_DSOUND_NOTIFICATION);
+  return true;
+}
+
+bool soundDrvInitializeSecondaryBufferNotification(sound_drv_dsound_device *dsound_device)
+{
+  DSBCAPS dsbcaps;
+  DSBPOSITIONNOTIFY rgdscbpn[2];
+
+  memset(&dsbcaps, 0, sizeof(dsbcaps));
+  dsbcaps.dwSize = sizeof(dsbcaps);
+
+  HRESULT getCapsResult = IDirectSoundBuffer_GetCaps(dsound_device->lpDSBS, &dsbcaps);
+  if (getCapsResult != DS_OK)
+  {
+    soundDrvDSoundFailure("soundDrvInitializeSecondaryBufferNotification: GetCaps(), ", getCapsResult);
+    return false;
+  }
+
+  dsound_device->notification_supported = (!!(dsbcaps.dwFlags & DSBCAPS_CTRLPOSITIONNOTIFY)) 
+					  && (soundGetNotification() == SOUND_DSOUND_NOTIFICATION);
+
   if (dsound_device->notification_supported)
   {
     /* Notification supported AND selected */
 
     /* Get notification interface */
   
-    res = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
-					    IID_IDirectSoundNotify,
-					    (LPVOID * FAR) &dsound_device->lpDSN);
-    if (res != DS_OK)
+    HRESULT queryInterfaceResult = IDirectSoundBuffer_QueryInterface(dsound_device->lpDSBS,
+								     IID_IDirectSoundNotify,
+								     (LPVOID * FAR) &dsound_device->lpDSN);
+    if (queryInterfaceResult != DS_OK)
     {
-      soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): QueryInterface(IID_IDirectSoundNotify), ", res);
-      soundDrvDSoundSecondaryBufferRelease(dsound_device);
-      return FALSE;
+      soundDrvDSoundFailure("soundDrvInitializeSecondaryBufferNotification(): QueryInterface(IID_IDirectSoundNotify), ", 
+			    queryInterfaceResult);
+      return false;
     }
 
     /* Attach notification objects to buffer */
@@ -599,28 +610,25 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
                            (dsound_device->mode_current->buffer_sample_count*2 - 1);
     rgdscbpn[1].hEventNotify = dsound_device->notifications[1];
 
-    res = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN, 2, rgdscbpn);
-    if (res != DS_OK)
+    HRESULT setNotificationPositionsResult = IDirectSoundNotify_SetNotificationPositions(dsound_device->lpDSN, 2, rgdscbpn);
+    if (setNotificationPositionsResult != DS_OK)
     {
-      soundDrvDSoundFailure("soundDrvDSoundSecondaryBufferInitialize(): SetNotificationPositions(), ", res);
-      soundDrvDSoundSecondaryBufferRelease(dsound_device);
-      return FALSE;
+      soundDrvDSoundFailure("soundDrvInitializeSecondaryBufferNotification(): SetNotificationPositions(), ", setNotificationPositionsResult);
+      return false;
     }
   }
   else
   {
-    /* Notification not supported */
+    /* Notification not supported, fallback to timer */
 
     char s[80];
     TIMECAPS timecaps;
-    MMRESULT mmres;
 
-    mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
-    if(mmres != TIMERR_NOERROR)
+    MMRESULT timeGetDevCapsResult = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+    if (timeGetDevCapsResult != TIMERR_NOERROR)
     {
-      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeGetDevCaps() failed\n");
-      soundDrvDSoundSecondaryBufferRelease(dsound_device);
-      return FALSE;
+      fellowAddLog("soundDrvInitializeSecondaryBufferNotification(): timeGetDevCaps() failed\n");
+      return false;
     }
 
     sprintf(s, "timeGetDevCaps: min: %d, max %d\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
@@ -628,27 +636,49 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 
     dsound_device->mmresolution = timecaps.wPeriodMin;
 
-    mmres = timeBeginPeriod(dsound_device->mmresolution);
-    if(mmres != TIMERR_NOERROR)
+    MMRESULT timeBeginPeriodResult = timeBeginPeriod(dsound_device->mmresolution);
+    if (timeBeginPeriodResult != TIMERR_NOERROR)
     {
-      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeBeginPeriod() failed\n");
-      soundDrvDSoundSecondaryBufferRelease(dsound_device);
-      return FALSE;
+      fellowAddLog("soundDrvInitializeSecondaryBufferNotification(): timeBeginPeriod() failed\n");
+      return false;
     }
 
-    mmres = timeSetEvent(1, 0, timercb, (DWORD_PTR)0, (UINT) TIME_PERIODIC);
-    if(mmres == 0)
+    MMRESULT timeSetEventResult = timeSetEvent(1, 0, timercb, (DWORD_PTR)0, (UINT) TIME_PERIODIC);
+    if (timeSetEventResult == 0)
     {
-      fellowAddLog("soundDrvDSoundSecondaryBufferInitialize(): timeSetEvent() failed\n");
-      soundDrvDSoundSecondaryBufferRelease(dsound_device);
-      return FALSE;
+      fellowAddLog("soundDrvInitializeSecondaryBufferNotification(): timeSetEvent() failed\n");
+      return false;
     }
-    dsound_device->mmtimer = mmres;
+    dsound_device->mmtimer = timeSetEventResult;
+  }
+  return true;
+}
+
+/*===========================================================================*/
+/* Get a secondary buffer                                                    */
+/* Ref: Microsoft Press, Inside DirectX, page 212, 229-232                   */
+/*===========================================================================*/
+
+bool soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_device)
+{
+  if (!soundDrvCreateSecondaryBuffer(dsound_device))
+  {
+    return false;
   }
 
-  /* When we get here, all is well */
+  if (!soundDrvClearSecondaryBuffer(dsound_device))
+  {
+    soundDrvDSoundSecondaryBufferRelease(dsound_device);
+    return false;
+  }
 
-  return TRUE;
+  if (!soundDrvInitializeSecondaryBufferNotification(dsound_device))
+  {
+    soundDrvDSoundSecondaryBufferRelease(dsound_device);
+    return false;
+  }
+
+  return true;
 }
 
 
@@ -658,7 +688,6 @@ BOOLE soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_de
 
 void soundDrvDSoundPlaybackStop(sound_drv_dsound_device *dsound_device)
 {
-  //fellowAddLog("soundDrvDSoundPlaybackStop()\n");
   soundDrvDSoundSecondaryBufferRelease(dsound_device);
   soundDrvDSoundPrimaryBufferRelease(dsound_device);
 }
@@ -668,15 +697,10 @@ void soundDrvDSoundPlaybackStop(sound_drv_dsound_device *dsound_device)
 /* Initialize playback                                                      */
 /*===========================================================================*/
 
-BOOLE soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device)
+bool soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device)
 {
-  BOOLE result;
-  HRESULT res;
-
-  //fellowAddLog("Sound, initializing playback\n");
   dsound_device->lastreadpos = 0;
-  result = soundDrvDSoundPrimaryBufferInitialize(dsound_device);
-  //fellowAddLog("Sound, primary done, doing secondary\n");
+  bool result = soundDrvDSoundPrimaryBufferInitialize(dsound_device);
   if (result)
   {
     result = soundDrvDSoundSecondaryBufferInitialize(dsound_device);
@@ -688,18 +712,16 @@ BOOLE soundDrvDSoundPlaybackInitialize(sound_drv_dsound_device *dsound_device)
   }
   if (result)
   {
-    //fellowAddLog("Starting to play buffers\n");
-    res = IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, DSBPLAY_LOOPING);
-    if (res != DS_OK)
+    HRESULT primaryPlayResult = IDirectSoundBuffer_Play(dsound_device->lpDSB, 0, 0, DSBPLAY_LOOPING);
+    if (primaryPlayResult != DS_OK)
     {
-      soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Primary->Play(), ", res);
+      soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Primary->Play(), ", primaryPlayResult);
     }
-    res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
-    if (res != DS_OK)
+    HRESULT secondaryPlayResult = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+    if (secondaryPlayResult != DS_OK)
     {
-      soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Secondary->Play(), ", res);
+      soundDrvDSoundFailure("soundDrvDSoundPlaybackInitialize: Secondary->Play(), ", secondaryPlayResult);
     }
-    //fellowAddLog("Finished starting to play buffers\n");
   }
   return result;
 }
@@ -755,47 +777,57 @@ void soundDrvCopy8BitsMono(UBY *audio_buffer,
   }
 }
 
-BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
-				 UWO *left,
-				 UWO *right,
-				 ULO sample_count,
-				 ULO buffer_half)
+bool soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
+				UWO *left,
+				UWO *right,
+				ULO sample_count,
+				ULO buffer_half)
 {
-  HRESULT res;
   LPVOID lpvAudio;
   DWORD dwBytes;
   DWORD size = dsound_device->mode_current->buffer_sample_count*
 	       dsound_device->mode_current->buffer_block_align; 
   DWORD start_offset = buffer_half*size;
 
-  res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
-				start_offset,
-				size,
-				&lpvAudio,
-				&dwBytes,
-				NULL,
-				NULL,
-				0);
+  HRESULT lockResult = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+					       start_offset,
+					       size,
+					       &lpvAudio,
+					       &dwBytes,
+					       NULL,
+					       NULL,
+					       0);
 
-  if (res == DSERR_BUFFERLOST)
+  if (lockResult != DS_OK)
+  {
+    soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Lock(), ", lockResult);
+    return false;
+  }
+
+  if (lockResult == DSERR_BUFFERLOST)
   {
     /* Buffer lost. Try to restore buffer once. Multiple restores need more intelligence */
-    IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
-    res = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
-				  start_offset,
-				  size,
-				  &lpvAudio,
-				  &dwBytes,
-				  NULL,
-				  NULL,
-				  0);
+    HRESULT restoreResult = IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+    if (restoreResult != DS_OK)
+    {
+      soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Restore(), ", restoreResult);
+      return false;
+    }
+    HRESULT lock2Result = IDirectSoundBuffer_Lock(dsound_device->lpDSBS,
+						  start_offset,
+						  size,
+						  &lpvAudio,
+						  &dwBytes,
+						  NULL,
+						  NULL,
+						  0);
+    if (lock2Result != DS_OK)
+    {
+      soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Lock() after Restore , ", lock2Result);
+      return false;
+    }
   }
 
-  if (res != DS_OK)
-  {
-    soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Lock(), ", res);
-    return FALSE;
-  }
   if (soundGetStereo())
   {
     if (soundGet16Bits())
@@ -818,8 +850,13 @@ BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
       soundDrvCopy8BitsMono((UBY*)lpvAudio, left, right, sample_count);
     }
   }
-  IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpvAudio, dwBytes, NULL, 0);
-  return TRUE;
+  HRESULT unlockResult = IDirectSoundBuffer_Unlock(dsound_device->lpDSBS, lpvAudio, dwBytes, NULL, 0);
+  if (unlockResult != DS_OK)
+  {
+    soundDrvDSoundFailure("soundDrvDSoundCopyToBuffer: Unlock(), ", unlockResult);
+    return false;
+  }
+  return true;
 }
 
 
@@ -833,7 +870,6 @@ BOOLE soundDrvDSoundCopyToBuffer(sound_drv_dsound_device *dsound_device,
 void soundDrvPlay(WOR *left, WOR *right, ULO sample_count)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
-//  fellowAddLog("soundDrvPlay() starting\n");
   WaitForSingleObject(dsound_device->can_add_data, INFINITE);
   dsound_device->pending_data_left = (UWO*)left;
   dsound_device->pending_data_right = (UWO*)right;
@@ -867,20 +903,20 @@ void soundDrvReleaseMutex(sound_drv_dsound_device *dsound_device)
 /* We use this one only when notification is supported                       */
 /*===========================================================================*/
 
-BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
+bool soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
 			  ULO next_buffer_no,
-			  BOOLE *need_to_restart_playback)
+			  bool &need_to_restart_playback)
 {
   HANDLE multi_events[3];
   DWORD evt;
-  BOOLE terminate_wait;
-  BOOLE terminate_thread;
+  bool terminate_wait = false;
+  bool terminate_thread = false;
   ULO wait_for_x_events = 3;
 
   // No-wait test for data_available, return TRUE if data is available
   if (WaitForSingleObject(dsound_device->data_available, 0) == WAIT_OBJECT_0)
   {
-    return TRUE;
+    return true;
   }
   //fellowAddLog("Data was not available\n");
   // Here, data is not available from the sound emulation
@@ -896,8 +932,6 @@ BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
 
   // What if we are lagging behind already?
 
-  terminate_wait = FALSE;
-  terminate_thread = FALSE;
   while (!terminate_wait)
   {
     multi_events[0] = dsound_device->data_available;
@@ -915,21 +949,22 @@ BOOLE soundDrvWaitForData(sound_drv_dsound_device *dsound_device,
       case WAIT_OBJECT_0:
         // Data is now available
 	// Restart playing if we have stopped it
-        *need_to_restart_playback = (wait_for_x_events == 2);
-	terminate_wait = TRUE;
-//	fellowAddLog("Needed to wait for data, got it now\n");
+        need_to_restart_playback = (wait_for_x_events == 2);
+	terminate_wait = true;
 	break;
       case WAIT_OBJECT_0 + 1:
 	// End of thread requested, return FALSE
-	terminate_wait = TRUE;
-	terminate_thread = TRUE;
-//	fellowAddLog("soundDrvWaitForData(), thread is terminating\n");
+	terminate_wait = true;
+	terminate_thread = true;
 	break;
       case WAIT_OBJECT_0 + 2:
 	// End of next buffer reached, stop playback, wait more
-        IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
+        HRESULT playResult = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, 0);
+	if (playResult != DS_OK)
+	{
+	  soundDrvDSoundFailure("soundDrvWaitForData: Play(), ", playResult);
+	}
 	wait_for_x_events = 2;
-//	fellowAddLog("soundDrvWaitForData(), next buffer exhausted, stopping playback\n");
 	break;
     }
   }
@@ -957,18 +992,20 @@ void soundDrvPollBufferPosition(void)
 
     if (dsound_device->lpDSBS != NULL)
     {
-      IDirectSoundBuffer_GetCurrentPosition(dsound_device->lpDSBS,
-					    &readpos,
-					    &writepos);
+      HRESULT getCurrentPositionResult = IDirectSoundBuffer_GetCurrentPosition(dsound_device->lpDSBS,
+									       &readpos,
+									       &writepos);
+      if (getCurrentPositionResult != DS_OK)
+      {
+	soundDrvDSoundFailure("soundDrvPollBufferPosition: GetCurrentPosition(), ", getCurrentPositionResult);
+      }
       if ((readpos >= halfway) && (dsound_device->lastreadpos < halfway))
       {
         SetEvent(dsound_device->notifications[0]);
-        /*fellowAddLog("Notify 0\n");*/
       }
       else if ((readpos < halfway) && (dsound_device->lastreadpos >= halfway))
       {
         SetEvent(dsound_device->notifications[1]);
-        /*fellowAddLog("Notify 1\n");*/
       }
       dsound_device->lastreadpos = readpos;
     }
@@ -980,16 +1017,13 @@ void soundDrvPollBufferPosition(void)
 /* Process end of buffer event                                               */
 /*===========================================================================*/
 
-BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
-				 ULO current_buffer_no,
-				 ULO next_buffer_no)
+bool soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
+				ULO current_buffer_no,
+				ULO next_buffer_no)
 {
-  HRESULT res;
-  BOOLE terminate_thread = FALSE;
-  BOOLE need_to_restart_playback = FALSE;
-  if (soundDrvWaitForData(dsound_device,
-			  next_buffer_no, 
-			  &need_to_restart_playback))
+  bool terminate_thread = false;
+  bool need_to_restart_playback = false;
+  if (soundDrvWaitForData(dsound_device, next_buffer_no, need_to_restart_playback))
   {
     soundDrvDSoundCopyToBuffer(dsound_device,
  			       dsound_device->pending_data_left,
@@ -998,12 +1032,29 @@ BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
 			       current_buffer_no);
     if (need_to_restart_playback)
     {
-      res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
-      if (res == DSERR_BUFFERLOST)
+      HRESULT playResult = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+
+      if (playResult != DS_OK)
       {
-        /* Temporary fix for restoring buffer once. Multiple restore needs alot more */
-        IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
-        res = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+	soundDrvDSoundFailure("soundDrvProcessEndOfBuffer: Play(), ", playResult);
+      }
+
+      if (playResult == DSERR_BUFFERLOST)
+      {
+	/* Temporary fix for restoring buffer once. Multiple restore needs alot more */
+        HRESULT restoreResult = IDirectSoundBuffer_Restore(dsound_device->lpDSBS);
+	if (restoreResult != DS_OK)
+	{
+	  soundDrvDSoundFailure("soundDrvProcessEndOfBuffer: Restore(), ", restoreResult);
+	}
+	else
+	{
+	  HRESULT play2Result = IDirectSoundBuffer_Play(dsound_device->lpDSBS, 0, 0, DSBPLAY_LOOPING);
+	  if (play2Result != DS_OK)
+	  {
+	    soundDrvDSoundFailure("soundDrvProcessEndOfBuffer: Play() after restore, ", play2Result);
+	  }
+	}
       }
     }
 
@@ -1015,8 +1066,7 @@ BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
   }
   else
   {
-    terminate_thread = TRUE;
-    //fellowAddLog("Terminated in soundDrvWaitForData()\n");
+    terminate_thread = true;
   }
   return terminate_thread;
 }
@@ -1037,12 +1087,11 @@ BOOLE soundDrvProcessEndOfBuffer(sound_drv_dsound_device *dsound_device,
 
 DWORD WINAPI soundDrvThreadProc(void *in)
 {
-  BOOLE terminate_thread = FALSE;
+  bool terminate_thread = false;
   sound_drv_dsound_device *dsound_device = (sound_drv_dsound_device *) in;
 
   winDrvSetThreadName(-1, "soundDrvThreadProc()");
 
-//  fellowAddLog("soundDrvThreadProc()\n");
   while (!terminate_thread) {
     // Thread is activated by 3 different events:
     // 0 - Play position is at end of buffer 0
@@ -1067,12 +1116,10 @@ DWORD WINAPI soundDrvThreadProc(void *in)
 	break;
       case WAIT_OBJECT_0 + 2: /* Emulation is ending */
       default:
-	terminate_thread = TRUE;
-//	fellowAddLog("Sound thread was asked to terminate\n");
+	terminate_thread = true;
 	break;
     }
   }
-//  fellowAddLog("soundDrvThreadProc() ending\n");
   return 0;
 }
 
@@ -1090,13 +1137,12 @@ void soundDrvHardReset(void)
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-BOOLE soundDrvEmulationStart(ULO rate,
-			     BOOLE bits16,
-			     BOOLE stereo,
-			     ULO *sample_count_max)
+bool soundDrvEmulationStart(ULO rate,
+			    bool bits16,
+			    bool stereo,
+			    ULO *sample_count_max)
 {
   sound_drv_dsound_device *dsound_device = &sound_drv_dsound_device_current;
-  BOOLE result;
 
   soundDrvAcquireMutex(dsound_device);
 
@@ -1115,7 +1161,7 @@ BOOLE soundDrvEmulationStart(ULO rate,
 						 stereo,
 						 bits16,
 						 rate);
-  result = dsound_device->mode_current != NULL;
+  bool result = dsound_device->mode_current != NULL;
 
   /* Record the number of samples in our buffer (ie. one half of the size) */
 
@@ -1178,11 +1224,9 @@ void soundDrvEmulationStop(void)
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-BOOLE soundDrvStartup(sound_device *devinfo)
+bool soundDrvStartup(sound_device *devinfo)
 {
-  BOOLE result;
-
-  result = soundDrvDSoundInitialize();       /* Create a direct sound object */
+  bool result = soundDrvDSoundInitialize();       /* Create a direct sound object */
   if (result)
   {
     result = soundDrvDSoundModeInformationInitialize(&sound_drv_dsound_device_current);
