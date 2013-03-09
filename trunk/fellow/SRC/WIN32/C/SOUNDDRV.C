@@ -490,7 +490,8 @@ bool soundDrvCreateSecondaryBuffer(sound_drv_dsound_device *dsound_device)
   memset(&dsbdesc, 0, sizeof(dsbdesc));
   dsbdesc.dwSize = sizeof(dsbdesc);
   dsbdesc.dwFlags = DSBCAPS_CTRLPOSITIONNOTIFY |
-		    DSBCAPS_GETCURRENTPOSITION2;
+		    DSBCAPS_GETCURRENTPOSITION2 |
+		    DSBCAPS_GLOBALFOCUS;
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
