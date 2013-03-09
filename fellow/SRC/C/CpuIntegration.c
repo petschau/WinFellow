@@ -244,7 +244,7 @@ void cpuInstructionLogOpen(void)
 
 void cpuIntegrationPrintBusCycle(void)
 {
-  fprintf(CPUINSTRUCTIONLOG, "%d:%.5d ", bus.frame_no, bus.cycle);
+  fprintf(CPUINSTRUCTIONLOG, "%I64u:%.5u ", bus.frame_no, bus.cycle);
 }
 
 void cpuIntegrationInstructionLogging(void)
@@ -323,7 +323,7 @@ void cpuIntegrationInterruptLogging(ULO level, ULO vector_address)
   cpuInstructionLogOpen();
 
   cpuIntegrationPrintBusCycle();
-  fprintf(CPUINSTRUCTIONLOG, "Irq %d to %.6X (%s)\n", level, vector_address, cpuIntegrationGetInterruptName(cpuIntegrationGetIrqSource()));
+  fprintf(CPUINSTRUCTIONLOG, "Irq %u to %.6X (%s)\n", level, vector_address, cpuIntegrationGetInterruptName(cpuIntegrationGetIrqSource()));
 }
 
 #endif

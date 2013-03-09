@@ -163,7 +163,7 @@ void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
   if ((wav_rate != rate) ||
     (wav_16bits != bits16) ||
     (wav_stereo != stereo)) {
-      sprintf(wav_filename, "FWAV%d.WAV", wav_serial++);
+      sprintf(wav_filename, "FWAV%u.WAV", wav_serial++);
 
       fileopsGetGenericFileName(generic_wav_filename, "WinFellow", wav_filename);
       strcpy(wav_filename, generic_wav_filename);
