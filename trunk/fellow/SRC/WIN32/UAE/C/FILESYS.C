@@ -420,7 +420,7 @@ int sprintf_filesys_unit (struct uaedev_mount_info *mountinfo, char *buffer, int
 	sprintf (buffer, "(DH%d:) Filesystem, %s: %s %s", num, uip[num].volname,
 		 uip[num].rootdir, uip[num].readonly ? "ro" : "");
     else
-	sprintf (buffer, "(DH%d:) Hardfile, \"%s\", size %d bytes", num,
+	sprintf (buffer, "(DH%d:) Hardfile, \"%s\", size %u bytes", num,
 		 uip[num].rootdir, uip[num].hf.size);
     return 0;
 }

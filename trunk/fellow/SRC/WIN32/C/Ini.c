@@ -396,17 +396,17 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 
 BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "ini_description=%s\n", iniGetDescription(initdata));
-  fprintf(inifile, "main_window_x_pos=%d\n", iniGetMainWindowXPos(initdata));
-  fprintf(inifile, "main_window_y_pos=%d\n", iniGetMainWindowYPos(initdata));
-  fprintf(inifile, "emu_window_x_pos=%d\n", iniGetEmulationWindowXPos(initdata));
-  fprintf(inifile, "emu_window_y_pos=%d\n", iniGetEmulationWindowYPos(initdata));
+  fprintf(inifile, "main_window_x_pos=%u\n", iniGetMainWindowXPos(initdata));
+  fprintf(inifile, "main_window_y_pos=%u\n", iniGetMainWindowYPos(initdata));
+  fprintf(inifile, "emu_window_x_pos=%u\n", iniGetEmulationWindowXPos(initdata));
+  fprintf(inifile, "emu_window_y_pos=%u\n", iniGetEmulationWindowYPos(initdata));
   fprintf(inifile, "config_history_0=%s\n", iniGetConfigurationHistoryFilename(initdata,0));
   fprintf(inifile, "config_history_1=%s\n", iniGetConfigurationHistoryFilename(initdata,1));
   fprintf(inifile, "config_history_2=%s\n", iniGetConfigurationHistoryFilename(initdata,2));
   fprintf(inifile, "config_history_3=%s\n", iniGetConfigurationHistoryFilename(initdata,3));
   fprintf(inifile, "last_used_configuration=%s\n", iniGetCurrentConfigurationFilename(initdata));
   fprintf(inifile, "last_used_cfg_dir=%s\n", iniGetLastUsedCfgDir(initdata));
-  fprintf(inifile, "last_used_cfg_tab=%d\n", iniGetLastUsedCfgTab(initdata));
+  fprintf(inifile, "last_used_cfg_tab=%u\n", iniGetLastUsedCfgTab(initdata));
   fprintf(inifile, "last_used_kick_image_dir=%s\n", iniGetLastUsedKickImageDir(initdata));
   fprintf(inifile, "last_used_key_dir=%s\n", iniGetLastUsedKeyDir(initdata));
   fprintf(inifile, "last_used_global_disk_dir=%s\n", iniGetLastUsedGlobalDiskDir(initdata));

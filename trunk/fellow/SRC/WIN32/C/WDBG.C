@@ -219,7 +219,7 @@ STR *wdbgGetAddressRegistersStr(STR * s)
 STR *wdbgGetSpecialRegistersStr(STR * s)
 {
   sprintf(s,
-	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %d y: %d x: %d",
+	  "USP:%.8X SSP:%.8X SR:%.4X FRAME: %u y: %u x: %u",
 	  cpuGetUspAutoMap(), cpuGetSspAutoMap(), cpuGetSR(), draw_frame_count, busGetRasterY(), busGetRasterX());
   return s;
 }
@@ -546,10 +546,10 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     x += WDBG_DISASSEMBLY_INDENT;
 
     for (i = 0; i < 4; i++) {
-      sprintf(s, "DF%d:", i);
+      sprintf(s, "DF%u:", i);
       y = wdbgLineOut(hDC, s, x, y);
 
-      sprintf(s, "Track-%d Sel-%d Motor-%d Side-%d WP-%d",
+      sprintf(s, "Track-%u Sel-%d Motor-%d Side-%d WP-%d",
 	      floppy[i].track,
 	      floppy[i].sel,
 	      floppy[i].motor,
@@ -570,7 +570,7 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     strcpy(s, "Transfer settings:");
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Wordsleft: %d  Wait: %d  Dst: %X",
+    sprintf(s, "Wordsleft: %u  Wait: %u  Dst: %X",
 	    floppy_DMA.wordsleft, floppy_DMA.wait, floppy_DMA.dskpt);
     y = wdbgLineOut(hDC, s, x, y);
 
@@ -717,11 +717,11 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
     atpc = (copper_ptr & 0xfffffe);	/* Make sure debug doesn't trap odd ex */
 
-    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%d Copper PC - %.6X", cop1lc,
+    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%u Copper PC - %.6X", cop1lc,
 	    cop2lc, copcon, copper_ptr);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next cycle - %d  Y - %d  X - %d", copperEvent.cycle,
+    sprintf(s, "Next cycle - %u  Y - %u  X - %u", copperEvent.cycle,
 	    (copperEvent.cycle != -1) ? (copperEvent.cycle / 228) : 0,
 	    (copperEvent.cycle != -1) ? (copperEvent.cycle % 228) : 0);
     y = wdbgLineOut(hDC, s, x, y);
@@ -806,7 +806,7 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
     for (i = 0; i < 8; i++) {
       sprintf(s,
-	      "Spr%dX-%d Spr%dStartY-%d Spr%dStopY-%d Spr%dAttached-%d Spr%dstate-%d",
+	      "Spr%uX-%u Spr%uStartY-%u Spr%uStopY-%u Spr%uAttached-%u Spr%ustate-%u",
 	      i, sprx[i], i, spry[i], i, sprly[i], i, spratt[i], i,
 	      sprite_state[i]);
       y = wdbgLineOut(hDC, s, x, y);
@@ -880,27 +880,27 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, s, x, y);
     y++;
 
-    sprintf(s, "Host window clip envelope (Hor) (Ver): (%d, %d) (%d, %d)",
+    sprintf(s, "Host window clip envelope (Hor) (Ver): (%u, %u) (%u, %u)",
             draw_left, draw_right, draw_top, draw_bottom);
     y = wdbgLineOut(hDC, s, x, y);
     
-    sprintf(s, "Even/odd scroll (lores/hires): (%d, %d) (%d, %d)",
+    sprintf(s, "Even/odd scroll (lores/hires): (%u, %u) (%u, %u)",
             evenscroll, evenhiscroll, oddscroll, oddhiscroll);
     y = wdbgLineOut(hDC, s, x, y);
     
-    sprintf(s, "Visible bitplane data envelope (Hor) (Ver): (%d, %d) (%d, %d)",
+    sprintf(s, "Visible bitplane data envelope (Hor) (Ver): (%u, %u) (%u, %u)",
 	    diwxleft, diwxright, diwytop, diwybottom);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "DDF (First output cylinder, length in words): (%d, %d)",
+    sprintf(s, "DDF (First output cylinder, length in words): (%u, %u)",
 	    graph_DDF_start, graph_DDF_word_count);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "DIW (First visible pixel, last visible pixel + 1): (%d, %d)",
+    sprintf(s, "DIW (First visible pixel, last visible pixel + 1): (%u, %u)",
 	    graph_DIW_first_visible, graph_DIW_last_visible);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Raster beam position (x, y): (%d, %d)",
+    sprintf(s, "Raster beam position (x, y): (%u, %u)",
 	    busGetRasterX(), busGetRasterY());
     y = wdbgLineOut(hDC, s, x, y);    
     
@@ -956,19 +956,19 @@ void wdbgUpdateEventState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    sprintf(s, "Next Cpu      - %d", cpuEvent.cycle);
+    sprintf(s, "Next Cpu      - %u", cpuEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next Copper   - %d", copperEvent.cycle);
+    sprintf(s, "Next Copper   - %u", copperEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next EOL      - %d", eolEvent.cycle);
+    sprintf(s, "Next EOL      - %u", eolEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next Blitter  - %d", blitterEvent.cycle);
+    sprintf(s, "Next Blitter  - %u", blitterEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Next EOF      - %d", eofEvent.cycle);
+    sprintf(s, "Next EOF      - %u", eofEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
     DeleteDC(hDC_image);
@@ -1031,7 +1031,7 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 */
     for (i = 0; i < 4; i++) {
       sprintf(s,
-	      "Ch%i State: %2d Lenw: %5d Len: %5d per: %5d Pcnt: %5X Vol: %5d",
+	      "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u",
 	      i,
 	      (audstate[i] == soundState0) ? 0 :
 	      (audstate[i] == soundState1) ? 1 :

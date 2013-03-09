@@ -64,7 +64,7 @@ void sysinfoLogErrorMessageFromSystem (void)
 
   dwError = GetLastError ();
 
-  sprintf (szTemp, "Error %d: ", dwError);
+  sprintf (szTemp, "Error %u: ", dwError);
   cMsgLen =
     FormatMessage (FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER
 		   | 40, NULL, dwError, MAKELANGID (0, SUBLANG_ENGLISH_US),

@@ -939,7 +939,7 @@ void gfxDrvDDrawDeviceInformationDump(void) {
   STR s[120];
   
   sprintf(s,
-    "gfxdrv; DirectDraw devices found: %d\n",
+    "gfxdrv; DirectDraw devices found: %u\n",
     listCount(gfx_drv_ddraw_devices));
   fellowAddLog(s);
   for (l = gfx_drv_ddraw_devices; l != NULL; l = listNext(l)) {
@@ -1158,10 +1158,10 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device) {
     mode->id = id;
     if (!ddmode->windowed) {
       char hz[16];
-      if (ddmode->refresh != 0) sprintf(hz, "%dHZ", ddmode->refresh);
+      if (ddmode->refresh != 0) sprintf(hz, "%uHZ", ddmode->refresh);
       else hz[0] = 0;
       sprintf(mode->name,
-      "%dWx%dHx%dBPPx%s",
+      "%uWx%uHx%uBPPx%s",
       ddmode->width,
       ddmode->height,
       ddmode->depth,
@@ -1169,7 +1169,7 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device) {
     }
     else {
       sprintf(mode->name,
-      "%dWx%dHxWindow",
+      "%uWx%uHxWindow",
       ddmode->width,
       ddmode->height);
     }
@@ -1212,14 +1212,14 @@ void gfxDrvDDrawModeInformationDump(gfx_drv_ddraw_device *ddraw_device) {
   STR s[120];
   
   sprintf(s,
-    "gfxdrv: DirectDraw modes found: %d\n",
+    "gfxdrv: DirectDraw modes found: %u\n",
     listCount(ddraw_device->modes));
   fellowAddLog(s);
   for (l = ddraw_device->modes; l != NULL; l = listNext(l)) {
     gfx_drv_ddraw_mode *tmpmode = (gfx_drv_ddraw_mode *) listNode(l);
     if (!tmpmode->windowed)
       sprintf(s,
-      "gfxdrv: Mode Description: %dWx%dHx%dBPPx%dHZ (%d,%d,%d,%d,%d,%d)\n",
+      "gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)\n",
       tmpmode->width,
       tmpmode->height,
       tmpmode->depth,
@@ -1232,7 +1232,7 @@ void gfxDrvDDrawModeInformationDump(gfx_drv_ddraw_device *ddraw_device) {
       tmpmode->bluesize);
     else
       sprintf(s,
-      "gfxdrv: Mode Description: %dWx%dHxWindow\n",
+      "gfxdrv: Mode Description: %uWx%uHxWindow\n",
       tmpmode->width,
       tmpmode->height);
     fellowAddLog(s);

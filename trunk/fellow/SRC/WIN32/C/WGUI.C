@@ -379,7 +379,7 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
   }
   pwguicfgwdm = (wgui_drawmode *)listNode(listnode);
   if (pwguicfgwdm != NULL) {
-    sprintf(char_buffer, "%d by %d pixels", pwguicfgwdm->width, pwguicfgwdm->height);
+    sprintf(char_buffer, "%u by %u pixels", pwguicfgwdm->width, pwguicfgwdm->height);
   } else {
     sprintf(char_buffer, "unknown screen area");
   }
@@ -1410,7 +1410,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     memset(&lvi, 0, sizeof(lvi));
     lvi.mask = LVIF_TEXT;
-    sprintf(stmp, "FELLOW%d", i);
+    sprintf(stmp, "FELLOW%u", i);
     lvi.iItem = i;
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
@@ -1426,22 +1426,22 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     lvi.cchTextMax = (int) strlen(stmp);
     lvi.iSubItem = 2;
     ListView_SetItem(lvHWND, &lvi);
-    sprintf(stmp, "%d", hf->sectorspertrack);
+    sprintf(stmp, "%u", hf->sectorspertrack);
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
     lvi.iSubItem = 3;
     ListView_SetItem(lvHWND, &lvi);
-    sprintf(stmp, "%d", hf->surfaces);
+    sprintf(stmp, "%u", hf->surfaces);
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
     lvi.iSubItem = 4;
     ListView_SetItem(lvHWND, &lvi);
-    sprintf(stmp, "%d", hf->reservedblocks);
+    sprintf(stmp, "%u", hf->reservedblocks);
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
     lvi.iSubItem = 5;
     ListView_SetItem(lvHWND, &lvi);
-    sprintf(stmp, "%d", hf->bytespersector);
+    sprintf(stmp, "%u", hf->bytespersector);
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
     lvi.iSubItem = 6;
@@ -1542,7 +1542,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     memset(&lvi, 0, sizeof(lvi));
     lvi.mask = LVIF_TEXT;
-    sprintf(stmp, "DH%d", i);
+    sprintf(stmp, "DH%u", i);
     lvi.iItem = i;
     lvi.pszText = stmp;
     lvi.cchTextMax = (int) strlen(stmp);
@@ -2345,16 +2345,16 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     switch (uMsg) {
 	case WM_INITDIALOG:
-	  sprintf(stmp, "%d", wgui_current_hardfile_edit_index);
+	  sprintf(stmp, "%u", wgui_current_hardfile_edit_index);
 	  ccwStaticSetText(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT, stmp);
 	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
-	  sprintf(stmp, "%d", wgui_current_hardfile_edit->sectorspertrack);
+	  sprintf(stmp, "%u", wgui_current_hardfile_edit->sectorspertrack);
 	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp);
-	  sprintf(stmp, "%d", wgui_current_hardfile_edit->surfaces);
+	  sprintf(stmp, "%u", wgui_current_hardfile_edit->surfaces);
 	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp);
-	  sprintf(stmp, "%d", wgui_current_hardfile_edit->reservedblocks);
+	  sprintf(stmp, "%u", wgui_current_hardfile_edit->reservedblocks);
 	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp);
-	  sprintf(stmp, "%d", wgui_current_hardfile_edit->bytespersector);
+	  sprintf(stmp, "%u", wgui_current_hardfile_edit->bytespersector);
 	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp);
 	  return TRUE;
 	case WM_COMMAND:

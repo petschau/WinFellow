@@ -958,7 +958,7 @@ void wsprxctl(UWO data, ULO address)
   spry_debug[sprnr] = (spry_debug[sprnr] & 0x0ff) | ((data & 0x4) << 6);
   sprly_debug[sprnr] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
   if (output_sprite_log == TRUE) {
-    sprintf(buffer, "(y, x) = (%d, %d): call to spr%dctl (sprx = %d, spry = %d, sprly = %d)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], spry_debug[sprnr], sprly_debug[sprnr]);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n", busGetRasterY(), 2*(busGetRasterX() - 16), sprnr, sprx_debug[sprnr], spry_debug[sprnr], sprly_debug[sprnr]);
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
