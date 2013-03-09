@@ -92,7 +92,7 @@ static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
 static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
-static ULO lRetroPlatformRecursiveDevice = 0;
+static LON lRetroPlatformClippingOffsetLeft = 0, lRetroPlatformClippingOffsetTop = 0;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
@@ -190,6 +190,20 @@ int RetroPlatformEnumerateJoysticks(void) {
     njoyCount);
 
   return njoyCount;
+}
+
+void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
+  lRetroPlatformClippingOffsetLeft = (lOffsetLeft - 368) / 2;
+
+  fellowAddLog("RetroPlatformSetClippingOffsetLeft(): set left offset to %d\n", 
+    lRetroPlatformClippingOffsetLeft);
+}
+
+void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
+  lRetroPlatformClippingOffsetTop = lOffsetTop;
+
+  fellowAddLog("RetroPlatformSetClippingOffsetTop(): set top offset to %d\n", 
+    lRetroPlatformClippingOffsetTop);
 }
 
 /** configure keyboard layout to custom key mappings
@@ -405,6 +419,14 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 #endif
 
   return bResult;
+}
+
+ULO RetroPlatformGetClippingOffsetLeft(void) {
+  return lRetroPlatformClippingOffsetLeft;
+}
+
+ULO RetroPlatformGetClippingOffsetTop(void) {
+  return lRetroPlatformClippingOffsetTop;
 }
 
 /** Verify state of the emulation engine.
