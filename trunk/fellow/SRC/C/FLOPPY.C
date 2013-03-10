@@ -397,8 +397,8 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync) {
   /* Track and sector info */
 
   tmp = 0xff000000 | (tra<<16) | (sec<<8) | (11 - sec);
-  odd = (tmp & MFM_MASK) | MFM_FILLL;
-  even = ((tmp>>1) & MFM_MASK) | MFM_FILLL;
+  odd = (tmp & MFM_MASK);
+  even = ((tmp>>1) & MFM_MASK);
   *(dest +  8) = (UBY) ((even & 0xff000000)>>24);
   *(dest +  9) = (UBY) ((even & 0xff0000)>>16);
   *(dest + 10) = (UBY) ((even & 0xff00)>>8);
