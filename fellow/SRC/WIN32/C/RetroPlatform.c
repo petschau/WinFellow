@@ -499,6 +499,13 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 	return bResult;
 }
 
+
+/** Post message to the player to signalize that the guest wants to escape the mouse cursor.
+ */
+void RetroPlatformPostEscaped(void) {
+  RetroPlatformPostMessage(RP_IPC_TO_HOST_ESCAPED, 0, 0, &RetroPlatformGuestInfo);
+}
+
 /** Control status of the RetroPlatform floppy drive LEDs.
  *
  * Only sends status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages.
@@ -1233,7 +1240,7 @@ void RetroPlatformEndOfFrame(void) {
       fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
       lRetroPlatformEscapeKeyTargetHoldTime = 0;
 
-      RetroPlatformPostMessage(RP_IPC_TO_HOST_ESCAPED, 0, 0, &RetroPlatformGuestInfo);
+      RetroPlatformPostEscaped();
     }
   }
 }

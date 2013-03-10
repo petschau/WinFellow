@@ -919,10 +919,16 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode()) {
-    if( pressed ( RetroPlatformGetEscapeKey() ))
-      issue_event( EVENT_RPESCAPE_ACTIVE );
-    if( released ( RetroPlatformGetEscapeKey() ))
-      issue_event( EVENT_RPESCAPE_INACTIVE );
+    if(RetroPlatformGetEmulationState()) {
+      if( pressed ( RetroPlatformGetEscapeKey() ))
+        issue_event( EVENT_RPESCAPE_ACTIVE );
+      if( released ( RetroPlatformGetEscapeKey() ))
+        issue_event( EVENT_RPESCAPE_INACTIVE );
+    }
+    else {
+      if( pressed ( RetroPlatformGetEscapeKey() ))
+        RetroPlatformPostEscaped();
+    }
   }
 #endif
 
