@@ -650,26 +650,28 @@ void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device) {
   memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-  {
-    LONG left, top, right, bottom;
-    RECT *temp;
+  if(RetroPlatformGetMode()) {
+    if((RetroPlatformGetClippingOffsetLeft() != 0) && (RetroPlatformGetClippingOffsetTop() != 0)) {
+      LONG left, top, right, bottom;
+      RECT *temp;
 
-    temp = &ddraw_device->hwnd_clientrect_screen;
+      temp = &ddraw_device->hwnd_clientrect_screen;
 
-    left   = 0-RetroPlatformGetClippingOffsetLeft();
-    top    = 0-RetroPlatformGetClippingOffsetTop();
-    right  = (RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 ) - RetroPlatformGetClippingOffsetLeft();
-    bottom = (RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2) - RetroPlatformGetClippingOffsetTop();
+      if(RetroPlatformGetClippingOffsetLeft() != 0) {
+        left   = 0-RetroPlatformGetClippingOffsetLeft();
+        right  = (RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 ) - RetroPlatformGetClippingOffsetLeft();
+      }
+    
+      if(RetroPlatformGetClippingOffsetTop() != 0) {
+        top    = 0-RetroPlatformGetClippingOffsetTop();
+        bottom = (RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2) - RetroPlatformGetClippingOffsetTop();
+      }
 
-    fellowAddLog("gfxDrvWindowFindClientRect(): calculated a client rectangle of %d,%d-%d,%d...\n",
-      left,top,right,bottom);
-
-    SetRect(&ddraw_device->hwnd_clientrect_screen, left, top, right, bottom);
+      SetRect(&ddraw_device->hwnd_clientrect_screen, left, top, right, bottom);
+    }
   }
 #endif
  
-
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen);
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen + 1);
 }
