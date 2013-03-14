@@ -648,6 +648,28 @@ BOOLE gfxDrvWindowClassInitialize(void) {
 void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device) {
   GetClientRect(gfx_drv_hwnd, &ddraw_device->hwnd_clientrect_win);
   memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+  {
+    LONG left, top, right, bottom;
+    RECT *temp;
+
+    temp = &ddraw_device->hwnd_clientrect_screen;
+
+    left   = 0-RetroPlatformGetClippingOffsetLeft();
+    top    = 0-RetroPlatformGetClippingOffsetTop();
+    right  = (RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 ) - RetroPlatformGetClippingOffsetLeft();
+    bottom = (RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2) - RetroPlatformGetClippingOffsetTop();
+
+    fellowAddLog("gfxDrvWindowFindClientRect(): calculated a client rectangle of %d,%d-%d,%d...\n",
+      left,top,right,bottom);
+
+    SetRect(&ddraw_device->hwnd_clientrect_screen, left, top, right, bottom);
+  }
+#endif
+ 
+
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen);
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen + 1);
 }
@@ -718,12 +740,20 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
       DWORD dwExStyle = 0;
       HWND hParent = NULL;
       int x = 0, y = 0;
+      ULO width  = ddraw_device->drawmode->width;
+      ULO height = ddraw_device->drawmode->height;
 
 #ifdef RETRO_PLATFORM
       if(RetroPlatformGetMode()) {
         dwStyle = WS_POPUP;
         dwExStyle = WS_EX_TOOLWINDOW;
         hParent = RetroPlatformGetParentWindowHandle();
+
+        width  = cfgGetScreenWidth(gfxdrv_config);
+        height = cfgGetScreenHeight(gfxdrv_config);
+
+        fellowAddLog("RetroPlatform: override window dimensions to %ux%u, offset %u,%u...\n",
+          width, height, RetroPlatformGetClippingOffsetLeft(), RetroPlatformGetClippingOffsetTop());
       }
 #endif
 
@@ -733,8 +763,8 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
         dwStyle,
         0, // CW_USEDEFAULT,
         0, // SW_SHOW,
-        ddraw_device->drawmode->width,
-        ddraw_device->drawmode->height,
+        width,
+        height,
         hParent,
         NULL,
         win_drv_hInstance,
@@ -1612,8 +1642,20 @@ gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device) {
     ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
     ddraw_device->ddsdSecondary.ddsCaps.dwCaps = gfxDrvDDrawVideomemLocationFlags(pass)
 						 | DDSCAPS_OFFSCREENPLAIN;
-    ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
-    ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
+
+#ifdef RETRO_PLATFORM
+    if(!RetroPlatformGetMode()) {
+#endif
+      ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
+      ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
+#ifdef RETRO_PLATFORM
+    }
+    else {
+      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+    }
+#endif
+    
     if ((err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
                                           &(ddraw_device->ddsdSecondary),
                                           &(ddraw_device->lpDDSSecondary),
