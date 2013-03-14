@@ -194,6 +194,7 @@ int RetroPlatformEnumerateJoysticks(void) {
 
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
   lRetroPlatformClippingOffsetLeft = (lOffsetLeft - 368) / 2;
+  lRetroPlatformClippingOffsetLeft -= 8;
 
   fellowAddLog("RetroPlatformSetClippingOffsetLeft(): set left offset to %d\n", 
     lRetroPlatformClippingOffsetLeft);
@@ -201,6 +202,7 @@ void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
 
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
   lRetroPlatformClippingOffsetTop = lOffsetTop;
+  lRetroPlatformClippingOffsetTop -= 52;
 
   fellowAddLog("RetroPlatformSetClippingOffsetTop(): set top offset to %d\n", 
     lRetroPlatformClippingOffsetTop);

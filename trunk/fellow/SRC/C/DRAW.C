@@ -40,6 +40,10 @@
 #include "fileops.h"
 #include "sprite.h"
 
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
+
 /* 
 Enable this for detailed profiling, log written to drawprofile.txt
 It can be imported into excel for better viewing
@@ -992,6 +996,14 @@ BOOLE drawSetMode(ULO width,
 {
   felist *l;
   ULO allow_any_refresh;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode()) {
+    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+  }
+#endif
+
   for (allow_any_refresh = 0; allow_any_refresh < 2; allow_any_refresh++)
     for (l = draw_modes; l != NULL; l = listNext(l)) {
       draw_mode *dm = (draw_mode*) listNode(l);

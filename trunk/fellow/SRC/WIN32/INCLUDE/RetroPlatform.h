@@ -67,6 +67,9 @@ extern void  RetroPlatformSetWindowInstance(HINSTANCE);
 extern void  RetroPlatformShutdown(void);
 extern void  RetroPlatformStartup(void);
 
+#define RETRO_PLATFORM_MAX_PAL_LORES_WIDTH 376
+#define RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT 288
+
 #endif
 
 #endif
