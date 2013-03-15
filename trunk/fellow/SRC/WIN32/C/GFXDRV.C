@@ -1498,15 +1498,18 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
     }
 #ifdef RETRO_PLATFORM
     else {
-      srcwin.left   = RetroPlatformGetClippingOffsetLeft();
-      srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetClippingOffsetLeft();
-		  srcwin.top    = RetroPlatformGetClippingOffsetTop();
-		  srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetClippingOffsetTop();
-
-#ifdef _DEBUG
-      fellowAddLog("gfxDrvDDrawSurfaceBlit(): using blit source area %u,%u-%u,%u...\n",
-        srcwin.left, srcwin.top, srcwin.right, srcwin.bottom);
-#endif
+      if((RetroPlatformGetClippingOffsetLeft() != 0) && (RetroPlatformGetClippingOffsetTop() != 0)) {
+        srcwin.left   = RetroPlatformGetClippingOffsetLeft();
+        srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetClippingOffsetLeft();
+		    srcwin.top    = RetroPlatformGetClippingOffsetTop();
+		    srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetClippingOffsetTop();
+      }
+      else {
+        srcwin.left = 0;
+        srcwin.right = ddraw_device->mode->width;
+		    srcwin.top = 0;
+		    srcwin.bottom = ddraw_device->mode->height;
+      }
     }
 #endif
 	}
@@ -1542,7 +1545,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 	/* This can fail when a surface is lost */
   if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
 		(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
-		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0)  & !RetroPlatformGetMode())) ? NULL : &srcwin,
+		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0) & !RetroPlatformGetMode())) ? NULL : &srcwin,
 		DDBLT_ASYNC, &bltfx)) != DD_OK)
 	{
 		gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
