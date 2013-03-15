@@ -647,31 +647,7 @@ BOOLE gfxDrvWindowClassInitialize(void) {
 
 void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device) {
   GetClientRect(gfx_drv_hwnd, &ddraw_device->hwnd_clientrect_win);
-  memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
-
-#ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
-    if((RetroPlatformGetClippingOffsetLeft() != 0) && (RetroPlatformGetClippingOffsetTop() != 0)) {
-      LONG left, top, right, bottom;
-      RECT *temp;
-
-      temp = &ddraw_device->hwnd_clientrect_screen;
-
-      if(RetroPlatformGetClippingOffsetLeft() != 0) {
-        left   = 0-RetroPlatformGetClippingOffsetLeft();
-        right  = (RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 ) - RetroPlatformGetClippingOffsetLeft();
-      }
-    
-      if(RetroPlatformGetClippingOffsetTop() != 0) {
-        top    = 0-RetroPlatformGetClippingOffsetTop();
-        bottom = (RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2) - RetroPlatformGetClippingOffsetTop();
-      }
-
-      SetRect(&ddraw_device->hwnd_clientrect_screen, left, top, right, bottom);
-    }
-  }
-#endif
- 
+  memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT)); 
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen);
   ClientToScreen(gfx_drv_hwnd, (LPPOINT) &ddraw_device->hwnd_clientrect_screen + 1);
 }
@@ -1511,10 +1487,28 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 	/* Prevent horizontal scaling of the offscreen buffer */
 	if (ddraw_device->mode->windowed && !gfx_drv_stretch_always)
 	{
-		srcwin.left = 0;
-		srcwin.right = ddraw_device->mode->width;
-		srcwin.top = 0;
-		srcwin.bottom = (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+#ifdef RETRO_PLATFORM
+    if(!RetroPlatformGetMode())
+#endif
+    {
+		  srcwin.left = 0;
+      srcwin.right = ddraw_device->mode->width;
+		  srcwin.top = 0;
+		  srcwin.bottom = (ddraw_device->mode->height >> (ddraw_device->vertical_scale - 1));
+    }
+#ifdef RETRO_PLATFORM
+    else {
+      srcwin.left   = RetroPlatformGetClippingOffsetLeft();
+      srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetClippingOffsetLeft();
+		  srcwin.top    = RetroPlatformGetClippingOffsetTop();
+		  srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetClippingOffsetTop();
+
+#ifdef _DEBUG
+      fellowAddLog("gfxDrvDDrawSurfaceBlit(): using blit source area %u,%u-%u,%u...\n",
+        srcwin.left, srcwin.top, srcwin.right, srcwin.bottom);
+#endif
+    }
+#endif
 	}
 	else
 	{
@@ -1546,10 +1540,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 	}
 
 	/* This can fail when a surface is lost */
-	if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
+  if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
 		(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
-		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0))) ? NULL : &srcwin,
-		DDBLT_ASYNC, &bltfx)) != DD_OK) 
+		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0)  & !RetroPlatformGetMode())) ? NULL : &srcwin,
+		DDBLT_ASYNC, &bltfx)) != DD_OK)
 	{
 		gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
 		if (err == DDERR_SURFACELOST) {
