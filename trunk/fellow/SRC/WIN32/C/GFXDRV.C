@@ -1542,11 +1542,18 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 		}
 	}
 
+  RECT *srcrect = (((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) ||
+    (ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0)) ? NULL : &srcwin ;
+
+#ifdef RETRO_PLATFORM
+  if (RetroPlatformGetMode())
+    srcrect = &srcwin;
+#endif
+
 	/* This can fail when a surface is lost */
   if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
 		(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
-		(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0) & !RetroPlatformGetMode())) ? NULL : &srcwin,
-		DDBLT_ASYNC, &bltfx)) != DD_OK)
+		srcrect, DDBLT_ASYNC, &bltfx)) != DD_OK)
 	{
 		gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
 		if (err == DDERR_SURFACELOST) {
