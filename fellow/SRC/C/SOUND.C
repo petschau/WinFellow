@@ -435,6 +435,7 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
 {
   ULO samples_added = 0;
   ULO i;
+
   if (dmacon & audiodmaconmask[ch])
   {
     for (i = 0; i < count; ++i)
@@ -442,22 +443,40 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
       audstate[ch](ch);
       if ((!halfscale) || (halfscale && !odd))
       {
-	if (ch == 0 || ch == 3) buffer_left[samples_added++] += (WOR) auddatw[ch];
-	else buffer_right[samples_added++] += (WOR) auddatw[ch];
+	if (ch == 0 || ch == 3)
+	{
+	  buffer_left[samples_added++] += (WOR) auddatw[ch];
+	}
+	else
+	{
+	  buffer_right[samples_added++] += (WOR) auddatw[ch];
+	}
       }
       odd = !odd;
     }
   }
   else
   {
-    if ((intreq & audioirqmask[ch]) == 0) memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
-    if (!halfscale) samples_added = count;
-    else 
+    if ((intreq & audioirqmask[ch]) == 0 && auddat_set[ch])
+    {
+      auddat_set[ch] = FALSE;
+      memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
+    }
+    if (!halfscale)
+    {
+      samples_added = count;
+    }
+    else
+    {
       for (i = 0; i < count; ++i)
       {
-	if (!odd) samples_added++;
+	if (!odd)
+	{
+	  samples_added++;
+	}
 	odd = !odd;
       }
+    }
   }
   return samples_added;
 }
