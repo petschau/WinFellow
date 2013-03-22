@@ -39,15 +39,6 @@
  *  *Important Note:* The Cloanto modules make heavy use of wide character strings.
  *  As WinFellow uses normal strings, conversion is usually required (using, for example,
  *  wsctombs and mbstowcs).
- * 
- *  @todo free allocated elements, cfgmanager, ... in RetroPlatform module
- *  @todo make resolution configurable via config file dynamically instead of from the fixed set available from the GUI
- *  @todo auto-resizing of window based on scaling, clipping and resolution inside emulation; lores, hires 1x, 2x
- *  @todo fullscreen resolution support for RetroPlatform
- *  @todo drive sounds not audible, these are produced by the emulator, not the player - how to determine if setting is active or not?
- *  @todo pick up implementation of input devices (keyboard joysticks) based on VICE implementation once it is available
- *  @bug  reset functionality not fully implemented, test soft- & hard reset
- *  @bug  the sound stops while the window does not have focus, while the rest of the emulation continues
  */
 
 #include "defs.h"
