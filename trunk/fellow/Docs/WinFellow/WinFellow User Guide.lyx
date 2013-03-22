@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.11 (2013/03/22)
+v0.12 (2013/03/22)
 \end_layout
 
 \begin_layout Standard
@@ -241,6 +241,12 @@ Andreas Eibach
 
 \noun on
 Damien Green
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Vincent Haot
 \end_layout
 
 \begin_layout Standard
@@ -500,6 +506,20 @@ Marcelo Gurgacz
 , as well as numerous others for taking interest in the emulator.
 \end_layout
 
+\begin_layout Standard
+Thanks also to the Cloanto RetroPlatform team (
+\noun on
+Mike C.
+ Battilana
+\noun default
+, 
+\noun on
+Oscar Sillani
+\noun default
+ and anyone else who may have been involved) for their support integrating
+ WinFellow into Amiga Forever.
+\end_layout
+
 \begin_layout Section*
 Website Translations
 \end_layout
@@ -634,6 +654,62 @@ pagebreak
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part
+What's New in WinFellow 0.5?
+\end_layout
+
+\begin_layout Standard
+Thanks for your interest in WinFellow.
+ There are a lot of changes in version 0.5, with the most significant ones
+ being:
+\end_layout
+
+\begin_layout Itemize
+conversion of all assembler code to C
+\end_layout
+
+\begin_layout Itemize
+basic Cloanto Amiga Forever/RetroPlatform Player integration; it does not
+ yet support all features (only floppy drives are supported, clipping works
+ only using static offsets, but not in automatic mode).
+ Currently the Amiga 500, 500 Plus, 600, 1000 and 2000 models are supported;
+ the A500 profile supports an optional A-501 memory expansion card.
+\end_layout
+
+\begin_layout Itemize
+support for ROM decryption using AmigaForever.dll
+\end_layout
+
+\begin_layout Itemize
+revamped debugger using a more modern GUI design
+\end_layout
+
+\begin_layout Itemize
+support for 2 joysticks, usable simultaneously
+\end_layout
+
+\begin_layout Itemize
+CPU instruction bug fix (RTD 68010 instruction, EORW, ORW)
+\end_layout
+
+\begin_layout Itemize
+added the ability to generate minidumps, which allows us to debug crashes
+ that are reported to us
+\end_layout
+
+\begin_layout Itemize
+update of project files to current Visual Studio (2012 Update 1) and DirectX;
+ code can now be compiled using Express editions without further dependencies
+\end_layout
+
+\begin_layout Itemize
+new versioning scheme, based on SVN revisions
+\end_layout
+
+\begin_layout Itemize
+a lot of minor bugfixes
 \end_layout
 
 \begin_layout Part
