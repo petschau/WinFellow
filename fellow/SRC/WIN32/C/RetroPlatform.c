@@ -546,10 +546,8 @@ void RetroPlatformPostEscaped(void) {
  *
  * Only sends status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages.
  */
-BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMotorActive) {
-	BOOLE bWriteActivity = diskDMAen == 3 && !((floppy[lFloppyDriveNo].sel | !floppy[lFloppyDriveNo].enabled) & (1 << lFloppyDriveNo));
-
-  if(lFloppyDriveNo > 3) 
+BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMotorActive, const BOOLE bWriteActivity) {
+	if(lFloppyDriveNo > 3) 
     return FALSE;
 
   return RetroPlatformPostMessage(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD (RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo),
@@ -572,7 +570,7 @@ BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMot
 BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *szImageName, const BOOLE bWriteProtected) {
   BOOLE bResult;
   struct RPDeviceContent rpDeviceContent = { 0 };
-  
+
   if (!bRetroPlatformInitialized)
 		return FALSE;
 
@@ -626,6 +624,26 @@ BOOLE RetroPlatformSendFloppyDriveReadOnly(const ULO lFloppyDriveNo, const BOOLE
     0, &RetroPlatformGuestInfo, NULL);
 
   fellowAddLog("RetroPlatformSendFloppyDriveReadOnly(): %s.\n",
+    bResult ? "successful" : "failed");
+    
+  return bResult;
+}
+
+/** Send floppy turbo mode state to RetroPlatform host.
+ * @param[in] bTurbo flag indicating state of turbo mode
+ * @return TRUE if message sent successfully, FALSE otherwise.
+ * @callergraph
+ */
+BOOLE RetroPlatformSendFloppyTurbo(const BOOLE bTurbo) {
+  BOOLE bResult;
+
+  if(!bRetroPlatformInitialized)
+    return FALSE;
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_TURBO, RP_TURBO_FLOPPY, 
+    bTurbo ? RP_TURBO_FLOPPY : 0, NULL, 0, &RetroPlatformGuestInfo, NULL);
+
+  fellowAddLog("RetroPlatformSendFloppyDriveTurbo(): %s.\n",
     bResult ? "successful" : "failed");
     
   return bResult;
