@@ -318,7 +318,7 @@ void floppyMotorSet(ULO drive, BOOLE mtr) {
     drawSetLED(drive, !mtr);
 #ifdef RETRO_PLATFORM
     if(RetroPlatformGetMode())
-      RetroPlatformSendFloppyDriveLED(drive, !mtr);
+      RetroPlatformSendFloppyDriveLED(drive, !mtr, FALSE);
 #endif
   }
   floppy[drive].motor = !mtr;
@@ -865,6 +865,11 @@ void floppyImageIPFLoad(ULO drive) {
  */
 void floppySetDiskImage(ULO drive, STR *diskname) {
   fs_navig_point *fsnp;
+
+#ifdef _DEBUG
+  fellowAddLog("floppySetDiskImage(%u, %s)...\n", drive, diskname);
+#endif
+
   if (strcmp(diskname, floppy[drive].imagename) == 0) 
     return; /* Same image */
   floppyImageRemove(drive);
@@ -946,6 +951,11 @@ void floppySetReadOnly(ULO drive, BOOLE readonly) {
 
 void floppySetFastDMA(BOOLE fastDMA) {
   floppy_fast = fastDMA;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    RetroPlatformSendFloppyTurbo(fastDMA);
+#endif
 }
 
 /*========================*/
@@ -1125,6 +1135,12 @@ void floppyDMAWriteInit(LON drive) {
   ULO pos = dskpt & 0x1ffffe;
   ULO track_lin;
   BOOLE ended = FALSE;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    RetroPlatformSendFloppyDriveLED(drive, TRUE, TRUE);
+#endif
+
   if ((drive == -1) || !floppyDMAChannelOn()) ended = TRUE;
   track_lin = floppyGetLinearTrack(drive);
   while (length > 0) {
