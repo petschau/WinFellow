@@ -39,6 +39,41 @@
  *  *Important Note:* The Cloanto modules make heavy use of wide character strings.
  *  As WinFellow uses normal strings, conversion is usually required (using, for example,
  *  wsctombs and mbstowcs).
+ * 
+ * The RetroPlatform WinFellow plug-in will, if applicable for an RP9, start 
+ * WinFellow with the following command-line arguments:
+ * 
+ * -rphost:
+ * ID of the RetroPlatform host, used to initiate IPC communication.
+ *
+ * -datapath:
+ * the path where WinFellow specific runtime information should be stored.
+ * 
+ * -f:
+ * The -f parameter provides an initial configuration, that is created in the following order:
+ * -# the WinFellow plug-in's shared.ini is applied
+ * -# a model-specific INI is applied on top of that
+ * -# the WinFellow plug-in overrides a number of things:
+ *    - if "No interlace" is checked in the compatibility settings, fellow.gfx_deinterlace is set to no, otherwise to yes
+ *    - if "Turbo CPU" is checked, cpu_speed is set to 0
+ *    - if the user has enabled "Always speed up drives where possible", "Turbo floppy" is set to yes in the RP9,
+ *       and  "Always use more accurate (slower) emulation" in the Option dialog is NOT set, fellow.floppy_fast_dma is set to yes,
+ *       otherwise to no
+ *    - gfx_width, gfx_height, gfx_offset_left and gfx_offset_top are added into the configuration depending on the
+ *      settings of the RP9; the numbers assume the maximum pixel density (horizontal values super hires, vertical
+ *      values interlace), so depending on the mode displayed, conversion is required; the clipping offsets need to
+*       be adjusted (384 to the top, 52 to the left)
+ * -# the WinFellow plug-in's override.ini is applied on top of that, to apply any settings that always must be active
+ *
+ * -rpescapekey:
+ * the DirectInput keycode of the escape key
+ *
+ * -rpescapeholdtime:
+ * the time in milliseconds after which the escape key should actually escape
+ *
+ * -rpscreenmode: 
+ * the initial screenmode the guest should activate at startup (e.g. 1X, 2X, ...).
+ * It is the numerical equivalent of the RP_SCREENMODE_* flags (see RetroPlatformIPC.h).
  */
 
 #include "defs.h"
@@ -56,7 +91,7 @@
 #include "joydrv.h"
 #include "CpuIntegration.h"
 #include "kbddrv.h"
-#include "dxver.h" ///< needed for DirectInput based joystick detection code
+#include "dxver.h" /// needed for DirectInput based joystick detection code
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
@@ -183,21 +218,25 @@ int RetroPlatformEnumerateJoysticks(void) {
   return njoyCount;
 }
 
+/** Set clipping offset that is applied to the left of the picture.
+ */
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
-  lRetroPlatformClippingOffsetLeft = (lOffsetLeft - 368) / 2;
-  
-  if(lOffsetLeft >= 8)
-    lRetroPlatformClippingOffsetLeft -= 8;
+  lRetroPlatformClippingOffsetLeft = lOffsetLeft;
+
+  if(lOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
+    lRetroPlatformClippingOffsetLeft = (lOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
 
   fellowAddLog("RetroPlatformSetClippingOffsetLeft(): set left offset to %d\n", 
     lRetroPlatformClippingOffsetLeft);
 }
 
+/** Set clipping offset that is applied to the top of the picture
+ */
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
   lRetroPlatformClippingOffsetTop = lOffsetTop;
   
-  if(lOffsetTop >= 52)
-    lRetroPlatformClippingOffsetTop -= 52;
+  if(lOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
+    lRetroPlatformClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
 
   fellowAddLog("RetroPlatformSetClippingOffsetTop(): set top offset to %d\n", 
     lRetroPlatformClippingOffsetTop);
