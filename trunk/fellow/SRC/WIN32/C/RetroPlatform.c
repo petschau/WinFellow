@@ -596,7 +596,7 @@ BOOLE RetroPlatformSendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *s
     &rpDeviceContent, sizeof(struct RPDeviceContent), &RetroPlatformGuestInfo,
     NULL);
 
-  fellowAddLog("RetroPlatformSendFloppyDriveContent(%d,%s): %s.\n",
+  fellowAddLog("RetroPlatformSendFloppyDriveContent(%d, '%s'): %s.\n",
     lFloppyDriveNo, szImageName, bResult ? "successful" : "failed");
   
   return bResult;
