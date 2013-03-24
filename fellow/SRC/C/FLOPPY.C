@@ -109,7 +109,10 @@ UWO dskbyt_tmp = 0;
 BOOLE dskbyt1_read = FALSE;
 BOOLE dskbyt2_read = FALSE;
 
-//#define FLOPPY_LOG
+#ifdef _DEBUG
+#define FLOPPY_LOG
+#endif 
+
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
@@ -743,6 +746,10 @@ ULO floppyImageGeometryCheck(fs_navig_point *fsnp, ULO drive) {
     floppy[drive].imagestatus = FLOPPY_STATUS_EXTENDED_OK;
     floppy[drive].tracks = 80;
   }
+  else if (strncmp(head, "UAE-1ADF", 8) == 0) {
+    floppy[drive].imagestatus = FLOPPY_STATUS_EXTENDED2_OK;
+    floppy[drive].tracks = 80;
+  }
 #ifdef FELLOW_SUPPORT_CAPS
   else if (strncmp(head, "CAPS", 4) == 0) {
     floppy[drive].imagestatus = FLOPPY_STATUS_IPF_OK;
@@ -865,10 +872,10 @@ void floppyImageIPFLoad(ULO drive) {
  */
 void floppySetDiskImage(ULO drive, STR *diskname) {
   fs_navig_point *fsnp;
+  BOOLE bSuccess = FALSE;
 
-#ifdef _DEBUG
-  fellowAddLog("floppySetDiskImage(%u, %s)...\n", drive, diskname);
-#endif
+  if(floppy[drive].enabled)
+    fellowAddLog("floppySetDiskImage(%u, '%s')...\n", drive, diskname);
 
   if (strcmp(diskname, floppy[drive].imagename) == 0) 
     return; /* Same image */
@@ -901,22 +908,31 @@ void floppySetDiskImage(ULO drive, STR *diskname) {
 	          switch (floppyImageGeometryCheck(fsnp, drive)) {
 				      case FLOPPY_STATUS_NORMAL_OK:
 				        floppyImageNormalLoad(drive);
+                bSuccess = TRUE;
 				        break;
 				      case FLOPPY_STATUS_EXTENDED_OK:
 				        floppyImageExtendedLoad(drive);
+                bSuccess = TRUE;
 				        break;
+              case FLOPPY_STATUS_EXTENDED2_OK:
+                fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: floppy image is in unsupported extended2 ADF format.\n",
+                  drive, diskname);
+                break;
   #ifdef FELLOW_SUPPORT_CAPS
 				      case FLOPPY_STATUS_IPF_OK:
 				        floppyImageIPFLoad(drive);
+                bSuccess = TRUE;
 				        break;
   #endif
 				      default:
 				        /* Error already set by floppyImageGeometryCheck() */
+                fellowAddLog("floppySetDiskImage(%u, '%s') ERROR: unexpected floppy image geometry status.\n",
+                  drive, diskname);
 				        break;
 	          }
 #ifdef RETRO_PLATFORM
-            if(RetroPlatformGetMode())
-              RetroPlatformSendFloppyDriveContent(drive, diskname, floppy[drive].writeprot);
+            if(RetroPlatformGetMode() && bSuccess)
+                RetroPlatformSendFloppyDriveContent(drive, diskname, floppy[drive].writeprot);
 #endif
 	        }
 	      }
