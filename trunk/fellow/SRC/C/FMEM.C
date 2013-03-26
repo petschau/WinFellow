@@ -155,25 +155,12 @@ const STR *memory_kickimage_versionstrings[14] = {
   Chip read register functions	
   ----------------------------*/
 
-  UWO rintreqr(ULO address)
-  {
-    return (UWO) intreq;
-  }
-
   /* SERDATR
   $dff018 */
 
   UWO rserdatr(ULO address)
   {
     return 0x2000;
-  }
-
-  /* INTENAR
-  $dff01c */
-
-  UWO rintenar(ULO address)
-  {
-    return (UWO) intenar;
   }
 
   // To simulate noise, return 0 and -1 every second time.
@@ -189,68 +176,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   void wdefault(UWO data, ULO address)
   {
     memory_undefined_io_writecounter++;
-  }
-
-  /*
-  ======
-  INTREQ
-  ======
-
-  $dff09c - Read from $dff01e
-
-  Paula
-  */
-
-  void wintreq(UWO data, ULO address)
-  {
-    if (data & 0x8000)
-    {
-      intreq = intreq | (data & 0x7fff);
-    }
-    else
-    {
-      intreq = intreq & ~(data & 0x7fff);
-      ciaUpdateIRQ(0);
-      ciaUpdateIRQ(1);
-    }
-    cpuIntegrationCheckPendingInterrupts();
-  }
-
-  /*
-  ======
-  INTENA
-  ======
-
-  $dff09a - Read from $dff01c
-
-  Paula
-  */
-
-  // If master bit is off, then INTENA is 0, else INTENA = INTENAR
-  // The master bit can not be read, the memory test in the kickstart
-  // depends on this.
-
-  void wintena(UWO data, ULO address)
-  {
-    if (data & 0x8000)
-    {
-      intenar = intenar | (data & 0x7fff);
-    }
-    else
-    {
-      intenar = intenar & ~(data & 0x7fff); 
-    }
-
-    if ((intenar & 0x00004000) == 0x00004000)
-    {
-      // Interrupts are enabled, check if any has not been serviced
-      intena = intenar;
-      cpuIntegrationCheckPendingInterrupts();
-    }
-    else
-    {
-      intena = 0;
-    }
   }
 
   /*============================================================================*/
@@ -272,11 +197,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   memoryWriteLongFunc memory_bank_writelong[65536];
   UBY *memory_bank_pointer[65536];                   /* Used by the filesystem */
   BOOLE memory_bank_pointer_can_write[65536];
-
-  /* Variables that correspond to various registers */
-
-  ULO intenar, intena, intreq;
-
 
   /*============================================================================*/
   /* Memory bank mapping functions                                              */
@@ -1971,10 +1891,6 @@ __inline  UWO memoryReadWord(ULO address)
   void memoryIoHandlersInstall(void)
   {
     memorySetIoReadStub(0x018, rserdatr);
-    memorySetIoReadStub(0x01c, rintenar);
-    memorySetIoReadStub(0x01e, rintreqr);
-    memorySetIoWriteStub(0x09a, wintena);
-    memorySetIoWriteStub(0x09c, wintreq);
   }
 
   /*==============*/
@@ -2035,7 +1951,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryEmemClear();
     memoryEmemCardsRemove();
     memoryFastCardAdd();
-    intreq = intena = intenar = 0;
     memoryBankClearAll();
     memoryChipMap(TRUE);
     memorySlowMap();
@@ -2055,7 +1970,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryEmemClear();
     memoryEmemCardsRemove();
     memoryFastCardAdd();
-    intreq = intena = intenar = 0;
     memoryBankClearAll();
     memoryChipMap(TRUE);
     memorySlowMap();

@@ -143,7 +143,6 @@ extern UBY memory_kick[];
 extern ULO memory_chipsize;
 extern UBY memory_emem[];
 
-extern ULO intenar,intena,intreq;
 extern ULO potgor;
 
 extern ULO memory_fault_address;

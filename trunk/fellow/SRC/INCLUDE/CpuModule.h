@@ -6,10 +6,10 @@
 #define CPU_INSTRUCTION_LOGGING
 
 // Function to check if there are any external interrupt sources wanting to issue interrupts
-typedef BOOLE (*cpuCheckPendingInterruptsFunc)(void);
+typedef void (*cpuCheckPendingInterruptsFunc)(void);
 extern void cpuSetCheckPendingInterruptsFunc(cpuCheckPendingInterruptsFunc func);
 extern void cpuCheckPendingInterrupts(void);
-extern void cpuSetUpInterrupt(void);
+extern void cpuSetUpInterrupt(ULO new_interrupt_level);
 extern void cpuInitializeFromNewPC(ULO new_pc);
 
 // Logging interface
@@ -64,11 +64,8 @@ extern ULO cpuGetInitialSP(void);
 
 extern ULO cpuGetInstructionTime(void);
 
-extern void cpuSetIrqLevel(ULO irq_level);
+extern BOOLE cpuSetIrqLevel(ULO irq_level);
 extern ULO cpuGetIrqLevel(void);
-
-extern void cpuSetIrqAddress(ULO irq_address);
-extern ULO cpuGetIrqAddress(void);
 
 extern ULO cpuExecuteInstruction(void);
 extern ULO cpuDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);

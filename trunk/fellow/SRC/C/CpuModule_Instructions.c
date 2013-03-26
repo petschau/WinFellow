@@ -88,42 +88,60 @@ static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
 
 /* Maintains the integrity of the super/user state */
 
-void cpuUpdateSr(ULO new_sr) {
-	BOOLE supermode_was_set = cpuGetFlagSupervisor();
-	BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
+void cpuUpdateSr(ULO new_sr)
+{
+  BOOLE supermode_was_set = cpuGetFlagSupervisor();
+  BOOLE master_was_set = (cpuGetModelMajor() >= 2) && cpuGetFlagMaster();
 
-	BOOLE supermode_is_set = !!(new_sr & 0x2000);
-	BOOLE master_is_set = (cpuGetModelMajor() >= 2) && !!(new_sr & 0x1000);
+  BOOLE supermode_is_set = !!(new_sr & 0x2000);
+  BOOLE master_is_set = (cpuGetModelMajor() >= 2) && !!(new_sr & 0x1000);
 
-	ULO runlevel_old = (cpuGetSR() >> 8) & 7;
-	ULO runlevel_new = (new_sr >> 8) & 7;
+  ULO runlevel_old = (cpuGetSR() >> 8) & 7;
+  ULO runlevel_new = (new_sr >> 8) & 7;
 
-	if (!supermode_was_set)
-		cpuSetUspDirect(cpuGetAReg(7));
-	else if (master_was_set)
-		cpuSetMspDirect(cpuGetAReg(7));
-	else
-		cpuSetSspDirect(cpuGetAReg(7));
+  if (!supermode_was_set)
+  {
+    cpuSetUspDirect(cpuGetAReg(7));
+  }
+  else if (master_was_set)
+  {
+    cpuSetMspDirect(cpuGetAReg(7));
+  }
+  else
+  {
+    cpuSetSspDirect(cpuGetAReg(7));
+  }
 
-	if (!supermode_is_set)
-		cpuSetAReg(7, cpuGetUspDirect());
-	else if (master_is_set)
-		cpuSetAReg(7, cpuGetMspDirect());
-	else
-		cpuSetAReg(7, cpuGetSspDirect());
+  if (!supermode_is_set)
+  {
+    cpuSetAReg(7, cpuGetUspDirect());
+  }
+  else if (master_is_set)
+  {
+    cpuSetAReg(7, cpuGetMspDirect());
+  }
+  else
+  {
+    cpuSetAReg(7, cpuGetSspDirect());
+  }
 
-	cpuSetSR(new_sr);
+  cpuSetSR(new_sr);
 
-	if (runlevel_old != runlevel_new) {
-		cpuCallCheckPendingInterruptsFunc();
-	}
+  if (runlevel_old != runlevel_new)
+  {
+    cpuCheckPendingInterrupts();
+  }
 }
 
-static void cpuIllegal(void) {
-	UWO opcode = memoryReadWord(cpuGetPC() - 2);
-	if ((opcode & 0xf000) == 0xf000) {
-		cpuThrowFLineException();
-	} else if ((opcode & 0xa000) == 0xa000) {
+static void cpuIllegal(void)
+{
+  UWO opcode = memoryReadWord(cpuGetPC() - 2);
+  if ((opcode & 0xf000) == 0xf000)
+  {
+    cpuThrowFLineException();
+  }
+  else if ((opcode & 0xa000) == 0xa000)
+  {
 #ifdef UAE_FILESYS
     if ((cpuGetPC() & 0xff0000) == 0xf00000)
     {
@@ -3696,11 +3714,14 @@ void cpuMakeOpcodeTableForModel(void)
   }
 }
 
+ULO irq_arrival_time = -1;
+extern ULO busGetCycle();
+
 ULO cpuExecuteInstruction(void)
 {
   if (cpuGetRaiseInterrupt())
   {
-    cpuSetUpInterrupt();
+    cpuSetUpInterrupt(cpuGetRaiseInterruptLevel());
     cpuCheckPendingInterrupts();
     return 44;
   }

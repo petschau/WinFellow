@@ -41,6 +41,7 @@
 #include "timer.h"
 #include "draw.h"
 #include "fileops.h"
+#include "interrupt.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -54,6 +55,7 @@ bus_event eolEvent;
 bus_event eofEvent;
 bus_event ciaEvent;
 bus_event blitterEvent;
+bus_event interruptEvent;
 
 /*==============================================================================*/
 /* Global end of line handler                                                   */
@@ -168,6 +170,17 @@ void busEndOfFrame(void)
   {
     // The CPU is never in the queue
     cpuEvent.cycle -= BUS_CYCLE_PER_FRAME;
+  }
+
+  /*==============================================================*/
+  /* Update next interrupt time                                   */
+  /*==============================================================*/
+
+  if (interruptEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    busRemoveEvent(&interruptEvent);
+    interruptEvent.cycle -= BUS_CYCLE_PER_FRAME;
+    busInsertEvent(&interruptEvent);
   }
 
   /*==============================================================*/
@@ -452,39 +465,48 @@ void busDebugStepOneInstruction(void)
   }
 }
 
-void busInitializeQueue(void)
+void busClearEvent(bus_event *ev, busEventHandler handlerFunc)
+{
+  memset(ev, 0, sizeof(bus_event));
+  ev->cycle = BUS_CYCLE_DISABLE;
+  ev->handler = handlerFunc;
+}
+
+void busClearCpuEvent()
 {
   memset(&cpuEvent, 0, sizeof(bus_event));
-  memset(&copperEvent, 0, sizeof(bus_event));
-  memset(&eolEvent, 0, sizeof(bus_event));
-  memset(&eofEvent, 0, sizeof(bus_event));
-  memset(&ciaEvent, 0, sizeof(bus_event));
-  memset(&blitterEvent, 0, sizeof(bus_event));
-  bus.events = NULL;
-
-  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
-  eolEvent.handler = busEndOfLine;
-  eofEvent.cycle = BUS_CYCLE_PER_FRAME;
-  eofEvent.handler = busEndOfFrame;
-  ciaEvent.cycle = BUS_CYCLE_DISABLE;
-  ciaEvent.handler = ciaHandleEvent;
-  copperEvent.cycle = BUS_CYCLE_DISABLE;
-  copperEvent.handler = copperEmulate;
-  blitterEvent.cycle = BUS_CYCLE_DISABLE;
-  blitterEvent.handler = blitFinishBlit;
   cpuEvent.cycle = 0;
-  
   if (cpuGetModelMajor() <= 1)
   {
     if (cpuIntegrationGetSpeed() == 4)
+    {
       cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
+    }
     else
+    {
       cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
+    }
   }
-  else 
+  else
+  {
     cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68020;
+  }
+}
 
+void busInitializeQueue(void)
+{
+  bus.events = NULL;
+  busClearCpuEvent();
+  busClearEvent(&eolEvent, busEndOfLine);
+  busClearEvent(&eofEvent, busEndOfFrame);
+  busClearEvent(&ciaEvent, ciaHandleEvent);
+  busClearEvent(&copperEvent, copperEmulate);
+  busClearEvent(&blitterEvent, blitFinishBlit);
+  busClearEvent(&interruptEvent, interruptHandleEvent);
+
+  eofEvent.cycle = BUS_CYCLE_PER_FRAME;
   busInsertEventWithNullCheck(&eofEvent);
+  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
   busInsertEvent(&eolEvent);
 }
 
@@ -502,6 +524,7 @@ void busSaveState(FILE *F)
   fwrite(&eofEvent.cycle, sizeof(eofEvent.cycle), 1, F);
   fwrite(&ciaEvent.cycle, sizeof(ciaEvent.cycle), 1, F);
   fwrite(&blitterEvent.cycle, sizeof(blitterEvent.cycle), 1, F);
+  fwrite(&interruptEvent.cycle, sizeof(interruptEvent.cycle), 1, F);
 }
 
 void busLoadState(FILE *F)
@@ -514,6 +537,7 @@ void busLoadState(FILE *F)
   fread(&eofEvent.cycle, sizeof(eofEvent.cycle), 1, F);
   fread(&ciaEvent.cycle, sizeof(ciaEvent.cycle), 1, F);
   fread(&blitterEvent.cycle, sizeof(blitterEvent.cycle), 1, F);
+  fread(&interruptEvent.cycle, sizeof(interruptEvent.cycle), 1, F);
 
   bus.events = NULL;
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&cpuEvent);
@@ -522,6 +546,7 @@ void busLoadState(FILE *F)
   if (eofEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&eofEvent);
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&ciaEvent);
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&blitterEvent);
+  if (interruptEvent.cycle != BUS_CYCLE_DISABLE) busInsertEvent(&interruptEvent);
 }
 
 void busEmulationStart(void)

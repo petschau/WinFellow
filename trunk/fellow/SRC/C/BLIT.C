@@ -899,7 +899,7 @@ void blitInitiate(void)
   }
   blitter.started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
-  intreq &= 0xffbf;
+  memoryWriteWord(0x0040, 0xdff09c);
   blitterInsertEvent(cycle_length + bus.cycle);
 }
 

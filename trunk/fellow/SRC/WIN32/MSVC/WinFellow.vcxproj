@@ -549,6 +549,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\C\interrupt.c" />
     <ClCompile Include="..\C\fsysamnt.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1543,6 +1544,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\INCLUDE\GAMEPORT.H" />
     <ClInclude Include="..\..\INCLUDE\GRAPH.H" />
     <ClInclude Include="..\..\INCLUDE\Ini.h" />
+    <ClInclude Include="..\..\include\interrupt.h" />
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H" />
     <ClInclude Include="..\..\INCLUDE\LISTTREE.H" />
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
