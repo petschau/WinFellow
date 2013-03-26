@@ -62,6 +62,7 @@
 #include "bus.h"
 #include "CpuModule.h"
 #include "fileops.h"
+#include "interrupt.h"
 
 #include "xdms.h"
 #include "zlibwrap.h"

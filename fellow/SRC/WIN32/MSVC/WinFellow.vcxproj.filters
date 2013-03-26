@@ -309,6 +309,9 @@
     <ClCompile Include="..\C\RetroPlatform.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\C\interrupt.c">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -595,6 +598,9 @@
     </ClInclude>
     <ClInclude Include="..\INCLUDE\versioninfo-wcrev.h">
       <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\interrupt.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -48,7 +48,6 @@ void cpuClearEverything(void)
   cpuSetSfc(0);
   cpuSetDfc(0);
   cpuSetIrqLevel(0);
-  cpuSetIrqAddress(0);
   cpuSetStop(FALSE);
   cpuSetInstructionTime(0);
   cpuSetOriginalPC(0);

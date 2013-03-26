@@ -22,7 +22,7 @@ extern void busLogCpu(STR *s);
 extern void busLogCpuException(STR *s);
 #endif
 
-typedef void (*busEventHandler)();
+typedef void (*busEventHandler)(void);
 typedef struct bus_event_struct
 {
   struct bus_event_struct *next;
@@ -64,5 +64,6 @@ extern bus_event eolEvent;
 extern bus_event eofEvent;
 extern bus_event ciaEvent;
 extern bus_event blitterEvent;
+extern bus_event interruptEvent;
 
 #endif

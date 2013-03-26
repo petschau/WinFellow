@@ -48,6 +48,7 @@ typedef signed short int WOR;
 typedef signed int LON;
 typedef signed FELLOW_LONG_LONG LLO;
 typedef int BOOLE;
+
 #define FALSE 0
 #define TRUE  1
 typedef char STR;

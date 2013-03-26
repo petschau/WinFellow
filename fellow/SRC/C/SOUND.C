@@ -30,6 +30,7 @@
 #include "cia.h"
 #include "graph.h"
 #include "sounddrv.h"
+#include "interrupt.h"
 
 
 #define MAX_BUFFER_SAMPLES 65536
@@ -457,7 +458,7 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
   }
   else
   {
-    if ((intreq & audioirqmask[ch]) == 0 && auddat_set[ch])
+    if (!interruptIsRequested(audioirqmask[ch]) && auddat_set[ch])
     {
       auddat_set[ch] = FALSE;
       memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);

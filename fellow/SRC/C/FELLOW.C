@@ -59,6 +59,7 @@
 #include "ini.h"
 #include "sysinfo.h"
 #include "fileops.h"
+#include "interrupt.h"
 #include "RetroPlatform.h"
 
 BOOLE fellow_request_emulation_stop;
@@ -263,6 +264,7 @@ static void fellowRuntimeErrorCheck(void) {
 
 void fellowSoftReset(void) {
   memorySoftReset();
+  interruptSoftReset();
   fhfileHardReset();
   spriteHardReset();
   drawHardReset();
@@ -286,6 +288,7 @@ void fellowSoftReset(void) {
 
 void fellowHardReset(void) {
   memoryHardReset();
+  interruptHardReset();
   fhfileHardReset();
   spriteHardReset();
   drawHardReset();
@@ -318,7 +321,6 @@ void fellowRequestEmulationStopClear(void) {
   fellow_request_emulation_stop = FALSE;
 }
 
-
 /*============================================================================*/
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
@@ -328,6 +330,7 @@ BOOLE fellowEmulationStart(void) {
   fellowRequestEmulationStopClear();
   iniEmulationStart();
   memoryEmulationStart();
+  interruptEmulationStart();
   ciaEmulationStart();
   cpuIntegrationEmulationStart();
   graphEmulationStart();
@@ -374,6 +377,7 @@ void fellowEmulationStop(void) {
   graphEmulationStop();
   cpuIntegrationEmulationStop();
   ciaEmulationStop();
+  interruptEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
 }
@@ -552,8 +556,9 @@ static void fellowModulesStartup(int argc, char *argv[])
   blitterStartup();
   copperStartup();
   floppyStartup();
-  ciaStartup();
+  ciaStartup();  
   memoryStartup();
+  interruptStartup();
   graphStartup();
   cpuIntegrationStartup();
   wguiStartup();
@@ -576,6 +581,7 @@ static void fellowModulesShutdown(void)
   wguiShutdown();
   cpuIntegrationShutdown();
   graphShutdown();
+  interruptShutdown();
   memoryShutdown();
   ciaShutdown();
   floppyShutdown();
