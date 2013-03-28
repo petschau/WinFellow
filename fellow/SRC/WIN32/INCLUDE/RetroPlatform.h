@@ -60,7 +60,7 @@ extern void  RetroPlatformSetClippingOffsetLeft(const ULO);
 extern void  RetroPlatformSetClippingOffsetTop(const ULO);
 extern void  RetroPlatformSetEscapeKey(const char *);
 extern void  RetroPlatformSetEscapeKeyHoldTime(const char *);
-extern void  RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE);
+extern BOOLE RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE);
 extern void  RetroPlatformSetHostID(const char *);
 extern void  RetroPlatformSetMode(const BOOLE);
 extern void  RetroPlatformSetScreenMode(const char *);

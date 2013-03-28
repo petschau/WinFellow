@@ -86,12 +86,6 @@ void busEndOfLine(void)
   /*==============================================================*/
   soundEndOfLine();
 
-  /*==============================================================*/
-  /* Handle keyboard events                                       */
-  /*==============================================================*/
-  kbdQueueHandler();
-  kbdEventEOLHandler();
-
 #ifdef RETRO_PLATFORM
   /*==============================================================*/
   /* Handle RetroPlatform events                                  */
@@ -99,6 +93,12 @@ void busEndOfLine(void)
   if(RetroPlatformGetMode())
     RetroPlatformEndOfFrame();
 #endif
+
+  /*==============================================================*/
+  /* Handle keyboard events                                       */
+  /*==============================================================*/
+  kbdQueueHandler();
+  kbdEventEOLHandler();
 
   /*==============================================================*/
   /* Set up the next end of line event                            */
