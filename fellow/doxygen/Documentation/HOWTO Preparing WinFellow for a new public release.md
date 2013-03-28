@@ -15,7 +15,7 @@ This HOWTO describes the steps necessary to prepare a new public WinFellow relea
 * Compile the exe (always do a clean rebuild of the entire solution by pressing Ctrl+Alt+F7)
 * copy exe and readme into a folder named WinFellow_...
 * Generate ChangeLog using svn2cl (available from http://sites.google.com/site/kzmizzz/svn2clwin-en); ensure that SVN revisions are included in the resulting file; copy the ChangeLog.txt into the WinFellow_... folder
-* //Unclear: Zip the folder using WinZIP/WinRAR (?)//
+* Zip the folder using 7-Zip
 * post the beta to the EAB [private : WinFellow beta release](http://eab.abime.net/forumdisplay.php?f=60) board
 * announce availability of the beta in the forum and to the fellow-beta mailing list
 * If feedback is positive, post exe to the website, fellow-announce, ... //(how do we ensure the beta exe is not leaked, can we mark it as beta somehow so that beta and release build differ?)//

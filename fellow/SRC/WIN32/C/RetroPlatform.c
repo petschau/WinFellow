@@ -40,8 +40,15 @@
  *  As WinFellow uses normal strings, conversion is usually required (using, for example,
  *  wsctombs and mbstowcs).
  * 
- * The RetroPlatform WinFellow plug-in will, if applicable for an RP9, start 
- * WinFellow with the following command-line arguments:
+ * When looking at an RP9 package, the RetroPlatform WinFellow plug-in has a list of
+ * criteria to decide if WinFellow is a compatible emulator that is offered as choice.
+ * It verifies that
+ * - a valid model-specific INI file exists for the configured Amiga model
+ * - no extended ADF files are used (file size = 901.120 for all ADFs)
+ * - no filesystems or hardfiles are used
+ *
+ * The RetroPlatform WinFellow plug-in will start WinFellow with the following 
+ * command-line arguments:
  * 
  * -rphost:
  * ID of the RetroPlatform host, used to initiate IPC communication.
@@ -544,7 +551,14 @@ void RetroPlatformPostEscaped(void) {
 
 /** Control status of the RetroPlatform floppy drive LEDs.
  *
- * Only sends status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages.
+ * Sends LED status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages,
+ * so that floppy read and write activity can be displayed, and detected (undo functionality uses write
+ * messages as fallback method to detect changed floppy images).
+ * @param[in] lFloppyDriveNo floppy drive index (0-3)
+ * @param[in] bMotorActive   state of floppy drive motor (active/inactive)
+ * @param[in] bWriteActivity type of access (write/read)
+ * @return TRUE if message sent successfully, FALSE otherwise. 
+ * @callergraph
  */
 BOOLE RetroPlatformSendFloppyDriveLED(const ULO lFloppyDriveNo, const BOOLE bMotorActive, const BOOLE bWriteActivity) {
 	if(lFloppyDriveNo > 3) 
@@ -787,9 +801,22 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
     fellowRequestEmulationStop();
 		return TRUE;
 	case RP_IPC_TO_GUEST_TURBO:
-		// 0 equals max speed, 4 is default	
-    if (wParam & RP_TURBO_CPU)	
-      cpuIntegrationSetSpeed((lParam & RP_TURBO_CPU) ? 0 : 4);
+    if (wParam & RP_TURBO_CPU) {
+      static ULO lOriginalSpeed = 0;
+      
+      if(lParam & RP_TURBO_CPU) {
+        fellowAddLog("RetroPlatformHostMessageFunction(): enabling CPU turbo mode...\n");
+        lOriginalSpeed = cfgGetCPUSpeed(RetroPlatformConfig);
+        cpuIntegrationSetSpeed(0);
+        fellowRequestEmulationStop();
+      }
+      else {
+        fellowAddLog("RetroPlatformHostMessageFunction(): disabling CPU turbo mode, reverting back to speed level %u...\n",
+          lOriginalSpeed);
+        cpuIntegrationSetSpeed(lOriginalSpeed);
+        fellowRequestEmulationStop();
+      }
+    }
     if (wParam & RP_TURBO_FLOPPY)
       floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? TRUE : FALSE);
 		return TRUE;
@@ -840,8 +867,6 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 				  break;
 			  case RP_DEVICECATEGORY_INPUTPORT:
 				  ok = RetroPlatformConnectInputDeviceToPort(num, dc->dwInputDevice, dc->dwFlags, n);
-				  if(ok)
-					  // inputdevice_updateconfig (&currprefs);
 				  break;
 			  case RP_DEVICECATEGORY_CD:
 				  ok = FALSE;
@@ -935,7 +960,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 		}
 	case RP_IPC_TO_GUEST_GUESTAPIVERSION:
 		{
-			return MAKELONG(3, 3);
+			return MAKELONG(3, 4);
 		}
 	}
 	return FALSE;
@@ -996,7 +1021,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
 
 	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU| RP_FEATURE_TURBO_FLOPPY;
+  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
   // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
 	dFeatureFlags |= RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   // dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;

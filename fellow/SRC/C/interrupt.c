@@ -28,32 +28,29 @@
 
 #include "fileops.h"
 
-/* The process of servicing interrupts is asynchronous in several steps
-
-  Case 1: Chipset requests an interrupt, or program sets intreq or intena.
-
-  1. interruptRaisePending() is called to evaluate the current requested and enabled 
-     interrupts.
-
-  2. If one is found, to emulate the chipset latency before actually sending the desired interrupt level
-     to the CPU, the interrupt event is used (bus.c), scheduled to fire some cycles from now.
-
-  3. The interrupt event fires, calls interruptHandleEvent() which will set the new
-     interrupt level in the cpu using cpuSetIrqLevel(). The rest in the hands of the
-     cpu module.
-  
-  (4.) cpuSetIrqLevel() will set an internal flag, record the new interrupt level, 
-       and unstop the CPU if needed. CPU state is not changed here.
-
-  (5.) The next time cpuExecuteIntruction runs, it will switch to the new interrupt level
-       and make the necessary state changes.
-
-  Case 2: CPU lowers the interrupt level (RTE, write to SR etc).
-
-  1. The CPU module calls the checkPendingInterrupt hook to force us to re-evaluate the interrupt sources.
-     This hook points to interruptRaisePending(). Continues as Case 1.
-
-*/
+/** @file
+ *  Chipset side of interrupt control 
+ *
+ *
+ * The process of servicing interrupts is asynchronous in several steps
+ *
+ * Case 1: Chipset requests an interrupt, or program sets intreq or intena.
+ * 1. interruptRaisePending() is called to evaluate the current requested and enabled 
+ *    interrupts.
+ * 2. If one is found, to emulate the chipset latency before actually sending the desired interrupt level
+ *    to the CPU, the interrupt event is used (bus.c), scheduled to fire some cycles from now.
+ * 3. The interrupt event fires, calls interruptHandleEvent() which will set the new
+ *    interrupt level in the cpu using cpuSetIrqLevel(). The rest in the hands of the
+ *    cpu module.
+ * 4. cpuSetIrqLevel() will set an internal flag, record the new interrupt level, 
+ *    and unstop the CPU if needed. CPU state is not changed here.
+ * 5. The next time cpuExecuteIntruction runs, it will switch to the new interrupt level
+ *    and make the necessary state changes.
+ *
+ * Case 2: CPU lowers the interrupt level (RTE, write to SR etc).
+ * 1. The CPU module calls the checkPendingInterrupt hook to force us to re-evaluate the interrupt sources.
+ *    This hook points to interruptRaisePending(). Continues as Case 1.
+ */
 
 UWO intena;
 UWO intreq;
