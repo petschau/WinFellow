@@ -412,6 +412,11 @@ void busRunGeneric(void)
 typedef void (*busRunHandlerFunc)(void);
 busRunHandlerFunc busGetRunHandler(void)
 {
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    return busRunGeneric;
+#endif
+
   if (cpuGetModelMajor() <= 1)
   {
     if (cpuIntegrationGetSpeed() == 4)
@@ -480,7 +485,12 @@ void busClearCpuEvent()
   {
     if (cpuIntegrationGetSpeed() == 4)
     {
-      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
+#ifdef RETRO_PLATFORM
+      if(RetroPlatformGetMode())
+        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
+      else
+#endif
+        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
     }
     else
     {
