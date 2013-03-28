@@ -3000,8 +3000,7 @@ static void cpuBfTstEa(ULO ea, UWO ext)
 static void cpuMovepWReg(ULO areg, ULO dreg)
 {
   ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  memoryWriteByte((UBY) (cpuGetDReg(dreg) >> 8), ea);
-  memoryWriteByte(cpuGetDRegByte(dreg), ea + 2);
+  cpuSetDRegWord(dreg, cpuJoinByteToWord(memoryReadByte(ea), memoryReadByte(ea + 2)));
   cpuSetInstructionTime(16);
 }
 
@@ -3011,10 +3010,7 @@ static void cpuMovepWReg(ULO areg, ULO dreg)
 static void cpuMovepLReg(ULO areg, ULO dreg)
 {
   ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 24), ea);
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 16), ea + 2);
-  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 8), ea + 4);
-  memoryWriteByte(cpuGetDRegByte(dreg), ea + 6);
+  cpuSetDReg(dreg, cpuJoinByteToLong(memoryReadByte(ea), memoryReadByte(ea + 2), memoryReadByte(ea + 4), memoryReadByte(ea + 6)));
   cpuSetInstructionTime(24);
 }
 
@@ -3024,7 +3020,8 @@ static void cpuMovepLReg(ULO areg, ULO dreg)
 static void cpuMovepWEa(ULO areg, ULO dreg)
 {
   ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  cpuSetDRegWord(dreg, cpuJoinByteToWord(memoryReadByte(ea), memoryReadByte(ea + 2)));
+  memoryWriteByte((UBY) (cpuGetDReg(dreg) >> 8), ea);
+  memoryWriteByte(cpuGetDRegByte(dreg), ea + 2);
   cpuSetInstructionTime(16);
 }
 
@@ -3034,7 +3031,10 @@ static void cpuMovepWEa(ULO areg, ULO dreg)
 static void cpuMovepLEa(ULO areg, ULO dreg)
 {
   ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
-  cpuSetDReg(dreg, cpuJoinByteToLong(memoryReadByte(ea), memoryReadByte(ea + 2), memoryReadByte(ea + 4), memoryReadByte(ea + 6)));
+  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 24), ea);
+  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 16), ea + 2);
+  memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 8), ea + 4);
+  memoryWriteByte(cpuGetDRegByte(dreg), ea + 6);
   cpuSetInstructionTime(24);
 }
 
