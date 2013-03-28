@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.12 (2013/03/22)
+v0.13 (2013/03/28)
 \end_layout
 
 \begin_layout Standard
@@ -136,6 +136,24 @@ pagebreak
 \end_inset
 
 
+\end_layout
+
+\begin_layout Part
+Disclaimer
+\end_layout
+
+\begin_layout Standard
+WinFellow is provided without warranty of any kind.
+\end_layout
+
+\begin_layout Standard
+None of the authors of WinFellow shall in any event be liable for any direct,
+ consequential, incidental, indirect or special damages even if advised
+ of the possibility of such damages.
+ In particular, the authors shall have no liability for any damage loss
+ or corruption of data or programs stored in or used in conjunction with
+ WinFellow, nor shall the authors be liable for the cost of retrieving or
+ replacing damaged lost or corrupted data.
 \end_layout
 
 \begin_layout Part
@@ -676,6 +694,8 @@ basic Cloanto Amiga Forever/RetroPlatform Player integration; it does not
  only using static offsets, but not in automatic mode).
  Currently the Amiga 500, 500 Plus, 600, 1000 and 2000 models are supported;
  the A500 profile supports an optional A-501 memory expansion card.
+ Extended ADFs, hardfiles and filesystems currently cannot be used with
+ WinFellow on Amiga Forever.
 \end_layout
 
 \begin_layout Itemize
@@ -691,17 +711,13 @@ support for 2 joysticks, usable simultaneously
 \end_layout
 
 \begin_layout Itemize
-CPU instruction bug fix (RTD 68010 instruction, EORW, ORW)
-\end_layout
-
-\begin_layout Itemize
 added the ability to generate minidumps, which allows us to debug crashes
  that are reported to us
 \end_layout
 
 \begin_layout Itemize
 update of project files to current Visual Studio (2012 Update 1) and DirectX;
- code can now be compiled using Express editions without further dependencies
+ the code can now be compiled using Visual Studio Express editions
 \end_layout
 
 \begin_layout Itemize
@@ -709,7 +725,18 @@ new versioning scheme, based on SVN revisions
 \end_layout
 
 \begin_layout Itemize
-a lot of minor bugfixes
+several CPU instruction bug fixes (RTD 68010 instruction, EORW, ORW, MOVEP)
+\end_layout
+
+\begin_layout Itemize
+enhanced compatibility with many titles (the chipset interrupt handler was
+ completely re-designed; the sound interrupt handling was changed as well,
+ allowing execution of many titles that previously failed)
+\end_layout
+
+\begin_layout Itemize
+several minor bug and stability fixes (please see ChangeLog.txt for complete
+ details)
 \end_layout
 
 \begin_layout Part
