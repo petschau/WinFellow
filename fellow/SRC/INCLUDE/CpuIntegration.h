@@ -10,6 +10,8 @@ typedef enum {
   M68EC20 = 9
 } cpu_integration_models;
 
+extern void cpuIntegrationCalculateMultiplier(void);
+
 extern void cpuIntegrationExecuteInstructionEventHandler68000Fast(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68000General(void);
 extern void cpuIntegrationExecuteInstructionEventHandler68020(void);

@@ -72,7 +72,7 @@ static ULO cpuIntegrationGetSpeedMultiplier(void)
   return cpu_integration_speed_multiplier;
 }
 
-static void cpuIntegrationCalculateMultiplier(void)
+void cpuIntegrationCalculateMultiplier(void)
 {
   ULO multiplier = 12;
 

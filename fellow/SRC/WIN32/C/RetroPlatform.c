@@ -816,13 +816,13 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
         fellowAddLog("RetroPlatformHostMessageFunction(): enabling CPU turbo mode...\n");
         lOriginalSpeed = cfgGetCPUSpeed(RetroPlatformConfig);
         cpuIntegrationSetSpeed(0);
-        fellowRequestEmulationStop();
+        cpuIntegrationCalculateMultiplier();
       }
       else {
         fellowAddLog("RetroPlatformHostMessageFunction(): disabling CPU turbo mode, reverting back to speed level %u...\n",
           lOriginalSpeed);
         cpuIntegrationSetSpeed(lOriginalSpeed);
-        fellowRequestEmulationStop();
+        cpuIntegrationCalculateMultiplier();
       }
     }
     if (wParam & RP_TURBO_FLOPPY)
