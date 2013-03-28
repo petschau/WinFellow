@@ -920,10 +920,20 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode()) {
     if(RetroPlatformGetEmulationState()) {
-      if( pressed ( RetroPlatformGetEscapeKey() ))
-        issue_event( EVENT_RPESCAPE_ACTIVE );
-      if( released ( RetroPlatformGetEscapeKey() ))
-        issue_event( EVENT_RPESCAPE_INACTIVE );
+      if( pressed ( RetroPlatformGetEscapeKey() )) {
+        RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
+        return TRUE;
+      }
+      if( released ( RetroPlatformGetEscapeKey() )) {
+       if(!RetroPlatformSetEscapeKeyTargetHoldTime(FALSE)) {
+          // escape key held shorter than escape interval, send key
+          UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+          kbdKeyAdd(a_code);
+			    kbdKeyAdd(a_code | 0x80);
+          return FALSE;
+        }
+       return TRUE;
+      }
     }
     else {
       if( pressed ( RetroPlatformGetEscapeKey() ))

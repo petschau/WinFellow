@@ -117,6 +117,7 @@ BOOLE bRetroPlatformMode = FALSE;
 ULO lRetroPlatformEscapeKey                     = 1;
 ULO lRetroPlatformEscapeKeyHoldTime             = 600;
 ULONGLONG lRetroPlatformEscapeKeyTargetHoldTime = 0;
+BOOLE bRetroPlatformEscapeEventGenerated        = FALSE;
 ULO lRetroPlatformScreenMode                    = 0;
 
 static BOOLE bRetroPlatformInitialized    = FALSE;
@@ -726,13 +727,20 @@ void RetroPlatformSetEscapeKeyHoldTime(const char *szEscapeHoldTime) {
   fellowAddLog("RetroPlatformSetEscapeKeyHoldTime(): escape hold time configured to %d.\n", lRetroPlatformEscapeKeyHoldTime);
 }
 
-void RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
+BOOLE RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
   if(bEscapeKeyHeld) {
-    if(lRetroPlatformEscapeKeyTargetHoldTime == 0)
+    if(lRetroPlatformEscapeKeyTargetHoldTime == 0) {
       lRetroPlatformEscapeKeyTargetHoldTime = RetroPlatformGetTime() + lRetroPlatformEscapeKeyHoldTime;
+      bRetroPlatformEscapeEventGenerated = FALSE;
+    }
+    return FALSE;
   } 
-  else
+  else {
+    BOOLE bResult = bRetroPlatformEscapeEventGenerated;
     lRetroPlatformEscapeKeyTargetHoldTime = 0;
+    bRetroPlatformEscapeEventGenerated = FALSE;
+    return bResult;
+  }
 }
 
 void RetroPlatformSetEmulationState(const BOOLE bNewState) {
@@ -1315,11 +1323,10 @@ void RetroPlatformEndOfFrame(void) {
     ULONGLONG t;
 
     t = RetroPlatformGetTime();
-    if(t >= lRetroPlatformEscapeKeyTargetHoldTime) {
+    if(t >= lRetroPlatformEscapeKeyTargetHoldTime && !bRetroPlatformEscapeEventGenerated) {
       fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
-      lRetroPlatformEscapeKeyTargetHoldTime = 0;
-
       RetroPlatformPostEscaped();
+      bRetroPlatformEscapeEventGenerated = TRUE;
     }
   }
 }
