@@ -358,7 +358,7 @@ void busRun68000Fast(void)
 #endif
 	  busSetCycle(e->cycle);
 	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle);
+	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
@@ -396,7 +396,7 @@ void busRunGeneric(void)
 #endif
 	  busSetCycle(e->cycle);
 	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle);
+	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
@@ -452,7 +452,7 @@ void busDebugStepOneInstruction(void)
 #endif
 	  busSetCycle(e->cycle);
 	  e->handler();
-	} while (bus.events->cycle < cpuEvent.cycle);
+	} while (bus.events->cycle < cpuEvent.cycle && !fellow_request_emulation_stop);
       }
     }
     else
