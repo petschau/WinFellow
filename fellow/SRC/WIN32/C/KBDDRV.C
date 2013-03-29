@@ -926,8 +926,8 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
       }
       if( released ( RetroPlatformGetEscapeKey() )) {
        if(!RetroPlatformSetEscapeKeyTargetHoldTime(FALSE)) {
-          // escape key held shorter than escape interval, send key
-          UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+          fellowAddLog("RetroPlatform escape key held shorter than escape interval, sending key...\n");
+          UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbol_key];
           kbdKeyAdd(a_code);
 			    kbdKeyAdd(a_code | 0x80);
           return FALSE;
@@ -1038,7 +1038,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed) {
 		if (!kbdDrvEventChecker(symbolic_key))
 		{
 			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-			kbdKeyAdd(kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key] | 0x80);
+			kbdKeyAdd(a_code | 0x80);
 		}
 	}
 	else if (keycode_pressed && !keycode_was_pressed) {
