@@ -360,6 +360,10 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
 		                   ((LOWORD(wParam)) == WA_CLICKACTIVE));
     gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
     gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+      RetroPlatformSendMouseCapture(TRUE);
+#endif
     gfxDrvEvaluateActiveStatus();
     return 0; /* We processed this message */
   case WM_ENTERMENULOOP:
