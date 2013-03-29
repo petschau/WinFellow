@@ -128,6 +128,8 @@ static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static LON lRetroPlatformClippingOffsetLeft = 0, lRetroPlatformClippingOffsetTop = 0;
+static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
+static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
@@ -230,25 +232,27 @@ int RetroPlatformEnumerateJoysticks(void) {
 /** Set clipping offset that is applied to the left of the picture.
  */
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
-  lRetroPlatformClippingOffsetLeft = lOffsetLeft;
+  lRetroPlatformClippingOffsetLeftRP = lOffsetLeft;
+  lRetroPlatformClippingOffsetLeft   = lOffsetLeft;
 
   if(lOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
     lRetroPlatformClippingOffsetLeft = (lOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
 
-  fellowAddLog("RetroPlatformSetClippingOffsetLeft(): set left offset to %d\n", 
-    lRetroPlatformClippingOffsetLeft);
+  fellowAddLog("RetroPlatformSetClippingOffsetLeft(): left offset adjusted from %u to %u\n", 
+    lRetroPlatformClippingOffsetLeftRP, lRetroPlatformClippingOffsetLeft);
 }
 
 /** Set clipping offset that is applied to the top of the picture
  */
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
-  lRetroPlatformClippingOffsetTop = lOffsetTop;
+  lRetroPlatformClippingOffsetTopRP = lOffsetTop;
+  lRetroPlatformClippingOffsetTop   = lOffsetTop;
   
   if(lOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
     lRetroPlatformClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
 
-  fellowAddLog("RetroPlatformSetClippingOffsetTop(): set top offset to %d\n", 
-    lRetroPlatformClippingOffsetTop);
+  fellowAddLog("RetroPlatformSetClippingOffsetTop(): top offset adjusted from %u to %u\n", 
+    lRetroPlatformClippingOffsetTopRP, lRetroPlatformClippingOffsetTop);
 }
 
 /** configure keyboard layout to custom key mappings
@@ -359,28 +363,6 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
   }
 }
 
-/** Translate the screenmode configured in the configuration file and pass it along to the RetroPlatform Player.
- */
-static void RetroPlatformDetermineScreenModeFromConfig(
-  struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
-  DWORD dwScreenMode = RP_SCREENMODE_SCALE_1X;
-	int iHeight = cfgGetScreenHeight(RetroPlatformConfig);
-  int iWidth = cfgGetScreenWidth(RetroPlatformConfig);
-
-  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
-
-  RetroPlatformScreenMode->lTargetHeight = iHeight;
-  RetroPlatformScreenMode->lTargetWidth  = iWidth;
-
-  RetroPlatformScreenMode->dwScreenMode = dwScreenMode;
-
-  RetroPlatformScreenMode->lClipLeft = -1;
-  RetroPlatformScreenMode->lClipTop = -1;
-  RetroPlatformScreenMode->lClipWidth = -1;
-  RetroPlatformScreenMode->lClipHeight = -1;
-  RetroPlatformScreenMode->dwClipFlags = RP_CLIPFLAGS_NOCLIP;
-}
-
 /** Translate a RetroPlatform IPC message code into readable text.
  */
 static const STR *RetroPlatformGetMessageText(ULO iMsg) {
@@ -466,12 +448,68 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
   return bResult;
 }
 
-ULO RetroPlatformGetClippingOffsetLeft(void) {
+ULO RetroPlatformGetAdjustedClippingOffsetLeft(void) {
   return lRetroPlatformClippingOffsetLeft;
 }
 
-ULO RetroPlatformGetClippingOffsetTop(void) {
+ULO RetroPlatformGetAdjustedClippingOffsetTop(void) {
   return lRetroPlatformClippingOffsetTop;
+}
+
+ULO RetroPlatformGetClippingOffsetLeft(void) {
+  return lRetroPlatformClippingOffsetLeftRP;
+}
+
+ULO RetroPlatformGetClippingOffsetTop(void) {
+  return lRetroPlatformClippingOffsetTopRP;
+}
+
+ULO RetroPlatformGetAdjustedScreenHeight(void) {
+  return lRetroPlatformScreenHeightRP;
+}
+
+ULO RetroPlatformGetAdjustedScreenWidth(void) {
+  ULO lScreenWidth = 0;
+  
+  if(lRetroPlatformScreenWidthRP > 768) {
+    // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
+    lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
+  }
+  else
+    lScreenWidth = lRetroPlatformScreenWidthRP;
+
+  return lScreenWidth;
+}
+
+ULO RetroPlatformGetScreenWidth(void) {
+  return lRetroPlatformScreenWidthRP;
+}
+
+ULO RetroPlatformGetScreenHeight(void) {
+   return lRetroPlatformScreenHeightRP;
+}
+
+ULO RetroPlatformGetScreenMode(void) {
+  return lRetroPlatformScreenMode;
+}
+
+/** Translate the screenmode configured in the configuration file and pass it along to the RetroPlatform Player.
+ */
+static void RetroPlatformDetermineScreenModeFromConfig(
+  struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
+
+  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
+
+  RetroPlatformScreenMode->lTargetHeight = RetroPlatformGetScreenHeight();
+  RetroPlatformScreenMode->lTargetWidth  = RetroPlatformGetScreenWidth();
+
+  RetroPlatformScreenMode->dwScreenMode = RetroPlatformGetScreenMode();
+
+  RetroPlatformScreenMode->lClipLeft   = RetroPlatformGetClippingOffsetLeft();
+  RetroPlatformScreenMode->lClipTop    = RetroPlatformGetClippingOffsetTop();
+  RetroPlatformScreenMode->lClipWidth  = RetroPlatformGetScreenWidth();
+  RetroPlatformScreenMode->lClipHeight = RetroPlatformGetScreenHeight();
+  RetroPlatformScreenMode->dwClipFlags = 0;
 }
 
 /** Verify state of the emulation engine.
@@ -762,9 +800,27 @@ void RetroPlatformSetMode(const BOOLE bRPMode) {
   fellowAddLog("RetroPlatformSetMode(): entering RetroPlatform (headless) mode.\n");
 }
 
+/** Set screen height.
+ */
+void RetroPlatformSetScreenHeight(const ULO lHeight) {
+  lRetroPlatformScreenHeightRP = lHeight;
+
+  fellowAddLog("RetroPlatformSetScreenHeight(): height configured to %u\n", 
+    lRetroPlatformScreenHeightRP);
+}
+
+/** Set screen width.
+ */
+void RetroPlatformSetScreenWidth(const ULO lWidth) {
+  lRetroPlatformScreenWidthRP = lWidth;
+
+  fellowAddLog("RetroPlatformSetScreenWidth(): width configured to %u\n", 
+    lRetroPlatformScreenWidthRP);
+}
+
 void RetroPlatformSetScreenMode(const char *szScreenMode) {
   lRetroPlatformScreenMode = atol(szScreenMode);
-  fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %d.\n", lRetroPlatformScreenMode);
+  fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %u.\n", lRetroPlatformScreenMode);
 }
 
 void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {

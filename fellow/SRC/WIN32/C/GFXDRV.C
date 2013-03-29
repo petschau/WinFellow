@@ -729,11 +729,13 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
         dwExStyle = WS_EX_TOOLWINDOW;
         hParent = RetroPlatformGetParentWindowHandle();
 
-        width  = cfgGetScreenWidth(gfxdrv_config);
+        width  = cfgGetScreenWidth (gfxdrv_config);
         height = cfgGetScreenHeight(gfxdrv_config);
 
         fellowAddLog("RetroPlatform: override window dimensions to %ux%u, offset %u,%u...\n",
-          width, height, RetroPlatformGetClippingOffsetLeft(), RetroPlatformGetClippingOffsetTop());
+          width, height, 
+          RetroPlatformGetAdjustedClippingOffsetLeft(), 
+          RetroPlatformGetAdjustedClippingOffsetTop());
       }
 #endif
 
@@ -1500,11 +1502,11 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
     }
 #ifdef RETRO_PLATFORM
     else {
-      if((RetroPlatformGetClippingOffsetLeft() != 0) && (RetroPlatformGetClippingOffsetTop() != 0)) {
-        srcwin.left   = RetroPlatformGetClippingOffsetLeft();
-        srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetClippingOffsetLeft();
-		    srcwin.top    = RetroPlatformGetClippingOffsetTop();
-		    srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetClippingOffsetTop();
+      if((RetroPlatformGetAdjustedClippingOffsetLeft() != 0) && (RetroPlatformGetAdjustedClippingOffsetTop() != 0)) {
+        srcwin.left   = RetroPlatformGetAdjustedClippingOffsetLeft();
+        srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetLeft();
+		    srcwin.top    = RetroPlatformGetAdjustedClippingOffsetTop();
+		    srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetTop();
       }
       else {
         srcwin.left = 0;
@@ -2187,16 +2189,16 @@ BOOLE gfxDrvStartup(void) {
     ULO lHeight, lWidth;
     gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
     
-    lHeight = cfgGetScreenHeight(gfxdrv_config);
-    lWidth  = cfgGetScreenWidth (gfxdrv_config);
+    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
+    RetroPlatformSetScreenWidth (cfgGetScreenWidth (gfxdrv_config));
 
-    if(lWidth > 768) {
-      // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
-      lWidth  = cfgGetScreenWidth (gfxdrv_config) / 2;
-      cfgSetScreenWidth(gfxdrv_config, lWidth);
-    }
-    
-    fellowAddLog("gfxdrv: operating in RetroPlatform mode, insert resolution %dx%d into list of valid screen resolutions...\n",
+    lHeight = RetroPlatformGetAdjustedScreenHeight();
+    lWidth  = RetroPlatformGetAdjustedScreenWidth();
+
+    cfgSetScreenHeight(gfxdrv_config, lHeight);
+    cfgSetScreenWidth (gfxdrv_config, lWidth);
+
+    fellowAddLog("gfxdrv: operating in RetroPlatform mode, insert resolution %ux%u into list of valid screen resolutions...\n",
       lWidth, lHeight);
 
     listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
