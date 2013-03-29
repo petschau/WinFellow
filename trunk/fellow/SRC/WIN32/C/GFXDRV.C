@@ -250,8 +250,7 @@ BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
 LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) {
 	RECT emulationRect;
-	BOOLE diacquire_sent = FALSE;
-
+	
 #ifdef RETRO_PLATFORM
   static BOOLE bIgnoreLeftMouseButton = FALSE;
 #endif
@@ -717,7 +716,6 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device) {
       DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX | ((gfx_drv_stretch_always) ? (WS_MAXIMIZEBOX | WS_SIZEBOX) : 0);
       DWORD dwExStyle = 0;
       HWND hParent = NULL;
-      int x = 0, y = 0;
       ULO width  = ddraw_device->drawmode->width;
       ULO height = ddraw_device->drawmode->height;
 

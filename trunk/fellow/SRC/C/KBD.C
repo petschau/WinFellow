@@ -115,14 +115,6 @@ void kbdEventEOFHandler(void) {
 	      break;
       case EVENT_HARD_RESET:
 	      break;
-#ifdef RETRO_PLATFORM
-      case EVENT_RPESCAPE_ACTIVE:
-        RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
-        break;
-      case EVENT_RPESCAPE_INACTIVE:
-        RetroPlatformSetEscapeKeyTargetHoldTime(FALSE);
-        break;
-#endif
     }
     kbd_state.eventsEOF.outpos++;
   }
