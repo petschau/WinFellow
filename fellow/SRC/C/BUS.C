@@ -412,11 +412,6 @@ void busRunGeneric(void)
 typedef void (*busRunHandlerFunc)(void);
 busRunHandlerFunc busGetRunHandler(void)
 {
-#ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    return busRunGeneric;
-#endif
-
   if (cpuGetModelMajor() <= 1)
   {
     if (cpuIntegrationGetSpeed() == 4)
@@ -477,30 +472,22 @@ void busClearEvent(bus_event *ev, busEventHandler handlerFunc)
   ev->handler = handlerFunc;
 }
 
+void busDetermineCpuInstructionEventHandler(void) {
+  if (cpuGetModelMajor() <= 1) {
+    if (cpuIntegrationGetSpeed() == 4)
+        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
+    else
+      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
+  }
+  else
+    cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68020;
+}
+
 void busClearCpuEvent()
 {
   memset(&cpuEvent, 0, sizeof(bus_event));
   cpuEvent.cycle = 0;
-  if (cpuGetModelMajor() <= 1)
-  {
-    if (cpuIntegrationGetSpeed() == 4)
-    {
-#ifdef RETRO_PLATFORM
-      if(RetroPlatformGetMode())
-        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
-      else
-#endif
-        cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000Fast;
-    }
-    else
-    {
-      cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68000General;
-    }
-  }
-  else
-  {
-    cpuEvent.handler = cpuIntegrationExecuteInstructionEventHandler68020;
-  }
+  busDetermineCpuInstructionEventHandler();
 }
 
 void busInitializeQueue(void)

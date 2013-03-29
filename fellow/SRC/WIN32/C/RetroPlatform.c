@@ -97,6 +97,7 @@
 #include "mousedrv.h"
 #include "joydrv.h"
 #include "CpuIntegration.h"
+#include "BUS.H"
 #include "kbddrv.h"
 #include "dxver.h" /// needed for DirectInput based joystick detection code
 
@@ -817,12 +818,16 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
         lOriginalSpeed = cfgGetCPUSpeed(RetroPlatformConfig);
         cpuIntegrationSetSpeed(0);
         cpuIntegrationCalculateMultiplier();
+        busDetermineCpuInstructionEventHandler();
+        fellowRequestEmulationStop();
       }
       else {
         fellowAddLog("RetroPlatformHostMessageFunction(): disabling CPU turbo mode, reverting back to speed level %u...\n",
           lOriginalSpeed);
         cpuIntegrationSetSpeed(lOriginalSpeed);
         cpuIntegrationCalculateMultiplier();
+        busDetermineCpuInstructionEventHandler();
+        fellowRequestEmulationStop();
       }
     }
     if (wParam & RP_TURBO_FLOPPY)
