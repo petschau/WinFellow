@@ -450,7 +450,7 @@ void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile) {
   hardfile->bytespersector = 512;
   hardfile->sectorspertrack = 32;
   hardfile->surfaces = 1;
-  hardfile->reservedblocks = 1;
+  hardfile->reservedblocks = 2;
 }
 
 void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index) {
