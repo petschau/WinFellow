@@ -13,6 +13,7 @@ extern void busSoftReset(void);
 extern void busHardReset(void);
 extern void busStartup(void);
 extern void busShutdown(void);
+extern void busDetermineCpuInstructionEventHandler(void);
 
 void busEndOfLine(void);
 void busEndOfFrame(void);
