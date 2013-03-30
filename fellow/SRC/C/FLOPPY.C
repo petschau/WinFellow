@@ -1341,7 +1341,12 @@ void floppyDMAReadInit(ULO drive)
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt & 0x1ffffe;
-  floppy_DMA.wait_for_sync = (adcon & 0x0400);
+
+  // Workaround, require normal sync with MFM generated from ADF. (North and South, Prince of Persia)
+  floppy_DMA.wait_for_sync = (adcon & 0x0400)
+    && ((floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0)
+        || (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489));
+
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
 
