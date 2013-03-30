@@ -904,7 +904,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
       return 1;
     }
 	case RP_IPC_TO_GUEST_VOLUME:
-    soundDrvDSoundSetVolume(wParam);
+    soundDrvDSoundSetCurrentSoundDeviceVolume(wParam);
 		return TRUE;
 	case RP_IPC_TO_GUEST_ESCAPEKEY:
 		lRetroPlatformEscapeKey         = wParam;

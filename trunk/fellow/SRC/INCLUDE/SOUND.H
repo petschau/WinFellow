@@ -77,6 +77,8 @@ extern void soundSetFilter(sound_filters filter);
 extern sound_filters soundGetFilter(void);
 extern void soundSetBufferLength(ULO ms);
 extern ULO soundGetBufferLength(void);
+extern void soundSetVolume(ULO volume);
+extern ULO soundGetVolume(void);
 extern void soundSetWAVDump(BOOLE wav_capture);
 extern BOOLE soundGetWAVDump(void);
 extern void soundSetNotification(sound_notifications notification);

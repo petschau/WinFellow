@@ -347,6 +347,14 @@ sound_filters cfgGetSoundFilter(cfg *config) {
   return config->m_soundfilter;
 }
 
+void cfgSetSoundVolume(cfg *config, const ULO soundvolume) {
+  config->m_soundvolume = soundvolume;
+}
+
+ULO cfgGetSoundVolume(cfg *config) {
+  return config->m_soundvolume;
+}
+
 void cfgSetSoundWAVDump(cfg *config, BOOLE soundWAVdump) {
   config->m_soundWAVdump = soundWAVdump;
 }
@@ -624,6 +632,7 @@ void cfgSetDefaults(cfg *config) {
   cfgSetSoundStereo(config, TRUE);
   cfgSetSound16Bits(config, TRUE);
   cfgSetSoundFilter(config, SOUND_FILTER_ORIGINAL);
+  cfgSetSoundVolume(config, 100);
   cfgSetSoundWAVDump(config, FALSE);
   cfgSetSoundNotification(config, SOUND_MMTIMER_NOTIFICATION);
   cfgSetSoundBufferLength(config, 60);
@@ -1064,6 +1073,9 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr) {
     else if (stricmp(option, "sound_frequency") == 0) {
       cfgSetSoundRate(config, cfgGetSoundRateFromString(value));
     }
+    else if (stricmp(option, "sound_volume") == 0) {
+      cfgSetSoundVolume(config, cfgGetULOFromString(value));
+    }
     else if ((stricmp(option, "fellow.sound_wav") == 0) ||
       (stricmp(option, "sound_wav") == 0)) {
 	cfgSetSoundWAVDump(config, cfgGetBOOLEFromString(value));
@@ -1298,6 +1310,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile) {
     cfgGetSound16BitsToString(cfgGetSound16Bits(config)));
   fprintf(cfgfile, "sound_frequency=%s\n", 
     cfgGetSoundRateToString(cfgGetSoundRate(config)));
+  fprintf(cfgfile, "sound_volume=%u\n", cfgGetSoundVolume(config));
   fprintf(cfgfile, "fellow.sound_wav=%s\n", 
     cfgGetBOOLEToString(cfgGetSoundWAVDump(config)));
   fprintf(cfgfile, "fellow.sound_filter=%s\n", 
@@ -1604,6 +1617,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager) {
   soundSetStereo(cfgGetSoundStereo(config));
   soundSet16Bits(cfgGetSound16Bits(config));
   soundSetFilter(cfgGetSoundFilter(config));
+  soundSetVolume(cfgGetSoundVolume(config));
   soundSetWAVDump(cfgGetSoundWAVDump(config));
   soundSetNotification(cfgGetSoundNotification(config));
   soundSetBufferLength(cfgGetSoundBufferLength(config));
