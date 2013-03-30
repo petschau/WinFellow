@@ -15,6 +15,6 @@ extern bool soundDrvEmulationStart(ULO outputrate,
 extern void soundDrvEmulationStop(void);
 extern void soundDrvPlay(WOR *leftbuffer, WOR *rightbuffer, ULO samplecount);
 extern void soundDrvPollBufferPosition(void);
-extern bool  soundDrvDSoundSetVolume(int);
+extern bool soundDrvDSoundSetCurrentSoundDeviceVolume(const int);
 
 #endif

@@ -48,6 +48,7 @@ sound_filters sound_filter;
 sound_notifications sound_notification;
 BOOLE sound_wav_capture;
 BOOLE sound_device_found;
+ULO sound_volume;
 
 
 /*===========================================================================*/
@@ -580,6 +581,14 @@ __inline void soundSetBufferLength(ULO ms) {
 
 __inline ULO soundGetBufferLength(void) {
   return sound_buffer_length;
+}
+
+__inline ULO soundGetVolume(void) {
+  return sound_volume;
+}
+
+__inline void soundSetVolume(const ULO volume) {
+  sound_volume = volume;
 }
 
 __inline void soundSetWAVDump(BOOLE wav_capture) {

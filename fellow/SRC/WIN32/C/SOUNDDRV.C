@@ -34,10 +34,7 @@
 #include "listtree.h"
 #include "windrv.h"
 #include "sounddrv.h"
-
-#ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
-#endif
+#include "config.h"
 
 
 /*===========================================================================*/
@@ -377,7 +374,7 @@ bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_dev
                full volume)
  *  @return TRUE is successful, FALSE otherwise.
  */
-bool soundDrvDSoundSetVolume(int volume) {
+static bool soundDrvDSoundSetVolume(sound_drv_dsound_device *dsound_device, const int volume) {
   HRESULT hResult;
   LONG vol;
 
@@ -393,11 +390,15 @@ bool soundDrvDSoundSetVolume(int volume) {
     volume, vol);
 #endif
 
-	hResult = IDirectSoundBuffer_SetVolume (sound_drv_dsound_device_current.lpDSBS, vol);
+	hResult = IDirectSoundBuffer_SetVolume (dsound_device->lpDSBS, vol);
 	if (FAILED (hResult))
 		soundDrvDSoundFailure("soundDrvDSoundSetVolume(): SetVolume() failed: ", hResult);
 
   return (hResult == DS_OK);
+}
+
+bool soundDrvDSoundSetCurrentSoundDeviceVolume(const int volume) {
+  return soundDrvDSoundSetVolume(&sound_drv_dsound_device_current, volume);
 }
 
 /*===========================================================================*/
@@ -532,11 +533,8 @@ bool soundDrvCreateSecondaryBuffer(sound_drv_dsound_device *dsound_device)
   dsbdesc.dwSize = sizeof(dsbdesc);
   dsbdesc.dwFlags = DSBCAPS_CTRLPOSITIONNOTIFY |
 		    DSBCAPS_GETCURRENTPOSITION2 |
-		    DSBCAPS_GLOBALFOCUS;
-#ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    dsbdesc.dwFlags |= DSBCAPS_CTRLVOLUME;
-#endif
+		    DSBCAPS_GLOBALFOCUS |
+        DSBCAPS_CTRLVOLUME;
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
@@ -723,6 +721,8 @@ bool soundDrvDSoundSecondaryBufferInitialize(sound_drv_dsound_device *dsound_dev
     soundDrvDSoundSecondaryBufferRelease(dsound_device);
     return false;
   }
+
+  soundDrvDSoundSetVolume(dsound_device, soundGetVolume());
 
   return true;
 }
