@@ -3,7 +3,9 @@
 
 // This header file defines the internal interfaces of the CPU module.
 
+#ifdef _DEBUG
 #define CPU_INSTRUCTION_LOGGING
+#endif
 
 // Function to check if there are any external interrupt sources wanting to issue interrupts
 typedef void (*cpuCheckPendingInterruptsFunc)(void);
