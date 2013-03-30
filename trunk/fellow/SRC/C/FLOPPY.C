@@ -278,7 +278,9 @@ void wdsklen(UWO data, ULO address)
     // DMA is off
     if (floppy_DMA_started)
     {
+#ifdef FLOPPY_LOG
       floppyLogValue("DMA was stopped with words left", floppy_DMA.wordsleft);
+#endif
       floppyClearDMAState();
     }
     diskDMAen = 0;
