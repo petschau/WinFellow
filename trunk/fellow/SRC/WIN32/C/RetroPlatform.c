@@ -1,4 +1,4 @@
-/* @(#) $Id: RetroPlatform.c,v 1.58 2013-02-16 11:52:20 carfesh Exp $ */
+/* $Id$ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -99,7 +99,8 @@
 #include "CpuIntegration.h"
 #include "BUS.H"
 #include "kbddrv.h"
-#include "dxver.h" /// needed for DirectInput based joystick detection code
+#include "dxver.h"    /// needed for DirectInput based joystick detection code
+#include "sounddrv.h" /// needed for DirectSound volume control
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
@@ -903,8 +904,7 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
       return 1;
     }
 	case RP_IPC_TO_GUEST_VOLUME:
-		/*currprefs.sound_volume = changed_prefs.sound_volume = 100 - wParam;
-		set_volume (currprefs.sound_volume, 0);*/
+    soundDrvDSoundSetVolume(wParam);
 		return TRUE;
 	case RP_IPC_TO_GUEST_ESCAPEKEY:
 		lRetroPlatformEscapeKey         = wParam;
@@ -965,16 +965,20 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 		}
 	case RP_IPC_TO_GUEST_SCREENCAPTURE:
 		{
-			/*extern int screenshotf (const TCHAR *spath, int mode, int doprepare);
-			extern int screenshotmode;
-			int ok;
-			int ossm = screenshotmode;
-			TCHAR *s = (TCHAR*)pData;
-			screenshotmode = 0;
-			ok = screenshotf (s, 1, 1);
-			screenshotmode = ossm;
-			return ok ? TRUE : FALSE;*/
-		}
+			struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
+      STR szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
+
+      wcstombs(szScreenFiltered, rpsc->szScreenFiltered, CFG_FILENAME_LENGTH);
+      wcstombs(szScreenRaw,      rpsc->szScreenRaw,      CFG_FILENAME_LENGTH);
+      
+			if (szScreenFiltered[0] || szScreenRaw[0]) {
+				DWORD ret = RP_SCREENCAPTURE_ERROR;
+				fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
+          szScreenFiltered, szScreenRaw);
+				return ret;
+			}
+    }
+	  return RP_SCREENCAPTURE_ERROR;
 	case RP_IPC_TO_GUEST_SAVESTATE:
 		{
 			TCHAR *s = (TCHAR*)pData;

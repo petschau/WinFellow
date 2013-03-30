@@ -1,4 +1,4 @@
-/* @(#) $Id: SOUNDDRV.C,v 1.18 2013-01-13 21:42:34 peschau Exp $ */
+/* $Id$ */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Sound driver for Windows                                                */
@@ -20,6 +20,11 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
+
+/** @file
+ *  Sound driver for Windows
+ */
+
 #include <windowsx.h>
 #include <dsound.h>
 
@@ -29,6 +34,10 @@
 #include "listtree.h"
 #include "windrv.h"
 #include "sounddrv.h"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 
 /*===========================================================================*/
@@ -358,6 +367,38 @@ bool soundDrvDSoundModeInformationInitialize(sound_drv_dsound_device *dsound_dev
   return true;
 }
 
+/** Configure volume of secondary DirectSound buffer of current sound device.
+ * 
+ *  Loudness is perceived in a logarithmic manner; the calculation attempts
+ *  to utilize the upper half of the available spectrum quadratically, so
+ *  that the perceived volume when moving the slider along feels more natural
+ *  the numbers may still need some fine-tuning
+ *  @param[in] volume the target volume in the range of 0 to 100 (100 being 
+               full volume)
+ *  @return TRUE is successful, FALSE otherwise.
+ */
+bool soundDrvDSoundSetVolume(int volume) {
+  HRESULT hResult;
+  LONG vol;
+
+	if (volume <= 100 && volume > 0)
+    vol = (LONG) -((50-(volume/2))*(50-(volume/2)));
+  else if (volume == 0)
+    vol = DSBVOLUME_MIN;
+  else
+    vol = DSBVOLUME_MAX;
+
+#ifdef _DEBUG
+  fellowAddLog("soundDrvDSoundSetVolume: volume %d scaled to %d, setting volume...\n",
+    volume, vol);
+#endif
+
+	hResult = IDirectSoundBuffer_SetVolume (sound_drv_dsound_device_current.lpDSBS, vol);
+	if (FAILED (hResult))
+		soundDrvDSoundFailure("soundDrvDSoundSetVolume(): SetVolume() failed: ", hResult);
+
+  return (hResult == DS_OK);
+}
 
 /*===========================================================================*/
 /* Set sound cooperative level                                               */
@@ -492,6 +533,10 @@ bool soundDrvCreateSecondaryBuffer(sound_drv_dsound_device *dsound_device)
   dsbdesc.dwFlags = DSBCAPS_CTRLPOSITIONNOTIFY |
 		    DSBCAPS_GETCURRENTPOSITION2 |
 		    DSBCAPS_GLOBALFOCUS;
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    dsbdesc.dwFlags |= DSBCAPS_CTRLVOLUME;
+#endif
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 
