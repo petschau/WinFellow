@@ -57,3 +57,8 @@ r833: More checks for emulation stop (ie F11) to avoid deadlock in rare cases.
 ------------------------------------------------------------------------------
 No test case is known yet.
 
+r843: Loaders using disksync different from 4489 with standard ADF files
+------------------------------------------------------------------------
+Test that Prince of Persia loads. It would not start earlier.
+
+Comment in 0.4.4 source also suggests North and South is affected.
