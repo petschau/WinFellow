@@ -360,9 +360,6 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
   } else {
     // fullscreen
     switch (pwgui_dm_match->colorbits) {
-			case 8:
-			  listnode = pwgui_dm->res8bit;
-			  break;
 			case 16:
 			  listnode = pwgui_dm->res16bit;
 			  break;
@@ -404,8 +401,6 @@ void wguiSetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifie
 }
 
 ULO wguiGetColorBitsFromComboboxIndex(LONG index) {
-
-  if (pwgui_dm->comboxbox8bitindex == index) { return 8; }
   if (pwgui_dm->comboxbox16bitindex == index) { return 16; }
   if (pwgui_dm->comboxbox24bitindex == index) { return 24; }
   if (pwgui_dm->comboxbox32bitindex == index) { return 32; }
@@ -415,7 +410,6 @@ ULO wguiGetColorBitsFromComboboxIndex(LONG index) {
 LONG wguiGetComboboxIndexFromColorBits(ULO colorbits) {
 
   switch (colorbits) {
-    case 8:  return pwgui_dm->comboxbox8bitindex;
     case 16: return pwgui_dm->comboxbox16bitindex;
     case 24: return pwgui_dm->comboxbox24bitindex;
     case 32: return pwgui_dm->comboxbox32bitindex;
@@ -457,19 +451,26 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
   draw_mode * dm;
   wgui_drawmode* pwdm;
   ULO idw				= 0;
-  ULO id8bit		= 0;
   ULO id16bit		= 0;
   ULO id24bit		= 0;
   ULO id32bit		= 0;
   wdms->reswindowed = NULL;
-  wdms->res8bit = NULL;
   wdms->res16bit = NULL;
   wdms->res24bit = NULL;
   wdms->res32bit = NULL;
-  wdms->comboxbox8bitindex = -1;
   wdms->comboxbox16bitindex = -1;
   wdms->comboxbox24bitindex = -1;
   wdms->comboxbox32bitindex = -1;
+
+  HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
+  int desktopwindow_bitspixel = GetDeviceCaps(desktopwindow_DC, BITSPIXEL);
+  ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
+  bool allowWindowedModes = desktopwindow_bitspixel != 8;
+
+  if (!allowWindowedModes)
+  {
+    wguiRequester("Your desktop is currently running an 8-bit color resolution.", "This is not supported.", "Only fullscreen modes will be available");          
+  }
 
   for (reslist = drawGetModes(); reslist != NULL; reslist = listNext(reslist)) {
     dm = (draw_mode*)listNode(reslist);
@@ -478,17 +479,14 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
     if (dm->windowed) {
       // windowed
       //pwdm->id = idw;
-      wdms->reswindowed = listAddSorted(wdms->reswindowed, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
-      idw++;
+      if (allowWindowedModes)
+      {
+	wdms->reswindowed = listAddSorted(wdms->reswindowed, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
+	idw++;
+      }
     } else {
       // fullscreen
       switch(dm->bits) {
-				case 8:
-				  //pwdm->id = id8bit;
-				  wdms->res8bit = listAddSorted(wdms->res8bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
-				  id8bit++;
-				  break;
-
 				case 16:
 				  //pwdm->id = id16bit;
 				  wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
@@ -510,17 +508,11 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
     }
   }
   wdms->numberofwindowed	= idw;
-  wdms->numberof8bit			= id8bit;
   wdms->numberof16bit			= id16bit;
   wdms->numberof24bit			= id24bit;
   wdms->numberof32bit			= id32bit;
   i=0;
   for (reslist=wdms->reswindowed; reslist!=NULL; reslist=listNext(reslist)) {
-    ((wgui_drawmode *) listNode(reslist))->id = i;
-    i++;
-  }
-  i=0;
-  for (reslist=wdms->res8bit; reslist!=NULL; reslist=listNext(reslist)) {
     ((wgui_drawmode *) listNode(reslist))->id = i;
     i++;
   }
@@ -544,7 +536,6 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
 void wguiFreeGuiDrawModesList(wgui_drawmodes *wdms) {
 
   listFreeAll(wdms->reswindowed, TRUE);
-  listFreeAll(wdms->res8bit, TRUE);
   listFreeAll(wdms->res16bit, TRUE);
   listFreeAll(wdms->res24bit, TRUE);
   listFreeAll(wdms->res32bit, TRUE);
@@ -558,8 +549,6 @@ felist *wguiGetMatchingList(BOOLE windowed, ULO colorbits) {
   } else {
     // fullscreen
     switch(colorbits) {
-			case 8:
-			  return pwgui_dm->res8bit;
 			case 16:
 			  return pwgui_dm->res16bit;
 			case 24:
@@ -568,7 +557,7 @@ felist *wguiGetMatchingList(BOOLE windowed, ULO colorbits) {
 			  return pwgui_dm->res32bit;
     }
   }
-  return pwgui_dm->res8bit;
+  return pwgui_dm->res16bit;
 }
 
 wgui_drawmode *wguiMatchResolution() {
@@ -588,13 +577,11 @@ wgui_drawmode *wguiMatchResolution() {
       return dm;
     }
   }
-  // if no matching is found return pointer to first resolution of 8 colorbits
+  // if no matching is found return pointer to first resolution of 32 or 16 colorbits
   if(listNode(pwgui_dm->res32bit) != NULL)
     return (wgui_drawmode *) listNode(pwgui_dm->res32bit);
-  else if(listNode(pwgui_dm->res16bit) != NULL)
-    return (wgui_drawmode *) listNode(pwgui_dm->res16bit);
   else
-    return (wgui_drawmode *) listNode(pwgui_dm->res8bit);
+    return (wgui_drawmode *) listNode(pwgui_dm->res16bit);
 }
 
 /*============================================================================*/
@@ -1646,10 +1633,12 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     // match available resolutions with configuration
     pwgui_dm_match = wguiMatchResolution();
 
+    HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
+    int desktopwindow_bitspixel = GetDeviceCaps(desktopwindow_DC, BITSPIXEL);
+    ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
+
     // fill combobox for colorbit depth
-    ComboBox_AddString(colorBitsComboboxHWND, "256 colors"); 
     comboboxid = 0;
-    pwgui_dm->comboxbox8bitindex = comboboxid; comboboxid++; 
     if (pwgui_dm->numberof16bit > 0) { 
       ComboBox_AddString(colorBitsComboboxHWND, "high color (16 bit)"); 
       pwgui_dm->comboxbox16bitindex = comboboxid; comboboxid++; 
@@ -1673,9 +1662,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     if (pwgui_dm_match->windowed) {
       // windowed 
       // colorbits can't be selected through WinFellow, desktop setting will be used
-      HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
-      int desktopwindow_bitspixel = GetDeviceCaps(desktopwindow_DC, BITSPIXEL);
-      ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
 
       ComboBox_SetCurSel(colorBitsComboboxHWND, wguiGetComboboxIndexFromColorBits(desktopwindow_bitspixel));
       ComboBox_Enable(colorBitsComboboxHWND, FALSE);
@@ -1686,6 +1672,12 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       // fullscreen
       ComboBox_Enable(colorBitsComboboxHWND, TRUE);
       ccwButtonSetCheck(hwndDlg, IDC_CHECK_FULLSCREEN);
+
+      if (desktopwindow_bitspixel == 8)
+      {
+	ccwButtonDisable(hwndDlg, IDC_CHECK_FULLSCREEN);
+      }
+
       // enable the checkbox for multiplebuffers
       ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
     }
@@ -1724,9 +1716,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));
     } else {
       switch (pwgui_dm_match->colorbits) {
-			case 8:
-			  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof8bit - 1));
-			  break;
 			case 16:
 			  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof16bit - 1));
 			  break;
@@ -1777,10 +1766,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
     } else {
       switch(cfgGetScreenColorBits(conf)) {
-			case 8:
-			  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
-			  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res8bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
-			  break;
 			case 16:
 			  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
 			  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
@@ -1962,8 +1947,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   ULO wguiGetNumberOfScreenAreas(ULO colorbits) {
 
     switch (colorbits) {
-		case 8:
-		  return pwgui_dm->numberof8bit;
 		case 16:
 		  return pwgui_dm->numberof16bit;
 		case 24:
@@ -1971,7 +1954,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 		case 32:
 		  return pwgui_dm->numberof32bit;
     }
-    return pwgui_dm->numberof8bit;
+    return pwgui_dm->numberof16bit;
   }
 
   INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg,

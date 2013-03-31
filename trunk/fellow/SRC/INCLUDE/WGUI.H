@@ -26,16 +26,13 @@ typedef struct {
 
 typedef struct {
 	ULO numberofwindowed;
-	ULO numberof8bit;
 	ULO numberof16bit;
 	ULO numberof24bit;
 	ULO numberof32bit;
-	LON comboxbox8bitindex;
 	LON comboxbox16bitindex;
 	LON comboxbox24bitindex;
 	LON comboxbox32bitindex;
 	felist *reswindowed;
-	felist *res8bit;
 	felist *res16bit;
 	felist *res24bit;
 	felist *res32bit;

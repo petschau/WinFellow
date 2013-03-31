@@ -1031,7 +1031,7 @@ static ULO cfgGetVerticalScaleStrategyFromString(STR *value)
 static ULO cfgGetColorBitsFromString(STR *value)
 {
   if ((stricmp(value, "8bit") == 0) ||
-    (stricmp(value, "8") == 0)) return 8;
+    (stricmp(value, "8") == 0)) return 16; // Fallback to 16 bits, 8 bit support is removed
   else if ((stricmp(value, "15bit") == 0) ||
     (stricmp(value, "15") == 0)) return 15;
   else if ((stricmp(value, "16bit") == 0) ||
@@ -1051,7 +1051,6 @@ static STR *cfgGetColorBitsToString(ULO colorbits)
 {
   switch (colorbits)
   {
-    case 8:  return "8bit";
     case 16: return "16bit";
     case 24: return "24bit";
     case 32: return "32bit";
