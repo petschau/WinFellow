@@ -125,9 +125,7 @@ typedef struct {
   DDSURFACEDESC        ddsdPrimary;
   DDSURFACEDESC        ddsdBack;
   DDSURFACEDESC        ddsdSecondary;
-  LPDIRECTDRAWPALETTE  lpDDPalette;
   LPDIRECTDRAWCLIPPER  lpDDClipper;
-  BOOLE		       PaletteInitialized;
   felist               *modes;
   gfx_drv_ddraw_mode   *mode;
   ULO		       buffercount;
@@ -161,13 +159,6 @@ BOOLE gfx_drv_displaychange;
 BOOLE gfx_drv_stretch_always;
 
 HANDLE gfx_drv_app_run;     /*!< Event indicating running or paused status */
-
-
-/************************************************************************//**
- * Master copy of the 8 bit palette
- ***************************************************************************/
-
-PALETTEENTRY gfx_drv_palette[256];
 
 
 /***********************************************************************//**
@@ -240,7 +231,6 @@ void gfxDrvEvaluateActiveStatus(void) {
 }
 
 void gfxDrvWindowFindClientRect(gfx_drv_ddraw_device *ddraw_device);
-BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device);
 
 /***********************************************************************//**
  * Window procedure for the emulation window.
@@ -452,13 +442,6 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_DISPLAYCHANGE:
       gfx_drv_displaychange = (wParam != gfx_drv_ddraw_device_current->mode->depth) &&
 			      gfx_drv_ddraw_device_current->mode->windowed;
-      break;
-    case WM_PALETTECHANGED:	/* Palette has changed, sometimes we did it */
-      /*if (((HWND) wParam) == gfx_drv_hwnd)*/
-	break;
-      /* else run code in WM_PALETTECHANGED to claim whatever colors are left for us */
-    case WM_QUERYNEWPALETTE:	/* We are activated and are allowed to realise our palette */
-      gfxDrvDDrawSetPalette(gfx_drv_ddraw_device_current);
       break;
     case WM_DIACQUIRE:        /* Re-evaluate the active status of DI-devices */
 //      fellowAddLog("WM_DIACQUIRE\n");
@@ -861,56 +844,6 @@ BOOLE gfxDrvDDrawClipperInitialize(gfx_drv_ddraw_device *ddraw_device) {
 
 
 /*==========================================================================*/
-/* Activate the palette                                                     */
-/*==========================================================================*/
-
-BOOLE gfxDrvDDrawSetPalette(gfx_drv_ddraw_device *ddraw_device) {
-  HRESULT err = DD_OK;
-  
-  if (ddraw_device->lpDDSPrimary != NULL) {
-    err = IDirectDrawSurface_SetPalette(ddraw_device->lpDDSPrimary,
-                                        ddraw_device->lpDDPalette);
-    if (err != DD_OK)
-      gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): SetPalette() ", err);
-  }
-  return (err == DD_OK);
-}
-
-
-/*==========================================================================*/
-/* Releases the palette for the 8-bit display modes.                        */
-/* Called on emulator shutdown                                              */
-/*==========================================================================*/
-
-void gfxDrvDDrawPaletteRelease(gfx_drv_ddraw_device *ddraw_device) {
-  if (ddraw_device->lpDDPalette != NULL)
-    IDirectDrawPalette_Release(ddraw_device->lpDDPalette);
-  ddraw_device->lpDDPalette = NULL;
-}
-
-
-/*==========================================================================*/
-/* Creates a palette for the 8-bit display modes.                           */
-/* Called on emulator startup                                               */
-/*==========================================================================*/
-
-BOOLE gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device *ddraw_device) {
-  HRESULT err;
-  
-  if (!ddraw_device->PaletteInitialized) {
-    if ((err = IDirectDraw2_CreatePalette(ddraw_device->lpDD2,
-                                          DDPCAPS_8BIT, 
-                                          gfx_drv_palette,
-                                          &(ddraw_device->lpDDPalette),
-                                          NULL)) != DD_OK)
-      gfxDrvDDrawFailure("gfxDrvDDrawPaletteInitialize(): ", err);
-    ddraw_device->PaletteInitialized = (err == DD_OK);
-  }
-  return ddraw_device->PaletteInitialized;
-}
-
-
-/*==========================================================================*/
 /* Callback used to collect information about available DirectDraw devices  */
 /* Called on emulator startup                                               */
 /*==========================================================================*/
@@ -1294,8 +1227,8 @@ HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
   if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) &&
     ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) ||
     (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
-    (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))) ||
-    (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == (DDPF_PALETTEINDEXED8 | DDPF_RGB))) {
+    (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
+  {
     gfx_drv_ddraw_mode *tmpmode;
     gfx_drv_ddraw_device *ddraw_device;
     
@@ -1790,14 +1723,8 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device) {
         ddraw_device->drawmode->bluepos = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(ddpf.dwBBitMask) : 0;
 	ddraw_device->drawmode->bluesize = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(ddpf.dwBBitMask) : 0;
 	
-	/* Set palette and clipper */
+	/* Set clipper */
 	
-	if (ddraw_device->drawmode->bits == 8) {
-	  if (!gfxDrvDDrawSetPalette(ddraw_device)) {
-	    gfxDrvDDrawSurfacesRelease(ddraw_device);
-	    success = FALSE;
-	  }
-	}
 	if (success && (ddraw_device->mode->windowed)) {
 	  if (!gfxDrvDDrawClipperInitialize(ddraw_device)) {
 	    gfxDrvDDrawSurfacesRelease(ddraw_device);
@@ -1935,7 +1862,6 @@ ULO gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device) {
       }
     }
     if (result) {
-      gfxDrvDDrawPaletteInitialize(gfx_drv_ddraw_device_current);
       buffers = gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device_current);
       if (buffers == 0)
       {
@@ -1979,7 +1905,6 @@ BOOLE gfxDrvDDrawInitialize(void) {
 
 void gfxDrvDDrawRelease(void) {
   gfxDrvDDrawModeInformationRelease(gfx_drv_ddraw_device_current);
-  gfxDrvDDrawPaletteRelease(gfx_drv_ddraw_device_current);
   gfxDrvDDraw2ObjectRelease(gfx_drv_ddraw_device_current);
   gfxDrvDDrawDeviceInformationRelease();
 }
@@ -1996,18 +1921,6 @@ void gfxDrvSetStretchAlways(BOOLE stretch_always)
 /*==========================================================================*/
 /* Functions below are the actual "graphics driver API"                     */
 /*==========================================================================*/
-
-
-/*==========================================================================*/
-/* Set an 8 bit palette entry                                               */
-/*==========================================================================*/
-
-void gfxDrvSet8BitColor(ULO col, ULO r, ULO g, ULO b) {
-  gfx_drv_palette[col].peRed = (UBY) r;
-  gfx_drv_palette[col].peGreen = (UBY) g;
-  gfx_drv_palette[col].peBlue = (UBY) b;
-  gfx_drv_palette[col].peFlags = PC_RESERVED;
-}
 
 
 /*==========================================================================*/

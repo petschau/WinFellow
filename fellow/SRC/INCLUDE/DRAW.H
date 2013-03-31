@@ -15,11 +15,6 @@
 
 // drawLineNormal
 
-void drawLineNormal1x1__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineNormal2x1__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineNormal1x2__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineNormal2x2__8bit(graph_line *linedescription, ULO nextlineoffset);
-
 void drawLineNormal1x1_16bit(graph_line *linedescription, ULO nextlineoffset);
 void drawLineNormal1x2_16bit(graph_line *linedescription, ULO nextlineoffset);
 void drawLineNormal2x1_16bit(graph_line *linedescription, ULO nextlineoffset);
@@ -36,11 +31,6 @@ void drawLineNormal1x2_32bit(graph_line *linedescription, ULO nextlineoffset);
 void drawLineNormal2x2_32bit(graph_line *linedescription, ULO nextlineoffset);
 
 // drawLineDual
-
-void drawLineDual1x1__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineDual2x1__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineDual1x2__8bit(graph_line *linedescription, ULO nextlineoffset);
-void drawLineDual2x2__8bit(graph_line *linedescription, ULO nextlineoffset);
 
 void drawLineDual1x1_16bit(graph_line *linedescription, ULO nextlineoffset);
 void drawLineDual2x1_16bit(graph_line *linedescription, ULO nextlineoffset);
@@ -59,11 +49,6 @@ void drawLineDual2x2_32bit(graph_line *linedescription, ULO nextlineoffset);
 
 // drawLineBPL
 
-void drawLineBPL1x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBPL2x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBPL1x2__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBPL2x2__8bit(graph_line *linedesc, ULO nextlineoffset);
-
 void drawLineBPL1x1_16bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBPL2x1_16bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBPL1x2_16bit(graph_line *linedesc, ULO nextlineoffset);
@@ -80,11 +65,6 @@ void drawLineBPL1x2_32bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBPL2x2_32bit(graph_line *linedesc, ULO nextlineoffset);
 
 // one line segment (normal or double) with background color
-
-void drawLineSegmentBG1x1__8bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
-void drawLineSegmentBG2x1__8bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
-void drawLineSegmentBG1x2__8bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
-void drawLineSegmentBG2x2__8bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
 
 void drawLineSegmentBG1x1_16bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
 void drawLineSegmentBG2x1_16bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
@@ -103,11 +83,6 @@ void drawLineSegmentBG2x2_32bit(ULO topad, ULO bgcolor, ULO nextlineoffset);
 
 // one full line (normal or double) with background color
 
-void drawLineBG1x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBG2x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBG1x2__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineBG2x2__8bit(graph_line *linedesc, ULO nextlineoffset);
-
 void drawLineBG1x1_16bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBG2x1_16bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBG1x2_16bit(graph_line *linedesc, ULO nextlineoffset);
@@ -122,11 +97,6 @@ void drawLineBG1x1_32bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBG2x1_32bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBG1x2_32bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineBG2x2_32bit(graph_line *linedesc, ULO nextlineoffset);
-
-void drawLineHAM1x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineHAM2x1__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineHAM1x2__8bit(graph_line *linedesc, ULO nextlineoffset);
-void drawLineHAM2x2__8bit(graph_line *linedesc, ULO nextlineoffset);
 
 void drawLineHAM1x1_16bit(graph_line *linedesc, ULO nextlineoffset);
 void drawLineHAM2x1_16bit(graph_line *linedesc, ULO nextlineoffset);
