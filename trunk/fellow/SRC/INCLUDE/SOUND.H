@@ -52,8 +52,8 @@ typedef struct {
 
 extern sound_emulations sound_emulation;
 extern sound_rates sound_rate;
-extern BOOLE sound_stereo;
-extern BOOLE sound_16bits;
+extern bool sound_stereo;
+extern bool sound_16bits;
 extern BOOLE sound_wav_capture;
 extern ULO sound_buffer_length;
 extern sound_filters sound_filter;
@@ -67,10 +67,10 @@ extern sound_notifications sound_notification;
 extern void soundSetRate(sound_rates rate);
 extern sound_rates soundGetRate(void);
 extern ULO soundGetRateReal(void);
-extern void soundSetStereo(BOOLE stereo);
-extern BOOLE soundGetStereo(void);
-extern void soundSet16Bits(BOOLE bits16);
-extern BOOLE soundGet16Bits(void);
+extern void soundSetStereo(bool stereo);
+extern bool soundGetStereo(void);
+extern void soundSet16Bits(bool bits16);
+extern bool soundGet16Bits(void);
 extern void soundSetEmulation(sound_emulations emulation);
 extern sound_emulations soundGetEmulation(void);
 extern void soundSetFilter(sound_filters filter);

@@ -1,66 +1,66 @@
 #ifndef FONTS_H
 #define FONTS_H
 
-UBY draw_fps_font[12][5][4] = {
-  0,0,1,0,  /* 1 */
-  0,0,1,0,
-  0,0,1,0,
-  0,0,1,0,
-  0,0,1,0,
-  1,1,1,0,  /* 2 */
-  0,0,1,0,
-  1,1,1,0,
-  1,0,0,0,
-  1,1,1,0,
-  1,1,1,0,  /* 3 */
-  0,0,1,0,
-  1,1,1,0,
-  0,0,1,0,
-  1,1,1,0,
-  1,0,1,0,  /* 4 */
-  1,0,1,0,
-  1,1,1,0,
-  0,0,1,0,
-  0,0,1,0,
-  1,1,1,0,  /* 5 */
-  1,0,0,0,
-  1,1,1,0,
-  0,0,1,0,
-  1,1,1,0,
-  1,1,1,0,  /* 6 */
-  1,0,0,0,
-  1,1,1,0,
-  1,0,1,0,
-  1,1,1,0,
-  1,1,1,0,  /* 7 */
-  0,0,1,0,
-  0,0,1,0,
-  0,0,1,0,
-  0,0,1,0,
-  1,1,1,0,  /* 8 */
-  1,0,1,0,
-  1,1,1,0,
-  1,0,1,0,
-  1,1,1,0,
-  1,1,1,0,  /* 9 */
-  1,0,1,0,
-  1,1,1,0,
-  0,0,1,0,
-  1,1,1,0,
-  1,1,1,0,  /* 0 */
-  1,0,1,0,
-  1,0,1,0,
-  1,0,1,0,
-  1,1,1,0,
-  0,0,0,0,  /* % */
-  1,0,0,1,  
-  0,0,1,0,
-  0,1,0,0,
-  1,0,0,1,  
-  0,0,0,0,  /* space */
-  0,0,0,0,
-  0,0,0,0,
-  0,0,0,0,
-  0,0,0,0};
+bool draw_fps_font[12][5][4] = 
+{ false,false,true,false,  /* 1 */
+  false,false,true,false,
+  false,false,true,false,
+  false,false,true,false,
+  false,false,true,false,
+  true,true,true,false,  /* 2 */
+  false,false,true,false,
+  true,true,true,false,
+  true,false,false,false,
+  true,true,true,false,
+  true,true,true,false,  /* 3 */
+  false,false,true,false,
+  true,true,true,false,
+  false,false,true,false,
+  true,true,true,false,
+  true,false,true,false,  /* 4 */
+  true,false,true,false,
+  true,true,true,false,
+  false,false,true,false,
+  false,false,true,false,
+  true,true,true,false,  /* 5 */
+  true,false,false,false,
+  true,true,true,false,
+  false,false,true,false,
+  true,true,true,false,
+  true,true,true,false,  /* 6 */
+  true,false,false,false,
+  true,true,true,false,
+  true,false,true,false,
+  true,true,true,false,
+  true,true,true,false,  /* 7 */
+  false,false,true,false,
+  false,false,true,false,
+  false,false,true,false,
+  false,false,true,false,
+  true,true,true,false,  /* 8 */
+  true,false,true,false,
+  true,true,true,false,
+  true,false,true,false,
+  true,true,true,false,
+  true,true,true,false,  /* 9 */
+  true,false,true,false,
+  true,true,true,false,
+  false,false,true,false,
+  true,true,true,false,
+  true,true,true,false,  /* 0 */
+  true,false,true,false,
+  true,false,true,false,
+  true,false,true,false,
+  true,true,true,false,
+  false,false,false,false,  /* % */
+  true,false,false,true,  
+  false,false,true,false,
+  false,true,false,false,
+  true,false,false,true,  
+  false,false,false,false,  /* space */
+  false,false,false,false,
+  false,false,false,false,
+  false,false,false,false,
+  false,false,false,false};
 
 #endif

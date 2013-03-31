@@ -177,7 +177,8 @@ void fhfileClear(void) {
 /* Set HD led symbol */
 /*===================*/
 
-static void fhfileSetLed(BOOLE state) {
+static void fhfileSetLed(bool state)
+{
   drawSetLED(4, state);
 }
 
@@ -191,34 +192,40 @@ static void fhfileIgnore(ULO index) {
   cpuSetDReg(0, 0);
 }
 
-static BYT fhfileRead(ULO index) {
+static BYT fhfileRead(ULO index)
+{
   ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
   ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
 
   if ((offset + length) > fhfile_devs[index].size)
+  {
     return -3;
-  fhfileSetLed(TRUE);
+  }
+  fhfileSetLed(true);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fread(memoryAddressToPtr(dest), 1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
-  fhfileSetLed(FALSE);
+  fhfileSetLed(false);
   return 0;
 }
 
-static BYT fhfileWrite(ULO index) {
+static BYT fhfileWrite(ULO index)
+{
   ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
   ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
 
   if (fhfile_devs[index].readonly ||
     ((offset + length) > fhfile_devs[index].size))
+  {
     return -3;
-  fhfileSetLed(TRUE);
+  }
+  fhfileSetLed(true);
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fwrite(memoryAddressToPtr(dest),1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
-  fhfileSetLed(FALSE);
+  fhfileSetLed(false);
   return 0;
 }
 

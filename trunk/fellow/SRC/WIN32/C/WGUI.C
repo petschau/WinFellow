@@ -1304,10 +1304,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
 
     /* get current sound channels */
-    cfgSetSoundStereo(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_STEREO));
+    cfgSetSoundStereo(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_STEREO) == TRUE);
 
     /* get current sound bits */
-    cfgSetSound16Bits(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_16BITS));
+    cfgSetSound16Bits(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_16BITS) == TRUE);
 
     /* get current sound filter */
     for (i=0; i<NUMBER_OF_SOUND_FILTERS; i++) {
@@ -1388,10 +1388,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 
     /* get measure speed */
-    cfgSetMeasureSpeed(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_SPEED));
+    cfgSetMeasureSpeed(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_SPEED) == TRUE);
 
     /* get draw LED */
-    cfgSetScreenDrawLEDs(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_LED));  
+    cfgSetScreenDrawLEDs(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_LED) == TRUE);
 
     /* get autoconfig disable */
     cfgSetUseAutoconfig(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE));

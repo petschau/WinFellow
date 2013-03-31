@@ -35,22 +35,21 @@
 
 void ccwButtonSetCheck(HWND windowHandle, int controlIdentifier) {
 
-  Button_SetCheck(GetDlgItem(windowHandle, controlIdentifier), TRUE);
+  Button_SetCheck(GetDlgItem(windowHandle, controlIdentifier), BST_CHECKED);
 }
 
 void ccwButtonUncheck(HWND windowHandle, int controlIdentifier) {
 
-  Button_SetCheck(GetDlgItem(windowHandle, controlIdentifier), FALSE);
+  Button_SetCheck(GetDlgItem(windowHandle, controlIdentifier), BST_UNCHECKED);
 }
 
 void ccwButtonCheckConditional(HWND windowHandle, int controlIdentifier, BOOLE check) {
-
-  Button_SetCheck(GetDlgItem(windowHandle, controlIdentifier), check);
+  if (check) ccwButtonSetCheck(windowHandle, controlIdentifier);
+  else ccwButtonUncheck(windowHandle, controlIdentifier);
 }
 
 BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier) {
-
-  return Button_GetCheck(GetDlgItem(windowHandle, controlIdentifier));
+  return Button_GetCheck(GetDlgItem(windowHandle, controlIdentifier)) == BST_CHECKED;
 }
 
 void ccwButtonEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable) {
