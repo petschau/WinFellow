@@ -1229,6 +1229,11 @@ HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
     (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
     (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
   {
+    if (lpDDSurfaceDesc->dwRefreshRate != 0 && lpDDSurfaceDesc->dwRefreshRate < 50)
+    {
+      return DDENUMRET_OK;
+    }
+
     gfx_drv_ddraw_mode *tmpmode;
     gfx_drv_ddraw_device *ddraw_device;
     
