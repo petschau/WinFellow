@@ -71,14 +71,14 @@ typedef struct {
   ULO   m_screencolorbits;
   ULO   m_screenrefresh;
   BOOLE m_screenwindowed;
-  BOOLE m_screendrawleds;
+  bool  m_screendrawleds;
   ULO   m_frameskipratio;
   ULO   m_horizontalscale;
   ULO   m_verticalscale;
   ULO   m_verticalscalestrategy;
   BOOLE m_scanlines;
   BOOLE m_deinterlace;
-  BOOLE m_measurespeed;
+  bool  m_measurespeed;
 
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
@@ -92,8 +92,8 @@ typedef struct {
 
   sound_emulations     m_soundemulation;
   sound_rates          m_soundrate;
-  BOOLE                m_soundstereo;
-  BOOLE                m_sound16bits;
+  bool                 m_soundstereo;
+  bool                 m_sound16bits;
   sound_filters        m_soundfilter;
   ULO                  m_soundvolume;
   BOOLE                m_soundWAVdump;
@@ -200,8 +200,8 @@ extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
 extern ULO cfgGetScreenRefresh(cfg *config);
 extern void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed);
 extern BOOLE cfgGetScreenWindowed(cfg *config);
-extern void cfgSetScreenDrawLEDs(cfg *config, BOOLE drawleds);
-extern BOOLE cfgGetScreenDrawLEDs(cfg *config);
+extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
+extern bool cfgGetScreenDrawLEDs(cfg *config);
 extern void cfgSetUseMultipleGraphicalBuffers(cfg *, BOOLE);
 extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *);
 
@@ -231,10 +231,10 @@ extern void cfgSetSoundEmulation(cfg *config, sound_emulations soundemulation);
 extern sound_emulations cfgGetSoundEmulation(cfg *config);
 extern void cfgSetSoundRate(cfg *config, sound_rates soundrate);
 extern sound_rates cfgGetSoundRate(cfg *config);
-extern void cfgSetSoundStereo(cfg *config, BOOLE soundstereo);
-extern BOOLE cfgGetSoundStereo(cfg *config);
-extern void cfgSetSound16Bits(cfg *config, BOOLE soundbit);
-extern BOOLE cfgGetSound16Bits(cfg *config);
+extern void cfgSetSoundStereo(cfg *config, bool soundstereo);
+extern bool cfgGetSoundStereo(cfg *config);
+extern void cfgSetSound16Bits(cfg *config, bool soundbit);
+extern bool cfgGetSound16Bits(cfg *config);
 extern void cfgSetSoundFilter(cfg *config, sound_filters soundfilter);
 extern sound_filters cfgGetSoundFilter(cfg *config);
 extern void cfgSetSoundVolume(cfg *config, const ULO soundvolume);
@@ -320,8 +320,8 @@ extern BOOLE cfgGetUseGUI(cfg *config);
 /* Various configuration property access                                      */
 /*============================================================================*/
 
-extern void cfgSetMeasureSpeed(cfg *config, BOOLE measurespeed);
-extern BOOLE cfgGetMeasureSpeed(cfg *config);
+extern void cfgSetMeasureSpeed(cfg *config, bool measurespeed);
+extern bool cfgGetMeasureSpeed(cfg *config);
 
 /*============================================================================*/
 /* cfg Utility Functions                                                      */

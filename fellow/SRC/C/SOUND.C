@@ -41,8 +41,8 @@
 /*===========================================================================*/
 
 sound_rates sound_rate;                               /* Current output rate */
-BOOLE sound_stereo;                           /* Current mono/stereo setting */
-BOOLE sound_16bits;                              /* Current 8/16 bit setting */
+bool sound_stereo;                            /* Current mono/stereo setting */
+bool sound_16bits;                               /* Current 8/16 bit setting */
 sound_emulations sound_emulation;
 sound_filters sound_filter;
 sound_notifications sound_notification;
@@ -517,15 +517,18 @@ void soundFrequencyHandler(void)
 /* Property settings                                                         */
 /*===========================================================================*/
 
-__inline void soundSetRate(sound_rates rate) {
+__inline void soundSetRate(sound_rates rate)
+{
   sound_rate = rate;
 }
 
-__inline sound_rates soundGetRate(void) {
+__inline sound_rates soundGetRate(void)
+{
   return sound_rate;
 }
 
-__inline ULO soundGetRateReal(void) {
+__inline ULO soundGetRateReal(void)
+{
   switch (soundGetRate()) {
     case SOUND_44100:	return 44100;
     case SOUND_31300:	return 31300;
@@ -535,115 +538,143 @@ __inline ULO soundGetRateReal(void) {
   return 0;
 }
 
-__inline void soundSetStereo(BOOLE stereo) {
+__inline void soundSetStereo(bool stereo)
+{
   sound_stereo = stereo;
 }
 
-__inline BOOLE soundGetStereo(void) {
+__inline bool soundGetStereo(void)
+{
   return sound_stereo;
 }
 
-__inline void soundSet16Bits(BOOLE bits16) {
+__inline void soundSet16Bits(bool bits16)
+{
   sound_16bits = bits16;
 }
 
-__inline BOOLE soundGet16Bits(void) {
+__inline bool soundGet16Bits(void)
+{
   return sound_16bits;
 }
 
-__inline void soundSetEmulation(sound_emulations emulation) {
+__inline void soundSetEmulation(sound_emulations emulation)
+{
   sound_emulation = emulation;
 }
 
-sound_emulations soundGetEmulation(void) {
+sound_emulations soundGetEmulation(void)
+{
   return sound_emulation;
 }
 
-__inline void soundSetFilter(sound_filters filter) {
+__inline void soundSetFilter(sound_filters filter)
+{
   sound_filter = filter;
 }
 
-__inline sound_filters soundGetFilter(void) {
+__inline sound_filters soundGetFilter(void)
+{
   return sound_filter;
 }
 
-__inline void soundSetNotification(sound_notifications notification) {
+__inline void soundSetNotification(sound_notifications notification)
+{
   sound_notification = notification;
 }
 
-sound_notifications soundGetNotification(void) {
+sound_notifications soundGetNotification(void)
+{
   return sound_notification;
 }
 
-__inline void soundSetBufferLength(ULO ms) {
+__inline void soundSetBufferLength(ULO ms)
+{
   sound_buffer_length = ms;
 }
 
-__inline ULO soundGetBufferLength(void) {
+__inline ULO soundGetBufferLength(void)
+{
   return sound_buffer_length;
 }
 
-__inline ULO soundGetVolume(void) {
+__inline ULO soundGetVolume(void)
+{
   return sound_volume;
 }
 
-__inline void soundSetVolume(const ULO volume) {
+__inline void soundSetVolume(const ULO volume)
+{
   sound_volume = volume;
 }
 
-__inline void soundSetWAVDump(BOOLE wav_capture) {
+__inline void soundSetWAVDump(BOOLE wav_capture)
+{
   sound_wav_capture = wav_capture;
 }
 
-__inline BOOLE soundGetWAVDump(void) {
+__inline BOOLE soundGetWAVDump(void)
+{
   return sound_wav_capture;
 }
 
-__inline void soundSetBufferSampleCount(ULO sample_count) {
+__inline void soundSetBufferSampleCount(ULO sample_count)
+{
   sound_buffer_sample_count = sample_count;
 }
 
-__inline ULO soundGetBufferSampleCount(void) {
+__inline ULO soundGetBufferSampleCount(void)
+{
   return sound_buffer_sample_count;
 }
 
-__inline void soundSetBufferSampleCountMax(ULO sample_count_max) {
+__inline void soundSetBufferSampleCountMax(ULO sample_count_max)
+{
   sound_buffer_sample_count_max = sample_count_max;
 }
 
-__inline ULO soundGetBufferSampleCountMax(void) {
+__inline ULO soundGetBufferSampleCountMax(void)
+{
   return sound_buffer_sample_count_max;
 }
 
-__inline void soundSetDeviceFound(BOOLE device_found) {
+__inline void soundSetDeviceFound(BOOLE device_found)
+{
   sound_device_found = device_found;
 }
 
-__inline BOOLE soundGetDeviceFound(void) {
+__inline BOOLE soundGetDeviceFound(void)
+{
   return sound_device_found;
 }
 
-__inline void soundSetScale(ULO scale) {
+__inline void soundSetScale(ULO scale)
+{
   sound_scale = scale;
 }
 
-__inline ULO soundGetScale(void) {
+__inline ULO soundGetScale(void)
+{
   return sound_scale;
 }
 
-__inline void soundSetSampleVolume(UBY sample_in, UBY volume, WOR sample_out) {
+__inline void soundSetSampleVolume(UBY sample_in, UBY volume, WOR sample_out)
+{
   volumes[sample_in][volume] = sample_out;
 }
 
-__inline WOR soundGetSampleVolume(BYT sample_in, UBY volume) {
+__inline WOR soundGetSampleVolume(BYT sample_in, UBY volume)
+{
   return volumes[sample_in][volume];
 }
 
-__inline void soundSetPeriodValue(ULO period, ULO value) {
+__inline void soundSetPeriodValue(ULO period, ULO value)
+{
   periodtable[period] = value;
 }
 
-__inline ULO soundGetPeriodValue(ULO period) {
+__inline ULO soundGetPeriodValue(ULO period)
+{
   return periodtable[period];
 }
 
@@ -652,7 +683,8 @@ __inline ULO soundGetPeriodValue(ULO period) {
 /* Initializes the volume table                                              */
 /*===========================================================================*/
 
-void soundVolumeTableInitialize(BOOLE stereo) {
+void soundVolumeTableInitialize(BOOLE stereo)
+{
   LON i, s, j;
 
   if (!stereo)
@@ -673,7 +705,8 @@ void soundVolumeTableInitialize(BOOLE stereo) {
 /* Initializes the period table                                              */
 /*===========================================================================*/
 
-void soundPeriodTableInitialize(ULO outputrate) {
+void soundPeriodTableInitialize(ULO outputrate)
+{
   double j;
   LON i, periodvalue;
 
@@ -682,7 +715,8 @@ void soundPeriodTableInitialize(ULO outputrate) {
   soundSetScale((ULO) (((double)(65536.0*2.0*31200.0))/((double) outputrate)));
 
   soundSetPeriodValue(0, 0x10000);
-  for (i = 1; i < 65536; i++) {
+  for (i = 1; i < 65536; i++)
+  {
     //j = 3568200 / i;                                          /* Sample rate */
     j = 3546895 / i;                                          /* Sample rate */
     periodvalue = (ULO) ((j*65536) / outputrate);
@@ -700,7 +734,8 @@ void soundPeriodTableInitialize(ULO outputrate) {
 void soundPlaybackInitialize(void)
 {
   audiocounter = 0;
-  if (soundGetEmulation() > SOUND_NONE) {                      /* Play sound */
+  if (soundGetEmulation() > SOUND_NONE)
+  {                      /* Play sound */
     soundPeriodTableInitialize(soundGetRateReal());
     soundVolumeTableInitialize(soundGetStereo());
     soundSetBufferSampleCount(0);
@@ -714,7 +749,8 @@ void soundPlaybackInitialize(void)
 /* Clear a device struct                                                     */
 /*===========================================================================*/
 
-void soundDeviceClear(sound_device *sd) {
+void soundDeviceClear(sound_device *sd)
+{
   memset(sd, 0, sizeof(sound_device));
 }
 
@@ -723,10 +759,10 @@ void soundDeviceClear(sound_device *sd) {
 /* Set IO register stubs                                                     */
 /*===========================================================================*/
 
-void soundIOHandlersInstall(void) {
-  ULO i;
-
-  for (i = 0; i < 4; i++) {
+void soundIOHandlersInstall(void)
+{
+  for (int i = 0; i < 4; i++)
+  {
     memorySetIoWriteStub(0xa0 + 16*i, waudXpth);
     memorySetIoWriteStub(0xa2 + 16*i, waudXptl);
     memorySetIoWriteStub(0xa4 + 16*i, waudXlen);
@@ -741,15 +777,15 @@ void soundIOHandlersInstall(void) {
 /* Clear all sound emulation data                                            */
 /*===========================================================================*/
 
-void soundIORegistersClear(void) {
-  ULO i;
-
+void soundIORegistersClear(void)
+{
   audstate[0] = soundState0;
   audstate[1] = soundState0;
   audstate[2] = soundState0;
   audstate[3] = soundState0;
 
-  for (i = 0; i < 4; i++) {
+  for (int i = 0; i < 4; i++)
+  {
     audpt[i] = 0;
     audptw[i] = 0;
     audlen[i] = 2;
@@ -770,20 +806,22 @@ void soundIORegistersClear(void) {
 /* Called on end of line                                                     */
 /*===========================================================================*/
 
-void soundEndOfLine(void) {
-  if (soundGetEmulation() != SOUND_NONE) {
+void soundEndOfLine(void)
+{
+  if (soundGetEmulation() != SOUND_NONE)
+  {
     soundFrequencyHandler();
     if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
-      soundGetBufferSampleCountMax()) {
-	if (soundGetEmulation() == SOUND_PLAY) {
-	  soundDrvPlay(sound_left[sound_current_buffer],
-	    sound_right[sound_current_buffer],
-	    soundGetBufferSampleCountMax());
+      soundGetBufferSampleCountMax())
+    {
+	if (soundGetEmulation() == SOUND_PLAY)
+	{
+	  soundDrvPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
 	}
 	if (soundGetWAVDump())
-	  wavPlay(sound_left[sound_current_buffer],
-	  sound_right[sound_current_buffer],
-	  soundGetBufferSampleCountMax());
+	{
+	  wavPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
+	}
 	sound_current_buffer++;
 	if (sound_current_buffer > 1) sound_current_buffer = 0;
 	soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
@@ -796,7 +834,8 @@ void soundEndOfLine(void) {
 /* Called on emulation start and stop                                        */
 /*===========================================================================*/
 
-void soundEmulationStart(void) {
+void soundEmulationStart(void)
+{
   soundIOHandlersInstall();
   audioodd = 0;
   soundPlaybackInitialize();
@@ -804,22 +843,23 @@ void soundEmulationStart(void) {
   {
     /* Allow sound driver to override buffer length */
     ULO buffer_length = soundGetBufferSampleCountMax();
-    if (!soundDrvEmulationStart(soundGetRateReal(),
-      soundGet16Bits(),
-      soundGetStereo(),
-      &buffer_length))
+    if (!soundDrvEmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
+    {
       soundSetEmulation(SOUND_EMULATE); /* Driver failed, slient emulation */
+    }
     if (buffer_length != soundGetBufferSampleCountMax())
+    {
       soundSetBufferSampleCountMax(buffer_length);
+    }
   }
   if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
-    wavEmulationStart(soundGetRate(),
-    soundGet16Bits(),
-    soundGetStereo(),
-    soundGetBufferSampleCountMax());
+  {
+    wavEmulationStart(soundGetRate(), soundGet16Bits(), soundGetStereo(), soundGetBufferSampleCountMax());
+  }
 }
 
-void soundEmulationStop(void) {
+void soundEmulationStop(void)
+{
   if (soundGetEmulation() != SOUND_NONE && soundGetEmulation() != SOUND_EMULATE)
     soundDrvEmulationStop();
   if (soundGetWAVDump() && (soundGetEmulation() != SOUND_NONE))
@@ -831,7 +871,8 @@ void soundEmulationStop(void) {
 /* Called every time we do a hard-reset                                      */
 /*===========================================================================*/
 
-void soundHardReset(void) {
+void soundHardReset(void)
+{
   soundIORegistersClear();
 }
 
@@ -840,7 +881,8 @@ void soundHardReset(void) {
 /* Called once on emulator startup                                           */
 /*===========================================================================*/
 
-BOOLE soundStartup(void) {
+BOOLE soundStartup(void)
+{
   soundSetEmulation(SOUND_NONE);
   soundSetFilter(SOUND_FILTER_ORIGINAL);
   soundSetRate(SOUND_15650);
@@ -864,6 +906,7 @@ BOOLE soundStartup(void) {
 /* Called once on emulator shutdown                                          */
 /*===========================================================================*/
 
-void soundShutdown(void) {
+void soundShutdown(void)
+{
   soundDrvShutdown();
 }

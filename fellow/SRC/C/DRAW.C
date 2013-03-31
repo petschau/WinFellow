@@ -442,33 +442,10 @@ felist *draw_modes;
 draw_mode *draw_mode_current;
 
 
-/*============================================================================*/
-/* Fps counter and LED control                                                */
-/*============================================================================*/
-
-BOOLE draw_fps_counter_enabled;
-
-
-/*============================================================================*/
-/* These constants define the LED symbol appearance                           */
-/*============================================================================*/
-
-#define DRAW_LED_COUNT      5
-#define DRAW_LED_WIDTH     12
-#define DRAW_LED_HEIGHT     4
-#define DRAW_LED_FIRST_X   16
-#define DRAW_LED_FIRST_Y    4
-#define DRAW_LED_GAP        8
-#define DRAW_LED_COLOR_ON  0x00FF00 /* Green */
-#define DRAW_LED_COLOR_OFF 0x000000 /* Black */
-
 // Indexes into the HAM drawing table
 
 #define draw_HAM_modify_table_bitindex 0
 #define draw_HAM_modify_table_holdmask 4
-
-BOOLE draw_LEDs_enabled;
-BOOLE draw_LEDs_state[DRAW_LED_COUNT];
 
 /*============================================================================*/
 /* Event flags that trigger some action regarding the host display            */
@@ -517,13 +494,6 @@ ULO draw_left;
 ULO draw_right;
 ULO draw_top;
 ULO draw_bottom;
-
-
-/*============================================================================*/
-/* FPS image buffer                                                           */
-/*============================================================================*/
-
-BOOLE draw_fps_buffer[5][20];
 
 
 /*============================================================================*/
@@ -716,123 +686,159 @@ static void drawViewScroll(void) {
 }
 
 /*============================================================================*/
+/* These constants define the LED symbol appearance                           */
+/*============================================================================*/
+
+#define DRAW_LED_COUNT      5
+#define DRAW_LED_WIDTH     12
+#define DRAW_LED_HEIGHT     4
+#define DRAW_LED_FIRST_X   16
+#define DRAW_LED_FIRST_Y    4
+#define DRAW_LED_GAP        8
+#define DRAW_LED_COLOR_ON  0x00FF00 /* Green */
+#define DRAW_LED_COLOR_OFF 0x000000 /* Black */
+
+bool draw_LEDs_enabled;
+bool draw_LEDs_state[DRAW_LED_COUNT];
+
+/*============================================================================*/
 /* Draws a LED symbol                                                         */
 /*============================================================================*/
 
-static void drawLED8(ULO x, ULO y, ULO width, ULO height, ULO color) {
-  UBY *bufb;
-  ULO x1, y1;
+static void drawLED8(int x, int y, int width, int height, ULO color)
+{
+  UBY *bufb = draw_buffer_top_ptr + draw_mode_current->pitch*y + x;
   UBY color8 = (UBY) draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
-  ULO pitch = drawValidateBufferPointer(0);
-  if (pitch == 0) return;
-  bufb = draw_buffer_top_ptr + pitch*y + x;
-  for (y1 = 0; y1 < height; y1++) {
-    for (x1 = 0; x1 < width; x1++) *(bufb + x1) = color8;
-    bufb = bufb + pitch;
+		    ((color & 0x00f000) >> 8) |
+		    ((color & 0x0000f0) >> 4)];
+  for (int y1 = 0; y1 < height; y1++)
+  {
+    for (int x1 = 0; x1 < width; x1++)
+    {
+      *(bufb + x1) = color8;
+    }
+    bufb = bufb + draw_mode_current->pitch;
   }
-  drawInvalidateBufferPointer();
 }
 
-static void drawLED16(ULO x, ULO y, ULO width, ULO height, ULO color) {
-  UWO *bufw;
-  ULO x1, y1;
+static void drawLED16(int x, int y, int width, int height, ULO color)
+{
+  UWO *bufw = ((UWO *) (draw_buffer_top_ptr + draw_mode_current->pitch*y)) + x;
   UWO color16 = (UWO) draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
-  ULO pitch = drawValidateBufferPointer(0);
-  if (pitch == 0) return;
-  bufw = ((UWO *) (draw_buffer_top_ptr + pitch*y)) + x;
-  for (y1 = 0; y1 < height; y1++) {
-    for (x1 = 0; x1 < width; x1++) *(bufw + x1) = color16;
-    bufw = (UWO *) (((UBY *) bufw) + pitch);
+		      ((color & 0x00f000) >> 8) |
+		      ((color & 0x0000f0) >> 4)];
+  for (int y1 = 0; y1 < height; y1++)
+  {
+    for (int x1 = 0; x1 < width; x1++)
+    {
+      *(bufw + x1) = color16;
+    }
+    bufw = (UWO *) (((UBY *) bufw) + draw_mode_current->pitch);
   }
-  drawInvalidateBufferPointer();
 }
 
 
-static void drawLED24(ULO x, ULO y, ULO width, ULO height, ULO color) {
-  UBY *bufb;
-  ULO x1, y1;
+static void drawLED24(int x, int y, int width, int height, ULO color)
+{
+  UBY *bufb = draw_buffer_top_ptr + draw_mode_current->pitch*y + x*3;
   ULO color24 = draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
+		((color & 0x00f000) >> 8) |
+		((color & 0x0000f0) >> 4)];
   UBY color24_1 = (UBY) ((color24 & 0xff0000) >> 16);
   UBY color24_2 = (UBY) ((color24 & 0x00ff00) >> 8);
   UBY color24_3 = (UBY) (color24 & 0x0000ff);
-  ULO pitch = drawValidateBufferPointer(0);
-  if (pitch == 0) return;
-  bufb = draw_buffer_top_ptr + pitch*y + x*3;
-  for (y1 = 0; y1 < height; y1++) {
-    for (x1 = 0; x1 < width; x1++) {
+  for (int y1 = 0; y1 < height; y1++)
+  {
+    for (int x1 = 0; x1 < width; x1++)
+    {
       *(bufb + x1*3) = color24_1;
       *(bufb + x1*3 + 1) = color24_2;
       *(bufb + x1*3 + 2) = color24_3;
     }
-    bufb = bufb + pitch;
+    bufb = bufb + draw_mode_current->pitch;
   }
-  drawInvalidateBufferPointer();
 }
 
-static void drawLED32(ULO x, ULO y, ULO width, ULO height, ULO color) {
-  ULO *bufl;
-  ULO x1, y1;
+static void drawLED32(int x, int y, int width, int height, ULO color)
+{
+  ULO *bufl = ((ULO *) (draw_buffer_top_ptr + draw_mode_current->pitch*y)) + x;
   ULO color32 = draw_color_table[((color & 0xf00000) >> 12) |
-    ((color & 0x00f000) >> 8) |
-    ((color & 0x0000f0) >> 4)];
-  ULO pitch = drawValidateBufferPointer(0);
-  if (pitch == 0) return;
-  bufl = ((ULO *) (draw_buffer_top_ptr + pitch*y)) + x;
-  for (y1 = 0; y1 < height; y1++) {
-    for (x1 = 0; x1 < width; x1++) *(bufl + x1) = color32;
-    bufl = (ULO *) (((UBY *) bufl) + pitch);
+		((color & 0x00f000) >> 8) |
+		((color & 0x0000f0) >> 4)];
+  for (int y1 = 0; y1 < height; y1++)
+  {
+    for (int x1 = 0; x1 < width; x1++)
+    {
+      *(bufl + x1) = color32;
+    }
+    bufl = (ULO *) (((UBY *) bufl) + draw_mode_current->pitch);
   }
-  drawInvalidateBufferPointer();
 }
 
-static void drawLED(ULO index, BOOLE state) {
-  ULO x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index;
-  ULO y = DRAW_LED_FIRST_Y;
+static void drawLED(int index, bool state)
+{
+  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index;
+  int y = DRAW_LED_FIRST_Y;
   ULO color = (state) ? DRAW_LED_COLOR_ON : DRAW_LED_COLOR_OFF;
+  int height = DRAW_LED_HEIGHT;
 
-  switch (draw_mode_current->bits) {
+  if (drawGetVerticalScaleStrategy() == 1 && !drawGetDeinterlace()) // dxstretch
+  {
+    height /= 2;
+  }
+
+  switch (draw_mode_current->bits)
+  {
     case 8:
-      drawLED8(x, y, DRAW_LED_WIDTH, DRAW_LED_HEIGHT, color);
+      drawLED8(x, y, DRAW_LED_WIDTH, height, color);
       break;
     case 16:
-      drawLED16(x, y, DRAW_LED_WIDTH, DRAW_LED_HEIGHT, color);
+      drawLED16(x, y, DRAW_LED_WIDTH, height, color);
       break;
     case 24:
-      drawLED24(x, y, DRAW_LED_WIDTH, DRAW_LED_HEIGHT, color);
+      drawLED24(x, y, DRAW_LED_WIDTH, height, color);
       break;
     case 32:
-      drawLED32(x, y, DRAW_LED_WIDTH, DRAW_LED_HEIGHT, color);
+      drawLED32(x, y, DRAW_LED_WIDTH, height, color);
       break;
     default:
       break;
   }
 }
 
-
-static void drawLEDs(void) {
-  if (draw_LEDs_enabled) {
-    ULO i;
-    for (i = 0; i < DRAW_LED_COUNT; i++) drawLED(i, draw_LEDs_state[i]);
+static void drawLEDs(void)
+{
+  if (draw_LEDs_enabled)
+  {
+    for (int i = 0; i < DRAW_LED_COUNT; i++)
+    {
+      drawLED(i, draw_LEDs_state[i]);
+    }
   }
 }
+
+
+/*============================================================================*/
+/* FPS image buffer                                                           */
+/*============================================================================*/
+
+bool draw_fps_counter_enabled;
+bool draw_fps_buffer[5][20];
 
 
 /*============================================================================*/
 /* Draws one char in the FPS counter buffer                                   */
 /*============================================================================*/
 
-static void drawFpsChar(ULO character, ULO x) {
-  ULO i, j;
-
-  for (i = 0; i < 5; i++) 
-    for (j = 0; j < 4; j++)
-      draw_fps_buffer[i][x*4 + j] = draw_fps_font[character][i][j]; 
+static void drawFpsChar(int character, int x)
+{
+  for (int i = 0; i < 5; i++)
+  {
+    for (int j = 0; j < 4; j++)
+    {
+      draw_fps_buffer[i][x*4 + j] = draw_fps_font[character][i][j];
+    }
+  }
 }
 
 
@@ -840,12 +846,13 @@ static void drawFpsChar(ULO character, ULO x) {
 /* Draws text in the FPS counter buffer                                       */
 /*============================================================================*/
 
-static void drawFpsText(STR *text) {
-  ULO i, c;
-
-  for (i = 0; i < 4; i++) {
-    c = *text++;
-    switch (c) {
+static void drawFpsText(STR *text)
+{
+  for (int i = 0; i < 4; i++)
+  {
+    STR c = *text++;
+    switch (c)
+    {
       case '0': drawFpsChar(9, i);
 	break;
       case '1': drawFpsChar(0, i);
@@ -880,18 +887,17 @@ static void drawFpsText(STR *text) {
 /* Copy FPS buffer to a 8 bit screen                                          */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer8(void) {
-  UBY *bufb;
-  ULO x, y;
-
-  if (!drawValidateBufferPointer(0)) return;
-  bufb = draw_buffer_top_ptr + draw_mode_current->width - 20;
-  for (y = 0; y < 5; y++) {
-    for (x = 0; x < 20; x++)
+static void drawFpsToFramebuffer8(void)
+{
+  UBY *bufb = draw_buffer_top_ptr + draw_mode_current->width - 20;
+  for (int y = 0; y < 5; y++)
+  {
+    for (int x = 0; x < 20; x++)
+    {
       *(bufb + x) = draw_fps_buffer[y][x] ? 252 : 0;
+    }
     bufb = bufb + draw_mode_current->pitch;
   }
-  drawInvalidateBufferPointer();
 }
 
 
@@ -899,17 +905,17 @@ static void drawFpsToFramebuffer8(void) {
 /* Copy FPS buffer to a 16 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer16(void) {
-  UWO *bufw;
-  ULO x, y;
-  if (!drawValidateBufferPointer(0)) return;
-  bufw = ((UWO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
-  for (y = 0; y < 5; y++) {
-    for (x = 0; x < 20; x++)
+static void drawFpsToFramebuffer16(void)
+{
+  UWO *bufw = ((UWO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
+  for (int y = 0; y < 5; y++)
+  {
+    for (int x = 0; x < 20; x++)
+    {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
+    }
     bufw = (UWO *) (((UBY *) bufw) + draw_mode_current->pitch);
   }
-  drawInvalidateBufferPointer();
 }
 
 
@@ -917,14 +923,13 @@ static void drawFpsToFramebuffer16(void) {
 /* Copy FPS buffer to a 24 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer24(void) {
-  UBY *bufb;
-  ULO x, y;
-  if (!drawValidateBufferPointer(0)) return;
-  bufb = draw_buffer_top_ptr;
-  bufb += (draw_mode_current->width - 20)*3;
-  for (y = 0; y < 5; y++) {
-    for (x = 0; x < 20; x++) {
+static void drawFpsToFramebuffer24(void)
+{
+  UBY *bufb = draw_buffer_top_ptr + (draw_mode_current->width - 20)*3;
+  for (int y = 0; y < 5; y++)
+  {
+    for (int x = 0; x < 20; x++)
+    {
       UBY color = draw_fps_buffer[y][x] ? 0xff : 0;
       *(bufb + x*3) = color;
       *(bufb + x*3 + 1) = color;
@@ -932,7 +937,6 @@ static void drawFpsToFramebuffer24(void) {
     }
     bufb += draw_mode_current->pitch;
   }
-  drawInvalidateBufferPointer();
 }
 
 
@@ -940,17 +944,17 @@ static void drawFpsToFramebuffer24(void) {
 /* Copy FPS buffer to a 32 bit screen                                         */
 /*============================================================================*/
 
-static void drawFpsToFramebuffer32(void) {
-  ULO *bufl;
-  ULO x, y;
-  if (!drawValidateBufferPointer(0)) return;
-  bufl = ((ULO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
-  for (y = 0; y < 5; y++) {
-    for (x = 0; x < 20; x++)
+static void drawFpsToFramebuffer32(void)
+{
+  ULO *bufl = ((ULO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
+  for (int y = 0; y < 5; y++)
+  {
+    for (int x = 0; x < 20; x++)
+    {
       *(bufl + x) = draw_fps_buffer[y][x] ? 0xffffffff : 0;
+    }
     bufl = (ULO *) (((UBY *) bufl) + draw_mode_current->pitch);
   }
-  drawInvalidateBufferPointer();
 }
 
 
@@ -958,13 +962,16 @@ static void drawFpsToFramebuffer32(void) {
 /* Draws FPS counter in current framebuffer                                   */
 /*============================================================================*/
 
-static void drawFpsCounter(void) {
-  if (draw_fps_counter_enabled) {
+static void drawFpsCounter(void)
+{
+  if (draw_fps_counter_enabled)
+  {
     STR s[16];
 
     sprintf(s, "%u", drawStatLast50FramesFps());
     drawFpsText(s);
-    switch (draw_mode_current->bits) {
+    switch (draw_mode_current->bits)
+    {
       case 8:
 	drawFpsToFramebuffer8();
 	break;
@@ -982,7 +989,6 @@ static void drawFpsCounter(void) {
     }
   }
 }
-
 
 /*============================================================================*/
 /* Draw module properties                                                     */
@@ -1040,11 +1046,13 @@ ULO drawGetHorizontalScale(void) {
   return draw_hscale;
 }
 
-void drawSetVerticalScale(ULO verticalscale) {
+void drawSetVerticalScale(ULO verticalscale)
+{
   draw_vscale = verticalscale;
 }
 
-ULO drawGetVerticalScale(void) {
+ULO drawGetVerticalScale(void)
+{
   return draw_vscale;
 }
 
@@ -1068,16 +1076,22 @@ void drawSetFrameskipRatio(ULO frameskipratio) {
   draw_frame_skip_factor = frameskipratio;
 }
 
-void drawSetFPSCounterEnabled(BOOLE enabled) {
+void drawSetFPSCounterEnabled(bool enabled)
+{
   draw_fps_counter_enabled = enabled;
 }
 
-void drawSetLEDsEnabled(BOOLE enabled) {
+void drawSetLEDsEnabled(bool enabled)
+{
   draw_LEDs_enabled = enabled;
 }
 
-void drawSetLED(ULO index, BOOLE state) {
-  if (index < DRAW_LED_COUNT) draw_LEDs_state[index] = state;
+void drawSetLED(int index, bool state)
+{
+  if (index < DRAW_LED_COUNT)
+  {
+    draw_LEDs_state[index] = state;
+  }
 }
 
 void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers) {
@@ -1751,9 +1765,9 @@ void drawEndOfFrame(void)
 	draw_buffer_current_ptr_local += next_line_offset;
 	draw_buffer_current_ptr = draw_buffer_current_ptr_local;
       }
-      drawInvalidateBufferPointer();
       drawLEDs();
       drawFpsCounter();
+      drawInvalidateBufferPointer();
       drawViewScroll();
       drawStatTimestamp();
       drawBufferFlip();
