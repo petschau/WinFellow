@@ -1146,6 +1146,34 @@ static BOOLE RetroPlatformSendEnabledFloppyDrives(void) {
   return bResult;
 }
 
+/** Send list of enabled hard drives to the RetroPlatform host.
+ *
+ * An RP_IPC_TO_HOST_DEVICES message is sent to the host, indicating the hard drives 
+ * enabled in the guest. Must be called after the activation of the config, and before
+ * sending the screen mode.
+ * @return TRUE if message was sent successfully, FALSE otherwise.
+ */
+static BOOLE RetroPlatformSendEnabledHardDrives(void) {
+	DWORD dFeatureFlags;
+  LRESULT lResult;
+  BOOLE bResult;
+  int i;
+
+	dFeatureFlags = 0;
+  fellowAddLog("%d hard drives are enabled.\n", cfgGetHardfileCount(RetroPlatformConfig));
+	for(i = 0; i < cfgGetHardfileCount(RetroPlatformConfig); i++) {
+			dFeatureFlags |= 1 << i;
+	}
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_HD, 
+    dFeatureFlags, NULL, 0, &RetroPlatformGuestInfo, &lResult);
+ 
+  fellowAddLog("RetroPlatformSendEnabledHardDrives() %s, result was %d.\n", 
+    bResult ? "successful" : "failed", lResult);
+
+  return bResult;
+}
+
 static BOOLE RetroPlatformSendGameports(const ULO lNumGameports) {
   LRESULT lResult;
   BOOLE bResult;
@@ -1353,6 +1381,7 @@ void RetroPlatformEnter(void) {
 	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
     RetroPlatformSendEnabledFloppyDrives();
+    RetroPlatformSendEnabledHardDrives();
     RetroPlatformSendGameports(RETRO_PLATFORM_NUM_GAMEPORTS);
     RetroPlatformSendInputDevices();
 
