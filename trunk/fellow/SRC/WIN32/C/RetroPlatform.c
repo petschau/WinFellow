@@ -99,11 +99,14 @@
 #include "CpuIntegration.h"
 #include "BUS.H"
 #include "kbddrv.h"
+#include "FHFILE.H"
 #include "dxver.h"    /// needed for DirectInput based joystick detection code
 #include "sounddrv.h" /// needed for DirectSound volume control
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
+
+#define RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS 100
 
 static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
 extern BOOLE kbd_drv_joykey_enabled[2][2];	///< For each port, the enabled joykeys
@@ -583,11 +586,45 @@ static BOOLE RetroPlatformPostMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 	return bResult;
 }
 
-
 /** Post message to the player to signalize that the guest wants to escape the mouse cursor.
  */
 void RetroPlatformPostEscaped(void) {
   RetroPlatformPostMessage(RP_IPC_TO_HOST_ESCAPED, 0, 0, &RetroPlatformGuestInfo);
+}
+
+/** Control status of the RetroPlatform hard drive LEDs.
+ *
+ * Sends LED status changes to the RetroPlatform host in the form of RP_IPC_TO_HOST_DEVICEACTIVITY messages,
+ * so that hard drive read and write activity can be displayed, and detected (undo functionality uses write
+ * messages as fallback method to detect changed floppy images).
+ * @param[in] lHardDriveNo   hard drive index (0-...)
+ * @param[in] bActive        flag indicating disk access (active/inactive)
+ * @param[in] bWriteActivity flag indicating type of access (write/read)
+ * @return TRUE if message sent successfully, FALSE otherwise. 
+ * @callergraph
+ */
+void RetroPlatformPostHardDriveLED(const ULO lHardDriveNo, const BOOLE bActive, const BOOLE bWriteActivity) {
+  static int oldleds[FHFILE_MAX_DEVICES];
+	int state;
+
+	if(!bRetroPlatformInitialized)
+    return;
+
+	state = bActive ? 1 : 0;
+	state |= bWriteActivity ? 2 : 0;
+
+	if (state == oldleds[lHardDriveNo])
+		return;
+  else
+    oldleds[lHardDriveNo] = state;
+
+  if (bActive) {
+		RetroPlatformPostMessage (RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD (RP_DEVICECATEGORY_HD, lHardDriveNo),
+			MAKELONG (RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS, bWriteActivity ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ), 
+      &RetroPlatformGuestInfo);
+	}
+  else
+    return;
 }
 
 /** Control status of the RetroPlatform floppy drive LEDs.
@@ -735,6 +772,45 @@ BOOLE RetroPlatformSendGameportActivity(const ULO lGameport, const ULO lGameport
 		lGameportMask, &RetroPlatformGuestInfo);
 
   return TRUE;
+}
+
+/** Send content of hard drive to RetroPlatform host.
+ * @param[in] lHardDriveNo hard drive index (0-...)
+ * @param[in] szImageName ANSI string containing the floppy image name
+ * @param[in] bWriteProtected flag indicating the read-only state of the drive
+ * @return TRUE if message sent successfully, FALSE otherwise.
+ * @callergraph
+ */
+BOOLE RetroPlatformSendHardDriveContent(const ULO lHardDriveNo, const STR *szImageName, const BOOLE bWriteProtected) {
+  BOOLE bResult;
+  struct RPDeviceContent rpDeviceContent = { 0 };
+
+  if (!bRetroPlatformInitialized)
+		return FALSE;
+
+	rpDeviceContent.btDeviceCategory = RP_DEVICECATEGORY_HD;
+	rpDeviceContent.btDeviceNumber = lHardDriveNo + 1;
+	rpDeviceContent.dwInputDevice = 0;
+	if (szImageName)
+		mbstowcs(rpDeviceContent.szContent, szImageName, CFG_FILENAME_LENGTH);
+  else
+    wcscpy(rpDeviceContent.szContent, L"");
+  rpDeviceContent.dwFlags = (bWriteProtected ? RP_DEVICEFLAGS_RW_READONLY : RP_DEVICEFLAGS_RW_READWRITE);
+
+#ifdef _DEBUG
+	fellowAddLog("RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n",
+	  rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, 
+    rpDeviceContent.dwInputDevice, rpDeviceContent.szContent);
+#endif
+
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, 
+    &rpDeviceContent, sizeof(struct RPDeviceContent), &RetroPlatformGuestInfo,
+    NULL);
+
+  fellowAddLog("RetroPlatformSendHardDriveContent(%d, '%s'): %s.\n",
+    lHardDriveNo, szImageName, bResult ? "successful" : "failed");
+  
+  return bResult;
 }
 
 /** Control status of power LED in RetroPlatform player.
@@ -1157,7 +1233,7 @@ static BOOLE RetroPlatformSendEnabledHardDrives(void) {
 	DWORD dFeatureFlags;
   LRESULT lResult;
   BOOLE bResult;
-  int i;
+  ULO i;
 
 	dFeatureFlags = 0;
   fellowAddLog("%d hard drives are enabled.\n", cfgGetHardfileCount(RetroPlatformConfig));
