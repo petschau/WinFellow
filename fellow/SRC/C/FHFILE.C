@@ -32,6 +32,9 @@
 #include "CpuModule.h"
 #include "fswrap.h"
 
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 /*====================*/
 /* fhfile.device      */
@@ -152,6 +155,11 @@ void fhfileSetHardfile(fhfile_dev hardfile, ULO index) {
   if (fhfile_devs[index].reservedblocks < 1)
     fhfile_devs[index].reservedblocks = 1;
   fhfileInitializeHardfile(index);
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    RetroPlatformSendHardDriveContent(index, hardfile.filename, hardfile.readonly_original);
+#endif
 }
 
 
@@ -203,10 +211,18 @@ static BYT fhfileRead(ULO index)
     return -3;
   }
   fhfileSetLed(true);
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+     RetroPlatformPostHardDriveLED(index, TRUE, FALSE);
+#endif
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fread(memoryAddressToPtr(dest), 1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(false);
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+     RetroPlatformPostHardDriveLED(index, FALSE, FALSE);
+#endif
   return 0;
 }
 
@@ -222,10 +238,18 @@ static BYT fhfileWrite(ULO index)
     return -3;
   }
   fhfileSetLed(true);
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+     RetroPlatformPostHardDriveLED(index, TRUE, TRUE);
+#endif
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fwrite(memoryAddressToPtr(dest),1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(false);
+ #ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+     RetroPlatformPostHardDriveLED(index, FALSE, TRUE);
+#endif
   return 0;
 }
 
