@@ -118,6 +118,11 @@ BOOLE dskbyt2_read = FALSE;
 
 char floppylogfilename[MAX_PATH];
 
+void floppyLogClear(void)
+{
+  remove(floppylogfilename);
+}
+
 void floppyLog(STR *msg)
 {
   FILE *F = fopen(floppylogfilename, "a");
@@ -1627,10 +1632,6 @@ void floppyHardReset(void)
 void floppyEmulationStart(void)
 {
   floppyIOHandlersInstall();
-
-#ifdef FLOPPY_LOG
-  fileopsGetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
-#endif
 }
 
 void floppyEmulationStop(void)
@@ -1642,6 +1643,10 @@ void floppyStartup(void)
   floppyIORegistersClear();
   floppyClearDMAState();
   floppyDriveTableInit();
+#ifdef FLOPPY_LOG
+  fileopsGetGenericFileName(floppylogfilename, "WinFellow", "floppy.log");
+  floppyLogClear();
+#endif
 }
 
 void floppyShutdown(void)
