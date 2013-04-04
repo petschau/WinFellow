@@ -605,6 +605,7 @@ void RetroPlatformPostEscaped(void) {
  */
 void RetroPlatformPostHardDriveLED(const ULO lHardDriveNo, const BOOLE bActive, const BOOLE bWriteActivity) {
   static int oldleds[FHFILE_MAX_DEVICES];
+  static ULONGLONG lastsent[FHFILE_MAX_DEVICES];
 	int state;
 
 	if(!bRetroPlatformInitialized)
@@ -618,10 +619,12 @@ void RetroPlatformPostHardDriveLED(const ULO lHardDriveNo, const BOOLE bActive, 
   else
     oldleds[lHardDriveNo] = state;
 
-  if (bActive) {
+  if (bActive && (lastsent[lHardDriveNo] + RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS < RetroPlatformGetTime()) 
+  || (bActive && bWriteActivity)) {
 		RetroPlatformPostMessage (RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD (RP_DEVICECATEGORY_HD, lHardDriveNo),
 			MAKELONG (RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS, bWriteActivity ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ), 
       &RetroPlatformGuestInfo);
+    lastsent[lHardDriveNo] = RetroPlatformGetTime();
 	}
   else
     return;
@@ -789,7 +792,7 @@ BOOLE RetroPlatformSendHardDriveContent(const ULO lHardDriveNo, const STR *szIma
 		return FALSE;
 
 	rpDeviceContent.btDeviceCategory = RP_DEVICECATEGORY_HD;
-	rpDeviceContent.btDeviceNumber = lHardDriveNo + 1;
+	rpDeviceContent.btDeviceNumber = lHardDriveNo;
 	rpDeviceContent.dwInputDevice = 0;
 	if (szImageName)
 		mbstowcs(rpDeviceContent.szContent, szImageName, CFG_FILENAME_LENGTH);
@@ -850,7 +853,7 @@ BOOLE RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
       bRetroPlatformEscapeEventGenerated = FALSE;
     }
     return FALSE;
-  } 
+  }
   else {
     BOOLE bResult = bRetroPlatformEscapeEventGenerated;
     lRetroPlatformEscapeKeyTargetHoldTime = 0;
