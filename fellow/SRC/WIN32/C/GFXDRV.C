@@ -1516,8 +1516,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device) {
 			/* Restore was successful, do the blit */
 			if ((err = IDirectDrawSurface_Blt(lpDDSDestination, 
 			(ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary, 
-			(((ddraw_device->vertical_scale == 1) && !gfx_drv_stretch_always) || ((ddraw_device->vertical_scale == 2) && (ddraw_device->vertical_scale_strategy == 0))) ? NULL : &srcwin,
-			DDBLT_ASYNC, &bltfx)) != DD_OK) 
+			srcrect, DDBLT_ASYNC, &bltfx)) != DD_OK) 
 			{
 				/* failed second time, pass over */
 				gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blit failed after restore) ", err);
@@ -2144,100 +2143,101 @@ void gfxDrvShutdown(void) {
   gfxDrvRunEventRelease();
 }
 
-static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, int width, int height, int bits, char *filename) {
-   BITMAPFILEHEADER bfh;
-   BITMAPINFOHEADER bih;
-   HDC memDC = NULL;
-   HGDIOBJ bitmap = NULL;
-   HGDIOBJ oldbit = NULL;
-   FILE *file = NULL;
-   void *data= NULL;
-   int bpp, datasize;
-   BOOLE success = FALSE;
+static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWORD bits, STR *filename) {
+  BITMAPFILEHEADER bfh;
+  BITMAPINFOHEADER bih;
+  HDC memDC = NULL;
+  HGDIOBJ bitmap = NULL;
+  HGDIOBJ oldbit = NULL;
+  FILE *file = NULL;
+  void *data= NULL;
+  int bpp, datasize;
+  BOOLE success = FALSE;
 
-   if (!hDC) return 0;
-   if (bits <= 0) return 0;
-   if (width <= 0) return 0;
-   if (height <= 0) return 0;
+  if (!hDC) return 0;
+  if (bits <= 0) return 0;
+  if (width <= 0) return 0;
+  if (height <= 0) return 0;
 
-   bpp = bits / 8;
-   if (bpp < 2) bpp = 2;
-   if (bpp > 3) bpp = 3;
+  bpp = bits / 8;
+  if (bpp < 2) bpp = 2;
+  if (bpp > 3) bpp = 3;
 
-   datasize = width * bpp * height;     
-   if (width * bpp % 4) {
-      datasize += height * (4 - width * bpp % 4);
-   }
+  datasize = width * bpp * height;     
+  if (width * bpp % 4) {
+    datasize += height * (4 - width * bpp % 4);
+  }
 
-   memset((void*)&bfh, 0, sizeof(bfh));
+  memset((void*)&bfh, 0, sizeof(bfh));
 
-   bfh.bfType = 'B'+('M'<<8);
-   bfh.bfSize = sizeof(bfh)+sizeof(bih)+datasize;
-   bfh.bfOffBits = sizeof(bfh)+sizeof(bih);
+  bfh.bfType = 'B'+('M'<<8);
+  bfh.bfSize = sizeof(bfh)+sizeof(bih)+datasize;
+  bfh.bfOffBits = sizeof(bfh)+sizeof(bih);
 
-   memset((void*)&bih, 0, sizeof(bih));
-   bih.biSize = sizeof(bih);
-   bih.biWidth = width;
-   bih.biHeight = height;
-   bih.biPlanes = 1;
-   bih.biBitCount = bpp * 8;
-   bih.biCompression = BI_RGB;
+  memset((void*)&bih, 0, sizeof(bih));
+  bih.biSize = sizeof(bih);
+  bih.biWidth = width;
+  bih.biHeight = height;
+  bih.biPlanes = 1;
+  bih.biBitCount = bpp * 8;
+  bih.biCompression = BI_RGB;
 
-   bitmap = CreateDIBSection(NULL, (BITMAPINFO *)&bih,
-                DIB_RGB_COLORS, &data, NULL, 0);
+  bitmap = CreateDIBSection(NULL, (BITMAPINFO *)&bih,
+              DIB_RGB_COLORS, &data, NULL, 0);
 
-   if (!bitmap) goto cleanup;                                   if (!data) goto cleanup;
+  if (!bitmap) goto cleanup;                                  
+  if (!data) goto cleanup;
 
-   memDC = CreateCompatibleDC(hDC);
-   if (!memDC) goto cleanup;
+  memDC = CreateCompatibleDC(hDC);
+  if (!memDC) goto cleanup;
 
-   oldbit = SelectObject(memDC, bitmap);
-   if (oldbit <= 0) goto cleanup;
+  oldbit = SelectObject(memDC, bitmap);
+  if (oldbit <= 0) goto cleanup;
 
-   success = BitBlt(memDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
-   if (!success) goto cleanup;
+  success = BitBlt(memDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
+  if (!success) goto cleanup;
 
-   file = fopen(filename, "wb");
-   if (!file) goto cleanup;
+  file = fopen(filename, "wb");
+  if (!file) goto cleanup;
 
-   fwrite((void*)&bfh, sizeof(bfh), 1, file);
-   fwrite((void*)&bih, sizeof(bih), 1, file);
-   fwrite((void*)data, 1, datasize, file);      
+  fwrite((void*)&bfh, sizeof(bfh), 1, file);
+  fwrite((void*)&bih, sizeof(bih), 1, file);
+  fwrite((void*)data, 1, datasize, file);      
 
-   success = TRUE;
+  success = TRUE;
 
- cleanup:
+cleanup:
 
-   if (oldbit > 0) SelectObject(memDC, oldbit);
-   if (memDC) DeleteDC(memDC);
-   if (file) fclose(file);
-   if (bitmap) DeleteObject(bitmap);
+  if (oldbit > 0) SelectObject(memDC, oldbit);
+  if (memDC) DeleteDC(memDC);
+  if (file) fclose(file);
+  if (bitmap) DeleteObject(bitmap);
 
-   return success;
+  return success;
 }
 
 static BOOLE gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surface, STR *filename) {
-   DDSURFACEDESC ddsd;
-   HRESULT hResult = DD_OK;
-   HDC surfDC = NULL;
-   BOOLE bSuccess = FALSE;
+  DDSURFACEDESC ddsd;
+  HRESULT hResult = DD_OK;
+  HDC surfDC = NULL;
+  BOOLE bSuccess = FALSE;
 
-   if(!surface) return FALSE;
+  if(!surface) return FALSE;
 
-   ZeroMemory(&ddsd,sizeof(ddsd));
-   ddsd.dwSize = sizeof(ddsd);                              
-   hResult=surface->GetSurfaceDesc(&ddsd);
-   if(FAILED(hResult)) return FALSE;
+  ZeroMemory(&ddsd,sizeof(ddsd));
+  ddsd.dwSize = sizeof(ddsd);                              
+  hResult=surface->GetSurfaceDesc(&ddsd);
+  if(FAILED(hResult)) return FALSE;
 
-   hResult=surface->GetDC(&surfDC);
-   if(FAILED(hResult)) return FALSE;
+  hResult=surface->GetDC(&surfDC);
+  if(FAILED(hResult)) return FALSE;
 
-   bSuccess = gfxDrvTakeScreenShotFromDC(surfDC, ddsd.dwWidth, ddsd.dwHeight,
-        ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
+  bSuccess = gfxDrvTakeScreenShotFromDC(surfDC, ddsd.dwWidth, ddsd.dwHeight,
+      ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
 
-   if(surfDC) surface->ReleaseDC(surfDC);
+  if(surfDC) surface->ReleaseDC(surfDC);
 
-   return bSuccess;
+  return bSuccess;
 }
 
 BOOLE gfxDrvTakeScreenShot(BOOLE bSourceIsPrimarySurface, STR *filename) {

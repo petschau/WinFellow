@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.13 (2013/03/28)
+v0.2 (2013/04/04)
 \end_layout
 
 \begin_layout Standard
@@ -689,19 +689,104 @@ conversion of all assembler code to C
 \end_layout
 
 \begin_layout Itemize
-basic Cloanto Amiga Forever/RetroPlatform Player integration; it does not
- yet support all features (only floppy drives are supported, clipping works
- only using static offsets, but not in automatic mode).
- Currently the Amiga 500, 500 Plus, 600, 1000 and 2000 models are supported;
- the A500 profile supports an optional A-501 memory expansion card.
- Extended ADFs, hardfiles and filesystems currently cannot be used with
- WinFellow on Amiga Forever.
+basic Cloanto Amiga Forever/RetroPlatform Player integration; using Amiga
+ Forever, WinFellow does not yet support all features that are available
+ from within WinFellow; below is a list of what is supported:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+the Amiga 500, 500 Plus, 600, 1000 and 2000 models contained in Amiga Forever
+ are supported; the A500 profile supports an optional A-501 memory expansion
+ card
+\end_layout
+
+\begin_layout Itemize
+all input devices available in WinFellow can be used comfortably within
+ Amiga Forever, and be switched at runtime
+\end_layout
+
+\begin_layout Itemize
+floppy drives are supported using conventional ADF files; floppy 
+\begin_inset Quotes eld
+\end_inset
+
+turbo
+\begin_inset Quotes erd
+\end_inset
+
+ mode is available, which equals WinFellow's fast disk DMA setting - it
+ can be switched at runtime, if a title is compatible with it
+\end_layout
+
+\begin_layout Itemize
+conventional (non-RDB) hardfiles are supported, and can be booted from on
+ AmigaOS 2.0+ (as autoconfig support is required to boot from them)
+\end_layout
+
+\begin_layout Itemize
+clipping the visible screen area works using static offsets; the 1x screenmode
+ is supported
+\end_layout
+
+\begin_layout Itemize
+audio volume control using Amiga Forever is possible
+\end_layout
+
+\begin_layout Itemize
+the emulation can be paused and resumed anytime
+\end_layout
+
+\begin_layout Itemize
+a CPU turbo mode is available, that makes the emulation run at maximum speed;
+ this can be enabled and disabled during runtime, if a title is compatible
+ with it
 \end_layout
 
 \begin_layout Itemize
 support for ROM decryption using AmigaForever.dll
 \end_layout
 
+\end_deeper
+\begin_layout Itemize
+the following is a list of features that are currently NOT available from
+ within Amiga Forever:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+extended ADF files, or SPS .ipf files are not supported yet
+\end_layout
+
+\begin_layout Itemize
+RDB hardfiles currently cannot be used
+\end_layout
+
+\begin_layout Itemize
+conventional hardfiles cannot be booted from on Workbench 1.3 or earlier
+\end_layout
+
+\begin_layout Itemize
+clipping the visible screen area does not work in 
+\begin_inset Quotes eld
+\end_inset
+
+automatic
+\begin_inset Quotes erd
+\end_inset
+
+ mode
+\end_layout
+
+\begin_layout Itemize
+no 2x or fullscreen modes have been implemented yet
+\end_layout
+
+\begin_layout Itemize
+filesystems currently cannot be used with WinFellow
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 revamped debugger using a more modern GUI design
 \end_layout
@@ -711,8 +796,12 @@ support for 2 joysticks, usable simultaneously
 \end_layout
 
 \begin_layout Itemize
-added the ability to generate minidumps, which allows us to debug crashes
- that are reported to us
+ability to generate minidumps, which allows us to debug crashes that are
+ reported to us
+\end_layout
+
+\begin_layout Itemize
+updated PDF user guide
 \end_layout
 
 \begin_layout Itemize
@@ -735,8 +824,8 @@ enhanced compatibility with many titles (the chipset interrupt handler was
 \end_layout
 
 \begin_layout Itemize
-several minor bug and stability fixes (please see ChangeLog.txt for complete
- details)
+several minor bug and stability fixes (please see ChangeLog.txt for a full
+ list of changes)
 \end_layout
 
 \begin_layout Part
