@@ -1051,8 +1051,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
       wcstombs(szScreenRaw,      rpsc->szScreenRaw,      CFG_FILENAME_LENGTH);
       
 			if (szScreenFiltered[0] || szScreenRaw[0]) {
-        BOOLE bResult;
-				DWORD ret = RP_SCREENCAPTURE_ERROR;
+        BOOLE bResult = TRUE;
+				DWORD dResult = 0;
 				fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
           szScreenFiltered, szScreenRaw);
 
@@ -1061,10 +1061,14 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
         }
 
         if(szScreenRaw[0]) {
-          bResult = gfxDrvTakeScreenShot(FALSE, szScreenRaw);
+          bResult &= gfxDrvTakeScreenShot(FALSE, szScreenRaw);
         }
 
-				return ret;
+        if(bResult) {
+          dResult |= RP_GUESTSCREENFLAGS_MODE_PAL;
+          return dResult;
+        }
+        else return RP_SCREENCAPTURE_ERROR;
 			}
     }
 	  return RP_SCREENCAPTURE_ERROR;

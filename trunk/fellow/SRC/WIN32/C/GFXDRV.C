@@ -2153,7 +2153,7 @@ static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, int width, int height, int bits
    FILE *file = NULL;
    void *data= NULL;
    int bpp, datasize;
-   BOOL success = FALSE;
+   BOOLE success = FALSE;
 
    if (!hDC) return 0;
    if (bits <= 0) return 0;
