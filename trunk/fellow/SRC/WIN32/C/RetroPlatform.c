@@ -1022,26 +1022,6 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 			} 
 			return ok;
 		}
-	case RP_IPC_TO_GUEST_SCREENMODE:
-		{
-			/* struct RPScreenMode *sm = (struct RPScreenMode*)pData;
-			set_screenmode (sm, &changed_prefs);
-			return (LRESULT)INVALID_HANDLE_VALUE;*/
-		}
-	case RP_IPC_TO_GUEST_EVENT:
-		{
-			/* TCHAR out[256];
-			TCHAR *s = (WCHAR*)pData;
-			int idx = -1;
-			for (;;) {
-				int ret;
-				out[0] = 0;
-				ret = cfgfile_modify (idx++, s, _tcslen (s), out, sizeof out / sizeof (TCHAR));
-				if (ret >= 0)
-					break;
-			}*/
-			return TRUE;
-		}
 	case RP_IPC_TO_GUEST_SCREENCAPTURE:
 		{
 			struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
@@ -1072,36 +1052,6 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 			}
     }
 	  return RP_SCREENCAPTURE_ERROR;
-	case RP_IPC_TO_GUEST_SAVESTATE:
-		{
-			TCHAR *s = (TCHAR*)pData;
-			DWORD ret = FALSE;
-			/* if (s == NULL) {
-				savestate_initsave (NULL, 0, TRUE, true);
-				return 1;
-			}
-			if (vpos == 0) {
-				savestate_initsave (_T(""), 1, TRUE, true);
-				save_state (s, _T("AmigaForever"));
-				ret = 1;
-			} else {
-				//savestate_initsave (s, 1, TRUE);
-				//ret = -1;
-			}*/
-			return ret;
-		}
-	case RP_IPC_TO_GUEST_LOADSTATE:
-		{
-			WCHAR *s = (WCHAR*)pData;
-			DWORD ret = FALSE;
-      /* DWORD attr = GetFileAttributes (s);
-			if (attr != INVALID_FILE_ATTRIBUTES && !(attr & FILE_ATTRIBUTE_DIRECTORY)) {
-				savestate_state = STATE_DORESTORE;
-				_tcscpy (savestate_fname, s);
-				ret = -1;
-			} */
-			return ret;
-		}
 	case RP_IPC_TO_GUEST_DEVICEREADWRITE:
 		{
 			DWORD ret = FALSE;
@@ -1117,13 +1067,6 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
 		}
 	case RP_IPC_TO_GUEST_FLUSH:
 		return 1;
-	case RP_IPC_TO_GUEST_QUERYSCREENMODE:
-		{
-      /*
-			screenmode_request = true;
-      */
-			return 1;
-		}
 	case RP_IPC_TO_GUEST_GUESTAPIVERSION:
 		{
 			return MAKELONG(3, 4);
