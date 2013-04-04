@@ -1051,9 +1051,19 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
       wcstombs(szScreenRaw,      rpsc->szScreenRaw,      CFG_FILENAME_LENGTH);
       
 			if (szScreenFiltered[0] || szScreenRaw[0]) {
+        BOOLE bResult;
 				DWORD ret = RP_SCREENCAPTURE_ERROR;
 				fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
           szScreenFiltered, szScreenRaw);
+
+        if(szScreenFiltered[0]) {
+          bResult = gfxDrvTakeScreenShot(TRUE, szScreenFiltered);
+        }
+
+        if(szScreenRaw[0]) {
+          bResult = gfxDrvTakeScreenShot(FALSE, szScreenRaw);
+        }
+
 				return ret;
 			}
     }
@@ -1173,7 +1183,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
 
 	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
   // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
+  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
   // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
 	dFeatureFlags |= RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   // dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
