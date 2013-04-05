@@ -145,7 +145,7 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_general-wcrev.rc .\GUI_general.rc -n
+      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
 SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
     </PreBuildEvent>
     <PreBuildEvent>
@@ -254,7 +254,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_general-wcrev.rc .\GUI_general.rc
+      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
 SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
     </PreBuildEvent>
     <PreBuildEvent>
@@ -1607,12 +1607,12 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\zlib\include\zconf.h" />
     <ClInclude Include="..\..\zlib\include\zlib.h" />
     <ClInclude Include="..\..\zlib\include\zutil.h" />
-    <ClInclude Include="gui_debugger.h" />
     <ClInclude Include="gui_general.h" />
     <ClInclude Include="..\CAPS\include\CapsAPI.h" />
     <ClInclude Include="..\CAPS\include\CapsLib.h" />
     <ClInclude Include="..\CAPS\include\Comlib.h" />
     <ClInclude Include="..\CAPS\include\Comtype.h" />
+    <ClInclude Include="GUI_versioninfo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp" />
@@ -1638,6 +1638,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture Condition="'$(Configuration)|$(Platform)'=='Release|x64'">0x0417</Culture>
     </ResourceCompile>
+    <ResourceCompile Include="GUI_versioninfo.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

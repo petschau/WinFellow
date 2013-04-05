@@ -566,9 +566,6 @@
     <ClInclude Include="..\..\zlib\include\zutil.h">
       <Filter>ADF Compression Files\zlib Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui_debugger.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
     <ClInclude Include="gui_general.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
@@ -601,6 +598,9 @@
     </ClInclude>
     <ClInclude Include="..\..\include\interrupt.h">
       <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GUI_versioninfo.h">
+      <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -646,10 +646,15 @@
     <None Include="winfellow.ico">
       <Filter>icons</Filter>
     </None>
-    <None Include="..\icons\arrow.bmp" />
+    <None Include="..\icons\arrow.bmp">
+      <Filter>bitmaps</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_general.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="GUI_versioninfo.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>

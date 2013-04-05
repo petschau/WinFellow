@@ -29,7 +29,6 @@
 #define IDD_DEBUG_EVENTS                1131
 #define IDD_DEBUG_SOUND                 1132
 #define IDD_DEBUG_BLITTER               1133
-#define ID_DEBUGGER_START               40003
 
 // Next default values for new objects
 // 
