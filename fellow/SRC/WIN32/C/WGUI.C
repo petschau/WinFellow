@@ -169,15 +169,6 @@ STR *wgui_bogoram_strings[NUMBER_OF_BOGORAM_SIZES] = {
   "1792 KB"
 };
 
-
-//from sound.h: typedef enum {SOUND_NONE, SOUND_PLAY, SOUND_EMULATE} sound_emulations;
-#define NUMBER_OF_SOUND_EMULATIONS 3
-int wgui_sound_emulation_cci[NUMBER_OF_SOUND_EMULATIONS] = {
-  IDC_RADIO_SOUND_NO_EMULATION,
-  IDC_RADIO_SOUND_PLAY,
-  IDC_RADIO_SOUND_SILENT_EMULATION
-};
-
 //from sound.h: typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
 #define NUMBER_OF_SOUND_RATES 4
 
@@ -1243,8 +1234,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   void wguiInstallSoundConfig(HWND hwndDlg, cfg *conf) {
 
-    /* Set sound emulation type */
-    ccwButtonSetCheck(hwndDlg, wgui_sound_emulation_cci[cfgGetSoundEmulation(conf)]);
+	/* set sound volume slider */
+    ccwSliderSetRange(hwndDlg, IDC_SLIDER_SOUND_VOLUME, 0, 100);
+    ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SOUND_VOLUME, cfgGetSoundVolume(conf));
 
     /* Set sound rate */
     ccwButtonSetCheck(hwndDlg, wgui_sound_rates_cci[cfgGetSoundRate(conf)]);
@@ -1278,12 +1270,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Extract sound config */
 
   void wguiExtractSoundConfig(HWND hwndDlg, cfg *conf) {
-    ULO i;
+	ULO i;
 
-    /* get current sound emulation type */
-    for (i=0; i<NUMBER_OF_SOUND_EMULATIONS; i++) {
-      if (ccwButtonGetCheck(hwndDlg, wgui_sound_emulation_cci[i])) { cfgSetSoundEmulation(conf, (sound_emulations) i); }
-    }
+	/* get current sound volume */
+	cfgSetSoundVolume(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SOUND_VOLUME));
 
     /* get current sound rate */
     for (i=0; i<NUMBER_OF_SOUND_RATES; i++) {
@@ -2094,7 +2084,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   INT_PTR CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     long buffer_length;
+	long sound_volume;
     STR buffer[16];
+	STR volume[16];
 
     switch (uMsg) {
     case WM_INITDIALOG:
@@ -2109,6 +2101,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       buffer_length = (long) SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_BUFFER_LENGTH), TBM_GETPOS, 0, 0);
       sprintf(buffer, "%d", buffer_length);
       ccwStaticSetText(hwndDlg, IDC_STATIC_BUFFER_LENGTH, buffer);
+
+	  sound_volume = (long) SendMessage(GetDlgItem(hwndDlg, IDC_SLIDER_SOUND_VOLUME), TBM_GETPOS, 0, 0);
+	  sprintf(volume, "%d %%", sound_volume);
+	  ccwStaticSetText(hwndDlg, IDC_STATIC_SOUND_VOLUME, volume);
       break;
     }
     return FALSE;
