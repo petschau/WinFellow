@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by GUI_general.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
 #define IDS_APP_TITLE                   2
@@ -257,6 +257,7 @@
 #define IDC_CHECK_FAST_DMA              2078
 #define ID_FILE_QUIT                    40001
 #define ID_HELP_ABOUT                   40002
+#define ID_DEBUGGER_START               40003
 #define ID_FILE_OPENCONFIGURATION       40004
 #define ID_FILE_SAVECONFIGURATION       40005
 #define ID_FILE_SAVECONFIGURATIONAS     40006
@@ -273,6 +274,7 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
