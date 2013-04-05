@@ -28,24 +28,27 @@
 /** @file
  *  Cloanto RetroPlatform GUI integration.
  *
- *  This module contains RetroPlatform specific functionality to register as
- *  RetroPlatform guest and interact with the host (player).
- *  It imitates the full Windows GUI module, implementing the same functionality, 
- *  but supported via the RetroPlatform player as main GUI.
- *  WinFellow's own GUI is not shown, the emulator operates in a headless mode.
- *  The configuration is received as a command line parameter, all control events 
- *  (start, shutdown, reset, ...) are sent via IPC.
+ * This module contains RetroPlatform specific functionality to register as
+ * RetroPlatform guest and interact with the host (player).
+ * It imitates the full Windows GUI module, implementing the same functionality, 
+ * but supported via the RetroPlatform player as main GUI.
+ * WinFellow's own GUI is not shown, the emulator operates in a headless mode.
+ * The configuration is received as a command line parameter, all control events 
+ * (start, shutdown, reset, ...) are sent via IPC.
  * 
- *  *Important Note:* The Cloanto modules make heavy use of wide character strings.
- *  As WinFellow uses normal strings, conversion is usually required (using, for example,
- *  wsctombs and mbstowcs).
+ * *Important Note:* The Cloanto modules make heavy use of unicode strings.
+ * As WinFellow uses ANSI strings, conversion is usually required (using, for example,
+ * wsctombs and mbstowcs).
  * 
  * When looking at an RP9 package, the RetroPlatform WinFellow plug-in has a list of
  * criteria to decide if WinFellow is a compatible emulator that is offered as choice.
  * It verifies that
  * - a valid model-specific INI file exists for the configured Amiga model
  * - no extended ADF files are used (file size = 901.120 for all ADFs)
- * - no filesystems or hardfiles are used
+ * 
+ * The plug-in will block the start of WinFellow on a number of criteria:
+ * - if filesystems are used
+ * - hardfiles using a non-standard geometry, or RDB hardfiles
  *
  * The RetroPlatform WinFellow plug-in will start WinFellow with the following 
  * command-line arguments:
@@ -173,15 +176,6 @@ BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst,
 int RetroPlatformEnumerateJoysticks(void) {
   int njoyCount = 0;
 
-#ifdef RETRO_PLATFORM_USE_ALTERNATE_JOYSTICK_ENUMERATION
-  JOYINFOEX joyinfoex;
-  int njoyId = 0;
-  MMRESULT dwResult;   
-
-  while ((dwResult = joyGetPosEx(njoyId++, &joyinfoex)) != JOYERR_PARMS)
-    if (dwResult == JOYERR_NOERROR)
-      njoyCount++;
-#else
   HRESULT hResult;
   IDirectInput8 *RP_lpDI = NULL;
 
@@ -225,7 +219,6 @@ int RetroPlatformEnumerateJoysticks(void) {
       RP_lpDI = NULL;
     }
   }
-#endif
 
   fellowAddLog("RetroPlatformEnumerateJoysticks: detected %d joystick(s).\n", 
     njoyCount);
@@ -394,7 +387,6 @@ static const STR *RetroPlatformGetMessageText(ULO iMsg) {
 	  case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
 	  case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
 	  case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
-
 	  case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
 	  case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
 	  case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
@@ -1128,19 +1120,18 @@ static BOOLE RetroPlatformSendFeatures(void) {
   LRESULT lResult;
   BOOLE bResult;
 
-	dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X;
-  // dFeatureFlags = RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_FULLSCREEN;
-  dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
-  // dFeatureFlags |= RP_FEATURE_PAUSE | RP_FEATURE_TURBO_CPU | RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_VOLUME | RP_FEATURE_SCREENCAPTURE;
-	dFeatureFlags |= RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
-  // dFeatureFlags |= RP_FEATURE_STATE | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
-	// dFeatureFlags |= RP_FEATURE_SCALING_SUBPIXEL | RP_FEATURE_SCALING_STRETCH;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYSTICK;
-	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_GAMEPAD;
-	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_JOYPAD;
-	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_ANALOGSTICK;
-	// dFeatureFlags |= RP_FEATURE_INPUTDEVICE_LIGHTPEN;
+	dFeatureFlags =  RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_PAUSE;
+  dFeatureFlags |= RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
+	dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
+	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
+#ifdef _DEBUG
+  dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+#endif
+
+  // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
+  // RP_FEATURE_STATE, RP_FEATURE_SCALING_SUBPIXEL, RP_FEATURE_SCALING_STRETCH
+  // RP_FEATURE_INPUTDEVICE_GAMEPAD, RP_FEATURE_INPUTDEVICE_JOYPAD, 
+  // RP_FEATURE_INPUTDEVICE_ANALOGSTICK, RP_FEATURE_INPUTDEVICE_LIGHTPEN
 
 	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 
     0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
@@ -1190,16 +1181,16 @@ static BOOLE RetroPlatformSendEnabledFloppyDrives(void) {
  * @return TRUE if message was sent successfully, FALSE otherwise.
  */
 static BOOLE RetroPlatformSendEnabledHardDrives(void) {
-	DWORD dFeatureFlags;
+	DWORD dFeatureFlags = 0;
   LRESULT lResult;
   BOOLE bResult;
   ULO i;
 
-	dFeatureFlags = 0;
-  fellowAddLog("%d hard drives are enabled.\n", cfgGetHardfileCount(RetroPlatformConfig));
-	for(i = 0; i < cfgGetHardfileCount(RetroPlatformConfig); i++) {
+  fellowAddLog("RetroPlatformSendEnabledHardDrives(): %d hard drives are enabled.\n", 
+    cfgGetHardfileCount(RetroPlatformConfig));
+
+	for(i = 0; i < cfgGetHardfileCount(RetroPlatformConfig); i++)
 			dFeatureFlags |= 1 << i;
-	}
 
   bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_HD, 
     dFeatureFlags, NULL, 0, &RetroPlatformGuestInfo, &lResult);
@@ -1232,10 +1223,8 @@ BOOLE RetroPlatformSendInputDevice(const DWORD dwHostInputType,
   LRESULT lResult;
   BOOLE bResult;
   STR szHostInputNameA[CFG_FILENAME_LENGTH];
-
 	struct RPInputDeviceDescription rpInputDevDesc;
 
-  // begin with the basics - the Windows mouse
   wcscpy(rpInputDevDesc.szHostInputID, szHostInputID);
   wcscpy(rpInputDevDesc.szHostInputName, szHostInputName);
   rpInputDevDesc.dwHostInputType = dwHostInputType;
