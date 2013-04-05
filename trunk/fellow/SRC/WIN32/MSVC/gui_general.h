@@ -165,6 +165,8 @@
 #define IDC_SLIDER_SOUND_BUFFER_LENGTH  1130
 #define IDC_STATIC_BUFFER_LENGTH        1131
 #define IDC_COMBO_COLOR_BITS            1132
+#define IDC_STATIC_SOUND_VOLUME_0       1132
+#define IDC_STATIC_SOUND_VOLUME         1132
 #define IDC_CHECK_INTERLACE             1133
 #define IDC_STATIC_SCREEN_AREA          1134
 #define IDC_STATIC_FRAME_SKIPPING       1135
@@ -174,6 +176,7 @@
 #define IDC_LST_REGISTERS               1140
 #define IDC_LST_INFO                    1141
 #define IDC_LST_INSTRUCTIONS            1142
+#define IDC_SLIDER_SOUND_VOLUME         1143
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BUTTON3                     2001
 #define IDC_BTN_RUN                     2001
@@ -274,7 +277,6 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
-#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
@@ -282,7 +284,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        182
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1143
+#define _APS_NEXT_CONTROL_VALUE         1144
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
