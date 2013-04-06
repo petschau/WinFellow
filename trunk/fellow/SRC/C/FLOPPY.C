@@ -1349,10 +1349,13 @@ void floppyDMAReadInit(ULO drive)
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt & 0x1ffffe;
 
-  // Workaround, require normal sync with MFM generated from ADF. (North and South, Prince of Persia)
-  floppy_DMA.wait_for_sync = (adcon & 0x0400)
-    && ((floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0)
-        || (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync == 0x4489));
+  // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
+  if(floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
+    fellowAddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
+
+  floppy_DMA.wait_for_sync = (adcon & 0x0400) 
+    && ( (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
+         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914)));
 
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
