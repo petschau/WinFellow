@@ -57,8 +57,13 @@ r833: More checks for emulation stop (ie F11) to avoid deadlock in rare cases.
 ------------------------------------------------------------------------------
 No test case is known yet.
 
-r843: Loaders using disksync different from 4489 with standard ADF files
-------------------------------------------------------------------------
+r865: Loaders using disksync different from 0x4489 and 0x8914 with standard ADF files
+-------------------------------------------------------------------------------------
 Test that Prince of Persia loads. It would not start earlier.
 
-Comment in 0.4.4 source also suggests North and South is affected.
+Test that Lemmings 2 (uncracked) loads successfully; before the fix, it would
+indefinitely read from the floppy disk while loading the main menu.
+
+Comment in 0.4.4 source also suggests North and South is affected, though this could not be
+reproduced recently. This fix supersedes the fix in r843, which did not take 0x8914 into 
+account.
