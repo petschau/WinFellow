@@ -1,4 +1,5 @@
 #include <ctime>
+#include "rtc.h"
 #include "RtcOkiMsm6242rs.h"
 #include "FELLOW.H"
 
@@ -222,7 +223,6 @@ UWO RtcOkiMsm6242rs::GetControlRegisterD(void)
 void RtcOkiMsm6242rs::SetControlRegisterD(UWO data)
 {
   _thirtySecAdjFlag = (data & 0x8) >> 3;
-  //_irqFlag = (data & 0x4) >> 2;
   _busyFlag = (data & 0x2) >> 1;
   _holdFlag = data & 1;
 }
@@ -256,18 +256,29 @@ void RtcOkiMsm6242rs::SetControlRegisterF(UWO data)
 
 UWO RtcOkiMsm6242rs::read(ULO address)
 {
+#ifdef RTC_LOG
   logRtcTime("read");
+#endif
+
   int register_number = GetRegisterNumberFromAddress(address);
   return (this->*_registerGetters[register_number])();
 }
 
 void RtcOkiMsm6242rs::write(UWO data, ULO address)
 {
+#ifdef RTC_LOG
   logRtcTime("Before write");
+#endif
+
   int register_number = GetRegisterNumberFromAddress(address);
   (this->*_registerSetters[register_number])(data);
+
+#ifdef RTC_LOG
   logRtcTime("After write");
+#endif
 }
+
+#ifdef RTC_LOG
 
 void RtcOkiMsm6242rs::logRtcTime(STR *msg)
 {
@@ -283,6 +294,8 @@ void RtcOkiMsm6242rs::logRtcTime(STR *msg)
     datetime->tm_min,
     datetime->tm_sec);
 }
+
+#endif
 
 void RtcOkiMsm6242rs::InitializeRegisterGetters(void)
 {

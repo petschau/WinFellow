@@ -60,6 +60,7 @@ typedef struct {
   STR    m_kickimage[CFG_FILENAME_LENGTH];
   STR    m_key[CFG_FILENAME_LENGTH];
   BOOLE  m_useautoconfig;
+  bool   m_rtc;
 
 
   /*==========================================================================*/
@@ -184,7 +185,8 @@ extern void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig);
 extern BOOLE cfgGetUseAutoconfig(cfg *config);
 extern void cfgSetAddress32Bit(cfg *config, BOOLE address32bit);
 extern BOOLE cfgGetAddress32Bit(cfg *config);
-
+extern void cfgSetRtc(cfg *config, bool rtc);
+extern bool cfgGetRtc(cfg *config);
 
 /*===========================================================================*/
 /* Host screen configuration property access                                 */
