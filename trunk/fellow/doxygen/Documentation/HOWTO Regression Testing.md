@@ -5,6 +5,11 @@ Several issues were fixed over time in WinFellow's emulation core.
 To avoid them resurfacing in the future, the following tests should be performed 
 on a regular basis, at the very least after major changes.
 
+When testing large batches of titles, to speed up testing it is possible to make
+the emulation run at maximum speed by setting the configuration file option
+_sound_output=interrupt_; this can also be configured in Amiga Forever's 
+override.ini, allowing quick testing of a group of RP9 packages.
+
 r749: Changed the constant for lines in a frame
 -----------------------------------------------
 Test that the demo "Global Trash" by The Silents will proceed beyond the second
