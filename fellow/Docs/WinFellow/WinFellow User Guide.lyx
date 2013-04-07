@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.2 (2013/04/04)
+v0.21 (2013/04/07)
 \end_layout
 
 \begin_layout Standard
@@ -680,12 +680,35 @@ What's New in WinFellow 0.5?
 
 \begin_layout Standard
 Thanks for your interest in WinFellow.
- There are a lot of changes in version 0.5, with the most significant ones
- being:
+ After years of development, there are a lot of changes and enhancements
+ in version 0.5, with the most significant ones being:
 \end_layout
 
 \begin_layout Itemize
 conversion of all assembler code to C
+\end_layout
+
+\begin_layout Itemize
+enhanced compatibility with many titles; the chipset interrupt handler was
+ completely re-designed, and sound interrupt handling was changed as well,
+ allowing execution of many titles that previously failed
+\end_layout
+
+\begin_layout Itemize
+emulation of a battery backed real-time clock (Oki MSM 6242)
+\end_layout
+
+\begin_layout Itemize
+support for 2 joysticks, usable simultaneously
+\end_layout
+
+\begin_layout Itemize
+audio volume made controllable
+\end_layout
+
+\begin_layout Itemize
+the LED overlays were changed to no longer be scaled or stretched, making
+ them nicer to look at
 \end_layout
 
 \begin_layout Itemize
@@ -792,10 +815,6 @@ revamped debugger using a more modern GUI design
 \end_layout
 
 \begin_layout Itemize
-support for 2 joysticks, usable simultaneously
-\end_layout
-
-\begin_layout Itemize
 ability to generate minidumps, which allows us to debug crashes that are
  reported to us
 \end_layout
@@ -805,8 +824,9 @@ updated PDF user guide
 \end_layout
 
 \begin_layout Itemize
-update of project files to current Visual Studio (2012 Update 1) and DirectX;
- the code can now be compiled using Visual Studio Express editions
+update of project files to current Visual Studio (2012 Update 2 is used
+ to compile the builds) and DirectX; the code can now be compiled using
+ Visual Studio Express editions
 \end_layout
 
 \begin_layout Itemize
@@ -815,12 +835,6 @@ new versioning scheme, based on SVN revisions
 
 \begin_layout Itemize
 several CPU instruction bug fixes (RTD 68010 instruction, EORW, ORW, MOVEP)
-\end_layout
-
-\begin_layout Itemize
-enhanced compatibility with many titles (the chipset interrupt handler was
- completely re-designed; the sound interrupt handling was changed as well,
- allowing execution of many titles that previously failed)
 \end_layout
 
 \begin_layout Itemize
