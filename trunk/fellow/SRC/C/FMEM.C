@@ -34,6 +34,7 @@
 #include "fmem.h"
 #include "fswrap.h"
 #include "wgui.h"
+#include "rtc.h"
 
 #ifdef WIN32
 #include <tchar.h>
@@ -1959,6 +1960,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemMap();
     memoryMysteryMap();
     memoryKickMap();
+    rtcMap();
   }
 
   void memoryHardReset(void)
@@ -1978,6 +1980,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemMap();
     memoryMysteryMap();
     memoryKickMap();
+    rtcMap();
   }
 
   void memoryHardResetPost(void)
