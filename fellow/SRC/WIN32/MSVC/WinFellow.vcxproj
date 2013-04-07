@@ -550,6 +550,8 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\..\C\interrupt.c" />
+    <ClCompile Include="..\..\c\rtc.cpp" />
+    <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp" />
     <ClCompile Include="..\C\fsysamnt.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1548,6 +1550,8 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H" />
     <ClInclude Include="..\..\INCLUDE\LISTTREE.H" />
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
+    <ClInclude Include="..\..\include\rtc.h" />
+    <ClInclude Include="..\..\include\RtcOkiMsm6242rs.h" />
     <ClInclude Include="..\INCLUDE\fileops.h" />
     <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H" />
     <ClInclude Include="..\..\INCLUDE\SPRITE.H" />
