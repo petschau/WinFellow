@@ -2152,7 +2152,7 @@ static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWOR
   FILE *file = NULL;
   void *data= NULL;
   int bpp, datasize;
-  BOOLE success = FALSE;
+  BOOLE bSuccess = FALSE;
 
   if (!hDC) return 0;
   if (bits <= 0) return 0;
@@ -2194,8 +2194,8 @@ static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWOR
   oldbit = SelectObject(memDC, bitmap);
   if (oldbit <= 0) goto cleanup;
 
-  success = BitBlt(memDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
-  if (!success) goto cleanup;
+  bSuccess = BitBlt(memDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY);
+  if (!bSuccess) goto cleanup;
 
   file = fopen(filename, "wb");
   if (!file) goto cleanup;
@@ -2204,16 +2204,18 @@ static BOOLE gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWOR
   fwrite((void*)&bih, sizeof(bih), 1, file);
   fwrite((void*)data, 1, datasize, file);      
 
-  success = TRUE;
+  bSuccess = TRUE;
 
 cleanup:
-
   if (oldbit > 0) SelectObject(memDC, oldbit);
   if (memDC) DeleteDC(memDC);
   if (file) fclose(file);
   if (bitmap) DeleteObject(bitmap);
 
-  return success;
+  fellowAddLog("gfxDrvTakeScreenShotFromDC(hDC=0x%x, width=%d, height=%d, bits=%d, filename='%s' %s.\n",
+    hDC, width, height, bits, filename, bSuccess ? "successful" : "failed");
+
+  return bSuccess;
 }
 
 static BOOLE gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surface, STR *filename) {
@@ -2240,14 +2242,43 @@ static BOOLE gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surfa
   return bSuccess;
 }
 
-BOOLE gfxDrvTakeScreenShot(BOOLE bSourceIsPrimarySurface, STR *filename) {
+static BOOLE gfxDrvTakeScreenShotFromWindow(HWND hWnd, STR *filename) {
+  HDC hwndDC = NULL;
+  BOOLE bSuccess = FALSE;
+  RECT rect;
+  int width, height;
+
+  if(!hWnd) return FALSE;
+
+  fellowAddLog("gfxDrvTakeScreenshotFromWindow(hWnd=0x%x, filename='%s'...\n",
+    hWnd, filename);
+
+  if(GetWindowRect(hWnd, &rect)) {
+    width = rect.right - rect.left;
+    height = rect.bottom - rect.top;
+  }
+  else
+    return FALSE;
+
+  hwndDC = GetDC(hWnd);
+  if(FAILED(hwndDC)) return FALSE;
+  
+  bSuccess = gfxDrvTakeScreenShotFromDC(hwndDC, width, height, 
+    GetDeviceCaps(hwndDC, BITSPIXEL), filename);
+
+  if(hwndDC) ReleaseDC(gfx_drv_hwnd, hwndDC);
+
+  return bSuccess;
+}
+
+BOOLE gfxDrvTakeScreenShot(BOOLE bTakeFilteredScreenshot, STR *filename) {
   BOOLE bResult; 
-  if(bSourceIsPrimarySurface)
-    bResult = gfxDrvTakeScreenShotFromDirectDrawSurface(gfx_drv_ddraw_device_current->lpDDSPrimary, filename);
+  if(bTakeFilteredScreenshot)
+    bResult = gfxDrvTakeScreenShotFromWindow(gfx_drv_hwnd, filename);
   else
     bResult = gfxDrvTakeScreenShotFromDirectDrawSurface(gfx_drv_ddraw_device_current->lpDDSSecondary, filename);
 
-  fellowAddLog("gfxDrvTakeScreenShot(primary=%d, filename='%s') %s.\n", bSourceIsPrimarySurface, filename, 
+  fellowAddLog("gfxDrvTakeScreenShot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename, 
     bResult ? "successful" : "failed");
   return bResult;
 }
