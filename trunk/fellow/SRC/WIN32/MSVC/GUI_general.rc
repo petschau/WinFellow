@@ -8,8 +8,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "windows.h"
-#include "gui_debugger.h"
-
+#include "gui_debugger.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -250,17 +249,20 @@ BEGIN
     LTEXT           "not set",IDC_GAMEPORT1_AUTOFIRE1,150,155,70,8
 END
 
-IDD_VARIOUS DIALOG 0, 0, 235, 156
+IDD_VARIOUS DIALOGEX 0, 0, 235, 156
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "various"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     CONTROL         "show FPS in windowed emulation mode",IDC_CHECK_VARIOUS_SPEED,
-                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,10,10,141,10
+                    "Button",BS_AUTOCHECKBOX | WS_GROUP | WS_TABSTOP,7,7,141,10
     CONTROL         "show LEDs in emulation window",IDC_CHECK_VARIOUS_LED,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,25,117,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,20,117,10
     CONTROL         "disable Autoconfig-devices",IDC_CHECK_AUTOCONFIG_DISABLE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,40,135,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,35,135,10
+    CONTROL         "silent sound emulation (removes framelimit)",IDC_CHECK_SOUND_EMULATE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,64,149,10
+    CONTROL         "emulate real-time clock",IDC_CHECK_VARIOUS_RTC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,50,89,10
 END
 
 IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 190, 94

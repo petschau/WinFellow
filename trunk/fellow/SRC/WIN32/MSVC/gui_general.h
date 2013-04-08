@@ -189,8 +189,9 @@
 #define IDC_BUTTON_TURBO_LOAD           2006
 #define IDC_DEBUG_RIP                   2006
 #define IDC_BTN_MODRIP                  2006
-#define IDC_CHECK1                      2007
+#define IDC_CHECK_SOUND_EMULATE         2007
 #define IDC_CHECK_FILESYSTEM_ADD_READONLY 2008
+#define IDC_CHECK_VARIOUS_RTC           2008
 #define IDC_CHECK_VARIOUS_LED           2009
 #define IDC_CHECK_CREATE_HARDFILE_MEGABYTES 2010
 #define IDC_CHECK_FULLSCREEN            2011
@@ -277,6 +278,7 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
