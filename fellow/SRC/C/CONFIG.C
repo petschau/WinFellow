@@ -262,7 +262,6 @@ bool cfgGetRtc(cfg *config)
   return config->m_rtc;
 }
 
-
 /*============================================================================*/
 /* Screen configuration property access                                       */
 /*============================================================================*/
@@ -849,6 +848,7 @@ void cfgSetDefaults(cfg *config)
 
   cfgSetMeasureSpeed(config, false);
 
+  cfgSetConfigAppliedOnce(config, false);
 }
 
 
@@ -1284,6 +1284,13 @@ static STR *cfgGetECSToString(BOOLE chipset)
   return (chipset) ? "ecs" : "ocs";
 }
 
+void cfgSetConfigAppliedOnce(cfg *config, BOOLE bApplied) {
+  config->m_config_applied_once = bApplied;
+}
+
+BOOLE cfgGetConfigAppliedOnce(cfg *config) {
+  return config->m_config_applied_once;
+}
 
 /*============================================================================*/
 /* Command line option synopsis                                               */
@@ -1829,6 +1836,7 @@ static BOOLE cfgLoadFromFile(cfg *config, FILE *cfgfile)
     cfgStripTrailingNewlines(line);
     cfgSetOption(config, line);
   }
+  cfgSetConfigAppliedOnce(config, true);
   return TRUE;
 }
 
@@ -2217,14 +2225,22 @@ void cfgManagerFreeConfig(cfgManager *configmanager, cfg *config)
 void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
 {
   cfg *config = cfgManagerGetNewConfig(configmanager);
-  configmanager->m_original_config = config;
+  cfgParseCommandLine(config, argc, argv);
+#ifdef RETRO_PLATFORM
+  if(!RetroPlatformGetMode()) {
+#endif
+  if(!cfgGetConfigAppliedOnce(config)) {
+	  configmanager->m_original_config = config;
 
-  // load configuration that the initdata contains
-  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
-  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata));
+	  // load configuration that the initdata contains
+	  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
+	  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata));
+  }
+#ifdef RETRO_PLATFORM
+  }
+#endif
 
   cfgManagerSetCurrentConfig(configmanager, config);
-  cfgParseCommandLine(config, argc, argv);
 }
 
 void cfgManagerShutdown(cfgManager *configmanager)
