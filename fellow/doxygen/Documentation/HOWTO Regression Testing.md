@@ -7,7 +7,7 @@ on a regular basis, at the very least after major changes.
 
 When testing large batches of titles, to speed up testing it is possible to make
 the emulation run at maximum speed by setting the configuration file option
-_sound_output=interrupt_; this can also be configured in Amiga Forever's 
+_sound_output=interrupts_; this can also be configured in Amiga Forever's 
 override.ini, allowing quick testing of a group of RP9 packages.
 
 r749: Changed the constant for lines in a frame

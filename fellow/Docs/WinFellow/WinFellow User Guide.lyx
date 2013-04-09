@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.21 (2013/04/07)
+v0.22 (2013/04/09)
 \end_layout
 
 \begin_layout Standard
@@ -685,7 +685,7 @@ Thanks for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
-conversion of all assembler code to C
+conversion of most of the former assembler code to C
 \end_layout
 
 \begin_layout Itemize
@@ -730,7 +730,7 @@ all input devices available in WinFellow can be used comfortably within
 \end_layout
 
 \begin_layout Itemize
-floppy drives are supported using conventional ADF files; floppy 
+floppy drives (DD) are supported using conventional ADF files; floppy 
 \begin_inset Quotes eld
 \end_inset
 
@@ -778,7 +778,8 @@ the following is a list of features that are currently NOT available from
 
 \begin_deeper
 \begin_layout Itemize
-extended ADF files, or SPS .ipf files are not supported yet
+HD floppy drives, extended ADF files, or SPS .ipf files are not supported
+ yet
 \end_layout
 
 \begin_layout Itemize
