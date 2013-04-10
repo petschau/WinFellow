@@ -1592,7 +1592,7 @@ void floppyEndOfLine(void)
   {
     ULO i;
     ULO track = floppyGetLinearTrack(sel_drv);
-    ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 3;
+    ULO words = (floppy_fast) ? FLOPPY_FAST_WORDS : 2;
     for (i = 0; i < words; i++) 
     {
       UWO tmpb1 = floppyGetByteUnderHead(sel_drv, track);
