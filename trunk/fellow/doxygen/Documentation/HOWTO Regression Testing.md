@@ -72,3 +72,10 @@ indefinitely read from the floppy disk while loading the main menu.
 Comment in 0.4.4 source also suggests North and South is affected, though this could not be
 reproduced recently. This fix supersedes the fix in r843, which did not take 0x8914 into 
 account.
+
+r873: floppy words per line should be 2 instead of 3
+----------------------------------------------------
+Test that Guardian Dragon II loads successfully, and continues beyond the first Kefrens logo.
+The scrolling text between the two blue statues needs to appear. Before this change, the
+sound would start garbling and the emulation session would reboot.
+
