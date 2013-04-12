@@ -723,6 +723,8 @@ bool cfgGetMeasureSpeed(cfg *config)
 
 void cfgSetDefaults(cfg *config)
 {
+  if(config == NULL) return;
+
   /*==========================================================================*/
   /* Default configuration description                                        */
   /*==========================================================================*/
