@@ -196,6 +196,12 @@ void RtcOkiMsm6242rs::SetTenYearRegister(UWO data)
 {
   struct tm datetime = *GetCurrentOrHeldTime();
   ReplaceSecondDigitAllowBCDOverflow(datetime.tm_year, data);
+
+  // mktime's lower limit is 1970, if the year is less than 1970, assume they mean 21st century
+  if (datetime.tm_year < 70)
+  {
+    datetime.tm_year += 100;
+  }
   SetCurrentTime(&datetime);
 }
 
