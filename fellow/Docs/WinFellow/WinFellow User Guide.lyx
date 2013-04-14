@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.23 (2013/04/14)
+v0.24 (2013/04/14)
 \end_layout
 
 \begin_layout Standard
@@ -744,7 +744,7 @@ turbo
 
 \begin_layout Itemize
 conventional (non-RDB) hardfiles are supported, and can be booted from on
- AmigaOS 2.0+ (as autoconfig support is required to boot from them)
+ AmigaOS 2.0+
 \end_layout
 
 \begin_layout Itemize
@@ -832,10 +832,6 @@ update of project files to current Visual Studio (2012 Update 2 is used
 
 \begin_layout Itemize
 new versioning scheme, based on SVN revisions
-\end_layout
-
-\begin_layout Itemize
-several CPU instruction bug fixes (RTD 68010 instruction, EORW, ORW, MOVEP)
 \end_layout
 
 \begin_layout Itemize
