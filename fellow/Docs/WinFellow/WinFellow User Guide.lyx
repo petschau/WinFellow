@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.22 (2013/04/09)
+v0.23 (2013/04/14)
 \end_layout
 
 \begin_layout Standard
@@ -675,13 +675,13 @@ pagebreak
 \end_layout
 
 \begin_layout Part
-What's New in WinFellow 0.5?
+What's New in WinFellow 0.5.1?
 \end_layout
 
 \begin_layout Standard
 Thanks for your interest in WinFellow.
  After years of development, there are a lot of changes and enhancements
- in version 0.5, with the most significant ones being:
+ in version 0.5.1, with the most significant ones being:
 \end_layout
 
 \begin_layout Itemize
