@@ -145,8 +145,8 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
-SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
+      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
+SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
@@ -555,22 +555,32 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\zlib\C\gzlib.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\zlib\C\gzread.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\zlib\C\gzwrite.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\zlib\C\infback.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\C\fsysamnt.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
