@@ -282,9 +282,6 @@
     <ClCompile Include="..\..\zlib\C\deflate.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\zlib\C\gzio.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\zlib\C\inffast.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
@@ -317,6 +314,21 @@
     </ClCompile>
     <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp">
       <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zlib\C\gzclose.c">
+      <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zlib\C\gzlib.c">
+      <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zlib\C\gzread.c">
+      <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zlib\C\gzwrite.c">
+      <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\zlib\C\infback.c">
+      <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
