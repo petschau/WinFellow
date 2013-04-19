@@ -826,8 +826,8 @@ updated PDF user guide
 
 \begin_layout Itemize
 update of project files to current Visual Studio (2012 Update 2 is used
- to compile the builds) and DirectX; the code can now be compiled using
- Visual Studio Express editions
+ to compile the builds); the code can now be compiled using Visual Studio
+ Express editions
 \end_layout
 
 \begin_layout Itemize

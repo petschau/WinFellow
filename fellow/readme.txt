@@ -1,4 +1,4 @@
-WinFellow v0.5.1 alpha version dated 2013/04/14 (source code archive)
+WinFellow v0.5.1 alpha version dated 2013/04/19 (source code archive)
 ---------------------------------------------------------------------
 
 This is a readme file describing the contents of this archive.
@@ -49,7 +49,7 @@ src/win32/incasm
 
 These directories contain pure win32 (and DirectX) implementations needed to 
 support Fellow on Win32. A workspace setup to compile Fellow into
-an executable is provided for MS Visual Studio (MSVC++ V6, V5 will also work).
+an executable is provided for MS Visual Studio.
 
 src/win32/msvc
 
@@ -59,7 +59,8 @@ This directory contains a MS Visual Studio workspace for the entire Fellow sourc
 What you need to compile the sources:
 -------------------------------------
 
-MS Visual Studio 2010 or higher. Express editions can be used to compile WinFellow.
+MS Visual Studio 2012 and the February 2010 DirectX SDK. 
+The Express edition can be used to compile WinFellow.
 
 Other notes:
 ------------
