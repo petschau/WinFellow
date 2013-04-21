@@ -65,11 +65,11 @@ Sunday, February 03, 2008: carfesh
 
 LPDIRECTINPUT		mouse_drv_lpDI = NULL;
 LPDIRECTINPUTDEVICE	mouse_drv_lpDID = NULL;
-HANDLE				mouse_drv_DIevent = NULL;
-BOOLE				mouse_drv_focus;
-BOOLE				mouse_drv_active;
-BOOLE				mouse_drv_in_use;
-BOOLE				mouse_drv_initialization_failed;
+HANDLE			mouse_drv_DIevent = NULL;
+BOOLE			mouse_drv_focus;
+BOOLE			mouse_drv_active;
+BOOLE			mouse_drv_in_use;
+BOOLE			mouse_drv_initialization_failed;
 static BOOLE		bLeftButton;
 static BOOLE		bRightButton;
 
@@ -80,8 +80,10 @@ int num_mouse_attached = 0;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *mouseDrvDInputErrorString(HRESULT hResult) {
-  switch (hResult) {
+STR *mouseDrvDInputErrorString(HRESULT hResult)
+{
+  switch (hResult)
+  {
     case DI_OK:				return "The operation completed successfully.";
     case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
     case DI_POLLEDDEVICE:		return "The device is a polled device.";
@@ -112,7 +114,8 @@ STR *mouseDrvDInputErrorString(HRESULT hResult) {
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void mouseDrvDInputFailure(STR *header, HRESULT err) {
+void mouseDrvDInputFailure(STR *header, HRESULT err)
+{
   fellowAddLog(header);
   fellowAddLog(mouseDrvDInputErrorString(err));
   fellowAddLog("\n");
@@ -123,21 +126,30 @@ void mouseDrvDInputFailure(STR *header, HRESULT err) {
 /* Acquire DirectInput mouse device                                          */
 /*===========================================================================*/
 
-void mouseDrvDInputAcquire(void) {
+void mouseDrvDInputAcquire(void)
+{
   HRESULT res;
 
   fellowAddLog("mouseDrvDInputAcquire()\n");
 
-  if (mouse_drv_in_use) {
-    if (mouse_drv_lpDID != NULL) {
+  if (mouse_drv_in_use)
+  {
+    if (mouse_drv_lpDID != NULL)
+    {
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
+      {
         mouseDrvDInputFailure("mouseDrvDInputAcquire(): ", res);
+      }
     }
   }
-  else {
-    if (mouse_drv_lpDID != NULL) {
+  else
+  {
+    if (mouse_drv_lpDID != NULL)
+    {
       if ((res = IDirectInputDevice_Unacquire(mouse_drv_lpDID)) != DI_OK)
+      {
         mouseDrvDInputFailure("mouseDrvDInputUnacquire(): ", res);
+      }
     }
   }
 }
@@ -147,34 +159,37 @@ void mouseDrvDInputAcquire(void) {
 /* Release DirectInput for mouse                                             */
 /*===========================================================================*/
 
-void mouseDrvDInputRelease(void) {
-  if (mouse_drv_lpDID != NULL) {
+void mouseDrvDInputRelease(void)
+{
+  if (mouse_drv_lpDID != NULL)
+  {
     IDirectInputDevice_Release(mouse_drv_lpDID);
     mouse_drv_lpDID = NULL;
   }
-  if (mouse_drv_DIevent != NULL) {
+  if (mouse_drv_DIevent != NULL)
+  {
     CloseHandle(mouse_drv_DIevent);
     mouse_drv_DIevent = NULL;
   }
-  if (mouse_drv_lpDI != NULL) {
+  if (mouse_drv_lpDI != NULL)
+  {
     IDirectInput_Release(mouse_drv_lpDI);
     mouse_drv_lpDI = NULL;
   }
 }
 
-BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, 
-                                  LPVOID pvRef) 
+BOOL FAR PASCAL GetMouseInfo(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef) 
 { 
-	fellowAddLog( "**** mouse %d ****\n", num_mouse_attached++ );
-
-	return DIENUM_CONTINUE; 
+  fellowAddLog( "**** mouse %d ****\n", num_mouse_attached++ );
+  return DIENUM_CONTINUE; 
 }
 	
 /*===========================================================================*/
 /* Initialize DirectInput for mouse                                          */
 /*===========================================================================*/
 
-BOOLE mouseDrvDInputInitialize(void) {
+BOOLE mouseDrvDInputInitialize(void)
+{
   HRESULT res; 
 
 #define INITDIPROP( diprp, obj, how ) \
@@ -202,12 +217,10 @@ BOOLE mouseDrvDInputInitialize(void) {
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
   mouse_drv_initialization_failed = FALSE;
-  res = DirectInput8Create(win_drv_hInstance,
-                           DIRECTINPUT_VERSION,
-                           IID_IDirectInput8,
-                           (void**)&mouse_drv_lpDI,
-			   NULL);
-  if (res != DI_OK) {
+
+  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, NULL);
+  if (res != DI_OK)
+  {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -215,19 +228,17 @@ BOOLE mouseDrvDInputInitialize(void) {
   }
 
   num_mouse_attached = 0;
-
-  if ((res = IDirectInput_EnumDevices( mouse_drv_lpDI, DI8DEVTYPE_MOUSE,
-			  GetMouseInfo, NULL, DIEDFL_ALLDEVICES )) != DI_OK) {
-	  fellowAddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
+  res = IDirectInput_EnumDevices( mouse_drv_lpDI, DI8DEVTYPE_MOUSE, GetMouseInfo, NULL, DIEDFL_ALLDEVICES);
+  if (res != DI_OK)
+  {
+    fellowAddLog("Mouse Enum Devices failed %s\n", mouseDrvDInputErrorString( res ));
   }
   
   /* Create Direct Input 1 mouse device */
   
-  res = IDirectInput_CreateDevice(mouse_drv_lpDI,
-                                  GUID_SysMouse,
-                                  &mouse_drv_lpDID,
-                                  NULL);
-  if (res != DI_OK) {
+  res = IDirectInput_CreateDevice(mouse_drv_lpDI, GUID_SysMouse, &mouse_drv_lpDID, NULL);
+  if (res != DI_OK)
+  {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): CreateDevice() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -235,21 +246,20 @@ BOOLE mouseDrvDInputInitialize(void) {
   }
   
   /* Set data format for mouse device */
-  
-  if ((res = IDirectInputDevice_SetDataFormat(mouse_drv_lpDID,
-                                              &c_dfDIMouse)) != DI_OK) {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetDataFormat() ", res );
+
+  res = IDirectInputDevice_SetDataFormat(mouse_drv_lpDID, &c_dfDIMouse);
+  if (res != DI_OK)
+  {
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetDataFormat() ", res);
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
   }
 
   /* Set cooperative level */
-  
-   if ((res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID,
-						    gfx_drv_hwnd,
-						    DISCL_EXCLUSIVE |
-						    DISCL_FOREGROUND)) != DI_OK) {
+  res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfx_drv_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  if (res != DI_OK)
+  {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -257,8 +267,9 @@ BOOLE mouseDrvDInputInitialize(void) {
   }
 
   /* Create event for notification */
-  
-  if ((mouse_drv_DIevent = CreateEvent(0, 0, 0, 0)) == NULL) {
+  mouse_drv_DIevent = CreateEvent(0, 0, 0, 0);
+  if (mouse_drv_DIevent == NULL)
+  {
     fellowAddLog("mouseDrvDInputInitialize(): CreateEvent() failed\n");
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -266,19 +277,18 @@ BOOLE mouseDrvDInputInitialize(void) {
   }
 
   /* Set property for buffered data */
-  
-  if ((res = IDirectInputDevice_SetProperty(mouse_drv_lpDID,
-				            DIPROP_BUFFERSIZE,
-				            &dipdw.diph)) != DI_OK) {
+  res = IDirectInputDevice_SetProperty(mouse_drv_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
+  if (res != DI_OK)
+  {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetProperty() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
   }
 
   /* Set event notification */
-
-  if ((res = IDirectInputDevice_SetEventNotification(mouse_drv_lpDID,
-                                                     mouse_drv_DIevent)) != DI_OK) {
+  res = IDirectInputDevice_SetEventNotification(mouse_drv_lpDID, mouse_drv_DIevent);
+  if (res != DI_OK)
+  {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetEventNotification() ", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
@@ -295,12 +305,15 @@ BOOLE mouseDrvDInputInitialize(void) {
 /* Mouse grab status has changed                                             */
 /*===========================================================================*/
 
-void mouseDrvStateHasChanged(BOOLE active) {
+void mouseDrvStateHasChanged(BOOLE active)
+{
   mouse_drv_active = active;
-  if (mouse_drv_active && mouse_drv_focus) {
+  if (mouse_drv_active && mouse_drv_focus)
+  {
     mouse_drv_in_use = TRUE;
   }
-  else {
+  else
+  {
     mouse_drv_in_use = FALSE;
   }
   mouseDrvDInputAcquire();
@@ -311,11 +324,13 @@ void mouseDrvStateHasChanged(BOOLE active) {
 /* Mouse toggle focus                                                        */
 /*===========================================================================*/
 
-void mouseDrvToggleFocus(void) {
+void mouseDrvToggleFocus(void)
+{
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
+  if(RetroPlatformGetMode())
+  {
     fellowAddLog("mouseDrvToggleFocus(): mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
     RetroPlatformSendMouseCapture(mouse_drv_focus);
   }
@@ -330,8 +345,10 @@ void mouseDrvToggleFocus(void) {
  * by the player itself.
  * @callergraph
  */
-void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) {
-  if(bNewFocus != mouse_drv_focus) {
+void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
+{
+  if (bNewFocus != mouse_drv_focus)
+  {
     fellowAddLog("mouseDrvSetFocus(%s)\n", bNewFocus ? "true" : "false");
     
     mouse_drv_focus = bNewFocus;
@@ -339,7 +356,8 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) {
 
   #ifdef RETRO_PLATFORM
     if(RetroPlatformGetMode())
-      if(!bRequestedByRPHost) {
+      if(!bRequestedByRPHost)
+      {
         fellowAddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", 
           bNewFocus ? "true" : "false");
         RetroPlatformSendMouseCapture(mouse_drv_focus);
@@ -352,87 +370,92 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) {
 /* Mouse movement handler                                                    */
 /*===========================================================================*/
 
-void mouseDrvMovementHandler(void) {
-  if (mouse_drv_in_use) {
-	static LON lx = 0;
-	static LON ly = 0;
-	HRESULT res;
+void mouseDrvMovementHandler(void)
+{
+  if (mouse_drv_in_use)
+  {
+    static LON lx = 0;
+    static LON ly = 0;
+    HRESULT res;
 	
-	DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
-	DWORD itemcount = DINPUT_BUFFERSIZE;
+    DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
+    DWORD itemcount = DINPUT_BUFFERSIZE;
 	
-	do {
-	  res = IDirectInputDevice_GetDeviceData(mouse_drv_lpDID,
-		sizeof(DIDEVICEOBJECTDATA),
-		rgod,
-		&itemcount,
-		0);
-	  if (res == DIERR_INPUTLOST) mouseDrvDInputAcquire();
-	}
-	while (res == DIERR_INPUTLOST);
+    do
+    {
+      res = IDirectInputDevice_GetDeviceData(mouse_drv_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
+      if (res == DIERR_INPUTLOST)
+      {
+	mouseDrvDInputAcquire();
+      }
+    }
+    while (res == DIERR_INPUTLOST);
 	
-	if (res != DI_OK) {
-	  mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData() ", res );
-	}
-	else {
-	  ULO i = 0;
-	  DWORD oldSequence = 0;
+    if (res != DI_OK)
+    {
+      mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData() ", res );
+    }
+    else
+    {
+      ULO i = 0;
+      DWORD oldSequence = 0;
 	  
-	  /*
-	  ** Sometimes in a buffered input of a device, some simultaneous events are stored
-	  ** in different - but contigous - objects in the array. For every event object
-	  ** there is a sequence number - automatically handled by dinput - stored together
-	  ** with the event. Simultaneous events are assigned the same sequence number.
-	  ** Events are always placed in the buffer in chronological order.
-	  */
+      /*
+      ** Sometimes in a buffered input of a device, some simultaneous events are stored
+      ** in different - but contigous - objects in the array. For every event object
+      ** there is a sequence number - automatically handled by dinput - stored together
+      ** with the event. Simultaneous events are assigned the same sequence number.
+      ** Events are always placed in the buffer in chronological order.
+      */
 	  
-	  if( itemcount == 0 )	// exit if there are no objects to examine
-		return;
+      if( itemcount == 0 )	// exit if there are no objects to examine
+      {
+	return;
+      }
 	  
-	  lx = ly = 0;
-	  for (i = 0; i <= itemcount; i++) {
-		if( i != 0 )
-		{
-		  if(( i == itemcount ) ||					// if there are no other objects
-			( rgod[i].dwSequence != oldSequence ))	// or the current objects is a different event
-		  {
-			gameportMouseHandler(GP_MOUSE0,
-			  lx,
-			  ly,
-			  bLeftButton,
-			  FALSE,
-			  bRightButton);
-			
-			lx = ly = 0;
-		  }
-		  if( i == itemcount )	// no other objects to examine, exit
-			break;
-		}
-		oldSequence = rgod[i].dwSequence;
-		
-		switch( rgod[i].dwOfs ) {
-		case DIMOFS_BUTTON0:
-		  bLeftButton = (rgod[i].dwData & 0x80);
-		  break;
-		  
-		case DIMOFS_BUTTON1:
-		  bRightButton = (rgod[i].dwData & 0x80);
-		  break;
-		  
-		case DIMOFS_X:
-		  lx += rgod[i].dwData;
-		  break;
-		  
-		case DIMOFS_Y:
-		  ly += rgod[i].dwData;
-		  break;
-		}				
+      lx = ly = 0;
+      for (i = 0; i <= itemcount; i++)
+      {
+	if( i != 0 )
+	{
+	  if(( i == itemcount ) ||					// if there are no other objects
+		( rgod[i].dwSequence != oldSequence ))	// or the current objects is a different event
+	  {
+	    gameportMouseHandler(GP_MOUSE0, lx, ly, bLeftButton, FALSE, bRightButton);			
+	    lx = ly = 0;
+	  }
+	  if( i == itemcount )	// no other objects to examine, exit
+	  {
+		break;
 	  }
 	}
+	oldSequence = rgod[i].dwSequence;
+		
+	switch( rgod[i].dwOfs )
+	{
+	  case DIMOFS_BUTTON0:
+	    bLeftButton = (rgod[i].dwData & 0x80);
+	    break;
+		  
+	  case DIMOFS_BUTTON1:
+	    bRightButton = (rgod[i].dwData & 0x80);
+	    break;
+		  
+	  case DIMOFS_X:
+	    lx += rgod[i].dwData;
+	    break;
+		  
+	  case DIMOFS_Y:
+	    ly += rgod[i].dwData;
+	    break;
+	}				
+      }
+    }
   }
 }
 
-BOOLE mouseDrvGetFocus(void) {
+BOOLE mouseDrvGetFocus(void)
+{
   return mouse_drv_focus;
 }
 
@@ -440,7 +463,8 @@ BOOLE mouseDrvGetFocus(void) {
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void mouseDrvHardReset(void) {
+void mouseDrvHardReset(void)
+{
   fellowAddLog("mouseDrvHardReset\n");
 }
 
@@ -449,7 +473,8 @@ void mouseDrvHardReset(void) {
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-BOOLE mouseDrvEmulationStart(void) {
+BOOLE mouseDrvEmulationStart(void) 
+{
   fellowAddLog("mouseDrvEmulationStart\n");
   return mouseDrvDInputInitialize();
 }
@@ -459,7 +484,8 @@ BOOLE mouseDrvEmulationStart(void) {
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void mouseDrvEmulationStop(void) {
+void mouseDrvEmulationStop(void) 
+{
   fellowAddLog("mouseDrvEmulationStop\n");
   mouseDrvDInputRelease();
 }
@@ -469,7 +495,8 @@ void mouseDrvEmulationStop(void) {
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-void mouseDrvStartup(void) {
+void mouseDrvStartup(void) 
+{
   fellowAddLog("mouseDrvStartup\n");
   mouse_drv_active = FALSE;
   mouse_drv_focus = TRUE;
@@ -487,7 +514,8 @@ void mouseDrvStartup(void) {
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void mouseDrvShutdown(void) {
+void mouseDrvShutdown(void) 
+{
   fellowAddLog("mouseDrvShutdown\n");
 }
 
