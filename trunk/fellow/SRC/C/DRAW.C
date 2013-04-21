@@ -1923,7 +1923,7 @@ static __inline void drawLineNormal1xX_24bit(graph_line *linedescription, ULO ne
   if (pixels_left_to_draw > 2)
   {
     // synchronize with 32 bit address
-    while (((ULO) draw_buffer_current_ptr & 0x3) != 0)
+    while (PTR_TO_INT(draw_buffer_current_ptr) & 0x3)
     {
       decoded_color = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
       if (verticalscale == 1)
@@ -2045,7 +2045,7 @@ static __inline void drawLineNormal2xX_24bit(graph_line *linedescription, ULO ne
   // worst case, the alignment can cost three pixels
   if (pixels_left_to_draw > 2)
   {
-    if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x2)
+    if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x2)
     {
       // with two 24 bit writes, this case reverts to the 0x01 case (with already one pixel fully scaled)
       decoded_color = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
@@ -2066,7 +2066,7 @@ static __inline void drawLineNormal2xX_24bit(graph_line *linedescription, ULO ne
       source_ptr++;
     }
 
-    if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x1)
+    if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x1)
     {
       // we can align it after one 24 bit write, but this leaves us one pixel not fully scaled
       decoded_color_d = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
@@ -2139,7 +2139,7 @@ static __inline void drawLineNormal2xX_24bit(graph_line *linedescription, ULO ne
     else
     {
       // we need to handle the 0x00 and 0x10 cases
-      if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x2)
+      if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x2)
       {
 	// with two 24 bit writes, this case reverts to the 0x00 case (with already one pixel draw 2x)
 	decoded_color = *((ULO *) ((UBY *) linedescription->colors + *source_ptr));
@@ -2969,7 +2969,7 @@ void drawLineDual1xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
   if (pixels_left_to_draw > 2)
   {
     // synchronize with 32 bit address
-    while (((ULO) draw_buffer_current_ptr & 0x3) != 0)
+    while (PTR_TO_INT(draw_buffer_current_ptr) & 0x3)
     {
       decoded_color = *((ULO *) ((UBY *) linedescription->colors + (*(draw_dual_translate_ptr + (((*source_line1_ptr) << 8) + *source_line2_ptr)))));
       if (verticalscale == 1)
@@ -3106,7 +3106,7 @@ void drawLineDual2xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
   // worst case, the alignment can cost three pixels
   if (pixels_left_to_draw > 2)
   {
-    if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x2)
+    if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x2)
     {
       // with two 24 bit writes, this case reverts to the 0x01 case (with already one pixel fully scaled)
       decoded_color = *((ULO *) ((UBY *) linedescription->colors + (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
@@ -3128,7 +3128,7 @@ void drawLineDual2xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
       source_line2_ptr++;
     }
 
-    if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x1)
+    if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x1)
     {
       // we can align it after one 24 bit write, but this leaves us one pixel not fully scaled
       decoded_color_d = *((ULO *) ((UBY *) linedescription->colors + (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));
@@ -3204,7 +3204,7 @@ void drawLineDual2xX_24bit(graph_line *linedescription, ULO nextlineoffset, ULO 
     else
     {
       // we need to handle the 0x00 and 0x10 cases
-      if ((((ULO) draw_buffer_current_ptr) & 0x3) == 0x2)
+      if ((PTR_TO_INT(draw_buffer_current_ptr) & 0x3) == 0x2)
       {
 	// with two 24 bit writes, this case reverts to the 0x00 case (with already one pixel draw 2x)
 	decoded_color = *((ULO *) ((UBY *) linedescription->colors + (*(draw_dual_translate_ptr + ((*source_line1_ptr << 8) + *source_line2_ptr)))));

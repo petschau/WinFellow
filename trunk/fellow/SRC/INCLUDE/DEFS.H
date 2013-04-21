@@ -55,9 +55,11 @@ typedef char STR;
 
 #ifndef X64
 #define PTR_TO_INT(i) ((ULO)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((ULO)i)
 #endif
 #ifdef X64
 #define PTR_TO_INT(i) ((ULL)i)
+#define PTR_TO_INT_MASK_TYPE(i) ((ULL)i)
 #endif
 
 /* Filename length used throughout the code */
