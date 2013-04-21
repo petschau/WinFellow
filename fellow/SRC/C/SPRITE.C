@@ -2016,7 +2016,7 @@ static void spriteMergeDualLoresPF2loopbehind2(graph_line* current_graph_line, U
   }
 }
 
-static void spriteMergeDualPlayfield(graph_line* current_graph_line)
+static void spriteMergeDualLoresPlayfield(graph_line* current_graph_line)
 {
   ULO sprnr;
 
@@ -2078,6 +2078,334 @@ static void spriteMergeDualPlayfield(graph_line* current_graph_line)
 	  {
 	    // current sprite is in behind of playfield 2, and thus also behind playfield 1
 	    spriteMergeDualLoresPF2loopbehind2(current_graph_line, sprnr);
+	  }
+	}
+      }
+      //}
+    }
+  }
+#ifdef DRAW_TSC_PROFILE
+  spriteTscAfter(&spritemergedual_tmp, &spritemergedual, &spritemergedual_times);
+#endif
+}
+
+// current sprite is in front of playfield 2, and thus also in front of playfield 1
+static void spriteMergeDualHiresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr)
+{
+  ULO i, j;
+  UBY *line2; 
+  UBY *sprite_data; 
+  spr_merge_list_item *next_item;
+  UBY sprite_color;
+
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line2 = current_graph_line->line2 + 2*(next_item->sprx + 1);
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      sprite_color = sprite_data[0];
+      if (sprite_color != 0)
+      {
+	line2[0] = sprite_color;
+	line2[1] = sprite_color;
+      }
+
+      sprite_color = sprite_data[1];
+      if (sprite_color != 0)
+      {
+	line2[2] = sprite_color;
+	line2[3] = sprite_color;
+      }
+
+      sprite_color = sprite_data[2];
+      if (sprite_color != 0)
+      {
+	line2[4] = sprite_color;
+	line2[5] = sprite_color;
+      }
+
+      sprite_color = sprite_data[3];
+      if (sprite_color != 0)
+      {
+	line2[6] = sprite_color;
+	line2[7] = sprite_color;
+      }
+
+      sprite_data += 4;
+      line2 += 8;
+    }
+  }
+}
+
+// current sprite is behind of playfield 2, but in front of playfield 1
+static void spriteMergeDualHiresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr)
+{
+  ULO i, j;
+  UBY *line1; 
+  UBY *sprite_data; 
+  spr_merge_list_item *next_item;
+  UBY sprite_color;
+
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line1 = current_graph_line->line1 + 2*(next_item->sprx + 1);
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      sprite_color = sprite_data[0];
+      if (sprite_color != 0)
+      {
+	line1[0] = sprite_color;
+	line1[1] = sprite_color;
+      }
+
+      sprite_color = sprite_data[1];
+      if (sprite_color != 0)
+      {
+	line1[2] = sprite_color;
+	line1[3] = sprite_color;
+      }
+
+      sprite_color = sprite_data[2];
+      if (sprite_color != 0)
+      {
+	line1[4] = sprite_color;
+	line1[5] = sprite_color;
+      }
+
+      sprite_color = sprite_data[3];
+      if (sprite_color != 0)
+      {
+	line1[6] = sprite_color;
+	line1[7] = sprite_color;
+      }
+
+      sprite_data += 4;
+      line1 += 8;
+    }
+  }
+}
+
+// current sprite is behind of playfield 2, and also behind playfield 1
+static void spriteMergeDualHiresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr)
+{
+  ULO i, j;
+  UBY *line1;
+  UBY *sprite_data; 
+  UBY line_buildup[4];
+  spr_merge_list_item *next_item;
+  UBY sprite_color;
+
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line1 = current_graph_line->line1 + 2*(next_item->sprx + 1);
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      sprite_color = sprite_data[0];
+      if (sprite_color != 0)
+      {
+	if (line1[0] == 0)
+	{
+	  line1[0] = sprite_color;
+	}
+	if (line1[1] == 0)
+	{
+	  line1[1] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[1];
+      if (sprite_color != 0)
+      {
+	if (line1[2] == 0)
+	{
+	  line1[2] = sprite_color;
+	}
+	if (line1[3] == 0)
+	{
+	  line1[3] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[2];
+      if (sprite_color != 0)
+      {
+	if (line1[4] == 0)
+	{
+	  line1[4] = sprite_color;
+	}
+	if (line1[5] == 0)
+	{
+	  line1[5] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[3];
+      if (sprite_color != 0)
+      {
+	if (line1[6] == 0)
+	{
+	  line1[6] = sprite_color;
+	}
+	if (line1[7] == 0)
+	{
+	  line1[7] = sprite_color;
+	}
+      }
+      sprite_data += 4;
+      line1 += 8;
+    }
+  }
+}
+
+// current sprite is in behind of playfield 2, and thus also behind playfield 1
+static void spriteMergeDualHiresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr)
+{
+  ULO i, j;
+  UBY *line2;
+  UBY *sprite_data; 
+  spr_merge_list_item *next_item;
+  UBY sprite_color;
+
+  ULO count = spriteMergeListCount(&spr_merge_list[sprnr]);
+  for (j = 0; j < count; j++)
+  {
+    next_item = spriteMergeListGet(&spr_merge_list[sprnr], j);
+    line2 = current_graph_line->line2 + 2*(next_item->sprx + 1);
+    sprite_data = next_item->sprite_data;
+
+    for (i = 0; i < 4; i++)
+    {
+      sprite_color = sprite_data[0];
+      if (sprite_color != 0)
+      {
+	if (line2[0] == 0)
+	{
+	  line2[0] = sprite_color;
+	}
+	if (line2[1] == 0)
+	{
+	  line2[1] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[1];
+      if (sprite_color != 0)
+      {
+	if (line2[2] == 0)
+	{
+	  line2[2] = sprite_color;
+	}
+	if (line2[3] == 0)
+	{
+	  line2[3] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[2];
+      if (sprite_color != 0)
+      {
+	if (line2[4] == 0)
+	{
+	  line2[4] = sprite_color;
+	}
+	if (line2[5] == 0)
+	{
+	  line2[5] = sprite_color;
+	}
+      }
+
+      sprite_color = sprite_data[3];
+      if (sprite_color != 0)
+      {
+	if (line2[6] == 0)
+	{
+	  line2[6] = sprite_color;
+	}
+	if (line2[7] == 0)
+	{
+	  line2[7] = sprite_color;
+	}
+      }
+      sprite_data += 4;
+      line2 += 8;
+    }
+  }
+}
+
+static void spriteMergeDualHiresPlayfield(graph_line* current_graph_line)
+{
+  ULO sprnr;
+
+#ifdef DRAW_TSC_PROFILE
+  spriteTscBefore(&spritemergedual_tmp);
+#endif
+
+  for (sprnr = 0; sprnr < 8; sprnr++)
+  {
+    if (sprite_online[sprnr] == TRUE)
+    {
+      // there is sprite data waiting within this line
+      //if (sprx[sprnr] <= graph_DIW_last_visible)
+      //{
+      // set destination and source 
+      //line1 = ((current_graph_line->line1) + sprx[sprnr]);
+      //sprite_data = sprite[sprnr];
+
+      // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
+      if ((bplcon2 & 0x40) == 0x40)
+      {
+	// playfield 2 is in front of playfield 1
+	if ((bplcon2 & 0x38) > sprnr*4)
+	{
+	  // current sprite is in front of playfield 2, and thus also in front of playfield 1
+	  spriteMergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
+	}
+	else
+	{
+	  // current sprite is behind of playfield 2
+	  if (((bplcon2 & 0x7) << 1) > sprnr)
+	  {
+	    // current sprite is behind of playfield 2, but in front of playfield 1
+	    spriteMergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
+	  }
+	  else
+	  {
+	    // current sprite is behind of playfield 2, and also behind playfield 1
+	    spriteMergeDualHiresPF1loopbehind2(current_graph_line, sprnr);
+	  }
+	}
+      } 
+      else
+      {
+	// playfield 1 is in front of playfield 2
+	if (((bplcon2 & 0x7) << 1) > sprnr)
+	{
+	  // current sprite is in front of playfield 1, and thus also in front of playfield 2
+	  spriteMergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
+	}
+	else
+	{
+	  if ((bplcon2 & 0x38) > sprnr*4)
+	  {
+	    // current sprite is in front of playfield 2, but behind playfield 1 (in between)
+	    spriteMergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
+	  }
+	  else
+	  {
+	    // current sprite is in behind of playfield 2, and thus also behind playfield 1
+	    spriteMergeDualHiresPF2loopbehind2(current_graph_line, sprnr);
 	  }
 	}
       }
@@ -2205,7 +2533,16 @@ void spritesMerge(graph_line* current_graph_line)
   if ((bplcon0 & 0x400) == 0x400)
   {
     // dual playfield bit is set
-    spriteMergeDualPlayfield(current_graph_line);
+
+    if ((bplcon0 & 0x8000) == 0x8000 && draw_hscale >= 2)
+    {
+      spriteMergeDualHiresPlayfield(current_graph_line);
+    }
+    else
+    {
+      spriteMergeDualLoresPlayfield(current_graph_line);
+    }
+
     return;
   }
 
