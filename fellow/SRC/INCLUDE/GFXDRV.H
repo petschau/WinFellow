@@ -2,6 +2,9 @@
 
 #include "draw.h"
 
+// For windows only
+extern bool gfx_drv_displaychange;
+
 /*===========================================================================*/
 /* Implementing these functions creates a graphics driver for Fellow         */
 /*===========================================================================*/
