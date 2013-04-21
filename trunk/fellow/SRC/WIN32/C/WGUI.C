@@ -62,6 +62,7 @@
 #endif
 #include "floppy.h"
 #include "fellow.h"
+#include "GFXDRV.H"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -1378,11 +1379,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     /* get autoconfig disable */
     cfgSetUseAutoconfig(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE));
 
-	/* get real-time clock */
-	cfgSetRtc(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_RTC));
+    /* get real-time clock */
+    cfgSetRtc(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_RTC));
 
-	/* get silent sound emulation */
-	cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
+    /* get silent sound emulation */
+    cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
   }
 
 
@@ -2859,12 +2860,14 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     else return FALSE;
   }	
 
-  BOOLE wguiEnter(void) {
+  BOOLE wguiEnter(void)
+  {
     BOOLE quit_emulator = FALSE;
     BOOLE debugger_start = FALSE;
     RECT dialogRect;
 
-    do {
+    do
+    {
       MSG myMsg;
       BOOLE end_loop = FALSE;
 
@@ -2880,110 +2883,117 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       wguiInstallHistoryIntoMenu();
       ShowWindow(wgui_hDialog, win_drv_nCmdShow);
 
-      while (!end_loop) {
+      while (!end_loop)
+      {
 	if (GetMessage(&myMsg, wgui_hDialog, 0, 0))
+	{
 	  if (!IsDialogMessage(wgui_hDialog, &myMsg))
+	  {
 	    DispatchMessage(&myMsg);
-	switch (wgui_action) {
-	case WGUI_START_EMULATION:
-	  if (wguiCheckEmulationNecessities() == TRUE) {
+	  }
+	}
+	switch (wgui_action)
+	{
+	  case WGUI_START_EMULATION:
+	    if (wguiCheckEmulationNecessities() == TRUE)
+	    {
+	      end_loop = TRUE;
+	      cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+	      // check for manual or needed reset
+	      fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+	      break;
+	    }
+	    MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_QUIT_EMULATOR:
+	    end_loop = TRUE;
+	    quit_emulator = TRUE;
+	    break;
+	  case WGUI_OPEN_CONFIGURATION:
+	    wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
+	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_SAVE_CONFIGURATION:
+	    cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));		  
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_SAVE_CONFIGURATION_AS:
+	    wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
+	    wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_LOAD_HISTORY0:
+	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) 
+	    {
+	      wguiDeleteCfgFromHistory(0);
+	    } 
+	    else 
+	    {
+	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+	    }
+	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_LOAD_HISTORY1:
+	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) 
+	    {
+	      wguiDeleteCfgFromHistory(1);
+	    } 
+	    else 
+	    {
+	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+	      wguiPutCfgInHistoryOnTop(1);
+	    } 
+	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_LOAD_HISTORY2:
+	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) 
+	    {
+	      wguiDeleteCfgFromHistory(2);
+	    } 
+	    else 
+	    {
+	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+	      wguiPutCfgInHistoryOnTop(2);
+	    } 
+	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_LOAD_HISTORY3:
+	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) 
+	    {
+	      wguiDeleteCfgFromHistory(3);
+	    } 
+	    else 
+	    {
+	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+	      wguiPutCfgInHistoryOnTop(3);
+	    } 
+	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_LOAD_STATE:
+	    wguiOpenStateFile(wgui_cfg, wgui_hDialog);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_SAVE_STATE:
+	    wguiSaveStateFileAs(wgui_cfg, wgui_hDialog);
+	    wgui_action = WGUI_NO_ACTION;
+	    break;
+	  case WGUI_DEBUGGER_START:
 	    end_loop = TRUE;
 	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	    // check for manual or needed reset
-	    fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+	    fellowPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
+	    debugger_start = TRUE;
+	  default:
 	    break;
-	  }
-	  MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_QUIT_EMULATOR:
-	  end_loop = TRUE;
-	  quit_emulator = TRUE;
-	  break;
-	case WGUI_OPEN_CONFIGURATION:
-	  wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_CONFIGURATION:
-	  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));		  
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_CONFIGURATION_AS:
-	  wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
-	  wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY0:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(0);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
-	  }
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY1:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(1);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-	    wguiPutCfgInHistoryOnTop(1);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY2:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(2);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-	    wguiPutCfgInHistoryOnTop(2);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_HISTORY3:
-	  //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	  if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3)) == FALSE) 
-	  {
-	    wguiDeleteCfgFromHistory(3);
-	  } 
-	  else 
-	  {
-	    iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-	    wguiPutCfgInHistoryOnTop(3);
-	  } 
-	  wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_LOAD_STATE:
-	  wguiOpenStateFile(wgui_cfg, wgui_hDialog);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_SAVE_STATE:
-	  wguiSaveStateFileAs(wgui_cfg, wgui_hDialog);
-	  wgui_action = WGUI_NO_ACTION;
-	  break;
-	case WGUI_DEBUGGER_START:
-	  end_loop = TRUE;
-	  cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	  fellowPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
-	  debugger_start = TRUE;
-	default:
-	  break;
 	}
       }
 
@@ -2992,12 +3002,19 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       iniSetMainWindowPosition(wgui_ini, dialogRect.left, dialogRect.top);
 
       DestroyWindow(wgui_hDialog);
-      if (!quit_emulator && debugger_start) {
+      if (!quit_emulator && debugger_start)
+      {
 	debugger_start = FALSE;
 	//wdbgDebugSessionRun(NULL);
 	wdebDebug();
       }
-      else if (!quit_emulator) winDrvEmulationStart();
+      else if (!quit_emulator)
+      {
+	do
+	{
+	  winDrvEmulationStart();
+	} while (gfx_drv_displaychange);
+      }
     } while (!quit_emulator);
     return quit_emulator;
   }
