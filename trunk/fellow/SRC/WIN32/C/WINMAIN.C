@@ -99,7 +99,8 @@ DWORD WINAPI winDrvFellowRunDebugStart(LPVOID in)
 }
 
 
-enum MultiEventTypes {
+enum MultiEventTypes 
+{
   met_emulation_ended = 0, 
   met_mouse_data = 1, 
   met_kbd_data = 2, 
@@ -111,17 +112,19 @@ extern HANDLE mouse_drv_DIevent;
 extern BOOLE kbd_drv_initialization_failed;
 extern HANDLE kbd_drv_DIevent;
 
-ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
-				    enum MultiEventTypes *object_mapping) {
+ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping) 
+{
   ULO event_count = 0;
 
   multi_events[event_count] = win_drv_emulation_ended;
   object_mapping[event_count++] = met_emulation_ended;
-  if (!mouse_drv_initialization_failed) {
+  if (!mouse_drv_initialization_failed) 
+  {
     multi_events[event_count] = mouse_drv_DIevent;
     object_mapping[event_count++] = met_mouse_data;
   }
-  if (!kbd_drv_initialization_failed) {
+  if (!kbd_drv_initialization_failed) 
+  {
     multi_events[event_count] = kbd_drv_DIevent;
     object_mapping[event_count++] = met_kbd_data;
   }
@@ -133,19 +136,19 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events,
 
 void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 {
-   THREADNAME_INFO info;
-   info.dwType = 0x1000;
-   info.szName = szThreadName;
-   info.dwThreadID = dwThreadID;
-   info.dwFlags = 0;
+  THREADNAME_INFO info;
+  info.dwType = 0x1000;
+  info.szName = szThreadName;
+  info.dwThreadID = dwThreadID;
+  info.dwFlags = 0;
 
-   __try
-   {
-       RaiseException(0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info);
-   }
-   __except(EXCEPTION_CONTINUE_EXECUTION)
-   {
-   }
+  __try
+  {
+    RaiseException(0x406D1388, 0, sizeof(info)/sizeof(DWORD), (ULONG_PTR*)&info);
+  }
+  __except(EXCEPTION_CONTINUE_EXECUTION)
+  {
+  }
 }
 
 void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
@@ -170,14 +173,17 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   SetTimer(gfx_drv_hwnd, 1, 10, NULL);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
-  while (keep_on_waiting) {
+  while (keep_on_waiting)
+  {
     dwEvt = MsgWaitForMultipleObjects(event_count,
 				      multi_events,
 				      FALSE,
 				      INFINITE,
 				      QS_ALLINPUT);
-    if ((dwEvt >= WAIT_OBJECT_0) && (dwEvt <= (WAIT_OBJECT_0 + event_count))) {
-      switch (object_mapping[dwEvt - WAIT_OBJECT_0]) {
+    if ((dwEvt >= WAIT_OBJECT_0) && (dwEvt <= (WAIT_OBJECT_0 + event_count))) 
+    {
+      switch (object_mapping[dwEvt - WAIT_OBJECT_0]) 
+      {
         case met_emulation_ended:
 	  /* Emulation session is ending */
           fellowAddLog("met_emulation_ended\n");
@@ -197,7 +203,8 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 		             NULL,
 		             0,
 		             0,
-		             PM_REMOVE)) {
+		             PM_REMOVE)) 
+	  {
             TranslateMessage(&myMsg);
             DispatchMessage(&myMsg);
 	  }
@@ -208,11 +215,16 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
   CloseHandle(win_drv_emulation_ended);
 }
 
-void winDrvEmulationStart(void) {
+void winDrvEmulationStart(void) 
+{
   if (fellowEmulationStart())
+  {
     winDrvEmulate(winDrvFellowRunStart, 0);
+  }
   else 
+  {
     wguiRequester("Emulation session failed to start up", "", "");
+  }
   fellowEmulationStop();
 }
 
@@ -243,9 +255,11 @@ DWORD WINAPI winDrvFellowRunDebug(LPVOID in)
 }
 
 
-BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) {
+BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) 
+{
 
-  switch (operation) {
+  switch (operation) 
+  {
     case DBG_STEP:      winDrvFellowStepOne((LPVOID) 1); break;
     case DBG_STEP_OVER: winDrvFellowStepOver((LPVOID) 1); break;
     case DBG_RUN:       winDrvFellowRunDebug((LPVOID) 0); break;
@@ -259,7 +273,8 @@ BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg) {
 /* Timer controls execution of this function                                 */
 /*===========================================================================*/
 
-void winDrvHandleInputDevices(void) {
+void winDrvHandleInputDevices(void) 
+{
   joyDrvMovementHandler();
 }
 
@@ -267,7 +282,8 @@ void winDrvHandleInputDevices(void) {
 /* Sets the version and path registry keys                                   */
 /*===========================================================================*/
 
-void winDrvSetKey(char *path, char *name, char *value) {
+void winDrvSetKey(char *path, char *name, char *value) 
+{
   HKEY hkey;
   DWORD disposition;
   LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE,
@@ -293,15 +309,20 @@ void winDrvSetKey(char *path, char *name, char *value) {
   }
 }
 
-void winDrvSetRegistryKeys(char **argv) {
+void winDrvSetRegistryKeys(char **argv) 
+{
   char p[1024];
   char *locc;
   p[0] = '\0';
   winDrvSetKey("Software\\WinFellow", "version", FELLOWNUMERICVERSION);
   _fullpath(p, argv[0], 1024);
   locc = strrchr(p, '\\');
-  if (locc == NULL) p[0] = '\0';
-  else {
+  if (locc == NULL)
+  {
+    p[0] = '\0';
+  }
+  else 
+  {
     BOOLE isreadonly = FALSE;
     *locc = '\0';
     if (p[1] == ':' && p[2] == '\\')
@@ -314,7 +335,9 @@ void winDrvSetRegistryKeys(char **argv) {
       isreadonly = (GetDriveType(p2) == DRIVE_CDROM);
     }
     if (!isreadonly)
+    {
       winDrvSetKey("Software\\WinFellow", "path", p);
+    }
   }
 }
 
@@ -324,22 +347,29 @@ void winDrvSetRegistryKeys(char **argv) {
 
 /* Returns the first character in the next argument                          */
 
-char *winDrvCmdLineGetNextFirst(char *lpCmdLine) {
+char *winDrvCmdLineGetNextFirst(char *lpCmdLine) 
+{
   while (*lpCmdLine == ' ' && *lpCmdLine != '\0')
+  {
     lpCmdLine++;
+  }
   return (*lpCmdLine == '\0') ? NULL : lpCmdLine;
 }
 
 
 /* Returns the first character after the next argument                       */
 
-char *winDrvCmdLineGetNextEnd(char *lpCmdLine) {
+char *winDrvCmdLineGetNextEnd(char *lpCmdLine) 
+{
   int InString = FALSE;
   
   while (((*lpCmdLine != ' ') && (*lpCmdLine != '\0')) ||
-    (InString && (*lpCmdLine != '\0'))) {
+    (InString && (*lpCmdLine != '\0'))) 
+  {
     if (*lpCmdLine == '\"')
+    {
       InString = !InString;
+    }
     lpCmdLine++;
   }
   return lpCmdLine;
@@ -348,15 +378,18 @@ char *winDrvCmdLineGetNextEnd(char *lpCmdLine) {
 /* Returns an argv vector and takes argc as a pointer parameter              */
 /* Must free memory argv on exit                                             */
 
-char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) {
+char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) 
+{
   int elements = 0, i;
   char *tmp;
   char **argv;
   char *argstart, *argend;
   
   tmp = winDrvCmdLineGetNextFirst(lpCmdLine);
-  if (tmp != 0) {
-    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != NULL) {
+  if (tmp != 0) 
+  {
+    while ((tmp = winDrvCmdLineGetNextFirst(tmp)) != NULL) 
+    {
       tmp = winDrvCmdLineGetNextEnd(tmp);
       elements++;
     }
@@ -364,13 +397,18 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) {
   argv = (char **) malloc(sizeof(char**)*(elements + 2));
   argv[0] = "winfellow.exe";
   argend = lpCmdLine;
-  for (i = 1; i <= elements; i++) {
+  for (i = 1; i <= elements; i++) 
+  {
     argstart = winDrvCmdLineGetNextFirst(argend);
     argend = winDrvCmdLineGetNextEnd(argstart);
     if (*argstart == '\"')
+    {
       argstart++;
+    }
     if (*(argend - 1) == '\"')
+    {
       argend--;
+    }
     *argend++ = '\0';
     argv[i] = argstart;
   }
@@ -382,7 +420,8 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc) {
 int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance 
 		   HINSTANCE hPrevInstance, // handle to previous instance 
 		   LPSTR lpCmdLine,	    // pointer to command line 
-		   int nCmdShow) {	    // show state of window 
+		   int nCmdShow)  	    // show state of window 
+{
   char *cmdline = (char *) malloc(strlen(lpCmdLine) + 1);
   char **argv;
   int argc;

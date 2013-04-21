@@ -76,23 +76,24 @@ Sunday, February 10, 2008: carfesh
 /* Keyboard specific data                                                    */
 /*===========================================================================*/
 
-BOOLE			          kbd_drv_active;
-BOOLE               kbd_drv_in_use;
-LPDIRECTINPUT		    kbd_drv_lpDI;
-LPDIRECTINPUTDEVICE	kbd_drv_lpDID;
-HANDLE			        kbd_drv_DIevent;
-BYTE			          keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
-BYTE			          prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
-BOOLE               kbd_drv_initialization_failed;
-BOOLE               prs_rewrite_mapping_file;
-char                kbd_drv_mapping_filename[MAX_PATH];
+BOOLE		      kbd_drv_active;
+BOOLE		      kbd_drv_in_use;
+LPDIRECTINPUT	      kbd_drv_lpDI;
+LPDIRECTINPUTDEVICE   kbd_drv_lpDID;
+HANDLE		      kbd_drv_DIevent;
+BYTE		      keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
+BYTE		      prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
+BOOLE		      kbd_drv_initialization_failed;
+BOOLE		      prs_rewrite_mapping_file;
+char		      kbd_drv_mapping_filename[MAX_PATH];
 
 
 /*===========================================================================*/
 /* Map symbolic key to a description string                                  */
 /*===========================================================================*/
 
-STR *kbd_drv_pc_symbol_to_string[106] = {
+STR *kbd_drv_pc_symbol_to_string[106] = 
+{
   "NONE",
   "ESCAPE",
   "F1",
@@ -315,7 +316,8 @@ STR *symbol_pretty_name[106] = {
     
 kbd_drv_pc_symbol kbddrv_DIK_to_symbol[MAX_KEYS];
     
-int symbol_to_DIK_kbddrv[PCK_LAST_KEY] = {
+int symbol_to_DIK_kbddrv[PCK_LAST_KEY] = 
+{
   0,
   DIK_ESCAPE,
   DIK_F1,
@@ -428,7 +430,8 @@ int symbol_to_DIK_kbddrv[PCK_LAST_KEY] = {
 /* Map symbolic pc key to amiga scancode                                     */
 /*===========================================================================*/
 
-UBY kbd_drv_pc_symbol_to_amiga_scancode[106] = {
+UBY kbd_drv_pc_symbol_to_amiga_scancode[106] = 
+{
   /* 0x00 */
 
   A_NONE,           /* PCK_NONE            */
@@ -586,7 +589,8 @@ BOOLE kbd_drv_end_pressed;
 
 // the order of kbd_drv_joykey_directions enum influence the order of the replacement_keys array in kbdparser.c
 
-typedef enum {
+typedef enum 
+{
   JOYKEY_LEFT = 0,
   JOYKEY_RIGHT = 1,
   JOYKEY_UP = 2,
@@ -608,30 +612,32 @@ BOOLE				kbd_drv_capture;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *kbdDrvDInputErrorString(HRESULT hResult) {
-  switch (hResult) {
-    case DI_OK:				            return "The operation completed successfully.";
-    case DI_BUFFEROVERFLOW:		        return "The device buffer overflowed and some input was lost.";
-    case DI_POLLEDDEVICE:		        return "The device is a polled device.";
-    case DIERR_ACQUIRED:		        return "The operation cannot be performed while the device is acquired.";
-    case DIERR_ALREADYINITIALIZED:	    return "This object is already initialized.";
-    case DIERR_BADDRIVERVER:		    return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
+STR *kbdDrvDInputErrorString(HRESULT hResult) 
+{
+  switch (hResult) 
+  {
+    case DI_OK:				return "The operation completed successfully.";
+    case DI_BUFFEROVERFLOW:		return "The device buffer overflowed and some input was lost.";
+    case DI_POLLEDDEVICE:		return "The device is a polled device.";
+    case DIERR_ACQUIRED:		return "The operation cannot be performed while the device is acquired.";
+    case DIERR_ALREADYINITIALIZED:	return "This object is already initialized.";
+    case DIERR_BADDRIVERVER:		return "The object could not be created due to an incompatible driver version or mismatched or incomplete driver components.";
     case DIERR_BETADIRECTINPUTVERSION:	return "The application was written for an unsupported prerelease version of DirectInput.";
-    case DIERR_DEVICENOTREG:		    return "The device or device instance is not registered with DirectInput.";
-    case DIERR_GENERIC:			        return "An undetermined error occurred inside the DirectInput subsystem.";
+    case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
+    case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
     case DIERR_HANDLEEXISTS:	        return "The device already has an event notification associated with it.";
-    case DIERR_INPUTLOST:		        return "Access to the input device has been lost. It must be re-acquired.";
-    case DIERR_INVALIDPARAM:		    return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
-    case DIERR_NOAGGREGATION:		    return "This object does not support aggregation.";
-    case DIERR_NOINTERFACE:		        return "The specified interface is not supported by the object.";
-    case DIERR_NOTACQUIRED:		        return "The operation cannot be performed unless the device is acquired.";
-    case DIERR_NOTINITIALIZED:		    return "This object has not been initialized.";
-    case DIERR_OBJECTNOTFOUND:		    return "The requested object does not exist.";
+    case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
+    case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
+    case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
+    case DIERR_NOINTERFACE:		return "The specified interface is not supported by the object.";
+    case DIERR_NOTACQUIRED:		return "The operation cannot be performed unless the device is acquired.";
+    case DIERR_NOTINITIALIZED:		return "This object has not been initialized.";
+    case DIERR_OBJECTNOTFOUND:		return "The requested object does not exist.";
     case DIERR_OLDDIRECTINPUTVERSION:	return "The application requires a newer version of DirectInput.";
-    case DIERR_OUTOFMEMORY:		        return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
-    case DIERR_UNSUPPORTED:		        return "The function called is not supported at this time.";
-    case E_PENDING:			            return "Data is not yet available.";
-	case E_POINTER:                     return "Invalid pointer.";
+    case DIERR_OUTOFMEMORY:		return "The DirectInput subsystem couldn't allocate sufficient memory to complete the caller's request.";
+    case DIERR_UNSUPPORTED:		return "The function called is not supported at this time.";
+    case E_PENDING:			return "Data is not yet available.";
+    case E_POINTER:                     return "Invalid pointer.";
   }
   return "Not a DirectInput Error";
 }
@@ -641,7 +647,8 @@ STR *kbdDrvDInputErrorString(HRESULT hResult) {
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void kbdDrvDInputFailure(STR *header, HRESULT err) {
+void kbdDrvDInputFailure(STR *header, HRESULT err)
+{
   fellowAddLog(header);
   fellowAddLog(kbdDrvDInputErrorString(err));
   fellowAddLog("\n");
@@ -652,13 +659,13 @@ void kbdDrvDInputFailure(STR *header, HRESULT err) {
 /* Set keyboard cooperative level                                            */
 /*===========================================================================*/
 
-void kbdDrvDInputSetCooperativeLevel(void) {
-  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID,
-						       gfx_drv_hwnd,
-						       DISCL_NONEXCLUSIVE | 
-						       DISCL_FOREGROUND );
+void kbdDrvDInputSetCooperativeLevel(void)
+{
+  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
   if( res != DI_OK )
+  {
     kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel(): ", res );
+  }
 }
 
 
@@ -666,14 +673,20 @@ void kbdDrvDInputSetCooperativeLevel(void) {
 /* Unacquire DirectInput keyboard device                                     */
 /*===========================================================================*/
 
-void kbdDrvDInputUnacquire(void) {
+void kbdDrvDInputUnacquire(void) 
+{
   HRESULT res;
   
   fellowAddLog("kbdDrvDInputUnacquire()\n");
-  if (kbd_drv_lpDID == NULL) return;
+  if (kbd_drv_lpDID == NULL)
+  {
+    return;
+  }
   res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
   if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputUnacquire(): ", res);
+  }
 }
 
 
@@ -681,14 +694,20 @@ void kbdDrvDInputUnacquire(void) {
 /* Acquire DirectInput keyboard device                                       */
 /*===========================================================================*/
 
-void kbdDrvDInputAcquire(void) {
+void kbdDrvDInputAcquire(void) 
+{
   HRESULT res;
   
   fellowAddLog("kbdDrvDInputAcquire()\n");
-  if (kbd_drv_lpDID == NULL) return;
+  if (kbd_drv_lpDID == NULL)
+  {
+    return;
+  }
   kbdDrvDInputUnacquire();
   if ((res = IDirectInputDevice_Acquire( kbd_drv_lpDID )) != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputAcquire(): ", res);
+  }
 }
 
 
@@ -696,16 +715,20 @@ void kbdDrvDInputAcquire(void) {
 /* Release DirectInput for keyboard                                          */
 /*===========================================================================*/
 
-void kbdDrvDInputRelease(void) {
-  if (kbd_drv_lpDID != NULL) {
+void kbdDrvDInputRelease(void)
+{
+  if (kbd_drv_lpDID != NULL)
+  {
     IDirectInputDevice_Release(kbd_drv_lpDID);
     kbd_drv_lpDID = NULL;
   }
-  if (kbd_drv_DIevent != NULL) {
+  if (kbd_drv_DIevent != NULL)
+  {
     CloseHandle(kbd_drv_DIevent);
     kbd_drv_DIevent = NULL;
   }
-  if (kbd_drv_lpDI != NULL) {
+  if (kbd_drv_lpDI != NULL)
+  {
     IDirectInput_Release(kbd_drv_lpDI);
     kbd_drv_lpDI = NULL;
   }
@@ -716,17 +739,15 @@ void kbdDrvDInputRelease(void) {
 /* Initialize DirectInput for keyboard                                       */
 /*===========================================================================*/
 
-void kbdDrvDInputInitializeOld(void) {
+void kbdDrvDInputInitializeOld(void)
+{
   HRESULT res;
   
   fellowAddLog("kbdDrvDInputInitialize()\n");
-  if(!kbd_drv_lpDI) {
-    res = DirectInput8Create(win_drv_hInstance,
-			     DIRECTINPUT_VERSION,
-			     IID_IDirectInput8,
-			     (void**)&kbd_drv_lpDI,
-			     NULL);
-    if(res != DI_OK )
+  if (!kbd_drv_lpDI)
+  {
+    res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
+    if (res != DI_OK)
     {
       kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
       return;
@@ -735,10 +756,7 @@ void kbdDrvDInputInitializeOld(void) {
   
   if( !kbd_drv_lpDID )
   {
-    res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-				    GUID_SysKeyboard,
-				    &kbd_drv_lpDID,
-				    NULL );
+    res = IDirectInput_CreateDevice(kbd_drv_lpDI, GUID_SysKeyboard, &kbd_drv_lpDID, NULL );
     if( res != DI_OK )
     {
       kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
@@ -755,7 +773,8 @@ void kbdDrvDInputInitializeOld(void) {
 }
 
 
-BOOLE kbdDrvDInputInitialize(void) {
+BOOLE kbdDrvDInputInitialize(void)
+{
   HRESULT res;
   DIPROPDWORD dipdw =
   {
@@ -774,12 +793,9 @@ BOOLE kbdDrvDInputInitialize(void) {
   kbd_drv_lpDID = NULL;
   kbd_drv_DIevent = NULL;
   kbd_drv_initialization_failed = FALSE;
-  res = DirectInput8Create(win_drv_hInstance,
-                           DIRECTINPUT_VERSION,
-                           IID_IDirectInput8,
-                           (void**)&kbd_drv_lpDI,
-			   NULL);
-  if (res != DI_OK) {
+  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -788,11 +804,9 @@ BOOLE kbdDrvDInputInitialize(void) {
   
   /* Create Direct Input 1 keyboard device */
 
-  res = IDirectInput_CreateDevice(kbd_drv_lpDI,
-                                  GUID_SysKeyboard,
-                                  &kbd_drv_lpDID,
-                                  NULL);
-  if (res != DI_OK) {
+  res = IDirectInput_CreateDevice(kbd_drv_lpDI, GUID_SysKeyboard, &kbd_drv_lpDID, NULL);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -801,8 +815,9 @@ BOOLE kbdDrvDInputInitialize(void) {
   
   /* Set data format for mouse device */
   
-  if ((res = IDirectInputDevice_SetDataFormat(kbd_drv_lpDID,
-                                              &c_dfDIKeyboard)) != DI_OK) {
+  res = IDirectInputDevice_SetDataFormat(kbd_drv_lpDID, &c_dfDIKeyboard);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -810,11 +825,10 @@ BOOLE kbdDrvDInputInitialize(void) {
   }
 
   /* Set cooperative level */
-  
-  if ((res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID,
-						    gfx_drv_hwnd,
-						    DISCL_NONEXCLUSIVE |
-						    DISCL_FOREGROUND)) != DI_OK) {
+
+  res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetCooperativeLevel() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -822,8 +836,10 @@ BOOLE kbdDrvDInputInitialize(void) {
   }
 
   /* Create event for notification */
-  
-  if ((kbd_drv_DIevent = CreateEvent(0, 0, 0, 0)) == NULL) {
+
+  kbd_drv_DIevent = CreateEvent(0, 0, 0, 0);
+  if (kbd_drv_DIevent == NULL)
+  {
     fellowAddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -831,19 +847,18 @@ BOOLE kbdDrvDInputInitialize(void) {
   }
 
   /* Set property for buffered data */
-  
-  if ((res = IDirectInputDevice_SetProperty(kbd_drv_lpDID,
-				            DIPROP_BUFFERSIZE,
-				            &dipdw.diph)) != DI_OK) {
+  res = IDirectInputDevice_SetProperty(kbd_drv_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetProperty() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
   }
 
   /* Set event notification */
-
-  if ((res = IDirectInputDevice_SetEventNotification(kbd_drv_lpDID,
-                                                     kbd_drv_DIevent)) != DI_OK) {
+  res = IDirectInputDevice_SetEventNotification(kbd_drv_lpDID, kbd_drv_DIevent);
+  if (res != DI_OK)
+  {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetEventNotification() ", res );
     kbd_drv_initialization_failed = TRUE;
     kbdDrvDInputRelease();
@@ -857,10 +872,17 @@ BOOLE kbdDrvDInputInitialize(void) {
 /* keyboard grab status has changed                                          */
 /*===========================================================================*/
 
-void kbdDrvStateHasChanged(BOOL active) {
+void kbdDrvStateHasChanged(BOOLE active)
+{
   kbd_drv_active = active;
-  if (kbd_drv_active) kbdDrvDInputAcquire();
-  else kbdDrvDInputUnacquire();
+  if (kbd_drv_active)
+  {
+    kbdDrvDInputAcquire();
+  }
+  else
+  {
+    kbdDrvDInputUnacquire();
+  }
 }
 
 #define map(sym) symbol_to_DIK_kbddrv[(sym)]
@@ -878,135 +900,167 @@ void kbdDrvStateHasChanged(BOOL active) {
 /* which means it must not be passed to the emulator                         */
 /*===========================================================================*/
 
-BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
+BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
+{
   ULO eol_evpos = kbd_state.eventsEOL.inpos;
   ULO eof_evpos = kbd_state.eventsEOF.inpos;
   
   ULO port, setting;
   
-  for (;;) {
+  for (;;)
+  {
 	
-	if (kbd_drv_capture) {
+    if (kbd_drv_capture)
+    {
 
 #ifdef _DEBUG
-		fellowAddLog( "Key captured: %s\n", kbdDrvKeyString( symbol_key ));
+      fellowAddLog( "Key captured: %s\n", kbdDrvKeyString( symbol_key ));
 #endif
 
-		kbd_drv_captured_key = symbol_key;
-		return TRUE;
-	}
+      kbd_drv_captured_key = symbol_key;
+      return TRUE;
+    }
 	
-	if( released( PCK_PAGE_DOWN ))
-	{
-	  if( ispressed(PCK_HOME) )
-	  {
-		issue_event( EVENT_RESOLUTION_NEXT );
-	  } else {
-		if( ispressed(PCK_END) )
-		  issue_event( EVENT_SCALEY_NEXT );
-	  }
-	}
-	if( released( PCK_PAGE_UP ))
-	{
-	  if( ispressed(PCK_HOME) )
-	  {
-		issue_event( EVENT_RESOLUTION_PREV );
-	  } else {
-		if( ispressed(PCK_END) )
-		  issue_event( EVENT_SCALEY_PREV );
-	  }
-	}
-
-#ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
-    if(RetroPlatformGetEmulationState()) {
-      if( pressed ( RetroPlatformGetEscapeKey() )) {
-        RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
-        return TRUE;
+    if (released(PCK_PAGE_DOWN))
+    {
+      if (ispressed(PCK_HOME))
+      {
+	issue_event(EVENT_RESOLUTION_NEXT);
       }
-      if( released ( RetroPlatformGetEscapeKey() )) {
-       if(!RetroPlatformSetEscapeKeyTargetHoldTime(FALSE)) {
-          fellowAddLog("RetroPlatform escape key held shorter than escape interval, sending key...\n");
-          UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbol_key];
-          kbdKeyAdd(a_code);
-			    kbdKeyAdd(a_code | 0x80);
-          return FALSE;
-        }
-       return TRUE;
+      else
+      {
+	if (ispressed(PCK_END))
+	{
+	  issue_event(EVENT_SCALEY_NEXT);
+	}
       }
     }
-    else {
-      if( pressed ( RetroPlatformGetEscapeKey() ))
-        RetroPlatformPostEscaped();
+    if (released(PCK_PAGE_UP))
+    {
+      if (ispressed(PCK_HOME))
+      {
+	issue_event(EVENT_RESOLUTION_PREV);
+      }
+      else
+      {
+	if (ispressed(PCK_END))
+	{
+	  issue_event(EVENT_SCALEY_PREV);
+	}
+      }
     }
-  }
+
+#ifdef RETRO_PLATFORM
+    if(RetroPlatformGetMode())
+    {
+      if(RetroPlatformGetEmulationState())
+      {
+	if( pressed ( RetroPlatformGetEscapeKey() ))
+	{
+	  RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
+	  return TRUE;
+	}
+	if( released ( RetroPlatformGetEscapeKey() ))
+	{
+	 if(!RetroPlatformSetEscapeKeyTargetHoldTime(FALSE)) 
+	 {
+	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, sending key...\n");
+	    UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbol_key];
+	    kbdKeyAdd(a_code);
+			      kbdKeyAdd(a_code | 0x80);
+	    return FALSE;
+	  }
+	 return TRUE;
+	}
+      }
+      else 
+      {
+	if( pressed ( RetroPlatformGetEscapeKey() ))
+	  RetroPlatformPostEscaped();
+      }
+    }
 #endif
 
 #ifdef RETRO_PLATFORM
-  if(!RetroPlatformGetMode())
+    if(!RetroPlatformGetMode())
 #endif
-	if( released( PCK_F11 ))
-	  issue_event( EVENT_EXIT );
+    if( released( PCK_F11 ))
+    {
+      issue_event( EVENT_EXIT );
+    }
 	
 #ifdef RETRO_PLATFORM
-  if(!RetroPlatformGetMode())
+    if(!RetroPlatformGetMode())
 #endif
-	if( released( PCK_F12 ))
-	{
-	  mouseDrvToggleFocus();
-	  joyDrvToggleFocus();
-    //spriteSetDebugging();
-	  break;
-	}
+    if( released( PCK_F12 ))
+    {
+      mouseDrvToggleFocus();
+      joyDrvToggleFocus();
+      break;
+    }
 	
-	if( ispressed(PCK_HOME) )
-	{
-	  if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
-	  if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
-	  if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
-	  if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
-	}
-	else if( ispressed(PCK_END) )
-	{
-	  if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
-	  if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
-	  if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
-	  if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
-	}
-	/*
-	if( released( PCK_F11 ) && kbd_drv_home_pressed )
-	issue_event( EVENT_BMP_DUMP );
-	*/
-	
-	if( ispressed(PCK_HOME) )
-	{
-	  if( ispressed( PCK_NUMPAD_2 ))
-		issue_event( EVENT_SCROLL_DOWN );
-	  if( ispressed( PCK_NUMPAD_4 ))
-		issue_event( EVENT_SCROLL_LEFT );
+    if( ispressed(PCK_HOME) )
+    {
+      if( released( PCK_F1 )) issue_event( EVENT_INSERT_DF0 );
+      if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
+      if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
+      if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
+    }
+    else if( ispressed(PCK_END) )
+    {
+      if( released( PCK_F1 )) issue_event( EVENT_EJECT_DF0 );
+      if( released( PCK_F2 )) issue_event( EVENT_EJECT_DF1 );
+      if( released( PCK_F3 )) issue_event( EVENT_EJECT_DF2 );
+      if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
+    }
+
+    if( ispressed(PCK_HOME) )
+    {
+      if( ispressed( PCK_NUMPAD_2 ))
+      {
+	issue_event( EVENT_SCROLL_DOWN );
+      }
+      if( ispressed( PCK_NUMPAD_4 ))
+      {
+	issue_event( EVENT_SCROLL_LEFT );
+      }
 	  
-	  if( ispressed( PCK_NUMPAD_6 ))
-		issue_event( EVENT_SCROLL_RIGHT );
-	  if( ispressed( PCK_NUMPAD_8 ))
-		issue_event( EVENT_SCROLL_UP );
+      if( ispressed( PCK_NUMPAD_6 ))
+      {
+	issue_event( EVENT_SCROLL_RIGHT );
+      }
+      if( ispressed( PCK_NUMPAD_8 ))
+      {
+	issue_event( EVENT_SCROLL_UP );
+      }
+    }
+	
+    // Check joysticks replacements
+    // New here: Must remember last value to decide if a change has happened
+	
+    for( port = 0; port < 2; port++ )
+    {
+      for( setting = 0; setting < 2; setting++ )
+      {
+	if( kbd_drv_joykey_enabled[port][setting] )
+	{
+	  // Here the gameport is set up for input from the specified set of joykeys 
+	  // Check each key for change
+	  int direction;
+	  for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
+	  {
+	    if (symbol_key == kbd_drv_joykey[setting][direction])
+	    {
+	      if( pressed( symbol_key ) || released( symbol_key ))
+	      {
+		kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
+	      }
+	    }
+	  }
 	}
-	
-	// Check joysticks replacements
-	// New here: Must remember last value to decide if a change has happened
-	
-	for( port = 0; port < 2; port++ )
-	  for( setting = 0; setting < 2; setting++ )
-		if( kbd_drv_joykey_enabled[port][setting] )
-		{
-		  // Here the gameport is set up for input from the specified set of joykeys 
-		  // Check each key for change
-		  int direction;
-		  for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
-			if (symbol_key == kbd_drv_joykey[setting][direction])
-			  if( pressed( symbol_key ) || released( symbol_key ))
-				kbdEventEOLAdd(kbd_drv_joykey_event[port][pressed(symbol_key)][direction]);
-		}
-		break;
+      }
+    }
+    break;
   }
   
   return (eol_evpos != kbd_state.eventsEOL.inpos) ||
@@ -1018,38 +1072,38 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key) {
 /* Handle one specific keycode change                                        */
 /*===========================================================================*/
     
-void kbdDrvKeypress(ULO keycode, BOOL pressed) {
-	kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
-	BOOLE keycode_pressed = pressed;
-	BOOLE keycode_was_pressed = prevkeys[keycode];
+void kbdDrvKeypress(ULO keycode, BOOL pressed)
+{
+  kbd_drv_pc_symbol symbolic_key = symbolickey(keycode); 
+  BOOLE keycode_pressed = pressed;
+  BOOLE keycode_was_pressed = prevkeys[keycode];
 
-	/* DEBUG info, not needed now*/
-	char szMsg[255];
-	sprintf( szMsg, "Keypress %s %s\n"
-	, kbdDrvKeyString( symbolic_key )
-	, ( pressed ? "pressed" : "released" )
-	);
-	fellowAddLog( szMsg );
+  /* DEBUG info, not needed now*/
+  char szMsg[255];
+  sprintf( szMsg, "Keypress %s %s\n", kbdDrvKeyString( symbolic_key ), ( pressed ? "pressed" : "released" ));
+  fellowAddLog( szMsg );
 
-	keys[keycode] = pressed;
+  keys[keycode] = pressed;
 
-	if ((!keycode_pressed) && keycode_was_pressed) {
-		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-		if (!kbdDrvEventChecker(symbolic_key))
-		{
-			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-			kbdKeyAdd(a_code | 0x80);
-		}
-	}
-	else if (keycode_pressed && !keycode_was_pressed) {
-		// If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-		if (!kbdDrvEventChecker(symbolic_key))
-		{
-			UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
-			kbdKeyAdd(a_code);
-		}
-	}
-	prevkeys[keycode] = pressed;
+  if ((!keycode_pressed) && keycode_was_pressed)
+  {
+    // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+    if (!kbdDrvEventChecker(symbolic_key))
+    {
+      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      kbdKeyAdd(a_code | 0x80);
+    }
+  }
+  else if (keycode_pressed && !keycode_was_pressed)
+  {
+    // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
+    if (!kbdDrvEventChecker(symbolic_key))
+    {
+      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
+      kbdKeyAdd(a_code);
+    }
+  }
+  prevkeys[keycode] = pressed;
 }
 
 
@@ -1057,7 +1111,8 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed) {
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
 
-void kbdDrvBufferOverflowHandler(void) {
+void kbdDrvBufferOverflowHandler(void)
+{
 }
 
 
@@ -1067,31 +1122,35 @@ void kbdDrvBufferOverflowHandler(void) {
 
 void kbdDrvKeypressHandler(void)
 {
+  if (!kbd_drv_active)
+  {
+    return;
+  }
+  
   DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE];
   DWORD itemcount = DINPUT_BUFFERSIZE;
   HRESULT res;
 		
-  if( !kbd_drv_active)
-	return;
-  
-  do {
-	res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID,
-	  sizeof(DIDEVICEOBJECTDATA),
-	  rgod,
-	  &itemcount,
-	  0);
-	if (res == DIERR_INPUTLOST) kbdDrvDInputAcquire();
+  do
+  {
+    res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
+    if (res == DIERR_INPUTLOST)
+    {
+      kbdDrvDInputAcquire();
+    }
   }
   while (res == DIERR_INPUTLOST);
   
   if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
-		kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
-  else {
-	
-		ULO i = 0;
-		
-		for (i = 0; i < itemcount; i++)
-			kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+  {
+    kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
+  }
+  else
+  {	
+    for (ULO i = 0; i < itemcount; i++)
+    {
+      kbdDrvKeypress( rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+    }
   }
 }    
     
@@ -1099,27 +1158,34 @@ void kbdDrvKeypressHandler(void)
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-STR *kbdDrvKeyString(ULO symbolickey) {
+STR *kbdDrvKeyString(ULO symbolickey)
+{
   if (symbolickey >= 106)
+  {
     symbolickey = PCK_NONE;
+  }
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-STR *kbdDrvKeyPrettyString(ULO symbolickey) {
+STR *kbdDrvKeyPrettyString(ULO symbolickey)
+{
   if (symbolickey >= 106)
+  {
     symbolickey = PCK_NONE;
+  }
   return symbol_pretty_name[symbolickey];
 }
 
 STR *DikKeyString(int dikkey)
 {
-  int j;
-
-	for( j = 0; j < PCK_LAST_KEY; j++ )	{
-		if( dikkey == symbol_to_DIK_kbddrv[j] )
-			return kbdDrvKeyString(j);
-	}
-	return "UNKNOWN";
+  for (int j = 0; j < PCK_LAST_KEY; j++ )
+  {
+    if (dikkey == symbol_to_DIK_kbddrv[j])
+    {
+      return kbdDrvKeyString(j);
+    }
+  }
+  return "UNKNOWN";
 }
 
 
@@ -1131,54 +1197,54 @@ void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey)
 {
   switch (event)
   {
-  case EVENT_JOY0_UP_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_DOWN_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_LEFT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_RIGHT_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_FIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_FIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_UP_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_DOWN_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_LEFT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_RIGHT_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_FIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_FIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
-    break;
-  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
-    kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
-    break;
+    case EVENT_JOY0_UP_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_DOWN_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_LEFT_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_RIGHT_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_FIRE0_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_FIRE1_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_AUTOFIRE0_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY0_AUTOFIRE1_ACTIVE:
+      kbd_drv_joykey[0][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_UP_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_UP] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_DOWN_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_DOWN] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_LEFT_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_LEFT] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_RIGHT_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_RIGHT] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_FIRE0_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_FIRE0] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_FIRE1_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_FIRE1] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_AUTOFIRE0_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = (kbd_drv_pc_symbol) symbolickey;
+      break;
+    case EVENT_JOY1_AUTOFIRE1_ACTIVE:
+      kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = (kbd_drv_pc_symbol) symbolickey;
+      break;
   }
 }
 
@@ -1186,49 +1252,52 @@ void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey)
 /* Get joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-ULO kbdDrvJoystickReplacementGet(kbd_event event) {
-  switch (event) {
-  case EVENT_JOY0_UP_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_UP];
-  case EVENT_JOY0_DOWN_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_DOWN];
-  case EVENT_JOY0_LEFT_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_LEFT];
-  case EVENT_JOY0_RIGHT_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_RIGHT];
-  case EVENT_JOY0_FIRE0_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_FIRE0];
-  case EVENT_JOY0_FIRE1_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_FIRE1];
-  case EVENT_JOY0_AUTOFIRE0_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
-  case EVENT_JOY0_AUTOFIRE1_ACTIVE:
-    return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
-  case EVENT_JOY1_UP_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_UP];
-  case EVENT_JOY1_DOWN_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_DOWN];
-  case EVENT_JOY1_LEFT_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_LEFT];
-  case EVENT_JOY1_RIGHT_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_RIGHT];
-  case EVENT_JOY1_FIRE0_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_FIRE0];
-  case EVENT_JOY1_FIRE1_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_FIRE1];
-  case EVENT_JOY1_AUTOFIRE0_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
-  case EVENT_JOY1_AUTOFIRE1_ACTIVE:
-    return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
+ULO kbdDrvJoystickReplacementGet(kbd_event event)
+{
+  switch (event)
+  {
+    case EVENT_JOY0_UP_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_UP];
+    case EVENT_JOY0_DOWN_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_DOWN];
+    case EVENT_JOY0_LEFT_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_LEFT];
+    case EVENT_JOY0_RIGHT_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_RIGHT];
+    case EVENT_JOY0_FIRE0_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_FIRE0];
+    case EVENT_JOY0_FIRE1_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_FIRE1];
+    case EVENT_JOY0_AUTOFIRE0_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_AUTOFIRE0];
+    case EVENT_JOY0_AUTOFIRE1_ACTIVE:
+      return kbd_drv_joykey[0][JOYKEY_AUTOFIRE1];
+    case EVENT_JOY1_UP_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_UP];
+    case EVENT_JOY1_DOWN_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_DOWN];
+    case EVENT_JOY1_LEFT_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_LEFT];
+    case EVENT_JOY1_RIGHT_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_RIGHT];
+    case EVENT_JOY1_FIRE0_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_FIRE0];
+    case EVENT_JOY1_FIRE1_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_FIRE1];
+    case EVENT_JOY1_AUTOFIRE0_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_AUTOFIRE0];
+    case EVENT_JOY1_AUTOFIRE1_ACTIVE:
+      return kbd_drv_joykey[1][JOYKEY_AUTOFIRE1];
   }
   return PC_NONE;
 }
 
-void kbdDrvInitializeDIKToSymbolKeyTable(void) {
-  int i;
-
-  for( i = 0; i < PCK_LAST_KEY; i++ )
+void kbdDrvInitializeDIKToSymbolKeyTable(void)
+{
+  for (int i = 0; i < PCK_LAST_KEY; i++)
+  {
     kbddrv_DIK_to_symbol[ i ] = PCK_NONE;
+  }
   
   kbddrv_DIK_to_symbol[ DIK_ESCAPE          ] = PCK_ESCAPE; /* First row */
   kbddrv_DIK_to_symbol[ DIK_F1              ] = PCK_F1;
@@ -1344,7 +1413,8 @@ void kbdDrvInitializeDIKToSymbolKeyTable(void) {
 /* Hard Reset                                                                */
 /*===========================================================================*/
 
-void kbdDrvHardReset(void) {
+void kbdDrvHardReset(void)
+{
 }
 
 
@@ -1352,12 +1422,12 @@ void kbdDrvHardReset(void) {
 /* Emulation Starting                                                        */
 /*===========================================================================*/
 
-void kbdDrvEmulationStart(void) {
-  ULO port;
-  
+void kbdDrvEmulationStart(void)
+{
   kbd_drv_home_pressed = FALSE;
   kbd_drv_end_pressed = FALSE;
-  for (port = 0; port < 2; port++) {
+  for (ULO port = 0; port < 2; port++)
+  {
     kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == GP_JOYKEY0);
     kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == GP_JOYKEY1);
   }
@@ -1373,7 +1443,8 @@ void kbdDrvEmulationStart(void) {
 /* Emulation Stopping                                                        */
 /*===========================================================================*/
 
-void kbdDrvEmulationStop(void) {
+void kbdDrvEmulationStop(void)
+{
   kbdDrvDInputRelease();
 }
 
@@ -1381,9 +1452,8 @@ void kbdDrvEmulationStop(void) {
 /* Emulation Startup                                                         */
 /*===========================================================================*/
 
-void kbdDrvStartup(void) {
-  ULO port, setting;
-  
+void kbdDrvStartup(void)
+{
   kbd_drv_joykey_event[0][0][JOYKEY_UP] = EVENT_JOY0_UP_INACTIVE;
   kbd_drv_joykey_event[0][1][JOYKEY_UP] = EVENT_JOY0_UP_ACTIVE;
   kbd_drv_joykey_event[1][0][JOYKEY_UP] = EVENT_JOY1_UP_INACTIVE;
@@ -1434,9 +1504,13 @@ void kbdDrvStartup(void) {
   kbd_drv_joykey[1][JOYKEY_AUTOFIRE0] = PCK_A;
   kbd_drv_joykey[1][JOYKEY_AUTOFIRE1] = PCK_S;
   
-  for (port = 0; port < 2; port++)
-    for (setting = 0; setting < 2; setting++)
+  for (ULO port = 0; port < 2; port++)
+  {
+    for (ULO setting = 0; setting < 2; setting++)
+    {
       kbd_drv_joykey_enabled[port][setting] = FALSE;
+    }
+  }
     
   kbd_drv_capture = FALSE;
   kbd_drv_captured_key = PCK_NONE;
@@ -1456,7 +1530,10 @@ void kbdDrvStartup(void) {
 /* Emulation Shutdown                                                        */
 /*===========================================================================*/
 
-void kbdDrvShutdown(void) {
-  if( prs_rewrite_mapping_file )
+void kbdDrvShutdown(void)
+{
+  if (prs_rewrite_mapping_file)
+  {
     prsWriteFile( kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey );
+  }
 }
