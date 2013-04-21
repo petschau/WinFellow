@@ -466,9 +466,13 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
     case WM_SHOWWINDOW:
       break; 
     case WM_DISPLAYCHANGE:
-      gfx_drv_displaychange = (wParam != gfx_drv_ddraw_device_current->mode->depth) &&
-			      gfx_drv_ddraw_device_current->mode->windowed;
-      fellow_request_emulation_stop = TRUE;
+      fellowAddLog("WM_DISPLAYCHANGE\n");
+      if (gfx_drv_ddraw_device_current->mode->windowed)
+      {
+	gfx_drv_displaychange = (wParam != gfx_drv_ddraw_device_current->mode->depth) &&
+				gfx_drv_ddraw_device_current->mode->windowed;
+	fellow_request_emulation_stop = TRUE;
+      }
       break;
     case WM_DIACQUIRE:        /* Re-evaluate the active status of DI-devices */
 //      fellowAddLog("WM_DIACQUIRE\n");
@@ -2125,19 +2129,18 @@ UBY *gfxDrvValidateBufferPointer(void)
     
     /* Align pointer returned to drawing routines */
     
-    ULO bufferULO = (ULO) buffer;
     if (gfx_drv_ddraw_device_current->drawmode->bits == 32)
     {
-      if ((bufferULO & 0x7) != 0)
+      if ((PTR_TO_INT(buffer) & 0x7) != 0)
       {
-	buffer = (UBY *) (bufferULO & 0xfffffff8) + 8;
+	buffer = (UBY *) (PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(7)) + 8;
       }
     }
     if (gfx_drv_ddraw_device_current->drawmode->bits == 15 || gfx_drv_ddraw_device_current->drawmode->bits == 16)
     {
-      if ((bufferULO & 0x3) != 0)
+      if ((PTR_TO_INT(buffer) & 0x3) != 0)
       {
-	buffer = (UBY *) (bufferULO & 0xfffffffc) + 4;
+	buffer = (UBY *) (PTR_TO_INT(buffer) & ~PTR_TO_INT_MASK_TYPE(3)) + 4;
       }
     }
   }
