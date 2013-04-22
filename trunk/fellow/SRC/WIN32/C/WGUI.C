@@ -63,6 +63,7 @@
 #include "floppy.h"
 #include "fellow.h"
 #include "GFXDRV.H"
+#include "fileops.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -2737,8 +2738,19 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  wgui_action = WGUI_LOAD_HISTORY3;
 	  break;
 	case IDC_CONFIGURATION:
-	  wguiConfigurationDialog();
-	  break;
+    {
+      char *configbackup;
+      INT_PTR result;
+
+      configbackup = fileopsGetTemporaryFilename();
+      cfgSaveToFilename(wgui_cfg, configbackup);
+      result = wguiConfigurationDialog();
+      if(result == 0) // discard changes, as user clicked cancel
+        cfgLoadFromFilename(wgui_cfg, configbackup);
+      remove(configbackup);
+      free(configbackup);
+	    break;
+    }
 	case IDC_HARD_RESET:
 	  fellowPreStartReset(TRUE);
 	  wguiLoadBitmaps();

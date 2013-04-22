@@ -26,9 +26,10 @@
 #ifndef FILEOPS_H
 #define FILEOPS_H
 
-BOOLE fileopsGetFellowLogfileName(char *);
-BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
-BOOLE fileopsGetDefaultConfigFileName(char *);
-BOOLE fileopsResolveVariables(const char *, char *);
+extern BOOLE fileopsGetFellowLogfileName(char *);
+extern BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
+extern BOOLE fileopsGetDefaultConfigFileName(char *);
+extern BOOLE fileopsResolveVariables(const char *, char *);
+extern char *fileopsGetTemporaryFilename(void);
 
 #endif // FILEOPS_H
