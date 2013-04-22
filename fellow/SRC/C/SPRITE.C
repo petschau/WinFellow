@@ -2198,8 +2198,7 @@ static void spriteMergeDualHiresPF1loopbehind2(graph_line* current_graph_line, U
 {
   ULO i, j;
   UBY *line1;
-  UBY *sprite_data; 
-  UBY line_buildup[4];
+  UBY *sprite_data;
   spr_merge_list_item *next_item;
   UBY sprite_color;
 

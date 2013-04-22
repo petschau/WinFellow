@@ -109,3 +109,27 @@ BOOLE fileopsGetDefaultConfigFileName(char *szPath)
 {
   return fileopsGetGenericFileName(szPath, "WinFellow\\configurations", "default.wfc");
 }
+
+/*=========================================*/
+/* Get a temporary file name               */
+/* if TEMP environment variable is set try */
+/* to create in temporary folder, else in  */
+/* the volumes rootdir                     */
+/*=========================================*/
+
+char *fileopsGetTemporaryFilename(void)
+{
+  char *tempvar;
+  char *result;
+
+  tempvar = getenv("TEMP");
+  if( tempvar != NULL )
+  {
+    result = _tempnam(tempvar, "wftemp");
+  }
+  else
+  {
+    result = tmpnam(NULL);
+  }
+  return result;
+}

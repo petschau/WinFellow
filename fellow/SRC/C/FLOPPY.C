@@ -66,6 +66,7 @@
 
 #include "xdms.h"
 #include "zlibwrap.h"
+#include "fileops.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
@@ -684,30 +685,6 @@ void floppyError(ULO drive, ULO errorID)
 /* Handling of Compressed Images */
 /*===============================*/
 
-/*=========================================*/
-/* Get a temporary file name               */
-/* if TEMP environment variable is set try */
-/* to create in temporary folder, else in  */
-/* the volumes rootdir                     */
-/*=========================================*/
-
-static char *TemporaryFilename(void)
-{
-  char *tempvar;
-  char *result;
-
-  tempvar = getenv("TEMP");
-  if( tempvar != NULL )
-  {
-    result = _tempnam(tempvar, "wftemp");
-  }
-  else
-  {
-    result = tmpnam(NULL);
-  }
-  return result;
-}
-
 /*=========================*/
 /* Uncompress a BZip image */
 /*=========================*/
@@ -717,7 +694,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive)
   char *gzname;
   STR cmdline[512];
 
-  if( (gzname = TemporaryFilename()) == NULL)
+  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -738,7 +715,7 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive)
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 {
   char *gzname;
-  if( (gzname = TemporaryFilename()) == NULL)
+  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
@@ -762,7 +739,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive)
 {
   char *gzname;
-  if( (gzname = TemporaryFilename()) == NULL)
+  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
