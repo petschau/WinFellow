@@ -2739,16 +2739,23 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  break;
 	case IDC_CONFIGURATION:
     {
-      char *configbackup;
+      cfg *configbackup;
       INT_PTR result;
 
-      configbackup = fileopsGetTemporaryFilename();
-      cfgSaveToFilename(wgui_cfg, configbackup);
+      configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
+ 
       result = wguiConfigurationDialog();
-      if(result == 0) // discard changes, as user clicked cancel
-        cfgLoadFromFilename(wgui_cfg, configbackup);
-      remove(configbackup);
-      free(configbackup);
+      if(result >= 1)
+      {
+        cfgManagerFreeConfig(&cfg_manager, configbackup);
+      }
+      else 
+      { // discard changes, as user clicked cancel or error occurred
+        cfgManagerFreeConfig(&cfg_manager, wgui_cfg);
+        cfgManagerSetCurrentConfig(&cfg_manager, configbackup);
+        wgui_cfg = configbackup;
+      }
+
 	    break;
     }
 	case IDC_HARD_RESET:

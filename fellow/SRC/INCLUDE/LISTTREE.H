@@ -17,6 +17,7 @@ felist *listNext(felist *l);
 felist *listPrev(felist *l);
 felist *listLast(felist *l);
 felist *listCat(felist *l1, felist *l2);
+felist *listCopy(felist *, size_t);
 ULO listCount(felist *l);
 void *listNode(felist *l);
 void listRemove(felist *l);

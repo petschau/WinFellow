@@ -2022,6 +2022,16 @@ cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager)
   return configmanager->m_currentconfig;
 }
 
+cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager)
+{
+  cfg *newconfig = (cfg *) malloc(sizeof(cfg));
+  memcpy(newconfig, configmanager->m_currentconfig, sizeof(cfg));
+  newconfig->m_filesystems = listCopy(configmanager->m_currentconfig->m_filesystems, sizeof(cfg_filesys ));
+  newconfig->m_hardfiles   = listCopy(configmanager->m_currentconfig->m_hardfiles,   sizeof(cfg_hardfile));
+
+  return newconfig;
+}
+
 void cfgManagerUseDefaultConfiguration(cfgManager *configmanager)
 {
   configmanager->m_currentconfig = configmanager->m_currentconfig;
