@@ -347,7 +347,6 @@ extern void cfgSynopsis(cfg *config);
 
 typedef struct {
   cfg *m_currentconfig;
-  cfg *m_original_config;
 } cfgManager;
 
 

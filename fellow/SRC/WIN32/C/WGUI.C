@@ -63,7 +63,6 @@
 #include "floppy.h"
 #include "fellow.h"
 #include "GFXDRV.H"
-#include "fileops.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
