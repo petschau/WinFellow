@@ -2242,8 +2242,6 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
   if(!RetroPlatformGetMode()) {
 #endif
   if(!cfgGetConfigAppliedOnce(config)) {
-	  configmanager->m_original_config = config;
-
 	  // load configuration that the initdata contains
 	  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
 	  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata));
@@ -2258,7 +2256,7 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
 void cfgManagerShutdown(cfgManager *configmanager)
 {
   cfgManagerFreeConfig(configmanager, 
-    configmanager->m_original_config);
+    configmanager->m_currentconfig);
 }
 
 void cfgStartup(int argc, char **argv)
