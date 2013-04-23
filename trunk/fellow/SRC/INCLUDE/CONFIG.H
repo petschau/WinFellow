@@ -357,6 +357,7 @@ typedef struct {
 
 extern void cfgManagerSetCurrentConfig(cfgManager *configmanager, cfg *currentconfig);
 extern cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager);
+extern cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager);
 extern void cfgManagerSetDefaultConfig(cfgManager *configmanager);
 
 

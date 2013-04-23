@@ -121,6 +121,32 @@ felist *listCat(felist *l1, felist *l2) {
   return l1;
 }
 
+felist *listCopy(felist *srcfirstnode, size_t nodesize) {
+  felist *prevnode = NULL;
+  felist *currnode = srcfirstnode;
+  felist *result = NULL;
+
+  if(srcfirstnode == NULL) return NULL;
+  
+  while(currnode != NULL) {
+    felist *newnode = (felist *) malloc(sizeof(felist));
+    newnode->prev = prevnode;
+    if(prevnode == NULL) { 
+      result = newnode;
+    }
+    else {
+      prevnode->next = newnode;
+    }
+    newnode->next = NULL;
+    newnode->node = (void *) malloc(nodesize);
+    memcpy(newnode->node, currnode->node, nodesize);
+  
+    prevnode = newnode;
+    currnode = listNext(currnode);
+  }
+  return result;
+}
+
 ULO listCount(felist *l) {
   felist *t;
   ULO i;
