@@ -851,6 +851,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetMeasureSpeed(config, false);
 
   cfgSetConfigAppliedOnce(config, false);
+  cfgSetConfigChangedSinceLastSave(config, FALSE);
 }
 
 
@@ -1293,6 +1294,15 @@ void cfgSetConfigAppliedOnce(cfg *config, BOOLE bApplied) {
 BOOLE cfgGetConfigAppliedOnce(cfg *config) {
   return config->m_config_applied_once;
 }
+
+void cfgSetConfigChangedSinceLastSave(cfg *config, BOOLE bChanged) {
+  config->m_config_changed_since_save = bChanged;
+}
+
+BOOLE cfgGetConfigChangedSinceLastSave(cfg *config) {
+  return config->m_config_changed_since_save;
+}
+
 
 /*============================================================================*/
 /* Command line option synopsis                                               */
