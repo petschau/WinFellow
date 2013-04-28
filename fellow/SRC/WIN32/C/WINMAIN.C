@@ -109,7 +109,7 @@ enum MultiEventTypes
 
 extern BOOLE mouse_drv_initialization_failed;
 extern HANDLE mouse_drv_DIevent;
-extern BOOLE kbd_drv_initialization_failed;
+extern bool kbd_drv_initialization_failed;
 extern HANDLE kbd_drv_DIevent;
 
 ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping) 

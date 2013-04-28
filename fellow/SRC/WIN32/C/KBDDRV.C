@@ -83,7 +83,7 @@ LPDIRECTINPUTDEVICE   kbd_drv_lpDID;
 HANDLE		      kbd_drv_DIevent;
 BYTE		      keys[MAX_KEYS];					// contains boolean values (pressed/not pressed) for actual keystroke
 BYTE		      prevkeys[MAX_KEYS];				// contains boolean values (pressed/not pressed) for past keystroke
-BOOLE		      kbd_drv_initialization_failed;
+bool		      kbd_drv_initialization_failed;
 BOOLE		      prs_rewrite_mapping_file;
 char		      kbd_drv_mapping_filename[MAX_PATH];
 
@@ -608,6 +608,14 @@ volatile kbd_drv_pc_symbol	kbd_drv_captured_key;
 BOOLE				kbd_drv_capture;
 
 
+void kbdDrvClearPressedKeys(void)
+{
+  kbd_drv_home_pressed = FALSE;
+  kbd_drv_end_pressed = FALSE;
+  memset( prevkeys, 0, sizeof( prevkeys ));
+  memset( keys, 0, sizeof( keys ));
+}
+
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
@@ -659,13 +667,15 @@ void kbdDrvDInputFailure(STR *header, HRESULT err)
 /* Set keyboard cooperative level                                            */
 /*===========================================================================*/
 
-void kbdDrvDInputSetCooperativeLevel(void)
+bool kbdDrvDInputSetCooperativeLevel(void)
 {
-  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-  if( res != DI_OK )
+  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel(): ", res );
+    return false;
   }
+  return true;
 }
 
 
@@ -675,14 +685,12 @@ void kbdDrvDInputSetCooperativeLevel(void)
 
 void kbdDrvDInputUnacquire(void) 
 {
-  HRESULT res;
-  
   fellowAddLog("kbdDrvDInputUnacquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
-  res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
+  HRESULT res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputUnacquire(): ", res);
@@ -696,15 +704,14 @@ void kbdDrvDInputUnacquire(void)
 
 void kbdDrvDInputAcquire(void) 
 {
-  HRESULT res;
-  
   fellowAddLog("kbdDrvDInputAcquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
   kbdDrvDInputUnacquire();
-  if ((res = IDirectInputDevice_Acquire( kbd_drv_lpDID )) != DI_OK)
+  HRESULT res = IDirectInputDevice_Acquire(kbd_drv_lpDID); 
+  if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputAcquire(): ", res);
   }
@@ -739,43 +746,8 @@ void kbdDrvDInputRelease(void)
 /* Initialize DirectInput for keyboard                                       */
 /*===========================================================================*/
 
-void kbdDrvDInputInitializeOld(void)
+bool kbdDrvDInputInitialize(void)
 {
-  HRESULT res;
-  
-  fellowAddLog("kbdDrvDInputInitialize()\n");
-  if (!kbd_drv_lpDI)
-  {
-    res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
-    if (res != DI_OK)
-    {
-      kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
-      return;
-    }
-  }
-  
-  if( !kbd_drv_lpDID )
-  {
-    res = IDirectInput_CreateDevice(kbd_drv_lpDI, GUID_SysKeyboard, &kbd_drv_lpDID, NULL );
-    if( res != DI_OK )
-    {
-      kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
-      return;
-    }
-  }
-  
-  res = IDirectInputDevice_SetDataFormat( kbd_drv_lpDID, &c_dfDIKeyboard );
-  if( res != DI_OK )
-  {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat() ", res );
-    return;
-  }
-}
-
-
-BOOLE kbdDrvDInputInitialize(void)
-{
-  HRESULT res;
   DIPROPDWORD dipdw =
   {
     {
@@ -784,7 +756,7 @@ BOOLE kbdDrvDInputInitialize(void)
       0,                          /* diph.dwObj */
       DIPH_DEVICE,                /* diph.dwHow */
     },
-    DINPUT_BUFFERSIZE,            /* dwData */
+    DINPUT_BUFFERSIZE            /* dwData */
   };
   
   /* Create Direct Input object */
@@ -792,14 +764,14 @@ BOOLE kbdDrvDInputInitialize(void)
   kbd_drv_lpDI = NULL;
   kbd_drv_lpDID = NULL;
   kbd_drv_DIevent = NULL;
-  kbd_drv_initialization_failed = FALSE;
-  res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
+  kbd_drv_initialization_failed = false;
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
   
   /* Create Direct Input 1 keyboard device */
@@ -808,9 +780,9 @@ BOOLE kbdDrvDInputInitialize(void)
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
   
   /* Set data format for mouse device */
@@ -819,20 +791,18 @@ BOOLE kbdDrvDInputInitialize(void)
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
 
   /* Set cooperative level */
 
-  res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
-  if (res != DI_OK)
+  if (!kbdDrvDInputSetCooperativeLevel())
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetCooperativeLevel() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
 
   /* Create event for notification */
@@ -841,9 +811,9 @@ BOOLE kbdDrvDInputInitialize(void)
   if (kbd_drv_DIevent == NULL)
   {
     fellowAddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
 
   /* Set property for buffered data */
@@ -851,8 +821,9 @@ BOOLE kbdDrvDInputInitialize(void)
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetProperty() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
+    return false;
   }
 
   /* Set event notification */
@@ -860,11 +831,11 @@ BOOLE kbdDrvDInputInitialize(void)
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetEventNotification() ", res );
-    kbd_drv_initialization_failed = TRUE;
+    kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
-    return FALSE;
+    return false;
   }
-  return TRUE;
+  return true;
 }
 
 
@@ -882,6 +853,7 @@ void kbdDrvStateHasChanged(BOOLE active)
   else
   {
     kbdDrvDInputUnacquire();
+    kbdDrvClearPressedKeys();
   }
 }
 
@@ -1424,17 +1396,13 @@ void kbdDrvHardReset(void)
 
 void kbdDrvEmulationStart(void)
 {
-  kbd_drv_home_pressed = FALSE;
-  kbd_drv_end_pressed = FALSE;
   for (ULO port = 0; port < 2; port++)
   {
     kbd_drv_joykey_enabled[port][0] = (gameport_input[port] == GP_JOYKEY0);
     kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == GP_JOYKEY1);
   }
-  
-  memset( prevkeys, 0, sizeof( prevkeys ));
-  memset( keys, 0, sizeof( keys ));
-  
+
+  kbdDrvClearPressedKeys();  
   kbdDrvDInputInitialize();
 }
 
