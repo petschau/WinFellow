@@ -206,7 +206,7 @@ BOOLE mouseDrvDInputInitialize(void)
       0,                          /* diph.dwObj */
       DIPH_DEVICE,                /* diph.dwHow */
     },
-    DINPUT_BUFFERSIZE,            /* dwData */
+    DINPUT_BUFFERSIZE            /* dwData */
   };
 
   fellowAddLog("mouseDrvDInputInitialize()\n");
