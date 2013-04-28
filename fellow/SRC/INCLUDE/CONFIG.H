@@ -146,10 +146,11 @@ typedef struct {
   BOOLE m_useGUI;
 
   /*==========================================================================*/
-  /* tracking if a configuration was already applie                           */
+  /* tracking flags                                                           */
   /*==========================================================================*/
 
   BOOLE m_config_applied_once;
+  BOOLE m_config_changed_since_save;
 
 } cfg;
 
@@ -380,8 +381,14 @@ extern cfgManager cfg_manager;
 extern void cfgStartup(int argc, char **argv);
 extern void cfgShutdown(void);
 
+/*============================================================================*/
+/* tracking flag functions                                                    */
+/*============================================================================*/
+
 extern void  cfgSetConfigAppliedOnce(cfg *, BOOLE);
 extern BOOLE cfgGetConfigAppliedOnce(cfg *);
+extern void  cfgSetConfigChangedSinceLastSave(cfg *, BOOLE);
+extern BOOLE cfgGetConfigChangedSinceLastSave(cfg *);
 
 
 #endif  /* CONFIG_H */

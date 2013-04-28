@@ -2747,6 +2747,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       if(result >= 1)
       {
         cfgManagerFreeConfig(&cfg_manager, configbackup);
+        cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
       }
       else 
       { // discard changes, as user clicked cancel or error occurred
@@ -2925,20 +2926,42 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
 	  case WGUI_QUIT_EMULATOR:
-	    end_loop = TRUE;
-	    quit_emulator = TRUE;
+      {
+        BOOLE bQuit = TRUE;
+
+        if(cfgGetConfigChangedSinceLastSave(wgui_cfg)) {
+          int result;
+
+          result = MessageBox(wgui_hDialog, 
+            "There are unsaved configuration changes, quit anyway?", 
+            "WinFellow",
+          MB_YESNO | MB_ICONEXCLAMATION);
+          if(result == IDNO)
+            bQuit = FALSE;
+        }
+        if(bQuit)
+	      {
+          end_loop = TRUE;
+	        quit_emulator = TRUE;
+        }
+        else
+          wgui_action = WGUI_NO_ACTION;
+      }
 	    break;
 	  case WGUI_OPEN_CONFIGURATION:
 	    wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
+      cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
 	  case WGUI_SAVE_CONFIGURATION:
-	    cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));		  
+	    cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+      cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
 	  case WGUI_SAVE_CONFIGURATION_AS:
 	    wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
+      cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	    wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
@@ -2951,6 +2974,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
+        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	    }
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	    wgui_action = WGUI_NO_ACTION;
@@ -2964,6 +2988,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
+        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	      wguiPutCfgInHistoryOnTop(1);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
@@ -2978,6 +3003,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
+        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	      wguiPutCfgInHistoryOnTop(2);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
@@ -2992,6 +3018,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
+        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	      wguiPutCfgInHistoryOnTop(3);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
