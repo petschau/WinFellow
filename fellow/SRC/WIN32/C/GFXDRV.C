@@ -1379,29 +1379,29 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
     {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 288, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 287, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 400, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 574, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 288, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 287, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 400, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(376, 574, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 288, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 287, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 400, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(640, 574, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 288, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 287, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 400, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 512, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
-      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(768, 576, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(752, 574, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
+      listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(768, 574, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       gfxDrvDDrawModeInformationRegister(ddraw_device);
     }
   }
