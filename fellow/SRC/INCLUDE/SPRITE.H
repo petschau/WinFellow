@@ -3,6 +3,8 @@
 
 #include "graph.h"
 
+#define SPRITE_MAX_LIST_ITEMS 5000
+
 /*============================================================================*/
 /* struct that holds the sprite register access during a line                 */
 /*============================================================================*/
@@ -19,7 +21,7 @@ typedef struct {
 
 typedef struct {
   ULO count;
-  spr_action_list_item items[1000]; /* How many is actually needed? */
+  spr_action_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_action_list_master;
 
 
@@ -30,7 +32,7 @@ typedef struct {
 
 typedef struct {
   ULO count;
-  spr_merge_list_item items[1000]; /* How many is actually needed? */
+  spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_merge_list_master;
 
 /* C-declarations */
