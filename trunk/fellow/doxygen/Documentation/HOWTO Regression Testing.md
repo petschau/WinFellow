@@ -79,3 +79,14 @@ Test that Guardian Dragon II loads successfully, and continues beyond the first 
 The scrolling text between the two blue statues needs to appear. Before this change, the
 sound would start garbling and the emulation session would reboot.
 
+r888: sprites in hires dual playfield mode
+------------------------------------------
+Test that during the loader screen in Decaying Paradise by Andromeda, a blue rotating 
+triangle-shaped logo is visible. Before this change, the triangle was invisible.
+
+r897: Alt+F4 in RetroPlatform mode when undo is enabled and a change was performed
+----------------------------------------------------------------------------------
+Test that Alt+F4 in RetroPlatform mode will close the emulation session. 
+Perform a write operation on a floppy where undo is enabled, and close the session 
+using Alt+F4. The undo dialog must be usable both when clicking ok or cancel.
+Before this change, the emulation session would always be closed.

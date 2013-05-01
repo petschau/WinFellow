@@ -102,6 +102,7 @@ void kbdEventEOFHandler(void) {
 #ifdef RETRO_PLATFORM
               if(RetroPlatformGetMode())  
                 RetroPlatformSendClose();
+              else
 #endif
               fellowRequestEmulationStop();
 
