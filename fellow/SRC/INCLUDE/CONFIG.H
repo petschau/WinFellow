@@ -34,6 +34,9 @@ typedef struct {
 
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
+/* the struct is copied in cfgManagerGetCopyOfCurrentConfig()                 */
+/* any new pointers to allocated structures must be taken into account there  */
+/* when changed here.                                                         */
 /*============================================================================*/
 
 typedef struct {

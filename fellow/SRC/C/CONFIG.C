@@ -2032,6 +2032,12 @@ cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager)
   return configmanager->m_currentconfig;
 }
 
+/*============================================================================*/
+/* get copy of current configuration                                          */
+/* the copy is intended to be a completely separate structure, that can be    */
+/* freed independently; all targets behind pointers in the config struct must */
+/* be cloned and allocated independently.                                     */
+/*============================================================================*/
 cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager)
 {
   cfg *newconfig = (cfg *) malloc(sizeof(cfg));
