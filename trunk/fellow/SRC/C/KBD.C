@@ -99,7 +99,12 @@ void kbdEventEOFHandler(void) {
 	      fellowRequestEmulationStop();
 	      break;
       case EVENT_EXIT:
-	      fellowRequestEmulationStop();
+#ifdef RETRO_PLATFORM
+              if(RetroPlatformGetMode())  
+                RetroPlatformSendClose();
+#endif
+              fellowRequestEmulationStop();
+
 	      break;
       case EVENT_SCROLL_UP:
 	      draw_view_scroll = 0x48;

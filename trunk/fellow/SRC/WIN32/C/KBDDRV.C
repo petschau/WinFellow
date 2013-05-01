@@ -925,6 +925,10 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 #ifdef RETRO_PLATFORM
     if(RetroPlatformGetMode())
     {
+      if( ispressed ( PCK_LEFT_ALT ) )
+        if(ispressed ( PCK_F4 ) )
+          issue_event(EVENT_EXIT);
+
       if(RetroPlatformGetEmulationState())
       {
 	if( pressed ( RetroPlatformGetEscapeKey() ))
