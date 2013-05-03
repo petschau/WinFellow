@@ -1846,22 +1846,22 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
   }
 
-  bool wguiCreateDiskImage(cfg *conf, HWND hwndDlg, ULO index) {
-    STR filename[CFG_FILENAME_LENGTH];
-
-    /* if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", FSEL_ADF)) {
-      cfgSetDiskImage(conf, index, filename);
-
-      cfgSetLastUsedDiskDir(conf, wguiExtractPath(filename));
-      iniSetLastUsedGlobalDiskDir(wgui_ini, wguiExtractPath(filename));
-
-      ccwEditSetText(hwndDlg, editIdentifier, cfgGetDiskImage(conf, index));
-    } */
-
-    return DialogBox(win_drv_hInstance,
+  bool wguiCreateFloppyDiskImage(cfg *conf, HWND hwndDlg, ULO index) 
+  {
+    char *filename = NULL;
+    
+    filename = (char *) DialogBox(win_drv_hInstance,
 	MAKEINTRESOURCE(IDD_FLOPPY_ADF_CREATE),
 	hwndDlg,
-	wguiFloppyCreateDialogProc) == IDOK;
+	wguiFloppyCreateDialogProc);
+
+    if(filename)
+    {
+      cfgSetDiskImage(conf, index, filename);
+      free(filename);
+      return true;
+    }
+    return false;
   }
 
   INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -1886,7 +1886,20 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       wguiSelectDiskImage(wgui_cfg, hwndDlg, IDC_EDIT_DF3_IMAGENAME, 3);
       break;
     case IDC_BUTTON_DF0_CREATE:
-      wguiCreateDiskImage(wgui_cfg, hwndDlg, 0);
+      wguiCreateFloppyDiskImage(wgui_cfg, hwndDlg, 0);
+      ccwEditSetText(hwndDlg, IDC_EDIT_DF0_IMAGENAME, cfgGetDiskImage(wgui_cfg, 0));
+      break;
+    case IDC_BUTTON_DF1_CREATE:
+      wguiCreateFloppyDiskImage(wgui_cfg, hwndDlg, 1);
+      ccwEditSetText(hwndDlg, IDC_EDIT_DF1_IMAGENAME, cfgGetDiskImage(wgui_cfg, 1));
+      break;
+    case IDC_BUTTON_DF2_CREATE:
+      wguiCreateFloppyDiskImage(wgui_cfg, hwndDlg, 2);
+      ccwEditSetText(hwndDlg, IDC_EDIT_DF2_IMAGENAME, cfgGetDiskImage(wgui_cfg, 2));
+      break;
+    case IDC_BUTTON_DF3_CREATE:
+      wguiCreateFloppyDiskImage(wgui_cfg, hwndDlg, 3);
+      ccwEditSetText(hwndDlg, IDC_EDIT_DF3_IMAGENAME, cfgGetDiskImage(wgui_cfg, 3));
       break;
     case IDC_BUTTON_DF0_EJECT:
       cfgSetDiskImage(wgui_cfg, 0, "");
@@ -1923,21 +1936,78 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) 
   {
     switch (uMsg) {
-    case WM_INITDIALOG:
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-	switch (LOWORD(wParam)) {
-          case IDOK:
-            return IDOK;
-          case IDCANCEL:
-            return IDCANCEL;
-          default:
-            break;
-        }      
-      break;
-    case WM_DESTROY:
-      break;
+      case WM_INITDIALOG:
+        ccwEditSetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME, "Empty");
+        return TRUE;
+      case WM_COMMAND:
+        if (HIWORD(wParam) == BN_CLICKED)
+	  switch (LOWORD(wParam)) {
+            case IDOK:
+              {
+                char *strFilename;
+                STR strVolume[CFG_FILENAME_LENGTH] = "";
+                bool bResult = false;
+                bool bFormat, bBootable = false, bFFS = false;
+
+                strFilename = (char *) malloc(CFG_FILENAME_LENGTH + 1);
+
+                ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME, strFilename, CFG_FILENAME_LENGTH);
+  
+	        if(strFilename[0] == '\0') 
+                {
+	          MessageBox(hwndDlg,
+	            "You must specify a floppy image filename.",
+	            "Create floppy image",
+	            0);
+	          break;
+	        }
+
+                bFormat   = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
+                if(bFormat) 
+                {
+                  bBootable = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE);
+                  bFFS      = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS);
+                  ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME, strVolume, CFG_FILENAME_LENGTH);
+                }
+
+                bResult = floppyImageADFCreate(strFilename, strVolume, bFormat, bBootable, bFFS);
+
+                if(bResult)
+                  EndDialog(hwndDlg, (INT_PTR) strFilename);
+                else {
+                  if(strFilename) free(strFilename);
+                  EndDialog(hwndDlg, NULL);
+                }
+
+                return FALSE;
+              }
+            case IDCANCEL:
+               EndDialog(hwndDlg, NULL);
+               return FALSE;
+            case IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT:
+              {
+                // (un)hide the elements that are needed for formatting
+                bool bChecked = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
+                
+                ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE, bChecked);
+                ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS,      bChecked);
+                ccwButtonEnableConditional(hwndDlg, IDC_LABEL_FLOPPY_ADF_CREATE_VOLUME,   bChecked);
+                ccwEditEnableConditional  (hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME,    bChecked);
+              }
+              break;
+            case IDC_FLOPPY_ADF_CREATE_SELECT:
+              {
+                STR strFilename[CFG_FILENAME_LENGTH] = "";
+
+                if(wguiSaveFile(hwndDlg, strFilename, CFG_FILENAME_LENGTH, "Select disk image filename", FSEL_ADF)) {
+                  ccwEditSetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME, strFilename);
+                }
+              }
+              break;
+          }      
+          break;
+      case WM_DESTROY:
+        break;
     }
     return FALSE;
   }
