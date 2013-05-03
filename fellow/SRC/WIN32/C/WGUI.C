@@ -4,6 +4,7 @@
 /* Windows GUI code                                                        */
 /* Author: Petter Schau                                                    */
 /* Author: Worfje (worfje@gmx.net)                                         */
+/* Author: Torsten Enderling (carfesh@gmx.net)                             */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -21,6 +22,11 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
+
+/** @file
+ *  Window GUI code
+ */
+
 #include "defs.h"
 
 #ifdef WGUI
@@ -1864,8 +1870,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return false;
   }
 
-  INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-
+  INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+  {
     switch (uMsg) {
     case WM_INITDIALOG:
       wguiInstallFloppyConfig(hwndDlg, wgui_cfg);
@@ -1933,6 +1939,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return FALSE;
   }
 
+  /**
+   * dialog procedure for creation of floppy ADF images
+   *
+   * @return EndDialog is passed a pointer to the newly created floppy image, that must be freed by the caller
+   */
   INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) 
   {
     switch (uMsg) {
