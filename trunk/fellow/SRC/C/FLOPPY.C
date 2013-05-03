@@ -63,6 +63,7 @@
 #include "CpuModule.h"
 #include "fileops.h"
 #include "interrupt.h"
+#include <sys/timeb.h>
 
 #include "xdms.h"
 #include "zlibwrap.h"
@@ -114,6 +115,22 @@ BOOLE dskbyt2_read = FALSE;
 #ifdef _DEBUG
 #define FLOPPY_LOG
 #endif 
+
+static STR floppyBootBlockOFS[]={
+  0x44, 0x4f, 0x53, 0x00, 0xc0, 0x20, 0x0f, 0x19, 0x00, 0x00, 0x03, 0x70, 0x43, 0xfa, 0x00, 0x18,
+  0x4e, 0xae, 0xff, 0xa0, 0x4a, 0x80, 0x67, 0x0a, 0x20, 0x40, 0x20, 0x68, 0x00, 0x16, 0x70, 0x00,
+  0x4e, 0x75, 0x70, 0xff, 0x60, 0xfa, 0x64, 0x6f, 0x73, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x72,
+  0x79
+};
+
+static STR floppyBootBlockFFS[]={
+  0x44, 0x4F, 0x53, 0x01, 0xE3, 0x3D, 0x0E, 0x72, 0x00, 0x00, 0x03, 0x70, 0x43, 0xFA, 0x00, 0x3E,
+  0x70, 0x25, 0x4E, 0xAE, 0xFD, 0xD8, 0x4A, 0x80, 0x67, 0x0C, 0x22, 0x40, 0x08, 0xE9, 0x00, 0x06,
+  0x00, 0x22, 0x4E, 0xAE, 0xFE, 0x62, 0x43, 0xFA, 0x00, 0x18, 0x4E, 0xAE, 0xFF, 0xA0, 0x4A, 0x80,
+  0x67, 0x0A, 0x20, 0x40, 0x20, 0x68, 0x00, 0x16, 0x70, 0x00, 0x4E, 0x75, 0x70, 0xFF, 0x4E, 0x75,
+  0x64, 0x6F, 0x73, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x65, 0x78, 0x70, 0x61,
+  0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
+};
 
 #ifdef FLOPPY_LOG
 
@@ -681,9 +698,144 @@ void floppyError(ULO drive, ULO errorID)
   }
 }
 
-bool floppyImageADFCreate(STR *filename, STR *volumelabel, bool format, bool bootable, bool ffs)
+/** Write the current date/time into the floppy disk buffer.
+ */
+static void floppyWriteDiskDate(UBY *strBuffer)
 {
-  return true;
+  int days, mins, ticks;
+  struct timeb time;
+  LONGLONG sec, usec;
+  LONGLONG t;
+  const LONGLONG timediff = ((8 * 365 + 2) * (24 * 60 * 60)) * (LONGLONG)1000;
+  const LONGLONG msecs_per_day = 24 * 60 * 60 * 1000;
+  
+  ftime(&time);
+
+  sec = time.time;
+  sec -= time.timezone * 60;
+  if(time.dstflag) sec += 3600;
+  usec = time.millitm * 1000;
+
+  t = sec * 1000 + usec / 1000 - timediff;
+
+  if(t < 0) t = 0;
+
+  days = t / msecs_per_day;
+  t -= days * msecs_per_day;
+  mins = t / (60 * 1000);
+  t -= mins * (60 * 1000);
+  ticks = t / (1000 / 50);
+  
+  strBuffer[0]  = days  >> 24; 
+  strBuffer[1]  = days  >> 16; 
+  strBuffer[2]  = days  >> 8; 
+  strBuffer[3]  = days  >> 0;
+  strBuffer[4]  = mins  >> 24; 
+  strBuffer[5]  = mins  >> 16; 
+  strBuffer[6]  = mins  >> 8; 
+  strBuffer[7]  = mins  >> 0;
+  strBuffer[8]  = ticks >> 24;
+  strBuffer[9]  = ticks >> 16;
+  strBuffer[10] = ticks >> 8; 
+  strBuffer[11] = ticks >> 0;
+}
+
+/** Write the checksum into the floppy disk buffer.
+ */
+static void floppyWriteDiskChecksum(const UBY *strBuffer, UBY *strChecksum)
+{
+  ULO lChecksum = 0;
+  int i;
+
+  for (i = 0; i < 512; i+= 4)
+    lChecksum += (strBuffer[i] << 24) | (strBuffer[i+1] << 16) | (strBuffer[i+2] << 8) | (strBuffer[i+3] << 0);
+
+  lChecksum = -lChecksum;
+
+  strChecksum[0] = lChecksum >> 24; 
+  strChecksum[1] = lChecksum >> 16; 
+  strChecksum[2] = lChecksum >> 8; 
+  strChecksum[3] = lChecksum >> 0;
+}
+
+static void floppyWriteDiskBootblock (UBY *strCylinderContent, bool bFFS, bool bBootable)
+{
+  strcpy((char *) strCylinderContent, "DOS");
+  strCylinderContent[3] = bFFS ? 1 : 0;
+
+  if(bBootable)
+    memcpy(strCylinderContent, 
+      bFFS ? floppyBootBlockFFS : floppyBootBlockOFS, 
+      bFFS ? sizeof(floppyBootBlockFFS) : sizeof(floppyBootBlockOFS));
+}
+
+static void floppyWriteDiskRootBlock(UBY *strCylinderContent, ULO lBlockIndex, const UBY *strVolumeLabel)
+{
+  strCylinderContent[0+3] = 2;
+  strCylinderContent[12+3] = 0x48;
+  strCylinderContent[312] = strCylinderContent[313] = strCylinderContent[314] = strCylinderContent[315] = 0xff;
+  strCylinderContent[316+2] = (lBlockIndex + 1) >> 8; strCylinderContent[316+3] = (lBlockIndex + 1) & 255;
+  strCylinderContent[432] = strlen((char *) strVolumeLabel);
+  strcpy((char *) strCylinderContent + 433, (const char *) strVolumeLabel);
+  strCylinderContent[508 + 3] = 1;
+  floppyWriteDiskDate(strCylinderContent + 420);
+  memcpy(strCylinderContent + 472, strCylinderContent + 420, 3 * 4);
+  memcpy(strCylinderContent + 484, strCylinderContent + 420, 3 * 4);
+  floppyWriteDiskChecksum(strCylinderContent, strCylinderContent + 20);
+  memset(strCylinderContent + 512 + 4, 0xff, 2 * lBlockIndex / 8);
+  strCylinderContent[512 + 0x72] = 0x3f;
+  floppyWriteDiskChecksum(strCylinderContent + 512, strCylinderContent + 512);
+}
+
+bool floppyImageADFCreate(STR *strImageFilename, STR *strVolumeLabel, bool bFormat, bool bBootable, bool bFFS)
+{
+  bool bResult = false;
+  ULO lImageSize = 2*11*80*512; // 2 tracks per cylinder, 11 sectors per track, 80 cylinders, 512 bytes per sector
+  ULO lCylinderSize = 2*11*512; // 2 tracks per cylinder, 11 sectors per track, 512 bytes per sector
+
+  FILE *f = NULL;
+
+  if(bFormat) {
+    if(strVolumeLabel == NULL) return false;
+    if(strVolumeLabel[0] == '\0') return false;
+  }
+
+  f = fopen(strImageFilename, "wb");
+
+  if(f)
+  { 
+    UBY *strCylinderContent = NULL;
+    ULO i;
+
+    strCylinderContent = (UBY *) malloc(lCylinderSize);
+
+    if(strCylinderContent)
+    {
+      for(i = 0; i < lImageSize; i += lCylinderSize)
+      {
+        memset(strCylinderContent, 0, lCylinderSize);
+
+        if(bFormat) {
+          if(i == 0)
+	    floppyWriteDiskBootblock(strCylinderContent, 
+              bFFS, 
+              bBootable);
+          else if(i == lImageSize / 2)
+	    floppyWriteDiskRootBlock(strCylinderContent, 
+              lImageSize / 1024, 
+              (UBY *) strVolumeLabel);
+        }
+
+        fwrite(strCylinderContent, lCylinderSize, 1, f);
+      }
+
+      fclose(f);
+      free(strCylinderContent);
+      bResult = TRUE;
+    }
+  }
+
+  return bResult;
 }
 
 /*===============================*/

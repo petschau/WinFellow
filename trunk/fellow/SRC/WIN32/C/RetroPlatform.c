@@ -1078,6 +1078,15 @@ BOOLE RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
   return bResult;
 }
 
+/** Notify the player that the user request to close the emulation session.
+ *
+ *  The player will examine if changes to the package were performed that
+ *  require user feedback (media changed where undo is enabled, parameters
+ *  like e.g. clipping were changed, ...).
+ *  The user can choose what to commit and proceed with quitting, or cancel.
+ *  The player can then either notify the emulator to quit via an IPC message
+ *  RP_IPC_TO_GUEST_CLOSE, or do nothing and let the session continue.
+ */
 BOOLE RetroPlatformSendClose(void) {
   BOOLE bResult;
 
