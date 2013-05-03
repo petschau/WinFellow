@@ -243,18 +243,19 @@ wguiActions wgui_action;
 /* Forward declarations for each property sheet dialog procedure              */
 /*============================================================================*/
 
-INT_PTR CALLBACK wguiCPUDialogProc			(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiFloppyDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiMemoryDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiDisplayDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiSoundDialogProc		(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiCPUDialogProc           (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFloppyDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFloppyCreateDialogProc  (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiMemoryDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiDisplayDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiSoundDialogProc         (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFilesystemAddDialogProc (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiFilesystemDialogProc    (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
-INT_PTR CALLBACK wguiVariousDialogProc	(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiHardfileAddDialogProc   (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiHardfileDialogProc      (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiGameportDialogProc      (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+INT_PTR CALLBACK wguiVariousDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 /*============================================================================*/
 /* The following tables defines the data needed to create the property        */
@@ -1845,6 +1846,24 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
   }
 
+  bool wguiCreateDiskImage(cfg *conf, HWND hwndDlg, ULO index) {
+    STR filename[CFG_FILENAME_LENGTH];
+
+    /* if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Diskimage", FSEL_ADF)) {
+      cfgSetDiskImage(conf, index, filename);
+
+      cfgSetLastUsedDiskDir(conf, wguiExtractPath(filename));
+      iniSetLastUsedGlobalDiskDir(wgui_ini, wguiExtractPath(filename));
+
+      ccwEditSetText(hwndDlg, editIdentifier, cfgGetDiskImage(conf, index));
+    } */
+
+    return DialogBox(win_drv_hInstance,
+	MAKEINTRESOURCE(IDD_FLOPPY_ADF_CREATE),
+	hwndDlg,
+	wguiFloppyCreateDialogProc) == IDOK;
+  }
+
   INT_PTR CALLBACK wguiFloppyDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
     switch (uMsg) {
@@ -1865,6 +1884,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       break;
     case IDC_BUTTON_DF3_FILEDIALOG:
       wguiSelectDiskImage(wgui_cfg, hwndDlg, IDC_EDIT_DF3_IMAGENAME, 3);
+      break;
+    case IDC_BUTTON_DF0_CREATE:
+      wguiCreateDiskImage(wgui_cfg, hwndDlg, 0);
       break;
     case IDC_BUTTON_DF0_EJECT:
       cfgSetDiskImage(wgui_cfg, 0, "");
@@ -1898,6 +1920,27 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return FALSE;
   }
 
+  INT_PTR CALLBACK wguiFloppyCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) 
+  {
+    switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_COMMAND:
+      if (HIWORD(wParam) == BN_CLICKED)
+	switch (LOWORD(wParam)) {
+          case IDOK:
+            return IDOK;
+          case IDCANCEL:
+            return IDCANCEL;
+          default:
+            break;
+        }      
+      break;
+    case WM_DESTROY:
+      break;
+    }
+    return FALSE;
+  }
 
   /*============================================================================*/
   /* Dialog Procedure for the memory property sheet                             */

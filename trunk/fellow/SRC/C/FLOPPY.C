@@ -681,6 +681,11 @@ void floppyError(ULO drive, ULO errorID)
   }
 }
 
+bool floppyImageADFCreate(STR *filename, STR *volumelabel, bool format, bool bootable, bool ffs)
+{
+  return true;
+}
+
 /*===============================*/
 /* Handling of Compressed Images */
 /*===============================*/
