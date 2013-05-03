@@ -128,9 +128,8 @@ extern void floppyMotorSet(ULO drive, BOOLE mtr);
 extern void floppySideSet(BOOLE s);
 extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
+extern bool floppyImageADFCreate(STR *, STR *, bool, bool, bool);
 extern void floppyImageRemove(ULO drive);
-
-extern void copy_bootblock(void);
 
 /* Configuration */
 

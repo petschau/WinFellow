@@ -47,6 +47,7 @@
 #define IDI_ICON_FILESYSTEM             170
 #define IDI_ICON_CPU                    171
 #define IDD_DEBUGGER                    181
+#define IDD_FLOPPY_ADF_CREATE           182
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -58,9 +59,9 @@
 #define IDC_RADIO_68030                 1014
 #define IDC_RADIO_68EC20                1015
 #define IDC_RADIO_68EC30                1016
-#define IDC_EDIT1                       1017
+#define IDC_EDIT_FLOPPY_ADF_CREATE_FILENAME 1017
 #define IDC_EDIT_FILESYSTEM_ADD_ROOTPATH 1018
-#define IDC_EDIT2                       1019
+#define IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME 1019
 #define IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME 1020
 #define IDC_RADIO_68040                 1021
 #define IDC_EDIT3                       1022
@@ -69,8 +70,8 @@
 #define IDC_EDIT4                       1025
 #define IDC_EDIT_HARDFILE_ADD_RESERVED  1026
 #define IDC_RADIO_68EC40                1027
-#define IDC_BUTTON1                     1028
 #define IDC_BTN_STEP1                   1028
+#define IDC_FLOPPY_ADF_CREATE_SELECT    1028
 #define IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG 1029
 #define IDC_BUTTON_HARDFILE_CREATE      1030
 #define IDC_RADIO_68EC60                1031
@@ -89,14 +90,18 @@
 #define IDC_CHECK_DF2_READONLY          1050
 #define IDC_CHECK_DF3_READONLY          1051
 #define IDC_COMBO_CHIP                  1052
+#define IDC_BUTTON_DF0_CREATE           1052
 #define IDC_CHECK_DF0_READONLY          1053
 #define IDC_COMBO_FAST                  1054
+#define IDC_BUTTON_DF1_CREATE           1054
 #define IDC_BUTTON_DF0_EJECT            1055
 #define IDC_EDIT_KICKSTART              1056
 #define IDC_BUTTON_DF1_EJECT            1057
 #define IDC_EDIT_KEYFILE                1058
+#define IDC_BUTTON_DF2_CREATE           1058
 #define IDC_BUTTON_DF2_EJECT            1059
 #define IDC_BUTTON_KICKSTART_FILEDIALOG 1060
+#define IDC_BUTTON_DF3_CREATE           1060
 #define IDC_CHECK_SOUND_WAV             1061
 #define IDC_COMBO_GAMEPORT1             1062
 #define IDC_CHECK_VARIOUS_SPEED         1063
@@ -177,6 +182,7 @@
 #define IDC_LST_INFO                    1141
 #define IDC_LST_INSTRUCTIONS            1142
 #define IDC_SLIDER_SOUND_VOLUME         1143
+#define IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT 1144
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BUTTON3                     2001
 #define IDC_BTN_RUN                     2001
@@ -195,13 +201,13 @@
 #define IDC_CHECK_VARIOUS_LED           2009
 #define IDC_CHECK_CREATE_HARDFILE_MEGABYTES 2010
 #define IDC_CHECK_FULLSCREEN            2011
-#define IDC_CHECK2                      2012
+#define IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE 2012
 #define IDC_RADIO1                      2013
 #define IDC_CHECK_DF1_ENABLED           2014
 #define IDC_RADIO_SOUND_NO_EMULATION    2015
 #define IDC_RADIO_SCREEN_HSCALE_SINGLE  2016
 #define IDC_CHECK_AUTOCONFIG_DISABLE    2017
-#define IDC_CHECK3                      2019
+#define IDC_CHECK_FLOPPY_ADF_CREATE_FFS 2019
 #define IDC_RADIO2                      2020
 #define IDC_CHECK_DF2_ENABLED           2021
 #define IDC_RADIO_SOUND_PLAY            2022
@@ -278,15 +284,14 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
-#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        182
+#define _APS_NEXT_RESOURCE_VALUE        183
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1144
+#define _APS_NEXT_CONTROL_VALUE         1145
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
