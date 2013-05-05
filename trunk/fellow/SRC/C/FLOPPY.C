@@ -116,14 +116,14 @@ BOOLE dskbyt2_read = FALSE;
 #define FLOPPY_LOG
 #endif 
 
-static STR floppyBootBlockOFS[]={
+static UBY floppyBootBlockOFS[]={
   0x44, 0x4f, 0x53, 0x00, 0xc0, 0x20, 0x0f, 0x19, 0x00, 0x00, 0x03, 0x70, 0x43, 0xfa, 0x00, 0x18,
   0x4e, 0xae, 0xff, 0xa0, 0x4a, 0x80, 0x67, 0x0a, 0x20, 0x40, 0x20, 0x68, 0x00, 0x16, 0x70, 0x00,
   0x4e, 0x75, 0x70, 0xff, 0x60, 0xfa, 0x64, 0x6f, 0x73, 0x2e, 0x6c, 0x69, 0x62, 0x72, 0x61, 0x72,
   0x79
 };
 
-static STR floppyBootBlockFFS[]={
+static UBY floppyBootBlockFFS[]={
   0x44, 0x4F, 0x53, 0x01, 0xE3, 0x3D, 0x0E, 0x72, 0x00, 0x00, 0x03, 0x70, 0x43, 0xFA, 0x00, 0x3E,
   0x70, 0x25, 0x4E, 0xAE, 0xFD, 0xD8, 0x4A, 0x80, 0x67, 0x0C, 0x22, 0x40, 0x08, 0xE9, 0x00, 0x06,
   0x00, 0x22, 0x4E, 0xAE, 0xFE, 0x62, 0x43, 0xFA, 0x00, 0x18, 0x4E, 0xAE, 0xFF, 0xA0, 0x4A, 0x80,
@@ -702,21 +702,20 @@ void floppyError(ULO drive, ULO errorID)
  */
 static void floppyWriteDiskDate(UBY *strBuffer)
 {
-  int days, mins, ticks;
   struct timeb time;
-  LONGLONG sec, usec;
-  LONGLONG t;
-  const LONGLONG timediff = ((8 * 365 + 2) * (24 * 60 * 60)) * (LONGLONG)1000;
-  const LONGLONG msecs_per_day = 24 * 60 * 60 * 1000;
+  time_t days, mins, ticks;
+  time_t sec;
+  time_t t;
+  const time_t timediff = ((8 * 365 + 2) * (24 * 60 * 60)) * (time_t)1000;
+  const time_t msecs_per_day = 24 * 60 * 60 * 1000;
   
   ftime(&time);
 
   sec = time.time;
   sec -= time.timezone * 60;
   if(time.dstflag) sec += 3600;
-  usec = time.millitm * 1000;
-
-  t = sec * 1000 + usec / 1000 - timediff;
+  
+  t = sec * 1000 + time.millitm - timediff;
 
   if(t < 0) t = 0;
 
@@ -726,18 +725,9 @@ static void floppyWriteDiskDate(UBY *strBuffer)
   t -= mins * (60 * 1000);
   ticks = t / (1000 / 50);
   
-  strBuffer[0]  = days  >> 24; 
-  strBuffer[1]  = days  >> 16; 
-  strBuffer[2]  = days  >> 8; 
-  strBuffer[3]  = days  >> 0;
-  strBuffer[4]  = mins  >> 24; 
-  strBuffer[5]  = mins  >> 16; 
-  strBuffer[6]  = mins  >> 8; 
-  strBuffer[7]  = mins  >> 0;
-  strBuffer[8]  = ticks >> 24;
-  strBuffer[9]  = ticks >> 16;
-  strBuffer[10] = ticks >> 8; 
-  strBuffer[11] = ticks >> 0;
+  memoryWriteLongToPointer(days,  strBuffer);
+  memoryWriteLongToPointer(mins,  strBuffer + 4);
+  memoryWriteLongToPointer(ticks, strBuffer + 8);
 }
 
 /** Write the checksum into the floppy disk buffer.
@@ -747,15 +737,14 @@ static void floppyWriteDiskChecksum(const UBY *strBuffer, UBY *strChecksum)
   ULO lChecksum = 0;
   int i;
 
-  for (i = 0; i < 512; i+= 4)
-    lChecksum += (strBuffer[i] << 24) | (strBuffer[i+1] << 16) | (strBuffer[i+2] << 8) | (strBuffer[i+3] << 0);
-
+  for (i = 0; i < 512; i+= 4) {
+    const UBY *p = strBuffer + i;
+    lChecksum += memoryReadLongFromPointer(p);
+  }
+    
   lChecksum = -lChecksum;
 
-  strChecksum[0] = lChecksum >> 24; 
-  strChecksum[1] = lChecksum >> 16; 
-  strChecksum[2] = lChecksum >> 8; 
-  strChecksum[3] = lChecksum >> 0;
+  memoryWriteLongToPointer(lChecksum, strChecksum);
 }
 
 static void floppyWriteDiskBootblock (UBY *strCylinderContent, bool bFFS, bool bBootable)
