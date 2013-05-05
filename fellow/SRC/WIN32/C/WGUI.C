@@ -1864,6 +1864,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     if(filename)
     {
       cfgSetDiskImage(conf, index, filename);
+      cfgSetLastUsedDiskDir(conf, wguiExtractPath(filename));
       free(filename);
       return true;
     }

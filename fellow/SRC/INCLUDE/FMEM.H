@@ -17,6 +17,8 @@ extern void memoryChipWriteWord(UWO data, ULO address);
 #define memoryReadWordFromPointer(address) ((address[0] << 8) | address[1])
 #define memoryReadLongFromPointer(address) ((address[0] << 24) | (address[1] << 16) | (address[2] << 8) | address[3])
 
+extern void memoryWriteLongToPointer(ULO data, UBY *address);
+
 /* IO Bank functions */
 
 typedef UWO (*memoryIoReadFunc)(ULO address);
