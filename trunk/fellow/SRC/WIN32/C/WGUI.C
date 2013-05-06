@@ -1970,7 +1970,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	          MessageBox(hwndDlg,
 	            "You must specify a floppy image filename.",
 	            "Create floppy image",
-	            0);
+	            MB_ICONERROR);
 	          break;
 	        }
 
@@ -1980,6 +1980,15 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                   bBootable = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE);
                   bFFS      = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS);
                   ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME, strVolume, CFG_FILENAME_LENGTH);
+
+                  if(!floppyValidateAmigaDOSVolumeName(strVolume))
+                  {
+	            MessageBox(hwndDlg,
+	              "The specified volume name is invalid.",
+	              "Create floppy image",
+	              MB_ICONERROR);
+	            break;
+	          }
                 }
 
                 bResult = floppyImageADFCreate(strFilename, strVolume, bFormat, bBootable, bFFS);
