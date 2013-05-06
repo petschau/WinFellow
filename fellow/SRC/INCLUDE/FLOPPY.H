@@ -130,7 +130,7 @@ extern void floppyDirSet(BOOLE dr);
 extern void floppyStepSet(BOOLE stp);
 extern bool floppyImageADFCreate(STR *, STR *, bool, bool, bool);
 extern void floppyImageRemove(ULO drive);
-
+extern bool floppyValidateAmigaDOSVolumeName(const STR *);
 /* Configuration */
 
 extern void floppySetDiskImage(ULO drive, STR *diskname);

@@ -747,7 +747,33 @@ static void floppyWriteDiskChecksum(const UBY *strBuffer, UBY *strChecksum)
   memoryWriteLongToPointer(lChecksum, strChecksum);
 }
 
-static void floppyWriteDiskBootblock (UBY *strCylinderContent, bool bFFS, bool bBootable)
+bool floppyValidateAmigaDOSVolumeName(const STR *strVolumeName)
+{
+  STR *strIllegalVolumeNames[7] = { "SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S" };
+  STR strIllegalCharacters[2] = { ':', '/' };
+  int i;
+
+  if(strVolumeName == NULL) 
+    return FALSE;
+
+  if(strVolumeName[0] == '\0') 
+    return false;
+
+  if(strlen(strVolumeName) > 30)
+    return FALSE;
+
+  for(i = 0; i < 2; i++)
+    if(strchr(strVolumeName, strIllegalCharacters[i]) != NULL)
+      return FALSE;
+
+  for(i = 0; i < 7; i++)
+    if(strcmp(strVolumeName, strIllegalVolumeNames[i]) == 0)
+      return FALSE;
+
+  return TRUE;
+}
+
+static void floppyWriteDiskBootblock(UBY *strCylinderContent, bool bFFS, bool bBootable)
 {
   strcpy((char *) strCylinderContent, "DOS");
   strCylinderContent[3] = bFFS ? 1 : 0;
@@ -785,8 +811,7 @@ bool floppyImageADFCreate(STR *strImageFilename, STR *strVolumeLabel, bool bForm
   FILE *f = NULL;
 
   if(bFormat) {
-    if(strVolumeLabel == NULL) return false;
-    if(strVolumeLabel[0] == '\0') return false;
+    if(!floppyValidateAmigaDOSVolumeName(strVolumeLabel)) return false;
   }
 
   f = fopen(strImageFilename, "wb");
