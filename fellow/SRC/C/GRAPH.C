@@ -36,6 +36,10 @@
 #include "sprite.h"
 #include "CpuIntegration.h"
 
+#ifdef GRAPH2
+#include "Graphics.h"
+#endif
+
 /*======================================================================*/
 /* flag that handles loss of surface content due to DirectX malfunction */
 /*======================================================================*/
@@ -354,6 +358,16 @@ void wserper(UWO data, ULO address)
 
 void wdiwstrt(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  ULO diwstrt_old = diwstrt;
+  diwstrt = data;
+  if (diwstrt_old != diwstrt)
+  {
+    GraphicsContext.DIWXStateMachine.ChangedValue();
+    GraphicsContext.DIWYStateMachine.ChangedValue();
+  }
+#endif
   diwstrt = data;
   diwytop = (data >> 8) & 0x000000FF;
   if (diwxright == 472)
@@ -374,6 +388,16 @@ void wdiwstrt(UWO data, ULO address)
 
 void wdiwstop(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  ULO diwstop_old = diwstop;
+  diwstop = data;
+  if (diwstop_old != diwstop)
+  {
+    GraphicsContext.DIWXStateMachine.ChangedValue();
+    GraphicsContext.DIWYStateMachine.ChangedValue();
+  }
+#endif
   diwstop = data;
   if ((((data >> 8) & 0xff) & 0x80) == 0x0)
   {
@@ -408,6 +432,11 @@ void wdiwstop(UWO data, ULO address)
 
 void wddfstrt(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  ULO ddfstrt_old = ddfstrt;
+#endif
+
   if ((data & 0xfc) < 0x18)
   {
     ddfstrt = 0x18;
@@ -418,6 +447,13 @@ void wddfstrt(UWO data, ULO address)
   }
   sprite_ddf_kill = (data & 0xfc) - 0x14;
   wbplcon1((UWO)bplcon1, address);
+
+#ifdef GRAPH2
+  if (ddfstrt_old != ddfstrt)
+  {
+    GraphicsContext.DDFStateMachine.ChangedValue();
+  }
+#endif
 }
 
 /*==============================================================================*/
@@ -430,6 +466,11 @@ void wddfstrt(UWO data, ULO address)
 
 void wddfstop(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  ULO ddfstop_old = ddfstop;
+#endif
+
   if ((data & 0xfc) > 0xd8)
   {
     ddfstop = 0xd8;
@@ -439,6 +480,13 @@ void wddfstop(UWO data, ULO address)
     ddfstop = data & 0xfc;
   }
   graphCalculateWindow();
+
+#ifdef GRAPH2
+  if (ddfstop_old != ddfstop)
+  {
+    GraphicsContext.DDFStateMachine.ChangedValue();
+  }
+#endif
 }
 
 /*===========================================================================*/
@@ -577,6 +625,10 @@ void wdmacon(UWO data, ULO address)
 
 void wbpl1pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
+
   bpl1pt = (bpl1pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
@@ -587,6 +639,9 @@ void wbpl1pth(UWO data, ULO address)
 
 void wbpl1ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl1pt = (bpl1pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -597,6 +652,9 @@ void wbpl1ptl(UWO data, ULO address)
 
 void wbpl2pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl2pt = (bpl2pt & 0x0000ffff) | ((UWO)(data & 0x01f)) << 16;
 }
 
@@ -607,6 +665,9 @@ void wbpl2pth(UWO data, ULO address)
 
 void wbpl2ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl2pt = (bpl2pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -617,6 +678,9 @@ void wbpl2ptl(UWO data, ULO address)
 
 void wbpl3pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl3pt = (bpl3pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
@@ -627,6 +691,9 @@ void wbpl3pth(UWO data, ULO address)
 
 void wbpl3ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl3pt = (bpl3pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -637,6 +704,9 @@ void wbpl3ptl(UWO data, ULO address)
 
 void wbpl4pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl4pt = (bpl4pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
@@ -647,6 +717,9 @@ void wbpl4pth(UWO data, ULO address)
 
 void wbpl4ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl4pt = (bpl4pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -657,6 +730,9 @@ void wbpl4ptl(UWO data, ULO address)
 
 void wbpl5pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl5pt = (bpl5pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
@@ -667,6 +743,9 @@ void wbpl5pth(UWO data, ULO address)
 
 void wbpl5ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl5pt = (bpl5pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -677,6 +756,9 @@ void wbpl5ptl(UWO data, ULO address)
 
 void wbpl6pth(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl6pt = (bpl6pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
 }
 
@@ -687,6 +769,9 @@ void wbpl6pth(UWO data, ULO address)
 
 void wbpl6ptl(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+#endif
   bpl6pt = (bpl6pt & 0xffff0000) | (ULO)(data & 0x0fffe);
 }
 
@@ -697,6 +782,13 @@ void wbpl6ptl(UWO data, ULO address)
 
 void wbplcon0(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  if (bplcon0 != data)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  }
+#endif
+
   ULO local_data;
 
   bplcon0 = data;
@@ -767,6 +859,13 @@ void wbplcon0(UWO data, ULO address)
 
 void wbplcon1(UWO data, ULO address)
 {
+#ifdef GRAPH2
+  if (bplcon1 != (data & 0xff))
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  }
+#endif
+
   bplcon1 = data & 0xff;
 
   // check for reverse shift order
@@ -829,7 +928,14 @@ void wbplcon2(UWO data, ULO address)
 
 void wbpl1mod(UWO data, ULO address)
 {
-  bpl1mod = (ULO)(LON)(WOR)(data & 0xfffe);
+  ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
+#ifdef GRAPH2
+  if (bpl1mod != new_value)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  }
+#endif
+  bpl1mod = new_value;
 }
 
 /*===========================================================================*/
@@ -839,7 +945,14 @@ void wbpl1mod(UWO data, ULO address)
 
 void wbpl2mod(UWO data, ULO address)
 {
-  bpl2mod = (ULO)(LON)(WOR)(data & 0xfffe);
+  ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
+#ifdef GRAPH2
+  if (bpl2mod != new_value)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  }
+#endif
+  bpl2mod = new_value;
 }
 
 /*===========================================================================*/
@@ -849,12 +962,21 @@ void wbpl2mod(UWO data, ULO address)
 
 void wcolor(UWO data, ULO address)
 {
+  ULO color_index = ((address & 0x1ff) - 0x180) >> 1;
+
+#ifdef GRAPH2
+  if (graph_color[color_index] != (data & 0x0fff))
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  }
+#endif
+
   // normal mode
-  graph_color[((address & 0x1ff) - 0x180) >> 1] = (UWO) (data & 0x0fff);
-  graph_color_shadow[((address & 0x1ff) - 0x180) >> 1] = draw_color_table[data & 0xfff];
+  graph_color[color_index] = (UWO) (data & 0x0fff);
+  graph_color_shadow[color_index] = draw_color_table[data & 0xfff];
   // half bright mode
-  graph_color[(((address & 0x1ff) - 0x180) >> 1) + 32] = (UWO) (((data & 0xfff) & 0xeee) >> 1);
-  graph_color_shadow[(((address & 0x1ff) - 0x180) >> 1) + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
+  graph_color[color_index + 32] = (UWO) (((data & 0xfff) & 0xeee) >> 1);
+  graph_color_shadow[color_index + 32] = draw_color_table[(((data & 0xfff) & 0xeee) >> 1)];
 }
 
 /*===========================================================================*/
@@ -2683,6 +2805,12 @@ void graphP2C2XInit(void)
 
 void graphEndOfLine(void)
 {
+#ifdef GRAPH2
+
+  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+  return;
+#endif
+
   graph_line* current_graph_line;
 
   // skip this frame?

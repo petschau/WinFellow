@@ -30,6 +30,10 @@
 #include "bus.h"
 #include "blit.h"
 
+#ifdef GRAPH2
+#include "CopperNew.h"
+#endif
+
 /*=======================================================*/
 /* external references not exported by the include files */
 /*=======================================================*/
@@ -161,6 +165,11 @@ UWO rcopjmp2(ULO address)
 
 void copperYTableInit(void) {
   int i, ex = 16;
+
+#ifdef GRAPH2
+  ex = 0;
+#endif
+
   spriteSetDelay(40);
   for (i = 0; i < 512; i++) {
     copper_ytable[i] = i*BUS_CYCLE_PER_LINE + ex;
@@ -261,8 +270,12 @@ void copperLoad1(void)
 
   if (copper_dma == TRUE)
   {
+#ifdef GRAPH2
+    Copper_Load();
+#else
     copperRemoveEvent();
     copperInsertEvent(bus.cycle + 4);
+#endif
   }
 }
 
@@ -272,8 +285,12 @@ void copperLoad2(void)
 
   if (copper_dma == TRUE)
   {
+#ifdef GRAPH2
+    Copper_Load();
+#else
     copperRemoveEvent();
     copperInsertEvent(bus.cycle + 4);
+#endif
   }
 }
 

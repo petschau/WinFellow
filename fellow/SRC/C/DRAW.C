@@ -40,6 +40,10 @@
 #include "fileops.h"
 #include "sprite.h"
 
+#ifdef GRAPH2
+#include "Graphics.h"
+#endif
+
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #endif
@@ -1658,35 +1662,35 @@ void drawUpdateDrawmode(void)
 
 void drawEndOfFrame(void)
 {
-  UBY* draw_buffer_current_ptr_local;
-  ULO i;
-  ULO next_line_offset;
-  graph_line * graph_frame_ptr;
-
   if (draw_frame_skip == 0)
   {
-    next_line_offset = drawValidateBufferPointer(draw_top);
+    ULO next_line_offset = drawValidateBufferPointer(draw_top);
 
     // need to test for error
     if (draw_buffer_top_ptr != NULL)
     {
-      draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-      for (i = 0; i < (draw_bottom - draw_top); i++)
-      {
-	graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
-	if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
-	{
-	  if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
-	  {
-	    ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, next_line_offset/8);
+#ifndef GRAPH2
+      UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+      for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
+        graph_line *graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
+        if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+        {
+          if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
+          {
+              ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, next_line_offset/8);
 	  }
-	}
-	draw_buffer_current_ptr_local += next_line_offset;
-	draw_buffer_current_ptr = draw_buffer_current_ptr_local;
+        }
+        draw_buffer_current_ptr_local += next_line_offset;
+        draw_buffer_current_ptr = draw_buffer_current_ptr_local;
       }
+#else
+      GraphicsContext.BitplaneDraw.TmpFrame(next_line_offset);
+#endif
+
       drawLEDs();
       drawFpsCounter();
       drawInvalidateBufferPointer();
+
       drawViewScroll();
       drawStatTimestamp();
       drawBufferFlip();
