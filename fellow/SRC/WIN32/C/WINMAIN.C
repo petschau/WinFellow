@@ -33,10 +33,18 @@
 #include "kbd.h"
 #include "joydrv.h"
 #include "kbddrv.h"
+#include "fileops.h"
 
 #ifdef RETRO_PLATFORM
 #include "retroplatform.h"
 #endif
+
+// in release builds, user mode crash dumps shall be captured
+#ifdef NDEBUG
+#include <Windows.h>
+#include <Dbghelp.h>
+#endif
+
 
 extern int __cdecl main(int, char **);
 
@@ -417,11 +425,89 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
   return argv;
 }
 
+/*============================================================================*/
+/* exception handling to generate minidumps                                   */
+/*============================================================================*/
+
+#ifdef NDEBUG
+
+typedef BOOL (__stdcall *tMDWD)(
+  IN HANDLE hProcess,
+  IN DWORD ProcessId,
+  IN HANDLE hFile,
+  IN MINIDUMP_TYPE DumpType,
+  IN CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, OPTIONAL
+  IN CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, OPTIONAL
+  IN CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam OPTIONAL
+  );
+
+void winDrvWriteMinidump(EXCEPTION_POINTERS* e) {
+  char name[MAX_PATH], filename[MAX_PATH];
+  HINSTANCE hDbgHelp = LoadLibraryA("dbghelp.dll");
+  SYSTEMTIME t;
+
+  if(hDbgHelp == NULL)
+    return;
+
+  tMDWD pMiniDumpWriteDump = (tMDWD) GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
+
+  if(pMiniDumpWriteDump == NULL)
+    return;
+
+  GetSystemTime(&t);
+
+  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp", 
+    FELLOWNUMERICVERSION, 
+    t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+
+  fileopsGetGenericFileName(name, "WinFellow", filename);
+
+  fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
+
+  HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
+
+  if(hFile == INVALID_HANDLE_VALUE)
+      return;
+
+  MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+  exceptionInfo.ThreadId = GetCurrentThreadId();
+  exceptionInfo.ExceptionPointers = e;
+  exceptionInfo.ClientPointers = FALSE;
+
+  pMiniDumpWriteDump(
+    GetCurrentProcess(),
+    GetCurrentProcessId(),
+    hFile,
+    MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
+    e ? &exceptionInfo : NULL,
+    NULL,
+    NULL);
+
+  CloseHandle(hFile);
+
+  return;
+}
+
+LONG CALLBACK winDrvUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
+  winDrvWriteMinidump(e);
+  return EXCEPTION_CONTINUE_SEARCH;
+}
+
+#endif
+
 int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance 
 		   HINSTANCE hPrevInstance, // handle to previous instance 
 		   LPSTR lpCmdLine,	    // pointer to command line 
 		   int nCmdShow)  	    // show state of window 
 {
+#ifdef NDEBUG
+  SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
+#endif
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
+#endif
+
   char *cmdline = (char *) malloc(strlen(lpCmdLine) + 1);
   char **argv;
   int argc;
@@ -436,6 +522,37 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   result = main(argc, argv);
   free(cmdline);
   free(argv);
+
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+  HANDLE hLogFile;
+  STR stOutputFileName[CFG_FILENAME_LENGTH];
+  STR strLogFileName[CFG_FILENAME_LENGTH];
+  SYSTEMTIME t;
+
+  GetSystemTime(&t);
+
+  wsprintfA(strLogFileName, 
+    "WinFellowCrtMallocReport_%s_%4d%02d%02d_%02d%02d%02d.log", 
+    FELLOWNUMERICVERSION, 
+    t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+
+  fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
+
+  hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE, 
+      FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 
+      FILE_ATTRIBUTE_NORMAL, NULL);
+
+  _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+  _CrtSetReportFile(_CRT_WARN, hLogFile);
+
+  if(!_CrtDumpMemoryLeaks()) {
+    CloseHandle(hLogFile);
+    remove(stOutputFileName);
+  }
+  else
+    CloseHandle(hLogFile);
+#endif
+
   return result;
 }
 
