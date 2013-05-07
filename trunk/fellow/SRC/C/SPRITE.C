@@ -1426,14 +1426,7 @@ void spritesDMASpriteHandler(void) {
 	    sprpt[sprnr] = sprpt[sprnr] + 4; 
 	  }
 
-	  if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
-	  {
-	    sprite_state[sprnr] = 0;
-	  }
-	  else
-	  {
-	    sprite_state[sprnr] = 1;
-	  }
+          sprite_state[sprnr] = 1;
 	}
 
 	// check if item is a write to register sprxpth
@@ -1448,7 +1441,7 @@ void spritesDMASpriteHandler(void) {
 
     case 1: 
       // waiting for (graph_raster_y == spry)
-      if ((currentY >= spry[sprnr]) && (currentY < sprly[sprnr]))
+      if ((currentY >= spry[sprnr]) && ((currentY < sprly[sprnr]) || (currentY == spry[sprnr] && spry[sprnr] == sprly[sprnr])))
       {
 	//if (graph_raster_y != sprly[sprnr])
 	if (TRUE)
@@ -1504,7 +1497,7 @@ void spritesDMASpriteHandler(void) {
 
     case 2: 
       // waiting for (graph_raster_y == sprly)
-      if (currentY == sprly[sprnr]) 
+      if (currentY >= sprly[sprnr]) 
       {
 	// we interpret the next two data words as the next two control words
 	local_data_ctl = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
@@ -1539,14 +1532,7 @@ void spritesDMASpriteHandler(void) {
 	  sprpt[sprnr] = sprpt[sprnr] + 4; 
 	}
 
-	if ((local_data_ctl == 0) && (local_data_pos == 0))
-	{
-	  sprite_state[sprnr] = 0;
-	}
-	else
-	{
-	  sprite_state[sprnr] = 1;
-	}
+        sprite_state[sprnr] = 1;
       }
       else
       {
