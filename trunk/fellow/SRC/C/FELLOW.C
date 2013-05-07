@@ -26,11 +26,6 @@
 
 #include <time.h>
 
-#ifdef NDEBUG
-#include <Windows.h>
-#include <Dbghelp.h>
-#endif
-
 #include "defs.h"
 #include "versioninfo.h"
 #include "fellow.h"
@@ -603,88 +598,10 @@ static void fellowModulesShutdown(void)
 }
 
 /*============================================================================*/
-/* exception handling to generate minidumps                                   */
-/*============================================================================*/
-
-#ifdef NDEBUG
-
-typedef BOOL (__stdcall *tMDWD)(
-  IN HANDLE hProcess,
-  IN DWORD ProcessId,
-  IN HANDLE hFile,
-  IN MINIDUMP_TYPE DumpType,
-  IN CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam, OPTIONAL
-  IN CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, OPTIONAL
-  IN CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam OPTIONAL
-  );
-
-void fellowWriteMinidump(EXCEPTION_POINTERS* e) {
-  char name[MAX_PATH], filename[MAX_PATH];
-  HINSTANCE hDbgHelp = LoadLibraryA("dbghelp.dll");
-  SYSTEMTIME t;
-
-  if(hDbgHelp == NULL)
-    return;
-
-  tMDWD pMiniDumpWriteDump = (tMDWD) GetProcAddress(hDbgHelp, "MiniDumpWriteDump");
-
-  if(pMiniDumpWriteDump == NULL)
-    return;
-
-  GetSystemTime(&t);
-
-  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp", 
-    FELLOWNUMERICVERSION, 
-    t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
-
-  fileopsGetGenericFileName(name, "WinFellow", filename);
-
-  fellowAddLog("Unhandled exception detected, write minidump to %s...\n", name);
-
-  HANDLE hFile = CreateFileA(name, GENERIC_WRITE, FILE_SHARE_READ, 0, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-
-  if(hFile == INVALID_HANDLE_VALUE)
-      return;
-
-  MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
-  exceptionInfo.ThreadId = GetCurrentThreadId();
-  exceptionInfo.ExceptionPointers = e;
-  exceptionInfo.ClientPointers = FALSE;
-
-  pMiniDumpWriteDump(
-    GetCurrentProcess(),
-    GetCurrentProcessId(),
-    hFile,
-    MINIDUMP_TYPE(MiniDumpWithIndirectlyReferencedMemory | MiniDumpScanMemory),
-    e ? &exceptionInfo : NULL,
-    NULL,
-    NULL);
-
-  CloseHandle(hFile);
-
-  return;
-}
-
-LONG CALLBACK fellowUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
-  fellowWriteMinidump(e);
-  return EXCEPTION_CONTINUE_SEARCH;
-}
-
-#endif
-
-/*============================================================================*/
 /* main....                                                                   */
 /*============================================================================*/
 
 int __cdecl main(int argc, char *argv[]) {
-#ifdef NDEBUG
- SetUnhandledExceptionFilter(fellowUnhandledExceptionHandler);
-#endif
-
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-#endif
-
   fellowSetLogFirstTime(TRUE);
   fellowSetLogEnabled(TRUE);
 
@@ -704,5 +621,6 @@ int __cdecl main(int argc, char *argv[]) {
 #endif
   
   fellowModulesShutdown();
+
   return EXIT_SUCCESS;
 }
