@@ -57,6 +57,10 @@
 #include "interrupt.h"
 #include "RetroPlatform.h"
 
+#ifdef GRAPH2
+#include "Graphics.h"
+#endif
+
 BOOLE fellow_request_emulation_stop;
 
 char fellowlogfilename[MAX_PATH];
@@ -275,6 +279,9 @@ void fellowSoftReset(void) {
   ffilesysHardReset();
   memoryHardResetPost();
   fellowPreStartReset(FALSE);
+#ifdef GRAPH2
+  GraphicsContext.SoftReset();
+#endif
 }
 
 /*============================================================================*/
@@ -300,6 +307,9 @@ void fellowHardReset(void) {
   memoryHardResetPost();
   cpuIntegrationHardReset();
   fellowPreStartReset(FALSE);
+#ifdef GRAPH2
+  GraphicsContext.HardReset();
+#endif
 }
 
 /*============================================================================*/
@@ -345,6 +355,9 @@ BOOLE fellowEmulationStart(void) {
   if(RetroPlatformGetMode())
     RetroPlatformEmulationStart();
 #endif
+#ifdef GRAPH2
+  GraphicsContext.EmulationStart();
+#endif
   return result && memoryGetKickImageOK();
 }
 
@@ -375,6 +388,9 @@ void fellowEmulationStop(void) {
   interruptEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
+#ifdef GRAPH2
+  GraphicsContext.EmulationStop();
+#endif
 }
 
 /*============================================================================*/
@@ -561,6 +577,9 @@ static void fellowModulesStartup(int argc, char *argv[])
   if(RetroPlatformGetMode())
     RetroPlatformStartup();
 #endif
+#ifdef GRAPH2
+  GraphicsContext.Startup();
+#endif
 }
 
 /*============================================================================*/
@@ -569,6 +588,9 @@ static void fellowModulesStartup(int argc, char *argv[])
 
 static void fellowModulesShutdown(void)
 {
+#ifdef GRAPH2
+  GraphicsContext.Shutdown();
+#endif
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode())
 	  RetroPlatformShutdown();

@@ -47,6 +47,11 @@
 #include "RetroPlatform.h"
 #endif
 
+#ifdef GRAPH2
+#include "Graphics.h"
+#include "CopperNew.h"
+#endif
+
 bus_state bus;
 
 bus_event cpuEvent;
@@ -116,7 +121,9 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
   /*==============================================================*/
+#ifndef GRAPH2
   drawEndOfFrame();
+#endif
 
   /*==============================================================*/
   /* Handle keyboard events                                       */
@@ -131,7 +138,11 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Restart copper                                               */
   /*==============================================================*/
+#ifndef GRAPH2
   copperEndOfFrame();
+#else
+  Copper_EndOfFrame();
+#endif
 
   /*==============================================================*/
   /* Update CIA timer counters                                    */
@@ -189,6 +200,10 @@ void busEndOfFrame(void)
   graphEndOfFrame();
   timerEndOfFrame();
 
+#ifdef GRAPH2
+  GraphicsContext.EndOfFrame();
+#endif
+
   busInsertEvent(&eofEvent);
   bus.frame_no++;
 }
@@ -241,7 +256,7 @@ void busInsertEvent(bus_event *ev)
   bus_event *tmp_prev = NULL;
   for (tmp = bus.events; tmp != NULL; tmp = tmp->next)
   {
-    if (ev->cycle < tmp->cycle)
+      if (ev->cycle < tmp->cycle)
     {
       ev->next = tmp;
       ev->prev = tmp_prev;
@@ -497,6 +512,13 @@ void busInitializeQueue(void)
   busClearEvent(&eolEvent, busEndOfLine);
   busClearEvent(&eofEvent, busEndOfFrame);
   busClearEvent(&ciaEvent, ciaHandleEvent);
+
+#ifndef GRAPH2
+  busClearEvent(&copperEvent, copperEmulate);
+#else
+  busClearEvent(&copperEvent, Copper_EventHandler);
+#endif
+
   busClearEvent(&copperEvent, copperEmulate);
   busClearEvent(&blitterEvent, blitFinishBlit);
   busClearEvent(&interruptEvent, interruptHandleEvent);

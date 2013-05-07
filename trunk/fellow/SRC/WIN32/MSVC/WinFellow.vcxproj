@@ -104,7 +104,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -168,7 +168,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;USE_DX5;_CRT_SECURE_NO_WARNINGS;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>
@@ -216,7 +216,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>
       </ExceptionHandling>
@@ -273,7 +273,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -552,6 +552,18 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClCompile Include="..\..\C\interrupt.c" />
     <ClCompile Include="..\..\c\rtc.cpp" />
     <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp" />
+    <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
+    <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
+    <ClCompile Include="..\..\graphics\BitplaneDraw.c" />
+    <ClCompile Include="..\..\graphics\PixelSerializer.c" />
+    <ClCompile Include="..\..\graphics\CopperNew.c" />
+    <ClCompile Include="..\..\graphics\DDFStateMachine.c" />
+    <ClCompile Include="..\..\graphics\DIWXStateMachine.c" />
+    <ClCompile Include="..\..\graphics\DIWYStateMachine.c" />
+    <ClCompile Include="..\..\graphics\Graphics.cpp" />
+    <ClCompile Include="..\..\graphics\GraphicsEvent.cpp" />
+    <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp" />
+    <ClCompile Include="..\..\graphics\SpriteState.c" />
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1529,6 +1541,19 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
+    <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />
+    <ClInclude Include="..\..\graphics\BitplaneDMA.h" />
+    <ClInclude Include="..\..\graphics\BitplaneDraw.h" />
+    <ClInclude Include="..\..\graphics\PixelSerializer.h" />
+    <ClInclude Include="..\..\graphics\CopperNew.h" />
+    <ClInclude Include="..\..\graphics\DDFStateMachine.h" />
+    <ClInclude Include="..\..\graphics\DIWXStateMachine.h" />
+    <ClInclude Include="..\..\graphics\DIWYStateMachine.h" />
+    <ClInclude Include="..\..\graphics\Graphics.h" />
+    <ClInclude Include="..\..\graphics\GraphicsEvent.h" />
+    <ClInclude Include="..\..\graphics\GraphicsEventQueue.h" />
+    <ClInclude Include="..\..\graphics\SpriteState.h" />
     <ClInclude Include="..\..\INCLUDE\BLIT.H" />
     <ClInclude Include="..\..\INCLUDE\BUS.H" />
     <ClInclude Include="..\..\INCLUDE\CIA.H" />

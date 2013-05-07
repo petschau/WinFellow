@@ -55,6 +55,9 @@
     <Filter Include="CAPS Header Files">
       <UniqueIdentifier>{16e17f05-c0df-4b6f-8422-957ed77e46d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="graphics">
+      <UniqueIdentifier>{b87ae76d-615b-4620-818c-936fab6ea5a0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -329,6 +332,42 @@
     </ClCompile>
     <ClCompile Include="..\..\zlib\C\infback.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\BitplaneDMA.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\BitplaneDraw.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\CopperNew.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\DDFStateMachine.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\DIWXStateMachine.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\DIWYStateMachine.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\SpriteState.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\Graphics.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\GraphicsEvent.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\PixelSerializer.c">
+      <Filter>graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -625,6 +664,45 @@
     </ClInclude>
     <ClInclude Include="..\..\include\rtc.h">
       <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\BitplaneDMA.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\BitplaneDraw.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\CopperNew.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\DDFStateMachine.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\DIWXStateMachine.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\DIWYStateMachine.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\SpriteState.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\Graphics.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\GraphicsEvent.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\GraphicsEventQueue.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\PixelSerializer.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\BitplaneUtility.h">
+      <Filter>graphics</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
