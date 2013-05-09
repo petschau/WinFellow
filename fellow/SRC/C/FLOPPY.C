@@ -754,23 +754,23 @@ bool floppyValidateAmigaDOSVolumeName(const STR *strVolumeName)
   int i;
 
   if(strVolumeName == NULL) 
-    return FALSE;
+    return false;
 
   if(strVolumeName[0] == '\0') 
     return false;
 
   if(strlen(strVolumeName) > 30)
-    return FALSE;
+    return false;
 
   for(i = 0; i < 2; i++)
     if(strchr(strVolumeName, strIllegalCharacters[i]) != NULL)
-      return FALSE;
+      return false;
 
   for(i = 0; i < 7; i++)
-    if(strcmp(strVolumeName, strIllegalVolumeNames[i]) == 0)
-      return FALSE;
+    if(stricmp(strVolumeName, strIllegalVolumeNames[i]) == 0)
+      return false;
 
-  return TRUE;
+  return true;
 }
 
 static void floppyWriteDiskBootblock(UBY *strCylinderContent, bool bFFS, bool bBootable)
