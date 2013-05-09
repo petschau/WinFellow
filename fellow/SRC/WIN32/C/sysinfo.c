@@ -419,19 +419,23 @@ static void sysinfoParseMemoryStatus (void) {
 }
 
 static void sysinfoVersionInfo (void) {
-    char *versionstring = fellowGetVersionString();
-	fellowAddTimelessLog(versionstring);
-    free(versionstring);
+  char *versionstring = fellowGetVersionString();
+  fellowAddTimelessLog(versionstring);
+  free(versionstring);
 
-	#ifdef USE_DIRECTX
-		fellowAddTimelessLog(" (DirectX");
-	#endif
+  #ifdef USE_DIRECTX
+    fellowAddTimelessLog(" (DirectX");
+  #endif
 
-	#ifdef _DEBUG
-		fellowAddTimelessLog(" (debug build)\n");
-	#else
-		fellowAddTimelessLog(" (release build)\n");
-	#endif
+  #ifdef GRAPH2
+    fellowAddTimelessLog(" GRAPH2");
+  #endif
+
+  #ifdef _DEBUG
+    fellowAddTimelessLog(" (debug build)\n");
+  #else
+    fellowAddTimelessLog(" (release build)\n");
+  #endif
 }
 
 /*============================================================================*/
