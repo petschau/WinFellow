@@ -90,3 +90,11 @@ Test that Alt+F4 in RetroPlatform mode will close the emulation session.
 Perform a write operation on a floppy where undo is enabled, and close the session 
 using Alt+F4. The undo dialog must be usable both when clicking ok or cancel.
 Before this change, the emulation session would always be closed.
+
+r906: Sprite DMA was being disabled instead of waiting
+------------------------------------------------------
+Start Arkanoid, hit F1 and start in round 7 (move mouse to the right to select 
+level). Verify that enemy sprites are coming down from the top of the screen. 
+Before this change, they were not visible.
+
+Arkanoid is updating vstart/vstop with the copper.
