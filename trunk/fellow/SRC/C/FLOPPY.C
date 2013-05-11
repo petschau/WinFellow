@@ -135,6 +135,7 @@ static UBY floppyBootBlockFFS[]={
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
+FILE *floppylogfile = 0;
 
 void floppyLogClear(void)
 {
@@ -143,10 +144,12 @@ void floppyLogClear(void)
 
 void floppyLog(STR *msg)
 {
-  FILE *F = fopen(floppylogfilename, "a");
-  if (F == 0) return;
-  fputs(msg, F);
-  fclose(F);
+  if (floppylogfile == 0)
+  {
+    floppylogfile = fopen(floppylogfilename, "a");
+    if (floppylogfile == 0) return;
+  }
+  fputs(msg, floppylogfile);
 }
 
 void floppyLogDMARead(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
@@ -1813,4 +1816,8 @@ void floppyShutdown(void)
   fellowAddLog("Unloading CAPS Image library...\n");
   capsShutdown();
 #endif
+  if (floppylogfile != 0)
+  {
+    fclose(floppylogfile);
+  }
 }
