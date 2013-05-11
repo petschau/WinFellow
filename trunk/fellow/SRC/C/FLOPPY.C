@@ -1816,8 +1816,10 @@ void floppyShutdown(void)
   fellowAddLog("Unloading CAPS Image library...\n");
   capsShutdown();
 #endif
+#ifdef FLOPPY_LOG
   if (floppylogfile != 0)
   {
     fclose(floppylogfile);
   }
+#endif
 }
