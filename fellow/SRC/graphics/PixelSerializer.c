@@ -30,35 +30,34 @@
 #include "graph.h"
 #include "draw.h"
 #include "fmem.h"
-#include "fileops.h"
 
 #include "Graphics.h"
-
-#define PIXEL_SERIALIZER_FIRST_CYCLE 28
-#define PIXEL_SERIALIZER_LAST_CYCLE 11
-#define PIXEL_SERIALIZER_OUTPUT_SIZE 2
 
 extern UBY *draw_buffer_current_ptr;
 extern UBY draw_dual_translate[2][256][256];
 
-void PixelSerializer::Log(ULO rasterY, ULO rasterX)
+void PixelSerializer::LogEndOfLine(ULO line, ULO cylinder)
 {
-  if (_enableLog)
+  if (GraphicsContext.Logger.IsLogEnabled())
   {
-    if (_logfile == 0)
-    {
-      STR filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "BPLSerializer.log");
-      _logfile = fopen(filename, "w");
-    }
-    fprintf(_logfile, "%.16I64X %.3X %.3X\n", busGetRasterFrameCount(), rasterY, rasterX);
+    GraphicsContext.Logger.Log(line, cylinder, "SERIALIZER: End of line\n");
   }
 }
 
-void PixelSerializer::EventSetup(ULO cycle)
+void PixelSerializer::LogOutput(ULO line, ULO cylinder, ULO startCylinder, ULO untilCylinder)
+{
+  if (GraphicsContext.Logger.IsLogEnabled())
+  {
+    STR msg[256];
+    sprintf(msg, "Output: %d to %d\n", startCylinder, untilCylinder);
+    GraphicsContext.Logger.Log(line, cylinder, msg);
+  }
+}
+
+void PixelSerializer::EventSetup(ULO arriveTime)
 {
   _queue->Remove(this);
-  _cycle = cycle;
+  _arriveTime = arriveTime;
   _queue->Insert(this);
 }
 
@@ -78,19 +77,17 @@ void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, U
   ULO oddmask, invoddmask;
   ULO evenmask, invevenmask;
 
+  _activated = true;
+
   if (BitplaneUtility::IsLores())
   {
-    scrollodd = 16 - oddscroll;
-    scrolleven = 16 - evenscroll;
-    scrollodd--;  // 0.5 cycle delay
-    scrolleven--;
+    scrollodd = 16 - 1 - oddscroll;
+    scrolleven = 16 - 1 - evenscroll;
   }
   else
   {
-    scrollodd = 16 - oddhiscroll;
-    scrolleven = 16 - evenhiscroll;
-    scrollodd -= 2; // 0.5 cycle delay
-    scrolleven -= 2;
+    scrollodd = 16 - 2 - oddhiscroll;
+    scrolleven = 16 - 2 - evenhiscroll;
   }
 
   oddmask = 0xffff << scrollodd;
@@ -106,20 +103,10 @@ void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, U
   _active[5].l = (_active[5].l & invevenmask) | ( ( ((ULO) dat6) << scrolleven) & evenmask);
 }
 
-// Serialize one unit of data (here 2 cylinders, 4 lores or 8 hires pixels)
-void PixelSerializer::SerializeBatch(void)
+void PixelSerializer::SerializePixels(ULO pixelCount)
 {
-  if (BitplaneUtility::IsLores())
-  {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNext4Pixels(_active[0].b[3],
-			                                _active[1].b[3],
-			                                _active[2].b[3],
-			                                _active[3].b[3],
-			                                _active[4].b[3],
-			                                _active[5].b[3]);
-    ShiftActive(4);
-  }
-  else
+  ULO pixelIterations8 = pixelCount >> 3;
+  for (ULO i = 0; i < pixelIterations8; ++i)
   {
     GraphicsContext.Planar2ChunkyDecoder.P2CNext8Pixels(_active[0].b[3],
 			                                _active[1].b[3],
@@ -129,76 +116,152 @@ void PixelSerializer::SerializeBatch(void)
 			                                _active[5].b[3]);
     ShiftActive(8);
   }
+  if (pixelCount & 4)
+  {
+    GraphicsContext.Planar2ChunkyDecoder.P2CNext4Pixels(_active[0].b[3],
+			                                _active[1].b[3],
+			                                _active[2].b[3],
+			                                _active[3].b[3],
+			                                _active[4].b[3],
+			                                _active[5].b[3]);
+    ShiftActive(4);
+  }
+  
+  ULO remainingPixels = pixelCount & 3;
+  if (remainingPixels > 0)
+  {
+    GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(remainingPixels,
+                                                       _active[0].b[3],
+			                               _active[1].b[3],
+			                               _active[2].b[3],
+			                               _active[3].b[3],
+			                               _active[4].b[3],
+			                               _active[5].b[3]);
+    ShiftActive(remainingPixels);
+  }
 }
 
-bool PixelSerializer::OutputCylinders(ULO rasterY, ULO rasterX)
+void PixelSerializer::SerializeBatch(ULO cylinderCount)
 {
-  bool isEndOfLine = (rasterX == PIXEL_SERIALIZER_LAST_CYCLE);
-
-  if (rasterY == 0) rasterY = BUS_LINES_PER_FRAME;
-
-  if (rasterX <= PIXEL_SERIALIZER_LAST_CYCLE)
+  if (BitplaneUtility::IsLores())
   {
-    rasterX += BUS_CYCLE_PER_LINE;
-    rasterY--;
+    SerializePixels(cylinderCount);
+  }
+  else
+  {
+    SerializePixels(cylinderCount*2);
+  }
+}
+
+ULO PixelSerializer::GetOutputLine(ULO rasterY, ULO cylinder)
+{
+  if (cylinder <= LAST_CYLINDER)
+  {
+    if (rasterY == 0) return BUS_LINES_PER_FRAME - 1;
+    return rasterY - 1;
+  }
+  return rasterY;
+}
+
+ULO PixelSerializer::GetOutputCylinder(ULO cylinder)
+{
+  if (cylinder <= LAST_CYLINDER && !_newLine) return cylinder + GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE;
+  return cylinder;
+}
+
+void PixelSerializer::OutputCylindersUntil(ULO rasterY, ULO cylinder)
+{
+  ULO outputUntilCylinder = GetOutputCylinder(cylinder);
+  if (outputUntilCylinder <= _lastCylinderOutput)
+  {
+    // Multiple commits can happen on the same cycle
+    return;
+  }
+  ULO outputLine = GetOutputLine(rasterY, cylinder);
+  if (outputLine < 0x1a)
+  {
+    return;
+  }
+  _newLine = false;
+
+  ULO cylinderCount = outputUntilCylinder - _lastCylinderOutput;
+
+  LogOutput(outputLine, outputUntilCylinder, _lastCylinderOutput + 1, outputUntilCylinder);
+
+  if (outputUntilCylinder > 479)
+  {
+    // For debug
+    MessageBox(0, "outputUntilCylinder larger than it should be", "outputUntilCylinder out of range", 0);
+  }
+
+  if (outputUntilCylinder < _lastCylinderOutput)
+  {
+    MessageBox(0, "outputUntilCylinder less than _lastCylinderOutput", "outputUntilCylinder out of range", 0);
+  }
+
+  if (cylinderCount == 0)
+  {
+    return;
   }
 
   GraphicsContext.Planar2ChunkyDecoder.NewBatch();
-  SerializeBatch();
-  GraphicsContext.Sprites.OutputSprites(rasterX, 2);
-  GraphicsContext.BitplaneDraw.DrawBatch(rasterY, rasterX);
+  SerializeBatch(cylinderCount);
+  if (GraphicsContext.DIWYStateMachine.IsVisible() && _activated)
+  {
+    GraphicsContext.Sprites.OutputSprites(_lastCylinderOutput + 1, cylinderCount);
+  }
+  GraphicsContext.BitplaneDraw.DrawBatch(outputLine, _lastCylinderOutput + 1);
 
-  return isEndOfLine;
+  _lastCylinderOutput = outputUntilCylinder;
 }
 
-void PixelSerializer::Handler(ULO rasterY, ULO rasterX)
+void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
 {
-  bool isEndOfLine = OutputCylinders(rasterY, rasterX);
+  LogEndOfLine(rasterY, cylinder);
 
-  if (rasterY == 0x19)
+  ULO line = GetOutputLine(rasterY, cylinder);
+  if (line < 0x1a)
   {
     GraphicsContext.Sprites.EndOfLine(rasterY);
-    EventSetup(0x1a*BUS_CYCLE_PER_LINE + PIXEL_SERIALIZER_LAST_CYCLE);
+    EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
+    return;
   }
-  else if (rasterY == 0x1a && isEndOfLine)
+
+  OutputCylindersUntil(rasterY, cylinder);
+
+  for (ULO i = 0; i < 6; ++i)
   {
-    GraphicsContext.Sprites.EndOfLine(rasterY);
-    EventSetup(0x1a*BUS_CYCLE_PER_LINE + PIXEL_SERIALIZER_FIRST_CYCLE);
+    _active[i].l = 0;
   }
-  else if (rasterY == 0 && isEndOfLine)
+  _lastCylinderOutput = FIRST_CYLINDER - 1;
+  _newLine = true;
+  _activated = false;
+
+  if (line == BUS_LINES_PER_FRAME - 1)
   {
     drawEndOfFrame();
-    EventSetup(0x19*BUS_CYCLE_PER_LINE + PIXEL_SERIALIZER_LAST_CYCLE);
-    GraphicsContext.Sprites.EndOfFrame();
+    EventSetup(MakeArriveTime(0x19, LAST_CYLINDER));
+    return;
   }
-  else if (isEndOfLine)
+  else
   {
-    EventSetup(rasterY*BUS_CYCLE_PER_LINE + PIXEL_SERIALIZER_FIRST_CYCLE);
-
-    for (ULO i = 0; i < 6; ++i)
-    {
-      _active[i].l = 0;
-    }
-
     GraphicsContext.Sprites.EndOfLine(rasterY);
   }
-  else 
-  {
-    EventSetup(rasterY*BUS_CYCLE_PER_LINE + rasterX + PIXEL_SERIALIZER_OUTPUT_SIZE);
-  }
+  EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
 }
 
 void PixelSerializer::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
-  EventSetup(1);
+  _priority = 1;
+  EventSetup(LAST_CYLINDER);
 }
 
 /* Fellow events */
 
 void PixelSerializer::EndOfFrame(void)
 {
-  EventSetup(1);
+  EventSetup(LAST_CYLINDER);
 }
 
 void PixelSerializer::SoftReset(void)
@@ -207,7 +270,7 @@ void PixelSerializer::SoftReset(void)
 
 void PixelSerializer::HardReset(void)
 {
-  EventSetup(1);
+  EventSetup(LAST_CYLINDER);
 }
 
 void PixelSerializer::EmulationStart(void)

@@ -40,25 +40,24 @@ private:
   DIWXStates _state;
   ULO _maxValidX;
 
-  bool _enableLog;
-  FILE *_logfile;
-
-  void Log(void);
+  void Log(ULO line, ULO cylinder);
   ULO GetStartPosition(void);
   ULO GetStopPosition(void);
-  void SetState(DIWXStates newState, ULO cycle);
-  void SetStateWaitingForStartPos(ULO rasterY, ULO rasterX);
-  void SetStateWaitingForStopPos(ULO rasterY, ULO rasterX);
-  void DoStateWaitingForStartPos(ULO rasterY, ULO rasterX);
-  void DoStateWaitingForStopPos(ULO rasterY, ULO rasterX);
+  void SetState(DIWXStates newState, ULO arriveTime);
+  void SetStateWaitingForStartPos(ULO rasterY, ULO cylinder);
+  void SetStateWaitingForStopPos(ULO rasterY, ULO cylinder);
+  void DoStateWaitingForStartPos(ULO rasterY, ULO cylinder);
+  void DoStateWaitingForStopPos(ULO rasterY, ULO cylinder);
+
+  void OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cylinder);
 
 public:
-  UBY GetOutputMask(ULO rasterX);
+  //UBY GetOutputMask(ULO rasterX);
   bool IsVisible(void);
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO rasterX);
+  virtual void Handler(ULO rasterY, ULO cylinder);
 
   void SoftReset(void);
   void HardReset(void);

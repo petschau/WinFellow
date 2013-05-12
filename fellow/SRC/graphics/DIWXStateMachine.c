@@ -26,27 +26,18 @@
 
 #ifdef GRAPH2
 
-#include "bus.h"
-#include "graph.h"
-#include "fileops.h"
-
-#include "DIWXStateMachine.h"
-#include "GraphicsEventQueue.h"
+#include "Graphics.h"
 
 static STR *DIWXStateNames[2] = {"WAITING_FOR_START_POS",
 				 "WAITING_FOR_STOP_POS"};
 
-void DIWXStateMachine::Log(void)
+void DIWXStateMachine::Log(ULO line, ULO cylinder)
 {
-  if (_enableLog)
+  if (GraphicsContext.Logger.IsLogEnabled())
   {
-    if (_logfile == 0)
-    {
-      STR filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "DIWXStateMachine.log");
-      _logfile = fopen(filename, "w");
-    }
-    fprintf(_logfile, "%.16I64X %.3X %.3X %s\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), DIWXStateNames[_state]);
+    STR msg[256];
+    sprintf(msg, "DIWX: %s\n", DIWXStateNames[_state]);
+    GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
@@ -60,52 +51,74 @@ ULO DIWXStateMachine::GetStopPosition(void)
   return diwxright;
 }
 
-void DIWXStateMachine::SetState(DIWXStates newState, ULO cycle)
+void DIWXStateMachine::SetState(DIWXStates newState, ULO arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
-  _cycle = cycle;
+  _arriveTime = arriveTime;
   _queue->Insert(this);
-  Log();
 }
 
-void DIWXStateMachine::SetStateWaitingForStartPos(ULO rasterY, ULO rasterX)
+void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cylinder)
 {
-  ULO start = GetStartPosition() / 2;
-  if (start <= rasterX)
+  ULO previousCylinder = ((cylinder == 0) ? GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE : cylinder) - 1;
+  ULO outputLine;
+  
+  if (cylinder != 0)
+  {
+    outputLine = rasterY;
+  }
+  else
+  {
+    if (rasterY == 0) outputLine = BUS_LINES_PER_FRAME - 1;
+    else outputLine = rasterY - 1;
+  }
+
+  GraphicsContext.PixelSerializer.OutputCylindersUntil(outputLine, previousCylinder);
+}
+
+
+void DIWXStateMachine::SetStateWaitingForStartPos(ULO rasterY, ULO cylinder)
+{
+  OutputCylindersUntilPreviousCylinder(rasterY, cylinder);
+
+  ULO start = GetStartPosition();
+  if (start <= cylinder)
   {
     // Start is seen on the next line
     rasterY++;
   }
-  SetState(DIWX_STATE_WAITING_FOR_START_POS, rasterY*BUS_CYCLE_PER_LINE + start);
+  SetState(DIWX_STATE_WAITING_FOR_START_POS, MakeArriveTime(rasterY, start));
 }
 
-void DIWXStateMachine::SetStateWaitingForStopPos(ULO rasterY, ULO rasterX)
+void DIWXStateMachine::SetStateWaitingForStopPos(ULO rasterY, ULO cylinder)
 {
+  OutputCylindersUntilPreviousCylinder(rasterY, cylinder);
+
   if (GetStopPosition() > _maxValidX)
   {
     // Stop position will never be found, wait beyond end of frame (effectively disabled)
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, BUS_CYCLE_PER_FRAME + 1);
+    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_FRAME + 1);
   }
-  else if (GetStopPosition() <= rasterX*2)
+  else if (GetStopPosition() <= cylinder)
   {
     // Stop position will be found on the next line
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, (rasterY + 1)*BUS_CYCLE_PER_LINE + GetStopPosition()/2);
+    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY + 1, GetStopPosition()));
   }
   else
   {
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, rasterY*BUS_CYCLE_PER_LINE + GetStopPosition()/2);
+    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, MakeArriveTime(rasterY, GetStopPosition()));
   }
 }
 
-void DIWXStateMachine::DoStateWaitingForStartPos(ULO rasterY, ULO rasterX)
+void DIWXStateMachine::DoStateWaitingForStartPos(ULO rasterY, ULO cylinder)
 {
-  SetStateWaitingForStopPos(rasterY, rasterX);
+  SetStateWaitingForStopPos(rasterY, cylinder);
 }
 
-void DIWXStateMachine::DoStateWaitingForStopPos(ULO rasterY, ULO rasterX)
+void DIWXStateMachine::DoStateWaitingForStopPos(ULO rasterY, ULO cylinder)
 {
-  SetStateWaitingForStartPos(rasterY, rasterX);
+  SetStateWaitingForStartPos(rasterY, cylinder);
 }
 
 bool DIWXStateMachine::IsVisible(void)
@@ -118,10 +131,10 @@ void DIWXStateMachine::ChangedValue(void)
   switch (_state)
   {
     case DIWX_STATE_WAITING_FOR_START_POS:
-      SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX());
+      SetStateWaitingForStartPos(busGetRasterY(), busGetRasterX()*2);
       break;
     case DIWX_STATE_WAITING_FOR_STOP_POS:
-      SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX());
+      SetStateWaitingForStopPos(busGetRasterY(), busGetRasterX()*2);
       break;
   }
 }
@@ -134,39 +147,19 @@ void DIWXStateMachine::InitializeEvent(GraphicsEventQueue *queue)
   SetStateWaitingForStartPos(0, 0);
 }
 
-void DIWXStateMachine::Handler(ULO rasterY, ULO rasterX)
+void DIWXStateMachine::Handler(ULO rasterY, ULO cylinder)
 {
+  Log(rasterY, cylinder);
+
   switch (_state)
   {
     case DIWX_STATE_WAITING_FOR_START_POS:
-      DoStateWaitingForStartPos(rasterY, rasterX);
+      DoStateWaitingForStartPos(rasterY, cylinder);
       break;
     case DIWX_STATE_WAITING_FOR_STOP_POS:
-      DoStateWaitingForStopPos(rasterY, rasterX);
+      DoStateWaitingForStopPos(rasterY, cylinder);
       break;
   }
-}
-
-UBY start_mask[4] = {0xf0, 0x70, 0x30, 0x10};
-UBY stop_mask[4] = {0x00, 0x80, 0xc0, 0xe0};
-
-UBY DIWXStateMachine::GetOutputMask(ULO rasterX)
-{
-  ULO first_cylinder = rasterX*2 + 1;
-  ULO last_cylinder = first_cylinder + 3;
-
-  if (_state == DIWX_STATE_WAITING_FOR_START_POS)
-  {
-    if (GetStartPosition() > last_cylinder) return 0x00;
-    else if (GetStartPosition() < first_cylinder) return 0x00;
-
-    return start_mask[GetStartPosition() - first_cylinder];
-  }
-
-  if (GetStopPosition() > last_cylinder) return 0xff;
-  else if (GetStopPosition() < first_cylinder) return 0xff;
-
-  return stop_mask[GetStopPosition() - first_cylinder];
 }
 
 /* Fellow events */
@@ -195,16 +188,10 @@ void DIWXStateMachine::EmulationStop(void)
 void DIWXStateMachine::Startup(void)
 {
   _maxValidX = 455;
-  _enableLog = false;
-  _logfile = 0;
 }
 
 void DIWXStateMachine::Shutdown(void)
 {
-  if (_enableLog && _logfile != 0)
-  {
-    fclose(_logfile);
-  }
 }
 
 #endif

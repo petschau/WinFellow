@@ -9,7 +9,11 @@ Graphics GraphicsContext;
 
 void Graphics::Commit(ULO untilRasterY, ULO untilRasterX)
 {
-  _queue.Run(untilRasterY*BUS_CYCLE_PER_LINE + untilRasterX);
+  if (GraphicsContext.Logger.IsLogEnabled())
+  {
+    GraphicsContext.Logger.Log(untilRasterY, untilRasterX*2+1, "Commit:\n-------------------------\n"); 
+  }
+  _queue.Run(untilRasterY*GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + untilRasterX*2 + 1);
 }
 
 void Graphics::InitializeEventQueue(void)
@@ -37,7 +41,6 @@ void Graphics::SoftReset(void)
   DIWXStateMachine.SoftReset();
   DIWYStateMachine.SoftReset();
   DDFStateMachine.SoftReset();
-  BitplaneDMA.SoftReset();
   PixelSerializer.SoftReset();
 }
 
@@ -46,7 +49,6 @@ void Graphics::HardReset(void)
   DIWXStateMachine.HardReset();
   DIWYStateMachine.HardReset();
   DDFStateMachine.HardReset();
-  BitplaneDMA.HardReset();
   PixelSerializer.HardReset();
 }
 
@@ -55,7 +57,6 @@ void Graphics::EmulationStart(void)
   DIWXStateMachine.EmulationStart();
   DIWYStateMachine.EmulationStart();
   DDFStateMachine.EmulationStart();
-  BitplaneDMA.EmulationStart();
   PixelSerializer.EmulationStart();
   Sprites.EmulationStart();
 }
@@ -65,7 +66,6 @@ void Graphics::EmulationStop(void)
   DIWXStateMachine.EmulationStop();
   DIWYStateMachine.EmulationStop();
   DDFStateMachine.EmulationStop();
-  BitplaneDMA.EmulationStop();
   PixelSerializer.EmulationStop();
 }
 
@@ -74,7 +74,6 @@ void Graphics::Startup(void)
   DIWXStateMachine.Startup();
   DIWYStateMachine.Startup();
   DDFStateMachine.Startup();
-  BitplaneDMA.Startup();
   PixelSerializer.Startup();
   Copper_Startup();
 
@@ -86,9 +85,9 @@ void Graphics::Shutdown(void)
   DIWXStateMachine.Shutdown();
   DIWYStateMachine.Shutdown();
   DDFStateMachine.Shutdown();
-  BitplaneDMA.Shutdown();
   PixelSerializer.Shutdown();
   Copper_Shutdown();
+  Logger.Shutdown();
 }
 
 #endif

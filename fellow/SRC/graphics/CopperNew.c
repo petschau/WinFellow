@@ -27,13 +27,10 @@ typedef struct CopperStateMachine_
   UWO second;
 
   BOOLE skip_next;
-  ULO test_delay;
 
 } CopperStateMachine;
 
 CopperStateMachine CopperState;
-
-ULO copper_cycle_offset = 4;
 
 static UWO Copper_ReadWord(void)
 {
@@ -101,7 +98,7 @@ static void Copper_Wait(void)
   ULO vp = (ULO) (CopperState.first >> 8);
   ULO hp = (ULO) (CopperState.first & 0xfe);
 
-  ULO test_cycle = busGetCycle() + CopperState.test_delay + copper_cycle_offset;
+  ULO test_cycle = busGetCycle() + 2;
   ULO rasterY = test_cycle / BUS_CYCLE_PER_LINE;
   ULO rasterX = test_cycle % BUS_CYCLE_PER_LINE;
 
@@ -116,7 +113,7 @@ static void Copper_Wait(void)
   if ((rasterY & ve) > vp)
   {
     CopperState.skip_next = FALSE;
-    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 4);
+    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
     return;
   }
 
@@ -126,7 +123,7 @@ static void Copper_Wait(void)
     while ((rasterX <= 0xe2) && ((rasterX & he) < hp)) rasterX += 2;
     if (rasterX < 0xe4)
     {
-      Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2 - copper_cycle_offset);
+      Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
       return;
     }
   }
@@ -157,12 +154,12 @@ static void Copper_Wait(void)
   else if ((rasterY & ve) == vp)
   {
     // An exact match on both vp and hp was found
-    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2 - copper_cycle_offset);
+    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
   }
   else
   {
     // A match on vp being larger (not equal) was found
-    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2 - copper_cycle_offset);
+    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
   }
 }
 
@@ -174,7 +171,7 @@ static void Copper_Skip(void)
   ULO vp = (ULO) (CopperState.first >> 8);
   ULO hp = (ULO) (CopperState.first & 0xfe);
 
-  ULO test_cycle = busGetCycle() + CopperState.test_delay + copper_cycle_offset;
+  ULO test_cycle = busGetCycle();
   ULO rasterY = test_cycle / BUS_CYCLE_PER_LINE;
   ULO rasterX = test_cycle % BUS_CYCLE_PER_LINE;
 
@@ -219,6 +216,11 @@ static void Copper_ReadSecondWord(void)
 
 void Copper_EventHandler(void)
 {
+  if (busGetRasterX() == 0xe2)
+  {
+    Copper_SetState(CopperState.state, busGetCycle() + 1);
+    return;
+  }
   switch (CopperState.state)
   {
     case COPPER_STATE_READ_FIRST_WORD:
@@ -244,7 +246,6 @@ void Copper_EndOfFrame(void)
 void Copper_Startup(void)
 {
   CopperState.skip_next = FALSE;
-  CopperState.test_delay = 2;
 }
 
 void Copper_Shutdown(void)

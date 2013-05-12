@@ -369,6 +369,9 @@
     <ClCompile Include="..\..\graphics\PixelSerializer.c">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\graphics\Logger.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -702,6 +705,9 @@
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\graphics\BitplaneUtility.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\Logger.h">
       <Filter>graphics</Filter>
     </ClInclude>
   </ItemGroup>

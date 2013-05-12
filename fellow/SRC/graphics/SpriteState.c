@@ -130,7 +130,7 @@ void Sprites::Arm(ULO spriteNo)
     return;
   }
   SpriteState[spriteNo].armed = true;
-  SpriteState[spriteNo].x_cylinder = (SpriteState[spriteNo].x + 1) / 2;
+  SpriteState[spriteNo].x_cylinder = SpriteState[spriteNo].x;
   SpriteState[spriteNo].pixels_output = 0;
   SpriteState[spriteNo].dat_hold[0].w = SpriteState[spriteNo].dat[0];
   SpriteState[spriteNo].dat_hold[1].w = SpriteState[spriteNo].dat[1];
@@ -186,17 +186,20 @@ void Sprites::OutputSprite(ULO spriteNo, ULO startCylinder, ULO cylinderCount)
     ULO pixel_index = 0;
 
     // Look for start of sprite output
-    if (!SpriteState[spriteNo].serializing)
+    if (!SpriteState[spriteNo].serializing && InRange(spriteNo, startCylinder, cylinderCount))
     {
-      SpriteState[spriteNo].serializing = InRange(spriteNo, startCylinder, cylinderCount);
-      pixel_index = (SpriteState[spriteNo].x + 1) - startCylinder*2;
+      SpriteState[spriteNo].serializing = true;
+      pixel_index = SpriteState[spriteNo].x - startCylinder + 1;
     }
     if (SpriteState[spriteNo].serializing)
     {
       // Some output of the sprite will occur in this range.
-      ULO pixel_count = 4 - pixel_index;
-      if (pixel_count > (16 - SpriteState[spriteNo].pixels_output))
-	pixel_count = (16 - SpriteState[spriteNo].pixels_output);
+      ULO pixel_count = cylinderCount - pixel_index;
+      ULO pixelsLeft = 16 - SpriteState[spriteNo].pixels_output;
+      if (pixel_count > pixelsLeft)
+      {
+        pixel_count = pixelsLeft;
+      }
 
       if (BitplaneUtility::IsHires())
       {
@@ -432,6 +435,10 @@ void Sprites::DMAHandler(ULO rasterY)
 
 void Sprites::EndOfLine(ULO rasterY)
 {
+  for (ULO i = 0; i < 8; ++i)
+  {
+    SpriteState[i].serializing = false;
+  }
   DMAHandler(rasterY);
 }
 

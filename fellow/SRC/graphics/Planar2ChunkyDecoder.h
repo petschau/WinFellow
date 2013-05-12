@@ -31,6 +31,7 @@
 typedef union ByteLongArrayUnion_
 {
   UBY barray[1024];
+  ByteWordUnion bwu[512];
   ByteLongUnion blu[256];
 } ByteLongArrayUnion;
 
@@ -41,12 +42,18 @@ private:
   ByteLongArrayUnion _playfield_odd;
   ByteLongArrayUnion _playfield_even;
 
+  ULO *GetEvenPlayfieldULOPtr(void);
+  ULO *GetOddPlayfieldULOPtr(void);
+
   ULO P2COdd1(ULO dat1, ULO dat3, ULO dat5);
   ULO P2COdd2(ULO dat1, ULO dat3, ULO dat5);
   ULO P2CEven1(ULO dat2, ULO dat4, ULO dat6);
   ULO P2CEven2(ULO dat2, ULO dat4, ULO dat6);
   ULO P2CDual1(ULO dat1, ULO dat2, ULO dat3);
   ULO P2CDual2(ULO dat1, ULO dat2, ULO dat3);
+
+  void P2CNextPixelsNormal(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
+  void P2CNextPixelsDual(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext4PixelsNormal(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext4PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext8PixelsNormal(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
@@ -58,6 +65,7 @@ public:
   ULO GetBatchSize(void);
 
   void NewBatch(void);
+  void P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext4Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext8Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
 };

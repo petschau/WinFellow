@@ -28,24 +28,19 @@
 
 #include "bus.h"
 #include "graph.h"
-#include "fileops.h"
 
 #include "Graphics.h"
 
 static STR *DDFStateNames[2] = {"WAITING_FOR_FIRST_FETCH",
 				"WAITING_FOR_NEXT_FETCH"};
 
-void DDFStateMachine::Log(ULO rasterY, ULO rasterX)
+void DDFStateMachine::Log(ULO line, ULO cylinder)
 {
-  if (_enableLog)
+  if (GraphicsContext.Logger.IsLogEnabled())
   {
-    if (_logfile == 0)
-    {
-      STR filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "DDFStateMachine.log");
-      _logfile = fopen(filename, "w");
-    }
-    fprintf(_logfile, "%.16I64X %.3X %.3X for %.3X %s\n", busGetRasterFrameCount(), rasterY, rasterX, _cycle % BUS_CYCLE_PER_LINE, DDFStateNames[_state]);
+    STR msg[256];
+    sprintf(msg, "DDF: %s\n", DDFStateNames[_state]);
+    GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
@@ -64,79 +59,91 @@ ULO DDFStateMachine::GetFetchSize(void)
   return (bplcon0 & 0x8000) ? 4 : 8;
 }
 
-void DDFStateMachine::SetState(DDFStates newState, ULO cycle)
+void DDFStateMachine::SetState(DDFStates newState, ULO arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
-  _cycle = cycle;
+  _arriveTime = arriveTime;
   _queue->Insert(this);
 }
 
-void DDFStateMachine::SetStateWaitingForFirstFetch(ULO rasterY, ULO rasterX)
+void DDFStateMachine::SetStateWaitingForFirstFetch(ULO rasterY, ULO cylinder)
 {
   ULO start = GetStartPosition();
-  if (start == rasterX)
+  ULO currentCycle = cylinder / 2;
+
+  if (start == currentCycle)
   {
-    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, rasterY*BUS_CYCLE_PER_LINE + rasterX + GetFetchSize());
+    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize()*2));
   }
-  else if (start > rasterX)
+  else if (start > currentCycle)
   {
     // Fetch start will be seen on this line
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, rasterY*BUS_CYCLE_PER_LINE + start);
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start*2));
   }
   else
   {
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, (rasterY + 1)*BUS_CYCLE_PER_LINE + start);
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start*2));
   }
-  Log(rasterY, rasterX);
 }
 
-void DDFStateMachine::SetStateWaitingForNextFetch(ULO rasterY, ULO rasterX)
+void DDFStateMachine::SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
 {
   ULO stop = GetStopPosition();
   ULO start = GetStartPosition();
+  ULO currentCycle = cylinder / 2;
+
   if ((stop & 7) != (start & 7)) stop += GetFetchSize();
   
-  if (stop > rasterX)
+  if (stop > currentCycle)
   {
     // More fetches on this line
-    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, rasterY*BUS_CYCLE_PER_LINE + rasterX + GetFetchSize());
+    SetState(DDF_STATE_WAITING_FOR_NEXT_FETCH, MakeArriveTime(rasterY, cylinder + GetFetchSize()*2));
   }
-  else if (start > rasterX)
+  else if (start > currentCycle)
   {
     // Fetch start will be seen on this line
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, rasterY*BUS_CYCLE_PER_LINE + start);
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY, start*2));
   }
   else
   {
-    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, (rasterY + 1)*BUS_CYCLE_PER_LINE + start);
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(rasterY + 1, start*2));
   }
 }
 
-void DDFStateMachine::DoStateWaitingForFirstFetch(ULO rasterY, ULO rasterX)
+void DDFStateMachine::DoStateWaitingForFirstFetch(ULO rasterY, ULO cylinder)
 {
-  SetStateWaitingForFirstFetch(rasterY, rasterX);
+  SetStateWaitingForFirstFetch(rasterY, cylinder);
 }
 
-void DDFStateMachine::DoStateWaitingForNextFetch(ULO rasterY, ULO rasterX)
+void DDFStateMachine::DoStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
 {
-  SetStateWaitingForNextFetch(rasterY, rasterX);
+  SetStateWaitingForNextFetch(rasterY, cylinder);
 }
 
 bool DDFStateMachine::CanRead(void)
 {
-  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH);
+  return (_state == DDF_STATE_WAITING_FOR_NEXT_FETCH) 
+    && BitplaneUtility::GetEnabledBitplaneCount() > 0 
+    && GraphicsContext.DIWYStateMachine.IsVisible();
 }
 
 void DDFStateMachine::ChangedValue(void)
 {
+  ULO rasterY = busGetRasterY();
+  if (rasterY < 0x1a)
+  {
+    SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
+    return;
+  }
+
   switch (_state)
   {
     case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-      SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX());
+      SetStateWaitingForFirstFetch(busGetRasterY(), busGetRasterX()*2);
       break;
     case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-      SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX());
+      SetStateWaitingForNextFetch(busGetRasterY(), busGetRasterX()*2);
       break;
   }
 }
@@ -146,25 +153,27 @@ void DDFStateMachine::ChangedValue(void)
 void DDFStateMachine::InitializeEvent(GraphicsEventQueue *queue)
 {
   _queue = queue;
-  SetStateWaitingForFirstFetch(0, 0);
+  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
 }
 
-void DDFStateMachine::Handler(ULO rasterY, ULO rasterX)
+void DDFStateMachine::Handler(ULO rasterY, ULO cylinder)
 {
+  Log(rasterY, cylinder);
+
   switch (_state)
   {
     case DDF_STATE_WAITING_FOR_FIRST_FETCH:
-      DoStateWaitingForFirstFetch(rasterY, rasterX);
+      DoStateWaitingForFirstFetch(rasterY, cylinder);
       break;
     case DDF_STATE_WAITING_FOR_NEXT_FETCH:
-      DoStateWaitingForNextFetch(rasterY, rasterX);
+      DoStateWaitingForNextFetch(rasterY, cylinder);
       break;
   }
-  if (CanRead() && GraphicsContext.DIWYStateMachine.IsVisible())
+  if (CanRead())
   {
-    GraphicsContext.BitplaneDMA.Start(rasterY*BUS_CYCLE_PER_LINE + rasterX);
+    GraphicsContext.BitplaneDMA.Start(MakeArriveTime(rasterY, cylinder));
   }
-  else if (!CanRead())
+  else
   {
     GraphicsContext.BitplaneDMA.Stop();
   }
@@ -174,7 +183,7 @@ void DDFStateMachine::Handler(ULO rasterY, ULO rasterX)
 
 void DDFStateMachine::EndOfFrame(void)
 {
-  SetStateWaitingForFirstFetch(0, 0);
+  SetState(DDF_STATE_WAITING_FOR_FIRST_FETCH, MakeArriveTime(0x1a, GetStartPosition()*2));
 }
 
 void DDFStateMachine::SoftReset(void)
@@ -197,16 +206,10 @@ void DDFStateMachine::Startup(void)
 {
   _minValidX = 0x18;
   _maxValidX = 0xd8;
-  _enableLog = false;
-  _logfile = 0;
 }
 
 void DDFStateMachine::Shutdown(void)
 {
-  if (_enableLog && _logfile != 0)
-  {
-    fclose(_logfile);
-  }
 }
 
 #endif

@@ -14,6 +14,7 @@
 #include "DIWXStateMachine.h"
 #include "DIWYStateMachine.h"
 #include "DDFStateMachine.h"
+#include "Logger.h"
 
 class Graphics
 {
@@ -36,6 +37,7 @@ public:
   Planar2ChunkyDecoder Planar2ChunkyDecoder;
   BitplaneDraw BitplaneDraw;
   Sprites Sprites;
+  Logger Logger;
 
   void Commit(ULO untilRasterY, ULO untilRasterX);
 
