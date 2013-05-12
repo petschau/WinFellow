@@ -26,11 +26,7 @@
 
 #ifdef GRAPH2
 
-#include "bus.h"
 #include "graph.h"
-#include "draw.h"
-#include "fmem.h"
-#include "fileops.h"
 
 #include "Graphics.h"
 
@@ -40,8 +36,6 @@ extern ULO graph_deco3[256][2];
 extern ULO graph_deco4[256][2];
 extern ULO graph_deco5[256][2];
 extern ULO graph_deco6[256][2];
-
-extern UBY *draw_buffer_current_ptr;
 
 //----------------------------------------------------------------------------
 // Planar to chunky conversion
@@ -209,6 +203,11 @@ UBY *Planar2ChunkyDecoder::GetOddPlayfield(void)
 UBY *Planar2ChunkyDecoder::GetEvenPlayfield(void)
 {
   return _playfield_even.barray;
+}
+
+UBY *Planar2ChunkyDecoder::GetHamSpritesPlayfield(void)
+{
+  return _playfield_ham_sprites.barray;
 }
 
 ULO Planar2ChunkyDecoder::GetBatchSize(void)

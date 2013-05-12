@@ -38,6 +38,7 @@
 
 #ifdef GRAPH2
 #include "Graphics.h"
+#include "CopperNew.h"
 #endif
 
 /*======================================================================*/
@@ -564,7 +565,11 @@ void wdmacon(UWO data, ULO address)
     }
 
     // update Copper DMA
+#ifdef GRAPH2
+    Copper_UpdateDMA(); 
+#else
     copperUpdateDMA(); 
+#endif
   }
   else
   {
@@ -613,8 +618,11 @@ void wdmacon(UWO data, ULO address)
       }
     }
 
-    // update Copper DMA
+#ifdef GRAPH2
+    Copper_UpdateDMA(); 
+#else
     copperUpdateDMA(); 
+#endif
   }
 }
 

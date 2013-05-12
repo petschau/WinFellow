@@ -267,31 +267,32 @@ void copperInsertEvent(ULO cycle)
 void copperLoad1(void)
 {
   copper_ptr = cop1lc;
-
-  if (copper_dma == TRUE)
-  {
 #ifdef GRAPH2
     Copper_Load();
 #else
+
+  if (copper_dma == TRUE)
+  {
     copperRemoveEvent();
     copperInsertEvent(bus.cycle + 4);
-#endif
   }
+#endif
 }
 
 void copperLoad2(void)
 {
   copper_ptr = cop2lc;
 
-  if (copper_dma == TRUE)
-  {
 #ifdef GRAPH2
     Copper_Load();
 #else
+
+  if (copper_dma == TRUE)
+  {
     copperRemoveEvent();
     copperInsertEvent(bus.cycle + 4);
-#endif
   }
+#endif
 }
 
 /*-------------------------------------------------------------------------------

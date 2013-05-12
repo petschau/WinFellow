@@ -41,6 +41,7 @@ private:
   ULO _batch_size;
   ByteLongArrayUnion _playfield_odd;
   ByteLongArrayUnion _playfield_even;
+  ByteLongArrayUnion _playfield_ham_sprites;
 
   ULO *GetEvenPlayfieldULOPtr(void);
   ULO *GetOddPlayfieldULOPtr(void);
@@ -62,6 +63,7 @@ private:
 public:
   UBY *GetOddPlayfield(void);
   UBY *GetEvenPlayfield(void);
+  UBY *GetHamSpritesPlayfield(void);
   ULO GetBatchSize(void);
 
   void NewBatch(void);

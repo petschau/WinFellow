@@ -34,7 +34,6 @@
 
 
 //#define DRAW_TSC_PROFILE
-
 #ifdef DRAW_TSC_PROFILE
 
 LLO spritemergelores_tmp = 0;

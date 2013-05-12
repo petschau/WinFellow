@@ -71,6 +71,10 @@ private:
   void Decode4(ULO spriteNo);
   void Decode16(ULO spriteNo);
   void Arm(ULO spriteNo);
+
+  void MergeLores(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
+  void MergeHires(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
+  void MergeHam(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
   void Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count);
   bool InRange(ULO spriteNo, ULO startCylinder, ULO cylinderCount);
   UWO ReadWord(ULO spriteNo);
