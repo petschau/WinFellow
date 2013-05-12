@@ -2,6 +2,7 @@
 #define COPPERNEW_H
 
 void Copper_Load(void);
+void Copper_UpdateDMA(void);
 
 void Copper_EventHandler(void);
 void Copper_EndOfFrame(void);

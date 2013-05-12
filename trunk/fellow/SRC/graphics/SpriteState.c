@@ -146,30 +146,55 @@ void Sprites::Arm(ULO spriteNo)
   }
 }
 
-void Sprites::Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+void Sprites::MergeLores(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
 {
   UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
   UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
   ULO in_front = ((bplcon2 & 0x38) > (4 * spriteNo)) ? 1 : 0;
-  ULO i;
+
+  for (ULO i = 0; i < pixel_count; ++i)
+  {
+    *playfield++ = sprite_translate[in_front][*playfield][*sprite_data++];
+  }
+}
+
+void Sprites::MergeHires(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+{
+  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  ULO in_front = ((bplcon2 & 0x38) > (4 * spriteNo)) ? 1 : 0;
   UBY pixel_color;
 
+  for (ULO i = 0; i < pixel_count; ++i)
+  {
+    pixel_color = sprite_translate[in_front][*playfield][*sprite_data++];
+    *playfield++ = pixel_color;
+    *playfield++ = pixel_color;
+  }
+}
+
+void Sprites::MergeHam(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+{
+  UBY *playfield = &GraphicsContext.Planar2ChunkyDecoder.GetOddPlayfield()[pixel_index];
+  UBY *ham_sprites_playfield = &GraphicsContext.Planar2ChunkyDecoder.GetHamSpritesPlayfield()[pixel_index];
+  UBY *sprite_data = &SpriteState[spriteNo].dat_decoded.barray[source_pixel_index];
+  ULO in_front = ((bplcon2 & 0x38) > (4 * spriteNo)) ? 1 : 0;
+
+  for (ULO i = 0; i < pixel_count; ++i)
+  {
+    *ham_sprites_playfield++ = sprite_translate[in_front][*playfield][*sprite_data++];
+  }
+}
+
+void Sprites::Merge(ULO spriteNo, ULO source_pixel_index, ULO pixel_index, ULO pixel_count)
+{
   if (BitplaneUtility::IsLores())
   {
-    for (i = 0; i < pixel_count; ++i)
-    {
-      *playfield++ = sprite_translate[in_front][*playfield][*sprite_data++];
-    }
+    MergeLores(spriteNo, source_pixel_index, pixel_index, pixel_count);
   }
   else
   {
-    for (i = 0; i < pixel_count; ++i)
-    {
-      pixel_color = sprite_translate[in_front][*playfield][*sprite_data];
-      *playfield++ = pixel_color;
-      pixel_color = sprite_translate[in_front][*playfield][*sprite_data++];
-      *playfield++ = pixel_color;
-    }
+    MergeHires(spriteNo, source_pixel_index, pixel_index, pixel_count);
   }
 }
 
