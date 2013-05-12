@@ -41,13 +41,10 @@ private:
   ULO _minValidY;
   ULO _maxValidY;
 
-  bool _enableLog;
-  FILE *_logfile;
-
-  void Log(void);
+  void Log(ULO line, ULO cylinder);
   ULO GetStartLine(void);
   ULO GetStopLine(void);
-  void SetState(DIWYStates newState, ULO cycle);
+  void SetState(DIWYStates newState, ULO arriveTime);
   void SetStateWaitingForStartLine(ULO rasterY);
   void SetStateWaitingForStopLine(ULO rasterY);
   void DoStateWaitingForStartLine(ULO rasterY);
@@ -59,7 +56,7 @@ public:
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO rasterX);
+  virtual void Handler(ULO rasterY, ULO cylinder);
 
   void SoftReset(void);
   void HardReset(void);

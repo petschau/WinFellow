@@ -31,26 +31,36 @@
 class PixelSerializer : public GraphicsEvent
 {
 private:
+  const static ULO FIRST_CYLINDER = 56;
+  const static ULO LAST_CYLINDER = 25;
+
   ByteLongUnion _active[6];
 
   ULO _tmpline[960];
 
-  bool _enableLog;
-  FILE *_logfile;
+  ULO _lastCylinderOutput;
+  bool _newLine;
+  bool _activated;
 
-  void Log(ULO rasterY, ULO rasterX);
-  void EventSetup(ULO cycle);
+  void LogEndOfLine(ULO rasterY, ULO cylinder);
+  void LogOutput(ULO rasterY, ULO cylinder, ULO startCylinder, ULO untilCylinder);
+  void EventSetup(ULO arriveTime);
   void ShiftActive(ULO pixelCount);
-  void SerializeBatch(void);
-  bool OutputCylinders(ULO rasterY, ULO rasterX);
+
+  ULO GetOutputLine(ULO rasterY, ULO cylinder);
+  ULO GetOutputCylinder(ULO cylinder);
+  
+  void SerializePixels(ULO pixelCount);
+  void SerializeBatch(ULO cylinderCount);
 
 public:
   void Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6);
 
-  virtual void Handler(ULO rasterY, ULO rasterX);
+  void OutputCylindersUntil(ULO rasterY, ULO cylinder);
+
+  virtual void Handler(ULO rasterY, ULO cylinder);
   virtual void InitializeEvent(GraphicsEventQueue *queue);
 
-  // Standard Fellow methods
   void EndOfFrame(void);
   void SoftReset(void);
   void HardReset(void);
@@ -59,9 +69,7 @@ public:
   void Startup(void);
   void Shutdown(void);
 
-  PixelSerializer(void) : GraphicsEvent() {};
-
+  PixelSerializer(void) : GraphicsEvent(), _lastCylinderOutput(FIRST_CYLINDER - 1), _newLine(true), _activated(false) {};
 };
-
 
 #endif

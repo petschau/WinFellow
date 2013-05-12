@@ -7,7 +7,6 @@
 
 void GraphicsEventQueue::Clear(void)
 {
-  _cycle = GRAPHICS_CYCLE_NONE;
   _events = 0;
 }
 
@@ -55,7 +54,8 @@ void GraphicsEventQueue::Insert(GraphicsEvent *graphics_event)
     GraphicsEvent *tmp_prev = 0;
     for (tmp = _events; tmp != 0; tmp = tmp->_next)
     {
-        if (graphics_event->_cycle < tmp->_cycle || ((graphics_event->_cycle == tmp->_cycle) && (graphics_event->_priority > tmp->_priority)))
+      if (graphics_event->_arriveTime < tmp->_arriveTime 
+        || ((graphics_event->_arriveTime == tmp->_arriveTime) && (graphics_event->_priority > tmp->_priority)))
       {
         graphics_event->_next = tmp;
         graphics_event->_prev = tmp_prev;
@@ -89,14 +89,15 @@ GraphicsEvent *GraphicsEventQueue::Pop(void)
   return tmp;
 }
 
-void GraphicsEventQueue::Run(ULO untilCycle)
+void GraphicsEventQueue::Run(ULO untilTime)
 {
-  while (_events != 0 && _events->_cycle <= untilCycle)
+  while (_events->_arriveTime <= untilTime)
   {
     GraphicsEvent *graphics_event = Pop();
-    _cycle = graphics_event->_cycle;
-    graphics_event->Handler(_cycle / BUS_CYCLE_PER_LINE, _cycle % BUS_CYCLE_PER_LINE);
+    ULO arrive_time = graphics_event->_arriveTime;
+    graphics_event->Handler(arrive_time / GRAPHICS_CYLINDERS_PER_LINE, arrive_time % GRAPHICS_CYLINDERS_PER_LINE);
   }
+  GraphicsContext.PixelSerializer.OutputCylindersUntil(untilTime / GRAPHICS_CYLINDERS_PER_LINE, untilTime % GRAPHICS_CYLINDERS_PER_LINE);
 }
 
 #endif

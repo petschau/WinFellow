@@ -519,7 +519,6 @@ void busInitializeQueue(void)
   busClearEvent(&copperEvent, Copper_EventHandler);
 #endif
 
-  busClearEvent(&copperEvent, copperEmulate);
   busClearEvent(&blitterEvent, blitFinishBlit);
   busClearEvent(&interruptEvent, interruptHandleEvent);
 

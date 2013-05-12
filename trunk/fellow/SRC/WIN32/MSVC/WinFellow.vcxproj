@@ -552,6 +552,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClCompile Include="..\..\C\interrupt.c" />
     <ClCompile Include="..\..\c\rtc.cpp" />
     <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp" />
+    <ClCompile Include="..\..\graphics\Logger.cpp" />
     <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
     <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
     <ClCompile Include="..\..\graphics\BitplaneDraw.c" />
@@ -1542,6 +1543,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
+    <ClInclude Include="..\..\graphics\Logger.h" />
     <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />
     <ClInclude Include="..\..\graphics\BitplaneDMA.h" />
     <ClInclude Include="..\..\graphics\BitplaneDraw.h" />
@@ -1683,6 +1685,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <PropertyGroup>
-	<GraphVersion></GraphVersion>
+    <GraphVersion>
+    </GraphVersion>
   </PropertyGroup>
 </Project>

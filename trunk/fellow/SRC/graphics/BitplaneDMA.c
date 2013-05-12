@@ -29,7 +29,6 @@
 #include "bus.h"
 #include "graph.h"
 #include "fmem.h"
-#include "fileops.h"
 
 #include "Graphics.h"
 
@@ -37,17 +36,13 @@ static STR *BPLDMA_StateNames[3] = {"NONE",
 				    "FETCH_LORES",
 				    "FETCH_HIRES"};
 
-void BitplaneDMA::Log(void)
+void BitplaneDMA::Log(ULO line, ULO cylinder)
 {
-  if (_enableLog)
+  if (GraphicsContext.Logger.IsLogEnabled())
   {
-    if (_logfile == 0)
-    {
-      STR filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "BPLDMAStateMachine.log");
-      _logfile = fopen(filename, "w");
-    }
-    fprintf(_logfile, "%.16I64X %.3X %.3X %s\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), BPLDMA_StateNames[_state]);
+    STR msg[256];
+    sprintf(msg, "BitplaneDMA %s\n", BPLDMA_StateNames[_state]);
+    GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
@@ -63,18 +58,13 @@ void BitplaneDMA::IncreaseBplPt(ULO *bplpt, ULO size)
 
 UWO BitplaneDMA::GetHold(ULO bplNo, ULO bplsEnabled, ULO *bplpt)
 {
-  UWO hold;
-
   if (bplNo <= bplsEnabled)
   {
-    hold = ReadWord(*bplpt);
+    UWO hold = ReadWord(*bplpt);
     IncreaseBplPt(bplpt, 2);
+    return hold;
   }
-  else
-  {
-    hold = 0;
-  }
-  return hold;
+  return 0;
 }
 
 void BitplaneDMA::AddModulo(void)
@@ -96,35 +86,34 @@ void BitplaneDMA::Stop(void)
   _stopDDF = true;
 }
 
-void BitplaneDMA::SetState(BPLDMAStates newState, ULO cycle)
+void BitplaneDMA::SetState(BPLDMAStates newState, ULO arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
-  _cycle = cycle;
+  _arriveTime = arriveTime;
   _queue->Insert(this);
-  Log();
 }
 
 void BitplaneDMA::SetStateNone(void)
 {
   _queue->Remove(this);
   _state = BPL_DMA_STATE_NONE;
-  _cycle = GraphicsEventQueue::GRAPHICS_CYCLE_NONE;
-  Log();
+  _arriveTime = GraphicsEventQueue::GRAPHICS_ARRIVE_TIME_NONE;
 }
 
-// Called from outside the state machine, cycle is the display fetch start for this unit
-void BitplaneDMA::Start(ULO cycle)
+// Called from outside the state machine
+// arrive_time points to the start of the fetch unit
+void BitplaneDMA::Start(ULO arriveTime)
 {
   if (BitplaneUtility::IsDMAEnabled())
   {
     if (BitplaneUtility::IsLores())
     {
-      SetState(BPL_DMA_STATE_FETCH_LORES, cycle + 7);
+      SetState(BPL_DMA_STATE_FETCH_LORES, arriveTime + (7*2 + 1));
     }
     else
     {
-      SetState(BPL_DMA_STATE_FETCH_HIRES, cycle + 3);
+      SetState(BPL_DMA_STATE_FETCH_HIRES, arriveTime + (3*2 + 1));
     }
   }
 }
@@ -135,7 +124,8 @@ void BitplaneDMA::Restart(bool ddfIsActive)
   if (ddfIsActive || !ddfIsActive && _stopDDF && BitplaneUtility::IsHires())
   {
     _stopDDF = false;
-    Start(_cycle + 1);
+    ULO startOfNextFetchUnit = _arriveTime + 1;
+    Start(startOfNextFetchUnit);
   }
   else
   {
@@ -174,8 +164,12 @@ void BitplaneDMA::InitializeEvent(GraphicsEventQueue *queue)
   SetStateNone();
 }
 
-void BitplaneDMA::Handler(ULO rasterY, ULO rasterX)
+void BitplaneDMA::Handler(ULO rasterY, ULO cylinder)
 {
+  Log(rasterY, cylinder);
+
+  GraphicsContext.PixelSerializer.OutputCylindersUntil(rasterY, cylinder);
+
   if (BitplaneUtility::IsDMAEnabled())
   {
     switch (_state)
@@ -200,37 +194,6 @@ void BitplaneDMA::Handler(ULO rasterY, ULO rasterX)
 void BitplaneDMA::EndOfFrame(void)
 {
   SetStateNone();
-}
-
-void BitplaneDMA::SoftReset(void)
-{
-}
-
-void BitplaneDMA::HardReset(void)
-{
-}
-
-void BitplaneDMA::EmulationStart(void)
-{
-}
-
-void BitplaneDMA::EmulationStop(void)
-{
-}
-
-void BitplaneDMA::Startup(void)
-{
-  _enableLog = false;
-  _logfile = 0;
-  _stopDDF = false;
-}
-
-void BitplaneDMA::Shutdown(void)
-{
-  if (_enableLog && _logfile != 0)
-  {
-    fclose(_logfile);
-  }
 }
 
 #endif

@@ -41,25 +41,22 @@ private:
   ULO _minValidX;
   ULO _maxValidX;
 
-  bool _enableLog;
-  FILE *_logfile;
-
-  void Log(ULO rasterY, ULO rasterX);
+  void Log(ULO line, ULO cylinder);
   ULO GetStartPosition(void);
   ULO GetStopPosition(void);
   ULO GetFetchSize(void);
-  void SetState(DDFStates newState, ULO cycle);
-  void SetStateWaitingForFirstFetch(ULO rasterY, ULO rasterX);
-  void SetStateWaitingForNextFetch(ULO rasterY, ULO rasterX);
-  void DoStateWaitingForFirstFetch(ULO rasterY, ULO rasterX);
-  void DoStateWaitingForNextFetch(ULO rasterY, ULO rasterX);
+  void SetState(DDFStates newState, ULO arriveTime);
+  void SetStateWaitingForFirstFetch(ULO rasterY, ULO cylinder);
+  void SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder);
+  void DoStateWaitingForFirstFetch(ULO rasterY, ULO cylinder);
+  void DoStateWaitingForNextFetch(ULO rasterY, ULO cylinder);
 
 public:
   bool CanRead(void);
   void ChangedValue(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO rasterX);
+  virtual void Handler(ULO rasterY, ULO cylinder);
 
   void SoftReset(void);
   void HardReset(void);

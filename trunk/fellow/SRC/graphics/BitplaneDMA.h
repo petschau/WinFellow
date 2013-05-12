@@ -40,11 +40,10 @@ class BitplaneDMA : public GraphicsEvent
 private:
   BPLDMAStates _state;
   bool _stopDDF;
+  bool _hasBeenActive;
 
-  bool _enableLog;
-  FILE *_logfile;
+  void Log(ULO line, ULO cylinder);
 
-  void Log(void);
   UWO ReadWord(ULO address);
   void IncreaseBplPt(ULO *bplpt, ULO size);
   UWO GetHold(ULO bplNo, ULO bplsEnabled, ULO *bplpt);
@@ -60,18 +59,11 @@ public:
   void Stop(void);
 
   virtual void InitializeEvent(GraphicsEventQueue *queue);
-  virtual void Handler(ULO rasterY, ULO rasterX);
-//  virtual void Handler(bool ddfIsActive);
+  virtual void Handler(ULO rasterY, ULO cylinder);
 
-  void SoftReset(void);
-  void HardReset(void);
   void EndOfFrame(void);
-  void EmulationStart(void);
-  void EmulationStop(void);
-  void Startup(void);
-  void Shutdown(void);
 
-  BitplaneDMA(void) : GraphicsEvent() {};
+  BitplaneDMA(void) : GraphicsEvent(), _stopDDF(false), _state(BPL_DMA_STATE_NONE) {};
 
 };
 

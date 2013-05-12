@@ -28,24 +28,19 @@
 
 #include "bus.h"
 #include "graph.h"
-#include "fileops.h"
 
-#include "DIWYStateMachine.h"
+#include "Graphics.h"
 
 static STR *DIWYStateNames[2] = {"WAITING_FOR_START_LINE",
 				 "WAITING_FOR_STOP_LINE"};
 
-void DIWYStateMachine::Log(void)
+void DIWYStateMachine::Log(ULO line, ULO cylinder)
 {
-  if (_enableLog)
+  if (GraphicsContext.Logger.IsLogEnabled())
   {
-    if (_logfile == 0)
-    {
-      STR filename[MAX_PATH];
-      fileopsGetGenericFileName(filename, "WinFellow", "DIWYStateMachine.log");
-      _logfile = fopen(filename, "w");
-    }
-    fprintf(_logfile, "%.16I64X %.3X %.3X %s\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), DIWYStateNames[_state]);
+    STR msg[256];
+    sprintf(msg, "DIWY: %s\n", DIWYStateNames[_state]);
+    GraphicsContext.Logger.Log(line, cylinder, msg);
   }
 }
 
@@ -59,13 +54,12 @@ ULO DIWYStateMachine::GetStopLine(void)
   return diwybottom;
 }
 
-void DIWYStateMachine::SetState(DIWYStates newState, ULO cycle)
+void DIWYStateMachine::SetState(DIWYStates newState, ULO arriveTime)
 {
   _queue->Remove(this);
   _state = newState;
-  _cycle = cycle;
+  _arriveTime = arriveTime;
   _queue->Insert(this);
-  Log();
 }
 
 void DIWYStateMachine::SetStateWaitingForStartLine(ULO rasterY)
@@ -73,11 +67,12 @@ void DIWYStateMachine::SetStateWaitingForStartLine(ULO rasterY)
   if ((GetStartLine() > _maxValidY) || (GetStartLine() < rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively disabled)
-    SetState(DIWY_STATE_WAITING_FOR_START_LINE, BUS_CYCLE_PER_FRAME + 1);
+    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + 1, 0));
   }
   else
   {
-    SetState(DIWY_STATE_WAITING_FOR_START_LINE, GetStartLine()*BUS_CYCLE_PER_LINE);
+    // This should not affect the current line
+    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GetStartLine(), 0));
   }
 }
 
@@ -86,11 +81,11 @@ void DIWYStateMachine::SetStateWaitingForStopLine(ULO rasterY)
   if ((GetStopLine() > _maxValidY) || (GetStopLine() <= rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively enabled until end of frame)
-    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, BUS_CYCLE_PER_FRAME + 1);
+    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + 1, 0));
   }
   else
   {
-    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, GetStopLine()*BUS_CYCLE_PER_LINE);
+    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GetStopLine(), 0));
   }
 }
 
@@ -130,8 +125,10 @@ void DIWYStateMachine::InitializeEvent(GraphicsEventQueue *queue)
   SetStateWaitingForStartLine(0);
 }
 
-void DIWYStateMachine::Handler(ULO rasterY, ULO rasterX)
+void DIWYStateMachine::Handler(ULO rasterY, ULO cylinder)
 {
+  Log(rasterY, cylinder);
+
   switch (_state)
   {
     case DIWY_STATE_WAITING_FOR_START_LINE:
@@ -170,16 +167,10 @@ void DIWYStateMachine::Startup(void)
 {
   _minValidY = 26;
   _maxValidY = BUS_LINES_PER_FRAME;
-  _enableLog = false;
-  _logfile = 0;
 }
 
 void DIWYStateMachine::Shutdown(void)
 {
-  if (_enableLog && _logfile != 0)
-  {
-    fclose(_logfile);
-  }
 }
 
 #endif
