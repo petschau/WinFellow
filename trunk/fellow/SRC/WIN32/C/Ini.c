@@ -155,6 +155,14 @@ STR *iniGetLastUsedStateFileDir(ini *initdata) {
   return initdata->m_lastusedstatefiledir;
 }
 
+void iniSetLastUsedPresetROMDir(ini *initdata, STR *directory) {
+  strncpy(initdata->m_lastusedpresetromdir, directory, CFG_FILENAME_LENGTH);
+}
+
+STR *iniGetLastUsedPresetROMDir(ini *initdata) {
+  return initdata->m_lastusedpresetromdir;
+}
+
 void iniSetLastUsedKickImageDir(ini *initdata, STR *directory) {
   strncpy(initdata->m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
 }
@@ -258,6 +266,7 @@ void iniSetDefaults(ini *initdata) {
   iniSetLastUsedGlobalDiskDir(initdata, "");  
   iniSetLastUsedHdfDir(initdata, "");
   iniSetLastUsedStateFileDir(initdata, "");
+  iniSetLastUsedPresetROMDir(initdata, "");
 }
 
 /*============================================================================*/
@@ -388,6 +397,9 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
     else if (stricmp(option, "last_used_statefile_dir") == 0) {
       iniSetLastUsedStateFileDir(initdata, value);
     }
+    else if (stricmp(option, "last_used_preset_rom_dir") == 0) {
+      iniSetLastUsedPresetROMDir(initdata, value);
+    }
     else result = FALSE;
   }
   else result = FALSE;
@@ -413,6 +425,8 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "last_used_hdf_dir=%s\n", iniGetLastUsedHdfDir(initdata));
   fprintf(inifile, "last_used_mod_dir=%s\n", iniGetLastUsedModDir(initdata));
   fprintf(inifile, "last_used_statefile_dir=%s\n", iniGetLastUsedStateFileDir(initdata));
+  fprintf(inifile, "last_used_preset_rom_dir=%s\n", iniGetLastUsedPresetROMDir(initdata));
+
   return TRUE;
 }
 

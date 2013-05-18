@@ -43,6 +43,7 @@ typedef struct {
   STR  m_lastusedhdfdir[CFG_FILENAME_LENGTH];
   STR  m_lastusedmoddir[CFG_FILENAME_LENGTH];
   STR  m_lastusedstatefiledir[CFG_FILENAME_LENGTH];
+  STR  m_lastusedpresetromdir[CFG_FILENAME_LENGTH];
   
 } ini;
 
@@ -81,6 +82,8 @@ extern void iniSetLastUsedCfgTab(ini *initdata, ULO cfgTab);
 extern ULO iniGetLastUsedCfgTab(ini *initdata);
 extern void iniSetLastUsedStateFileDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedStateFileDir(ini *initdata);
+extern void iniSetLastUsedPresetROMDir(ini *initdata, STR *directory);
+extern STR *iniGetLastUsedPresetROMDir(ini *initdata);
 
 extern BOOLE iniSetOption(ini *initdata, STR *initoptionstr);
 extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);

@@ -69,6 +69,7 @@
 #include "floppy.h"
 #include "fellow.h"
 #include "GFXDRV.H"
+#include "fileops.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -796,7 +797,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       LPITEMIDLIST pidlTarget;
 
       if(pidlTarget = SHBrowseForFolder(&bi)) {
-	strcpy(szDescription, bi.pszDisplayName);
+        if(szDescription != NULL) 
+	  strcpy(szDescription, bi.pszDisplayName);
 	SHGetPathFromIDList(pidlTarget, szPath);   // Make sure it is a path
 	CoTaskMemFree(pidlTarget);
 	return TRUE;
@@ -1820,16 +1822,54 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Dialog Procedure for the Presets property sheet                            */
   /*============================================================================*/
 
-  INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg,
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam) 
+  INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
-      switch (uMsg) {
-    case WM_INITDIALOG:
-      return TRUE;
-    case WM_COMMAND:
-      break;
+    switch (uMsg) 
+    {
+      case WM_INITDIALOG:
+      {
+        STR *strLastPresetROMDir, strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
+
+        strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
+
+        if(strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
+        {
+          // last preset directory not set
+          if(fileopsResolveVariables("%AMIGAFOREVERDATA%Shared\\rom", strAmigaForeverROMDir)); 
+          {
+            strLastPresetROMDir = strAmigaForeverROMDir;
+            iniSetLastUsedPresetROMDir(wgui_ini, strAmigaForeverROMDir);
+          }
+        }
+
+        ccwEditSetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strLastPresetROMDir);
+
+        if(strLastPresetROMDir != NULL)
+          if(strLastPresetROMDir[0] != '\0') {
+            ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_MODEL);
+            ccwButtonEnable(hwndDlg, IDC_COMBO_PRESETS_MODEL);
+          }
+
+        return TRUE;
+      }
+      case WM_COMMAND:
+        if (HIWORD(wParam) == BN_CLICKED)
+	  switch (LOWORD(wParam)) {
+ 
+            case IDC_BUTTON_PRESETS_ROMSEARCHPATH:
+              {
+                STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
+                // STR strROMSearchPathDescription[CFG_FILENAME_LENGTH] = "";
+
+                if (wguiSelectDirectory(hwndDlg, strROMSearchPath, NULL, CFG_FILENAME_LENGTH, 
+	          "Select ROM Directory:")) {
+	          ccwEditSetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath);
+                  iniSetLastUsedPresetROMDir(wgui_ini, strROMSearchPath);
+                }
+              }
+            default:
+              break;
+        }
     case WM_DESTROY:
       break;
       }
@@ -2770,7 +2810,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     propertysheetheader.pszCaption = "WinFellow Configuration";
     propertysheetheader.nPages = PROP_SHEETS;
     // propertysheetheader.nStartPage = iniGetLastUsedCfgTab(wgui_ini);
-    propertysheetheader.nStartPage = 3;
+    propertysheetheader.nStartPage = 4;
     propertysheetheader.ppsp = propertysheets;
     propertysheetheader.pfnCallback = NULL;
     return PropertySheet(&propertysheetheader);
