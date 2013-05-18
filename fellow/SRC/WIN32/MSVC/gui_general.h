@@ -48,6 +48,7 @@
 #define IDI_ICON_CPU                    171
 #define IDD_DEBUGGER                    181
 #define IDD_FLOPPY_ADF_CREATE           182
+#define IDD_PRESETS                     183
 #define IDC_CONFIGURATION               1003
 #define IDC_SLIDER_CPU_SPEED            1007
 #define IDC_START_EMULATION             1008
@@ -184,6 +185,22 @@
 #define IDC_LST_INSTRUCTIONS            1142
 #define IDC_SLIDER_SOUND_VOLUME         1143
 #define IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT 1144
+#define IDC_EDIT_PRESETS_ROMSEARCHPATH  1145
+#define IDC_BUTTON_PRESETS_ROMSEARCHPATH 1146
+#define IDC_BUTTON_PRESETS_APPLY        1147
+#define IDC_LABEL_PRESETS_ROM           1148
+#define IDC_LABEL_PRESETS_ROMLOCATION   1149
+#define IDC_LABEL_PRESETS_CHIPSET       1150
+#define IDC_LABEL_PRESETS_CPU           1151
+#define IDC_LABEL_PRESETS_CHIPRAM       1152
+#define IDC_LABEL_PRESETS_FASTRAM       1153
+#define IDC_LABEL_PRESETS_BOGORAM       1154
+#define IDC_LABEL_ROM                   1155
+#define IDC_LABEL_PRESETS_ROM_LABEL     1155
+#define IDC_LABEL_PRESETS_ROM_LOCATION_LABEL 1156
+#define IDC_LABEL_PRESETS_CHIPSET_LABEL 1157
+#define IDC_LABEL_PRESETS_CPU_LABEL     1158
+#define IDC_LABEL_PRESETS_CHIPRAM_LABEL 1159
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BUTTON3                     2001
 #define IDC_BTN_RUN                     2001
@@ -221,6 +238,7 @@
 #define IDC_RADIO4                      2030
 #define IDC_RADIO_SOUND_31300           2031
 #define IDC_COMBO1                      2032
+#define IDC_COMBO_PRESETS_MODEL         2032
 #define IDC_RADIO5                      2033
 #define IDC_RADIO_SOUND_44100           2034
 #define IDC_RADIO_LINEMODE_NORMAL       2035
@@ -285,14 +303,15 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        183
+#define _APS_NEXT_RESOURCE_VALUE        184
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1145
+#define _APS_NEXT_CONTROL_VALUE         1160
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -249,6 +249,7 @@ wguiActions wgui_action;
 /* Forward declarations for each property sheet dialog procedure              */
 /*============================================================================*/
 
+INT_PTR CALLBACK wguiPresetDialogProc        (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK wguiCPUDialogProc           (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK wguiFloppyDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT_PTR CALLBACK wguiFloppyCreateDialogProc  (HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -271,9 +272,10 @@ INT_PTR CALLBACK wguiVariousDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wPa
 /* -Dialog procedure for each property sheet                                  */
 /*============================================================================*/
 
-#define PROP_SHEETS 9
+#define PROP_SHEETS 10
 
 UINT wgui_propsheetRID[PROP_SHEETS] = {
+  IDD_PRESETS,
   IDD_CPU,
   IDD_FLOPPY,
   IDD_MEMORY,
@@ -286,6 +288,7 @@ UINT wgui_propsheetRID[PROP_SHEETS] = {
 };
 
 UINT wgui_propsheetICON[PROP_SHEETS] = {
+  0,
   IDI_ICON_CPU,
   IDI_ICON_FLOPPY,
   //IDI_ICON_MEMORY,
@@ -303,6 +306,7 @@ UINT wgui_propsheetICON[PROP_SHEETS] = {
 typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
 wguiDlgProc wgui_propsheetDialogProc[PROP_SHEETS] = {
+  wguiPresetDialogProc,
   wguiCPUDialogProc,
   wguiFloppyDialogProc,
   wguiMemoryDialogProc,
@@ -1810,6 +1814,26 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	return index;
       else index++;
       return -1;
+  }
+
+   /*===========================================================================*/
+  /* Dialog Procedure for the Presets property sheet                            */
+  /*============================================================================*/
+
+  INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg,
+    UINT uMsg,
+    WPARAM wParam,
+    LPARAM lParam) 
+  {
+      switch (uMsg) {
+    case WM_INITDIALOG:
+      return TRUE;
+    case WM_COMMAND:
+      break;
+    case WM_DESTROY:
+      break;
+      }
+      return FALSE;
   }
 
 
