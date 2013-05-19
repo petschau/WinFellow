@@ -1818,7 +1818,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       return -1;
   }
 
-   /*===========================================================================*/
+
+  /*===========================================================================*/
   /* Dialog Procedure for the Presets property sheet                            */
   /*============================================================================*/
 
@@ -1835,7 +1836,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
         if(strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
         {
           // last preset directory not set
-          if(fileopsResolveVariables("%AMIGAFOREVERDATA%Shared\\rom", strAmigaForeverROMDir)); 
+          if(fileopsResolveVariables("%AMIGAFOREVERDATA%Shared\\rom", strAmigaForeverROMDir))
           {
             strLastPresetROMDir = strAmigaForeverROMDir;
             iniSetLastUsedPresetROMDir(wgui_ini, strAmigaForeverROMDir);
@@ -1848,6 +1849,13 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
           if(strLastPresetROMDir[0] != '\0') {
             ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_MODEL);
             ccwButtonEnable(hwndDlg, IDC_COMBO_PRESETS_MODEL);
+
+            {
+              STR WinFellowPresetPath[CFG_FILENAME_LENGTH];
+
+              if(fileopsGetWinFellowPresetPath(WinFellowPresetPath, CFG_FILENAME_LENGTH))
+                fellowAddLog("WinFellow preset path = %s\n", WinFellowPresetPath);
+            }
           }
 
         return TRUE;
