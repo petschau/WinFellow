@@ -30,6 +30,7 @@ extern BOOLE fileopsGetFellowLogfileName(char *);
 extern BOOLE fileopsGetGenericFileName(char *, const char *, const char *);
 extern BOOLE fileopsGetDefaultConfigFileName(char *);
 extern BOOLE fileopsResolveVariables(const char *, char *);
+extern BOOLE fileopsGetWinFellowPresetPath(char *, const DWORD);
 extern char *fileopsGetTemporaryFilename(void);
 
 #endif // FILEOPS_H

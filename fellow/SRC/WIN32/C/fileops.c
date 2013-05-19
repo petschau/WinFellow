@@ -110,6 +110,65 @@ BOOLE fileopsGetDefaultConfigFileName(char *szPath)
   return fileopsGetGenericFileName(szPath, "WinFellow\\configurations", "default.wfc");
 }
 
+/* fileopsGetWinFellowExecutablePath                                */
+/* writes WinFellow executable full path into strBuffer             */
+static BOOLE fileopsGetWinFellowExecutablePath(char *strBuffer, const DWORD lBufferSize)
+{
+  if(GetModuleFileName(NULL, strBuffer, lBufferSize) != 0)
+    return TRUE;
+  else
+    return FALSE;
+}
+
+/* fileopsGetWinFellowExecutablePath                                */
+/* writes WinFellow installation path into strBuffer                */
+static BOOLE fileopsGetWinFellowInstallationPath(char *strBuffer, const DWORD lBufferSize)
+{
+  STR strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
+
+  if(fileopsGetWinFellowExecutablePath(strWinFellowExePath, CFG_FILENAME_LENGTH))
+  {
+    char *strLastBackslash = strrchr(strWinFellowExePath, '\\');
+
+    if (strLastBackslash)
+        *strLastBackslash = '\0';
+
+    strncpy(strBuffer, strWinFellowExePath, lBufferSize);
+
+    return TRUE;
+  }
+  else
+    return FALSE;
+}
+
+static bool fileopsDirectoryExists(const char *strPath)
+{
+  DWORD dwAttrib = GetFileAttributes(strPath);
+
+  return (dwAttrib != INVALID_FILE_ATTRIBUTES && (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
+
+/* fileopsGetWinFellowExecutablePath                                */
+/* writes WinFellow preset directory path into strBuffer            */
+BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
+{
+  STR strWinFellowInstallPath[CFG_FILENAME_LENGTH] = "";
+
+  if(fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH))
+  {
+    strncat(strWinFellowInstallPath, "\\Presets", 9);
+
+    if(fileopsDirectoryExists(strWinFellowInstallPath)) {
+      strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
+      return TRUE;
+    }
+    else
+      return FALSE;
+  }
+  else
+    return FALSE;
+}
+
 /*=========================================*/
 /* Get a temporary file name               */
 /* if TEMP environment variable is set try */
