@@ -222,6 +222,11 @@ STR *wgui_gameport_strings[NUMBER_OF_GAMEPORT_STRINGS] = {
   "mouse"
 };
 
+// preset handling
+STR wgui_preset_path[CFG_FILENAME_LENGTH] = "";
+ULO wgui_num_presets = 0;
+wgui_preset *wgui_presets = NULL;
+
 /*============================================================================*/
 /* Flags for various global events                                            */
 /*============================================================================*/
@@ -1818,13 +1823,15 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       return -1;
   }
 
-
+   
   /*===========================================================================*/
   /* Dialog Procedure for the Presets property sheet                            */
   /*============================================================================*/
 
   INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
+    
+
     switch (uMsg) 
     {
       case WM_INITDIALOG:
@@ -1851,10 +1858,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
             ccwButtonEnable(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 
             {
-              STR WinFellowPresetPath[CFG_FILENAME_LENGTH];
-
-              if(fileopsGetWinFellowPresetPath(WinFellowPresetPath, CFG_FILENAME_LENGTH))
-                fellowAddLog("WinFellow preset path = %s\n", WinFellowPresetPath);
+             
             }
           }
 
@@ -3270,20 +3274,94 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return quit_emulator;
   }
 
+  static bool wguiInitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_presets) {
+    STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
+    WIN32_FIND_DATA ffd;
+    HANDLE hFind = INVALID_HANDLE_VALUE;
+    ULO i = 0;
+
+    strncpy(strSearchPattern, wgui_preset_path, CFG_FILENAME_LENGTH);
+    strncat(strSearchPattern, "\\*", 3);
+
+    // first we count the number of files in the preset directory
+    hFind = FindFirstFile(strSearchPattern, &ffd);
+    if (hFind == INVALID_HANDLE_VALUE) {
+      fellowAddLog("wguiInitializePresets(): FindFirstFile failed.\n");
+      return false;
+    }
+
+    *wgui_num_presets = 0;
+    do {
+      if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+      else
+         *wgui_num_presets+=1;
+    } while(FindNextFile(hFind, &ffd) != 0);
+    FindClose(hFind);
+
+    fellowAddLog("wguiInitializePresets(): %u preset(s) found.\n", *wgui_num_presets);
+
+    // then we allocate the memory to store preset information, and read the information
+    if(*wgui_num_presets > 0) {
+      *wgui_presets = (wgui_preset *) malloc(*wgui_num_presets * sizeof(wgui_preset));
+
+      hFind = FindFirstFile(strSearchPattern, &ffd);
+      do {
+        if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY);
+        else {
+          cfg *cfgTemp;
+          BOOLE bResult;
+          STR strFilename[CFG_FILENAME_LENGTH] = "";
+
+          strncpy((*wgui_presets)[i].strPresetFilename, wgui_preset_path, CFG_FILENAME_LENGTH);
+          strncat((*wgui_presets)[i].strPresetFilename, "\\", 2);
+          strncat((*wgui_presets)[i].strPresetFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
+
+          cfgTemp = cfgManagerGetNewConfig(&cfg_manager);
+          if(cfgTemp) {
+            bResult = cfgLoadFromFilename(cfgTemp, (*wgui_presets)[i].strPresetFilename);
+
+            if(bResult) {
+              strncpy((*wgui_presets)[i].strPresetDescription, cfgGetDescription(cfgTemp), CFG_FILENAME_LENGTH);
+#ifdef _DEBUG
+              fellowAddLog(" preset %u filename   : %s\n", i, ffd.cFileName);
+              fellowAddLog(" preset %u description: %s\n", i, (*wgui_presets)[i].strPresetDescription);
+#endif
+              
+              i++;
+            }
+            else
+              strncpy((*wgui_presets)[i].strPresetDescription, "", CFG_FILENAME_LENGTH);
+
+            cfgManagerFreeConfig(&cfg_manager, cfgTemp);
+          }
+        }
+      } while((FindNextFile(hFind, &ffd) != 0) && (i < *wgui_num_presets));
+      FindClose(hFind);
+    }
+
+    return TRUE;
+  } 
+
 
   /*============================================================================*/
   /* Called at the start of Fellow execution                                    */
-  /*============================================================================*/
-
-  /*============================================================================*/
-  /* Called at the end of Fellow initialization                                 */
   /*============================================================================*/
 
   void wguiStartup(void) {
     wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
     wgui_ini = iniManagerGetCurrentInitdata(&ini_manager);
     wguiConvertDrawModeListToGuiDrawModes(pwgui_dm);
+
+    if(fileopsGetWinFellowPresetPath(wgui_preset_path, CFG_FILENAME_LENGTH)) {
+      fellowAddLog("wguiStartup(): preset path = %s\n", wgui_preset_path);
+      wguiInitializePresets(&wgui_presets, &wgui_num_presets);
+    }
   }
+
+
+  /*============================================================================*/
+  /* Called at the end of Fellow initialization                                 */
+  /*============================================================================*/
 
   void wguiStartupPost(void) {
     wguiLoadBitmaps();
@@ -3297,6 +3375,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
   }
 
+
   /*============================================================================*/
   /* Called at the end of Fellow execution                                      */
   /*============================================================================*/
@@ -3304,6 +3383,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   void wguiShutdown(void) {
     wguiReleaseBitmaps();
     wguiFreeGuiDrawModesList(pwgui_dm);
+
+    if(wgui_presets != NULL)
+      free(wgui_presets);
   }
 
 

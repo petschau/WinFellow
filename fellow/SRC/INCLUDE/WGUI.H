@@ -38,6 +38,11 @@ typedef struct {
 	felist *res32bit;
 } wgui_drawmodes;
 
+typedef struct {
+  STR strPresetFilename[CFG_FILENAME_LENGTH];
+  STR strPresetDescription[CFG_FILENAME_LENGTH];
+} wgui_preset;
+
 /*===========================================================================*/
 /* This is the generic interface that must be implemented to create a GUI    */
 /* Fellow                                                                    */
