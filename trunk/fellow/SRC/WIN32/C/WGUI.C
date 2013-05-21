@@ -1830,8 +1830,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   INT_PTR CALLBACK wguiPresetDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
   {
-    
-
     switch (uMsg) 
     {
       case WM_INITDIALOG:
@@ -1856,18 +1854,20 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
           if(strLastPresetROMDir[0] != '\0') {
             ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_MODEL);
             ccwButtonEnable(hwndDlg, IDC_COMBO_PRESETS_MODEL);
-
-            {
-             
-            }
           }
+
+        if(wgui_presets != NULL) {
+          ULO i;          
+
+          for(i=0; i<wgui_num_presets; i++)
+            ccwComboBoxAddString(hwndDlg, IDC_COMBO_PRESETS_MODEL, wgui_presets[i].strPresetDescription);
+        }
 
         return TRUE;
       }
       case WM_COMMAND:
-        if (HIWORD(wParam) == BN_CLICKED)
+        if(HIWORD(wParam) == BN_CLICKED) {
 	  switch (LOWORD(wParam)) {
- 
             case IDC_BUTTON_PRESETS_ROMSEARCHPATH:
               {
                 STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
@@ -1881,6 +1881,46 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
               }
             default:
               break;
+          }
+        }
+        else if(HIWORD(wParam) == CBN_SELENDOK) {
+           switch (LOWORD(wParam)) {
+            case IDC_COMBO_PRESETS_MODEL:
+              {
+                ULO index = 0;
+                cfg *cfgTemp = NULL;
+                STR strTemp[10] = "";
+
+                index = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
+#ifdef _DEBUG
+                fellowAddLog("preset selected: %s\n", wgui_presets[index].strPresetFilename);
+#endif
+
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_ROM);         ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_ROM_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_ROMLOCATION); ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_ROM_LOCATION_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CHIPSET);     ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CHIPSET_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CPU);         ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CPU_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CHIPRAM);     ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_CHIPRAM_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_FASTRAM);     ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_FASTRAM_LABEL);
+                ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_BOGORAM);     ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_BOGORAM_LABEL);
+
+                if(cfgTemp = cfgManagerGetNewConfig(&cfg_manager)) {
+                  if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename)) {
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECSBlitter(cfgTemp) ? "ECS": "OCS");
+                    // ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CPU,     cfgGetCPUType(cfgTemp));
+                    sprintf(strTemp, "%d bytes", cfgGetChipSize(cfgTemp));
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPRAM, strTemp);
+                    sprintf(strTemp, "%d bytes", cfgGetFastSize(cfgTemp));
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_FASTRAM, strTemp);
+                    sprintf(strTemp, "%d bytes", cfgGetBogoSize(cfgTemp));
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_BOGORAM, strTemp);
+                  }
+                  cfgManagerFreeConfig(&cfg_manager, cfgTemp);
+                }
+              }
+            default:
+              break;
+           }
         }
     case WM_DESTROY:
       break;
