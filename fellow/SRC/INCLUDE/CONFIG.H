@@ -41,7 +41,7 @@ typedef struct {
 
 typedef struct {
 
-  STR	m_description[256];
+  STR	m_description[CFG_FILENAME_LENGTH];
 	
   /*==========================================================================*/
   /* Floppy disk configuration                                                */
@@ -61,6 +61,7 @@ typedef struct {
   ULO    m_fastsize;
   ULO    m_bogosize;
   STR    m_kickimage[CFG_FILENAME_LENGTH];
+  STR    m_kickdescription[CFG_FILENAME_LENGTH];
   STR    m_key[CFG_FILENAME_LENGTH];
   BOOLE  m_useautoconfig;
   bool   m_rtc;
@@ -194,6 +195,8 @@ extern void cfgSetBogoSize(cfg *config, ULO bogosize);
 extern ULO cfgGetBogoSize(cfg *config);
 extern void cfgSetKickImage(cfg *config, STR *kickimage);
 extern STR *cfgGetKickImage(cfg *config);
+extern void cfgSetKickDescription(cfg *config, STR *kickdescription);
+extern STR *cfgGetKickDescription(cfg *config);
 extern void cfgSetKey(cfg *config, STR *key);
 extern STR *cfgGetKey(cfg *config);
 extern void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig);

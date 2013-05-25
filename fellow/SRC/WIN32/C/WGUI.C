@@ -280,6 +280,19 @@ INT_PTR CALLBACK wguiVariousDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wPa
 
 #define PROP_SHEETS 10
 
+typedef enum {
+  PROPSHEETPRESETS = 0,
+  PROPSHEETCPU     = 1,
+  PROPSHEETFLOPPY  = 2,
+  PROPSHEETMEMORY  = 3,
+  PROPSHEETDISPLAY = 4,
+  PROPSHEETSOUND   = 5,
+  PROPSHEETFILESYSTEM = 6,
+  PROPSHEETHARDFILE = 7,
+  PROPSHEETGAMEPORT = 8,
+  PROPSHEETVARIOUS = 9
+};
+
 UINT wgui_propsheetRID[PROP_SHEETS] = {
   IDD_PRESETS,
   IDD_CPU,
@@ -308,6 +321,20 @@ UINT wgui_propsheetICON[PROP_SHEETS] = {
   0,0
 };
 
+// in this struct, we remember the configuration dialog property sheet handles,
+// so that a refresh can be triggered by the presets propery sheet
+HWND wgui_propsheetHWND[PROP_SHEETS] = {
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL,
+  NULL
+};
 
 typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
@@ -982,9 +1009,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* install CPU config */
 
   void wguiInstallCPUConfig(HWND hwndDlg, cfg *conf) {
-    int slidervalue;
+    int slidervalue, i;
 
     /* set CPU type */
+    for(i=0; i<NUMBER_OF_CPUS; i++)
+      ccwButtonUncheck(hwndDlg, wgui_cpus_cci[i]);
     ccwButtonSetCheck(hwndDlg, wgui_cpus_cci[cfgGetCPUType(conf)]);
 
     /* Set CPU speed */
@@ -1836,6 +1865,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       {
         STR *strLastPresetROMDir, strAmigaForeverROMDir[CFG_FILENAME_LENGTH] = "";
 
+        wgui_propsheetHWND[PROPSHEETPRESETS] = hwndDlg;
         strLastPresetROMDir = iniGetLastUsedPresetROMDir(wgui_ini);
 
         if(strncmp(strLastPresetROMDir, "", CFG_FILENAME_LENGTH) == 0)
@@ -1867,7 +1897,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       }
       case WM_COMMAND:
         if(HIWORD(wParam) == BN_CLICKED) {
-	  switch (LOWORD(wParam)) {
+	  switch(LOWORD(wParam)) {
             case IDC_BUTTON_PRESETS_ROMSEARCHPATH:
               {
                 STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
@@ -1879,6 +1909,33 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                   iniSetLastUsedPresetROMDir(wgui_ini, strROMSearchPath);
                 }
               }
+            case IDC_BUTTON_PRESETS_APPLY:
+              {
+                ULO lIndex = 0;
+                STR strFilename[CFG_FILENAME_LENGTH] = "";
+
+                lIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
+
+                strncpy(strFilename, wgui_presets[lIndex].strPresetFilename, CFG_FILENAME_LENGTH);
+
+                fellowAddLog("Applying preset %s...\n", strFilename);
+
+                if(cfgLoadFromFilename(wgui_cfg, strFilename)) {
+                  wguiInstallCPUConfig        (wgui_propsheetHWND[PROPSHEETCPU],        wgui_cfg);
+                  wguiInstallFloppyConfig     (wgui_propsheetHWND[PROPSHEETFLOPPY],     wgui_cfg);
+                  wguiInstallMemoryConfig     (wgui_propsheetHWND[PROPSHEETMEMORY],     wgui_cfg);
+                  wguiInstallDisplayConfig    (wgui_propsheetHWND[PROPSHEETDISPLAY],    wgui_cfg);
+                  wguiInstallSoundConfig      (wgui_propsheetHWND[PROPSHEETSOUND],      wgui_cfg);
+                  wguiInstallFilesystemConfig (wgui_propsheetHWND[PROPSHEETFILESYSTEM], wgui_cfg);
+                  wguiInstallHardfileConfig   (wgui_propsheetHWND[PROPSHEETHARDFILE],   wgui_cfg);
+                  wguiInstallGameportConfig   (wgui_propsheetHWND[PROPSHEETGAMEPORT],   wgui_cfg);
+                  wguiInstallVariousConfig    (wgui_propsheetHWND[PROPSHEETVARIOUS],    wgui_cfg);
+
+                  fellowAddLog(" Preset applied successfully.\n");
+                }
+                else
+                  fellowAddLog(" ERROR applying preset.\n");
+              }
             default:
               break;
           }
@@ -1889,7 +1946,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
               {
                 ULO index = 0;
                 cfg *cfgTemp = NULL;
-                STR strTemp[10] = "";
+                STR strTemp[CFG_FILENAME_LENGTH] = "";
 
                 index = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 #ifdef _DEBUG
@@ -1907,13 +1964,37 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 if(cfgTemp = cfgManagerGetNewConfig(&cfg_manager)) {
                   if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename)) {
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECSBlitter(cfgTemp) ? "ECS": "OCS");
-                    // ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CPU,     cfgGetCPUType(cfgTemp));
+
+                    switch(cfgGetCPUType(cfgTemp))
+                    {
+                      case 0:
+                        sprintf(strTemp, "68000"); break;
+                      case 1:
+                        sprintf(strTemp, "68010"); break;
+                      case 2:
+                        sprintf(strTemp, "68020"); break;
+                      case 3:
+                        sprintf(strTemp, "68030"); break;
+                      case 4:
+                        sprintf(strTemp, "68EC30"); break;
+                      case 9:
+                        sprintf(strTemp, "68EC20"); break;
+                      default:
+                        sprintf(strTemp, "unknown model");
+                    }
+
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CPU, strTemp);
                     sprintf(strTemp, "%d bytes", cfgGetChipSize(cfgTemp));
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPRAM, strTemp);
                     sprintf(strTemp, "%d bytes", cfgGetFastSize(cfgTemp));
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_FASTRAM, strTemp);
                     sprintf(strTemp, "%d bytes", cfgGetBogoSize(cfgTemp));
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_BOGORAM, strTemp);
+
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_ROM, cfgGetKickDescription(cfgTemp));
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_ROMLOCATION, cfgGetKickImage(cfgTemp));
+
+                    ccwButtonEnable(hwndDlg, IDC_BUTTON_PRESETS_APPLY);
                   }
                   cfgManagerFreeConfig(&cfg_manager, cfgTemp);
                 }
@@ -1939,6 +2020,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     LPARAM lParam) {
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETCPU] = hwndDlg;
       wguiInstallCPUConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -1991,6 +2073,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   {
     switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETFLOPPY] = hwndDlg;
       wguiInstallFloppyConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2161,6 +2244,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETMEMORY] = hwndDlg;
       wguiInstallMemoryConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2218,6 +2302,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETDISPLAY] = hwndDlg;
       wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2434,6 +2519,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     LPARAM lParam) {
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETFILESYSTEM] = hwndDlg;
       wguiInstallFilesystemConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2665,6 +2751,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     LPARAM lParam) {
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETHARDFILE] = hwndDlg;
       wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2766,6 +2853,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
       switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETGAMEPORT] = hwndDlg;
       wguiInstallGameportConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
@@ -2813,6 +2901,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   {
     switch (uMsg) {
     case WM_INITDIALOG:
+      wgui_propsheetHWND[PROPSHEETVARIOUS] = hwndDlg;
       wguiInstallVariousConfig(hwndDlg, wgui_cfg);
       return TRUE;
     case WM_COMMAND:
