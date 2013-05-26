@@ -28,6 +28,9 @@
 #include <shlwapi.h>
 
 #include "defs.h"
+#include "fellow.h"
+
+#include "zlib.h" // crc32 function
 
 /** @file
  * The fileops module contains abtract functions to generate filenames in a
@@ -191,4 +194,70 @@ char *fileopsGetTemporaryFilename(void)
     result = tmpnam(NULL);
   }
   return result;
+}
+
+bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, char *strDestFilename, const ULO strDestLen)
+{
+  STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
+  WIN32_FIND_DATA ffd;
+  HANDLE hFind = INVALID_HANDLE_VALUE;
+
+  strncpy(strSearchPattern, strSearchPath, CFG_FILENAME_LENGTH);
+  strncat(strSearchPattern, "\\*", 3);
+
+  fellowAddLog("fileopsGetKickstartByCRC32(%s, %X)...\n", strSearchPath, lCRC32);
+
+  hFind = FindFirstFile(strSearchPattern, &ffd);
+  if (hFind == INVALID_HANDLE_VALUE) {
+    fellowAddLog("fileopsGetKickstartByCRC32(): FindFirstFile failed.\n");
+    return false;
+  }
+
+  do {
+    if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+      if(strcmp(ffd.cFileName, ".") != 0 && strcmp(ffd.cFileName, "..") != 0) {
+        STR strSubDir[CFG_FILENAME_LENGTH] = "";
+      
+        strncpy(strSubDir, strSearchPath, CFG_FILENAME_LENGTH);
+        strncat(strSubDir, "\\", 2);
+        strncat(strSubDir, ffd.cFileName, CFG_FILENAME_LENGTH);
+
+        if(fileopsGetKickstartByCRC32(strSubDir, lCRC32, strDestFilename, strDestLen))
+          return true;
+      }
+    }
+    else {
+      if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262144 || ffd.nFileSizeLow == 524288)) {
+        // possibly an unencrypted ROM, read and build checksum
+        FILE *F = NULL;
+        STR strFilename[CFG_FILENAME_LENGTH] = "";
+        Bytef strBuffer[524288];
+        ULO lCurrentCRC32;
+
+        strncpy(strFilename, strSearchPath, CFG_FILENAME_LENGTH);
+        strncat(strFilename, "\\", 2);
+        strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
+
+        if(F = fopen(strFilename, "rb"))
+        {
+          fread(strBuffer, ffd.nFileSizeLow, 1, F);
+
+          lCurrentCRC32 = crc32(0, strBuffer, ffd.nFileSizeLow);
+
+          if(lCurrentCRC32 == lCRC32) {
+            strncpy(strDestFilename, strFilename, strDestLen);
+            return true;
+          }
+
+          fclose(F);
+          F = NULL;
+        }
+      }
+
+    }
+
+  } while(FindNextFile(hFind, &ffd) != 0);
+  FindClose(hFind);
+
+  return false;
 }
