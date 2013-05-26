@@ -236,6 +236,16 @@ STR *cfgGetKickDescription(cfg *config)
   return config->m_kickdescription;
 }
 
+void cfgSetKickCRC32(cfg *config, ULO kickcrc32)
+{
+  config->m_kickcrc32 = kickcrc32;
+}
+
+ULO cfgGetKickCRC32(cfg *config)
+{
+  return config->m_kickcrc32;
+}
+
 void cfgSetKey(cfg *config, STR *key)
 {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
@@ -765,6 +775,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetBogoSize(config, 0x1c0000);
   cfgSetKickImage(config, "");
   cfgSetKickDescription(config, "");
+  cfgSetKickCRC32(config, 0);
   cfgSetKey(config, "");
   cfgSetUseAutoconfig(config, FALSE);
   cfgSetRtc(config, false);
@@ -1510,6 +1521,12 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetKickDescription(config, value);
     }
+    else if (stricmp(option, "kickstart_rom_crc32") == 0)
+    {
+      ULO crc32;
+      sscanf(value,"%lX", &crc32); 
+      cfgSetKickCRC32(config, crc32);
+    }
     else if (stricmp(option, "kickstart_key_file") == 0)
     {
       cfgSetKey(config, value);
@@ -1795,6 +1812,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "bogomem_size=%u\n", cfgGetBogoSize(config) / 262144);
   fprintf(cfgfile, "kickstart_rom_file=%s\n", cfgGetKickImage(config));
   fprintf(cfgfile, "kickstart_rom_description=%s\n", cfgGetKickDescription(config));
+  fprintf(cfgfile, "kickstart_rom_crc32=%X\n", cfgGetKickCRC32(config));
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", cfgGetBOOLEToString(cfgGetBlitterFast(config)));
   fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECSBlitter(config)));

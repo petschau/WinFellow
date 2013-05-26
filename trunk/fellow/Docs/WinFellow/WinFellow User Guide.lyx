@@ -690,6 +690,15 @@ support for sprites in hires dual playfield mode was fixed, making previously
 \end_layout
 
 \begin_layout Itemize
+support for model presets to quickly get started setting up model specific
+ configurations (a number of presets already included)
+\end_layout
+
+\begin_layout Itemize
+support for creation of empty and formatted ADF images
+\end_layout
+
+\begin_layout Itemize
 WinFellow will now re-initialize the emulation session when a change of
  the display adapter properties is detected (change of color depth, change
  of graphics adapter)

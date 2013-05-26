@@ -1901,7 +1901,6 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
             case IDC_BUTTON_PRESETS_ROMSEARCHPATH:
               {
                 STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
-                // STR strROMSearchPathDescription[CFG_FILENAME_LENGTH] = "";
 
                 if (wguiSelectDirectory(hwndDlg, strROMSearchPath, NULL, CFG_FILENAME_LENGTH, 
 	          "Select ROM Directory:")) {
@@ -1913,6 +1912,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
               {
                 ULO lIndex = 0;
                 STR strFilename[CFG_FILENAME_LENGTH] = "";
+                STR strKickstart[CFG_FILENAME_LENGTH] = "";
+                STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
 
                 lIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_PRESETS_MODEL);
 
@@ -1921,6 +1922,19 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 fellowAddLog("Applying preset %s...\n", strFilename);
 
                 if(cfgLoadFromFilename(wgui_cfg, strFilename)) {
+                  ULO lCRC32 = 0;
+
+                  if(lCRC32 = cfgGetKickCRC32(wgui_cfg)) {
+                    ccwEditGetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath, CFG_FILENAME_LENGTH);
+                    if(fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
+                    {
+                      cfgSetKickImage(wgui_cfg, strKickstart);
+                    }
+                    else
+                      fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n",
+                        lCRC32, strROMSearchPath);
+                  }
+
                   wguiInstallCPUConfig        (wgui_propsheetHWND[PROPSHEETCPU],        wgui_cfg);
                   wguiInstallFloppyConfig     (wgui_propsheetHWND[PROPSHEETFLOPPY],     wgui_cfg);
                   wguiInstallMemoryConfig     (wgui_propsheetHWND[PROPSHEETMEMORY],     wgui_cfg);
@@ -1963,6 +1977,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
                 if(cfgTemp = cfgManagerGetNewConfig(&cfg_manager)) {
                   if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename)) {
+                    STR strKickstart[CFG_FILENAME_LENGTH] = "";
+                    STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
+                    ULO lCRC32 = 0;
+
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECSBlitter(cfgTemp) ? "ECS": "OCS");
 
                     switch(cfgGetCPUType(cfgTemp))
@@ -1990,6 +2008,17 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_FASTRAM, strTemp);
                     sprintf(strTemp, "%d bytes", cfgGetBogoSize(cfgTemp));
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_BOGORAM, strTemp);
+
+                    if(lCRC32 = cfgGetKickCRC32(cfgTemp)) {
+                      ccwEditGetText(hwndDlg, IDC_EDIT_PRESETS_ROMSEARCHPATH, strROMSearchPath, CFG_FILENAME_LENGTH);
+                      if(fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
+                      {
+                        cfgSetKickImage(cfgTemp, strKickstart);
+                      }
+                      else
+                        fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n",
+                          lCRC32, strROMSearchPath);
+                    }
 
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_ROM, cfgGetKickDescription(cfgTemp));
                     ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_ROMLOCATION, cfgGetKickImage(cfgTemp));
