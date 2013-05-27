@@ -31,6 +31,7 @@
 #include "fellow.h"
 
 #include "zlib.h" // crc32 function
+#include "fmem.h" // decrypt AF2 kickstart
 
 /** @file
  * The fileops module contains abtract functions to generate filenames in a
@@ -165,8 +166,21 @@ BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
       strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
       return TRUE;
     }
-    else
+    else {
+#ifdef _DEBUG
+      // in debug mode, look for presets directory also with relative path from output exe
+      fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
+      strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\Presets", 21);
+
+      fellowAddLog("%s\n", strWinFellowInstallPath);
+      
+      if(fileopsDirectoryExists(strWinFellowInstallPath)) {
+        strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
+        return TRUE;
+      }
       return FALSE;
+#endif
+    }
   }
   else
     return FALSE;
@@ -201,6 +215,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
   STR strSearchPattern[CFG_FILENAME_LENGTH] = "";
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
+  UBY memory_kick[0x080000 + 32];
 
   strncpy(strSearchPattern, strSearchPath, CFG_FILENAME_LENGTH);
   strncat(strSearchPattern, "\\*", 3);
@@ -231,7 +246,6 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         // possibly an unencrypted ROM, read and build checksum
         FILE *F = NULL;
         STR strFilename[CFG_FILENAME_LENGTH] = "";
-        Bytef strBuffer[524288];
         ULO lCurrentCRC32;
 
         strncpy(strFilename, strSearchPath, CFG_FILENAME_LENGTH);
@@ -240,9 +254,9 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
 
         if(F = fopen(strFilename, "rb"))
         {
-          fread(strBuffer, ffd.nFileSizeLow, 1, F);
+          fread(memory_kick, ffd.nFileSizeLow, 1, F);
 
-          lCurrentCRC32 = crc32(0, strBuffer, ffd.nFileSizeLow);
+          lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow);
 
           if(lCurrentCRC32 == lCRC32) {
             strncpy(strDestFilename, strFilename, strDestLen);
@@ -253,7 +267,46 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
           F = NULL;
         }
       }
+      else if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262155 || ffd.nFileSizeLow == 524299)) {
+        // possibly an encrypted ROM, read and build checksum
+        FILE *F = NULL;
+        STR strFilename[CFG_FILENAME_LENGTH] = "";
+        
+        ULO lCurrentCRC32;
 
+        strncpy(strFilename, strSearchPath, CFG_FILENAME_LENGTH);
+        strncat(strFilename, "\\", 2);
+        strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
+
+        if(F = fopen(strFilename, "rb"))
+        {
+          int result = memoryKickLoadAF2(strFilename, F, memory_kick, true);
+
+          if(result == TRUE) {
+            lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow - 11);
+
+            fellowAddLog("fileopsGetKickstartByCRC32() filename=%s, crc32=%X\n",
+              strFilename, lCurrentCRC32);
+
+            if(lCurrentCRC32 == lCRC32) {
+              strncpy(strDestFilename, strFilename, strDestLen);
+              return true;
+            }
+            else if(ffd.nFileSizeLow == 262155) {
+              // some ROMs have the content doubled
+              lCurrentCRC32 = crc32(0, memory_kick, 524288);
+
+              if(lCurrentCRC32 == lCRC32) {
+                strncpy(strDestFilename, strFilename, strDestLen);
+                return true;
+              }
+            }
+          }
+
+          fclose(F);
+          F = NULL;
+        }
+      }
     }
 
   } while(FindNextFile(hFind, &ffd) != 0);

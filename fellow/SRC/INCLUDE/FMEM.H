@@ -123,6 +123,9 @@ extern ULO memoryGetKickImageVersion(void);
 extern ULO memoryInitialPC(void);
 extern ULO memoryInitialSP(void);
 
+/* Kickstart decryption */
+extern int memoryKickLoadAF2(STR *filename, FILE *F, UBY *memory_kick, const bool);
+
 /* Kickstart load error handling */
 
 #define MEMORY_ROM_ERROR_SIZE           0

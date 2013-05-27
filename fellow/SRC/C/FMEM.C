@@ -1292,7 +1292,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* Returns size of decoded kickstart                                          */
   /*============================================================================*/
 
-  int memoryKickDecodeAF(STR *filename, STR *keyfile)
+  int memoryKickDecodeAF(STR *filename, STR *keyfile, UBY *memory_kick)
   {
     STR *keybuffer = NULL;
     ULO keysize, filesize = 0, keypos = 0, c;
@@ -1322,46 +1322,47 @@ const STR *memory_kickimage_versionstrings[14] = {
       hAmigaForeverDLL = LoadLibrary(strLibName);
       if (!hAmigaForeverDLL)
       {
-	      DWORD dwRet;
+	DWORD dwRet;
         STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
         dwRet = GetEnvironmentVariable("AMIGAFOREVERROOT", strAmigaForeverRoot, CFG_FILENAME_LENGTH);
-	      if((dwRet > 0) && strAmigaForeverRoot) {
-		      TCHAR strTemp[CFG_FILENAME_LENGTH];
-		      _tcscpy(strTemp, strAmigaForeverRoot);
-        	if (strTemp[_tcslen(strTemp) - 1] == '/' || strTemp[_tcslen(strTemp) - 1] == '\\')
-        	_tcscat(strTemp, TEXT("\\"));
-		      _stprintf(strPath, TEXT("%sPlayer\\%s"), strTemp, strLibName);
-		      hAmigaForeverDLL = LoadLibrary(strPath);
-	      }
+	if((dwRet > 0) && strAmigaForeverRoot) {
+	  TCHAR strTemp[CFG_FILENAME_LENGTH];
+	  _tcscpy(strTemp, strAmigaForeverRoot);
+          if (strTemp[_tcslen(strTemp) - 1] == '/' || strTemp[_tcslen(strTemp) - 1] == '\\')
+          _tcscat(strTemp, TEXT("\\"));
+	  _stprintf(strPath, TEXT("%sPlayer\\%s"), strTemp, strLibName);
+	  hAmigaForeverDLL = LoadLibrary(strPath);
+	}
 
-	      if (hAmigaForeverDLL)
+	if (hAmigaForeverDLL)
         {
-	        typedef DWORD (STDAPICALLTYPE *PFN_GetKey)(LPVOID lpvBuffer, DWORD dwSize);
-				  PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
-				  if (pfnGetKey)
-				  {
-					  keysize = pfnGetKey(NULL, 0);
-					  if (keysize)
-					  {
-						  keybuffer = (STR*)malloc(keysize);
+	  typedef DWORD (STDAPICALLTYPE *PFN_GetKey)(LPVOID lpvBuffer, DWORD dwSize);
+
+	  PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
+	  if (pfnGetKey)
+	  {
+	    keysize = pfnGetKey(NULL, 0);
+	    if (keysize)
+	    {
+	      keybuffer = (STR*)malloc(keysize);
  
-						  if (keybuffer)
-						  {
-							  if (pfnGetKey(keybuffer, keysize) == keysize)
-							  {
-								  // key successfully retrieved
-							  }
+	      if (keybuffer)
+	      {
+		if (pfnGetKey(keybuffer, keysize) == keysize)
+		{
+			// key successfully retrieved
+		}
                 else
                 {
                   memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
                   return -1;
                 }
-						  }
-					  }
-				  }
-				  FreeLibrary(hAmigaForeverDLL);
+              }
+	    }
+          }
+        FreeLibrary(hAmigaForeverDLL);
         }
-#endif
+  #endif
       }
 
       if (!keybuffer)
@@ -1403,7 +1404,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* valid, or has wrong version                                                */
   /*============================================================================*/
 
-  int memoryKickLoadAF2(FILE *F)
+  int memoryKickLoadAF2(STR *filename, FILE *F, UBY *memory_kick, const bool suppressgui)
   {
     ULO version;
     STR IDString[12];
@@ -1415,7 +1416,8 @@ const STR *memory_kickimage_versionstrings[14] = {
     { /* Header seems OK */
       if (version != 1)
       {
-	memoryKickError(MEMORY_ROM_ERROR_AMIROM_VERSION, version);
+	if(!suppressgui)
+          memoryKickError(MEMORY_ROM_ERROR_AMIROM_VERSION, version);
 	return TRUE;  /* File was handled */
       }
       else
@@ -1424,16 +1426,18 @@ const STR *memory_kickimage_versionstrings[14] = {
 
 	fclose(F);
 
-	size = memoryKickDecodeAF(memory_kickimage,
-	  memory_key);
+	size = memoryKickDecodeAF(filename,
+	  memory_key, memory_kick);
 	if (size == -1)
 	{
-	  memoryKickError(MEMORY_ROM_ERROR_AMIROM_READ, 0);
+          if(!suppressgui)
+	    memoryKickError(MEMORY_ROM_ERROR_AMIROM_READ, 0);
 	  return TRUE;
 	}
 	if (size != 262144 && size != 524288)
 	{
-	  memoryKickError(MEMORY_ROM_ERROR_SIZE, size);
+          if(!suppressgui)
+	    memoryKickError(MEMORY_ROM_ERROR_SIZE, size);
 	  return TRUE;
 	}
 	if (size == 262144)
@@ -1534,7 +1538,7 @@ const STR *memory_kickimage_versionstrings[14] = {
       if (kickdisk)
 	memoryKickDiskLoad(F);
       else
-	afkick = memoryKickLoadAF2(F);
+	afkick = memoryKickLoadAF2(memory_kickimage, F, memory_kick, false);
       if (!kickdisk && !afkick)
       { /* Normal kickstart image */
 	fseek(F, 0, SEEK_SET);
