@@ -1811,8 +1811,10 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "fastmem_size=%u\n", cfgGetFastSize(config) / 1048576);
   fprintf(cfgfile, "bogomem_size=%u\n", cfgGetBogoSize(config) / 262144);
   fprintf(cfgfile, "kickstart_rom_file=%s\n", cfgGetKickImage(config));
-  fprintf(cfgfile, "kickstart_rom_description=%s\n", cfgGetKickDescription(config));
-  fprintf(cfgfile, "kickstart_rom_crc32=%X\n", cfgGetKickCRC32(config));
+  if(strcmp(cfgGetKickDescription(config), "") != 0) 
+    fprintf(cfgfile, "kickstart_rom_description=%s\n", cfgGetKickDescription(config));
+  if(cfgGetKickCRC32(config) != 0)
+    fprintf(cfgfile, "kickstart_rom_crc32=%X\n", cfgGetKickCRC32(config));
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", cfgGetBOOLEToString(cfgGetBlitterFast(config)));
   fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECSBlitter(config)));
