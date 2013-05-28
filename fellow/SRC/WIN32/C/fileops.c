@@ -216,11 +216,13 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   UBY memory_kick[0x080000 + 32];
-
+  FILE *F = NULL;
+  STR strSubDir[CFG_FILENAME_LENGTH] = "";
+  STR strFilename[CFG_FILENAME_LENGTH] = "";
+  ULO lCurrentCRC32 = 0;
+  
   strncpy(strSearchPattern, strSearchPath, CFG_FILENAME_LENGTH);
   strncat(strSearchPattern, "\\*", 3);
-
-  fellowAddLog("fileopsGetKickstartByCRC32(%s, %X)...\n", strSearchPath, lCRC32);
 
   hFind = FindFirstFile(strSearchPattern, &ffd);
   if (hFind == INVALID_HANDLE_VALUE) {
@@ -230,9 +232,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
 
   do {
     if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      if(strcmp(ffd.cFileName, ".") != 0 && strcmp(ffd.cFileName, "..") != 0) {
-        STR strSubDir[CFG_FILENAME_LENGTH] = "";
-      
+      if(strcmp(ffd.cFileName, ".") != 0 && strcmp(ffd.cFileName, "..") != 0) {    
         strncpy(strSubDir, strSearchPath, CFG_FILENAME_LENGTH);
         strncat(strSubDir, "\\", 2);
         strncat(strSubDir, ffd.cFileName, CFG_FILENAME_LENGTH);
@@ -244,10 +244,6 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
     else {
       if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262144 || ffd.nFileSizeLow == 524288)) {
         // possibly an unencrypted ROM, read and build checksum
-        FILE *F = NULL;
-        STR strFilename[CFG_FILENAME_LENGTH] = "";
-        ULO lCurrentCRC32;
-
         strncpy(strFilename, strSearchPath, CFG_FILENAME_LENGTH);
         strncat(strFilename, "\\", 2);
         strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
@@ -269,11 +265,6 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
       }
       else if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262155 || ffd.nFileSizeLow == 524299)) {
         // possibly an encrypted ROM, read and build checksum
-        FILE *F = NULL;
-        STR strFilename[CFG_FILENAME_LENGTH] = "";
-        
-        ULO lCurrentCRC32;
-
         strncpy(strFilename, strSearchPath, CFG_FILENAME_LENGTH);
         strncat(strFilename, "\\", 2);
         strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
@@ -285,21 +276,9 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
           if(result == TRUE) {
             lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow - 11);
 
-            fellowAddLog("fileopsGetKickstartByCRC32() filename=%s, crc32=%X\n",
-              strFilename, lCurrentCRC32);
-
             if(lCurrentCRC32 == lCRC32) {
               strncpy(strDestFilename, strFilename, strDestLen);
               return true;
-            }
-            else if(ffd.nFileSizeLow == 262155) {
-              // some ROMs have the content doubled
-              lCurrentCRC32 = crc32(0, memory_kick, 524288);
-
-              if(lCurrentCRC32 == lCRC32) {
-                strncpy(strDestFilename, strFilename, strDestLen);
-                return true;
-              }
             }
           }
 

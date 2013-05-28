@@ -1888,7 +1888,7 @@ static BOOLE cfgLoadFromFile(cfg *config, FILE *cfgfile)
   return TRUE;
 }
 
-BOOLE cfgLoadFromFilename(cfg *config, STR *filename)
+BOOLE cfgLoadFromFilename(cfg *config, const STR *filename, const bool bAddLog)
 {
   FILE *cfgfile;
   BOOLE result;
@@ -1896,7 +1896,8 @@ BOOLE cfgLoadFromFilename(cfg *config, STR *filename)
 
   fileopsResolveVariables(filename, newfilename);
 
-  fellowAddLog("cfg: loading configuration filename %s...\n", filename);
+  if(bAddLog)
+    fellowAddLog("cfg: loading configuration filename %s...\n", filename);
 
   // remove existing hardfiles
   cfgHardfilesFree(config);
@@ -2019,7 +2020,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       if (i < argc)
       {
 	fellowAddLog("cfg: configuration file: %s\n", argv[i]);
-	if (!cfgLoadFromFilename(config, argv[i]))
+	if(!cfgLoadFromFilename(config, argv[i], true))
 	{
 	  fellowAddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
 	}
@@ -2296,7 +2297,7 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
   if(!cfgGetConfigAppliedOnce(config)) {
 	  // load configuration that the initdata contains
 	  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
-	  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata));
+	  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata), true);
   }
 #ifdef RETRO_PLATFORM
   }

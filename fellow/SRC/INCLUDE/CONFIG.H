@@ -353,7 +353,7 @@ extern bool cfgGetMeasureSpeed(cfg *config);
 extern void cfgSetDefaults(cfg *config);
 extern BOOLE cfgSetOption(cfg *config, STR *optionstr);
 extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern BOOLE cfgLoadFromFilename(cfg *config, STR *filename);
+extern BOOLE cfgLoadFromFilename(cfg *, const STR *, const bool);
 extern BOOLE cfgSaveToFilename(cfg *config, STR *filename);
 extern void cfgSynopsis(cfg *config);
 
