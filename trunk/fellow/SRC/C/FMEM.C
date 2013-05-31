@@ -1316,14 +1316,23 @@ const STR *memory_kickimage_versionstrings[14] = {
     else
     {
 #ifdef WIN32
-      HMODULE hAmigaForeverDLL;
+      HMODULE hAmigaForeverDLL = NULL;
       STR *strLibName = TEXT("amigaforever.dll");
-      STR strPath[CFG_FILENAME_LENGTH];
+      STR strPath[CFG_FILENAME_LENGTH] = "";
+      STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
+      DWORD dwRet = 0;
+     
+      // the preferred way to locate the DLL is by relative path, so it is
+      // of a matching version (DVD/portable installation with newer version
+      // than what is installed)
+      if(fileopsGetWinFellowInstallationPath(strPath, CFG_FILENAME_LENGTH)) {
+        strncat(strPath, "\\..\\Player\\", 11);
+        strncat(strPath, strLibName, strlen(strLibName) + 1);
+	hAmigaForeverDLL = LoadLibrary(strPath);
+      }
 
-      hAmigaForeverDLL = LoadLibrary(strLibName);
       if(!hAmigaForeverDLL) {
-	DWORD dwRet;
-        STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
+        // DLL not found via relative path, fallback to env. variable
         dwRet = GetEnvironmentVariable("AMIGAFOREVERROOT", strAmigaForeverRoot, CFG_FILENAME_LENGTH);
 	if((dwRet > 0) && strAmigaForeverRoot) {
 	  TCHAR strTemp[CFG_FILENAME_LENGTH];
@@ -1333,49 +1342,33 @@ const STR *memory_kickimage_versionstrings[14] = {
 	  _stprintf(strPath, TEXT("%sPlayer\\%s"), strTemp, strLibName);
 	  hAmigaForeverDLL = LoadLibrary(strPath);
 	}
+      }
 
-        if(!hAmigaForeverDLL) {
-          // DLL not found via variable, fallback to relative path
-          if(fileopsGetWinFellowInstallationPath(strPath, CFG_FILENAME_LENGTH)) {
-            strncat(strPath, "\\..\\Player\\", 11);
-            strncat(strPath, strLibName, strlen(strLibName) + 1);
-	    hAmigaForeverDLL = LoadLibrary(strPath);
-          }
-        }
+      if(hAmigaForeverDLL) {
+	typedef DWORD (STDAPICALLTYPE *PFN_GetKey)(LPVOID lpvBuffer, DWORD dwSize);
 
-	if (hAmigaForeverDLL)
-        {
-	  typedef DWORD (STDAPICALLTYPE *PFN_GetKey)(LPVOID lpvBuffer, DWORD dwSize);
-
-	  PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
-	  if (pfnGetKey)
-	  {
-	    keysize = pfnGetKey(NULL, 0);
-	    if (keysize)
-	    {
-	      keybuffer = (STR*)malloc(keysize);
+	PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
+	if (pfnGetKey) {
+	  keysize = pfnGetKey(NULL, 0);
+	  if (keysize) {
+	    keybuffer = (STR*)malloc(keysize);
  
-	      if (keybuffer)
-	      {
-		if (pfnGetKey(keybuffer, keysize) == keysize)
-		{
-			// key successfully retrieved
-		}
-                else
-                {
-                  memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
-                  return -1;
-                }
+	    if (keybuffer) {
+	      if (pfnGetKey(keybuffer, keysize) == keysize) {
+                // key successfully retrieved
+	      }
+              else {
+                memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
+                return -1;
               }
-	    }
-          }
-        FreeLibrary(hAmigaForeverDLL);
+            }
+	  }
         }
+        FreeLibrary(hAmigaForeverDLL);
   #endif
       }
 
-      if (!keybuffer)
-      {
+      if (!keybuffer) {
         memoryKickError(MEMORY_ROM_ERROR_KEYFILE, 0);
         return -1;
       }
