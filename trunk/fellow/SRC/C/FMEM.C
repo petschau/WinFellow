@@ -35,6 +35,7 @@
 #include "fswrap.h"
 #include "wgui.h"
 #include "rtc.h"
+#include "fileops.h"
 
 #ifdef WIN32
 #include <tchar.h>
@@ -1307,8 +1308,8 @@ const STR *memory_kickimage_versionstrings[14] = {
       keybuffer = (STR*)malloc(keysize);
       if (keybuffer != NULL)
       {
-	      fseek(KF, 0, SEEK_SET);
-	      fread(keybuffer, 1, keysize, KF);
+        fseek(KF, 0, SEEK_SET);
+        fread(keybuffer, 1, keysize, KF);
       }
       fclose(KF);
     }
@@ -1320,8 +1321,7 @@ const STR *memory_kickimage_versionstrings[14] = {
       STR strPath[CFG_FILENAME_LENGTH];
 
       hAmigaForeverDLL = LoadLibrary(strLibName);
-      if (!hAmigaForeverDLL)
-      {
+      if(!hAmigaForeverDLL) {
 	DWORD dwRet;
         STR strAmigaForeverRoot[CFG_FILENAME_LENGTH] = "";
         dwRet = GetEnvironmentVariable("AMIGAFOREVERROOT", strAmigaForeverRoot, CFG_FILENAME_LENGTH);
@@ -1333,6 +1333,15 @@ const STR *memory_kickimage_versionstrings[14] = {
 	  _stprintf(strPath, TEXT("%sPlayer\\%s"), strTemp, strLibName);
 	  hAmigaForeverDLL = LoadLibrary(strPath);
 	}
+
+        if(!hAmigaForeverDLL) {
+          // DLL not found via variable, fallback to relative path
+          if(fileopsGetWinFellowInstallationPath(strPath, CFG_FILENAME_LENGTH)) {
+            strncat(strPath, "\\..\\Player\\", 11);
+            strncat(strPath, strLibName, strlen(strLibName) + 1);
+	    hAmigaForeverDLL = LoadLibrary(strPath);
+          }
+        }
 
 	if (hAmigaForeverDLL)
         {

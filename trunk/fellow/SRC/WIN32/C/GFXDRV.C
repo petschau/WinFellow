@@ -937,7 +937,7 @@ void gfxDrvDDrawDeviceInformationDump(void)
   felist *l;
   STR s[120];
   
-  sprintf(s, "gfxdrv; DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
+  sprintf(s, "gfxdrv: DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
   fellowAddLog(s);
   for (l = gfx_drv_ddraw_devices; l != NULL; l = listNext(l))
   {
@@ -1376,17 +1376,7 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
   {
     result = listCount(ddraw_device->modes) != 0;
 
-    if(!result)
-    {
-      err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
-                                      NULL,
-				      NULL,
-				      (LPVOID) ddraw_device,
-				      gfxDrvDDrawModeEnumerate);
-
-      result = listCount(ddraw_device->modes) != 0;
-    }
-    else
+    if(result)
     {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
