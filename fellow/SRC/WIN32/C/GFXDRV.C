@@ -1325,7 +1325,7 @@ HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
       (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
       (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
   {
-    if (lpDDSurfaceDesc->dwRefreshRate != 0 && lpDDSurfaceDesc->dwRefreshRate < 50)
+    if (lpDDSurfaceDesc->dwRefreshRate > 1 && lpDDSurfaceDesc->dwRefreshRate < 50)
     {
       return DDENUMRET_OK;
     }
@@ -1375,7 +1375,18 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
   else
   {
     result = listCount(ddraw_device->modes) != 0;
-    if (result)
+
+    if(!result)
+    {
+      err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
+                                      NULL,
+				      NULL,
+				      (LPVOID) ddraw_device,
+				      gfxDrvDDrawModeEnumerate);
+
+      result = listCount(ddraw_device->modes) != 0;
+    }
+    else
     {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));

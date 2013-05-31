@@ -171,8 +171,6 @@ BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
       // in debug mode, look for presets directory also with relative path from output exe
       fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
       strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\Presets", 21);
-
-      fellowAddLog("%s\n", strWinFellowInstallPath);
       
       if(fileopsDirectoryExists(strWinFellowInstallPath)) {
         strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
