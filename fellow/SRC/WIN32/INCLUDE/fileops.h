@@ -32,6 +32,7 @@ extern BOOLE fileopsGetDefaultConfigFileName(char *);
 extern BOOLE fileopsResolveVariables(const char *, char *);
 extern BOOLE fileopsGetWinFellowPresetPath(char *, const DWORD);
 extern char *fileopsGetTemporaryFilename(void);
+extern bool fileopsGetWinFellowInstallationPath(char *, const DWORD);
 extern bool fileopsGetKickstartByCRC32(const char *, const ULO, char *, const ULO);
 
 #endif // FILEOPS_H

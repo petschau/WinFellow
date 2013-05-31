@@ -126,7 +126,7 @@ static BOOLE fileopsGetWinFellowExecutablePath(char *strBuffer, const DWORD lBuf
 
 /* fileopsGetWinFellowExecutablePath                                */
 /* writes WinFellow installation path into strBuffer                */
-static BOOLE fileopsGetWinFellowInstallationPath(char *strBuffer, const DWORD lBufferSize)
+bool fileopsGetWinFellowInstallationPath(char *strBuffer, const DWORD lBufferSize)
 {
   STR strWinFellowExePath[CFG_FILENAME_LENGTH] = "";
 
@@ -139,10 +139,10 @@ static BOOLE fileopsGetWinFellowInstallationPath(char *strBuffer, const DWORD lB
 
     strncpy(strBuffer, strWinFellowExePath, lBufferSize);
 
-    return TRUE;
+    return true;
   }
   else
-    return FALSE;
+    return false;
 }
 
 static bool fileopsDirectoryExists(const char *strPath)
