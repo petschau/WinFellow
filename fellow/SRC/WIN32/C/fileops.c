@@ -176,8 +176,8 @@ BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
         strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
         return TRUE;
       }
-      return FALSE;
 #endif
+      return FALSE;
     }
   }
   else
@@ -250,15 +250,15 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         {
           fread(memory_kick, ffd.nFileSizeLow, 1, F);
 
+          fclose(F);
+          F = NULL;
+
           lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow);
 
           if(lCurrentCRC32 == lCRC32) {
             strncpy(strDestFilename, strFilename, strDestLen);
             return true;
           }
-
-          fclose(F);
-          F = NULL;
         }
       }
       else if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262155 || ffd.nFileSizeLow == 524299)) {
@@ -271,6 +271,9 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         {
           int result = memoryKickLoadAF2(strFilename, F, memory_kick, true);
 
+          fclose(F);
+          F = NULL;
+
           if(result == TRUE) {
             lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow - 11);
 
@@ -279,9 +282,6 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
               return true;
             }
           }
-
-          fclose(F);
-          F = NULL;
         }
       }
     }
