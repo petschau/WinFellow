@@ -230,6 +230,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
 
   do {
     if(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+#ifdef FILEOPS_ROMSEARCH_RECURSIVE
       if(strcmp(ffd.cFileName, ".") != 0 && strcmp(ffd.cFileName, "..") != 0) {    
         strncpy(strSubDir, strSearchPath, CFG_FILENAME_LENGTH);
         strncat(strSubDir, "\\", 2);
@@ -238,6 +239,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         if(fileopsGetKickstartByCRC32(strSubDir, lCRC32, strDestFilename, strDestLen))
           return true;
       }
+#endif
     }
     else {
       if(ffd.nFileSizeHigh == 0 && (ffd.nFileSizeLow == 262144 || ffd.nFileSizeLow == 524288)) {
