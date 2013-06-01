@@ -1327,6 +1327,12 @@ HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
   {
     if (lpDDSurfaceDesc->dwRefreshRate > 1 && lpDDSurfaceDesc->dwRefreshRate < 50)
     {
+      fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
+        lpDDSurfaceDesc->dwWidth,
+        lpDDSurfaceDesc->dwHeight,
+        lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount, 
+        lpDDSurfaceDesc->dwRefreshRate);
+
       return DDENUMRET_OK;
     }
 
@@ -1376,7 +1382,18 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
   {
     result = listCount(ddraw_device->modes) != 0;
 
-    if(result)
+    if(!result)
+    {
+      fellowAddLog("gfxdrv: no valid draw modes found, retry while ignoring refresh rates...\n");
+      err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
+                                      NULL,
+				      NULL,
+				      (LPVOID) ddraw_device,
+				      gfxDrvDDrawModeEnumerate);
+
+      result = listCount(ddraw_device->modes) != 0;
+    }
+    else
     {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
@@ -2301,7 +2318,7 @@ BOOLE gfxDrvStartup(void)
   }
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
+  if(RetroPlatformGetMode() && gfx_drv_initialized) {
     ULO lHeight, lWidth;
     gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
     
