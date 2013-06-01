@@ -500,6 +500,9 @@ static void fellowDrawFailed(void) {
   wguiRequester("Graphics subsystem failed to start. ",
     "Please check your OS graphics driver setup. ",
     "Closing down application.");
+
+  fellowAddLog("Graphics subsystem failed to start. Please check your OS graphics driver setup. Closing down application.\n");
+
   exit(EXIT_FAILURE);
 }
 
