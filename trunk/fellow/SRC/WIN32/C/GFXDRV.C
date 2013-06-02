@@ -1393,7 +1393,8 @@ BOOL gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
 
       result = listCount(ddraw_device->modes) != 0;
     }
-    else
+
+    if(result)
     {
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 200, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
       listAddLast(ddraw_device->modes, listNew(gfxDrvDDrawModeNew(320, 256, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
