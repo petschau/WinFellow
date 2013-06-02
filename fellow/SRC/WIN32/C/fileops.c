@@ -215,9 +215,11 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
   HANDLE hFind = INVALID_HANDLE_VALUE;
   UBY memory_kick[0x080000 + 32];
   FILE *F = NULL;
-  STR strSubDir[CFG_FILENAME_LENGTH] = "";
   STR strFilename[CFG_FILENAME_LENGTH] = "";
   ULO lCurrentCRC32 = 0;
+#ifdef FILEOPS_ROMSEARCH_RECURSIVE
+  STR strSubDir[CFG_FILENAME_LENGTH] = "";
+#endif
   
   strncpy(strSearchPattern, strSearchPath, CFG_FILENAME_LENGTH);
   strncat(strSearchPattern, "\\*", 3);
@@ -248,8 +250,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         strncat(strFilename, "\\", 2);
         strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
 
-        if(F = fopen(strFilename, "rb"))
-        {
+        if(F = fopen(strFilename, "rb")) {
           fread(memory_kick, ffd.nFileSizeLow, 1, F);
 
           fclose(F);
@@ -269,8 +270,7 @@ bool fileopsGetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, cha
         strncat(strFilename, "\\", 2);
         strncat(strFilename, ffd.cFileName, CFG_FILENAME_LENGTH);
 
-        if(F = fopen(strFilename, "rb"))
-        {
+        if(F = fopen(strFilename, "rb")) {
           int result = memoryKickLoadAF2(strFilename, F, memory_kick, true);
 
           fclose(F);

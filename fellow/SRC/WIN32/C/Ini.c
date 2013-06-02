@@ -265,6 +265,7 @@ void iniSetDefaults(ini *initdata) {
   iniSetLastUsedKeyDir(initdata, "");
   iniSetLastUsedGlobalDiskDir(initdata, "");  
   iniSetLastUsedHdfDir(initdata, "");
+  iniSetLastUsedModDir(initdata, "");
   iniSetLastUsedStateFileDir(initdata, "");
   iniSetLastUsedPresetROMDir(initdata, "");
 }
