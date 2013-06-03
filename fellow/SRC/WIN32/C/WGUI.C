@@ -1908,6 +1908,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                   iniSetLastUsedPresetROMDir(wgui_ini, strROMSearchPath);
                 }
               }
+              break;
             case IDC_BUTTON_PRESETS_APPLY:
               {
                 ULO lIndex = 0;
@@ -1950,6 +1951,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 else
                   fellowAddLog(" ERROR applying preset.\n");
               }
+              break;
             default:
               break;
           }
@@ -2028,6 +2030,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                   cfgManagerFreeConfig(&cfg_manager, cfgTemp);
                 }
               }
+              break;
             default:
               break;
            }
