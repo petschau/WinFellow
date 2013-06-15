@@ -281,16 +281,16 @@ INT_PTR CALLBACK wguiVariousDialogProc	     (HWND hwndDlg, UINT uMsg, WPARAM wPa
 #define PROP_SHEETS 10
 
 typedef enum {
-  PROPSHEETPRESETS = 0,
-  PROPSHEETCPU     = 1,
-  PROPSHEETFLOPPY  = 2,
-  PROPSHEETMEMORY  = 3,
-  PROPSHEETDISPLAY = 4,
-  PROPSHEETSOUND   = 5,
+  PROPSHEETPRESETS    = 0,
+  PROPSHEETCPU        = 1,
+  PROPSHEETFLOPPY     = 2,
+  PROPSHEETMEMORY     = 3,
+  PROPSHEETDISPLAY    = 4,
+  PROPSHEETSOUND      = 5,
   PROPSHEETFILESYSTEM = 6,
-  PROPSHEETHARDFILE = 7,
-  PROPSHEETGAMEPORT = 8,
-  PROPSHEETVARIOUS = 9
+  PROPSHEETHARDFILE   = 7,
+  PROPSHEETGAMEPORT   = 8,
+  PROPSHEETVARIOUS    = 9
 };
 
 UINT wgui_propsheetRID[PROP_SHEETS] = {
@@ -967,7 +967,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     STR filename[CFG_FILENAME_LENGTH];
 
     if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Open", FSEL_WFC)) {
-      cfgLoadFromFilename(wgui_cfg, filename, true);
+      cfgLoadFromFilename(wgui_cfg, filename, false);
       iniSetCurrentConfigurationFilename(wgui_ini, filename);
       iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
       wguiInsertCfgIntoHistory(filename);
@@ -1922,7 +1922,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
                 fellowAddLog("Applying preset %s...\n", strFilename);
 
-                if(cfgLoadFromFilename(wgui_cfg, strFilename, false)) {
+                if(cfgLoadFromFilename(wgui_cfg, strFilename, true)) {
                   ULO lCRC32 = 0;
 
                   if(lCRC32 = cfgGetKickCRC32(wgui_cfg)) {
@@ -1941,8 +1941,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                   wguiInstallMemoryConfig     (wgui_propsheetHWND[PROPSHEETMEMORY],     wgui_cfg);
                   wguiInstallDisplayConfig    (wgui_propsheetHWND[PROPSHEETDISPLAY],    wgui_cfg);
                   wguiInstallSoundConfig      (wgui_propsheetHWND[PROPSHEETSOUND],      wgui_cfg);
-                  wguiInstallFilesystemConfig (wgui_propsheetHWND[PROPSHEETFILESYSTEM], wgui_cfg);
-                  wguiInstallHardfileConfig   (wgui_propsheetHWND[PROPSHEETHARDFILE],   wgui_cfg);
+                  // wguiInstallFilesystemConfig (wgui_propsheetHWND[PROPSHEETFILESYSTEM], wgui_cfg);
+                  // wguiInstallHardfileConfig   (wgui_propsheetHWND[PROPSHEETHARDFILE],   wgui_cfg);
                   wguiInstallGameportConfig   (wgui_propsheetHWND[PROPSHEETGAMEPORT],   wgui_cfg);
                   wguiInstallVariousConfig    (wgui_propsheetHWND[PROPSHEETVARIOUS],    wgui_cfg);
 
@@ -1978,7 +1978,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_BOGORAM);     ccwButtonEnable(hwndDlg, IDC_LABEL_PRESETS_BOGORAM_LABEL);
 
                 if(cfgTemp = cfgManagerGetNewConfig(&cfg_manager)) {
-                  if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename, false)) {
+                  if(cfgLoadFromFilename(cfgTemp, wgui_presets[index].strPresetFilename, true)) {
                     STR strKickstart[CFG_FILENAME_LENGTH] = "";
                     STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
                     ULO lCRC32 = 0;
@@ -3338,7 +3338,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    break;
 	  case WGUI_LOAD_HISTORY0:
 	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0), true) == FALSE) 
+	    if(cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 0), false) == FALSE) 
 	    {
 	      wguiDeleteCfgFromHistory(0);
 	    } 
@@ -3352,7 +3352,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    break;
 	  case WGUI_LOAD_HISTORY1:
 	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1), true) == FALSE) 
+	    if(cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 1), false) == FALSE) 
 	    {
 	      wguiDeleteCfgFromHistory(1);
 	    } 
@@ -3367,7 +3367,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    break;
 	  case WGUI_LOAD_HISTORY2:
 	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2), true) == FALSE) 
+	    if(cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 2), false) == FALSE) 
 	    {
 	      wguiDeleteCfgFromHistory(2);
 	    } 
@@ -3382,7 +3382,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    break;
 	  case WGUI_LOAD_HISTORY3:
 	    //cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
-	    if (cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3), true) == FALSE) 
+	    if(cfgLoadFromFilename(wgui_cfg, iniGetConfigurationHistoryFilename(wgui_ini, 3), false) == FALSE) 
 	    {
 	      wguiDeleteCfgFromHistory(3);
 	    } 
@@ -3478,7 +3478,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
           cfgTemp = cfgManagerGetNewConfig(&cfg_manager);
           if(cfgTemp) {
-            bResult = cfgLoadFromFilename(cfgTemp, (*wgui_presets)[i].strPresetFilename, false);
+            bResult = cfgLoadFromFilename(cfgTemp, (*wgui_presets)[i].strPresetFilename, true);
 
             if(bResult) {
               strncpy((*wgui_presets)[i].strPresetDescription, cfgGetDescription(cfgTemp), CFG_FILENAME_LENGTH);
