@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Von Microsoft Visual C++ generierte Includedatei.
-// Verwendet durch GUI_general.rc
+// Microsoft Visual C++ generated include file.
+// Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
 #define IDS_APP_TITLE                   2
@@ -204,11 +204,9 @@
 #define IDC_LABEL_PRESETS_FASTRAM_LABEL 1161
 #define IDC_LABEL_PRESETS_BOGORAM_LABEL 1162
 #define IDC_BUTTON_DF2_SWAP             2000
-#define IDC_BUTTON3                     2001
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
 #define IDC_BUTTON_DF3_SWAP             2003
-#define IDC_BUTTON4                     2004
 #define IDC_BTN_BREAK                   2004
 #define IDC_BUTTON_DF3_FILEDIALOG       2005
 #define IDC_BTN_DUMPCHIP                2005
@@ -222,58 +220,35 @@
 #define IDC_CHECK_CREATE_HARDFILE_MEGABYTES 2010
 #define IDC_CHECK_FULLSCREEN            2011
 #define IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE 2012
-#define IDC_RADIO1                      2013
+#define IDC_RADIO_LINE_FILL_SOLID       2013
 #define IDC_CHECK_DF1_ENABLED           2014
 #define IDC_RADIO_SOUND_NO_EMULATION    2015
 #define IDC_RADIO_SCREEN_HSCALE_SINGLE  2016
 #define IDC_CHECK_AUTOCONFIG_DISABLE    2017
 #define IDC_CHECK_FLOPPY_ADF_CREATE_FFS 2019
-#define IDC_RADIO2                      2020
+#define IDC_RADIO_LINE_FILL_SCANLINES   2020
 #define IDC_CHECK_DF2_ENABLED           2021
 #define IDC_RADIO_SOUND_PLAY            2022
-#define IDC_RADIO_SCREEN_HSCALE_DOUBLE  2023
 #define IDC_CHECK_AUTOMOUNT_FILESYSTEMS 2024
-#define IDC_CHECK4                      2026
-#define IDC_RADIO3                      2027
 #define IDC_CHECK_DF3_ENABLED           2028
 #define IDC_RADIO_SOUND_SILENT_EMULATION 2029
-#define IDC_RADIO4                      2030
 #define IDC_RADIO_SOUND_31300           2031
-#define IDC_COMBO1                      2032
 #define IDC_COMBO_PRESETS_MODEL         2032
-#define IDC_RADIO5                      2033
 #define IDC_RADIO_SOUND_44100           2034
-#define IDC_RADIO_LINEMODE_NORMAL       2035
-#define IDC_COMBO2                      2036
-#define IDC_RADIO6                      2037
+#define IDC_RADIO_DISPLAYSIZE_1X        2035
 #define IDC_RADIO_SOUND_22050           2038
 #define IDC_COMBO_GAMEPORT2             2039
-#define IDC_RADIO_SCREEN_VSCALE_SINGLE  2040
-#define IDC_RADIO_LINEMODE_DOUBLE       2041
-#define IDC_COMBO3                      2042
-#define IDC_RADIO7                      2043
 #define IDC_COMBO_BOGO                  2044
 #define IDC_RADIO_SOUND_15650           2045
 #define IDC_COMBO_SCREEN_FRAMESKIP      2046
-#define IDC_RADIO_LINEMODE_SCANLINE     2047
-#define IDC_RADIO8                      2048
+#define IDC_RADIO_DISPLAYSIZE_2X        2047
 #define IDC_RADIO_SOUND_STEREO          2049
-#define IDC_RADIO_SCREEN_VSCALE_DOUBLE  2050
-#define IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT 2051
-#define IDC_RADIO9                      2052
 #define IDC_RADIO_SOUND_MONO            2053
-#define IDC_RADIO_SCREEN_VSCALE_SCANLINES 2054
-#define IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH 2055
-#define IDC_RADIO10                     2056
 #define IDC_RADIO_SOUND_16BITS          2057
-#define IDC_RADIO11                     2058
 #define IDC_RADIO_SOUND_8BITS           2059
-#define IDC_RADIO12                     2060
 #define IDC_RADIO_SOUND_FILTER_ORIGINAL 2061
-#define IDC_RADIO13                     2062
 #define IDC_RADIO_SOUND_FILTER_ALWAYS   2064
 #define IDC_LIST_FILESYSTEMS            2065
-#define IDC_RADIO14                     2066
 #define IDC_BUTTON_ADD_FILESYSTEM       2067
 #define IDC_RADIO_SOUND_FILTER_NEVER    2068
 #define IDC_BUTTON_FILESYSTEM_ADD       2069

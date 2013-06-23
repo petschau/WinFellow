@@ -6,8 +6,6 @@
 extern void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip);
 extern BOOLE graphGetAllowBplLineSkip(void);
 
-extern void graphP2C1XInit(void);
-extern void graphP2C2XInit(void);
 extern void graphLineDescClear(void);
 extern void graphLineDescClearSkips(void);
 extern void graphInitializeShadowColors(void);
@@ -142,18 +140,4 @@ extern BOOLE graph_buffer_lost;
 #define graph_line_reserved1                  2346
 #define graph_line_end                        2348
 
-/*
-void graphLinedescRoutines_C(graph_line* current_graph_line);
-void graphLinedescColors_C(graph_line* current_graph_line);
-void graphLinedescGeometry_C(graph_line* current_graph_line);
-void graphComposeLineOutput_C(graph_line* current_graph_line);
-
-BOOLE graphLinedescRoutinesSmart_C(graph_line* current_graph_line);
-BOOLE graphLinedescColorsSmart_C(graph_line* current_graph_line);
-BOOLE graphLinedescGeometrySmart_C(graph_line* current_graph_line);
-BOOLE graphLinedescMakeSmart_C(graph_line* current_graph_line);
-void graphComposeLineOutputSmart_C(graph_line* current_graph_line);
-BOOLE graphCompareCopy_C(ULO first_pixel, LON pixel_count, ULO* dest_line, ULO* source_line);
-void graphSpriteHack_C(void);
-*/
 #endif

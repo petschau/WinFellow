@@ -372,6 +372,9 @@
     <ClCompile Include="..\..\graphics\Logger.cpp">
       <Filter>graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\c\draw_pixelrenderers.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -709,6 +712,9 @@
     </ClInclude>
     <ClInclude Include="..\..\graphics\Logger.h">
       <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\draw_pixelrenderers.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

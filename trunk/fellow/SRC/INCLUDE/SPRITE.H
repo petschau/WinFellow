@@ -83,14 +83,10 @@ void asprxdatb(UWO data, ULO address);
 
 
 int spriteCompareRasterX(spr_action_list_item *item_from_list, spr_action_list_item *to_be_inserted);
-//void spriteDMAActionListClear(ULO sprnr);
 void spriteActionListsClear();
-//void spriteActionListClear(ULO sprnr);
-//void spriteMergeListClear(ULO sprnr);
 
 void spriteMergeDualPlayfield(graph_line* current_graph_line);
 void spriteMergeHires(graph_line* current_graph_line);
-void spriteMergeHires320(graph_line* current_graph_line);
 void spriteMergeLores(graph_line* current_graph_line);
 
 extern void spriteSetDelay(ULO delay);
@@ -104,14 +100,15 @@ extern void spriteShutdown(void);
 
 extern ULO sprite_ddf_kill;
 
-extern void spriteMergeHAM1x8(UBY *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM2x8(UWO *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM1x16(UWO *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM2x16(ULO *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM1x24(UBY *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM2x24(UBY *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM1x32(ULO *frameptr, graph_line *linedesc);
-extern void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedesc);
+extern void spriteMergeHAM1x16(UWO *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM2x16(ULO *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM4x16(ULL *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM1x24(UBY *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM2x24(UBY *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM4x24(UBY *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM1x32(ULO *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM2x32(ULO *frameptr, graph_line *linedescription);
+extern void spriteMergeHAM4x32(ULO *frameptr, graph_line *linedescription);
 
 /* variable declerations */
 

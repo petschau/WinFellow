@@ -370,56 +370,25 @@ ULO cfgGetFrameskipRatio(cfg *config)
   return config->m_frameskipratio;
 }
 
-void cfgSetHorizontalScale(cfg *config, ULO horizontalscale)
+void cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale)
 {
-  config->m_horizontalscale = horizontalscale;
+  config->m_displayscale = displayscale;
 }
 
-ULO cfgGetHorizontalScale(cfg *config)
+DISPLAYSCALE cfgGetDisplayScale(cfg *config)
 {
-  return config->m_horizontalscale;
+  return config->m_displayscale;
 }
 
-void cfgSetVerticalScale(cfg *config, ULO verticalscale)
+void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy)
 {
-  config->m_verticalscale = verticalscale;
+  config->m_displayscalestrategy = displayscalestrategy;
 }
 
-ULO cfgGetVerticalScale(cfg *config)
+DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config)
 {
-  return config->m_verticalscale;
+  return config->m_displayscalestrategy;
 }
-
-void cfgSetVerticalScaleStrategy(cfg *config, ULO strategy)
-{
-  config->m_verticalscalestrategy = strategy;
-}
-
-ULO cfgGetVerticalScaleStrategy(cfg *config)
-{
-  return config->m_verticalscalestrategy;
-}
-
-void cfgSetScanlines(cfg *config, BOOLE scanlines)
-{
-  config->m_scanlines = scanlines;
-}
-
-BOOLE cfgGetScanlines(cfg *config)
-{
-  return config->m_scanlines;
-}
-
-void cfgSetDeinterlace(cfg *config, BOOLE deinterlace)
-{
-  config->m_deinterlace = deinterlace;
-}
-
-BOOLE cfgGetDeinterlace(cfg *config)
-{
-  return config->m_deinterlace;
-}
-
 
 /*============================================================================*/
 /* Sound configuration property access                                        */
@@ -798,12 +767,8 @@ void cfgSetDefaults(cfg *config)
   /*==========================================================================*/
 
   cfgSetFrameskipRatio(config, 0);
-  cfgSetHorizontalScale(config, 0);
-  cfgSetVerticalScale(config, 1);
-  cfgSetVerticalScaleStrategy(config, 0);
-  cfgSetDeinterlace(config, FALSE);
-  cfgSetScanlines(config, FALSE);
-
+  cfgSetDisplayScale(config, DISPLAYSCALE_1X);
+  cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
 
   /*==========================================================================*/
   /* Default sound configuration                                              */
@@ -1177,41 +1142,50 @@ static ULO cfgGetBufferLengthFromString(STR *value)
   return buffer_length;
 }
 
-static ULO cfgGetHorizontalScaleFromString(STR *value)
+static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
 {
-  if (cfgGetBOOLEFromString(value))
+  if (stricmp(value, "double") == 0)
   {
-    return 1;
+    return DISPLAYSCALE_2X;
   }
-  return 2;
+  if (stricmp(value, "single") == 0)
+  {
+    return DISPLAYSCALE_1X;
+  }
+  return DISPLAYSCALE_1X; // Default
 }
 
-static ULO cfgGetVerticalScaleFromString(STR *value)
+static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
 {
-  if ((stricmp(value, "double") == 0) ||
-    (stricmp(value, "d") == 0))
+  switch (displayscale)
   {
-    return 2;
+    case DISPLAYSCALE_1X: return "single";
+    case DISPLAYSCALE_2X: return "double";
   }
-  else if ((stricmp(value, "none") == 0) ||
-    (stricmp(value, "n") == 0))
-  {
-    return 1;
-  }
-  return 1;
+  return "single";
 }
 
-static ULO cfgGetVerticalScaleStrategyFromString(STR *value)
+static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
 {
-  if (stricmp(value, "exact") == 0)
+  if (stricmp(value, "scanlines") == 0)
   {
-    return 0;
+    return DISPLAYSCALE_STRATEGY_SCANLINES;
   }
-  if (stricmp(value, "dxstretch") == 0)
+  if (stricmp(value, "solid") == 0)
   {
-    return 1;
+    return DISPLAYSCALE_STRATEGY_SOLID;
   }
-  return 0;
+  return DISPLAYSCALE_STRATEGY_SOLID; // Default
+}
+
+static STR* cfgGetDisplayScaleStrategyToString(DISPLAYSCALE_STRATEGY displayscalestrategy)
+{
+  switch (displayscalestrategy)
+  {
+    case DISPLAYSCALE_STRATEGY_SOLID: return "solid";
+    case DISPLAYSCALE_STRATEGY_SCANLINES: return "scanlines";
+  }
+  return "solid";
 }
 
 static ULO cfgGetColorBitsFromString(STR *value)
@@ -1253,35 +1227,6 @@ static STR *cfgGetColorBitsToString(ULO colorbits)
     case 32: return "32bit";
   }
   return "8bit";
-}
-
-static BOOLE cfgGetScanlinesFromString(STR *value)
-{
-  return ((stricmp(value, "scanlines") == 0) ||
-    (stricmp(value, "s") == 0));
-}
-
-static STR *cfgGetLinemodeToString(ULO verticalscale, BOOLE scanlines)
-{
-  if (scanlines)
-  {
-    return "scanlines";
-  }
-  if (verticalscale == 2)
-  {
-    return "double";
-  }
-  return "none";
-}
-
-static STR *cfgGetLinemodeStrategyToString(ULO verticalscalestrategy)
-{
-  switch (verticalscalestrategy) 
-  {
-    case 0: return "exact";
-    case 1: return "dxstretch";
-  }
-  return "exact";
 }
 
 static BOOLE cfgGetECSFromString(STR *value)
@@ -1568,34 +1513,17 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetScreenDrawLEDs(config, cfgGetboolFromString(value));
     }
-    else if (stricmp(option, "gfx_lores") == 0)
+    else if (stricmp(option, "gfx_display_scale") == 0)
     {
-      cfgSetHorizontalScale(config, cfgGetHorizontalScaleFromString(value));
+      cfgSetDisplayScale(config, cfgGetDisplayScaleFromString(value));
     }
-    else if (stricmp(option, "gfx_linemode") == 0)
+    else if (stricmp(option, "gfx_display_scale_strategy") == 0)
     {
-      cfgSetScanlines(config, cfgGetScanlinesFromString(value));
-      if (!cfgGetScanlines(config))
-      {
-	cfgSetVerticalScale(config, cfgGetVerticalScaleFromString(value));
-      }
-      else
-      {	
-	cfgSetVerticalScale(config, 1);
-      }
-    }
-    else if (stricmp(option, "gfx_linemode_strategy") == 0)
-    {
-      cfgSetVerticalScaleStrategy(config, cfgGetVerticalScaleStrategyFromString(value));
+      cfgSetDisplayScaleStrategy(config, cfgGetDisplayScaleStrategyFromString(value));
     }
     else if (stricmp(option, "gfx_framerate") == 0)
     {
       cfgSetFrameskipRatio(config, cfgGetULOFromString(value));
-    }
-    else if ((stricmp(option, "fellow.gfx_deinterlace") == 0) ||
-      (stricmp(option, "gfx_deinterlace") == 0))
-    {
-      cfgSetDeinterlace(config, cfgGetBOOLEFromString(value));
     }
     else if ((stricmp(option, "fellow.measure_speed") == 0) ||
       (stricmp(option, "measure_speed") == 0))
@@ -1780,11 +1708,9 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 
 BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
 {
-  ULO i;
-
   fprintf(cfgfile, "config_description=%s\n", cfgGetDescription(config));
   fprintf(cfgfile, "autoconfig=%s\n", cfgGetBOOLEToString(cfgGetUseAutoconfig(config)));
-  for (i = 0; i < 4; i++)
+  for (ULO i = 0; i < 4; i++)
   {
     fprintf(cfgfile, "floppy%u=%s\n", i, cfgGetDiskImage(config, i));
     fprintf(cfgfile, "fellow.floppy%u_enabled=%s\n", i, cfgGetBOOLEToString(cfgGetDiskEnabled(config, i)));
@@ -1811,10 +1737,14 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "fastmem_size=%u\n", cfgGetFastSize(config) / 1048576);
   fprintf(cfgfile, "bogomem_size=%u\n", cfgGetBogoSize(config) / 262144);
   fprintf(cfgfile, "kickstart_rom_file=%s\n", cfgGetKickImage(config));
-  if(strcmp(cfgGetKickDescription(config), "") != 0) 
+  if(strcmp(cfgGetKickDescription(config), "") != 0)
+  {
     fprintf(cfgfile, "kickstart_rom_description=%s\n", cfgGetKickDescription(config));
+  }
   if(cfgGetKickCRC32(config) != 0)
+  {
     fprintf(cfgfile, "kickstart_rom_crc32=%X\n", cfgGetKickCRC32(config));
+  }
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", cfgGetBOOLEToString(cfgGetBlitterFast(config)));
   fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECSBlitter(config)));
@@ -1824,33 +1754,28 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
-  fprintf(cfgfile, "gfx_lores=%s\n", cfgGetBOOLEToString(cfgGetHorizontalScale(config) == 1));
-  fprintf(cfgfile, "gfx_linemode=%s\n", cfgGetLinemodeToString(cfgGetVerticalScale(config), cfgGetScanlines(config)));
-  fprintf(cfgfile, "gfx_linemode_strategy=%s\n", cfgGetLinemodeStrategyToString(cfgGetVerticalScaleStrategy(config)));
+  fprintf(cfgfile, "gfx_display_scale=%s\n", cfgGetDisplayScaleToString(cfgGetDisplayScale(config)));
+  fprintf(cfgfile, "gfx_display_scale_strategy=%s\n", cfgGetDisplayScaleStrategyToString(cfgGetDisplayScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%u\n", cfgGetFrameskipRatio(config));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetboolToString(cfgGetScreenDrawLEDs(config)));
-  fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n", cfgGetBOOLEToString(cfgGetDeinterlace(config)));
   fprintf(cfgfile, "fellow.measure_speed=%s\n", cfgGetboolToString(cfgGetMeasureSpeed(config)));
   fprintf(cfgfile, "rtc=%s\n", cfgGetboolToString(cfgGetRtc(config)));
   fprintf(cfgfile, "win32.map_drives=%s\n", cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));
-  for (i = 0; i < cfgGetHardfileCount(config); i++)
+  for (ULO i = 0; i < cfgGetHardfileCount(config); i++)
   {
     cfg_hardfile hf = cfgGetHardfile(config, i);
-    fprintf(cfgfile, "hardfile=%s,%u,%u,%u,%u,%s\n",
-      (hf.readonly) ? "ro" : "rw",
+    fprintf(cfgfile, "hardfile=%s,%u,%u,%u,%u,%s\n", 
+      (hf.readonly) ? "ro" : "rw", 
       hf.sectorspertrack,
       hf.surfaces,
       hf.reservedblocks,
       hf.bytespersector,
       hf.filename);
   }
-  for (i = 0; i < cfgGetFilesystemCount(config); i++)
+  for (ULO i = 0; i < cfgGetFilesystemCount(config); i++)
   {
     cfg_filesys fs = cfgGetFilesystem(config, i);
-    fprintf(cfgfile, "filesystem=%s,%s:%s\n",
-      (fs.readonly) ? "ro" : "rw",
-      fs.volumename,
-      fs.rootpath);
+    fprintf(cfgfile, "filesystem=%s,%s:%s\n", (fs.readonly) ? "ro" : "rw", fs.volumename, fs.rootpath);
   }
   return TRUE;
 }
@@ -2147,11 +2072,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetHorizontalScale(cfgGetHorizontalScale(config));
-  drawSetVerticalScale(cfgGetVerticalScale(config));
-  drawSetVerticalScaleStrategy(cfgGetVerticalScaleStrategy(config));
-  drawSetScanlines(cfgGetScanlines(config));
-  drawSetDeinterlace(cfgGetDeinterlace(config));
+  drawSetDisplayScale(cfgGetDisplayScale(config));
+  drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
 
 

@@ -1,4 +1,3 @@
-/* @(#) $Id: GRAPH.C,v 1.8 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Convert graphics data to temporary format suitable for fast             */
@@ -66,11 +65,6 @@ ULO graph_deco4[256][2];
 ULO graph_deco5[256][2];
 ULO graph_deco6[256][2];
 
-ULO graph_deco320hi1[256];
-ULO graph_deco320hi2[256];
-ULO graph_deco320hi3[256];
-ULO graph_deco320hi4[256];
-
 UBY graph_line1_tmp[1024];
 UBY graph_line2_tmp[1024];
 
@@ -115,38 +109,6 @@ ULO dmaconr, dmacon;
 /*===========================================================================*/
 
 graph_line graph_frame[3][314];
-
-
-/*===========================================================================*/
-/* Initializes the Planar 2 Chunky translation tables                        */
-/*===========================================================================*/
-
-void graphP2CTablesInit(void) {
-  ULO i, j, d[2];
-
-  for (i = 0; i < 256; i++) {
-    d[0] = d[1] = 0;
-    for (j = 0; j < 4; j++) {
-      d[0] |= ((i & (0x80>>j))>>(4 + 3 - j))<<(j*8);
-      d[1] |= ((i & (0x8>>j))>>(3 - j))<<(j*8);
-    }
-    for (j = 0; j < 2; j++) {
-      graph_deco1[i][j] = d[j]<<2;
-      graph_deco2[i][j] = d[j]<<3;
-      graph_deco3[i][j] = d[j]<<4;
-      graph_deco4[i][j] = d[j]<<5;
-      graph_deco5[i][j] = d[j]<<6;
-      graph_deco6[i][j] = d[j]<<7;
-    }
-    graph_deco320hi1[i] = ((d[0] & 0xff) |
-      ((d[0] & 0xff0000)>>8) |
-      ((d[1] & 0xff)<<16) |
-      ((d[1] & 0xff0000)<<8))<<2;
-    graph_deco320hi2[i] = graph_deco320hi1[i]<<1;
-    graph_deco320hi3[i] = graph_deco320hi1[i]<<2;
-    graph_deco320hi4[i] = graph_deco320hi1[i]<<3;
-  }
-}
 
 
 /*===========================================================================*/
@@ -1026,64 +988,6 @@ void graphIOHandlersInstall(void)
 }
 
 /*===========================================================================*/
-/* Called on emulation end of frame                                          */
-/*===========================================================================*/
-
-void graphEndOfFrame(void)
-{
-  graph_playfield_on = FALSE;
-  if (graph_buffer_lost == TRUE)
-  {
-    graphLineDescClear();
-    graph_buffer_lost = FALSE;
-  }
-}
-
-/*===========================================================================*/
-/* Called on emulation hard reset                                            */
-/*===========================================================================*/
-
-void graphHardReset(void) {
-  graphIORegistersClear();
-  graphLineDescClear();
-}
-
-/*===========================================================================*/
-/* Called on emulation start                                                 */
-/*===========================================================================*/
-
-void graphEmulationStart(void) {
-  graph_buffer_lost = FALSE;
-  graphLineDescClear();
-  graphIOHandlersInstall();
-}
-
-/*===========================================================================*/
-/* Called on emulation stop                                                  */
-/*===========================================================================*/
-
-void graphEmulationStop(void) {
-}
-
-/*===========================================================================*/
-/* Initializes the graphics module                                           */
-/*===========================================================================*/
-
-void graphStartup(void) {
-  graphP2CTablesInit();
-  graphLineDescClear();
-  graphIORegistersClear();
-  graphSetAllowBplLineSkip(TRUE);
-}
-
-/*===========================================================================*/
-/* Release resources taken by the graphics module                            */
-/*===========================================================================*/
-
-void graphShutdown(void) {
-}
-
-/*===========================================================================*/
 /* Planar to chunky conversion, 1 to 4 (or 6) bitplanes hires (or lores)     */
 /*===========================================================================*/
 
@@ -1203,66 +1107,6 @@ static __inline ULO graphDecodeDualEven2(int bitplanes, ULO datA, ULO datB, ULO 
   case 4:  
   case 5: return graph_deco1[datA][1] | graph_deco2[datB][1]; 
   case 6: return graph_deco1[datA][1] | graph_deco2[datB][1] | graph_deco3[datC][1]; 
-  }
-  return 0;
-}
-
-// Decode the odd part of the first 4 pixels
-static __inline ULO graphDecodeHiOdd(int bitplanes, ULO dat1, ULO dat3, ULO dat5)
-{
-  switch (bitplanes)
-  {
-  case 1:
-  case 2: return graph_deco320hi1[dat1]; 
-  case 3:
-  case 4: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
-  case 5:
-  case 6: return graph_deco320hi1[dat1] | graph_deco320hi3[dat3]; 
-  }
-  return 0;
-}
-
-// Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeHiEven(int bitplanes, ULO dat2, ULO dat4, ULO dat6)
-{
-  switch (bitplanes)
-  {
-  case 1:
-  case 2:
-  case 3: return graph_deco320hi2[dat2]; 
-  case 4: 
-  case 5: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4];  
-  case 6: return graph_deco320hi2[dat2] | graph_deco320hi4[dat4];
-  }
-  return 0;
-}
-
-// Decode the even part of the last 4 pixels
-static __inline ULO graphDecodeHiDualOdd(int bitplanes, ULO datA, ULO datB, ULO datC)
-{
-  switch (bitplanes)
-  {
-  case 1:
-  case 2: return graph_deco320hi1[datA]; 
-  case 3: 
-  case 4: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
-  case 5: 
-  case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC]; 
-  }
-  return 0;
-}
-
-// Decode the even part of the first 4 pixels
-static __inline ULO graphDecodeHiDualEven(int bitplanes, ULO datA, ULO datB, ULO datC)
-{
-  switch (bitplanes)
-  {
-  case 1:
-  case 2:
-  case 3: return graph_deco320hi1[datA]; 
-  case 4: 
-  case 5: return graph_deco320hi1[datA] | graph_deco320hi2[datB];  
-  case 6: return graph_deco320hi1[datA] | graph_deco320hi2[datB] | graph_deco320hi3[datC];
   }
   return 0;
 }
@@ -1504,161 +1348,6 @@ static __inline void graphDecodeDualGeneric(int bitplanes)
   graphDecodeModulo(bitplanes, bpl_length_in_bytes);
 }
 
-static __inline void graphDecodeHi320Generic(int bitplanes)
-{
-  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
-
-  if (bitplanes == 0) return;
-  if (bpl_length_in_bytes != 0) 
-  {
-    ULO *dest_odd;
-    ULO *dest_even;
-    ULO *dest_tmp;
-    ULO *end_odd;
-    ULO *end_even;
-    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-    UBY *line1;
-    UBY *line2;
-
-    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
-
-    graphSetLinePointers(&line1, &line2);
-
-    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
-    {
-      // high resolution
-      dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddhiscroll >> 1));		
-
-      // setup loop
-      end_odd = dest_odd + bpl_length_in_bytes; 
-
-      if (bitplanes > 1)
-      {
-	// high resolution
-	dest_even = (ULO*) (line1 + (graph_DDF_start >> 1) + (evenhiscroll >> 1));
-	end_even = dest_even + bpl_length_in_bytes; 
-      }
-
-      switch (bitplanes)
-      {
-      case 6: pt6_tmp = memory_chip + bpl6pt;
-      case 5: pt5_tmp = memory_chip + bpl5pt;
-      case 4: pt4_tmp = memory_chip + bpl4pt;
-      case 3: pt3_tmp = memory_chip + bpl3pt;
-      case 2: pt2_tmp = memory_chip + bpl2pt;
-      case 1: pt1_tmp = memory_chip + bpl1pt;
-      }
-
-      for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
-      {
-	switch (bitplanes)
-	{
-	case 6:
-	case 5:	dat5 = *pt5_tmp++;
-	case 4:
-	case 3:	dat3 = *pt3_tmp++;
-	case 2:
-	case 1:	dat1 = *pt1_tmp++;
-	}
-	dest_tmp[0] = graphDecodeHiOdd(bitplanes, dat1, dat3, dat5);
-      }
-
-      if (bitplanes >= 2) 
-      {
-	for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
-	{
-	  switch (bitplanes)
-	  {
-	  case 6:	dat6 = *pt6_tmp++;
-	  case 5:
-	  case 4:	dat4 = *pt4_tmp++;
-	  case 3:
-	  case 2:	dat2 = *pt2_tmp++;
-	  }
-	  dest_tmp[0] |= graphDecodeHiEven(bitplanes, dat2, dat4, dat6);
-	}
-      }
-    }
-    graphDecodeModulo(bitplanes, bpl_length_in_bytes);
-  }
-}
-
-
-static __inline void graphDecodeDualHi320Generic(int bitplanes)
-{
-  ULO bpl_length_in_bytes = graph_DDF_word_count * 2;
-  if (bitplanes == 0) return;
-  if (bpl_length_in_bytes != 0) 
-  {
-    ULO *dest_odd;
-    ULO *dest_even;
-    ULO *dest_tmp;
-    ULO *end_odd;
-    ULO *end_even;
-    UBY *pt1_tmp, *pt2_tmp, *pt3_tmp, *pt4_tmp, *pt5_tmp, *pt6_tmp;
-    ULO dat1, dat2, dat3, dat4, dat5, dat6; 
-    UBY *line1;
-    UBY *line2;
-
-    dat1 = dat2 = dat3= dat4= dat5 = dat6 = 0;
-
-    graphSetLinePointers(&line1, &line2);
-
-    // setup loop
-    dest_odd = (ULO*) (line1 + (graph_DDF_start >> 1) + (oddscroll >> 1));			
-    end_odd = dest_odd + bpl_length_in_bytes; 
-
-    if (bitplanes > 1)
-    {
-      // low resolution
-      dest_even = (ULO*) (line2 + (graph_DDF_start >> 1)+ (evenscroll >> 1));
-      end_even = dest_even + bpl_length_in_bytes; 
-    }
-
-    switch (bitplanes)
-    {
-    case 6: pt6_tmp = memory_chip + bpl6pt;
-    case 5: pt5_tmp = memory_chip + bpl5pt;
-    case 4: pt4_tmp = memory_chip + bpl4pt;
-    case 3: pt3_tmp = memory_chip + bpl3pt;
-    case 2: pt2_tmp = memory_chip + bpl2pt;
-    case 1: pt1_tmp = memory_chip + bpl1pt;
-    }
-
-    for (dest_tmp = dest_odd; dest_tmp != end_odd; dest_tmp += 1) 
-    {
-      switch (bitplanes)
-      {
-      case 6:
-      case 5:	dat5 = *pt5_tmp++;
-      case 4:
-      case 3:	dat3 = *pt3_tmp++;
-      case 2:
-      case 1:	dat1 = *pt1_tmp++;
-      }
-      dest_tmp[0] = graphDecodeHiDualOdd(bitplanes, dat1, dat3, dat5);
-    }
-
-    if (bitplanes >= 2) 
-    {
-      for (dest_tmp = dest_even; dest_tmp != end_even; dest_tmp += 1)
-      {
-	switch (bitplanes)
-	{
-	case 6:	dat6 = *pt6_tmp++;
-	case 5:
-	case 4:	dat4 = *pt4_tmp++;
-	case 3:
-	case 2:	dat2 = *pt2_tmp++;
-	}
-	dest_tmp[0] = graphDecodeHiDualEven(bitplanes, dat2, dat4, dat6);
-      }
-    }
-  }
-  graphDecodeModulo(bitplanes, bpl_length_in_bytes);
-}
-
 /*===========================================================================*/
 /* Planar to chunky conversion, 1 bitplane hires or lores                    */
 /*===========================================================================*/
@@ -1723,60 +1412,6 @@ void graphDecode6(void)
 }
 
 /*===========================================================================*/
-/* Planar to chunky conversion, 1 bitplane hires to 320                      */
-/*===========================================================================*/
-
-void graphDecodeHi1(void)
-{
-  graphDecodeHi320Generic(1);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 2 bitplanes hires to 320                     */
-/*===========================================================================*/
-
-void graphDecodeHi2(void)
-{
-  graphDecodeHi320Generic(2);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 3 bitplanes hires to 320                     */
-/*===========================================================================*/
-
-void graphDecodeHi3(void)
-{
-  graphDecodeHi320Generic(3);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 4 bitplanes hires to 320                     */
-/*===========================================================================*/
-
-void graphDecodeHi4(void)
-{
-  graphDecodeHi320Generic(4);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 5 bitplanes hires to 320                     */
-/*===========================================================================*/
-
-void graphDecodeHi5(void)
-{
-  graphDecodeHi320Generic(5);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 6 bitplanes hires to 320                     */
-/*===========================================================================*/
-
-void graphDecodeHi6(void)
-{
-  graphDecodeHi320Generic(6);
-}
-
-/*===========================================================================*/
 /* Planar to chunky conversion, 2 bitplanes lores, dual playfield            */
 /*===========================================================================*/
 void graphDecode2Dual(void)
@@ -1814,46 +1449,6 @@ void graphDecode5Dual(void)
 void graphDecode6Dual(void)
 {
   graphDecodeDualGeneric(6);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 2 bitplanes hires, dual playfield            */
-/*===========================================================================*/
-void graphDecodeHi2Dual(void)
-{
-  graphDecodeDualHi320Generic(2);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 3 bitplanes hires, dual playfield            */
-/*===========================================================================*/
-void graphDecodeHi3Dual(void)
-{
-  graphDecodeDualHi320Generic(3);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 4 bitplanes hires, dual playfield            */
-/*===========================================================================*/
-void graphDecodeHi4Dual(void)
-{
-  graphDecodeDualHi320Generic(4);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 5 bitplanes hires, dual playfield            */
-/*===========================================================================*/
-void graphDecodeHi5Dual(void)
-{
-  graphDecodeDualHi320Generic(5);
-}
-
-/*===========================================================================*/
-/* Planar to chunky conversion, 6 bitplanes hires, dual playfield            */
-/*===========================================================================*/
-void graphDecodeHi6Dual(void)
-{
-  graphDecodeDualHi320Generic(6);
 }
 
 /*===========================================================================*/
@@ -2171,10 +1766,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
     local_graph_DIW_first_visible >>= 1;
     local_graph_DIW_last_visible >>= 1;
     local_graph_DDF_start >>= 1;
-    if (draw_hscale == 2)
-    {
-      shift = 1;
-    }
+    shift = 1;
   }
   if (local_graph_DIW_first_visible < local_draw_left)
   {
@@ -2381,10 +1973,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
     local_graph_DIW_first_visible >>= 1;
     local_graph_DIW_last_visible >>= 1;
     local_graph_DDF_start >>= 1;
-    if (draw_hscale == 2)
-    {
-      shift = 1;
-    }
+    shift = 1;
   }
   if (local_graph_DIW_first_visible < local_draw_left)
   {
@@ -2719,58 +2308,39 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
 }
 
 /*===========================================================================*/
-/* Decode tables for horizontal scale                                        */
-/* 1x scaling Lores                                                          */
-/* 0.5x scaling Hires                                                        */
-/* Called from the draw module                                               */
+/* Initializes the Planar 2 Chunky translation tables                        */
 /*===========================================================================*/
 
-void graphP2C1XInit(void)
+void graphP2CTablesInit(void)
 {
-  graph_decode_line_tab[0] = graphDecode0;
-  graph_decode_line_tab[1] = graphDecode1;
-  graph_decode_line_tab[2] = graphDecode2;
-  graph_decode_line_tab[3] = graphDecode3;
-  graph_decode_line_tab[4] = graphDecode4;
-  graph_decode_line_tab[5] = graphDecode5;
-  graph_decode_line_tab[6] = graphDecode6;
-  graph_decode_line_tab[7] = graphDecode0;
-  graph_decode_line_tab[8] = graphDecode0;
-  graph_decode_line_tab[9] = graphDecodeHi1;
-  graph_decode_line_tab[10] = graphDecodeHi2;
-  graph_decode_line_tab[11] = graphDecodeHi3;
-  graph_decode_line_tab[12] = graphDecodeHi4;
-  graph_decode_line_tab[13] = graphDecode0;
-  graph_decode_line_tab[14] = graphDecode0;
-  graph_decode_line_tab[15] = graphDecode0;
-  graph_decode_line_dual_tab[0] = graphDecode0;
-  graph_decode_line_dual_tab[1] = graphDecode1;
-  graph_decode_line_dual_tab[2] = graphDecode2Dual;
-  graph_decode_line_dual_tab[3] = graphDecode3Dual;
-  graph_decode_line_dual_tab[4] = graphDecode4Dual;
-  graph_decode_line_dual_tab[5] = graphDecode5Dual;
-  graph_decode_line_dual_tab[6] = graphDecode6Dual;
-  graph_decode_line_dual_tab[7] = graphDecode0;
-  graph_decode_line_dual_tab[8] = graphDecode0;
-  graph_decode_line_dual_tab[9] = graphDecodeHi1;
-  graph_decode_line_dual_tab[10] = graphDecodeHi2Dual;
-  graph_decode_line_dual_tab[11] = graphDecodeHi3Dual;
-  graph_decode_line_dual_tab[12] = graphDecodeHi4Dual;
-  graph_decode_line_dual_tab[13] = graphDecode0;
-  graph_decode_line_dual_tab[14] = graphDecode0;
-  graph_decode_line_dual_tab[15] = graphDecode0;
-  graph_decode_line_ptr = graphDecode0;
+  ULO d[2];
+
+  for (ULO i = 0; i < 256; i++)
+  {
+    d[0] = d[1] = 0;
+    for (ULO j = 0; j < 4; j++)
+    {
+      d[0] |= ((i & (0x80>>j))>>(4 + 3 - j))<<(j*8);
+      d[1] |= ((i & (0x8>>j))>>(3 - j))<<(j*8);
+    }
+    for (ULO j = 0; j < 2; j++)
+    {
+      graph_deco1[i][j] = d[j]<<2;
+      graph_deco2[i][j] = d[j]<<3;
+      graph_deco3[i][j] = d[j]<<4;
+      graph_deco4[i][j] = d[j]<<5;
+      graph_deco5[i][j] = d[j]<<6;
+      graph_deco6[i][j] = d[j]<<7;
+    }
+  }
 }
 
-
 /*===========================================================================*/
-/* Decode tables for horizontal scale                                        */
-/* 1x scaling Lores                                                          */
-/* 1x scaling Hires                                                          */
+/* Decode tables                                                             */
 /* Called from the draw module                                               */
 /*===========================================================================*/
 
-void graphP2C2XInit(void)
+static void graphP2CFunctionsInit(void)
 {
   graph_decode_line_tab[0] = graphDecode0;
   graph_decode_line_tab[1] = graphDecode1;
@@ -2885,4 +2455,63 @@ void graphEndOfLine(void)
       }
     }
   }
+}
+
+/*===========================================================================*/
+/* Called on emulation end of frame                                          */
+/*===========================================================================*/
+
+void graphEndOfFrame(void)
+{
+  graph_playfield_on = FALSE;
+  if (graph_buffer_lost == TRUE)
+  {
+    graphLineDescClear();
+    graph_buffer_lost = FALSE;
+  }
+}
+
+/*===========================================================================*/
+/* Called on emulation hard reset                                            */
+/*===========================================================================*/
+
+void graphHardReset(void) {
+  graphIORegistersClear();
+  graphLineDescClear();
+}
+
+/*===========================================================================*/
+/* Called on emulation start                                                 */
+/*===========================================================================*/
+
+void graphEmulationStart(void) {
+  graph_buffer_lost = FALSE;
+  graphLineDescClear();
+  graphIOHandlersInstall();
+}
+
+/*===========================================================================*/
+/* Called on emulation stop                                                  */
+/*===========================================================================*/
+
+void graphEmulationStop(void) {
+}
+
+/*===========================================================================*/
+/* Initializes the graphics module                                           */
+/*===========================================================================*/
+
+void graphStartup(void) {
+  graphP2CTablesInit();
+  graphP2CFunctionsInit();
+  graphLineDescClear();
+  graphIORegistersClear();
+  graphSetAllowBplLineSkip(TRUE);
+}
+
+/*===========================================================================*/
+/* Release resources taken by the graphics module                            */
+/*===========================================================================*/
+
+void graphShutdown(void) {
 }
