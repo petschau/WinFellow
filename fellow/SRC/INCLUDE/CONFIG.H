@@ -31,6 +31,15 @@ typedef struct {
   BOOLE readonly;
 } cfg_filesys;
 
+typedef enum {
+  DISPLAYSCALE_1X = 1,
+  DISPLAYSCALE_2X = 2
+} DISPLAYSCALE;
+
+typedef enum {
+  DISPLAYSCALE_STRATEGY_SOLID = 0,
+  DISPLAYSCALE_STRATEGY_SCANLINES = 1
+} DISPLAYSCALE_STRATEGY;
 
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
@@ -79,11 +88,8 @@ typedef struct {
   BOOLE m_screenwindowed;
   bool  m_screendrawleds;
   ULO   m_frameskipratio;
-  ULO   m_horizontalscale;
-  ULO   m_verticalscale;
-  ULO   m_verticalscalestrategy;
-  BOOLE m_scanlines;
-  BOOLE m_deinterlace;
+  DISPLAYSCALE  m_displayscale;
+  DISPLAYSCALE_STRATEGY m_displayscalestrategy;
   bool  m_measurespeed;
 
   /*==========================================================================*/
@@ -234,17 +240,10 @@ extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *);
 
 extern void  cfgSetFrameskipRatio (cfg *config, ULO frameskipratio);
 extern ULO   cfgGetFrameskipRatio (cfg *config);
-extern void  cfgSetHorizontalScale(cfg *config, ULO horisontalscale);
-extern ULO   cfgGetHorizontalScale(cfg *config);
-extern void  cfgSetVerticalScale  (cfg *config, ULO verticalscale);
-extern ULO   cfgGetVerticalScale  (cfg *config);
-extern void  cfgSetVerticalScaleStrategy(cfg *config, ULO verticalscalestrategy);
-extern ULO   cfgGetVerticalScaleStrategy(cfg *config);
-extern void  cfgSetScanlines      (cfg *config, BOOLE scanlines);
-extern BOOLE cfgGetScanlines      (cfg *config);
-extern void  cfgSetDeinterlace    (cfg *config, BOOLE deinterlace);
-extern BOOLE cfgGetDeinterlace    (cfg *config);
-
+extern void  cfgSetDisplayScale   (cfg *config, DISPLAYSCALE displayscale);
+extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
+extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy);
+extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
 
 /*============================================================================*/
 /* Sound configuration property access                                        */

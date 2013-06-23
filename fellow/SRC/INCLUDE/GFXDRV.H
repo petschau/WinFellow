@@ -10,7 +10,7 @@ extern bool gfx_drv_displaychange;
 /*===========================================================================*/
 
 extern void gfxDrvBufferFlip(void);
-extern void gfxDrvSetMode(draw_mode *dm, ULO vertical_stretch, ULO vertical_stretch_strategy);
+extern void gfxDrvSetMode(draw_mode *dm);
 extern UBY *gfxDrvValidateBufferPointer(void);
 extern void gfxDrvInvalidateBufferPointer(void);
 extern BOOLE gfxDrvEmulationStart(ULO maxbuffercount);

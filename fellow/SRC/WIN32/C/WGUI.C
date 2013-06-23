@@ -1427,7 +1427,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     cfgSetUseAutoconfig(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE));
 
     /* get real-time clock */
-    cfgSetRtc(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_RTC));
+    cfgSetRtc(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_RTC) == TRUE);
 
     /* get silent sound emulation */
     cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
@@ -1674,8 +1674,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   /* install display config */
 
-  void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf) {
-    HWND colorBitsComboboxHWND				= GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
+  void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
+  {
+    HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 
     ULO comboboxid;
 
@@ -1688,15 +1689,18 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     // fill combobox for colorbit depth
     comboboxid = 0;
-    if (pwgui_dm->numberof16bit > 0) { 
+    if (pwgui_dm->numberof16bit > 0)
+    { 
       ComboBox_AddString(colorBitsComboboxHWND, "high color (16 bit)"); 
       pwgui_dm->comboxbox16bitindex = comboboxid; comboboxid++; 
     }
-    if (pwgui_dm->numberof24bit > 0) { 
+    if (pwgui_dm->numberof24bit > 0)
+    {
       ComboBox_AddString(colorBitsComboboxHWND, "true color (24 bit)"); 
       pwgui_dm->comboxbox24bitindex = comboboxid; comboboxid++; 
     }
-    if (pwgui_dm->numberof32bit > 0) { 
+    if (pwgui_dm->numberof32bit > 0)
+    { 
       ComboBox_AddString(colorBitsComboboxHWND, "true color (32 bit)"); 
       pwgui_dm->comboxbox32bitindex = comboboxid; comboboxid++; 
     }
@@ -1708,7 +1712,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     ccwButtonCheckConditional(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS, cfgGetUseMultipleGraphicalBuffers(conf));
 
     // set fullscreen button check
-    if (pwgui_dm_match->windowed) {
+    if (pwgui_dm_match->windowed)
+    {
       // windowed 
       // colorbits can't be selected through WinFellow, desktop setting will be used
 
@@ -1717,7 +1722,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       ccwButtonUncheck(hwndDlg, IDC_CHECK_FULLSCREEN);
       // disable multiplebuffers
       ccwButtonDisable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
-    } else {
+    }
+    else
+    {
       // fullscreen
       ComboBox_Enable(colorBitsComboboxHWND, TRUE);
       ccwButtonSetCheck(hwndDlg, IDC_CHECK_FULLSCREEN);
@@ -1731,49 +1738,40 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
     }
 
-    // add horizontal pixel scale option
-    ccwButtonCheckConditional(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE, cfgGetHorizontalScale(conf) == 1);
+    // add display scale option and scale strategy
+    BOOLE isDisplaySize1x = cfgGetDisplayScale(conf) == DISPLAYSCALE_1X;
+    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X, isDisplaySize1x);
+    if (isDisplaySize1x == FALSE)
+    {
+      ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAYSIZE_2X, TRUE);
+    }
 
-    // add vertical pixel scale option and scale strategy
-    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE, cfgGetScanlines(conf));
-    if (cfgGetScanlines(conf) == FALSE)
+    BOOLE isDisplayStrategySolid = cfgGetDisplayScaleStrategy(conf) == DISPLAYSCALE_STRATEGY_SOLID;
+    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINE_FILL_SOLID, isDisplayStrategySolid);
+    if (isDisplayStrategySolid == FALSE)
     {
-      ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_NORMAL, cfgGetVerticalScale(conf) == 1);
+      ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINE_FILL_SCANLINES, TRUE);
     }
-    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE, cfgGetVerticalScale(conf) == 2);
-    if (cfgGetVerticalScale(conf) == 2)
-    {
-      // double scaling selected 
-      ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
-      ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
-    }
-    else
-    {
-      // double scaling not selected 
-      ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
-      ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
-    }
-    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT, cfgGetVerticalScaleStrategy(conf) == 0);
-    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH, cfgGetVerticalScaleStrategy(conf) == 1);
-
-    // add interlace compensation option
-    ccwButtonCheckConditional(hwndDlg, IDC_CHECK_INTERLACE, cfgGetDeinterlace(conf));
 
     // add screen area 
-    if (pwgui_dm_match->windowed) {
+    if (pwgui_dm_match->windowed)
+    {
       // windowed
       ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));
-    } else {
-      switch (pwgui_dm_match->colorbits) {
-			case 16:
-			  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof16bit - 1));
-			  break;
-			case 24:
-			  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof24bit - 1));
-			  break;
-			case 32:
-			  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof32bit - 1));
-			  break;
+    }
+    else 
+    {
+      switch (pwgui_dm_match->colorbits)
+      {
+	case 16:
+	  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof16bit - 1));
+	  break;
+	case 24:
+	  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof24bit - 1));
+	  break;
+	case 32:
+	  ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberof32bit - 1));
+	  break;
       }
     }
     ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
@@ -1790,7 +1788,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   /* extract display config */
 
-  void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf) {
+  void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
+  {
     HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 
     // get current colorbits
@@ -1803,30 +1802,31 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
     // get scaling
-    cfgSetVerticalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE)) ? 2 : 1);
-    cfgSetVerticalScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT)) ? 0 : 1);
-    cfgSetHorizontalScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_CHECK_HORIZONTAL_SCALE)) ? 1 : 2);
-    cfgSetScanlines(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE));
-    cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_INTERLACE));
+    cfgSetDisplayScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X)) ? DISPLAYSCALE_1X : DISPLAYSCALE_2X);
+    cfgSetDisplayScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID)) ? DISPLAYSCALE_STRATEGY_SOLID : DISPLAYSCALE_STRATEGY_SCANLINES);
 
     // get height and width
-    if (cfgGetScreenWindowed(conf)) {
+    if (cfgGetScreenWindowed(conf))
+    {
       cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
       cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->reswindowed, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
-    } else {
-      switch(cfgGetScreenColorBits(conf)) {
-			case 16:
-			  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
-			  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
-			  break;
-			case 24:
-			  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
-			  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
-			  break;
-			case 32:
-			  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
-			  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
-			  break;
+    }
+    else
+    {
+      switch(cfgGetScreenColorBits(conf))
+      {
+	case 16:
+	  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+	  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res16bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
+	  break;
+	case 24:
+	  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+	  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res24bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
+	  break;
+	case 32:
+	  cfgSetScreenWidth(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->width);
+	  cfgSetScreenHeight(conf, ((wgui_drawmode *) listNode(listIndex(pwgui_dm->res32bit, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA))))->height);
+	  break;
       }
     }
 
@@ -2205,11 +2205,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	          break;
 	        }
 
-                bFormat   = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
+                bFormat   = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT) == TRUE;
                 if(bFormat) 
                 {
-                  bBootable = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE);
-                  bFFS      = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS);
+                  bBootable = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE) == TRUE;
+                  bFFS      = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS) == TRUE;
                   ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME, strVolume, CFG_FILENAME_LENGTH);
 
                   if(!floppyValidateAmigaDOSVolumeName(strVolume))
@@ -2239,7 +2239,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
             case IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT:
               {
                 // (un)hide the elements that are needed for formatting
-                bool bChecked = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
+                bool bChecked = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT) == TRUE;
                 
                 ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE, bChecked);
                 ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS,      bChecked);
@@ -2312,127 +2312,144 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* dialog procedure for the display property sheet                            */
   /*============================================================================*/
 
-  ULO wguiGetNumberOfScreenAreas(ULO colorbits) {
+  ULO wguiGetNumberOfScreenAreas(ULO colorbits)
+  {
 
-    switch (colorbits) {
-		case 16:
-		  return pwgui_dm->numberof16bit;
-		case 24:
-		  return pwgui_dm->numberof24bit;
-		case 32:
-		  return pwgui_dm->numberof32bit;
+    switch (colorbits)
+    {
+      case 16:
+	return pwgui_dm->numberof16bit;
+      case 24:
+	return pwgui_dm->numberof24bit;
+      case 32:
+	return pwgui_dm->numberof32bit;
     }
     return pwgui_dm->numberof16bit;
   }
 
-  INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg,
-    UINT uMsg,
-    WPARAM wParam,
-    LPARAM lParam) {
-      ULO comboboxIndexColorBits;
-      ULO selectedColorBits;
+  INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+  {
+    ULO comboboxIndexColorBits;
+    ULO selectedColorBits;
 
-      switch (uMsg) {
-    case WM_INITDIALOG:
-      wgui_propsheetHWND[PROPSHEETDISPLAY] = hwndDlg;
-      wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
-      return TRUE;
-    case WM_COMMAND:
-      switch ((int) LOWORD(wParam)) {
-    case IDC_CHECK_FULLSCREEN:
-      switch (HIWORD(wParam)) {
-    case BN_CLICKED:
-      if (!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN)) {
-	// the checkbox was unchecked - going to windowed
-	ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));					
-	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
-	pwgui_dm_match = (wgui_drawmode *) listNode(pwgui_dm->reswindowed);
-	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-	ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
-	ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
-	Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
-      } else {
-	// the checkbox was checked 
-	comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
-	selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
-	ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
-	ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-	pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
-	wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-	ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
-	Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
-      }
-      break;
-      }
-      break;
-    case IDC_COMBO_COLOR_BITS:
-      switch (HIWORD(wParam)) {
-    case CBN_SELCHANGE:
-      comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
-      selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
-      ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
-      ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-      pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
-      wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-      break;
-      }
-      break;
-    case IDC_RADIO_LINEMODE_SCANLINE:
-      switch (HIWORD(wParam)) {
-    case BN_CLICKED:
-      if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE)) {
-	// scanlines was checked
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL);
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE);
-	ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
-	ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
-      } 
-      break;
-      }
-      break;
-    case IDC_RADIO_LINEMODE_DOUBLE:
-      switch (HIWORD(wParam)) {
-    case BN_CLICKED:
-      if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE)) {
-	// scanlines was checked
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL);
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE);
-	ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
-	ccwButtonEnable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
-      } 
-      break;
-      }
-      break;
-    case IDC_RADIO_LINEMODE_NORMAL:
-      switch (HIWORD(wParam)) {
-    case BN_CLICKED:
-      if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINEMODE_NORMAL)) {
-	// vertical scale was checked
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_SCANLINE);
-	ccwButtonUncheck(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE);
-	ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_EXACT);
-	ccwButtonDisable(hwndDlg, IDC_RADIO_LINEMODE_DOUBLE_STRATEGY_STRETCH);
-      } 
-      break;
-      }
-      break;
-      }
-      break;
-    case WM_NOTIFY:
-      switch ((int) wParam) {
-    case IDC_SLIDER_SCREEN_AREA:
-      wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-      break;
-    case IDC_SLIDER_FRAME_SKIPPING:
-      wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
-      break;
-      }
-      break;
-    case WM_DESTROY:
-      wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
-      break;
-      }
-      return FALSE;
+    switch (uMsg)
+    {
+      case WM_INITDIALOG:
+        wgui_propsheetHWND[PROPSHEETDISPLAY] = hwndDlg;
+        wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
+        return TRUE;
+      case WM_COMMAND:
+        switch ((int) LOWORD(wParam))
+        {
+          case IDC_CHECK_FULLSCREEN:
+            switch (HIWORD(wParam))
+            {
+              case BN_CLICKED:
+                if (!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN))
+                {
+	          // the checkbox was unchecked - going to windowed
+	          ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (pwgui_dm->numberofwindowed - 1));					
+	          ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+	          pwgui_dm_match = (wgui_drawmode *) listNode(pwgui_dm->reswindowed);
+	          wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
+	          ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(GetDeviceCaps(GetWindowDC(GetDesktopWindow()), BITSPIXEL)));
+	          ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
+	          Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
+                } 
+                else 
+                {
+	          // the checkbox was checked 
+	          comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
+	          selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
+	          ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+	          ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+	          pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(FALSE, wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+	          wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
+	          ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
+	          Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
+                }
+                break;
+            }
+            break;
+          case IDC_COMBO_COLOR_BITS:
+            switch (HIWORD(wParam))
+            {
+              case CBN_SELCHANGE:
+                comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
+                selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
+                ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+                ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
+                pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+                wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
+                break;
+            }
+            break;
+          case IDC_RADIO_DISPLAYSIZE_1X:
+            switch (HIWORD(wParam))
+            {
+              case BN_CLICKED:
+                if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X))
+                {
+	          // 1x was checked
+	          ccwButtonUncheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_2X);
+                } 
+                break;
+            }
+            break;
+          case IDC_RADIO_DISPLAYSIZE_2X:
+            switch (HIWORD(wParam))
+            {
+              case BN_CLICKED:
+                if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_2X))
+                {
+	          // 2x was checked
+	          ccwButtonUncheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X);
+                } 
+                break;
+            }
+            break;
+          case IDC_RADIO_LINE_FILL_SOLID:
+            switch (HIWORD(wParam))
+            {
+              case BN_CLICKED:
+                if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID))
+                {
+	          // solid was checked
+	          ccwButtonUncheck(hwndDlg, IDC_RADIO_LINE_FILL_SCANLINES);
+                } 
+                break;
+            }
+            break;
+          case IDC_RADIO_LINE_FILL_SCANLINES:
+            switch (HIWORD(wParam))
+            {
+              case BN_CLICKED:
+                if (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SCANLINES))
+                {
+	          // scanlines was checked
+	          ccwButtonUncheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID);
+                } 
+                break;
+            }
+            break;
+        }
+        break;
+      case WM_NOTIFY:
+        switch ((int) wParam)
+        {
+          case IDC_SLIDER_SCREEN_AREA:
+            wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
+            break;
+          case IDC_SLIDER_FRAME_SKIPPING:
+            wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
+            break;
+        }
+        break;
+      case WM_DESTROY:
+        wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
+        break;
+    }
+    return FALSE;
   }
 
   /*============================================================================*/
