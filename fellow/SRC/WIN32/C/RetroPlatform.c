@@ -895,6 +895,34 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
   fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %u.\n", lRetroPlatformScreenMode);
 }
 
+void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
+  ULO lScalingFactor = RP_SCREENMODE_SCALE(sm->dwScreenMode);
+
+  if(lScalingFactor == RP_SCREENMODE_SCALE_1X) {
+    fellowAddLog("RetroPlatformSetScreenModeStruct(): 1x mode requested.\n");
+    cfgSetDisplayScale(RetroPlatformConfig, DISPLAYSCALE_1X);
+  }
+  if(lScalingFactor == RP_SCREENMODE_SCALE_2X) {
+    fellowAddLog("RetroPlatformSetScreenModeStruct(): 2x mode requested.\n");
+    cfgSetDisplayScale(RetroPlatformConfig, DISPLAYSCALE_1X);
+  }
+
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatformSetScreenModeStruct(): dwScreenMode=0x%x, dwClipFlags=0x%x, lTargetWidth=%u, lTargetHeight=%u\n", 
+    sm->dwScreenMode, sm->dwClipFlags, sm->lTargetWidth, sm->lTargetHeight);
+
+  fellowAddLog("RetroPlatformSetScreenModeStruct(): lClipWidth=%u, lClipHeight=%u, lClipLeft=%u, lClipTop=%u\n", 
+    sm->lClipWidth, sm->lClipHeight, sm->lClipLeft, sm->lClipTop);
+#endif
+
+  RetroPlatformSetClippingOffsetLeft(sm->lClipLeft);
+  RetroPlatformSetClippingOffsetTop (sm->lClipTop);
+  RetroPlatformSetScreenHeight      (sm->lClipHeight);
+  RetroPlatformSetScreenWidth       (sm->lClipWidth);
+
+  fellowRequestEmulationStop();
+}
+
 void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
   fellowAddLog("RetroPlatformSetWindowInstance():  window instance set to %d.\n", hInstance);
   hRetroPlatformWindowInstance = hInstance;
@@ -903,41 +931,41 @@ void RetroPlatformSetWindowInstance(HINSTANCE hInstance) {
 /** host message function that is used as callback to receive IPC messages from the host.
  */
 static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
-	LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
+LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
 
 #ifdef _DEBUG
-	fellowAddLog("RetroPlatformHostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
-	  RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
+  fellowAddLog("RetroPlatformHostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
+    RetroPlatformGetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
 #endif
 
-	if (uMessage == RP_IPC_TO_GUEST_DEVICECONTENT) {
-		struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
+  if (uMessage == RP_IPC_TO_GUEST_DEVICECONTENT) {
+    struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
 
 #ifdef _DEBUG
-		fellowAddLog(" Cat=%d Num=%d Flags=%08x '%s'\n",
-			dc->btDeviceCategory, dc->btDeviceNumber, dc->dwFlags, dc->szContent);
+    fellowAddLog(" Cat=%d Num=%d Flags=%08x '%s'\n",
+      dc->btDeviceCategory, dc->btDeviceNumber, dc->dwFlags, dc->szContent);
 #endif
   }
 
-	switch(uMessage)
-	{
-	default:
-		fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command %x\n", uMessage);
-		break;
-	case RP_IPC_TO_GUEST_PING:
-		return TRUE;
-	case RP_IPC_TO_GUEST_CLOSE:
+  switch(uMessage)
+  {
+  default:
+    fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command %x\n", uMessage);
+    break;
+  case RP_IPC_TO_GUEST_PING:
+    return TRUE;
+  case RP_IPC_TO_GUEST_CLOSE:
     fellowAddLog("RetroPlatformHostMessageFunction: received close event.\n");
     fellowRequestEmulationStop();
     gfxDrvRunEventSet();
     bRetroPlatformEmulatorQuit = TRUE;
-		return TRUE;
-	case RP_IPC_TO_GUEST_RESET:
+    return TRUE;
+  case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_HARD)
       fellowPreStartReset(TRUE);
     fellowRequestEmulationStop();
-		return TRUE;
-	case RP_IPC_TO_GUEST_TURBO:
+    return TRUE;
+  case RP_IPC_TO_GUEST_TURBO:
     if (wParam & RP_TURBO_CPU) {
       static ULO lOriginalSpeed = 0;
       
@@ -960,8 +988,8 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
     }
     if (wParam & RP_TURBO_FLOPPY)
       floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? TRUE : FALSE);
-		return TRUE;
-	case RP_IPC_TO_GUEST_PAUSE:
+    return TRUE;
+  case RP_IPC_TO_GUEST_PAUSE:
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction: received pause event.\n");
       gfxDrvRunEventReset();
@@ -974,58 +1002,58 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
       RetroPlatformSetEmulationState(TRUE);
       return 1;
     }
-	case RP_IPC_TO_GUEST_VOLUME:
+  case RP_IPC_TO_GUEST_VOLUME:
     soundDrvDSoundSetCurrentSoundDeviceVolume(wParam);
-		return TRUE;
-	case RP_IPC_TO_GUEST_ESCAPEKEY:
-		lRetroPlatformEscapeKey         = wParam;
-		lRetroPlatformEscapeKeyHoldTime = lParam;
-		return TRUE;
-	case RP_IPC_TO_GUEST_MOUSECAPTURE:
+    return TRUE;
+  case RP_IPC_TO_GUEST_ESCAPEKEY:
+    lRetroPlatformEscapeKey         = wParam;
+    lRetroPlatformEscapeKeyHoldTime = lParam;
+    return TRUE;
+  case RP_IPC_TO_GUEST_MOUSECAPTURE:
     fellowAddLog("hostmsgfunction: mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
     mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? TRUE : FALSE, TRUE);
     return TRUE;
-	case RP_IPC_TO_GUEST_DEVICECONTENT:
-		{
-			struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
-			STR n[CFG_FILENAME_LENGTH] = "";
-			int num = dc->btDeviceNumber;
-			int ok = FALSE;
+  case RP_IPC_TO_GUEST_DEVICECONTENT:
+    {
+      struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
+      STR n[CFG_FILENAME_LENGTH] = "";
+      int num = dc->btDeviceNumber;
+      int ok = FALSE;
       wcstombs(n, dc->szContent, CFG_FILENAME_LENGTH);
-			switch (dc->btDeviceCategory) {
-			  case RP_DEVICECATEGORY_FLOPPY:
-				  if (n == NULL || n[0] == 0) {
+      switch (dc->btDeviceCategory) {
+	case RP_DEVICECATEGORY_FLOPPY:
+	  if (n == NULL || n[0] == 0) {
             fellowAddLog("RetroPlatformHostMessageFunction: remove floppy disk from drive %d.\n", num);
-					  floppyImageRemove(num);
+            floppyImageRemove(num);
           }
-				  else {
+          else {
             fellowAddLog("RetroPlatformHostMessageFunction: set floppy image for drive %d to %s.\n",
               num, n);
             floppySetDiskImage(num, n);
           }
-				  ok = TRUE;
-				  break;
-			  case RP_DEVICECATEGORY_INPUTPORT:
-				  ok = RetroPlatformConnectInputDeviceToPort(num, dc->dwInputDevice, dc->dwFlags, n);
-				  break;
-			  case RP_DEVICECATEGORY_CD:
-				  ok = FALSE;
-				  break;
-			} 
-			return ok;
-		}
-	case RP_IPC_TO_GUEST_SCREENCAPTURE:
-		{
-			struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
+	  ok = TRUE;
+	  break;
+        case RP_DEVICECATEGORY_INPUTPORT:
+          ok = RetroPlatformConnectInputDeviceToPort(num, dc->dwInputDevice, dc->dwFlags, n);
+          break;
+        case RP_DEVICECATEGORY_CD:
+          ok = FALSE;
+          break;
+	    } 
+	    return ok;
+    }
+  case RP_IPC_TO_GUEST_SCREENCAPTURE:
+    {		
+      struct RPScreenCapture *rpsc = (struct RPScreenCapture*)pData;
       STR szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
 
       wcstombs(szScreenFiltered, rpsc->szScreenFiltered, CFG_FILENAME_LENGTH);
       wcstombs(szScreenRaw,      rpsc->szScreenRaw,      CFG_FILENAME_LENGTH);
-      
-			if (szScreenFiltered[0] || szScreenRaw[0]) {
+      		
+      if (szScreenFiltered[0] || szScreenRaw[0]) {
         BOOLE bResult = TRUE;
-				DWORD dResult = 0;
-				fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
+	DWORD dResult = 0;
+	fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
           szScreenFiltered, szScreenRaw);
 
         if(szScreenFiltered[0]) {
@@ -1040,31 +1068,38 @@ static LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM w
           dResult |= RP_GUESTSCREENFLAGS_MODE_PAL;
           return dResult;
         }
-        else return RP_SCREENCAPTURE_ERROR;
-			}
+        else 
+          return RP_SCREENCAPTURE_ERROR;		
+      }
     }
-	  return RP_SCREENCAPTURE_ERROR;
-	case RP_IPC_TO_GUEST_DEVICEREADWRITE:
-		{
-			DWORD ret = FALSE;
+    return RP_SCREENCAPTURE_ERROR;
+  case RP_IPC_TO_GUEST_SCREENMODE:
+    {
+      struct RPScreenMode *sm = (struct RPScreenMode *) pData;
+      RetroPlatformSetScreenModeStruct(sm);
+      return (LRESULT)INVALID_HANDLE_VALUE;
+    }
+  case RP_IPC_TO_GUEST_DEVICEREADWRITE:	
+    {		
+      DWORD ret = FALSE;
       int device = LOBYTE(wParam);
-			if (device == RP_DEVICECATEGORY_FLOPPY) {
-				int num = HIBYTE(wParam);
-				if (lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) {
-          floppySetReadOnly(num, lParam == RP_DEVICE_READONLY ? TRUE : FALSE);
-					ret = TRUE;
-				}
-			} 
-			return ret ? (LPARAM)1 : 0;
-		}
-	case RP_IPC_TO_GUEST_FLUSH:
-		return 1;
-	case RP_IPC_TO_GUEST_GUESTAPIVERSION:
-		{
-			return MAKELONG(3, 4);
-		}
-	}
-	return FALSE;
+      if(device == RP_DEVICECATEGORY_FLOPPY) {
+	int num = HIBYTE(wParam);
+	if (lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) {
+          floppySetReadOnly(num, lParam == RP_DEVICE_READONLY ? TRUE : FALSE);				
+          ret = TRUE;			
+        }		
+      } 		
+      return ret ? (LPARAM) 1 : 0;	
+    }
+  case RP_IPC_TO_GUEST_FLUSH:
+    return 1;
+  case RP_IPC_TO_GUEST_GUESTAPIVERSION:  
+    {
+      return MAKELONG(3, 4);
+    }
+  }
+  return FALSE;
 }
 
 BOOLE RetroPlatformSendActivate(const BOOLE bActive, const LPARAM lParam) {
