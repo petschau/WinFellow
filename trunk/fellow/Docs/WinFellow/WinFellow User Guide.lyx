@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.24 (2013/04/14)
+v0.25 (2013/06/24)
 \end_layout
 
 \begin_layout Standard
@@ -685,8 +685,15 @@ Thanks for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
-support for sprites in hires dual playfield mode was fixed, making previously
- invisible objects visible on the screen
+New features:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+new display configuration options for setting the scale (1x and 2x, both
+ retaining a proper aspect ratio), and the scaling strategy (solid or scanline);
+ inclusion of higher screen resolutions to allow proper use of 2x windowed
+ modes
 \end_layout
 
 \begin_layout Itemize
@@ -696,6 +703,17 @@ support for model presets to quickly get started setting up model specific
 
 \begin_layout Itemize
 support for creation of empty and formatted ADF images
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Bug fixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+support for sprites in hires dual playfield mode was fixed, making previously
+ invisible objects visible on the screen
 \end_layout
 
 \begin_layout Itemize
@@ -709,6 +727,7 @@ cancelling the configuration dialog no longer performs changes to the configurat
 ion
 \end_layout
 
+\end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes.
 \end_layout
