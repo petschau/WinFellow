@@ -1125,16 +1125,17 @@ BOOLE RetroPlatformSendEnable(const BOOLE bEnabled) {
  * @return TRUE if message was sent successfully, FALSE otherwise.
  */
 static BOOLE RetroPlatformSendFeatures(void) {
-	DWORD dFeatureFlags;
+  DWORD dFeatureFlags;
   LRESULT lResult;
   BOOLE bResult;
 
-	dFeatureFlags =  RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_PAUSE;
+  dFeatureFlags =  RP_FEATURE_POWERLED | RP_FEATURE_SCREEN1X | RP_FEATURE_PAUSE;
   dFeatureFlags |= RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
-	dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
-	dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
+  dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
+  dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
 #ifdef _DEBUG
   dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+  dFeatureFlags |= RP_FEATURE_SCREEN2X;
 #endif
 
   // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
@@ -1142,7 +1143,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
   // RP_FEATURE_INPUTDEVICE_GAMEPAD, RP_FEATURE_INPUTDEVICE_JOYPAD, 
   // RP_FEATURE_INPUTDEVICE_ANALOGSTICK, RP_FEATURE_INPUTDEVICE_LIGHTPEN
 
-	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_FEATURES, dFeatureFlags, 
     0, NULL, 0, &RetroPlatformGuestInfo, &lResult);
   
   fellowAddLog("RetroPlatformSendFeatures() %s, result was %d.\n", 
@@ -1164,14 +1165,14 @@ static BOOLE RetroPlatformSendEnabledFloppyDrives(void) {
   BOOLE bResult;
   int i;
 
-	dFeatureFlags = 0;
-	for(i = 0; i < 4; i++) {
+  dFeatureFlags = 0;
+  for(i = 0; i < 4; i++) {
 #ifdef _DEBUG
     fellowAddLog("floppy drive %d is %s.\n", i, floppy[i].enabled ? "enabled" : "disabled");
 #endif
-		if(floppy[i].enabled)
-			dFeatureFlags |= 1 << i;
-	}
+  if(floppy[i].enabled)
+    dFeatureFlags |= 1 << i;
+  }
 
   bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_FLOPPY, 
     dFeatureFlags, NULL, 0, &RetroPlatformGuestInfo, &lResult);
