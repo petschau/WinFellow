@@ -137,6 +137,7 @@ static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPl
 static LON lRetroPlatformClippingOffsetLeft = 0, lRetroPlatformClippingOffsetTop = 0;
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
+static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
@@ -149,8 +150,8 @@ cfg *RetroPlatformConfig; ///< RetroPlatform copy of configuration
 /** Joystick enumeration function.
  */
 BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, 
-                                  LPVOID pvRef) {
-	STR strHostInputID[CFG_FILENAME_LENGTH];
+  LPVOID pvRef) {
+  STR strHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputName[CFG_FILENAME_LENGTH];
                                     
@@ -165,10 +166,10 @@ BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst,
     RP_FEATURE_INPUTDEVICE_JOYSTICK | RP_FEATURE_INPUTDEVICE_GAMEPAD,
     0, szHostInputID, szHostInputName);
 
-	if(RetroPlatformNumberOfJoysticksAttached == 2)
-		return DIENUM_STOP;
-	else
-		return DIENUM_CONTINUE; 
+  if(RetroPlatformNumberOfJoysticksAttached == 2)
+    return DIENUM_STOP;
+  else  
+    return DIENUM_CONTINUE; 
 }
 
 /** Determine the number of joysticks connected to the system.
@@ -461,7 +462,12 @@ ULO RetroPlatformGetClippingOffsetTop(void) {
 }
 
 ULO RetroPlatformGetAdjustedScreenHeight(void) {
-  return lRetroPlatformScreenHeightRP;
+  ULO lScreenHeight = lRetroPlatformScreenHeightRP;
+
+  /* if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
+    lScreenHeight *= 2; */
+
+  return lScreenHeight;
 }
 
 ULO RetroPlatformGetAdjustedScreenWidth(void) {
@@ -469,7 +475,9 @@ ULO RetroPlatformGetAdjustedScreenWidth(void) {
   
   if(lRetroPlatformScreenWidthRP > 768) {
     // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
-    lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
+    
+    // if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_1X)
+      lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
   }
   else
     lScreenWidth = lRetroPlatformScreenWidthRP;
@@ -493,19 +501,22 @@ ULO RetroPlatformGetScreenMode(void) {
  */
 static void RetroPlatformDetermineScreenModeFromConfig(
   struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
+  DWORD dwScreenMode = 0;
 
-  RetroPlatformScreenMode->hGuestWindow = hRetroPlatformGuestWindow;
+  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_1X)
+    dwScreenMode |= RP_SCREENMODE_SCALE_1X;
+  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
+    dwScreenMode |= RP_SCREENMODE_SCALE_2X;
 
+  RetroPlatformScreenMode->dwScreenMode  = dwScreenMode;
+  RetroPlatformScreenMode->hGuestWindow  = hRetroPlatformGuestWindow;
   RetroPlatformScreenMode->lTargetHeight = RetroPlatformGetScreenHeight();
   RetroPlatformScreenMode->lTargetWidth  = RetroPlatformGetScreenWidth();
-
-  RetroPlatformScreenMode->dwScreenMode = RetroPlatformGetScreenMode();
-
-  RetroPlatformScreenMode->lClipLeft   = RetroPlatformGetClippingOffsetLeft();
-  RetroPlatformScreenMode->lClipTop    = RetroPlatformGetClippingOffsetTop();
-  RetroPlatformScreenMode->lClipWidth  = RetroPlatformGetScreenWidth();
-  RetroPlatformScreenMode->lClipHeight = RetroPlatformGetScreenHeight();
-  RetroPlatformScreenMode->dwClipFlags = 0;
+  RetroPlatformScreenMode->lClipLeft     = RetroPlatformGetClippingOffsetLeft();
+  RetroPlatformScreenMode->lClipTop      = RetroPlatformGetClippingOffsetTop();
+  RetroPlatformScreenMode->lClipWidth    = RetroPlatformGetScreenWidth();
+  RetroPlatformScreenMode->lClipHeight   = RetroPlatformGetScreenHeight();
+  RetroPlatformScreenMode->dwClipFlags   = 0;
 }
 
 /** Verify state of the emulation engine.
@@ -513,6 +524,10 @@ static void RetroPlatformDetermineScreenModeFromConfig(
  */
 BOOLE RetroPlatformGetEmulationState(void) {
   return bRetroPlatformEmulationState;
+}
+
+DISPLAYSCALE RetroPlatformGetDisplayScale(void) {
+  return RetroPlatformDisplayScale;
 }
 
 BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void) {
@@ -890,21 +905,51 @@ void RetroPlatformSetScreenWidth(const ULO lWidth) {
     lRetroPlatformScreenWidthRP);
 }
 
+void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
+  RetroPlatformDisplayScale = displayscale;
+
+  if(RetroPlatformConfig != NULL)
+    cfgSetDisplayScale(RetroPlatformConfig, displayscale);
+
+  fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
+    displayscale == DISPLAYSCALE_1X ? "1x" : "2x");
+}
+
 void RetroPlatformSetScreenMode(const char *szScreenMode) {
+  ULO lScalingFactor = 0;
+
   lRetroPlatformScreenMode = atol(szScreenMode);
   fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %u.\n", lRetroPlatformScreenMode);
+
+  lScalingFactor = RP_SCREENMODE_SCALE(lRetroPlatformScreenMode);
+
+  switch(lScalingFactor)
+  {
+    case RP_SCREENMODE_SCALE_1X:
+      RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+      break;
+    case RP_SCREENMODE_SCALE_2X:
+      RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
+      break;
+    default:
+      fellowAddLog("RetroPlatformSetScreenMode(): unknown display scaling factor %x\n",
+        lScalingFactor);
+  }
 }
 
 void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   ULO lScalingFactor = RP_SCREENMODE_SCALE(sm->dwScreenMode);
-
-  if(lScalingFactor == RP_SCREENMODE_SCALE_1X) {
-    fellowAddLog("RetroPlatformSetScreenModeStruct(): 1x mode requested.\n");
-    cfgSetDisplayScale(RetroPlatformConfig, DISPLAYSCALE_1X);
-  }
-  if(lScalingFactor == RP_SCREENMODE_SCALE_2X) {
-    fellowAddLog("RetroPlatformSetScreenModeStruct(): 2x mode requested.\n");
-    cfgSetDisplayScale(RetroPlatformConfig, DISPLAYSCALE_1X);
+  
+  switch(lScalingFactor)
+  {
+    case RP_SCREENMODE_SCALE_1X:
+      RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+      break;
+    case RP_SCREENMODE_SCALE_2X:
+      RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
+      break;
+    default:
+      fellowAddLog("RetroPlatformSetScreenModeStruct(): unknown display scaling factor.\n");
   }
 
 #ifdef _DEBUG
@@ -1354,13 +1399,13 @@ BOOLE RetroPlatformSendMouseCapture(const BOOLE bActive) {
  */
 BOOLE RetroPlatformSendScreenMode(HWND hWnd) {
   BOOLE bResult;
-	struct RPScreenMode RetroPlatformScreenMode = { 0 };
+  struct RPScreenMode RetroPlatformScreenMode = { 0 };
 
-	if (!bRetroPlatformInitialized)
-		return FALSE;
+  if (!bRetroPlatformInitialized)
+    return FALSE;
 
-	hRetroPlatformGuestWindow = hWnd;
-	RetroPlatformDetermineScreenModeFromConfig(&RetroPlatformScreenMode, RetroPlatformConfig);
+  hRetroPlatformGuestWindow = hWnd;
+  RetroPlatformDetermineScreenModeFromConfig(&RetroPlatformScreenMode, RetroPlatformConfig);
 
   bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_SCREENMODE, 0, 0, 
     &RetroPlatformScreenMode, sizeof RetroPlatformScreenMode, 

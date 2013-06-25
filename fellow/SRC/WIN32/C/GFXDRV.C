@@ -2307,6 +2307,7 @@ BOOLE gfxDrvStartup(void)
 
     cfgSetScreenHeight(gfxdrv_config, lHeight);
     cfgSetScreenWidth (gfxdrv_config, lWidth);
+    cfgSetDisplayScale(gfxdrv_config, RetroPlatformGetDisplayScale());
 
     fellowAddLog("gfxdrv: operating in RetroPlatform mode, insert resolution %ux%u into list of valid screen resolutions...\n",
       lWidth, lHeight);
