@@ -40,6 +40,7 @@ extern ULO   RetroPlatformGetAdjustedClippingOffsetLeft(void);
 extern ULO   RetroPlatformGetAdjustedClippingOffsetTop(void);
 extern ULO   RetroPlatformGetAdjustedScreenHeight(void);
 extern ULO   RetroPlatformGetAdjustedScreenWidth(void);
+extern DISPLAYSCALE RetroPlatformGetDisplayScale(void);
 extern BOOLE RetroPlatformGetEmulationState(void);
 extern ULO   RetroPlatformGetEscapeKey(void);
 extern BOOLE RetroPlatformGetMode(void);
