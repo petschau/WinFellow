@@ -134,7 +134,6 @@ static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
 static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
-static LON lRetroPlatformClippingOffsetLeft = 0, lRetroPlatformClippingOffsetTop = 0;
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
@@ -231,26 +230,20 @@ int RetroPlatformEnumerateJoysticks(void) {
  */
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
   lRetroPlatformClippingOffsetLeftRP = lOffsetLeft;
-  lRetroPlatformClippingOffsetLeft   = lOffsetLeft;
 
-  if(lOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
-    lRetroPlatformClippingOffsetLeft = (lOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
-
-  fellowAddLog("RetroPlatformSetClippingOffsetLeft(): left offset adjusted from %u to %u\n", 
-    lRetroPlatformClippingOffsetLeftRP, lRetroPlatformClippingOffsetLeft);
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatformSetClippingOffsetLeft(%u)\n", lOffsetLeft);
+#endif
 }
 
 /** Set clipping offset that is applied to the top of the picture
  */
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
   lRetroPlatformClippingOffsetTopRP = lOffsetTop;
-  lRetroPlatformClippingOffsetTop   = lOffsetTop;
-  
-  if(lOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
-    lRetroPlatformClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
 
-  fellowAddLog("RetroPlatformSetClippingOffsetTop(): top offset adjusted from %u to %u\n", 
-    lRetroPlatformClippingOffsetTopRP, lRetroPlatformClippingOffsetTop);
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatformSetClippingOffsetTop(%u)\n", lOffsetTop);
+#endif
 }
 
 /** configure keyboard layout to custom key mappings
@@ -351,12 +344,12 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
         }
       }
       else {
-        fellowAddLog (" Unknown joystick input device name, ignoring..\n");
+        fellowAddLog (" WARNING: Unknown joystick input device name, ignoring..\n");
         return FALSE;
       }
       return TRUE;
     default:
-      fellowAddLog(" Unsupported input device type detected.\n");
+      fellowAddLog(" WARNING: Unsupported input device type detected.\n");
       return FALSE;
   }
 }
@@ -446,10 +439,56 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 }
 
 ULO RetroPlatformGetAdjustedClippingOffsetLeft(void) {
+  ULO lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeftRP;
+
+  switch(RetroPlatformGetDisplayScale())
+  {
+    case DISPLAYSCALE_1X:
+      if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
+        lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
+      break;
+    case DISPLAYSCALE_2X:
+      if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
+        lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
+      break;
+    default:
+      fellowAddLog("RetroPlatformGetAdjustedClippingOffsetLeft(): WARNING: unknown display scaling factor 0x%x\n.",
+        RetroPlatformGetDisplayScale());
+      break;
+  }
+
+#ifdef _DEBUGVERBOSE
+  fellowAddLog("RetroPlatformGetAdjustedClippingOffsetLeft(): left offset adjusted from %u to %u\n", 
+    lRetroPlatformClippingOffsetLeftRP, lRetroPlatformClippingOffsetLeft);
+#endif
+
   return lRetroPlatformClippingOffsetLeft;
 }
 
 ULO RetroPlatformGetAdjustedClippingOffsetTop(void) {
+  ULO lRetroPlatformClippingOffsetTop = lRetroPlatformClippingOffsetTopRP;
+
+  if(lRetroPlatformClippingOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
+    lRetroPlatformClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
+
+  switch(RetroPlatformGetDisplayScale())
+  {
+    case DISPLAYSCALE_1X:
+      break;
+    case DISPLAYSCALE_2X:
+      lRetroPlatformClippingOffsetTop *= 2;
+      break;
+    default:
+      fellowAddLog("RetroPlatformGetAdjustedClippingOffsetTop(): WARNING: unknown display scaling factor 0x%x.\n",
+        RetroPlatformGetDisplayScale());
+      break;
+  }
+
+#ifdef _DEBUGVERBOSE
+  fellowAddLog("RetroPlatformGetAdjustedClippingOffsetTop(): top offset adjusted from %u to %u\n", 
+    lRetroPlatformClippingOffsetTopRP, lRetroPlatformClippingOffsetTop);
+#endif
+  
   return lRetroPlatformClippingOffsetTop;
 }
 
@@ -464,8 +503,8 @@ ULO RetroPlatformGetClippingOffsetTop(void) {
 ULO RetroPlatformGetAdjustedScreenHeight(void) {
   ULO lScreenHeight = lRetroPlatformScreenHeightRP;
 
-  /* if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
-    lScreenHeight *= 2; */
+  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
+    lScreenHeight *= 2;
 
   return lScreenHeight;
 }
@@ -476,8 +515,19 @@ ULO RetroPlatformGetAdjustedScreenWidth(void) {
   if(lRetroPlatformScreenWidthRP > 768) {
     // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
     
-    // if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_1X)
-      lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
+    switch(RetroPlatformGetDisplayScale())
+    {
+      case DISPLAYSCALE_1X:
+        lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
+        break;
+      case DISPLAYSCALE_2X:
+        lScreenWidth = lRetroPlatformScreenWidthRP;
+        break;
+      default:
+        fellowAddLog("RetroPlatformGetAdjustedScreenWidth(): WARNING: unknown display scaling factor 0x%x.\n",
+          RetroPlatformGetDisplayScale());
+        break;
+    }  
   }
   else
     lScreenWidth = lRetroPlatformScreenWidthRP;
@@ -932,7 +982,7 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
       RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
       break;
     default:
-      fellowAddLog("RetroPlatformSetScreenMode(): unknown display scaling factor %x\n",
+      fellowAddLog("RetroPlatformSetScreenMode(): WARNING: unknown display scaling factor 0x%x\n",
         lScalingFactor);
   }
 }
@@ -949,7 +999,7 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
       RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
       break;
     default:
-      fellowAddLog("RetroPlatformSetScreenModeStruct(): unknown display scaling factor.\n");
+      fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown display scaling factor 0x%x.\n", lScalingFactor);
   }
 
 #ifdef _DEBUG
@@ -995,7 +1045,7 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
   switch(uMessage)
   {
   default:
-    fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command %x\n", uMessage);
+    fellowAddLog("RetroPlatformHostMessageFunction: Unknown or unsupported command 0x%x\n", uMessage);
     break;
   case RP_IPC_TO_GUEST_PING:
     return TRUE;
