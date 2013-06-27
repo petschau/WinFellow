@@ -469,8 +469,20 @@ BOOLE drawSetMode(ULO width,
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode())
   {
-    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-    width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+    switch(RetroPlatformGetDisplayScale()) {
+      case DISPLAYSCALE_1X:
+        height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+        width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+        break;
+      case DISPLAYSCALE_2X:
+        height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
+        width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 4;
+        break;
+      default:
+        fellowAddLog("drawSetMode(): WARNING: unknown display scaling factor 0x%x.\n",
+          RetroPlatformGetDisplayScale());
+        break;
+    }
   }
 #endif
 
