@@ -1740,9 +1740,22 @@ BOOLE gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_dev
     }
     else
     {
-      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+      switch(RetroPlatformGetDisplayScale()) {
+      case DISPLAYSCALE_1X:
+        ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+        ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
+        break;
+      case DISPLAYSCALE_2X:
+        ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
+        ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 4;
+        break;
+      default:
+        fellowAddLog("gfxDrvDDrawCreateSecondaryOffscreenSurface(): WARNING: unknown display scaling factor 0x%x.\n",
+          RetroPlatformGetDisplayScale());
+        break;
+      }
     }
+      
 #endif
     err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
                                      &(ddraw_device->ddsdSecondary),
@@ -2297,6 +2310,9 @@ BOOLE gfxDrvStartup(void)
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode() && gfx_drv_initialized) {
     ULO lHeight, lWidth;
+    STR strMode[3] = "";
+    DISPLAYSCALE displayscale = RetroPlatformGetDisplayScale();
+
     gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
     
     RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
@@ -2307,10 +2323,23 @@ BOOLE gfxDrvStartup(void)
 
     cfgSetScreenHeight(gfxdrv_config, lHeight);
     cfgSetScreenWidth (gfxdrv_config, lWidth);
-    cfgSetDisplayScale(gfxdrv_config, RetroPlatformGetDisplayScale());
+    cfgSetDisplayScale(gfxdrv_config, displayscale);
 
-    fellowAddLog("gfxdrv: operating in RetroPlatform mode, insert resolution %ux%u into list of valid screen resolutions...\n",
-      lWidth, lHeight);
+    switch(displayscale) {
+      case DISPLAYSCALE_1X:
+        sprintf(strMode, "1x");
+        break;
+      case DISPLAYSCALE_2X:
+        sprintf(strMode, "2x");
+        break;
+      default:
+        fellowAddLog("gfxDrvStartup(): WARNING: unknown display scaling factor 0x%x.\n",
+          displayscale);
+        break;
+    }
+
+    fellowAddLog("gfxdrv: operating in RetroPlatform %s mode, insert resolution %ux%u into list of valid screen resolutions...\n",
+      strMode, lWidth, lHeight);
 
     listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
     gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
