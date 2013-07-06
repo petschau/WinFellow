@@ -369,7 +369,7 @@ LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, L
       gfx_drv_win_minimized_original = ((HIWORD(wParam)) != 0);
       gfxDrvChangeDInputDeviceStates(gfx_drv_win_active_original);
   #ifdef RETRO_PLATFORM
-      if(RetroPlatformGetMode())
+     if(RetroPlatformGetMode())
 	RetroPlatformSendMouseCapture(TRUE);
   #endif
       gfxDrvEvaluateActiveStatus();
@@ -786,10 +786,6 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
   fellowAddLog("gfxdrv: Window created\n");
   free(versionstring);
-
-#ifdef RETRO_PLATFORM
-  RetroPlatformSendScreenMode(gfx_drv_hwnd);
-#endif
 
   return (gfx_drv_hwnd != NULL);
 }
@@ -1618,7 +1614,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 	                       srcrect, DDBLT_ASYNC, &bltfx);
   if (err != DD_OK)
   {
-    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): ", err);
+    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): 0x%x.\n", err);
     if (err == DDERR_SURFACELOST)
     {
       /* Reclaim surface, if that also fails, pass over the blit and hope it */
@@ -1738,24 +1734,10 @@ BOOLE gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_dev
       ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
 #ifdef RETRO_PLATFORM
     }
-    else
-    {
-      switch(RetroPlatformGetDisplayScale()) {
-      case DISPLAYSCALE_1X:
-        ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-        ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
-        break;
-      case DISPLAYSCALE_2X:
-        ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
-        ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 4;
-        break;
-      default:
-        fellowAddLog("gfxDrvDDrawCreateSecondaryOffscreenSurface(): WARNING: unknown display scaling factor 0x%x.\n",
-          RetroPlatformGetDisplayScale());
-        break;
-      }
+    else {
+      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
+      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 4;
     }
-      
 #endif
     err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
                                      &(ddraw_device->ddsdSecondary),
@@ -1763,7 +1745,7 @@ BOOLE gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_dev
                                      NULL);
     if (err != DD_OK)
     {
-      gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() ", err);
+      gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() 0x%x\n", err);
       fellowAddLog("gfxdrv: Failed to allocate second offscreen surface in %s\n",
 		   gfxDrvDDrawVideomemLocationStr(pass));
       result = FALSE;
@@ -2285,35 +2267,12 @@ void gfxDrvEndOfFrame(void)
 {
 }
 
-
-/*==========================================================================*/
-/* Collects information about the DirectX capabilities of this computer     */
-/* After this, a DDraw object exists.                                       */
-/* Called on emulator startup                                               */
-/*==========================================================================*/
-
-BOOLE gfxDrvStartup(void)
-{
-  gfxDrvSetStretchAlways(FALSE);
-  gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
-  gfx_drv_initialized = FALSE;
-  gfx_drv_app_run = NULL;
-  graph_buffer_lost = FALSE;
-  if (gfxDrvRunEventInitialize())
-  {
-    if (gfxDrvWindowClassInitialize())
-    {
-      gfx_drv_initialized = gfxDrvDDrawInitialize();
-    }
-  }
-
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode() && gfx_drv_initialized) {
+
+  void gfxDrvRegisterRetroPlatformScreenMode(void) {
     ULO lHeight, lWidth;
     STR strMode[3] = "";
     DISPLAYSCALE displayscale = RetroPlatformGetDisplayScale();
-
-    gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
     
     RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
     RetroPlatformSetScreenWidth (cfgGetScreenWidth (gfxdrv_config));
@@ -2343,6 +2302,34 @@ BOOLE gfxDrvStartup(void)
 
     listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
     gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
+  }
+
+#endif
+/*==========================================================================*/
+/* Collects information about the DirectX capabilities of this computer     */
+/* After this, a DDraw object exists.                                       */
+/* Called on emulator startup                                               */
+/*==========================================================================*/
+
+BOOLE gfxDrvStartup(void)
+{
+  gfxDrvSetStretchAlways(FALSE);
+  gfxdrv_ini = iniManagerGetCurrentInitdata(&ini_manager);
+  gfx_drv_initialized = FALSE;
+  gfx_drv_app_run = NULL;
+  graph_buffer_lost = FALSE;
+  if (gfxDrvRunEventInitialize())
+  {
+    if (gfxDrvWindowClassInitialize())
+    {
+      gfx_drv_initialized = gfxDrvDDrawInitialize();
+    }
+  }
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode() && gfx_drv_initialized) {
+    gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
+    gfxDrvRegisterRetroPlatformScreenMode();
   }
 #endif
 
