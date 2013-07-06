@@ -1013,8 +1013,12 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   RetroPlatformSetClippingOffsetLeft(sm->lClipLeft);
   RetroPlatformSetClippingOffsetTop (sm->lClipTop);
   RetroPlatformSetScreenHeight      (sm->lClipHeight);
+  cfgSetScreenHeight(RetroPlatformConfig, sm->lClipHeight);
   RetroPlatformSetScreenWidth       (sm->lClipWidth);
+  cfgSetScreenWidth(RetroPlatformConfig, sm->lClipWidth);
 
+  // gfxDrvRunEventReset();
+  gfxDrvRegisterRetroPlatformScreenMode();
   fellowRequestEmulationStop();
 }
 
@@ -1571,6 +1575,7 @@ void RetroPlatformShutdown(void) {
 }
 
 void RetroPlatformEmulationStart(void) {
+  RetroPlatformSendScreenMode(gfx_drv_hwnd);
   RetroPlatformSendMouseCapture(FALSE);
 }
 

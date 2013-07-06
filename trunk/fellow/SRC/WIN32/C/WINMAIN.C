@@ -40,10 +40,10 @@
 #endif
 
 // in release builds, user mode crash dumps shall be captured
-#ifdef NDEBUG
+// #ifdef NDEBUG
 #include <Windows.h>
 #include <Dbghelp.h>
-#endif
+// #endif
 
 
 extern int __cdecl main(int, char **);
@@ -429,7 +429,7 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
 /* exception handling to generate minidumps                                   */
 /*============================================================================*/
 
-#ifdef NDEBUG
+// #ifdef NDEBUG
 
 typedef BOOL (__stdcall *tMDWD)(
   IN HANDLE hProcess,
@@ -493,16 +493,16 @@ LONG CALLBACK winDrvUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
-#endif
+// #endif
 
 int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance 
 		   HINSTANCE hPrevInstance, // handle to previous instance 
 		   LPSTR lpCmdLine,	    // pointer to command line 
 		   int nCmdShow)  	    // show state of window 
 {
-#ifdef NDEBUG
+// #ifdef NDEBUG
   SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
-#endif
+// #endif
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
