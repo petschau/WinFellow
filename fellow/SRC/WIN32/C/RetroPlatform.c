@@ -958,8 +958,10 @@ void RetroPlatformSetScreenWidth(const ULO lWidth) {
 void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
   RetroPlatformDisplayScale = displayscale;
 
-  if(RetroPlatformConfig != NULL)
+  if(RetroPlatformConfig != NULL) {
     cfgSetDisplayScale(RetroPlatformConfig, displayscale);
+    drawSetDisplayScale(displayscale);
+  }
 
   fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
     displayscale == DISPLAYSCALE_1X ? "1x" : "2x");
