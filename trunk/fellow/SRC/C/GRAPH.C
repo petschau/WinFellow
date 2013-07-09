@@ -1865,15 +1865,7 @@ void graphLinedescMake(graph_line* current_graph_line)
     /*==================================================================*/
     current_graph_line->linetype = GRAPH_LINE_BG;
     current_graph_line->colors[0] = graph_color_shadow[0];
-    if (draw_deinterlace == 0)
-    {
-      // dword [draw_buffer_count]
-      current_graph_line->frames_left_until_BG_skip = 0;
-    }
-    else
-    {
-      current_graph_line->frames_left_until_BG_skip = 1;
-    }
+    current_graph_line->frames_left_until_BG_skip = 0;
     graphLinedescRoutines(current_graph_line);
   }
 }
@@ -2245,15 +2237,7 @@ BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
     /*==================================================================*/
     current_graph_line->linetype = GRAPH_LINE_BG;
     current_graph_line->colors[0] = graph_color_shadow[0];
-    if (draw_deinterlace == 0)
-    {
-      // dword [draw_buffer_count]
-      current_graph_line->frames_left_until_BG_skip = 0;
-    }
-    else
-    {
-      current_graph_line->frames_left_until_BG_skip = 1;
-    }
+    current_graph_line->frames_left_until_BG_skip = 0;
     graphLinedescRoutines(current_graph_line);
     line_desc_changed = TRUE;
   }

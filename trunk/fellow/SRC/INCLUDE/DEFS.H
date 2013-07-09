@@ -19,14 +19,6 @@
 #define WGUI
 
 
-/*===========================================================================*/
-/* Disable some or all OS dependent drivers                                  */
-/* As anyone can observe, keyboard and mouse is disabled here, but still     */
-/* works in Windows, so these no longer makes sense.                         */
-/*===========================================================================*/
-
-#define WITH_OS_TIMER
-
 /*================================*/
 /* The rest is not wise to change */
 /*================================*/
