@@ -75,7 +75,6 @@ ULO draw_view_scroll;                        /* Scroll visible window runtime */
 DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
 
-BOOLE draw_deinterlace;                           /* remove interlace flicker */
 BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 
 
@@ -510,16 +509,6 @@ felist *drawGetModes(void)
   return draw_modes;
 }
 
-void drawSetDeinterlace(BOOLE deinterlace)
-{
-  draw_deinterlace = deinterlace;
-}
-
-BOOLE drawGetDeinterlace(void)
-{
-  return draw_deinterlace;
-}
-
 void drawSetDisplayScale(DISPLAYSCALE displayscale)
 {
   draw_displayscale = displayscale;
@@ -889,10 +878,6 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
     draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
     (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
 
-  //if (drawGetDeinterlace() && lof) 
-  //{
-  //  draw_buffer_current_ptr += (scale / 2) * draw_mode_current->pitch;
-  //}
   return draw_mode_current->pitch * scale;
 }
 
@@ -982,7 +967,6 @@ BOOLE drawStartup(void)
   draw_view_scroll = 0;
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
-  drawSetDeinterlace(FALSE);
   drawSetDisplayScale(DISPLAYSCALE_1X);
   drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY_SOLID);
   drawSetFrameskipRatio(1);
@@ -1036,7 +1020,7 @@ ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
   }
   else if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
-    return pitch_in_bytes / 4; // 4x2 (scanline - write to solid lines followed by two blank ones... Awful?)
+    return pitch_in_bytes / 4; // 4x2 (scanline - write two solid lines followed by two blank ones... Awful?)
   }
   return pitch_in_bytes / 4; // 4x4
 }
@@ -1060,7 +1044,7 @@ void drawEndOfFrame(void)
         graph_line *graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
         if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
         {
-          if (draw_deinterlace || (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP))
+          if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
           {
             ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
 	  }

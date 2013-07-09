@@ -67,8 +67,6 @@ extern ULO draw_buffer_draw;                 /* Number of the current drawing bu
 extern LON draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
 
-extern BOOLE draw_deinterlace;
-
 extern UBY *draw_buffer_current_ptr;
 
 /*===========================================================================*/
@@ -78,8 +76,6 @@ extern UBY *draw_buffer_current_ptr;
 extern void drawModeAdd(draw_mode *modenode);
 extern BOOLE drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, BOOLE windowed);
 extern felist *drawGetModes(void);
-extern void drawSetDeinterlace(BOOLE deinterlace);
-extern BOOLE drawGetDeinterlace(void);
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
 extern DISPLAYSCALE drawGetDisplayScale(void);
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
