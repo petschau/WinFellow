@@ -960,7 +960,7 @@ void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
 
   if(RetroPlatformConfig != NULL) {
     cfgSetDisplayScale(RetroPlatformConfig, displayscale);
-    drawSetDisplayScale(displayscale);
+    // drawSetDisplayScale(displayscale);
   }
 
   fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
@@ -1269,9 +1269,10 @@ static BOOLE RetroPlatformSendFeatures(void) {
   dFeatureFlags |= RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
   dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
+  dFeatureFlags |= RP_FEATURE_SCREEN2X;
+
 #ifdef _DEBUG
   dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
-  dFeatureFlags |= RP_FEATURE_SCREEN2X;
 #endif
 
   // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
@@ -1547,9 +1548,9 @@ BOOLE RetroPlatformCheckEmulationNecessities(void) {
  */
 void RetroPlatformEnter(void) {
   if (RetroPlatformCheckEmulationNecessities() == TRUE) {
-	  cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
-	  // check for manual or needed reset
-	  fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+    cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
+    // check for manual or needed reset
+    fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
     RetroPlatformSendEnabledFloppyDrives();
     RetroPlatformSendEnabledHardDrives();
@@ -1559,11 +1560,13 @@ void RetroPlatformEnter(void) {
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
       winDrvEmulationStart();
+      if(!bRetroPlatformEmulatorQuit)
+        cfgManagerConfigurationActivate(&cfg_manager);
       RetroPlatformSetEmulationState(FALSE);
     }
   }
   else
-	  MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
+    MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
 }
 
 void RetroPlatformShutdown(void) {
