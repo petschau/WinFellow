@@ -960,7 +960,7 @@ void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
 
   if(RetroPlatformConfig != NULL) {
     cfgSetDisplayScale(RetroPlatformConfig, displayscale);
-    // drawSetDisplayScale(displayscale);
+    drawSetDisplayScale(displayscale);
   }
 
   fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
@@ -1019,8 +1019,8 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   RetroPlatformSetScreenWidth       (sm->lClipWidth);
   cfgSetScreenWidth(RetroPlatformConfig, sm->lClipWidth);
 
-  // gfxDrvRunEventReset();
   gfxDrvRegisterRetroPlatformScreenMode();
+
   fellowRequestEmulationStop();
 }
 
@@ -1560,8 +1560,6 @@ void RetroPlatformEnter(void) {
     while(!bRetroPlatformEmulatorQuit) {
       RetroPlatformSetEmulationState(TRUE);
       winDrvEmulationStart();
-      if(!bRetroPlatformEmulatorQuit)
-        cfgManagerConfigurationActivate(&cfg_manager);
       RetroPlatformSetEmulationState(FALSE);
     }
   }
