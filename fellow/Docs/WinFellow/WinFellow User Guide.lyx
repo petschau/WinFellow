@@ -697,12 +697,21 @@ new display configuration options for setting the scale (1x and 2x, both
 \end_layout
 
 \begin_layout Itemize
+support for 2x mode in Amiga Forver
+\end_layout
+
+\begin_layout Itemize
 support for model presets to quickly get started setting up model specific
  configurations (a number of presets already included)
 \end_layout
 
 \begin_layout Itemize
 support for creation of empty and formatted ADF images
+\end_layout
+
+\begin_layout Itemize
+work on a unified deinterlace renderer is ongoing (in the current beta,
+ interlace compensation is no longer configurable)
 \end_layout
 
 \end_deeper

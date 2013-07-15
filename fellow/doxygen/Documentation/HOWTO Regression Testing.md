@@ -98,3 +98,9 @@ level). Verify that enemy sprites are coming down from the top of the screen.
 Before this change, they were not visible.
 
 Arkanoid is updating vstart/vstop with the copper.
+
+r941: reset of RetroPlatform reset causes input devices to no longer function
+-----------------------------------------------------------------------------
+Start the A500 system, click into the emulator window to capture the cursor.
+Hold Esc to release cursor, click the Power symbol and select Reset.
+After the reset, verify that the mouse is usable in Workbench.

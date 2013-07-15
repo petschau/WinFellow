@@ -2302,6 +2302,12 @@ void gfxDrvEndOfFrame(void)
 
     listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
     gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
+
+    drawSetMode(cfgGetScreenWidth(gfxdrv_config),
+      cfgGetScreenHeight(gfxdrv_config),
+      cfgGetScreenColorBits(gfxdrv_config),
+      cfgGetScreenRefresh(gfxdrv_config),
+      cfgGetScreenWindowed(gfxdrv_config));
   }
 
 #endif
