@@ -33,7 +33,5 @@
 #define _SYSINFO_H_
 
 void sysinfoLogSysInfo(void);
-BOOL sysinfoDetectMMX(void);
-BOOL sysinfoDetectSSE(void);
 
 #endif

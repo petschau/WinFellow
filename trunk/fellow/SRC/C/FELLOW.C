@@ -96,21 +96,6 @@ BOOLE fellowGetUseGUI(void) {
 
 
 /*============================================================================*/
-/* We have MMX?                                                               */
-/*============================================================================*/
-
-BOOLE fellow_mmx_detected;
-
-void fellowSetMMXDetected(BOOLE mmx_detected) {
-  fellow_mmx_detected = mmx_detected;
-}
-
-BOOLE fellowGetMMXDetected(void) {
-  return fellow_mmx_detected;
-}
-
-
-/*============================================================================*/
 /* setjmp support                                                             */
 /*============================================================================*/
 
@@ -632,7 +617,6 @@ int __cdecl main(int argc, char *argv[]) {
 
   sysinfoLogSysInfo();
   fellowPreStartReset(TRUE);
-  fellowSetMMXDetected(sysinfoDetectMMX());
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
