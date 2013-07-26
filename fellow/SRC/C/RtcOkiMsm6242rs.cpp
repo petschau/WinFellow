@@ -67,8 +67,10 @@ UWO RtcOkiMsm6242rs::GetSecondRegister(void)
 
 void RtcOkiMsm6242rs::SetSecondRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetFirstDigit(datetime, datetime.tm_sec, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetFirstDigit(*datetime, datetime->tm_sec, data);
 }
 
 UWO RtcOkiMsm6242rs::GetTenSecondRegister(void)
@@ -78,8 +80,10 @@ UWO RtcOkiMsm6242rs::GetTenSecondRegister(void)
 
 void RtcOkiMsm6242rs::SetTenSecondRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetSecondDigit(datetime, datetime.tm_sec, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetSecondDigit(*datetime, datetime->tm_sec, data);
 }
 
 UWO RtcOkiMsm6242rs::GetMinuteRegister(void)
@@ -89,8 +93,10 @@ UWO RtcOkiMsm6242rs::GetMinuteRegister(void)
 
 void RtcOkiMsm6242rs::SetMinuteRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetFirstDigit(datetime, datetime.tm_min, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetFirstDigit(*datetime, datetime->tm_min, data);
 }
 
 UWO RtcOkiMsm6242rs::GetTenMinuteRegister(void)
@@ -100,8 +106,10 @@ UWO RtcOkiMsm6242rs::GetTenMinuteRegister(void)
 
 void RtcOkiMsm6242rs::SetTenMinuteRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetSecondDigit(datetime, datetime.tm_min, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetSecondDigit(*datetime, datetime->tm_min, data);
 }
 
 UWO RtcOkiMsm6242rs::GetHourRegister(void)
@@ -111,8 +119,10 @@ UWO RtcOkiMsm6242rs::GetHourRegister(void)
 
 void RtcOkiMsm6242rs::SetHourRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetFirstDigit(datetime, datetime.tm_hour, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetFirstDigit(*datetime, datetime->tm_hour, data);
 }
 
 UWO RtcOkiMsm6242rs::GetTenHourRegister(void)
@@ -122,8 +132,10 @@ UWO RtcOkiMsm6242rs::GetTenHourRegister(void)
 
 void RtcOkiMsm6242rs::SetTenHourRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetSecondDigit(datetime, datetime.tm_hour, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetSecondDigit(*datetime, datetime->tm_hour, data);
 }
 
 UWO RtcOkiMsm6242rs::GetDayRegister(void)
@@ -133,8 +145,10 @@ UWO RtcOkiMsm6242rs::GetDayRegister(void)
 
 void RtcOkiMsm6242rs::SetDayRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetFirstDigit(datetime, datetime.tm_mday, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetFirstDigit(*datetime, datetime->tm_mday, data);
 }
 
 UWO RtcOkiMsm6242rs::GetTenDayRegister(void)
@@ -144,8 +158,10 @@ UWO RtcOkiMsm6242rs::GetTenDayRegister(void)
 
 void RtcOkiMsm6242rs::SetTenDayRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetSecondDigit(datetime, datetime.tm_mday, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetSecondDigit(*datetime, datetime->tm_mday, data);
 }
 
 UWO RtcOkiMsm6242rs::GetMonthRegister(void)
@@ -155,11 +171,14 @@ UWO RtcOkiMsm6242rs::GetMonthRegister(void)
 
 void RtcOkiMsm6242rs::SetMonthRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  int month = datetime.tm_mon + 1;
-  ReplaceFirstDigit(month, data);
-  datetime.tm_mon = month - 1;
-  SetCurrentTime(&datetime);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime) {
+    int month = datetime->tm_mon + 1;
+    ReplaceFirstDigit(month, data);
+    datetime->tm_mon = month - 1;
+    SetCurrentTime(datetime);
+  }
 }
 
 UWO RtcOkiMsm6242rs::GetTenMonthRegister(void)
@@ -169,11 +188,14 @@ UWO RtcOkiMsm6242rs::GetTenMonthRegister(void)
 
 void RtcOkiMsm6242rs::SetTenMonthRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  int month = datetime.tm_mon + 1;
-  ReplaceSecondDigit(month, data);
-  datetime.tm_mon = month - 1;
-  SetCurrentTime(&datetime);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime) {
+    int month = datetime->tm_mon + 1;
+    ReplaceSecondDigit(month, data);
+    datetime->tm_mon = month - 1;
+    SetCurrentTime(datetime);
+  }
 }
 
 UWO RtcOkiMsm6242rs::GetYearRegister(void)
@@ -183,8 +205,10 @@ UWO RtcOkiMsm6242rs::GetYearRegister(void)
 
 void RtcOkiMsm6242rs::SetYearRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  SetFirstDigit(datetime, datetime.tm_year, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
+
+  if(datetime)
+    SetFirstDigit(*datetime, datetime->tm_year, data);
 }
 
 UWO RtcOkiMsm6242rs::GetTenYearRegister(void)
@@ -194,15 +218,18 @@ UWO RtcOkiMsm6242rs::GetTenYearRegister(void)
 
 void RtcOkiMsm6242rs::SetTenYearRegister(UWO data)
 {
-  struct tm datetime = *GetCurrentOrHeldTime();
-  ReplaceSecondDigitAllowBCDOverflow(datetime.tm_year, data);
+  struct tm *datetime = GetCurrentOrHeldTime();
 
-  // mktime's lower limit is 1970, if the year is less than 1970, assume they mean 21st century
-  if (datetime.tm_year < 70)
-  {
-    datetime.tm_year += 100;
+  if(datetime) {
+    ReplaceSecondDigitAllowBCDOverflow(datetime->tm_year, data);
+
+    // mktime's lower limit is 1970, if the year is less than 1970, assume they mean 21st century
+    if (datetime->tm_year < 70)
+    {
+      datetime->tm_year += 100;
+    }
+    SetCurrentTime(datetime);
   }
-  SetCurrentTime(&datetime);
 }
 
 UWO RtcOkiMsm6242rs::GetWeekRegister(void)
@@ -214,10 +241,13 @@ UWO RtcOkiMsm6242rs::GetWeekRegister(void)
 void RtcOkiMsm6242rs::SetWeekRegister(UWO data)
 {
   struct tm *datetime = GetCurrentOrHeldTime();
-  _rtcWeekdayModifier = (data % 10) - datetime->tm_wday;
-  if (_rtcWeekdayModifier < 0)
-  {
-    _rtcWeekdayModifier += 7;
+
+  if(datetime) {
+    _rtcWeekdayModifier = (data % 10) - datetime->tm_wday;
+    if (_rtcWeekdayModifier < 0)
+    {
+      _rtcWeekdayModifier += 7;
+    }
   }
 }
 
@@ -289,16 +319,19 @@ void RtcOkiMsm6242rs::write(UWO data, ULO address)
 void RtcOkiMsm6242rs::logRtcTime(STR *msg)
 {
   struct tm *datetime = GetCurrentOrHeldTime();
-  fellowAddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
-    msg,
-    datetime->tm_year + 1900,
-    datetime->tm_mon + 1,
-    datetime->tm_mday,
-    datetime->tm_wday,
-    datetime->tm_wday + _rtcWeekdayModifier,
-    datetime->tm_hour,
-    datetime->tm_min,
-    datetime->tm_sec);
+
+  if(datetime) {
+    fellowAddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
+      msg,
+      datetime->tm_year + 1900,
+      datetime->tm_mon + 1,
+      datetime->tm_mday,
+      datetime->tm_wday,
+      datetime->tm_wday + _rtcWeekdayModifier,
+      datetime->tm_hour,
+      datetime->tm_min,
+      datetime->tm_sec);
+  }
 }
 
 #endif

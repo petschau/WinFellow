@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.25 (2013/06/24)
+v0.26 (2013/07/26)
 \end_layout
 
 \begin_layout Standard
@@ -697,7 +697,7 @@ new display configuration options for setting the scale (1x and 2x, both
 \end_layout
 
 \begin_layout Itemize
-support for 2x mode in Amiga Forver
+support for 2x mode in Amiga Forever
 \end_layout
 
 \begin_layout Itemize
@@ -712,6 +712,10 @@ support for creation of empty and formatted ADF images
 \begin_layout Itemize
 work on a unified deinterlace renderer is ongoing (in the current beta,
  interlace compensation is no longer configurable)
+\end_layout
+
+\begin_layout Itemize
+system requirements lowered to no longer require an SSE capable processor
 \end_layout
 
 \end_deeper
@@ -734,6 +738,10 @@ WinFellow will now re-initialize the emulation session when a change of
 \begin_layout Itemize
 cancelling the configuration dialog no longer performs changes to the configurat
 ion
+\end_layout
+
+\begin_layout Itemize
+fix for rare crash when random code would set RTC registers randomly
 \end_layout
 
 \end_deeper
