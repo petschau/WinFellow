@@ -136,6 +136,7 @@ static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
+static bool bRetroPlatformScreenWindowed = true;
 static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
@@ -539,6 +540,10 @@ ULO RetroPlatformGetScreenWidth(void) {
   return lRetroPlatformScreenWidthRP;
 }
 
+bool RetroPlatformGetScreenWindowed(void) {
+  return bRetroPlatformScreenWindowed;
+}
+
 ULO RetroPlatformGetScreenHeight(void) {
    return lRetroPlatformScreenHeightRP;
 }
@@ -557,6 +562,11 @@ static void RetroPlatformDetermineScreenModeFromConfig(
     dwScreenMode |= RP_SCREENMODE_SCALE_1X;
   if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
     dwScreenMode |= RP_SCREENMODE_SCALE_2X;
+
+  if(RetroPlatformGetScreenWindowed())
+    dwScreenMode |= RP_SCREENMODE_DISPLAY_WINDOW;
+  else
+    dwScreenMode |= RP_SCREENMODE_DISPLAY_FULLSCREEN_1;
 
   RetroPlatformScreenMode->dwScreenMode  = dwScreenMode;
   RetroPlatformScreenMode->hGuestWindow  = hRetroPlatformGuestWindow;
@@ -955,6 +965,17 @@ void RetroPlatformSetScreenWidth(const ULO lWidth) {
     lRetroPlatformScreenWidthRP);
 }
 
+void RetroPlatformSetScreenWindowed(const bool bWindowed) {  
+  bRetroPlatformScreenWindowed = bWindowed;
+
+  if(RetroPlatformConfig != NULL) {
+    cfgSetScreenWindowed(RetroPlatformConfig, bWindowed);
+  }
+
+  fellowAddLog("RetroPlatformSetScreenWindowed(): configured to %s\n",
+    bWindowed ? "true" : "false");
+}
+
 void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
   RetroPlatformDisplayScale = displayscale;
 
@@ -990,19 +1011,10 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
 }
 
 void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
-  ULO lScalingFactor = RP_SCREENMODE_SCALE(sm->dwScreenMode);
-  
-  switch(lScalingFactor)
-  {
-    case RP_SCREENMODE_SCALE_1X:
-      RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
-      break;
-    case RP_SCREENMODE_SCALE_2X:
-      RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
-      break;
-    default:
-      fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown display scaling factor 0x%x.\n", lScalingFactor);
-  }
+  ULO lScalingFactor = 0, lDisplay = 0;
+
+  lScalingFactor = RP_SCREENMODE_SCALE  (sm->dwScreenMode);
+  lDisplay       = RP_SCREENMODE_DISPLAY(sm->dwScreenMode);
 
 #ifdef _DEBUG
   fellowAddLog("RetroPlatformSetScreenModeStruct(): dwScreenMode=0x%x, dwClipFlags=0x%x, lTargetWidth=%u, lTargetHeight=%u\n", 
@@ -1010,7 +1022,40 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
 
   fellowAddLog("RetroPlatformSetScreenModeStruct(): lClipWidth=%u, lClipHeight=%u, lClipLeft=%u, lClipTop=%u\n", 
     sm->lClipWidth, sm->lClipHeight, sm->lClipLeft, sm->lClipTop);
+
+  fellowAddLog("RetroPlatformSetScreenModeStruct(): lScalingFactor=0x%x, lDisplay=0x%x\n",
+    lScalingFactor, lDisplay);
 #endif
+
+  if(lDisplay == 0) {
+    RetroPlatformSetScreenWindowed(true);
+
+    switch(lScalingFactor)
+    {
+      case RP_SCREENMODE_SCALE_1X:
+        RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+        break;
+      case RP_SCREENMODE_SCALE_2X:
+        RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
+        break;
+      default:
+        fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown windowed display scaling factor 0x%x.\n", lScalingFactor);
+    }
+  }
+
+  if(lDisplay == 1) {
+    RetroPlatformSetScreenWindowed(false);
+
+    switch(lScalingFactor)
+    {
+      case RP_SCREENMODE_SCALE_MAX:
+        // automatically scale to max - set in conjunction with fullscreen mode
+        RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+        break;
+      default:
+        fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown fullscreen 1 display scaling factor 0x%x.\n", lScalingFactor);
+    }
+  }
 
   RetroPlatformSetClippingOffsetLeft(sm->lClipLeft);
   RetroPlatformSetClippingOffsetTop (sm->lClipTop);
@@ -1273,6 +1318,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
 
 #ifdef _DEBUG
   dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+  dFeatureFlags |= RP_FEATURE_FULLSCREEN;
 #endif
 
   // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
