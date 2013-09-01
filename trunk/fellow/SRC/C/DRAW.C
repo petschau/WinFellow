@@ -41,6 +41,7 @@
 #include "CONFIG.H"
 
 #include "draw_pixelrenderers.h"
+#include "draw_interlace_control.h"
 
 #ifdef GRAPH2
 #include "Graphics.h"
@@ -878,6 +879,14 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
     draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
     (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
 
+  if (drawGetFrameIsInterlaced())
+  {
+    if (!drawGetFrameIsLong())
+    {
+      draw_buffer_current_ptr += ((draw_mode_current->pitch * scale) / 2);
+    }
+  }
+
   return draw_mode_current->pitch * scale;
 }
 
@@ -973,6 +982,9 @@ BOOLE drawStartup(void)
   drawSetFPSCounterEnabled(false);
   drawSetLEDsEnabled(false);
   drawSetAllowMultipleBuffers(FALSE);
+
+  drawClearInterlaceStatus();
+
   for (ULO i = 0; i < DRAW_LED_COUNT; i++)
   {
     drawSetLED(i, false);
@@ -1025,6 +1037,12 @@ ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
   return pitch_in_bytes / 4; // 4x4
 }
 
+void drawReintitializeRendering(void)
+{
+  drawModeTablesInitialize(draw_mode_current);
+  graphLineDescClear();
+}
+
 /*==============================================================================*/
 /* Drawing end of frame handler                                                 */
 /*==============================================================================*/
@@ -1041,7 +1059,7 @@ void drawEndOfFrame(void)
 #ifndef GRAPH2
       UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
       for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
-        graph_line *graph_frame_ptr = &graph_frame[draw_buffer_draw][draw_top + i];
+        graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
         if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
         {
           if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
@@ -1072,5 +1090,11 @@ void drawEndOfFrame(void)
   if (draw_frame_skip < 0) 
   {
     draw_frame_skip = draw_frame_skip_factor;
+  }
+
+  bool interlace_changed = drawDecideInterlaceStatusForNextFrame();
+  if (interlace_changed)
+  {
+    drawReintitializeRendering();
   }
 }

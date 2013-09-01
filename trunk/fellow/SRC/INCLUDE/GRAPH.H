@@ -120,7 +120,10 @@ typedef struct {
   ULO bplcon2;
 } graph_line;
 
-extern graph_line graph_frame[3][314];
+
+graph_line* graphGetLineDesc(int buffer_no, int currentY);
+
+extern graph_line graph_frame[3][628];
 extern BOOLE graph_buffer_lost;
 
 #define graph_line_type                          0
