@@ -3687,39 +3687,57 @@ draw_line_func draw_line_HAM_lores_funcs[3][4] =
   {drawLineHAM2x1_32Bit, drawLineHAM2x2_32Bit, drawLineHAM4x2_32Bit, drawLineHAM4x4_32Bit}
 };
 
-void drawModeFunctionsInitialize(draw_mode *dm)
+ULO drawGetColorDepthIndex(draw_mode *dm)
 {
-  ULO colordepth_index;
   if (dm->bits == 15 || dm->bits == 16)
   {
-    colordepth_index = 0;
+    return 0;
   }
   else if (dm->bits == 24)
   {
-    colordepth_index = 1;
+    return 1;
   }
-  else // if (dm->bits == 32)
+  // dm->bits == 32
+  return 2;
+}
+
+ULO drawGetScaleIndex(void)
+{
+  if (drawGetFrameIsInterlaced())
   {
-    colordepth_index = 2;
+    if (drawGetDisplayScale() == DISPLAYSCALE_1X)
+    {
+      return 0; // 2x1
+    }
+    else
+    {
+      return 2; // 4x2
+    }
   }
 
-  ULO scale_index;
+  // <Not interlaced>
   if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
-    scale_index = 0; // 2x1
+    return 0; // 2x1
   }
   else if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
-    scale_index = 1; // 2x2
+    return 1; // 2x2
   }
   else if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
-    scale_index = 2; // 4x2
+    return 2; // 4x2
   }
   else // if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
-    scale_index = 3; // 4x4
+    return 3; // 4x4
   }
+}
+
+void drawModeFunctionsInitialize(draw_mode *dm)
+{
+  ULO colordepth_index = drawGetColorDepthIndex(dm);
+  ULO scale_index = drawGetScaleIndex();
 
   draw_line_BPL_manage_routine = draw_line_BPL_manage_funcs[colordepth_index][scale_index];
   draw_line_routine = draw_line_BG_routine = draw_line_BG_funcs[colordepth_index][scale_index];

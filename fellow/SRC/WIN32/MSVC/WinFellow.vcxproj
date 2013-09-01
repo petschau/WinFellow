@@ -447,6 +447,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\c\draw_interlace_control.cpp" />
     <ClCompile Include="..\..\c\draw_pixelrenderers.cpp" />
     <ClCompile Include="..\..\C\FELLOW.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -1575,6 +1576,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\INCLUDE\CpuModule_Profile.h" />
     <ClInclude Include="..\..\INCLUDE\DEFS.H" />
     <ClInclude Include="..\..\INCLUDE\DRAW.H" />
+    <ClInclude Include="..\..\include\draw_interlace_control.h" />
     <ClInclude Include="..\..\include\draw_pixelrenderers.h" />
     <ClInclude Include="..\..\INCLUDE\EVENTID.H" />
     <ClInclude Include="..\..\INCLUDE\FELLOW.H" />

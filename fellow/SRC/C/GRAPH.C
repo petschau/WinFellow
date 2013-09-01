@@ -34,6 +34,7 @@
 #include "graph.h"
 #include "sprite.h"
 #include "CpuIntegration.h"
+#include "draw_interlace_control.h"
 
 #ifdef GRAPH2
 #include "Graphics.h"
@@ -108,8 +109,7 @@ ULO dmaconr, dmacon;
 /* Framebuffer data about each line, max triple buffering                    */
 /*===========================================================================*/
 
-graph_line graph_frame[3][314];
-
+graph_line graph_frame[3][628];
 
 /*===========================================================================*/
 /* Clear the line descriptions                                               */
@@ -121,9 +121,9 @@ void graphLineDescClear(void)
 {
   int frame, line;
 
-  memset(graph_frame, 0, sizeof(graph_line)*3*314);
+  memset(graph_frame, 0, sizeof(graph_line)*3*628);
   for (frame = 0; frame < 3; frame++)
-    for (line = 0; line < 314; line++) {
+    for (line = 0; line < 628; line++) {
       graph_frame[frame][line].linetype = GRAPH_LINE_BG;
       graph_frame[frame][line].draw_line_routine =
 	(void *) draw_line_BG_routine;
@@ -132,7 +132,6 @@ void graphLineDescClear(void)
       graph_frame[frame][line].sprite_ham_slot = 0xffffffff;
     }
 }
-
 
 /*===========================================================================*/
 /* Clear the line descriptions partially                                     */
@@ -144,7 +143,7 @@ void graphLineDescClearSkips(void)
   int frame, line;
 
   for (frame = 0; frame < 3; frame++)
-    for (line = 0; line < 314; line++) 
+    for (line = 0; line < 628; line++) 
       if (graph_frame[frame][line].linetype == GRAPH_LINE_SKIP) {
 	graph_frame[frame][line].linetype = GRAPH_LINE_BG;
 	graph_frame[frame][line].frames_left_until_BG_skip = 1;
@@ -153,6 +152,17 @@ void graphLineDescClearSkips(void)
 	graph_frame[frame][line].linetype = GRAPH_LINE_BPL;
 	graph_frame[frame][line].frames_left_until_BG_skip = 1;
       }
+}
+
+graph_line* graphGetLineDesc(int buffer_no, int currentY)
+{
+  int line_index = currentY*2;
+  
+  if (drawGetFrameIsInterlaced() && !drawGetFrameIsLong())
+  {
+    line_index += 1;
+  }
+  return &graph_frame[buffer_no][line_index];
 }
 
 
@@ -1137,8 +1147,9 @@ static void graphSetLinePointers(UBY **line1, UBY **line2)
   else
   {
     ULO currentY = busGetRasterY();
-    *line1 = graph_frame[draw_buffer_draw][currentY].line1;
-    *line2 = graph_frame[draw_buffer_draw][currentY].line2;
+    graph_line *current_graph_line = graphGetLineDesc(draw_buffer_draw, currentY);
+    *line1 = current_graph_line->line1;
+    *line2 = current_graph_line->line2;
   }
 }
 
@@ -2386,7 +2397,7 @@ void graphEndOfLine(void)
     if (currentY >= 0x12)
     {
       // make pointer to linedesc for this line
-      current_graph_line = &graph_frame[draw_buffer_draw][currentY];
+      current_graph_line = graphGetLineDesc(draw_buffer_draw, currentY);
 
       // decode sprites if DMA is enabled and raster is after line $18
       if ((dmacon & 0x20) == 0x20)
