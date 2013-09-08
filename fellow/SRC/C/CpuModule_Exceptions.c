@@ -220,7 +220,7 @@ void cpuThrowTraceException(void)
 
 void cpuThrowAddressErrorException(void)
 {
-  cpuThrowException(0xc, cpuGetPC(), TRUE);
+  cpuThrowException(0xc, cpuGetPC() - 2, TRUE);
 }
 
 /*=================*/
