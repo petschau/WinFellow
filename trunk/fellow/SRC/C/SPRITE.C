@@ -263,7 +263,7 @@ typedef struct {
   BOOLE online[8];
 } sprite_ham_slot;
 
-sprite_ham_slot sprite_ham_slots[BUS_LINES_PER_FRAME];
+sprite_ham_slot sprite_ham_slots[313];
 ULO sprite_ham_slot_next;
 
 ULO sprite_delay;

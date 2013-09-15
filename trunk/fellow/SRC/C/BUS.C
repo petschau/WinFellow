@@ -40,6 +40,7 @@
 #include "sprite.h"
 #include "timer.h"
 #include "draw.h"
+#include "draw_interlace_control.h"
 #include "fileops.h"
 #include "interrupt.h"
 
@@ -53,6 +54,9 @@
 #endif
 
 bus_state bus;
+
+bus_screen_limits pal_long_frame;
+bus_screen_limits pal_short_frame;
 
 bus_event cpuEvent;
 bus_event copperEvent;
@@ -108,7 +112,8 @@ void busEndOfLine(void)
   /*==============================================================*/
   /* Set up the next end of line event                            */
   /*==============================================================*/
-  eolEvent.cycle += BUS_CYCLE_PER_LINE;
+
+  eolEvent.cycle += busGetCyclesInThisLine();
   busInsertEvent(&eolEvent);
 }
 
@@ -161,21 +166,13 @@ void busEndOfFrame(void)
   memoryWriteWord(0x8020, 0xdff09c);
 
   /*==============================================================*/
-  /* Set up next end of line event                                */
-  /*==============================================================*/
-
-  busRemoveEvent(&eolEvent);
-  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
-  busInsertEventWithNullCheck(&eolEvent);
-
-  /*==============================================================*/
   /* Update next CPU instruction time                             */
   /*==============================================================*/
 
   if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
   {
     // The CPU is never in the queue
-    cpuEvent.cycle -= BUS_CYCLE_PER_FRAME;
+    cpuEvent.cycle -= busGetCyclesInThisFrame();
   }
 
   /*==============================================================*/
@@ -185,7 +182,7 @@ void busEndOfFrame(void)
   if (interruptEvent.cycle != BUS_CYCLE_DISABLE)
   {
     busRemoveEvent(&interruptEvent);
-    interruptEvent.cycle -= BUS_CYCLE_PER_FRAME;
+    interruptEvent.cycle -= busGetCyclesInThisFrame();
     busInsertEvent(&interruptEvent);
   }
 
@@ -195,10 +192,27 @@ void busEndOfFrame(void)
   graphEndOfFrame();
   timerEndOfFrame();
 
+  /*==============================================================*/
+  /* Decide interlace rendering status and switch bus screen      */
+  /* geometry based on long/short frame                           */
+  /*==============================================================*/
+
+  drawInterlaceEndOfFrame();
+
+  /*==============================================================*/
+  /* Set up next end of line event                                */
+  /*==============================================================*/
+
+  busRemoveEvent(&eolEvent);
+  eolEvent.cycle = busGetCyclesInThisLine() - 1;
+  busInsertEventWithNullCheck(&eolEvent);
+
+
 #ifdef GRAPH2
   GraphicsContext.EndOfFrame();
 #endif
 
+  eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEvent(&eofEvent);
   bus.frame_no++;
 }
@@ -330,17 +344,37 @@ ULO busGetCycle(void)
 
 ULO busGetRasterY(void)
 {
-  return bus.cycle / BUS_CYCLE_PER_LINE;
+  return bus.cycle / busGetCyclesInThisLine();
 }
 
 ULO busGetRasterX(void)
 {
-  return bus.cycle % BUS_CYCLE_PER_LINE;
+  return bus.cycle % busGetCyclesInThisLine();
 }
 
 ULL busGetRasterFrameCount(void)
 {
   return bus.frame_no;
+}
+
+ULO busGetCyclesInThisLine(void)
+{
+  return bus.screen_limits->cycles_in_this_line;
+}
+
+ULO busGetLinesInThisFrame(void)
+{
+  return bus.screen_limits->lines_in_this_frame;
+}
+
+ULO busGetMaxLinesInFrame(void)
+{
+  return bus.screen_limits->max_lines_in_frame;
+}
+
+ULO busGetCyclesInThisFrame(void)
+{
+  return bus.screen_limits->cycles_in_this_frame;
 }
 
 void busRun68000Fast(void)
@@ -517,10 +551,45 @@ void busInitializeQueue(void)
   busClearEvent(&blitterEvent, blitFinishBlit);
   busClearEvent(&interruptEvent, interruptHandleEvent);
 
-  eofEvent.cycle = BUS_CYCLE_PER_FRAME;
+  eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEventWithNullCheck(&eofEvent);
-  eolEvent.cycle = BUS_CYCLE_PER_LINE - 1;
+  eolEvent.cycle = busGetCyclesInThisLine() - 1;
   busInsertEvent(&eolEvent);
+}
+
+void busInitializePalLongFrame(void)
+{
+  pal_long_frame.cycles_in_this_line = 227;
+  pal_long_frame.max_cycles_in_line = 227;
+  pal_long_frame.lines_in_this_frame = 313;
+  pal_long_frame.max_lines_in_frame = 313;
+  pal_long_frame.cycles_in_this_frame = 313*227;
+}
+void busInitializePalShortFrame(void)
+{
+  pal_short_frame.cycles_in_this_line = 227;
+  pal_short_frame.max_cycles_in_line = 227;
+  pal_short_frame.lines_in_this_frame = 312;
+  pal_short_frame.max_lines_in_frame = 313;
+  pal_short_frame.cycles_in_this_frame = 312*227;
+}
+
+void busInitializeScreenLimits(void)
+{
+  busInitializePalLongFrame();
+  busInitializePalShortFrame();
+}
+
+void busSetScreenLimits(bool is_long_frame)
+{
+  if (is_long_frame)
+  {
+    bus.screen_limits = &pal_long_frame;
+  }
+  else
+  {
+    bus.screen_limits = &pal_short_frame;
+  }
 }
 
 /*===========================================================================*/
@@ -578,6 +647,7 @@ void busSoftReset(void)
 void busHardReset(void)
 {
   busInitializeQueue();
+  busSetScreenLimits(true);
 }
 
 /*===========================================================================*/
@@ -588,6 +658,9 @@ void busStartup(void)
 {
   bus.frame_no = 0;
   bus.cycle = 0;
+  bus.screen_limits = &pal_long_frame;
+
+  busInitializeScreenLimits();
 }
 
 void busShutdown(void)

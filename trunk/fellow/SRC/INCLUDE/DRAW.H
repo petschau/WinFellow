@@ -88,6 +88,11 @@ extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
 extern BOOLE drawGetAllowMultipleBuffers(void);
 extern bool drawGetFrameIsInterlaced(void);
 
+/*===========================================================================*/
+/* When switching rendering (progressive->interlaced)                        */
+/*===========================================================================*/
+
+extern void drawReintitializeRendering(void);
 
 
 /*===========================================================================*/

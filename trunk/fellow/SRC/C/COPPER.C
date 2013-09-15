@@ -172,7 +172,7 @@ void copperYTableInit(void) {
 
   spriteSetDelay(40);
   for (i = 0; i < 512; i++) {
-    copper_ytable[i] = i*BUS_CYCLE_PER_LINE + ex;
+    copper_ytable[i] = i*busGetCyclesInThisLine() + ex;
   }
 }
 
@@ -484,7 +484,7 @@ void copperEmulate(void)
 		*((UBY*) &maskedY) &= (bswapRegD >> 8);
 		// mask them into vertical position
 		*((UBY*) &maskedY) |= (bswapRegC >> 8);
-		maskedY *= BUS_CYCLE_PER_LINE;
+		maskedY *= busGetCyclesInThisLine();
 		bswapRegC &= 0xfe;
 		bswapRegD &= 0xfe;
 
@@ -635,7 +635,7 @@ void copperEmulate(void)
 		  *((UBY*) &maskedY) &= (bswapRegD >> 8);
 		  // mask them into vertical position
 		  *((UBY*) &maskedY) |= (bswapRegC >> 8);
-		  maskedY *= BUS_CYCLE_PER_LINE;
+		  maskedY *= busGetCyclesInThisLine();
 		  bswapRegC &= 0xfe;
 		  bswapRegD &= 0xfe;
 

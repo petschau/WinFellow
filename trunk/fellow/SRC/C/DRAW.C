@@ -689,8 +689,8 @@ static void drawAmigaScreenHeight(draw_mode *dm)
   }
   else
   {
-    draw_bottom = BUS_LINES_PER_FRAME;
-    draw_top = BUS_LINES_PER_FRAME - draw_height_amiga;
+    draw_bottom = busGetMaxLinesInFrame();
+    draw_top = busGetMaxLinesInFrame() - draw_height_amiga;
   }
   draw_height_amiga_real = draw_height_amiga*totalscale;
 }
@@ -1090,11 +1090,5 @@ void drawEndOfFrame(void)
   if (draw_frame_skip < 0) 
   {
     draw_frame_skip = draw_frame_skip_factor;
-  }
-
-  bool interlace_changed = drawDecideInterlaceStatusForNextFrame();
-  if (interlace_changed)
-  {
-    drawReintitializeRendering();
   }
 }

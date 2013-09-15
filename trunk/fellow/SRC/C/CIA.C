@@ -223,15 +223,15 @@ void ciaUpdateTimersEOF(void)
   for (i = 0; i < 2; i++)
   {
     if (cia[i].taleft >= 0)
-      if ((cia[i].taleft -= BUS_CYCLE_PER_FRAME) < 0)
+      if ((cia[i].taleft -= busGetCyclesInThisFrame()) < 0)
 	cia[i].taleft = 0;
     if (cia[i].tbleft >= 0)
-      if ((cia[i].tbleft -= BUS_CYCLE_PER_FRAME) < 0)
+      if ((cia[i].tbleft -= busGetCyclesInThisFrame()) < 0)
 	cia[i].tbleft = 0;
   }
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    if (((LON)(ciaEvent.cycle -= BUS_CYCLE_PER_FRAME)) < 0)
+    if (((LON)(ciaEvent.cycle -= busGetCyclesInThisFrame())) < 0)
       ciaEvent.cycle = 0;
     busRemoveEvent(&ciaEvent);
     busInsertEvent(&ciaEvent);
