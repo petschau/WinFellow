@@ -19,6 +19,7 @@ extern void graphCalculateWindowHires(void);
 extern void graphEndOfLine(void);
 extern void graphEndOfFrame(void);
 extern void graphPlayfieldOnOff(void);
+extern bool graphIsPal(void);
 
 /* IO register read and write */
 

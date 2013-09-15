@@ -1,6 +1,6 @@
-#include "GraphicsEventQueue.h"
-
 #ifdef GRAPH2
+
+#include "GraphicsEventQueue.h"
 
 ULO GraphicsEvent::MakeArriveTime(ULO rasterY, ULO cylinder)
 {

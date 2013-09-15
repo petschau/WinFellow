@@ -20,7 +20,6 @@ extern ULO cpuIntegrationDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR
 extern BOOLE cpuIntegrationSetModel(cpu_integration_models model);
 extern cpu_integration_models cpuIntegrationGetModel(void);
 extern ULO cpuIntegrationGetModelMajor(void);
-extern ULO cpuIntegrationGetPC(void);
 
 void cpuIntegrationSetIrqLevel(ULO new_interrupt_level, ULO chip_interrupt_number);
 extern ULO cpuIntegrationGetInstructionTime(void);

@@ -1473,8 +1473,8 @@ void blitterEndOfFrame(void)
 {
   if (blitterEvent.cycle != BUS_CYCLE_DISABLE)
   {
-    LON cycle = blitterEvent.cycle -= BUS_CYCLE_PER_FRAME;
-    blitterRemoveEvent();    
+    LON cycle = blitterEvent.cycle -= busGetCyclesInThisFrame();
+    blitterRemoveEvent();
     blitterInsertEvent(cycle);
   }
 }

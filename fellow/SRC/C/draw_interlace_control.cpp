@@ -1,6 +1,8 @@
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "BUS.H"
 #include "GRAPH.H"
+#include "DRAW.H"
 #include "draw_interlace_control.h"
 
 typedef struct
@@ -42,6 +44,7 @@ bool drawDecideInterlaceStatusForNextFrame(void)
   {
     lof = lof ^ 0x8000;
     interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
+    busSetScreenLimits(interlace_status.frame_is_long);
   }
   return interlace_status_changed;
 }
@@ -49,4 +52,13 @@ bool drawDecideInterlaceStatusForNextFrame(void)
 void drawClearInterlaceStatus(void)
 {
   interlace_status.frame_is_interlaced = false;
+}
+
+void drawInterlaceEndOfFrame(void)
+{
+  bool interlace_changed = drawDecideInterlaceStatusForNextFrame();
+  if (interlace_changed)
+  {
+    drawReintitializeRendering();
+  }
 }

@@ -37,10 +37,20 @@ extern void busInsertEventWithNullCheck(bus_event *ev);
 extern void busInsertEvent(bus_event *event);
 extern void busRemoveEvent(bus_event *event);
 
+typedef struct bus_screen_limits_
+{
+  ULO cycles_in_this_line;
+  ULO cycles_in_this_frame;
+  ULO lines_in_this_frame;
+  ULO max_cycles_in_line;
+  ULO max_lines_in_frame;
+} bus_screen_limits;
+
 typedef struct bus_state_
 {
   ULL frame_no;
   ULO cycle;
+  bus_screen_limits *screen_limits;
   bus_event *events;
 } bus_state;
 
@@ -54,9 +64,16 @@ extern ULO busGetRasterX(void);
 extern ULO busGetRasterY(void);
 extern ULL busGetRasterFrameCount(void);
 
-#define BUS_CYCLE_PER_LINE 227
-#define BUS_LINES_PER_FRAME 313
-#define BUS_CYCLE_PER_FRAME (BUS_CYCLE_PER_LINE*BUS_LINES_PER_FRAME)
+extern ULO busGetCyclesInThisLine(void);
+extern ULO busGetLinesInThisFrame(void);
+extern ULO busGetCyclesInThisFrame(void);
+
+extern ULO busGetMaxLinesInFrame(void);
+extern ULO busGetMaxCyclesInLine(void);
+
+extern void busSetScreenLimits(bool is_long_frame);
+
+//#define BUS_CYCLE_PER_FRAME (BUS_CYCLE_PER_LINE*BUS_LINES_PER_FRAME)
 #define BUS_CYCLE_DISABLE 0xffffffff
 
 extern bus_event cpuEvent;
