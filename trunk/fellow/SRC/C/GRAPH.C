@@ -103,7 +103,6 @@ ULO evenscroll, evenhiscroll, oddscroll, oddhiscroll;
 ULO diwstrt, diwstop; 
 ULO diwxleft, diwxright, diwytop, diwybottom;
 ULO dmaconr, dmacon;
-UWO beamcon0;
 
 /*===========================================================================*/
 /* Framebuffer data about each line, max triple buffering                    */
@@ -221,7 +220,6 @@ static void graphIORegistersClear(void) {
   oddhiscroll = 0;
   dmaconr = 0;
   dmacon = 0;
-  beamcon0 = 0;//0x20;
 }
 
 
