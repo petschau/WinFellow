@@ -2236,6 +2236,7 @@ ULO gfxDrvEmulationStartPost(void)
   {
     fellowAddLog("gfxdrv: gfxDrvEmulationStart(): Zero buffers, gfxDrvDDSetMode() failed\n");
   }
+
   if (gfx_drv_hwnd != NULL)
   {
 #ifdef RETRO_PLATFORM

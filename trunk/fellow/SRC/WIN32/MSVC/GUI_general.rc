@@ -8,18 +8,17 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "windows.h"
-#include "gui_debugger.h"
-/////////////////////////////////////////////////////////////////////////////
-#undef APSTUDIO_READONLY_SYMBOLS
+#include "gui_debugger.h"
 
 #ifndef IDC_STATIC
 #define IDC_STATIC -1
 #endif
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -269,6 +268,8 @@ BEGIN
     CONTROL         "silent sound emulation (removes framelimit)",IDC_CHECK_SOUND_EMULATE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,64,149,10
     CONTROL         "emulate real-time clock",IDC_CHECK_VARIOUS_RTC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,50,89,10
+    CONTROL         "enable automatic interlace compensation",IDC_CHECK_GRAPHICS_DEINTERLACE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,78,145,10
 END
 
 IDD_FILESYSTEM_ADD DIALOGEX 0, 0, 190, 94
@@ -690,12 +691,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // English (United States) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian, Bokmål (Norway) resources
+// Norwegisch, Bokmål (Norwegen) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -707,7 +708,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegian, Bokmål (Norway) resources
+#endif    // Norwegisch, Bokmål (Norwegen) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

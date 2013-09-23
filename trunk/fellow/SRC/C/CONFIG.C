@@ -50,6 +50,7 @@
 #include "fileops.h"
 #include "rtc.h"
 #include "RetroPlatform.h"
+#include "draw_interlace_control.h"
 
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
@@ -389,6 +390,18 @@ DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config)
 {
   return config->m_displayscalestrategy;
 }
+
+void cfgSetDeinterlace(cfg *config, bool deinterlace)
+{
+  config->m_deinterlace = deinterlace;
+  drawSetDeinterlace(deinterlace);
+}
+
+bool cfgGetDeinterlace(cfg *config)
+{
+  return config->m_deinterlace;
+}
+
 
 /*============================================================================*/
 /* Sound configuration property access                                        */
@@ -761,6 +774,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetScreenRefresh(config, 0);
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, false);
+  cfgSetDeinterlace(config, TRUE);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
@@ -1525,6 +1539,11 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetFrameskipRatio(config, cfgGetULOFromString(value));
     }
+    else if ((stricmp(option, "fellow.gfx_deinterlace") == 0) ||
+      (stricmp(option, "gfx_deinterlace") == 0))
+    {
+      cfgSetDeinterlace(config, cfgGetBOOLEFromString(value) ? true : false);
+    }
     else if ((stricmp(option, "fellow.measure_speed") == 0) ||
       (stricmp(option, "measure_speed") == 0))
     {
@@ -1758,6 +1777,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "gfx_display_scale_strategy=%s\n", cfgGetDisplayScaleStrategyToString(cfgGetDisplayScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%u\n", cfgGetFrameskipRatio(config));
   fprintf(cfgfile, "show_leds=%s\n", cfgGetboolToString(cfgGetScreenDrawLEDs(config)));
+  fprintf(cfgfile, "fellow.gfx_deinterlace=%s\n", cfgGetBOOLEToString(cfgGetDeinterlace(config)));
   fprintf(cfgfile, "fellow.measure_speed=%s\n", cfgGetboolToString(cfgGetMeasureSpeed(config)));
   fprintf(cfgfile, "rtc=%s\n", cfgGetboolToString(cfgGetRtc(config)));
   fprintf(cfgfile, "win32.map_drives=%s\n", cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));

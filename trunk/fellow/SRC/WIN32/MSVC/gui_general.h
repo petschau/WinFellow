@@ -201,6 +201,7 @@
 #define IDC_LABEL_PRESETS_MODEL         1160
 #define IDC_LABEL_PRESETS_FASTRAM_LABEL 1161
 #define IDC_LABEL_PRESETS_BOGORAM_LABEL 1162
+#define IDC_CHECK_GRAPHICS_DEINTERLACE  1163
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
@@ -278,6 +279,7 @@
 #define ID_FILE_LOAD_STATE              40015
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
+#define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
@@ -285,7 +287,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        184
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1163
+#define _APS_NEXT_CONTROL_VALUE         1164
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
