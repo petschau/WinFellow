@@ -7,5 +7,6 @@ bool drawGetFrameIsLong(void);
 bool drawDecideInterlaceStatusForNextFrame(void);
 void drawClearInterlaceStatus(void);
 void drawInterlaceEndOfFrame(void);
+void drawSetDeinterlace(bool);
 
 #endif

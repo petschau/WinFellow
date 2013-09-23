@@ -104,3 +104,10 @@ r941: reset of RetroPlatform reset causes input devices to no longer function
 Start the A500 system, click into the emulator window to capture the cursor.
 Hold Esc to release cursor, click the Power symbol and select Reset.
 After the reset, verify that the mouse is usable in Workbench.
+
+r949: PC -2 saved on the stack for address exception
+----------------------------------------------------
+Start the game Double Dragon II [cr Oracle] and verify that it loads the main
+menu after exiting the cracktro by hitting Enter.
+
+Before this change, a loader animation would be displayed indefinitely.

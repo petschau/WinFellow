@@ -1406,11 +1406,14 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     /* set autoconfig disable */
     ccwButtonCheckConditional(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE, !cfgGetUseAutoconfig(conf));
 
-	/* set real-time clock */
+    /* set real-time clock */
     ccwButtonCheckConditional(hwndDlg, IDC_CHECK_VARIOUS_RTC, cfgGetRtc(conf));
 
-	/* set silent sound emulation */
+    /* set silent sound emulation */
     ccwButtonCheckConditional(hwndDlg, IDC_CHECK_SOUND_EMULATE, cfgGetSoundEmulation(conf) == SOUND_EMULATE ? TRUE : FALSE);
+
+    /* set automatic interlace compensation */
+    ccwButtonCheckConditional(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE, cfgGetDeinterlace(conf));
   }
 
   /* extract various config */
@@ -1431,6 +1434,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     /* get silent sound emulation */
     cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
+
+    /* get automatic interlace compensation */
+    cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE) ? true : false);
   }
 
 

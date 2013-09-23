@@ -51,6 +51,8 @@
 #include "RetroPlatform.h"
 #endif
 
+cfg *draw_config;
+
 /*============================================================================*/
 /* Mode list, nodes created by the graphics driver, and pointer to the mode   */
 /* that is current                                                            */
@@ -924,6 +926,8 @@ void drawEmulationStart(void)
 
   gfxDrvEmulationStart(gfxModeNumberOfBuffers);
   drawStatClear();
+
+  drawSetDeinterlace(cfgGetDeinterlace(draw_config));
 }
 
 BOOLE drawEmulationStartPost(void)
@@ -962,6 +966,8 @@ void drawEmulationStop(void)
 
 BOOLE drawStartup(void)
 {
+  draw_config = cfgManagerGetCurrentConfig(&cfg_manager);
+
   drawModesClear();
   if (!gfxDrvStartup())
   {
@@ -1071,7 +1077,7 @@ void drawEndOfFrame(void)
         draw_buffer_current_ptr = draw_buffer_current_ptr_local;
       }
 #else
-      GraphicsContext.BitplaneDraw.TmpFrame(next_line_offset);
+      GraphicsContext.BitplaneDraw.TmpFrame(pitch_in_bytes);
 #endif
 
       drawLEDs();

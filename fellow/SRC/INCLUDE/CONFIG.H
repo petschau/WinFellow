@@ -90,6 +90,7 @@ typedef struct {
   ULO   m_frameskipratio;
   DISPLAYSCALE  m_displayscale;
   DISPLAYSCALE_STRATEGY m_displayscalestrategy;
+  bool  m_deinterlace;
   bool  m_measurespeed;
 
   /*==========================================================================*/
@@ -244,6 +245,8 @@ extern void  cfgSetDisplayScale   (cfg *config, DISPLAYSCALE displayscale);
 extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
 extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
+extern void cfgSetDeinterlace(cfg *, bool);
+extern bool cfgGetDeinterlace(cfg *);
 
 /*============================================================================*/
 /* Sound configuration property access                                        */

@@ -9,6 +9,7 @@ typedef struct
 {
   bool frame_is_interlaced;
   bool frame_is_long;
+  bool enable_deinterlace;
 } draw_interlace_status;
 
 draw_interlace_status interlace_status;
@@ -34,6 +35,9 @@ bool drawDecideInterlaceStatusForNextFrame(void)
 {
   bool lace_bit = ((bplcon0 & 4) == 4);
   bool interlace_status_changed = (lace_bit != interlace_status.frame_is_interlaced);
+
+  if (!interlace_status.enable_deinterlace)
+    return false;
 
   if (interlace_status_changed)
   {
@@ -61,4 +65,9 @@ void drawInterlaceEndOfFrame(void)
   {
     drawReintitializeRendering();
   }
+}
+
+void drawSetDeinterlace(bool deinterlace)
+{
+  interlace_status.enable_deinterlace = deinterlace;
 }
