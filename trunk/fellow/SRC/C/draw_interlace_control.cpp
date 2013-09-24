@@ -28,7 +28,7 @@ void drawChangeInterlaceStatus(bool lace_bit)
 {
   interlace_status.frame_is_interlaced = lace_bit;
 
-  fellowAddLog("Frames are now %s\n", (lace_bit) ? "interlaced" : "normal");
+//  fellowAddLog("Frames are now %s, frame no %I64d, Y %d X %d\n", (lace_bit) ? "interlaced" : "normal", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 bool drawDecideInterlaceStatusForNextFrame(void)
@@ -49,6 +49,8 @@ bool drawDecideInterlaceStatusForNextFrame(void)
     lof = lof ^ 0x8000;
     interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
     busSetScreenLimits(interlace_status.frame_is_long);
+
+//    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
   }
   return interlace_status_changed;
 }

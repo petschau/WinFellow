@@ -300,6 +300,9 @@ UWO rid(ULO address)
 void wvpos(UWO data, ULO address)
 {
   lof = (ULO) (data & 0x8000);
+
+//fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+
 }
 
 /*===========================================================================*/
@@ -609,6 +612,9 @@ void wbpl1pth(UWO data, ULO address)
 #endif
 
   bpl1pt = (bpl1pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+
+//  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+
 }
 
 /*===========================================================================*/
@@ -622,6 +628,8 @@ void wbpl1ptl(UWO data, ULO address)
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
   bpl1pt = (bpl1pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+
+//  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
 
 /*===========================================================================*/
@@ -761,6 +769,8 @@ void wbpl6ptl(UWO data, ULO address)
 
 void wbplcon0(UWO data, ULO address)
 {
+//  fellowAddLog("Interlace toggle is %s, frame no %I64d, Y %d X %d\n", (data & 0x4) ? "on" : "off", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+
 #ifdef GRAPH2
   if (bplcon0 != data)
   {

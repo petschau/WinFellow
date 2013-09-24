@@ -90,6 +90,12 @@ void wcop1lch(UWO data, ULO address)
 {
   // store 21 bit (2 MB)
   *(((UWO*) &cop1lc) + 1) = data & 0x1f;
+
+  // Have been hanging since end of frame
+  if (copper_dma == FALSE && copper_suspended_wait == 40)
+  {
+    copper_ptr = cop1lc;
+  }
 }
 
 /* $dff082 */
@@ -98,6 +104,12 @@ void wcop1lcl(UWO data, ULO address)
 {
   // no odd addresses
   *((UWO*) &cop1lc) = data & 0xfffe;
+
+  // Have been hanging since end of frame
+  if (copper_dma == FALSE && copper_suspended_wait == 40)
+  {
+    copper_ptr = cop1lc;
+  }
 }
 
 /*
