@@ -151,6 +151,9 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
     </PreBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>WinFellow.exe.Compatibility.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -262,6 +265,9 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
     </PreBuildEvent>
+    <Manifest>
+      <AdditionalManifestFiles>WinFellow.exe.Compatibility.manifest</AdditionalManifestFiles>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
