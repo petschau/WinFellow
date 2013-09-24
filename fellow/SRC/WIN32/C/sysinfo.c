@@ -331,6 +331,9 @@ static void sysinfoParseOSVersionInfo(void) {
         case 2:
           fellowAddTimelessLog("\toperating system: \tWindows 8\n");
           break;
+        case 3:
+          fellowAddTimelessLog("\toperating system: \tWindows 8.1\n");
+          break;
         }
         break;
       default:
