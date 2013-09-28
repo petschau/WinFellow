@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.26 (2013/07/26)
+v0.30 (2013/09/28)
 \end_layout
 
 \begin_layout Standard
@@ -690,10 +690,9 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-new display configuration options for setting the scale (1x and 2x, both
- retaining a proper aspect ratio), and the scaling strategy (solid or scanline);
- inclusion of higher screen resolutions to allow proper use of 2x windowed
- modes
+new display configuration options for setting scale factor (1x and 2x, retaining
+ a proper aspect ratio), and scaling strategy (solid/scanline); inclusion
+ of higher screen resolutions to allow use of 2x windowed modes
 \end_layout
 
 \begin_layout Itemize
@@ -710,12 +709,13 @@ support for creation of empty and formatted ADF images
 \end_layout
 
 \begin_layout Itemize
-work on a unified deinterlace renderer is ongoing (in the current beta,
- interlace compensation is no longer configurable)
+automatic interlace compensation (WinFellow will automatically detect interlaced
+ graphics and perform interlace compensation; this can be disabled in various
+ options, but is on by default for new configurations)
 \end_layout
 
 \begin_layout Itemize
-system requirements lowered to no longer require an SSE capable processor
+lower system requirements (an SSE capable processor is no longer required)
 \end_layout
 
 \end_deeper
@@ -725,14 +725,8 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-support for sprites in hires dual playfield mode was fixed, making previously
- invisible objects visible on the screen
-\end_layout
-
-\begin_layout Itemize
-WinFellow will now re-initialize the emulation session when a change of
- the display adapter properties is detected (change of color depth, change
- of graphics adapter)
+re-initialize the emulation session when a change of display adapter properties
+ (color depth, different graphics adapter) is detected
 \end_layout
 
 \begin_layout Itemize
@@ -741,7 +735,38 @@ ion
 \end_layout
 
 \begin_layout Itemize
-fix for rare crash when random code would set RTC registers randomly
+support for sprites in hires dual playfield mode was fixed, making previously
+ invisible objects visible on the screen
+\end_layout
+
+\begin_layout Itemize
+sprite DMA was being disabled instead of waiting, causing invisible sprites
+\end_layout
+
+\begin_layout Itemize
+PC -2 saved on the stack for address exception
+\end_layout
+
+\begin_layout Itemize
+proper "short frame" when display is interlaced and frame is short
+\end_layout
+
+\begin_layout Itemize
+fix copper list load
+\end_layout
+
+\begin_layout Itemize
+fixes for several crashes to desktop caused by NULL pointer exceptions
+\end_layout
+
+\begin_layout Itemize
+cancelling an undo dialog in Amiga Forever will no longer close the emulation
+ session
+\end_layout
+
+\begin_layout Itemize
+reset of Amiga Forever emulation session no longer causes input devices
+ to no longer function
 \end_layout
 
 \end_deeper

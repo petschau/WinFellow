@@ -111,3 +111,32 @@ Start the game Double Dragon II [cr Oracle] and verify that it loads the main
 menu after exiting the cracktro by hitting Enter.
 
 Before this change, a loader animation would be displayed indefinitely.
+
+r950: proper "short frame" when display is interlaced and frame is short
+------------------------------------------------------------------------
+Start the game Project-X Special Edition '93 and enter the game. Before
+this change, there would be graphical corruption and the emulator would
+become unresponsive.
+
+r954: fix copper list load
+--------------------------
+Start the demo Sequential by Andromeda with automatic interlace compensation.
+The (interlaced) intro graphic must be displayed properly, without interlace
+flickering.
+
+Before this change, it would have inverted lines.
+
+Also affected by this is the game The Ninja Warriors; the game would not load 
+before this change and can now be started.
+
+If copper DMA was off during "end of frame", and is being turned on for the first
+time after that, it also loads the copper list pointer.
+
+r955: graph frame pointer NULL pointer exception
+------------------------------------------------
+Start the game First Samurai and proceed through the intro. When prompted
+to insert disk 2 into DF0:, do not change the disk, just press fire. The
+game will crash, but the emulation session should remain open indefinitely.
+
+Before this commit, the emulator would crash to the desktop with a NULL
+pointer exception.
