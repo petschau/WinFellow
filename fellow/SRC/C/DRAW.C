@@ -1066,12 +1066,15 @@ void drawEndOfFrame(void)
       UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
       for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
         graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
-        if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+        if (graph_frame_ptr != NULL)
         {
-          if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
+          if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
           {
-            ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
-	  }
+            if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
+            {
+              ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
+	    }
+          }
         }
         draw_buffer_current_ptr_local += pitch_in_bytes;
         draw_buffer_current_ptr = draw_buffer_current_ptr_local;
