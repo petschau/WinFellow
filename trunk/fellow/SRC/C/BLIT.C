@@ -897,6 +897,7 @@ void blitInitiate(void)
   {
     cpuIntegrationSetChipSlowdown(1);
   }
+  blitter.dma_pending = FALSE;
   blitter.started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
   memoryWriteWord(0x0040, 0xdff09c);
