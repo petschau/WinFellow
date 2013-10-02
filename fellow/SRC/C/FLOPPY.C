@@ -400,7 +400,7 @@ BOOLE floppyIsChanged(ULO drive)
   {
     return floppy[drive].changed;
   }
-  return TRUE;
+  return FALSE;
 }
 
 /* If motor is turned off, idmode is reset and on */
