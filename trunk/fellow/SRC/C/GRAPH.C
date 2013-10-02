@@ -157,7 +157,7 @@ graph_line* graphGetLineDesc(int buffer_no, int currentY)
 {
   int line_index = currentY*2;
   
-  if (drawGetFrameIsInterlaced() && !drawGetFrameIsLong())
+  if (drawGetUseInterlacedRendering() && !drawGetFrameIsLong())
   {
     line_index += 1;
   }

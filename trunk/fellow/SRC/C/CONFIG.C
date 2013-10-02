@@ -394,7 +394,6 @@ DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config)
 void cfgSetDeinterlace(cfg *config, bool deinterlace)
 {
   config->m_deinterlace = deinterlace;
-  drawSetDeinterlace(deinterlace);
 }
 
 bool cfgGetDeinterlace(cfg *config)
@@ -774,7 +773,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetScreenRefresh(config, 0);
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, false);
-  cfgSetDeinterlace(config, TRUE);
+  cfgSetDeinterlace(config, true);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
@@ -1542,7 +1541,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     else if ((stricmp(option, "fellow.gfx_deinterlace") == 0) ||
       (stricmp(option, "gfx_deinterlace") == 0))
     {
-      cfgSetDeinterlace(config, cfgGetBOOLEFromString(value) ? true : false);
+      cfgSetDeinterlace(config, cfgGetboolFromString(value));
     }
     else if ((stricmp(option, "fellow.measure_speed") == 0) ||
       (stricmp(option, "measure_speed") == 0))
@@ -2095,6 +2094,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetDisplayScale(cfgGetDisplayScale(config));
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
+  drawSetDeinterlace(cfgGetDeinterlace(config));
 
 
   /*==========================================================================*/

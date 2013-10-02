@@ -26,6 +26,7 @@
 #include "DEFS.H"
 #include "GRAPH.H"
 #include "DRAW.H"
+#include "draw_interlace_control.h"
 #include "SPRITE.H"
 
 #ifdef DRAW_TSC_PROFILE
@@ -3703,7 +3704,7 @@ ULO drawGetColorDepthIndex(draw_mode *dm)
 
 ULO drawGetScaleIndex(void)
 {
-  if (drawGetFrameIsInterlaced())
+  if (drawGetUseInterlacedRendering())
   {
     if (drawGetDisplayScale() == DISPLAYSCALE_1X)
     {

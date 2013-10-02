@@ -1,11 +1,11 @@
 #ifndef DRAW_INTERLACE_CONTROL
 #define DRAW_INTERLACE_CONTROL
 
-bool drawGetFrameIsInterlaced(void);
+bool drawGetUseInterlacedRendering(void);
 bool drawGetFrameIsLong(void);
 
-bool drawDecideInterlaceStatusForNextFrame(void);
-void drawClearInterlaceStatus(void);
+void drawDecideInterlaceStatusForNextFrame(void);
+void drawInterlaceStartup(void);
 void drawInterlaceEndOfFrame(void);
 void drawSetDeinterlace(bool);
 
