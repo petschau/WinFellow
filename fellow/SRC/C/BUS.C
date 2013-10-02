@@ -647,7 +647,10 @@ void busSoftReset(void)
 void busHardReset(void)
 {
   busInitializeQueue();
-  busSetScreenLimits(true);
+
+  // Continue to use the selected cycle layout, interlace control will switch it when necessary
+  // it must only be changed in the end of frame handler to maintain event time consistency
+  busSetScreenLimits(drawGetFrameIsLong());
 }
 
 /*===========================================================================*/

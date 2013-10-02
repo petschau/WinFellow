@@ -881,7 +881,7 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
     draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
     (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
 
-  if (drawGetFrameIsInterlaced())
+  if (drawGetUseInterlacedRendering())
   {
     if (!drawGetFrameIsLong())
     {
@@ -989,7 +989,7 @@ BOOLE drawStartup(void)
   drawSetLEDsEnabled(false);
   drawSetAllowMultipleBuffers(FALSE);
 
-  drawClearInterlaceStatus();
+  drawInterlaceStartup();
 
   for (ULO i = 0; i < DRAW_LED_COUNT; i++)
   {
@@ -1043,7 +1043,7 @@ ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
   return pitch_in_bytes / 4; // 4x4
 }
 
-void drawReintitializeRendering(void)
+void drawReinitializeRendering(void)
 {
   drawModeTablesInitialize(draw_mode_current);
   graphLineDescClear();
