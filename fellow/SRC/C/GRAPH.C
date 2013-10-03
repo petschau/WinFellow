@@ -1586,11 +1586,11 @@ void graphCalculateWindowHires(void)
 {
   ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
 
-  if (ddfstrt > ddfstop) // cmp dword[ddfstrt], dword[ddfstop]
+  if (ddfstrt > ddfstop)
   {
-    // ja near cwdiwerrh
     graph_DDF_start = graph_DDF_word_count = 0;
     graph_DIW_first_visible = graph_DIW_last_visible = 256;
+    return;
   }
 
   ddfstop_aligned = ddfstop & 0x07;
