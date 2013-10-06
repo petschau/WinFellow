@@ -562,7 +562,7 @@ void busInitializePalLongFrame(void)
   pal_long_frame.cycles_in_this_line = 227;
   pal_long_frame.max_cycles_in_line = 227;
   pal_long_frame.lines_in_this_frame = 313;
-  pal_long_frame.max_lines_in_frame = 313;
+  pal_long_frame.max_lines_in_frame = 314;
   pal_long_frame.cycles_in_this_frame = 313*227;
 }
 void busInitializePalShortFrame(void)
@@ -570,7 +570,7 @@ void busInitializePalShortFrame(void)
   pal_short_frame.cycles_in_this_line = 227;
   pal_short_frame.max_cycles_in_line = 227;
   pal_short_frame.lines_in_this_frame = 312;
-  pal_short_frame.max_lines_in_frame = 313;
+  pal_short_frame.max_lines_in_frame = 314;
   pal_short_frame.cycles_in_this_frame = 312*227;
 }
 

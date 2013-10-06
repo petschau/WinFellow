@@ -3,11 +3,7 @@
 
 /* C declarations */
 
-extern void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip);
-extern BOOLE graphGetAllowBplLineSkip(void);
-
 extern void graphLineDescClear(void);
-extern void graphLineDescClearSkips(void);
 extern void graphInitializeShadowColors(void);
 extern void graphHardReset(void);
 extern void graphEmulationStart(void);

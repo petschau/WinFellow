@@ -78,7 +78,6 @@ ULO graph_DDF_start;
 ULO graph_DDF_word_count;
 ULO graph_DIW_first_visible;
 ULO graph_DIW_last_visible;
-ULO graph_allow_bpl_line_skip;
 
 
 /*===========================================================================*/
@@ -118,39 +117,18 @@ graph_line graph_frame[3][628];
 
 void graphLineDescClear(void)
 {
-  int frame, line;
-
   memset(graph_frame, 0, sizeof(graph_line)*3*628);
-  for (frame = 0; frame < 3; frame++)
-    for (line = 0; line < 628; line++) {
+  for (int frame = 0; frame < 3; frame++)
+  {
+    for (int line = 0; line < 628; line++)
+    {
       graph_frame[frame][line].linetype = GRAPH_LINE_BG;
-      graph_frame[frame][line].draw_line_routine =
-	(void *) draw_line_BG_routine;
+      graph_frame[frame][line].draw_line_routine = (void *) draw_line_BG_routine;
       graph_frame[frame][line].colors[0] = 0;
-      graph_frame[frame][line].frames_left_until_BG_skip = 1; /* Ensures we draw once */
+      graph_frame[frame][line].frames_left_until_BG_skip = drawGetBufferCount(); /* ie. one more than normal to draw once in each buffer */
       graph_frame[frame][line].sprite_ham_slot = 0xffffffff;
     }
-}
-
-/*===========================================================================*/
-/* Clear the line descriptions partially                                     */
-/* Removes all the SKIP tags.                                                */
-/*===========================================================================*/
-
-void graphLineDescClearSkips(void)
-{
-  int frame, line;
-
-  for (frame = 0; frame < 3; frame++)
-    for (line = 0; line < 628; line++) 
-      if (graph_frame[frame][line].linetype == GRAPH_LINE_SKIP) {
-	graph_frame[frame][line].linetype = GRAPH_LINE_BG;
-	graph_frame[frame][line].frames_left_until_BG_skip = 1;
-      }
-      else if (graph_frame[frame][line].linetype == GRAPH_LINE_BPL_SKIP) {
-	graph_frame[frame][line].linetype = GRAPH_LINE_BPL;
-	graph_frame[frame][line].frames_left_until_BG_skip = 1;
-      }
+  }
 }
 
 graph_line* graphGetLineDesc(int buffer_no, int currentY)
@@ -222,19 +200,6 @@ static void graphIORegistersClear(void) {
   dmacon = 0;
 }
 
-
-/*===========================================================================*/
-/* Property set/get for smart drawing                                       */
-/*===========================================================================*/
-
-void graphSetAllowBplLineSkip(BOOLE allow_bpl_line_skip) {
-  graph_allow_bpl_line_skip = allow_bpl_line_skip;
-}
-
-BOOLE graphGetAllowBplLineSkip(void) {
-  return graph_allow_bpl_line_skip;
-}
-
 /*===========================================================================*/
 /* Graphics Register Access routines                                         */
 /*===========================================================================*/
@@ -301,7 +266,7 @@ void wvpos(UWO data, ULO address)
 {
   lof = (ULO) (data & 0x8000);
 
-//fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //fellowAddLog("LOF: %s, frame no %I64d, Y %d X %d\n", (lof & 0x8000) ? "long" : "short", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 
 }
 
@@ -769,7 +734,10 @@ void wbpl6ptl(UWO data, ULO address)
 
 void wbplcon0(UWO data, ULO address)
 {
-//  fellowAddLog("Interlace toggle is %s, frame no %I64d, Y %d X %d\n", (data & 0x4) ? "on" : "off", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //if ((data & 0x4) != (bplcon0 & 0x4))
+  //{
+  //  fellowAddLog("Interlace toggle is %s, frame no %I64d, Y %d X %d\n", (data & 0x4) ? "on" : "off", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
+  //}
 
 #ifdef GRAPH2
   if (bplcon0 != data)
@@ -1147,19 +1115,9 @@ static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
 static void graphSetLinePointers(UBY **line1, UBY **line2)
 {
   // make function compatible for no line skipping
-  if (graph_allow_bpl_line_skip)
-  {
-    // Dummy lines
-    *line1 = graph_line1_tmp;
-    *line2 = graph_line2_tmp;
-  }
-  else
-  {
-    ULO currentY = busGetRasterY();
-    graph_line *current_graph_line = graphGetLineDesc(draw_buffer_draw, currentY);
-    *line1 = current_graph_line->line1;
-    *line2 = current_graph_line->line2;
-  }
+  // Dummy lines
+  *line1 = graph_line1_tmp;
+  *line2 = graph_line2_tmp;
 }
 
 static __inline void graphDecodeGeneric(int bitplanes)
@@ -1827,104 +1785,6 @@ void graphLinedescGeometry(graph_line* current_graph_line)
 }
 
 /*-------------------------------------------------------------------------------
-/* Makes a description of this line
-/* [4 + esp] - linedesc struct
-/*-------------------------------------------------------------------------------*/
-
-void graphLinedescMake(graph_line* current_graph_line)
-{
-  /*==========================================================*/
-  /* Is this a bitplane or background line?                   */
-  /*==========================================================*/
-  if (draw_line_BG_routine != draw_line_routine)
-  {
-    /*===========================================*/
-    /* This is a bitplane line                   */
-    /*===========================================*/
-    current_graph_line->linetype = GRAPH_LINE_BPL;
-    graphLinedescColors(current_graph_line);
-    graphLinedescGeometry(current_graph_line);
-    graphLinedescRoutines(current_graph_line);
-  }
-  else
-  {
-    /*===========================================*/
-    /* This is a background line                 */
-    /*===========================================*/
-    if (graph_color_shadow[0] == current_graph_line->colors[0])
-    {
-      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
-      {
-	return;
-      }
-      if (current_graph_line->linetype == GRAPH_LINE_BG)
-      {
-	/*==================================================================*/
-	/* This line was a "background" line during the last drawing of     */
-	/* this frame buffer,                                               */
-	/* and it has the same color as last time.                          */
-	/* We might be able to skip drawing it, we need to check the        */
-	/* flag that says it has been drawn in all of our buffers.          */
-	/* The flag is only of importance when "deinterlacing"              */
-	/*==================================================================*/
-	if (current_graph_line->frames_left_until_BG_skip == 0)
-	{
-	  current_graph_line->linetype = GRAPH_LINE_SKIP;
-	  return;
-	}
-	else
-	{
-	  current_graph_line->frames_left_until_BG_skip--;
-	  return;
-	}
-      }
-    }
-
-    /*==================================================================*/
-    /* This background line is different from the one in the buffer     */
-    /*==================================================================*/
-    current_graph_line->linetype = GRAPH_LINE_BG;
-    current_graph_line->colors[0] = graph_color_shadow[0];
-    current_graph_line->frames_left_until_BG_skip = 0;
-    graphLinedescRoutines(current_graph_line);
-  }
-}
-
-/*-------------------------------------------------------------------------------
-/* Compose the visible layout of the line
-/* [4 + esp] - linedesc struct
-/*-------------------------------------------------------------------------------*/
-
-void graphComposeLineOutput(graph_line* current_graph_line)
-{
-  /*==================================================================*/
-  /* Check if we need to decode bitplane data                         */
-  /*==================================================================*/
-
-  if (draw_line_BG_routine != draw_line_routine) 
-  {
-    /*================================================================*/
-    /* Do the planar to chunky conversion                             */
-    /*================================================================*/
-    graph_decode_line_ptr();
-
-    /*================================================================*/
-    /* Add sprites to the line image                                  */
-    /*================================================================*/
-    if (sprites_online == 1)
-    {
-      spritesMerge(current_graph_line);
-      sprites_online = 0;
-    }
-
-    /*================================================================*/
-    /* Remember line geometry for later drawing                       */
-    /*================================================================*/
-  }
-  graphLinedescMake(current_graph_line);
-}
-
-/*-------------------------------------------------------------------------------
 /* Smart sets line routines for this line
 /* [4 + esp] - linedesc struct
 /* Return 1 if routines have changed (eax)
@@ -2179,6 +2039,72 @@ static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, 
   return result;
 }
 
+
+BOOLE graphLinedescSetBackgroundLine(graph_line* current_graph_line)
+{
+  if (graph_color_shadow[0] == current_graph_line->colors[0])
+  {
+    if (current_graph_line->linetype == GRAPH_LINE_SKIP)
+    {
+      // Already skipping this line and no changes
+      return FALSE;
+    }
+    if (current_graph_line->linetype == GRAPH_LINE_BG)
+    {
+      /*==================================================================*/
+      /* This line was a "background" line during the last drawing of     */
+      /* this frame buffer,                                               */
+      /* and it has the same color as last time.                          */
+      /* We might be able to skip drawing it, we need to check the        */
+      /* flag that says it has been drawn in all of our buffers.          */
+      /*==================================================================*/
+      if (current_graph_line->frames_left_until_BG_skip == 0)
+      {
+        // No changes since drawing it last time, change state to skip
+	current_graph_line->linetype = GRAPH_LINE_SKIP;
+	return FALSE;
+      }
+      else
+      {
+        // Still need to draw the line in some buffers
+	current_graph_line->frames_left_until_BG_skip--;
+	return TRUE;
+      }
+    }
+  }
+
+  /*==================================================================*/
+  /* This background line is different from the one in the buffer     */
+  /*==================================================================*/
+  current_graph_line->linetype = GRAPH_LINE_BG;
+  current_graph_line->colors[0] = graph_color_shadow[0];
+  current_graph_line->frames_left_until_BG_skip = drawGetBufferCount() - 1;
+  graphLinedescRoutines(current_graph_line);
+  return TRUE;
+}
+
+BOOLE graphLinedescSetBitplaneLine(graph_line* current_graph_line)
+{
+  /*===========================================*/
+  /* This is a bitplane line                   */
+  /*===========================================*/
+  if (current_graph_line->linetype != GRAPH_LINE_BPL)
+  {
+    if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
+    {
+      current_graph_line->linetype = GRAPH_LINE_BPL;
+      graphLinedescColors(current_graph_line);
+      graphLinedescGeometry(current_graph_line);
+      graphLinedescRoutines(current_graph_line);
+      return TRUE;
+    }
+  }
+  BOOLE line_desc_changed = graphLinedescColorsSmart(current_graph_line);
+  line_desc_changed |= graphLinedescGeometrySmart(current_graph_line);
+  line_desc_changed |= graphLinedescRoutinesSmart(current_graph_line);
+  return line_desc_changed;
+ }
+
 /*-------------------------------------------------------------------------------
 /* Smart makes a description of this line
 /* [4 + esp] - linedesc struct
@@ -2187,81 +2113,15 @@ static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, 
 
 BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
 {
-  BOOLE line_desc_changed;
-
-  line_desc_changed = FALSE;
-
   /*==========================================================*/
   /* Is this a bitplane or background line?                   */
   /*==========================================================*/
   if (draw_line_BG_routine != draw_line_routine)
   {
-    /*===========================================*/
-    /* This is a bitplane line                   */
-    /*===========================================*/
-    if (current_graph_line->linetype != GRAPH_LINE_BPL)
-    {
-      if (current_graph_line->linetype != GRAPH_LINE_BPL_SKIP)
-      {
-	current_graph_line->linetype = GRAPH_LINE_BPL;
-	graphLinedescColors(current_graph_line);
-	graphLinedescGeometry(current_graph_line);
-	graphLinedescRoutines(current_graph_line);
-	return TRUE;
-      }
-    }
-    line_desc_changed = graphLinedescColorsSmart(current_graph_line);
-    line_desc_changed |= graphLinedescGeometrySmart(current_graph_line);
-    line_desc_changed |= graphLinedescRoutinesSmart(current_graph_line);
-    return line_desc_changed;
+    return graphLinedescSetBitplaneLine(current_graph_line);
   }
-  else
-  {
-    /*===========================================*/
-    /* This is a background line                 */
-    /*===========================================*/
-    if (graph_color_shadow[0] == current_graph_line->colors[0])
-    {
-      if (current_graph_line->linetype == GRAPH_LINE_SKIP)
-      {
-	line_desc_changed = FALSE;
-	return line_desc_changed;
-      }
-      if (current_graph_line->linetype == GRAPH_LINE_BG)
-      {
-	/*==================================================================*/
-	/* This line was a "background" line during the last drawing of     */
-	/* this frame buffer,                                               */
-	/* and it has the same color as last time.                          */
-	/* We might be able to skip drawing it, we need to check the        */
-	/* flag that says it has been drawn in all of our buffers.          */
-	/* The flag is only of importance when "deinterlacing"              */
-	/*==================================================================*/
-	if (current_graph_line->frames_left_until_BG_skip == 0)
-	{
-	  current_graph_line->linetype = GRAPH_LINE_SKIP;
-	  line_desc_changed = FALSE;
-	  return line_desc_changed;
-	}
-	else
-	{
-	  current_graph_line->frames_left_until_BG_skip--;
-	  line_desc_changed = TRUE;
-	  return line_desc_changed;
-	}
-      }
-    }
 
-    /*==================================================================*/
-    /* This background line is different from the one in the buffer     */
-    /*==================================================================*/
-    current_graph_line->linetype = GRAPH_LINE_BG;
-    current_graph_line->colors[0] = graph_color_shadow[0];
-    current_graph_line->frames_left_until_BG_skip = 0;
-    graphLinedescRoutines(current_graph_line);
-    line_desc_changed = TRUE;
-  }
-  return line_desc_changed;
+  return graphLinedescSetBackgroundLine(current_graph_line);
 }
 
 /*===========================================================================*/
@@ -2429,16 +2289,8 @@ void graphEndOfLine(void)
       // check if we are clipped
       if ((currentY >= draw_top) || (currentY < draw_bottom))
       {
-
 	// visible line, either background or bitplanes
-	if (graph_allow_bpl_line_skip == 0) 
-	{
-	  graphComposeLineOutput(current_graph_line);
-	}
-	else
-	{
-	  graphComposeLineOutputSmart(current_graph_line);
-	}
+        graphComposeLineOutputSmart(current_graph_line);
       }
       else
       {
@@ -2456,6 +2308,17 @@ void graphEndOfLine(void)
       {
 	draw_line_BPL_manage_routine = draw_line_routine;
 	draw_switch_bg_to_bpl = 0;
+      }
+
+      if (currentY == (busGetLinesInThisFrame() - 1))
+      {
+        // In the case when the display has more lines than the frame (AF or short frames)
+        // this routine pads the remaining lines with background color
+        for (ULO y = currentY + 1; y < draw_bottom; ++y)
+        {
+          graph_line* graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
+          graphLinedescSetBackgroundLine(graph_line_y);
+        }
       }
     }
   }
@@ -2510,7 +2373,6 @@ void graphStartup(void) {
   graphP2CFunctionsInit();
   graphLineDescClear();
   graphIORegistersClear();
-  graphSetAllowBplLineSkip(TRUE);
 }
 
 /*===========================================================================*/
