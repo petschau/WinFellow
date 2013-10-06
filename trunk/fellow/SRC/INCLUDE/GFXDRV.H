@@ -9,6 +9,7 @@ extern bool gfx_drv_displaychange;
 /* Implementing these functions creates a graphics driver for Fellow         */
 /*===========================================================================*/
 
+extern void gfxDrvClearCurrentBuffer(void);
 extern void gfxDrvBufferFlip(void);
 extern void gfxDrvSetMode(draw_mode *dm);
 extern UBY *gfxDrvValidateBufferPointer(void);

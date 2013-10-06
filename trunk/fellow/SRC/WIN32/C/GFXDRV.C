@@ -2108,6 +2108,15 @@ void gfxDrvSetStretchAlways(BOOLE stretch_always)
 /*==========================================================================*/
 
 
+void gfxDrvClearCurrentBuffer(void)
+{
+  LPDIRECTDRAWSURFACE lpDDS;
+  LPDDSURFACEDESC lpDDSD;
+
+  gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device_current, &lpDDS, &lpDDSD);
+  gfxDrvDDrawSurfaceClear(lpDDS);
+}
+
 /*==========================================================================*/
 /* Locks surface and puts a valid framebuffer pointer in framebuffer        */
 /*==========================================================================*/
