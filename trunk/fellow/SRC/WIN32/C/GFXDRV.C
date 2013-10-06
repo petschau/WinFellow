@@ -751,8 +751,8 @@ BOOLE gfxDrvWindowInitialize(gfx_drv_ddraw_device *ddraw_device)
 
       fellowAddLog("RetroPlatform: override window dimensions to %ux%u, offset %u,%u...\n",
         width, height, 
-        RetroPlatformGetAdjustedClippingOffsetLeft(), 
-        RetroPlatformGetAdjustedClippingOffsetTop());
+        RetroPlatformGetClippingOffsetLeftAdjusted(), 
+        RetroPlatformGetClippingOffsetTopAdjusted());
     }
 #endif
 
@@ -1543,7 +1543,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   if (ddraw_device->mode->windowed && !gfx_drv_stretch_always)
   {
 #ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode())
+    if(!RetroPlatformGetMode() || RetroPlatformGetClippingAutomatic())
 #endif
     {
       srcwin.left = 0;
@@ -1554,10 +1554,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #ifdef RETRO_PLATFORM
     else
     {
-      srcwin.left   = RetroPlatformGetAdjustedClippingOffsetLeft();
-      srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetLeft();
-      srcwin.top    = RetroPlatformGetAdjustedClippingOffsetTop();
-      srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetTop();
+        srcwin.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
+        srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetClippingOffsetLeftAdjusted();
+        srcwin.top    = RetroPlatformGetClippingOffsetTopAdjusted();
+        srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetClippingOffsetTopAdjusted();
     }
 #endif
   }
@@ -2206,7 +2206,7 @@ BOOLE gfxDrvEmulationStart(ULO maxbuffercount)
 
 #ifdef RETRO_PLATFORM
   // unpause emulation if in Retroplatform mode
-  if(RetroPlatformGetMode())
+  if(RetroPlatformGetMode()  && !RetroPlatformGetEmulationPaused())
     gfxDrvRunEventSet();
 #endif
 
@@ -2268,8 +2268,8 @@ void gfxDrvEndOfFrame(void)
     RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
     RetroPlatformSetScreenWidth (cfgGetScreenWidth (gfxdrv_config));
 
-    lHeight = RetroPlatformGetAdjustedScreenHeight();
-    lWidth  = RetroPlatformGetAdjustedScreenWidth();
+    lHeight = RetroPlatformGetScreenHeightAdjusted();
+    lWidth  = RetroPlatformGetScreenWidthAdjusted();
 
     cfgSetScreenHeight(gfxdrv_config, lHeight);
     cfgSetScreenWidth (gfxdrv_config, lWidth);
@@ -2278,9 +2278,13 @@ void gfxDrvEndOfFrame(void)
     switch(displayscale) {
       case DISPLAYSCALE_1X:
         sprintf(strMode, "1x");
+        if(RetroPlatformGetScreenWidthAdjusted() > 752)
+          RetroPlatformSetClippingAutomatic(true);
         break;
       case DISPLAYSCALE_2X:
         sprintf(strMode, "2x");
+        if(RetroPlatformGetScreenWidthAdjusted() > 1504)
+          RetroPlatformSetClippingAutomatic(true);
         break;
       default:
         fellowAddLog("gfxDrvStartup(): WARNING: unknown display scaling factor 0x%x.\n",

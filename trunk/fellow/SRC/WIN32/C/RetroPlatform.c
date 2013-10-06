@@ -130,6 +130,7 @@ ULO lRetroPlatformScreenMode                    = 0;
 
 static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
+static bool  bRetroPlatformEmulationPaused = FALSE;
 static BOOLE bRetroPlatformEmulatorQuit   = FALSE;
 static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
@@ -137,6 +138,7 @@ static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPl
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 static bool bRetroPlatformScreenWindowed = true;
+static bool bRetroPlatformClippingAutomatic = true;
 static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
@@ -230,6 +232,8 @@ int RetroPlatformEnumerateJoysticks(void) {
 /** Set clipping offset that is applied to the left of the picture.
  */
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
+  bRetroPlatformClippingAutomatic = false;
+
   lRetroPlatformClippingOffsetLeftRP = lOffsetLeft;
 
 #ifdef _DEBUG
@@ -240,6 +244,8 @@ void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
 /** Set clipping offset that is applied to the top of the picture
  */
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
+  bRetroPlatformClippingAutomatic = false;
+
   lRetroPlatformClippingOffsetTopRP = lOffsetTop;
 
 #ifdef _DEBUG
@@ -439,7 +445,7 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
   return bResult;
 }
 
-ULO RetroPlatformGetAdjustedClippingOffsetLeft(void) {
+ULO RetroPlatformGetClippingOffsetLeftAdjusted(void) {
   ULO lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeftRP;
 
   switch(RetroPlatformGetDisplayScale())
@@ -457,20 +463,20 @@ ULO RetroPlatformGetAdjustedClippingOffsetLeft(void) {
         lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK;
       break;
     default:
-      fellowAddLog("RetroPlatformGetAdjustedClippingOffsetLeft(): WARNING: unknown display scaling factor 0x%x\n.",
+      fellowAddLog("RetroPlatformGetClippingOffsetLeftAdjusted(): WARNING: unknown display scaling factor 0x%x\n.",
         RetroPlatformGetDisplayScale());
       break;
   }
 
 #ifdef _DEBUGVERBOSE
-  fellowAddLog("RetroPlatformGetAdjustedClippingOffsetLeft(): left offset adjusted from %u to %u\n", 
+  fellowAddLog("RetroPlatformGetClippingOffsetLeftAdjusted(): left offset adjusted from %u to %u\n", 
     lRetroPlatformClippingOffsetLeftRP, lRetroPlatformClippingOffsetLeft);
 #endif
 
   return lRetroPlatformClippingOffsetLeft;
 }
 
-ULO RetroPlatformGetAdjustedClippingOffsetTop(void) {
+ULO RetroPlatformGetClippingOffsetTopAdjusted(void) {
   ULO lRetroPlatformClippingOffsetTop = lRetroPlatformClippingOffsetTopRP;
 
   if(lRetroPlatformClippingOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
@@ -484,13 +490,13 @@ ULO RetroPlatformGetAdjustedClippingOffsetTop(void) {
       lRetroPlatformClippingOffsetTop *= 2;
       break;
     default:
-      fellowAddLog("RetroPlatformGetAdjustedClippingOffsetTop(): WARNING: unknown display scaling factor 0x%x.\n",
+      fellowAddLog("RetroPlatformGetClippingOffsetTopAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
         RetroPlatformGetDisplayScale());
       break;
   }
 
 #ifdef _DEBUGVERBOSE
-  fellowAddLog("RetroPlatformGetAdjustedClippingOffsetTop(): top offset adjusted from %u to %u\n", 
+  fellowAddLog("RetroPlatformGetClippingOffsetTopAdjusted(): top offset adjusted from %u to %u\n", 
     lRetroPlatformClippingOffsetTopRP, lRetroPlatformClippingOffsetTop);
 #endif
   
@@ -505,7 +511,19 @@ ULO RetroPlatformGetClippingOffsetTop(void) {
   return lRetroPlatformClippingOffsetTopRP;
 }
 
-ULO RetroPlatformGetAdjustedScreenHeight(void) {
+bool RetroPlatformGetClippingAutomatic(void) {
+  return bRetroPlatformClippingAutomatic;
+}
+
+void RetroPlatformSetClippingAutomatic(const bool bAutomatic) {
+  if(bAutomatic != bRetroPlatformClippingAutomatic) {
+    bRetroPlatformClippingAutomatic = bAutomatic;
+
+    fellowAddLog("RetroPlatformSetClippingAutomatic(): automatic clipping is now %s.\n", bAutomatic ? "enabled" : "disabled");
+  }
+}
+
+ULO RetroPlatformGetScreenHeightAdjusted(void) {
   ULO lScreenHeight = lRetroPlatformScreenHeightRP;
 
   if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
@@ -514,7 +532,7 @@ ULO RetroPlatformGetAdjustedScreenHeight(void) {
   return lScreenHeight;
 }
 
-ULO RetroPlatformGetAdjustedScreenWidth(void) {
+ULO RetroPlatformGetScreenWidthAdjusted(void) {
   ULO lScreenWidth = 0;
   
   if(lRetroPlatformScreenWidthRP > 768) {
@@ -529,7 +547,7 @@ ULO RetroPlatformGetAdjustedScreenWidth(void) {
         lScreenWidth = lRetroPlatformScreenWidthRP;
         break;
       default:
-        fellowAddLog("RetroPlatformGetAdjustedScreenWidth(): WARNING: unknown display scaling factor 0x%x.\n",
+        fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
           RetroPlatformGetDisplayScale());
         break;
     }  
@@ -583,12 +601,18 @@ static void RetroPlatformDetermineScreenModeFromConfig(
   RetroPlatformScreenMode->dwClipFlags   = 0;
 }
 
+bool RetroPlatformGetEmulationPaused(void)
+{
+  return bRetroPlatformEmulationPaused;
+}
+
 /** Verify state of the emulation engine.
  *  @return TRUE, if emulation session if active, FALSE if not.
  */
 BOOLE RetroPlatformGetEmulationState(void) {
   return bRetroPlatformEmulationState;
 }
+
 
 DISPLAYSCALE RetroPlatformGetDisplayScale(void) {
   return RetroPlatformDisplayScale;
@@ -941,6 +965,15 @@ void RetroPlatformSetEmulationState(const BOOLE bNewState) {
   }
 }
 
+void RetroPlatformSetEmulationPaused(const bool bPaused) {
+  if(bPaused != bRetroPlatformEmulationPaused) {
+    bRetroPlatformEmulationPaused = bPaused;
+
+    fellowAddLog("RetroPlatformSetEmulationPaused(): emulation is now %s.\n",
+      bPaused ? "paused" : "active");
+  }
+}
+
 void RetroPlatformSetHostID(const char *szHostID) {
   strncpy(szRetroPlatformHostID, szHostID, CFG_FILENAME_LENGTH);
   fellowAddLog("RetroPlatformSetHostID(): host ID configured to %s.\n", szRetroPlatformHostID);
@@ -1068,6 +1101,11 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   RetroPlatformSetScreenWidth       (sm->lClipWidth);
   cfgSetScreenWidth(RetroPlatformConfig, sm->lClipWidth);
 
+  // Resume emulation, as graph module will crash otherwise if emulation is paused.
+  // As the pause mode is not changed, after the restart of the session it will be
+  // paused again.
+  gfxDrvRunEventSet();
+
   gfxDrvRegisterRetroPlatformScreenMode();
 
   fellowRequestEmulationStop();
@@ -1113,6 +1151,8 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
   case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_HARD)
       fellowPreStartReset(TRUE);
+    RetroPlatformSetEmulationPaused(false);
+    gfxDrvRunEventSet();
     fellowRequestEmulationStop();
     return TRUE;
   case RP_IPC_TO_GUEST_TURBO:
@@ -1143,12 +1183,14 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction: received pause event.\n");
       gfxDrvRunEventReset();
+      RetroPlatformSetEmulationPaused(true);
       RetroPlatformSetEmulationState(FALSE);
       return 1;
     }
     else { // resume emulation
       fellowAddLog("RetroPlatformHostMessageFunction: received resume event, requesting start.\n");
       gfxDrvRunEventSet();
+      RetroPlatformSetEmulationPaused(false);
       RetroPlatformSetEmulationState(TRUE);
       return 1;
     }
