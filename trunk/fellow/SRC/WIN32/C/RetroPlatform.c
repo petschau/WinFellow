@@ -447,10 +447,14 @@ ULO RetroPlatformGetAdjustedClippingOffsetLeft(void) {
     case DISPLAYSCALE_1X:
       if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
         lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
+      else if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK)
+        lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK) / 2;
       break;
     case DISPLAYSCALE_2X:
       if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
         lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
+      else if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK)
+        lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK;
       break;
     default:
       fellowAddLog("RetroPlatformGetAdjustedClippingOffsetLeft(): WARNING: unknown display scaling factor 0x%x\n.",

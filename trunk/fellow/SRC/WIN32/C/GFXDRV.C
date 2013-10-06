@@ -1554,20 +1554,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #ifdef RETRO_PLATFORM
     else
     {
-      if((RetroPlatformGetAdjustedClippingOffsetLeft() != 0) && (RetroPlatformGetAdjustedClippingOffsetTop() != 0))
-      {
-        srcwin.left   = RetroPlatformGetAdjustedClippingOffsetLeft();
-        srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetLeft();
-	srcwin.top    = RetroPlatformGetAdjustedClippingOffsetTop();
-	srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetTop();
-      }
-      else
-      {
-        srcwin.left = 0;
-        srcwin.right = ddraw_device->mode->width;
-	srcwin.top = 0;
-	srcwin.bottom = ddraw_device->mode->height;
-      }
+      srcwin.left   = RetroPlatformGetAdjustedClippingOffsetLeft();
+      srcwin.right  = cfgGetScreenWidth(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetLeft();
+      srcwin.top    = RetroPlatformGetAdjustedClippingOffsetTop();
+      srcwin.bottom = cfgGetScreenHeight(gfxdrv_config) + RetroPlatformGetAdjustedClippingOffsetTop();
     }
 #endif
   }
