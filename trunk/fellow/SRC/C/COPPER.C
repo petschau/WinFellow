@@ -272,9 +272,23 @@ void copperInsertEvent(ULO cycle)
     busInsertEvent(&copperEvent);
   }
 }
-/*-------------------------------------------------------------------------------
-; Initializes the copper from ptr 1
-;-------------------------------------------------------------------------------*/
+
+void copperStartAfterLoad(void)
+{
+  if (copper_dma == TRUE)
+  {
+    copperRemoveEvent();
+    copperInsertEvent(bus.cycle + 4);
+  }
+  else
+  {
+    // DMA is off
+    if (copper_suspended_wait == BUS_CYCLE_DISABLE)
+    {
+      copper_suspended_wait = busGetCycle();
+    }
+  }
+}
 
 void copperLoad1(void)
 {
@@ -282,12 +296,7 @@ void copperLoad1(void)
 #ifdef GRAPH2
     Copper_Load();
 #else
-
-  if (copper_dma == TRUE)
-  {
-    copperRemoveEvent();
-    copperInsertEvent(bus.cycle + 4);
-  }
+  copperStartAfterLoad();
 #endif
 }
 
@@ -298,12 +307,7 @@ void copperLoad2(void)
 #ifdef GRAPH2
     Copper_Load();
 #else
-
-  if (copper_dma == TRUE)
-  {
-    copperRemoveEvent();
-    copperInsertEvent(bus.cycle + 4);
-  }
+  copperStartAfterLoad();
 #endif
 }
 
@@ -337,7 +341,7 @@ void copperUpdateDMA(void)
       // reactivate the cycle the copper was waiting for the last time it was on.
       // if we have passed it in the mean-time, execute immediately.
       copperRemoveEvent();
-      if (copper_suspended_wait != -1)
+      if (copper_suspended_wait != BUS_CYCLE_DISABLE)
       {
 	// dma not hanging
 	if (copper_suspended_wait <= bus.cycle)
