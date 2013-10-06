@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.30 (2013/09/28)
+v0.5.2 Beta (2013/10/06)
 \end_layout
 
 \begin_layout Standard
@@ -718,6 +718,10 @@ automatic interlace compensation (WinFellow will automatically detect interlaced
 lower system requirements (an SSE capable processor is no longer required)
 \end_layout
 
+\begin_layout Itemize
+Windows 8.1 added to the supported operating systems
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
@@ -756,6 +760,11 @@ fix copper list load
 \end_layout
 
 \begin_layout Itemize
+failure to find valid screen mode for screens with unusual refresh rates
+ (Microsoft VirtualPC, ...)
+\end_layout
+
+\begin_layout Itemize
 fixes for several crashes to desktop caused by NULL pointer exceptions
 \end_layout
 
@@ -769,9 +778,47 @@ reset of Amiga Forever emulation session no longer causes input devices
  to no longer function
 \end_layout
 
+\begin_layout Itemize
+fixed problem with Amiga Forever clipping calculations for left offsets
+ < 16 (would lead to only half the screen being visible) or one of the offset
+ values = 0 (would ignore the offsets completely)
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes.
+\end_layout
+
+\begin_layout Part
+System Requirements
+\end_layout
+
+\begin_layout Standard
+WinFellow is highly optimized for execution on low-end systems.
+ It can be executed on any of the following operating systems:
+\end_layout
+
+\begin_layout Itemize
+Windows XP
+\end_layout
+
+\begin_layout Itemize
+Windows Vista
+\end_layout
+
+\begin_layout Itemize
+Windows 7
+\end_layout
+
+\begin_layout Itemize
+Windows 8 (including Windows 8.1)
+\end_layout
+
+\begin_layout Standard
+It does not have any particularly high CPU requirements, and should work
+ well on any system capable of running one of these operating systems.
+ However, for advanced features like 2x graphics mode, a relatively fast
+ CPU will be required (a minimum of 2GHz recommended).
 \end_layout
 
 \begin_layout Part

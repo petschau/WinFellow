@@ -91,6 +91,13 @@ Perform a write operation on a floppy where undo is enabled, and close the sessi
 using Alt+F4. The undo dialog must be usable both when clicking ok or cancel.
 Before this change, the emulation session would always be closed.
 
+r898: increased sprite action/merge item list sizes to a maximum of 5.000 entries
+---------------------------------------------------------------------------------
+Start the 1MB chipmem version of State of the Art (Spaceballs) with only 512kB of
+chipmem configured. The demo will cause a crash of the emulator session, but the 
+emulator should remain responsive.
+Before this change, a crash to the desktop would occur.
+
 r906: Sprite DMA was being disabled instead of waiting
 ------------------------------------------------------
 Start Arkanoid, hit F1 and start in round 7 (move mouse to the right to select 
@@ -140,3 +147,21 @@ game will crash, but the emulation session should remain open indefinitely.
 
 Before this commit, the emulator would crash to the desktop with a NULL
 pointer exception.
+
+r957: clear dma pending flag when blit is initiated from enabling dma in wdmacon
+--------------------------------------------------------------------------------
+Start the demo "Megademo 8" (Kefrens). Enter the "snake bite" section and verify
+that it loads normally.
+
+Before this change, the emulator would hang in an endless loop and become
+unresponsive.
+
+r958: set floppy change bit high when no disk is selected
+---------------------------------------------------------
+Start the game "Silkworm [cr Trilogy/t+4 Trilogy]" and verify that the cracktro
+can be left by pressing both mouse buttons simultaneously.
+
+Before this commit, it was impossible to proceed beyond the cracktro.
+
+Also known to be affected by this change is the game "Plan 9 From Outer Space", 
+which would fail to proceed loading the second disk.
