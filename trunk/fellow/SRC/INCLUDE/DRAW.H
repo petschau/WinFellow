@@ -86,6 +86,7 @@ extern void drawSetLEDsEnabled(bool enabled);
 extern void drawSetLED(int index, bool state);
 extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
 extern BOOLE drawGetAllowMultipleBuffers(void);
+extern ULO drawGetBufferCount(void);
 
 /*===========================================================================*/
 /* When switching rendering (progressive->interlaced)                        */

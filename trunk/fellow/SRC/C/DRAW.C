@@ -570,6 +570,11 @@ BOOLE drawGetAllowMultipleBuffers(void)
   return draw_allow_multiple_buffers;
 }
 
+ULO drawGetBufferCount(void)
+{
+  return draw_buffer_count;
+}
+
 /*============================================================================*/
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/
@@ -680,11 +685,11 @@ static void drawAmigaScreenHeight(draw_mode *dm)
   ULO totalscale = drawGetDisplayScaleFactor();
 
   draw_height_amiga = dm->height/totalscale;
-  if (draw_height_amiga > 287)
+  if (draw_height_amiga > 288)
   {
-    draw_height_amiga = 287;
+    draw_height_amiga = 288;
   }
-  if (draw_height_amiga <= 269)
+  if (draw_height_amiga <= 270)
   {
     draw_top = 44;
     draw_bottom = 44 + draw_height_amiga;
