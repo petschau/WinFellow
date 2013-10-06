@@ -66,6 +66,7 @@ extern ULO draw_buffer_draw;                 /* Number of the current drawing bu
 
 extern LON draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
+extern ULO draw_clear_buffers;
 
 extern UBY *draw_buffer_current_ptr;
 

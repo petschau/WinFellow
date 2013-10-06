@@ -79,7 +79,7 @@ DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
 
 BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
-
+ULO draw_clear_buffers;
 
 /*============================================================================*/
 /* Data concerning the dimensions of the Amiga screen to show                 */
@@ -987,6 +987,7 @@ BOOLE drawStartup(void)
   draw_view_scroll = 0;
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
+  draw_clear_buffers = 0;
   drawSetDisplayScale(DISPLAYSCALE_1X);
   drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY_SOLID);
   drawSetFrameskipRatio(1);
@@ -1062,6 +1063,12 @@ void drawEndOfFrame(void)
 {
   if (draw_frame_skip == 0)
   {
+    if (draw_clear_buffers > 0)
+    {
+      gfxDrvClearCurrentBuffer();
+      --draw_clear_buffers;
+    }
+
     ULO pitch_in_bytes = drawValidateBufferPointer(draw_top);
 
     // need to test for error

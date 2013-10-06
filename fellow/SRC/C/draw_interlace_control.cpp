@@ -47,6 +47,15 @@ void drawDecideInterlaceStatusForNextFrame(void)
   bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
   if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)
   {
+
+    if ((drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES) &&
+        interlace_status.use_interlaced_rendering)
+    {
+      // Clear buffers when switching back to scanlines from interlaced rendering
+      // to avoid a ghost image remaining in the scanlines.
+      draw_clear_buffers = drawGetBufferCount();
+    }
+
     interlace_status.use_interlaced_rendering = use_interlaced_rendering;
     drawReinitializeRendering();
   }
