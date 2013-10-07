@@ -165,3 +165,10 @@ Before this commit, it was impossible to proceed beyond the cracktro.
 
 Also known to be affected by this change is the game "Plan 9 From Outer Space", 
 which would fail to proceed loading the second disk.
+
+r963: copjmp  lost if triggered while dma was off and copper had already run to the end of its copper list
+----------------------------------------------------------------------------------------------------------
+Start the demo Multica by Andromeda with automatic interlace compensation enabled.
+Verify that the initial intro screen featuring the Andromeda logo looks right.
+
+Before this commit, it had an issue with inverted lines.

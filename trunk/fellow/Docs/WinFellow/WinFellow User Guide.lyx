@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.2 Beta (2013/10/06)
+v0.5.2 (2013/10/07)
 \end_layout
 
 \begin_layout Standard
@@ -818,7 +818,13 @@ Windows 8 (including Windows 8.1)
 It does not have any particularly high CPU requirements, and should work
  well on any system capable of running one of these operating systems.
  However, for advanced features like 2x graphics mode, a relatively fast
- CPU will be required (a minimum of 2GHz recommended).
+ CPU will be required (a minimum of 2GHz is recommended).
+\end_layout
+
+\begin_layout Standard
+For optimum performance, the graphics card should support DirectDraw hardware
+ acceleration.
+ Use is possible without, but performance will be reduced drastically.
 \end_layout
 
 \begin_layout Part
