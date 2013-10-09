@@ -3418,14 +3418,14 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
-	  case WGUI_LOAD_STATE:
-	    wguiOpenStateFile(wgui_cfg, wgui_hDialog);
-	    wgui_action = WGUI_NO_ACTION;
-	    break;
-	  case WGUI_SAVE_STATE:
-	    wguiSaveStateFileAs(wgui_cfg, wgui_hDialog);
-	    wgui_action = WGUI_NO_ACTION;
-	    break;
+	  //case WGUI_LOAD_STATE:
+	  //  wguiOpenStateFile(wgui_cfg, wgui_hDialog);
+	  //  wgui_action = WGUI_NO_ACTION;
+	  //  break;
+	  //case WGUI_SAVE_STATE:
+	  //  wguiSaveStateFileAs(wgui_cfg, wgui_hDialog);
+	  //  wgui_action = WGUI_NO_ACTION;
+	  //  break;
 	  case WGUI_DEBUGGER_START:
 	    end_loop = TRUE;
 	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);

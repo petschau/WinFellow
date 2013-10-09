@@ -18,7 +18,7 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -620,9 +620,6 @@ BEGIN
         MENUITEM "&Save Configuration",         ID_FILE_SAVECONFIGURATION
         MENUITEM "Save Configuration &As...",   ID_FILE_SAVECONFIGURATIONAS
         MENUITEM SEPARATOR
-        MENUITEM "&Load Statefile",             ID_FILE_LOAD_STATE
-        MENUITEM "Sa&ve Statefile",             ID_FILE_SAVE_STATE
-        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_FILE_QUIT
         MENUITEM SEPARATOR
     END
@@ -691,12 +688,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegisch, Bokmål (Norwegen) resources
+// Norwegian, Bokmål (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -708,7 +705,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegisch, Bokmål (Norwegen) resources
+#endif    // Norwegian, Bokmål (Norway) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
