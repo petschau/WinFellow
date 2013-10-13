@@ -22,6 +22,7 @@
 
 #include "defs.h"
 #include "fellow.h"
+#include "chipset.h"
 #include "draw.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
@@ -64,6 +65,7 @@ UBY memory_kick[0x080000 + 32];
 UBY *memory_fast = NULL;
 ULO memory_fast_baseaddress;
 ULO memory_fastallocatedsize;
+UBY *memory_slow_base;
 
 
 /*============================================================================*/
@@ -213,15 +215,15 @@ const STR *memory_kickimage_versionstrings[14] = {
   /*============================================================================*/
 
   void memoryBankSet(memoryReadByteFunc rb, 
-    memoryReadWordFunc rw, 
-    memoryReadLongFunc rl, 
-    memoryWriteByteFunc wb,
-    memoryWriteWordFunc ww, 
-    memoryWriteLongFunc wl, 
-    UBY *basep, 
-    ULO bank,
-    ULO basebank,
-    BOOLE pointer_can_write)
+                     memoryReadWordFunc rw, 
+                     memoryReadLongFunc rl, 
+                     memoryWriteByteFunc wb,
+                     memoryWriteWordFunc ww, 
+                     memoryWriteLongFunc wl, 
+                     UBY *basep, 
+                     ULO bank,
+                     ULO basebank,
+                     BOOLE pointer_can_write)
   {
     ULO i, j;
 
@@ -289,15 +291,15 @@ const STR *memory_kickimage_versionstrings[14] = {
   void memoryBankClear(ULO bank)
   {
     memoryBankSet(memoryUnmappedReadByte,
-      memoryUnmappedReadWord,
-      memoryUnmappedReadLong, 
-      memoryUnmappedWriteByte,
-      memoryUnmappedWriteWord, 
-      memoryUnmappedWriteLong, 
-      NULL,
-      bank,
-      0,
-      FALSE);
+                  memoryUnmappedReadWord,
+                  memoryUnmappedReadLong, 
+                  memoryUnmappedWriteByte,
+                  memoryUnmappedWriteWord, 
+                  memoryUnmappedWriteLong, 
+                  NULL,
+                  bank,
+                  0,
+                  FALSE);
   }
 
   /*============================================================================*/
@@ -306,10 +308,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryBankClearAll(void)
   {
-    ULO bank;
     ULO hilim = (memoryGetAddress32Bit()) ? 65536 : 256;
-    for (bank = 0; bank < hilim; bank++)
+    for (ULO bank = 0; bank < hilim; bank++)
+    {
       memoryBankClear(bank);
+    }
   }
 
 
@@ -490,16 +493,18 @@ const STR *memory_kickimage_versionstrings[14] = {
   void memoryEmemMap(void)
   {
     if (memoryGetKickImageBaseBank() >= 0xf8)
+    {
       memoryBankSet(memoryEmemReadByte,
-      memoryEmemReadWord,
-      memoryEmemReadLong,
-      memoryEmemWriteByte,
-      memoryEmemWriteWord,
-      memoryEmemWriteLong,
-      NULL,
-      0xe8,
-      0xe8,
-      FALSE);
+                    memoryEmemReadWord,
+                    memoryEmemReadLong,
+                    memoryEmemWriteByte,
+                    memoryEmemWriteWord,
+                    memoryEmemWriteLong,
+                    NULL,
+                    0xe8,
+                    0xe8,
+                    FALSE);
+    }
   }
 
 
@@ -555,9 +560,9 @@ const STR *memory_kickimage_versionstrings[14] = {
     {
       switch (data>>16)
       {
-      case 0x0001:    fhfileDo(data);
-	break;
-      default:        break;
+        case 0x0001:
+          fhfileDo(data);
+	  break;
       }
     }
   }
@@ -611,16 +616,18 @@ const STR *memory_kickimage_versionstrings[14] = {
     ULO bank = 0xf40000>>16;
 
     if (memory_useautoconfig && (memory_kickimage_basebank >= 0xf8))
+    {
       memoryBankSet(memoryDmemReadByte,
-      memoryDmemReadWord,
-      memoryDmemReadLong,
-      memoryDmemWriteByte,
-      memoryDmemWriteWord,
-      memoryDmemWriteLong,
-      memory_dmem,
-      bank,
-      bank,
-      FALSE);
+                    memoryDmemReadWord,
+                    memoryDmemReadLong,
+                    memoryDmemWriteByte,
+                    memoryDmemWriteWord,
+                    memoryDmemWriteLong,
+                    memory_dmem,
+                    bank,
+                    bank,
+                    FALSE);
+    }
   }
 
   /*============================================================================*/
@@ -629,9 +636,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY *memoryAddressToPtr(ULO address)
   {
-    UBY *result;
+    UBY *result = memory_bank_pointer[address>>16];
 
-    if ((result = memory_bank_pointer[address>>16]) != NULL)
+    if (result != NULL)
       result += address;
     return result;
   }
@@ -640,39 +647,41 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* Chip memory handling                                                       */
   /*============================================================================*/
 
+  #define chipmemMaskAddress(ptr) ((ptr) & chipset.address_mask)
+
   UBY memoryChipReadByte(ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     return memoryReadByteFromPointer(p);
   }
 
   UWO memoryChipReadWord(ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     return memoryReadWordFromPointer(p);
   }
 
   ULO memoryChipReadLong(ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     return memoryReadLongFromPointer(p);
   }
 
   void memoryChipWriteByte(UBY data, ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     memoryWriteByteToPointer(data, p);
   }
 
   void memoryChipWriteWord(UWO data, ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     memoryWriteWordToPointer(data, p);
   }
 
   void memoryChipWriteLong(ULO data, ULO address)
   {
-    UBY *p = memory_chip + (address & 0x1fffff);
+    UBY *p = memory_chip + chipmemMaskAddress(address);
     memoryWriteLongToPointer(data, p);
   }
 
@@ -714,39 +723,91 @@ const STR *memory_kickimage_versionstrings[14] = {
     // NOP
   }
 
-  void memoryChipMap(BOOLE overlay)
+  ULO memoryChipGetLastBank(void)
   {
-    ULO bank, lastbank;
+    ULO lastbank = memoryGetChipSize()>>16;
 
-    if (overlay)
+    if (chipsetGetECS())
     {
-      for (bank = 0; bank < 8; bank++)
-	memoryBankSet(memoryOverlayReadByte,
-	memoryOverlayReadWord,
-	memoryOverlayReadLong,
-	memoryOverlayWriteByte,
-	memoryOverlayWriteWord,
-	memoryOverlayWriteLong,
-	memory_kick,
-	bank,
-	0,
-	FALSE);
+      return (lastbank <= 32) ? lastbank : 32;
     }
 
-    if (memoryGetChipSize() > 0x200000) lastbank = 0x200000>>16;
-    else lastbank = memoryGetChipSize()>>16;
+    // OCS
+    return (lastbank <= 8) ? lastbank : 8;
+  }
 
+  void memoryChipMap(bool overlay)
+  {
+    ULO bank;
+
+    // Build first, "real" chipmem area
+    if (overlay)
+    {
+      // 256k ROMs are already mirrored once in the memory_kick area
+      // Map entire 512k ROM area to $0
+      for (bank = 0; bank < 8; bank++)
+      {
+	memoryBankSet(memoryOverlayReadByte,
+	              memoryOverlayReadWord,
+	              memoryOverlayReadLong,
+	              memoryOverlayWriteByte,
+	              memoryOverlayWriteWord,
+	              memoryOverlayWriteLong,
+	              memory_kick,
+	              bank,
+	              0,
+	              FALSE);
+      }
+    }
+
+    // Map 512k to 2MB of chip memory, possibly skipping the overlay area
+    ULO lastbank = memoryChipGetLastBank();
     for (bank = (overlay) ? 8 : 0; bank < lastbank; bank++)
+    {
       memoryBankSet(memoryChipReadByte,
-      memoryChipReadWord, 
-      memoryChipReadLong,
-      memoryChipWriteByte, 
-      memoryChipWriteWord, 
-      memoryChipWriteLong,
-      memory_chip,
-      bank, 
-      0,
-      TRUE);
+                    memoryChipReadWord, 
+                    memoryChipReadLong,
+                    memoryChipWriteByte, 
+                    memoryChipWriteWord, 
+                    memoryChipWriteLong,
+                    memory_chip,
+                    bank, 
+                    0,
+                    TRUE);
+    }
+
+    // In the case of 256k chip memory and not overlaying, clear the second 256k map 
+    // as this area could have been mapped for the ROM overlay
+    if (lastbank < 8 && !overlay)
+    {
+      for (bank = lastbank; bank < 8; ++bank)
+      {
+        memoryBankClear(bank);
+      }
+    }
+
+    if (!chipsetGetECS())
+    {
+      // OCS: Make 3 more copies of the chipram at $80000, $100000 and $180000
+      for (ULO i = 1; i < 4; ++i)
+      {
+        ULO bank_start = 8*i;
+        ULO bank_end = bank_start + lastbank;
+        for (bank = bank_start; bank < bank_end; bank++)
+        {
+          memoryBankSet(memoryChipReadByte,
+                        memoryChipReadWord, 
+                        memoryChipReadLong,
+                        memoryChipWriteByte, 
+                        memoryChipWriteWord, 
+                        memoryChipWriteLong,
+                        memory_chip,
+                        bank,
+                        bank_start,
+                        TRUE);
+        }
+      }
+    }
   }
 
   /*============================================================================*/
@@ -854,19 +915,27 @@ const STR *memory_kickimage_versionstrings[14] = {
     ULO bank, lastbank;
 
     memory_fast_baseaddress = (mapping >> 8) << 16;
-    if (memoryGetFastSize() > 0x800000) lastbank = 0xa00000>>16;
-    else lastbank = (memory_fast_baseaddress + memoryGetFastSize())>>16;
+    if (memoryGetFastSize() > 0x800000)
+    {
+      lastbank = 0xa00000>>16;
+    }
+    else
+    {
+      lastbank = (memory_fast_baseaddress + memoryGetFastSize())>>16;
+    }
     for (bank = memory_fast_baseaddress>>16; bank < lastbank; bank++)
+    {
       memoryBankSet(memoryFastReadByte,
-      memoryFastReadWord,
-      memoryFastReadLong,
-      memoryFastWriteByte,
-      memoryFastWriteWord, 
-      memoryFastWriteLong,
-      memory_fast, 
-      bank, 
-      memory_fast_baseaddress>>16,
-      TRUE);
+                    memoryFastReadWord,
+                    memoryFastReadLong,
+                    memoryFastWriteByte,
+                    memoryFastWriteWord, 
+                    memoryFastWriteLong,
+                    memory_fast, 
+                    bank, 
+                    memory_fast_baseaddress>>16,
+                    TRUE);
+    }
     memset(memory_fast, 0, memoryGetFastSize());
   }
 
@@ -882,62 +951,83 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memorySlowReadByte(ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     return memoryReadByteFromPointer(p);
   }
 
   UWO memorySlowReadWord(ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     return memoryReadWordFromPointer(p);
   }
 
   ULO memorySlowReadLong(ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     return memoryReadLongFromPointer(p);
   }
 
   void memorySlowWriteByte(UBY data, ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     memoryWriteByteToPointer(data, p);
   }
 
   void memorySlowWriteWord(UWO data, ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     memoryWriteWordToPointer(data, p);
   }
 
   void memorySlowWriteLong(ULO data, ULO address)
   {
-    UBY *p = memory_slow + ((address & 0xffffff) - 0xc00000);
+    UBY *p = memory_slow_base + ((address & 0xffffff) - 0xc00000);
     memoryWriteLongToPointer(data, p);
+  }
+
+  bool memorySlowMapAsChip(void)
+  {
+    return chipsetGetECS() && memoryGetChipSize() == 0x80000 && memoryGetSlowSize() == 0x80000;
   }
 
   void memorySlowClear(void)
   {
     memset(memory_slow, 0, memoryGetSlowSize());
+    if (memorySlowMapAsChip())
+    {
+      memset(memory_chip + 0x80000, 0, memoryGetSlowSize());
+    }
   }
 
   void memorySlowMap(void)
   {
-    ULO bank, lastbank;
+    ULO lastbank;
 
-    if (memoryGetSlowSize() > 0x1c0000) lastbank = 0xdc0000>>16;
-    else lastbank = (0xc00000 + memoryGetSlowSize())>>16;
-    for (bank = 0xc00000>>16; bank < lastbank; bank++)
+    if (memoryGetSlowSize() > 0x1c0000)
+    {
+      lastbank = 0xdc0000>>16;
+    }
+    else
+    {
+      lastbank = (0xc00000 + memoryGetSlowSize())>>16;
+    }
+
+    // Special config on ECS with 512k chip + 512k slow, chips see slow mem at $80000
+    memory_slow_base = (memorySlowMapAsChip()) ? (memory_chip + 0x80000) : memory_slow;
+
+    for (ULO bank = 0xc00000>>16; bank < lastbank; bank++)
+    {
       memoryBankSet(memorySlowReadByte,
-      memorySlowReadWord,
-      memorySlowReadLong,
-      memorySlowWriteByte,
-      memorySlowWriteWord,
-      memorySlowWriteLong,
-      memory_slow,
-      bank, 
-      0xc00000>>16,
-      TRUE);
+                    memorySlowReadWord,
+                    memorySlowReadLong,
+                    memorySlowWriteByte,
+                    memorySlowWriteWord,
+                    memorySlowWriteLong,
+                    memory_slow_base,
+                    bank, 
+                    0xc00000>>16,
+                    TRUE);
+    }
   }
 
   /*============================================================================*/
@@ -981,25 +1071,25 @@ const STR *memory_kickimage_versionstrings[14] = {
   void memoryMysteryMap(void)
   {
     memoryBankSet(memoryMysteryReadByte,
-      memoryMysteryReadWord,
-      memoryMysteryReadLong,
-      memoryMysteryWriteByte, 
-      memoryMysteryWriteWord, 
-      memoryMysteryWriteLong,
-      NULL, 
-      0xe9, 
-      0,
-      FALSE);
+                  memoryMysteryReadWord,
+                  memoryMysteryReadLong,
+                  memoryMysteryWriteByte, 
+                  memoryMysteryWriteWord, 
+                  memoryMysteryWriteLong,
+                  NULL, 
+                  0xe9, 
+                  0,
+                  FALSE);
     memoryBankSet(memoryMysteryReadByte, 
-      memoryMysteryReadWord, 
-      memoryMysteryReadLong,
-      memoryMysteryWriteByte, 
-      memoryMysteryWriteWord, 
-      memoryMysteryWriteLong,
-      NULL, 
-      0xde, 
-      0,
-      FALSE);
+                  memoryMysteryReadWord, 
+                  memoryMysteryReadLong,
+                  memoryMysteryWriteByte, 
+                  memoryMysteryWriteWord, 
+                  memoryMysteryWriteLong,
+                  NULL, 
+                  0xde, 
+                  0,
+                  FALSE);
   }
 
   /*============================================================================*/
@@ -1060,21 +1150,29 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryIoMap(void)
   {
-    ULO bank, lastbank;
+    ULO lastbank;
 
-    if (memoryGetSlowSize() > 0x1c0000) lastbank = 0xdc0000>>16;
-    else lastbank = (0xc00000 + memoryGetSlowSize())>>16;
-    for (bank = lastbank; bank < 0xe00000>>16; bank++)
+    if (memoryGetSlowSize() > 0x1c0000)
+    {
+      lastbank = 0xdc0000>>16;
+    }
+    else
+    {
+      lastbank = (0xc00000 + memoryGetSlowSize())>>16;
+    }
+    for (ULO bank = lastbank; bank < 0xe00000>>16; bank++)
+    {
       memoryBankSet(memoryIoReadByte,
-      memoryIoReadWord, 
-      memoryIoReadLong,
-      memoryIoWriteByte, 
-      memoryIoWriteWord, 
-      memoryIoWriteLong,
-      NULL,
-      bank,
-      0,
-      FALSE);
+                    memoryIoReadWord, 
+                    memoryIoReadLong,
+                    memoryIoWriteByte, 
+                    memoryIoWriteWord, 
+                    memoryIoWriteLong,
+                    NULL,
+                    bank,
+                    0,
+                    FALSE);
+    }
   }
 
   /*===========================================================================*/
@@ -1149,22 +1247,20 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryKickMap(void)
   {
-    ULO bank, basebank;
-
-    basebank = memory_kickimage_basebank & 0xf8;
-    for (bank = basebank;
-      bank < (basebank + 8);
-      bank++)
+    ULO basebank = memory_kickimage_basebank & 0xf8;
+    for (ULO bank = basebank; bank < (basebank + 8); bank++)
+    {
       memoryBankSet(memoryKickReadByte,
-      memoryKickReadWord,
-      memoryKickReadLong,
-      memoryKickWriteByte,
-      memoryKickWriteWord,
-      memoryKickWriteLong,
-      memory_kick,
-      bank,
-      memory_kickimage_basebank,
-      FALSE);
+                    memoryKickReadWord,
+                    memoryKickReadLong,
+                    memoryKickWriteByte,
+                    memoryKickWriteWord,
+                    memoryKickWriteLong,
+                    memory_kick,
+                    bank,
+                    memory_kickimage_basebank,
+                    FALSE);
+    }
   }
 
   /*============================================================================*/
@@ -1181,43 +1277,43 @@ const STR *memory_kickimage_versionstrings[14] = {
     error3[0] = '\0';
     switch (errorcode)
     {
-    case MEMORY_ROM_ERROR_SIZE:
-      sprintf(error3,
-	"Illegal size: %u bytes, size must be either 256K or 512K",
-	data);
-      break;
-    case MEMORY_ROM_ERROR_AMIROM_VERSION:
-      sprintf(error3, "Unsupported encryption method, version found was %u",
-	data);
-      break;
-    case MEMORY_ROM_ERROR_AMIROM_READ:
-      sprintf(error3, "Read error in encrypted Kickstart or keyfile");
-      break;
-    case MEMORY_ROM_ERROR_KEYFILE:
-      sprintf(error3, "Unable to access keyfile %s", memory_key);
-      break;
-    case MEMORY_ROM_ERROR_EXISTS_NOT:
-      sprintf(error3, "File does not exist");
-      break;
-    case MEMORY_ROM_ERROR_FILE:
-      sprintf(error3, "File is a directory");
-      break;
-    case MEMORY_ROM_ERROR_KICKDISK_NOT:
-      sprintf(error3, "The ADF-image is not a kickdisk");
-      break;
-    case MEMORY_ROM_ERROR_CHECKSUM:
-      sprintf(error3,
-	"The Kickstart image has a checksum error, checksum is %X",
-	data);
-      break;
-    case MEMORY_ROM_ERROR_KICKDISK_SUPER:
-      sprintf(error3,
-	"The ADF-image contains a superkickstart. Fellow can not handle it.");
-      break;
-    case MEMORY_ROM_ERROR_BAD_BANK:
-      sprintf(error3, "The ROM has a bad baseaddress: %X",
-	memory_kickimage_basebank*0x10000);
-      break;
+      case MEMORY_ROM_ERROR_SIZE:
+        sprintf(error3,
+	  "Illegal size: %u bytes, size must be either 256K or 512K",
+	  data);
+        break;
+      case MEMORY_ROM_ERROR_AMIROM_VERSION:
+        sprintf(error3, "Unsupported encryption method, version found was %u",
+	  data);
+        break;
+      case MEMORY_ROM_ERROR_AMIROM_READ:
+        sprintf(error3, "Read error in encrypted Kickstart or keyfile");
+        break;
+      case MEMORY_ROM_ERROR_KEYFILE:
+        sprintf(error3, "Unable to access keyfile %s", memory_key);
+        break;
+      case MEMORY_ROM_ERROR_EXISTS_NOT:
+        sprintf(error3, "File does not exist");
+        break;
+      case MEMORY_ROM_ERROR_FILE:
+        sprintf(error3, "File is a directory");
+        break;
+      case MEMORY_ROM_ERROR_KICKDISK_NOT:
+        sprintf(error3, "The ADF-image is not a kickdisk");
+        break;
+      case MEMORY_ROM_ERROR_CHECKSUM:
+        sprintf(error3,
+	  "The Kickstart image has a checksum error, checksum is %X",
+	  data);
+        break;
+      case MEMORY_ROM_ERROR_KICKDISK_SUPER:
+        sprintf(error3,
+	  "The ADF-image contains a superkickstart. Fellow can not handle it.");
+        break;
+      case MEMORY_ROM_ERROR_BAD_BANK:
+        sprintf(error3, "The ROM has a bad baseaddress: %X",
+	  memory_kickimage_basebank*0x10000);
+        break;
     }
     wguiRequester(error1, error2, error3);
     memoryKickSettingsClear();
@@ -1959,7 +2055,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryEmemCardsRemove();
     memoryFastCardAdd();
     memoryBankClearAll();
-    memoryChipMap(TRUE);
+    memoryChipMap(true);
     memorySlowMap();
     memoryIoMap();
     memoryEmemMap();
@@ -1979,7 +2075,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryEmemCardsRemove();
     memoryFastCardAdd();
     memoryBankClearAll();
-    memoryChipMap(TRUE);
+    memoryChipMap(true);
     memorySlowMap();
     memoryIoMap();
     memoryEmemMap();

@@ -379,9 +379,15 @@ void wguiReleaseBitmaps(void)
   if (diskdrive_led_off_bitmap != 0) DeleteObject(diskdrive_led_off_bitmap);
 }
 
-
-
-
+void wguiCheckMemorySettingsForChipset(void)
+{
+  if (!cfgGetECS(wgui_cfg) && cfgGetChipSize(wgui_cfg) > 0x80000)
+  {
+    MessageBox(wgui_hDialog, "The configuration uses more than 512k chip memory with OCS. The size has been reduced to 512k", "Configuration Error", 0);
+    cfgSetChipSize(wgui_cfg, 0x80000);
+    cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
+  }
+}
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
 
@@ -970,6 +976,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       cfgLoadFromFilename(wgui_cfg, filename, false);
       iniSetCurrentConfigurationFilename(wgui_ini, filename);
       iniSetLastUsedCfgDir(wgui_ini, wguiExtractPath(filename));
+      wguiCheckMemorySettingsForChipset();
       wguiInsertCfgIntoHistory(filename);
     }
   }
@@ -1255,9 +1262,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     else
       ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_NORMAL);
 
-    /* Set blitter chipset type */
+    /* Set chipset type */
 
-    if (cfgGetECSBlitter(conf))
+    if (cfgGetECS(conf))
       ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_ECS);
     else
       ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_OCS);
@@ -1269,8 +1276,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     /* get current blitter operation type */
     cfgSetBlitterFast(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE));
 
-    /* get current blitter chipset type */
-    cfgSetECSBlitter(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_BLITTER_ECS));
+    /* get current chipset type */
+    cfgSetECS(conf, ccwButtonGetCheckBool(hwndDlg, IDC_RADIO_BLITTER_ECS));
   }
 
 
@@ -1329,10 +1336,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
 
     /* get current sound channels */
-    cfgSetSoundStereo(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_STEREO) == TRUE);
+    cfgSetSoundStereo(conf, ccwButtonGetCheckBool(hwndDlg, IDC_RADIO_SOUND_STEREO));
 
     /* get current sound bits */
-    cfgSetSound16Bits(conf, ccwButtonGetCheck(hwndDlg, IDC_RADIO_SOUND_16BITS) == TRUE);
+    cfgSetSound16Bits(conf, ccwButtonGetCheckBool(hwndDlg, IDC_RADIO_SOUND_16BITS));
 
     /* get current sound filter */
     for (i=0; i<NUMBER_OF_SOUND_FILTERS; i++) {
@@ -1421,22 +1428,22 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 
     /* get measure speed */
-    cfgSetMeasureSpeed(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_SPEED) == TRUE);
+    cfgSetMeasureSpeed(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_VARIOUS_SPEED));
 
     /* get draw LED */
-    cfgSetScreenDrawLEDs(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_LED) == TRUE);
+    cfgSetScreenDrawLEDs(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_VARIOUS_LED));
 
     /* get autoconfig disable */
     cfgSetUseAutoconfig(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOCONFIG_DISABLE));
 
     /* get real-time clock */
-    cfgSetRtc(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_VARIOUS_RTC) == TRUE);
+    cfgSetRtc(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_VARIOUS_RTC));
 
     /* get silent sound emulation */
     cfgSetSoundEmulation(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_SOUND_EMULATE) ? SOUND_EMULATE : SOUND_PLAY);
 
     /* get automatic interlace compensation */
-    cfgSetDeinterlace(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE) ? true : false);
+    cfgSetDeinterlace(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE));
   }
 
 
@@ -1989,7 +1996,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                     STR strROMSearchPath[CFG_FILENAME_LENGTH] = "";
                     ULO lCRC32 = 0;
 
-                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECSBlitter(cfgTemp) ? "ECS": "OCS");
+                    ccwEditSetText(hwndDlg, IDC_LABEL_PRESETS_CHIPSET, cfgGetECS(cfgTemp) ? "ECS": "OCS");
 
                     switch(cfgGetCPUType(cfgTemp))
                     {
@@ -2211,11 +2218,11 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	          break;
 	        }
 
-                bFormat   = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT) == TRUE;
+                bFormat   = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
                 if(bFormat) 
                 {
-                  bBootable = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE) == TRUE;
-                  bFFS      = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS) == TRUE;
+                  bBootable = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE);
+                  bFFS      = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS);
                   ccwEditGetText(hwndDlg, IDC_EDIT_FLOPPY_ADF_CREATE_VOLUME, strVolume, CFG_FILENAME_LENGTH);
 
                   if(!floppyValidateAmigaDOSVolumeName(strVolume))
@@ -2245,7 +2252,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
             case IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT:
               {
                 // (un)hide the elements that are needed for formatting
-                bool bChecked = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT) == TRUE;
+                bool bChecked = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FORMAT);
                 
                 ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_BOOTABLE, bChecked);
                 ccwButtonEnableConditional(hwndDlg, IDC_CHECK_FLOPPY_ADF_CREATE_FFS,      bChecked);
@@ -2693,7 +2700,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE,	stmp, 32);
 	hfile.size = atoi(stmp);
 
-	if (ccwButtonGetCheck(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES) == TRUE) {
+	if (ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES)) {
 	  hfile.size = hfile.size * 1024 * 1024;
 	}
 	if ((hfile.size < 1) && (hfile.size > 4294967295)) {
@@ -3131,27 +3138,27 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  wgui_action = WGUI_LOAD_HISTORY3;
 	  break;
 	case IDC_CONFIGURATION:
-    {
-      cfg *configbackup;
-      INT_PTR result;
+          {
+            cfg *configbackup;
+            INT_PTR result;
 
-      configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
+            configbackup = cfgManagerGetCopyOfCurrentConfig(&cfg_manager);
  
-      result = wguiConfigurationDialog();
-      if(result >= 1)
-      {
-        cfgManagerFreeConfig(&cfg_manager, configbackup);
-        cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
-      }
-      else 
-      { // discard changes, as user clicked cancel or error occurred
-        cfgManagerFreeConfig(&cfg_manager, wgui_cfg);
-        cfgManagerSetCurrentConfig(&cfg_manager, configbackup);
-        wgui_cfg = configbackup;
-      }
+            result = wguiConfigurationDialog();
+            if(result >= 1)
+            {
+              cfgManagerFreeConfig(&cfg_manager, configbackup);
+              cfgSetConfigChangedSinceLastSave(wgui_cfg, TRUE);
+            }
+            else 
+            { // discard changes, as user clicked cancel or error occurred
+              cfgManagerFreeConfig(&cfg_manager, wgui_cfg);
+              cfgManagerSetCurrentConfig(&cfg_manager, configbackup);
+              wgui_cfg = configbackup;
+            }
 
-	    break;
-    }
+            break;
+          }
 	case IDC_HARD_RESET:
 	  fellowPreStartReset(TRUE);
 	  wguiLoadBitmaps();
@@ -3308,6 +3315,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	switch (wgui_action)
 	{
 	  case WGUI_START_EMULATION:
+            wguiCheckMemorySettingsForChipset();
 	    if (wguiCheckEmulationNecessities() == TRUE)
 	    {
 	      end_loop = TRUE;
@@ -3320,32 +3328,33 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
 	  case WGUI_QUIT_EMULATOR:
-      {
-        BOOLE bQuit = TRUE;
+            {
+              BOOLE bQuit = TRUE;
 
-        if(cfgGetConfigChangedSinceLastSave(wgui_cfg)) {
-          int result;
+              if(cfgGetConfigChangedSinceLastSave(wgui_cfg)) {
+                int result;
 
-          result = MessageBox(wgui_hDialog, 
-            "There are unsaved configuration changes, quit anyway?", 
-            "WinFellow",
-          MB_YESNO | MB_ICONEXCLAMATION);
-          if(result == IDNO)
-            bQuit = FALSE;
-        }
-        if(bQuit)
-	      {
-          end_loop = TRUE;
-	        quit_emulator = TRUE;
-        }
-        else
-          wgui_action = WGUI_NO_ACTION;
-      }
+                result = MessageBox(wgui_hDialog, 
+                  "There are unsaved configuration changes, quit anyway?", 
+                  "WinFellow",
+                MB_YESNO | MB_ICONEXCLAMATION);
+                if(result == IDNO)
+                  bQuit = FALSE;
+              }
+              if(bQuit)
+	            {
+                end_loop = TRUE;
+	              quit_emulator = TRUE;
+              }
+              else
+                wgui_action = WGUI_NO_ACTION;
+            }
 	    break;
 	  case WGUI_OPEN_CONFIGURATION:
 	    wguiOpenConfigurationFile(wgui_cfg, wgui_hDialog);
             cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
-	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
+            wguiCheckMemorySettingsForChipset();
+            wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	    wgui_action = WGUI_NO_ACTION;
 	    break;
 	  case WGUI_SAVE_CONFIGURATION:
@@ -3368,7 +3377,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 0));
-        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              wguiCheckMemorySettingsForChipset();
 	    }
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
 	    wgui_action = WGUI_NO_ACTION;
@@ -3382,7 +3392,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 1));
-        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              wguiCheckMemorySettingsForChipset();
 	      wguiPutCfgInHistoryOnTop(1);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
@@ -3397,7 +3408,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 2));
-        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              wguiCheckMemorySettingsForChipset();
 	      wguiPutCfgInHistoryOnTop(2);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);
@@ -3412,7 +3424,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    else 
 	    {
 	      iniSetCurrentConfigurationFilename(wgui_ini, iniGetConfigurationHistoryFilename(wgui_ini, 3));
-        cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
+              wguiCheckMemorySettingsForChipset();
 	      wguiPutCfgInHistoryOnTop(3);
 	    } 
 	    wguiInstallFloppyMain(wgui_hDialog, wgui_cfg);

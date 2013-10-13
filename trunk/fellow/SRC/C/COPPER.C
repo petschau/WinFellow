@@ -24,6 +24,7 @@
 /*=========================================================================*/
 
 #include "defs.h"
+#include "chipset.h"
 #include "copper.h"
 #include "sprite.h"
 #include "fmem.h"
@@ -88,8 +89,7 @@ $dff080
 
 void wcop1lch(UWO data, ULO address)
 {
-  // store 21 bit (2 MB)
-  *(((UWO*) &cop1lc) + 1) = data & 0x1f;
+  cop1lc = chipsetReplaceHighPtr(cop1lc, data);
 
   // Have been hanging since end of frame
   if (copper_dma == FALSE && copper_suspended_wait == 40)
@@ -102,8 +102,7 @@ void wcop1lch(UWO data, ULO address)
 
 void wcop1lcl(UWO data, ULO address)
 {
-  // no odd addresses
-  *((UWO*) &cop1lc) = data & 0xfffe;
+  cop1lc = chipsetReplaceLowPtr(cop1lc, data);
 
   // Have been hanging since end of frame
   if (copper_dma == FALSE && copper_suspended_wait == 40)
@@ -122,16 +121,14 @@ $dff084
 
 void wcop2lch(UWO data, ULO address)
 {
-  // store 21 bit (2 MB)
-  *(((UWO*) &cop2lc) + 1) = data & 0x1f;
+  cop2lc = chipsetReplaceHighPtr(cop2lc, data);
 }
 
 /* $dff082 */
 
 void wcop2lcl(UWO data, ULO address)
 {
-  // no odd addresses
-  *((UWO*) &cop2lc) = data & 0xfffe;
+  cop2lc = chipsetReplaceLowPtr(cop2lc, data);
 }
 
 /*
@@ -399,9 +396,11 @@ void copperEmulate(void)
   }
 
   // retrieve Copper command (two words)
-  bswapRegC = memoryChipReadWord(copper_ptr);
-  bswapRegD = memoryChipReadWord(copper_ptr + 2);
-  copper_ptr = ((copper_ptr + 4) & 0x1ffffe);
+  bswapRegC = chipmemReadWord(copper_ptr);
+  copper_ptr = chipsetMaskPtr(copper_ptr + 2);
+  bswapRegD = chipmemReadWord(copper_ptr);
+  copper_ptr = chipsetMaskPtr(copper_ptr + 2);
+
   if (bswapRegC != 0xffff || bswapRegD != 0xfffe)
   {
     // check bit 0 of first instruction word, zero is move
@@ -426,7 +425,7 @@ void copperEmulate(void)
       if (((bswapRegD & 0x8000) == 0x0) && blitterIsStarted())
       {
 	// Copper waits until Blitter is finished
-	copper_ptr -= 4;
+	copper_ptr = chipsetMaskPtr(copper_ptr - 4);
 	if ((blitterEvent.cycle + 4) <= bus.cycle)
 	{
 	  copperInsertEvent(bus.cycle + 4);
@@ -690,7 +689,7 @@ void copperEmulate(void)
 	  {
 	    // do skip
 	    // we have passed the line, set up next instruction immediately
-	    copper_ptr += 4;
+	    copper_ptr = chipsetMaskPtr(copper_ptr + 4);
 	    copperInsertEvent(bus.cycle + 4);
 	  }
 	  else if (*((UBY *) &maskedY) < (UBY) (bswapRegC >> 8))
@@ -713,7 +712,7 @@ void copperEmulate(void)
 	    if (*((UBY*) &maskedX) >= (UBY) (bswapRegC & 0xff))
 	    {
 	      // position reached, set up next instruction immediately
-	      copper_ptr += 4;
+	      copper_ptr = chipsetMaskPtr(copper_ptr + 4);
 	    }
 	    copperInsertEvent(bus.cycle + 4);
 	  }

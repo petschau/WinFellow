@@ -2,6 +2,7 @@
 
 #ifdef GRAPH2
 
+#include "chipset.h"
 #include "bus.h"
 #include "fmem.h"
 #include "copper.h"
@@ -35,17 +36,17 @@ CopperStateMachine CopperState;
 
 static UWO Copper_ReadWord(void)
 {
-  return ((UWO) (memory_chip[copper_ptr] << 8) | (UWO) memory_chip[copper_ptr + 1]);
+  return chipmemReadWord(copper_ptr);
 }
 
 static void Copper_IncreasePtr(void)
 {
-  copper_ptr = (copper_ptr + 2) & 0x1ffffe;
+  copper_ptr = chipsetMaskPtr(copper_ptr + 2);
 }
 
 void Copper_SetState(CopperStates newState, ULO cycle)
 {
-  if ((cycle % BUS_CYCLE_PER_LINE) & 1)
+  if ((cycle % busGetCyclesInThisLine()) & 1)
   {
     cycle++;
   }
@@ -62,7 +63,7 @@ void Copper_Load(void)
 {
   CopperState.skip_next = FALSE;
   ULO startCycle = busGetCycle() + 6;
-  if ((startCycle % BUS_CYCLE_PER_LINE) & 1)
+  if ((startCycle % busGetCyclesInThisLine()) & 1)
   {
     startCycle++;
   }
@@ -112,8 +113,8 @@ static void Copper_Wait(void)
   ULO hp = (ULO) (CopperState.first & 0xfe);
 
   ULO test_cycle = busGetCycle() + 2;
-  ULO rasterY = test_cycle / BUS_CYCLE_PER_LINE;
-  ULO rasterX = test_cycle % BUS_CYCLE_PER_LINE;
+  ULO rasterY = test_cycle / busGetCyclesInThisLine();
+  ULO rasterX = test_cycle % busGetCyclesInThisLine();
 
   if (rasterX & 1)
   {
@@ -136,7 +137,7 @@ static void Copper_Wait(void)
     while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he))) rasterX += 2;
     if (rasterX < 0xe4)
     {
-      Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
+      Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX + 2);
       return;
     }
   }
@@ -151,15 +152,15 @@ static void Copper_Wait(void)
   if (rasterX == 0xe4)
   {
     // There is no match on the horisontal position. The vertical position must be larger than vp to match
-    while ((rasterY < BUS_LINES_PER_FRAME) && ((rasterY & ve) <= (vp & ve))) rasterY++;
+    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) <= (vp & ve))) rasterY++;
   }
   else
   {
     // A match can either be exact on vp and hp, or the vertical position must be larger than vp.
-    while ((rasterY < BUS_LINES_PER_FRAME) && ((rasterY & ve) < (vp & ve))) rasterY++;
+    while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) < (vp & ve))) rasterY++;
   }
 
-  if (rasterY >= BUS_LINES_PER_FRAME)
+  if (rasterY >= busGetLinesInThisFrame())
   {
     // No match was found
     Copper_SetStateNone();
@@ -167,12 +168,12 @@ static void Copper_Wait(void)
   else if ((rasterY & ve) == (vp & ve))
   {
     // An exact match on both vp and hp was found
-    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
+    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX + 2);
   }
   else
   {
     // A match on vp being larger (not equal) was found
-    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*BUS_CYCLE_PER_LINE + rasterX + 2);
+    Copper_SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX + 2);
   }
 }
 
@@ -185,8 +186,8 @@ static void Copper_Skip(void)
   ULO hp = (ULO) (CopperState.first & 0xfe);
 
   ULO test_cycle = busGetCycle();
-  ULO rasterY = test_cycle / BUS_CYCLE_PER_LINE;
-  ULO rasterX = test_cycle % BUS_CYCLE_PER_LINE;
+  ULO rasterY = test_cycle / busGetCyclesInThisLine();
+  ULO rasterX = test_cycle % busGetCyclesInThisLine();
 
   if (rasterX & 1)
   {

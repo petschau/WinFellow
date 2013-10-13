@@ -52,6 +52,10 @@ BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier) {
   return Button_GetCheck(GetDlgItem(windowHandle, controlIdentifier)) == BST_CHECKED;
 }
 
+bool ccwButtonGetCheckBool(HWND windowHandle, int controlIdentifier) {
+  return Button_GetCheck(GetDlgItem(windowHandle, controlIdentifier)) == BST_CHECKED;
+}
+
 void ccwButtonEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable) {
 
   Button_Enable(GetDlgItem(windowHandle, controlIdentifier), enable);

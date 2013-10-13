@@ -13,8 +13,8 @@ private:
 
 public:
   const static ULO GRAPHICS_ARRIVE_TIME_NONE = 0xffffffff;
-  const static ULO GRAPHICS_CYLINDERS_PER_FRAME = BUS_CYCLE_PER_FRAME*2;
-  const static ULO GRAPHICS_CYLINDERS_PER_LINE = BUS_CYCLE_PER_LINE*2;
+
+  static ULO GetCylindersPerLine() {return busGetCyclesInThisLine()*2;}
 
   void Clear(void);
   GraphicsEvent* Pop(void);

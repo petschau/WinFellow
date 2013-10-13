@@ -26,6 +26,7 @@
 
 #ifdef GRAPH2
 
+#include "chipset.h"
 #include "bus.h"
 #include "graph.h"
 #include "fmem.h"
@@ -48,12 +49,12 @@ void BitplaneDMA::Log(ULO line, ULO cylinder)
 
 UWO BitplaneDMA::ReadWord(ULO address)
 {
-  return ((UWO) (memory_chip[address] << 8) | (UWO) memory_chip[address + 1]);
+  return chipmemReadWord(address);
 }
 
 void BitplaneDMA::IncreaseBplPt(ULO *bplpt, ULO size)
 {
-  *bplpt = ((*bplpt) + size) & 0x1ffffe;
+  *bplpt = chipsetMaskPtr((*bplpt) + size);
 }
 
 UWO BitplaneDMA::GetHold(ULO bplNo, ULO bplsEnabled, ULO *bplpt)

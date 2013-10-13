@@ -18,6 +18,7 @@
 #include "bus.h"
 #include "fileops.h"
 #include "CpuIntegration.h"
+#include "chipset.h"
 
 //#define BLIT_VERIFY_MINTERMS
 //#define BLIT_OPERATION_LOG
@@ -99,7 +100,6 @@ BOOLE blit_minterm_seen[256];
 /*===========================================================================*/
 
 BOOLE blitter_fast;   /* Blitter finishes in zero time */
-BOOLE blitter_ECS;    /* Enable long blits */
 
 void blitterSetFast(BOOLE fast)
 {
@@ -109,16 +109,6 @@ void blitterSetFast(BOOLE fast)
 BOOLE blitterGetFast(void)
 {
   return blitter_fast;
-}
-
-void blitterSetECS(BOOLE ECS)
-{
-  blitter_ECS = ECS;
-}
-
-BOOLE blitterGetECS(void)
-{
-  return blitter_ECS;
 }
 
 BOOLE blitterGetDMAPending(void)
@@ -403,19 +393,18 @@ void blitterOperationLog(void) {
 }
 
 #define blitterReadWordEnabled(pt, dat, ascending) \
-  dat = (((ULO) memory_chip[pt]) << 8) | (ULO) memory_chip[pt + 1]; \
-  if (!ascending) pt = (pt - 2) & 0x1ffffe; \
-  if (ascending) pt = (pt + 2) & 0x1ffffe;
+  dat = chipmemReadWord(pt); \
+  if (!ascending) pt = chipsetMaskPtr(pt - 2); \
+  if (ascending) pt = chipsetMaskPtr(pt + 2);
 
 #define blitterWriteWordEnabled(pt, pt_tmp, dat, ascending) \
   if (pt_tmp != 0xffffffff) \
   { \
-    memory_chip[pt_tmp] = (UBY) (dat >> 8); \
-    memory_chip[pt_tmp + 1] = (UBY) dat; \
+    chipmemWriteWord(dat, pt_tmp); \
   } \
   pt_tmp = pt; \
-  if (!ascending) pt = (pt - 2) & 0x1ffffe; \
-  if (ascending) pt = (pt + 2) & 0x1ffffe;
+  if (!ascending) pt = chipsetMaskPtr(pt - 2); \
+  if (ascending) pt = chipsetMaskPtr(pt + 2);
 
 #define blitterReadWordDisabled(dat, dat_preload) \
   dat = dat_preload;
@@ -461,7 +450,7 @@ void blitterOperationLog(void) {
   flag |= dat;
 
 #define blitterModulo(pt, modul, enabled) \
-  if (enabled) pt = (pt + modul) & 0x1ffffe;
+  if (enabled) pt = chipsetMaskPtr(pt + modul);
 
 #define blitterFillCarryReload(fill, dst, fc_original) \
   if (fill) dst = fc_original;
@@ -650,7 +639,7 @@ void blitterCopyABCD(void)
   else \
 { \
   a_shift = 0; \
-  cpt = (cpt + 2) & 0x1ffffe; \
+  cpt = chipsetMaskPtr(cpt + 2); \
 }
 
 #define blitterLineDecreaseX(a_shift, cpt) \
@@ -658,16 +647,16 @@ void blitterCopyABCD(void)
   if (a_shift == 0) \
 { \
   a_shift = 16; \
-  cpt = (cpt - 2) & 0x1ffffe; \
+  cpt = chipsetMaskPtr(cpt - 2); \
 } \
   a_shift--; \
 }
 
 #define blitterLineIncreaseY(cpt, cmod) \
-  cpt = (cpt + cmod) & 0x1ffffe;
+  cpt = chipsetMaskPtr(cpt + cmod);
 
 #define blitterLineDecreaseY(cpt, cmod) \
-  cpt = (cpt - cmod) & 0x1ffffe;
+  cpt = chipsetMaskPtr(cpt - cmod);
 
 /*================================================*/
 /* blitterLineMode                                */
@@ -710,7 +699,7 @@ void blitterLineMode(void)
     // Read C-data from memory if the C-channel is enabled
     if (c_enabled)
     {
-      bltcdat_local = (memory_chip[bltcpt_local] << 8) | memory_chip[bltcpt_local + 1];
+      bltcdat_local = chipmemReadWord(bltcpt_local);
     }
 
     // Calculate data for the A-channel
@@ -741,8 +730,7 @@ void blitterLineMode(void)
     // Save result to D-channel, same as the C ptr after first pixel. 
     if (c_enabled) // C-channel must be enabled
     {
-      memory_chip[bltdpt_local] = (UBY) (bltddat_local >> 8);
-      memory_chip[bltdpt_local + 1] = (UBY) (bltddat_local);
+      chipmemWriteWord(bltddat_local, bltdpt_local);
     }
 
     // Remember zero result status
@@ -1019,7 +1007,7 @@ void wbltalwm(UWO data, ULO address)
 void wbltcpth(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltcpt = (blitter.bltcpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltcpt = chipsetReplaceHighPtr(blitter.bltcpt, data);
 }
 
 /*=========================================================*/
@@ -1035,7 +1023,7 @@ void wbltcpth(UWO data, ULO address)
 void wbltcptl(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltcpt = (blitter.bltcpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltcpt = chipsetReplaceLowPtr(blitter.bltcpt, data);
 }
 
 /*======================================================*/
@@ -1051,7 +1039,7 @@ void wbltcptl(UWO data, ULO address)
 void wbltbpth(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltbpt = (blitter.bltbpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltbpt = chipsetReplaceHighPtr(blitter.bltbpt, data);
 }
 
 /*=========================================================*/
@@ -1067,7 +1055,7 @@ void wbltbpth(UWO data, ULO address)
 void wbltbptl(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltbpt = (blitter.bltbpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltbpt = chipsetReplaceLowPtr(blitter.bltbpt, data);
 }
 
 /*======================================================*/
@@ -1083,7 +1071,7 @@ void wbltbptl(UWO data, ULO address)
 void wbltapth(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltapt = (blitter.bltapt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltapt = chipsetReplaceHighPtr(blitter.bltapt, data);
 }
 
 /*=========================================================*/
@@ -1099,7 +1087,7 @@ void wbltapth(UWO data, ULO address)
 void wbltaptl(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltapt = (blitter.bltapt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltapt = chipsetReplaceLowPtr(blitter.bltapt, data);
 }
 
 /*===========================================================*/
@@ -1115,7 +1103,7 @@ void wbltaptl(UWO data, ULO address)
 void wbltdpth(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltdpt = (blitter.bltdpt & 0x0000FFFF) | (((ULO) (data & 0x0000001F)) << 16);
+  blitter.bltdpt = chipsetReplaceHighPtr(blitter.bltdpt, data);
 }
 
 /*==============================================================*/
@@ -1131,7 +1119,7 @@ void wbltdpth(UWO data, ULO address)
 void wbltdptl(UWO data, ULO address)
 {
   blitForceFinish();
-  blitter.bltdpt = (blitter.bltdpt & 0xFFFF0000) | ((ULO) (data & 0x0000FFFE));
+  blitter.bltdpt = chipsetReplaceLowPtr(blitter.bltdpt, data);
 }
 
 /*==============================================================*/
@@ -1420,7 +1408,7 @@ static void blitterIOHandlersInstall(void)
   memorySetIoWriteStub(0x70, wbltcdat);
   memorySetIoWriteStub(0x72, wbltbdat);
   memorySetIoWriteStub(0x74, wbltadat);
-  if (blitterGetECS())
+  if (chipsetGetECS())
   {
     memorySetIoWriteStub(0x5a, wbltcon0l);
     memorySetIoWriteStub(0x5c, wbltsizv);
@@ -1602,7 +1590,6 @@ void blitterStartup(void)
 {
   blitterFillTableInit();
   blitterSetFast(FALSE);
-  blitterSetECS(FALSE);
   blitterIORegistersClear();
 
 #ifdef BLIT_OPERATION_LOG

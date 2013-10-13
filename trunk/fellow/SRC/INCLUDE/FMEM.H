@@ -1,6 +1,14 @@
 #ifndef FMEM_H
 #define FMEM_H
 
+/* Access for chipset emulation that already have validated addresses */
+
+#define chipmemReadByte(address) (memory_chip[address])
+#define chipmemReadWord(address) ((((UWO) memory_chip[address]) << 8) | ((UWO) memory_chip[address + 1]))
+#define chipmemWriteWord(data, address) \
+  memory_chip[address] = (UBY) (data >> 8); \
+  memory_chip[address + 1] = (UBY) data
+
 /* Memory access functions */
 
 extern UBY memoryReadByte(ULO address);
@@ -94,7 +102,7 @@ extern void memoryBankSet(memoryReadByteFunc rb,
 			  ULO basebank,
 			  BOOLE pointer_can_write);
 extern UBY *memoryAddressToPtr(ULO address);
-extern void memoryChipMap(BOOLE overlay);
+extern void memoryChipMap(bool overlay);
 
 /* Memory configuration properties */
 

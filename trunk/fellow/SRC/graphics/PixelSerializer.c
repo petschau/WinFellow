@@ -157,7 +157,7 @@ ULO PixelSerializer::GetOutputLine(ULO rasterY, ULO cylinder)
 {
   if (cylinder <= LAST_CYLINDER)
   {
-    if (rasterY == 0) return BUS_LINES_PER_FRAME - 1;
+    if (rasterY == 0) return busGetLinesInThisFrame() - 1;
     return rasterY - 1;
   }
   return rasterY;
@@ -165,7 +165,7 @@ ULO PixelSerializer::GetOutputLine(ULO rasterY, ULO cylinder)
 
 ULO PixelSerializer::GetOutputCylinder(ULO cylinder)
 {
-  if (cylinder <= LAST_CYLINDER && !_newLine) return cylinder + GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE;
+  if (cylinder <= LAST_CYLINDER && !_newLine) return cylinder + GraphicsEventQueue::GetCylindersPerLine();
   return cylinder;
 }
 
@@ -237,7 +237,7 @@ void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
   _newLine = true;
   _activated = false;
 
-  if (line == BUS_LINES_PER_FRAME - 1)
+  if (line == busGetLinesInThisFrame() - 1)
   {
     drawEndOfFrame();
     EventSetup(MakeArriveTime(0x19, LAST_CYLINDER));

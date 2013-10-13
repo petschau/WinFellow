@@ -1,10 +1,12 @@
+#include "DEFS.H"
+
 #ifdef GRAPH2
 
 #include "GraphicsEventQueue.h"
 
 ULO GraphicsEvent::MakeArriveTime(ULO rasterY, ULO cylinder)
 {
-  return rasterY*GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + cylinder;
+  return rasterY*GraphicsEventQueue::GetCylindersPerLine() + cylinder;
 }
 
 GraphicsEvent::GraphicsEvent(void)
