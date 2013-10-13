@@ -348,6 +348,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\C\chipset.cpp" />
     <ClCompile Include="..\..\C\CIA.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1568,6 +1569,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\graphics\SpriteState.h" />
     <ClInclude Include="..\..\INCLUDE\BLIT.H" />
     <ClInclude Include="..\..\INCLUDE\BUS.H" />
+    <ClInclude Include="..\..\INCLUDE\chipset.h" />
     <ClInclude Include="..\..\INCLUDE\CIA.H" />
     <ClInclude Include="..\..\INCLUDE\CONFIG.H" />
     <ClInclude Include="..\..\INCLUDE\COPPER.H" />

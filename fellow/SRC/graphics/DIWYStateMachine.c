@@ -67,7 +67,7 @@ void DIWYStateMachine::SetStateWaitingForStartLine(ULO rasterY)
   if ((GetStartLine() > _maxValidY) || (GetStartLine() < rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively disabled)
-    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + 1, 0));
+    SetState(DIWY_STATE_WAITING_FOR_START_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
   }
   else
   {
@@ -81,7 +81,7 @@ void DIWYStateMachine::SetStateWaitingForStopLine(ULO rasterY)
   if ((GetStopLine() > _maxValidY) || (GetStopLine() <= rasterY))
   {
     // Start will not be seen (again) in this frame, wait until end of frame (effectively enabled until end of frame)
-    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + 1, 0));
+    SetState(DIWY_STATE_WAITING_FOR_STOP_LINE, MakeArriveTime(GraphicsEventQueue::GetCylindersPerLine() + 1, 0));
   }
   else
   {
@@ -166,7 +166,7 @@ void DIWYStateMachine::EmulationStop(void)
 void DIWYStateMachine::Startup(void)
 {
   _minValidY = 26;
-  _maxValidY = BUS_LINES_PER_FRAME;
+  _maxValidY = busGetLinesInThisFrame();
 }
 
 void DIWYStateMachine::Shutdown(void)

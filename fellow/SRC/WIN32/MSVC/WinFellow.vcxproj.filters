@@ -378,6 +378,9 @@
     <ClCompile Include="..\..\c\draw_interlace_control.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\C\chipset.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -720,6 +723,9 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\draw_interlace_control.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\chipset.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>

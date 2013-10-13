@@ -26,6 +26,7 @@
 
 #ifdef GRAPH2
 
+#include "chipset.h"
 #include "bus.h"
 #include "graph.h"
 #include "draw.h"
@@ -259,7 +260,7 @@ void Sprites::wsprxpth(UWO data, ULO address)
 {
   ULO spriteNo = (address >> 2) & 7;
 
-  SpriteState[spriteNo].DMAState.pt = ((data & 0x1f) << 16) | (SpriteState[spriteNo].DMAState.pt & 0xfffe);
+  SpriteState[spriteNo].DMAState.pt = chipsetReplaceHighPtr(SpriteState[spriteNo].DMAState.pt, data);
 }
 
 void Sprite_wsprxptl(UWO data, ULO address)
@@ -271,7 +272,7 @@ void Sprites::wsprxptl(UWO data, ULO address)
 {
   ULO spriteNo = (address >> 2) & 7;
 
-  SpriteState[spriteNo].DMAState.pt = (data & 0xfffe) | (SpriteState[spriteNo].DMAState.pt & 0x1f0000);
+  SpriteState[spriteNo].DMAState.pt = chipsetReplaceLowPtr(SpriteState[spriteNo].DMAState.pt, data);
   SpriteState[spriteNo].DMAState.state = SPRITE_DMA_STATE_READ_CONTROL;
 }
 
@@ -346,8 +347,8 @@ void Sprites::wsprxdatb(UWO data, ULO address)
 
 UWO Sprites::ReadWord(ULO spriteNo)
 {
-  UWO data = ((UWO) (memory_chip[SpriteState[spriteNo].DMAState.pt] << 8) | (UWO) memory_chip[SpriteState[spriteNo].DMAState.pt + 1]);
-  SpriteState[spriteNo].DMAState.pt = (SpriteState[spriteNo].DMAState.pt + 2) & 0x1ffffe;
+  UWO data = chipmemReadWord(SpriteState[spriteNo].DMAState.pt);
+  SpriteState[spriteNo].DMAState.pt = chipsetMaskPtr(SpriteState[spriteNo].DMAState.pt + 2);
   return data;
 }
 

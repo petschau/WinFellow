@@ -61,7 +61,7 @@ void DIWXStateMachine::SetState(DIWXStates newState, ULO arriveTime)
 
 void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cylinder)
 {
-  ULO previousCylinder = ((cylinder == 0) ? GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE : cylinder) - 1;
+  ULO previousCylinder = ((cylinder == 0) ? GraphicsEventQueue::GetCylindersPerLine() : cylinder) - 1;
   ULO outputLine;
   
   if (cylinder != 0)
@@ -70,7 +70,7 @@ void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cyl
   }
   else
   {
-    if (rasterY == 0) outputLine = BUS_LINES_PER_FRAME - 1;
+    if (rasterY == 0) outputLine = busGetLinesInThisFrame() - 1;
     else outputLine = rasterY - 1;
   }
 
@@ -98,7 +98,7 @@ void DIWXStateMachine::SetStateWaitingForStopPos(ULO rasterY, ULO cylinder)
   if (GetStopPosition() > _maxValidX)
   {
     // Stop position will never be found, wait beyond end of frame (effectively disabled)
-    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_FRAME + 1);
+    SetState(DIWX_STATE_WAITING_FOR_STOP_POS, busGetCyclesInThisFrame()*2 + 1);
   }
   else if (GetStopPosition() <= cylinder)
   {

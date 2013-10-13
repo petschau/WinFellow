@@ -7,6 +7,7 @@ extern void ccwButtonCheckConditional(HWND windowHandle, int controlIdentifier, 
 extern void ccwButtonDisable(HWND windowHandle, int controlIdentifier);
 extern void ccwButtonEnable(HWND windowHandle, int controlIdentifier);
 extern BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier);
+extern bool ccwButtonGetCheckBool(HWND windowHandle, int controlIdentifier);
 extern void ccwButtonEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable);
 extern void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, ULO minPos, ULO maxPos);
 extern ULO ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier);

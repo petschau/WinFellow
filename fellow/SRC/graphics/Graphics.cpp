@@ -13,7 +13,7 @@ void Graphics::Commit(ULO untilRasterY, ULO untilRasterX)
   {
     GraphicsContext.Logger.Log(untilRasterY, untilRasterX*2+1, "Commit:\n-------------------------\n"); 
   }
-  _queue.Run(untilRasterY*GraphicsEventQueue::GRAPHICS_CYLINDERS_PER_LINE + untilRasterX*2 + 1);
+  _queue.Run(untilRasterY*GraphicsEventQueue::GetCylindersPerLine() + untilRasterX*2 + 1);
 }
 
 void Graphics::InitializeEventQueue(void)

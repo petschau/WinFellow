@@ -29,6 +29,7 @@
 #include "defs.h"
 #include "versioninfo.h"
 #include "fellow.h"
+#include "chipset.h"
 #include "draw.h"
 #include "CpuModule.h"
 #include "CpuModule_Disassembler.h"
@@ -539,6 +540,7 @@ BOOLE fellowLoadState(STR *filename)
 
 static void fellowModulesStartup(int argc, char *argv[])
 {
+  chipsetStartup();
   timerStartup();
   fsNavigStartup(argv);
   fhfileStartup();

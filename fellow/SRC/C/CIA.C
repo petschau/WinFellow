@@ -340,11 +340,11 @@ void ciaWriteApra(UBY data)
 {
   if ((data & 0x1) && !(cia[0].pra & 0x1))
   {
-    memoryChipMap(TRUE);
+    memoryChipMap(true);
   }
   else if ((cia[0].pra & 0x1) && !(data & 0x1))
   {
-    memoryChipMap(FALSE);
+    memoryChipMap(false);
   }
   cia[0].pra = data;
 }

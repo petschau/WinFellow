@@ -31,6 +31,7 @@
 
 #include "defs.h"
 #include "versioninfo.h"
+#include "chipset.h"
 #include "floppy.h"
 #include "fmem.h"
 #include "gameport.h"
@@ -535,14 +536,14 @@ BOOLE cfgGetBlitterFast(cfg *config)
   return config->m_blitterfast;
 }
 
-void cfgSetECSBlitter(cfg *config, BOOLE ECSblitter)
+void cfgSetECS(cfg *config, bool ecs)
 {
-  config->m_ECSblitter = ECSblitter;
+  config->m_ECS = ecs;
 }
 
-BOOLE cfgGetECSBlitter(cfg *config)
+bool cfgGetECS(cfg *config)
 {
-  return config->m_ECSblitter;
+  return config->m_ECS;
 }
 
 
@@ -811,7 +812,7 @@ void cfgSetDefaults(cfg *config)
   /*==========================================================================*/
 
   cfgSetBlitterFast(config, FALSE);
-  cfgSetECSBlitter(config, FALSE);
+  cfgSetECS(config, false);
 
 
   /*==========================================================================*/
@@ -1242,12 +1243,12 @@ static STR *cfgGetColorBitsToString(ULO colorbits)
   return "8bit";
 }
 
-static BOOLE cfgGetECSFromString(STR *value)
+static bool cfgGetECSFromString(STR *value)
 {
   if ((stricmp(value, "ocs") == 0) ||
     (stricmp(value, "0") == 0))
   {
-    return FALSE;
+    return false;
   }
   else if ((stricmp(value, "ecs agnes") == 0) ||
     (stricmp(value, "ecs denise") == 0) ||
@@ -1257,14 +1258,14 @@ static BOOLE cfgGetECSFromString(STR *value)
     (stricmp(value, "3") == 0) ||
     (stricmp(value, "4") == 0))
   {
-    return TRUE;
+    return true;
   }
-  return FALSE;
+  return false;
 }
 
-static STR *cfgGetECSToString(BOOLE chipset)
+static STR *cfgGetECSToString(bool chipset_ecs)
 {
-  return (chipset) ? "ecs" : "ocs";
+  return (chipset_ecs) ? "ecs" : "ocs";
 }
 
 void cfgSetConfigAppliedOnce(cfg *config, BOOLE bApplied) {
@@ -1495,7 +1496,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_chipset") == 0)
     {
-      cfgSetECSBlitter(config, cfgGetECSFromString(value));
+      cfgSetECS(config, cfgGetECSFromString(value));
     }
     else if (stricmp(option, "gfx_width") == 0)
     {
@@ -1765,7 +1766,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   }
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", cfgGetBOOLEToString(cfgGetBlitterFast(config)));
-  fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECSBlitter(config)));
+  fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECS(config)));
   fprintf(cfgfile, "gfx_width=%u\n", cfgGetScreenWidth(config));
   fprintf(cfgfile, "gfx_height=%u\n", cfgGetScreenHeight(config));
   fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
@@ -2084,10 +2085,10 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /*==========================================================================*/
 
   drawSetMode(cfgGetScreenWidth(config),
-    cfgGetScreenHeight(config),
-    cfgGetScreenColorBits(config),
-    cfgGetScreenRefresh(config),
-    cfgGetScreenWindowed(config));
+              cfgGetScreenHeight(config),
+              cfgGetScreenColorBits(config),
+              cfgGetScreenRefresh(config),
+              cfgGetScreenWindowed(config));
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
@@ -2125,7 +2126,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /*==========================================================================*/
 
   blitterSetFast(cfgGetBlitterFast(config));
-  blitterSetECS(cfgGetECSBlitter(config));
+  needreset |= chipsetSetECS(cfgGetECS(config));
 
 
   /*==========================================================================*/

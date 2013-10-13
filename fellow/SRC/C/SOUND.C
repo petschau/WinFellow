@@ -24,6 +24,7 @@
 /*=========================================================================*/
 
 #include "defs.h"
+#include "chipset.h"
 #include "fmem.h"
 #include "sound.h"
 #include "wav.h"
@@ -153,13 +154,13 @@ $dff0a0,b0,c0,d0
 void waudXpth(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audpt[ch] = (audpt[ch] & 0xffff) | (((ULO)(data & 0x1f)) << 16);
+  audpt[ch] = chipsetReplaceHighPtr(audpt[ch], data);
 }
 
 void waudXptl(UWO data, ULO address)
 {
   ULO ch = soundGetChannelNumber(address);
-  audpt[ch] = (audpt[ch] & 0x1f0000) | (ULO)(data & 0xfffe);
+  audpt[ch] = chipsetReplaceLowPtr(audpt[ch], data);
 }
 
 /*
@@ -311,8 +312,8 @@ void soundState3(ULO ch)
     audvolw[ch] = audvol[ch];
     audstate[ch] = soundState2;
     auddatw[ch] = volumes[auddat[ch] & 0xff][audvolw[ch]];
-    auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
-    audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
+    auddat[ch] = chipmemReadWord(audptw[ch]);
+    audptw[ch] = chipsetMaskPtr(audptw[ch] + 2);
     if (audlenw[ch] != 1) audlenw[ch]--;
     else
     {
@@ -355,8 +356,8 @@ void soundState5(ULO ch)
 
   audvolw[ch] = audvol[ch];
   audpercounter[ch] = 0;
-  auddat[ch] = ((ULO) memory_chip[audptw[ch]]) << 8 | (ULO)memory_chip[audptw[ch]+1];
-  audptw[ch] = (audptw[ch] + 2) & 0x1ffffe;
+  auddat[ch] = chipmemReadWord(audptw[ch]);
+  audptw[ch] = chipsetMaskPtr(audptw[ch] + 2);
   audstate[ch] = soundState2;
   if (audlenw[ch] != 1) audlenw[ch]--;
   else

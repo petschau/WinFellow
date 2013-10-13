@@ -7,8 +7,6 @@
 
 extern void blitterSetFast(BOOLE fast);
 extern BOOLE blitterGetFast(void);
-extern void blitterSetECS(BOOLE ECS);
-extern BOOLE blitterGetECS(void);
 
 extern void blitterSetOperationLog(BOOLE operation_log);
 extern BOOLE blitterGetOperationLog(void);

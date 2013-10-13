@@ -25,6 +25,7 @@
 
 #include "defs.h"
 #include "fellow.h"
+#include "chipset.h"
 #include "fmem.h"
 #include "graph.h"
 #include "sprite.h"
@@ -904,7 +905,6 @@ static void spriteBuildItem(spr_action_list_item ** item)
 
 /* SPRXPT */
 /* Makes a log of the writes to the wsprpt registers */
-/* PETTER */
 
 void wsprpt(UWO data, ULO address)
 {
@@ -929,9 +929,9 @@ void wsprpt(UWO data, ULO address)
 	    busGetRasterY(), 
 	    2*(busGetRasterX() - 16), 
 	    sprnr, 
-	    (memory_chip[sprpt_debug[sprnr] + 1] << 1) | (memory_chip[sprpt_debug[sprnr] + 3] & 0x01), 
-	    memory_chip[sprpt_debug[sprnr]] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x04) << 6), 
-	    memory_chip[sprpt_debug[sprnr] + 2] | ((memory_chip[sprpt_debug[sprnr] + 3] & 0x02) << 7));
+	    (chipmemReadByte(sprpt_debug[sprnr] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprnr] + 3) & 0x01), 
+	    chipmemReadByte(sprpt_debug[sprnr]) | ((chipmemReadByte(sprpt_debug[sprnr] + 3) & 0x04) << 6), 
+	    chipmemReadByte(sprpt_debug[sprnr] + 2) | ((chipmemReadByte(sprpt_debug[sprnr] + 3) & 0x02) << 7));
     fellowAddLog2(buffer);
   }
 #ifdef DRAW_TSC_PROFILE
@@ -941,73 +941,73 @@ void wsprpt(UWO data, ULO address)
 
 void aspr0pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 2)) = data & 0x01f;
+  sprpt[0] = chipsetReplaceHighPtr(sprpt[0], data);
 }
 void aspr0ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt)) = data & 0xfffe;
+  sprpt[0] = chipsetReplaceLowPtr(sprpt[0], data);
 }
 
 void aspr1pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 6)) = data & 0x01f;
+  sprpt[1] = chipsetReplaceHighPtr(sprpt[1], data);
 }
 void aspr1ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 4)) = data & 0xfffe;
+  sprpt[1] = chipsetReplaceLowPtr(sprpt[1], data);
 }
 
 void aspr2pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 10)) = data & 0x01f;
+  sprpt[2] = chipsetReplaceHighPtr(sprpt[2], data);
 }
 void aspr2ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 8)) = data & 0xfffe;
+  sprpt[2] = chipsetReplaceLowPtr(sprpt[2], data);
 }
 
 void aspr3pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 14)) = data & 0x01f;
+  sprpt[3] = chipsetReplaceHighPtr(sprpt[3], data);
 }
 void aspr3ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 12)) = data & 0xfffe;
+  sprpt[3] = chipsetReplaceLowPtr(sprpt[3], data);
 }
 
 void aspr4pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 18)) = data & 0x01f;
+  sprpt[4] = chipsetReplaceHighPtr(sprpt[4], data);
 }
 void aspr4ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 16)) = data & 0xfffe;
+  sprpt[4] = chipsetReplaceLowPtr(sprpt[4], data);
 }
 
 void aspr5pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 22)) = data & 0x01f;
+  sprpt[5] = chipsetReplaceHighPtr(sprpt[5], data);
 }
 void aspr5ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 20)) = data & 0xfffe;
+  sprpt[5] = chipsetReplaceLowPtr(sprpt[5], data);
 }
 void aspr6pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 26)) = data & 0x01f;
+  sprpt[6] = chipsetReplaceHighPtr(sprpt[6], data);
 }
 void aspr6ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 24)) = data & 0xfffe;
+  sprpt[6] = chipsetReplaceLowPtr(sprpt[6], data);
 }
 
 void aspr7pth(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 30)) = data & 0x01f;
+  sprpt[7] = chipsetReplaceHighPtr(sprpt[7], data);
 }
 void aspr7ptl(UWO data, ULO address)
 {
-  *((UWO *) ((UBY *) sprpt + 28)) = data & 0xfffe;
+  sprpt[7] = chipsetReplaceLowPtr(sprpt[7], data);
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
@@ -1504,12 +1504,12 @@ void spritesDMASpriteHandler(void) {
 	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
 
 	  // data from sprxpos
-	  local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	  local_data_pos = chipmemReadWord(sprpt[sprnr]);
 	  local_spry = ((local_data_pos & 0xff00) >> 8);
 	  local_sprx = ((local_data_pos & 0xff) << 1);
 
 	  // data from sprxctl
-	  local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	  local_data_ctl = chipmemReadWord(sprpt[sprnr] + 2);
 	  local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
 	  local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
 	  local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
@@ -1524,7 +1524,7 @@ void spritesDMASpriteHandler(void) {
 	    item->raster_x = dma_action_item->raster_x;
 	    item->raster_y = dma_action_item->raster_y;
 	    item->called_function = asprxpos;
-	    item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	    item->data = chipmemReadWord(sprpt[sprnr]);
 	    item->address = sprnr << 3;
 
 	    // insert a write to sprxctl at time raster_x
@@ -1532,14 +1532,14 @@ void spritesDMASpriteHandler(void) {
 	    item->raster_x = dma_action_item->raster_x;
 	    item->raster_y = dma_action_item->raster_y;
 	    item->called_function = asprxctl;
-	    item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	    item->data = chipmemReadWord(sprpt[sprnr] + 2);
 	    item->address = sprnr << 3;
 	  }
 
 	  if ((local_spry < local_sprly) && (local_sprx > 40))
 	  {
 	    // point to next two data words
-	    sprpt[sprnr] = sprpt[sprnr] + 4; 
+	    sprpt[sprnr] = chipsetMaskPtr(sprpt[sprnr] + 4); 
 	  }
 
           sprite_state[sprnr] = 1;
@@ -1569,7 +1569,7 @@ void spritesDMASpriteHandler(void) {
 	  item->raster_x = 60;
 	  item->raster_y = currentY;
 	  item->called_function = asprxdatb;
-	  item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	  item->data = chipmemReadWord(sprpt[sprnr] + 2);
 	  item->address = sprnr << 3;
 
 	  // insert a write to sprxdata 
@@ -1577,11 +1577,11 @@ void spritesDMASpriteHandler(void) {
 	  item->raster_x = 61;
 	  item->raster_y = currentY;
 	  item->called_function = asprxdata;
-	  item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	  item->data = chipmemReadWord(sprpt[sprnr]);
 	  item->address = sprnr << 3;
 
 	  // point to next two data words
-	  sprpt[sprnr] = sprpt[sprnr] + 4; 
+	  sprpt[sprnr] = chipsetMaskPtr(sprpt[sprnr] + 4); 
 
 	  // we move to state 2 to wait for the last line sprly
 	  sprite_state[sprnr] = 2;
@@ -1616,9 +1616,9 @@ void spritesDMASpriteHandler(void) {
       if (currentY >= sprly[sprnr]) 
       {
 	// we interpret the next two data words as the next two control words
-	local_data_ctl = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	local_data_ctl = chipmemReadWord(sprpt[sprnr]);
 	local_spry = ((local_data_ctl & 0xff00) >> 8);
-	local_data_pos = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	local_data_pos = chipmemReadWord(sprpt[sprnr] + 2);
 	local_spry = (local_spry & 0x0ff) | ((local_data_pos & 0x4) << 6);
 	local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
 
@@ -1630,7 +1630,7 @@ void spritesDMASpriteHandler(void) {
 	  item->raster_x = 0;
 	  item->raster_y = currentY;
 	  item->called_function = asprxpos;
-	  item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	  item->data = chipmemReadWord(sprpt[sprnr]);
 	  item->address = sprnr << 3;
 
 	  // insert a write to sprxctl at time raster_x
@@ -1638,14 +1638,14 @@ void spritesDMASpriteHandler(void) {
 	  item->raster_x = 1;
 	  item->raster_y = currentY;
 	  item->called_function = asprxctl;
-	  item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	  item->data = chipmemReadWord(sprpt[sprnr] + 2);
 	  item->address = sprnr << 3;
 	} 
 
 	if (local_spry < local_sprly)
 	{
 	  // point to next two data words
-	  sprpt[sprnr] = sprpt[sprnr] + 4; 
+	  sprpt[sprnr] = chipsetMaskPtr(sprpt[sprnr] + 4); 
 	}
 
         sprite_state[sprnr] = 1;
@@ -1658,7 +1658,7 @@ void spritesDMASpriteHandler(void) {
 	item->raster_x = 60;
 	item->raster_y = currentY;
 	item->called_function = asprxdatb;
-	item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	item->data = chipmemReadWord(sprpt[sprnr] + 2);
 	item->address = sprnr << 3;
 
 	// insert a write to sprxdata 
@@ -1666,11 +1666,11 @@ void spritesDMASpriteHandler(void) {
 	item->raster_x = 61;
 	item->raster_y = currentY;
 	item->called_function = asprxdata;
-	item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	item->data = chipmemReadWord(sprpt[sprnr]);
 	item->address = sprnr << 3;
 
 	// point to next two data words
-	sprpt[sprnr] = sprpt[sprnr] + 4; 
+	sprpt[sprnr] = chipsetMaskPtr(sprpt[sprnr] + 4); 
       }
 
       // handle writes to sprxptl and sprxpth
@@ -1686,12 +1686,12 @@ void spritesDMASpriteHandler(void) {
 	  dma_action_item->called_function(dma_action_item->data, dma_action_item->address);
 
 	  // data from sprxpos
-	  local_data_pos = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	  local_data_pos = chipmemReadWord(sprpt[sprnr]);
 	  local_spry = ((local_data_pos & 0xff00) >> 8);
 	  local_sprx = ((local_data_pos & 0xff) << 1);
 
 	  // data from sprxctl
-	  local_data_ctl = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	  local_data_ctl = chipmemReadWord(sprpt[sprnr] + 2);
 	  local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
 	  local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
 	  local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
@@ -1704,7 +1704,7 @@ void spritesDMASpriteHandler(void) {
 	    item->raster_x = dma_action_item->raster_x;
 	    item->raster_y = dma_action_item->raster_y;
 	    item->called_function = asprxpos;
-	    item->data = ((memory_chip[sprpt[sprnr]]) << 8) + memory_chip[sprpt[sprnr] + 1];
+	    item->data = chipmemReadWord(sprpt[sprnr]);
 	    item->address = sprnr << 3;
 
 	    // insert a write to sprxctl at time raster_x
@@ -1712,14 +1712,14 @@ void spritesDMASpriteHandler(void) {
 	    item->raster_x = dma_action_item->raster_x + 1;
 	    item->raster_y = dma_action_item->raster_y;
 	    item->called_function = asprxctl;
-	    item->data = ((memory_chip[sprpt[sprnr] + 2]) << 8) + memory_chip[sprpt[sprnr] + 3];
+	    item->data = chipmemReadWord(sprpt[sprnr] + 2);
 	    item->address = sprnr << 3;
 	  }
 
 	  if ((local_spry < local_sprly) && (local_sprx > 40))
 	  {
 	    // point to next two data words
-	    sprpt[sprnr] = sprpt[sprnr] + 4; 
+	    sprpt[sprnr] = chipsetMaskPtr(sprpt[sprnr] + 4); 
 	  }
 
 	  if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))

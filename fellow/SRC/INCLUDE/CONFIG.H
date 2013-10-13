@@ -127,7 +127,7 @@ typedef struct {
   /*==========================================================================*/
 
   BOOLE m_blitterfast;
-  BOOLE m_ECSblitter;
+  bool m_ECS;
 
 
   /*==========================================================================*/
@@ -288,8 +288,8 @@ extern ULO cfgGetCPUSpeed(cfg *config);
 
 extern void cfgSetBlitterFast(cfg *config, BOOLE blitterfast);
 extern BOOLE cfgGetBlitterFast(cfg *config);
-extern void cfgSetECSBlitter(cfg *config, BOOLE ECSblitter);
-extern BOOLE cfgGetECSBlitter(cfg *config);
+extern void cfgSetECS(cfg *config, bool ecs);
+extern bool cfgGetECS(cfg *config);
 
 
 /*============================================================================*/

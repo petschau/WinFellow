@@ -22,6 +22,7 @@
 /*=========================================================================*/
 #include "defs.h"
 #include "fellow.h"
+#include "chipset.h"
 #include "draw.h"
 #include "fmem.h"
 #include "kbd.h"
@@ -227,7 +228,7 @@ UWO rdmaconr(ULO address)
 
 UWO rvposr(ULO address)
 {
-  if (blitterGetECS())
+  if (chipsetGetECS())
   {
     return (UWO) ((lof | (busGetRasterY() >> 8)) | 0x2000);
   }
@@ -576,7 +577,7 @@ void wbpl1pth(UWO data, ULO address)
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
 
-  bpl1pt = (bpl1pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+  bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 
 //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 
@@ -592,7 +593,7 @@ void wbpl1ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl1pt = (bpl1pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 
 //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
 }
@@ -607,7 +608,7 @@ void wbpl2pth(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl2pt = (bpl2pt & 0x0000ffff) | ((UWO)(data & 0x01f)) << 16;
+  bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
 }
 
 /*===========================================================================*/
@@ -620,7 +621,7 @@ void wbpl2ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl2pt = (bpl2pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
 }
 
 /*===========================================================================*/
@@ -633,7 +634,7 @@ void wbpl3pth(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl3pt = (bpl3pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+  bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
 }
 
 /*===========================================================================*/
@@ -646,7 +647,7 @@ void wbpl3ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl3pt = (bpl3pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
 }
 
 /*===========================================================================*/
@@ -659,7 +660,7 @@ void wbpl4pth(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl4pt = (bpl4pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+  bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
 }
 
 /*===========================================================================*/
@@ -672,7 +673,7 @@ void wbpl4ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl4pt = (bpl4pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
 }
 
 /*===========================================================================*/
@@ -685,7 +686,7 @@ void wbpl5pth(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl5pt = (bpl5pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+  bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
 }
 
 /*===========================================================================*/
@@ -698,7 +699,7 @@ void wbpl5ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl5pt = (bpl5pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
 }
 
 /*===========================================================================*/
@@ -711,7 +712,7 @@ void wbpl6pth(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl6pt = (bpl6pt & 0x0000ffff) | ((ULO)(data & 0x01f)) << 16;
+  bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
 }
 
 /*===========================================================================*/
@@ -724,7 +725,7 @@ void wbpl6ptl(UWO data, ULO address)
 #ifdef GRAPH2
   GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 #endif
-  bpl6pt = (bpl6pt & 0xffff0000) | (ULO)(data & 0x0fffe);
+  bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
 }
 
 /*===========================================================================*/
@@ -1103,12 +1104,12 @@ static __inline void graphDecodeModulo(int bitplanes, ULO bpl_length_in_bytes)
 {
   switch (bitplanes)
   {
-  case 6: bpl6pt = (bpl6pt + bpl_length_in_bytes + bpl2mod) & 0x1FFFFF;
-  case 5: bpl5pt = (bpl5pt + bpl_length_in_bytes + bpl1mod) & 0x1FFFFF;
-  case 4: bpl4pt = (bpl4pt + bpl_length_in_bytes + bpl2mod) & 0x1FFFFF;
-  case 3: bpl3pt = (bpl3pt + bpl_length_in_bytes + bpl1mod) & 0x1FFFFF;
-  case 2: bpl2pt = (bpl2pt + bpl_length_in_bytes + bpl2mod) & 0x1FFFFF;
-  case 1: bpl1pt = (bpl1pt + bpl_length_in_bytes + bpl1mod) & 0x1FFFFF;
+  case 6: bpl6pt = chipsetMaskPtr(bpl6pt + bpl_length_in_bytes + bpl2mod);
+  case 5: bpl5pt = chipsetMaskPtr(bpl5pt + bpl_length_in_bytes + bpl1mod);
+  case 4: bpl4pt = chipsetMaskPtr(bpl4pt + bpl_length_in_bytes + bpl2mod);
+  case 3: bpl3pt = chipsetMaskPtr(bpl3pt + bpl_length_in_bytes + bpl1mod);
+  case 2: bpl2pt = chipsetMaskPtr(bpl2pt + bpl_length_in_bytes + bpl2mod);
+  case 1: bpl1pt = chipsetMaskPtr(bpl1pt + bpl_length_in_bytes + bpl1mod);
   }
 }
 
@@ -1665,17 +1666,17 @@ void graphDecodeNOP(void)
     case 0:
       break;
     case 6:
-      bpl6pt += (graph_DDF_word_count << 1) + bpl2mod;
+      bpl6pt = chipsetMaskPtr(bpl6pt + (graph_DDF_word_count*2) + bpl2mod);
     case 5:
-      bpl5pt += (graph_DDF_word_count << 1) + bpl1mod;
+      bpl5pt = chipsetMaskPtr(bpl5pt + (graph_DDF_word_count*2) + bpl1mod);
     case 4:
-      bpl4pt += (graph_DDF_word_count << 1) + bpl2mod;
+      bpl4pt = chipsetMaskPtr(bpl4pt + (graph_DDF_word_count*2) + bpl2mod);
     case 3:
-      bpl3pt += (graph_DDF_word_count << 1) + bpl1mod;
+      bpl3pt = chipsetMaskPtr(bpl3pt + (graph_DDF_word_count*2) + bpl1mod);
     case 2:
-      bpl2pt += (graph_DDF_word_count << 1) + bpl2mod;
+      bpl2pt = chipsetMaskPtr(bpl2pt + (graph_DDF_word_count*2) + bpl2mod);
     case 1:
-      bpl1pt += (graph_DDF_word_count << 1) + bpl1mod;
+      bpl1pt = chipsetMaskPtr(bpl1pt + (graph_DDF_word_count*2) + bpl1mod);
       break;
   }
 }

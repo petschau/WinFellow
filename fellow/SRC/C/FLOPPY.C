@@ -53,6 +53,7 @@
 
 #include "defs.h"
 #include "fellow.h"
+#include "chipset.h"
 #include "fmem.h"
 #include "floppy.h"
 #include "draw.h"
@@ -258,7 +259,7 @@ UWO rdskbytr(ULO address)
 
 void wdskpth(UWO data, ULO address)
 {
-  *(((UWO *) &dskpt) + 1) = data & 0x1f;
+  dskpt = chipsetReplaceHighPtr(dskpt, data);
 
 #ifdef FLOPPY_LOG
   floppyLogValue("dskpth", dskpt);
@@ -272,7 +273,7 @@ void wdskpth(UWO data, ULO address)
 
 void wdskptl(UWO data, ULO address)
 {
-  *((UWO *) &dskpt) = data & 0xfffe;
+  dskpt = chipsetReplaceLowPtr(dskpt, data);
 
 #ifdef FLOPPY_LOG
   floppyLogValue("dskptl", dskpt);
@@ -1498,7 +1499,7 @@ void floppyDMAReadInit(ULO drive)
   floppy_DMA_started = TRUE;
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
-  floppy_DMA.dskpt = dskpt & 0x1ffffe;
+  floppy_DMA.dskpt = dskpt;
 
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
   if(floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
@@ -1535,18 +1536,18 @@ ULO floppyFindNextSync(ULO pos, LON length)
   while ((length > 0) && (!past_sync))
   {
     was_sync = is_sync;
-    is_sync = (memory_chip[offset] == 0x44 && memory_chip[offset + 1] == 0x89);
+    is_sync = (chipmemReadWord(offset) == 0x4489);
     past_sync = (was_sync && !is_sync);
     length -= 2;
-    offset += 2;
+    offset = chipsetMaskPtr(offset + 2);
   }
-  return offset - pos - ((past_sync) ? 2 : 0);
+  return chipsetMaskPtr(offset - pos - ((past_sync) ? 2 : 0));
 }
 
 void floppyDMAWriteInit(LON drive)
 {
   LON length = (dsklen & 0x3fff)*2;
-  ULO pos = dskpt & 0x1ffffe;
+  ULO pos = dskpt;
   ULO track_lin;
   BOOLE ended = FALSE;
 
@@ -1654,9 +1655,8 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync)
   }
   if (floppyDMAChannelOn() && !floppy_DMA.wait_for_sync)
   {
-    memory_chip[floppy_DMA.dskpt] = word_under_head >> 8;
-    memory_chip[floppy_DMA.dskpt + 1] = word_under_head & 0xff;
-    floppy_DMA.dskpt = (floppy_DMA.dskpt + 2) & 0x1ffffe;
+    chipmemWriteWord(word_under_head, floppy_DMA.dskpt);
+    floppy_DMA.dskpt = chipsetMaskPtr(floppy_DMA.dskpt + 2);
     floppy_DMA.wordsleft--;
     if (floppy_DMA.wordsleft == 0)
     {
