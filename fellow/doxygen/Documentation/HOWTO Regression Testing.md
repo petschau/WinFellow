@@ -172,3 +172,11 @@ Start the demo Multica by Andromeda with automatic interlace compensation enable
 Verify that the initial intro screen featuring the Andromeda logo looks right.
 
 Before this commit, it had an issue with inverted lines.
+
+r967: implemented chipmem / bogomem aliasing
+--------------------------------------------
+Start the demo Wayfarer by Spaceballs with 512kB chipmem and no bogo memory. It should load normally, the
+emulator should not crash.
+
+Before this commit, the session would crash. Related titles impacted by this change are Sensible Soccer 1.0,
+Cannon Fodder XMAS Edition and Toki.
