@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.2 (2013/10/07)
+v0.5.3 Beta (2013/10/18)
 \end_layout
 
 \begin_layout Standard
@@ -675,53 +675,43 @@ pagebreak
 \end_layout
 
 \begin_layout Part
-What's New in WinFellow 0.5.2?
+What's New in WinFellow 0.5.3?
 \end_layout
 
 \begin_layout Standard
 Thanks for your interest in WinFellow.
- Compared to version 0.5.1 there are a number of changes in this build, with
+ Compared to version 0.5.2 there are a number of changes in this build, with
  the most significant ones being:
 \end_layout
 
 \begin_layout Itemize
-New features:
+Changed functionality:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-new display configuration options for setting scale factor (1x and 2x, retaining
- a proper aspect ratio), and scaling strategy (solid/scanline); inclusion
- of higher screen resolutions to allow use of 2x windowed modes
+the default configuration contains 512kB chip/bogo memory now and has the
+ real-time clock active (Amiga 500 with A-501 expansion)
 \end_layout
 
 \begin_layout Itemize
-support for 2x mode in Amiga Forever
+the default configuration is now windowed and has LEDs active
 \end_layout
 
 \begin_layout Itemize
-support for model presets to quickly get started setting up model specific
- configurations (a number of presets already included)
+chip memory mirroring has been implemented for OCS chipsets; the change
+ was required for compatibility reasons, as some titles rely on it
 \end_layout
 
+\begin_deeper
 \begin_layout Itemize
-support for creation of empty and formatted ADF images
+because of this change, chip memory is now limited to 512kB when an OCS
+ blitter has been configured; if you need to use more, please use the ECS
+ Agnus blitter in your display configuration (it is an actual limitation
+ of the OCS chipset)
 \end_layout
 
-\begin_layout Itemize
-automatic interlace compensation (WinFellow will automatically detect interlaced
- graphics and perform interlace compensation; this can be disabled in various
- options, but is on by default for new configurations)
-\end_layout
-
-\begin_layout Itemize
-lower system requirements (an SSE capable processor is no longer required)
-\end_layout
-
-\begin_layout Itemize
-Windows 8.1 added to the supported operating systems
-\end_layout
-
+\end_deeper
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
@@ -729,59 +719,8 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-re-initialize the emulation session when a change of display adapter properties
- (color depth, different graphics adapter) is detected
-\end_layout
-
-\begin_layout Itemize
-cancelling the configuration dialog no longer performs changes to the configurat
-ion
-\end_layout
-
-\begin_layout Itemize
-support for sprites in hires dual playfield mode was fixed, making previously
- invisible objects visible on the screen
-\end_layout
-
-\begin_layout Itemize
-sprite DMA was being disabled instead of waiting, causing invisible sprites
-\end_layout
-
-\begin_layout Itemize
-PC -2 saved on the stack for address exception
-\end_layout
-
-\begin_layout Itemize
-proper "short frame" when display is interlaced and frame is short
-\end_layout
-
-\begin_layout Itemize
-fix copper list load
-\end_layout
-
-\begin_layout Itemize
-failure to find valid screen mode for screens with unusual refresh rates
- (Microsoft VirtualPC, ...)
-\end_layout
-
-\begin_layout Itemize
-fixes for several crashes to desktop caused by NULL pointer exceptions
-\end_layout
-
-\begin_layout Itemize
-cancelling an undo dialog in Amiga Forever will no longer close the emulation
- session
-\end_layout
-
-\begin_layout Itemize
-reset of Amiga Forever emulation session no longer causes input devices
- to no longer function
-\end_layout
-
-\begin_layout Itemize
-fixed problem with Amiga Forever clipping calculations for left offsets
- < 16 (would lead to only half the screen being visible) or one of the offset
- values = 0 (would ignore the offsets completely)
+implemented bogo memory mirroring for ECS chipset with 512kB chip/bogo memory
+ (required by the demo Move any Mountain)
 \end_layout
 
 \end_deeper

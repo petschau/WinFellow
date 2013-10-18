@@ -733,7 +733,6 @@ void cfgSetDefaults(cfg *config)
 
   cfgSetDescription(config, FELLOWLONGVERSION);
 
-
   /*==========================================================================*/
   /* Default floppy disk configuration                                        */
   /*==========================================================================*/
@@ -747,21 +746,19 @@ void cfgSetDefaults(cfg *config)
   cfgSetDiskFast(config, FALSE);
   cfgSetLastUsedDiskDir(config, "");
 
-
   /*==========================================================================*/
   /* Default memory configuration                                             */
   /*==========================================================================*/
 
-  cfgSetChipSize(config, 0x200000);
+  cfgSetChipSize(config, 0x80000);
   cfgSetFastSize(config, 0);
-  cfgSetBogoSize(config, 0x1c0000);
+  cfgSetBogoSize(config, 0x80000);
   cfgSetKickImage(config, "");
   cfgSetKickDescription(config, "");
   cfgSetKickCRC32(config, 0);
   cfgSetKey(config, "");
   cfgSetUseAutoconfig(config, FALSE);
-  cfgSetRtc(config, false);
-
+  cfgSetRtc(config, true);
 
   /*==========================================================================*/
   /* Default screen configuration                                             */
@@ -770,10 +767,10 @@ void cfgSetDefaults(cfg *config)
   cfgSetScreenWidth(config, 640);
   cfgSetScreenHeight(config, 400);
   cfgSetScreenColorBits(config, 16);
-  cfgSetScreenWindowed(config, FALSE);
+  cfgSetScreenWindowed(config, true);
   cfgSetScreenRefresh(config, 0);
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
-  cfgSetScreenDrawLEDs(config, false);
+  cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
 
   /*==========================================================================*/
@@ -797,7 +794,6 @@ void cfgSetDefaults(cfg *config)
   cfgSetSoundWAVDump(config, FALSE);
   cfgSetSoundNotification(config, SOUND_MMTIMER_NOTIFICATION);
   cfgSetSoundBufferLength(config, 60);
-
 
   /*==========================================================================*/
   /* Default CPU configuration                                                */
