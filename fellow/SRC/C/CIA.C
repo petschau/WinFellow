@@ -115,7 +115,8 @@ ULO ciaStabilizeValueRemainder(ULO value) {
 
 ULO ciaGetTimerValue(ULO value)
 {
-  return value + 1;
+  if (value == 0) return 1; // Avoid getting stuck on zero timeout.
+  return value;
 }
 
 void ciaTAStabilize(ULO i) {
