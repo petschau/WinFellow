@@ -180,3 +180,24 @@ emulator should not crash.
 
 Before this commit, the session would crash. Related titles impacted by this change are Sensible Soccer 1.0,
 Cannon Fodder XMAS Edition and Toki.
+
+r971: CIA timer fix
+-------------------
+Verify in the game Atomix that the main game can be started.
+
+Before this fix, it would hang when entering the game.
+
+r972: RetroPlatform escape key handling
+---------------------------------------
+Using default escape key ESC
+
+1. verify that the cracktro of Cannon Fodder 2 [cr PDX] can be left by tipping ESC; holding ESC and releasing after the interval should have no effect (release input devices)
+2. verify in Turrican II that the main game will be quit when tipping ESC; holding for the configured interval and releasing should have no effect (release input devices)
+3. verify that pressing the key for longer than the configured interval releases the mouse cursor BEFORE releasing the key (end of frame handler)
+4. verify in the game F-19 Stealth Fighter, that tipping the ESC key will delete a character from the roster; releasing after the configured interval should not have an effect, except to release the input devices
+5. verify that using the escape key while emulation is paused will release the devices, but will not send the escape key when the session is resumed (Cannon Fodder 2 cracktro)
+
+Configure escape key to A
+
+1. verify in a Workbench CLI that tipping A will produce an A on the screen; holding and releasing A should have no effect (release input devices)
+
