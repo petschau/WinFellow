@@ -24,6 +24,7 @@
 /*=========================================================================*/
 
 #include "defs.h"
+#include "FELLOW.H"
 #include "chipset.h"
 #include "copper.h"
 #include "sprite.h"
@@ -374,6 +375,17 @@ void copperEndOfFrame(void)
   }
 }
 
+ULO copperGetCheckedWaitCycle(ULO waitCycle)
+{
+  if (waitCycle <= bus.cycle)
+  {
+    // Do not ever go back in time
+    waitCycle = bus.cycle + 4;
+    //fellowAddLog("Warning: Copper went back in time.\n");
+  }
+  return waitCycle;
+}
+
 /*-------------------------------------------------------------------------------
 ; Emulates one copper instruction
 ;-------------------------------------------------------------------------------*/
@@ -541,18 +553,18 @@ void copperEmulate(void)
 	      if (bswapRegD < currentX)
 	      {
 		// get unmasked bits from current x
-		copperInsertEvent(waitY + ((bswapRegD & currentX) | bswapRegC) + 4);
+		copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
 	      }
 	      else
 	      {
 		// copwaitnotsameline
-		copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+                copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
 	      }
 	    }
 	    else
 	    {
 	      // copwaitnotsameline
-	      copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+              copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
 	    }
 	  }
 	  else
@@ -594,18 +606,18 @@ void copperEmulate(void)
 		if (bswapRegD < currentX)
 		{
 		  // get unmasked bits from current x
-		  copperInsertEvent(waitY + ((bswapRegD & currentX) | bswapRegC) + 4);
+		  copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
 		}
 		else
 		{
 		  // copwaitnotsameline
-		  copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+		  copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
 		}
 	      }
 	      else
 	      {
 		// copwaitnotsameline
-		copperInsertEvent(waitY + ((bswapRegD & 0) | bswapRegC) + 4);
+		copperInsertEvent(copperGetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
 	      }
 	    }
 	    else
@@ -663,7 +675,7 @@ void copperEmulate(void)
 		    // fix
 		    bswapRegC = bus.cycle + 4;
 		  }
-		  copperInsertEvent(bswapRegC);
+		  copperInsertEvent(copperGetCheckedWaitCycle(bswapRegC));
 		} 
 	      }
 	    }
