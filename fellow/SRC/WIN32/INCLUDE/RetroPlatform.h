@@ -34,16 +34,16 @@
 
 extern void  RetroPlatformEmulationStart(void);
 extern void  RetroPlatformEmulationStop(void);
-extern void  RetroPlatformEndOfFrame(void);
 extern void  RetroPlatformEnter(void);
 extern ULO   RetroPlatformGetClippingOffsetLeftAdjusted(void);
 extern ULO   RetroPlatformGetClippingOffsetTopAdjusted(void);
 extern bool  RetroPlatformGetClippingAutomatic(void);
 extern DISPLAYSCALE RetroPlatformGetDisplayScale(void);
-
 extern BOOLE RetroPlatformGetEmulationState(void);
 extern bool  RetroPlatformGetEmulationPaused(void);
 extern ULO   RetroPlatformGetEscapeKey(void);
+extern ULO   RetroPlatformGetEscapeKeyHoldTime(void);
+extern ULONGLONG RetroPlatformGetEscapeKeySimulatedTargetTime(void);
 extern BOOLE RetroPlatformGetMode(void);
 extern BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void);
 extern HWND  RetroPlatformGetParentWindowHandle(void);
@@ -53,6 +53,7 @@ extern ULO   RetroPlatformGetScreenHeightAdjusted(void);
 extern ULO   RetroPlatformGetScreenWidthAdjusted(void);
 extern bool  RetroPlatformGetScreenWindowed(void);
 extern ULO   RetroPlatformGetScreenMode(void);
+extern ULONGLONG RetroPlatformGetTime(void);
 extern void  RetroPlatformPostEscaped(void);
 extern void  RetroPlatformPostHardDriveLED(const ULO, const BOOLE, const BOOLE);
 extern BOOLE RetroPlatformSendActivate(const BOOLE, const LPARAM);
@@ -73,8 +74,10 @@ extern void  RetroPlatformSetClippingOffsetLeft(const ULO);
 extern void  RetroPlatformSetClippingOffsetTop(const ULO);
 extern void  RetroPlatformSetEmulationPaused(const bool);
 extern void  RetroPlatformSetEscapeKey(const char *);
+extern ULONGLONG RetroPlatformSetEscapeKeyHeld(const bool);
+extern ULONGLONG RetroPlatformGetEscapeKeyHeldSince(void);
 extern void  RetroPlatformSetEscapeKeyHoldTime(const char *);
-extern BOOLE RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE);
+extern void  RetroPlatformSetEscapeKeySimulatedTargetTime(const ULONGLONG);
 extern void  RetroPlatformSetHostID(const char *);
 extern void  RetroPlatformSetMode(const BOOLE);
 extern void  RetroPlatformSetScreenHeight(ULO);

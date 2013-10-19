@@ -46,6 +46,7 @@
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
+#include "KBDDRV.H"
 #endif
 
 #ifdef GRAPH2
@@ -95,14 +96,6 @@ void busEndOfLine(void)
   /*==============================================================*/
   soundEndOfLine();
 
-#ifdef RETRO_PLATFORM
-  /*==============================================================*/
-  /* Handle RetroPlatform events                                  */
-  /*==============================================================*/
-  if(RetroPlatformGetMode())
-    RetroPlatformEndOfFrame();
-#endif
-
   /*==============================================================*/
   /* Handle keyboard events                                       */
   /*==============================================================*/
@@ -133,6 +126,10 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Handle keyboard events                                       */
   /*==============================================================*/
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode())
+    kbdDrvEOFHandler();
+#endif
   kbdEventEOFHandler();
 
   /*==============================================================*/

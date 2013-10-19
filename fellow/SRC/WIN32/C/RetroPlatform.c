@@ -122,11 +122,11 @@ STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
 /// flag to indicate that emulator operates in "headless" mode
 BOOLE bRetroPlatformMode = FALSE;
 
-ULO lRetroPlatformEscapeKey                     = 1;
-ULO lRetroPlatformEscapeKeyHoldTime             = 600;
-ULONGLONG lRetroPlatformEscapeKeyTargetHoldTime = 0;
-BOOLE bRetroPlatformEscapeEventGenerated        = FALSE;
-ULO lRetroPlatformScreenMode                    = 0;
+ULO lRetroPlatformEscapeKey                          = 1;
+ULO lRetroPlatformEscapeKeyHoldTime                  = 600;
+ULONGLONG lRetroPlatformEscapeKeyHeldSince           = 0;
+ULONGLONG lRetroPlatformEscapeKeySimulatedTargetTime = 0;
+ULO lRetroPlatformScreenMode                         = 0;
 
 static BOOLE bRetroPlatformInitialized    = FALSE;
 static BOOLE bRetroPlatformEmulationState = FALSE;
@@ -364,65 +364,65 @@ static BOOLE RetroPlatformConnectInputDeviceToPort(const ULO lGameport,
 /** Translate a RetroPlatform IPC message code into readable text.
  */
 static const STR *RetroPlatformGetMessageText(ULO iMsg) {
-	switch(iMsg) {
-	  case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
-	  case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
-	  case RP_IPC_TO_HOST_CLOSED:             return TEXT("RP_IPC_TO_HOST_CLOSED");
-	  case RP_IPC_TO_HOST_ACTIVATED:          return TEXT("RP_IPC_TO_HOST_ACTIVATED");
-	  case RP_IPC_TO_HOST_DEACTIVATED:        return TEXT("RP_IPC_TO_HOST_DEACTIVATED");
-	  case RP_IPC_TO_HOST_SCREENMODE:         return TEXT("RP_IPC_TO_HOST_SCREENMODE");
-	  case RP_IPC_TO_HOST_POWERLED:           return TEXT("RP_IPC_TO_HOST_POWERLED");
-	  case RP_IPC_TO_HOST_DEVICES:            return TEXT("RP_IPC_TO_HOST_DEVICES");
-	  case RP_IPC_TO_HOST_DEVICEACTIVITY:     return TEXT("RP_IPC_TO_HOST_DEVICEACTIVITY");
-	  case RP_IPC_TO_HOST_MOUSECAPTURE:       return TEXT("RP_IPC_TO_HOST_MOUSECAPTURE");
-	  case RP_IPC_TO_HOST_HOSTAPIVERSION:     return TEXT("RP_IPC_TO_HOST_HOSTAPIVERSION");
-	  case RP_IPC_TO_HOST_PAUSE:              return TEXT("RP_IPC_TO_HOST_PAUSE");
-	  case RP_IPC_TO_HOST_DEVICECONTENT:      return TEXT("RP_IPC_TO_HOST_DEVICECONTENT");
-	  case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
-	  case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
-	  case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
-	  case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
-	  case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
-	  case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
-	  case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
-	  case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
-	  case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
-	  case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
-	  case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
-	  case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
-	  case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
-	  case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
-	  case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
-	  case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
-	  case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
-	  case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
-	  case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
-	  case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
-	  case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
-	  case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
-	  case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
-	  case RP_IPC_TO_GUEST_LOADSTATE:         return TEXT("RP_IPC_TO_GUEST_LOADSTATE");
-	  case RP_IPC_TO_GUEST_FLUSH:             return TEXT("RP_IPC_TO_GUEST_FLUSH");
-	  case RP_IPC_TO_GUEST_DEVICEREADWRITE:   return TEXT("RP_IPC_TO_GUEST_DEVICEREADWRITE");
-	  case RP_IPC_TO_GUEST_QUERYSCREENMODE:   return TEXT("RP_IPC_TO_GUEST_QUERYSCREENMODE");
-	  case RP_IPC_TO_GUEST_GUESTAPIVERSION :  return TEXT("RP_IPC_TO_GUEST_GUESTAPIVERSION");
-	  default: return TEXT("UNKNOWN");
-	}
+  switch(iMsg) {
+    case RP_IPC_TO_HOST_REGISTER:           return TEXT("RP_IPC_TO_HOST_REGISTER");
+    case RP_IPC_TO_HOST_FEATURES:           return TEXT("RP_IPC_TO_HOST_FEATURES");
+    case RP_IPC_TO_HOST_CLOSED:             return TEXT("RP_IPC_TO_HOST_CLOSED");
+    case RP_IPC_TO_HOST_ACTIVATED:          return TEXT("RP_IPC_TO_HOST_ACTIVATED");
+    case RP_IPC_TO_HOST_DEACTIVATED:        return TEXT("RP_IPC_TO_HOST_DEACTIVATED");
+    case RP_IPC_TO_HOST_SCREENMODE:         return TEXT("RP_IPC_TO_HOST_SCREENMODE");
+    case RP_IPC_TO_HOST_POWERLED:           return TEXT("RP_IPC_TO_HOST_POWERLED");
+    case RP_IPC_TO_HOST_DEVICES:            return TEXT("RP_IPC_TO_HOST_DEVICES");
+    case RP_IPC_TO_HOST_DEVICEACTIVITY:     return TEXT("RP_IPC_TO_HOST_DEVICEACTIVITY");
+    case RP_IPC_TO_HOST_MOUSECAPTURE:       return TEXT("RP_IPC_TO_HOST_MOUSECAPTURE");
+    case RP_IPC_TO_HOST_HOSTAPIVERSION:     return TEXT("RP_IPC_TO_HOST_HOSTAPIVERSION");
+    case RP_IPC_TO_HOST_PAUSE:              return TEXT("RP_IPC_TO_HOST_PAUSE");
+    case RP_IPC_TO_HOST_DEVICECONTENT:      return TEXT("RP_IPC_TO_HOST_DEVICECONTENT");
+    case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
+    case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
+    case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
+    case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+    case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
+    case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
+    case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
+    case RP_IPC_TO_HOST_DEVICEREADWRITE:    return TEXT("RP_IPC_TO_HOST_DEVICEREADWRITE");
+    case RP_IPC_TO_HOST_HOSTVERSION:        return TEXT("RP_IPC_TO_HOST_HOSTVERSION");
+    case RP_IPC_TO_HOST_INPUTDEVICE:        return TEXT("RP_IPC_TO_HOST_INPUTDEVICE");
+    case RP_IPC_TO_GUEST_CLOSE:             return TEXT("RP_IPC_TO_GUEST_CLOSE");
+    case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
+    case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
+    case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
+    case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
+    case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
+    case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
+    case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
+    case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
+    case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+    case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
+    case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
+    case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
+    case RP_IPC_TO_GUEST_LOADSTATE:         return TEXT("RP_IPC_TO_GUEST_LOADSTATE");
+    case RP_IPC_TO_GUEST_FLUSH:             return TEXT("RP_IPC_TO_GUEST_FLUSH");
+    case RP_IPC_TO_GUEST_DEVICEREADWRITE:   return TEXT("RP_IPC_TO_GUEST_DEVICEREADWRITE");
+    case RP_IPC_TO_GUEST_QUERYSCREENMODE:   return TEXT("RP_IPC_TO_GUEST_QUERYSCREENMODE");
+    case RP_IPC_TO_GUEST_GUESTAPIVERSION :  return TEXT("RP_IPC_TO_GUEST_GUESTAPIVERSION");
+    default: return TEXT("UNKNOWN");
+  }
 }
 
 /** Determine a timestamp for the current time.
  */
-static ULONGLONG RetroPlatformGetTime(void) {
-	SYSTEMTIME st;
-	FILETIME ft;
-	ULARGE_INTEGER li;
+ULONGLONG RetroPlatformGetTime(void) {
+  SYSTEMTIME st;
+  FILETIME ft;
+  ULARGE_INTEGER li;
 
-	GetSystemTime(&st);
-	if (!SystemTimeToFileTime (&st, &ft))
-		return 0;
-	li.LowPart = ft.dwLowDateTime;
-	li.HighPart = ft.dwHighDateTime;
-	return li.QuadPart / 10000;
+  GetSystemTime(&st);
+  if (!SystemTimeToFileTime (&st, &ft))
+    return 0;
+  li.LowPart = ft.dwLowDateTime;
+  li.HighPart = ft.dwHighDateTime;
+  return li.QuadPart / 10000;
 }
 
 /** Send an IPC message to RetroPlatform host.
@@ -941,20 +941,25 @@ void RetroPlatformSetEscapeKeyHoldTime(const char *szEscapeHoldTime) {
   fellowAddLog("RetroPlatformSetEscapeKeyHoldTime(): escape hold time configured to %d.\n", lRetroPlatformEscapeKeyHoldTime);
 }
 
-BOOLE RetroPlatformSetEscapeKeyTargetHoldTime(const BOOLE bEscapeKeyHeld) {
+ULONGLONG RetroPlatformSetEscapeKeyHeld(const bool bEscapeKeyHeld) {
+  ULONGLONG t = 0;
+
   if(bEscapeKeyHeld) {
-    if(lRetroPlatformEscapeKeyTargetHoldTime == 0) {
-      lRetroPlatformEscapeKeyTargetHoldTime = RetroPlatformGetTime() + lRetroPlatformEscapeKeyHoldTime;
-      bRetroPlatformEscapeEventGenerated = FALSE;
+    if(lRetroPlatformEscapeKeyHeldSince == 0) {
+      lRetroPlatformEscapeKeyHeldSince = RetroPlatformGetTime();
     }
-    return FALSE;
   }
   else {
-    BOOLE bResult = bRetroPlatformEscapeEventGenerated;
-    lRetroPlatformEscapeKeyTargetHoldTime = 0;
-    bRetroPlatformEscapeEventGenerated = FALSE;
-    return bResult;
+    if(lRetroPlatformEscapeKeyHeldSince) {
+      t = RetroPlatformGetTime() - lRetroPlatformEscapeKeyHeldSince;
+      lRetroPlatformEscapeKeyHeldSince = 0;
+    }
   }
+  return t;
+}
+
+void RetroPlatformSetEscapeKeySimulatedTargetTime(const ULONGLONG tTargetTime) {
+  lRetroPlatformEscapeKeySimulatedTargetTime = tTargetTime;
 }
 
 void RetroPlatformSetEmulationState(const BOOLE bNewState) {
@@ -1570,20 +1575,32 @@ ULO RetroPlatformGetEscapeKey(void) {
   return lRetroPlatformEscapeKey;
 }
 
+ULO RetroPlatformGetEscapeKeyHoldTime(void) {
+  return lRetroPlatformEscapeKeyHoldTime;
+}
+
+ULONGLONG RetroPlatformGetEscapeKeyHeldSince(void) {
+  return lRetroPlatformEscapeKeyHeldSince;
+}
+
+ULONGLONG RetroPlatformGetEscapeKeySimulatedTargetTime(void) {
+  return lRetroPlatformEscapeKeySimulatedTargetTime;
+}
+
 HWND RetroPlatformGetParentWindowHandle(void) {
-	LRESULT lResult;
+  LRESULT lResult;
   BOOLE bResult;
 
-	if (!bRetroPlatformInitialized)
-		return NULL;
+  if (!bRetroPlatformInitialized)
+    return NULL;
 
-	bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_PARENT, 0, 0, NULL, 0, 
+  bResult = RetroPlatformSendMessage(RP_IPC_TO_HOST_PARENT, 0, 0, NULL, 0, 
     &RetroPlatformGuestInfo, &lResult);
   
   if(bResult) {
     fellowAddLog("RetroPlatformGetParentWindowHandle(): parent window handle returned was %d.\n", 
-      lResult);
-	  return (HWND)lResult;
+      lResult);  
+    return (HWND)lResult;
   }
   else
     return NULL;
@@ -1594,11 +1611,11 @@ void RetroPlatformStartup(void) {
 
   RetroPlatformConfig = cfgManagerGetCurrentConfig(&cfg_manager);
   
-	lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, 
+  lResult = RPInitializeGuest(&RetroPlatformGuestInfo, hRetroPlatformWindowInstance, 
     szRetroPlatformHostID, RetroPlatformHostMessageFunction, 0);
 
   if (SUCCEEDED (lResult)) {
-	  bRetroPlatformInitialized = TRUE;
+    bRetroPlatformInitialized = TRUE;
 
     RetroPlatformGetHostVersion(&lRetroPlatformMainVersion, 
       &lRetroPlatformRevision, &lRetroPlatformBuild);
@@ -1675,19 +1692,6 @@ void RetroPlatformEmulationStart(void) {
 }
 
 void RetroPlatformEmulationStop(void) {
-}
-
-void RetroPlatformEndOfFrame(void) {
-  if(lRetroPlatformEscapeKeyTargetHoldTime != 0) {
-    ULONGLONG t;
-
-    t = RetroPlatformGetTime();
-    if(t >= lRetroPlatformEscapeKeyTargetHoldTime && !bRetroPlatformEscapeEventGenerated) {
-      fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
-      RetroPlatformPostEscaped();
-      bRetroPlatformEscapeEventGenerated = TRUE;
-    }
-  }
 }
 
 #endif

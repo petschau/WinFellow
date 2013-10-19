@@ -723,6 +723,15 @@ implemented bogo memory mirroring for ECS chipset with 512kB chip/bogo memory
  (required by the demo Move any Mountain)
 \end_layout
 
+\begin_layout Itemize
+fix for CIA timer logic (fixes the game Atomix)
+\end_layout
+
+\begin_layout Itemize
+escape key special handling in Amiga Forever improved (some titles would
+ not detect an escape key press before)
+\end_layout
+
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes.

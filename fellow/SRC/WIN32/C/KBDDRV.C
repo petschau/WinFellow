@@ -678,6 +678,43 @@ bool kbdDrvDInputSetCooperativeLevel(void)
   return true;
 }
 
+#ifdef RETRO_PLATFORM
+
+/// the end-of-frame handler for the keyboard driver is called only in RetroPlatform mode
+/// it's purpose is to relay simulated escape key presses to the Amiga, as well as to
+/// escape devices when the escape key has been held longer than the configured interval
+
+void kbdDrvEOFHandler(void)
+{
+  ULONGLONG t = 0;
+
+  t = RetroPlatformGetEscapeKeyHeldSince();
+
+  if(t && (RetroPlatformGetTime() - RetroPlatformGetEscapeKeyHeldSince()) > RetroPlatformGetEscapeKeyHoldTime())
+  {
+    fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
+    RetroPlatformPostEscaped();
+    RetroPlatformSetEscapeKeyHeld(false);
+  }
+
+  t = RetroPlatformGetEscapeKeySimulatedTargetTime();
+
+  if(t) {
+    ULONGLONG tCurrentTime = RetroPlatformGetTime();
+    UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+
+    if(t < tCurrentTime) {
+      fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
+      RetroPlatformSetEscapeKeySimulatedTargetTime(0);
+      kbdKeyAdd(a_code | 0x80); // release escape key
+    }
+    else {
+      kbdKeyAdd(a_code); // hold escape key
+    }
+  }
+}
+
+#endif
 
 /*===========================================================================*/
 /* Unacquire DirectInput keyboard device                                     */
@@ -929,24 +966,26 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
         if(ispressed ( PCK_F4 ) )
           issue_event(EVENT_EXIT);
 
-      if(RetroPlatformGetEmulationState())
+      if(!RetroPlatformGetEmulationPaused())
       {
 	if( pressed ( RetroPlatformGetEscapeKey() ))
 	{
-	  RetroPlatformSetEscapeKeyTargetHoldTime(TRUE);
+	  RetroPlatformSetEscapeKeyHeld(true);
 	  return TRUE;
 	}
 	if( released ( RetroPlatformGetEscapeKey() ))
 	{
-	 if(!RetroPlatformSetEscapeKeyTargetHoldTime(FALSE)) 
-	 {
-	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, sending key...\n");
-	    UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbol_key];
-	    kbdKeyAdd(a_code);
-			      kbdKeyAdd(a_code | 0x80);
-	    return FALSE;
+	  ULONGLONG t = RetroPlatformSetEscapeKeyHeld(false);
+          
+          if((t != 0) && (t < RetroPlatformGetEscapeKeyHoldTime())) 
+	  {
+	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
+              t);
+            RetroPlatformSetEscapeKeySimulatedTargetTime(RetroPlatformGetTime() + RetroPlatformGetEscapeKeyHoldTime());
+            return FALSE;
 	  }
-	 return TRUE;
+          else
+            return TRUE;
 	}
       }
       else 

@@ -23,4 +23,8 @@ extern void kbdDrvShutdown(void);
 extern void kbdDrvStateHasChanged(BOOLE);
 extern void kbdDrvKeypressHandler(void);
 
+#ifdef RETRO_PLATFORM
+extern void kbdDrvEOFHandler(void);
+#endif
+
 #endif
