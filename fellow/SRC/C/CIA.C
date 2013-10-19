@@ -31,6 +31,7 @@ Tuesday, September 19, 2000
 */
 
 #include "defs.h"
+#include "FELLOW.H"
 #include "bus.h"
 #include "gameport.h"
 #include "fmem.h"
@@ -50,6 +51,8 @@ Tuesday, September 19, 2000
 #define CIA_FLAG_IRQ  16
 
 #define CIA_BUS_CYCLE_RATIO 5
+
+//#define CIA_LOGGING
 
 typedef UBY (*ciaFetchFunc)(ULO i);
 typedef void (*ciaWriteFunc)(ULO i, UBY data);
@@ -108,6 +111,11 @@ ULO ciaStabilizeValue(ULO value) {
 
 ULO ciaStabilizeValueRemainder(ULO value) {
   return (value - bus.cycle) % CIA_BUS_CYCLE_RATIO;
+}
+
+ULO ciaGetTimerValue(ULO value)
+{
+  return value + 1;
 }
 
 void ciaTAStabilize(ULO i) {
@@ -175,8 +183,8 @@ void ciaRaiseIndexIRQ(void) {
 /* Timeout handlers */
 
 void ciaHandleTBTimeout(ULO i) {
-  cia[i].tb = cia[i].tblatch;      /* Reload from latch */
-  if (cia[i].tb == 0) cia[i].tb = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
+  cia[i].tb = ciaGetTimerValue(cia[i].tblatch);      /* Reload from latch */
+    
   if (cia[i].crb & 8) {            /* One Shot Mode */
     cia[i].crb &= 0xfe;            /* Stop timer */
     cia[i].tbleft = 0xffffffff;
@@ -187,8 +195,7 @@ void ciaHandleTBTimeout(ULO i) {
 }
 
 void ciaHandleTATimeout(ULO i) {
-  cia[i].ta = cia[i].talatch;      /* Reload from latch */
-  if (cia[i].ta == 0) cia[i].ta = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
+  cia[i].ta = ciaGetTimerValue(cia[i].talatch);      /* Reload from latch */
   if ((cia[i].crb & 0x41) == 0x41){/* Timer B attached and started */
     cia[i].tb = (cia[i].tb - 1) & 0xffff;
     if (cia[i].tb == 0)
@@ -459,21 +466,35 @@ UBY ciaReadtahi(ULO i)
 void ciaWritetalo(ULO i, UBY data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff00) | (ULO)data;
+
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer A %d written: %X\n", i, cia[i].talatch);
+#endif
 }
 
 void ciaWritetahi(ULO i, UBY data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff) | (((ULO)data)<<8);
-  if ((cia[i].cra & 8) || !(cia[i].cra & 1))
+
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer A %d written: %X\n", i, cia[i].talatch);
+#endif
+
+  if ((cia[i].cra & 8) || !(cia[i].cra & 1)) // Timer A is one-shot and not started. This write will start it
   {
     ciaStabilize(i);
-    cia[i].ta = cia[i].talatch;
+    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
     cia[i].ta_rem = 0;
-    if (cia[i].ta == 0) cia[i].ta = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     if (cia[i].cra & 8) cia[i].cra |= 1;
+
+#ifdef CIA_LOGGING  
+    fellowAddLog("Timer A %d one-shot mode automatically started\n", i);
+#endif
+
     ciaUnstabilize(i);
     ciaSetupNextEvent();
   }
+
 }
 
 /* Timer B */
@@ -495,21 +516,29 @@ UBY ciaReadtbhi(ULO i)
 void ciaWritetblo(ULO i, UBY data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff00) | ((ULO)data);
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer B %d written: %X\n", i, cia[i].tblatch);
+#endif
 }
 
 void ciaWritetbhi(ULO i, UBY data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff) | (((ULO)data)<<8);
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer B %d written: %X\n", i, cia[i].tblatch);
+#endif
   if ((cia[i].crb & 8) || !(cia[i].crb & 1))
   {
     ciaStabilize(i);
-    cia[i].tb = cia[i].tblatch;
+    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
     cia[i].tb_rem = 0;
-    if (cia[i].tb == 0) cia[i].tb = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     if (cia[i].crb & 8)
       cia[i].crb |= 1;
     ciaUnstabilize(i);
     ciaSetupNextEvent();
+#ifdef CIA_LOGGING  
+    fellowAddLog("Timer B %d one-shot mode automatically started\n", i);
+#endif
   }
 }
 
@@ -596,11 +625,16 @@ void ciaWritecra(ULO i, UBY data)
   ciaStabilize(i);
   if (data & 0x10)
   {
-    cia[i].ta = cia[i].talatch;
+    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
     cia[i].ta_rem = 0;
-    if (cia[i].ta == 0) cia[i].ta = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
+#ifdef CIA_LOGGING  
+    fellowAddLog("Timer A %d force load %X\n", i, cia[i].ta);
+#endif
   }
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer A %d is %s\n", i, (data & 1) ? "started" : "stopped");
+#endif
   cia[i].cra = data;
   ciaUnstabilize(i);
   ciaSetupNextEvent();
@@ -618,11 +652,16 @@ void ciaWritecrb(ULO i, UBY data)
   ciaStabilize(i);
   if (data & 0x10)
   {
-    cia[i].tb = cia[i].tblatch;
+    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
     cia[i].tb_rem = 0;
-    if (cia[i].tb == 0) cia[i].tb = 65535; /* Need to do this to avoid endless timeout loop, but is it correct? */
     data &= 0xef;
+#ifdef CIA_LOGGING  
+    fellowAddLog("Timer B %d force load %X\n", i, cia[i].tb);
+#endif
   }
+#ifdef CIA_LOGGING  
+  fellowAddLog("Timer B %d is %s\n", i, (data & 1) ? "started" : "stopped");
+#endif
   cia[i].crb = data;
   ciaUnstabilize(i);
   ciaSetupNextEvent();
