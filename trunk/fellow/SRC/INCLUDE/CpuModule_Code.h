@@ -6483,42 +6483,42 @@ static void BFTST_E8FB(ULO*opc_data)
 static void BFCHG_EAC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfChgReg(opc_data[1], ext);
+	cpuBfChgReg(opc_data[0], ext);
 }
 static void BFCLR_ECC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfClrReg(opc_data[1], ext);
+	cpuBfClrReg(opc_data[0], ext);
 }
 static void BFEXTS_EBC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfExtsReg(opc_data[1], ext);
+	cpuBfExtsReg(opc_data[0], ext);
 }
 static void BFEXTU_E9C0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfExtuReg(opc_data[1], ext);
+	cpuBfExtuReg(opc_data[0], ext);
 }
 static void BFFFO_EDC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfFfoReg(opc_data[1], ext);
+	cpuBfFfoReg(opc_data[0], ext);
 }
 static void BFINS_EFC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfInsReg(opc_data[1], ext);
+	cpuBfInsReg(opc_data[0], ext);
 }
 static void BFSET_EEC0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfSetReg(opc_data[1], ext);
+	cpuBfSetReg(opc_data[0], ext);
 }
 static void BFTST_E8C0(ULO*opc_data)
 {
 	UWO ext = cpuGetNextWord();
-	cpuBfTstReg(opc_data[1], ext);
+	cpuBfTstReg(opc_data[0], ext);
 }
 static void MULL_4C00(ULO*opc_data)
 {

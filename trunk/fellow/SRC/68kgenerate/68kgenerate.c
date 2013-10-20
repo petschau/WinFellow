@@ -1200,10 +1200,14 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	{
 	  fprintf(codef, "\t%s(src, ext);\n", i.function);
 	}
-	else
+	else if ((strnicmp(i.instruction_name, "BF", 2) == 0) && regtype == 'R')
 	{
-	  fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, cc_cpu_data_index);
+	  fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, eareg_cpu_data_index);
 	}
+        else
+        {
+	  fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, cc_cpu_data_index);
+        }
       }
       else if (regtype == 'G')
       {

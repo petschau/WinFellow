@@ -1058,7 +1058,7 @@ static void cpuMulL(ULO src1, UWO extension)
     else // 32bx32b=32b
     {
       cpuSetDReg(dl, (ULO)result);
-      cpuSetFlagsNZVC(result == 0, !!(result & 0x8000000000000000), (result >> 32) != 0, FALSE);
+      cpuSetFlagsNZVC(result == 0, !!(result & 0x80000000), (result >> 32) != 0, FALSE);
     }
   }
   cpuSetInstructionTime(4);
@@ -1444,10 +1444,16 @@ static UBY cpuAslB(UBY dst, ULO sh, ULO cycles)
   {
     UBY mask = 0xff << (7-sh);
     UBY out = dst & mask;
-    BOOLE n;
     res = ((BYT)dst) << sh;
-    n = cpuMsbB(res);
-    cpuSetFlagsShift(cpuIsZeroB(res), n, dst & (0x80>>(sh-1)), (cpuMsbB(dst)) ? (out != mask) : (out != 0));
+
+    // Overflow calculation: 
+    // 1. The msb of the result and original are different
+    // 2. Or the bits shifted out were not all the same as the msb of the original
+    BOOLE n_result = cpuMsbB(res);
+    BOOLE n_original = cpuMsbB(dst);
+    BOOLE msb_changed = (n_result != n_original) || ((n_original) ? (out != mask) : (out != 0));
+
+    cpuSetFlagsShift(cpuIsZeroB(res), n_result, dst & (0x80>>(sh-1)), msb_changed);
   }
   cpuSetInstructionTime(cycles + sh*2);
   return (UBY) res;
@@ -1474,10 +1480,16 @@ static UWO cpuAslW(UWO dst, ULO sh, ULO cycles)
   {
     UWO mask = 0xffff << (15-sh);
     UWO out = dst & mask;
-    BOOLE n;
     res = ((WOR)dst) << sh;
-    n = cpuMsbW(res);
-    cpuSetFlagsShift(cpuIsZeroW(res), n, dst & (0x8000>>(sh-1)), (cpuMsbW(dst)) ? (out != mask) : (out != 0));
+
+    // Overflow calculation: 
+    // 1. The msb of the result and original are different
+    // 2. Or the bits shifted out were not all the same as the msb of the original
+    BOOLE n_result = cpuMsbW(res);
+    BOOLE n_original = cpuMsbW(dst);
+    BOOLE msb_changed = (n_result != n_original) || ((n_original) ? (out != mask) : (out != 0));
+
+    cpuSetFlagsShift(cpuIsZeroW(res), n_result, dst & (0x8000>>(sh-1)), msb_changed);
   }
   cpuSetInstructionTime(cycles + sh*2);
   return (UWO) res;
@@ -1504,10 +1516,16 @@ static ULO cpuAslL(ULO dst, ULO sh, ULO cycles)
   {
     ULO mask = 0xffffffff << (31-sh);
     ULO out = dst & mask;
-    BOOLE n;
     res = ((LON)dst) << sh;
-    n = cpuMsbL(res);
-    cpuSetFlagsShift(cpuIsZeroL(res), n, dst & (0x80000000>>(sh-1)), (cpuMsbL(dst)) ? (out != mask) : (out != 0));
+
+    // Overflow calculation: 
+    // 1. The msb of the result and original are different
+    // 2. Or the bits shifted out were not all the same as the msb of the original
+    BOOLE n_result = cpuMsbL(res);
+    BOOLE n_original = cpuMsbL(dst);
+    BOOLE msb_changed = (n_result != n_original) || ((n_original) ? (out != mask) : (out != 0));
+
+    cpuSetFlagsShift(cpuIsZeroL(res), n_result, dst & (0x80000000>>(sh-1)), msb_changed);
   }
   cpuSetInstructionTime(cycles + sh*2);
   return (ULO) res;
@@ -2599,53 +2617,38 @@ static UBY cpuNbcdB(UBY dst)
 }
 
 // Bit field functions
-static void cpuGetBfRegBytes(UBY *bytes, ULO regno)
+struct cpuBfData
 {
-  bytes[0] = (UBY)(cpuGetDReg(regno) >> 24);
-  bytes[1] = (UBY)(cpuGetDReg(regno) >> 16);
-  bytes[2] = (UBY)(cpuGetDReg(regno) >> 8);
-  bytes[3] = (UBY)cpuGetDReg(regno);
-}
+  LON offset;
+  ULO width;
+  ULO normalized_offset;
 
-static void cpuGetBfEaBytes(UBY *bytes, ULO address, ULO count)
-{
-  ULO i;
-  for (i = 0; i < count; ++i)
-  {
-    bytes[i] = memoryReadByte(address + i);
-  }
-}
+  ULO base_address;
+  LON base_address_byte_offset;
+  ULO base_address_byte_count;
 
-static void cpuSetBfRegBytes(UBY *bytes, ULO regno)
-{
-  cpuSetDReg(regno, cpuJoinByteToLong(bytes[0], bytes[1], bytes[2], bytes[3]));
-}
+  ULO field;
+  ULL field_mask;
+  ULO dn;
+  ULL field_memory;
+};
 
-static void cpuSetBfEaBytes(UBY *bytes, ULO address, ULO count)
-{
-  ULO i;
-  for (i = 0; i < count; ++i)
-  {
-    memoryWriteByte(bytes[i], address + i);
-  }
-}
-
-static LON cpuGetBfOffset(UWO ext, BOOLE offsetIsDr)
+static LON cpuGetBfOffset(UWO ext, bool offsetIsDataRegister)
 {
   LON offset = (ext >> 6) & 0x1f;
-  if (offsetIsDr)
+  if (offsetIsDataRegister)
   {
     offset = (LON) cpuGetDReg(offset & 7);
   }
   return offset;
 }
 
-static ULO cpuGetBfWidth(UWO ext, BOOLE widthIsDr)
+static ULO cpuGetBfWidth(UWO ext, bool widthIsDataRegister)
 {
   ULO width = (ext & 0x1f);
-  if (widthIsDr)
+  if (widthIsDataRegister)
   {
-    width = (cpuGetDReg(width & 7) & 0x1f);
+    width = cpuGetDReg(width & 7) & 0x1f;
   }
   if (width == 0)
   {
@@ -2654,103 +2657,90 @@ static ULO cpuGetBfWidth(UWO ext, BOOLE widthIsDr)
   return width;
 }
 
-static ULO cpuGetBfField(UBY *bytes, ULO end_offset, ULO byte_count, ULO field_mask)
+static void cpuSetBfField(cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
 {
-  ULO i;
-  ULO field = ((ULO)bytes[byte_count - 1]) >> end_offset;
-
-  for (i = 1; i < byte_count; i++)
-  {
-    field |= ((ULO)bytes[byte_count - i - 1]) << (8*i - end_offset); 
-  }
-  return field & field_mask;
-}
-
-static void cpuSetBfField(UBY *bytes, ULO end_offset, ULO byte_count, ULO field, ULO field_mask)
-{
-  ULO i;
-
-  bytes[byte_count - 1] = (UBY)((field << end_offset) | (bytes[byte_count - 1] & (UBY)~(field_mask << end_offset)));
-  for (i = 1; i < byte_count - 1; ++i)
-  {
-    bytes[byte_count - i - 1] = (UBY)(field >> (end_offset + 8*i));
-  }
-  if (i < byte_count)
-  {
-    bytes[0] = (bytes[0] & (UBY)~(field_mask >> (end_offset + 8*i)) | (UBY)(field >> (end_offset + 8*i)));
-  }
-}
-
-struct cpuBfData
-{
-  UWO ext;
-  BOOLE offsetIsDr;
-  BOOLE widthIsDr;
-  LON offset;
-  ULO width;
-  ULO base_address;
-  ULO bit_offset;
-  ULO end_offset;
-  ULO byte_count;
-  ULO field;
-  ULO field_mask;
-  ULO dn;
-  UBY b[5];
-};
-
-void cpuBfExtWord(struct cpuBfData *bf_data, ULO val, BOOLE has_dn, BOOLE has_ea, UWO ext)
-{
-  bf_data->ext = ext;
-  bf_data->offsetIsDr = (bf_data->ext & 0x0800);
-  bf_data->widthIsDr = (bf_data->ext & 0x20);
-  bf_data->offset = cpuGetBfOffset(bf_data->ext, bf_data->offsetIsDr);
-  bf_data->width = cpuGetBfWidth(bf_data->ext, bf_data->widthIsDr);
-  bf_data->bit_offset = bf_data->offset & 7;
-  bf_data->byte_count = ((bf_data->bit_offset + bf_data->width + 7) >> 3);
-  bf_data->end_offset = (bf_data->byte_count*8 - (bf_data->offset + bf_data->width)) & 7;
-  bf_data->field = 0;
-  bf_data->field_mask = 0xffffffff >> (32 - bf_data->width);
-  if (has_dn)
-  {
-    bf_data->dn = (bf_data->ext & 0x7000) >> 12;
-  }
   if (has_ea)
   {
-    bf_data->base_address = val + (bf_data->offset >> 3);
-    cpuGetBfEaBytes(&bf_data->b[0], bf_data->base_address, bf_data->byte_count);
+    ULO shift = bf_data->base_address_byte_count*8 - bf_data->normalized_offset - bf_data->width;
+    ULL field_value = (bf_data->field_memory & ~(bf_data->field_mask << shift)) | (bf_data->field << shift);
+    ULO address = bf_data->base_address + bf_data->base_address_byte_offset;
+
+    for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
+    {
+      UBY field_byte = (field_value >> (i*8)) & 0xff;
+      memoryWriteByte(field_byte, address);
+      ++address;
+    }
   }
   else
   {
-    cpuGetBfRegBytes(&bf_data->b[0], val);
+    ULO reg_shift = (32 - bf_data->offset - bf_data->width);
+    ULO reg_value = (cpuGetDReg(ea_or_reg) & ~(bf_data->field_mask << reg_shift)) | (bf_data->field << reg_shift);
+    cpuSetDReg(ea_or_reg, reg_value);
   }
+}
+
+void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, ULO ea_or_reg, bool has_dn, bool has_ea, UWO ext)
+{
+  bool offsetIsDataRegister = ((ext & 0x0800) == 0x0800);
+  bool widthIsDataRegister = ((ext & 0x0020) == 0x0020);
+
+  bf_data->offset = cpuGetBfOffset(ext, offsetIsDataRegister);
+  bf_data->width = cpuGetBfWidth(ext, widthIsDataRegister);
+  bf_data->field_mask = 0xffffffff >> (32 - bf_data->width);
+
+  if (has_dn)
+  {
+    bf_data->dn = (ext & 0x7000) >> 12;
+  }
+
+  if (has_ea)
+  {
+    bf_data->base_address = ea_or_reg;  // Base address of the field, before offset is applied
+    bf_data->base_address_byte_offset = (bf_data->offset >> 3); // The first byte in the field
+    bf_data->normalized_offset = bf_data->offset - (bf_data->base_address_byte_offset)*8; // Offset relative to the first byte in the field
+    bf_data->base_address_byte_count = (bf_data->normalized_offset + bf_data->width + 7) / 8;
+
+    ULO field = 0;
+    ULL field_memory = 0;
+    ULO address = bf_data->base_address + bf_data->base_address_byte_offset;
+    ULO shift = (8 - bf_data->normalized_offset - bf_data->width) & 7;
+    for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
+    {
+      ULL value = (ULL) memoryReadByte(address);
+      field_memory |= (value << (8*i));
+      field |= ((value >> shift) << (8*i));
+      ++address;
+    }
+
+    bf_data->field_memory = field_memory;
+    bf_data->field = field;
+  }
+  else
+  {
+    bf_data->field = cpuGetDReg(ea_or_reg) >> (32 - bf_data->offset - bf_data->width);
+  }
+  bf_data->field &= bf_data->field_mask;
 }
 
 /// <summary>
 /// bfchg common logic
 /// </summary>
-static void cpuBfChgCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfChgCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, FALSE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
-  cpuSetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, (~bf_data.field) & bf_data.field_mask, bf_data.field_mask);
-  if (has_ea)
-  {
-    cpuSetBfEaBytes(&bf_data.b[0], bf_data.base_address, bf_data.byte_count);
-  }
-  else
-  {
-    cpuSetBfRegBytes(&bf_data.b[0], val);
-  }
+
+  bf_data.field = (~bf_data.field) & bf_data.field_mask;
+
+  cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }
 
-/// <summary>
-/// bfchg dx {offset:width}
-/// </summary>
+// bfchg dx {offset:width}
 static void cpuBfChgReg(ULO regno, UWO ext)
 {
-  cpuBfChgCommon(regno, FALSE, ext);
+  cpuBfChgCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2758,27 +2748,22 @@ static void cpuBfChgReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfChgEa(ULO ea, UWO ext)
 {
-  cpuBfChgCommon(ea, TRUE, ext);
+  cpuBfChgCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfclr common logic
 /// </summary>
-static void cpuBfClrCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfClrCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, FALSE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
+
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
-  cpuSetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, 0, bf_data.field_mask);
-  if (has_ea)
-  {
-    cpuSetBfEaBytes(&bf_data.b[0], bf_data.base_address, bf_data.byte_count);
-  }
-  else
-  {
-    cpuSetBfRegBytes(&bf_data.b[0], val);
-  }
+
+  bf_data.field = 0;
+
+  cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }
 
 /// <summary>
@@ -2786,7 +2771,7 @@ static void cpuBfClrCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfClrReg(ULO regno, UWO ext)
 {
-  cpuBfClrCommon(regno, FALSE, ext);
+  cpuBfClrCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2794,24 +2779,27 @@ static void cpuBfClrReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfClrEa(ULO ea, UWO ext)
 {
-  cpuBfClrCommon(ea, TRUE, ext);
+  cpuBfClrCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfexts common logic
 /// </summary>
-static void cpuBfExtsCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfExtsCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
   BOOLE n_flag;
-  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
+
   n_flag = bf_data.field & (1 << (bf_data.width - 1));
+
   cpuSetFlagsNZVC(bf_data.field == 0, n_flag, FALSE, FALSE);
+
   if (n_flag)
   {
-    bf_data.field = ~bf_data.field_mask | bf_data.field;
+    bf_data.field = (ULO)((~bf_data.field_mask) | bf_data.field);
   }
+  // Destination is always Dn
   cpuSetDReg(bf_data.dn, bf_data.field);
 }
 
@@ -2820,7 +2808,7 @@ static void cpuBfExtsCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfExtsReg(ULO regno, UWO ext)
 {
-  cpuBfExtsCommon(regno, FALSE, ext);
+  cpuBfExtsCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2828,18 +2816,18 @@ static void cpuBfExtsReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfExtsEa(ULO ea, UWO ext)
 {
-  cpuBfExtsCommon(ea, TRUE, ext);
+  cpuBfExtsCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfextu ea {offset:width}, Dn
 /// </summary>
-static void cpuBfExtuCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfExtuCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
+  // Destination is always Dn
   cpuSetDReg(bf_data.dn, bf_data.field);
 }
 
@@ -2848,7 +2836,7 @@ static void cpuBfExtuCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfExtuReg(ULO regno, UWO ext)
 {
-  cpuBfExtuCommon(regno, FALSE, ext);
+  cpuBfExtuCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2856,22 +2844,22 @@ static void cpuBfExtuReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfExtuEa(ULO ea, UWO ext)
 {
-  cpuBfExtuCommon(ea, TRUE, ext);
+  cpuBfExtuCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfffo common logic
 /// </summary>
-static void cpuBfFfoCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfFfoCommon(ULO val, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
   ULO i;
-  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, val, true, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
+
   for (i = 0; i < bf_data.width; ++i)
   {
-    if (bf_data.field & (0x1 << (bf_data.width - i - 1)))
+    if (bf_data.field & (1 << (bf_data.width - i - 1)))
       break;
   }
   cpuSetDReg(bf_data.dn, bf_data.offset + i);
@@ -2882,7 +2870,7 @@ static void cpuBfFfoCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfFfoReg(ULO regno, UWO ext)
 {
-  cpuBfFfoCommon(regno, FALSE, ext);
+  cpuBfFfoCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2890,28 +2878,23 @@ static void cpuBfFfoReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfFfoEa(ULO ea, UWO ext)
 {
-  cpuBfFfoCommon(ea, TRUE, ext);
+  cpuBfFfoCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfins common logic
 /// </summary>
-static void cpuBfInsCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfInsCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, TRUE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
-  cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, true, has_ea, ext);
+
   bf_data.field = cpuGetDReg(bf_data.dn) & bf_data.field_mask;
-  cpuSetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field, bf_data.field_mask);
-  if (has_ea)
-  {
-    cpuSetBfEaBytes(&bf_data.b[0], bf_data.base_address, bf_data.byte_count);
-  }
-  else
-  {
-    cpuSetBfRegBytes(&bf_data.b[0], val);
-  }
+
+  // Flags are set according to the inserted value
+  cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
+
+  cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }
 
 /// <summary>
@@ -2919,7 +2902,7 @@ static void cpuBfInsCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfInsReg(ULO regno, UWO ext)
 {
-  cpuBfInsCommon(regno, FALSE, ext);
+  cpuBfInsCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2927,28 +2910,21 @@ static void cpuBfInsReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfInsEa(ULO ea, UWO ext)
 {
-  cpuBfInsCommon(ea, TRUE, ext);
+  cpuBfInsCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bfset common logic
 /// </summary>
-static void cpuBfSetCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfSetCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, FALSE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
-  bf_data.field = bf_data.field_mask;
-  cpuSetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field, bf_data.field_mask);
-  if (has_ea)
-  {
-    cpuSetBfEaBytes(&bf_data.b[0], bf_data.base_address, bf_data.byte_count);
-  }
-  else
-  {
-    cpuSetBfRegBytes(&bf_data.b[0], val);
-  }
+
+  bf_data.field = (ULO)bf_data.field_mask;
+
+  cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }
 
 /// <summary>
@@ -2956,7 +2932,7 @@ static void cpuBfSetCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfSetReg(ULO regno, UWO ext)
 {
-  cpuBfSetCommon(regno, FALSE, ext);
+  cpuBfSetCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2964,17 +2940,16 @@ static void cpuBfSetReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfSetEa(ULO ea, UWO ext)
 {
-  cpuBfSetCommon(ea, TRUE, ext);
+  cpuBfSetCommon(ea, true, ext);
 }
 
 /// <summary>
 /// bftst common logic
 /// </summary>
-static void cpuBfTstCommon(ULO val, BOOLE has_ea, UWO ext)
+static void cpuBfTstCommon(ULO ea_or_reg, bool has_ea, UWO ext)
 {
   struct cpuBfData bf_data;
-  cpuBfExtWord(&bf_data, val, FALSE, has_ea, ext);
-  bf_data.field = cpuGetBfField(&bf_data.b[0], bf_data.end_offset, bf_data.byte_count, bf_data.field_mask);
+  cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 }
 
@@ -2983,7 +2958,7 @@ static void cpuBfTstCommon(ULO val, BOOLE has_ea, UWO ext)
 /// </summary>
 static void cpuBfTstReg(ULO regno, UWO ext)
 {
-  cpuBfTstCommon(regno, FALSE, ext);
+  cpuBfTstCommon(regno, false, ext);
 }
 
 /// <summary>
@@ -2991,7 +2966,7 @@ static void cpuBfTstReg(ULO regno, UWO ext)
 /// </summary>
 static void cpuBfTstEa(ULO ea, UWO ext)
 {
-  cpuBfTstCommon(ea, TRUE, ext);
+  cpuBfTstCommon(ea, true, ext);
 }
 
 /// <summary>
