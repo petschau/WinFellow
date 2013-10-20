@@ -181,14 +181,14 @@ emulator should not crash.
 Before this commit, the session would crash. Related titles impacted by this change are Sensible Soccer 1.0,
 Cannon Fodder XMAS Edition and Toki.
 
-r971: CIA timer fix
--------------------
+r969, r971: CIA timer fix
+-------------------------
 Verify in the game Atomix that the main game can be started.
 
 Before this fix, it would hang when entering the game.
 
-r972: RetroPlatform escape key handling
----------------------------------------
+r972, r973: RetroPlatform escape key handling
+---------------------------------------------
 Using default escape key ESC
 
 1. verify that the cracktro of Cannon Fodder 2 [cr PDX] can be left by tipping ESC; holding ESC and releasing after the interval should have no effect (release input devices)
@@ -199,5 +199,4 @@ Using default escape key ESC
 
 Configure escape key to A
 
-1. verify in a Workbench CLI that tipping A will produce an A on the screen; holding and releasing A should have no effect (release input devices)
-
+1. verify in a Workbench CLI that tipping A will produce a single "a" on the screen; holding and releasing A should have no effect (release input devices)
