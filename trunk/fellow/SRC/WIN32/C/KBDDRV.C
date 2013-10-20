@@ -701,15 +701,13 @@ void kbdDrvEOFHandler(void)
 
   if(t) {
     ULONGLONG tCurrentTime = RetroPlatformGetTime();
-    UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
 
     if(t < tCurrentTime) {
+      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+
       fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
       RetroPlatformSetEscapeKeySimulatedTargetTime(0);
       kbdKeyAdd(a_code | 0x80); // release escape key
-    }
-    else {
-      kbdKeyAdd(a_code); // hold escape key
     }
   }
 }
@@ -979,10 +977,13 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
           
           if((t != 0) && (t < RetroPlatformGetEscapeKeyHoldTime())) 
 	  {
+            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+
 	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
               t);
             RetroPlatformSetEscapeKeySimulatedTargetTime(RetroPlatformGetTime() + RetroPlatformGetEscapeKeyHoldTime());
-            return FALSE;
+            kbdKeyAdd(a_code); // hold escape key
+            return TRUE;
 	  }
           else
             return TRUE;
