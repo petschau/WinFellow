@@ -145,8 +145,10 @@ BOOLE cfgGetDiskFast(cfg *config)
 
 void cfgSetLastUsedDiskDir(cfg *config, STR *directory)
 {
-  strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
-  //fsNavigMakeRelativePath(config->m_lastuseddiskdir);
+  if(directory != NULL) {
+    strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
+    //fsNavigMakeRelativePath(config->m_lastuseddiskdir);
+  }
 }
 
 STR *cfgGetLastUsedDiskDir(cfg *config)

@@ -729,9 +729,9 @@ static void floppyWriteDiskDate(UBY *strBuffer)
   t -= mins * (60 * 1000);
   ticks = t / (1000 / 50);
   
-  memoryWriteLongToPointer(days,  strBuffer);
-  memoryWriteLongToPointer(mins,  strBuffer + 4);
-  memoryWriteLongToPointer(ticks, strBuffer + 8);
+  memoryWriteLongToPointer((ULO) days,  strBuffer);
+  memoryWriteLongToPointer((ULO) mins,  strBuffer + 4);
+  memoryWriteLongToPointer((ULO) ticks, strBuffer + 8);
 }
 
 /** Write the checksum into the floppy disk buffer.
@@ -745,8 +745,8 @@ static void floppyWriteDiskChecksum(const UBY *strBuffer, UBY *strChecksum)
     const UBY *p = strBuffer + i;
     lChecksum += memoryReadLongFromPointer(p);
   }
-    
-  lChecksum = -lChecksum;
+
+  lChecksum = ~lChecksum + 1;
 
   memoryWriteLongToPointer(lChecksum, strChecksum);
 }
