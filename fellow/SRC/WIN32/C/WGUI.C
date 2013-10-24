@@ -648,9 +648,14 @@ STR *wguiExtractPath(STR *fullpathname) {
   char *strpointer;
 
   strpointer = strrchr(fullpathname, '\\');
-  strncpy(extractedpathname, fullpathname, strlen(fullpathname) - strlen(strpointer));
-  extractedpathname[strlen(fullpathname) - strlen(strpointer)] = '\0';
-  return extractedpathname;
+
+  if(strpointer) {
+    strncpy(extractedpathname, fullpathname, strlen(fullpathname) - strlen(strpointer));
+    extractedpathname[strlen(fullpathname) - strlen(strpointer)] = '\0';
+    return extractedpathname;
+  }
+  else
+    return NULL;
 }
 
 /*============================================================================*/

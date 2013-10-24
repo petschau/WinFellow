@@ -44,7 +44,7 @@ extern bool  RetroPlatformGetEmulationPaused(void);
 extern ULO   RetroPlatformGetEscapeKey(void);
 extern ULO   RetroPlatformGetEscapeKeyHoldTime(void);
 extern ULONGLONG RetroPlatformGetEscapeKeySimulatedTargetTime(void);
-extern BOOLE RetroPlatformGetMode(void);
+extern inline bool  RetroPlatformGetMode(void);
 extern BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void);
 extern HWND  RetroPlatformGetParentWindowHandle(void);
 extern ULO   RetroPlatformGetScreenHeight(void);

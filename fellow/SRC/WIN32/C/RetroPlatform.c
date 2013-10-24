@@ -120,7 +120,7 @@ int RetroPlatformNumberOfJoysticksAttached;
 /// host ID that was passed over by the RetroPlatform player
 STR szRetroPlatformHostID[CFG_FILENAME_LENGTH] = "";
 /// flag to indicate that emulator operates in "headless" mode
-BOOLE bRetroPlatformMode = FALSE;
+bool bRetroPlatformMode = false;
 
 ULO lRetroPlatformEscapeKey                          = 1;
 ULO lRetroPlatformEscapeKeyHoldTime                  = 600;
@@ -648,7 +648,7 @@ static BOOLE RetroPlatformGetHostVersion(ULO *lpMainVersion, ULO *lpRevision,
  * RetroPlatform host ID has been passed along as a commandline parameter.
  * @return TRUE if WinFellow was called from Cloanto RetroPlatform, FALSE if not.
  */
-BOOLE RetroPlatformGetMode(void) {
+inline bool RetroPlatformGetMode(void) {
   return bRetroPlatformMode;
 }
 
