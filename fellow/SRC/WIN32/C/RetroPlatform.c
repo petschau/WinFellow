@@ -984,7 +984,7 @@ void RetroPlatformSetHostID(const char *szHostID) {
   fellowAddLog("RetroPlatformSetHostID(): host ID configured to %s.\n", szRetroPlatformHostID);
 }
 
-void RetroPlatformSetMode(const BOOLE bRPMode) {
+void RetroPlatformSetMode(const bool bRPMode) {
   bRetroPlatformMode = bRPMode;
   fellowAddLog("RetroPlatformSetMode(): entering RetroPlatform (headless) mode.\n");
 }

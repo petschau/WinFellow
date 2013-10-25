@@ -79,7 +79,7 @@ extern ULONGLONG RetroPlatformGetEscapeKeyHeldSince(void);
 extern void  RetroPlatformSetEscapeKeyHoldTime(const char *);
 extern void  RetroPlatformSetEscapeKeySimulatedTargetTime(const ULONGLONG);
 extern void  RetroPlatformSetHostID(const char *);
-extern void  RetroPlatformSetMode(const BOOLE);
+extern void  RetroPlatformSetMode(const bool);
 extern void  RetroPlatformSetScreenHeight(ULO);
 extern void  RetroPlatformSetScreenMode(const char *);
 extern void  RetroPlatformSetScreenWidth(ULO);

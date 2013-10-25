@@ -200,3 +200,11 @@ Using default escape key ESC
 Configure escape key to A
 
 1. verify in a Workbench CLI that tipping A will produce a single "a" on the screen; holding and releasing A should have no effect (release input devices)
+
+r974: bit-field '020 instruction code reimplemented
+---------------------------------------------------
+Start the demo Lotus Esprit Turbo Challenge 96k by Scarab. It should start correctly.
+
+Before this change it would fail to load with a black screen after the intro. I makes use of bit-field instructions during decrunching.
+
+In the same commit, ASL overflow handling was improved, and a flag check regarding MULU was fixed; no test cases are known for these changes.

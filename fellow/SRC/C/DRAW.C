@@ -394,6 +394,7 @@ static void drawFpsToFramebuffer16(void)
 static void drawFpsToFramebuffer24(void)
 {
   UBY *bufb = draw_buffer_top_ptr + (draw_mode_current->width - 20)*3;
+
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
@@ -415,6 +416,17 @@ static void drawFpsToFramebuffer24(void)
 static void drawFpsToFramebuffer32(void)
 {
   ULO *bufl = ((ULO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
+
+#ifdef RETRO_PLATFORM
+  if(RetroPlatformGetMode()) {
+    // move left to offset for clipping at the right
+    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 * RetroPlatformGetDisplayScale() - RetroPlatformGetScreenWidthAdjusted() - RetroPlatformGetClippingOffsetLeftAdjusted();
+
+    // move down to compensate for clipping at top
+    bufl += RetroPlatformGetClippingOffsetTopAdjusted() * draw_mode_current->pitch / 4;
+  }
+#endif
+
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
