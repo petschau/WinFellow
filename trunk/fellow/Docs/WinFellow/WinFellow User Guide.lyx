@@ -728,13 +728,33 @@ fix for CIA timer logic (fixes the game Atomix)
 \end_layout
 
 \begin_layout Itemize
+fixes for several CPU instructions:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+'020 bit-field instructions were re-implemented (fix for Lotus Esprit Turbo
+ Challenge 96k)
+\end_layout
+
+\begin_layout Itemize
+ASL instruction's overflow detection was improved
+\end_layout
+
+\begin_layout Itemize
+MULU flag check improved
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
 escape key special handling in Amiga Forever improved (some titles would
  not detect an escape key press before)
 \end_layout
 
 \end_deeper
 \begin_layout Standard
-Please see the included file ChangeLog.txt for a full list of changes.
+Please see the included file ChangeLog.txt for a full list of changes, including
+ minor bug fixes which are not listed above.
 \end_layout
 
 \begin_layout Part
