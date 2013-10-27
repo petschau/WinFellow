@@ -1257,21 +1257,86 @@ const STR *memory_kickimage_versionstrings[14] = {
     // NOP
   }
 
+  void memoryKickWriteByteA1000WCS(UBY data, ULO address)
+  {
+    const ULO mask = 262143;
+    UBY *p = NULL;
+#ifdef _DEBUG
+    fellowAddLog("memoryKickWriteByteA1000WCS(0x%x, 0x%x)\n", data, address);
+#endif
+
+    if(address >= 0xfc0000) {
+      address &= mask;
+      p = memory_kick + address;
+      memoryWriteByteToPointer(data, p);
+    } 
+    else
+      memoryKickA1000BootstrapSetMapped(false);
+  }
+
+  void memoryKickWriteWordA1000WCS(UWO data, ULO address)
+  {
+    const ULO mask = 262143;
+    UBY *p = NULL;
+
+#ifdef _DEBUG
+    fellowAddLog("memoryKickWriteWordA1000WCS(0x%x, 0x%x)\n", data, address);
+#endif
+
+    if(address >= 0xfc0000) {
+      address &= mask;
+      p = memory_kick + address;
+      memoryWriteWordToPointer(data, p);
+    } 
+    else
+      memoryKickA1000BootstrapSetMapped(false);
+  }
+
+  void memoryKickWriteLongA1000WCS(ULO data, ULO address)
+  {
+    const ULO mask = 262143;
+    UBY *p = NULL;
+
+#ifdef _DEBUG
+    fellowAddLog("memoryKickWriteLongA1000WCS(0x%x, 0x%x)\n", data, address);
+#endif
+
+    if(address >= 0xfc0000) {
+      address &= mask;
+      p = memory_kick + address;
+      memoryWriteLongToPointer(data, p);
+    } 
+    else
+      memoryKickA1000BootstrapSetMapped(false);
+  }
+
   void memoryKickMap(void)
   {
     ULO basebank = memory_kickimage_basebank & 0xf8;
     for (ULO bank = basebank; bank < (basebank + 8); bank++)
     {
-      memoryBankSet(memoryKickReadByte,
-        memoryKickReadWord,
-        memoryKickReadLong,
-        memoryKickWriteByte,
-        memoryKickWriteWord,
-        memoryKickWriteLong,
-        memory_kick,
-        bank,
-        memory_kickimage_basebank,
-        memory_a1000_bootstrap_mapped ? TRUE : FALSE);
+      if(!memory_a1000_bootstrap_mapped)
+        memoryBankSet(memoryKickReadByte,
+          memoryKickReadWord,
+          memoryKickReadLong,
+          memoryKickWriteByte,
+          memoryKickWriteWord,
+          memoryKickWriteLong,
+          memory_kick,
+          bank,
+          memory_kickimage_basebank,
+          FALSE);
+      else
+        memoryBankSet(memoryKickReadByte,
+          memoryKickReadWord,
+          memoryKickReadLong,
+          memoryKickWriteByteA1000WCS,
+          memoryKickWriteWordA1000WCS,
+          memoryKickWriteLongA1000WCS,
+          memory_kick,
+          bank,
+          memory_kickimage_basebank,
+          FALSE);
     }
   }
 
@@ -1606,7 +1671,6 @@ const STR *memory_kickimage_versionstrings[14] = {
               memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
               return FALSE;
             }
-            memoryKickA1000BootstrapSetMapped(true);
           }
         }
         else if (size == 262144)
@@ -1723,14 +1787,15 @@ const STR *memory_kickimage_versionstrings[14] = {
             ULO lCRC32 = 0;
             memset(memory_a1000_bootstrap, 0, 262144);
             fread(memory_a1000_bootstrap, 1, 8192, F);
-            lCRC32 = crc32(0, memory_kick, 8192);
+            memcpy(memory_kick, memory_a1000_bootstrap, 262144);
+            memcpy(memory_kick + 262144, memory_a1000_bootstrap, 262144);
+            lCRC32 = crc32(0, memory_a1000_bootstrap, 8192);
             if (lCRC32 != 0x62F11C04) {
               free(memory_a1000_bootstrap);
               memory_a1000_bootstrap = NULL;
               memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
               return;
             }
-            memoryKickA1000BootstrapSetMapped(true);
           }
         }
         else if (memory_kickimage_size == 262144)
@@ -1747,8 +1812,10 @@ const STR *memory_kickimage_versionstrings[14] = {
 	fclose(F);
       }
     }
-    if (!memory_kickimage_none)
+    if (!memory_kickimage_none) {
       memoryKickOK();
+      memoryKickA1000BootstrapSetMapped(true);
+    }
   }
 
   /*============================================================================*/
