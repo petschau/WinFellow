@@ -1259,14 +1259,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryKickWriteByteA1000WCS(UBY data, ULO address)
   {
-    const ULO mask = 262143;
-    UBY *p = NULL;
-#ifdef _DEBUG
-    fellowAddLog("memoryKickWriteByteA1000WCS(0x%x, 0x%x)\n", data, address);
-#endif
-
     if(address >= 0xfc0000) {
-      address &= mask;
+      UBY *p = NULL;
+      address = (address & 0xffffff) - 0xf80000;
       p = memory_kick + address;
       memoryWriteByteToPointer(data, p);
     } 
@@ -1276,15 +1271,9 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryKickWriteWordA1000WCS(UWO data, ULO address)
   {
-    const ULO mask = 262143;
-    UBY *p = NULL;
-
-#ifdef _DEBUG
-    fellowAddLog("memoryKickWriteWordA1000WCS(0x%x, 0x%x)\n", data, address);
-#endif
-
     if(address >= 0xfc0000) {
-      address &= mask;
+      UBY *p = NULL;
+      address = (address & 0xffffff) - 0xf80000;
       p = memory_kick + address;
       memoryWriteWordToPointer(data, p);
     } 
@@ -1294,16 +1283,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryKickWriteLongA1000WCS(ULO data, ULO address)
   {
-    const ULO mask = 262143;
-    UBY *p = NULL;
-
-#ifdef _DEBUG
-    fellowAddLog("memoryKickWriteLongA1000WCS(0x%x, 0x%x)\n", data, address);
-#endif
-
     if(address >= 0xfc0000) {
-      address &= mask;
-      p = memory_kick + address;
+      UBY *p = NULL;
+
+      address = (address & 0xffffff) - 0xf80000;
+      p = memory_kick + address ;
       memoryWriteLongToPointer(data, p);
     } 
     else
