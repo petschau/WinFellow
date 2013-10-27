@@ -20,6 +20,12 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#endif
+
 #include "defs.h"
 #include "fellow.h"
 #include "chipset.h"
@@ -37,6 +43,7 @@
 #include "wgui.h"
 #include "rtc.h"
 #include "fileops.h"
+#include "zlib.h" // crc32 function
 
 #ifdef WIN32
 #include <tchar.h>
@@ -53,7 +60,9 @@ BOOLE memory_useautoconfig;
 BOOLE memory_address32bit;
 STR memory_kickimage[CFG_FILENAME_LENGTH];
 STR memory_key[256];
-
+bool memory_a1000_wcs = false;              //< emulate the Amiga 1000 WCS (writable control store)
+UBY *memory_a1000_bootstrap = NULL;         //< hold A1000 bootstrap ROM, if used
+bool memory_a1000_bootstrap_mapped = false; //< true while A1000 bootstrap ROM mapped to KS area
 
 /*============================================================================*/
 /* Holds actual memory                                                        */
@@ -135,6 +144,9 @@ const STR *memory_kickimage_versionstrings[14] = {
   ULO memory_noise[2];                     /* Returns alternating bitpattern in */
   ULO memory_noisecounter;    /* unused IO-registers to keep apps from hanging */
   ULO memory_undefined_io_writecounter = 0;
+
+
+  void memoryKickA1000BootstrapSetMapped(const bool);
 
   void memoryWriteByteToPointer(UBY data, UBY *address)
   {
@@ -1251,15 +1263,52 @@ const STR *memory_kickimage_versionstrings[14] = {
     for (ULO bank = basebank; bank < (basebank + 8); bank++)
     {
       memoryBankSet(memoryKickReadByte,
-                    memoryKickReadWord,
-                    memoryKickReadLong,
-                    memoryKickWriteByte,
-                    memoryKickWriteWord,
-                    memoryKickWriteLong,
-                    memory_kick,
-                    bank,
-                    memory_kickimage_basebank,
-                    FALSE);
+        memoryKickReadWord,
+        memoryKickReadLong,
+        memoryKickWriteByte,
+        memoryKickWriteWord,
+        memoryKickWriteLong,
+        memory_kick,
+        bank,
+        memory_kickimage_basebank,
+        memory_a1000_bootstrap_mapped ? TRUE : FALSE);
+    }
+  }
+
+  void memoryKickA1000BootstrapSetMapped(const bool bBootstrapMapped)
+  {
+    if(!memory_a1000_bootstrap) return;
+
+#ifdef _DEBUG
+    fellowAddLog("memoryKickSetA1000BootstrapMapped(%s)\n", 
+      bBootstrapMapped ? "true" : "false");
+#endif
+
+    if (bBootstrapMapped) {
+      memcpy(memory_kick, memory_a1000_bootstrap, 262144);
+      // upper half of kickstart area will mirror the bootstrap, while lower half contains actual Kickstart
+      memcpy(memory_kick + 262144, memory_a1000_bootstrap, 262144);
+      memory_kickimage_version = 0;
+    } else {
+      memcpy(memory_kick, memory_kick + 262144, 262144);
+      memory_kickimage_version = (memory_kick[262144 + 12] << 8) | memory_kick[262144 + 13];
+      if (memory_kickimage_version == 0xffff)
+        memory_kickimage_version = 0;
+    }
+
+    if(bBootstrapMapped != memory_a1000_bootstrap_mapped) {
+      memory_a1000_bootstrap_mapped = bBootstrapMapped;
+      memoryKickMap();
+    }
+  }
+
+  void memoryKickA1000BootstrapFree(void)
+  {
+    if(memory_a1000_bootstrap != NULL) {
+      free(memory_a1000_bootstrap);
+      memory_a1000_bootstrap = NULL;
+      memory_a1000_bootstrap_mapped = false;
+      memory_a1000_wcs = false;
     }
   }
 
@@ -1279,7 +1328,7 @@ const STR *memory_kickimage_versionstrings[14] = {
     {
       case MEMORY_ROM_ERROR_SIZE:
         sprintf(error3,
-	  "Illegal size: %u bytes, size must be either 256K or 512K",
+	  "Illegal size: %u bytes, size must be either 8kB (A1000 bootstrap ROM), 256kB or 512kB.",
 	  data);
         break;
       case MEMORY_ROM_ERROR_AMIROM_VERSION:
@@ -1367,8 +1416,9 @@ const STR *memory_kickimage_versionstrings[14] = {
   void memoryKickOK(void)
   {
     ULO chksum, basebank;
+    bool bVerifyChecksum = !memory_a1000_wcs;
 
-    if ((chksum = memoryKickChksum()) != 0)
+    if (bVerifyChecksum && ((chksum = memoryKickChksum()) != 0))
       memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, chksum);
     else
     {
@@ -1532,14 +1582,36 @@ const STR *memory_kickimage_versionstrings[14] = {
 	    memoryKickError(MEMORY_ROM_ERROR_AMIROM_READ, 0);
 	  return TRUE;
 	}
-	if (size != 262144 && size != 524288)
+	if (size != 8192 && size != 262144 && size != 524288)
 	{
           if(!suppressgui)
 	    memoryKickError(MEMORY_ROM_ERROR_SIZE, size);
 	  return TRUE;
 	}
-	if (size == 262144)
+
+        if (size == 8192)
+        { /* Load A1000 bootstrap ROM */
+          memory_a1000_wcs = true;
+
+          if(memory_a1000_bootstrap == NULL)
+            memory_a1000_bootstrap = (UBY *) malloc(262144);
+
+          if(memory_a1000_bootstrap) {
+            ULO lCRC32 = 0;
+            memcpy(memory_a1000_bootstrap, memory_kick, 262144);
+            lCRC32 = crc32(0, memory_kick, 8192);
+            if (lCRC32 != 0x62F11C04) {
+              free(memory_a1000_bootstrap);
+              memory_a1000_bootstrap = NULL;
+              memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
+              return FALSE;
+            }
+            memoryKickA1000BootstrapSetMapped(true);
+          }
+        }
+        else if (size == 262144)
 	  memcpy(memory_kick + 262144, memory_kick, 262144);
+
 	memory_kickimage_none = FALSE;
 	memoryKickIdentify(memory_kickimage_versionstr);
 	return TRUE;
@@ -1640,7 +1712,28 @@ const STR *memory_kickimage_versionstrings[14] = {
       if (!kickdisk && !afkick)
       { /* Normal kickstart image */
 	fseek(F, 0, SEEK_SET);
-	if (memory_kickimage_size == 262144)
+	if (memory_kickimage_size == 8192)
+        { /* Load A1000 bootstrap ROM */
+          memory_a1000_wcs = true;
+          
+          if(memory_a1000_bootstrap == NULL) 
+            memory_a1000_bootstrap = (UBY *) malloc(262144);
+
+          if(memory_a1000_bootstrap) {
+            ULO lCRC32 = 0;
+            memset(memory_a1000_bootstrap, 0, 262144);
+            fread(memory_a1000_bootstrap, 1, 8192, F);
+            lCRC32 = crc32(0, memory_kick, 8192);
+            if (lCRC32 != 0x62F11C04) {
+              free(memory_a1000_bootstrap);
+              memory_a1000_bootstrap = NULL;
+              memoryKickError(MEMORY_ROM_ERROR_CHECKSUM, lCRC32);
+              return;
+            }
+            memoryKickA1000BootstrapSetMapped(true);
+          }
+        }
+        else if (memory_kickimage_size == 262144)
 	{   /* Load 256k ROM */
 	  fread(memory_kick, 1, 262144, F);
 	  memcpy(memory_kick + 262144, memory_kick, 262144);
@@ -2082,6 +2175,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemMap();
     memoryMysteryMap();
     memoryKickMap();
+    memoryKickA1000BootstrapSetMapped(true);
     rtcMap();
   }
 
@@ -2109,5 +2203,6 @@ __inline  UWO memoryReadWord(ULO address)
   void memoryShutdown(void)
   {
     memoryFastFree();
+    memoryKickA1000BootstrapFree();
   }
 

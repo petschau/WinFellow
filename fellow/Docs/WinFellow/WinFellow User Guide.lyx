@@ -712,6 +712,12 @@ because of this change, chip memory is now limited to 512kB when an OCS
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+support for the original Amiga 1000 boot process from Kickstart disk boot;
+ configure the A1000 bootstrap ROM like any other ROM image for the feature
+ to be automatically enabled
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
