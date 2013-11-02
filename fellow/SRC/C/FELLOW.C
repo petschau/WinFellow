@@ -72,7 +72,7 @@ char fellowlogfilename[MAX_PATH];
 
 BOOLE fellow_pre_start_reset;
 
-void fellowPreStartReset(BOOLE reset) {
+void fellowSetPreStartReset(BOOLE reset) {
   fellow_pre_start_reset = reset;
 }
 
@@ -264,7 +264,7 @@ void fellowSoftReset(void) {
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
-  fellowPreStartReset(FALSE);
+  fellowSetPreStartReset(FALSE);
 #ifdef GRAPH2
   GraphicsContext.SoftReset();
 #endif
@@ -292,7 +292,7 @@ void fellowHardReset(void) {
   ffilesysHardReset();
   memoryHardResetPost();
   cpuIntegrationHardReset();
-  fellowPreStartReset(FALSE);
+  fellowSetPreStartReset(FALSE);
 #ifdef GRAPH2
   GraphicsContext.HardReset();
 #endif
@@ -386,7 +386,7 @@ void fellowEmulationStop(void) {
 /*============================================================================*/
 
 void fellowRun(void) {
-  if (fellow_pre_start_reset) fellowHardReset();
+  if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     busRun();
@@ -402,7 +402,7 @@ void fellowRun(void) {
 void fellowStepOne(void)
 {
   fellowRequestEmulationStopClear();
-  if (fellow_pre_start_reset)
+  if (fellowGetPreStartReset())
   {
     fellowHardReset();
   }
@@ -428,7 +428,7 @@ void fellowStepOver(void)
   char soperands[128];
 
   fellowRequestEmulationStopClear();
-  if (fellow_pre_start_reset)
+  if (fellowGetPreStartReset())
   {
     fellowHardReset();
   }
@@ -454,7 +454,7 @@ void fellowStepOver(void)
 
 void fellowRunDebug(ULO breakpoint) {
   fellowRequestEmulationStopClear();
-  if (fellow_pre_start_reset) fellowHardReset();
+  if (fellowGetPreStartReset()) fellowHardReset();
   fellowSetRuntimeErrorCode((fellow_runtime_error_codes) setjmp(fellow_runtime_error_env));
   if (fellowGetRuntimeErrorCode() == FELLOW_RUNTIME_ERROR_NO_ERROR)
     while ((!fellow_request_emulation_stop) && (breakpoint != cpuGetPC()))
@@ -618,7 +618,7 @@ int __cdecl main(int argc, char *argv[]) {
   fellowSetLogEnabled(TRUE);
 
   sysinfoLogSysInfo();
-  fellowPreStartReset(TRUE);
+  fellowSetPreStartReset(TRUE);
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM

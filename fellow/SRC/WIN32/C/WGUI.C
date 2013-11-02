@@ -3165,7 +3165,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
             break;
           }
 	case IDC_HARD_RESET:
-	  fellowPreStartReset(TRUE);
+	  fellowSetPreStartReset(TRUE);
 	  wguiLoadBitmaps();
 	  SendMessage(GetDlgItem(wgui_hDialog, IDC_IMAGE_POWER_LED_MAIN), 
 	    STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) power_led_off_bitmap);
@@ -3326,7 +3326,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	      end_loop = TRUE;
 	      cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	      // check for manual or needed reset
-	      fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+	      fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 	      break;
 	    }
 	    MessageBox(wgui_hDialog, "Specified KickImage does not exist", "Configuration Error", 0);
@@ -3447,7 +3447,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  case WGUI_DEBUGGER_START:
 	    end_loop = TRUE;
 	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
-	    fellowPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
+	    fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	    debugger_start = TRUE;
 	  default:
 	    break;
