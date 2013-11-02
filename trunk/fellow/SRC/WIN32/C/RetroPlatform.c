@@ -1155,7 +1155,7 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
     return TRUE;
   case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_HARD)
-      fellowPreStartReset(TRUE);
+      fellowSetPreStartReset(TRUE);
     RetroPlatformSetEmulationPaused(false);
     gfxDrvRunEventSet();
     fellowRequestEmulationStop();
@@ -1659,7 +1659,7 @@ void RetroPlatformEnter(void) {
   if (RetroPlatformCheckEmulationNecessities() == TRUE) {
     cfgManagerSetCurrentConfig(&cfg_manager, RetroPlatformConfig);
     // check for manual or needed reset
-    fellowPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
+    fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
     RetroPlatformSendEnabledFloppyDrives();
     RetroPlatformSendEnabledHardDrives();

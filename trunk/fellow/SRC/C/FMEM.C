@@ -1285,7 +1285,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   {
     if(address >= 0xfc0000) {
       UBY *p = NULL;
-
       address = (address & 0xffffff) - 0xf80000;
       p = memory_kick + address ;
       memoryWriteLongToPointer(data, p);
@@ -1326,17 +1325,13 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   void memoryKickA1000BootstrapSetMapped(const bool bBootstrapMapped)
   {
-    if(!memory_a1000_bootstrap) return;
+    if(!memory_a1000_wcs || !memory_a1000_bootstrap) return;
 
-#ifdef _DEBUG
     fellowAddLog("memoryKickSetA1000BootstrapMapped(%s)\n", 
       bBootstrapMapped ? "true" : "false");
-#endif
 
     if (bBootstrapMapped) {
       memcpy(memory_kick, memory_a1000_bootstrap, 262144);
-      // upper half of kickstart area will mirror the bootstrap, while lower half contains actual Kickstart
-      memcpy(memory_kick + 262144, memory_a1000_bootstrap, 262144);
       memory_kickimage_version = 0;
     } else {
       memcpy(memory_kick, memory_kick + 262144, 262144);
@@ -1606,6 +1601,8 @@ const STR *memory_kickimage_versionstrings[14] = {
     ULO version;
     STR IDString[12];
 
+    memory_a1000_wcs = false;
+
     fread(IDString, 11, 1, F);
     version = IDString[10] - '0';
     IDString[10] = '\0';
@@ -1710,6 +1707,8 @@ const STR *memory_kickimage_versionstrings[14] = {
     BOOLE kickdisk = FALSE;
     STR *suffix, *lastsuffix;
     BOOLE afkick = FALSE;
+
+    memory_a1000_wcs = false;
 
     /* New file is different from previous */
     /* Must load file */
@@ -2205,12 +2204,15 @@ __inline  UWO memoryReadWord(ULO address)
     memoryEmemMap();
     memoryDmemMap();
     memoryMysteryMap();
+    memoryKickA1000BootstrapSetMapped(true);
     memoryKickMap();
     rtcMap();
   }
 
   void memoryHardReset(void)
   {
+    fellowAddLog("memoryHardReset()\n");
+
     memoryChipClear(),
     memoryFastClear();
     memorySlowClear();
@@ -2226,7 +2228,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemMap();
     memoryMysteryMap();
     memoryKickMap();
-    memoryKickA1000BootstrapSetMapped(true);
     rtcMap();
   }
 
