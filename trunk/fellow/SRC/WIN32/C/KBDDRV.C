@@ -957,6 +957,11 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       }
     }
 
+    if(ispressed(PCK_RIGHT_WINDOWS) || ispressed(PCK_START_MENU))
+      if(ispressed(PCK_LEFT_WINDOWS))
+        if(ispressed(PCK_LEFT_CTRL))
+          issue_event(EVENT_HARD_RESET);
+
 #ifdef RETRO_PLATFORM
     if(RetroPlatformGetMode())
     {
