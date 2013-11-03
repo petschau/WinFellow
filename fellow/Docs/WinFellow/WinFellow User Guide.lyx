@@ -718,6 +718,12 @@ support for the original Amiga 1000 boot process from Kickstart disk boot;
  to be automatically enabled
 \end_layout
 
+\begin_layout Itemize
+support for keyboard-initiated reset - press Ctrl+Left Windows+Right Windows
+ or Ctrl+Left Windows+Context Menu (as not all keyboards have a right Windows
+ key) to initiate a reboot within an emulated session
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Bug fixes:

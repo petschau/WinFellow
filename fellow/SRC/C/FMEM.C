@@ -1644,7 +1644,8 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap) {
             ULO lCRC32 = 0;
-            memcpy(memory_a1000_bootstrap, memory_kick, 262144);
+            memset(memory_a1000_bootstrap, 0xff, 262144);
+            memcpy(memory_a1000_bootstrap, memory_kick, 8192);
             lCRC32 = crc32(0, memory_kick, 8192);
             if (lCRC32 != 0x62F11C04) {
               free(memory_a1000_bootstrap);
@@ -1768,7 +1769,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 
           if(memory_a1000_bootstrap) {
             ULO lCRC32 = 0;
-            memset(memory_a1000_bootstrap, 0, 262144);
+            memset(memory_a1000_bootstrap, 0xff, 262144);
             fread(memory_a1000_bootstrap, 1, 8192, F);
             memcpy(memory_kick, memory_a1000_bootstrap, 262144);
             memcpy(memory_kick + 262144, memory_a1000_bootstrap, 262144);

@@ -120,6 +120,10 @@ void kbdEventEOFHandler(void) {
 	      draw_view_scroll = 0x4d;
 	      break;
       case EVENT_HARD_RESET:
+              // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
+              // cpuIntegrationHardReset calls cpuHardReset, which in turn triggers a soft reset
+              fellowAddLog("kbd: keyboard-initiated reset triggered...\n");
+              cpuIntegrationHardReset();
 	      break;
     }
     kbd_state.eventsEOF.outpos++;

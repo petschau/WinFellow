@@ -1688,7 +1688,6 @@ void RetroPlatformShutdown(void) {
 
 void RetroPlatformEmulationStart(void) {
   RetroPlatformSendScreenMode(gfx_drv_hwnd);
-  RetroPlatformSendMouseCapture(FALSE);
 }
 
 void RetroPlatformEmulationStop(void) {
