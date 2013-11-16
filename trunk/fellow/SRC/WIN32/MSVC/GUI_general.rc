@@ -13,7 +13,8 @@
 #ifndef IDC_STATIC
 #define IDC_STATIC -1
 #endif
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -194,7 +195,7 @@ BEGIN
     PUSHBUTTON      "&Create",IDC_BUTTON_HARDFILE_CREATE,7,134,54,15
 END
 
-IDD_MEMORY DIALOGEX 0, 0, 235, 156
+IDD_MEMORY DIALOGEX 0, 0, 235, 171
 STYLE DS_SETFONT | WS_CHILD | WS_DISABLED | WS_CAPTION
 CAPTION "memory"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
@@ -206,13 +207,16 @@ BEGIN
     COMBOBOX        IDC_COMBO_CHIP,40,26,55,49,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_FAST,40,40,55,47,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COMBO_BOGO,40,55,55,52,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    GROUPBOX        "rom",IDC_STATIC,10,80,215,55
+    GROUPBOX        "rom",IDC_STATIC,10,80,215,59
     LTEXT           "image",IDC_STATIC,15,95,20,8
-    LTEXT           "key",IDC_STATIC,15,110,12,8
+    LTEXT           "key",IDC_STATIC,15,124,12,8
     EDITTEXT        IDC_EDIT_KICKSTART,40,95,155,12,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_KEYFILE,40,110,155,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_KEYFILE,40,122,155,12,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BUTTON_KICKSTART_FILEDIALOG,200,95,15,12
-    PUSHBUTTON      "...",IDC_BUTTON_KEYFILE_FILEDIALOG,200,110,15,12
+    PUSHBUTTON      "...",IDC_BUTTON_KEYFILE_FILEDIALOG,200,122,15,12
+    LTEXT           "ext.",IDC_STATIC,15,110,12,8
+    EDITTEXT        IDC_EDIT_KICKSTART_EXT,40,108,155,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTON_KICKSTART_EXT_FILEDIALOG,200,108,15,12
 END
 
 IDD_GAMEPORT DIALOGEX 0, 0, 235, 174
@@ -319,7 +323,7 @@ BEGIN
     CTEXT           "WinFellow alpha",IDC_STATIC_ABOUT_VERSION,17,50,180,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,94,8,SS_NOTIFY
-    CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,WS_EX_TRANSPARENT
+    CONTROL         IDB_WINFELLOW_LOGO,IDC_STATIC,38,7,139,26,NOT WS_GROUP,WS_EX_TRANSPARENT
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 
@@ -496,7 +500,7 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 228
         TOPMARGIN, 7
-        BOTTOMMARGIN, 149
+        BOTTOMMARGIN, 142
     END
 
     IDD_GAMEPORT, DIALOG
@@ -688,12 +692,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // English (United States) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian, Bokmål (Norway) resources
+// Norwegisch, Bokmål (Norwegen) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -705,7 +709,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegian, Bokmål (Norway) resources
+#endif    // Norwegisch, Bokmål (Norwegen) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

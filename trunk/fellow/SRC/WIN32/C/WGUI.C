@@ -1206,8 +1206,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     /* Set current ROM and key file names */
 
-    ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART, cfgGetKickImage(conf));
-    ccwEditSetText(hwndDlg, IDC_EDIT_KEYFILE, cfgGetKey(conf));
+    ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART,     cfgGetKickImage(conf));
+    ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART_EXT, cfgGetKickImageExtended(conf));
+    ccwEditSetText(hwndDlg, IDC_EDIT_KEYFILE,       cfgGetKey(conf));
   }
 
   /* Extract memory config */
@@ -1248,6 +1249,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     ccwEditGetText(hwndDlg, IDC_EDIT_KICKSTART, tmp, CFG_FILENAME_LENGTH);
     cfgSetKickImage(conf, tmp);
+    ccwEditGetText(hwndDlg, IDC_EDIT_KICKSTART_EXT, tmp, CFG_FILENAME_LENGTH);
+    cfgSetKickImageExtended(conf, tmp);
     ccwEditGetText(hwndDlg, IDC_EDIT_KEYFILE, tmp, CFG_FILENAME_LENGTH);
     cfgSetKey(conf, tmp);
   }
@@ -2305,6 +2308,13 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	cfgSetKickImage(wgui_cfg, filename);
 	iniSetLastUsedKickImageDir(wgui_ini, wguiExtractPath(filename));
 	ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART, cfgGetKickImage(wgui_cfg));
+      }
+      break;
+    case IDC_BUTTON_KICKSTART_EXT_FILEDIALOG:
+      if (wguiSelectFile(hwndDlg, filename, CFG_FILENAME_LENGTH, "Select Extended ROM File", FSEL_ROM)) {
+        cfgSetKickImageExtended(wgui_cfg, filename);
+        iniSetLastUsedKickImageDir(wgui_ini, wguiExtractPath(filename));
+        ccwEditSetText(hwndDlg, IDC_EDIT_KICKSTART_EXT, cfgGetKickImageExtended(wgui_cfg));
       }
       break;
     case IDC_BUTTON_KEYFILE_FILEDIALOG:

@@ -59,10 +59,11 @@ ULO memory_slowsize;
 BOOLE memory_useautoconfig;
 BOOLE memory_address32bit;
 STR memory_kickimage[CFG_FILENAME_LENGTH];
+STR memory_kickimage_ext[CFG_FILENAME_LENGTH];
 STR memory_key[256];
-bool memory_a1000_wcs = false;              //< emulate the Amiga 1000 WCS (writable control store)
-UBY *memory_a1000_bootstrap = NULL;         //< hold A1000 bootstrap ROM, if used
-bool memory_a1000_bootstrap_mapped = false; //< true while A1000 bootstrap ROM mapped to KS area
+bool memory_a1000_wcs = false;              ///< emulate the Amiga 1000 WCS (writable control store)
+UBY *memory_a1000_bootstrap = NULL;         ///< hold A1000 bootstrap ROM, if used
+bool memory_a1000_bootstrap_mapped = false; ///< true while A1000 bootstrap ROM mapped to KS area
 
 /*============================================================================*/
 /* Holds actual memory                                                        */
@@ -71,6 +72,7 @@ bool memory_a1000_bootstrap_mapped = false; //< true while A1000 bootstrap ROM m
 UBY memory_chip[0x200000 + 32];
 UBY memory_slow[0x1c0000 + 32];
 UBY memory_kick[0x080000 + 32];
+UBY *memory_kick_ext = NULL;
 UBY *memory_fast = NULL;
 ULO memory_fast_baseaddress;
 ULO memory_fastallocatedsize;
@@ -110,6 +112,7 @@ ULO memory_kickimage_size;
 ULO memory_kickimage_version;
 STR memory_kickimage_versionstr[80];
 ULO memory_kickimage_basebank;
+ULO memory_kickimage_ext_size = 0;
 const STR *memory_kickimage_versionstrings[14] = {
   "Kickstart, version information unavailable",
   "Kickstart Pre-V1.0",
@@ -1230,9 +1233,21 @@ const STR *memory_kickimage_versionstrings[14] = {
     return memoryReadByteFromPointer(p);
   }
 
+  UBY memoryKickExtendedReadByte(ULO address)
+  {
+    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
+    return memoryReadByteFromPointer(p);
+  }
+
   UWO memoryKickReadWord(ULO address)
   {
     UBY *p = memory_kick + ((address & 0xffffff) - 0xf80000);
+    return memoryReadWordFromPointer(p);
+  }
+
+  UWO memoryKickExtendedReadWord(ULO address)
+  {
+    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
     return memoryReadWordFromPointer(p);
   }
 
@@ -1242,7 +1257,18 @@ const STR *memory_kickimage_versionstrings[14] = {
     return memoryReadLongFromPointer(p);
   }
 
+  ULO memoryKickExtendedReadLong(ULO address)
+  {
+    UBY *p = memory_kick_ext + ((address & 0xffffff) - 0xe00000);
+    return memoryReadLongFromPointer(p);
+  }
+
   void memoryKickWriteByte(UBY data, ULO address)
+  {
+    // NOP
+  }
+
+  void memoryKickExtendedWriteByte(UBY data, ULO address)
   {
     // NOP
   }
@@ -1252,7 +1278,17 @@ const STR *memory_kickimage_versionstrings[14] = {
     // NOP
   }
 
+  void memoryKickExtendedWriteWord(UWO data, ULO address)
+  {
+    // NOP
+  }
+
   void memoryKickWriteLong(ULO data, ULO address)
+  {
+    // NOP
+  }
+
+  void memoryKickExtendedWriteLong(ULO data, ULO address)
   {
     // NOP
   }
@@ -1320,6 +1356,29 @@ const STR *memory_kickimage_versionstrings[14] = {
           bank,
           memory_kickimage_basebank,
           FALSE);
+    }
+  }
+
+  void memoryKickExtendedMap(void)
+  {
+    if (memory_kickimage_ext_size == 0)
+      return;
+
+    ULO basebank = 0xe0;
+    ULO numbanks = memory_kickimage_ext_size / 65536;
+
+    for (ULO bank = basebank; bank < (basebank + numbanks); bank++)
+    {
+      memoryBankSet(memoryKickExtendedReadByte,
+      memoryKickExtendedReadWord,
+      memoryKickExtendedReadLong,
+      memoryKickExtendedWriteByte,
+      memoryKickExtendedWriteWord,
+      memoryKickExtendedWriteLong,
+      memory_kick_ext,
+      bank,
+      basebank,
+      FALSE);
     }
   }
 
@@ -1812,6 +1871,65 @@ const STR *memory_kickimage_versionstrings[14] = {
   }
 
   /*============================================================================*/
+  /* Free memory used for extended kickstart image                              */
+  /*============================================================================*/
+
+  void memoryKickExtendedFree(void)
+  {
+    if (memory_kick_ext) {
+      free(memory_kick_ext);
+      memory_kick_ext = NULL;
+    }
+    memory_kickimage_ext_size = 0;
+  }
+
+  /*============================================================================*/
+  /* Load extended Kickstart ROM into memory                                    */
+  /*============================================================================*/
+
+  void memoryKickExtendedLoad(void)
+  {
+    FILE *F;
+    fs_navig_point *fsnp;
+
+    /* New file is different from previous, must load file */
+
+    memoryKickExtendedFree();
+
+    if ((fsnp = fsWrapMakePoint(memory_kickimage_ext)) == NULL)
+      return;
+    else
+    {
+      if (fsnp->type != FS_NAVIG_FILE)
+        return;
+      else
+      { /* File passed initial tests */
+        if ((F = fopen(memory_kickimage_ext, "rb")) == NULL)
+          return;
+        else 
+          memory_kickimage_ext_size = fsnp->size;
+      }
+      free(fsnp);
+    }
+
+    if (F) {
+      memory_kick_ext = (UBY *)malloc(memory_kickimage_ext_size);
+      fseek(F, 0, SEEK_SET);
+
+      if (memory_kickimage_ext_size == 524288) /* Load 512k extended ROM */
+        fread(memory_kick_ext, 1, 524288, F);
+
+      if (memory_kickimage_ext_size == 262144) {
+        memset(memory_kick_ext, 0xff, 524288);
+        fread(memory_kick_ext, 1, 262144, F);
+      }
+
+      fclose(F);
+      F = NULL;
+    }
+  }
+
+  /*============================================================================*/
   /* Top-level memory access functions                                          */
   /*============================================================================*/
 
@@ -2030,6 +2148,16 @@ __inline  UWO memoryReadWord(ULO address)
     return needreset;
   }
 
+  BOOLE memorySetKickImageExtended(STR *kickimageext)
+  {
+    BOOLE needreset = !!strncmp(memory_kickimage_ext, kickimageext, CFG_FILENAME_LENGTH);
+    strncpy(memory_kickimage_ext, kickimageext, CFG_FILENAME_LENGTH);
+    if (needreset) 
+      memoryKickExtendedLoad();
+    return needreset;
+  }
+
+
   STR *memoryGetKickImage(void)
   {
     return memory_kickimage;
@@ -2207,6 +2335,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryMysteryMap();
     memoryKickA1000BootstrapSetMapped(true);
     memoryKickMap();
+    memoryKickExtendedMap();
     rtcMap();
   }
 
@@ -2229,6 +2358,7 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemMap();
     memoryMysteryMap();
     memoryKickMap();
+    memoryKickExtendedMap();
     rtcMap();
   }
 
@@ -2256,6 +2386,7 @@ __inline  UWO memoryReadWord(ULO address)
   void memoryShutdown(void)
   {
     memoryFastFree();
+    memoryKickExtendedFree();
     memoryKickA1000BootstrapFree();
   }
 

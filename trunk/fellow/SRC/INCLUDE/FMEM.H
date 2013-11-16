@@ -119,6 +119,7 @@ extern BOOLE memoryGetUseAutoconfig(void);
 extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
 extern BOOLE memoryGetAddress32Bit(void);
 extern BOOLE memorySetKickImage(STR *kickimage);
+extern BOOLE memorySetKickImageExtended(STR *kickimageext);
 extern STR *memoryGetKickImage(void);
 extern void memorySetKey(STR *key);
 extern STR *memoryGetKey(void);
