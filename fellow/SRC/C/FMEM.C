@@ -113,6 +113,7 @@ ULO memory_kickimage_version;
 STR memory_kickimage_versionstr[80];
 ULO memory_kickimage_basebank;
 ULO memory_kickimage_ext_size = 0;
+ULO memory_kickimage_ext_basebank = 0;
 const STR *memory_kickimage_versionstrings[14] = {
   "Kickstart, version information unavailable",
   "Kickstart Pre-V1.0",
@@ -1364,7 +1365,7 @@ const STR *memory_kickimage_versionstrings[14] = {
     if (memory_kickimage_ext_size == 0)
       return;
 
-    ULO basebank = 0xe0;
+    ULO basebank = memory_kickimage_ext_basebank;
     ULO numbanks = memory_kickimage_ext_size / 65536;
 
     for (ULO bank = basebank; bank < (basebank + numbanks); bank++)
@@ -1920,9 +1921,14 @@ const STR *memory_kickimage_versionstrings[14] = {
         fread(memory_kick_ext, 1, 524288, F);
 
       if (memory_kickimage_ext_size == 262144) {
-        memset(memory_kick_ext, 0xff, 524288);
+        memset(memory_kick_ext, 0xff, 262144);
         fread(memory_kick_ext, 1, 262144, F);
       }
+
+      memory_kickimage_ext_basebank = memory_kick_ext[5];
+
+      if (memory_kickimage_ext_basebank == 0xf8)
+        memory_kickimage_ext_basebank = 0xe0;
 
       fclose(F);
       F = NULL;
