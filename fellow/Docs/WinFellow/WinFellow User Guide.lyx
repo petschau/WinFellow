@@ -690,9 +690,9 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for extended Kickstart ROMs (only unencrypted ones for the moment,
- as a CDTV or CD32 profile cannot be used anyway) - this gives the ability
- to start from the ATOS boot ROM
+support for extended ROM images (only unencrypted ones for the moment, as
+ a CDTV or CD32 profile cannot be used anyway) - this gives the ability
+ to start from the AROS boot ROM
 \end_layout
 
 \end_deeper
