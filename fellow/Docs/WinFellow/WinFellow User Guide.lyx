@@ -685,6 +685,18 @@ Thanks for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
+New features:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+support for extended Kickstart ROMs (only unencrypted ones for the moment,
+ as a CDTV or CD32 profile cannot be used anyway) - this gives the ability
+ to start from the ATOS boot ROM
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
 Changed functionality:
 \end_layout
 

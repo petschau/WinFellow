@@ -70,6 +70,7 @@ typedef struct {
   ULO    m_fastsize;
   ULO    m_bogosize;
   STR    m_kickimage[CFG_FILENAME_LENGTH];
+  STR    m_kickimage_ext[CFG_FILENAME_LENGTH];
   STR    m_kickdescription[CFG_FILENAME_LENGTH];
   ULO    m_kickcrc32;
   STR    m_key[CFG_FILENAME_LENGTH];
@@ -203,6 +204,8 @@ extern void cfgSetBogoSize(cfg *config, ULO bogosize);
 extern ULO cfgGetBogoSize(cfg *config);
 extern void cfgSetKickImage(cfg *config, STR *kickimage);
 extern STR *cfgGetKickImage(cfg *config);
+extern void cfgSetKickImageExtended(cfg *config, STR *kickimageext);
+extern STR *cfgGetKickImageExtended(cfg *config);
 extern void cfgSetKickDescription(cfg *config, STR *kickdescription);
 extern STR *cfgGetKickDescription(cfg *config);
 extern void cfgSetKickCRC32(cfg *config, ULO kickcrc32);

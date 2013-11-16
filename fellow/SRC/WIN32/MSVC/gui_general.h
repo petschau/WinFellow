@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by GUI_general.rc
+// Von Microsoft Visual C++ generierte Includedatei.
+// Verwendet durch GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
 #define IDS_APP_TITLE                   2
@@ -98,12 +98,14 @@
 #define IDC_BUTTON_DF0_EJECT            1055
 #define IDC_EDIT_KICKSTART              1056
 #define IDC_BUTTON_DF1_EJECT            1057
+#define IDC_EDIT_KICKSTART_EXT          1057
 #define IDC_EDIT_KEYFILE                1058
 #define IDC_BUTTON_DF2_CREATE           1058
 #define IDC_BUTTON_DF2_EJECT            1059
 #define IDC_BUTTON_KICKSTART_FILEDIALOG 1060
 #define IDC_BUTTON_DF3_CREATE           1060
 #define IDC_CHECK_SOUND_WAV             1061
+#define IDC_BUTTON_KICKSTART_EXT_FILEDIALOG 1061
 #define IDC_COMBO_GAMEPORT1             1062
 #define IDC_CHECK_VARIOUS_SPEED         1063
 #define IDC_LIST_HARDFILES              1064

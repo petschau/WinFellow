@@ -230,6 +230,16 @@ STR *cfgGetKickImage(cfg *config)
   return config->m_kickimage;
 }
 
+void cfgSetKickImageExtended(cfg *config, STR *kickimageext)
+{
+  strncpy(config->m_kickimage_ext, kickimageext, CFG_FILENAME_LENGTH);
+}
+
+STR *cfgGetKickImageExtended(cfg *config)
+{
+  return config->m_kickimage_ext;
+}
+
 void cfgSetKickDescription(cfg *config, STR *kickdescription)
 {
   strncpy(config->m_kickdescription, kickdescription, CFG_FILENAME_LENGTH);
@@ -756,6 +766,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetFastSize(config, 0);
   cfgSetBogoSize(config, 0x80000);
   cfgSetKickImage(config, "");
+  cfgSetKickImageExtended(config, "");
   cfgSetKickDescription(config, "");
   cfgSetKickCRC32(config, 0);
   cfgSetKey(config, "");
@@ -1474,6 +1485,10 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetKickImage(config, value);
     }
+    else if (stricmp(option, "kickstart_rom_file_ext") == 0)
+    {
+      cfgSetKickImageExtended(config, value);
+    }
     else if (stricmp(option, "kickstart_rom_description") == 0)
     {
       cfgSetKickDescription(config, value);
@@ -1754,6 +1769,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "fastmem_size=%u\n", cfgGetFastSize(config) / 1048576);
   fprintf(cfgfile, "bogomem_size=%u\n", cfgGetBogoSize(config) / 262144);
   fprintf(cfgfile, "kickstart_rom_file=%s\n", cfgGetKickImage(config));
+  fprintf(cfgfile, "kickstart_rom_file_ext=%s\n", cfgGetKickImageExtended(config));
   if(strcmp(cfgGetKickDescription(config), "") != 0)
   {
     fprintf(cfgfile, "kickstart_rom_description=%s\n", cfgGetKickDescription(config));
@@ -2074,6 +2090,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   needreset |= memorySetSlowSize(cfgGetBogoSize(config));
   memorySetKey(cfgGetKey(config));
   needreset |= memorySetKickImage(cfgGetKickImage(config));
+  needreset |= memorySetKickImageExtended(cfgGetKickImageExtended(config));
   needreset |= memorySetAddress32Bit(cfgGetAddress32Bit(config));
   needreset |= rtcSetEnabled(cfgGetRtc(config)) == true;
 
