@@ -1882,6 +1882,7 @@ const STR *memory_kickimage_versionstrings[14] = {
       memory_kick_ext = NULL;
     }
     memory_kickimage_ext_size = 0;
+    memory_kickimage_ext_basebank = 0;
   }
 
   /*============================================================================*/
@@ -1892,6 +1893,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   {
     FILE *F;
     fs_navig_point *fsnp;
+    ULO size = 0;
 
     /* New file is different from previous, must load file */
 
@@ -1908,25 +1910,51 @@ const STR *memory_kickimage_versionstrings[14] = {
         if ((F = fopen(memory_kickimage_ext, "rb")) == NULL)
           return;
         else 
-          memory_kickimage_ext_size = fsnp->size;
+          size = fsnp->size;
       }
       free(fsnp);
     }
 
     if (F) {
-      memory_kick_ext = (UBY *)malloc(memory_kickimage_ext_size);
       fseek(F, 0, SEEK_SET);
 
-      if (memory_kickimage_ext_size == 524288) /* Load 512k extended ROM */
-        fread(memory_kick_ext, 1, 524288, F);
+      if (size == 262155 || size == 524299) {
+        // Amiga Forever - encrypted ROM?
+        ULO version;
+        STR IDString[12];
 
-      if (memory_kickimage_ext_size == 262144) {
-        memset(memory_kick_ext, 0xff, 262144);
-        fread(memory_kick_ext, 1, 262144, F);
+        fread(IDString, 11, 1, F);
+        version = IDString[10] - '0';
+        IDString[10] = '\0';
+        if (stricmp(IDString, "AMIROMTYPE") == 0)
+        { /* Header seems OK */
+          if (version != 1)
+            return;
+          else
+          { /* Seems to be a file we can handle */
+            memory_kick_ext = (UBY *) malloc(size - 11);
+            size = memoryKickDecodeAF(memory_kickimage_ext, memory_key, memory_kick_ext);
+            memory_kickimage_ext_size = size;
+          }
+        }
+      }
+      else {
+        if (size == 262144 || size == 524288) {
+          memory_kick_ext = (UBY *) malloc(size);
+
+          if (memory_kick_ext) {
+            memset(memory_kick_ext, 0xff, size);
+            fread(memory_kick_ext, 1, size, F);
+            memory_kickimage_ext_size = size;
+          }
+          else
+            return;
+        }
       }
 
       memory_kickimage_ext_basebank = memory_kick_ext[5];
 
+      // AROS extended ROM does not have basebank at byte 6, override
       if (memory_kickimage_ext_basebank == 0xf8)
         memory_kickimage_ext_basebank = 0xe0;
 
