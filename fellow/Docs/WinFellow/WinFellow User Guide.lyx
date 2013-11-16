@@ -690,9 +690,20 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for extended ROM images (only unencrypted ones for the moment, as
- a CDTV or CD32 profile cannot be used anyway) - this gives the ability
- to start from the AROS boot ROM
+support for the original Amiga 1000 boot process from Kickstart disk boot;
+ configure the A1000 bootstrap ROM like any other ROM image for the feature
+ to be automatically enabled
+\end_layout
+
+\begin_layout Itemize
+support for keyboard-initiated reset - press Ctrl+Left Windows+Right Windows
+ or Ctrl+Left Windows+Context Menu (as not all keyboards have a right Windows
+ key) to initiate a reboot within an emulated session
+\end_layout
+
+\begin_layout Itemize
+support for extended ROM images; this gives the ability to use the AROS
+ boot ROM
 \end_layout
 
 \end_deeper
@@ -724,18 +735,6 @@ because of this change, chip memory is now limited to 512kB when an OCS
 \end_layout
 
 \end_deeper
-\begin_layout Itemize
-support for the original Amiga 1000 boot process from Kickstart disk boot;
- configure the A1000 bootstrap ROM like any other ROM image for the feature
- to be automatically enabled
-\end_layout
-
-\begin_layout Itemize
-support for keyboard-initiated reset - press Ctrl+Left Windows+Right Windows
- or Ctrl+Left Windows+Context Menu (as not all keyboards have a right Windows
- key) to initiate a reboot within an emulated session
-\end_layout
-
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
