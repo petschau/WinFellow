@@ -447,26 +447,9 @@ static BOOLE RetroPlatformSendMessage(ULO iMessage, WPARAM wParam, LPARAM lParam
 
 ULO RetroPlatformGetClippingOffsetLeftAdjusted(void) {
   ULO lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeftRP;
-
-  switch(RetroPlatformGetDisplayScale())
-  {
-    case DISPLAYSCALE_1X:
-      if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
-        lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
-      else if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK)
-        lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK) / 2;
-      break;
-    case DISPLAYSCALE_2X:
-      if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
-        lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
-      else if(lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK)
-        lRetroPlatformClippingOffsetLeft = lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT_FALLBACK;
-      break;
-    default:
-      fellowAddLog("RetroPlatformGetClippingOffsetLeftAdjusted(): WARNING: unknown display scaling factor 0x%x\n.",
-        RetroPlatformGetDisplayScale());
-      break;
-  }
+    
+  if (lRetroPlatformClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
+    lRetroPlatformClippingOffsetLeft = (lRetroPlatformClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
 
 #ifdef _DEBUGVERBOSE
   fellowAddLog("RetroPlatformGetClippingOffsetLeftAdjusted(): left offset adjusted from %u to %u\n", 
@@ -481,19 +464,6 @@ ULO RetroPlatformGetClippingOffsetTopAdjusted(void) {
 
   if(lRetroPlatformClippingOffsetTop >= RETRO_PLATFORM_OFFSET_ADJUST_TOP)
     lRetroPlatformClippingOffsetTop -= RETRO_PLATFORM_OFFSET_ADJUST_TOP;
-
-  switch(RetroPlatformGetDisplayScale())
-  {
-    case DISPLAYSCALE_1X:
-      break;
-    case DISPLAYSCALE_2X:
-      lRetroPlatformClippingOffsetTop *= 2;
-      break;
-    default:
-      fellowAddLog("RetroPlatformGetClippingOffsetTopAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
-        RetroPlatformGetDisplayScale());
-      break;
-  }
 
 #ifdef _DEBUGVERBOSE
   fellowAddLog("RetroPlatformGetClippingOffsetTopAdjusted(): top offset adjusted from %u to %u\n", 
@@ -534,23 +504,21 @@ ULO RetroPlatformGetScreenHeightAdjusted(void) {
 
 ULO RetroPlatformGetScreenWidthAdjusted(void) {
   ULO lScreenWidth = 0;
-  
-  if(lRetroPlatformScreenWidthRP > 768) {
-    // target width is for super-hires mode display; for now, just divide by two to have the hires resolution
     
-    switch(RetroPlatformGetDisplayScale())
+  if (!RetroPlatformGetClippingAutomatic()) {
+    switch (RetroPlatformGetDisplayScale())
     {
-      case DISPLAYSCALE_1X:
-        lScreenWidth  = lRetroPlatformScreenWidthRP / 2;
-        break;
-      case DISPLAYSCALE_2X:
-        lScreenWidth = lRetroPlatformScreenWidthRP;
-        break;
-      default:
-        fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
-          RetroPlatformGetDisplayScale());
-        break;
-    }  
+    case DISPLAYSCALE_1X:
+      lScreenWidth = lRetroPlatformScreenWidthRP / 2;
+      break;
+    case DISPLAYSCALE_2X:
+      lScreenWidth = lRetroPlatformScreenWidthRP;
+      break;
+    default:
+      fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
+        RetroPlatformGetDisplayScale());
+      break;
+    }
   }
   else
     lScreenWidth = lRetroPlatformScreenWidthRP;
@@ -1022,8 +990,8 @@ void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
   RetroPlatformDisplayScale = displayscale;
 
   if(RetroPlatformConfig != NULL) {
-    cfgSetDisplayScale(RetroPlatformConfig, displayscale);
-    drawSetDisplayScale(displayscale);
+    // cfgSetDisplayScale(RetroPlatformConfig, displayscale);
+    // drawSetDisplayScale(displayscale);
   }
 
   fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
@@ -1248,7 +1216,7 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
       wcstombs(szScreenRaw,      rpsc->szScreenRaw,      CFG_FILENAME_LENGTH);
       		
       if (szScreenFiltered[0] || szScreenRaw[0]) {
-        BOOLE bResult = TRUE;
+        bool bResult = true;
 	DWORD dResult = 0;
 	fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
           szScreenFiltered, szScreenRaw);
@@ -1262,11 +1230,13 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
         }
 
         if(bResult) {
-          dResult |= RP_GUESTSCREENFLAGS_MODE_PAL;
+          dResult |= RP_GUESTSCREENFLAGS_MODE_PAL |
+            RP_GUESTSCREENFLAGS_HORIZONTAL_HIRES |
+            RP_GUESTSCREENFLAGS_VERTICAL_INTERLACED;
           return dResult;
         }
         else 
-          return RP_SCREENCAPTURE_ERROR;		
+          return RP_SCREENCAPTURE_ERROR;
       }
     }
     return RP_SCREENCAPTURE_ERROR;
@@ -1366,9 +1336,9 @@ static BOOLE RetroPlatformSendFeatures(void) {
   dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
   dFeatureFlags |= RP_FEATURE_SCREEN2X;
+  dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 
 #ifdef _DEBUG
-  dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
   dFeatureFlags |= RP_FEATURE_FULLSCREEN;
 #endif
 

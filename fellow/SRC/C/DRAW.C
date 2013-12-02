@@ -483,20 +483,8 @@ BOOLE drawSetMode(ULO width,
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode())
   {
-    switch(RetroPlatformGetDisplayScale()) {
-      case DISPLAYSCALE_1X:
-        height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-        width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
-        break;
-      case DISPLAYSCALE_2X:
-        height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
-        width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 4;
-        break;
-      default:
-        fellowAddLog("drawSetMode(): WARNING: unknown display scaling factor 0x%x.\n",
-          RetroPlatformGetDisplayScale());
-        break;
-    }
+    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
   }
 #endif
 
@@ -674,13 +662,23 @@ static void drawAmigaScreenWidth(draw_mode *dm)
   }
   if (draw_width_amiga <= 343)
   {
-    draw_left = 129;
-    draw_right = 129 + draw_width_amiga;
+#ifdef RETRO_PLATFORM
+    if (RetroPlatformGetMode())
+      draw_left = 125;
+    else
+#endif
+      draw_left = 129;
+    draw_right = draw_left + draw_width_amiga;
   }
   else
   {
-    draw_right = 472;
-    draw_left = 472 - draw_width_amiga;
+#ifdef RETRO_PLATFORM
+    if (RetroPlatformGetMode())
+      draw_right = 468;
+    else
+#endif
+      draw_right = 472;
+    draw_left = draw_right - draw_width_amiga;
   }
   draw_width_amiga_real = draw_width_amiga*totalscale;
 }
