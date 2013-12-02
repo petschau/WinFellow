@@ -22,7 +22,7 @@ extern void gfxDrvRunEventReset(void);
 extern BOOLE gfxDrvStartup(void);
 extern void gfxDrvShutdown(void);
 extern void gfxDrvChangeDInputDeviceStates(BOOLE);
-extern BOOLE gfxDrvTakeScreenShot(BOOLE, STR *);
+extern bool gfxDrvTakeScreenShot(const bool, const STR *);
 extern void gfxDrvRegisterRetroPlatformScreenMode(void);
 
 #endif
