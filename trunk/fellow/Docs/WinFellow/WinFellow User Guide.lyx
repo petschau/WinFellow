@@ -110,7 +110,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.3 Beta (2013/10/18)
+v0.5.3 Beta (2013/12/02)
 \end_layout
 
 \begin_layout Standard
@@ -706,6 +706,10 @@ support for extended ROM images; this gives the ability to use the AROS
  boot ROM
 \end_layout
 
+\begin_layout Itemize
+support for screenshots and clipping editor/live preview in Amiga Forever
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Changed functionality:
@@ -735,6 +739,12 @@ because of this change, chip memory is now limited to 512kB when an OCS
 \end_layout
 
 \end_deeper
+\begin_layout Itemize
+2x mode in Amiga Forever now scales via DirectX instead of the internal
+ draw modules (design change was necessary to enable live preview in 2x
+ mode)
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Bug fixes:
