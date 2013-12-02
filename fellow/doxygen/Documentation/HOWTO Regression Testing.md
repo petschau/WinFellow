@@ -208,3 +208,19 @@ Start the demo Lotus Esprit Turbo Challenge 96k by Scarab. It should start corre
 Before this change it would fail to load with a black screen after the intro. I makes use of bit-field instructions during decrunching.
 
 In the same commit, ASL overflow handling was improved, and a flag check regarding MULU was fixed; no test cases are known for these changes.
+
+r987: clipping and scaling, screenshots in Amiga Forever
+--------------------------------------------------------
+Edit a title to use PAL standard clipping and verify it is displayed correctly in 1x mode. Take a screenshot, verify it is ok. 
+
+Edit a title to use PAL (maximum) clipping and verify it is displayed correctly in 1x mode. Take a screenshot, verify it is ok.
+
+Start Arkanoid and verify it is displayed correctly
+- in 1x mode. Take a screenshot, verify it is ok. 
+- in 2x mode. Take a screenshot, verify it is ok.
+
+Edit a title to use Automatic clipping and verify the maximum screen area is visible in 1x mode. Take a screenshot, verify it is ok. 
+
+Edit a title to use custom clipping of a small area and verify it is displayed correctly
+- in 1x mode. Take a screenshot, verify it is ok. 
+- in 2x mode. Take a screenshot, verify it is ok.
