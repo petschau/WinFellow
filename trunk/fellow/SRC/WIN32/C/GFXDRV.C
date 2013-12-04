@@ -2492,11 +2492,11 @@ static bool gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surfac
 
 static bool gfxDrvTakeScreenShotFromWindow(HWND hWnd, const STR *filename) {
   HDC hwndDC = NULL;
-  bool bSuccess = FALSE;
+  bool bSuccess = false;
   RECT rect;
   int width, height;
 
-  if(!hWnd) return FALSE;
+  if(!hWnd) return false;
 
   fellowAddLog("gfxDrvTakeScreenshotFromWindow(hWnd=0x%x, filename='%s'...\n",
     hWnd, filename);
@@ -2505,14 +2505,22 @@ static bool gfxDrvTakeScreenShotFromWindow(HWND hWnd, const STR *filename) {
     width = rect.right - rect.left;
     height = rect.bottom - rect.top;
   }
-  else
-    return FALSE;
+  else {
+    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: failed to get window rectangle.\n");
+    return false;
+  }
 
   hwndDC = GetDC(hWnd);
-  if(FAILED(hwndDC)) return FALSE;
+  if(hwndDC == NULL) {
+    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: failed to get device context handle.\n");
+    return false;
+  }
   
   bSuccess = gfxDrvTakeScreenShotFromDC(hwndDC, width, height, 
     GetDeviceCaps(hwndDC, BITSPIXEL), filename);
+
+  if (!bSuccess)
+    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: gfxDrvTakeScreenShotFromDC failed.\n");
 
   if(hwndDC) ReleaseDC(gfx_drv_hwnd, hwndDC);
 
