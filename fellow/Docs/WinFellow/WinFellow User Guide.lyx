@@ -707,7 +707,8 @@ support for extended ROM images; this gives the ability to use the AROS
 \end_layout
 
 \begin_layout Itemize
-support for screenshots and clipping editor/live preview in Amiga Forever
+support for screenshots, clipping editor/live preview and scanlines in Amiga
+ Forever
 \end_layout
 
 \end_deeper

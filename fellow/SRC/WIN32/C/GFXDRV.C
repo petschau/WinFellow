@@ -2280,18 +2280,43 @@ void gfxDrvEndOfFrame(void)
 
 #ifdef RETRO_PLATFORM
 
-  void gfxDrvRegisterRetroPlatformScreenMode(void) {
+  void gfxDrvRegisterRetroPlatformScreenMode(const bool bStartup) {
     ULO lHeight, lWidth;
     STR strMode[3] = "";
+    DISPLAYSCALE displayscale = RetroPlatformGetDisplayScale();
     
-    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
-    RetroPlatformSetScreenWidth (cfgGetScreenWidth (gfxdrv_config));
+    if (RetroPlatformGetScanlines())
+      cfgSetDisplayScaleStrategy(gfxdrv_config, DISPLAYSCALE_STRATEGY_SCANLINES);
+    else
+      cfgSetDisplayScaleStrategy(gfxdrv_config, DISPLAYSCALE_STRATEGY_SOLID);
+
+    if (bStartup) {
+      RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
+      RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxdrv_config));
+
+      switch (displayscale) {
+      case DISPLAYSCALE_1X:
+        sprintf(strMode, "1x");
+        if (RetroPlatformGetScreenWidthAdjusted() > 752)
+          RetroPlatformSetClippingAutomatic(true);
+        break;
+      case DISPLAYSCALE_2X:
+        sprintf(strMode, "2x");
+        if (RetroPlatformGetScreenWidthAdjusted() > 1504)
+          RetroPlatformSetClippingAutomatic(true);
+        break;
+      default:
+        fellowAddLog("gfxDrvStartup(): WARNING: unknown display scaling factor 0x%x.\n",
+          displayscale);
+        break;
+      }
+    }
 
     lHeight = RetroPlatformGetScreenHeightAdjusted();
-    lWidth  = RetroPlatformGetScreenWidthAdjusted();
+    lWidth = RetroPlatformGetScreenWidthAdjusted();
 
     cfgSetScreenHeight(gfxdrv_config, lHeight);
-    cfgSetScreenWidth (gfxdrv_config, lWidth);
+    cfgSetScreenWidth(gfxdrv_config, lWidth);
 
     fellowAddLog("gfxdrv: operating in RetroPlatform %s mode, insert resolution %ux%u into list of valid screen resolutions...\n",
       strMode, lWidth, lHeight);
@@ -2331,7 +2356,7 @@ BOOLE gfxDrvStartup(void)
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode() && gfx_drv_initialized) {
     gfxdrv_config = cfgManagerGetCurrentConfig(&cfg_manager);
-    gfxDrvRegisterRetroPlatformScreenMode();
+    gfxDrvRegisterRetroPlatformScreenMode(true);
   }
 #endif
 
