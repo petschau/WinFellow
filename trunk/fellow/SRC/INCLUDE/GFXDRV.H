@@ -23,6 +23,6 @@ extern BOOLE gfxDrvStartup(void);
 extern void gfxDrvShutdown(void);
 extern void gfxDrvChangeDInputDeviceStates(BOOLE);
 extern bool gfxDrvTakeScreenShot(const bool, const STR *);
-extern void gfxDrvRegisterRetroPlatformScreenMode(void);
+extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
 
 #endif

@@ -139,6 +139,7 @@ static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetT
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 static bool bRetroPlatformScreenWindowed = true;
 static bool bRetroPlatformClippingAutomatic = true;
+static bool bRetroPlatformScanlines = false;
 static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
@@ -520,8 +521,14 @@ ULO RetroPlatformGetScreenWidthAdjusted(void) {
       break;
     }
   }
-  else
-    lScreenWidth = lRetroPlatformScreenWidthRP;
+  else {
+    ULO lScale = 1;
+    
+    if (RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
+      lScale = 2;
+
+    lScreenWidth = lRetroPlatformScreenWidthRP * lScale;
+  }
 
   return lScreenWidth;
 }
@@ -532,6 +539,10 @@ ULO RetroPlatformGetScreenWidth(void) {
 
 bool RetroPlatformGetScreenWindowed(void) {
   return bRetroPlatformScreenWindowed;
+}
+
+bool RetroPlatformGetScanlines(void) {
+  return bRetroPlatformScanlines;
 }
 
 ULO RetroPlatformGetScreenHeight(void) {
@@ -957,6 +968,12 @@ void RetroPlatformSetMode(const bool bRPMode) {
   fellowAddLog("RetroPlatformSetMode(): entering RetroPlatform (headless) mode.\n");
 }
 
+void RetroPlatformSetScanlines(const bool bScanlines) {
+  bRetroPlatformScanlines = bScanlines;
+
+  fellowAddLog("RetroPlatformSetScanlines(%s)\n", bScanlines ? "true" : "false");
+}
+
 /** Set screen height.
  */
 void RetroPlatformSetScreenHeight(const ULO lHeight) {
@@ -989,11 +1006,6 @@ void RetroPlatformSetScreenWindowed(const bool bWindowed) {
 void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
   RetroPlatformDisplayScale = displayscale;
 
-  if(RetroPlatformConfig != NULL) {
-    // cfgSetDisplayScale(RetroPlatformConfig, displayscale);
-    // drawSetDisplayScale(displayscale);
-  }
-
   fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
     displayscale == DISPLAYSCALE_1X ? "1x" : "2x");
 }
@@ -1002,11 +1014,11 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
   ULO lScalingFactor = 0;
 
   lRetroPlatformScreenMode = atol(szScreenMode);
-  fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to %u.\n", lRetroPlatformScreenMode);
+  fellowAddLog("RetroPlatformSetScreenMode(): screen mode configured to 0x%x.\n", lRetroPlatformScreenMode);
 
   lScalingFactor = RP_SCREENMODE_SCALE(lRetroPlatformScreenMode);
 
-  switch(lScalingFactor)
+  switch (lScalingFactor)
   {
     case RP_SCREENMODE_SCALE_1X:
       RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
@@ -1018,6 +1030,8 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
       fellowAddLog("RetroPlatformSetScreenMode(): WARNING: unknown display scaling factor 0x%x\n",
         lScalingFactor);
   }
+
+  RetroPlatformSetScanlines((lRetroPlatformScreenMode & RP_SCREENMODE_SCANLINES) ? true : false);
 }
 
 void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
@@ -1037,6 +1051,13 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
     lScalingFactor, lDisplay);
 #endif
 
+  RetroPlatformSetClippingAutomatic(sm->dwClipFlags & RP_CLIPFLAGS_AUTOCLIP ? true : false);
+
+  if (RetroPlatformGetClippingAutomatic() && RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X) {
+    fellowAddLog("RetroPlatformSetScreenModeStruct: active 2x mode in automatic clipping mode, compensating for screen width unit...");
+    sm->lClipWidth = 1504;
+  }
+  
   if(lDisplay == 0) {
     RetroPlatformSetScreenWindowed(true);
 
@@ -1079,7 +1100,7 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   // paused again.
   gfxDrvRunEventSet();
 
-  gfxDrvRegisterRetroPlatformScreenMode();
+  gfxDrvRegisterRetroPlatformScreenMode(false);
 
   fellowRequestEmulationStop();
 }
