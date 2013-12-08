@@ -1554,7 +1554,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   if (ddraw_device->mode->windowed && !gfx_drv_stretch_always)
   {
 #ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode() || RetroPlatformGetClippingAutomatic())
+    if(!RetroPlatformGetMode())
 #endif
     {
       srcwin.left = 0;
@@ -2293,23 +2293,6 @@ void gfxDrvEndOfFrame(void)
     if (bStartup) {
       RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxdrv_config));
       RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxdrv_config));
-
-      switch (displayscale) {
-      case DISPLAYSCALE_1X:
-        sprintf(strMode, "1x");
-        if (RetroPlatformGetScreenWidthAdjusted() > 752)
-          RetroPlatformSetClippingAutomatic(true);
-        break;
-      case DISPLAYSCALE_2X:
-        sprintf(strMode, "2x");
-        if (RetroPlatformGetScreenWidthAdjusted() > 1504)
-          RetroPlatformSetClippingAutomatic(true);
-        break;
-      default:
-        fellowAddLog("gfxDrvStartup(): WARNING: unknown display scaling factor 0x%x.\n",
-          displayscale);
-        break;
-      }
     }
 
     lHeight = RetroPlatformGetScreenHeightAdjusted();

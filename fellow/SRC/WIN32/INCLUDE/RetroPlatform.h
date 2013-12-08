@@ -37,7 +37,6 @@ extern void  RetroPlatformEmulationStop(void);
 extern void  RetroPlatformEnter(void);
 extern ULO   RetroPlatformGetClippingOffsetLeftAdjusted(void);
 extern ULO   RetroPlatformGetClippingOffsetTopAdjusted(void);
-extern bool  RetroPlatformGetClippingAutomatic(void);
 extern DISPLAYSCALE RetroPlatformGetDisplayScale(void);
 extern BOOLE RetroPlatformGetEmulationState(void);
 extern bool  RetroPlatformGetEmulationPaused(void);
@@ -70,7 +69,6 @@ extern BOOLE RetroPlatformSendHardDriveContent(const ULO, const STR *, const BOO
 extern BOOLE RetroPlatformSendInputDevice(const DWORD, const DWORD, const DWORD,  const WCHAR *, const WCHAR *);
 extern BOOLE RetroPlatformSendMouseCapture(const BOOLE);
 extern BOOLE RetroPlatformSendScreenMode(HWND);
-extern void  RetroPlatformSetClippingAutomatic(const bool);
 extern void  RetroPlatformSetClippingOffsetLeft(const ULO);
 extern void  RetroPlatformSetClippingOffsetTop(const ULO);
 extern void  RetroPlatformSetEmulationPaused(const bool);

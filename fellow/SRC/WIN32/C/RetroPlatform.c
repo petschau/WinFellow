@@ -138,7 +138,6 @@ static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPl
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 static bool bRetroPlatformScreenWindowed = true;
-static bool bRetroPlatformClippingAutomatic = true;
 static bool bRetroPlatformScanlines = false;
 static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
@@ -233,8 +232,6 @@ int RetroPlatformEnumerateJoysticks(void) {
 /** Set clipping offset that is applied to the left of the picture.
  */
 void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
-  bRetroPlatformClippingAutomatic = false;
-
   lRetroPlatformClippingOffsetLeftRP = lOffsetLeft;
 
 #ifdef _DEBUG
@@ -245,8 +242,6 @@ void RetroPlatformSetClippingOffsetLeft(const ULO lOffsetLeft) {
 /** Set clipping offset that is applied to the top of the picture
  */
 void RetroPlatformSetClippingOffsetTop(const ULO lOffsetTop) {
-  bRetroPlatformClippingAutomatic = false;
-
   lRetroPlatformClippingOffsetTopRP = lOffsetTop;
 
 #ifdef _DEBUG
@@ -482,18 +477,6 @@ ULO RetroPlatformGetClippingOffsetTop(void) {
   return lRetroPlatformClippingOffsetTopRP;
 }
 
-bool RetroPlatformGetClippingAutomatic(void) {
-  return bRetroPlatformClippingAutomatic;
-}
-
-void RetroPlatformSetClippingAutomatic(const bool bAutomatic) {
-  if(bAutomatic != bRetroPlatformClippingAutomatic) {
-    bRetroPlatformClippingAutomatic = bAutomatic;
-
-    fellowAddLog("RetroPlatformSetClippingAutomatic(): automatic clipping is now %s.\n", bAutomatic ? "enabled" : "disabled");
-  }
-}
-
 ULO RetroPlatformGetScreenHeightAdjusted(void) {
   ULO lScreenHeight = lRetroPlatformScreenHeightRP;
 
@@ -506,28 +489,18 @@ ULO RetroPlatformGetScreenHeightAdjusted(void) {
 ULO RetroPlatformGetScreenWidthAdjusted(void) {
   ULO lScreenWidth = 0;
     
-  if (!RetroPlatformGetClippingAutomatic()) {
-    switch (RetroPlatformGetDisplayScale())
-    {
-    case DISPLAYSCALE_1X:
-      lScreenWidth = lRetroPlatformScreenWidthRP / 2;
-      break;
-    case DISPLAYSCALE_2X:
-      lScreenWidth = lRetroPlatformScreenWidthRP;
-      break;
-    default:
-      fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
-        RetroPlatformGetDisplayScale());
-      break;
-    }
-  }
-  else {
-    ULO lScale = 1;
-    
-    if (RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
-      lScale = 2;
-
-    lScreenWidth = lRetroPlatformScreenWidthRP * lScale;
+  switch (RetroPlatformGetDisplayScale())
+  {
+  case DISPLAYSCALE_1X:
+    lScreenWidth = lRetroPlatformScreenWidthRP / 2;
+    break;
+  case DISPLAYSCALE_2X:
+    lScreenWidth = lRetroPlatformScreenWidthRP;
+    break;
+  default:
+    fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
+      RetroPlatformGetDisplayScale());
+    break;
   }
 
   return lScreenWidth;
@@ -1050,13 +1023,6 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   fellowAddLog("RetroPlatformSetScreenModeStruct(): lScalingFactor=0x%x, lDisplay=0x%x\n",
     lScalingFactor, lDisplay);
 #endif
-
-  RetroPlatformSetClippingAutomatic(sm->dwClipFlags & RP_CLIPFLAGS_AUTOCLIP ? true : false);
-
-  if (RetroPlatformGetClippingAutomatic() && RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X) {
-    fellowAddLog("RetroPlatformSetScreenModeStruct: active 2x mode in automatic clipping mode, compensating for screen width unit...");
-    sm->lClipWidth = 1504;
-  }
   
   if(lDisplay == 0) {
     RetroPlatformSetScreenWindowed(true);
