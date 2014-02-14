@@ -5,12 +5,12 @@ WinFellow is designed to be portable.
 However the project files contained in the SVN repository are built using Microsoft Visual Studio.
 
 Currently the following software should be used for development in the MAIN branch:
-* Visual Studio 2012
+* Visual Studio 2013
 * <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10084">February 2010 DirectX SDK</a>
 
 Visual Studio editions:
 * The professional edition was used for project setup, but does not contain profiling features. These are available in the Visual Studio Team System 2008 Development Edition.
-* The express edition can be used to compile WinFellow as well - this has been tested using Visual Studio 2012 (Update 2).
+* The express edition can be used to compile WinFellow as well - this has been tested using Visual Studio 2013.
 
 For access to the SVN repository, an SVN client is required.
 TortoiseSVN is required to compile WinFellow, as it contains the file SubWCRev.exe, which is used to generate version information that includes the SVN revision number.
