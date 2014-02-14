@@ -718,6 +718,10 @@ Changed functionality:
 
 \begin_deeper
 \begin_layout Itemize
+WinFellow is now compiled using Visual Studio 2013
+\end_layout
+
+\begin_layout Itemize
 the default configuration contains 512kB chip/bogo memory now and has the
  real-time clock active (Amiga 500 with A-501 expansion)
 \end_layout
