@@ -2367,7 +2367,7 @@ void gfxDrvShutdown(void)
   gfxDrvRunEventRelease();
 }
 
-static bool gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWORD bits, const STR *filename)
+static bool gfxDrvTakeScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, DWORD scalefactor, DWORD bits, const STR *filename)
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
@@ -2420,7 +2420,7 @@ static bool gfxDrvTakeScreenShotFromDC(HDC hDC, DWORD width, DWORD height, DWORD
   oldbit = SelectObject(memDC, bitmap);
   if (oldbit <= 0) goto cleanup;
 
-  bSuccess = BitBlt(memDC, 0, 0, width, height, hDC, 0, 0, SRCCOPY) ? true : false;
+  bSuccess = StretchBlt(memDC, 0, 0, width, height, hDC, x, y, width/scalefactor, height/scalefactor, SRCCOPY) ? true : false;
   if (!bSuccess) goto cleanup;    
 
   file = fopen(filename, "wb");
@@ -2444,7 +2444,8 @@ cleanup:
   return bSuccess;
 }
 
-static bool gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surface, const STR *filename) {
+static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE surface, 
+  DWORD x, DWORD y, DWORD width, DWORD height, DWORD scalefactor, const STR *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
   HDC surfDC = NULL;
@@ -2460,70 +2461,34 @@ static bool gfxDrvTakeScreenShotFromDirectDrawSurface(LPDIRECTDRAWSURFACE surfac
   hResult = surface->GetDC(&surfDC);
   if(FAILED(hResult)) return FALSE;
 
-  if(RetroPlatformGetMode()) {
-    // ddsd.dwWidth and dwHeight in RP mode are sized for maximum scale factor
-    // use harcoded RetroPlatform max PAL dimensions from WinUAE
-    bSuccess = gfxDrvTakeScreenShotFromDC(surfDC,
-      RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2,
-      RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2,
-      ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
-  }
-  else {
-    bSuccess = gfxDrvTakeScreenShotFromDC(surfDC, 
-      ddsd.dwWidth, 
-      ddsd.dwHeight,
-      ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
-  }
+  bSuccess = gfxDrvTakeScreenShotFromDCArea(surfDC, x, y, width, height, scalefactor, ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
 
   if(surfDC) surface->ReleaseDC(surfDC);
 
   return bSuccess;
 }
 
-static bool gfxDrvTakeScreenShotFromWindow(HWND hWnd, const STR *filename) {
-  HDC hwndDC = NULL;
-  bool bSuccess = false;
-  RECT rect;
-  int width, height;
+bool gfxDrvTakeScreenShot(const bool bTakeFilteredScreenshot, const STR *filename) {
+  bool bResult;
+  DWORD width = 0, height = 0, x = 0, y = 0, scalefactor = 2;
 
-  if(!hWnd) return false;
+  if (RetroPlatformGetDisplayScale() == RP_SCREENMODE_SCALE_2X)
+    scalefactor = 1;
 
-  fellowAddLog("gfxDrvTakeScreenshotFromWindow(hWnd=0x%x, filename='%s'...\n",
-    hWnd, filename);
-
-  if(GetWindowRect(hWnd, &rect)) {
-    width = rect.right - rect.left;
-    height = rect.bottom - rect.top;
+  if (bTakeFilteredScreenshot) {
+    width = RetroPlatformGetScreenWidthAdjusted();
+    height = RetroPlatformGetScreenHeightAdjusted();
+    x = RetroPlatformGetClippingOffsetLeftAdjusted();
+    y = RetroPlatformGetClippingOffsetTopAdjusted();
+    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, scalefactor, filename);
   }
   else {
-    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: failed to get window rectangle.\n");
-    return false;
+    //width and height in RP mode are sized for maximum scale factor
+    // use harcoded RetroPlatform max PAL dimensions from WinUAE
+    width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
+    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
   }
-
-  hwndDC = GetDC(hWnd);
-  if(hwndDC == NULL) {
-    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: failed to get device context handle.\n");
-    return false;
-  }
-  
-  bSuccess = gfxDrvTakeScreenShotFromDC(hwndDC, width, height, 
-    GetDeviceCaps(hwndDC, BITSPIXEL), filename);
-
-  if (!bSuccess)
-    fellowAddLog("gfxDrvTakeScreenShotFromWindow() ERROR: gfxDrvTakeScreenShotFromDC failed.\n");
-
-  if(hwndDC) ReleaseDC(gfx_drv_hwnd, hwndDC);
-
-  return bSuccess;
-}
-
-bool gfxDrvTakeScreenShot(const bool bTakeFilteredScreenshot, const STR *filename) {
-  bool bResult; 
-
-  if(bTakeFilteredScreenshot)
-    bResult = gfxDrvTakeScreenShotFromWindow(gfx_drv_hwnd, filename);
-  else
-    bResult = gfxDrvTakeScreenShotFromDirectDrawSurface(gfx_drv_ddraw_device_current->lpDDSSecondary, filename);
 
   fellowAddLog("gfxDrvTakeScreenShot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename, 
     bResult ? "successful" : "failed");
