@@ -323,7 +323,7 @@ BEGIN
     CTEXT           "WinFellow alpha",IDC_STATIC_ABOUT_VERSION,17,50,180,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,94,8,SS_NOTIFY
-    CONTROL         IDB_WINFELLOW_LOGO,IDC_STATIC,38,7,139,26,NOT WS_GROUP,WS_EX_TRANSPARENT
+    CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,WS_EX_TRANSPARENT
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 

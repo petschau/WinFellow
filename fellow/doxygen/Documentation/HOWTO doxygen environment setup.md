@@ -11,11 +11,10 @@ It can help you in three ways:
 
 Doxygen is developed under Linux and Mac OS X, but is set-up to be highly portable. As a result, it runs on most other Unix flavors as well. Furthermore, executables for Windows are available.
 
-The following setup files were used to generate the WinFellow documentation on Windows 7 SP1.
-Windows 8 will work, but causes warnings, as it is an untested Windows version.
+The following setup files were used to generate the WinFellow documentation on Windows 8.1.
 
 - doxygen: doxygen-1.8.3-setup.exe (http://www.stack.nl/~dimitri/doxygen/download.html)
-- TeX Live: texlive2012.iso (http://www.tug.org/texlive/acquire-iso.html)
+- TeX Live: texlive2013.iso (http://www.tug.org/texlive/acquire-iso.html)
 - GhostScript: gs905w32.exe (http://www.ghostscript.com/GPL_Ghostscript_9.05.html)
 - Graphviz: graphviz-2.28.0.msi (http://www.graphviz.org/Download_windows.php)
 
