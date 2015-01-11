@@ -1,4 +1,3 @@
-/* @(#) $Id: CpuModule_Disassembler.c,v 1.2 2009/07/26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU disassembly                                                         */
@@ -758,6 +757,7 @@ static ULO cpuDisBcc(ULO prc, UWO opc, STR *sdata, STR *sinstruction, STR *soper
     disp2 = memoryReadLong(prc);
     cpuDisLongAppend(disp2, sdata);
     adr = prc + disp2;
+    prc += 2;
   }
   else
   {
