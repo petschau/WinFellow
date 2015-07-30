@@ -336,6 +336,13 @@ static void sysinfoParseOSVersionInfo(void) {
           break;
         }
         break;
+	  case 10:
+        switch (osInfo.dwMinorVersion) {
+        case 0:
+          fellowAddTimelessLog("\toperating system: \tWindows 10\n");
+          break;
+        }
+        break;
       default:
 	fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
       }
