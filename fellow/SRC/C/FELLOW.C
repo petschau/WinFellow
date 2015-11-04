@@ -582,8 +582,8 @@ static void fellowModulesShutdown(void)
   GraphicsContext.Shutdown();
 #endif
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-	  RetroPlatformShutdown();
+  if (RetroPlatformGetMode())
+    RetroPlatformShutdown();
 #endif
   wguiShutdown();
   cpuIntegrationShutdown();
@@ -622,11 +622,14 @@ int __cdecl main(int argc, char *argv[]) {
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
-  if(!RetroPlatformGetMode())
+  if (!RetroPlatformGetMode()) {
 #endif
+    // set DPI awareness in standalone GUI mode to system DPI aware
+    wguiSetProcessDPIAwareness("1");
     while (!wguiEnter())
       fellowRun();
 #ifdef RETRO_PLATFORM
+  }
   else
     RetroPlatformEnter();
 #endif

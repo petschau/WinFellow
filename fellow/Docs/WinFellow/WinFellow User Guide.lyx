@@ -699,6 +699,11 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
+support for high DPI configurations, also when used together with Amiga
+ Forever 2016
+\end_layout
+
+\begin_layout Itemize
 support for the original Amiga 1000 boot process from Kickstart disk boot;
  configure the A1000 bootstrap ROM like any other ROM image for the feature
  to be automatically enabled

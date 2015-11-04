@@ -60,6 +60,7 @@ extern BOOLE wguiCheckEmulationNecessities(void);
 extern BOOLE wguiEnter(void);
 extern void wguiRequester(STR *line1, STR *line2, STR *line3);
 extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
+extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
 
 #else
 
