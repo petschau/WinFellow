@@ -52,6 +52,7 @@
 #include "rtc.h"
 #include "RetroPlatform.h"
 #include "draw_interlace_control.h"
+#include "wgui.h"
 
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
@@ -1928,8 +1929,8 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	RetroPlatformSetMode(TRUE);
-	RetroPlatformSetHostID(argv[i]);
+	      RetroPlatformSetMode(TRUE);
+	      RetroPlatformSetHostID(argv[i]);
       }
       i++;
     }
@@ -1938,7 +1939,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
+	      fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
       }
       i++;
     }
@@ -1947,7 +1948,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	RetroPlatformSetEscapeKey(argv[i]);
+	      RetroPlatformSetEscapeKey(argv[i]);
       }
       i++;
     }
@@ -1956,7 +1957,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	RetroPlatformSetEscapeKeyHoldTime(argv[i]);
+	      RetroPlatformSetEscapeKeyHoldTime(argv[i]);
       }
       i++;
     }
@@ -1965,7 +1966,16 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	RetroPlatformSetScreenMode(argv[i]);
+	      RetroPlatformSetScreenMode(argv[i]);
+      }
+      i++;
+    }
+    else if (stricmp(argv[i], "-rpdpiawareness") == 0)
+    {
+      i++;
+      if (i < argc)
+      {
+        wguiSetProcessDPIAwareness(argv[i]);
       }
       i++;
     }

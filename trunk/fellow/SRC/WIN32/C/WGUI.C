@@ -3551,6 +3551,56 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     return TRUE;
   } 
 
+  void wguiSetProcessDPIAwareness(const char *pszAwareness)
+  {
+#ifndef Process_DPI_Awareness
+    typedef enum _Process_DPI_Awareness {
+      Process_DPI_Unaware = 0,
+      Process_System_DPI_Aware = 1,
+      Process_Per_Monitor_DPI_Aware = 2
+    } Process_DPI_Awareness;
+#endif
+    typedef HRESULT(WINAPI *PFN_SetProcessDpiAwareness)(Process_DPI_Awareness);
+    typedef BOOL(WINAPI *PFN_SetProcessDPIAware)(void);
+    PFN_SetProcessDpiAwareness pfnSetProcessDpiAwareness;
+    PFN_SetProcessDPIAware pfnSetProcessDPIAware;
+    Process_DPI_Awareness nAwareness;
+    HINSTANCE hCoreDll, hUser32;
+    HRESULT hr;
+
+    fellowAddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
+
+    nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, NULL, 0);
+    hr = E_NOTIMPL;
+    hCoreDll = LoadLibrary("Shcore.dll");
+
+    if (hCoreDll)
+    {
+      pfnSetProcessDpiAwareness = (PFN_SetProcessDpiAwareness)GetProcAddress(hCoreDll, "SetProcessDpiAwareness");
+      if (pfnSetProcessDpiAwareness)
+        hr = pfnSetProcessDpiAwareness(nAwareness);
+      if (hr == S_OK)
+        fellowAddLog(" SetProcessDPIAwareness() executed succesfully.\n");
+      FreeLibrary(hCoreDll);
+    }
+
+    if (hr == E_NOTIMPL && nAwareness > 0) // Windows Vista / Windows 7
+    {
+      hUser32 = LoadLibrary("user32.dll");
+      if (hUser32)
+      {
+        fellowAddLog("hUser32");
+        pfnSetProcessDPIAware = (PFN_SetProcessDPIAware)GetProcAddress(hUser32, "SetProcessDPIAware");
+        if (pfnSetProcessDPIAware) {
+          hr = pfnSetProcessDPIAware();
+          if (hr != 0)
+            fellowAddLog(" SetProcessDPIAware() executed succesfully.\n");
+        }
+        FreeLibrary(hUser32);
+      }
+    }
+  }
+
 
   /*============================================================================*/
   /* Called at the start of Fellow execution                                    */
