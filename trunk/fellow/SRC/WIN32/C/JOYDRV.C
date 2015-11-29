@@ -76,6 +76,7 @@ Monday, February 04, 2008
 #include "fellow.h"
 #include "joydrv.h"
 #include "windrv.h"
+#include "GfxDrvCommon.h"
 
 #include "dxver.h"
 #include <mmsystem.h>
@@ -212,7 +213,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
     return;
   }
 
-  res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfx_drv_hwnd, ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
+  res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
   if (res != DI_OK)
   {
     joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): ", res );

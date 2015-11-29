@@ -58,6 +58,9 @@
     <Filter Include="graphics">
       <UniqueIdentifier>{b87ae76d-615b-4620-818c-936fab6ea5a0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DXGI">
+      <UniqueIdentifier>{e654a72c-db78-41a3-a44b-3f7378035727}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -172,9 +175,6 @@
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\FSWRAP.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\GFXDRV.C">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\JOYDRV.C">
@@ -380,6 +380,36 @@
     </ClCompile>
     <ClCompile Include="..\..\C\chipset.cpp">
       <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGI.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapter.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIErrorLogger.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIModeEnumerator.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIOutput.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIOutputEnumerator.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\GFXDRV.C">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\gfxdrv_directdraw.cpp">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\GfxDrvCommon.cpp">
+      <Filter>Win32 C Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -727,6 +757,33 @@
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\chipset.h">
       <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGI.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIErrorLogger.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIModeEnumerator.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIOutput.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIOutputEnumerator.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\gfxdrv_directdraw.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\GfxDrvCommon.h">
+      <Filter>Win32 C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

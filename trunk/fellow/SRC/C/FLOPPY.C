@@ -113,10 +113,6 @@ UWO dskbyt_tmp = 0;
 BOOLE dskbyt1_read = FALSE;
 BOOLE dskbyt2_read = FALSE;
 
-#ifdef _DEBUG
-#define FLOPPY_LOG
-#endif 
-
 static UBY floppyBootBlockOFS[]={
   0x44, 0x4f, 0x53, 0x00, 0xc0, 0x20, 0x0f, 0x19, 0x00, 0x00, 0x03, 0x70, 0x43, 0xfa, 0x00, 0x18,
   0x4e, 0xae, 0xff, 0xa0, 0x4a, 0x80, 0x67, 0x0a, 0x20, 0x40, 0x20, 0x68, 0x00, 0x16, 0x70, 0x00,
@@ -794,7 +790,7 @@ static void floppyWriteDiskRootBlock(UBY *strCylinderContent, ULO lBlockIndex, c
   strCylinderContent[12+3] = 0x48;
   strCylinderContent[312] = strCylinderContent[313] = strCylinderContent[314] = strCylinderContent[315] = 0xff;
   strCylinderContent[316+2] = (lBlockIndex + 1) >> 8; strCylinderContent[316+3] = (lBlockIndex + 1) & 255;
-  strCylinderContent[432] = strlen((char *) strVolumeLabel);
+  strCylinderContent[432] = (UBY) strlen((char *) strVolumeLabel);
   strcpy((char *) strCylinderContent + 433, (const char *) strVolumeLabel);
   strCylinderContent[508 + 3] = 1;
   floppyWriteDiskDate(strCylinderContent + 420);

@@ -1,4 +1,3 @@
-/* @(#) $Id: KBDDRV.C,v 1.24 2013-01-21 18:26:14 carfesh Exp $             */
 /*=========================================================================*/
 /* Fellow Amiga Emulator                                                   */
 /* Keyboard driver for Windows                                             */
@@ -60,6 +59,7 @@ Sunday, February 10, 2008: carfesh
 #include "windrv.h"
 #include "kbdparser.h"
 #include "fellow.h"
+#include "GfxDrvCommon.h"
 
 #include "dxver.h"
 #include "fileops.h"
@@ -669,7 +669,7 @@ void kbdDrvDInputFailure(STR *header, HRESULT err)
 
 bool kbdDrvDInputSetCooperativeLevel(void)
 {
-  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfx_drv_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel(): ", res );

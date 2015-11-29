@@ -105,6 +105,7 @@
 #include "FHFILE.H"
 #include "dxver.h"    /// needed for DirectInput based joystick detection code
 #include "sounddrv.h" /// needed for DirectSound volume control
+#include "GfxDrvCommon.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
@@ -1064,9 +1065,9 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
-  gfxDrvRunEventSet();
+  gfxDrvCommon->RunEventSet();
 
-  gfxDrvRegisterRetroPlatformScreenMode(false);
+  gfxDrvDDrawRegisterRetroPlatformScreenMode(false);
 
   fellowRequestEmulationStop();
 }
@@ -1105,14 +1106,14 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
   case RP_IPC_TO_GUEST_CLOSE:
     fellowAddLog("RetroPlatformHostMessageFunction: received close event.\n");
     fellowRequestEmulationStop();
-    gfxDrvRunEventSet();
+    gfxDrvCommon->RunEventSet();
     bRetroPlatformEmulatorQuit = TRUE;
     return TRUE;
   case RP_IPC_TO_GUEST_RESET:
     if(wParam == RP_RESET_HARD)
       fellowSetPreStartReset(TRUE);
     RetroPlatformSetEmulationPaused(false);
-    gfxDrvRunEventSet();
+    gfxDrvCommon->RunEventSet();
     fellowRequestEmulationStop();
     return TRUE;
   case RP_IPC_TO_GUEST_TURBO:
@@ -1142,14 +1143,14 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
   case RP_IPC_TO_GUEST_PAUSE:
     if(wParam != 0) { // pause emulation
       fellowAddLog("RetroPlatformHostMessageFunction: received pause event.\n");
-      gfxDrvRunEventReset();
+      gfxDrvCommon->RunEventReset();
       RetroPlatformSetEmulationPaused(true);
       RetroPlatformSetEmulationState(FALSE);
       return 1;
     }
     else { // resume emulation
       fellowAddLog("RetroPlatformHostMessageFunction: received resume event, requesting start.\n");
-      gfxDrvRunEventSet();
+      gfxDrvCommon->RunEventSet();
       RetroPlatformSetEmulationPaused(false);
       RetroPlatformSetEmulationState(TRUE);
       return 1;
@@ -1644,7 +1645,7 @@ void RetroPlatformShutdown(void) {
 }
 
 void RetroPlatformEmulationStart(void) {
-  RetroPlatformSendScreenMode(gfx_drv_hwnd);
+  RetroPlatformSendScreenMode(gfxDrvCommon->GetHWND());
 }
 
 void RetroPlatformEmulationStop(void) {

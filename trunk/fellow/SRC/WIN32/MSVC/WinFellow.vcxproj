@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -26,23 +26,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -107,8 +107,7 @@
       <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(GraphVersion);WIN32;NDEBUG;_WINDOWS;USE_DX5;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -145,8 +144,10 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
-SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n</Command>
+      <Command>
+        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
+        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
@@ -172,11 +173,10 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(GraphVersion);WIN32;NDEBUG;_WINDOWS;USE_DX5;_CRT_SECURE_NO_WARNINGS;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(GraphVersion);WIN32;NDEBUG;_WINDOWS;USE_DX5;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <FunctionLevelLinking>false</FunctionLevelLinking>
@@ -195,7 +195,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;comctl32.lib;dsound.lib;dxgi.lib;d3d11.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>CAPSImg.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -207,8 +207,17 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <TargetMachine>MachineX64</TargetMachine>
       <Profile>false</Profile>
     </Link>
+    <PreBuildEvent>
+      <Command>
+        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
+        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>generate SVN version information include</Message>
+    </PreBuildEvent>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>false</EnableDpiAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -223,10 +232,9 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>$(GraphVersion);WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling>
-      </ExceptionHandling>
+      <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -246,7 +254,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>C:\fellow\Microsoft DirectX SDK %28February 2010%29\Lib\x86;../../../lib/win32/msvc/caps;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -263,8 +271,10 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
-SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</Command>
+      <Command>
+        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
+        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
+      </Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate SVN version information include</Message>
@@ -286,8 +296,8 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>$(GraphVersion);WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>$(GraphVersion);WIN32;_DEBUG;_WINDOWS;USE_DX5;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -306,7 +316,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;comctl32.lib;dxgi.lib;d3d11.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\$(Platform)\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;d:\Program Files\Microsoft DirectX SDK (April 2007)\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -319,8 +329,17 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>
+        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
+        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
+      </Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message>generate SVN version information include</Message>
+    </PreBuildEvent>
     <Manifest>
-      <EnableDpiAwareness>true</EnableDpiAwareness>
+      <EnableDpiAwareness>false</EnableDpiAwareness>
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -662,6 +681,8 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\C\GfxDrvCommon.cpp" />
+    <ClCompile Include="..\C\gfxdrv_directdraw.cpp" />
     <ClCompile Include="..\C\Ini.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1023,6 +1044,13 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGI.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapter.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIErrorLogger.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIModeEnumerator.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIOutput.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIOutputEnumerator.cpp" />
     <ClCompile Include="..\UAE\C\AUTOCONF.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1611,7 +1639,16 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h</
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
     <ClInclude Include="..\..\include\rtc.h" />
     <ClInclude Include="..\..\include\RtcOkiMsm6242rs.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIErrorLogger.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIModeEnumerator.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIOutput.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIOutputEnumerator.h" />
     <ClInclude Include="..\INCLUDE\fileops.h" />
+    <ClInclude Include="..\INCLUDE\GfxDrvCommon.h" />
+    <ClInclude Include="..\INCLUDE\gfxdrv_directdraw.h" />
     <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H" />
     <ClInclude Include="..\..\INCLUDE\SPRITE.H" />
     <ClInclude Include="..\..\INCLUDE\WAV.H" />
