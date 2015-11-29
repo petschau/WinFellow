@@ -1643,6 +1643,7 @@
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIErrorLogger.h" />
+    <ClInclude Include="..\DXGI\GfxDrvDXGIMode.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIModeEnumerator.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIOutput.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIOutputEnumerator.h" />
@@ -1748,6 +1749,9 @@
     </GraphVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
   </PropertyGroup>
 </Project>

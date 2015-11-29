@@ -785,6 +785,9 @@
     <ClInclude Include="..\INCLUDE\GfxDrvCommon.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\DXGI\GfxDrvDXGIMode.h">
+      <Filter>DXGI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp">
