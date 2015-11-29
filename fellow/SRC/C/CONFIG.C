@@ -1,4 +1,3 @@
-/* @(#) $Id: CONFIG.C,v 1.23 2013-01-07 17:26:02 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Configuration file handling                                             */
@@ -369,6 +368,16 @@ void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical
 BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *config)
 {
   return config->m_use_multiple_graphical_buffers;
+}
+
+void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
+{
+  config->m_displaydriver = display_driver;
+}
+
+DISPLAYDRIVER cfgGetDisplayDriver(cfg *config)
+{
+  return config->m_displaydriver;
 }
 
 /*===========================================================================*/
@@ -786,6 +795,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
+  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECTDRAW);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
@@ -1189,6 +1199,31 @@ static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
   return "single";
 }
 
+static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
+{
+  if (stricmp(value, "directdraw") == 0)
+  {
+    return DISPLAYDRIVER_DIRECTDRAW;
+  }
+  if (stricmp(value, "directx11") == 0)
+  {
+    return DISPLAYDRIVER_DIRECTX11;
+  }
+  return DISPLAYDRIVER_DIRECTDRAW; // Default
+}
+
+static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
+{
+  switch (displaydriver)
+  {
+    case DISPLAYDRIVER_DIRECTDRAW:
+      return "directdraw";
+    case DISPLAYDRIVER_DIRECTX11:
+      return "directx11";
+  }
+  return "directdraw";
+}
+
 static DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategyFromString(STR *value)
 {
   if (stricmp(value, "scanlines") == 0)
@@ -1533,6 +1568,10 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetUseMultipleGraphicalBuffers(config, cfgGetBOOLEFromString(value));
     }
+    else if (stricmp(option, "gfx_driver") == 0)
+    {
+      cfgSetDisplayDriver(config, cfgGetDisplayDriverFromString(value));
+    }
     else if (stricmp(option, "gfx_colour_mode") == 0)
     {
       cfgSetScreenColorBits(config, cfgGetColorBitsFromString(value));
@@ -1786,6 +1825,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "gfx_height=%u\n", cfgGetScreenHeight(config));
   fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
+  fprintf(cfgfile, "gfx_driver=%s\n", cfgGetDisplayDriverToString(cfgGetDisplayDriver(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
   fprintf(cfgfile, "gfx_display_scale=%s\n", cfgGetDisplayScaleToString(cfgGetDisplayScale(config)));
@@ -2121,6 +2161,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
+  drawSetDisplayDriver(cfgGetDisplayDriver(config));
 
 
   /*==========================================================================*/

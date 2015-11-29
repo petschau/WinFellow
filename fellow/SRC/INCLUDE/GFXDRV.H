@@ -1,27 +1,34 @@
 #ifndef GFXDRV_H
+#define GFXDRV_H
 
 #include "draw.h"
-
-// For windows only
-extern bool gfx_drv_displaychange;
 
 /*===========================================================================*/
 /* Implementing these functions creates a graphics driver for Fellow         */
 /*===========================================================================*/
 
-extern void gfxDrvClearCurrentBuffer(void);
-extern void gfxDrvBufferFlip(void);
+extern void gfxDrvClearCurrentBuffer();
+
+extern void gfxDrvBufferFlip();
+
 extern void gfxDrvSetMode(draw_mode *dm);
-extern UBY *gfxDrvValidateBufferPointer(void);
-extern void gfxDrvInvalidateBufferPointer(void);
-extern BOOLE gfxDrvEmulationStart(ULO maxbuffercount);
-extern ULO gfxDrvEmulationStartPost(void);
-extern void gfxDrvEmulationStop(void);
-extern void gfxDrvRunEventSet(void);
-extern void gfxDrvRunEventReset(void);
-extern BOOLE gfxDrvStartup(void);
-extern void gfxDrvShutdown(void);
-extern void gfxDrvChangeDInputDeviceStates(BOOLE);
+extern void gfxDrvSizeChanged();
+
+extern UBY *gfxDrvValidateBufferPointer();
+extern void gfxDrvInvalidateBufferPointer();
+
+extern bool gfxDrvEmulationStart(ULO maxbuffercount);
+extern ULO gfxDrvEmulationStartPost();
+
+extern void gfxDrvEmulationStop();
+
+extern void gfxDrvRunEventSet();
+extern void gfxDrvRunEventReset();
+
+extern bool gfxDrvRestart(DISPLAYDRIVER displaydriver);
+extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
+extern void gfxDrvShutdown();
+
 extern bool gfxDrvTakeScreenShot(const bool, const STR *);
 extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
 

@@ -41,6 +41,11 @@ typedef enum {
   DISPLAYSCALE_STRATEGY_SCANLINES = 1
 } DISPLAYSCALE_STRATEGY;
 
+typedef enum {
+  DISPLAYDRIVER_DIRECTDRAW = 0,
+  DISPLAYDRIVER_DIRECTX11 = 1
+} DISPLAYDRIVER;
+
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
 /* the struct is copied in cfgManagerGetCopyOfCurrentConfig()                 */
@@ -93,6 +98,7 @@ typedef struct {
   DISPLAYSCALE_STRATEGY m_displayscalestrategy;
   bool  m_deinterlace;
   bool  m_measurespeed;
+  DISPLAYDRIVER m_displaydriver;
 
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
@@ -235,8 +241,10 @@ extern void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed);
 extern BOOLE cfgGetScreenWindowed(cfg *config);
 extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
 extern bool cfgGetScreenDrawLEDs(cfg *config);
-extern void cfgSetUseMultipleGraphicalBuffers(cfg *, BOOLE);
-extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *);
+extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers);
+extern BOOLE cfgGetUseMultipleGraphicalBuffers(cfg *config);
+extern void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver);
+extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
 
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */

@@ -1,4 +1,3 @@
-/* @(#) $Id: MOUSEDRV.C,v 1.17 2013-01-15 18:50:12 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Mouse driver for Windows                                                */
@@ -48,6 +47,7 @@ Sunday, February 03, 2008: carfesh
 #include "fellow.h"
 #include "mousedrv.h"
 #include "windrv.h"
+#include "GfxDrvCommon.h"
 
 #include <initguid.h>
 #include "dxver.h"
@@ -257,7 +257,7 @@ BOOLE mouseDrvDInputInitialize(void)
   }
 
   /* Set cooperative level */
-  res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfx_drv_hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel() ", res );

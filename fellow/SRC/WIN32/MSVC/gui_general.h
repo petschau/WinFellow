@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Von Microsoft Visual C++ generierte Includedatei.
-// Verwendet durch GUI_general.rc
+// Microsoft Visual C++ generated include file.
+// Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
 #define IDS_APP_TITLE                   2
@@ -175,6 +175,7 @@
 #define IDC_COMBO_COLOR_BITS            1132
 #define IDC_STATIC_SOUND_VOLUME_0       1132
 #define IDC_STATIC_SOUND_VOLUME         1132
+#define IDC_COMBO_DISPLAY_DRIVER        1133
 #define IDC_STATIC_SCREEN_AREA          1134
 #define IDC_STATIC_FRAME_SKIPPING       1135
 #define IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG 1136
@@ -287,7 +288,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        184
+#define _APS_NEXT_RESOURCE_VALUE        185
 #define _APS_NEXT_COMMAND_VALUE         40018
 #define _APS_NEXT_CONTROL_VALUE         1164
 #define _APS_NEXT_SYMED_VALUE           101

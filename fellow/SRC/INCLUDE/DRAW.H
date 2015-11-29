@@ -77,6 +77,7 @@ extern UBY *draw_buffer_current_ptr;
 extern void drawModeAdd(draw_mode *modenode);
 extern BOOLE drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, BOOLE windowed);
 extern felist *drawGetModes(void);
+extern void drawModesFree();
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
 extern DISPLAYSCALE drawGetDisplayScale(void);
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
@@ -87,6 +88,8 @@ extern void drawSetLEDsEnabled(bool enabled);
 extern void drawSetLED(int index, bool state);
 extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
 extern BOOLE drawGetAllowMultipleBuffers(void);
+extern void drawSetDisplayDriver(DISPLAYDRIVER displaydriver);
+extern DISPLAYDRIVER drawGetDisplayDriver();
 extern ULO drawGetBufferCount(void);
 
 /*===========================================================================*/

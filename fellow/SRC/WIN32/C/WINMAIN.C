@@ -34,6 +34,7 @@
 #include "joydrv.h"
 #include "kbddrv.h"
 #include "fileops.h"
+#include "GfxDrvCommon.h"
 
 #ifdef RETRO_PLATFORM
 #include "retroplatform.h"
@@ -178,7 +179,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 			       param,	            // Thread parameter
 			       0,                   // Creation flags
 			       &dwThreadId);        // ThreadId
-  SetTimer(gfx_drv_hwnd, 1, 10, NULL);
+  SetTimer(gfxDrvCommon->GetHWND(), 1, 10, NULL);
   event_count = winDrvInitializeMultiEventArray(multi_events, object_mapping);
   keep_on_waiting = TRUE;
   while (keep_on_waiting)

@@ -77,6 +77,7 @@ ULO draw_view_scroll;                        /* Scroll visible window runtime */
 
 DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
+DISPLAYDRIVER draw_displaydriver;
 
 BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 ULO draw_clear_buffers;
@@ -537,6 +538,16 @@ DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void)
   return draw_displayscale_strategy;
 }
 
+void drawSetDisplayDriver(DISPLAYDRIVER displaydriver)
+{
+  draw_displaydriver = displaydriver;
+}
+
+DISPLAYDRIVER drawGetDisplayDriver()
+{
+  return draw_displaydriver;
+}
+
 void drawSetFrameskipRatio(ULO frameskipratio)
 {
   draw_frame_skip_factor = frameskipratio;
@@ -586,24 +597,24 @@ void drawModeAdd(draw_mode *modenode)
 
 
 /*============================================================================*/
-/* Free mode list                                                             */
+/* Clear mode list (on startup)                                               */
 /*============================================================================*/
 
-static void drawModesFree(void)
+static void drawModesClear()
 {
-  listFreeAll(draw_modes, TRUE);
   draw_modes = NULL;
+  draw_mode_current = NULL;
 }
 
 
 /*============================================================================*/
-/* Clear mode list (on startup)                                               */
+/* Free mode list                                                             */
 /*============================================================================*/
 
-static void drawModesClear(void)
+void drawModesFree()
 {
-  draw_modes = NULL;
-  draw_mode_current = NULL;
+  listFreeAll(draw_modes, TRUE);
+  drawModesClear();
 }
 
 
@@ -984,7 +995,7 @@ BOOLE drawStartup(void)
   draw_config = cfgManagerGetCurrentConfig(&cfg_manager);
 
   drawModesClear();
-  if (!gfxDrvStartup())
+  if (!gfxDrvStartup(cfgGetDisplayDriver(draw_config)))
   {
     return FALSE;
   }

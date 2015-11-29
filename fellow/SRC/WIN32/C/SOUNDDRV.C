@@ -35,6 +35,7 @@
 #include "windrv.h"
 #include "sounddrv.h"
 #include "config.h"
+#include "GfxDrvCommon.h"
 
 
 /*===========================================================================*/
@@ -412,7 +413,7 @@ bool soundDrvDSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device)
   /* initialized after the gfx stuff */
 
   HRESULT setCooperativeLevelResult = IDirectSound_SetCooperativeLevel(dsound_device->lpDS,
-								       gfx_drv_hwnd,
+								       gfxDrvCommon->GetHWND(),
 								       DSSCL_PRIORITY);
   if (setCooperativeLevelResult != DS_OK)
   {

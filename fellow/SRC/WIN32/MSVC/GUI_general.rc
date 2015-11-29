@@ -7,14 +7,7 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "windows.h"
-#include "gui_debugger.h"
-
-#ifndef IDC_STATIC
-#define IDC_STATIC -1
-#endif
-
-
+#include "afxres.h"
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
@@ -58,11 +51,11 @@ BEGIN
     PUSHBUTTON      "eject",IDC_BUTTON_DF1_EJECT_MAIN,35,70,25,12
     PUSHBUTTON      "eject",IDC_BUTTON_DF2_EJECT_MAIN,35,105,25,12
     PUSHBUTTON      "eject",IDC_BUTTON_DF3_EJECT_MAIN,35,140,25,12
-    CONTROL         139,IDC_IMAGE_POWER_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,285,35,21,7
-    CONTROL         140,IDC_IMAGE_DF0_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,20,21,7
-    CONTROL         140,IDC_IMAGE_DF1_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,55,21,7
-    CONTROL         140,IDC_IMAGE_DF2_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,90,21,7
-    CONTROL         140,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,125,21,7
+    CONTROL         IDB_POWER_LED_OFF,IDC_IMAGE_POWER_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,285,35,21,7
+    CONTROL         IDB_DISKDRIVE_LED_OFF,IDC_IMAGE_DF0_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,20,21,7
+    CONTROL         IDB_DISKDRIVE_LED_OFF,IDC_IMAGE_DF1_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,55,21,7
+    CONTROL         IDB_DISKDRIVE_LED_OFF,IDC_IMAGE_DF2_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,90,21,7
+    CONTROL         IDB_DISKDRIVE_LED_OFF,IDC_IMAGE_DF3_LED_MAIN,"Static",SS_BITMAP | SS_SUNKEN,215,125,21,7
     PUSHBUTTON      "&debug",ID_DEBUGGER_START,274,89,32,15
     PUSHBUTTON      "into df0",IDC_BUTTON_DF1_SWAP,65,70,30,12
     PUSHBUTTON      "into df0",IDC_BUTTON_DF2_SWAP,65,105,30,12
@@ -323,7 +316,7 @@ BEGIN
     CTEXT           "WinFellow alpha",IDC_STATIC_ABOUT_VERSION,17,50,180,8
     LTEXT           "alpha version",IDC_STATIC,80,35,43,8
     LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,94,8,SS_NOTIFY
-    CONTROL         154,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,WS_EX_TRANSPARENT
+    CONTROL         IDB_WINFELLOW_LOGO,IDC_STATIC,"Static",SS_BITMAP,38,7,139,26,WS_EX_TRANSPARENT
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 
@@ -373,6 +366,7 @@ BEGIN
     GROUPBOX        "line fill strategy",IDC_STATIC,106,111,65,45
     CONTROL         "solid",IDC_RADIO_LINE_FILL_SOLID,"Button",BS_AUTORADIOBUTTON | WS_GROUP,110,126,30,10
     CONTROL         "scanlines",IDC_RADIO_LINE_FILL_SCANLINES,"Button",BS_AUTORADIOBUTTON | WS_GROUP,110,141,45,10
+    COMBOBOX        IDC_COMBO_DISPLAY_DRIVER,10,89,85,135,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
 END
 
 IDD_DEBUGGER DIALOGEX 0, 0, 577, 417
@@ -684,6 +678,17 @@ IDB_WINFELLOW_LOGO      BITMAP                  "winfellow_logo_small.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DISPLAY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
@@ -692,12 +697,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegisch, Bokmål (Norwegen) resources
+// Norwegian, Bokmål (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -709,7 +714,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 //
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
-#endif    // Norwegisch, Bokmål (Norwegen) resources
+#endif    // Norwegian, Bokmål (Norway) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

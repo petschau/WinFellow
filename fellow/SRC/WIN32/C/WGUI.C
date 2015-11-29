@@ -70,6 +70,7 @@
 #include "fellow.h"
 #include "GFXDRV.H"
 #include "fileops.h"
+#include "GfxDrvCommon.h"
 
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
@@ -291,7 +292,7 @@ typedef enum {
   PROPSHEETHARDFILE   = 7,
   PROPSHEETGAMEPORT   = 8,
   PROPSHEETVARIOUS    = 9
-};
+} PROPERTYSHEETNAMES;
 
 UINT wgui_propsheetRID[PROP_SHEETS] = {
   IDD_PRESETS,
@@ -390,7 +391,6 @@ void wguiCheckMemorySettingsForChipset(void)
 }
 
 void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
-
   felist *listnode;
   wgui_drawmode *pwguicfgwdm;
   LONG i;
@@ -402,15 +402,15 @@ void wguiGetResolutionStrWithIndex(LONG index, char char_buffer[]) {
   } else {
     // fullscreen
     switch (pwgui_dm_match->colorbits) {
-			case 16:
-			  listnode = pwgui_dm->res16bit;
-			  break;
-			case 24:
-			  listnode = pwgui_dm->res24bit;
-			  break;
-			case 32:
-			  listnode = pwgui_dm->res32bit;
-			  break;
+      case 16:
+	listnode = pwgui_dm->res16bit;
+	break;
+      case 24:
+	listnode = pwgui_dm->res24bit;
+	break;
+      case 32:
+	listnode = pwgui_dm->res32bit;
+	break;
     }
   }
   for (i=0; i < index; i++) {
@@ -450,7 +450,6 @@ ULO wguiGetColorBitsFromComboboxIndex(LONG index) {
 }
 
 LONG wguiGetComboboxIndexFromColorBits(ULO colorbits) {
-
   switch (colorbits) {
     case 16: return pwgui_dm->comboxbox16bitindex;
     case 24: return pwgui_dm->comboxbox24bitindex;
@@ -459,8 +458,25 @@ LONG wguiGetComboboxIndexFromColorBits(ULO colorbits) {
   return 0;
 }
 
-wgui_drawmode *wguiConvertDrawModeNodeToGuiDrawNode(draw_mode *dm, wgui_drawmode *wdm) {
+DISPLAYDRIVER wguiGetDisplayDriverFromComboboxIndex(LONG index) {
+  switch (index)
+  {
+    case 0: return DISPLAYDRIVER_DIRECTDRAW;
+    case 1: return DISPLAYDRIVER_DIRECTX11;
+  }
+  return DISPLAYDRIVER_DIRECTDRAW;
+}
 
+LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver) {
+  switch (displaydriver) 
+  {
+    case DISPLAYDRIVER_DIRECTDRAW: return 0;
+    case DISPLAYDRIVER_DIRECTX11: return 1;
+  }
+  return 0;
+}
+
+wgui_drawmode *wguiConvertDrawModeNodeToGuiDrawNode(draw_mode *dm, wgui_drawmode *wdm) {
   wdm->height = dm->height;
   wdm->refresh = dm->refresh;
   wdm->width = dm->width;
@@ -470,7 +486,6 @@ wgui_drawmode *wguiConvertDrawModeNodeToGuiDrawNode(draw_mode *dm, wgui_drawmode
 }
 
 int wguiCompareScreenArea(wgui_drawmode *lineup_dm, wgui_drawmode *insert_dm) {
-
   if (insert_dm->width < lineup_dm->width) {
     return 0;
   } else {
@@ -492,7 +507,7 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
   felist* reslist;
   draw_mode * dm;
   wgui_drawmode* pwdm;
-  ULO idw				= 0;
+  ULO idw		= 0;
   ULO id16bit		= 0;
   ULO id24bit		= 0;
   ULO id32bit		= 0;
@@ -529,23 +544,23 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
     } else {
       // fullscreen
       switch(dm->bits) {
-				case 16:
-				  //pwdm->id = id16bit;
-				  wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
-				  id16bit++;
-				  break;
+	case 16:
+	  //pwdm->id = id16bit;
+	  wdms->res16bit = listAddSorted(wdms->res16bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
+	  id16bit++;
+	  break;
 
-				case 24:
-				  //pwdm->id = id24bit;
-				  wdms->res24bit = listAddSorted(wdms->res24bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
-				  id24bit++;
-				  break;
+	case 24:
+	  //pwdm->id = id24bit;
+	  wdms->res24bit = listAddSorted(wdms->res24bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
+	  id24bit++;
+	  break;
 
-				case 32:
-				  //pwdm->id = id32bit;
-				  wdms->res32bit = listAddSorted(wdms->res32bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
-				  id32bit++;
-				  break;
+	case 32:
+	  //pwdm->id = id32bit;
+	  wdms->res32bit = listAddSorted(wdms->res32bit, listNew(pwdm), (int (*)(void*,void*)) &wguiCompareScreenArea);
+	  id32bit++;
+	  break;
       }
     }
   }
@@ -576,40 +591,41 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
 }
 
 void wguiFreeGuiDrawModesList(wgui_drawmodes *wdms) {
-
   listFreeAll(wdms->reswindowed, TRUE);
   listFreeAll(wdms->res16bit, TRUE);
   listFreeAll(wdms->res24bit, TRUE);
   listFreeAll(wdms->res32bit, TRUE);
+  wdms->reswindowed = NULL;
+  wdms->res16bit = NULL;
+  wdms->res24bit = NULL;
+  wdms->res32bit = NULL;
 }
 
 felist *wguiGetMatchingList(BOOLE windowed, ULO colorbits) {
-
   if (windowed) {
     // windowed
     return pwgui_dm->reswindowed;
   } else {
     // fullscreen
     switch(colorbits) {
-			case 16:
-			  return pwgui_dm->res16bit;
-			case 24:
-			  return pwgui_dm->res24bit;
-			case 32:
-			  return pwgui_dm->res32bit;
+      case 16:
+	return pwgui_dm->res16bit;
+      case 24:
+	return pwgui_dm->res24bit;
+      case 32:
+	return pwgui_dm->res32bit;
     }
   }
   return pwgui_dm->res16bit;
 }
 
 wgui_drawmode *wguiMatchResolution() {
-
-  BOOLE windowed		= cfgGetScreenWindowed(wgui_cfg); 
-  ULO width					= cfgGetScreenWidth(wgui_cfg);
-  ULO height				= cfgGetScreenHeight(wgui_cfg);
-  ULO colorbits			= cfgGetScreenColorBits(wgui_cfg);
-  felist *reslist		= NULL;
-  felist *i					= NULL;
+  BOOLE windowed = cfgGetScreenWindowed(wgui_cfg); 
+  ULO width = cfgGetScreenWidth(wgui_cfg);
+  ULO height = cfgGetScreenHeight(wgui_cfg);
+  ULO colorbits	= cfgGetScreenColorBits(wgui_cfg);
+  felist *reslist = NULL;
+  felist *i = NULL;
   wgui_drawmode *dm = NULL;
 
   reslist = wguiGetMatchingList(windowed, colorbits);	
@@ -619,8 +635,10 @@ wgui_drawmode *wguiMatchResolution() {
       return dm;
     }
   }
-  // if no matching is found return pointer to first resolution of 32 or 16 colorbits
-  if(listNode(pwgui_dm->res32bit) != NULL)
+  // if no matching is found return pointer to first resolution of windowed, 32 or 16 colorbits
+  if (listNode(pwgui_dm->reswindowed) != NULL)
+    return (wgui_drawmode *)listNode(pwgui_dm->reswindowed);
+  else if(listNode(pwgui_dm->res32bit) != NULL)
     return (wgui_drawmode *) listNode(pwgui_dm->res32bit);
   else
     return (wgui_drawmode *) listNode(pwgui_dm->res16bit);
@@ -1709,9 +1727,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
 
     // fill combobox for colorbit depth
+    ComboBox_ResetContent(colorBitsComboboxHWND);
     comboboxid = 0;
     if (pwgui_dm->numberof16bit > 0)
-    { 
+    {
       ComboBox_AddString(colorBitsComboboxHWND, "high color (16 bit)"); 
       pwgui_dm->comboxbox16bitindex = comboboxid; comboboxid++; 
     }
@@ -1732,6 +1751,13 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     // add multiple buffer option
     ccwButtonCheckConditional(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS, cfgGetUseMultipleGraphicalBuffers(conf));
 
+    // Display driver combo
+    HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
+    ComboBox_ResetContent(displayDriverComboboxHWND);
+    ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
+    ComboBox_AddString(displayDriverComboboxHWND, "DirectX 11");
+    ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
+
     // set fullscreen button check
     if (pwgui_dm_match->windowed)
     {
@@ -1750,13 +1776,18 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
       ComboBox_Enable(colorBitsComboboxHWND, TRUE);
       ccwButtonSetCheck(hwndDlg, IDC_CHECK_FULLSCREEN);
 
-      if (desktopwindow_bitspixel == 8)
-      {
-	ccwButtonDisable(hwndDlg, IDC_CHECK_FULLSCREEN);
-      }
-
       // enable the checkbox for multiplebuffers
       ccwButtonEnable(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS);
+    }
+
+    if (desktopwindow_bitspixel == 8
+      || (pwgui_dm->numberof16bit == 0 && pwgui_dm->numberof24bit == 0 && pwgui_dm->numberof32bit == 0))
+    {
+      ccwButtonDisable(hwndDlg, IDC_CHECK_FULLSCREEN);
+    }
+    else
+    {
+      ccwButtonEnable(hwndDlg, IDC_CHECK_FULLSCREEN);
     }
 
     // add display scale option and scale strategy
@@ -1818,6 +1849,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
     // get multiplebuffer check
     cfgSetUseMultipleGraphicalBuffers(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS));
+
+    // get display driver combo
+    cfgSetDisplayDriver(conf, wguiGetDisplayDriverFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER)));
 
     // get fullscreen check
     cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
@@ -2410,6 +2444,29 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 pwgui_dm_match = (wgui_drawmode *) listNode(wguiGetMatchingList(!ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN), wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
                 wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
                 break;
+            }
+            break;
+          case IDC_COMBO_DISPLAY_DRIVER:
+            switch (HIWORD(wParam))
+            {
+            case CBN_SELCHANGE:
+              ULO comboboxIndexDisplayDriver = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
+              DISPLAYDRIVER displaydriver = wguiGetDisplayDriverFromComboboxIndex(comboboxIndexDisplayDriver);
+
+              if (displaydriver != cfgGetDisplayDriver(wgui_cfg))
+              {
+                wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
+                wguiFreeGuiDrawModesList(pwgui_dm);
+                bool result = gfxDrvRestart(displaydriver);
+                if (!result)
+                {
+                  wguiRequester("Failed to restart display driver", "", "");
+                }
+                wguiConvertDrawModeListToGuiDrawModes(pwgui_dm);
+                wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
+              }
+
+              break;
             }
             break;
           case IDC_RADIO_DISPLAYSIZE_1X:
@@ -3480,7 +3537,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	do
 	{
 	  winDrvEmulationStart();
-	} while (gfx_drv_displaychange);
+	} while (gfxDrvCommon->_displaychange);
       }
     } while (!quit_emulator);
     return quit_emulator;
