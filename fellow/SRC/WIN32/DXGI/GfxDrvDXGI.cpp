@@ -65,18 +65,30 @@ void GfxDrvDXGI::DeleteEnumerationFactory()
   }
 }
 
+STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
+{
+  switch (featureLevel)
+  {
+    case D3D_FEATURE_LEVEL_11_0: return "D3D_FEATURE_LEVEL_11_0";
+    case D3D_FEATURE_LEVEL_10_1: return "D3D_FEATURE_LEVEL_10_1";
+    case D3D_FEATURE_LEVEL_10_0: return "D3D_FEATURE_LEVEL_10_0";
+    case D3D_FEATURE_LEVEL_9_3: return "D3D_FEATURE_LEVEL_9_3";
+    case D3D_FEATURE_LEVEL_9_2: return "D3D_FEATURE_LEVEL_9_2";
+    case D3D_FEATURE_LEVEL_9_1: return "D3D_FEATURE_LEVEL_9_1";
+  }
+  return "Unknown feature level";
+}
+
 bool GfxDrvDXGI::CreateD3D11Device()
 {
-  D3D_FEATURE_LEVEL  featureLevelsRequested = D3D_FEATURE_LEVEL_11_0;
   D3D_FEATURE_LEVEL  featureLevelsSupported;
-  UINT               numLevelsRequested = 1;
 
   HRESULT hr = D3D11CreateDevice(NULL,
 				 D3D_DRIVER_TYPE_HARDWARE,
 				 NULL,
 				 0,
-				 &featureLevelsRequested,
-				 numLevelsRequested,
+				 NULL,
+				 0,
 				 D3D11_SDK_VERSION,
 				 &_d3d11device,
 				 &featureLevelsSupported,
@@ -96,6 +108,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   fellowAddLog("The adapter we got was:\n\n");
   GfxDrvDXGIAdapter adapter(dxgiAdapter);
+  fellowAddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
   dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory);
 
@@ -111,6 +124,15 @@ void GfxDrvDXGI::DeleteD3D11Device()
   {
     _d3d11device->Release();
     _d3d11device = 0;
+  }
+}
+
+void GfxDrvDXGI::DeleteImmediateContext()
+{
+  if (_immediateContext != 0)
+  {
+    _immediateContext->Release();
+    _immediateContext = 0;
   }
 }
 
@@ -428,10 +450,16 @@ unsigned int GfxDrvDXGI::EmulationStartPost()
 
 void GfxDrvDXGI::EmulationStop()
 {
+  if (_immediateContext != 0)
+  {
+    _immediateContext->ClearState();
+  }
+
+  DeleteDXGIFactory();
   DeleteAmigaScreenTexture();
   DeleteSwapChain();
-  DeleteDXGIFactory();
-  DeleteD3D11Device();
+  DeleteImmediateContext();
+  //DeleteD3D11Device(); This crashes, unsure why
 }
 
 GfxDrvDXGI::GfxDrvDXGI()

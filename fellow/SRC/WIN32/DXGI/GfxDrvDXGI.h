@@ -42,6 +42,7 @@ private:
   void DeleteD3D11Device();
   
   void DeleteDXGIFactory();
+  void DeleteImmediateContext();
 
   bool CreateSwapChain();
   void DeleteSwapChain();
@@ -51,6 +52,8 @@ private:
   ID3D11Texture2D *GetCurrentAmigaScreenTexture();
 
   void FlipTexture();
+
+  STR* GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel);
 
 public:
 
