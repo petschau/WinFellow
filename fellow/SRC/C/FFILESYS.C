@@ -40,10 +40,7 @@
 #include "fellow.h"
 #include "ffilesys.h"
 #include "fileops.h"
-
-#ifdef UAE_FILESYS
 #include "filesys.h"
-#endif
 
 /*============================================================================*/
 /* Filesys device data                                                        */
@@ -191,7 +188,6 @@ void ffilesysInstall(void)
 
 void ffilesysHardReset(void)
 {
-#ifdef UAE_FILESYS
   if ((!ffilesysHasZeroDevices()) &&
     ffilesysGetEnabled() && (memoryGetKickImageVersion() > 36)) {
       rtarea_setup();		/* Maps the trap memory area into memory */
@@ -205,7 +201,6 @@ void ffilesysHardReset(void)
       filesys_start_threads();	/* Installs registersed filesystems mounts */
       memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
   }
-#endif
 }
 
 /*============================================================================*/

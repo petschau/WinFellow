@@ -27,8 +27,6 @@
 #include "defs.h"
 #include "CpuModule.h"
 
-#ifdef WGUI
-
 #include <windef.h>
 #include <windows.h>
 #include <windowsx.h>
@@ -1785,5 +1783,3 @@ void wdebDebug()
     MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
   }
 }
-
-#endif /* WGUI */
