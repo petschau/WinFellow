@@ -1,4 +1,3 @@
-/* @(#) $Id: WGUI.C,v 1.38 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Windows GUI code                                                        */
@@ -28,8 +27,6 @@
  */
 
 #include "defs.h"
-
-#ifdef WGUI
 
 #include <windows.h>
 #include <windowsx.h>
@@ -3703,6 +3700,3 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     if(wgui_presets != NULL)
       free(wgui_presets);
   }
-
-
-#endif /* WGUI */

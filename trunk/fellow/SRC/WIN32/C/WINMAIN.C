@@ -40,11 +40,8 @@
 #include "retroplatform.h"
 #endif
 
-// in release builds, user mode crash dumps shall be captured
-// #ifdef NDEBUG
-#include <Windows.h>
+// user mode crash dumps shall be captured
 #include <Dbghelp.h>
-// #endif
 
 
 extern int __cdecl main(int, char **);
@@ -430,8 +427,6 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
 /* exception handling to generate minidumps                                   */
 /*============================================================================*/
 
-// #ifdef NDEBUG
-
 typedef BOOL (__stdcall *tMDWD)(
   IN HANDLE hProcess,
   IN DWORD ProcessId,
@@ -501,9 +496,7 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 		   LPSTR lpCmdLine,	    // pointer to command line 
 		   int nCmdShow)  	    // show state of window 
 {
-// #ifdef NDEBUG
   SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
-// #endif
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);

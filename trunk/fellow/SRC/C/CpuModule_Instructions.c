@@ -28,11 +28,8 @@
 #include "fmem.h"
 #include "CpuModule.h"
 #include "CpuModule_Internal.h"
-
-#ifdef UAE_FILESYS
 #include "uae2fell.h"
 #include "autoconf.h"
-#endif
 
 /*============================================================================*/
 /* profiling help functions                                                   */
@@ -142,7 +139,6 @@ static void cpuIllegal(void)
   }
   else if ((opcode & 0xa000) == 0xa000)
   {
-#ifdef UAE_FILESYS
     if ((cpuGetPC() & 0xff0000) == 0xf00000)
     {
       call_calltrap(opcode & 0xfff);
@@ -150,7 +146,6 @@ static void cpuIllegal(void)
       cpuSetInstructionTime(512);
     }
     else
-#endif
     {
       cpuThrowALineException();
     }
