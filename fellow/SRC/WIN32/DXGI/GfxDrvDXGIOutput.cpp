@@ -29,7 +29,7 @@ void GfxDrvDXGIOutput::LogCapabilities(void)
   fellowAddLog("DXGI Output: %ls\n", desc.DeviceName);
   fellowAddLog("Attached to desktop: %s\n", (desc.AttachedToDesktop) ? "YES" : "NO");
   fellowAddLog("Desktop coordinates: (%d, %d) (%d, %d)\n", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
-  fellowAddLog("Rotation: %d\n\n", GetRotationDescription(desc.Rotation));
+  fellowAddLog("Rotation: %s\n\n", GetRotationDescription(desc.Rotation));
 }
 
 bool GfxDrvDXGIOutput::EnumerateModes(void)
