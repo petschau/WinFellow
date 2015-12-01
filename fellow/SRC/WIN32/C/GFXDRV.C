@@ -135,6 +135,10 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
     return false;
   }
 
+#ifdef RETRO_PLATFORM
+  gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
+#endif
+
   if (gfx_drv_use_dxgi)
   {
     gfxDrvDXGI = new GfxDrvDXGI();
