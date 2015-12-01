@@ -1770,7 +1770,6 @@ bool gfxDrvDDrawStartup()
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode() && gfx_drv_ddraw_initialized) {
-    gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
     gfxDrvDDrawRegisterRetroPlatformScreenMode(true);
   }
 #endif
