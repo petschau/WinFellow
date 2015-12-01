@@ -1,4 +1,4 @@
-HOWTO: Regression Testing
+HOWTO: Regression Testing {#howtoregressiontesting}
 ===================================================
 
 Several issues were fixed over time in WinFellow's emulation core. 

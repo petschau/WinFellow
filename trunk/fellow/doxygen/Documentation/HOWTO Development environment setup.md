@@ -4,7 +4,7 @@ HOWTO: Development environment setup    {#howtodevenvsetup}
 WinFellow is designed to be portable.
 However the project files contained in the SVN repository are built using Microsoft Visual Studio.
 
-Currently the following software should be used for development in the MAIN branch:
+Currently the following software should be used for development in the SVN trunk:
 * Visual Studio 2013 Update 5
 * <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10084">February 2010 DirectX SDK</a>
 
