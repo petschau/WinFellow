@@ -92,7 +92,7 @@
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 
-#include "config.h"
+// #include "config.h"
 #include "fellow.h"
 #include "windrv.h"
 #include "floppy.h"
@@ -137,10 +137,10 @@ static BOOLE bRetroPlatformMouseCaptureRequestedByHost = FALSE;
 
 static ULO lRetroPlatformMainVersion = -1, lRetroPlatformRevision = -1, lRetroPlatformBuild = -1;
 static LON lRetroPlatformClippingOffsetLeftRP = 0, lRetroPlatformClippingOffsetTopRP = 0;
+static ULO lRetroPlatformDisplayScale = 1;
 static LON lRetroPlatformScreenWidthRP = 0, lRetroPlatformScreenHeightRP = 0;
 static bool bRetroPlatformScreenWindowed = true;
 static bool bRetroPlatformScanlines = false;
-static DISPLAYSCALE RetroPlatformDisplayScale = DISPLAYSCALE_1X;
 
 static RPGUESTINFO RetroPlatformGuestInfo = { 0 };
 
@@ -481,8 +481,7 @@ ULO RetroPlatformGetClippingOffsetTop(void) {
 ULO RetroPlatformGetScreenHeightAdjusted(void) {
   ULO lScreenHeight = lRetroPlatformScreenHeightRP;
 
-  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
-    lScreenHeight *= 2;
+  lScreenHeight *= RetroPlatformGetDisplayScale();
 
   return lScreenHeight;
 }
@@ -490,19 +489,7 @@ ULO RetroPlatformGetScreenHeightAdjusted(void) {
 ULO RetroPlatformGetScreenWidthAdjusted(void) {
   ULO lScreenWidth = 0;
     
-  switch (RetroPlatformGetDisplayScale())
-  {
-  case DISPLAYSCALE_1X:
-    lScreenWidth = lRetroPlatformScreenWidthRP / 2;
-    break;
-  case DISPLAYSCALE_2X:
-    lScreenWidth = lRetroPlatformScreenWidthRP;
-    break;
-  default:
-    fellowAddLog("RetroPlatformGetScreenWidthAdjusted(): WARNING: unknown display scaling factor 0x%x.\n",
-      RetroPlatformGetDisplayScale());
-    break;
-  }
+  lScreenWidth = lRetroPlatformScreenWidthRP / 2 * RetroPlatformGetDisplayScale();
 
   return lScreenWidth;
 }
@@ -533,10 +520,14 @@ static void RetroPlatformDetermineScreenModeFromConfig(
   struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) {
   DWORD dwScreenMode = 0;
 
-  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_1X)
+  if(RetroPlatformGetDisplayScale() == 1)
     dwScreenMode |= RP_SCREENMODE_SCALE_1X;
-  if(RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X)
+  if(RetroPlatformGetDisplayScale() == 2)
     dwScreenMode |= RP_SCREENMODE_SCALE_2X;
+  if(RetroPlatformGetDisplayScale() == 3)
+    dwScreenMode |= RP_SCREENMODE_SCALE_3X;
+  if(RetroPlatformGetDisplayScale() == 4)
+    dwScreenMode |= RP_SCREENMODE_SCALE_4X;
 
   if(RetroPlatformGetScreenWindowed())
     dwScreenMode |= RP_SCREENMODE_DISPLAY_WINDOW;
@@ -567,8 +558,8 @@ BOOLE RetroPlatformGetEmulationState(void) {
 }
 
 
-DISPLAYSCALE RetroPlatformGetDisplayScale(void) {
-  return RetroPlatformDisplayScale;
+ULO RetroPlatformGetDisplayScale(void) {
+  return lRetroPlatformDisplayScale;
 }
 
 BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void) {
@@ -977,11 +968,11 @@ void RetroPlatformSetScreenWindowed(const bool bWindowed) {
     bWindowed ? "true" : "false");
 }
 
-void RetroPlatformSetDisplayScale(const DISPLAYSCALE displayscale) {
-  RetroPlatformDisplayScale = displayscale;
+void RetroPlatformSetDisplayScale(const ULO lDisplayScale) {
+  lRetroPlatformDisplayScale = lDisplayScale;
 
-  fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %s\n",
-    displayscale == DISPLAYSCALE_1X ? "1x" : "2x");
+  fellowAddLog("RetroPlatformSetDisplayScale(): display scale configured to %u\n",
+    lDisplayScale);
 }
 
 void RetroPlatformSetScreenMode(const char *szScreenMode) {
@@ -995,10 +986,16 @@ void RetroPlatformSetScreenMode(const char *szScreenMode) {
   switch (lScalingFactor)
   {
     case RP_SCREENMODE_SCALE_1X:
-      RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+      RetroPlatformSetDisplayScale(1);
       break;
     case RP_SCREENMODE_SCALE_2X:
-      RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
+      RetroPlatformSetDisplayScale(2);
+      break;
+    case RP_SCREENMODE_SCALE_3X:
+      RetroPlatformSetDisplayScale(3);
+      break;
+    case RP_SCREENMODE_SCALE_4X:
+      RetroPlatformSetDisplayScale(4);
       break;
     default:
       fellowAddLog("RetroPlatformSetScreenMode(): WARNING: unknown display scaling factor 0x%x\n",
@@ -1031,11 +1028,17 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
     switch(lScalingFactor)
     {
       case RP_SCREENMODE_SCALE_1X:
-        RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+        RetroPlatformSetDisplayScale(1);
         break;
       case RP_SCREENMODE_SCALE_2X:
-        RetroPlatformSetDisplayScale(DISPLAYSCALE_2X);
+        RetroPlatformSetDisplayScale(2);
         break;
+      case RP_SCREENMODE_SCALE_3X:
+	RetroPlatformSetDisplayScale(3);
+	break;
+      case RP_SCREENMODE_SCALE_4X:
+	RetroPlatformSetDisplayScale(4);
+	break;
       default:
         fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown windowed display scaling factor 0x%x.\n", lScalingFactor);
     }
@@ -1048,7 +1051,7 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
     {
       case RP_SCREENMODE_SCALE_MAX:
         // automatically scale to max - set in conjunction with fullscreen mode
-        RetroPlatformSetDisplayScale(DISPLAYSCALE_1X);
+        RetroPlatformSetDisplayScale(1);
         break;
       default:
         fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown fullscreen 1 display scaling factor 0x%x.\n", lScalingFactor);
@@ -1323,7 +1326,7 @@ static BOOLE RetroPlatformSendFeatures(void) {
   dFeatureFlags |= RP_FEATURE_TURBO_FLOPPY | RP_FEATURE_TURBO_CPU;
   dFeatureFlags |= RP_FEATURE_VOLUME | RP_FEATURE_SCANLINES | RP_FEATURE_DEVICEREADWRITE;
   dFeatureFlags |= RP_FEATURE_INPUTDEVICE_MOUSE | RP_FEATURE_INPUTDEVICE_JOYSTICK;
-  dFeatureFlags |= RP_FEATURE_SCREEN2X;
+  dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
   dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 
 #ifdef _DEBUG

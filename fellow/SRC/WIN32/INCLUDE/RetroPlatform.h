@@ -37,7 +37,7 @@ extern void  RetroPlatformEmulationStop(void);
 extern void  RetroPlatformEnter(void);
 extern ULO   RetroPlatformGetClippingOffsetLeftAdjusted(void);
 extern ULO   RetroPlatformGetClippingOffsetTopAdjusted(void);
-extern DISPLAYSCALE RetroPlatformGetDisplayScale(void);
+extern ULO   RetroPlatformGetDisplayScale(void);
 extern BOOLE RetroPlatformGetEmulationState(void);
 extern bool  RetroPlatformGetEmulationPaused(void);
 extern ULO   RetroPlatformGetEscapeKey(void);

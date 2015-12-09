@@ -278,12 +278,13 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
-    if (RetroPlatformGetDisplayScale() == DISPLAYSCALE_2X) {
-      ddraw_device->hwnd_clientrect_win.left *= 2;
-      ddraw_device->hwnd_clientrect_win.top *= 2;
-      ddraw_device->hwnd_clientrect_win.right *= 2;
-      ddraw_device->hwnd_clientrect_win.bottom *= 2;
-    }
+  {
+    ULO lDisplayScale = RetroPlatformGetDisplayScale();
+    ddraw_device->hwnd_clientrect_win.left *= lDisplayScale;
+    ddraw_device->hwnd_clientrect_win.top *= lDisplayScale;
+    ddraw_device->hwnd_clientrect_win.right *= lDisplayScale;
+    ddraw_device->hwnd_clientrect_win.bottom *= lDisplayScale;
+   }
 #endif
 
   memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
@@ -1725,7 +1726,6 @@ void gfxDrvDDrawEmulationStop()
 void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool bStartup) {
   ULO lHeight, lWidth;
   STR strMode[3] = "";
-  DISPLAYSCALE displayscale = RetroPlatformGetDisplayScale();
 
   if (RetroPlatformGetScanlines())
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
@@ -1792,7 +1792,7 @@ void gfxDrvDDrawShutdown()
   }
 }
 
-static bool gfxDrvTakeScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, DWORD scalefactor, DWORD bits, const STR *filename)
+static bool gfxDrvTakeScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, DWORD bits, const STR *filename)
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
@@ -1845,7 +1845,7 @@ static bool gfxDrvTakeScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD widt
   oldbit = SelectObject(memDC, bitmap);
   if (oldbit <= 0) goto cleanup;
 
-  bSuccess = StretchBlt(memDC, 0, 0, width, height, hDC, x, y, width / scalefactor, height / scalefactor, SRCCOPY) ? true : false;
+  bSuccess = StretchBlt(memDC, 0, 0, width, height, hDC, x, y, width / lDisplayScale, height / lDisplayScale, SRCCOPY) ? true : false;
   if (!bSuccess) goto cleanup;
 
   file = fopen(filename, "wb");
@@ -1870,7 +1870,7 @@ cleanup:
 }
 
 static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE surface,
-  DWORD x, DWORD y, DWORD width, DWORD height, DWORD scalefactor, const STR *filename) {
+  DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, const STR *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
   HDC surfDC = NULL;
@@ -1886,7 +1886,7 @@ static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE su
   hResult = surface->GetDC(&surfDC);
   if (FAILED(hResult)) return FALSE;
 
-  bSuccess = gfxDrvTakeScreenShotFromDCArea(surfDC, x, y, width, height, scalefactor, ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
+  bSuccess = gfxDrvTakeScreenShotFromDCArea(surfDC, x, y, width, height, lDisplayScale, ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
 
   if (surfDC) surface->ReleaseDC(surfDC);
 
@@ -1895,17 +1895,15 @@ static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE su
 
 bool gfxDrvTakeScreenShot(const bool bTakeFilteredScreenshot, const STR *filename) {
   bool bResult;
-  DWORD width = 0, height = 0, x = 0, y = 0, scalefactor = 2;
-
-  if (RetroPlatformGetDisplayScale() == RP_SCREENMODE_SCALE_2X)
-    scalefactor = 1;
+  DWORD width = 0, height = 0, x = 0, y = 0;
+  ULO lDisplayScale = RetroPlatformGetDisplayScale();
 
   if (bTakeFilteredScreenshot) {
     width = RetroPlatformGetScreenWidthAdjusted();
     height = RetroPlatformGetScreenHeightAdjusted();
     x = RetroPlatformGetClippingOffsetLeftAdjusted();
     y = RetroPlatformGetClippingOffsetTopAdjusted();
-    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, scalefactor, filename);
+    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, lDisplayScale, filename);
   }
   else {
     //width and height in RP mode are sized for maximum scale factor
