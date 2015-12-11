@@ -92,7 +92,7 @@
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 
-// #include "config.h"
+#include "config.h"
 #include "fellow.h"
 #include "windrv.h"
 #include "floppy.h"

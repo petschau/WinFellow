@@ -280,9 +280,10 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   if (RetroPlatformGetMode())
   {
     ULO lDisplayScale = RetroPlatformGetDisplayScale();
-    ddraw_device->hwnd_clientrect_win.left *= lDisplayScale;
-    ddraw_device->hwnd_clientrect_win.top *= lDisplayScale;
-    ddraw_device->hwnd_clientrect_win.right *= lDisplayScale;
+
+    ddraw_device->hwnd_clientrect_win.left   *= lDisplayScale;
+    ddraw_device->hwnd_clientrect_win.top    *= lDisplayScale;
+    ddraw_device->hwnd_clientrect_win.right  *= lDisplayScale;
     ddraw_device->hwnd_clientrect_win.bottom *= lDisplayScale;
    }
 #endif
@@ -1046,6 +1047,8 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   LPDIRECTDRAWSURFACE lpDDSDestination;
   DDBLTFX bltfx;
 
+  memset(&dstwin, 0, sizeof(RECT));
+
   memset(&bltfx, 0, sizeof(DDBLTFX));
   bltfx.dwSize = sizeof(DDBLTFX);
 
@@ -1068,10 +1071,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #ifdef RETRO_PLATFORM
     else
     {
-      srcwin.left = RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.right = cfgGetScreenWidth(gfxDrvCommon->rp_startup_config) + RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.top = RetroPlatformGetClippingOffsetTopAdjusted();
-      srcwin.bottom = cfgGetScreenHeight(gfxDrvCommon->rp_startup_config) + RetroPlatformGetClippingOffsetTopAdjusted();
+      srcwin.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
+      srcwin.right  = RetroPlatformGetScreenWidthAdjusted() + RetroPlatformGetClippingOffsetLeftAdjusted();
+      srcwin.top    = RetroPlatformGetClippingOffsetTopAdjusted();
+      srcwin.bottom = RetroPlatformGetScreenHeightAdjusted() + RetroPlatformGetClippingOffsetTopAdjusted();
     }
 #endif
   }
@@ -1229,8 +1232,9 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
 #ifdef RETRO_PLATFORM
     }
     else {
-      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 4;
-      ddraw_device->ddsdSecondary.dwWidth = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 4;
+      // increase buffer size to accomodate different display scaling factors
+      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RetroPlatformGetDisplayScale() * 2;
+      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RetroPlatformGetDisplayScale() * 2;
     }
 #endif
     err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
