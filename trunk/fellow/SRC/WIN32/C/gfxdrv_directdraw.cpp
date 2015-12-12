@@ -1047,8 +1047,6 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   LPDIRECTDRAWSURFACE lpDDSDestination;
   DDBLTFX bltfx;
 
-  memset(&dstwin, 0, sizeof(RECT));
-
   memset(&bltfx, 0, sizeof(DDBLTFX));
   bltfx.dwSize = sizeof(DDBLTFX);
 

@@ -119,7 +119,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.3 (2015/11/22)
+v0.5.4 (2015/12/12)
 \end_layout
 
 \begin_layout Standard
@@ -684,12 +684,12 @@ pagebreak
 \end_layout
 
 \begin_layout Part
-What's New in WinFellow 0.5.3?
+What's New in WinFellow 0.5.4?
 \end_layout
 
 \begin_layout Standard
 Thanks for your interest in WinFellow.
- Compared to version 0.5.2 there are a number of changes in this build, with
+ Compared to version 0.5.3 there are a number of changes in this build, with
  the most significant ones being:
 \end_layout
 
@@ -699,108 +699,11 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for high DPI configurations, also when used together with Amiga
- Forever 2016
+support for Direct3D graphics API (DirectX 11); windowed modes only
 \end_layout
 
 \begin_layout Itemize
-support for the original Amiga 1000 boot process from Kickstart disk boot;
- configure the A1000 bootstrap ROM like any other ROM image for the feature
- to be automatically enabled
-\end_layout
-
-\begin_layout Itemize
-support for keyboard-initiated reset - press Ctrl+Left Windows+Right Windows
- or Ctrl+Left Windows+Context Menu (as not all keyboards have a right Windows
- key) to initiate a reboot within an emulated session
-\end_layout
-
-\begin_layout Itemize
-support for extended ROM images; this gives the ability to use the AROS
- boot ROM
-\end_layout
-
-\begin_layout Itemize
-support for screenshots, clipping editor/live preview and scanlines in Amiga
- Forever
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Changed functionality:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-WinFellow is now compiled using Visual Studio 2013 Update 5
-\end_layout
-
-\begin_layout Itemize
-the default configuration contains 512kB chip/bogo memory now and has the
- real-time clock active (Amiga 500 with A-501 expansion)
-\end_layout
-
-\begin_layout Itemize
-the default configuration is now windowed and has LEDs active
-\end_layout
-
-\begin_layout Itemize
-chip memory mirroring has been implemented for OCS chipsets; the change
- was required for compatibility reasons, as some titles rely on it
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-because of this change, chip memory is now limited to 512kB when an OCS
- blitter has been configured; if you need to use more, please use the ECS
- Agnus blitter in your display configuration (it is an actual limitation
- of the OCS chipset)
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-2x mode in Amiga Forever now scales via DirectX instead of the internal
- draw modules (design change was necessary to enable live preview in 2x
- mode)
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Bug fixes:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-implemented bogo memory mirroring for ECS chipset with 512kB chip/bogo memory
- (required by the demo Move any Mountain)
-\end_layout
-
-\begin_layout Itemize
-fix for CIA timer logic (fixes the game Atomix)
-\end_layout
-
-\begin_layout Itemize
-fixes for several CPU instructions:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-'020 bit-field instructions were re-implemented (fix for Lotus Esprit Turbo
- Challenge 96k)
-\end_layout
-
-\begin_layout Itemize
-ASL instruction's overflow detection was improved
-\end_layout
-
-\begin_layout Itemize
-MULU flag check improved
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-escape key special handling in Amiga Forever improved (some titles would
- not detect an escape key press before)
+support for 3x mode in Amiga Forever
 \end_layout
 
 \end_deeper
