@@ -1726,8 +1726,7 @@ void gfxDrvDDrawEmulationStop()
 // TODO: Move it to GfxDrvCommon when mode lists are moved there
 
 void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool bStartup) {
-  ULO lHeight, lWidth;
-  STR strMode[3] = "";
+  ULO lHeight, lWidth, lDisplayScale;
 
   if (RetroPlatformGetScanlines())
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
@@ -1739,14 +1738,15 @@ void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool bStartup) {
     RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
   }
 
-  lHeight = RetroPlatformGetScreenHeightAdjusted();
-  lWidth = RetroPlatformGetScreenWidthAdjusted();
+  lHeight       = RetroPlatformGetScreenHeightAdjusted();
+  lWidth        = RetroPlatformGetScreenWidthAdjusted();
+  lDisplayScale = RetroPlatformGetDisplayScale();
 
   cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
   cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
 
-  fellowAddLog("gfxdrv: operating in RetroPlatform %s mode, insert resolution %ux%u into list of valid screen resolutions...\n",
-    strMode, lWidth, lHeight);
+  fellowAddLog("gfxdrv: operating in RetroPlatform %ux DirectDraw mode, insert resolution %ux%u into list of valid screen resolutions...\n",
+    lDisplayScale, lWidth, lHeight);
 
   listAddLast(gfx_drv_ddraw_device_current->modes, listNew(gfxDrvDDrawModeNew(lWidth, lHeight, 0, 0, 0, 0, 0, 0, 0, 0, TRUE)));
   gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device_current);
