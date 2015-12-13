@@ -37,7 +37,6 @@ private:
 
   void RegisterMode(int width, int height);
   void RegisterModes();
-  void RegisterRetroPlatformScreenMode(bool);
 
   bool CreateD3D11Device();
   void DeleteD3D11Device();
@@ -71,6 +70,8 @@ public:
   unsigned char *ValidateBufferPointer();
   void InvalidateBufferPointer();
   void Flip();
+
+  void RegisterRetroPlatformScreenMode(bool);
 
   GfxDrvDXGI();
   virtual ~GfxDrvDXGI();
