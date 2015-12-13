@@ -6,6 +6,10 @@
 
 #include <d3d11.h> 
 
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
+
 bool GfxDrvDXGI::Startup()
 {
   fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n\n");
@@ -16,6 +20,11 @@ bool GfxDrvDXGI::Startup()
   }
   CreateAdapterList();
   DeleteEnumerationFactory();
+
+#ifdef RETRO_PLATFORM
+  if (RetroPlatformGetMode())
+    RegisterRetroPlatformScreenMode(true);
+#endif
 
   fellowAddLog("GfxDrvDXGI: Finished starting up DXGI driver\n\n");	
 
@@ -260,7 +269,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
   D3D11_MAPPED_SUBRESOURCE mappedRect;
   ZeroMemory(&mappedRect, sizeof(mappedRect));
   D3D11_MAP mapFlag = D3D11_MAP_WRITE;
-
+  
   HRESULT mapResult = _immediateContext->Map(hostBuffer, 0, mapFlag, 0, &mappedRect);
 
   if (mapResult != S_OK)
@@ -420,6 +429,43 @@ void GfxDrvDXGI::RegisterModes()
   RegisterMode(4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
   RegisterMode(4 * GFXWIDTH_MAXOVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
 }
+
+#ifdef RETRO_PLATFORM
+
+void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup)
+{
+  ULO lHeight, lWidth;
+  STR strMode[3] = "";
+
+  if (RetroPlatformGetScanlines())
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
+  else
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
+
+  if (bStartup) {
+    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+    RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
+  }
+
+  lHeight = RetroPlatformGetScreenHeightAdjusted();
+  lWidth = RetroPlatformGetScreenWidthAdjusted();
+
+  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
+  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+
+  fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %s mode, insert resolution %ux%u into list of valid screen resolutions...\n",
+    strMode, lWidth, lHeight);
+
+  RegisterMode(lHeight, lWidth);
+
+  drawSetMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
+    cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
+    cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
+    cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config),
+    cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config));
+}
+
+#endif
 
 bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 {
