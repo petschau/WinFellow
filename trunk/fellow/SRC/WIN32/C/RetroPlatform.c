@@ -1339,6 +1339,16 @@ static BOOLE RetroPlatformSendFeatures(void) {
     dFeatureFlags |= RP_FEATURE_SCREEN4X;
 #endif
   }
+  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11) {
+#ifdef _DEBUG
+    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
+    dFeatureFlags |= RP_FEATURE_SCANLINES;
+    dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+#endif
+  }
+  else
+    fellowAddLog("RetroPlatformSendFeatures(): unknown display driver type %u\n",
+      RetroPlatformConfig->m_displaydriver);
     
   // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
   // RP_FEATURE_STATE, RP_FEATURE_SCALING_SUBPIXEL, RP_FEATURE_SCALING_STRETCH
