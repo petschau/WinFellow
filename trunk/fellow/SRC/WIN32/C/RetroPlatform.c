@@ -106,6 +106,7 @@
 #include "dxver.h"    /// needed for DirectInput based joystick detection code
 #include "sounddrv.h" /// needed for DirectSound volume control
 #include "GfxDrvCommon.h"
+#include "GfxDrvDXGI.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
 #define RETRO_PLATFORM_KEYSET_COUNT  6 ///< north, east, south, west, fire, autofire
@@ -114,6 +115,7 @@
 
 static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
 extern BOOLE kbd_drv_joykey_enabled[2][2];	///< For each port, the enabled joykeys
+extern GfxDrvDXGI *gfxDrvDXGI;
 
 #define	MAX_JOY_PORT  2 ///< maximum number of physically attached joysticks; the value originates from joydrv.c, as we emulate the enumeration behaviour
 int RetroPlatformNumberOfJoysticksAttached;
@@ -1070,7 +1072,13 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   // paused again.
   gfxDrvCommon->RunEventSet();
 
-  gfxDrvDDrawRegisterRetroPlatformScreenMode(false);
+  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
+    gfxDrvDDrawRegisterRetroPlatformScreenMode(false);
+  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11)
+    gfxDrvDXGI->RegisterRetroPlatformScreenMode(false);
+  else
+    fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown display driver %u\n",
+      RetroPlatformConfig->m_displaydriver);
 
   fellowRequestEmulationStop();
 }
@@ -1340,14 +1348,16 @@ static BOOLE RetroPlatformSendFeatures(void) {
 #endif
   }
   else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11) {
+    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X;
+
 #ifdef _DEBUG
-    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
+    dFeatureFlags |= RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 #endif
   }
   else
-    fellowAddLog("RetroPlatformSendFeatures(): unknown display driver type %u\n",
+    fellowAddLog("RetroPlatformSendFeatures(): WARNING: unknown display driver type %u\n",
       RetroPlatformConfig->m_displaydriver);
     
   // currently missing features: RP_FEATURE_FULLSCREEN, RP_FEATURE_SCREENCAPTURE,
