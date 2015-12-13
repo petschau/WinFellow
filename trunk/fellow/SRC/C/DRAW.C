@@ -420,8 +420,8 @@ static void drawFpsToFramebuffer32(void)
 
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode()) {
-    // move left to offset for clipping at the right
-    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 * RetroPlatformGetDisplayScale() - RetroPlatformGetScreenWidthAdjusted() - RetroPlatformGetClippingOffsetLeftAdjusted();
+    // move left to offset for clipping at the right; since width is adjusted dynamically for scale, reduce by that, all other values are static
+    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale() - RetroPlatformGetClippingOffsetLeftAdjusted();
 
     // move down to compensate for clipping at top
     bufl += RetroPlatformGetClippingOffsetTopAdjusted() * draw_mode_current->pitch / 4;
