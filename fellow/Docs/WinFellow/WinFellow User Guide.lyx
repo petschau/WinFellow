@@ -703,7 +703,7 @@ support for Direct3D graphics API (DirectX 11); windowed modes only
 \end_layout
 
 \begin_layout Itemize
-support for 3x mode in Amiga Forever
+support for 3x and 4x scaling in Amiga Forever
 \end_layout
 
 \end_deeper
