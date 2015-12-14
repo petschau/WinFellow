@@ -1338,20 +1338,18 @@ static BOOLE RetroPlatformSendFeatures(void) {
 
   // features that are currently implemented only for DirectDraw
   if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW) {
-    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X;
+    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 
 #ifdef _DEBUG
     dFeatureFlags |= RP_FEATURE_FULLSCREEN;
-    dFeatureFlags |= RP_FEATURE_SCREEN4X;
 #endif
   }
   else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11) {
-    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X;
+    dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
 
 #ifdef _DEBUG
-    dFeatureFlags |= RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 #endif
