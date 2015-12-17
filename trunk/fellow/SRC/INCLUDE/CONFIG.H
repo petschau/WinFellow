@@ -43,7 +43,7 @@ typedef enum {
 
 typedef enum {
   DISPLAYDRIVER_DIRECTDRAW = 0,
-  DISPLAYDRIVER_DIRECTX11 = 1
+  DISPLAYDRIVER_DIRECT3D11 = 1
 } DISPLAYDRIVER;
 
 /*============================================================================*/

@@ -459,7 +459,7 @@ DISPLAYDRIVER wguiGetDisplayDriverFromComboboxIndex(LONG index) {
   switch (index)
   {
     case 0: return DISPLAYDRIVER_DIRECTDRAW;
-    case 1: return DISPLAYDRIVER_DIRECTX11;
+    case 1: return DISPLAYDRIVER_DIRECT3D11;
   }
   return DISPLAYDRIVER_DIRECTDRAW;
 }
@@ -468,7 +468,7 @@ LONG wguiGetComboboxIndexFromDisplayDriver(DISPLAYDRIVER displaydriver) {
   switch (displaydriver) 
   {
     case DISPLAYDRIVER_DIRECTDRAW: return 0;
-    case DISPLAYDRIVER_DIRECTX11: return 1;
+    case DISPLAYDRIVER_DIRECT3D11: return 1;
   }
   return 0;
 }
@@ -1752,7 +1752,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
     ComboBox_ResetContent(displayDriverComboboxHWND);
     ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
-    ComboBox_AddString(displayDriverComboboxHWND, "DirectX 11");
+    ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
     ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
 
     // set fullscreen button check
