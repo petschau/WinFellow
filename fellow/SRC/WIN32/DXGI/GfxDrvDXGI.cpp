@@ -213,6 +213,14 @@ bool GfxDrvDXGI::CreateSwapChain()
   int width = _current_draw_mode->width;
   int height = _current_draw_mode->height;
 
+#ifdef RETRO_PLATFORM
+  if (RetroPlatformGetMode())
+  {
+    width = RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
+    height = RetroPlatformGetScreenHeightAdjusted() / RetroPlatformGetDisplayScale();
+  }
+#endif
+
   DXGI_SWAP_CHAIN_DESC swapChainDescription;
   ZeroMemory( &swapChainDescription, sizeof(swapChainDescription));
 
@@ -316,7 +324,26 @@ void GfxDrvDXGI::FlipTexture()
   _immediateContext->OMSetRenderTargets(1, &renderTargetView, NULL);
   renderTargetView->Release();
 
+#ifdef RETRO_PLATFORM
+  if (!RetroPlatformGetMode())
+#endif
   _immediateContext->CopyResource(backBuffer, amigaScreenBuffer);
+#ifdef RETRO_PLATFORM
+  else
+  {
+    D3D11_BOX sourceRegion;
+    sourceRegion.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
+    sourceRegion.right  = RetroPlatformGetClippingOffsetLeftAdjusted() + RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
+    sourceRegion.top    = RetroPlatformGetClippingOffsetTopAdjusted();
+    sourceRegion.bottom = RetroPlatformGetClippingOffsetTopAdjusted() + RetroPlatformGetScreenHeightAdjusted() / RetroPlatformGetDisplayScale();
+    sourceRegion.front  = 0;
+    sourceRegion.back   = 1;
+
+    _immediateContext->CopySubresourceRegion(backBuffer, 0, 0, 0, 0, amigaScreenBuffer, 0, &sourceRegion);
+  }
+
+#endif
+
   backBuffer->Release();
 
   HRESULT presentResult = _swapChain->Present(0, 0);
