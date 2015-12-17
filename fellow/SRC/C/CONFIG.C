@@ -1205,9 +1205,9 @@ static DISPLAYDRIVER cfgGetDisplayDriverFromString(STR *value)
   {
     return DISPLAYDRIVER_DIRECTDRAW;
   }
-  if (stricmp(value, "directx11") == 0)
+  if (stricmp(value, "direct3d11") == 0)
   {
-    return DISPLAYDRIVER_DIRECTX11;
+    return DISPLAYDRIVER_DIRECT3D11;
   }
   return DISPLAYDRIVER_DIRECTDRAW; // Default
 }
@@ -1218,8 +1218,8 @@ static STR *cfgGetDisplayDriverToString(DISPLAYDRIVER displaydriver)
   {
     case DISPLAYDRIVER_DIRECTDRAW:
       return "directdraw";
-    case DISPLAYDRIVER_DIRECTX11:
-      return "directx11";
+    case DISPLAYDRIVER_DIRECT3D11:
+      return "direct3d11";
   }
   return "directdraw";
 }

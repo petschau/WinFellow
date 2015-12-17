@@ -1074,7 +1074,7 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
 
   if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
     gfxDrvDDrawRegisterRetroPlatformScreenMode(false);
-  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11)
+  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
     gfxDrvDXGI->RegisterRetroPlatformScreenMode(false);
   else
     fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown display driver %u\n",
@@ -1346,12 +1346,12 @@ static BOOLE RetroPlatformSendFeatures(void) {
     dFeatureFlags |= RP_FEATURE_FULLSCREEN;
 #endif
   }
-  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTX11) {
+  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11) {
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
-
-#ifdef _DEBUG
     dFeatureFlags |= RP_FEATURE_SCANLINES;
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+
+#ifdef _DEBUG
 #endif
   }
   else
