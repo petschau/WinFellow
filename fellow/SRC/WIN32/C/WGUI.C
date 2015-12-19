@@ -1751,9 +1751,13 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     // Display driver combo
     HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
     ComboBox_ResetContent(displayDriverComboboxHWND);
-    ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
-    ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
-    ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
+    
+    if (gfxDrvDXGIValidateRequirements())
+    {
+      ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
+      ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
+      ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
+    }
 
     // set fullscreen button check
     if (pwgui_dm_match->windowed)
@@ -2455,18 +2459,12 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                 wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
                 wguiFreeGuiDrawModesList(pwgui_dm);
 
-		if (displaydriver == DISPLAYDRIVER_DIRECT3D11) {
-		  // test loading of DX11 dll
-		  HINSTANCE hDX11Dll;
-
-		  hDX11Dll = LoadLibrary("d3d11.dll");
-		  if (hDX11Dll) {
-		    fellowAddLog("INFO: d3d11.dll was successfully loaded.\n");
-		    FreeLibrary(hDX11Dll);
-		  }
-		  else {
-		    fellowAddLog("ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
-		    wguiRequester("DirectX 11 is required but could not be loaded, please revert back to DirectDraw.", "", "");
+		if (displaydriver == DISPLAYDRIVER_DIRECT3D11) 
+		{
+		  if(!gfxDrvDXGIValidateRequirements())
+		  {
+		    fellowAddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+		    wguiRequester("DirectX 11 is required but could not be loaded, revert back to DirectDraw.", "", "");
 		    displaydriver = DISPLAYDRIVER_DIRECTDRAW;
 		  }
 		}

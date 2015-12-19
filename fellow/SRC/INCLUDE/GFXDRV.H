@@ -31,4 +31,6 @@ extern void gfxDrvShutdown();
 
 extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
 
+extern bool gfxDrvDXGIValidateRequirements(void);
+
 #endif

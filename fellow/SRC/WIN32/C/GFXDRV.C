@@ -144,16 +144,9 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 
   if (gfx_drv_use_dxgi)
   {
-    // test loading of DX11 dll
-    HINSTANCE hDX11Dll;
-
-    hDX11Dll = LoadLibrary("d3d11.dll");
-    if (hDX11Dll) {
-      fellowAddLog("gfxDrv INFO: d3d11.dll was successfully loaded.\n");
-      FreeLibrary(hDX11Dll);
-    }
-    else {
-      fellowAddLog("gfxDrv ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
+    if (!gfxDrvDXGIValidateRequirements())
+    {
+      fellowAddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
       return gfxDrvDDrawStartup();
     }
 
@@ -187,4 +180,31 @@ void gfxDrvShutdown()
     delete gfxDrvCommon;
     gfxDrvCommon = 0;
   }
+}
+
+bool gfxDrvDXGIValidateRequirements(void)
+{
+  HINSTANCE hDll;
+
+  hDll = LoadLibrary("d3d11.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
+    return false;
+  }
+
+  hDll = LoadLibrary("dxgi.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
+    return false;
+  }
+
+  return true;
 }
