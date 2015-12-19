@@ -29,7 +29,6 @@ extern bool gfxDrvRestart(DISPLAYDRIVER displaydriver);
 extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
 extern void gfxDrvShutdown();
 
-extern bool gfxDrvTakeScreenShot(const bool, const STR *);
 extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
 
 #endif

@@ -1794,7 +1794,7 @@ void gfxDrvDDrawShutdown()
   }
 }
 
-static bool gfxDrvTakeScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, DWORD bits, const STR *filename)
+bool gfxDrvDDrawSaveScreenShotFromDCArea(HDC hDC, DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, DWORD bits, const STR *filename)
 {
   BITMAPFILEHEADER bfh;
   BITMAPINFOHEADER bih;
@@ -1871,7 +1871,7 @@ cleanup:
   return bSuccess;
 }
 
-static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE surface,
+static bool gfxDrvDDrawSaveScreenShotFromSurfaceArea(LPDIRECTDRAWSURFACE surface,
   DWORD x, DWORD y, DWORD width, DWORD height, ULO lDisplayScale, const STR *filename) {
   DDSURFACEDESC ddsd;
   HRESULT hResult = DD_OK;
@@ -1888,14 +1888,15 @@ static bool gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(LPDIRECTDRAWSURFACE su
   hResult = surface->GetDC(&surfDC);
   if (FAILED(hResult)) return FALSE;
 
-  bSuccess = gfxDrvTakeScreenShotFromDCArea(surfDC, x, y, width, height, lDisplayScale, ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
+  bSuccess = gfxDrvDDrawSaveScreenShotFromDCArea(surfDC, x, y, width, height, lDisplayScale, ddsd.ddpfPixelFormat.dwRGBBitCount, filename);
 
   if (surfDC) surface->ReleaseDC(surfDC);
 
   return bSuccess;
 }
 
-bool gfxDrvTakeScreenShot(const bool bTakeFilteredScreenshot, const STR *filename) {
+bool gfxDrvDDrawSaveScreenShot(const bool bTakeFilteredScreenshot, const STR *filename) 
+{
   bool bResult;
   DWORD width = 0, height = 0, x = 0, y = 0;
   ULO lDisplayScale = RetroPlatformGetDisplayScale();
@@ -1905,14 +1906,14 @@ bool gfxDrvTakeScreenShot(const bool bTakeFilteredScreenshot, const STR *filenam
     height = RetroPlatformGetScreenHeightAdjusted();
     x = RetroPlatformGetClippingOffsetLeftAdjusted();
     y = RetroPlatformGetClippingOffsetTopAdjusted();
-    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, lDisplayScale, filename);
+    bResult = gfxDrvDDrawSaveScreenShotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, lDisplayScale, filename);
   }
   else {
     //width and height in RP mode are sized for maximum scale factor
     // use harcoded RetroPlatform max PAL dimensions from WinUAE
     width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
     height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-    bResult = gfxDrvTakeScreenShotFromDirectDrawSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
+    bResult = gfxDrvDDrawSaveScreenShotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
   }
 
   fellowAddLog("gfxDrvTakeScreenShot(filtered=%d, filename='%s') %s.\n", bTakeFilteredScreenshot, filename,
