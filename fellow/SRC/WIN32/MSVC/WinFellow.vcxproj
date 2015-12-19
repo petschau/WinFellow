@@ -126,7 +126,7 @@
       <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>CAPSImg.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>CAPSImg.dll;dxgi.dll;d3d11.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Release/WinFellow.pdb</ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
@@ -253,7 +253,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <DelayLoadDLLs>CAPSImg.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>CAPSImg.dll;dxgi.dll;d3d11.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>.\Debug/WinFellow.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>

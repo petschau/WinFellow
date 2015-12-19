@@ -2454,6 +2454,23 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
               {
                 wguiExtractDisplayConfig(hwndDlg, wgui_cfg);
                 wguiFreeGuiDrawModesList(pwgui_dm);
+
+		if (displaydriver == DISPLAYDRIVER_DIRECT3D11) {
+		  // test loading of DX11 dll
+		  HINSTANCE hDX11Dll;
+
+		  hDX11Dll = LoadLibrary("d3d11.dll");
+		  if (hDX11Dll) {
+		    fellowAddLog("INFO: d3d11.dll was successfully loaded.\n");
+		    FreeLibrary(hDX11Dll);
+		  }
+		  else {
+		    fellowAddLog("ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
+		    wguiRequester("DirectX 11 is required but could not be loaded, please revert back to DirectDraw.", "", "");
+		    displaydriver = DISPLAYDRIVER_DIRECTDRAW;
+		  }
+		}
+
                 bool result = gfxDrvRestart(displaydriver);
                 if (!result)
                 {
