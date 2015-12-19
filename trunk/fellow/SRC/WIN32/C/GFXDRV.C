@@ -1,7 +1,9 @@
 #include "GfxDrvCommon.h"
 #include "GfxDrvDXGI.h"
 #include "GFXDRV.H"
+#include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
+#include "RetroPlatform.h"
 
 bool gfx_drv_use_dxgi = true;
 
@@ -136,11 +138,25 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
   }
 
 #ifdef RETRO_PLATFORM
-  gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
+  if (RetroPlatformGetMode())
+    gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
 #endif
 
   if (gfx_drv_use_dxgi)
   {
+    // test loading of DX11 dll
+    HINSTANCE hDX11Dll;
+
+    hDX11Dll = LoadLibrary("d3d11.dll");
+    if (hDX11Dll) {
+      fellowAddLog("gfxDrv INFO: d3d11.dll was successfully loaded.\n");
+      FreeLibrary(hDX11Dll);
+    }
+    else {
+      fellowAddLog("gfxDrv ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
+      return gfxDrvDDrawStartup();
+    }
+
     gfxDrvDXGI = new GfxDrvDXGI();
     return gfxDrvDXGI->Startup();
   }
