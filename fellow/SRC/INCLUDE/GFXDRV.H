@@ -30,6 +30,7 @@ extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
 extern void gfxDrvShutdown();
 
 extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
+extern bool gfxDrvSaveScreenshot(const bool, const STR *filename);
 
 extern bool gfxDrvDXGIValidateRequirements(void);
 

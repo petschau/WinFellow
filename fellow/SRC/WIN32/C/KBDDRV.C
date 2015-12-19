@@ -962,6 +962,9 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
         if(ispressed(PCK_LEFT_CTRL))
           issue_event(EVENT_HARD_RESET);
 
+    if (ispressed(PCK_PRINT_SCREEN))
+      issue_event(EVENT_BMP_DUMP);
+
 #ifdef RETRO_PLATFORM
     if(RetroPlatformGetMode())
     {

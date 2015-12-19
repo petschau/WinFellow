@@ -566,7 +566,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   bool bResult = false;
   HRESULT hr;
   DWORD width = 0, height = 0, x = 0, y = 0;
-  ULO lDisplayScale = RetroPlatformGetDisplayScale();
+  ULO lDisplayScale;
   IDXGISurface1* pSurface1 = NULL;
   HDC hDC = NULL;
   
@@ -586,10 +586,22 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
       return false;
     }
 
-    width = RetroPlatformGetScreenWidthAdjusted();
-    height = RetroPlatformGetScreenHeightAdjusted();
+#ifdef RETRO_PLATFORM
+    if (RetroPlatformGetMode())
+    {
+      width = RetroPlatformGetScreenWidthAdjusted();
+      height = RetroPlatformGetScreenHeightAdjusted();
+      lDisplayScale = RetroPlatformGetDisplayScale();
+    }
+    else
+#endif
+    {
+      width = _current_draw_mode->width;
+      height = _current_draw_mode->height;
+      lDisplayScale = 1;
+    }
 
-    bResult = gfxDrvDDrawSaveScreenShotFromDCArea(hDC, x, y, width, height, lDisplayScale, 32, filename);
+    bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, lDisplayScale, 32, filename);
   }
   else
   {
@@ -633,7 +645,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
       return false;
     }
     
-    bResult = gfxDrvDDrawSaveScreenShotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
+    bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
   }
 
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,

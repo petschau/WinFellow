@@ -1221,23 +1221,13 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
 	fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", 
           szScreenFiltered, szScreenRaw);
 
-        if(szScreenFiltered[0]) {
-	  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
-	    bResult = gfxDrvDDrawSaveScreenShot(TRUE, szScreenFiltered);
-	  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
-	    bResult = gfxDrvDXGI->SaveScreenshot(TRUE, szScreenFiltered);
-	  else
+	if (szScreenFiltered[0])
+	  if (!gfxDrvSaveScreenshot(TRUE, szScreenFiltered))
 	    bResult = false;
-        }
 
-        if(szScreenRaw[0]) {
-	  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
-	    bResult &= gfxDrvDDrawSaveScreenShot(FALSE, szScreenRaw);
-	  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
-	    bResult = gfxDrvDXGI->SaveScreenshot(FALSE, szScreenRaw);
-	  else
+	if (szScreenRaw[0])
+	  if (!gfxDrvSaveScreenshot(FALSE, szScreenRaw))
 	    bResult = false;
-        }
 
         if(bResult) {
           dResult |= RP_GUESTSCREENFLAGS_MODE_PAL |
