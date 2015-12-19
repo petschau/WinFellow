@@ -374,15 +374,9 @@ void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
 {
   config->m_displaydriver = display_driver;
 
-  // test loading of DX11 dll
-  HINSTANCE hDX11Dll;
-
-  hDX11Dll = LoadLibrary("d3d11.dll");
-  if (hDX11Dll) {
-    FreeLibrary(hDX11Dll);
-  }
-  else {
-    fellowAddLog("cfgSetDisplayDriver() ERROR: d3d11.dll could not be loaded, falling back to DirectDraw.\n");
+  if (!gfxDrvDXGIValidateRequirements())
+  {
+    fellowAddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
     config->m_displaydriver = DISPLAYDRIVER_DIRECTDRAW;
   }
 }

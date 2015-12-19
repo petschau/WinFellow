@@ -11,22 +11,6 @@
 #include "RetroPlatform.h"
 #endif
 
-#ifdef _DEBUG
-#include "D3Dcommon.h"
-#pragma comment( lib, "dxguid.lib")
-// see http://blogs.msdn.com/b/chuckw/archive/2010/04/15/object-naming.aspx
-// helper function to name Direct3D objects for better identification
-
-template<UINT TNameLength>
-inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource,
-  _In_z_ const char(&name)[TNameLength])
-{
-#if defined(_DEBUG) || defined(PROFILE)
-  resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
-#endif
-}
-
-#endif
 
 bool GfxDrvDXGI::Startup()
 {
