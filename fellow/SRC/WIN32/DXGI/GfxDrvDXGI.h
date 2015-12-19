@@ -72,6 +72,7 @@ public:
   void Flip();
 
   void RegisterRetroPlatformScreenMode(bool);
+  bool SaveScreenshot(const bool, const STR *);
 
   GfxDrvDXGI();
   virtual ~GfxDrvDXGI();

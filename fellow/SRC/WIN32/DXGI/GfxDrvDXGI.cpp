@@ -3,11 +3,29 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "GfxDrvCommon.h"
 #include "FELLOW.H"
+#include "gfxdrv_directdraw.h"
 
 #include <d3d11.h> 
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
+#endif
+
+#ifdef _DEBUG
+#include "D3Dcommon.h"
+#pragma comment( lib, "dxguid.lib")
+// see http://blogs.msdn.com/b/chuckw/archive/2010/04/15/object-naming.aspx
+// helper function to name Direct3D objects for better identification
+
+template<UINT TNameLength>
+inline void SetDebugObjectName(_In_ ID3D11DeviceChild* resource,
+  _In_z_ const char(&name)[TNameLength])
+{
+#if defined(_DEBUG) || defined(PROFILE)
+  resource->SetPrivateData(WKPDID_D3DDebugObjectName, TNameLength - 1, name);
+#endif
+}
+
 #endif
 
 bool GfxDrvDXGI::Startup()
@@ -62,6 +80,7 @@ bool GfxDrvDXGI::CreateEnumerationFactory()
     GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
     return false;
   }
+
   return true;
 }
 
@@ -90,18 +109,24 @@ STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
 
 bool GfxDrvDXGI::CreateD3D11Device()
 {
-  D3D_FEATURE_LEVEL  featureLevelsSupported;
+  D3D_FEATURE_LEVEL featureLevelsSupported;
+  HRESULT hr;
+  UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
-  HRESULT hr = D3D11CreateDevice(NULL,
-				 D3D_DRIVER_TYPE_HARDWARE,
-				 NULL,
-				 0,
-				 NULL,
-				 0,
-				 D3D11_SDK_VERSION,
-				 &_d3d11device,
-				 &featureLevelsSupported,
-				 &_immediateContext);
+#ifdef _DEBUG
+  creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+#endif
+
+  hr = D3D11CreateDevice(NULL,
+			 D3D_DRIVER_TYPE_HARDWARE,
+			 NULL,
+			 creationFlags,
+			 NULL,
+			 0,
+			 D3D11_SDK_VERSION,
+			 &_d3d11device,
+			 &featureLevelsSupported,
+			 &_immediateContext);
 
   if (hr != S_OK)
   {
@@ -161,12 +186,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
 
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
-    D3D11_TEXTURE2D_DESC texture2DDesc;
-    ZeroMemory(&texture2DDesc, sizeof(texture2DDesc));
-
-    D3D11_USAGE usage = D3D11_USAGE_STAGING;
-    UINT bindFlag = 0;
-
+    D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
     texture2DDesc.Width = width;
     texture2DDesc.Height = height;
     texture2DDesc.MipLevels = 1;
@@ -174,8 +194,8 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
     texture2DDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
     texture2DDesc.SampleDesc.Count = 1;
     texture2DDesc.SampleDesc.Quality = 0;
-    texture2DDesc.Usage = usage;
-    texture2DDesc.BindFlags = bindFlag;
+    texture2DDesc.Usage = D3D11_USAGE_STAGING;
+    texture2DDesc.BindFlags = 0;
     texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     texture2DDesc.MiscFlags = 0;
 
@@ -183,7 +203,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
 
     if (hr != S_OK)
     {
-      GfxDrvDXGIErrorLogger::LogError("Failed to create host screen texture1:", hr);
+      GfxDrvDXGIErrorLogger::LogError("Failed to create host screen texture.", hr);
       return false;
     }
   }
@@ -221,9 +241,7 @@ bool GfxDrvDXGI::CreateSwapChain()
   }
 #endif
 
-  DXGI_SWAP_CHAIN_DESC swapChainDescription;
-  ZeroMemory( &swapChainDescription, sizeof(swapChainDescription));
-
+  DXGI_SWAP_CHAIN_DESC swapChainDescription = { 0 };
   DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
   swapChainDescription.BufferCount = BackBufferCount;
@@ -236,6 +254,7 @@ bool GfxDrvDXGI::CreateSwapChain()
   swapChainDescription.SampleDesc.Quality = 0;
   swapChainDescription.Windowed = TRUE;
   swapChainDescription.SwapEffect = swapEffect;
+  swapChainDescription.Flags = DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE;
 
   HRESULT hr = _dxgiFactory->CreateSwapChain(_d3d11device, &swapChainDescription, &_swapChain);
 
@@ -252,9 +271,9 @@ bool GfxDrvDXGI::CreateSwapChain()
   viewPort.Height = (FLOAT) height;
   viewPort.MinDepth = 0.0f;
   viewPort.MaxDepth = 1.0f;
-  
+ 
   _immediateContext->RSSetViewports(1, &viewPort);
-
+  
   return true;
 }
 
@@ -556,4 +575,87 @@ GfxDrvDXGI::GfxDrvDXGI()
 GfxDrvDXGI::~GfxDrvDXGI()
 {
   Shutdown();
+}
+
+bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *filename)
+{
+  bool bResult = false;
+  HRESULT hr;
+  DWORD width = 0, height = 0, x = 0, y = 0;
+  ULO lDisplayScale = RetroPlatformGetDisplayScale();
+  IDXGISurface1* pSurface1 = NULL;
+  HDC hDC = NULL;
+  
+  if (bSaveFilteredScreenshot) 
+  {
+    hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
+    if (hr != S_OK)
+    {
+      GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for filtered screenshot.", hr);
+      return false;
+    }
+
+    hr = pSurface1->GetDC(FALSE, &hDC);
+    if (hr != S_OK)
+    {
+      GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain GDI compatible device context for filtered screenshot.", hr);
+      return false;
+    }
+
+    width = RetroPlatformGetScreenWidthAdjusted();
+    height = RetroPlatformGetScreenHeightAdjusted();
+
+    bResult = gfxDrvDDrawSaveScreenShotFromDCArea(hDC, x, y, width, height, lDisplayScale, 32, filename);
+  }
+  else
+  {
+    width = _current_draw_mode->width;
+    height = _current_draw_mode->height;
+    ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
+    ID3D11Texture2D *screenshotTexture = NULL;
+    D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
+    texture2DDesc.Width = width;
+    texture2DDesc.Height = height;
+    texture2DDesc.MipLevels = 1;
+    texture2DDesc.ArraySize = 1;
+    texture2DDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    texture2DDesc.SampleDesc.Count = 1;
+    texture2DDesc.SampleDesc.Quality = 0;
+    texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+    texture2DDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
+    texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    texture2DDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
+
+    HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &screenshotTexture);
+    if (hr != S_OK)
+    {
+      GfxDrvDXGIErrorLogger::LogError("Failed to create screenshot texture.", hr);
+      return false;
+    }
+
+    _immediateContext->CopyResource(screenshotTexture, hostBuffer);
+
+    hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)&pSurface1);
+    if (hr != S_OK)
+    {
+      GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for unfiltered screenshot.", hr);
+      return false;
+    }
+
+    hr = pSurface1->GetDC(FALSE, &hDC);
+    if (hr != S_OK)
+    {
+      GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain GDI compatible device context for unfiltered screenshot.", hr);
+      return false;
+    }
+    
+    bResult = gfxDrvDDrawSaveScreenShotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
+  }
+
+  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
+    bResult ? "successful" : "failed");
+
+  pSurface1->ReleaseDC(NULL);
+
+  return bResult;
 }

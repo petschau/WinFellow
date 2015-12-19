@@ -106,6 +106,7 @@
 #include "dxver.h"    /// needed for DirectInput based joystick detection code
 #include "sounddrv.h" /// needed for DirectSound volume control
 #include "GfxDrvCommon.h"
+#include "gfxdrv_directdraw.h"
 #include "GfxDrvDXGI.h"
 
 #define RETRO_PLATFORM_NUM_GAMEPORTS 2 ///< gameport 1 & 2
@@ -1221,11 +1222,21 @@ LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam) {
           szScreenFiltered, szScreenRaw);
 
         if(szScreenFiltered[0]) {
-          bResult = gfxDrvTakeScreenShot(TRUE, szScreenFiltered);
+	  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
+	    bResult = gfxDrvDDrawSaveScreenShot(TRUE, szScreenFiltered);
+	  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
+	    bResult = gfxDrvDXGI->SaveScreenshot(TRUE, szScreenFiltered);
+	  else
+	    bResult = false;
         }
 
         if(szScreenRaw[0]) {
-          bResult &= gfxDrvTakeScreenShot(FALSE, szScreenRaw);
+	  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
+	    bResult &= gfxDrvDDrawSaveScreenShot(FALSE, szScreenRaw);
+	  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
+	    bResult = gfxDrvDXGI->SaveScreenshot(FALSE, szScreenRaw);
+	  else
+	    bResult = false;
         }
 
         if(bResult) {
