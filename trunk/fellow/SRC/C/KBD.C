@@ -125,6 +125,8 @@ void kbdEventEOFHandler(void) {
               fellowAddLog("kbd: keyboard-initiated reset triggered...\n");
               cpuIntegrationHardReset();
 	      break;
+      case EVENT_BMP_DUMP:
+	gfxDrvSaveScreenshot(true, "");
     }
     kbd_state.eventsEOF.outpos++;
   }

@@ -19,7 +19,7 @@ void gfxDrvDDrawEmulationStop();
 bool gfxDrvDDrawStartup();
 void gfxDrvDDrawShutdown();
 
-bool gfxDrvDDrawSaveScreenShotFromDCArea(HDC, DWORD, DWORD, DWORD, DWORD, ULO, DWORD, const STR *);
-bool gfxDrvDDrawSaveScreenShot(const bool, const STR *);
+bool gfxDrvDDrawSaveScreenshotFromDCArea(HDC, DWORD, DWORD, DWORD, DWORD, ULO, DWORD, const STR *);
+bool gfxDrvDDrawSaveScreenshot(const bool, const STR *);
 
 #endif

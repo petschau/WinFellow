@@ -699,7 +699,13 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for Direct3D graphics API (DirectX 11); windowed modes only
+support for Direct3D 11 graphics API; this currently supports windowed display
+ modes only, and requires DirectX 11 to be installed
+\end_layout
+
+\begin_layout Itemize
+ability to save screenshots to the pictures folder (hit <Print Screen> to
+ trigger)
 \end_layout
 
 \begin_layout Itemize

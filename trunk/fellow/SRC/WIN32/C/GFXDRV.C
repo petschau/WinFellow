@@ -4,6 +4,7 @@
 #include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
 #include "RetroPlatform.h"
+#include "fileops.h"
 
 bool gfx_drv_use_dxgi = true;
 
@@ -116,6 +117,24 @@ void gfxDrvEmulationStop()
   }
 
   gfxDrvCommon->EmulationStop();
+}
+
+bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilename)
+{
+  STR szActualFilename[MAX_PATH];
+
+  if (szFilename[0] == 0)
+  {
+    // filename not set, automatically generate one
+    fileopsGetScreenshotFileName(szActualFilename);
+  }
+  else
+    strcpy(szActualFilename, szFilename);
+
+  if (gfx_drv_use_dxgi)
+    return gfxDrvDXGI->SaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+  else
+    return gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
 }
 
 bool gfxDrvRestart(DISPLAYDRIVER displaydriver)

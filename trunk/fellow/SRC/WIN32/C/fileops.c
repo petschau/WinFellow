@@ -33,6 +33,8 @@
 #include "zlib.h" // crc32 function
 #include "fmem.h" // decrypt AF2 kickstart
 
+#include <time.h>
+
 /** @file
  * The fileops module contains abtract functions to generate filenames in a
  * platform specific manner.
@@ -93,6 +95,32 @@ BOOLE fileopsGetGenericFileName(char *szPath, const char *szSubDir, const char *
     return TRUE;
   }
 #endif
+}
+
+/** generate screenshot filename (below my pictures folder)
+* @return TRUE if successful, FALSE otherwise
+*/
+
+BOOLE fileopsGetScreenshotFileName(char *szFilename)
+{
+  HRESULT hr;
+  char szFolderPath[MAX_PATH];
+  
+  hr = SHGetFolderPath(NULL, CSIDL_MYPICTURES, NULL, SHGFP_TYPE_CURRENT, szFolderPath);
+  if (hr == S_OK)
+  {
+    time_t rawtime;
+    struct tm *timeinfo;
+    char szTime[255];
+    
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    strftime(szTime, 255, "%Y%m%d%H%M%S", timeinfo);
+
+    sprintf(szFilename, "%s\\WinFellow-%s.bmp", szFolderPath, szTime);
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /* fileopsGetFellowLogfileName                                      */
