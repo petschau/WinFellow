@@ -127,6 +127,7 @@ void kbdEventEOFHandler(void) {
 	      break;
       case EVENT_BMP_DUMP:
 	gfxDrvSaveScreenshot(true, "");
+	break;
     }
     kbd_state.eventsEOF.outpos++;
   }
