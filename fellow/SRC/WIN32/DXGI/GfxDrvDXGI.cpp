@@ -146,6 +146,7 @@ void GfxDrvDXGI::DeleteD3D11Device()
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
     d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
+    // this crashes in release builds
     _d3d11device->Release();
     _d3d11device = 0;
 #endif
@@ -284,8 +285,7 @@ void GfxDrvDXGI::SizeChanged()
 unsigned char *GfxDrvDXGI::ValidateBufferPointer()
 {
   ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
-  D3D11_MAPPED_SUBRESOURCE mappedRect;
-  ZeroMemory(&mappedRect, sizeof(mappedRect));
+  D3D11_MAPPED_SUBRESOURCE mappedRect = { 0 };
   D3D11_MAP mapFlag = D3D11_MAP_WRITE;
   
   HRESULT mapResult = _immediateContext->Map(hostBuffer, 0, mapFlag, 0, &mappedRect);
@@ -351,10 +351,7 @@ void GfxDrvDXGI::FlipTexture()
 
     _immediateContext->CopySubresourceRegion(backBuffer, 0, 0, 0, 0, amigaScreenBuffer, 0, &sourceRegion);
   }
-
 #endif
-
-  backBuffer->Release();
 
   HRESULT presentResult = _swapChain->Present(0, 0);
 
