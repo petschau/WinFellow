@@ -34,6 +34,7 @@
 #include "fmem.h" // decrypt AF2 kickstart
 
 #include <time.h>
+#include <io.h>
 
 /** @file
  * The fileops module contains abtract functions to generate filenames in a
@@ -111,13 +112,24 @@ BOOLE fileopsGetScreenshotFileName(char *szFilename)
   {
     time_t rawtime;
     struct tm *timeinfo;
-    char szTime[255];
+    char szTime[255] = "";
+    ULO i = 1;
+    bool done = false;
     
     time(&rawtime);
     timeinfo = localtime(&rawtime);
+    
     strftime(szTime, 255, "%Y%m%d%H%M%S", timeinfo);
-
-    sprintf(szFilename, "%s\\WinFellow-%s.bmp", szFolderPath, szTime);
+    while (done != true)
+    {
+      sprintf(szFilename, "%s\\WinFellow-%s_%u.bmp", szFolderPath, szTime, i);
+      if (access(szFilename, 00) != -1)
+      { // file exists
+	i++;
+      }
+      else
+	done = true;
+    }
     return TRUE;
   }
   return FALSE;

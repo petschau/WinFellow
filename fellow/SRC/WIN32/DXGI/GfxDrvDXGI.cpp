@@ -1,3 +1,4 @@
+#include <InitGuid.h>
 #include "GfxDrvDXGI.h"
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
@@ -140,8 +141,14 @@ void GfxDrvDXGI::DeleteD3D11Device()
 {
   if (_d3d11device != 0)
   {
+#ifdef _DEBUG
+    ID3D11Debug *d3dDebug;
+    _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
+    d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+
     _d3d11device->Release();
     _d3d11device = 0;
+#endif
   }
 }
 
@@ -535,7 +542,7 @@ void GfxDrvDXGI::EmulationStop()
   DeleteAmigaScreenTexture();
   DeleteSwapChain();
   DeleteImmediateContext();
-  //DeleteD3D11Device(); This crashes, unsure why
+  DeleteD3D11Device(); // This crashes, unsure why
 }
 
 GfxDrvDXGI::GfxDrvDXGI()
@@ -646,6 +653,9 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     }
     
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
+
+    screenshotTexture->Release();
+    screenshotTexture = NULL;
   }
 
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
