@@ -1916,17 +1916,25 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *fi
     {
       width = gfx_drv_ddraw_device_current->mode->width;
       height = gfx_drv_ddraw_device_current->mode->height;
-      x = 0;
-      y = 0;
       lDisplayScale = 1;
     }
     bResult = gfxDrvDDrawSaveScreenshotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, lDisplayScale, filename);
   }
   else {
-    //width and height in RP mode are sized for maximum scale factor
-    // use harcoded RetroPlatform max PAL dimensions from WinUAE
-    width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
-    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+#ifdef RETRO_PLATFORM
+    if (RetroPlatformGetMode())
+    {
+      //width and height in RP mode are sized for maximum scale factor
+      // use harcoded RetroPlatform max PAL dimensions from WinUAE
+      width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
+      height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
+    }
+    else
+#endif
+    {
+      width = gfx_drv_ddraw_device_current->mode->width;
+      height = gfx_drv_ddraw_device_current->mode->height;
+    }
     bResult = gfxDrvDDrawSaveScreenshotFromSurfaceArea(gfx_drv_ddraw_device_current->lpDDSSecondary, x, y, width, height, 1, filename);
   }
 
