@@ -2461,15 +2461,19 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 		  if(!gfxDrvDXGIValidateRequirements())
 		  {
 		    fellowAddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
-		    wguiRequester("DirectX 11 is required but could not be loaded, revert back to DirectDraw.", "", "");
 		    displaydriver = DISPLAYDRIVER_DIRECTDRAW;
+		    cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
+		    wguiRequester("DirectX 11 is required but could not be loaded, revert back to DirectDraw.", "", "");
 		  }
 		}
 
                 bool result = gfxDrvRestart(displaydriver);
                 if (!result)
                 {
-                  wguiRequester("Failed to restart display driver", "", "");
+		  fellowAddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
+		  displaydriver = DISPLAYDRIVER_DIRECTDRAW;
+		  cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
+		  wguiRequester("Failed to restart display driver", "", "");
                 }
                 wguiConvertDrawModeListToGuiDrawModes(pwgui_dm);
                 wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
