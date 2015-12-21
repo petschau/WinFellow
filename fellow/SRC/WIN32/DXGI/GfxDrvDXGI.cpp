@@ -530,6 +530,25 @@ void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup)
 
 #endif
 
+void GfxDrvDXGI::ClearCurrentBuffer()
+{
+  UBY* buffer = ValidateBufferPointer();
+
+  if (buffer != 0)
+  {
+    for (unsigned int y = 0; y < _current_draw_mode->height; y++)
+    {
+      ULO *line_ptr = (ULO *)buffer;
+      for (unsigned int x = 0; x < _current_draw_mode->width; x++)
+      {
+        *line_ptr++ = 0;
+      }
+      buffer += _current_draw_mode->pitch;
+    }
+    InvalidateBufferPointer();
+  }
+}
+
 bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 {
   if (!CreateD3D11Device())

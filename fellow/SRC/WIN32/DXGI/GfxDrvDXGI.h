@@ -8,7 +8,7 @@
 #include "GfxDrvDXGIAdapter.h"
 #include "DRAW.H"
 
-const static unsigned int AmigaScreenTextureCount = 2;
+const static unsigned int AmigaScreenTextureCount = 1;
 const static unsigned int BackBufferCount = 2;
 
 class GfxDrvDXGI
@@ -57,6 +57,7 @@ private:
 
 public:
 
+  void ClearCurrentBuffer();
   void SetMode(draw_mode *dm);
   void SizeChanged();
 
