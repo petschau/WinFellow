@@ -1751,13 +1751,10 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     // Display driver combo
     HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
     ComboBox_ResetContent(displayDriverComboboxHWND);
-    
+    ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
     if (gfxDrvDXGIValidateRequirements())
-    {
-      ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
       ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
-      ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
-    }
+    ComboBox_SetCurSel(displayDriverComboboxHWND, wguiGetComboboxIndexFromDisplayDriver(cfgGetDisplayDriver(conf)));
 
     // set fullscreen button check
     if (pwgui_dm_match->windowed)

@@ -119,7 +119,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2015/12/12)
+v0.5.4 (2015/12/21)
 \end_layout
 
 \begin_layout Standard
@@ -132,16 +132,7 @@ LatexCommand tableofcontents
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-pagebreak
-\end_layout
-
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -165,519 +156,8 @@ None of the authors of WinFellow shall in any event be liable for any direct,
  replacing damaged lost or corrupted data.
 \end_layout
 
-\begin_layout Part
-Credits
-\end_layout
-
-\begin_layout Section*
-The WinFellow Team
-\end_layout
-
 \begin_layout Standard
-Created and developed by
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Petter Schau
-\noun default
- (petschau@gmail.com)
-\end_layout
-
-\begin_layout Standard
-\noindent
-with help from
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Worfje
-\noun default
- (worfje@gmx.net)
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Torsten Enderling
-\noun default
- (carfesh@gmx.net)
-\end_layout
-
-\begin_layout Section*
-The Beta Tester Team
-\end_layout
-
-\begin_layout Standard
-Special thanks go out to the beta tester team.
- Through their dedication, dozens of bugs could be fixed before they were
- ever released to the public.
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Brian Andreasen
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Giuseppe Bagnato
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-BenniP
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Attila Borsanyi
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Jan Brockmann
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Matthew Bushell
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Jim Durdan
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Andreas Eibach
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Damien Green
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Vincent Haot
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Marco Sascha Sven Hoppe
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Paul Irvine
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Malc Jennings
-\noun default
- (ale@emuhq.com)
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Magnus Jensen
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Nick K.
- Kalogeras
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Nick Lamburn
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Marcelo Nogueira Magri
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Tarnyko Rasty
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Andy Riley
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Dominik Schmidt
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Bryn Thompson
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Tomasz Tomaszek
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Phil Underhill
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Robert van Buren
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Christos Vasdekis
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Andy Voss
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Tim Wilson 
-\noun default
-aka Emulator Chicken
-\end_layout
-
-\begin_layout Section*
-Programming Contributions
-\end_layout
-
-\begin_layout Standard
-\noindent
-
-\noun on
-Ted
-\noun default
-M
-\noun on
-aul
-\noun default
- (dan@dillinja.org)
-\end_layout
-
-\begin_layout Itemize
-partially porting Fellow to Linux
-\end_layout
-
-\begin_layout Standard
-\noindent
-
-\noun on
-Mnd
-\noun default
- (novamarco@hotmail.com)
-\end_layout
-
-\begin_layout Itemize
-win32 keyboard, joystick & mouse modules
-\end_layout
-
-\begin_layout Standard
-\noindent
-
-\noun on
-Roman Dolejsi
-\noun default
- (roman@sorry.vse.cz) & 
-\noun on
-David Voracek
-\noun default
- (assassin@paru.cas.cz)
-\end_layout
-
-\begin_layout Itemize
-various improvements in GUI
-\end_layout
-
-\begin_layout Itemize
-keyboard LED code 
-\end_layout
-
-\begin_layout Itemize
-main design and partial implementation of 68010/20/30 instruction set emulation
- 
-\end_layout
-
-\begin_layout Itemize
-makeadf (David) 
-\end_layout
-
-\begin_layout Itemize
-generalized BMP dump code + various other improvements
-\end_layout
-
-\begin_layout Standard
-\noindent
-
-\noun on
-Rainer Sinsch
-\noun default
- (sinsh@stud.uni-frankfurt.de)
-\end_layout
-
-\begin_layout Itemize
-MOD-ripper
-\end_layout
-
-\begin_layout Itemize
-Low-pass filter
-\end_layout
-
-\begin_layout Itemize
-Wav-capture patch
-\end_layout
-
-\begin_layout Section*
-Thanks Also Go To
-\end_layout
-
-\begin_layout Standard
-
-\noun on
-Andreas Axelsson
-\noun default
-, 
-\noun on
-Brett Eden
-\noun default
-, 
-\noun on
-Hetz Ben Hamo
-\noun default
-, 
-\noun on
-Masashi Yamaguchi
-\noun default
-, 
-\noun on
-Jeremy Crawford
-\noun default
- and the DOS Documentation Crew: 
-\noun on
-Roberto Gasparrini
-\noun default
-, 
-\noun on
-Laurent Dugois
-\noun default
-, 
-\noun on
-Andreas Eibach
-\noun default
-, 
-\noun on
-Lou C.
- Fer
-\noun default
-, 
-\noun on
-Kenneth Vestergaard Schmidt
-\noun default
-, 
-\noun on
-Pawel Jedrak
-\noun default
-, 
-\noun on
-Peter Stolk
-\noun default
- and 
-\noun on
-Marcelo Gurgacz
-\noun default
-, as well as numerous others for taking interest in the emulator.
-\end_layout
-
-\begin_layout Standard
-Thanks also to the Cloanto RetroPlatform team (
-\noun on
-Mike C.
- Battilana
-\noun default
-, 
-\noun on
-Oscar Sillani
-\noun default
- and anyone else who may have been involved) for their support integrating
- WinFellow into Amiga Forever.
-\end_layout
-
-\begin_layout Section*
-Website Translations
-\end_layout
-
-\begin_layout Standard
-\noindent
-Mnd (Italian)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Wizard (German)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Sha! (French)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Bachfire (Danish)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Petter (Norwegian)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Apple (Finnish)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Solamnic (Greek)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Leon (Turkish)
-\end_layout
-
-\begin_layout Standard
-\noindent
-SewerRat (Portuguese)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Szatan (Polish)
-\end_layout
-
-\begin_layout Standard
-\noindent
-Bigma (Dutch)
-\end_layout
-
-\begin_layout Standard
-\noindent
-OrB (Spanish)
-\end_layout
-
-\begin_layout Section*
-Libraries used
-\end_layout
-
-\begin_layout Subsection*
-zlib
-\end_layout
-
-\begin_layout Standard
-Copyright © 1995-1998 
-\noun on
-Jean-loup Gailly
-\noun default
- and 
-\noun on
-Mark Adler
-\end_layout
-
-\begin_layout Section*
-Other sources used
-\end_layout
-
-\begin_layout Subsection*
-UAE Filesystem handler
-\end_layout
-
-\begin_layout Standard
-Copyright © 1996-2000 
-\noun on
-Bernd Schmidt
-\noun default
-, 
-\noun on
-Ed Hanway
-\noun default
-, 
-\noun on
-Gustavo Goedert
-\noun default
- and other UAE contributors.
- UAE filesystem sources are under the GNU GPL; used with permission.
-\end_layout
-
-\begin_layout Subsection*
-xDMS
-\end_layout
-
-\begin_layout Standard
-The xDMS v1.3 portable DMS archive unpacker is public domain software written
- by 
-\noun on
-Andre Rodrigues de la Rocha
-\noun default
- used with his kind permission.
-\end_layout
-
-\begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-pagebreak
-\end_layout
-
+\begin_inset Newpage pagebreak
 \end_inset
 
 
@@ -688,7 +168,7 @@ What's New in WinFellow 0.5.4?
 \end_layout
 
 \begin_layout Standard
-Thanks for your interest in WinFellow.
+Thank you for your interest in WinFellow.
  Compared to version 0.5.3 there are a number of changes in this build, with
  the most significant ones being:
 \end_layout
@@ -699,10 +179,29 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for Direct3D 11 graphics API; this currently supports windowed display
- modes only, and requires DirectX 11 to be installed
+support for the Direct3D 11 graphics API; this currently supports windowed
+ display modes only, and requires DirectX 11 to be installed
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+on Windows Vista, the 
+\begin_inset CommandInset href
+LatexCommand href
+name "platform update (KB971644)"
+target "https://support.microsoft.com/en-us/kb/971644"
+
+\end_inset
+
+ should be installed, as it contains required updates to DirectX
+\end_layout
+
+\begin_layout Itemize
+the graphics card has to provide hardware support for Direct3D feature level
+ 11.0
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 ability to save screenshots to the pictures folder (hit <Print Screen> to
  trigger)
@@ -716,6 +215,10 @@ support for 3x and 4x scaling in Amiga Forever
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
  minor bug fixes which are not listed above.
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -754,10 +257,47 @@ It does not have any particularly high CPU requirements, and should work
  CPU will be required (a minimum of 2GHz is recommended).
 \end_layout
 
+\begin_layout Section*
+Graphics card requirements
+\end_layout
+
+\begin_layout Subsection*
+DirectDraw
+\end_layout
+
 \begin_layout Standard
-For optimum performance, the graphics card should support DirectDraw hardware
+Support for DirectDraw rendering is the default configuration, and is supported
+ on all operating systems.
+ For optimum performance, the graphics card should support DirectDraw hardware
  acceleration.
  Use is possible without, but performance will be reduced drastically.
+\end_layout
+
+\begin_layout Subsection*
+Direct3D 11
+\end_layout
+
+\begin_layout Standard
+Support for Direct3D 11 can be enabled in the display configuration settings,
+ which enhances performance on systems that support it.
+ It requires DirectX 11 to be installed, which is available for Windows
+ Vista, 7, 8, 8.1 and 10.
+ For execution on Windows Vista, the 
+\begin_inset CommandInset href
+LatexCommand href
+name "platform update (KB971644)"
+target "https://support.microsoft.com/en-us/kb/971644"
+
+\end_inset
+
+ should be installed, as it contains required updates to DirectX.
+ The graphics card has to provide hardware support for Direct3D feature
+ level 11.0.
+ 
+\begin_inset Newpage pagebreak
+\end_inset
+
+
 \end_layout
 
 \begin_layout Part
@@ -1476,16 +1016,516 @@ type "mailto:"
 \end_layout
 
 \begin_layout Standard
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
+\begin_inset Newpage pagebreak
+\end_inset
 
 
-\backslash
-pagebreak
 \end_layout
 
+\begin_layout Part
+Credits
+\end_layout
+
+\begin_layout Section*
+The WinFellow Team
+\end_layout
+
+\begin_layout Standard
+Created and developed by
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Petter Schau
+\noun default
+ (petschau@gmail.com)
+\end_layout
+
+\begin_layout Standard
+\noindent
+with help from
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Worfje
+\noun default
+ (worfje@gmx.net)
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Torsten Enderling
+\noun default
+ (carfesh@gmx.net)
+\end_layout
+
+\begin_layout Section*
+The Beta Tester Team
+\end_layout
+
+\begin_layout Standard
+Special thanks go out to the beta tester team.
+ Through their dedication, dozens of bugs could be fixed before they were
+ ever released to the public.
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Brian Andreasen
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Giuseppe Bagnato
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+BenniP
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Attila Borsanyi
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Jan Brockmann
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Matthew Bushell
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Jim Durdan
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andreas Eibach
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Damien Green
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Vincent Haot
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Marco Sascha Sven Hoppe
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Paul Irvine
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Malc Jennings
+\noun default
+ (ale@emuhq.com)
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Magnus Jensen
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Nick K.
+ Kalogeras
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Nick Lamburn
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Marcelo Nogueira Magri
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tarnyko Rasty
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andy Riley
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Dominik Schmidt
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Bryn Thompson
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tomasz Tomaszek
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Phil Underhill
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Robert van Buren
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Christos Vasdekis
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andy Voss
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tim Wilson 
+\noun default
+aka Emulator Chicken
+\end_layout
+
+\begin_layout Section*
+Programming Contributions
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Ted
+\noun default
+M
+\noun on
+aul
+\noun default
+ (dan@dillinja.org)
+\end_layout
+
+\begin_layout Itemize
+partially porting Fellow to Linux
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Mnd
+\noun default
+ (novamarco@hotmail.com)
+\end_layout
+
+\begin_layout Itemize
+win32 keyboard, joystick & mouse modules
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Roman Dolejsi
+\noun default
+ (roman@sorry.vse.cz) & 
+\noun on
+David Voracek
+\noun default
+ (assassin@paru.cas.cz)
+\end_layout
+
+\begin_layout Itemize
+various improvements in GUI
+\end_layout
+
+\begin_layout Itemize
+keyboard LED code 
+\end_layout
+
+\begin_layout Itemize
+main design and partial implementation of 68010/20/30 instruction set emulation
+ 
+\end_layout
+
+\begin_layout Itemize
+makeadf (David) 
+\end_layout
+
+\begin_layout Itemize
+generalized BMP dump code + various other improvements
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Rainer Sinsch
+\noun default
+ (sinsh@stud.uni-frankfurt.de)
+\end_layout
+
+\begin_layout Itemize
+MOD-ripper
+\end_layout
+
+\begin_layout Itemize
+Low-pass filter
+\end_layout
+
+\begin_layout Itemize
+Wav-capture patch
+\end_layout
+
+\begin_layout Section*
+Thanks Also Go To
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andreas Axelsson
+\noun default
+, 
+\noun on
+Brett Eden
+\noun default
+, 
+\noun on
+Hetz Ben Hamo
+\noun default
+, 
+\noun on
+Masashi Yamaguchi
+\noun default
+, 
+\noun on
+Jeremy Crawford
+\noun default
+ and the DOS Documentation Crew: 
+\noun on
+Roberto Gasparrini
+\noun default
+, 
+\noun on
+Laurent Dugois
+\noun default
+, 
+\noun on
+Andreas Eibach
+\noun default
+, 
+\noun on
+Lou C.
+ Fer
+\noun default
+, 
+\noun on
+Kenneth Vestergaard Schmidt
+\noun default
+, 
+\noun on
+Pawel Jedrak
+\noun default
+, 
+\noun on
+Peter Stolk
+\noun default
+ and 
+\noun on
+Marcelo Gurgacz
+\noun default
+, as well as numerous others for taking interest in the emulator.
+\end_layout
+
+\begin_layout Standard
+Thanks also to the Cloanto RetroPlatform team (
+\noun on
+Mike C.
+ Battilana
+\noun default
+, 
+\noun on
+Oscar Sillani
+\noun default
+ and anyone else who may have been involved) for their support integrating
+ WinFellow into Amiga Forever.
+\end_layout
+
+\begin_layout Section*
+Website Translations
+\end_layout
+
+\begin_layout Standard
+\noindent
+Mnd (Italian)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Wizard (German)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Sha! (French)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Bachfire (Danish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Petter (Norwegian)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Apple (Finnish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Solamnic (Greek)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Leon (Turkish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+SewerRat (Portuguese)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Szatan (Polish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Bigma (Dutch)
+\end_layout
+
+\begin_layout Standard
+\noindent
+OrB (Spanish)
+\end_layout
+
+\begin_layout Section*
+Libraries used
+\end_layout
+
+\begin_layout Subsection*
+zlib
+\end_layout
+
+\begin_layout Standard
+Copyright © 1995-1998 
+\noun on
+Jean-loup Gailly
+\noun default
+ and 
+\noun on
+Mark Adler
+\end_layout
+
+\begin_layout Section*
+Other sources used
+\end_layout
+
+\begin_layout Subsection*
+UAE Filesystem handler
+\end_layout
+
+\begin_layout Standard
+Copyright © 1996-2000 
+\noun on
+Bernd Schmidt
+\noun default
+, 
+\noun on
+Ed Hanway
+\noun default
+, 
+\noun on
+Gustavo Goedert
+\noun default
+ and other UAE contributors.
+ UAE filesystem sources are under the GNU GPL; used with permission.
+\end_layout
+
+\begin_layout Subsection*
+xDMS
+\end_layout
+
+\begin_layout Standard
+The xDMS v1.3 portable DMS archive unpacker is public domain software written
+ by 
+\noun on
+Andre Rodrigues de la Rocha
+\noun default
+ used with his kind permission.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
 \end_inset
 
 
