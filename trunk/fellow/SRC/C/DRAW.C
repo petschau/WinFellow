@@ -944,7 +944,7 @@ void drawHardReset(void)
 
 void drawEmulationStart(void)
 {
-  ULO gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers()) ? 3 : 1;
+  ULO gfxModeNumberOfBuffers = (drawGetAllowMultipleBuffers() && !cfgGetDeinterlace(draw_config)) ? 3 : 1;
 
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;

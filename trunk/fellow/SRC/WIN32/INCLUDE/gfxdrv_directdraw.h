@@ -4,6 +4,7 @@
 #include "DEFS.H"
 #include "DRAW.H"
 
+void gfxDrvDDrawClearCurrentBuffer();
 void gfxDrvDDrawSetMode(draw_mode *dm);
 void gfxDrvDDrawSizeChanged();
 

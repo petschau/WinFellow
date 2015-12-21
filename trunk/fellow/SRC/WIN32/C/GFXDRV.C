@@ -13,7 +13,14 @@ GfxDrvDXGI *gfxDrvDXGI = 0;
 
 void gfxDrvClearCurrentBuffer()
 {
-  // Nothing, yet
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->ClearCurrentBuffer();
+  }
+  else
+  {
+    gfxDrvDDrawClearCurrentBuffer();
+  }
 }
 
 UBY* gfxDrvValidateBufferPointer()
