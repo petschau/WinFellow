@@ -688,6 +688,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(NULL);
+  pSurface1->Release();
 
   return bResult;
 }
