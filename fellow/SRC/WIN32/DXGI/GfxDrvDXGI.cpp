@@ -15,6 +15,8 @@
 
 bool GfxDrvDXGI::Startup()
 {
+  bool bResult;
+
   fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n\n");
 
   if (!CreateEnumerationFactory())
@@ -29,9 +31,11 @@ bool GfxDrvDXGI::Startup()
     RegisterRetroPlatformScreenMode(true);
 #endif
 
-  fellowAddLog("GfxDrvDXGI: Finished starting up DXGI driver\n\n");	
+  bResult = (_adapters != 0) & (_adapters->size() > 0);
 
-  return _adapters != 0;
+  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n\n", bResult ? "successful" : "failed");	
+
+  return bResult;
 }
 
 void GfxDrvDXGI::Shutdown()
@@ -103,15 +107,15 @@ bool GfxDrvDXGI::CreateD3D11Device()
 #endif
 
   hr = D3D11CreateDevice(NULL,
-			 D3D_DRIVER_TYPE_HARDWARE,
-			 NULL,
-			 creationFlags,
-			 NULL,
-			 0,
-			 D3D11_SDK_VERSION,
-			 &_d3d11device,
-			 &featureLevelsSupported,
-			 &_immediateContext);
+                         D3D_DRIVER_TYPE_HARDWARE,
+                         NULL,
+                         creationFlags,
+                         NULL,
+                         0,
+                         D3D11_SDK_VERSION,
+                         &_d3d11device,
+                         &featureLevelsSupported,
+                         &_immediateContext);
 
   if (hr != S_OK)
   {
@@ -121,13 +125,19 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   IDXGIDevice *dxgiDevice;
   hr = _d3d11device->QueryInterface(__uuidof(IDXGIDevice), (void **)&dxgiDevice);
-      
+
   IDXGIAdapter *dxgiAdapter;
   hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void **)&dxgiAdapter);
 
   fellowAddLog("The adapter we got was:\n\n");
   GfxDrvDXGIAdapter adapter(dxgiAdapter);
   fellowAddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
+
+  if (featureLevelsSupported != D3D_FEATURE_LEVEL_11_0)
+  {
+    fellowAddLog("Required feature level 11.0 not available.\n");
+    return false;
+  }
 
   dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory);
 
@@ -142,9 +152,9 @@ void GfxDrvDXGI::DeleteD3D11Device()
   if (_d3d11device != 0)
   {
 #ifdef _DEBUG
-    ID3D11Debug *d3dDebug;
-    _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3dDebug));
-    d3dDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+    ID3D11Debug *d3d11Debug;
+    _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
+    d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
 
     // this crashes in release builds
     _d3d11device->Release();
@@ -335,23 +345,21 @@ void GfxDrvDXGI::FlipTexture()
   renderTargetView->Release();
 
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode())
-#endif
-  _immediateContext->CopyResource(backBuffer, amigaScreenBuffer);
-#ifdef RETRO_PLATFORM
-  else
+  if (RetroPlatformGetMode())
   {
     D3D11_BOX sourceRegion;
-    sourceRegion.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
-    sourceRegion.right  = RetroPlatformGetClippingOffsetLeftAdjusted() + RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
-    sourceRegion.top    = RetroPlatformGetClippingOffsetTopAdjusted();
+    sourceRegion.left = RetroPlatformGetClippingOffsetLeftAdjusted();
+    sourceRegion.right = RetroPlatformGetClippingOffsetLeftAdjusted() + RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
+    sourceRegion.top = RetroPlatformGetClippingOffsetTopAdjusted();
     sourceRegion.bottom = RetroPlatformGetClippingOffsetTopAdjusted() + RetroPlatformGetScreenHeightAdjusted() / RetroPlatformGetDisplayScale();
-    sourceRegion.front  = 0;
-    sourceRegion.back   = 1;
+    sourceRegion.front = 0;
+    sourceRegion.back = 1;
 
     _immediateContext->CopySubresourceRegion(backBuffer, 0, 0, 0, 0, amigaScreenBuffer, 0, &sourceRegion);
   }
+  else
 #endif
+  _immediateContext->CopyResource(backBuffer, amigaScreenBuffer);
 
   HRESULT presentResult = _swapChain->Present(0, 0);
 
