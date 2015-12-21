@@ -126,22 +126,42 @@ bool GfxDrvDXGI::CreateD3D11Device()
   IDXGIDevice *dxgiDevice;
   hr = _d3d11device->QueryInterface(__uuidof(IDXGIDevice), (void **)&dxgiDevice);
 
+  if (hr != S_OK)
+  {
+    fellowAddLog("Failed to query interface for IDXGIDevice\n");
+    return false;
+  }
+
   IDXGIAdapter *dxgiAdapter;
   hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void **)&dxgiAdapter);
 
+  if (hr != S_OK)
+  {
+    dxgiDevice->Release();
+    fellowAddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
+    return false;
+  }
+
   fellowAddLog("The adapter we got was:\n\n");
-  GfxDrvDXGIAdapter adapter(dxgiAdapter);
+  GfxDrvDXGIAdapter adapter(dxgiAdapter); // Note: This will eventually release dxgiAdapter in COM. Maybe restructure the enum code later, the code structure ended up not being very practical.
   fellowAddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
   if (featureLevelsSupported != D3D_FEATURE_LEVEL_11_0)
   {
+    dxgiDevice->Release();
     fellowAddLog("Required feature level 11.0 not available.\n");
     return false;
   }
 
-  dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory);
+  hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
 
-  dxgiAdapter->Release();
+  if (hr != S_OK)
+  {
+    dxgiDevice->Release();
+    fellowAddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
+    return false;
+  }
+
   dxgiDevice->Release();
 
   return true;
@@ -155,11 +175,12 @@ void GfxDrvDXGI::DeleteD3D11Device()
     ID3D11Debug *d3d11Debug;
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
     d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+    d3d11Debug->Release();
+#endif
 
-    // this crashes in release builds
+     // this crashes in release builds
     _d3d11device->Release();
     _d3d11device = 0;
-#endif
   }
 }
 
@@ -302,7 +323,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
 
   if (mapResult != S_OK)
   {
-    GfxDrvDXGIErrorLogger::LogError("Failed to map host screen texture:", mapResult);
+    GfxDrvDXGIErrorLogger::LogError("Failed to map amiga screen texture:", mapResult);
     return 0;
   }
 
@@ -543,11 +564,11 @@ void GfxDrvDXGI::EmulationStop()
     _immediateContext->ClearState();
   }
 
-  DeleteDXGIFactory();
   DeleteAmigaScreenTexture();
   DeleteSwapChain();
+  DeleteDXGIFactory();
   DeleteImmediateContext();
-  DeleteD3D11Device(); // This crashes, unsure why
+  DeleteD3D11Device();
 }
 
 GfxDrvDXGI::GfxDrvDXGI()
