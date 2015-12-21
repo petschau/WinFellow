@@ -6,8 +6,8 @@
 class GfxDrvDXGIOutputEnumerator
 {
 public:
-  static GfxDrvDXGIOutputList* EnumerateOutputs(IDXGIAdapter *adapter);
-  static void DeleteOutputList(GfxDrvDXGIOutputList* outputs);
+  static void EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvDXGIOutputList& outputs);
+  static void DeleteOutputs(GfxDrvDXGIOutputList& outputs);
 };
 
 #endif

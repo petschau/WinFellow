@@ -1042,6 +1042,7 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
     <ClCompile Include="..\DXGI\GfxDrvDXGIAdapter.cpp" />
     <ClCompile Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.cpp" />
     <ClCompile Include="..\DXGI\GfxDrvDXGIErrorLogger.cpp" />
+    <ClCompile Include="..\DXGI\GfxDrvDXGIMode.cpp" />
     <ClCompile Include="..\DXGI\GfxDrvDXGIModeEnumerator.cpp" />
     <ClCompile Include="..\DXGI\GfxDrvDXGIOutput.cpp" />
     <ClCompile Include="..\DXGI\GfxDrvDXGIOutputEnumerator.cpp" />

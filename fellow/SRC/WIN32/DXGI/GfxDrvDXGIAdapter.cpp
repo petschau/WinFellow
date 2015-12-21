@@ -3,10 +3,12 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 
-void GfxDrvDXGIAdapter::LogCapabilities()
+void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
 {
   DXGI_ADAPTER_DESC desc;
-  HRESULT hr = _adapter->GetDesc(&desc);
+  HRESULT hr = adapter->GetDesc(&desc);
+
+  sprintf(_name, "%254ls", desc.Description);
 
   fellowAddLog("DXGI Adapter: %ls\n", desc.Description);
   fellowAddLog("Vendor ID: %.4X\n", desc.VendorId);
@@ -18,30 +20,18 @@ void GfxDrvDXGIAdapter::LogCapabilities()
   fellowAddLog("Shared system memory:    %I64d\n", (__int64) desc.SharedSystemMemory);
 }
 
-bool GfxDrvDXGIAdapter::EnumerateOutputs()
+void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter *adapter)
 {
-  _outputs = GfxDrvDXGIOutputEnumerator::EnumerateOutputs(_adapter);
-  return _outputs != 0;
+  GfxDrvDXGIOutputEnumerator::EnumerateOutputs(adapter, _outputs);
 }
 
 GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter *adapter)
-  : _adapter(adapter)
 {
-  LogCapabilities();
-  EnumerateOutputs();
+  LogCapabilities(adapter);
+  EnumerateOutputs(adapter);
 }
 
 GfxDrvDXGIAdapter::~GfxDrvDXGIAdapter()
 {
-  if (_outputs != 0)
-  {
-    GfxDrvDXGIOutputEnumerator::DeleteOutputList(_outputs);
-    _outputs = 0;
-  }
-  
-  if (_adapter != 0)
-  {
-    _adapter->Release();
-    _adapter = 0;
-  }
+  GfxDrvDXGIOutputEnumerator::DeleteOutputs(_outputs);
 }

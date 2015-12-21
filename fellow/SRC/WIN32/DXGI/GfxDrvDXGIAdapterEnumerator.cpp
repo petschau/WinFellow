@@ -13,6 +13,7 @@ GfxDrvDXGIAdapterList* GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFacto
   for (i = 0; factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; ++i) 
   { 
     adapters->push_back(new GfxDrvDXGIAdapter(adapter));
+    adapter->Release();
   }
 
   if (i == 0)
@@ -25,7 +26,7 @@ GfxDrvDXGIAdapterList* GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFacto
   return adapters;
 }
 
-void GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(GfxDrvDXGIAdapterList* adapters)
+void GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(GfxDrvDXGIAdapterList *adapters)
 {
   if (adapters != 0)
   {

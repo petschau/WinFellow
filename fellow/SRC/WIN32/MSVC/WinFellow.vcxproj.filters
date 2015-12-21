@@ -411,6 +411,9 @@
     <ClCompile Include="..\C\GfxDrvCommon.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\DXGI\GfxDrvDXGIMode.cpp">
+      <Filter>DXGI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
