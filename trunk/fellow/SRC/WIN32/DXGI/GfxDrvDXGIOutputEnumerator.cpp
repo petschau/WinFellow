@@ -3,31 +3,25 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 
-GfxDrvDXGIOutputList* GfxDrvDXGIOutputEnumerator::EnumerateOutputs(IDXGIAdapter *adapter)
+void GfxDrvDXGIOutputEnumerator::EnumerateOutputs(IDXGIAdapter *adapter, GfxDrvDXGIOutputList& outputs)
 {
-  GfxDrvDXGIOutputList *outputs = new GfxDrvDXGIOutputList();
   IDXGIOutput *output;
   UINT i;
   for (i = 0; adapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND; ++i) 
   { 
-    outputs->push_back(new GfxDrvDXGIOutput(output));
+    outputs.push_back(new GfxDrvDXGIOutput(output));
+    output->Release();
   }
   if (i == 0)
   {
     fellowAddLog("Device has no outputs.\n");
   }
-
-  return outputs;
 }
 
-void GfxDrvDXGIOutputEnumerator::DeleteOutputList(GfxDrvDXGIOutputList* outputs)
+void GfxDrvDXGIOutputEnumerator::DeleteOutputs(GfxDrvDXGIOutputList& outputs)
 {
-  if (outputs != 0)
+  for (GfxDrvDXGIOutputList::iterator i = outputs.begin(); i != outputs.end(); ++i)
   {
-    for (GfxDrvDXGIOutputList::iterator i = outputs->begin(); i != outputs->end(); ++i)
-    {
-      delete *i;
-    }
-    delete outputs;
+    delete *i;
   }
 }

@@ -21,41 +21,31 @@ char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
   return "UNKNOWN ROTATION";
 }
 
-void GfxDrvDXGIOutput::LogCapabilities(void)
+void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput *output)
 {
   DXGI_OUTPUT_DESC desc;
-  HRESULT hr = _output->GetDesc(&desc);
+  HRESULT hr = output->GetDesc(&desc);
 
+  sprintf(_name, "%254ls", desc.DeviceName);
+  
   fellowAddLog("DXGI Output: %ls\n", desc.DeviceName);
   fellowAddLog("Attached to desktop: %s\n", (desc.AttachedToDesktop) ? "YES" : "NO");
   fellowAddLog("Desktop coordinates: (%d, %d) (%d, %d)\n", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
   fellowAddLog("Rotation: %s\n\n", GetRotationDescription(desc.Rotation));
 }
 
-bool GfxDrvDXGIOutput::EnumerateModes(void)
+void GfxDrvDXGIOutput::EnumerateModes(IDXGIOutput *output)
 {
-  _modes = GfxDrvDXGIModeEnumerator::EnumerateModes(_output);
-  return (_modes != 0);
+  GfxDrvDXGIModeEnumerator::EnumerateModes(output, _modes);
 }
 
 GfxDrvDXGIOutput::GfxDrvDXGIOutput(IDXGIOutput *output)
-  : _output(output)
 {
-  LogCapabilities();
-  EnumerateModes();
+  LogCapabilities(output);
+  EnumerateModes(output);
 }
 
 GfxDrvDXGIOutput::~GfxDrvDXGIOutput()
 {
-  if (_modes != 0)
-  {
-    GfxDrvDXGIModeEnumerator::DeleteModeList(_modes);
-    _modes = 0;
-  }
-  
-  if (_output != 0)
-  {
-    _output->Release();
-    _output = 0;
-  }
+  GfxDrvDXGIModeEnumerator::DeleteModeList(_modes);
 }

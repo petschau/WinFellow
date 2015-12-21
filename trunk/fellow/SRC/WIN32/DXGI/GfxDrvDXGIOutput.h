@@ -9,12 +9,12 @@
 class GfxDrvDXGIOutput
 {
 private:
-  IDXGIOutput* _output;
-  GfxDrvDXGIModeList *_modes;
+  char _name[255];
+  GfxDrvDXGIModeList _modes;
 
   char* GetRotationDescription(DXGI_MODE_ROTATION rotation);
-  bool EnumerateModes(void);
-  void LogCapabilities(void);
+  void EnumerateModes(IDXGIOutput* output);
+  void LogCapabilities(IDXGIOutput* output);
 
 public:
 

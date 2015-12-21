@@ -9,15 +9,14 @@
 class GfxDrvDXGIAdapter
 {
 private:
-  IDXGIAdapter* _adapter;
-  GfxDrvDXGIOutputList* _outputs;
+  char _name[255];
+  GfxDrvDXGIOutputList _outputs;
+
+  void EnumerateOutputs(IDXGIAdapter *adapter);
+  void LogCapabilities(IDXGIAdapter *adapter);
 
 public:
-  bool EnumerateOutputs(void);
-  void LogCapabilities(void);
-  IDXGIAdapter *GetDXGIAdapter() {return _adapter;}
-
-  GfxDrvDXGIAdapter(IDXGIAdapter* adapter);
+  GfxDrvDXGIAdapter(IDXGIAdapter *adapter);
   virtual ~GfxDrvDXGIAdapter();
 };
 

@@ -6,8 +6,8 @@
 class GfxDrvDXGIModeEnumerator
 {
 public:
-  static GfxDrvDXGIModeList* EnumerateModes(IDXGIOutput *output);
-  static void DeleteModeList(GfxDrvDXGIModeList* modes);
+  static void EnumerateModes(IDXGIOutput *output, GfxDrvDXGIModeList& modes);
+  static void DeleteModeList(GfxDrvDXGIModeList& modes);
 };
 
 #endif
