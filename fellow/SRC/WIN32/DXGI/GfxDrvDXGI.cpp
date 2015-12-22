@@ -146,13 +146,6 @@ bool GfxDrvDXGI::CreateD3D11Device()
   GfxDrvDXGIAdapter adapter(dxgiAdapter); // Note: This will eventually release dxgiAdapter in COM. Maybe restructure the enum code later, the code structure ended up not being very practical.
   fellowAddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
-  if (featureLevelsSupported != D3D_FEATURE_LEVEL_11_0)
-  {
-    dxgiDevice->Release();
-    fellowAddLog("Required feature level 11.0 not available.\n");
-    return false;
-  }
-
   hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
 
   if (hr != S_OK)
