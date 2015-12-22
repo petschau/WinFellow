@@ -119,7 +119,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2015/12/21)
+v0.5.4 (2015/12/22)
 \end_layout
 
 \begin_layout Standard
@@ -156,7 +156,15 @@ None of the authors of WinFellow shall in any event be liable for any direct,
  replacing damaged lost or corrupted data.
 \end_layout
 
+\begin_layout Part
+GNU General Public License, Version 2
+\end_layout
+
 \begin_layout Standard
+WinFellow is developed and distributed under the terms of the GNU General
+ Public License, Version 2.
+ For the exact terms of the license, please see the file gpl-2.0.pdf, that
+ should have been distributed together with this manual.
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -197,8 +205,7 @@ target "https://support.microsoft.com/en-us/kb/971644"
 \end_layout
 
 \begin_layout Itemize
-the graphics card has to provide hardware support for Direct3D feature level
- 11.0
+the graphics card has to provide hardware acceleration for Direct3D
 \end_layout
 
 \end_deeper
@@ -282,7 +289,11 @@ Support for Direct3D 11 can be enabled in the display configuration settings,
  which enhances performance on systems that support it.
  It requires DirectX 11 to be installed, which is available for Windows
  Vista, 7, 8, 8.1 and 10.
- For execution on Windows Vista, the 
+ 
+\end_layout
+
+\begin_layout Standard
+For execution on Windows Vista, the 
 \begin_inset CommandInset href
 LatexCommand href
 name "platform update (KB971644)"
@@ -291,8 +302,7 @@ target "https://support.microsoft.com/en-us/kb/971644"
 \end_inset
 
  should be installed, as it contains required updates to DirectX.
- The graphics card has to provide hardware support for Direct3D feature
- level 11.0.
+ The graphics card has to provide hardware acceleration for Direct3D.
  
 \begin_inset Newpage pagebreak
 \end_inset
@@ -1391,7 +1401,7 @@ Marcelo Gurgacz
 \end_layout
 
 \begin_layout Standard
-Thanks also to the Cloanto RetroPlatform team (
+Special thanks also go out to the Cloanto RetroPlatform team (
 \noun on
 Mike C.
  Battilana
@@ -1522,24 +1532,6 @@ The xDMS v1.3 portable DMS archive unpacker is public domain software written
 Andre Rodrigues de la Rocha
 \noun default
  used with his kind permission.
-\end_layout
-
-\begin_layout Standard
-\begin_inset Newpage pagebreak
-\end_inset
-
-
-\end_layout
-
-\begin_layout Part
-GNU General Public License, Version 2
-\end_layout
-
-\begin_layout Standard
-WinFellow is developed and distributed under the terms of the GNU General
- Public License, Version 2.
- For the exact terms of the license, please see the file gpl-2.0.pdf, that
- should have been distributed together with this manual.
 \end_layout
 
 \end_body
