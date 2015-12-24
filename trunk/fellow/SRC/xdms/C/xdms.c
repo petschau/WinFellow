@@ -23,7 +23,9 @@
 #include "pfile.h"
 #include "crc_csum.h"
 
-int dmsUnpack(char *src, char *dest)
+
+
+USHORT dmsUnpack(char *src, char *dest)
 {
 	return Process_File(src, dest, 0, 0, 0);
 }
@@ -33,7 +35,6 @@ void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
 	switch (err) {
 		case NO_PROBLEM:
 		case DMS_FILE_END:
-		  sprintf(errMess, "DMS file %s ended prematurely !\n", i);
 			return;
 		case ERR_NOMEMORY:
 			sprintf(errMess,"Not enough memory for buffers !\n");
@@ -51,7 +52,7 @@ void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
 			sprintf(errMess,"Error reading file %s : unexpected end of file !\n",i);
 			break;
 		case ERR_HCRC:
-			sprintf(errMess,"Error in file %s : header CRC errMessor !\n",i);
+			sprintf(errMess,"Error in file %s : header CRC error !\n",i);
 			break;
 		case ERR_NOTTRACK:
 			sprintf(errMess,"Error in file %s : track header not found !\n",i);
@@ -67,16 +68,12 @@ void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
 			break;
 		case ERR_CSUM:
 			sprintf(errMess,"Error in file %s : checksum error after unpacking !\n",i);
-			sprintf(errMess,"This file seems ok, but the unpacking failed.\n");
-			sprintf(errMess,"This can be caused by a bug in xDMS. Please contact the author\n");
 			break;
 		case ERR_CANTWRITE:
 			sprintf(errMess,"Error : can't write to file %s  !\n",o);
 			break;
 		case ERR_BADDECR:
 			sprintf(errMess,"Error in file %s : error unpacking !\n",i);
-			sprintf(errMess,"This file seems ok, but the unpacking failed.\n");
-			sprintf(errMess,"This can be caused by a bug in xDMS. Please contact the author\n");
 			break;
 		case ERR_UNKNMODE:
 			sprintf(errMess,"Error in file %s : unknown compression mode used !\n",i);
@@ -92,8 +89,6 @@ void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
 			break;
 		default:
 			sprintf(errMess,"Error while processing file  %s : internal error !\n",i);
-			sprintf(errMess,"This is a bug in xDMS\n");
-			sprintf(errMess,"Please contact the author\n");
 			break;
 	}
 }
