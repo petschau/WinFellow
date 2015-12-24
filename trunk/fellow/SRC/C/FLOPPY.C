@@ -886,14 +886,21 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive)
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 {
   char *gzname;
+  USHORT iResult;
   if( (gzname = fileopsGetTemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
 
-  if(dmsUnpack(diskname, gzname) != 0)
+  if(iResult = dmsUnpack(diskname, gzname) != 0)
   {
+    STR szErrorMessage[1024] = "";
+
+    dmsErrMsg(iResult, (char *) diskname, gzname, (char *) szErrorMessage);
+
+    fellowAddLog("ERROR extracting DMS floppy image: %s", szErrorMessage);
+
     return FALSE;
   }
 

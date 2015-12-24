@@ -4,6 +4,6 @@
 #include "pfile.h"
 
 int dmsUnpack(char *, char *);
-static void dmsErrMsg(USHORT, char *, char *, char *);
+void dmsErrMsg(USHORT, char *, char *, char *);
 
 #endif

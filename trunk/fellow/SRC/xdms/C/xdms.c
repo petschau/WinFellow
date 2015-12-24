@@ -28,11 +28,12 @@ int dmsUnpack(char *src, char *dest)
 	return Process_File(src, dest, 0, 0, 0);
 }
 
-static void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
+void dmsErrMsg(USHORT err, char *i, char *o, char *errMess)
 {
 	switch (err) {
 		case NO_PROBLEM:
 		case DMS_FILE_END:
+		  sprintf(errMess, "DMS file %s ended prematurely !\n", i);
 			return;
 		case ERR_NOMEMORY:
 			sprintf(errMess,"Not enough memory for buffers !\n");
