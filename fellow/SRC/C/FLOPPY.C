@@ -892,8 +892,10 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
+  
+  iResult = dmsUnpack(diskname, gzname);
 
-  if(iResult = dmsUnpack(diskname, gzname) != 0)
+  if(iResult != 0)
   {
     STR szErrorMessage[1024] = "";
 

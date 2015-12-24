@@ -3,7 +3,7 @@
 
 #include "pfile.h"
 
-int dmsUnpack(char *, char *);
+USHORT dmsUnpack(char *, char *);
 void dmsErrMsg(USHORT, char *, char *, char *);
 
 #endif
