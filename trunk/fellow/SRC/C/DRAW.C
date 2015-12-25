@@ -970,7 +970,8 @@ BOOLE drawEmulationStartPost(void)
   }
   else
   {
-    wguiRequester("Failure: The graphics driver failed to allocate enough graphics card memory", "", "");
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
+      "Failure: The graphics driver failed to allocate enough graphics card memory");
   }
   return result;
 }

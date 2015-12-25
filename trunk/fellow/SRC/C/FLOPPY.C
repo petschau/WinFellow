@@ -901,7 +901,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 
     dmsErrMsg(iResult, (char *) diskname, gzname, (char *) szErrorMessage);
 
-    fellowAddLog("ERROR extracting DMS floppy image: %s", szErrorMessage);
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 
     return FALSE;
   }

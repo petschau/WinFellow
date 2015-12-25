@@ -6,6 +6,12 @@ typedef enum {
   FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK = 1
 } fellow_runtime_error_codes;
 
+typedef enum {
+  FELLOW_REQUESTER_TYPE_INFO = 0,
+  FELLOW_REQUESTER_TYPE_WARN = 1,
+  FELLOW_REQUESTER_TYPE_ERROR = 2
+} FELLOW_REQUESTER_TYPE;
+
 extern BOOLE fellow_request_emulation_stop;
 
 extern void fellowRun(void);
@@ -15,6 +21,7 @@ extern void fellowRunDebug(ULO breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit(void);
 extern void fellowAddLog(const char *,...);
+extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
 extern void fellowAddTimelessLog(const char *,...);
 extern char *fellowGetVersionString(void);
 extern void fellowSetUseGUI(BOOLE use_gui);

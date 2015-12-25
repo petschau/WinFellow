@@ -229,7 +229,8 @@ void winDrvEmulationStart(void)
   }
   else 
   {
-    wguiRequester("Emulation session failed to start up", "", "");
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
+      "Emulation session failed to start up");
   }
   fellowEmulationStop();
 }
