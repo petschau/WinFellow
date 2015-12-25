@@ -523,7 +523,7 @@ void wguiConvertDrawModeListToGuiDrawModes(wgui_drawmodes *wdms) {
 
   if (!allowWindowedModes)
   {
-    wguiRequester("Your desktop is currently running an 8-bit color resolution.", "This is not supported.", "Only fullscreen modes will be available");          
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available");
   }
 
   for (reslist = drawGetModes(); reslist != NULL; reslist = listNext(reslist)) {
@@ -2463,7 +2463,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 		    fellowAddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
 		    displaydriver = DISPLAYDRIVER_DIRECTDRAW;
 		    cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-		    wguiRequester("DirectX 11 is required but could not be loaded, revert back to DirectDraw.", "", "");
+		    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
 		  }
 		}
 
@@ -2473,7 +2473,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 		  fellowAddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
 		  displaydriver = DISPLAYDRIVER_DIRECTDRAW;
 		  cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER_DIRECTDRAW);
-		  wguiRequester("Failed to restart display driver", "", "");
+		  fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
                 }
                 wguiConvertDrawModeListToGuiDrawModes(pwgui_dm);
                 wguiInstallDisplayConfig(hwndDlg, wgui_cfg);
@@ -3340,11 +3340,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
   /* Shows a message box                                                        */
   /*============================================================================*/
 
-  void wguiRequester(STR *line1, STR *line2, STR *line3) {
-    STR text[1024];
-
-    sprintf(text, "%s\n%s\n%s", line1, line2, line3);
-    MessageBox(NULL, text, "WinFellow Amiga Emulator", 0);
+  void wguiRequester(STR *szMessage, UINT uType) {
+    MessageBox(NULL, szMessage, "WinFellow Amiga Emulator", uType);
   }
 
 

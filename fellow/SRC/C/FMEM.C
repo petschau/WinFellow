@@ -1468,7 +1468,7 @@ const STR *memory_kickimage_versionstrings[14] = {
 	  memory_kickimage_basebank*0x10000);
         break;
     }
-    wguiRequester(error1, error2, error3);
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
     memoryKickSettingsClear();
   }
 

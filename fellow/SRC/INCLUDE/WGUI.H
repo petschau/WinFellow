@@ -56,7 +56,7 @@ extern void wguiStartupPost(void);
 extern void wguiShutdown(void);
 extern BOOLE wguiCheckEmulationNecessities(void);
 extern BOOLE wguiEnter(void);
-extern void wguiRequester(STR *line1, STR *line2, STR *line3);
+extern void wguiRequester(STR *szMessage, UINT uType);
 extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
 
