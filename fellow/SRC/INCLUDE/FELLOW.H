@@ -7,9 +7,10 @@ typedef enum {
 } fellow_runtime_error_codes;
 
 typedef enum {
-  FELLOW_REQUESTER_TYPE_INFO = 0,
-  FELLOW_REQUESTER_TYPE_WARN = 1,
-  FELLOW_REQUESTER_TYPE_ERROR = 2
+  FELLOW_REQUESTER_TYPE_NONE  = 0,
+  FELLOW_REQUESTER_TYPE_INFO  = 1,
+  FELLOW_REQUESTER_TYPE_WARN  = 2,
+  FELLOW_REQUESTER_TYPE_ERROR = 3
 } FELLOW_REQUESTER_TYPE;
 
 extern BOOLE fellow_request_emulation_stop;
