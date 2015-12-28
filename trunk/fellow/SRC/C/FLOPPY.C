@@ -903,6 +903,7 @@ BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 
+    free(gzname);
     return FALSE;
   }
 
@@ -927,6 +928,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive)
 
   if(!gzUnpack(diskname, gzname))
   {
+    free(gzname);
     return FALSE;
   }
 
