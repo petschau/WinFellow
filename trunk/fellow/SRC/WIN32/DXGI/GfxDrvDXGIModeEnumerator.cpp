@@ -11,10 +11,22 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIMod
   
   HRESULT hr = output->GetDisplayModeList(format, flags, &numModes, NULL);
 
+  if (FAILED(hr))
+  {
+    GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGIModeEnumerator::EnumerateModes(): Failed to get display mode list.", hr);
+    return;
+  }
+
   fellowAddLog("Output has %d modes.\n", numModes);
 
   DXGI_MODE_DESC *descs = new DXGI_MODE_DESC[numModes];
-  output->GetDisplayModeList(format, flags, &numModes, descs);
+  hr = output->GetDisplayModeList(format, flags, &numModes, descs);
+
+  if (FAILED(hr))
+  {
+    GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGIModeEnumerator::EnumerateModes(): Failed to get display mode list.", hr);
+    return;
+  }
 
   for (UINT i = 0; i < numModes; i++)
   {

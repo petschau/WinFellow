@@ -24,6 +24,7 @@ const char* GfxDrvDXGIErrorLogger::GetErrorString(const HRESULT hResult)
     case DXGI_STATUS_OCCLUDED:			  return "DXGI_STATUS_OCCLUDED";
     case E_INVALIDARG:				  return "E_INVALIDARG";
     case S_OK:					  return "S_OK";
+    case S_FALSE:                                 return "S_FALSE";
   }
   return "Unknown error";
 }
