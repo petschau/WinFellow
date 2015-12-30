@@ -8,16 +8,19 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
   DXGI_ADAPTER_DESC desc;
   HRESULT hr = adapter->GetDesc(&desc);
 
-  sprintf(_name, "%254ls", desc.Description);
+  if (SUCCEEDED(hr))
+  {
+    sprintf(_name, "%254ls", desc.Description);
 
-  fellowAddLog("DXGI Adapter: %ls\n", desc.Description);
-  fellowAddLog("Vendor ID: %.4X\n", desc.VendorId);
-  fellowAddLog("Device ID: %.4X\n", desc.DeviceId);
-  fellowAddLog("Subsys ID: %.4X\n", desc.SubSysId);
-  fellowAddLog("Revision:  %.4X\n", desc.Revision);
-  fellowAddLog("Dedicated system memory: %I64d\n", (__int64) desc.DedicatedSystemMemory);
-  fellowAddLog("Dedicated video memory:  %I64d\n", (__int64) desc.DedicatedVideoMemory);
-  fellowAddLog("Shared system memory:    %I64d\n", (__int64) desc.SharedSystemMemory);
+    fellowAddLog("DXGI Adapter: %ls\n", desc.Description);
+    fellowAddLog("Vendor ID: %.4X\n", desc.VendorId);
+    fellowAddLog("Device ID: %.4X\n", desc.DeviceId);
+    fellowAddLog("Subsys ID: %.4X\n", desc.SubSysId);
+    fellowAddLog("Revision:  %.4X\n", desc.Revision);
+    fellowAddLog("Dedicated system memory: %I64d\n", (__int64)desc.DedicatedSystemMemory);
+    fellowAddLog("Dedicated video memory:  %I64d\n", (__int64)desc.DedicatedVideoMemory);
+    fellowAddLog("Shared system memory:    %I64d\n", (__int64)desc.SharedSystemMemory);
+  }
 }
 
 void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter *adapter)

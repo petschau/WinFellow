@@ -23,15 +23,21 @@ char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
 
 void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput *output)
 {
-  DXGI_OUTPUT_DESC desc;
-  HRESULT hr = output->GetDesc(&desc);
+  if (output)
+  {
+    DXGI_OUTPUT_DESC desc;
+    HRESULT hr = output->GetDesc(&desc);
 
-  sprintf(_name, "%254ls", desc.DeviceName);
-  
-  fellowAddLog("DXGI Output: %ls\n", desc.DeviceName);
-  fellowAddLog("Attached to desktop: %s\n", (desc.AttachedToDesktop) ? "YES" : "NO");
-  fellowAddLog("Desktop coordinates: (%d, %d) (%d, %d)\n", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
-  fellowAddLog("Rotation: %s\n\n", GetRotationDescription(desc.Rotation));
+    if (SUCCEEDED(hr))
+    {
+      sprintf(_name, "%254ls", desc.DeviceName);
+
+      fellowAddLog("DXGI Output: %ls\n", desc.DeviceName);
+      fellowAddLog("Attached to desktop: %s\n", (desc.AttachedToDesktop) ? "YES" : "NO");
+      fellowAddLog("Desktop coordinates: (%d, %d) (%d, %d)\n", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
+      fellowAddLog("Rotation: %s\n\n", GetRotationDescription(desc.Rotation));
+    }
+  }
 }
 
 void GfxDrvDXGIOutput::EnumerateModes(IDXGIOutput *output)

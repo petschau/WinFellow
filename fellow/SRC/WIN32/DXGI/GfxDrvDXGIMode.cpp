@@ -27,11 +27,14 @@ char *GfxDrvDXGIMode::GetScanlineOrderDescription(DXGI_MODE_SCANLINE_ORDER scanl
 
 void GfxDrvDXGIMode::LogCapabilities(DXGI_MODE_DESC *desc)
 {
-  _width = desc->Width;
-  _height = desc->Height;
-  _refresh = desc->RefreshRate.Numerator / desc->RefreshRate.Denominator;
-  
-  fellowAddLog("DXGI mode: %dx%dx%dhz - Scaling: %s Scanline order: %s\n", _width, _height, _refresh, GetScalingDescription(desc->Scaling), GetScanlineOrderDescription(desc->ScanlineOrdering));
+  if (desc)
+  {
+    _width = desc->Width;
+    _height = desc->Height;
+    _refresh = desc->RefreshRate.Numerator / desc->RefreshRate.Denominator;
+
+    fellowAddLog("DXGI mode: %dx%dx%dhz - Scaling: %s Scanline order: %s\n", _width, _height, _refresh, GetScalingDescription(desc->Scaling), GetScanlineOrderDescription(desc->ScanlineOrdering));
+  }
 }
 
 GfxDrvDXGIMode::GfxDrvDXGIMode(DXGI_MODE_DESC *desc)

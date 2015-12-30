@@ -116,8 +116,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
                          &_d3d11device,
                          &featureLevelsSupported,
                          &_immediateContext);
-
-  if (hr != S_OK)
+  if (FAILED(hr))
   {
     GfxDrvDXGIErrorLogger::LogError("D3D11CreateDevice failed with the error: ", hr);
     return false;
@@ -126,7 +125,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   IDXGIDevice *dxgiDevice;
   hr = _d3d11device->QueryInterface(__uuidof(IDXGIDevice), (void **)&dxgiDevice);
 
-  if (hr != S_OK)
+  if (FAILED(hr))
   {
     fellowAddLog("Failed to query interface for IDXGIDevice\n");
     return false;
@@ -135,7 +134,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   IDXGIAdapter *dxgiAdapter;
   hr = dxgiDevice->GetParent(__uuidof(IDXGIAdapter), (void **)&dxgiAdapter);
 
-  if (hr != S_OK)
+  if (FAILED(hr))
   {
     dxgiDevice->Release();
     dxgiDevice = 0;
@@ -150,7 +149,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
 
-  if (hr != S_OK)
+  if (FAILED(hr))
   {
     dxgiDevice->Release();
     dxgiDevice = 0;
@@ -222,7 +221,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
 
     HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &_amigaScreenTexture[i]);
 
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("Failed to create host screen texture.", hr);
       return false;
@@ -279,7 +278,7 @@ bool GfxDrvDXGI::CreateSwapChain()
 
   HRESULT hr = _dxgiFactory->CreateSwapChain(_d3d11device, &swapChainDescription, &_swapChain);
 
-  if (hr != S_OK)
+  if (FAILED(hr))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create swap chain.", hr);
     return false;
@@ -319,7 +318,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
   
   HRESULT mapResult = _immediateContext->Map(hostBuffer, 0, mapFlag, 0, &mappedRect);
 
-  if (mapResult != S_OK)
+  if (FAILED(mapResult))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to map amiga screen texture:", mapResult);
     return 0;
@@ -344,7 +343,7 @@ void GfxDrvDXGI::FlipTexture()
   ID3D11Texture2D *amigaScreenBuffer = GetCurrentAmigaScreenTexture();
   ID3D11Texture2D *backBuffer;
   HRESULT getBufferResult = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
-  if (getBufferResult != S_OK)
+  if (FAILED(getBufferResult))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to get back buffer.", getBufferResult);
     return;
@@ -353,7 +352,7 @@ void GfxDrvDXGI::FlipTexture()
   ID3D11RenderTargetView *renderTargetView;
   HRESULT createRenderTargetViewResult = _d3d11device->CreateRenderTargetView(backBuffer, NULL, &renderTargetView);
 
-  if (createRenderTargetViewResult != S_OK)
+  if (FAILED(createRenderTargetViewResult))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create render target view.", createRenderTargetViewResult);
     return;
@@ -385,7 +384,7 @@ void GfxDrvDXGI::FlipTexture()
 
   HRESULT presentResult = _swapChain->Present(0, 0);
 
-  if (presentResult != S_OK)
+  if (FAILED(presentResult))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to present buffer.", presentResult);
     return;
@@ -413,38 +412,42 @@ void GfxDrvDXGI::RegisterMode(int width, int height)
   ULO id = 0;
   draw_mode *mode = (draw_mode *)malloc(sizeof(draw_mode));
 
-  mode->width = width;
-  mode->height = height;
-  mode->bits = 32;
-  mode->windowed = TRUE;
-  mode->refresh = 60;
-  mode->redpos = 16;
-  mode->redsize = 8;
-  mode->greenpos = 8;
-  mode->greensize = 8;
-  mode->bluepos = 0;
-  mode->bluesize = 8;
-  mode->pitch = width * 4;
-
-  mode->id = id;
-  if (!mode->windowed)
+  if (mode)
   {
-    char hz[16];
-    if (mode->refresh != 0)
+
+    mode->width = width;
+    mode->height = height;
+    mode->bits = 32;
+    mode->windowed = TRUE;
+    mode->refresh = 60;
+    mode->redpos = 16;
+    mode->redsize = 8;
+    mode->greenpos = 8;
+    mode->greensize = 8;
+    mode->bluepos = 0;
+    mode->bluesize = 8;
+    mode->pitch = width * 4;
+
+    mode->id = id;
+    if (!mode->windowed)
     {
-      sprintf(hz, "%uHZ", mode->refresh);
+      char hz[16];
+      if (mode->refresh != 0)
+      {
+	sprintf(hz, "%uHZ", mode->refresh);
+      }
+      else
+      {
+	hz[0] = 0;
+      }
+      sprintf(mode->name, "%uWx%uHx%uBPPx%s", mode->width, mode->height, mode->bits, hz);
     }
     else
     {
-      hz[0] = 0;
+      sprintf(mode->name, "%uWx%uHxWindow", mode->width, mode->height);
     }
-    sprintf(mode->name, "%uWx%uHx%uBPPx%s", mode->width, mode->height, mode->bits, hz);
+    drawModeAdd(mode);
   }
-  else
-  {
-    sprintf(mode->name, "%uWx%uHxWindow", mode->width, mode->height);
-  }
-  drawModeAdd(mode);
 }
 
 void GfxDrvDXGI::RegisterModes()
@@ -626,14 +629,14 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   if (bSaveFilteredScreenshot) 
   {
     hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for filtered screenshot.", hr);
       return false;
     }
 
     hr = pSurface1->GetDC(FALSE, &hDC);
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain GDI compatible device context for filtered screenshot.", hr);
       return false;
@@ -676,7 +679,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     texture2DDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
     HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &screenshotTexture);
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("Failed to create screenshot texture.", hr);
       return false;
@@ -685,14 +688,14 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     _immediateContext->CopyResource(screenshotTexture, hostBuffer);
 
     hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)&pSurface1);
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for unfiltered screenshot.", hr);
       return false;
     }
 
     hr = pSurface1->GetDC(FALSE, &hDC);
-    if (hr != S_OK)
+    if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain GDI compatible device context for unfiltered screenshot.", hr);
       return false;
