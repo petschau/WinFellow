@@ -3,7 +3,6 @@
 
 #include "portable.h"
 
-//#define GRAPH2
 //#define DRAW_TSC_PROFILE
 
 /*================================*/

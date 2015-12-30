@@ -24,8 +24,6 @@
 
 #include "DEFS.H"
 
-#ifdef GRAPH2
-
 #include "bus.h"
 #include "graph.h"
 #include "draw.h"
@@ -288,5 +286,3 @@ void PixelSerializer::Startup(void)
 void PixelSerializer::Shutdown(void)
 {
 }
-
-#endif

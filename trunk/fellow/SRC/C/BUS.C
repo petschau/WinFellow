@@ -49,10 +49,9 @@
 #include "KBDDRV.H"
 #endif
 
-#ifdef GRAPH2
+// GRAPH2
 #include "Graphics.h"
 #include "CopperNew.h"
-#endif
 
 bus_state bus;
 
@@ -119,9 +118,8 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Draw the frame in the host buffer                            */
   /*==============================================================*/
-#ifndef GRAPH2
-  drawEndOfFrame();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+    drawEndOfFrame();
 
   /*==============================================================*/
   /* Handle keyboard events                                       */
@@ -135,11 +133,10 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Restart copper                                               */
   /*==============================================================*/
-#ifndef GRAPH2
-  copperEndOfFrame();
-#else
-  Copper_EndOfFrame();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+    copperEndOfFrame();
+  else
+    Copper_EndOfFrame();
 
   /*==============================================================*/
   /* Update CIA timer counters                                    */
@@ -204,10 +201,8 @@ void busEndOfFrame(void)
   eolEvent.cycle = busGetCyclesInThisLine() - 1;
   busInsertEventWithNullCheck(&eolEvent);
 
-
-#ifdef GRAPH2
-  GraphicsContext.EndOfFrame();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.EndOfFrame();
 
   eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEvent(&eofEvent);
@@ -539,11 +534,10 @@ void busInitializeQueue(void)
   busClearEvent(&eofEvent, busEndOfFrame);
   busClearEvent(&ciaEvent, ciaHandleEvent);
 
-#ifndef GRAPH2
-  busClearEvent(&copperEvent, copperEmulate);
-#else
-  busClearEvent(&copperEvent, Copper_EventHandler);
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+    busClearEvent(&copperEvent, copperEmulate);
+  else
+    busClearEvent(&copperEvent, Copper_EventHandler);
 
   busClearEvent(&blitterEvent, blitFinishBlit);
   busClearEvent(&interruptEvent, interruptHandleEvent);

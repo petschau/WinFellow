@@ -3,8 +3,6 @@
 
 #include "DEFS.H"
 
-#ifdef GRAPH2
-
 #include "GraphicsEventQueue.h"
 #include "Planar2ChunkyDecoder.h"
 #include "BitplaneDMA.h"
@@ -52,5 +50,4 @@ public:
 
 extern Graphics GraphicsContext;
 
-#endif
 #endif

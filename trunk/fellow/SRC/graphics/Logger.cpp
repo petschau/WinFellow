@@ -1,7 +1,5 @@
 #include "DEFS.H"
 
-#ifdef GRAPH2
-
 #include "Logger.h"
 #include "fileops.h"
 #include "BUS.H"
@@ -35,5 +33,3 @@ void Logger::Shutdown(void)
     _logfile = 0;
   }
 }
-
-#endif

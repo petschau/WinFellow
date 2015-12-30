@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "Graphics.h"
 
 static STR *DIWXStateNames[2] = {"WAITING_FOR_START_POS",
@@ -193,5 +191,3 @@ void DIWXStateMachine::Startup(void)
 void DIWXStateMachine::Shutdown(void)
 {
 }
-
-#endif

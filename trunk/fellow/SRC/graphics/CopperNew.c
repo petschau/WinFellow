@@ -1,7 +1,5 @@
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "chipset.h"
 #include "bus.h"
 #include "fmem.h"
@@ -311,5 +309,3 @@ void Copper_Startup(void)
 void Copper_Shutdown(void)
 {
 }
-
-#endif

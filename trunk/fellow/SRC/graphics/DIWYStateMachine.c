@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "bus.h"
 #include "graph.h"
 
@@ -172,5 +170,3 @@ void DIWYStateMachine::Startup(void)
 void DIWYStateMachine::Shutdown(void)
 {
 }
-
-#endif

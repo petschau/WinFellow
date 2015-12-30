@@ -43,9 +43,8 @@
 #include "draw_pixelrenderers.h"
 #include "draw_interlace_control.h"
 
-#ifdef GRAPH2
+// GRAPH2
 #include "Graphics.h"
-#endif
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -78,6 +77,7 @@ ULO draw_view_scroll;                        /* Scroll visible window runtime */
 DISPLAYSCALE draw_displayscale;
 DISPLAYSCALE_STRATEGY draw_displayscale_strategy;
 DISPLAYDRIVER draw_displaydriver;
+GRAPHICSEMULATIONMODE draw_graphicsemulationmode;
 
 BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 ULO draw_clear_buffers;
@@ -548,6 +548,16 @@ DISPLAYDRIVER drawGetDisplayDriver()
   return draw_displaydriver;
 }
 
+void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode)
+{
+  draw_graphicsemulationmode = graphicsemulationmode;
+}
+
+GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode()
+{
+  return draw_graphicsemulationmode;
+}
+
 void drawSetFrameskipRatio(ULO frameskipratio)
 {
   draw_frame_skip_factor = frameskipratio;
@@ -1016,6 +1026,7 @@ BOOLE drawStartup(void)
   drawSetFPSCounterEnabled(false);
   drawSetLEDsEnabled(false);
   drawSetAllowMultipleBuffers(FALSE);
+  drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(draw_config));
 
   drawInterlaceStartup();
 
@@ -1096,26 +1107,26 @@ void drawEndOfFrame(void)
     // need to test for error
     if (draw_buffer_top_ptr != NULL)
     {
-#ifndef GRAPH2
-      UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-      for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
-        graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
-        if (graph_frame_ptr != NULL)
-        {
-          if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
-          {
-            if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
-            {
-              ((draw_line_func) (graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
+      if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT) {
+	UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
+	for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
+	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
+	  if (graph_frame_ptr != NULL)
+	  {
+	    if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
+	    {
+	      if (graph_frame_ptr->linetype != GRAPH_LINE_BPL_SKIP)
+	      {
+		((draw_line_func)(graph_frame_ptr->draw_line_routine))(graph_frame_ptr, drawGetNextLineOffsetInBytes(pitch_in_bytes));
+	      }
 	    }
-          }
-        }
-        draw_buffer_current_ptr_local += pitch_in_bytes;
-        draw_buffer_current_ptr = draw_buffer_current_ptr_local;
+	  }
+	  draw_buffer_current_ptr_local += pitch_in_bytes;
+	  draw_buffer_current_ptr = draw_buffer_current_ptr_local;
+	}
       }
-#else
-      GraphicsContext.BitplaneDraw.TmpFrame(pitch_in_bytes);
-#endif
+      else
+	GraphicsContext.BitplaneDraw.TmpFrame(pitch_in_bytes);
 
       drawLEDs();
       drawFpsCounter();

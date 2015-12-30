@@ -24,8 +24,6 @@
 
 #include "DEFS.H"
 
-#ifdef GRAPH2
-
 #include "chipset.h"
 #include "bus.h"
 #include "graph.h"
@@ -500,4 +498,3 @@ void Sprites::EmulationStart(void)
   ClearState();
 }
 
-#endif

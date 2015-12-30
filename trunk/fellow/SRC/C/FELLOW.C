@@ -58,9 +58,8 @@
 #include "interrupt.h"
 #include "RetroPlatform.h"
 
-#ifdef GRAPH2
+// GRAPH2
 #include "Graphics.h"
-#endif
 
 BOOLE fellow_request_emulation_stop;
 
@@ -293,9 +292,8 @@ void fellowSoftReset(void) {
   ffilesysHardReset();
   memoryHardResetPost();
   fellowSetPreStartReset(FALSE);
-#ifdef GRAPH2
-  GraphicsContext.SoftReset();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.SoftReset();
 }
 
 /*============================================================================*/
@@ -321,9 +319,8 @@ void fellowHardReset(void) {
   memoryHardResetPost();
   cpuIntegrationHardReset();
   fellowSetPreStartReset(FALSE);
-#ifdef GRAPH2
-  GraphicsContext.HardReset();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.HardReset();
 }
 
 /*============================================================================*/
@@ -369,9 +366,9 @@ BOOLE fellowEmulationStart(void) {
   if(RetroPlatformGetMode())
     RetroPlatformEmulationStart();
 #endif
-#ifdef GRAPH2
-  GraphicsContext.EmulationStart();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.EmulationStart();
+
   return result && memoryGetKickImageOK();
 }
 
@@ -402,9 +399,8 @@ void fellowEmulationStop(void) {
   interruptEmulationStop();
   memoryEmulationStop();
   iniEmulationStop();
-#ifdef GRAPH2
-  GraphicsContext.EmulationStop();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.EmulationStop();
 }
 
 /*============================================================================*/
@@ -592,9 +588,8 @@ static void fellowModulesStartup(int argc, char *argv[])
   if(RetroPlatformGetMode())
     RetroPlatformStartup();
 #endif
-#ifdef GRAPH2
-  GraphicsContext.Startup();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Startup();
 }
 
 /*============================================================================*/
@@ -603,9 +598,8 @@ static void fellowModulesStartup(int argc, char *argv[])
 
 static void fellowModulesShutdown(void)
 {
-#ifdef GRAPH2
-  GraphicsContext.Shutdown();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
     RetroPlatformShutdown();

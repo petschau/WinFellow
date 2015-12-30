@@ -37,10 +37,9 @@
 #include "CpuIntegration.h"
 #include "draw_interlace_control.h"
 
-#ifdef GRAPH2
+// GRAPH2
 #include "Graphics.h"
 #include "CopperNew.h"
-#endif
 
 /*======================================================================*/
 /* flag that handles loss of surface content due to DirectX malfunction */
@@ -299,16 +298,18 @@ void wserper(UWO data, ULO address)
 
 void wdiwstrt(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  ULO diwstrt_old = diwstrt;
-  diwstrt = data;
-  if (diwstrt_old != diwstrt)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.DIWXStateMachine.ChangedValue();
-    GraphicsContext.DIWYStateMachine.ChangedValue();
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    ULO diwstrt_old = diwstrt;
+    diwstrt = data;
+    if (diwstrt_old != diwstrt)
+    {
+      GraphicsContext.DIWXStateMachine.ChangedValue();
+      GraphicsContext.DIWYStateMachine.ChangedValue();
+    }
   }
-#endif
+
   diwstrt = data;
   diwytop = (data >> 8) & 0x000000FF;
   if (diwxright == 472)
@@ -329,16 +330,18 @@ void wdiwstrt(UWO data, ULO address)
 
 void wdiwstop(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  ULO diwstop_old = diwstop;
-  diwstop = data;
-  if (diwstop_old != diwstop)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT) 
   {
-    GraphicsContext.DIWXStateMachine.ChangedValue();
-    GraphicsContext.DIWYStateMachine.ChangedValue();
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    ULO diwstop_old = diwstop;
+    diwstop = data;
+    if (diwstop_old != diwstop)
+    {
+      GraphicsContext.DIWXStateMachine.ChangedValue();
+      GraphicsContext.DIWYStateMachine.ChangedValue();
+    }
   }
-#endif
+
   diwstop = data;
   if ((((data >> 8) & 0xff) & 0x80) == 0x0)
   {
@@ -373,10 +376,13 @@ void wdiwstop(UWO data, ULO address)
 
 void wddfstrt(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  ULO ddfstrt_old = ddfstrt;
-#endif
+  ULO ddfstrt_old;
+
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    ddfstrt_old = ddfstrt;
+  }
 
   if ((data & 0xfc) < 0x18)
   {
@@ -389,12 +395,13 @@ void wddfstrt(UWO data, ULO address)
   sprite_ddf_kill = (data & 0xfc) - 0x14;
   wbplcon1((UWO)bplcon1, address);
 
-#ifdef GRAPH2
-  if (ddfstrt_old != ddfstrt)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.DDFStateMachine.ChangedValue();
+    if (ddfstrt_old != ddfstrt)
+    {
+      GraphicsContext.DDFStateMachine.ChangedValue();
+    }
   }
-#endif
 }
 
 /*==============================================================================*/
@@ -407,10 +414,13 @@ void wddfstrt(UWO data, ULO address)
 
 void wddfstop(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  ULO ddfstop_old = ddfstop;
-#endif
+  ULO ddfstop_old;
+
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    ddfstop_old = ddfstop;
+  }
 
   if ((data & 0xfc) > 0xd8)
   {
@@ -422,12 +432,13 @@ void wddfstop(UWO data, ULO address)
   }
   graphCalculateWindow();
 
-#ifdef GRAPH2
-  if (ddfstop_old != ddfstop)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.DDFStateMachine.ChangedValue();
+    if (ddfstop_old != ddfstop)
+    {
+      GraphicsContext.DDFStateMachine.ChangedValue();
+    }
   }
-#endif
 }
 
 /*===========================================================================*/
@@ -505,11 +516,10 @@ void wdmacon(UWO data, ULO address)
     }
 
     // update Copper DMA
-#ifdef GRAPH2
-    Copper_UpdateDMA(); 
-#else
-    copperUpdateDMA(); 
-#endif
+    if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+      Copper_UpdateDMA(); 
+    else
+      copperUpdateDMA(); 
   }
   else
   {
@@ -558,11 +568,10 @@ void wdmacon(UWO data, ULO address)
       }
     }
 
-#ifdef GRAPH2
-    Copper_UpdateDMA(); 
-#else
-    copperUpdateDMA(); 
-#endif
+    if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+      Copper_UpdateDMA(); 
+    else
+      copperUpdateDMA(); 
   }
 }
 
@@ -573,9 +582,8 @@ void wdmacon(UWO data, ULO address)
 
 void wbpl1pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
 
   bpl1pt = chipsetReplaceHighPtr(bpl1pt, data);
 
@@ -590,9 +598,9 @@ void wbpl1pth(UWO data, ULO address)
 
 void wbpl1ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl1pt = chipsetReplaceLowPtr(bpl1pt, data);
 
 //  fellowAddLog("BPL1PT: %X, frame no %I64d, Y %d X %d\n", bpl1pt, busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
@@ -605,9 +613,9 @@ void wbpl1ptl(UWO data, ULO address)
 
 void wbpl2pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl2pt = chipsetReplaceHighPtr(bpl2pt, data);
 }
 
@@ -618,9 +626,9 @@ void wbpl2pth(UWO data, ULO address)
 
 void wbpl2ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl2pt = chipsetReplaceLowPtr(bpl2pt, data);
 }
 
@@ -631,9 +639,8 @@ void wbpl2ptl(UWO data, ULO address)
 
 void wbpl3pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
   bpl3pt = chipsetReplaceHighPtr(bpl3pt, data);
 }
 
@@ -644,9 +651,9 @@ void wbpl3pth(UWO data, ULO address)
 
 void wbpl3ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl3pt = chipsetReplaceLowPtr(bpl3pt, data);
 }
 
@@ -657,9 +664,9 @@ void wbpl3ptl(UWO data, ULO address)
 
 void wbpl4pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl4pt = chipsetReplaceHighPtr(bpl4pt, data);
 }
 
@@ -670,9 +677,9 @@ void wbpl4pth(UWO data, ULO address)
 
 void wbpl4ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl4pt = chipsetReplaceLowPtr(bpl4pt, data);
 }
 
@@ -683,9 +690,9 @@ void wbpl4ptl(UWO data, ULO address)
 
 void wbpl5pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl5pt = chipsetReplaceHighPtr(bpl5pt, data);
 }
 
@@ -696,9 +703,9 @@ void wbpl5pth(UWO data, ULO address)
 
 void wbpl5ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl5pt = chipsetReplaceLowPtr(bpl5pt, data);
 }
 
@@ -709,9 +716,9 @@ void wbpl5ptl(UWO data, ULO address)
 
 void wbpl6pth(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl6pt = chipsetReplaceHighPtr(bpl6pt, data);
 }
 
@@ -722,9 +729,9 @@ void wbpl6pth(UWO data, ULO address)
 
 void wbpl6ptl(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+
   bpl6pt = chipsetReplaceLowPtr(bpl6pt, data);
 }
 
@@ -740,12 +747,13 @@ void wbplcon0(UWO data, ULO address)
   //  fellowAddLog("Interlace toggle is %s, frame no %I64d, Y %d X %d\n", (data & 0x4) ? "on" : "off", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX());
   //}
 
-#ifdef GRAPH2
-  if (bplcon0 != data)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    if (bplcon0 != data)
+    {
+      GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    }
   }
-#endif
 
   ULO local_data;
 
@@ -817,12 +825,13 @@ void wbplcon0(UWO data, ULO address)
 
 void wbplcon1(UWO data, ULO address)
 {
-#ifdef GRAPH2
-  if (bplcon1 != (data & 0xff))
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    if (bplcon1 != (data & 0xff))
+    {
+      GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    }
   }
-#endif
 
   bplcon1 = data & 0xff;
 
@@ -887,12 +896,13 @@ void wbplcon2(UWO data, ULO address)
 void wbpl1mod(UWO data, ULO address)
 {
   ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
-#ifdef GRAPH2
-  if (bpl1mod != new_value)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    if (bpl1mod != new_value)
+    {
+      GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    }
   }
-#endif
   bpl1mod = new_value;
 }
 
@@ -904,12 +914,13 @@ void wbpl1mod(UWO data, ULO address)
 void wbpl2mod(UWO data, ULO address)
 {
   ULO new_value = (ULO)(LON)(WOR)(data & 0xfffe);
-#ifdef GRAPH2
-  if (bpl2mod != new_value)
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    if (bpl2mod != new_value)
+    {
+      GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    }
   }
-#endif
   bpl2mod = new_value;
 }
 
@@ -922,12 +933,13 @@ void wcolor(UWO data, ULO address)
 {
   ULO color_index = ((address & 0x1ff) - 0x180) >> 1;
 
-#ifdef GRAPH2
-  if (graph_color[color_index] != (data & 0x0fff))
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
   {
-    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    if (graph_color[color_index] != (data & 0x0fff))
+    {
+      GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    }
   }
-#endif
 
   // normal mode
   graph_color[color_index] = (UWO) (data & 0x0fff);
@@ -2248,11 +2260,11 @@ static void graphP2CFunctionsInit(void)
 
 void graphEndOfLine(void)
 {
-#ifdef GRAPH2
-
-  GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
-  return;
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  {
+    GraphicsContext.Commit(busGetRasterY(), busGetRasterX());
+    return;
+  }
 
   graph_line* current_graph_line;
 

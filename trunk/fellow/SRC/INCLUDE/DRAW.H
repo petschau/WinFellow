@@ -90,6 +90,8 @@ extern void drawSetAllowMultipleBuffers(BOOLE allow_multiple_buffers);
 extern BOOLE drawGetAllowMultipleBuffers(void);
 extern void drawSetDisplayDriver(DISPLAYDRIVER displaydriver);
 extern DISPLAYDRIVER drawGetDisplayDriver();
+extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode);
+extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 extern ULO drawGetBufferCount(void);
 
 /*===========================================================================*/
