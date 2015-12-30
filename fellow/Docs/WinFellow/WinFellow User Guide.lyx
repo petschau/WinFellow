@@ -119,7 +119,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2015/12/22)
+v0.5.4 (2015/12/30)
 \end_layout
 
 \begin_layout Standard
@@ -216,6 +216,20 @@ ability to save screenshots to the pictures folder (hit <Print Screen> to
 
 \begin_layout Itemize
 support for 3x and 4x scaling in Amiga Forever
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Bug fixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+improved error handling for DMS floppy image extraction
+\end_layout
+
+\begin_layout Itemize
+fixed minor memory leaks
 \end_layout
 
 \end_deeper

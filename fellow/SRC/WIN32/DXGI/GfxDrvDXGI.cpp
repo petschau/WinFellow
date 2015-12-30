@@ -138,6 +138,8 @@ bool GfxDrvDXGI::CreateD3D11Device()
   if (hr != S_OK)
   {
     dxgiDevice->Release();
+    dxgiDevice = 0;
+
     fellowAddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
     return false;
   }
@@ -151,11 +153,14 @@ bool GfxDrvDXGI::CreateD3D11Device()
   if (hr != S_OK)
   {
     dxgiDevice->Release();
+    dxgiDevice = 0;
+
     fellowAddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
     return false;
   }
 
   dxgiDevice->Release();
+  dxgiDevice = 0;
 
   return true;
 }
@@ -169,9 +174,9 @@ void GfxDrvDXGI::DeleteD3D11Device()
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
     d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
     d3d11Debug->Release();
+    d3d11Debug = 0;
 #endif
 
-     // this crashes in release builds
     _d3d11device->Release();
     _d3d11device = 0;
   }
@@ -347,7 +352,6 @@ void GfxDrvDXGI::FlipTexture()
 
   ID3D11RenderTargetView *renderTargetView;
   HRESULT createRenderTargetViewResult = _d3d11device->CreateRenderTargetView(backBuffer, NULL, &renderTargetView);
-  backBuffer->Release();
 
   if (createRenderTargetViewResult != S_OK)
   {
@@ -357,6 +361,7 @@ void GfxDrvDXGI::FlipTexture()
 
   _immediateContext->OMSetRenderTargets(1, &renderTargetView, NULL);
   renderTargetView->Release();
+  renderTargetView = 0;
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
@@ -374,6 +379,9 @@ void GfxDrvDXGI::FlipTexture()
   else
 #endif
   _immediateContext->CopyResource(backBuffer, amigaScreenBuffer);
+
+  backBuffer->Release();
+  backBuffer = 0;
 
   HRESULT presentResult = _swapChain->Present(0, 0);
 
@@ -693,7 +701,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
 
     screenshotTexture->Release();
-    screenshotTexture = NULL;
+    screenshotTexture = 0;
   }
 
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
@@ -701,6 +709,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
 
   pSurface1->ReleaseDC(NULL);
   pSurface1->Release();
+  pSurface1 = 0;
 
   return bResult;
 }
