@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "bus.h"
 #include "graph.h"
 
@@ -211,5 +209,3 @@ void DDFStateMachine::Startup(void)
 void DDFStateMachine::Shutdown(void)
 {
 }
-
-#endif

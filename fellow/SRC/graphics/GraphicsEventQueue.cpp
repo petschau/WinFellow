@@ -1,7 +1,5 @@
 #include "DEFS.H"
 
-#ifdef GRAPH2
-
 #include "Graphics.h"
 #include "BUS.H"
 
@@ -99,5 +97,3 @@ void GraphicsEventQueue::Run(ULO untilTime)
   }
   GraphicsContext.PixelSerializer.OutputCylindersUntil(untilTime / GetCylindersPerLine(), untilTime % GetCylindersPerLine());
 }
-
-#endif

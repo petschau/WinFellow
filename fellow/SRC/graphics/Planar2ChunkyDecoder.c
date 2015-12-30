@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "graph.h"
 
 #include "Graphics.h"
@@ -214,5 +212,3 @@ ULO Planar2ChunkyDecoder::GetBatchSize(void)
 {
   return _batch_size;
 }
-
-#endif

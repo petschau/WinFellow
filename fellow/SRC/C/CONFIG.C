@@ -386,6 +386,7 @@ DISPLAYDRIVER cfgGetDisplayDriver(cfg *config)
   return config->m_displaydriver;
 }
 
+
 /*===========================================================================*/
 /* Graphics emulation configuration property access                          */
 /*===========================================================================*/
@@ -428,6 +429,16 @@ void cfgSetDeinterlace(cfg *config, bool deinterlace)
 bool cfgGetDeinterlace(cfg *config)
 {
   return config->m_deinterlace;
+}
+
+void cfgSetGraphicsEmulationMode(cfg *config, GRAPHICSEMULATIONMODE graphicsemulationmode)
+{
+  config->m_graphicsemulationmode = graphicsemulationmode;
+}
+
+GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config)
+{
+  return config->m_graphicsemulationmode;
 }
 
 
@@ -810,6 +821,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetFrameskipRatio(config, 0);
   cfgSetDisplayScale(config, DISPLAYSCALE_1X);
   cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
+  cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE_LINEEXACT);
 
   /*==========================================================================*/
   /* Default sound configuration                                              */
@@ -1335,6 +1347,30 @@ BOOLE cfgGetConfigChangedSinceLastSave(cfg *config) {
   return config->m_config_changed_since_save;
 }
 
+static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
+{
+  if (stricmp(value, "lineexact") == 0)
+  {
+    return GRAPHICSEMULATIONMODE_LINEEXACT;
+  }
+  if (stricmp(value, "cycleexact") == 0)
+  {
+    return GRAPHICSEMULATIONMODE_CYCLEEXACT;
+  }
+  return GRAPHICSEMULATIONMODE_LINEEXACT; // Default
+}
+
+static STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)
+{
+  switch (graphicsemulationmode)
+  {
+  case GRAPHICSEMULATIONMODE_LINEEXACT:
+    return "lineexact";
+  case GRAPHICSEMULATIONMODE_CYCLEEXACT:
+    return "cycleexact";
+  }
+  return "lineexact";
+}
 
 /*============================================================================*/
 /* Command line option synopsis                                               */
@@ -1577,6 +1613,10 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     else if (stricmp(option, "gfx_driver") == 0)
     {
       cfgSetDisplayDriver(config, cfgGetDisplayDriverFromString(value));
+    }
+    else if (stricmp(option, "gfx_emulation_mode") == 0)
+    {
+      cfgSetGraphicsEmulationMode(config, cfgGetGraphicsEmulationModeFromString(value));
     }
     else if (stricmp(option, "gfx_colour_mode") == 0)
     {
@@ -1832,6 +1872,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
   fprintf(cfgfile, "gfx_driver=%s\n", cfgGetDisplayDriverToString(cfgGetDisplayDriver(config)));
+  // fprintf(cfgfile, "gfx_emulation_mode=%s\n"), cfgGetGraphicsEmulationModeToString(cfgGetGraphicsEmulationMode(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
   fprintf(cfgfile, "gfx_display_scale=%s\n", cfgGetDisplayScaleToString(cfgGetDisplayScale(config)));
@@ -2168,6 +2209,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
   drawSetDisplayDriver(cfgGetDisplayDriver(config));
+  drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(config));
 
 
   /*==========================================================================*/

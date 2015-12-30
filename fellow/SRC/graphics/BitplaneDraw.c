@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "bus.h"
 #include "graph.h"
 #include "draw.h"
@@ -214,5 +212,3 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
     draw_buffer_second_ptr_local += (real_pitch_in_bytes/2);
   }
 }
-
-#endif

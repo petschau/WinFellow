@@ -24,8 +24,6 @@
 
 #include "defs.h"
 
-#ifdef GRAPH2
-
 #include "chipset.h"
 #include "bus.h"
 #include "graph.h"
@@ -197,4 +195,3 @@ void BitplaneDMA::EndOfFrame(void)
   SetStateNone();
 }
 
-#endif

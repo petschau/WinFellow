@@ -1292,9 +1292,8 @@ void spriteHardReset(void) {
 
 void spriteEndOfLine(void)
 {
-#ifdef GRAPH2
-  return;
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    return;
   ULO i;
 
   for (i = 0; i < 8; i++) 
@@ -1309,9 +1308,9 @@ void spriteEndOfLine(void)
 /*===========================================================================*/
 
 void spriteEndOfFrame(void) {
-#ifdef GRAPH2
-  return;
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    return; 
+
   ULO i;
 
   for (i = 0; i < 8; i++) 
@@ -1333,9 +1332,8 @@ void spriteEndOfFrame(void) {
 /*===========================================================================*/
 
 void spriteEmulationStart(void) {
-#ifndef GRAPH2
-  spriteIOHandlersInstall();
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+    spriteIOHandlersInstall();
 }
 
 

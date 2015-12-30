@@ -1,7 +1,5 @@
 #include "Graphics.h"
 
-#ifdef GRAPH2
-
 #include "CopperNew.h"
 #include "BUS.H"
 
@@ -90,4 +88,3 @@ void Graphics::Shutdown(void)
   Logger.Shutdown();
 }
 
-#endif

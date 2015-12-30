@@ -32,9 +32,10 @@
 #include "bus.h"
 #include "blit.h"
 
-#ifdef GRAPH2
+// GRAPH2
+#include "config.h"
+#include "draw.h"
 #include "CopperNew.h"
-#endif
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -176,9 +177,8 @@ UWO rcopjmp2(ULO address)
 void copperYTableInit(void) {
   int i, ex = 16;
 
-#ifdef GRAPH2
-  ex = 0;
-#endif
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+    ex = 0;
 
   spriteSetDelay(40);
   for (i = 0; i < 512; i++) {
@@ -291,22 +291,20 @@ void copperStartAfterLoad(void)
 void copperLoad1(void)
 {
   copper_ptr = cop1lc;
-#ifdef GRAPH2
+  if(drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     Copper_Load();
-#else
-  copperStartAfterLoad();
-#endif
+  else
+    copperStartAfterLoad();
 }
 
 void copperLoad2(void)
 {
   copper_ptr = cop2lc;
 
-#ifdef GRAPH2
+  if(drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     Copper_Load();
-#else
-  copperStartAfterLoad();
-#endif
+  else
+    copperStartAfterLoad();
 }
 
 /*-------------------------------------------------------------------------------

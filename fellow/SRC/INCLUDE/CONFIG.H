@@ -46,6 +46,11 @@ typedef enum {
   DISPLAYDRIVER_DIRECT3D11 = 1
 } DISPLAYDRIVER;
 
+typedef enum {
+  GRAPHICSEMULATIONMODE_LINEEXACT  = 0,
+  GRAPHICSEMULATIONMODE_CYCLEEXACT = 1
+} GRAPHICSEMULATIONMODE;
+
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
 /* the struct is copied in cfgManagerGetCopyOfCurrentConfig()                 */
@@ -99,6 +104,7 @@ typedef struct {
   bool  m_deinterlace;
   bool  m_measurespeed;
   DISPLAYDRIVER m_displaydriver;
+  GRAPHICSEMULATIONMODE m_graphicsemulationmode;
 
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
@@ -258,6 +264,7 @@ extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displa
 extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
 extern void cfgSetDeinterlace(cfg *, bool);
 extern bool cfgGetDeinterlace(cfg *);
+extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config);
 
 /*============================================================================*/
 /* Sound configuration property access                                        */

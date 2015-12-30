@@ -419,10 +419,6 @@ static void sysinfoVersionInfo (void) {
     fellowAddTimelessLog(" (DirectX");
   #endif
 
-  #ifdef GRAPH2
-    fellowAddTimelessLog(" GRAPH2");
-  #endif
-
   #ifdef _DEBUG
     fellowAddTimelessLog(" (debug build)\n");
   #else
