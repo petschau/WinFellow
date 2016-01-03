@@ -140,12 +140,11 @@
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
-SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n
-      </Command>
+      <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\INCLUDE\versioninfo-wcrev.h -OutputFileName ..\INCLUDE\versioninfo.h -PreventLocalModifications
+PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wcrev.rc -OutputFileName ..\MSVC\GUI_versioninfo.rc -PreventLocalModifications</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>generate SVN version information include</Message>
+      <Message>generate version information include</Message>
     </PreBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>WinFellow.exe.Compatibility.manifest</AdditionalManifestFiles>
@@ -203,13 +202,10 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <Profile>false</Profile>
     </Link>
     <PreBuildEvent>
-      <Command>
-        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc -n
-        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -n
-      </Command>
+      <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>generate SVN version information include</Message>
+      <Message>generate version information include</Message>
     </PreBuildEvent>
     <Manifest>
       <EnableDpiAwareness>false</EnableDpiAwareness>
@@ -266,12 +262,11 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h -
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
-SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
-      </Command>
+      <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\INCLUDE\versioninfo-wcrev.h -OutputFileName ..\INCLUDE\versioninfo.h
+PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wcrev.rc -OutputFileName ..\MSVC\GUI_versioninfo.rc</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>generate SVN version information include</Message>
+      <Message>generate version information include</Message>
     </PreBuildEvent>
     <Manifest>
       <AdditionalManifestFiles>WinFellow.exe.Compatibility.manifest</AdditionalManifestFiles>
@@ -324,13 +319,10 @@ SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>
-        SubWCRev.exe ..\..\..\ .\GUI_versioninfo-wcrev.rc .\GUI_versioninfo.rc
-        SubWCRev.exe ..\..\..\ ..\include\versioninfo-wcrev.h ..\include\versioninfo.h
-      </Command>
+      <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
-      <Message>generate SVN version information include</Message>
+      <Message>generate version information include</Message>
     </PreBuildEvent>
     <Manifest>
       <EnableDpiAwareness>false</EnableDpiAwareness>
