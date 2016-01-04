@@ -234,3 +234,34 @@ bool gfxDrvDXGIValidateRequirements(void)
 
   return true;
 }
+
+void gfxDrvRegisterRetroPlatformScreenMode(const bool bStartup)
+{
+  ULO lHeight, lWidth, lDisplayScale;
+
+  if (RetroPlatformGetScanlines())
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
+  else
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
+
+  if (bStartup) {
+    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+    RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
+  }
+
+  lHeight = RetroPlatformGetScreenHeightAdjusted();
+  lWidth = RetroPlatformGetScreenWidthAdjusted();
+  lDisplayScale = RetroPlatformGetDisplayScale();
+
+  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
+  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->RegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
+  }
+  else
+  {
+    gfxDrvDDrawRegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
+  }
+}

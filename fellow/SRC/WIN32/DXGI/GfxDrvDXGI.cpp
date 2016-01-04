@@ -28,7 +28,7 @@ bool GfxDrvDXGI::Startup()
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
-    RegisterRetroPlatformScreenMode(true);
+    gfxDrvRegisterRetroPlatformScreenMode(true);
 #endif
 
   bResult = (_adapters != 0) & (_adapters->size() > 0);
@@ -499,27 +499,8 @@ void GfxDrvDXGI::RegisterModes()
 
 #ifdef RETRO_PLATFORM
 
-void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup)
+void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup, const ULO lWidth, const ULO lHeight, const ULO lDisplayScale)
 {
-  ULO lHeight, lWidth, lDisplayScale;
-
-  if (RetroPlatformGetScanlines())
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
-  else
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
-
-  if (bStartup) {
-    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-    RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
-  }
-
-  lHeight       = RetroPlatformGetScreenHeightAdjusted();
-  lWidth        = RetroPlatformGetScreenWidthAdjusted();
-  lDisplayScale = RetroPlatformGetDisplayScale();
-
-  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
-
   fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %ux Direct3D mode, insert resolution %ux%u into list of valid screen resolutions...\n",
     lDisplayScale, lWidth, lHeight);
 

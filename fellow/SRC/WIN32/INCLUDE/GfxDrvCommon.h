@@ -8,7 +8,7 @@
 #include "Ini.h"
 
 // Until it is moved here
-extern void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool bStartup);
+extern void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool, const ULO, const ULO, const ULO);
 
 class GfxDrvCommon
 {

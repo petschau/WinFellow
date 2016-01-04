@@ -8,14 +8,14 @@ WinFellow is distributed under the terms of the [GNU General Public License vers
 
 This site is WinFellow's home on GitHub.
 
-The latest stable release can be found in WinFellow's former home at [SourceForge](http://fellow.sf.net); the latest stable release published on SourceForge is v0.5.4.1004.
+The latest stable release can be found in WinFellow's former home at [SourceForge](https://sourceforge.net/projects/fellow/files/); the latest stable release published on SourceForge is v0.5.4.1004.
 
 ----------
 
 ## The Team
 
 
-| team member | Petter                 | Torsten
+| team member | Petter Schau           | Torsten Enderling                     |
 |-------------|:-----------------------|:--------------------------------------|
 | occupation  | programmer from Norway | virtual desktop engineer from Germany |
 | tasks       | various                | beta team manager                     |

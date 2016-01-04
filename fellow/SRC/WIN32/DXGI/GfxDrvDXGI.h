@@ -72,7 +72,7 @@ public:
   void InvalidateBufferPointer();
   void Flip();
 
-  void RegisterRetroPlatformScreenMode(bool);
+  void RegisterRetroPlatformScreenMode(const bool, const ULO, const ULO, const ULO);
   bool SaveScreenshot(const bool, const STR *);
 
   GfxDrvDXGI();

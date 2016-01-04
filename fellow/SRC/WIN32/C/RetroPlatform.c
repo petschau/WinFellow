@@ -116,7 +116,6 @@
 
 static const char *RetroPlatformCustomLayoutKeys[RETRO_PLATFORM_KEYSET_COUNT] = { "up", "right", "down", "left", "fire", "fire.autorepeat" };
 extern BOOLE kbd_drv_joykey_enabled[2][2];	///< For each port, the enabled joykeys
-extern GfxDrvDXGI *gfxDrvDXGI;
 
 #define	MAX_JOY_PORT  2 ///< maximum number of physically attached joysticks; the value originates from joydrv.c, as we emulate the enumeration behaviour
 int RetroPlatformNumberOfJoysticksAttached;
@@ -1067,20 +1066,11 @@ void RetroPlatformSetScreenModeStruct(struct RPScreenMode *sm) {
   cfgSetScreenHeight(RetroPlatformConfig, sm->lClipHeight);
   RetroPlatformSetScreenWidth       (sm->lClipWidth);
   cfgSetScreenWidth(RetroPlatformConfig, sm->lClipWidth);
-
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
   gfxDrvCommon->RunEventSet();
-
-  if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW)
-    gfxDrvDDrawRegisterRetroPlatformScreenMode(false);
-  else if (RetroPlatformConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11)
-    gfxDrvDXGI->RegisterRetroPlatformScreenMode(false);
-  else
-    fellowAddLog("RetroPlatformSetScreenModeStruct(): WARNING: unknown display driver %u\n",
-      RetroPlatformConfig->m_displaydriver);
-
+  gfxDrvRegisterRetroPlatformScreenMode(false);
   fellowRequestEmulationStop();
 }
 
