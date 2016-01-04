@@ -11,7 +11,7 @@
 !define COPYRIGHT "© 1996-2016 under the GNU General Public License"
 !define DESCRIPTION "WinFellow Amiga Emulator"
 !define LICENSE_TXT "gpl-2.0.txt"
-!define INSTALLER_NAME "WinFellow_alpha_v${FELLOWVERSION}.exe"
+!define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}.exe"
 !define MAIN_APP_EXE "WinFellow.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
@@ -87,13 +87,13 @@ Section -MainProgram
 ${INSTALL_TYPE}
 SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
-File "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\ChangeLog.txt"
-File "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\gpl-2.0.pdf"
-File "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\WinFellow User Guide.pdf"
-File "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\WinFellow.exe"
-File "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\WinFellow.pdb"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\ChangeLog.txt"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\gpl-2.0.pdf"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow User Guide.pdf"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.exe"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.pdb"
 SetOutPath "$INSTDIR\Presets"
-File /r "$%TEMP%\WinFellow_alpha_v${FELLOWVERSION}\Presets\*"
+File /r "$%TEMP%\WinFellow_v${FELLOWVERSION}\Presets\*"
 SectionEnd
 
 ######################################################################
