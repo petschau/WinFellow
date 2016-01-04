@@ -2,7 +2,7 @@
 
 ## Description
 
-WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core dohowever allow a fairly easy port to other operating systems.
+WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.
 
 WinFellow is distributed under the terms of the [GNU General Public License version 2.0 (GPLv2)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 
@@ -31,8 +31,12 @@ The latest stable release can be found in WinFellow's former home at [SourceForg
 
 Please check the FAQ that can be found in WinFellow's User Guide before contacting us, it is the fastest way to find a solution to your problem.
 
-Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored. You can buy Kickstart ROM images from [Cloanto](http://www.amigaforever.com).
+There is a WinFellow specific support forum at the [English Amiga Board](http://eab.abime.net/forumdisplay.php?forumid=28), which is also monitored by us.
+
+You could also make use of the [GitHub issue tracker](https://github.com/petschau/winfellow/issues).
 
 Any comments on how to improve WinFellow are welcome!
 
-Please make use of the issue system on GitHub. You can also contact us directly by sending an email composed in English language to carfesh@gmx.net.
+You can also contact us directly by sending an email composed in English language to carfesh@gmx.net. Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored. 
+
+You can buy Kickstart ROM images from [Cloanto](http://www.amigaforever.com).
