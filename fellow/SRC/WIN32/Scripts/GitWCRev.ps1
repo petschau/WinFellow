@@ -49,11 +49,11 @@ if($PreventLocalModifications.IsPresent)
         Write-Host "Local working copy contains modifications, aborting."
         exit $GitStatus
     }
-    
-    $result = (git log origin/master..HEAD)
+    $GitBranch = (git rev-parse --abbrev-ref HEAD)
+    $result = (git log origin/$GitBranch..HEAD)
     if ($result -ne $0)
     {
-        Write-Error "Local working copy contains commits there were not pushed yet, aborting."
+        Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
         exit $result
     }
 }
