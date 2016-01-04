@@ -1,6 +1,5 @@
 #include "Graphics.h"
 
-#include "CopperNew.h"
 #include "BUS.H"
 
 Graphics GraphicsContext;
@@ -56,7 +55,6 @@ void Graphics::EmulationStart(void)
   DIWYStateMachine.EmulationStart();
   DDFStateMachine.EmulationStart();
   PixelSerializer.EmulationStart();
-  Sprites.EmulationStart();
 }
 
 void Graphics::EmulationStop(void)
@@ -73,7 +71,6 @@ void Graphics::Startup(void)
   DIWYStateMachine.Startup();
   DDFStateMachine.Startup();
   PixelSerializer.Startup();
-  Copper_Startup();
 
   InitializeEventQueue();
 }
@@ -84,7 +81,6 @@ void Graphics::Shutdown(void)
   DIWYStateMachine.Shutdown();
   DDFStateMachine.Shutdown();
   PixelSerializer.Shutdown();
-  Copper_Shutdown();
   Logger.Shutdown();
 }
 

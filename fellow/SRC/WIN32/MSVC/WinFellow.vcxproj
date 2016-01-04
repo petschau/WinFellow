@@ -410,6 +410,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
+    <ClCompile Include="..\..\C\LineExactCopper.cpp" />
+    <ClCompile Include="..\..\C\CopperRegisters.cpp" />
     <ClCompile Include="..\..\C\CpuIntegration.c">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -574,21 +576,25 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\..\C\interrupt.c" />
+    <ClCompile Include="..\..\C\LineExactSprites.cpp" />
     <ClCompile Include="..\..\c\rtc.cpp" />
     <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp" />
+    <ClCompile Include="..\..\C\SpriteMerger.cpp" />
+    <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp" />
+    <ClCompile Include="..\..\C\SpriteRegisters.cpp" />
     <ClCompile Include="..\..\graphics\Logger.cpp" />
     <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
     <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
     <ClCompile Include="..\..\graphics\BitplaneDraw.c" />
     <ClCompile Include="..\..\graphics\PixelSerializer.c" />
-    <ClCompile Include="..\..\graphics\CopperNew.c" />
+    <ClCompile Include="..\..\graphics\CycleExactCopper.cpp" />
     <ClCompile Include="..\..\graphics\DDFStateMachine.c" />
     <ClCompile Include="..\..\graphics\DIWXStateMachine.c" />
     <ClCompile Include="..\..\graphics\DIWYStateMachine.c" />
     <ClCompile Include="..\..\graphics\Graphics.cpp" />
     <ClCompile Include="..\..\graphics\GraphicsEvent.cpp" />
     <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp" />
-    <ClCompile Include="..\..\graphics\SpriteState.c" />
+    <ClCompile Include="..\..\graphics\CycleExactSprites.cpp" />
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1582,20 +1588,22 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\graphics\BitplaneDMA.h" />
     <ClInclude Include="..\..\graphics\BitplaneDraw.h" />
     <ClInclude Include="..\..\graphics\PixelSerializer.h" />
-    <ClInclude Include="..\..\graphics\CopperNew.h" />
+    <ClInclude Include="..\..\graphics\CycleExactCopper.h" />
     <ClInclude Include="..\..\graphics\DDFStateMachine.h" />
     <ClInclude Include="..\..\graphics\DIWXStateMachine.h" />
     <ClInclude Include="..\..\graphics\DIWYStateMachine.h" />
     <ClInclude Include="..\..\graphics\Graphics.h" />
     <ClInclude Include="..\..\graphics\GraphicsEvent.h" />
     <ClInclude Include="..\..\graphics\GraphicsEventQueue.h" />
-    <ClInclude Include="..\..\graphics\SpriteState.h" />
+    <ClInclude Include="..\..\graphics\CycleExactSprites.h" />
     <ClInclude Include="..\..\INCLUDE\BLIT.H" />
     <ClInclude Include="..\..\INCLUDE\BUS.H" />
     <ClInclude Include="..\..\INCLUDE\chipset.h" />
     <ClInclude Include="..\..\INCLUDE\CIA.H" />
     <ClInclude Include="..\..\INCLUDE\CONFIG.H" />
     <ClInclude Include="..\..\INCLUDE\COPPER.H" />
+    <ClInclude Include="..\..\INCLUDE\LineExactCopper.h" />
+    <ClInclude Include="..\..\INCLUDE\CopperRegisters.h" />
     <ClInclude Include="..\..\INCLUDE\CpuIntegration.h" />
     <ClInclude Include="..\..\INCLUDE\CpuModule.h" />
     <ClInclude Include="..\..\INCLUDE\CpuModule_Code.h" />
@@ -1622,10 +1630,13 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\Ini.h" />
     <ClInclude Include="..\..\include\interrupt.h" />
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H" />
+    <ClInclude Include="..\..\INCLUDE\LineExactSprites.h" />
     <ClInclude Include="..\..\INCLUDE\LISTTREE.H" />
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
     <ClInclude Include="..\..\include\rtc.h" />
     <ClInclude Include="..\..\include\RtcOkiMsm6242rs.h" />
+    <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h" />
+    <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />

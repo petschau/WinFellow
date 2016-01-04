@@ -58,7 +58,6 @@
 #include "interrupt.h"
 #include "RetroPlatform.h"
 
-// GRAPH2
 #include "Graphics.h"
 
 BOOLE fellow_request_emulation_stop;

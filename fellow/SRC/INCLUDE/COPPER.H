@@ -1,29 +1,30 @@
 #ifndef COPPER_H
 #define COPPER_H
 
-void wcopcon(UWO data, ULO address);
-void wcop1lch(UWO data, ULO address);
-void wcop1lcl(UWO data, ULO address);
-void wcop2lch(UWO data, ULO address);
-void wcop2lcl(UWO data, ULO address);
-void wcopjmp1(UWO data, ULO address);
-void wcopjmp2(UWO data, ULO address);
-UWO rcopjmp1(ULO address);
-UWO rcopjmp2(ULO address);
-
-void copperUpdateDMA(void);
-
+extern void copperEventHandler();
 extern void copperSaveState(FILE *F);
 extern void copperLoadState(FILE *F);
-extern void copperEndOfFrame(void);
-extern void copperHardReset(void);
-extern void copperEmulationStart(void);
-extern void copperEmulationStop(void);
-extern void copperStartup(void);
-extern void copperShutdown(void);
+extern void copperEndOfFrame();
+extern void copperHardReset();
+extern void copperEmulationStart();
+extern void copperEmulationStop();
+extern void copperStartup();
+extern void copperShutdown();
 
-void copperLoad1(void);
-void copperLoad2(void);
-void copperEmulate(void);
+class Copper
+{
+public:
+  virtual void NotifyDMAEnableChanged(bool new_dma_enable_state) = 0;
+  virtual void NotifyCop1lcChanged() = 0;
+  virtual void Load(ULO new_copper_pc) = 0;
+  virtual void EventHandler() = 0;
+
+  virtual void EndOfFrame() = 0;
+  virtual void HardReset() = 0;
+  virtual void EmulationStart() = 0;
+  virtual void EmulationStop() = 0;
+};
+
+extern Copper* copper;
 
 #endif

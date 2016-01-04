@@ -8,7 +8,7 @@
 #include "BitplaneDMA.h"
 #include "PixelSerializer.h"
 #include "BitplaneDraw.h"
-#include "SpriteState.h"
+#include "CycleExactSprites.h"
 #include "DIWXStateMachine.h"
 #include "DIWYStateMachine.h"
 #include "DDFStateMachine.h"
@@ -34,7 +34,6 @@ public:
   PixelSerializer PixelSerializer;
   Planar2ChunkyDecoder Planar2ChunkyDecoder;
   BitplaneDraw BitplaneDraw;
-  Sprites Sprites;
   Logger Logger;
 
   void Commit(ULO untilRasterY, ULO untilRasterX);

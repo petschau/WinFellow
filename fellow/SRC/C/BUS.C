@@ -49,9 +49,7 @@
 #include "KBDDRV.H"
 #endif
 
-// GRAPH2
 #include "Graphics.h"
-#include "CopperNew.h"
 
 bus_state bus;
 
@@ -78,7 +76,7 @@ void busEndOfLine(void)
   /* and updates the graphics emulation for a new line            */
   /*==============================================================*/
   graphEndOfLine(); 
-  spriteEndOfLine();
+  spriteEndOfLine(busGetRasterY());
 
   /*==============================================================*/
   /* Update the CIA B event counter                               */
@@ -133,10 +131,7 @@ void busEndOfFrame(void)
   /*==============================================================*/
   /* Restart copper                                               */
   /*==============================================================*/
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
-    copperEndOfFrame();
-  else
-    Copper_EndOfFrame();
+  copperEndOfFrame();
 
   /*==============================================================*/
   /* Update CIA timer counters                                    */
@@ -533,12 +528,7 @@ void busInitializeQueue(void)
   busClearEvent(&eolEvent, busEndOfLine);
   busClearEvent(&eofEvent, busEndOfFrame);
   busClearEvent(&ciaEvent, ciaHandleEvent);
-
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
-    busClearEvent(&copperEvent, copperEmulate);
-  else
-    busClearEvent(&copperEvent, Copper_EventHandler);
-
+  busClearEvent(&copperEvent, copperEventHandler);
   busClearEvent(&blitterEvent, blitFinishBlit);
   busClearEvent(&interruptEvent, interruptHandleEvent);
 

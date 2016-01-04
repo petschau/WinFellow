@@ -43,7 +43,6 @@
 #include "draw_pixelrenderers.h"
 #include "draw_interlace_control.h"
 
-// GRAPH2
 #include "Graphics.h"
 
 #ifdef RETRO_PLATFORM
