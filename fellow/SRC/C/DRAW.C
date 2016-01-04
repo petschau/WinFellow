@@ -549,7 +549,15 @@ DISPLAYDRIVER drawGetDisplayDriver()
 
 void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
+  GRAPHICSEMULATIONMODE oldgraphicsemulationmode = draw_graphicsemulationmode;
+  
   draw_graphicsemulationmode = graphicsemulationmode;
+
+  if (oldgraphicsemulationmode != draw_graphicsemulationmode)
+  {
+    spriteInitializeFromEmulationMode();
+    copperInitializeFromEmulationMode();
+  }
 }
 
 GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode()

@@ -31,6 +31,23 @@
 
 Copper *copper = nullptr;
 
+void copperInitializeFromEmulationMode()
+{
+  if (copper != nullptr)
+  {
+    delete copper;
+    copper = nullptr;
+  }
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  {
+    copper = new CycleExactCopper();
+  }
+  else
+  {
+    copper = new LineExactCopper();
+  }
+}
+
 void copperEventHandler()
 {
   copper->EventHandler();
@@ -71,15 +88,7 @@ void copperHardReset()
 void copperStartup()
 {
   copper_registers.ClearState();
-
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-  {
-    copper = new CycleExactCopper();
-  }
-  else
-  {
-    copper = new LineExactCopper();
-  }
+  copperInitializeFromEmulationMode();
 }
 
 void copperShutdown()

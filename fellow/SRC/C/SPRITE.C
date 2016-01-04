@@ -42,6 +42,26 @@ Sprites *sprites = nullptr;
 LineExactSprites *line_exact_sprites = nullptr;
 CycleExactSprites *cycle_exact_sprites = nullptr;
 
+void spriteInitializeFromEmulationMode()
+{
+  if (sprites != nullptr)
+  {
+    delete sprites;
+    sprites = nullptr;
+    line_exact_sprites = nullptr;
+    cycle_exact_sprites = nullptr;
+  }
+
+  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  {
+    sprites = cycle_exact_sprites = new CycleExactSprites();
+  }
+  else
+  {
+    sprites = line_exact_sprites = new LineExactSprites();
+  }
+}
+
 /*===========================================================================*/
 /* Called on emulation hard reset                                            */
 /*===========================================================================*/
@@ -96,16 +116,7 @@ void spriteEmulationStop()
 void spriteStartup()
 {
   sprite_registers.ClearState();
-
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-  {
-    sprites = cycle_exact_sprites = new CycleExactSprites();
-  }
-  else
-  {
-    sprites = line_exact_sprites = new LineExactSprites();
-  }
-
+  spriteInitializeFromEmulationMode();
   SpriteP2CDecoder::Initialize();
   SpriteMerger::Initialize();
 }

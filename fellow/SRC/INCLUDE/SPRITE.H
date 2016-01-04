@@ -3,6 +3,7 @@
 
 #include "graph.h"
 
+extern void spriteInitializeFromEmulationMode();
 extern void spriteEndOfLine(ULO rasterY);
 extern void spriteEndOfFrame();
 extern void spriteHardReset();

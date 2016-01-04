@@ -1,6 +1,7 @@
 #ifndef COPPER_H
 #define COPPER_H
 
+extern void copperInitializeFromEmulationMode();
 extern void copperEventHandler();
 extern void copperSaveState(FILE *F);
 extern void copperLoadState(FILE *F);

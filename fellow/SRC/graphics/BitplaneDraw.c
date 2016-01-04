@@ -212,3 +212,13 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
     draw_buffer_second_ptr_local += (real_pitch_in_bytes/2);
   }
 }
+
+BitplaneDraw::BitplaneDraw()
+{
+  _tmpframe = new ULO[313][1024];
+}
+
+BitplaneDraw::~BitplaneDraw()
+{
+  delete[] _tmpframe;
+}
