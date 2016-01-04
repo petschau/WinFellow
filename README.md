@@ -1,4 +1,5 @@
-# WinFellow - Amiga Emulator for Windows
+![WinFellow](./fellow/Docs/WinFellow/winfellow_logo_large.png) 
+#Amiga Emulator for Windows
 
 ## Description
 
@@ -15,15 +16,12 @@ The latest stable release can be found in WinFellow's former home at [SourceForg
 ## The Team
 
 
-| team member | Petter Schau           | Torsten Enderling                     |
-|-------------|:-----------------------|:--------------------------------------|
-| occupation  | programmer from Norway | virtual desktop engineer from Germany |
-| tasks       | various                | beta team manager                     |
-| modules     | emulation core         | RetroPlatform integration             |
-|             |                        | hardfile/file system                  |
-|             |                        | debugger                              |
-|             |                        | system information                    |
-| email       | petschau@gmail.com     | carfesh@gmx.net                       |
+| team member | Petter Schau           | Torsten Enderling                                                                   | Worfje                                               |
+|-------------|:-----------------------|:------------------------------------------------------------------------------------|:-----------------------------------------------------|
+| occupation  | programmer from Norway | virtual desktop engineer from Germany                                               | engineer from the Netherlands                        |
+| tasks       | various                | beta team manager                                                                   | website administration<br>cross platform development |
+| modules     | emulation core         | RetroPlatform integration<br>hardfile/file system<br>debugger<br>system information | graphics<br>sound<br>GUI                             |
+| email       | petschau@gmail.com     | carfesh@gmx.net                                                                     | worfje@gmx.net                                       |
 
 ----------
 
