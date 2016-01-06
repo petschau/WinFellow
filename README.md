@@ -7,9 +7,9 @@ WinFellow is a high performance Amiga Emulator primarily targeted for Windows. I
 
 WinFellow is distributed under the terms of the [GNU General Public License version 2.0 (GPLv2)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
 
-This site is WinFellow's home on GitHub.
+[This site](https://github.com/petschau/WinFellow) is WinFellow's home on GitHub.
 
-The latest stable release can be found in WinFellow's former home at [SourceForge](https://sourceforge.net/projects/fellow/files/); the latest stable release published on SourceForge is v0.5.4.1004.
+The latest stable release can be found in WinFellow's former home at [SourceForge](https://sourceforge.net/projects/fellow/files/); the latest stable release published on SourceForge is v0.5.3.1004.
 
 ----------
 

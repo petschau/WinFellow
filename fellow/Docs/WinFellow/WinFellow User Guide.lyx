@@ -119,7 +119,7 @@ Worfje
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2016/01/01)
+v0.5.4 (2016/01/06)
 \end_layout
 
 \begin_layout Standard
@@ -181,6 +181,35 @@ Thank you for your interest in WinFellow.
  the most significant ones being:
 \end_layout
 
+\begin_layout Itemize
+Project hosting:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+WinFellow development has found a new home on 
+\begin_inset CommandInset href
+LatexCommand href
+name "GitHub"
+target "http://github.com"
+
+\end_inset
+
+, accessible via the URL 
+\begin_inset CommandInset href
+LatexCommand href
+name "github.com/petschau/WinFellow"
+target "http://github.com/petschau/WinFellow"
+
+\end_inset
+
+; it is still being developed by the same team.
+ Our former SourceForge repository, as well as the website fellow.sourceforge.net,
+ will still be maintained to keep earlier releases available.
+ For future updates, please check GitHub.
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 New features:
 \end_layout
@@ -1426,6 +1455,14 @@ Oscar Sillani
 \noun default
  and anyone else who may have been involved) for their support integrating
  WinFellow into Amiga Forever.
+\end_layout
+
+\begin_layout Standard
+We'd also like to thank 
+\noun on
+Kelvin Sherlock
+\noun default
+ for providing various bugfixes around CPU emulation.
 \end_layout
 
 \begin_layout Section*
