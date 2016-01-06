@@ -1635,6 +1635,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
     <ClInclude Include="..\..\include\rtc.h" />
     <ClInclude Include="..\..\include\RtcOkiMsm6242rs.h" />
+    <ClInclude Include="..\..\INCLUDE\SpriteMerger.h" />
     <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />

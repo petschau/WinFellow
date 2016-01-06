@@ -148,7 +148,7 @@ void BitplaneDraw::TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count)
 
 void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
 {
-  ULO pixel_index = (start_cylinder + 1)*2;
+  ULO pixel_index = start_cylinder*2;
   ULO pixel_count = GraphicsContext.Planar2ChunkyDecoder.GetBatchSize();
 
   if (!GraphicsContext.DIWXStateMachine.IsVisible())
