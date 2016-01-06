@@ -84,7 +84,7 @@ BEGIN
 #define master 1
 #if $WCBRANCH$ == 1
             VALUE "FileVersion", "0.5.4.$WCREV$"
-            VALUE "ProductVersion", "0.5.4.$WCREV$"
+            VALUE "ProductVersion", "0.5.4.$WCREV$-$WCCOMMITSHORT$"
 #else
             VALUE "FileVersion", "0.5.4.$WCREV$"
             VALUE "ProductVersion", "0.5.4.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$" 

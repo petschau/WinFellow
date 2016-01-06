@@ -1,7 +1,7 @@
 #ifndef VERSIONINFO_H
 #define VERSIONINFO_H
 
-#define BetterSplitOfGraphs2CodeBase 1
+#define master 1
 #if $WCBRANCH$ == 1
     #define FELLOWVERSION        "WinFellow v0.5.4 r$WCREV$ (Git-$WCCOMMITSHORT$)"
     #define FELLOWLONGVERSION    "WinFellow Amiga Emulator v0.5.4.$WCREV$ (Git-$WCCOMMITSHORT$)" 
