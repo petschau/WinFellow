@@ -1357,7 +1357,7 @@ static GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationModeFromString(STR *value)
   {
     return GRAPHICSEMULATIONMODE_CYCLEEXACT;
   }
-  return GRAPHICSEMULATIONMODE_LINEEXACT; // Default
+  return GRAPHICSEMULATIONMODE_LINEEXACT;
 }
 
 static STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsemulationmode)

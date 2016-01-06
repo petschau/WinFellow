@@ -77,12 +77,18 @@ BEGIN
         BEGIN
             VALUE "Comments", "http://fellow.sourceforge.net"
             VALUE "FileDescription", "WinFellow Amiga Emulator"
-            VALUE "FileVersion", "0.5.4.$WCREV$"
             VALUE "InternalName", "WinFellow"
             VALUE "LegalCopyright", "©1996-2016 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
+#define master 1
+#if $WCBRANCH$ == 1
+            VALUE "FileVersion", "0.5.4.$WCREV$"
             VALUE "ProductVersion", "0.5.4.$WCREV$"
+#else
+            VALUE "FileVersion", "0.5.4.$WCREV$"
+            VALUE "ProductVersion", "0.5.4.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$" 
+#endif            
         END
     END
     BLOCK "VarFileInfo"

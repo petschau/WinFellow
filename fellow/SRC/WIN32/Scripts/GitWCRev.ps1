@@ -25,7 +25,7 @@
 <#
 .SYNOPSIS
     Replaces the $WCREV$ keyword in an input file with the number of commits in the 
-	Git working copy and writes the result to the output file.
+    Git working copy and writes the result to the output file.
 .DESCRIPTION
     
 
@@ -35,33 +35,38 @@
 
 [CmdletBinding()]
 Param(
-	[Parameter(Mandatory=$true)][string]$InputFileName,
-	[Parameter(Mandatory=$true)][string]$OutputFileName,
-	[switch]$PreventLocalModifications
+    [Parameter(Mandatory=$true)][string]$InputFileName,
+    [Parameter(Mandatory=$true)][string]$OutputFileName,
+    [switch]$PreventLocalModifications
 )
 
 if($PreventLocalModifications.IsPresent)
 {
-	$GitStatus = (git status --porcelain)
-	
-	if ($GitStatus -ne $0)
-	{ 
-		Write-Host "Local working copy contains modifications, aborting."
-		exit $GitStatus
-	}
+    $GitStatus = (git status --porcelain)
     
-    $result = (git log origin/master..HEAD)
+    if ($GitStatus -ne $0)
+    { 
+        Write-Host "Local working copy contains modifications, aborting."
+        exit $GitStatus
+    }
+    $GitBranch = (git rev-parse --abbrev-ref HEAD)
+    $result = (git log origin/$GitBranch..HEAD)
     if ($result -ne $0)
     {
-        Write-Error "Local working copy contains commits there were not pushed yet, aborting."
+        Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
         exit $result
     }
 }
 
-$GitWCREV = (git rev-list --count --first-parent HEAD)
+$GitWCREV         = (git rev-list --count --first-parent HEAD)
+$GitWCBRANCH      = (git rev-parse --abbrev-ref HEAD)
+$GitWCCOMMITSHORT = (git rev-parse --short HEAD)
 
-Get-Content $InputFileName |
-	ForEach-Object { $_ -replace '\$WCREV\$', $GitWCREV } |
-	Set-Content $OutputFileName
-	
+(Get-Content $InputFileName) |
+    ForEach-Object {
+        $_ -replace '\$WCREV\$',         $GitWCREV         `
+           -replace '\$WCBRANCH\$',      $GitWCBRANCH      `
+           -replace '\$WCCOMMITSHORT\$', $GitWCCOMMITSHORT
+    } | Set-Content $OutputFileName
+    
 exit 0

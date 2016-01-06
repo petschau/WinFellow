@@ -339,9 +339,6 @@
     <ClCompile Include="..\..\graphics\BitplaneDraw.c">
       <Filter>graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphics\CopperNew.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\graphics\DDFStateMachine.c">
       <Filter>graphics</Filter>
     </ClCompile>
@@ -349,9 +346,6 @@
       <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\graphics\DIWYStateMachine.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\SpriteState.c">
       <Filter>graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\graphics\Graphics.cpp">
@@ -413,6 +407,30 @@
     </ClCompile>
     <ClCompile Include="..\DXGI\GfxDrvDXGIMode.cpp">
       <Filter>DXGI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CopperRegisters.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\SpriteRegisters.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\LineExactCopper.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\LineExactSprites.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\CycleExactCopper.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\graphics\CycleExactSprites.cpp">
+      <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\SpriteMerger.cpp">
+      <Filter>core C Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -716,9 +734,6 @@
     <ClInclude Include="..\..\graphics\BitplaneDraw.h">
       <Filter>graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\graphics\CopperNew.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\graphics\DDFStateMachine.h">
       <Filter>graphics</Filter>
     </ClInclude>
@@ -726,9 +741,6 @@
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\graphics\DIWYStateMachine.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\SpriteState.h">
       <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\graphics\Graphics.h">
@@ -790,6 +802,30 @@
     </ClInclude>
     <ClInclude Include="..\DXGI\GfxDrvDXGIMode.h">
       <Filter>DXGI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\CopperRegisters.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\CycleExactSprites.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\LineExactCopper.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\LineExactSprites.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graphics\CycleExactCopper.h">
+      <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\SpriteMerger.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -148,7 +148,7 @@ void BitplaneDraw::TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count)
 
 void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
 {
-  ULO pixel_index = (start_cylinder + 1)*2;
+  ULO pixel_index = start_cylinder*2;
   ULO pixel_count = GraphicsContext.Planar2ChunkyDecoder.GetBatchSize();
 
   if (!GraphicsContext.DIWXStateMachine.IsVisible())
@@ -211,4 +211,14 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
     draw_buffer_first_ptr_local += (real_pitch_in_bytes/2);
     draw_buffer_second_ptr_local += (real_pitch_in_bytes/2);
   }
+}
+
+BitplaneDraw::BitplaneDraw()
+{
+  _tmpframe = new ULO[313][1024];
+}
+
+BitplaneDraw::~BitplaneDraw()
+{
+  delete[] _tmpframe;
 }

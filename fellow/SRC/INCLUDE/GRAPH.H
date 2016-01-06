@@ -89,8 +89,6 @@ extern ULO diwxright;
 extern ULO diwytop;
 extern ULO diwybottom;
 
-extern ULO sprites_online;
-
 extern BOOLE graph_playfield_on;
 
 typedef enum {

@@ -28,7 +28,7 @@
 class BitplaneDraw
 {
 private:
-  ULO _tmpframe[314][1024];
+  ULO (*_tmpframe)[1024];
 
   void TempLores(ULO rasterY, ULO pixel_index, ULO pixel_count);
   void TempLoresDual(ULO rasterY, ULO pixel_index, ULO pixel_count);
@@ -40,6 +40,9 @@ private:
 public:
   void DrawBatch(ULO rasterY, ULO rasterX);
   void TmpFrame(ULO next_line_offset);
+
+  BitplaneDraw();
+  ~BitplaneDraw();
 };
 
 

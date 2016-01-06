@@ -33,13 +33,11 @@
 #include "sound.h"
 #include "draw.h"
 #include "graph.h"
-#include "sprite.h"
+#include "LineExactSprites.h"
 #include "CpuIntegration.h"
 #include "draw_interlace_control.h"
 
-// GRAPH2
 #include "Graphics.h"
-#include "CopperNew.h"
 
 /*======================================================================*/
 /* flag that handles loss of surface content due to DirectX malfunction */
@@ -392,7 +390,6 @@ void wddfstrt(UWO data, ULO address)
   {
     ddfstrt = data & 0xfc;
   }
-  sprite_ddf_kill = (data & 0xfc) - 0x14;
   wbplcon1((UWO)bplcon1, address);
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
@@ -515,11 +512,7 @@ void wdmacon(UWO data, ULO address)
       }
     }
 
-    // update Copper DMA
-    if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-      Copper_UpdateDMA(); 
-    else
-      copperUpdateDMA(); 
+    copper->NotifyDMAEnableChanged((dmacon & 0x80) == 0x80);
   }
   else
   {
@@ -568,10 +561,7 @@ void wdmacon(UWO data, ULO address)
       }
     }
 
-    if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
-      Copper_UpdateDMA(); 
-    else
-      copperUpdateDMA(); 
+    copper->NotifyDMAEnableChanged((dmacon & 0x80) == 0x80);
   }
 }
 
@@ -2165,11 +2155,10 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
     }
 
     // add sprites to the line image
-    if (sprites_online)
+    if (line_exact_sprites->HasSpritesOnLine())
     {
       line_desc_changed = TRUE;
-      spritesMerge(current_graph_line);
-      sprites_online = FALSE;
+      line_exact_sprites->Merge(current_graph_line);
     }
 
     // final test for line skip
@@ -2286,12 +2275,8 @@ void graphEndOfLine(void)
       {
 	if (currentY >= 0x18) 
 	{
-	  spritesDMASpriteHandler();
-	  spriteProcessActionList();
-	}
-	else
-	{
-	  //spriteProcessActionList();
+	  line_exact_sprites->DMASpriteHandler();
+          line_exact_sprites->ProcessActionList();
 	}
       }
 

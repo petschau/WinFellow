@@ -206,7 +206,7 @@ void PixelSerializer::OutputCylindersUntil(ULO rasterY, ULO cylinder)
   SerializeBatch(cylinderCount);
   if (GraphicsContext.DIWYStateMachine.IsVisible() && _activated)
   {
-    GraphicsContext.Sprites.OutputSprites(_lastCylinderOutput + 1, cylinderCount);
+    cycle_exact_sprites->OutputSprites(_lastCylinderOutput + 1, cylinderCount);
   }
   GraphicsContext.BitplaneDraw.DrawBatch(outputLine, _lastCylinderOutput + 1);
 
@@ -220,7 +220,7 @@ void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
   ULO line = GetOutputLine(rasterY, cylinder);
   if (line < 0x1a)
   {
-    GraphicsContext.Sprites.EndOfLine(rasterY);
+//    sprites->EndOfLine(rasterY);
     EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
     return;
   }
@@ -243,7 +243,7 @@ void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
   }
   else
   {
-    GraphicsContext.Sprites.EndOfLine(rasterY);
+//    sprites->EndOfLine(rasterY);
   }
   EventSetup(MakeArriveTime(rasterY + 1, LAST_CYLINDER));
 }

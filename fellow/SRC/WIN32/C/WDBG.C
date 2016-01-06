@@ -51,10 +51,11 @@
 #include "floppy.h"
 #include "blit.h"
 #include "bus.h"
-#include "copper.h"
+#include "CopperRegisters.h"
 #include "graph.h"
 #include "sound.h"
 #include "sprite.h"
+#include "SpriteRegisters.h"
 #include "modrip.h"
 #include "blit.h"
 #include "wgui.h"
@@ -64,16 +65,11 @@
 /* external references not exported by the include files */
 /*=======================================================*/
 
-/* copper.c */
-extern ULO copcon, cop1lc, cop2lc;
-extern ULO copper_ptr;
-
 /* floppy.c */
 extern ULO dsklen, dsksync, dskpt;
 
 /* sprite.c */
 extern ULO sprpt[8];
-extern ULO sprite_ddf_kill;
 extern ULO sprx[8];
 extern ULO spry[8];
 extern ULO sprly[8];
@@ -710,13 +706,13 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    list1 = (cop1lc & 0xfffffe);
-    list2 = (cop2lc & 0xfffffe);
+    list1 = (copper_registers.cop1lc & 0xfffffe);
+    list2 = (copper_registers.cop2lc & 0xfffffe);
 
-    atpc = (copper_ptr & 0xfffffe);	/* Make sure debug doesn't trap odd ex */
+    atpc = (copper_registers.copper_pc & 0xfffffe);	/* Make sure debug doesn't trap odd ex */
 
-    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%u Copper PC - %.6X", cop1lc,
-	    cop2lc, copcon, copper_ptr);
+    sprintf(s, "Cop1lc-%.6X Cop2lc-%.6X Copcon-%u Copper PC - %.6X", copper_registers.cop1lc,
+      copper_registers.cop2lc, copper_registers.copcon, copper_registers.copper_pc);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Next cycle - %u  Y - %u  X - %u", copperEvent.cycle,
@@ -760,7 +756,6 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
     ULO y = WDBG_CPU_REGISTERS_Y;
     ULO x = WDBG_CPU_REGISTERS_X;
-    ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -791,24 +786,21 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += WDBG_DISASSEMBLY_INDENT;
 
-    sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprpt[0],
-	    sprpt[1], sprpt[2], sprpt[3]);
+    sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0],
+      sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprpt[4],
-	    sprpt[5], sprpt[6], sprpt[7]);
+    sprintf(s, "Spr4pt-%.6X Spr5pt-%.6X Spr6pt-%.6X Spr7pt - %.6X", sprite_registers.sprpt[4],
+      sprite_registers.sprpt[5], sprite_registers.sprpt[6], sprite_registers.sprpt[7]);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "SpriteDDFkill-%X", sprite_ddf_kill);
-    y = wdbgLineOut(hDC, s, x, y);
-
-    for (i = 0; i < 8; i++) {
-      sprintf(s,
-	      "Spr%uX-%u Spr%uStartY-%u Spr%uStopY-%u Spr%uAttached-%u Spr%ustate-%u",
-	      i, sprx[i], i, spry[i], i, sprly[i], i, spratt[i], i,
-	      sprite_state[i]);
-      y = wdbgLineOut(hDC, s, x, y);
-    }
+    //for (ULO i = 0; i < 8; i++) {
+    //  sprintf(s,
+	   //   "Spr%uX-%u Spr%uStartY-%u Spr%uStopY-%u Spr%uAttached-%u Spr%ustate-%u",
+	   //   i, sprx[i], i, spry[i], i, sprly[i], i, spratt[i], i,
+	   //   sprite_state[i]);
+    //  y = wdbgLineOut(hDC, s, x, y);
+    //}
 
     DeleteDC(hDC_image);
     DeleteObject(myarrow);

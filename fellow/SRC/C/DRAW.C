@@ -43,7 +43,6 @@
 #include "draw_pixelrenderers.h"
 #include "draw_interlace_control.h"
 
-// GRAPH2
 #include "Graphics.h"
 
 #ifdef RETRO_PLATFORM
@@ -550,7 +549,15 @@ DISPLAYDRIVER drawGetDisplayDriver()
 
 void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode)
 {
+  GRAPHICSEMULATIONMODE oldgraphicsemulationmode = draw_graphicsemulationmode;
+  
   draw_graphicsemulationmode = graphicsemulationmode;
+
+  if (oldgraphicsemulationmode != draw_graphicsemulationmode)
+  {
+    spriteInitializeFromEmulationMode();
+    copperInitializeFromEmulationMode();
+  }
 }
 
 GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode()

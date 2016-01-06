@@ -103,7 +103,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
   UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 #ifdef _DEBUG
-  creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+//  creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
   hr = D3D11CreateDevice(NULL,
@@ -171,8 +171,11 @@ void GfxDrvDXGI::DeleteD3D11Device()
 #ifdef _DEBUG
     ID3D11Debug *d3d11Debug;
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
-    d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-    d3d11Debug->Release();
+    if (d3d11Debug != nullptr)
+    {
+      d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
+      d3d11Debug->Release();
+    }
     d3d11Debug = 0;
 #endif
 

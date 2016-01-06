@@ -106,11 +106,11 @@ if($FELLOWBUILDPROFILE -eq "Release")
         Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
         exit $result
     }
-    
-    $result = (git log origin/master..HEAD)
+    $GitBranch = (git rev-parse --abbrev-ref HEAD)
+    $result = (git log origin/$GitBranch..HEAD)
     if ($result -ne $0)
     {
-        Write-Error "Local working copy contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
+        Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
         exit $result
     }
 }
@@ -132,7 +132,7 @@ Write-Verbose "Executing MSBuild.exe..."
 $result = (msbuild.exe $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM)
 
 Write-Verbose "Checking file version of file WinFellow\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe..."
-$FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.FileVersion
+$FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.ProductVersion
 Write-Debug "Detected file version: $FELLOWVERSION"
 
 ShowProgressIndicator 5 "Generating GPL terms..."
@@ -152,7 +152,7 @@ $result = (lyx --export pdf2 "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow
 
 ShowProgressIndicator 8 "Assembling release build..."
 
-$OUTPUTDIR = "$temp\WinFellow_alpha_v$FELLOWVERSION"
+$OUTPUTDIR = "$temp\WinFellow_v$FELLOWVERSION"
 $result = mkdir $OUTPUTDIR
 $OUTPUTDIR = Resolve-Path $OUTPUTDIR
 Write-Debug "Build output dir: $OUTPUTDIR"
@@ -166,10 +166,10 @@ Copy-Item "$temp\gpl-2.0.pdf"                                                   
 
 Write-Verbose "Compressing release binary distribution archive..."
 CD $OUTPUTDIR
-Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_alpha_v$FELLOWVERSION.zip"
+Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
-$result = (7z.exe a -tzip "$temp\WinFellow_alpha_v$FELLOWVERSION.zip" "*.*" -r)
-Move-Item "$temp\WinFellow_alpha_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_alpha_v$FELLOWVERSION.zip" -Force
+$result = (7z.exe a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*.*" -r)
+Move-Item "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip" -Force
 
 ShowProgressIndicator 9 "Generating NSIS Installer..."
 
@@ -177,8 +177,8 @@ $NSISDIR = Resolve-Path ("$SourceCodeBaseDir\fellow\SRC\WIN32\NSIS")
 Write-Debug "NSIS dir: $NSISDIR"
 cd $temp
 $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow.log")
-Move-Item "WinFellow_alpha_v${FELLOWVERSION}.exe" $TargetOutputDir -Force
-Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_alpha_v${FELLOWVERSION}.exe"
+Move-Item "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir -Force
+Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
 
 cd $SourceCodeBaseDir
 
@@ -195,13 +195,13 @@ if($FELLOWBUILDPROFILE -eq "Release")
 }
 
 ShowProgressIndicator 11 "Compressing release source code archive..."
-Write-Debug "Release source code archive output name: $TargetOutputDir\WinFellow_alpha_v${FELLOWVERSION}_src.zip"
+Write-Debug "Release source code archive output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
 
-$result = (7z.exe a -tzip "$temp\WinFellow_alpha_v${FELLOWVERSION}_src.zip" "fellow")
-$result = (7z.exe a -tzip "$temp\WinFellow_alpha_v${FELLOWVERSION}_src.zip" ".git")
+$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow")
+$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
 cd $OUTPUTDIR
-$result = (7z.exe a -tzip "$temp\WinFellow_alpha_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
-Move-Item "$temp\WinFellow_alpha_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_alpha_v${FELLOWVERSION}_src.zip" -Force
+$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
+Move-Item "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip" -Force
 
 cd $SourceCodeBaseDir
 Remove-Item "$OUTPUTDIR" -Recurse -Force
