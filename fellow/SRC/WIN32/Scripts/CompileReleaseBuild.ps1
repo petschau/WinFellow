@@ -73,6 +73,7 @@ else
 {
     $FELLOWBUILDPROFILE="Release"
 }
+$ErrorActionPreference="Stop"
 
 $FELLOWPLATFORM="Win32"
 $CMDLINETOOLS = [Environment]::GetEnvironmentVariable("VS120COMNTOOLS", "Machine")
@@ -84,6 +85,8 @@ $result = CheckForExeInSearchPath "lyx.exe"
 $result = CheckForExeInSearchPath "7z.exe"
 $result = CheckForExeInSearchPath "pdflatex.exe"
 $result = CheckForExeInSearchPath "makensis.exe"
+
+Set-Alias SevenZip "7z.exe"
 
 $SourceCodeBaseDir = Resolve-Path (git rev-parse --show-cdup)
 Write-Debug "Source Code Base Dir: $SourceCodeBaseDir"
@@ -168,7 +171,7 @@ Write-Verbose "Compressing release binary distribution archive..."
 CD $OUTPUTDIR
 Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
-$result = (7z.exe a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*.*" -r)
+$result = (SevenZip a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*.*" -r)
 Move-Item "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip" -Force
 
 ShowProgressIndicator 9 "Generating NSIS Installer..."
@@ -197,10 +200,10 @@ if($FELLOWBUILDPROFILE -eq "Release")
 ShowProgressIndicator 11 "Compressing release source code archive..."
 Write-Debug "Release source code archive output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
 
-$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow")
-$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
+$result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow")
+$result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
 cd $OUTPUTDIR
-$result = (7z.exe a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
+$result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
 Move-Item "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip" -Force
 
 cd $SourceCodeBaseDir
