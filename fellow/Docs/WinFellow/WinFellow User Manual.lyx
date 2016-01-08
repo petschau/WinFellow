@@ -86,7 +86,18 @@ figs-within-sections
 \begin_body
 
 \begin_layout Title
-WinFellow User Manual
+\begin_inset Graphics
+	filename winfellow_logo_large.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+User Manual
 \end_layout
 
 \begin_layout Author
@@ -165,6 +176,60 @@ WinFellow is developed and distributed under the terms of the GNU General
  Public License, Version 2.
  For the exact terms of the license, please see the file gpl-2.0.pdf, that
  should have been distributed together with this manual.
+\end_layout
+
+\begin_layout Part
+Contributing to WinFellow
+\end_layout
+
+\begin_layout Standard
+WinFellow is developed by a team of volunteers in their spare time; you
+ are very welcome to make contributions of your own.
+ Contributions can be improvements to the code, new features, but can also
+ include documentation updates or whatever else you feel could be an improvement.
+ It is best if you find something you want to work on rather than mailing
+ us and ask to be given some task.
+ Since WinFellow is developed on an idealistic basis, the basic idea is
+ that everyone should do something they like.
+\end_layout
+
+\begin_layout Standard
+When you start doing something it is wise to mail some of us in advance
+ to make sure no one is doing double work.
+ Since WinFellow is developed as open source software hosted on GitHub,
+ it is very easy to contribute.
+ You can easily fork the source code of WinFellow, create a branch and start
+ commiting changes to it; your changes can be submitted to our project in
+ form of a pull request.
+ Raising a pull request early on allows us to discuss your request early,
+ so that we can see if/how your request may fit into WinFellow before you
+ put any effort into it.
+\end_layout
+
+\begin_layout Standard
+There is a how-to guide in MarkDown syntax within the source code archive
+ in the directory 
+\begin_inset Quotes eld
+\end_inset
+
+fellow
+\backslash
+doxygen
+\backslash
+Documentation
+\begin_inset Quotes erd
+\end_inset
+
+ called 
+\begin_inset Quotes eld
+\end_inset
+
+HOWTO Development environment setup.md
+\begin_inset Quotes erd
+\end_inset
+
+, that can help you get started.
+ Feel free to contact us if you are interested in helping! 
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -417,7 +482,8 @@ Essential Requirements
 \end_layout
 
 \begin_layout Standard
-Before you can begin to use WinFellow, you will need two things: 
+Before you can begin to use WinFellow, you will need two things: an Amiga
+ Kickstart ROM, and a floppy image.
 \end_layout
 
 \begin_layout Enumerate
@@ -481,6 +547,25 @@ Will copy the Kickstart ROM chip and write it into a file in RAM: called
  (although it may be called from any different directory).
 \end_layout
 
+\begin_layout Subsubsection*
+AROS Research Operating System
+\end_layout
+
+\begin_layout Standard
+Some m68k distributions of 
+\begin_inset CommandInset href
+LatexCommand href
+name "AROS"
+target "http://www.aros.org"
+
+\end_inset
+
+ contain a ROM replacement that can be used in WinFellow.
+ The files must be renamed to have a .ROM file extension, and both the image
+ as well as the extended image need to be configured.
+ However not all software is compatible with this, so your mileage may vary.
+\end_layout
+
 \end_deeper
 \begin_layout Enumerate
 Floppy image(s)
@@ -536,10 +621,19 @@ Copying Files From PC to Amiga & Amiga to PC
 \begin_layout Standard
 There are different options to transfer files between your Amiga and your
  PC.
- This list is not meant to be exhaustive, it just provides a few different
- options.
- With a little research, other ways may be possible or easier for your particula
-r case.
+ This list is by no means meant to be exhaustive, it just provides a few
+ different options.
+ With a little research, other ways may be possible or more fitting for
+ your particular use case.
+ Cloanto also kindly provides a few options 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://www.amigaforever.com/kb/13-118"
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Enumerate
@@ -650,7 +744,7 @@ target "http://www.amigaforever.com/ae/"
 \end_inset
 
  that can also assist in the process, which provides more options to connect
- the systems.
+ the systems; for example, it can be used with a Bluetooth serial adapter.
  Amiga Explorer is also included in 
 \begin_inset CommandInset href
 LatexCommand href
