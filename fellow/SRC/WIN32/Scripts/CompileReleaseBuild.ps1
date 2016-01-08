@@ -140,7 +140,7 @@ Write-Debug "Detected file version: $FELLOWVERSION"
 
 ShowProgressIndicator 5 "Generating GPL terms..."
 
-Copy-Item "$SourceCodeBaseDir\fellow\Docs\WinFellow\gpl-2.0.tex" "$temp"
+Copy-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\gpl-2.0.tex" "$temp"
 cd $temp
 $result = (pdflatex gpl-2.0.tex)
 
@@ -149,30 +149,30 @@ ShowProgressIndicator 6 "Generating ChangeLog..."
 cd $SourceCodeBaseDir
 $result = (git log --date=short --pretty=format:"%h - %<(12)%an, %ad : %w(80,0,37)%s%n%w(80,37,37)%b" --invert-grep --grep="" > $temp\ChangeLog.txt)
 
-ShowProgressIndicator 7 "Generating User Guide..."
+ShowProgressIndicator 7 "Generating User Manual..."
 
-$result = (lyx --export pdf2 "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Guide.lyx" | Out-Null)
+$result = (lyx --export pdf2 "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.lyx" | Out-Null)
 
 ShowProgressIndicator 8 "Assembling release build..."
 
 $OUTPUTDIR = "$temp\WinFellow_v$FELLOWVERSION"
-$result = mkdir $OUTPUTDIR
+$result = mkdir $OUTPUTDIR -Force
 $OUTPUTDIR = Resolve-Path $OUTPUTDIR
 Write-Debug "Build output dir: $OUTPUTDIR"
 
-Move-Item "$temp\ChangeLog.txt"                                                        "$OUTPUTDIR\ChangeLog.txt"
-Move-Item "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Guide.pdf"          "$OUTPUTDIR\WinFellow User Guide.pdf"
-Move-Item "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow.exe"
-Move-Item "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow.pdb"
-Copy-Item "$SourceCodeBaseDir\fellow\Presets"                                          "$OUTPUTDIR\Presets" -Recurse
-Copy-Item "$temp\gpl-2.0.pdf"                                                          "$OUTPUTDIR\gpl-2.0.pdf"
+Move-Item -Force "$temp\ChangeLog.txt"                                                        "$OUTPUTDIR\ChangeLog.txt"
+Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf"         "$OUTPUTDIR\WinFellow User Manual.pdf"
+Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow.exe"
+Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow.pdb"
+Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"                                          "$OUTPUTDIR\Presets" -Recurse
+Copy-Item -Force "$temp\gpl-2.0.pdf"                                                          "$OUTPUTDIR\gpl-2.0.pdf"
 
 Write-Verbose "Compressing release binary distribution archive..."
 CD $OUTPUTDIR
 Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
 $result = (SevenZip a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*.*" -r)
-Move-Item "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip" -Force
+Move-Item -Force "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
 ShowProgressIndicator 9 "Generating NSIS Installer..."
 
@@ -180,7 +180,7 @@ $NSISDIR = Resolve-Path ("$SourceCodeBaseDir\fellow\SRC\WIN32\NSIS")
 Write-Debug "NSIS dir: $NSISDIR"
 cd $temp
 $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow.log")
-Move-Item "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir -Force
+Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir
 Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
 
 cd $SourceCodeBaseDir
@@ -204,7 +204,7 @@ $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow"
 $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
 cd $OUTPUTDIR
 $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
-Move-Item "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip" -Force
+Move-Item -Force "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
 
 cd $SourceCodeBaseDir
 Remove-Item "$OUTPUTDIR" -Recurse -Force
