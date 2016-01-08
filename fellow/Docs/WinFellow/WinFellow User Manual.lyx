@@ -779,6 +779,363 @@ target "http://www.amigaforever.com"
 
 \end_deeper
 \begin_layout Part
+Quickstart Guide
+\end_layout
+
+\begin_layout Standard
+This quickstart guide is going to take you through the basic steps required
+ to configure an emulation session using a ROM image and a boot floppy,
+ showing you the most important configuration settings that you should be
+ familiar with.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/main menu.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Above screenshot shows WinFellow's main menu.
+ To get started, a number of settings should be configured.
+\end_layout
+
+\begin_layout Standard
+You can quickly select the disk images that are used in floppy drive DF0:
+ to DF3: on this screen.
+ Only floppy drives that are enabled in the configuration menu can be configured
+ here.
+\end_layout
+
+\begin_layout Paragraph*
+Configuration of ROM
+\end_layout
+
+\begin_layout Standard
+As a first step, you should configure the ROM image that should be used.
+ In this example, we are going to use the AROS ROM replacement that we have
+ already downloaded, renamed to .rom and copied into WinFellow's program
+ directory.
+ 
+\end_layout
+
+\begin_layout Standard
+To configure the ROM, you should click the 
+\begin_inset Quotes eld
+\end_inset
+
+configuration
+\begin_inset Quotes erd
+\end_inset
+
+ button, and switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+memory
+\begin_inset Quotes erd
+\end_inset
+
+ tab:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - memory.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Click the 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+ button besides image to open a dialog that allows you to select the base
+ ROM image you have stored earlier; confirm that dialog by hitting OK.
+ Do the same for the extended ROM image.
+ While on the 
+\begin_inset Quotes eld
+\end_inset
+
+memory
+\begin_inset Quotes erd
+\end_inset
+
+ tab, review the settings configured under 
+\begin_inset Quotes eld
+\end_inset
+
+memory size
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It is currently configured for 512KB chip memory size, as well as 512 KB
+ bogo memory size, which is a pretty common setup.
+ You can change these values individually, if you know that the software
+ you are going to use has special memory requirements.
+\end_layout
+
+\begin_layout Paragraph*
+Configuration of presets
+\end_layout
+
+\begin_layout Standard
+If you want to emulate a system based on a particular Amiga model, a quick
+ way to get started is to utilize the 
+\begin_inset Quotes eld
+\end_inset
+
+presets
+\begin_inset Quotes erd
+\end_inset
+
+ tab:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - presets.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You first configure a ROM search path where WinFellow will attempt to locate
+ a ROM.
+ You can then select a configuration from the dropdown list of emulated
+ models; for example, you might select the Amiga 500 model with the popular
+ A-501 expansion like shown above.
+ After selecting a model, the most important settings for that model are
+ shown in a preview below.
+ WinFellow will attempt to locate the correct ROM for your selection automatical
+ly.
+ You can apply the settings shown in the preview to the active configuration
+ by clicking 
+\begin_inset Quotes eld
+\end_inset
+
+Apply Model Settings
+\begin_inset Quotes erd
+\end_inset
+
+.
+ For this example, don't click the 
+\begin_inset Quotes eld
+\end_inset
+
+Apply Model Settings
+\begin_inset Quotes erd
+\end_inset
+
+ button.
+\end_layout
+
+\begin_layout Paragraph
+Configuration of display settings
+\end_layout
+
+\begin_layout Standard
+While still in the configuration menu, switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+display
+\begin_inset Quotes erd
+\end_inset
+
+ tab:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - display.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Review the display settings configured here.
+ You can adjust the resolution of the emulation window to your preference
+ by moving the 
+\begin_inset Quotes eld
+\end_inset
+
+resolution
+\begin_inset Quotes erd
+\end_inset
+
+ slider.
+ You can also enable full screen mode on this tab and configure the screen
+ resolution.
+ Depending on your screen size, it may make sense to configure the display
+ size to 2x.
+ When you are done, confirm your changed configuration settings by clicking
+ the OK button.
+ This brings you back to the main menu.
+\end_layout
+
+\begin_layout Paragraph*
+Starting and stopping an emulation session
+\end_layout
+
+\begin_layout Standard
+Click the button 
+\begin_inset Quotes eld
+\end_inset
+
+start emulation
+\begin_inset Quotes erd
+\end_inset
+
+ to start an emulation session.
+ An additional window will appear:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/emulation session - boot prompt.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The virtual environment is now running.
+\end_layout
+
+\begin_layout Paragraph*
+Input device focus
+\end_layout
+
+\begin_layout Standard
+There are a few important key definitions you should be aware of when using
+ a WinFellow emulation session.
+ You will notice that the mouse cursor has disappeared when you started
+ the session, and keyboard input does not appear on the Windows screen.
+ This is because the emulation session took control of your input devices,
+ so that keyboard, mouse and possibly a joystick or gamepad are redirected
+ to the emulated system.
+ You can pause the emulation session and return to the main menu by hitting
+ the 
+\emph on
+F11
+\emph default
+ key.
+ You can toggle input device focus between an emulation session and Windows
+ by hitting the 
+\emph on
+F12
+\emph default
+ key repeatedly; to give the focus back to the emulation session, ensure
+ that the window is in the foreground and the mouse cursor over it when
+ hitting 
+\emph on
+F12
+\emph default
+.
+\end_layout
+
+\begin_layout Standard
+Go back to the main menu by hitting 
+\emph on
+F11
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph*
+Saving the configuration
+\end_layout
+
+\begin_layout Standard
+Then, when in the main menu, open the 
+\begin_inset Quotes eld
+\end_inset
+
+File
+\begin_inset Quotes erd
+\end_inset
+
+ menu, select the option to 
+\begin_inset Quotes eld
+\end_inset
+
+Save Configuration
+\begin_inset Quotes erd
+\end_inset
+
+.
+ You might also save the configuration under a certain name by selection
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Save Configuration as...
+\begin_inset Quotes erd
+\end_inset
+
+.
+ WinFellow will load the configuration that was used last automatically
+ when you start it again later.
+ The most recently used configurations are also listed in the 
+\begin_inset Quotes eld
+\end_inset
+
+File
+\begin_inset Quotes erd
+\end_inset
+
+ menu.
+ When you try to quit the emulator, and there are unsaved configuration
+ settings, a warning message will appear to remind you that you might want
+ to save your settings.
+\end_layout
+
+\begin_layout Paragraph*
+Closing the emulator
+\end_layout
+
+\begin_layout Standard
+You can close the emulator by clicking 
+\begin_inset Quotes eld
+\end_inset
+
+quit emulator
+\begin_inset Quotes erd
+\end_inset
+
+ in the main menu.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
 Frequently Asked Questions
 \end_layout
 
