@@ -5,7 +5,7 @@
 ############################################################################################
 
 !define APP_NAME "WinFellow"
-!define COMP_NAME "The WinFellow team"
+!define COMP_NAME "The WinFellow Team"
 !define WEB_SITE "http://fellow.sourceforge.net"
 !define VERSION "${FELLOWVERSION}"
 !define COPYRIGHT "© 1996-2016 under the GNU General Public License"
@@ -94,6 +94,8 @@ File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.exe"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.pdb"
 SetOutPath "$INSTDIR\Presets"
 File /r "$%TEMP%\WinFellow_v${FELLOWVERSION}\Presets\*"
+SetOutPath "$INSTDIR\Utilities"
+File /r "$%TEMP%\WinFellow_v${FELLOWVERSION}\Utilities\*"
 SectionEnd
 
 ######################################################################
@@ -149,6 +151,7 @@ Delete "$INSTDIR\WinFellow.pdb"
 Delete "$INSTDIR\WinFellow.exe"
 Delete "$INSTDIR\uninstall.exe"
 RMDir /r "$INSTDIR\Presets"
+RMDir /r "$INSTDIR\Utilities"
 !ifdef WEB_SITE
 Delete "$INSTDIR\${APP_NAME} website.url"
 !endif

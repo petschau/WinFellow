@@ -165,13 +165,14 @@ Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual
 Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow.exe"
 Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow.pdb"
 Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"                                          "$OUTPUTDIR\Presets" -Recurse
+Copy-Item -Force "$SourceCodeBaseDir\fellow\Utilities"                                        "$OUTPUTDIR\Utilities" -Recurse
 Copy-Item -Force "$temp\gpl-2.0.pdf"                                                          "$OUTPUTDIR\gpl-2.0.pdf"
 
 Write-Verbose "Compressing release binary distribution archive..."
 CD $OUTPUTDIR
 Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
-$result = (SevenZip a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*.*" -r)
+$result = (SevenZip a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*" -r)
 Move-Item -Force "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
 
 ShowProgressIndicator 9 "Generating NSIS Installer..."
