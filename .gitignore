@@ -6,8 +6,8 @@ fellow/SRC/WIN32/MSVC/Release/
 *.lyx~
 fellow/doxygen/WinFellow-doxygen.*
 fellow/doxygen/WinFellow-doxygen.pdf
-fellow/Docs/WinFellow/WinFellow User Guide.pdf
 fellow/SRC/WIN32/NSIS/WinFellow.log
 *.bak
 fellow/SRC/WIN32/MSVC/WinFellow.opensdf
 *.sdf
+fellow/Docs/WinFellow/WinFellow User Manual.pdf

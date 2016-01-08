@@ -89,7 +89,7 @@ SetOverwrite ifnewer
 SetOutPath "$INSTDIR"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\ChangeLog.txt"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\gpl-2.0.pdf"
-File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow User Guide.pdf"
+File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow User Manual.pdf"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.exe"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.pdb"
 SetOutPath "$INSTDIR\Presets"
@@ -106,7 +106,7 @@ WriteUninstaller "$INSTDIR\uninstall.exe"
 !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
 CreateDirectory "$SMPROGRAMS\$SM_Folder"
 CreateShortCut "$SMPROGRAMS\$SM_Folder\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
-CreateShortCut "$SMPROGRAMS\$SM_Folder\WinFellow User Guide.lnk" "$INSTDIR\WinFellow User Guide.pdf"
+CreateShortCut "$SMPROGRAMS\$SM_Folder\WinFellow User Manual.lnk" "$INSTDIR\WinFellow User Manual.pdf"
 CreateShortCut "$SMPROGRAMS\$SM_Folder\ChangeLog.lnk" "$INSTDIR\ChangeLog.txt"
 CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${MAIN_APP_EXE}"
 !ifdef WEB_SITE
@@ -144,7 +144,7 @@ Section Uninstall
 ${INSTALL_TYPE}
 Delete "$INSTDIR\ChangeLog.txt"
 Delete "$INSTDIR\gpl-2.0.pdf"
-Delete "$INSTDIR\WinFellow User Guide.pdf"
+Delete "$INSTDIR\WinFellow User Manual.pdf"
 Delete "$INSTDIR\WinFellow.pdb"
 Delete "$INSTDIR\WinFellow.exe"
 Delete "$INSTDIR\uninstall.exe"
@@ -158,7 +158,7 @@ RmDir "$INSTDIR"
 !ifdef REG_START_MENU
 !insertmacro MUI_STARTMENU_GETFOLDER "Application" $SM_Folder
 Delete "$SMPROGRAMS\$SM_Folder\${APP_NAME}.lnk"
-Delete "$SMPROGRAMS\$SM_Folder\WinFellow User Guide.lnk"
+Delete "$SMPROGRAMS\$SM_Folder\WinFellow User Manual.lnk"
 Delete "$SMPROGRAMS\$SM_Folder\ChangeLog.lnk"
 
 !ifdef WEB_SITE
