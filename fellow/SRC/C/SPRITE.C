@@ -23,6 +23,16 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif
+#endif
+
 #include "defs.h"
 #include "fellow.h"
 #include "chipset.h"
@@ -127,4 +137,9 @@ void spriteStartup()
 
 void spriteShutdown()
 {
+  if (sprites != nullptr)
+  {
+    delete sprites;
+    sprites = nullptr;
+  }
 }

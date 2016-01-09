@@ -23,6 +23,16 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+#ifndef DBG_NEW
+#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define new DBG_NEW
+#endif
+#endif
+
 #include "DEFS.H"
 #include "DRAW.H"
 #include "CopperRegisters.h"
@@ -93,4 +103,9 @@ void copperStartup()
 
 void copperShutdown()
 {
+  if (copper != nullptr)
+  {
+    delete copper;
+    copper = nullptr;
+  }
 }
