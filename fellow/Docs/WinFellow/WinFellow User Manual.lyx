@@ -500,22 +500,23 @@ Before you can begin to use WinFellow, you will need two things: an Amiga
 \end_layout
 
 \begin_layout Enumerate
-Kickstart ROM 
+ROM image
 \end_layout
 
 \begin_deeper
 \begin_layout Standard
 A copy of an Amiga Kickstart ROM, which is taken from a REAL Amiga.
- This file is extracted using a program called TransROM, which is included
+ The Kickstart is copyrighted software and is not included with the emulator.
+ This file can be extracted using a program called TransROM, which is included
  with WinFellow (Utilities
 \backslash
 Amiga).
- The Kickstart is copyrighted software and is not included with the emulator.
+ 
 \end_layout
 
 \begin_layout Standard
-The correct way to obtain this file is to copy it from the Amiga you own,
- or buy 
+The correct way to obtain this file is to copy it from the Amiga you own;
+ you can also buy 
 \begin_inset CommandInset href
 LatexCommand href
 name "Amiga Forever"
@@ -533,7 +534,6 @@ target "http://www.cloanto.com"
 
  which contains licensed Kickstart ROM images and Workbench software prepared
  for immediate use with the emulator.
- 
 \end_layout
 
 \begin_layout Subsubsection*
@@ -565,7 +565,7 @@ AROS Research Operating System
 \end_layout
 
 \begin_layout Standard
-Some m68k distributions of 
+M68k distributions of 
 \begin_inset CommandInset href
 LatexCommand href
 name "AROS"
@@ -573,9 +573,10 @@ target "http://www.aros.org"
 
 \end_inset
 
- contain a ROM replacement that can be used in WinFellow.
- The files must be renamed to have a .ROM file extension, and both the image
- as well as the extended image need to be configured.
+ contain a research ROM replacement that can be used in WinFellow.
+ The file aros-amiga-m68k-rom.bin must be configured as base ROM image, aros-amig
+a-m68k-ext.bin is an extended ROM image.
+ Both images need to be configured.
  However not all software is compatible with this, so your mileage may vary.
 \end_layout
 
@@ -818,8 +819,7 @@ Configuration of ROM
 \begin_layout Standard
 As a first step, you should configure the ROM image that should be used.
  In this example, we are going to use the AROS ROM replacement that we have
- already downloaded, renamed to .rom and copied into WinFellow's program
- directory.
+ already downloaded and copied into WinFellow's program directory.
  
 \end_layout
 
@@ -987,10 +987,42 @@ resolution
  You can also enable full screen mode on this tab and configure the screen
  resolution.
  Depending on your screen size, it may make sense to configure the display
- size to 2x.
+ size to 2x; you should adjust the resolution accordingly.
  When you are done, confirm your changed configuration settings by clicking
  the OK button.
  This brings you back to the main menu.
+\end_layout
+
+\begin_layout Paragraph*
+Input device focus
+\end_layout
+
+\begin_layout Standard
+There are a few important key definitions you should be aware of when using
+ a WinFellow emulation session.
+ You will notice that the mouse cursor will disappear when you start the
+ emulation session, and keyboard input will not appear on the Windows screen.
+ This is because the emulation session takes control of your input devices,
+ so that keyboard, mouse and possibly a joystick or gamepad are redirected
+ to the emulated system.
+ You can pause an emulation session and return to the main menu by pressing
+ the 
+\emph on
+F11
+\emph default
+ key.
+ You can toggle input device focus between an emulation session and Windows
+ by pressing the 
+\emph on
+F12
+\emph default
+ key repeatedly; to give the focus back to the emulation session, ensure
+ that the window is in the foreground and the mouse cursor over it when
+ pressing 
+\emph on
+F12
+\emph default
+.
 \end_layout
 
 \begin_layout Paragraph*
@@ -1024,40 +1056,8 @@ start emulation
 The virtual environment is now running.
 \end_layout
 
-\begin_layout Paragraph*
-Input device focus
-\end_layout
-
 \begin_layout Standard
-There are a few important key definitions you should be aware of when using
- a WinFellow emulation session.
- You will notice that the mouse cursor has disappeared when you started
- the session, and keyboard input does not appear on the Windows screen.
- This is because the emulation session took control of your input devices,
- so that keyboard, mouse and possibly a joystick or gamepad are redirected
- to the emulated system.
- You can pause the emulation session and return to the main menu by hitting
- the 
-\emph on
-F11
-\emph default
- key.
- You can toggle input device focus between an emulation session and Windows
- by hitting the 
-\emph on
-F12
-\emph default
- key repeatedly; to give the focus back to the emulation session, ensure
- that the window is in the foreground and the mouse cursor over it when
- hitting 
-\emph on
-F12
-\emph default
-.
-\end_layout
-
-\begin_layout Standard
-Go back to the main menu by hitting 
+Go back to the main menu by pressing 
 \emph on
 F11
 \emph default
