@@ -560,26 +560,6 @@ Will copy the Kickstart ROM chip and write it into a file in RAM: called
  (although it may be called from any different directory).
 \end_layout
 
-\begin_layout Subsubsection*
-AROS Research Operating System
-\end_layout
-
-\begin_layout Standard
-M68k distributions of 
-\begin_inset CommandInset href
-LatexCommand href
-name "AROS"
-target "http://www.aros.org"
-
-\end_inset
-
- contain a research ROM replacement that can be used in WinFellow.
- The file aros-amiga-m68k-rom.bin must be configured as base ROM image, aros-amig
-a-m68k-ext.bin is an extended ROM image.
- Both images need to be configured.
- However not all software is compatible with this, so your mileage may vary.
-\end_layout
-
 \end_deeper
 \begin_layout Enumerate
 Floppy image(s)
@@ -787,7 +767,7 @@ Quickstart Guide
 This quickstart guide is going to take you through the basic steps required
  to configure an emulation session using a ROM image and a boot floppy,
  showing you the most important configuration settings that you should be
- familiar with.
+ familiar with along the way.
 \end_layout
 
 \begin_layout Standard
@@ -818,13 +798,7 @@ Configuration of ROM
 
 \begin_layout Standard
 As a first step, you should configure the ROM image that should be used.
- In this example, we are going to use the AROS ROM replacement that we have
- already downloaded and copied into WinFellow's program directory.
- 
-\end_layout
-
-\begin_layout Standard
-To configure the ROM, you should click the 
+ To configure the ROM, you should click the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -832,7 +806,7 @@ configuration
 \begin_inset Quotes erd
 \end_inset
 
- button, and switch to the 
+ button, switch to the 
 \begin_inset Quotes eld
 \end_inset
 
@@ -840,7 +814,7 @@ memory
 \begin_inset Quotes erd
 \end_inset
 
- tab:
+ tab and configure a ROM, like in the example below:
 \end_layout
 
 \begin_layout Standard
@@ -946,6 +920,50 @@ Apply Model Settings
  button.
 \end_layout
 
+\begin_layout Paragraph*
+Configuration of floppy disks
+\end_layout
+
+\begin_layout Standard
+Switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+floppy
+\begin_inset Quotes erd
+\end_inset
+
+ tab to configure the floppy disk images used by the emulation session:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - floppy.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can configure the image that is used by each of the four drives (DF0:-DF3:)
+ in this dialog.
+ Each drive can be enabled and disabled individually, and the disk image
+ can be configured as read-only.
+ Enabling 
+\begin_inset Quotes eld
+\end_inset
+
+fast disk-DMA
+\begin_inset Quotes erd
+\end_inset
+
+ can speed up the access to the emulated floppy disks.
+ This setting however is not compatible with all software, you should test
+ if the software you want to use supports it or leave it disabled.
+\end_layout
+
 \begin_layout Paragraph
 Configuration of display settings
 \end_layout
@@ -1039,25 +1057,9 @@ start emulation
 \end_inset
 
  to start an emulation session.
- An additional window will appear:
-\end_layout
-
-\begin_layout Standard
-\align center
-\begin_inset Graphics
-	filename Screenshots/emulation session - boot prompt.jpg
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
-The virtual environment is now running.
-\end_layout
-
-\begin_layout Standard
-Go back to the main menu by pressing 
+ An additional window will appear hosting the emulation session; the virtual
+ environment is now running.
+ Go back to the main menu by pressing 
 \emph on
 F11
 \emph default
