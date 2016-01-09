@@ -1983,6 +1983,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                     if(fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
                     {
                       cfgSetKickImage(wgui_cfg, strKickstart);
+                      // model presets do not support extended ROMs (yet), reset any extended ROM that might be configured
+                      cfgSetKickImageExtended(wgui_cfg, "");
                     }
                     else
                       fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n",
