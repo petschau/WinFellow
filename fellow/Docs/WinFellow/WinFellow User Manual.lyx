@@ -3,6 +3,12 @@
 \begin_document
 \begin_header
 \textclass article
+\begin_preamble
+\usepackage{fancyhdr}
+
+\lhead{test}
+\chead{test}
+\end_preamble
 \use_default_options true
 \begin_modules
 theorems-ams
@@ -32,7 +38,7 @@ figs-within-sections
 \paperfontsize default
 \spacing single
 \use_hyperref true
-\pdf_title "WinFellow FAQ"
+\pdf_title "WinFellow User Manual"
 \pdf_author "Torsten Enderling, Worfje"
 \pdf_bookmarks true
 \pdf_bookmarksnumbered false
@@ -100,6 +106,10 @@ figs-within-sections
 User Manual
 \end_layout
 
+\begin_layout Date
+v0.5.4 (2016/01/10)
+\end_layout
+
 \begin_layout Author
 
 \noun on
@@ -110,27 +120,26 @@ Torsten Enderling
 \end_inset
 
 
-\begin_inset ERT
-status open
-
-\begin_layout Plain Layout
-
-
-\backslash
-and
-\end_layout
-
-\end_inset
-
- 
 \noun on
 Worfje
 \noun default
  (worfje@gmx.net)
-\end_layout
+\begin_inset Newline newline
+\end_inset
 
-\begin_layout Date
-v0.5.4 (2016/01/08)
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "github.com/petschau/WinFellow"
+target "http://github.com/petschau/WinFellow"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -140,9 +149,6 @@ LatexCommand tableofcontents
 \end_inset
 
 
-\end_layout
-
-\begin_layout Standard
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -251,7 +257,7 @@ WinFellow is developed by a team of volunteers in their spare time; you
  Contributions can be improvements to the code, new features, but can also
  include documentation updates or whatever else you feel could be an improvement.
  It is best if you find something you want to work on rather than mailing
- us and ask to be given some task.
+ us and ask to be assigned a task.
  Since WinFellow is developed on an idealistic basis, the basic idea is
  that everyone should do something they like.
 \end_layout
@@ -260,10 +266,10 @@ WinFellow is developed by a team of volunteers in their spare time; you
 When you start doing something it is wise to mail some of us in advance
  to make sure no one is doing double work.
  Since WinFellow is developed as open source software hosted on GitHub,
- it is very easy to contribute.
- You can easily fork the source code of WinFellow, create a branch and start
- commiting changes to it; your changes can be submitted to our project in
- form of a pull request.
+ it is easy to contribute.
+ You can fork the source code of WinFellow, create a branch for your topic
+ and start commiting changes to it; your changes can be submitted to our
+ project in form of a pull request.
  Raising a pull request early on allows us to discuss your request early,
  so that we can see if/how your request may fit into WinFellow before you
  put any effort into it.
@@ -291,7 +297,8 @@ HOWTO Development environment setup.md
 \begin_inset Quotes erd
 \end_inset
 
-, that can help you get started.
+, that can help you get started setting up a development environment for
+ WinFellow.
  
 \end_layout
 
@@ -760,14 +767,14 @@ target "http://www.amigaforever.com"
 
 \end_deeper
 \begin_layout Part
-Quickstart Guide
+First Steps
 \end_layout
 
 \begin_layout Standard
-This quickstart guide is going to take you through the basic steps required
- to configure an emulation session using a ROM image and a boot floppy,
- showing you the most important configuration settings that you should be
- familiar with along the way.
+This guide is going to take you through the first basic steps required to
+ configure an emulation session using a ROM image and a boot floppy, showing
+ you the most important configuration settings that you should be familiar
+ with along the way.
 \end_layout
 
 \begin_layout Standard
@@ -789,7 +796,17 @@ Above screenshot shows WinFellow's main menu.
 You can quickly select the disk images that are used in floppy drive DF0:
  to DF3: on this screen.
  Only floppy drives that are enabled in the configuration menu can be configured
- here.
+ here; the green LED besides DF0: indicates that the drive is enabled.
+ The red LED below the 
+\begin_inset Quotes eld
+\end_inset
+
+start emulation
+\begin_inset Quotes erd
+\end_inset
+
+ button is the power led; the dark red tone in the screenshot it indicates
+ that no emulation session is active.
 \end_layout
 
 \begin_layout Paragraph*
@@ -797,7 +814,7 @@ Configuration of ROM
 \end_layout
 
 \begin_layout Standard
-As a first step, you should configure the ROM image that should be used.
+As a first step, you should configure the ROM image that you want to use.
  To configure the ROM, you should click the 
 \begin_inset Quotes eld
 \end_inset
@@ -838,7 +855,6 @@ Click the
 
  button besides image to open a dialog that allows you to select the base
  ROM image you have stored earlier; confirm that dialog by hitting OK.
- Do the same for the extended ROM image.
  While on the 
 \begin_inset Quotes eld
 \end_inset
@@ -890,8 +906,8 @@ presets
 \end_layout
 
 \begin_layout Standard
-You first configure a ROM search path where WinFellow will attempt to locate
- a ROM.
+You first configure a ROM search path where WinFellow will automatically
+ attempt to locate a matching ROM.
  You can then select a configuration from the dropdown list of emulated
  models; for example, you might select the Amiga 500 model with the popular
  A-501 expansion like shown above.
@@ -909,15 +925,6 @@ Apply Model Settings
 \end_inset
 
 .
- For this example, don't click the 
-\begin_inset Quotes eld
-\end_inset
-
-Apply Model Settings
-\begin_inset Quotes erd
-\end_inset
-
- button.
 \end_layout
 
 \begin_layout Paragraph*
@@ -1838,7 +1845,7 @@ Final note
 
 \begin_layout Standard
 The module ripper is in an experimental state.
- Should you experience issues with an exported file, send Fellow's logfile
+ Should you experience issues with an exported file, send WinFellow's logfile
  along with a description of what you tried to rip music from (game/demo
  name) and the information the file save requester showed to 
 \begin_inset CommandInset href
@@ -2228,7 +2235,15 @@ Marcelo Gurgacz
 \end_layout
 
 \begin_layout Standard
-Special thanks also go out to the Cloanto RetroPlatform team (
+We'd also like to thank 
+\noun on
+Kelvin Sherlock
+\noun default
+ for providing various bugfixes around CPU emulation.
+\end_layout
+
+\begin_layout Standard
+Special thanks go out to the Cloanto RetroPlatform team (
 \noun on
 Mike C.
  Battilana
@@ -2238,15 +2253,7 @@ Mike C.
 Oscar Sillani
 \noun default
  and anyone else who may have been involved) for their support integrating
- WinFellow into Amiga Forever.
-\end_layout
-
-\begin_layout Standard
-We'd also like to thank 
-\noun on
-Kelvin Sherlock
-\noun default
- for providing various bugfixes around CPU emulation.
+ WinFellow into Amiga Forever, and for their continuing efforts.
 \end_layout
 
 \begin_layout Section*
