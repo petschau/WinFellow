@@ -59,6 +59,14 @@ void gfxDrvBufferFlip()
   }
 }
 
+void gfxDrvNotifyActiveStatus(bool active)
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->NotifyActiveStatus(active);
+  }
+}
+
 void gfxDrvSizeChanged()
 {
   if (gfx_drv_use_dxgi)

@@ -25,6 +25,8 @@ extern void gfxDrvEmulationStop();
 extern void gfxDrvRunEventSet();
 extern void gfxDrvRunEventReset();
 
+extern void gfxDrvNotifyActiveStatus(bool active);
+
 extern bool gfxDrvRestart(DISPLAYDRIVER displaydriver);
 extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
 extern void gfxDrvShutdown();

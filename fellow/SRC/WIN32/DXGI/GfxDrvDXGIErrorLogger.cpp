@@ -22,6 +22,7 @@ const char* GfxDrvDXGIErrorLogger::GetErrorString(const HRESULT hResult)
     case DXGI_ERROR_WAS_STILL_DRAWING:		  return "DXGI_ERROR_WAS_STILL_DRAWING";
     case DXGI_ERROR_UNSUPPORTED:		  return "DXGI_ERROR_UNSUPPORTED";
     case DXGI_STATUS_OCCLUDED:			  return "DXGI_STATUS_OCCLUDED";
+    case DXGI_STATUS_MODE_CHANGE_IN_PROGRESS:     return "DXGI_STATUS_MODE_CHANGE_IN_PROGRESS";
     case E_INVALIDARG:				  return "E_INVALIDARG";
     case S_OK:					  return "S_OK";
     case S_FALSE:                                 return "S_FALSE";

@@ -35,8 +35,10 @@ private:
   bool CreateEnumerationFactory();
   void DeleteEnumerationFactory();
 
-  void RegisterMode(int width, int height);
+  void RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate = 60, bool isWindowed = true);
   void RegisterModes();
+  void AddFullScreenModes();
+  void AddWindowModes();
 
   bool CreateD3D11Device();
   void DeleteD3D11Device();
@@ -46,6 +48,8 @@ private:
 
   bool CreateSwapChain();
   void DeleteSwapChain();
+  bool InitiateSwitchToFullScreen();
+  DXGI_MODE_DESC* GetDXGIMode(unsigned int id);
 
   bool CreateAmigaScreenTexture();
   void DeleteAmigaScreenTexture();
@@ -60,6 +64,7 @@ public:
   void ClearCurrentBuffer();
   void SetMode(draw_mode *dm);
   void SizeChanged();
+  void NotifyActiveStatus(bool active);
 
   bool EmulationStart(unsigned int maxbuffercount);
   unsigned int EmulationStartPost();

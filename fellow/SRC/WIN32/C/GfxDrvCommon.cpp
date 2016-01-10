@@ -67,6 +67,8 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     {
       RunEventReset();
     }
+    gfxDrvNotifyActiveStatus(_win_active);
+
 #ifdef RETRO_PLATFORM
   }
 #endif

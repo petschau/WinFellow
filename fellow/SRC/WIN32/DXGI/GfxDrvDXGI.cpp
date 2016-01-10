@@ -35,6 +35,7 @@ bool GfxDrvDXGI::Startup()
   }
   CreateAdapterList();
   DeleteEnumerationFactory();
+  RegisterModes();
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
@@ -306,6 +307,12 @@ bool GfxDrvDXGI::CreateSwapChain()
   viewPort.MaxDepth = 1.0f;
  
   _immediateContext->RSSetViewports(1, &viewPort);
+
+  if (!_current_draw_mode->windowed)
+  {
+    // TODO: Add cleanup in case of error.
+    return InitiateSwitchToFullScreen();
+  }
   
   return true;
 }
@@ -316,6 +323,59 @@ void GfxDrvDXGI::DeleteSwapChain()
   {
     _swapChain->Release();
     _swapChain = 0;
+  }
+}
+
+bool GfxDrvDXGI::InitiateSwitchToFullScreen()
+{
+  fellowAddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()");
+
+  DXGI_MODE_DESC *modeDescription = GetDXGIMode(_current_draw_mode->id);
+  if (modeDescription == nullptr)
+  {
+    fellowAddLog("Selected fullscreen mode was not found.\n");
+    return false;
+  }
+  HRESULT result = _swapChain->SetFullscreenState(TRUE, 0); // TODO: Set which screen to use.
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to set full-screen.", result);
+    return false;
+  }
+  
+  _swapChain->ResizeTarget(modeDescription);
+  return true;
+}
+
+DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
+{
+  if (_adapters->size() == 0)
+  {
+    return nullptr;
+  }
+  GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
+  if (firstAdapter->GetOutputs().size() == 0)
+  {
+    return nullptr;
+  }
+
+  GfxDrvDXGIOutput *firstOutput = firstAdapter->GetOutputs().front();
+  for (GfxDrvDXGIMode *mode : firstOutput->GetModes())
+  {
+    if (mode->GetId() == id)
+    {
+      return mode->GetDXGIModeDescription();
+    }
+  }
+  return nullptr;
+}
+
+void GfxDrvDXGI::NotifyActiveStatus(bool active)
+{
+  fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)", active ? "TRUE" : "FALSE");
+  if (!_current_draw_mode->windowed)
+  {
+    _swapChain->SetFullscreenState(active, 0);
   }
 }
 
@@ -420,9 +480,8 @@ void GfxDrvDXGI::SetMode(draw_mode *dm)
   _current_draw_mode = dm;
 }
 
-void GfxDrvDXGI::RegisterMode(int width, int height)
+void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate, bool isWindowed)
 {
-  ULO id = 0;
   draw_mode *mode = (draw_mode *)malloc(sizeof(draw_mode));
 
   if (mode)
@@ -431,8 +490,8 @@ void GfxDrvDXGI::RegisterMode(int width, int height)
     mode->width = width;
     mode->height = height;
     mode->bits = 32;
-    mode->windowed = TRUE;
-    mode->refresh = 60;
+    mode->windowed = isWindowed;
+    mode->refresh = refreshRate;
     mode->redpos = 16;
     mode->redsize = 8;
     mode->greenpos = 8;
@@ -463,51 +522,79 @@ void GfxDrvDXGI::RegisterMode(int width, int height)
   }
 }
 
-void GfxDrvDXGI::RegisterModes()
+void GfxDrvDXGI::AddFullScreenModes()
 {
-  #define GFXWIDTH_NORMAL 640
-  #define GFXWIDTH_OVERSCAN 752
-  #define GFXWIDTH_MAXOVERSCAN 768
+  if (_adapters->size() == 0)
+  {
+    return;
+  }
+  GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
+  if (firstAdapter->GetOutputs().size() == 0)
+  {
+    return;
+  }
 
-  #define GFXHEIGHT_NTSC 400
-  #define GFXHEIGHT_PAL 512
-  #define GFXHEIGHT_OVERSCAN 576
+  GfxDrvDXGIOutput *firstOutput = firstAdapter->GetOutputs().front();
+  for (GfxDrvDXGIMode *mode : firstOutput->GetModes())
+  {
+    if (mode->CanUseMode())
+    {
+      RegisterMode(mode->GetId(), mode->GetWidth(), mode->GetHeight(), mode->GetRefreshRate(), false);
+    }
+  }
+}
+
+void GfxDrvDXGI::AddWindowModes()
+{
+  const unsigned int GFXWIDTH_NORMAL = 640;
+  const unsigned int GFXWIDTH_OVERSCAN = 752;
+  const unsigned int  GFXWIDTH_MAXOVERSCAN = 768;
+
+  const unsigned int  GFXHEIGHT_NTSC = 400;
+  const unsigned int  GFXHEIGHT_PAL = 512;
+  const unsigned int  GFXHEIGHT_OVERSCAN = 576;
 
   // 1X
-  RegisterMode(GFXWIDTH_NORMAL, GFXHEIGHT_NTSC);
-  RegisterMode(GFXWIDTH_NORMAL, GFXHEIGHT_PAL);
-  RegisterMode(GFXWIDTH_NORMAL, GFXHEIGHT_OVERSCAN);
-  RegisterMode(GFXWIDTH_OVERSCAN, GFXHEIGHT_NTSC);
-  RegisterMode(GFXWIDTH_OVERSCAN, GFXHEIGHT_PAL);
-  RegisterMode(GFXWIDTH_OVERSCAN, GFXHEIGHT_OVERSCAN);
-  RegisterMode(GFXWIDTH_MAXOVERSCAN, GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_MAXOVERSCAN, GFXHEIGHT_OVERSCAN);
 
   // 2X
-  RegisterMode(2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_NTSC);
-  RegisterMode(2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_PAL);
-  RegisterMode(2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_NTSC);
-  RegisterMode(2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_PAL);
-  RegisterMode(2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(2 * GFXWIDTH_MAXOVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_MAXOVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
 
   // 3X
-  RegisterMode(3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_NTSC);
-  RegisterMode(3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_PAL);
-  RegisterMode(3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_NTSC);
-  RegisterMode(3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_PAL);
-  RegisterMode(3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(3 * GFXWIDTH_MAXOVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_MAXOVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
 
   // 4X
-  RegisterMode(4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_NTSC);
-  RegisterMode(4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_PAL);
-  RegisterMode(4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_NTSC);
-  RegisterMode(4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_PAL);
-  RegisterMode(4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(4 * GFXWIDTH_MAXOVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_NTSC);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_PAL);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
+  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_MAXOVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
+}
+
+void GfxDrvDXGI::RegisterModes()
+{
+  AddFullScreenModes();
+  AddWindowModes();
 }
 
 #ifdef RETRO_PLATFORM
@@ -517,7 +604,7 @@ void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup, const ULO 
   fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %ux Direct3D mode, insert resolution %ux%u into list of valid screen resolutions...\n",
     lDisplayScale, lWidth, lHeight);
 
-  RegisterMode(lHeight, lWidth);
+  RegisterMode(0, lHeight, lWidth);
 
   drawSetMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
     cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
@@ -602,8 +689,6 @@ GfxDrvDXGI::GfxDrvDXGI()
   {
     _amigaScreenTexture[i] = 0;
   }
-
-  RegisterModes();
 }
 
 GfxDrvDXGI::~GfxDrvDXGI()
