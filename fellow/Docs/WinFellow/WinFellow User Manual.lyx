@@ -4,10 +4,7 @@
 \begin_header
 \textclass article
 \begin_preamble
-\usepackage{fancyhdr}
-
-\lhead{test}
-\chead{test}
+\usepackage[none]{hyphenat}
 \end_preamble
 \use_default_options true
 \begin_modules
