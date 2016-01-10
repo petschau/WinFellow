@@ -518,6 +518,15 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   free(cmdline);
   free(argv);
 
+  return result;
+}
+
+/*============================================================================*/
+/* detect memory leaks in debug builds; called after main                     */
+/*============================================================================*/
+
+int winDrvDetectMemoryLeaks(void)
+{
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
   HANDLE hLogFile;
   STR stOutputFileName[CFG_FILENAME_LENGTH];
@@ -526,21 +535,22 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
 
   GetSystemTime(&t);
 
-  wsprintfA(strLogFileName, 
-    "WinFellowCrtMallocReport_%s_%4d%02d%02d_%02d%02d%02d.log", 
-    FELLOWNUMERICVERSION, 
+  wsprintfA(strLogFileName,
+    "WinFellowCrtMallocReport_%s_%4d%02d%02d_%02d%02d%02d.log",
+    FELLOWNUMERICVERSION,
     t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
   fileopsGetGenericFileName(stOutputFileName, "WinFellow", strLogFileName);
 
-  hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE, 
-      FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, 
-      FILE_ATTRIBUTE_NORMAL, NULL);
+  hLogFile = CreateFile(stOutputFileName, GENERIC_WRITE,
+    FILE_SHARE_WRITE, NULL, CREATE_ALWAYS,
+    FILE_ATTRIBUTE_NORMAL, NULL);
 
   _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
   _CrtSetReportFile(_CRT_WARN, hLogFile);
 
-  if(!_CrtDumpMemoryLeaks()) {
+  if(!_CrtDumpMemoryLeaks()) 
+  {
     CloseHandle(hLogFile);
     remove(stOutputFileName);
   }
@@ -548,6 +558,16 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
     CloseHandle(hLogFile);
 #endif
 
-  return result;
+  return 0;
 }
 
+/*============================================================================*/
+/* ensure winDrvDetectMemoryLeaks is called after main (CRT Link-Time Tables) */
+/*============================================================================*/
+
+typedef int cb(void);
+
+#pragma data_seg(".CRT$XPU")
+static cb *autoexit[] = { winDrvDetectMemoryLeaks };
+
+#pragma data_seg()    /* reset data-segment */
