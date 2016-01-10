@@ -521,13 +521,14 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   return result;
 }
 
+#ifdef _FELLOW_DEBUG_CRT_MALLOC
+
 /*============================================================================*/
 /* detect memory leaks in debug builds; called after main                     */
 /*============================================================================*/
 
 int winDrvDetectMemoryLeaks(void)
 {
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
   HANDLE hLogFile;
   STR stOutputFileName[CFG_FILENAME_LENGTH];
   STR strLogFileName[CFG_FILENAME_LENGTH];
@@ -556,7 +557,6 @@ int winDrvDetectMemoryLeaks(void)
   }
   else
     CloseHandle(hLogFile);
-#endif
 
   return 0;
 }
@@ -571,3 +571,5 @@ typedef int cb(void);
 static cb *autoexit[] = { winDrvDetectMemoryLeaks };
 
 #pragma data_seg()    /* reset data-segment */
+
+#endif
