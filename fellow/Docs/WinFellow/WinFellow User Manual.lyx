@@ -332,22 +332,29 @@ WinFellow development has found a new home on
 \begin_inset CommandInset href
 LatexCommand href
 name "GitHub"
-target "http://github.com"
-
-\end_inset
-
-, accessible via the URL 
-\begin_inset CommandInset href
-LatexCommand href
-name "github.com/petschau/WinFellow"
 target "http://github.com/petschau/WinFellow"
 
 \end_inset
 
+; the website is accessible via the URL 
+\begin_inset CommandInset href
+LatexCommand href
+name "petschau.github.io/WinFellow/"
+target "http://petschau.github.io/WinFellow/"
+
+\end_inset
+
 ; it is still being developed by the same team.
- Our former SourceForge repository, as well as the website fellow.sourceforge.net,
- will still be maintained to keep earlier releases available.
- For future updates, please check GitHub.
+ Our former SourceForge file repository, as well as the website 
+\begin_inset CommandInset href
+LatexCommand href
+name "fellow.sourceforge.net"
+target "http://fellow.sourceforge.net/new_version"
+
+\end_inset
+
+, will still be maintained for a while to keep earlier releases available.
+ For future updates, please check the new GitHub website.
 \end_layout
 
 \end_deeper
