@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>WinFellow - Amiga Emulator for Windows</title>
+    <link>http://petschau.github.io/WinFellow/</link>
+    <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
+    <atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>WinFellow has a new home</title>
+      <link>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
+      <description>&lt;p&gt;WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.&lt;/p&gt;
+
+&lt;p&gt;Downloads for older releases are still available at &lt;a href=&#34;http://sourceforge.net/projects/fellow/files/&#34;&gt;SourceForge&lt;/a&gt; for reference; for future news and updates, please visit us &lt;a href=&#34;http://petschau.github.io/WinFellow&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The GitHub source code repository is available &lt;a href=&#34;http://github.com/petschau/WinFellow&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>about</title>
+      <link>http://petschau.github.io/WinFellow/about/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/about/</guid>
+      <description>
+
+&lt;p&gt;&lt;img src=&#34;../winfellow_logo_large_transparent.png&#34; alt=&#34;WinFellow&#34; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;amiga-emulator-for-windows:6083a88ee3411b0d17ce02d738f69d47&#34;&gt;Amiga Emulator for Windows&lt;/h1&gt;
+
+&lt;h2 id=&#34;description:6083a88ee3411b0d17ce02d738f69d47&#34;&gt;Description&lt;/h2&gt;
+
+&lt;p&gt;WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.&lt;/p&gt;
+
+&lt;p&gt;WinFellow is distributed under the terms of the &lt;a href=&#34;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&#34;&gt;GNU General Public License version 2.0 (GPLv2)&lt;/a&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://github.com/petschau/WinFellow&#34;&gt;This site&lt;/a&gt; is WinFellow&amp;rsquo;s development home on GitHub.&lt;/p&gt;
+
+&lt;p&gt;The latest stable release can be found in WinFellow&amp;rsquo;s former home at &lt;a href=&#34;https://sourceforge.net/projects/fellow/files/&#34;&gt;SourceForge&lt;/a&gt;; the latest stable release published on SourceForge is v0.5.3.1004.&lt;/p&gt;
+
+&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>the team</title>
+      <link>http://petschau.github.io/WinFellow/team/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/team/</guid>
+      <description>&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;team member&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Petter Schau&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Torsten Enderling&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Worfje&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;occupation&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;programmer from Norway&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;virtual desktop engineer from Germany&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;engineer from the Netherlands&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;tasks&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;various&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;beta team manager&lt;br&gt;GitHub Pages/hugo website administration&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;cross platform development&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;modules&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;emulation core&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RetroPlatform integration&lt;br&gt;hardfile/file system&lt;br&gt;debugger&lt;br&gt;system information&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;graphics&lt;br&gt;sound&lt;br&gt;GUI&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td&gt;email&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:petschau@gmail.com&#34;&gt;petschau@gmail.com&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;carfesh@gmx.net&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:worfje@gmx.net&#34;&gt;worfje@gmx.net&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>contributing</title>
+      <link>http://petschau.github.io/WinFellow/contributing/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/contributing/</guid>
+      <description>&lt;p&gt;WinFellow is developed by a team of volunteers in their spare time; you
+are very welcome to make contributions of your own.
+Contributions can be improvements to the code, new features, but can also
+include documentation updates or whatever else you feel could be an improvement.
+It is best if you find something you want to work on rather than mailing
+us and ask to be assigned a task.
+Since WinFellow is developed on an idealistic basis, the basic idea is
+that everyone should do something they like.&lt;/p&gt;
+
+&lt;p&gt;When you start doing something it is wise to mail some of us in advance
+to make sure no one is doing double work.
+Since WinFellow is developed as open source software hosted on GitHub,
+it is easy to contribute.
+You can fork the source code of WinFellow, create a branch for your topic
+and start commiting changes to it; your changes can be submitted to our
+project in form of a pull request.
+Raising a pull request early on allows us to discuss your request early,
+so that we can see if/how your request may fit into WinFellow before you
+put any effort into it.&lt;/p&gt;
+
+&lt;p&gt;There is a how-to guide in MarkDown syntax within the source code archive
+in the directory &amp;ldquo;fellow\doxygen\Documentation&amp;rdquo; called
+&amp;ldquo;HOWTO Development environment setup.md&amp;rdquo;, that can help you get started
+setting up a development environment for WinFellow.&lt;/p&gt;
+
+&lt;p&gt;Feel free to mail us
+(&lt;a href=&#34;mailto:petschau@gmail.com&#34;&gt;Petter Schau&lt;/a&gt; / &lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;Torsten Enderling&lt;/a&gt;)
+if you are interested in helping!&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>contacting us</title>
+      <link>http://petschau.github.io/WinFellow/contact/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/contact/</guid>
+      <description>&lt;p&gt;Please check the FAQ that can be found in WinFellow&amp;rsquo;s User Manual before contacting us, it is usually the fastest way to find a solution to your problem.&lt;/p&gt;
+
+&lt;p&gt;There is a WinFellow specific support forum at the &lt;a href=&#34;http://eab.abime.net/forumdisplay.php?forumid=28&#34;&gt;English Amiga Board&lt;/a&gt;, which is also monitored by us.&lt;/p&gt;
+
+&lt;p&gt;You could also make use of the &lt;a href=&#34;https://github.com/petschau/winfellow/issues&#34;&gt;GitHub issue tracker&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Any comments on how to improve WinFellow are welcome!&lt;/p&gt;
+
+&lt;p&gt;You can also contact us directly by sending an email composed in English language to &lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;Torsten Enderling&lt;/a&gt;. Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored.&lt;/p&gt;
+
+&lt;p&gt;You can buy Kickstart ROM images from &lt;a href=&#34;http://www.amigaforever.com&#34;&gt;Cloanto&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
