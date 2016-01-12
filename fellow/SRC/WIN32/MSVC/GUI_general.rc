@@ -320,8 +320,8 @@ FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,80,115,50,14
     CTEXT           "WinFellow",IDC_STATIC_ABOUT_VERSION,7,50,201,19
-    LTEXT           "http://fellow.sourceforge.net/",IDC_STATIC_LINK,60,90,94,8,SS_NOTIFY
-    CONTROL         IDB_WINFELLOW_LOGO,IDC_STATIC,"Static",SS_BITMAP,59,7,92,17,WS_EX_TRANSPARENT
+    CTEXT           "http://petschau.github.io/WinFellow/",IDC_STATIC_LINK,7,90,201,8,SS_NOTIFY
+    CONTROL         IDB_WINFELLOW_LOGO,IDC_STATIC,"Static",SS_BITMAP,36,7,139,26,WS_EX_TRANSPARENT
     LTEXT           "visit us at",IDC_STATIC,90,80,30,8
 END
 
