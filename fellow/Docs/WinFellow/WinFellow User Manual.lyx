@@ -1,0 +1,2384 @@
+#LyX 2.1 created this file. For more info see http://www.lyx.org/
+\lyxformat 474
+\begin_document
+\begin_header
+\textclass article
+\begin_preamble
+\usepackage[none]{hyphenat}
+\end_preamble
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_math auto
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_title "WinFellow User Manual"
+\pdf_author "Torsten Enderling, Worfje"
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset Graphics
+	filename winfellow_logo_large.png
+	lyxscale 50
+	scale 50
+
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+User Manual
+\end_layout
+
+\begin_layout Date
+v0.5.4 (2016/01/10)
+\end_layout
+
+\begin_layout Author
+
+\noun on
+Torsten Enderling
+\noun default
+ (carfesh@gmx.net) 
+\begin_inset Newline newline
+\end_inset
+
+
+\noun on
+Worfje
+\noun default
+ (worfje@gmx.net)
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset Newline newline
+\end_inset
+
+
+\begin_inset CommandInset href
+LatexCommand href
+name "petschau.github.io/WinFellow"
+target "http://petschau.github.io/WinFellow/"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Disclaimer
+\end_layout
+
+\begin_layout Standard
+WinFellow is provided without warranty of any kind.
+\end_layout
+
+\begin_layout Standard
+None of the authors of WinFellow shall in any event be liable for any direct,
+ consequential, incidental, indirect or special damages even if advised
+ of the possibility of such damages.
+ In particular, the authors shall have no liability for any damage loss
+ or corruption of data or programs stored in or used in conjunction with
+ WinFellow, nor shall the authors be liable for the cost of retrieving or
+ replacing damaged lost or corrupted data.
+\end_layout
+
+\begin_layout Part
+GNU General Public License, Version 2
+\end_layout
+
+\begin_layout Standard
+WinFellow is developed and distributed under the terms of the GNU General
+ Public License, Version 2.
+ For the exact terms of the license, please see the file gpl-2.0.pdf, that
+ should have been distributed together with this manual.
+\end_layout
+
+\begin_layout Standard
+ 
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+About WinFellow
+\end_layout
+
+\begin_layout Standard
+Welcome to the WinFellow Amiga Emulator, a software emulation of the Commodore
+ Amiga computer system.
+ WinFellow provides a virtual Amiga environment to your PC in which you
+ can run Amiga software.
+ The emulator runs on an IBM compatible PC with a Windows operation system
+ installed.
+ Different Windows versions can be used, the emulator has been tested successful
+ly on operating systems ranging from Windows XP to Windows 10.
+\end_layout
+
+\begin_layout Standard
+The Commodore Amiga 500 model was used as a reference Amiga system when
+ creating WinFellow, and the default emulator configuration aims at providing
+ the speed and feeling of this particular Amiga system to your PC.
+\end_layout
+
+\begin_layout Standard
+WinFellow is also highly configurable, advanced features can be enabled
+ to provide more powerful capabilities that surpass those of a stock Amiga
+ 500.
+ It is strongly advised to read the feature summary so you can get familliar
+ with the strengths and limitations of the emulator.
+\end_layout
+
+\begin_layout Standard
+The Amiga 500 computer was first released in 1987 as the successor for Amiga
+ 1000.
+ It served for many years as the entry-level and the most popular member
+ of the Amiga computer system family.
+ With its rich multimedia capabilities thanks to several co-processors devoted
+ to the generation of fast graphics as well as 4 channel sample-based stereo
+ sound, it soon became a popular platform for games and demos.
+ The advanced multimedia capabilities combined with a multi-tasking, window-base
+d operating system made the Amiga well ahead of its time for a home computer.
+\end_layout
+
+\begin_layout Standard
+WinFellow was created by Petter Schau; it is based on the Fellow Amiga Emulator
+ for DOS, of which the first public version was released in December 1996.
+ Leading up to the release there were several years of curious experimentation
+ with methods to do fast emulation of selected parts in the Amiga hardware.
+ Today it is a mostly complete software emulation of an Amiga 500 and beyond,
+ thanks to the contributions of several other people.
+ 
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Contributing to WinFellow
+\end_layout
+
+\begin_layout Standard
+WinFellow is developed by a team of volunteers in their spare time; you
+ are very welcome to make contributions of your own.
+ Contributions can be improvements to the code, new features, but can also
+ include documentation updates or whatever else you feel could be an improvement.
+ It is best if you find something you want to work on rather than mailing
+ us and ask to be assigned a task.
+ Since WinFellow is developed on an idealistic basis, the basic idea is
+ that everyone should do something they like.
+\end_layout
+
+\begin_layout Standard
+When you start doing something it is wise to mail some of us in advance
+ to make sure no one is doing double work.
+ Since WinFellow is developed as open source software hosted on GitHub,
+ it is easy to contribute.
+ You can fork the source code of WinFellow, create a branch for your topic
+ and start commiting changes to it; your changes can be submitted to our
+ project in form of a pull request.
+ Raising a pull request early on allows us to discuss your request early,
+ so that we can see if/how your request may fit into WinFellow before you
+ put any effort into it.
+\end_layout
+
+\begin_layout Standard
+There is a how-to guide in MarkDown syntax within the source code archive
+ in the directory 
+\begin_inset Quotes eld
+\end_inset
+
+fellow
+\backslash
+doxygen
+\backslash
+Documentation
+\begin_inset Quotes erd
+\end_inset
+
+ called 
+\begin_inset Quotes eld
+\end_inset
+
+HOWTO Development environment setup.md
+\begin_inset Quotes erd
+\end_inset
+
+, that can help you get started setting up a development environment for
+ WinFellow.
+ 
+\end_layout
+
+\begin_layout Standard
+Feel free to mail us (petschau@gmail.com / carfesh@gmx.net) if you are interested
+ in helping!
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Release Notes
+\end_layout
+
+\begin_layout Section
+What's New in WinFellow 0.5.4?
+\end_layout
+
+\begin_layout Standard
+Thank you for your interest in WinFellow.
+ Compared to version 0.5.3 there are a number of changes in this build, with
+ the most significant ones being:
+\end_layout
+
+\begin_layout Itemize
+Project hosting:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+WinFellow development has found a new home on 
+\begin_inset CommandInset href
+LatexCommand href
+name "GitHub"
+target "http://github.com/petschau/WinFellow"
+
+\end_inset
+
+; the website is accessible via the URL 
+\begin_inset CommandInset href
+LatexCommand href
+name "petschau.github.io/WinFellow/"
+target "http://petschau.github.io/WinFellow/"
+
+\end_inset
+
+; it is still being developed by the same team.
+ Our former SourceForge file repository, as well as the website 
+\begin_inset CommandInset href
+LatexCommand href
+name "fellow.sourceforge.net"
+target "http://fellow.sourceforge.net/new_version"
+
+\end_inset
+
+, will still be maintained for a while to keep earlier releases available.
+ For future updates, please check the new GitHub website.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+New features:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+support for the Direct3D 11 graphics API; this currently supports windowed
+ display modes only, and requires DirectX 11 to be installed
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+on Windows Vista, the 
+\begin_inset CommandInset href
+LatexCommand href
+name "platform update (KB971644)"
+target "https://support.microsoft.com/en-us/kb/971644"
+
+\end_inset
+
+ should be installed, as it contains required updates to DirectX
+\end_layout
+
+\begin_layout Itemize
+the graphics card has to provide hardware acceleration for Direct3D
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+ability to save screenshots to the pictures folder (hit <Print Screen> to
+ trigger)
+\end_layout
+
+\begin_layout Itemize
+support for 3x and 4x scaling in Amiga Forever
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Bug fixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+improved error handling for DMS floppy image extraction
+\end_layout
+
+\begin_layout Itemize
+fixed minor memory leaks
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+Please see the included file ChangeLog.txt for a full list of changes, including
+ minor bug fixes which are not listed above.
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+System Requirements
+\end_layout
+
+\begin_layout Standard
+WinFellow is highly optimized for execution on low-end systems.
+ It can be executed on any of the following operating systems:
+\end_layout
+
+\begin_layout Itemize
+Windows XP
+\end_layout
+
+\begin_layout Itemize
+Windows Vista
+\end_layout
+
+\begin_layout Itemize
+Windows 7
+\end_layout
+
+\begin_layout Itemize
+Windows 8 (including Windows 8.1)
+\end_layout
+
+\begin_layout Itemize
+Windows 10
+\end_layout
+
+\begin_layout Standard
+It does not have any particularly high CPU requirements, and should work
+ well on any system capable of running one of these operating systems.
+ However, for advanced features like 2x graphics mode, a relatively fast
+ CPU will be required (a minimum of 2GHz is recommended).
+\end_layout
+
+\begin_layout Section*
+Graphics card requirements
+\end_layout
+
+\begin_layout Subsection*
+DirectDraw
+\end_layout
+
+\begin_layout Standard
+Support for DirectDraw rendering is the default configuration, and is supported
+ on all operating systems.
+ For optimum performance, the graphics card should support DirectDraw hardware
+ acceleration.
+ Use is possible without, but performance will be reduced drastically.
+\end_layout
+
+\begin_layout Subsection*
+Direct3D 11
+\end_layout
+
+\begin_layout Standard
+Support for Direct3D 11 can be enabled in the display configuration settings,
+ which enhances performance on systems that support it.
+ It requires DirectX 11 to be installed, which is available for Windows
+ Vista, 7, 8, 8.1 and 10.
+ 
+\end_layout
+
+\begin_layout Standard
+For execution on Windows Vista, the 
+\begin_inset CommandInset href
+LatexCommand href
+name "platform update (KB971644)"
+target "https://support.microsoft.com/en-us/kb/971644"
+
+\end_inset
+
+ should be installed, as it contains required updates to DirectX.
+ The graphics card has to provide hardware acceleration for Direct3D.
+ 
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Essential Requirements
+\end_layout
+
+\begin_layout Standard
+Before you can begin to use WinFellow, you will need two things: an Amiga
+ Kickstart ROM, and a floppy image.
+\end_layout
+
+\begin_layout Enumerate
+ROM image
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+A copy of an Amiga Kickstart ROM, which is taken from a REAL Amiga.
+ The Kickstart is copyrighted software and is not included with the emulator.
+ This file can be extracted using a program called TransROM, which is included
+ with WinFellow (Utilities
+\backslash
+Amiga).
+ 
+\end_layout
+
+\begin_layout Standard
+The correct way to obtain this file is to copy it from the Amiga you own;
+ you can also buy 
+\begin_inset CommandInset href
+LatexCommand href
+name "Amiga Forever"
+target "http://www.amigaforever.com"
+
+\end_inset
+
+ from 
+\begin_inset CommandInset href
+LatexCommand href
+name "Cloanto"
+target "http://www.cloanto.com"
+
+\end_inset
+
+ which contains licensed Kickstart ROM images and Workbench software prepared
+ for immediate use with the emulator.
+\end_layout
+
+\begin_layout Subsubsection*
+Using TransROM
+\end_layout
+
+\begin_layout Standard
+TransROM must be copied over to a real Amiga in order to extract a copy
+ of the Kickstart ROM chip and capture it into a file.
+\end_layout
+
+\begin_layout Paragraph*
+Example
+\end_layout
+
+\begin_layout LyX-Code
+CLI> transrom >RAM:kick.rom
+\end_layout
+
+\begin_layout Standard
+Will copy the Kickstart ROM chip and write it into a file in RAM: called
+ "kick.rom".
+ That file must then be copied to the PC and into the WinFellow directory
+ (although it may be called from any different directory).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Floppy image(s)
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+You will also need an "image" of a real Amiga floppy disk, containing the
+ program which you wish to run under WinFellow.
+ This is obtained using a program called "TransDisk", and it is also included
+ with WinFellow.
+\end_layout
+
+\begin_layout Standard
+A disk-image is a file in which the data normally stored on a floppy-disk
+ is collected.
+ A PC's floppy drive cannot read an Amiga floppy disk, so to be able to
+ use WinFellow, you NEED a disk image of a real Amiga disk.
+ 
+\end_layout
+
+\begin_layout Subsubsection*
+Using TransDisk 
+\end_layout
+
+\begin_layout Standard
+Like TransROM, TransDisk must be copied over a real Amiga to be of any use.
+ TransDisk is run from the AmigaDOS shell prompt, and will copy a floppy
+ disk, track by track, into a file (which can be read by WinFellow).
+\end_layout
+
+\begin_layout Paragraph*
+Example
+\end_layout
+
+\begin_layout LyX-Code
+CLI> transdisk >RAM:df0.adf
+\end_layout
+
+\begin_layout Standard
+Will make an image of any disk present in DF0:.
+ The disk doesn't have to be named "df0.adf", you can use whichever name
+ you feel is appropriate.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Copying Files From PC to Amiga & Amiga to PC
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+There are different options to transfer files between your Amiga and your
+ PC.
+ This list is by no means meant to be exhaustive, it just provides a few
+ different options.
+ With a little research, other ways may be possible or more fitting for
+ your particular use case.
+ Cloanto also kindly provides a few options 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "http://www.amigaforever.com/kb/13-118"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Enumerate
+Transfer vial terminal package and null-modem cable
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+If your PC is still equipped with a serial port, you can utilize a null-modem
+ cable to perform a Zmodem transfer between an Amiga and a PC.
+ Simply plug the cable into a serial port on each machine, load up a terminal
+ package such as Terminus, NComm or Term on the Amiga, or HyperTerminal
+ (if you are still on Windows XP) or an alternative like 
+\begin_inset CommandInset href
+LatexCommand href
+name "RealTerm"
+target "https://sourceforge.net/projects/realterm/"
+
+\end_inset
+
+ on the PC, and initiate a Zmodem upload on the Amiga.
+ If you have it configured correctly (automatic ZModem download at the recieving
+ end should be enabled), the PC will automatically accept this upload, and
+ will download the software onto your PC's hard disk.
+\end_layout
+
+\begin_layout Standard
+For best results, obtain a copy of BaudBandit serial.device replacement for
+ the Amiga, and set both ends to 57,600 Baud.
+ BaudBandit should allow transfers of up to 5500cps to/from a 68000-based
+ Amiga - it is available from AmiNET.
+\end_layout
+
+\begin_layout Standard
+If you're one of those people with an AmigaOS 1.2/1.3 A500, with only one
+ floppy drive, you could be in trouble.
+ Unless you have a Terminal package on a floppy disk which you can boot
+ or use in a second drive, there's no way you can use a null-modem cable
+ to talk to the PC (which is essential to actually get software like TransDisk
+ or TransROM onto an Amiga floppy).
+ Your best bet would be to approach an Amiga user group, who may be able
+ to supply you with such a disk, or if you're lucky, an Amiga shareware
+ house/distributor in your area.
+ Note: Some Amigas permit you to lock the serial port at 115,200 baud.
+ This largely depends on the machine, it's motherboard revision, and it's
+ processor.
+ By locking the serial port at 115,200 baud on both the Amiga and the PC,
+ you can effectively transfer files over a null-modem cable at over 10,100cps.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+CrossDOS
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+If you don't have a null-modem cable, or don't particularly want to buy
+ one, you can transfer the Amiga software over the PC using a 720k PC floppy
+ disk.
+ Workbench 2.1+ come bundled with CrossDOS, which is software which allows
+ you to read PC 720k disks in your Amiga's floppy drive.
+ If you don't have CrossDOS (i.e., you don't have access to Workbench 2.1 or
+ higher), you can also use MessyDOS which is located at on Aminet.
+ Here's a step by step guide on how to transfer software by floppy:
+\end_layout
+
+\begin_layout Enumerate
+Obtain a 720k PC diskette.
+ Format it either on your PC, or on the Amiga using CrossDOS.
+\end_layout
+
+\begin_layout Enumerate
+Create either an .ADF file or Kickstart ROM image using the method described
+ above.
+\end_layout
+
+\begin_layout Enumerate
+Archive this file using either LhA or Zip (Make sure you have these on the
+ PC, so you can unarchive them when you take the disk over).
+\end_layout
+
+\begin_layout Enumerate
+Copy the archive to the 720k diskette, using CrossDOS or MessyDOS.
+\end_layout
+
+\begin_layout Enumerate
+Take the diskette over to the PC, copy the archive to the hard-disk, and
+ unarchive it.
+ Copy the Kickstart ROM image or .ADF file into the WinFellow directory and
+ you're ready to go!
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+Amiga Explorer
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Cloanto provides a shareware tool called 
+\begin_inset CommandInset href
+LatexCommand href
+name "Amiga Explorer"
+target "http://www.amigaforever.com/ae/"
+
+\end_inset
+
+ that can also assist in the process, which provides more options to connect
+ the systems; for example, it can be used with a Bluetooth serial adapter.
+ Amiga Explorer is also included in 
+\begin_inset CommandInset href
+LatexCommand href
+name "Amiga Forever"
+target "http://www.amigaforever.com"
+
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Part
+First Steps
+\end_layout
+
+\begin_layout Standard
+This guide is going to take you through the first basic steps required to
+ configure an emulation session using a ROM image and a boot floppy, showing
+ you the most important configuration settings that you should be familiar
+ with along the way.
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/main menu.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Above screenshot shows WinFellow's main menu.
+ To get started, a number of settings should be configured.
+\end_layout
+
+\begin_layout Standard
+You can quickly select the disk images that are used in floppy drive DF0:
+ to DF3: on this screen.
+ Only floppy drives that are enabled in the configuration menu can be configured
+ here; the green LED besides DF0: indicates that the drive is enabled.
+ The red LED below the 
+\begin_inset Quotes eld
+\end_inset
+
+start emulation
+\begin_inset Quotes erd
+\end_inset
+
+ button is the power led; the dark red tone in the screenshot it indicates
+ that no emulation session is active.
+\end_layout
+
+\begin_layout Paragraph*
+Configuration of ROM
+\end_layout
+
+\begin_layout Standard
+As a first step, you should configure the ROM image that you want to use.
+ To configure the ROM, you should click the 
+\begin_inset Quotes eld
+\end_inset
+
+configuration
+\begin_inset Quotes erd
+\end_inset
+
+ button, switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+memory
+\begin_inset Quotes erd
+\end_inset
+
+ tab and configure a ROM, like in the example below:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - memory.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Click the 
+\begin_inset Quotes eld
+\end_inset
+
+...
+\begin_inset Quotes erd
+\end_inset
+
+ button besides image to open a dialog that allows you to select the base
+ ROM image you have stored earlier; confirm that dialog by hitting OK.
+ While on the 
+\begin_inset Quotes eld
+\end_inset
+
+memory
+\begin_inset Quotes erd
+\end_inset
+
+ tab, review the settings configured under 
+\begin_inset Quotes eld
+\end_inset
+
+memory size
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It is currently configured for 512KB chip memory size, as well as 512 KB
+ bogo memory size, which is a pretty common setup.
+ You can change these values individually, if you know that the software
+ you are going to use has special memory requirements.
+\end_layout
+
+\begin_layout Paragraph*
+Configuration of presets
+\end_layout
+
+\begin_layout Standard
+If you want to emulate a system based on a particular Amiga model, a quick
+ way to get started is to utilize the 
+\begin_inset Quotes eld
+\end_inset
+
+presets
+\begin_inset Quotes erd
+\end_inset
+
+ tab:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - presets.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You first configure a ROM search path where WinFellow will automatically
+ attempt to locate a matching ROM.
+ You can then select a configuration from the dropdown list of emulated
+ models; for example, you might select the Amiga 500 model with the popular
+ A-501 expansion like shown above.
+ After selecting a model, the most important settings for that model are
+ shown in a preview below.
+ WinFellow will attempt to locate the correct ROM for your selection automatical
+ly.
+ You can apply the settings shown in the preview to the active configuration
+ by clicking 
+\begin_inset Quotes eld
+\end_inset
+
+Apply Model Settings
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Paragraph*
+Configuration of floppy disks
+\end_layout
+
+\begin_layout Standard
+Switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+floppy
+\begin_inset Quotes erd
+\end_inset
+
+ tab to configure the floppy disk images used by the emulation session:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - floppy.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+You can configure the image that is used by each of the four drives (DF0:-DF3:)
+ in this dialog.
+ Each drive can be enabled and disabled individually, and the disk image
+ can be configured as read-only.
+ Enabling 
+\begin_inset Quotes eld
+\end_inset
+
+fast disk-DMA
+\begin_inset Quotes erd
+\end_inset
+
+ can speed up the access to the emulated floppy disks.
+ This setting however is not compatible with all software, you should test
+ if the software you want to use supports it or leave it disabled.
+\end_layout
+
+\begin_layout Paragraph
+Configuration of display settings
+\end_layout
+
+\begin_layout Standard
+While still in the configuration menu, switch to the 
+\begin_inset Quotes eld
+\end_inset
+
+display
+\begin_inset Quotes erd
+\end_inset
+
+ tab:
+\end_layout
+
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename Screenshots/configuration - display.jpg
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Review the display settings configured here.
+ You can adjust the resolution of the emulation window to your preference
+ by moving the 
+\begin_inset Quotes eld
+\end_inset
+
+resolution
+\begin_inset Quotes erd
+\end_inset
+
+ slider.
+ You can also enable full screen mode on this tab and configure the screen
+ resolution.
+ Depending on your screen size, it may make sense to configure the display
+ size to 2x; you should adjust the resolution accordingly.
+ When you are done, confirm your changed configuration settings by clicking
+ the OK button.
+ This brings you back to the main menu.
+\end_layout
+
+\begin_layout Paragraph*
+Input device focus
+\end_layout
+
+\begin_layout Standard
+There are a few important key definitions you should be aware of when using
+ a WinFellow emulation session.
+ You will notice that the mouse cursor will disappear when you start the
+ emulation session, and keyboard input will not appear on the Windows screen.
+ This is because the emulation session takes control of your input devices,
+ so that keyboard, mouse and possibly a joystick or gamepad are redirected
+ to the emulated system.
+ You can pause an emulation session and return to the main menu by pressing
+ the 
+\emph on
+F11
+\emph default
+ key.
+ You can toggle input device focus between an emulation session and Windows
+ by pressing the 
+\emph on
+F12
+\emph default
+ key repeatedly; to give the focus back to the emulation session, ensure
+ that the window is in the foreground and the mouse cursor over it when
+ pressing 
+\emph on
+F12
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph*
+Starting and stopping an emulation session
+\end_layout
+
+\begin_layout Standard
+Click the button 
+\begin_inset Quotes eld
+\end_inset
+
+start emulation
+\begin_inset Quotes erd
+\end_inset
+
+ to start an emulation session.
+ An additional window will appear hosting the emulation session; the virtual
+ environment is now running.
+ Go back to the main menu by pressing 
+\emph on
+F11
+\emph default
+.
+\end_layout
+
+\begin_layout Paragraph*
+Saving the configuration
+\end_layout
+
+\begin_layout Standard
+Then, when in the main menu, open the 
+\begin_inset Quotes eld
+\end_inset
+
+File
+\begin_inset Quotes erd
+\end_inset
+
+ menu, select the option to 
+\begin_inset Quotes eld
+\end_inset
+
+Save Configuration
+\begin_inset Quotes erd
+\end_inset
+
+.
+ You might also save the configuration under a certain name by selection
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Save Configuration as...
+\begin_inset Quotes erd
+\end_inset
+
+.
+ WinFellow will load the configuration that was used last automatically
+ when you start it again later.
+ The most recently used configurations are also listed in the 
+\begin_inset Quotes eld
+\end_inset
+
+File
+\begin_inset Quotes erd
+\end_inset
+
+ menu.
+ When you try to quit the emulator, and there are unsaved configuration
+ settings, a warning message will appear to remind you that you might want
+ to save your settings.
+\end_layout
+
+\begin_layout Paragraph*
+Closing the emulator
+\end_layout
+
+\begin_layout Standard
+You can close the emulator by clicking 
+\begin_inset Quotes eld
+\end_inset
+
+quit emulator
+\begin_inset Quotes erd
+\end_inset
+
+ in the main menu.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Frequently Asked Questions
+\end_layout
+
+\begin_layout Section
+Miscellaneous
+\end_layout
+
+\begin_layout Subsection
+I can't get <put your favorite game or demo here> working.
+\end_layout
+
+\begin_layout Standard
+Many older games require special settings.
+ Generally if having trouble check the following check-list:
+\end_layout
+
+\begin_layout Itemize
+some Kickstart versions require special CPU models, so play around with
+ reasonable combinations of them; for example it is a bad idea to run Kickstart
+ 1.2 on a '030 CPU
+\end_layout
+
+\begin_layout Itemize
+some games are written for a fixed amount of Bogo or Chip memory, so try
+ setting them both to 512 kB or even disable Bogo memory completely
+\end_layout
+
+\begin_layout Itemize
+not all games behave nicely (some control the hardware directly) so that
+ you may run into trouble when using things like "Fast Disk-DMA" or the
+ immediate blitter
+\end_layout
+
+\begin_layout Itemize
+many old games only make use of the first floppy drive and some do the strangest
+ things when you try to use two drives
+\end_layout
+
+\begin_layout Itemize
+timing may be critical, as some games do timing delays not by the timer
+ but by delay loops; this will result in trouble when using CPU speeds other
+ than the original 7 MHz
+\end_layout
+
+\begin_layout Itemize
+If in doubt, use a default A500 setting like:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+68000 CPU at 7 MHz
+\end_layout
+
+\begin_layout Itemize
+1 floppy drive (disable the others!), leave "Fast Disk-DMA" unchecked
+\end_layout
+
+\begin_layout Itemize
+512 kB Chip and eventually 512 kB Bogo RAM
+\end_layout
+
+\begin_layout Itemize
+Kickstart 1.3 or 1.2
+\end_layout
+
+\begin_layout Itemize
+normal, delayed OCS blitter
+\end_layout
+
+\begin_layout Itemize
+no filesystems or hardfiles, "Disable Autoconfig-devices"
+\end_layout
+
+\begin_layout Standard
+If this configuration doesn't work and it's really an A500 game (not an
+ AGA thing or such) it's possibly a WinFellow problem.
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Where can I find/download the Kickstart ROM file?
+\end_layout
+
+\begin_layout Standard
+You can buy the Kickstart ROM at 
+\begin_inset CommandInset href
+LatexCommand href
+name "Cloanto"
+target "http://www.amigaforever.com"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+I installed Workbench, but it refuses to load up.
+\end_layout
+
+\begin_layout Standard
+Though it is possible to install Workbench into a directory, you must make
+ sure that you install it into your hardfile or filesystem root directory.
+\end_layout
+
+\begin_layout Subsection
+The keys O and P aren't working, why is this?
+\end_layout
+
+\begin_layout Standard
+Since the 'enable autofire' is placed on those keys, the keys aren't used
+ as input for the Amiga keybuffer.
+ Just remove Keyboard Layout 1 from gameport 1 or 2 and the P and O keys
+ will work again.
+ 
+\end_layout
+
+\begin_layout Subsection
+How to play games and run applications with WinFellow?
+\end_layout
+
+\begin_layout Standard
+This is the general procedure to play a game or run applications on WinFellow:
+\end_layout
+
+\begin_layout Enumerate
+start WinFellow
+\end_layout
+
+\begin_layout Enumerate
+click on the configuration button
+\end_layout
+
+\begin_layout Enumerate
+select the memory propertysheet
+\end_layout
+
+\begin_layout Enumerate
+select a KickROM in the kickstart image edit control
+\end_layout
+
+\begin_layout Enumerate
+click the OK button to return to the main window
+\end_layout
+
+\begin_layout Enumerate
+select a ADF image containing your game
+\end_layout
+
+\begin_layout Enumerate
+start the emulation by clicking start emulation
+\end_layout
+
+\begin_layout Standard
+That's it, you should see the emulation window booting the KickROM (switching
+ from dark gray, light gray to white) and then loading from the disk.
+\end_layout
+
+\begin_layout Section
+Floppy disk images
+\end_layout
+
+\begin_layout Standard
+Floppy disk images are used to simulate floppy drives connected to the emulated
+ Amiga.
+ This is necessary, as a PC can't read Amiga floppy disks.
+\end_layout
+
+\begin_layout Subsection
+Which file formats are supported?
+\end_layout
+
+\begin_layout Standard
+WinFellow supports *.adf disk images and the compressed *.adz, *.adf.gz or *.dms
+ images; support for these is built into WinFellow, so you don't need any
+ additional executables.
+ 
+\end_layout
+
+\begin_layout Subsubsection
+ADF images
+\end_layout
+
+\begin_layout Standard
+Normal *.adf files are similar to a hardfile; they contain the contents of
+ an Amiga floppy disk dumped into a file and thus are always 880 kb large
+ for normal DD floppies.
+ WinFellow can handle these without problems.
+\end_layout
+
+\begin_layout Standard
+Note that there is also an "Extended" ADF file format, which is used for
+ example by the game backups you can download from the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Factor 5"
+target "http://factor5.de/downloads.shtml"
+
+\end_inset
+
+ homepage; these files contain some tracks which are specially encoded;
+ you can recognize these easily by their file size, as they are always larger
+ than 880 kB.
+ WinFellow has limited support for these, and they worked fine in our tests.
+ Should you experience any crashes if you attempt to use them, please let
+ us know!
+\end_layout
+
+\begin_layout Subsubsection
+ADZ and DMS images
+\end_layout
+
+\begin_layout Standard
+ADZ and DMS images may be regarded as normal ADF files that have been compressed
+ to reduce their size; when inserting such files WinFellow decompresses
+ them into a temporary ADF file, which is then used for your emulation session.
+ Note that any changes saved to compressed images will be lost as soon as
+ you quit the emulator.
+ So to write changes to a disk decompress it manually before starting to
+ work on it.
+\end_layout
+
+\begin_layout Subsubsection
+IPF images
+\end_layout
+
+\begin_layout Standard
+Experimental support for *.ipf files (floppy disk images generated by the
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Software Preservation Society"
+target "http://www.softpres.org"
+
+\end_inset
+
+) is available, but will only work in a few cases (the image must not be
+ 
+\begin_inset Quotes eld
+\end_inset
+
+flakey
+\begin_inset Quotes erd
+\end_inset
+
+, which usually means copy protected).
+ IPF images will only function when the user DLL from the IPF Support Library
+ is downloaded and copied into the WinFellow directory.
+ The Windows (32-bit) version 4.2 has been tested to work.
+\end_layout
+
+\begin_layout Subsection
+Saving games doesn't work.
+\end_layout
+
+\begin_layout Standard
+When trying to save games there are some things you should take care of:
+\end_layout
+
+\begin_layout Itemize
+make sure the savedisk file is not write protected (when copied from a CD-ROM
+ to your HD the file ususally is write protected)
+\end_layout
+
+\begin_layout Itemize
+the file must not be compressed (see section about floppy image file formats);
+ when saving to a compressed image, the changes are only saved to the uncompress
+ed temporary image which becomes deleted when you quit the emulator
+\end_layout
+
+\begin_layout Itemize
+take care of the compatibility information described in section 1.1; often
+ savedisk problems go away when using a more compatible setting as disk
+ access is always a time critical thing
+\end_layout
+
+\begin_layout Itemize
+some games require savedisks to be formatted in a special way; sometimes
+ a freshly formatted empty AmigaDOS floppy will do, sometimes you have to
+ create a disk in the game; if possible, try using the savedisk that comes
+ with the game or obtain a working one
+\end_layout
+
+\begin_layout Section
+Filesystems and hardfiles
+\end_layout
+
+\begin_layout Subsection
+What are hardfiles?
+\end_layout
+
+\begin_layout Standard
+Most of you probably already know this and may skip this paragraph.
+ For the ones that are new to emulation here a short description: 
+\end_layout
+
+\begin_layout Standard
+A hardfile is used to simulate a harddrive connected to the emulated Amiga.
+ Technically a hardfile is a 1:1 copy of the contents of an Amiga harddisk
+ partition into a file.
+ Having this in mind the restriction a hardfile has comes clear: a hardfile
+ is of a fixed size and doesn't grow as it is written to (like perhaps the
+ Amiga RAM disk).
+ When creating a hardfile you have to specify the size the hardfile shall
+ have, i.e.
+ the amount of storage space you will be able to use on the simulated Amiga
+ harddrive.
+ This device supports all features a real Amiga harddrive has (so you may
+ for example defrag it).
+\end_layout
+
+\begin_layout Subsection
+How do I use a hardfile?
+\end_layout
+
+\begin_layout Standard
+First of all you need a hardfile that is to be used.
+ Perhaps you already have one from UAE or DOSFellow; if you don't have one
+ you may now create it in the configuration menu under the hardfile tab.
+ Note that a newly created hardfile is just a file containing scratch; you
+ need to format it on the Amiga side to be able to write any data to it.
+ 
+\end_layout
+
+\begin_layout Standard
+Add the hardfile to your config in the configuration menu's hardfile tab.
+ Make sure that "Disable Autoconfig-devices" (section Various) is 
+\series bold
+not
+\series default
+ checked.
+ The Autoconfig functionality is needed for the Amiga to automatically detect
+ and initialize the device.
+\end_layout
+
+\begin_layout Standard
+Also make sure you use a Kickstart version 2.0 or newer; with Kickstart 1.x
+ the only way to use hardfiles is by the use of mount files (this possibility
+ may be explained in more detail in a later version of this manual) and
+ booting directly from them is not possible (since the old Kickstart versions
+ don't support Autoconfig).
+\end_layout
+
+\begin_layout Standard
+You should now be able to use the file.
+ If you have configured a newly created file, you should insert a Workbench
+ disk file fitting the configured Kickstart, boot it and format the hardfile
+ the way you want it (it will appear as FELLOW0).
+\end_layout
+
+\begin_layout Standard
+If you're going to use an already existing file (and this file is bootable,
+ not only a data partition) eject all inserted floppy images and boot from
+ it (again you should make sure the used Kickstart version fits the one
+ the hardfile has been installed with).
+\end_layout
+
+\begin_layout Subsection
+Can I use my existing UAE hardfiles (*.hdf) with WinFellow?
+\end_layout
+
+\begin_layout Standard
+Yes, WinFellow and UAE use the same hardfile format.
+ When using hardfiles generated by UAE, these must not make use of the Picasso96
+ uaegfx-driver, as this one is not yet supported by WinFellow.
+ It also must not make use of AGA screenmodes.
+\end_layout
+
+\begin_layout Section
+Filesystems
+\end_layout
+
+\begin_layout Subsection
+What are filesystems?
+\end_layout
+
+\begin_layout Standard
+Like a hardfile, a filesystem is also used to simulate some kind of device
+ connected to the emulated Amiga.
+ But instead of using a file you configure WinFellow to use a directory
+ on one your windows devices that shall be used to store or read data.
+\end_layout
+
+\begin_layout Standard
+This has the advantage that you don't have to care about the amount of data
+ you want to store.
+\end_layout
+
+\begin_layout Standard
+But this also has disadvantages: though on the first look the simulated
+ device looks like a harddisk, it misses some features: formatting or defragging
+ a filesystem device is absolutely impossible (and would not make sense
+ either).
+ To defrag it you'll have to run the windows defrag over the harddrive you
+ stored the files on.
+\end_layout
+
+\begin_layout Standard
+Another disadvantage lies in the differences between the Windows and the
+ Amiga filesystem.
+ The Amiga filesystem makes use of 8 different storage flags (e.g.
+ executable, writable, ...).
+ The Windows filesystem only supports 3 flags, but even these aren't really
+ usable for this purpose so that actually only the windows archive flag
+ is used to represent Amiga flags.
+ For an Amiga, filenames like " " or "..
+ " are fine; Windows runs into some serious trouble when you try to use
+ such names.
+ Just try to create a file named CON, then you'll know what I mean...
+ ;)
+\end_layout
+
+\begin_layout Standard
+To get rid of this problem, a technique called fsdb (FileSystem DataBase)
+ has been introduced in UAE (and WinFellow, as WinFellow uses UAE code for
+ filesystem support).
+\end_layout
+
+\begin_layout Standard
+Every time a file has a name not supported by Windows, or uses flags that
+ can't be stored, or has a comment, an entry for this file is created in
+ a special database file.
+ This file stores the local name, the according Amiga filename, the optional
+ comment and the flags that are used.
+ That way it is possible to use the device exactly the same way an Amiga
+ device could be used, allowing to even boot from a filesystem (this was
+ impossible without the fsdb).
+\end_layout
+
+\begin_layout Standard
+Why is all this relevant?
+\end_layout
+
+\begin_layout Standard
+WinUAE uses a slightly different way of storing the flag information, as
+ it also utilizes the write-protection bit to represent the Amiga's writable
+ and deletable flags; we do not think that this is the optimal solution,
+ and thus implemented it another way.
+ This means that the filesystem support from WinUAE is not necessarily 100%
+ compatible with WinFellow's support.
+ 
+\emph on
+So be careful when exchanging data over a filesystem between them both
+\emph default
+.
+\end_layout
+
+\begin_layout Subsection
+How do I use a filesystem?
+\end_layout
+
+\begin_layout Standard
+Configure the filesystem in the configuration menu on tab filesystem.
+ You might also check "Automount Windows-drives"; this will automatically
+ mount all hard disks, connected network drives and CD-ROMs as Amiga devices
+ (so you don't have to configure anything manually).
+\end_layout
+
+\begin_layout Standard
+Make sure that "Disable Autoconfig-devices" (section Various) is 
+\emph on
+not
+\emph default
+ checked.
+ The Autoconfig functionality is needed for the Amiga to automatically detect
+ and initialize the device.
+\end_layout
+
+\begin_layout Standard
+As with hardfiles, ensure that you use a Kickstart version 2.0 or greater.
+\end_layout
+
+\begin_layout Standard
+Now you need something you may boot from.
+ I suggest a Workbench disk or a hardfile.
+ The device will appear under the name you configured.
+ Install Workbench to the filesystem if you like and try booting without
+ the floppy inserted.
+\end_layout
+
+\begin_layout Section
+GUI
+\end_layout
+
+\begin_layout Subsection
+How can I play a game that has more than one disk / How can I switch a disk(imag
+e)?
+\end_layout
+
+\begin_layout Standard
+You can switch disks(images) at runtime in WinFellow.
+ You can do this by pressing the function key <F11> during the emulation.
+ After pressing the key you can see the main window again and this way you
+ can change the disk(images).
+ By clicking the "Start Emulation" button you can continue the emulation
+ at the point before you pressed the function key.
+\end_layout
+
+\begin_layout Section
+Known Bugs
+\end_layout
+
+\begin_layout Subsection
+The player is invisible in <insert your favourite game here>
+\end_layout
+
+\begin_layout Standard
+There are certain games in which sprites aren't rendered correctly, resulting
+ in invisible objects.
+ Known games having this problem are Stardust, SuperFrog, Robocop 2, Zool,
+ Alien Breed and Fire And Ice.
+\end_layout
+
+\begin_layout Subsection
+The player doesn't collide with other game objects
+\end_layout
+
+\begin_layout Standard
+Not all collision types are properly implemented in WinFellow; for example
+ in Transplant the spacecraft never collides with the rocks flying around.
+ Known to have this problem is Transplant, but there probably are much more
+ titles having this problem.
+\end_layout
+
+\begin_layout Section
+I still have questions!
+\end_layout
+
+\begin_layout Standard
+If you have questions not covered in this manual, find problems not mentioned
+ here or simply don't understand something written here, don't hesitate
+ to mail one of us.
+ This manual is a work in progress, and to be able to maintain it we need
+ your
+\end_layout
+
+\begin_layout Standard
+input.
+ Also, feel free to post a question to the 
+\begin_inset CommandInset href
+LatexCommand href
+name "WinFellow support forum"
+target "http://eab.abime.net/forumdisplay.php?f=28"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Part
+Module Ripper
+\end_layout
+
+\begin_layout Standard
+Since many users asked about it the, old module ripper contained in the
+ DOS-based Fellow has been ported into the new WinFellow environment and
+ has undergone some major changes.
+ This document is meant to describe WinFellow's mod-ripper in it's current
+ form.
+\end_layout
+
+\begin_layout Section
+The Module Ripper 
+\end_layout
+
+\begin_layout Subsection
+Credits
+\end_layout
+
+\begin_layout Standard
+Special thanks must go out to 
+\begin_inset CommandInset href
+LatexCommand href
+name "ExoticA"
+target "http://www.exotica.org.uk/"
+
+\end_inset
+
+ for the excellent file format section, and Sylvain "Asle" Chipaux for his
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "Amiga Mod Packers Described Page"
+target "http://www.multimania.com/asle/ampd.html"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Without the information provided on these pages the mod-ripper wouldn't
+ have been possible.
+ Another source of information was the 
+\begin_inset CommandInset href
+LatexCommand href
+name "Extended Module Player"
+target "http://xmp.sourceforge.net/"
+
+\end_inset
+
+source code, which also has some helpful information about various module
+ formats.
+\end_layout
+
+\begin_layout Subsection
+Supported Module Formats 
+\end_layout
+
+\begin_layout Standard
+The following formats are currently supported; more are probably to come
+ later (we'll have to see the demand):
+\end_layout
+
+\begin_layout Itemize
+ProTracker and clones (Protracker, Noisetracker, Startrekker 4/8 channel,
+ ...) 
+\end_layout
+
+\begin_layout Itemize
+SoundFX 1.3 and 2.0 
+\end_layout
+
+\begin_layout Itemize
+SoundMon 1.0, 2.0 and 2.2 
+\end_layout
+
+\begin_layout Itemize
+FredEditor 
+\end_layout
+
+\begin_layout Itemize
+ProRunner 2.0 
+\end_layout
+
+\begin_layout Itemize
+ThePlayer 4
+\end_layout
+
+\begin_layout Standard
+Note that while ProTracker files play fine in many music replayers like
+ WinAmp, this isn't the case for the other more exotic formats.
+ When you look for a good module player capable of playing all kinds of
+ Amiga formats try XMPlay with the DeliX plug-in.
+ DeliPlayer is an option is well, but is no longer under active development.
+\end_layout
+
+\begin_layout Subsection
+How to invoke the mod-ripper? 
+\end_layout
+
+\begin_layout Standard
+The mod-ripper is a bit hidden in Fellow's integrated debugger.
+ When running it, you are first prompted if you want to scan the emulated
+ Amiga's memory for modules.
+ This is the recommended way to rip modules; start the game or demo you
+ want to rip the music from and when the song you want to rip is actually
+ playing you may halt the emulation and run the mod-ripper to gather the
+ song out of the memory.
+ 
+\end_layout
+
+\begin_layout Standard
+The other possible way is to rip from floppies; the module ripper detects
+ when floppies are inserted and prompts you for each one if you want to
+ rip from that floppy; this works ok with some games or demos that use custom
+ trackloaders but will usually result in damaged modules when used on formatted
+ AmigaDOS disks so that you have to be abit careful with modules ripped
+ off a disk.
+\end_layout
+
+\begin_layout Subsection
+File naming conventions
+\end_layout
+
+\begin_layout Standard
+Whereas common module types like Protracker have a unique ending (*.mod),
+ this is not the case for many other formats.
+ For these, the ripper uses the default extension .cus to indicate a format
+ that is not very widespread; these are the ones that won't play in most
+ players so you'll need either a capable Amiga module player or a converter
+ to play these.
+\end_layout
+
+\begin_layout Subsection
+Dump Chipmem option
+\end_layout
+
+\begin_layout Standard
+In the debugger you also find a button "Dump Chip-memory".
+ This may be used to save the contents of the whole chipmem into a file
+ and so allows you to run other external module rippers over that.
+\end_layout
+
+\begin_layout Subsection
+Final note 
+\end_layout
+
+\begin_layout Standard
+The module ripper is in an experimental state.
+ Should you experience issues with an exported file, send WinFellow's logfile
+ along with a description of what you tried to rip music from (game/demo
+ name) and the information the file save requester showed to 
+\begin_inset CommandInset href
+LatexCommand href
+name "Torsten Enderling"
+target "carfesh@gmx.net"
+type "mailto:"
+
+\end_inset
+
+ so that we can fix the problem.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part
+Credits
+\end_layout
+
+\begin_layout Section*
+The WinFellow Team
+\end_layout
+
+\begin_layout Standard
+Created and developed by
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Petter Schau
+\noun default
+ (petschau@gmail.com)
+\end_layout
+
+\begin_layout Standard
+\noindent
+with help from
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Worfje
+\noun default
+ (worfje@gmx.net)
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Torsten Enderling
+\noun default
+ (carfesh@gmx.net)
+\end_layout
+
+\begin_layout Section*
+The Beta Tester Team
+\end_layout
+
+\begin_layout Standard
+Special thanks go out to the beta tester team.
+ Through their dedication, dozens of bugs could be fixed before they were
+ ever released to the public.
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Brian Andreasen
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Giuseppe Bagnato
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+BenniP
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Attila Borsanyi
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Jan Brockmann
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Matthew Bushell
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Jim Durdan
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andreas Eibach
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Damien Green
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Vincent Haot
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Marco Sascha Sven Hoppe
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Paul Irvine
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Malc Jennings
+\noun default
+ (ale@emuhq.com)
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Magnus Jensen
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Nick K.
+ Kalogeras
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Nick Lamburn
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Marcelo Nogueira Magri
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tarnyko Rasty
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andy Riley
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Dominik Schmidt
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Bryn Thompson
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tomasz Tomaszek
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Phil Underhill
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Robert van Buren
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Christos Vasdekis
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andy Voss
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Tim Wilson 
+\noun default
+aka Emulator Chicken
+\end_layout
+
+\begin_layout Section*
+Programming Contributions
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Ted
+\noun default
+M
+\noun on
+aul
+\noun default
+ (dan@dillinja.org)
+\end_layout
+
+\begin_layout Itemize
+partially porting Fellow to Linux
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Mnd
+\noun default
+ (novamarco@hotmail.com)
+\end_layout
+
+\begin_layout Itemize
+win32 keyboard, joystick & mouse modules
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Roman Dolejsi
+\noun default
+ (roman@sorry.vse.cz) & 
+\noun on
+David Voracek
+\noun default
+ (assassin@paru.cas.cz)
+\end_layout
+
+\begin_layout Itemize
+various improvements in GUI
+\end_layout
+
+\begin_layout Itemize
+keyboard LED code 
+\end_layout
+
+\begin_layout Itemize
+main design and partial implementation of 68010/20/30 instruction set emulation
+ 
+\end_layout
+
+\begin_layout Itemize
+makeadf (David) 
+\end_layout
+
+\begin_layout Itemize
+generalized BMP dump code + various other improvements
+\end_layout
+
+\begin_layout Standard
+\noindent
+
+\noun on
+Rainer Sinsch
+\noun default
+ (sinsh@stud.uni-frankfurt.de)
+\end_layout
+
+\begin_layout Itemize
+MOD-ripper
+\end_layout
+
+\begin_layout Itemize
+Low-pass filter
+\end_layout
+
+\begin_layout Itemize
+Wav-capture patch
+\end_layout
+
+\begin_layout Section*
+Thanks Also Go To
+\end_layout
+
+\begin_layout Standard
+
+\noun on
+Andreas Axelsson
+\noun default
+, 
+\noun on
+Brett Eden
+\noun default
+, 
+\noun on
+Hetz Ben Hamo
+\noun default
+, 
+\noun on
+Masashi Yamaguchi
+\noun default
+, 
+\noun on
+Jeremy Crawford
+\noun default
+ and the DOS Documentation Crew: 
+\noun on
+Roberto Gasparrini
+\noun default
+, 
+\noun on
+Laurent Dugois
+\noun default
+, 
+\noun on
+Andreas Eibach
+\noun default
+, 
+\noun on
+Lou C.
+ Fer
+\noun default
+, 
+\noun on
+Kenneth Vestergaard Schmidt
+\noun default
+, 
+\noun on
+Pawel Jedrak
+\noun default
+, 
+\noun on
+Peter Stolk
+\noun default
+ and 
+\noun on
+Marcelo Gurgacz
+\noun default
+, as well as numerous others for taking interest in the emulator.
+\end_layout
+
+\begin_layout Standard
+We'd also like to thank 
+\noun on
+Kelvin Sherlock
+\noun default
+ for providing various bugfixes around CPU emulation.
+\end_layout
+
+\begin_layout Standard
+Special thanks go out to the Cloanto RetroPlatform team (
+\noun on
+Mike C.
+ Battilana
+\noun default
+, 
+\noun on
+Oscar Sillani
+\noun default
+ and anyone else who may have been involved) for their support integrating
+ WinFellow into Amiga Forever, and for their continuing efforts.
+\end_layout
+
+\begin_layout Section*
+Website Translations
+\end_layout
+
+\begin_layout Standard
+\noindent
+Mnd (Italian)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Wizard (German)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Sha! (French)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Bachfire (Danish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Petter (Norwegian)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Apple (Finnish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Solamnic (Greek)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Leon (Turkish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+SewerRat (Portuguese)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Szatan (Polish)
+\end_layout
+
+\begin_layout Standard
+\noindent
+Bigma (Dutch)
+\end_layout
+
+\begin_layout Standard
+\noindent
+OrB (Spanish)
+\end_layout
+
+\begin_layout Section*
+Libraries used
+\end_layout
+
+\begin_layout Subsection*
+zlib
+\end_layout
+
+\begin_layout Standard
+Copyright © 1995-1998 
+\noun on
+Jean-loup Gailly
+\noun default
+ and 
+\noun on
+Mark Adler
+\end_layout
+
+\begin_layout Section*
+Other sources used
+\end_layout
+
+\begin_layout Subsection*
+UAE Filesystem handler
+\end_layout
+
+\begin_layout Standard
+Copyright © 1996-2000 
+\noun on
+Bernd Schmidt
+\noun default
+, 
+\noun on
+Ed Hanway
+\noun default
+, 
+\noun on
+Gustavo Goedert
+\noun default
+ and other UAE contributors.
+ UAE filesystem sources are under the GNU GPL; used with permission.
+\end_layout
+
+\begin_layout Subsection*
+xDMS
+\end_layout
+
+\begin_layout Standard
+The xDMS v1.3 portable DMS archive unpacker is public domain software written
+ by 
+\noun on
+Andre Rodrigues de la Rocha
+\noun default
+ used with his kind permission.
+\end_layout
+
+\end_body
+\end_document
