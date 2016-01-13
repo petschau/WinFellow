@@ -19,7 +19,7 @@ The latest stable release can be found in WinFellow's former home at [SourceForg
 | team member | Petter Schau           | Torsten Enderling                                                                   | Worfje                                               |
 |-------------|:-----------------------|:------------------------------------------------------------------------------------|:-----------------------------------------------------|
 | occupation  | programmer from Norway | virtual desktop engineer from Germany                                               | engineer from the Netherlands                        |
-| tasks       | various                | beta team manager                                                                   | website administration<br>cross platform development |
+| tasks       | various                | beta team manager<br>GitHub Pages/hugo website administration                       | cross platform development                           |
 | modules     | emulation core         | RetroPlatform integration<br>hardfile/file system<br>debugger<br>system information | graphics<br>sound<br>GUI                             |
 | email       | petschau@gmail.com     | carfesh@gmx.net                                                                     | worfje@gmx.net                                       |
 
@@ -35,6 +35,6 @@ You could also make use of the [GitHub issue tracker](https://github.com/petscha
 
 Any comments on how to improve WinFellow are welcome!
 
-You can also contact us directly by sending an email composed in English language to carfesh@gmx.net. Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored. 
+You can also contact us directly by sending an email composed in English language to [Torsten Enderling](mailto:carfesh@gmx.net). Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored. 
 
 You can buy Kickstart ROM images from [Cloanto](http://www.amigaforever.com).

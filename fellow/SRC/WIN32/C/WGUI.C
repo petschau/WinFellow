@@ -686,7 +686,7 @@ static STR *wguiGetBOOLEToString(BOOLE value) {
 /*============================================================================*/
 
 static STR FileType[7][CFG_FILENAME_LENGTH] = {
-  "ROM Images (.rom)\0*.rom\0ADF Diskfiles\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
+  "ROM Images (.rom;.bin)\0*.rom;*.bin\0ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
 #ifndef FELLOW_SUPPORT_CAPS
   "ADF Diskfiles (.adf;.adz;.adf.gz;.dms)\0*.adf;*.adz;*.adf.gz;*.dms\0\0\0",
 #else
@@ -1983,6 +1983,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
                     if(fileopsGetKickstartByCRC32(strROMSearchPath, lCRC32, strKickstart, CFG_FILENAME_LENGTH))
                     {
                       cfgSetKickImage(wgui_cfg, strKickstart);
+                      // model presets do not support extended ROMs (yet), reset any extended ROM that might be configured
+                      cfgSetKickImageExtended(wgui_cfg, "");
                     }
                     else
                       fellowAddLog(" WARNING: could not locate ROM with checksum %X in %s.\n",
