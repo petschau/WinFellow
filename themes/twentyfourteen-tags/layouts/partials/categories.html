@@ -1,0 +1,17 @@
+<aside id="categories-3" class="widget widget_categories">
+	
+	<h1 class="widget-title">Categories</h1>
+
+	<ul>
+		{{ $baseurl := .Site.BaseURL }}
+		{{ range $key, $value := .Site.Taxonomies.categories }}
+		
+		<li class="cat-item">
+			<a href="{{ $baseurl }}/categories/{{ $key | urlize }}/index.html">{{ $key | title }}</a>
+		</li>
+
+		{{ end }}
+
+	</ul>
+
+</aside>

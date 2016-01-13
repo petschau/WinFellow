@@ -1,0 +1,18 @@
+{{ partial "header.html" . }}
+
+<div id="main-content" class="main-content">
+
+	<div id="primary" class="content-area">
+		<div id="content" class="site-content" role="main">
+
+			{{ partial "content.html" . }}
+
+			{{ template "_internal/disqus.html" . }}
+		
+		</div><!-- #content -->
+
+	</div><!-- #primary -->
+	{{ partial "sidebar.html" . }}
+</div><!-- #main-content -->
+
+{{ partial "footer.html" . }}

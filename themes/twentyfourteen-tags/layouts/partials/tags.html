@@ -1,0 +1,17 @@
+<aside id="tags-3" class="widget widget_tags">
+	
+	<h1 class="widget-title">Tags</h1>
+
+	<ul>
+		{{ $baseurl := .Site.BaseURL }}
+		{{ range $key, $value := .Site.Taxonomies.tags }}
+		
+		<li class="cat-item">
+			<a href="{{ $baseurl }}/tags/{{ $key | urlize }}/index.html">{{ $key | title }}</a>
+		</li>
+
+		{{ end }}
+
+	</ul>
+
+</aside>

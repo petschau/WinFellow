@@ -1,0 +1,7 @@
+baseurl = "http://petschau.github.io/WinFellow"
+languageCode = "en-us"
+title = "WinFellow - Amiga Emulator for Windows"
+theme = "twentyfourteen-tags"
+
+[taxonomies]
+tag = "tags"

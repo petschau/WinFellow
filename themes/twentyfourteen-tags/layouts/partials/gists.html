@@ -1,0 +1,13 @@
+<aside id="categories-3" class="widget widget_categories">
+	
+	<h1 class="widget-title">Recent Gists</h1>
+
+	<ul>
+        {{ $gists := getJSON "https://api.github.com/users/spf13/gists" }}
+        {{ range first 5 $gists }}
+              <li><a href="{{ .html_url }}" target="_blank">{{ with .description }}{{ . }}{{ else }}(No description){{end}}</a></li>
+        {{ end }}
+
+	</ul>
+
+</aside>
