@@ -17,8 +17,7 @@ The entire source tree can be found as a Git repository at http://github.com/pet
 GNU Public License (GPL)
 ------------------------
 
-The source files are tagged with the GNU Public License. Fellow was supposed 
-to go GPL, and in the event of a release, Fellow and its source are GPL.
+The source files are tagged with the GNU Public License. Fellow and its source are GPL.
 (Consult http://www.gnu.org for information on GPL)
 
 
@@ -68,9 +67,4 @@ to be common for UAE and Fellow. Brian King specified most of it.
 These is also a keymapping file which allows you to redefine the
 mapping of PC-keys to Amiga keys. It is called mapping.key
 
-I think that's enough explaining for now. If anyone wants more detailed
-information, I am available on mail (peschau@online.no).
-
-(Such as, how on earth was this supposed to be portable to x86-Linux, anyway?
- Hint: The src/include/*drv.h files declare the interfaces it needs.)
-
+If you need more detailed information, you can contact me via mail at petschau@gmail.com
