@@ -113,7 +113,12 @@ bool GfxDrvDXGI::CreateD3D11Device()
   UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
 #ifdef _DEBUG
-//  creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
+  // VS2013 Update 5 on Windows 10 may require execution of the following
+  // command to enable use of the debug layer; this installs the optional
+  // "Graphics Tools" feature:
+  // dism /online /add-capability /capabilityname:Tools.Graphics.DirectX~~~~0.0.1.0
+
+  creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
   hr = D3D11CreateDevice(NULL,
@@ -669,7 +674,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     texture2DDesc.SampleDesc.Quality = 0;
     texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
     texture2DDesc.BindFlags = D3D11_BIND_RENDER_TARGET;
-    texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    // CheckFeatureSupport() API with D3D11_FEATURE_D3D11_OPTIONS2 must report support for MapOnDefaultTextures for a D3D11_USAGE_DEFAULT Texture Resource to have CPUAccessFlags set. 
+    // texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     texture2DDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
     HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &screenshotTexture);
@@ -677,6 +683,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to create screenshot texture.", hr);
       return false;
+      
     }
 
     _immediateContext->CopyResource(screenshotTexture, hostBuffer);
