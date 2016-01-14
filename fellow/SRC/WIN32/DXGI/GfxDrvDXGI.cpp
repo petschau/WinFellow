@@ -675,7 +675,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &screenshotTexture);
     if (FAILED(hr))
     {
-      GfxDrvDXGIErrorLogger::LogError("Failed to create screenshot texture.", hr);
+      GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to create screenshot texture.", hr);
       return false;
     }
 
