@@ -17,11 +17,11 @@
       <guid>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
       <description>&lt;p&gt;WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.&lt;/p&gt;
 
-&lt;p&gt;Downloads for older releases are still available at &lt;a href=&#34;http://sourceforge.net/projects/fellow/files/&#34;&gt;SourceForge&lt;/a&gt; for reference; for future news and updates, please visit us &lt;a href=&#34;http://petschau.github.io/WinFellow&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Downloads for older releases are still available at &lt;a href=&#34;http://sourceforge.net/projects/fellow/files/&#34; target=&#34;_blank&#34;&gt;SourceForge&lt;/a&gt; for reference; for future news and updates, please visit us &lt;a href=&#34;http://petschau.github.io/WinFellow&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;The GitHub source code repository is available &lt;a href=&#34;http://github.com/petschau/WinFellow&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The GitHub source code repository is available &lt;a href=&#34;http://github.com/petschau/WinFellow&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
+&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34; target=&#34;_blank&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
 </description>
     </item>
     
@@ -41,13 +41,13 @@
 
 &lt;p&gt;WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.&lt;/p&gt;
 
-&lt;p&gt;WinFellow is distributed under the terms of the &lt;a href=&#34;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&#34;&gt;GNU General Public License version 2.0 (GPLv2)&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;WinFellow is distributed under the terms of the &lt;a href=&#34;http://www.gnu.org/licenses/old-licenses/gpl-2.0.html&#34; target=&#34;_blank&#34;&gt;GNU General Public License version 2.0 (GPLv2)&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;a href=&#34;https://github.com/petschau/WinFellow&#34;&gt;This site&lt;/a&gt; is WinFellow&amp;rsquo;s development home on GitHub.&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/petschau/WinFellow&#34; target=&#34;_blank&#34;&gt;This site&lt;/a&gt; is WinFellow&amp;rsquo;s development home on GitHub.&lt;/p&gt;
 
-&lt;p&gt;The latest stable release can be found in WinFellow&amp;rsquo;s former home at &lt;a href=&#34;https://sourceforge.net/projects/fellow/files/&#34;&gt;SourceForge&lt;/a&gt;; the latest one published on SourceForge is v0.5.3.1004.&lt;/p&gt;
+&lt;p&gt;The latest stable release can be found in WinFellow&amp;rsquo;s former home at &lt;a href=&#34;https://sourceforge.net/projects/fellow/files/&#34; target=&#34;_blank&#34;&gt;SourceForge&lt;/a&gt;; the latest one published on SourceForge is v0.5.3.1004.&lt;/p&gt;
 
-&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
+&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34; target=&#34;_blank&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
 </description>
     </item>
     
@@ -91,9 +91,9 @@
 
 &lt;tr&gt;
 &lt;td&gt;email&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:petschau@gmail.com&#34;&gt;petschau@gmail.com&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;carfesh@gmx.net&lt;/a&gt;&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:worfje@gmx.net&#34;&gt;worfje@gmx.net&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:petschau@gmail.com&#34; target=&#34;_blank&#34;&gt;petschau@gmail.com&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:carfesh@gmx.net&#34; target=&#34;_blank&#34;&gt;carfesh@gmx.net&lt;/a&gt;&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;a href=&#34;mailto:worfje@gmx.net&#34; target=&#34;_blank&#34;&gt;worfje@gmx.net&lt;/a&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -108,15 +108,15 @@
       <guid>http://petschau.github.io/WinFellow/contact/</guid>
       <description>&lt;p&gt;Please check the FAQ that can be found in WinFellow&amp;rsquo;s User Manual before contacting us, it is usually the fastest way to find a solution to your problem.&lt;/p&gt;
 
-&lt;p&gt;There is a WinFellow specific support forum at the &lt;a href=&#34;http://eab.abime.net/forumdisplay.php?forumid=28&#34;&gt;English Amiga Board&lt;/a&gt;, which is also monitored by us.&lt;/p&gt;
+&lt;p&gt;There is a WinFellow specific support forum at the &lt;a href=&#34;http://eab.abime.net/forumdisplay.php?forumid=28&#34; target=&#34;_blank&#34;&gt;English Amiga Board&lt;/a&gt;, which is also monitored by us.&lt;/p&gt;
 
-&lt;p&gt;You could also make use of the &lt;a href=&#34;https://github.com/petschau/winfellow/issues&#34;&gt;GitHub issue tracker&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You could also make use of the &lt;a href=&#34;https://github.com/petschau/winfellow/issues&#34; target=&#34;_blank&#34;&gt;GitHub issue tracker&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;Any comments on how to improve WinFellow are welcome!&lt;/p&gt;
 
-&lt;p&gt;You can also contact us directly by sending an email composed in English language to &lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;Torsten Enderling&lt;/a&gt;. Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored.&lt;/p&gt;
+&lt;p&gt;You can also contact us directly by sending an email composed in English language to &lt;a href=&#34;mailto:carfesh@gmx.net&#34; target=&#34;_blank&#34;&gt;Torsten Enderling&lt;/a&gt;. Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored.&lt;/p&gt;
 
-&lt;p&gt;You can buy Kickstart ROM images from &lt;a href=&#34;http://www.amigaforever.com&#34;&gt;Cloanto&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;You can buy Kickstart ROM images from &lt;a href=&#34;http://www.amigaforever.com&#34; target=&#34;_blank&#34;&gt;Cloanto&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
     
@@ -152,7 +152,7 @@ in the directory &amp;ldquo;fellow\doxygen\Documentation&amp;rdquo; called
 setting up a development environment for WinFellow.&lt;/p&gt;
 
 &lt;p&gt;Feel free to mail us
-(&lt;a href=&#34;mailto:petschau@gmail.com&#34;&gt;Petter Schau&lt;/a&gt; / &lt;a href=&#34;mailto:carfesh@gmx.net&#34;&gt;Torsten Enderling&lt;/a&gt;)
+(&lt;a href=&#34;mailto:petschau@gmail.com&#34; target=&#34;_blank&#34;&gt;Petter Schau&lt;/a&gt; / &lt;a href=&#34;mailto:carfesh@gmx.net&#34; target=&#34;_blank&#34;&gt;Torsten Enderling&lt;/a&gt;)
 if you are interested in helping!&lt;/p&gt;
 </description>
     </item>
