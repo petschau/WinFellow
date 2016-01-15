@@ -9,6 +9,11 @@ tag = "tags"
 [blackfriday]
     hrefTargetBlank = true
 
+[[menu.main]]
+    name = "RSS"
+    weight = 0
+    url = "/post/index.xml"
+    
 [[menu.external]]
     name = "Downloads"
     weight = 10
