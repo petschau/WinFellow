@@ -6,18 +6,21 @@ theme = "twentyfourteen-tags"
 [taxonomies]
 tag = "tags"
 
-[[menu.main]]
-name = "Downloads"
-weight = 10
-url = "https://github.com/petschau/WinFellow/releases"
+[blackfriday]
+    hrefTargetBlank = true
 
-[[menu.main]]
-name = "GitHub"
-weight = 30
-identifier = "GitHub"
-url = "http://github.com/petschau/WinFellow"
+[[menu.external]]
+    name = "Downloads"
+    weight = 10
+    url = "https://github.com/petschau/WinFellow/releases"
 
-[[menu.main]]
-name = "sf.net Archive"
-weight = 35
-url = "http://fellow.sf.net/new_version"
+[[menu.external]]
+    name = "GitHub"
+    weight = 30
+    identifier = "GitHub"
+    url = "http://github.com/petschau/WinFellow"
+
+[[menu.external]]
+    name = "sf.net Archive"
+    weight = 35
+    url = "http://fellow.sf.net/new_version"

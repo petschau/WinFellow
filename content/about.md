@@ -2,7 +2,7 @@
 layout: page
 title: about
 menu: main
-weight: 5
+weight: 10
 date: 2016-01-12T06:43:18+01:00
 ---
 ![WinFellow](../winfellow_logo_large_transparent.png) 

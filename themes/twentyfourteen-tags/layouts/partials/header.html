@@ -33,7 +33,7 @@
 			<div class="search-toggle">
 				<a href="#search-container" class="screen-reader-text">Search</a>
 			</div>
-
+            
 			<nav id="primary-navigation" class="site-navigation primary-navigation" role="navigation">
 				<button class="menu-toggle">Primary Menu</button>
 				<a class="screen-reader-text skip-link" href="#content">Skip to content</a>
@@ -42,6 +42,11 @@
 						{{ range .Site.Menus.main }}
 						<li class="page_item"> 
 							<a href="{{ .URL }}">{{ .Name }}</a>
+						</li>
+						{{ end }}
+                        {{ range .Site.Menus.external }}
+						<li class="page_item"> 
+							<a href="{{ .URL }}" target="_blank">{{ .Name }}</a>
 						</li>
 						{{ end }}
 					</ul>

@@ -2,7 +2,7 @@
 layout: page
 title: the team
 menu: main
-weight: 15
+weight: 20
 date: 2016-01-12T06:43:18+01:00
 ---
 
