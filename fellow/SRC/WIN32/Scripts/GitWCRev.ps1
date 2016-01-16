@@ -58,7 +58,7 @@ if($PreventLocalModifications.IsPresent)
     }
 }
 
-$GitWCREV         = (git rev-list --count --first-parent HEAD)
+$GitWCREV         = (git rev-list --count HEAD)
 $GitWCBRANCH      = (git rev-parse --abbrev-ref HEAD)
 $GitWCCOMMITSHORT = (git rev-parse --short HEAD)
 
