@@ -124,15 +124,15 @@ void ciaTAStabilize(ULO i) {
     cia[i].ta = ciaStabilizeValue(cia[i].taleft);
     cia[i].ta_rem = ciaStabilizeValueRemainder(cia[i].taleft);
   }
-  cia[i].taleft = -1;
+  cia[i].taleft = BUS_CYCLE_DISABLE;
 }
 
 void ciaTBStabilize(ULO i) {
-  if ((cia[i].crb & 0x41) == 1) {
+  if ((cia[i].crb & 0x41) == 1) { // Timer B started and not attached to timer A
     cia[i].tb = ciaStabilizeValue(cia[i].tbleft);
     cia[i].tb_rem = ciaStabilizeValueRemainder(cia[i].tbleft);
   }
-  cia[i].tbleft = 0xffffffff;
+  cia[i].tbleft = BUS_CYCLE_DISABLE;
 }
 
 void ciaStabilize(ULO i) {
@@ -146,7 +146,7 @@ void ciaTAUnstabilize(ULO i) {
 }
 
 void ciaTBUnstabilize(ULO i) {
-  if ((cia[i].crb & 0x41) == 1)
+  if ((cia[i].crb & 0x41) == 1) // Timer B started and not attached to timer A
     cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, cia[i].tb_rem);
 }
 
@@ -188,7 +188,7 @@ void ciaHandleTBTimeout(ULO i) {
     
   if (cia[i].crb & 8) {            /* One Shot Mode */
     cia[i].crb &= 0xfe;            /* Stop timer */
-    cia[i].tbleft = 0xffffffff;
+    cia[i].tbleft = BUS_CYCLE_DISABLE;
   }
   else if (!(cia[i].crb & 0x40))   /* Continuous mode, no attach */
     cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, 0);
@@ -204,7 +204,7 @@ void ciaHandleTATimeout(ULO i) {
   }
   if (cia[i].cra & 8) {            /* One Shot Mode */
     cia[i].cra &= 0xfe;            /* Stop timer */
-    cia[i].taleft = -1;
+    cia[i].taleft = BUS_CYCLE_DISABLE;
   }
   else                             /* Continuous mode */
     cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, 0);
@@ -473,29 +473,37 @@ void ciaWritetalo(ULO i, UBY data)
 #endif
 }
 
+bool ciaMustReloadOnTHiWrite(UBY cr)
+{
+  // Reload when not started, or one-shot mode
+  return !(cr & 1) || (cr & 8);
+}
+
 void ciaWritetahi(ULO i, UBY data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff) | (((ULO)data)<<8);
+
+  if (ciaMustReloadOnTHiWrite(cia[i].cra))
+  {
+    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
+    cia[i].ta_rem = 0;
+    cia[i].taleft = BUS_CYCLE_DISABLE;
+  }
 
 #ifdef CIA_LOGGING  
   fellowAddLog("Timer A %d written: %X\n", i, cia[i].talatch);
 #endif
 
-  if ((cia[i].cra & 8) || !(cia[i].cra & 1)) // Timer A is one-shot and not started. This write will start it
+  if (cia[i].cra & 8) // Timer A is one-shot, write starts it
   {
-    ciaStabilize(i);
-    cia[i].ta = ciaGetTimerValue(cia[i].talatch);
-    cia[i].ta_rem = 0;
-    if (cia[i].cra & 8) cia[i].cra |= 1;
+    cia[i].cra |= 1;
+    ciaUnstabilize(i);
+    ciaSetupNextEvent();
 
 #ifdef CIA_LOGGING  
     fellowAddLog("Timer A %d one-shot mode automatically started\n", i);
 #endif
-
-    ciaUnstabilize(i);
-    ciaSetupNextEvent();
   }
-
 }
 
 /* Timer B */
@@ -525,16 +533,20 @@ void ciaWritetblo(ULO i, UBY data)
 void ciaWritetbhi(ULO i, UBY data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff) | (((ULO)data)<<8);
+
+  if (ciaMustReloadOnTHiWrite(cia[i].crb))
+  {
+    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
+    cia[i].tb_rem = 0;
+    cia[i].tbleft = BUS_CYCLE_DISABLE;
+  }
+
 #ifdef CIA_LOGGING  
   fellowAddLog("Timer B %d written: %X\n", i, cia[i].tblatch);
 #endif
-  if ((cia[i].crb & 8) || !(cia[i].crb & 1))
+  if (cia[i].crb & 8)
   {
-    ciaStabilize(i);
-    cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
-    cia[i].tb_rem = 0;
-    if (cia[i].crb & 8)
-      cia[i].crb |= 1;
+    cia[i].crb |= 1;
     ciaUnstabilize(i);
     ciaSetupNextEvent();
 #ifdef CIA_LOGGING  
@@ -624,7 +636,7 @@ UBY ciaReadcra(ULO i)
 void ciaWritecra(ULO i, UBY data)
 {
   ciaStabilize(i);
-  if (data & 0x10)
+  if (data & 0x10) // Force load
   {
     cia[i].ta = ciaGetTimerValue(cia[i].talatch);
     cia[i].ta_rem = 0;
@@ -651,7 +663,7 @@ UBY ciaReadcrb(ULO i)
 void ciaWritecrb(ULO i, UBY data)
 {
   ciaStabilize(i);
-  if (data & 0x10)
+  if (data & 0x10) // Force load
   {
     cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
     cia[i].tb_rem = 0;
@@ -772,8 +784,8 @@ ciaWriteFunc cia_write[16]={
       cia[i].evalarmlatching = 0;
       cia[i].evwritelatch = 0;
       cia[i].evwritelatching = 0;
-      cia[i].taleft = -1;		/* Zero out timers */
-      cia[i].tbleft = -1;
+      cia[i].taleft = BUS_CYCLE_DISABLE;		/* Zero out timers */
+      cia[i].tbleft = BUS_CYCLE_DISABLE;
       cia[i].ta = 0xffff;        
       cia[i].tb = 0xffff;
       cia[i].talatch = 0xffff;
