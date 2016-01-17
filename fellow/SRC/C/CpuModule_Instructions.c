@@ -1121,17 +1121,16 @@ static ULO cpuMuluW(UWO src2, UWO src1, ULO eatime)
 /// <summary>
 /// Divsw, src1 / src2
 /// </summary>
-static ULO cpuDivsW(ULO dst, UWO src1)
+static void cpuDivsW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_time)
 {
-  ULO result;
   if (src1 == 0)
   {
     // Alcatraz odyssey assumes that PC in this exception points after the instruction.
-    cpuThrowDivisionByZeroException(TRUE);
-    result = dst;
+    cpuThrowDivisionByZeroException();
   }
   else
   {
+    ULO result;
     LON x = (LON) dst;
     LON y = (LON)(WOR) src1;
     LON res = x / y;
@@ -1146,24 +1145,24 @@ static ULO cpuDivsW(ULO dst, UWO src1)
       result = (rem << 16) | (res & 0xffff);
       cpuSetFlagsNZVC(cpuIsZeroW((UWO) res), cpuMsbW((UWO) res), FALSE, FALSE);
     }
+    cpuSetDReg(destination_reg, result);
+    cpuSetInstructionTime(instruction_time);
   }
-  return result;
 }
 
 /// <summary>
 /// Divuw, src1 / src2
 /// </summary>
-static ULO cpuDivuW(ULO dst, UWO src1)
+static void cpuDivuW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_time)
 {
-  ULO result;
   if (src1 == 0)
   {
     // Alcatraz odyssey assumes that PC in this exception points after the instruction.
-    cpuThrowDivisionByZeroException(TRUE);
-    result = dst;
+    cpuThrowDivisionByZeroException();
   }
   else
   {
+    ULO result;
     ULO x = dst;
     ULO y = (ULO) src1;
     ULO res = x / y;
@@ -1178,11 +1177,12 @@ static ULO cpuDivuW(ULO dst, UWO src1)
       result = (rem << 16) | (res & 0xffff);
       cpuSetFlagsNZVC(cpuIsZeroW((UWO) res), cpuMsbW((UWO) res), FALSE, FALSE);
     }
+    cpuSetDReg(destination_reg, result);
+    cpuSetInstructionTime(instruction_time);
   }
-  return result;
 }
 
-static void cpuDivL(ULO divisor, ULO ext)
+static void cpuDivL(ULO divisor, ULO ext, ULO instruction_time)
 {
   if (divisor != 0)
   {
@@ -1255,10 +1255,11 @@ static void cpuDivL(ULO divisor, ULO ext)
 	cpuSetFlagsNZ00NewL((ULO) result);
       }
     }
+    cpuSetInstructionTime(instruction_time);
   }
   else
   {
-    cpuThrowDivisionByZeroException(FALSE);
+    cpuThrowDivisionByZeroException();
   }
 }
 

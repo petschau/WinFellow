@@ -172,7 +172,7 @@ extern void cpuThrowFLineException(void);
 extern void cpuThrowALineException(void);
 extern void cpuThrowTrapVException(void);
 extern void cpuThrowTrapException(ULO vector_no);
-extern void cpuThrowDivisionByZeroException(BOOLE executejmp);
+extern void cpuThrowDivisionByZeroException();
 extern void cpuThrowChkException(void);
 extern void cpuThrowTraceException(void);
 extern void cpuThrowResetException(void);

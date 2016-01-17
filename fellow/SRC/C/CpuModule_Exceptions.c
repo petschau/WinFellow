@@ -194,10 +194,10 @@ void cpuThrowTrapVException(void)
   cpuThrowException(0x1c, cpuGetPC(), FALSE);
 }
 
-void cpuThrowDivisionByZeroException(BOOLE executejmp)
+void cpuThrowDivisionByZeroException()
 {
   // The saved pc points to the next instruction, which is now in pc
-  cpuThrowException(0x14, cpuGetPC(), executejmp);
+  cpuThrowException(0x14, cpuGetPC(), FALSE);
 }
 
 void cpuThrowTrapException(ULO vector_no)
