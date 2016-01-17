@@ -37,7 +37,8 @@ static ULO cpu_sfc;
 static ULO cpu_dfc;
 ULO cpu_sr; // Not static because flags calculation use it extensively
 static ULO cpu_vbr;
-static UWO cpu_prefetch_word;
+static UWO cpu_irc; // Prefetch, extension word
+static UWO cpu_ird; // Prefetch, opcode
 static ULO cpu_cacr;
 static ULO cpu_caar;
 
@@ -49,8 +50,9 @@ static ULO cpu_raise_irq_level;
 static ULO cpu_initial_pc;
 static ULO cpu_initial_sp;
 
-/* Flag set if CPU is stopped */
+/* Flag set if CPU is stopped or traced */
 static BOOLE cpu_stop;
+static bool cpu_is_traced;
 
 /* The current CPU model */
 static ULO cpu_model_major = -1;
@@ -83,7 +85,7 @@ ULO cpuGetReg(ULO da, ULO i) {return cpu_regs[da][i];}
 /// <summary>
 /// Get the supervisor bit from sr.
 /// </summary>
-BOOLE cpuGetFlagSupervisor(void)
+BOOLE cpuGetFlagSupervisor()
 {
   return cpu_sr & 0x2000;
 }
@@ -91,26 +93,26 @@ BOOLE cpuGetFlagSupervisor(void)
 /// <summary>
 /// Get the master/irq state bit from sr.
 /// </summary>
-BOOLE cpuGetFlagMaster(void)
+BOOLE cpuGetFlagMaster()
 {
   return cpu_sr & 0x1000;
 }
 
 void cpuSetUspDirect(ULO usp) {cpu_usp = usp;}
-ULO cpuGetUspDirect(void) {return cpu_usp;}
-ULO cpuGetUspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
+ULO cpuGetUspDirect() {return cpu_usp;}
+ULO cpuGetUspAutoMap() {return (cpuGetFlagSupervisor()) ? cpuGetUspDirect() : cpuGetAReg(7);}
 
 void cpuSetSspDirect(ULO ssp) {cpu_ssp = ssp;}
-ULO cpuGetSspDirect(void) {return cpu_ssp;}
-ULO cpuGetSspAutoMap(void) {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
+ULO cpuGetSspDirect() {return cpu_ssp;}
+ULO cpuGetSspAutoMap() {return (cpuGetFlagSupervisor()) ? cpuGetAReg(7) : cpuGetSspDirect();}
 
 void cpuSetMspDirect(ULO msp) {cpu_msp = msp;}
-ULO cpuGetMspDirect(void) {return cpu_msp;}
+ULO cpuGetMspDirect() {return cpu_msp;}
 
 /// <summary>
 /// Returns the master stack pointer.
 /// </summary>
-ULO cpuGetMspAutoMap(void)
+ULO cpuGetMspAutoMap()
 {
   if (cpuGetFlagSupervisor() && cpuGetFlagMaster())
   {
@@ -167,6 +169,9 @@ ULO cpuGetPC(void) {return cpu_pc;}
 void cpuSetStop(BOOLE stop) {cpu_stop = stop;}
 BOOLE cpuGetStop(void) {return cpu_stop;}
 
+void cpuSetIsTraced(bool is_traced) { cpu_is_traced = is_traced; }
+BOOLE cpuGetIsTraced() { return cpu_is_traced; }
+
 void cpuSetVbr(ULO vbr) {cpu_vbr = vbr;}
 ULO cpuGetVbr(void) {return cpu_vbr;}
 
@@ -184,6 +189,9 @@ ULO cpuGetCaar(void) {return cpu_caar;}
 
 void cpuSetSR(ULO sr) {cpu_sr = sr;}
 ULO cpuGetSR(void) {return cpu_sr;}
+
+UWO cpuGetIRD() { return cpu_ird; }
+UWO cpuGetIRC() { return cpu_irc; }
 
 void cpuSetInstructionTime(ULO cycles) {cpu_instruction_time = cycles;}
 ULO cpuGetInstructionTime(void) {return cpu_instruction_time;}
@@ -217,7 +225,7 @@ UBY cpuGetModelMask(void) {return cpu_model_mask;}
 ULO cpuGetModelMajor(void) {return cpu_model_major;}
 ULO cpuGetModelMinor(void) {return cpu_model_minor;}
 
-static void cpuCalculateModelMask(void)
+static void cpuCalculateModelMask()
 {
   switch (cpuGetModelMajor())
   {
@@ -263,57 +271,69 @@ UBY cpuGetARegByte(ULO regno) {return (UBY)cpu_regs[1][regno];}
 typedef UWO (*cpuGetWordFunc)(void);
 typedef ULO (*cpuGetLongFunc)(void);
 
-static UWO cpuGetNextWordInternal(void)
+static UWO cpuGetNextWordInternal()
 {
-  UWO data = memoryReadWord(cpuGetPC() + 2);
+  UWO data = memoryReadWord(cpuGetPC() + 4);
   return data;
 }
 
-static ULO cpuGetNextLongInternal(void)
+static ULO cpuGetNextLongInternal()
 {
-  ULO data = memoryReadLong(cpuGetPC() + 2);
+  ULO data = memoryReadLong(cpuGetPC() + 4);
   return data;
 }
 
-UWO cpuGetNextWord(void)
+// Fetch next word, do not transfer to ird
+UWO cpuGetNextExtensionWord()
 {
-  UWO tmp = cpu_prefetch_word;
-  cpu_prefetch_word = cpuGetNextWordInternal();
+  UWO tmp = cpu_irc;
+  cpu_irc = cpuGetNextWordInternal();
   cpuSetPC(cpuGetPC() + 2);
   return tmp;
 }
 
-ULO cpuGetNextWordSignExt(void)
+// Fetch two next words, do not transfer to ird
+ULO cpuGetNextExtensionLong()
 {
-  return cpuSignExtWordToLong(cpuGetNextWord());
-}
-
-ULO cpuGetNextLong(void)
-{
-  ULO tmp = cpu_prefetch_word << 16;
   ULO data = cpuGetNextLongInternal();
-  cpu_prefetch_word = (UWO) data;
+  ULO tmp = (((ULO)cpu_irc) << 16) | (data >>16);
+  cpu_irc = (UWO)data;
   cpuSetPC(cpuGetPC() + 4);
-  return tmp | (data >> 16);
+  return tmp;
 }
 
-void cpuInitializePrefetch(void)
+// Fetch next word, transfer existing extension to ird
+void cpuPrefetchOpcode()
 {
-  cpu_prefetch_word = memoryReadWord(cpuGetPC());
-}
-
-void cpuClearPrefetch(void)
-{
-  cpu_prefetch_word = 0;
-}
-
-void cpuSkipNextWord(void)
-{
+  cpu_ird = cpu_irc;
+  cpu_irc = cpuGetNextWordInternal();
   cpuSetPC(cpuGetPC() + 2);
-  cpuInitializePrefetch();
 }
 
-void cpuSkipNextLong(void)
+ULO cpuGetNextExtensionWordSignExt()
+{
+  return cpuSignExtWordToLong(cpuGetNextExtensionWord());
+}
+
+void cpuInitializePrefetch()
+{
+  ULO data = memoryReadLong(cpuGetPC());
+  cpu_irc = (UWO)data;
+  cpu_ird = (UWO)(data >> 16);
+}
+
+void cpuClearPrefetch()
+{
+  cpu_ird = cpu_irc = 0;
+}
+
+void cpuSkipNextExtensionWord()
+{
+  cpu_irc = cpuGetNextWordInternal();
+  cpuSetPC(cpuGetPC() + 2);
+}
+
+void cpuSkipNextExtensionLong()
 {
   cpuSetPC(cpuGetPC() + 4);
   cpuInitializePrefetch();
@@ -345,7 +365,8 @@ void cpuSaveState(FILE *F)
   fwrite(&cpu_sfc, sizeof(cpu_sfc), 1, F);
   fwrite(&cpu_dfc, sizeof(cpu_dfc), 1, F);
   fwrite(&cpu_sr, sizeof(cpu_sr), 1, F);
-  fwrite(&cpu_prefetch_word, sizeof(cpu_prefetch_word), 1, F);
+  fwrite(&cpu_ird, sizeof(cpu_ird), 1, F);
+  fwrite(&cpu_irc, sizeof(cpu_irc), 1, F);
   fwrite(&cpu_vbr, sizeof(cpu_vbr), 1, F);
   fwrite(&cpu_cacr, sizeof(cpu_cacr), 1, F);
   fwrite(&cpu_caar, sizeof(cpu_caar), 1, F);
@@ -373,7 +394,8 @@ void cpuLoadState(FILE *F)
   fread(&cpu_sfc, sizeof(cpu_sfc), 1, F);
   fread(&cpu_dfc, sizeof(cpu_dfc), 1, F);
   fread(&cpu_sr, sizeof(cpu_sr), 1, F);
-  fread(&cpu_prefetch_word, sizeof(cpu_prefetch_word), 1, F);
+  fread(&cpu_ird, sizeof(cpu_ird), 1, F);
+  fread(&cpu_irc, sizeof(cpu_irc), 1, F);
   fread(&cpu_vbr, sizeof(cpu_vbr), 1, F);
   fread(&cpu_cacr, sizeof(cpu_cacr), 1, F);
   fread(&cpu_caar, sizeof(cpu_caar), 1, F);

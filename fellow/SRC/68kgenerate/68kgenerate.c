@@ -287,6 +287,11 @@ void cgSetModelMask(unsigned int opcode, char *model_mask)
   cpu_opcode_model_mask[opcode] = mask;
 }
 
+void cgPrefetchOpcode()
+{
+  fprintf(codef, "\tcpuPrefetchOpcode();\n");
+}
+
 unsigned int cgGetEaNo(unsigned int eano, unsigned int eareg)
 {
   return (eano < 7) ? eano : (eano + eareg);
@@ -393,12 +398,12 @@ void cgFetchSrc(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   if (regtype == 'I' || cg_ea_immediate[eano])
   {
     // Read source value from an immediate word.
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNextExtension%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (regtype == '2')
   {
     // Read source value from an immediate word. Bit number for BCHG etc.
-    fprintf(codef, "%scpuGetNextWord();\n", cgCastSize(size));
+    fprintf(codef, "%scpuGetNextExtensionWord();\n", cgCastSize(size));
   }
   else if (eano == 1)
   {
@@ -461,7 +466,7 @@ void cgFetchDst(unsigned int eano, unsigned int eareg_cpu_data_index, unsigned i
   // Fetch operand
   if (cg_ea_immediate[eano])
   {
-    fprintf(codef, "%scpuGetNext%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
+    fprintf(codef, "%scpuGetNextExtension%s();\n", (size == 1) ? "(UBY)" : "", (size <= 2) ? "Word" : "Long");
   }
   else if (eano == 1)
   {
@@ -794,7 +799,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	    if (stricmp(i.instruction_name, "DIVL") == 0) fprintf(codef, "\tUWO ext = cpuGetNextExtensionWord();\n");
 	    cgFetchSrc(eano, eareg_cpu_data_index, size, regtype, reg_cpu_data_index);
 	    if (stricmp(i.instruction_name, "DIVL") != 0) cgFetchDst((regtype=='A') ? 1:0, reg_cpu_data_index, (regtype == 'V') ? 4 : size);
 	  }
@@ -804,9 +809,11 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  cgFetchSrc(0, reg_cpu_data_index, size, regtype, reg_cpu_data_index);
 	  cgFetchDst(eano, eareg_cpu_data_index, size);
 	}
+
 	if (stricmp(i.instruction_name, "LEA") == 0)
 	{
 	  fprintf(codef, "\tcpuSetAReg(opc_data[%d], dstea);\n", reg_cpu_data_index);
+          cgPrefetchOpcode();
 	}
 	else if (regtype == 'C' || 
 	         (stricmp(i.instruction_name, "CMPA") == 0) || 
@@ -1059,13 +1066,25 @@ unsigned int cgMove(cpu_data *cpudata, cpu_instruction_info i)
 	  {
 	    cgFetchDstEa(dsteano, dstreg_cpu_data_index, size);
 	    fprintf(codef, "\t%s(src);\n", i.function);
-	    cgStoreDst(dsteano, dstreg_cpu_data_index, size, "src");
+
+            if (dsteano == 4) // predec
+            {
+              cgPrefetchOpcode();
+            }
+            
+            cgStoreDst(dsteano, dstreg_cpu_data_index, size, "src");
+
+            if (dsteano != 4) // any other
+            {
+              cgPrefetchOpcode();
+            }
 	  }
 	  else
 	  {
 	    if (size == 2) fprintf(codef, "\tcpuSetAReg(opc_data[%d], (ULO)(LON)(WOR)src);\n", dstreg_cpu_data_index);
 	    else fprintf(codef, "\tcpuSetAReg(opc_data[%d], src);\n", dstreg_cpu_data_index);
-	  }
+            cgPrefetchOpcode();
+          }
 	  cgMakeInstructionTimeAbs(cgGetMoveTime(size, srceano, dsteano));
 	  cgMakeFunctionFooter(fname, templ_name);
 
@@ -1135,7 +1154,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 
       if (stricmp(i.instruction_name, "MOVEM") == 0)
       {
-	fprintf(codef, "\tUWO regs = cpuGetNextWord();\n");
+	fprintf(codef, "\tUWO regs = cpuGetNextExtensionWord();\n");
       }
       else if ((stricmp(i.instruction_name, "MULL") == 0)
 	       || (stricmp(i.instruction_name, "MOVES") == 0)
@@ -1146,7 +1165,7 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
 	       || (strnicmp(i.instruction_name, "BF", 2) == 0))
       {
 	// Read extension word _before_ ea calculation.
-	  fprintf(codef, "\tUWO ext = cpuGetNextWord();\n");
+	  fprintf(codef, "\tUWO ext = cpuGetNextExtensionWord();\n");
       }
 
       // Generate fetch
@@ -1207,6 +1226,20 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
         else
         {
 	  fprintf(codef, "\t%s(opc_data[%d], ext);\n", i.function, cc_cpu_data_index);
+        }
+      }
+      else if (stricmp(i.instruction_name, "PEA") == 0)
+      {
+        if (eano != 7 && eano != 8)
+        {
+          cgPrefetchOpcode();
+        }
+
+        fprintf(codef, "\t%s(dstea);\n", i.function);
+
+        if (eano == 7 || eano == 8)
+        {
+          cgPrefetchOpcode();
         }
       }
       else if (regtype == 'G')
@@ -1279,7 +1312,12 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
       }
       else if (stricmp(i.instruction_name, "PEA") == 0)
       {
-        cgMakeInstructionTimeAbs(cg_jmp_time[eano]);
+        cgMakeInstructionTimeAbs(cg_pea_time[eano]);
+      }
+      else if (stricmp(i.instruction_name, "TAS") == 0)
+      {
+        cgPrefetchOpcode();
+        cgMakeInstructionTimeAbs(((eano == 0) ? 4 : 10) + cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
       }
       else if ((stricmp(i.instruction_name, "MOVETOSR") == 0)
 	       || (stricmp(i.instruction_name, "MOVETOCCR") == 0))
@@ -1357,6 +1395,7 @@ unsigned int cgMoveQ(cpu_data *cpudata, cpu_instruction_info i)
 
   fprintf(codef, "\tcpuSetDReg(opc_data[%d], opc_data[%d]);\n", reg_cpu_data_index, imm_cpu_data_index);
   fprintf(codef, "\tcpuSetFlagsAbs((UWO)opc_data[%d]);\n", flags_cpu_data_index);
+  cgPrefetchOpcode();
   cgMakeInstructionTimeAbs(4);
   cgMakeFunctionFooter(fname, templ_name);
 
@@ -1497,7 +1536,7 @@ unsigned int cgBCC(cpu_data *cpudata, cpu_instruction_info i)
   
   if (stricmp(i.instruction_name, "STOP") == 0)
   {
-    fprintf(codef, "\t%s(cpuGetNextWord());\n", i.function);
+    fprintf(codef, "\t%s(cpuGetNextExtensionWord());\n", i.function);
   }
   else if ((stricmp(i.instruction_name, "BKPT") == 0)
            || (stricmp(i.instruction_name, "SWAP") == 0)

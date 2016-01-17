@@ -180,6 +180,7 @@ static UBY cpuAddB(UBY src2, UBY src1)
 {
   UBY res = src2 + src1;
   cpuSetFlagsAdd(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -191,6 +192,7 @@ static UWO cpuAddW(UWO src2, UWO src1)
 {
   UWO res = src2 + src1;
   cpuSetFlagsAdd(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src2), cpuMsbW(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -202,6 +204,7 @@ static ULO cpuAddL(ULO src2, ULO src1)
 {
   ULO res = src2 + src1;
   cpuSetFlagsAdd(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src2), cpuMsbL(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -211,6 +214,7 @@ static ULO cpuAddL(ULO src2, ULO src1)
 /// <returns>The result</returns>
 static ULO cpuAddaW(ULO src2, ULO src1)
 {
+  cpuPrefetchOpcode();
   return src2 + src1;
 }
 
@@ -220,6 +224,7 @@ static ULO cpuAddaW(ULO src2, ULO src1)
 /// <returns>The result</returns>
 static ULO cpuAddaL(ULO src2, ULO src1)
 {
+  cpuPrefetchOpcode();
   return src2 + src1;
 }
 
@@ -231,6 +236,7 @@ static UBY cpuSubB(UBY src2, UBY src1)
 {
   UBY res = src2 - src1;
   cpuSetFlagsSub(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -242,6 +248,7 @@ static UWO cpuSubW(UWO src2, UWO src1)
 {
   UWO res = src2 - src1;
   cpuSetFlagsSub(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src2), cpuMsbW(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -253,6 +260,7 @@ static ULO cpuSubL(ULO src2, ULO src1)
 {
   ULO res = src2 - src1;
   cpuSetFlagsSub(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src2), cpuMsbL(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -262,6 +270,7 @@ static ULO cpuSubL(ULO src2, ULO src1)
 /// <returns>The result</returns>
 static ULO cpuSubaW(ULO src2, ULO src1)
 {
+  cpuPrefetchOpcode();
   return src2 - src1;
 }
 
@@ -271,6 +280,7 @@ static ULO cpuSubaW(ULO src2, ULO src1)
 /// <returns>The result</returns>
 static ULO cpuSubaL(ULO src2, ULO src1)
 {
+  cpuPrefetchOpcode();
   return src2 - src1;
 }
 
@@ -281,6 +291,7 @@ static void cpuCmpB(UBY src2, UBY src1)
 {
   UBY res = src2 - src1;
   cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src2), cpuMsbB(src1));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -290,6 +301,7 @@ static void cpuCmpW(UWO src2, UWO src1)
 {
   UWO res = src2 - src1;
   cpuSetFlagsCmp(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src2), cpuMsbW(src1));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -299,6 +311,7 @@ static void cpuCmpL(ULO src2, ULO src1)
 {
   ULO res = src2 - src1;
   cpuSetFlagsCmp(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src2), cpuMsbL(src1));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -309,6 +322,7 @@ static UBY cpuAndB(UBY src2, UBY src1)
 {
   UBY res = src2 & src1;
   cpuSetFlagsNZ00NewB(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -320,6 +334,7 @@ static UWO cpuAndW(UWO src2, UWO src1)
 {
   UWO res = src2 & src1;
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -331,6 +346,7 @@ static ULO cpuAndL(ULO src2, ULO src1)
 {
   ULO res = src2 & src1;
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -342,6 +358,7 @@ static UBY cpuEorB(UBY src2, UBY src1)
 {
   UBY res = src2 ^ src1;
   cpuSetFlagsNZ00NewB(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -353,6 +370,7 @@ static UWO cpuEorW(UWO src2, UWO src1)
 {
   UWO res = src2 ^ src1;
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -364,6 +382,7 @@ static ULO cpuEorL(ULO src2, ULO src1)
 {
   ULO res = src2 ^ src1;
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -375,6 +394,7 @@ static UBY cpuOrB(UBY src2, UBY src1)
 {
   UBY res = src2 | src1;
   cpuSetFlagsNZ00NewB(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -386,6 +406,7 @@ static UWO cpuOrW(UWO src2, UWO src1)
 {
   UWO res = src2 | src1;
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -397,6 +418,7 @@ static ULO cpuOrL(ULO src2, ULO src1)
 {
   ULO res = src2 | src1;
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -408,6 +430,7 @@ static UBY cpuBchgB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
+  cpuPrefetchOpcode();
   return src ^ bit_mask;
 }
 
@@ -419,6 +442,7 @@ static ULO cpuBchgL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
   cpuSetZFlagBitOpsL(src & bit_mask);
+  cpuPrefetchOpcode();
   return src ^ bit_mask;
 }
 
@@ -430,6 +454,7 @@ static UBY cpuBclrB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
+  cpuPrefetchOpcode();
   return src & ~bit_mask;
 }
 
@@ -441,6 +466,7 @@ static ULO cpuBclrL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
   cpuSetZFlagBitOpsL(src & bit_mask);
+  cpuPrefetchOpcode();
   return src & ~bit_mask;
 }
 
@@ -452,6 +478,7 @@ static UBY cpuBsetB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
+  cpuPrefetchOpcode();
   return src | bit_mask;
 }
 
@@ -463,6 +490,7 @@ static ULO cpuBsetL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
   cpuSetZFlagBitOpsL(src & bit_mask);
+  cpuPrefetchOpcode();
   return src | bit_mask;
 }
 
@@ -473,6 +501,7 @@ static void cpuBtstB(UBY src, UBY bit)
 {
   UBY bit_mask = 1 << (bit & 7);
   cpuSetZFlagBitOpsB(src & bit_mask);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -482,6 +511,7 @@ static void cpuBtstL(ULO src, ULO bit)
 {
   ULO bit_mask = 1 << (bit & 31);
   cpuSetZFlagBitOpsL(src & bit_mask);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -490,6 +520,7 @@ static void cpuBtstL(ULO src, ULO bit)
 static void cpuClr()
 {
   cpuSetFlags0100();
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -500,6 +531,7 @@ static UBY cpuNegB(UBY src1)
 {
   UBY res = (UBY)-(BYT)src1;
   cpuSetFlagsNeg(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -511,6 +543,7 @@ static UWO cpuNegW(UWO src1)
 {
   UWO res = (UWO)-(WOR)src1;
   cpuSetFlagsNeg(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -522,6 +555,7 @@ static ULO cpuNegL(ULO src1)
 {
   ULO res = (ULO)-(LON)src1;
   cpuSetFlagsNeg(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -534,6 +568,7 @@ static UBY cpuNegxB(UBY src1)
   BYT x = (cpuGetFlagX()) ? 1 : 0;
   UBY res = (UBY)-(BYT)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -546,6 +581,7 @@ static UWO cpuNegxW(UWO src1)
   WOR x = (cpuGetFlagX()) ? 1 : 0;
   UWO res = (UWO)-(WOR)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -558,6 +594,7 @@ static ULO cpuNegxL(ULO src1)
   LON x = (cpuGetFlagX()) ? 1 : 0;
   ULO res = (ULO)-(LON)src1 - x;
   cpuSetFlagsNegx(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(src1));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -569,6 +606,7 @@ static UBY cpuNotB(UBY src1)
 {
   UBY res = ~src1;
   cpuSetFlagsNZ00NewB(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -580,6 +618,7 @@ static UWO cpuNotW(UWO src1)
 {
   UWO res = ~src1;
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -591,6 +630,7 @@ static ULO cpuNotL(ULO src)
 {
   ULO res = ~src;
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -610,6 +650,7 @@ static UBY cpuTas(UBY src)
 static void cpuTestB(UBY res)
 {
   cpuSetFlagsNZ00NewB(res);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -618,6 +659,7 @@ static void cpuTestB(UBY res)
 static void cpuTestW(UWO res)
 {
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -626,6 +668,7 @@ static void cpuTestW(UWO res)
 static void cpuTestL(ULO res)
 {
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -651,7 +694,7 @@ static void cpuJmp(ULO ea)
 static void cpuJsr(ULO ea)
 {
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
+  memoryWriteLong(cpuGetPC() + 2, cpuGetAReg(7));
   cpuInitializeFromNewPC(ea);
 }
 
@@ -687,7 +730,7 @@ static void cpuMoveL(ULO res)
 /// </summary>
 static void cpuBraB(ULO offset)
 {
-  cpuInitializeFromNewPC(cpuGetPC() + offset);
+  cpuInitializeFromNewPC(cpuGetPC() + 2 + offset);
   cpuSetInstructionTime(10);
 }
 
@@ -697,7 +740,7 @@ static void cpuBraB(ULO offset)
 static void cpuBraW()
 {
   ULO tmp_pc = cpuGetPC();
-  cpuInitializeFromNewPC(tmp_pc + cpuGetNextWordSignExt());
+  cpuInitializeFromNewPC(tmp_pc + 2 + cpuGetNextExtensionWordSignExt());
   cpuSetInstructionTime(10);
 }
 
@@ -710,7 +753,7 @@ static void cpuBraL()
   else
   {
     ULO tmp_pc = cpuGetPC();
-    cpuInitializeFromNewPC(tmp_pc + cpuGetNextLong());
+    cpuInitializeFromNewPC(tmp_pc + 2 + cpuGetNextExtensionLong());
     cpuSetInstructionTime(4);
   }
 }
@@ -721,8 +764,8 @@ static void cpuBraL()
 static void cpuBsrB(ULO offset)
 {
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
-  cpuInitializeFromNewPC(cpuGetPC() + offset);
+  memoryWriteLong(cpuGetPC() + 2, cpuGetAReg(7));
+  cpuInitializeFromNewPC(cpuGetPC() + 2 + offset);
   cpuSetInstructionTime(18);
 }
 
@@ -732,10 +775,10 @@ static void cpuBsrB(ULO offset)
 static void cpuBsrW()
 {
   ULO tmp_pc = cpuGetPC();
-  ULO offset = cpuGetNextWordSignExt();
+  ULO offset = cpuGetNextExtensionWordSignExt();
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
-  cpuInitializeFromNewPC(tmp_pc + offset);
+  memoryWriteLong(cpuGetPC() + 2, cpuGetAReg(7));
+  cpuInitializeFromNewPC(tmp_pc + 2 + offset);
   cpuSetInstructionTime(18);
 }
 
@@ -748,10 +791,10 @@ static void cpuBsrL()
   else
   {
     ULO tmp_pc = cpuGetPC();
-    ULO offset = cpuGetNextLong();
+    ULO offset = cpuGetNextExtensionLong();
     cpuSetAReg(7, cpuGetAReg(7) - 4);
-    memoryWriteLong(cpuGetPC(), cpuGetAReg(7));
-    cpuInitializeFromNewPC(tmp_pc + offset);
+    memoryWriteLong(cpuGetPC() + 2, cpuGetAReg(7));
+    cpuInitializeFromNewPC(tmp_pc + 2 + offset);
     cpuSetInstructionTime(4);
   }
 }
@@ -763,11 +806,12 @@ static void cpuBccB(BOOLE cc, ULO offset)
 {
   if (cc)
   {
-    cpuInitializeFromNewPC(cpuGetPC() + offset);
+    cpuInitializeFromNewPC(cpuGetPC() + 2 + offset);
     cpuSetInstructionTime(10);
   }
   else
   {
+    cpuPrefetchOpcode();
     cpuSetInstructionTime(8);
   }
 }
@@ -780,12 +824,13 @@ static void cpuBccW(BOOLE cc)
   if (cc)
   {
     ULO tmp_pc = cpuGetPC();
-    cpuInitializeFromNewPC(tmp_pc + cpuGetNextWordSignExt());
+    cpuInitializeFromNewPC(tmp_pc + 2 + cpuGetNextExtensionWordSignExt());
     cpuSetInstructionTime(10);
   }
   else
   {
-    cpuSkipNextWord();
+    cpuSkipNextExtensionWord();
+    cpuPrefetchOpcode();
     cpuSetInstructionTime(12);
   }
 }
@@ -801,11 +846,12 @@ static void cpuBccL(BOOLE cc)
     if (cc)
     {
       ULO tmp_pc = cpuGetPC();
-      cpuInitializeFromNewPC(tmp_pc + cpuGetNextLong());
+      cpuInitializeFromNewPC(tmp_pc + 2 + cpuGetNextExtensionLong());
     }
     else
     {
-      cpuSkipNextLong();
+      cpuSkipNextExtensionLong();
+      cpuPrefetchOpcode();
     }
     cpuSetInstructionTime(4);
   }
@@ -824,18 +870,20 @@ static void cpuDbcc(BOOLE cc, ULO reg)
     if (val != -1)
     {
       ULO tmp_pc = cpuGetPC();
-      cpuInitializeFromNewPC(tmp_pc + cpuGetNextWordSignExt());
+      cpuInitializeFromNewPC(tmp_pc + 2 + cpuGetNextExtensionWordSignExt());
       cpuSetInstructionTime(10);
     }
     else
     {
-      cpuSkipNextWord();
+      cpuSkipNextExtensionWord();
+      cpuPrefetchOpcode();
       cpuSetInstructionTime(14);
     }
   }
   else
   {
-    cpuSkipNextWord();
+    cpuSkipNextExtensionWord();
+    cpuPrefetchOpcode();
     cpuSetInstructionTime(12);
   }
 }
@@ -845,8 +893,9 @@ static void cpuDbcc(BOOLE cc, ULO reg)
 /// </summary>
 static void cpuAndCcrB()
 {
-  UWO imm = cpuGetNextWord();
+  UWO imm = cpuGetNextExtensionWord();
   cpuSetSR(cpuGetSR() & (0xffe0 | (imm & 0x1f)));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -856,8 +905,9 @@ static void cpuAndSrW()
 {
   if (cpuGetFlagSupervisor())
   {
-    UWO imm = cpuGetNextWord();
+    UWO imm = cpuGetNextExtensionWord();
     cpuUpdateSr(cpuGetSR() & imm);
+    cpuPrefetchOpcode();
   }
   else
   {
@@ -870,8 +920,9 @@ static void cpuAndSrW()
 /// </summary>
 static void cpuOrCcrB()
 {
-  UWO imm = cpuGetNextWord();
+  UWO imm = cpuGetNextExtensionWord();
   cpuSetSR(cpuGetSR() | (imm & 0x1f));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -881,8 +932,9 @@ static void cpuOrSrW()
 {
   if (cpuGetFlagSupervisor())
   {
-    UWO imm = cpuGetNextWord();
+    UWO imm = cpuGetNextExtensionWord();
     cpuUpdateSr(cpuGetSR() | imm);
+    cpuPrefetchOpcode();
   }
   else
   {
@@ -895,8 +947,9 @@ static void cpuOrSrW()
 /// </summary>
 static void cpuEorCcrB()
 {
-  UWO imm = cpuGetNextWord();
+  UWO imm = cpuGetNextExtensionWord();
   cpuSetSR(cpuGetSR() ^ (imm & 0x1f));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -906,8 +959,9 @@ static void cpuEorSrW()
 {
   if (cpuGetFlagSupervisor())
   {
-    UWO imm = cpuGetNextWord();
+    UWO imm = cpuGetNextExtensionWord();
     cpuUpdateSr(cpuGetSR() ^ imm);
+    cpuPrefetchOpcode();
   }
   else
   {
@@ -921,6 +975,7 @@ static void cpuEorSrW()
 static void cpuMoveToCcr(UWO src)
 {
   cpuSetSR((cpuGetSR() & 0xff00) | (src & 0x1f));
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -936,6 +991,7 @@ static void cpuMoveToSr(UWO src)
   {
     cpuThrowPrivilegeViolationException();
   }
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -943,6 +999,7 @@ static void cpuMoveToSr(UWO src)
 /// </summary>
 static UWO cpuMoveFromCcr()
 {
+  cpuPrefetchOpcode();
   return cpuGetSR() & 0x1f;
 }
 
@@ -953,6 +1010,7 @@ static UWO cpuMoveFromSr()
 {
   if (cpuGetModelMajor() == 0 || (cpuGetModelMajor() > 0 && cpuGetFlagSupervisor()))
   {
+    cpuPrefetchOpcode();
     return (UWO) cpuGetSR();
   }
   else
@@ -967,6 +1025,7 @@ static UWO cpuMoveFromSr()
 /// </summary>
 static UBY cpuScc(ULO cc)
 {
+  cpuPrefetchOpcode();
   return (cpuCalculateConditionCode(cc)) ? 0xff : 0;
 }
 
@@ -997,6 +1056,7 @@ static void cpuRtr()
 /// </summary>
 static void cpuNop()
 {
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -1005,6 +1065,7 @@ static void cpuNop()
 /// </summary>
 static void cpuTrapv()
 {
+  cpuPrefetchOpcode();
   if (cpuGetFlagV())
   {
     cpuThrowTrapVException();
@@ -1056,6 +1117,7 @@ static void cpuMulL(ULO src1, UWO extension)
       cpuSetFlagsNZVC(result == 0, !!(result & 0x80000000), (result >> 32) != 0, FALSE);
     }
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -1103,6 +1165,7 @@ static ULO cpuMulsW(UWO src2, UWO src1, ULO eatime)
 {
   ULO res = (ULO)(((LON)(WOR)src2)*((LON)(WOR)src1));
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(38 + eatime + cpuMulsTime[(src1 << 1) & 0x1ff] + cpuMulsTime[src1 >> 7]);
   return res;
 }
@@ -1114,6 +1177,7 @@ static ULO cpuMuluW(UWO src2, UWO src1, ULO eatime)
 {
   ULO res = ((ULO)src2)*((ULO)src1);
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(38 + eatime + cpuMuluTime[src1 & 0xff] + cpuMuluTime[src1 >> 8]);
   return res;
 }
@@ -1146,6 +1210,7 @@ static ULO cpuDivsW(ULO dst, UWO src1)
       result = (rem << 16) | (res & 0xffff);
       cpuSetFlagsNZVC(cpuIsZeroW((UWO) res), cpuMsbW((UWO) res), FALSE, FALSE);
     }
+    cpuPrefetchOpcode();
   }
   return result;
 }
@@ -1178,6 +1243,7 @@ static ULO cpuDivuW(ULO dst, UWO src1)
       result = (rem << 16) | (res & 0xffff);
       cpuSetFlagsNZVC(cpuIsZeroW((UWO) res), cpuMsbW((UWO) res), FALSE, FALSE);
     }
+    cpuPrefetchOpcode();
   }
   return result;
 }
@@ -1255,6 +1321,7 @@ static void cpuDivL(ULO divisor, ULO ext)
 	cpuSetFlagsNZ00NewL((ULO) result);
       }
     }
+    cpuPrefetchOpcode();
   }
   else
   {
@@ -1284,6 +1351,7 @@ static UBY cpuLslB(UBY dst, ULO sh, ULO cycles)
     res = dst << sh;
     cpuSetFlagsShift(cpuIsZeroB(res), cpuMsbB(res), dst & (0x80>>(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1310,6 +1378,7 @@ static UWO cpuLslW(UWO dst, ULO sh, ULO cycles)
     res = dst << sh;
     cpuSetFlagsShift(cpuIsZeroW(res), cpuMsbW(res), dst & (0x8000>>(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1336,6 +1405,7 @@ static ULO cpuLslL(ULO dst, ULO sh, ULO cycles)
     res = dst << sh;
     cpuSetFlagsShift(cpuIsZeroL(res), cpuMsbL(res), dst & (0x80000000>>(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1362,6 +1432,7 @@ static UBY cpuLsrB(UBY dst, ULO sh, ULO cycles)
     res = dst >> sh;
     cpuSetFlagsShift(cpuIsZeroB(res), FALSE, dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1388,6 +1459,7 @@ static UWO cpuLsrW(UWO dst, ULO sh, ULO cycles)
     res = dst >> sh;
     cpuSetFlagsShift(cpuIsZeroW(res), FALSE, dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1414,6 +1486,7 @@ static ULO cpuLsrL(ULO dst, ULO sh, ULO cycles)
     res = dst >> sh;
     cpuSetFlagsShift(cpuIsZeroL(res), FALSE, dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1450,6 +1523,7 @@ static UBY cpuAslB(UBY dst, ULO sh, ULO cycles)
 
     cpuSetFlagsShift(cpuIsZeroB(res), n_result, dst & (0x80>>(sh-1)), msb_changed);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (UBY) res;
 }
@@ -1486,6 +1560,7 @@ static UWO cpuAslW(UWO dst, ULO sh, ULO cycles)
 
     cpuSetFlagsShift(cpuIsZeroW(res), n_result, dst & (0x8000>>(sh-1)), msb_changed);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (UWO) res;
 }
@@ -1522,6 +1597,7 @@ static ULO cpuAslL(ULO dst, ULO sh, ULO cycles)
 
     cpuSetFlagsShift(cpuIsZeroL(res), n_result, dst & (0x80000000>>(sh-1)), msb_changed);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (ULO) res;
 }
@@ -1548,6 +1624,7 @@ static UBY cpuAsrB(UBY dst, ULO sh, ULO cycles)
     res = ((BYT)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroB(res), cpuMsbB(res), dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (UBY) res;
 }
@@ -1574,6 +1651,7 @@ static UWO cpuAsrW(UWO dst, ULO sh, ULO cycles)
     res = ((WOR)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroW(res), cpuMsbW(res), dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (UWO) res;
 }
@@ -1601,6 +1679,7 @@ static ULO cpuAsrL(ULO dst, ULO sh, ULO cycles)
     res = ((LON)dst) >> sh;
     cpuSetFlagsShift(cpuIsZeroL(res), cpuMsbL(res), dst & (1<<(sh-1)), FALSE);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return (ULO) res;
 }
@@ -1624,6 +1703,7 @@ static UBY cpuRolB(UBY dst, ULO sh, ULO cycles)
     res = (dst << sh) | (dst >> (8-sh));
     cpuSetFlagsRotate(cpuIsZeroB(res), cpuMsbB(res), res & 1);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1647,6 +1727,7 @@ static UWO cpuRolW(UWO dst, ULO sh, ULO cycles)
     res = (dst << sh) | (dst >> (16-sh));
     cpuSetFlagsRotate(cpuIsZeroW(res), cpuMsbW(res), res & 1);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1670,6 +1751,7 @@ static ULO cpuRolL(ULO dst, ULO sh, ULO cycles)
     res = (dst << sh) | (dst >> (32-sh));
     cpuSetFlagsRotate(cpuIsZeroL(res), cpuMsbL(res), res & 1);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1693,6 +1775,7 @@ static UBY cpuRorB(UBY dst, ULO sh, ULO cycles)
     res = (dst >> sh) | (dst << (8-sh));
     cpuSetFlagsRotate(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(res));
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1716,6 +1799,7 @@ static UWO cpuRorW(UWO dst, ULO sh, ULO cycles)
     res = (dst >> sh) | (dst << (16-sh));
     cpuSetFlagsRotate(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(res));
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1739,6 +1823,7 @@ static ULO cpuRorL(ULO dst, ULO sh, ULO cycles)
     res = (dst >> sh) | (dst << (32-sh));
     cpuSetFlagsRotate(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(res));
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
   return res;
 }
@@ -1760,6 +1845,7 @@ static UBY cpuRoxlB(UBY dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagB(res), cpuGetNFlagB(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1781,6 +1867,7 @@ static UWO cpuRoxlW(UWO dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagW(res), cpuGetNFlagW(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1802,6 +1889,7 @@ static ULO cpuRoxlL(ULO dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagL(res), cpuGetNFlagL(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1823,6 +1911,7 @@ static UBY cpuRoxrB(UBY dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagB(res), cpuGetNFlagB(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1844,6 +1933,7 @@ static UWO cpuRoxrW(UWO dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagW(res), cpuGetNFlagW(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1865,6 +1955,7 @@ static ULO cpuRoxrL(ULO dst, ULO sh, ULO cycles)
     x = x_temp;
   }
   cpuSetFlagsRotateX(cpuGetZFlagL(res), cpuGetNFlagL(res), (x) ? 0x11 : 0);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles + sh*2);
   return res;
 }
@@ -1878,6 +1969,7 @@ static void cpuStop(UWO flags)
   {
     cpuSetStop(TRUE);
     cpuUpdateSr(flags);
+    cpuPrefetchOpcode();
     cpuSetInstructionTime(4);
   }
   else
@@ -1891,6 +1983,7 @@ static void cpuStop(UWO flags)
 /// </summary>
 static void cpuReset()
 {
+  cpuPrefetchOpcode();
   cpuCallResetExceptionFunc();
   cpuSetInstructionTime(132);
 }
@@ -1900,9 +1993,10 @@ static void cpuReset()
 /// </summary>
 static void cpuRtd()
 {
-  ULO displacement = cpuGetNextWordSignExt();
+  ULO displacement = cpuGetNextExtensionWordSignExt();
   cpuInitializeFromNewPC(memoryReadLong(cpuGetAReg(7))); 
   cpuSetAReg(7, cpuGetAReg(7) + 4 + displacement);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -1940,6 +2034,7 @@ static void cpuRte()
   }
   else
   {
+    cpuPrefetchOpcode();
     cpuThrowPrivilegeViolationException();
   }
   cpuSetInstructionTime(20);
@@ -1953,6 +2048,7 @@ static void cpuSwap(ULO reg)
   ULO res = cpuJoinWordToLong((UWO)cpuGetDReg(reg), (UWO) (cpuGetDReg(reg) >> 16));
   cpuSetDReg(reg, res);
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -1964,6 +2060,7 @@ static void cpuUnlk(ULO reg)
   cpuSetAReg(7, cpuGetAReg(reg));
   cpuSetAReg(reg, memoryReadLong(cpuGetAReg(7)));
   cpuSetAReg(7, cpuGetAReg(7) + 4);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(12);
 }
 
@@ -1972,11 +2069,12 @@ static void cpuUnlk(ULO reg)
 /// </summary>
 static void cpuLinkW(ULO reg)
 {
-  ULO disp = cpuGetNextWordSignExt();
+  ULO disp = cpuGetNextExtensionWordSignExt();
   cpuSetAReg(7, cpuGetAReg(7) - 4);
   memoryWriteLong(cpuGetAReg(reg), cpuGetAReg(7));
   cpuSetAReg(reg, cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + disp);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(16);
 }
 
@@ -1986,11 +2084,12 @@ static void cpuLinkW(ULO reg)
 /// </summary>
 static void cpuLinkL(ULO reg)
 {
-  ULO disp = cpuGetNextLong();
+  ULO disp = cpuGetNextExtensionLong();
   cpuSetAReg(7, cpuGetAReg(7) - 4);
   memoryWriteLong(cpuGetAReg(reg), cpuGetAReg(7));
   cpuSetAReg(reg, cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + disp);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -2002,6 +2101,7 @@ static void cpuExtW(ULO reg)
   UWO res = cpuGetDRegByteSignExtWord(reg);
   cpuSetDRegWord(reg, res);
   cpuSetFlagsNZ00NewW(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -2013,6 +2113,7 @@ static void cpuExtL(ULO reg)
   ULO res = cpuGetDRegWordSignExtLong(reg);
   cpuSetDReg(reg, res);
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -2024,6 +2125,7 @@ static void cpuExtBL(ULO reg)
   ULO res = cpuGetDRegByteSignExtLong(reg);
   cpuSetDReg(reg, res);
   cpuSetFlagsNZ00NewL(res);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -2035,6 +2137,7 @@ static void cpuExgAll(ULO reg1_type, ULO reg1, ULO reg2_type, ULO reg2)
   ULO tmp = cpuGetReg(reg1_type, reg1);
   cpuSetReg(reg1_type, reg1, cpuGetReg(reg2_type, reg2));
   cpuSetReg(reg2_type, reg2, tmp);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(6);
 }
 
@@ -2111,6 +2214,7 @@ static void cpuMovemwPre(UWO regs, ULO reg)
     memoryWriteWord((UWO)dstea, ea_reg_ea);
   }
   cpuSetAReg(reg, dstea);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2164,6 +2268,7 @@ static void cpuMovemlPre(UWO regs, ULO reg)
     memoryWriteLong(dstea, ea_reg_ea);
   }
   cpuSetAReg(reg, dstea);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2193,6 +2298,7 @@ static void cpuMovemwPost(UWO regs, ULO reg)
     }
   }
   cpuSetAReg(reg, dstea);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2221,6 +2327,7 @@ static void cpuMovemlPost(UWO regs, ULO reg)
     }
   }
   cpuSetAReg(reg, dstea);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2249,6 +2356,7 @@ static void cpuMovemwEa2R(UWO regs, ULO ea, ULO eacycles)
       index = index << 1;
     }
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2276,6 +2384,7 @@ static void cpuMovemlEa2R(UWO regs, ULO ea, ULO eacycles)
       index = index << 1;
     }
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2303,6 +2412,7 @@ static void cpuMovemwR2Ea(UWO regs, ULO ea, ULO eacycles)
       index = index << 1;
     }
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2330,6 +2440,7 @@ static void cpuMovemlR2Ea(UWO regs, ULO ea, ULO eacycles)
       index = index << 1;
     }
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(cycles);
 }
 
@@ -2338,7 +2449,8 @@ static void cpuMovemlR2Ea(UWO regs, ULO ea, ULO eacycles)
 /// </summary>
 static void cpuTrap(ULO vectorno)
 {
-  // PC written to the exception frame must be pc + 2, the address of the next instruction.
+  // PC written to the exception frame must be the address of the next instruction.
+  cpuPrefetchOpcode();
   cpuThrowTrapException(vectorno);
 }
 
@@ -2347,6 +2459,7 @@ static void cpuTrap(ULO vectorno)
 /// </summary>
 static void cpuMoveToUsp(ULO reg)
 {
+  cpuPrefetchOpcode();
   if (cpuGetFlagSupervisor())
   {
     // In supervisor mode, usp does not affect a7
@@ -2364,6 +2477,7 @@ static void cpuMoveToUsp(ULO reg)
 /// </summary>
 static void cpuMoveFromUsp(ULO reg)
 {
+  cpuPrefetchOpcode();
   if (cpuGetFlagSupervisor())
   {
     // In supervisor mode, usp is up to date
@@ -2385,6 +2499,7 @@ static void cpuCmpMB(ULO regx, ULO regy)
   UBY dst = memoryReadByte(cpuEA03(regx, 1));
   UBY res = dst - src;
   cpuSetFlagsCmp(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(12);
 }
 
@@ -2397,6 +2512,7 @@ static void cpuCmpMW(ULO regx, ULO regy)
   UWO dst = memoryReadWord(cpuEA03(regx, 2));
   UWO res = dst - src;
   cpuSetFlagsCmp(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW(src));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(12);
 }
 
@@ -2409,6 +2525,7 @@ static void cpuCmpML(ULO regx, ULO regy)
   ULO dst = memoryReadLong(cpuEA03(regx, 4));
   ULO res = dst - src;
   cpuSetFlagsCmp(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(src));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(20);
 }
 
@@ -2422,6 +2539,7 @@ static void cpuChkW(UWO value, UWO ub)
 {
   cpuSetFlagZ(value == 0);
   cpuSetFlagsVC(FALSE, FALSE);
+  cpuPrefetchOpcode();
   if (((WOR)value) < 0)
   {
     cpuSetFlagN(TRUE);
@@ -2445,6 +2563,7 @@ static void cpuChkL(ULO value, ULO ub)
 {
   cpuSetFlagZ(value == 0);
   cpuSetFlagsVC(FALSE, FALSE);
+  cpuPrefetchOpcode();
   if (((LON)value) < 0)
   {
     cpuSetFlagN(TRUE);
@@ -2464,6 +2583,7 @@ static UBY cpuAddXB(UBY dst, UBY src)
 {
   UBY res = dst + src + ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsAddX(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2474,6 +2594,7 @@ static UWO cpuAddXW(UWO dst, UWO src)
 {
   UWO res = dst + src + ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsAddX(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2484,6 +2605,7 @@ static ULO cpuAddXL(ULO dst, ULO src)
 {
   ULO res = dst + src + ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsAddX(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2494,6 +2616,7 @@ static UBY cpuSubXB(UBY dst, UBY src)
 {
   UBY res = dst - src - ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsSubX(cpuIsZeroB(res), cpuMsbB(res), cpuMsbB(dst), cpuMsbB(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2504,6 +2627,7 @@ static UWO cpuSubXW(UWO dst, UWO src)
 {
   UWO res = dst - src - ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsSubX(cpuIsZeroW(res), cpuMsbW(res), cpuMsbW(dst), cpuMsbW(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2514,6 +2638,7 @@ static ULO cpuSubXL(ULO dst, ULO src)
 {
   ULO res = dst - src - ((cpuGetFlagX()) ? 1:0);
   cpuSetFlagsSubX(cpuIsZeroL(res), cpuMsbL(res), cpuMsbL(dst), cpuMsbL(src));
+  cpuPrefetchOpcode();
   return res;
 }
 
@@ -2558,6 +2683,7 @@ static UBY cpuAbcdB(UBY dst, UBY src)
     cpuSetFlagN(TRUE);
   }
   cpuSetFlagV(((res_unadjusted & 0x80) == 0) && (res_bcd & 0x80));
+  cpuPrefetchOpcode();
   return res_bcd;
 }
 
@@ -2600,6 +2726,7 @@ static UBY cpuSbcdB(UBY dst, UBY src)
     cpuSetFlagN(TRUE);
   }
   cpuSetFlagV(((res_unadjusted & 0x80) == 0x80) && !(res_bcd & 0x80));
+  cpuPrefetchOpcode();
   return res_bcd;
 }
 
@@ -2730,6 +2857,7 @@ static void cpuBfChgCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   bf_data.field = (~bf_data.field) & bf_data.field_mask;
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
+  cpuPrefetchOpcode();
 }
 
 // bfchg dx {offset:width}
@@ -2759,6 +2887,7 @@ static void cpuBfClrCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   bf_data.field = 0;
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2796,6 +2925,7 @@ static void cpuBfExtsCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   }
   // Destination is always Dn
   cpuSetDReg(bf_data.dn, bf_data.field);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2824,6 +2954,7 @@ static void cpuBfExtuCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
   // Destination is always Dn
   cpuSetDReg(bf_data.dn, bf_data.field);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2858,6 +2989,7 @@ static void cpuBfFfoCommon(ULO val, bool has_ea, UWO ext)
       break;
   }
   cpuSetDReg(bf_data.dn, bf_data.offset + i);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2890,6 +3022,7 @@ static void cpuBfInsCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2920,6 +3053,7 @@ static void cpuBfSetCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   bf_data.field = (ULO)bf_data.field_mask;
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2946,6 +3080,7 @@ static void cpuBfTstCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   struct cpuBfData bf_data;
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
+  cpuPrefetchOpcode();
 }
 
 /// <summary>
@@ -2969,8 +3104,9 @@ static void cpuBfTstEa(ULO ea, UWO ext)
 /// </summary>
 static void cpuMovepWReg(ULO areg, ULO dreg)
 {
-  ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
+  ULO ea = cpuGetAReg(areg) + cpuGetNextExtensionWordSignExt();
   cpuSetDRegWord(dreg, cpuJoinByteToWord(memoryReadByte(ea), memoryReadByte(ea + 2)));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(16);
 }
 
@@ -2979,8 +3115,9 @@ static void cpuMovepWReg(ULO areg, ULO dreg)
 /// </summary>
 static void cpuMovepLReg(ULO areg, ULO dreg)
 {
-  ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
+  ULO ea = cpuGetAReg(areg) + cpuGetNextExtensionWordSignExt();
   cpuSetDReg(dreg, cpuJoinByteToLong(memoryReadByte(ea), memoryReadByte(ea + 2), memoryReadByte(ea + 4), memoryReadByte(ea + 6)));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(24);
 }
 
@@ -2989,9 +3126,10 @@ static void cpuMovepLReg(ULO areg, ULO dreg)
 /// </summary>
 static void cpuMovepWEa(ULO areg, ULO dreg)
 {
-  ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
+  ULO ea = cpuGetAReg(areg) + cpuGetNextExtensionWordSignExt();
   memoryWriteByte((UBY) (cpuGetDReg(dreg) >> 8), ea);
   memoryWriteByte(cpuGetDRegByte(dreg), ea + 2);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(16);
 }
 
@@ -3000,11 +3138,12 @@ static void cpuMovepWEa(ULO areg, ULO dreg)
 /// </summary>
 static void cpuMovepLEa(ULO areg, ULO dreg)
 {
-  ULO ea = cpuGetAReg(areg) + cpuGetNextWordSignExt();
+  ULO ea = cpuGetAReg(areg) + cpuGetNextExtensionWordSignExt();
   memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 24), ea);
   memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 16), ea + 2);
   memoryWriteByte((UBY)(cpuGetDReg(dreg) >> 8), ea + 4);
   memoryWriteByte(cpuGetDRegByte(dreg), ea + 6);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(24);
 }
 
@@ -3013,9 +3152,10 @@ static void cpuMovepLEa(ULO areg, ULO dreg)
 /// </summary>
 static void cpuPackReg(ULO yreg, ULO xreg)
 {
-  UWO adjustment = cpuGetNextWord();
+  UWO adjustment = cpuGetNextExtensionWord();
   UWO src = cpuGetDRegWord(xreg) + adjustment;
   cpuSetDRegByte(yreg, (UBY) (((src >> 4) & 0xf0) | (src & 0xf)));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3024,11 +3164,12 @@ static void cpuPackReg(ULO yreg, ULO xreg)
 /// </summary>
 static void cpuPackEa(ULO yreg, ULO xreg)
 {
-  UWO adjustment = cpuGetNextWord();
+  UWO adjustment = cpuGetNextExtensionWord();
   UBY b1 = memoryReadByte(cpuEA04(xreg, 1));
   UBY b2 = memoryReadByte(cpuEA04(xreg, 1));
   UWO result = ((((UWO)b1) << 8) | (UWO) b2) + adjustment;
   memoryWriteByte((UBY) (((result >> 4) & 0xf0) | (result & 0xf)), cpuEA04(yreg, 1));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3037,10 +3178,11 @@ static void cpuPackEa(ULO yreg, ULO xreg)
 /// </summary>
 static void cpuUnpkReg(ULO yreg, ULO xreg)
 {
-  UWO adjustment = cpuGetNextWord();
+  UWO adjustment = cpuGetNextExtensionWord();
   UBY b1 = cpuGetDRegByte(xreg);
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   cpuSetDRegWord(yreg, result);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3049,11 +3191,12 @@ static void cpuUnpkReg(ULO yreg, ULO xreg)
 /// </summary>
 static void cpuUnpkEa(ULO yreg, ULO xreg)
 {
-  UWO adjustment = cpuGetNextWord();
+  UWO adjustment = cpuGetNextExtensionWord();
   UBY b1 = memoryReadByte(cpuEA04(xreg, 1));
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
   memoryWriteByte((UBY) (result >> 8), cpuEA04(yreg, 1));
   memoryWriteByte((UBY) result, cpuEA04(yreg, 1));
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3064,7 +3207,7 @@ static void cpuMoveCFrom()
 {
   if (cpuGetFlagSupervisor())
   {
-    UWO extension = (UWO) cpuGetNextWord();
+    UWO extension = (UWO) cpuGetNextExtensionWord();
     ULO da = (extension >> 15) & 1;
     ULO regno = (extension >> 12) & 7;
     ULO ctrl_regno = extension & 0xfff;
@@ -3115,6 +3258,7 @@ static void cpuMoveCFrom()
     cpuThrowPrivilegeViolationException();
     return;
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3125,7 +3269,7 @@ static void cpuMoveCTo()
 {
   if (cpuGetFlagSupervisor())
   {
-    UWO extension = (UWO) cpuGetNextWord();
+    UWO extension = (UWO) cpuGetNextExtensionWord();
     ULO da = (extension >> 15) & 1;
     ULO regno = (extension >> 12) & 7;
     ULO ctrl_regno = extension & 0xfff;
@@ -3176,6 +3320,7 @@ static void cpuMoveCTo()
     cpuThrowPrivilegeViolationException();
     return;
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3204,13 +3349,13 @@ static void cpuMoveSB(ULO ea, UWO extension)
 	cpuSetAReg(regno, (ULO)(LON)(BYT) data);
       }
     }
-  }
-  else
-  {
-    cpuThrowPrivilegeViolationException();
+    cpuPrefetchOpcode();
+    cpuSetInstructionTime(4);
     return;
   }
-  cpuSetInstructionTime(4);	  
+
+  cpuThrowPrivilegeViolationException();
+  return;
 }
 
 /// <summary>
@@ -3238,13 +3383,13 @@ static void cpuMoveSW(ULO ea, UWO extension)
 	cpuSetAReg(regno, (ULO)(LON)(WOR) data);
       }
     }
-  }
-  else
-  {
-    cpuThrowPrivilegeViolationException();
+    cpuPrefetchOpcode();
+    cpuSetInstructionTime(4);
     return;
   }
-  cpuSetInstructionTime(4);	  
+
+  cpuThrowPrivilegeViolationException();
+  return;
 }
 
 /// <summary>
@@ -3264,13 +3409,13 @@ static void cpuMoveSL(ULO ea, UWO extension)
     {
       cpuSetDReg(regno, memoryReadLong(ea));
     }
-  }
-  else
-  {
-    cpuThrowPrivilegeViolationException();
+    cpuPrefetchOpcode();
+    cpuSetInstructionTime(4);
     return;
   }
-  cpuSetInstructionTime(4);	  
+
+  cpuThrowPrivilegeViolationException();
+  return;
 }
 
 /// <summary>
@@ -3283,7 +3428,8 @@ static void cpuTrapcc(ULO cc)
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
     return;
   }
-  cpuSetInstructionTime(4);	  
+  cpuPrefetchOpcode();
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3291,13 +3437,14 @@ static void cpuTrapcc(ULO cc)
 /// </summary>
 static void cpuTrapccW(ULO cc)
 {
-  cpuGetNextWord();
+  cpuGetNextExtensionWord();
   if (cc)
   {
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
     return;
   }
-  cpuSetInstructionTime(4);	  
+  cpuPrefetchOpcode();
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3305,13 +3452,14 @@ static void cpuTrapccW(ULO cc)
 /// </summary>
 static void cpuTrapccL(ULO cc)
 {
-  cpuGetNextLong();
+  cpuGetNextExtensionLong();
   if (cc)
   {
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
     return;
   }
-  cpuSetInstructionTime(4);	  
+  cpuPrefetchOpcode();
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3333,6 +3481,7 @@ static void cpuCasB(ULO ea, UWO extension)
   {
     cpuSetDRegByte(cmp_regno, dst);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3355,6 +3504,7 @@ static void cpuCasW(ULO ea, UWO extension)
   {
     cpuSetDRegWord(cmp_regno, dst);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3377,6 +3527,7 @@ static void cpuCasL(ULO ea, UWO extension)
   {
     cpuSetDReg(cmp_regno, dst);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3385,8 +3536,8 @@ static void cpuCasL(ULO ea, UWO extension)
 /// </summary>
 static void cpuCas2W()
 {
-  UWO extension1 = cpuGetNextWord();
-  UWO extension2 = cpuGetNextWord();
+  UWO extension1 = cpuGetNextExtensionWord();
+  UWO extension2 = cpuGetNextExtensionWord();
   ULO ea1 = cpuGetReg(extension1 >> 15, (extension1 >> 12) & 7);
   ULO ea2 = cpuGetReg(extension2 >> 15, (extension2 >> 12) & 7);
   UWO dst1 = memoryReadWord(ea1);
@@ -3415,6 +3566,7 @@ static void cpuCas2W()
     cpuSetDRegWord(cmp1_regno, dst1);
     cpuSetDRegWord(cmp2_regno, dst2);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3423,8 +3575,8 @@ static void cpuCas2W()
 /// </summary>
 static void cpuCas2L()
 {
-  UWO extension1 = cpuGetNextWord();
-  UWO extension2 = cpuGetNextWord();
+  UWO extension1 = cpuGetNextExtensionWord();
+  UWO extension2 = cpuGetNextExtensionWord();
   ULO ea1 = cpuGetReg(extension1 >> 15, (extension1 >> 12) & 7);
   ULO ea2 = cpuGetReg(extension2 >> 15, (extension2 >> 12) & 7);
   ULO dst1 = memoryReadLong(ea1);
@@ -3453,6 +3605,7 @@ static void cpuCas2L()
     cpuSetDReg(cmp1_regno, dst1);
     cpuSetDReg(cmp2_regno, dst2);
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3465,6 +3618,7 @@ static void cpuChkCmp(ULO lb, ULO ub, ULO val, BOOLE is_chk2)
   BOOLE c = ((lb <= ub) && (val < lb || val > ub)) || ((lb > ub) && (val < lb) && (val > ub)); 
   cpuSetFlagZ(z);
   cpuSetFlagC(c);
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
   if (is_chk2 && c)
   {
@@ -3526,6 +3680,7 @@ static void cpuChkCmp2L(ULO ea, UWO extension)
 /// </summary>
 static void cpuCallm(ULO ea, UWO extension)
 {
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3536,6 +3691,7 @@ static void cpuCallm(ULO ea, UWO extension)
 /// </summary>
 static void cpuRtm(ULO da, ULO regno)
 {
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3587,6 +3743,7 @@ static void cpuPflush030(ULO ea, UWO extension)
     cpuThrowPrivilegeViolationException();
     return;
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3623,6 +3780,7 @@ static void cpuPflush040(ULO opmode, ULO regno)
     cpuThrowPrivilegeViolationException();
     return;
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3655,6 +3813,7 @@ static void cpuPtest040(ULO rw, ULO regno)
     cpuThrowPrivilegeViolationException();
     return;
   }
+  cpuPrefetchOpcode();
   cpuSetInstructionTime(4);
 }
 
@@ -3697,30 +3856,28 @@ ULO cpuExecuteInstruction(void)
   }
   else
   {
-    ULO oldSr = cpuGetSR();
-    UWO opcode;
+    cpuSetIsTraced(cpuGetSR() & 0xc000);
 
 #ifdef CPU_INSTRUCTION_LOGGING
     cpuCallInstructionLoggingFunc();
 #endif
 
-    cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
-    opcode = cpuGetNextWord();
+    //if (cpuGetPC() == 0xebe4)
+      if (cpuGetPC() == 0x50ca)
+      {
+      int asfasdf = 0;
+    }
 
-#ifdef CPU_INSTRUCTION_LOGGING
-    cpuSetCurrentOpcode(opcode);
-#endif
-
+    cpuSetOriginalPC(cpuGetPC()); // Store pc for exception logging
     cpuSetInstructionTime(0);
 
-	cpu_opcode_data_current[opcode].instruction_func(
-			cpu_opcode_data_current[opcode].data);
-    if (oldSr & 0xc000)
+    UWO opcode = cpuGetIRD();
+    cpu_opcode_data_current[opcode].instruction_func(cpu_opcode_data_current[opcode].data);
+    
+    if (cpuGetIsTraced())
     {
-      // This instruction was traced
-      ULO cycles = cpuGetInstructionTime();
-      cpuThrowTraceException();
-      cpuSetInstructionTime(cpuGetInstructionTime() + cycles);
+      // This instruction was traced. Some instructions that throw exceptions have already set this up
+      cpuThrowTraceException(cpuGetInstructionTime());
     }
     return cpuGetInstructionTime();
   }

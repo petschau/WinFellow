@@ -57,7 +57,6 @@ void cpuClearEverything(void)
   cpuSetCheckPendingInterruptsFunc(NULL);
 
 #ifdef CPU_INSTRUCTION_LOGGING
-  cpuSetCurrentOpcode(0);
   cpuSetInstructionLoggingFunc(NULL);
   cpuSetExceptionLoggingFunc(NULL);
   cpuSetInterruptLoggingFunc(NULL);

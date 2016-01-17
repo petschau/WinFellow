@@ -35,6 +35,8 @@ extern void cpuSetPC(ULO address);
 extern ULO cpuGetPC(void);
 extern void cpuSetStop(BOOLE stop);
 extern BOOLE cpuGetStop(void);
+extern void cpuSetIsTraced(bool is_traced);
+extern BOOLE cpuGetIsTraced();
 extern void cpuSetVbr(ULO vbr);
 extern ULO cpuGetVbr(void);
 extern void cpuSetSfc(ULO sfc);
@@ -47,17 +49,12 @@ extern void cpuSetCaar(ULO caar);
 extern ULO cpuGetCaar(void);
 extern void cpuSetSR(ULO sr);
 extern ULO cpuGetSR(void);
+extern UWO cpuGetIRD();
+extern UWO cpuGetIRC();
 extern void cpuSetInstructionTime(ULO cycles);
 extern ULO cpuGetInstructionTime(void);
 extern void cpuSetOriginalPC(ULO pc);
 extern ULO cpuGetOriginalPC(void);
-
-#ifdef CPU_INSTRUCTION_LOGGING
-
-extern void cpuSetCurrentOpcode(UWO opcode);
-extern UWO cpuGetCurrentOpcode(void);
-
-#endif
 
 extern void cpuProfileWrite(void);
 
@@ -74,13 +71,13 @@ extern ULO cpuGetDRegByteSignExtLong(ULO regno);
 extern UWO cpuGetARegWord(ULO regno);
 extern UBY cpuGetARegByte(ULO regno);
 
-extern UWO cpuGetNextWord(void);
-extern ULO cpuGetNextWordSignExt(void);
-extern ULO cpuGetNextLong(void);
-extern void cpuSkipNextWord(void);
-extern void cpuSkipNextLong(void);
-extern void cpuClearPrefetch(void);
-extern void cpuValidateReadPointer(void);
+extern void cpuPrefetchOpcode();
+extern UWO cpuGetNextExtensionWord();
+extern ULO cpuGetNextExtensionWordSignExt();
+extern ULO cpuGetNextExtensionLong();
+extern void cpuSkipNextExtensionWord();
+extern void cpuSkipNextExtensionLong();
+extern void cpuClearPrefetch();
 
 extern void cpuInitializeFromNewPC(ULO new_pc);
 
@@ -90,10 +87,10 @@ extern ULO cpuEA03(ULO regno, ULO size);
 extern ULO cpuEA04(ULO regno, ULO size);
 extern ULO cpuEA05(ULO regno);
 extern ULO cpuEA06(ULO regno);
-extern ULO cpuEA70(void);
-extern ULO cpuEA71(void);
-extern ULO cpuEA72(void);
-extern ULO cpuEA73(void);
+extern ULO cpuEA70();
+extern ULO cpuEA71();
+extern ULO cpuEA72();
+extern ULO cpuEA73();
 
 // Flags
 extern void cpuSetFlagsAdd(BOOLE z, BOOLE rm, BOOLE dm, BOOLE sm);
@@ -174,7 +171,7 @@ extern void cpuThrowTrapVException(void);
 extern void cpuThrowTrapException(ULO vector_no);
 extern void cpuThrowDivisionByZeroException(BOOLE executejmp);
 extern void cpuThrowChkException(void);
-extern void cpuThrowTraceException(void);
+extern void cpuThrowTraceException(ULO traced_instruction_cycle_time);
 extern void cpuThrowResetException(void);
 extern void cpuCallResetExceptionFunc(void);
 extern void cpuFrame1(UWO vector_offset, ULO pc);

@@ -121,7 +121,7 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
   }
 
 #ifdef CPU_INSTRUCTION_LOGGING
-  cpuCallExceptionLoggingFunc(cpuGetExceptionName(vector_offset), cpuGetOriginalPC(), cpuGetCurrentOpcode());
+  cpuCallExceptionLoggingFunc(cpuGetExceptionName(vector_offset), cpuGetOriginalPC(), cpuGetIRC());
 #endif
 
   cpuActivateSSP();
@@ -191,6 +191,7 @@ void cpuThrowFLineException(void)
 void cpuThrowTrapVException(void)
 {
   // The saved pc points to the next instruction, which is now in pc
+  if (cpuGetIsTraced()) cpuThrowTraceException(cpuGetInstructionTime());
   cpuThrowException(0x1c, cpuGetPC(), FALSE);
 }
 
@@ -203,6 +204,7 @@ void cpuThrowDivisionByZeroException(BOOLE executejmp)
 void cpuThrowTrapException(ULO vector_no)
 {
   // The saved pc points to the next instruction, which is now in pc
+  if (cpuGetIsTraced()) cpuThrowTraceException(cpuGetInstructionTime());
   cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);
 }
 
@@ -212,10 +214,12 @@ void cpuThrowChkException(void)
   cpuThrowException(0x18, cpuGetPC(), FALSE);
 }
 
-void cpuThrowTraceException(void)
+void cpuThrowTraceException(ULO traced_instruction_cycle_time)
 {
   // The saved pc points to the next instruction, which is now in pc
   cpuThrowException(0x24, cpuGetPC(), FALSE);
+  cpuSetInstructionTime(cpuGetInstructionTime() + traced_instruction_cycle_time);
+  cpuSetIsTraced(false);
 }
 
 void cpuThrowAddressErrorException(void)

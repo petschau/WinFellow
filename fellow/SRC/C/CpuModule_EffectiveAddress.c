@@ -56,7 +56,7 @@ ULO cpuEA04(ULO regno, ULO size)
 /* Calculates EA for disp16(Ax) */
 ULO cpuEA05(ULO regno)
 {
-  return cpuGetAReg(regno) + cpuGetNextWordSignExt();
+  return cpuGetAReg(regno) + cpuGetNextExtensionWordSignExt();
 }
 
 /* Calculates EA for disp8(Ax,Ri.size) with 68020 extended modes. */
@@ -95,10 +95,10 @@ static ULO cpuEA06Ext(UWO ext, ULO base_reg_value, ULO index_value)
       base_displacement = 0;
       break;
     case 2:			  /* Word base displacement */
-      base_displacement = cpuGetNextWordSignExt();
+      base_displacement = cpuGetNextExtensionWordSignExt();
       break;
     case 3:			  /* Long base displacement */
-      base_displacement = cpuGetNextLong();
+      base_displacement = cpuGetNextExtensionLong();
       break;
   }
 
@@ -109,18 +109,18 @@ static ULO cpuEA06Ext(UWO ext, ULO base_reg_value, ULO index_value)
     case 1: /* Indirect preindexed with null outer displacement */
       return memoryReadLong(base_reg_value + base_displacement + index_value);
     case 2: /* Indirect preindexed with word outer displacement */
-      outer_displacement = cpuGetNextWordSignExt();
+      outer_displacement = cpuGetNextExtensionWordSignExt();
       return memoryReadLong(base_reg_value + base_displacement + index_value) + outer_displacement;
     case 3: /* Indirect preindexed with long outer displacement */
-      outer_displacement = cpuGetNextLong();
+      outer_displacement = cpuGetNextExtensionLong();
       return memoryReadLong(base_reg_value + base_displacement + index_value) + outer_displacement;
     case 5: /* Indirect postindexed with null outer displacement, reserved for index register suppressed */
       return memoryReadLong(base_reg_value + base_displacement) + index_value;
     case 6: /* Indirect postindexed with word outer displacement, reserved for index register suppressed */
-      outer_displacement = cpuGetNextWordSignExt();
+      outer_displacement = cpuGetNextExtensionWordSignExt();
       return memoryReadLong(base_reg_value + base_displacement) + index_value + outer_displacement;
     case 7: /* Indirect postindexed with long outer displacement, reserved for index register suppressed */
-      outer_displacement = cpuGetNextLong();
+      outer_displacement = cpuGetNextExtensionLong();
       return memoryReadLong(base_reg_value + base_displacement) + index_value + outer_displacement;
   }
   return 0; /* Should never come here. */
@@ -130,7 +130,7 @@ static ULO cpuEA06Ext(UWO ext, ULO base_reg_value, ULO index_value)
 ULO cpuEA06(ULO regno)
 {
   ULO reg_value = cpuGetAReg(regno);
-  UWO ext = cpuGetNextWord();
+  UWO ext = cpuGetNextExtensionWord();
   ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 7);
   if (!(ext & 0x0800))
   {
@@ -148,35 +148,35 @@ ULO cpuEA06(ULO regno)
 }
 
 /* Calculates EA for xxxx.W */
-ULO cpuEA70(void)
+ULO cpuEA70()
 {
-  return cpuGetNextWordSignExt();
+  return cpuGetNextExtensionWordSignExt();
 }
 
 /* Calculates EA for xxxxxxxx.L */
-ULO cpuEA71(void)
+ULO cpuEA71()
 {
-  return cpuGetNextLong();
+  return cpuGetNextExtensionLong();
 }
 
 /// <summary>
 /// Calculates EA for disp16(PC)
 /// </summary>
 /// <returns>Address</returns>
-ULO cpuEA72(void)
+ULO cpuEA72()
 {
   ULO pc_tmp = cpuGetPC();
-  return pc_tmp + cpuGetNextWordSignExt();
+  return pc_tmp + 2 + cpuGetNextExtensionWordSignExt();
 }
 
 /// <summary>
 /// Calculates EA for disp8(PC,Ri.size). Calls cpuEA06Ext() to calculate extended 68020 modes.
 /// </summary>
 /// <returns>Address</returns>
-ULO cpuEA73(void)
+ULO cpuEA73()
 {
-  ULO reg_value = cpuGetPC();
-  UWO ext = cpuGetNextWord();
+  ULO reg_value = cpuGetPC() + 2;
+  UWO ext = cpuGetNextExtensionWord();
   ULO index_value = cpuGetReg(ext >> 15, (ext >> 12) & 0x7);
   if (!(ext & 0x0800))
   {
