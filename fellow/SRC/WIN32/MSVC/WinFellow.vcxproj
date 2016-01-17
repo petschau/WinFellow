@@ -938,7 +938,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\C\RetroPlatform.c" />
+    <ClCompile Include="..\C\RetroPlatform.cpp" />
     <ClCompile Include="..\C\RetroPlatformGuestIPC.c" />
     <ClCompile Include="..\C\SOUNDDRV.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>

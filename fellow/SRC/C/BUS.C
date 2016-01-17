@@ -123,7 +123,7 @@ void busEndOfFrame(void)
   /* Handle keyboard events                                       */
   /*==============================================================*/
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
     kbdDrvEOFHandler();
 #endif
   kbdEventEOFHandler();

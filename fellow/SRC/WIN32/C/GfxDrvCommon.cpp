@@ -57,7 +57,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     !_syskey_down);
 
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode()) {
+  if (!RP.GetHeadlessMode()) {
 #endif
     if (_win_active)
     {
@@ -194,8 +194,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     _win_minimized_original = ((HIWORD(wParam)) != 0);
     NotifyDirectInputDevicesAboutActiveState(_win_active_original);
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      RetroPlatformSendMouseCapture(TRUE);
+    if (RP.GetHeadlessMode())
+      RP.SendMouseCapture(true);
 #endif
     EvaluateRunEventStatus();
     return 0; /* We processed this message */
@@ -222,8 +222,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       return 0;
 #ifdef RETRO_PLATFORM
     case SC_CLOSE:
-      if (RetroPlatformGetMode())
-        RetroPlatformSendClose();
+      if (RP.GetHeadlessMode())
+        RP.SendClose();
       return 0;
 #endif
     default:
@@ -241,8 +241,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     }
 
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      RetroPlatformSendActivate(wParam, lParam);
+    if (RP.GetHeadlessMode())
+      RP.SendActivated(wParam ? true : false, lParam);
 #endif
 
     return 0;
@@ -276,12 +276,12 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 
 #ifdef RETRO_PLATFORM
   case WM_LBUTTONUP:
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
       if (mouseDrvGetFocus())
       {
         NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-        RetroPlatformSendMouseCapture(TRUE);
+        RP.SendMouseCapture(true);
       }
       else
       {
@@ -290,9 +290,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       return 0;
     }
   case WM_ENABLE:
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
-      RetroPlatformSendEnable(wParam ? 1 : 0);
+      RP.SendEnable(wParam ? 1 : 0);
       return 0;
     }
 #endif
@@ -319,8 +319,8 @@ bool GfxDrvCommon::InitializeWindowClass()
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
-    RetroPlatformSetWindowInstance(win_drv_hInstance);
+  if (RP.GetHeadlessMode())
+    RP.SetWindowInstance(win_drv_hInstance);
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
@@ -404,19 +404,17 @@ bool GfxDrvCommon::InitializeWindow()
     ULO height = _current_draw_mode->height;
 
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
       dwStyle = WS_POPUP;
       dwExStyle = WS_EX_TOOLWINDOW;
-      hParent = RetroPlatformGetParentWindowHandle();
+      hParent = RP.GetParentWindowHandle();
 
-      width = cfgGetScreenWidth(rp_startup_config);
+      width  = cfgGetScreenWidth(rp_startup_config);
       height = cfgGetScreenHeight(rp_startup_config);
 
-      fellowAddLog("RetroPlatform: override window dimensions to %ux%u, offset %u,%u...\n",
-        width, height,
-        RetroPlatformGetClippingOffsetLeftAdjusted(),
-        RetroPlatformGetClippingOffsetTopAdjusted());
+      fellowAddLog("GfxDrvCommon::InitializeWindow(): RetroPlatform mode, override window dimensions to %ux%u, offset %u,%u...\n",
+        width, height, RP.GetClippingOffsetLeftAdjusted(), RP.GetClippingOffsetTopAdjusted());
     }
 #endif
 
@@ -497,7 +495,7 @@ bool GfxDrvCommon::EmulationStart()
 
 #ifdef RETRO_PLATFORM
   // unpause emulation if in Retroplatform mode
-  if (RetroPlatformGetMode() && !RetroPlatformGetEmulationPaused())
+  if (RP.GetHeadlessMode() && !RP.GetEmulationPaused())
     RunEventSet();
 #endif
 
@@ -509,7 +507,7 @@ void GfxDrvCommon::EmulationStartPost()
   if (_hwnd != NULL)
   {
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
 #endif
       DisplayWindow();
   }

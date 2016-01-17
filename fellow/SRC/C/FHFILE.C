@@ -157,8 +157,8 @@ void fhfileSetHardfile(fhfile_dev hardfile, ULO index) {
   fhfileInitializeHardfile(index);
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendHardDriveContent(index, hardfile.filename, hardfile.readonly_original);
+  if(RP.GetHeadlessMode())
+    RP.SendHardDriveContent(index, hardfile.filename, hardfile.readonly_original ? true : false);
 #endif
 }
 
@@ -212,16 +212,16 @@ static BYT fhfileRead(ULO index)
   }
   fhfileSetLed(true);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-     RetroPlatformPostHardDriveLED(index, TRUE, FALSE);
+  if(RP.GetHeadlessMode())
+     RP.PostHardDriveLED(index, true, false);
 #endif
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fread(memoryAddressToPtr(dest), 1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(false);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-     RetroPlatformPostHardDriveLED(index, FALSE, FALSE);
+  if(RP.GetHeadlessMode())
+     RP.PostHardDriveLED(index, false, false);
 #endif
   return 0;
 }
@@ -239,16 +239,16 @@ static BYT fhfileWrite(ULO index)
   }
   fhfileSetLed(true);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-     RetroPlatformPostHardDriveLED(index, TRUE, TRUE);
+  if(RP.GetHeadlessMode())
+     RP.PostHardDriveLED(index, true, true);
 #endif
   fseek(fhfile_devs[index].F, offset, SEEK_SET);
   fwrite(memoryAddressToPtr(dest),1, length, fhfile_devs[index].F);
   memoryWriteLong(length, cpuGetAReg(1) + 32);
   fhfileSetLed(false);
  #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-     RetroPlatformPostHardDriveLED(index, FALSE, TRUE);
+  if(RP.GetHeadlessMode())
+     RP.PostHardDriveLED(index, false, true);
 #endif
   return 0;
 }

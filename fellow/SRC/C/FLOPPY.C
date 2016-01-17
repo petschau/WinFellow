@@ -420,8 +420,8 @@ void floppyMotorSet(ULO drive, BOOLE mtr)
   {
     drawSetLED(drive, !mtr);
 #ifdef RETRO_PLATFORM
-    if(RetroPlatformGetMode())
-      RetroPlatformSendFloppyDriveLED(drive, !mtr, FALSE);
+    if(RP.GetHeadlessMode())
+      RP.PostFloppyDriveLED(drive, !mtr ? true : false, false);
 #endif
   }
   floppy[drive].motor = !mtr;
@@ -469,8 +469,8 @@ void floppyStepSet(BOOLE stp)
 	  floppy[i].track++;
 
 #ifdef RETRO_PLATFORM
-	  if(RetroPlatformGetMode())
-	    RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+	  if(RP.GetHeadlessMode())
+            RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
 	}
 	else
@@ -483,8 +483,8 @@ void floppyStepSet(BOOLE stp)
 	    floppy[i].track--;
 
 #ifdef RETRO_PLATFORM
-	    if(RetroPlatformGetMode())
-	      RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+	    if(RP.GetHeadlessMode())
+	      RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
 	  }
 	}
@@ -1035,9 +1035,9 @@ void floppyImageRemove(ULO drive)
   }
 #endif
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
   {
-    RetroPlatformSendFloppyDriveContent(drive, "", floppy[drive].writeprot);
+    RP.SendFloppyDriveContent(drive, "", floppy[drive].writeprot ? true : false);
   }
 #endif
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
@@ -1297,9 +1297,9 @@ void floppySetDiskImage(ULO drive, STR *diskname)
 		break;
 	    }
 #ifdef RETRO_PLATFORM
-	    if(RetroPlatformGetMode() && bSuccess)
+	    if(RP.GetHeadlessMode() && bSuccess)
 	    {
-		RetroPlatformSendFloppyDriveContent(drive, diskname, floppy[drive].writeprot);
+              RP.SendFloppyDriveContent(drive, diskname, floppy[drive].writeprot ? true : false);
 	    }
 #endif
 	  }
@@ -1326,8 +1326,8 @@ void floppySetReadOnly(ULO drive, BOOLE readonly)
   floppy[drive].writeprot = readonly;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyDriveReadOnly(drive, readonly);
+  if(RP.GetHeadlessMode())
+    RP.SendFloppyDriveReadOnly(drive, readonly ? true : false);
 #endif
 }
 
@@ -1340,8 +1340,8 @@ void floppySetFastDMA(BOOLE fastDMA)
   floppy_fast = fastDMA;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyTurbo(fastDMA);
+  if(RP.GetHeadlessMode())
+    RP.SendFloppyTurbo(fastDMA ? true : false);
 #endif
 }
 
@@ -1559,8 +1559,8 @@ void floppyDMAWriteInit(LON drive)
   BOOLE ended = FALSE;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyDriveLED(drive, TRUE, TRUE);
+  if(RP.GetHeadlessMode())
+    RP.PostFloppyDriveLED(drive, true, true);
 #endif
 
   if ((drive == -1) || !floppyDMAChannelOn())

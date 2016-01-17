@@ -100,8 +100,8 @@ void kbdEventEOFHandler(void) {
 	      break;
       case EVENT_EXIT:
 #ifdef RETRO_PLATFORM
-              if(RetroPlatformGetMode())  
-                RetroPlatformSendClose();
+              if(RP.GetHeadlessMode())  
+                RP.SendClose();
               else
 #endif
               fellowRequestEmulationStop();

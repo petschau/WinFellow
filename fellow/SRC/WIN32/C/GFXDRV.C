@@ -176,7 +176,7 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
   }
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
     gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
 #endif
 
@@ -251,22 +251,22 @@ void gfxDrvRegisterRetroPlatformScreenMode(const bool bStartup)
 {
   ULO lHeight, lWidth, lDisplayScale;
 
-  if (RetroPlatformGetScanlines())
+  if (RP.GetScanlines())
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
   else
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
 
   if (bStartup) {
-    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-    RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
   }
 
-  lHeight = RetroPlatformGetScreenHeightAdjusted();
-  lWidth = RetroPlatformGetScreenWidthAdjusted();
-  lDisplayScale = RetroPlatformGetDisplayScale();
+  lHeight = RP.GetScreenHeightAdjusted();
+  lWidth  = RP.GetScreenWidthAdjusted();
+  lDisplayScale = RP.GetDisplayScale();
 
   cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+  cfgSetScreenWidth (gfxDrvCommon->rp_startup_config, lWidth);
 
   if (gfx_drv_use_dxgi)
   {

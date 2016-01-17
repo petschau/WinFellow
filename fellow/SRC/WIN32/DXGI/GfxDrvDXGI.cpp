@@ -37,7 +37,7 @@ bool GfxDrvDXGI::Startup()
   DeleteEnumerationFactory();
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
     gfxDrvRegisterRetroPlatformScreenMode(true);
 #endif
 
@@ -272,10 +272,10 @@ bool GfxDrvDXGI::CreateSwapChain()
   int height = _current_draw_mode->height;
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
   {
-    width = RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
-    height = RetroPlatformGetScreenHeightAdjusted() / RetroPlatformGetDisplayScale();
+    width = RP.GetScreenWidthAdjusted() / RP.GetDisplayScale();
+    height = RP.GetScreenHeightAdjusted() / RP.GetDisplayScale();
   }
 #endif
 
@@ -381,15 +381,15 @@ void GfxDrvDXGI::FlipTexture()
   renderTargetView = 0;
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
   {
     D3D11_BOX sourceRegion;
-    sourceRegion.left = RetroPlatformGetClippingOffsetLeftAdjusted();
-    sourceRegion.right = RetroPlatformGetClippingOffsetLeftAdjusted() + RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale();
-    sourceRegion.top = RetroPlatformGetClippingOffsetTopAdjusted();
-    sourceRegion.bottom = RetroPlatformGetClippingOffsetTopAdjusted() + RetroPlatformGetScreenHeightAdjusted() / RetroPlatformGetDisplayScale();
-    sourceRegion.front = 0;
-    sourceRegion.back = 1;
+    sourceRegion.left   = RP.GetClippingOffsetLeftAdjusted();
+    sourceRegion.right  = RP.GetClippingOffsetLeftAdjusted() + RP.GetScreenWidthAdjusted() / RP.GetDisplayScale();
+    sourceRegion.top    = RP.GetClippingOffsetTopAdjusted();
+    sourceRegion.bottom = RP.GetClippingOffsetTopAdjusted() + RP.GetScreenHeightAdjusted() / RP.GetDisplayScale();
+    sourceRegion.front  = 0;
+    sourceRegion.back   = 1;
 
     _immediateContext->CopySubresourceRegion(backBuffer, 0, 0, 0, 0, amigaScreenBuffer, 0, &sourceRegion);
   }
@@ -642,11 +642,11 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     }
 
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
-      width = RetroPlatformGetScreenWidthAdjusted();
-      height = RetroPlatformGetScreenHeightAdjusted();
-      lDisplayScale = RetroPlatformGetDisplayScale();
+      width         = RP.GetScreenWidthAdjusted();
+      height        = RP.GetScreenHeightAdjusted();
+      lDisplayScale = RP.GetDisplayScale();
     }
     else
 #endif

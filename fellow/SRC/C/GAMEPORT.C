@@ -236,7 +236,8 @@ void gameportJoystickHandler(gameport_inputs joydev,
 	    gameport_down[i] = down;
 
 #ifdef RETRO_PLATFORM
-      if(RetroPlatformGetMode()) {
+      if(RP.GetHeadlessMode())
+      {
         ULO lMask = 0;
         if(button1) lMask |= RP_JOYSTICK_BUTTON1;
         if(button2) lMask |= RP_JOYSTICK_BUTTON2;
@@ -245,7 +246,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
         if(right)   lMask |= RP_JOYSTICK_RIGHT;
         if(down)    lMask |= RP_JOYSTICK_DOWN;
 
-        RetroPlatformSendGameportActivity(i, lMask);
+        RP.PostGameportActivity(i, lMask);
       }
 #endif
     }

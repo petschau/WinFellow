@@ -1,8 +1,7 @@
-/* @(#) $Id: RetroPlatform.h,v 1.23 2013-02-09 09:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
-/* This file contains RetroPlatform specific functionality to register as  */
+/* This file contains  specific functionality to register as RetroPlatform */
 /* guest and interact with the host.                                       */
 /*                                                                         */
 /* Author: Torsten Enderling (carfesh@gmx.net)                             */
@@ -29,68 +28,165 @@
 
 #ifdef RETRO_PLATFORM
 
+// DirectInput resources are used in interfaces
+#include "dxver.h"
+#include <dinput.h>
+
 #include "gfxdrv.h"
+#include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
+#include "defs.h"
 
-extern void  RetroPlatformEmulationStart(void);
-extern void  RetroPlatformEmulationStop(void);
-extern void  RetroPlatformEnter(void);
-extern ULO   RetroPlatformGetClippingOffsetLeftAdjusted(void);
-extern ULO   RetroPlatformGetClippingOffsetTopAdjusted(void);
-extern ULO   RetroPlatformGetDisplayScale(void);
-extern BOOLE RetroPlatformGetEmulationState(void);
-extern bool  RetroPlatformGetEmulationPaused(void);
-extern ULO   RetroPlatformGetEscapeKey(void);
-extern ULO   RetroPlatformGetEscapeKeyHoldTime(void);
-extern ULONGLONG RetroPlatformGetEscapeKeySimulatedTargetTime(void);
-extern inline bool  RetroPlatformGetMode(void);
-extern BOOLE RetroPlatformGetMouseCaptureRequestedByHost(void);
-extern HWND  RetroPlatformGetParentWindowHandle(void);
-extern bool  RetroPlatformGetScanlines(void);
-extern ULO   RetroPlatformGetScreenHeight(void);
-extern ULO   RetroPlatformGetScreenWidth(void);
-extern ULO   RetroPlatformGetScreenHeightAdjusted(void);
-extern ULO   RetroPlatformGetScreenWidthAdjusted(void);
-extern bool  RetroPlatformGetScreenWindowed(void);
-extern ULO   RetroPlatformGetScreenMode(void);
-extern ULONGLONG RetroPlatformGetTime(void);
-extern void  RetroPlatformPostEscaped(void);
-extern void  RetroPlatformPostHardDriveLED(const ULO, const BOOLE, const BOOLE);
-extern BOOLE RetroPlatformSendActivate(const BOOLE, const LPARAM);
-extern BOOLE RetroPlatformSendClose(void);
-extern BOOLE RetroPlatformSendEnable(const BOOLE);
-extern BOOLE RetroPlatformSendFloppyDriveContent(const ULO, const STR *szImageName, const BOOLE);
-extern BOOLE RetroPlatformSendFloppyDriveLED(const ULO, const BOOLE, const BOOLE);
-extern BOOLE RetroPlatformSendFloppyDriveReadOnly(const ULO, const BOOLE);
-extern BOOLE RetroPlatformSendFloppyDriveSeek(const ULO, const ULO);
-extern BOOLE RetroPlatformSendFloppyTurbo(const BOOLE);
-extern BOOLE RetroPlatformSendGameportActivity(const ULO, const ULO);
-extern BOOLE RetroPlatformSendHardDriveContent(const ULO, const STR *, const BOOLE);
-extern BOOLE RetroPlatformSendInputDevice(const DWORD, const DWORD, const DWORD,  const WCHAR *, const WCHAR *);
-extern BOOLE RetroPlatformSendMouseCapture(const BOOLE);
-extern BOOLE RetroPlatformSendScreenMode(HWND);
-extern void  RetroPlatformSetClippingOffsetLeft(const ULO);
-extern void  RetroPlatformSetClippingOffsetTop(const ULO);
-extern void  RetroPlatformSetEmulationPaused(const bool);
-extern void  RetroPlatformSetEscapeKey(const char *);
-extern ULONGLONG RetroPlatformSetEscapeKeyHeld(const bool);
-extern ULONGLONG RetroPlatformGetEscapeKeyHeldSince(void);
-extern void  RetroPlatformSetEscapeKeyHoldTime(const char *);
-extern void  RetroPlatformSetEscapeKeySimulatedTargetTime(const ULONGLONG);
-extern void  RetroPlatformSetHostID(const char *);
-extern void  RetroPlatformSetMode(const bool);
-extern void  RetroPlatformSetScreenHeight(ULO);
-extern void  RetroPlatformSetScreenMode(const char *);
-extern void  RetroPlatformSetScreenWidth(ULO);
-extern void  RetroPlatformSetScreenWindowed(const bool);
-extern void  RetroPlatformSetWindowInstance(HINSTANCE);
-extern void  RetroPlatformShutdown(void);
-extern void  RetroPlatformStartup(void);
+#define RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS 100
+#define RETRO_PLATFORM_KEYSET_COUNT            6 ///< north, east, south, west, fire, autofire
+#define RETRO_PLATFORM_MAX_PAL_LORES_WIDTH   376
+#define RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT  288
+#define RETRO_PLATFORM_NUM_GAMEPORTS           2 ///< gameport 1 & 2
+#define RETRO_PLATFORM_OFFSET_ADJUST_LEFT    368
+#define RETRO_PLATFORM_OFFSET_ADJUST_TOP      52
 
-#define RETRO_PLATFORM_MAX_PAL_LORES_WIDTH         376
-#define RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT        288
-#define RETRO_PLATFORM_OFFSET_ADJUST_LEFT          368
-#define RETRO_PLATFORM_OFFSET_ADJUST_TOP            52
+class RetroPlatform 
+{
+public:
+  bool       ConnectInputDeviceToPort(const ULO, const ULO, DWORD, const STR *);
+
+  void       EmulationStart(void);
+  void       EmulationStop(void);
+  void       EnterHeadlessMode(void);
+
+  // getters
+  ULO        GetClippingOffsetLeftAdjusted(void);
+  ULO        GetClippingOffsetTopAdjusted(void);
+  ULO        GetCPUSpeed(void);
+  ULO        GetDisplayScale(void);
+  bool       GetEmulationPaused(void);
+  bool       GetEmulationState(void);
+  ULO        GetEscapeKey(void);
+  ULONGLONG  GetEscapeKeyHeldSince(void);
+  ULO        GetEscapeKeyHoldTime(void);
+  ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
+  bool       GetHeadlessMode(void);
+  const STR *GetMessageText(ULO);
+  bool       GetMouseCaptureRequestedByHost(void);
+  HWND       GetParentWindowHandle(void);
+  bool       GetScanlines(void);
+  ULO        GetScreenHeight(void);
+  ULO        GetScreenWidth(void);
+  ULO        GetScreenHeightAdjusted(void);
+  ULO        GetScreenWidthAdjusted(void);
+  bool       GetScreenWindowed(void);
+  ULO        GetScreenMode(void);
+  ULONGLONG  GetTime(void);
+
+  // IPC guest to host communication - asynchronous post
+  bool       PostEscaped(void);
+  bool       PostFloppyDriveLED(const ULO, const bool, const bool);
+  bool       PostFloppyDriveSeek(const ULO, const ULO);
+  bool       PostGameportActivity(const ULO, const ULO);
+  bool       PostHardDriveLED(const ULO, const bool, const bool);
+  
+  // IPC guest to host communication - synchronous send
+  bool       SendActivated(const bool, const LPARAM);
+  bool       SendClose(void);
+  bool       SendEnable(const bool);
+  bool       SendFloppyDriveContent(const ULO, const STR *, const bool);
+  bool       SendHardDriveContent(const ULO, const STR *, const bool);
+  bool       SendFloppyDriveReadOnly(const ULO, const bool);
+  bool       SendFloppyTurbo(const bool);
+  bool       SendInputDevice(const DWORD, const DWORD, const DWORD, const WCHAR *, const WCHAR *);
+  bool       SendMouseCapture(const bool);
+
+  // setters
+  void       SetClippingOffsetLeft(const ULO);
+  void       SetClippingOffsetTop(const ULO);
+  void       SetEmulationPaused(const bool);
+  void       SetEmulationState(const bool);
+  void       SetEmulatorQuit(const bool);
+  void       SetEscapeKey(const ULO);
+  ULONGLONG  SetEscapeKeyHeld(const bool);
+  void       SetEscapeKeyHoldTime(const ULO);
+  void       SetEscapeKeySimulatedTargetTime(const ULONGLONG);
+  void       SetScanlines(const bool);
+  void       SetHeadlessMode(const bool);
+  void       SetHostID(const char *);
+  void       SetScreenHeight(ULO);
+  void       SetScreenMode(const char *);
+  void       SetScreenModeStruct(struct RPScreenMode *);
+  void       SetScreenWidth(ULO);
+  void       SetWindowInstance(HINSTANCE);
+
+  void       Shutdown(void);
+  void       Startup(void);
+
+             RetroPlatform();
+  virtual   ~RetroPlatform();
+  
+private:
+  // private functions  
+  bool       CheckEmulationNecessities(void);
+  void       DetermineScreenModeFromConfig(struct RPScreenMode *, cfg *);
+  int        EnumerateJoysticks(void);
+
+  ULO        GetClippingOffsetLeft(void);
+  ULO        GetClippingOffsetTop(void);
+  bool       GetHostVersion(ULO *, ULO *, ULO *);
+
+  // IPC guest to host communication - asynchronous post
+  bool       PostMessageToHost(ULO, WPARAM, LPARAM, const RPGUESTINFO *);
+  bool       PostPowerLEDIntensityPercent(const WPARAM);
+
+  // IPC guest to host communication - synchronous send
+  bool       SendMessageToHost(ULO, WPARAM, LPARAM, LPCVOID, DWORD, const RPGUESTINFO *, LRESULT *);
+
+  // setters
+  void       SetCustomKeyboardLayout(const ULO, const STR *);
+  void       SetDisplayScale(const ULO);
+  void       SetScreenWindowed(const bool);
+
+  // IPC guest to host communication - send (sync.)
+  bool       SendEnabledFloppyDrives(void);
+  bool       SendEnabledHardDrives(void);
+  bool       SendFeatures(void);
+  bool       SendGameports(const ULO);
+  bool       SendInputDevices(void);
+  bool       SendScreenMode(HWND);
+
+  // private variables
+  STR szHostID[CFG_FILENAME_LENGTH];  /// host ID that was passed over by the RetroPlatform player
+  bool bRetroPlatformMode = false;    /// flag to indicate that emulator operates in RetroPlatform/"headless" mode
+
+    // emulation/state settings
+  bool bInitialized = false;
+  bool bEmulationState = false;
+  bool bEmulationPaused = false;
+  bool bEmulatorQuit = false;
+  bool bMouseCaptureRequestedByHost = false;
+
+  ULO lMainVersion = 0, lRevision = 0, lBuild = 0;
+
+  // screen settings
+  LON lClippingOffsetLeftRP = 0, lClippingOffsetTopRP = 0;
+  LON lScreenWidthRP        = 0, lScreenHeightRP      = 0;
+  ULO lScreenMode = 0;
+  bool bScreenWindowed = true;
+  ULO lDisplayScale = 1;
+  bool bScanlines = false;
+
+  // escape key
+  ULO lEscapeKey = 1;
+  ULO lEscapeKeyHoldTime = 600;
+  ULONGLONG lEscapeKeyHeldSince = 0;
+  ULONGLONG lEscapeKeySimulatedTargetTime = 0;
+
+  RPGUESTINFO GuestInfo;
+
+  HINSTANCE hWindowInstance = NULL;
+  HWND      hGuestWindow = NULL;
+
+  cfg *Config; ///< RetroPlatform copy of WinFellow configuration
+};
+
+extern RetroPlatform RP;
 
 #endif
 

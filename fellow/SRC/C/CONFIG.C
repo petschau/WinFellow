@@ -52,6 +52,7 @@
 #include "RetroPlatform.h"
 #include "draw_interlace_control.h"
 #include "wgui.h"
+#include "KBDDRV.H"
 
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
@@ -1798,15 +1799,15 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else
 #ifdef RETRO_PLATFORM
-      if(RetroPlatformGetMode())
+      if(RP.GetHeadlessMode())
       {
 	if (stricmp(option, "gfx_offset_left") == 0)
 	{
-	  RetroPlatformSetClippingOffsetLeft(cfgGetULOFromString(value));
+	  RP.SetClippingOffsetLeft(cfgGetULOFromString(value));
 	}
 	else if (stricmp(option, "gfx_offset_top") == 0)
 	{
-	  RetroPlatformSetClippingOffsetTop(cfgGetULOFromString(value));
+	  RP.SetClippingOffsetTop(cfgGetULOFromString(value));
 	}
       }
       else
@@ -2016,8 +2017,8 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetMode(TRUE);
-	      RetroPlatformSetHostID(argv[i]);
+        RP.SetHeadlessMode(true); 
+        RP.SetHostID(argv[i]);
       }
       i++;
     }
@@ -2026,7 +2027,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
+        fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
       }
       i++;
     }
@@ -2034,8 +2035,10 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
     {
       i++;
       if (i < argc)
-      {
-	      RetroPlatformSetEscapeKey(argv[i]);
+      {      
+        ULO lEscapeKey = atoi(argv[i]);
+        lEscapeKey = kbddrv_DIK_to_symbol[lEscapeKey];
+        RP.SetEscapeKey(lEscapeKey);
       }
       i++;
     }
@@ -2043,8 +2046,8 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
     {
       i++;
       if (i < argc)
-      {
-	      RetroPlatformSetEscapeKeyHoldTime(argv[i]);
+      {   
+        RP.SetEscapeKeyHoldTime(atoi(argv[i]));
       }
       i++;
     }
@@ -2053,7 +2056,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetScreenMode(argv[i]);
+        RP.SetScreenMode(argv[i]);
       }
       i++;
     }
@@ -2351,7 +2354,7 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
   cfg *config = cfgManagerGetNewConfig(configmanager);
   cfgParseCommandLine(config, argc, argv);
 #ifdef RETRO_PLATFORM
-  if(!RetroPlatformGetMode()) {
+  if(!RP.GetHeadlessMode()) {
 #endif
   if(!cfgGetConfigAppliedOnce(config)) {
 	  // load configuration that the initdata contains

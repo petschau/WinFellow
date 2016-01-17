@@ -306,7 +306,7 @@
     <ClCompile Include="..\C\RetroPlatformGuestIPC.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\C\RetroPlatform.c">
+    <ClCompile Include="..\C\RetroPlatform.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\interrupt.c">

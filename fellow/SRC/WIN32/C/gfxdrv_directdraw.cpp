@@ -287,9 +287,9 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
   {
-    ULO lDisplayScale = RetroPlatformGetDisplayScale();
+    ULO lDisplayScale = RP.GetDisplayScale();
 
     ddraw_device->hwnd_clientrect_win.left   *= lDisplayScale;
     ddraw_device->hwnd_clientrect_win.top    *= lDisplayScale;
@@ -1068,7 +1068,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   if (ddraw_device->mode->windowed)
   {
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
 #endif
     {
       srcwin.left = 0;
@@ -1079,10 +1079,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #ifdef RETRO_PLATFORM
     else
     {
-      srcwin.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.right  = RetroPlatformGetScreenWidthAdjusted() + RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.top    = RetroPlatformGetClippingOffsetTopAdjusted();
-      srcwin.bottom = RetroPlatformGetScreenHeightAdjusted() + RetroPlatformGetClippingOffsetTopAdjusted();
+      srcwin.left   = RP.GetClippingOffsetLeftAdjusted();
+      srcwin.right  = RP.GetScreenWidthAdjusted() + RP.GetClippingOffsetLeftAdjusted();
+      srcwin.top    = RP.GetClippingOffsetTopAdjusted();
+      srcwin.bottom = RP.GetScreenHeightAdjusted() + RP.GetClippingOffsetTopAdjusted();
     }
 #endif
   }
@@ -1109,7 +1109,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   RECT *srcrect = NULL;
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
     srcrect = &srcwin;
 #endif
 
@@ -1232,7 +1232,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
       | DDSCAPS_OFFSCREENPLAIN;
 
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
     {
 #endif
       ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
@@ -1241,8 +1241,8 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
     }
     else {
       // increase buffer size to accomodate different display scaling factors
-      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RetroPlatformGetDisplayScale() * 2;
-      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RetroPlatformGetDisplayScale() * 2;
+      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RP.GetDisplayScale() * 2;
+      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RP.GetDisplayScale() * 2;
     }
 #endif
     err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
@@ -1763,7 +1763,7 @@ bool gfxDrvDDrawStartup()
   gfx_drv_ddraw_initialized = gfxDrvDDrawInitialize();
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode() && gfx_drv_ddraw_initialized) {
+  if (RP.GetHeadlessMode() && gfx_drv_ddraw_initialized) {
     gfxDrvRegisterRetroPlatformScreenMode(true);
   }
 #endif
@@ -1895,13 +1895,13 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *fi
 
   if (bTakeFilteredScreenshot) {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
-      width = RetroPlatformGetScreenWidthAdjusted();
-      height = RetroPlatformGetScreenHeightAdjusted();
-      x = RetroPlatformGetClippingOffsetLeftAdjusted();
-      y = RetroPlatformGetClippingOffsetTopAdjusted();
-      lDisplayScale = RetroPlatformGetDisplayScale();
+      width = RP.GetScreenWidthAdjusted();
+      height = RP.GetScreenHeightAdjusted();
+      x = RP.GetClippingOffsetLeftAdjusted();
+      y = RP.GetClippingOffsetTopAdjusted();
+      lDisplayScale = RP.GetDisplayScale();
     }
     else
 #endif
@@ -1914,7 +1914,7 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *fi
   }
   else {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
       //width and height in RP mode are sized for maximum scale factor
       // use harcoded RetroPlatform max PAL dimensions from WinUAE

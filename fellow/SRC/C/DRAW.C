@@ -418,12 +418,13 @@ static void drawFpsToFramebuffer32(void)
   ULO *bufl = ((ULO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
+  if(RP.GetHeadlessMode()) 
+  {
     // move left to offset for clipping at the right; since width is adjusted dynamically for scale, reduce by that, all other values are static
-    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale() - RetroPlatformGetClippingOffsetLeftAdjusted();
+    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RP.GetScreenWidthAdjusted() / RP.GetDisplayScale() - RP.GetClippingOffsetLeftAdjusted();
 
     // move down to compensate for clipping at top
-    bufl += RetroPlatformGetClippingOffsetTopAdjusted() * draw_mode_current->pitch / 4;
+    bufl += RP.GetClippingOffsetTopAdjusted() * draw_mode_current->pitch / 4;
   }
 #endif
 
@@ -481,7 +482,7 @@ BOOLE drawSetMode(ULO width,
   ULO allow_any_refresh;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
   {
     height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
     width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
@@ -691,7 +692,7 @@ static void drawAmigaScreenWidth(draw_mode *dm)
   if (draw_width_amiga <= 343)
   {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
       draw_left = 125;
     else
 #endif
@@ -701,7 +702,7 @@ static void drawAmigaScreenWidth(draw_mode *dm)
   else
   {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
       draw_right = 468;
     else
 #endif
