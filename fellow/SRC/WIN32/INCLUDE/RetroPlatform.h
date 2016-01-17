@@ -182,7 +182,7 @@ private:
   HINSTANCE hWindowInstance = NULL;
   HWND      hGuestWindow = NULL;
 
-  cfg *Config; ///< RetroPlatform copy of WinFellow configuration
+  cfg *pConfig; ///< RetroPlatform copy of WinFellow configuration
 };
 
 extern RetroPlatform RP;

@@ -664,7 +664,7 @@ ULO RetroPlatform::GetScreenHeightAdjusted(void)
 
 ULO RetroPlatform::GetCPUSpeed(void)
 {
-  return cfgGetCPUSpeed(Config);
+  return cfgGetCPUSpeed(pConfig);
 }
 
 ULO RetroPlatform::GetScreenWidthAdjusted(void) 
@@ -717,7 +717,7 @@ void RetroPlatform::DetermineScreenModeFromConfig(struct RPScreenMode *RetroPlat
     dwScreenMode |= RP_SCREENMODE_DISPLAY_FULLSCREEN_1;
 
   RetroPlatformScreenMode->dwScreenMode  = dwScreenMode;
-  RetroPlatformScreenMode->hGuestWindow  = hGuestWindow; // @@@TODO@@@
+  RetroPlatformScreenMode->hGuestWindow  = hGuestWindow;
   RetroPlatformScreenMode->lTargetHeight = RP.GetScreenHeight();
   RetroPlatformScreenMode->lTargetWidth  = RP.GetScreenWidth();
   RetroPlatformScreenMode->lClipLeft     = RP.GetClippingOffsetLeft();
@@ -1189,9 +1189,9 @@ void RetroPlatform::SetScreenWindowed(const bool bWindowed)
 {  
   bScreenWindowed = bWindowed;
 
-  if(Config != NULL) 
+  if(pConfig != NULL) 
   {
-    cfgSetScreenWindowed(Config, bWindowed);
+    cfgSetScreenWindowed(pConfig, bWindowed);
   }
 
   fellowAddLog("RetroPlatform::SetScreenWindowed(): configured to %s\n",
@@ -1296,8 +1296,8 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   RetroPlatform::SetClippingOffsetTop (sm->lClipTop);
   RetroPlatform::SetScreenHeight      (sm->lClipHeight);
   RetroPlatform::SetScreenWidth       (sm->lClipWidth);
-  cfgSetScreenHeight(Config, sm->lClipHeight);
-  cfgSetScreenWidth (Config, sm->lClipWidth);
+  cfgSetScreenHeight(pConfig, sm->lClipHeight);
+  cfgSetScreenWidth (pConfig, sm->lClipWidth);
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
@@ -1379,7 +1379,7 @@ bool RetroPlatform::SendFeatures(void)
   LRESULT lResult;
   bool bResult;
 
-  if (Config == nullptr)
+  if (pConfig == nullptr)
   {
     fellowAddLog("RetroPlatform::SendFeatures(): ERROR: config not initialzed.\n");
     return false;
@@ -1392,7 +1392,7 @@ bool RetroPlatform::SendFeatures(void)
   dFeatureFlags |= RP_FEATURE_SCREEN1X;
 
   // features that are currently implemented only for DirectDraw
-  if (Config->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW) 
+  if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECTDRAW) 
   {
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
@@ -1402,7 +1402,7 @@ bool RetroPlatform::SendFeatures(void)
     dFeatureFlags |= RP_FEATURE_FULLSCREEN;
 #endif
   }
-  else if (Config->m_displaydriver == DISPLAYDRIVER_DIRECT3D11) 
+  else if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11) 
   {
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
@@ -1413,7 +1413,7 @@ bool RetroPlatform::SendFeatures(void)
   }
   else
     fellowAddLog("RetroPlatform::SendFeatures(): WARNING: unknown display driver type %u\n",
-      Config->m_displaydriver);
+      pConfig->m_displaydriver);
     
   // currently missing features: RP_FEATURE_FULLSCREEN,
   // RP_FEATURE_STATE, RP_FEATURE_SCALING_SUBPIXEL, RP_FEATURE_SCALING_STRETCH
@@ -1478,9 +1478,9 @@ bool RetroPlatform::SendEnabledHardDrives(void)
   ULO i;
 
   fellowAddLog("RetroPlatform::SendEnabledHardDrives(): %d hard drives are enabled.\n", 
-    cfgGetHardfileCount(Config));
+    cfgGetHardfileCount(pConfig));
 
-  for(i = 0; i < cfgGetHardfileCount(Config); i++)
+  for(i = 0; i < cfgGetHardfileCount(pConfig); i++)
     dFeatureFlags |= 1 << i;
 
   bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_DEVICES, RP_DEVICECATEGORY_HD, 
@@ -1617,7 +1617,7 @@ bool RetroPlatform::SendScreenMode(HWND hWnd)
     return false;
 
   hGuestWindow = hWnd;
-  RetroPlatform::DetermineScreenModeFromConfig(&ScreenMode, Config);
+  RetroPlatform::DetermineScreenModeFromConfig(&ScreenMode, pConfig);
 
   bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_SCREENMODE, 0, 0, 
     &ScreenMode, sizeof ScreenMode, &GuestInfo, NULL);
@@ -1673,7 +1673,7 @@ void RetroPlatform::Startup(void)
 {
   ULO lResult;
 
-  Config = cfgManagerGetCurrentConfig(&cfg_manager);
+  pConfig = cfgManagerGetCurrentConfig(&cfg_manager);
 
   lResult = RPInitializeGuest(&GuestInfo, hWindowInstance, szHostID, RetroPlatformHostMessageFunction, 0);
 
@@ -1701,9 +1701,9 @@ void RetroPlatform::Startup(void)
  */
 bool RetroPlatform::CheckEmulationNecessities(void)
 {
-  if(strcmp(cfgGetKickImage(Config), "") != 0) 
+  if(strcmp(cfgGetKickImage(pConfig), "") != 0) 
   {
-    FILE *F = fopen(cfgGetKickImage(Config), "rb");
+    FILE *F = fopen(cfgGetKickImage(pConfig), "rb");
     if (F != NULL)
     {
       fclose(F);
@@ -1724,7 +1724,7 @@ void RetroPlatform::EnterHeadlessMode(void)
 {
   if (RetroPlatform::CheckEmulationNecessities() == true)
   {
-    cfgManagerSetCurrentConfig(&cfg_manager, Config);
+    cfgManagerSetCurrentConfig(&cfg_manager, pConfig);
     // check for manual or needed reset
     fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 
