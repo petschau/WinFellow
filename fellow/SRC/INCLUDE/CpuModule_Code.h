@@ -7347,6 +7347,7 @@ static void TAS_4AC0(ULO*opc_data)
 	UBY dst = cpuGetDRegByte(opc_data[0]);
 	dst = cpuTas(dst);
 	cpuSetDRegByte(opc_data[0], dst);
+	cpuSetInstructionTime(4);
 }
 static void TAS_4AD0(ULO*opc_data)
 {
@@ -7354,6 +7355,7 @@ static void TAS_4AD0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(14);
 }
 static void TAS_4AD8(ULO*opc_data)
 {
@@ -7361,6 +7363,7 @@ static void TAS_4AD8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(14);
 }
 static void TAS_4AE0(ULO*opc_data)
 {
@@ -7368,6 +7371,7 @@ static void TAS_4AE0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(16);
 }
 static void TAS_4AE8(ULO*opc_data)
 {
@@ -7375,6 +7379,7 @@ static void TAS_4AE8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(18);
 }
 static void TAS_4AF0(ULO*opc_data)
 {
@@ -7382,6 +7387,7 @@ static void TAS_4AF0(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(20);
 }
 static void TAS_4AF8(ULO*opc_data)
 {
@@ -7389,6 +7395,7 @@ static void TAS_4AF8(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(18);
 }
 static void TAS_4AF9(ULO*opc_data)
 {
@@ -7396,6 +7403,7 @@ static void TAS_4AF9(ULO*opc_data)
 	UBY dst = memoryReadByte(dstea);
 	dst = cpuTas(dst);
 	memoryWriteByte(dst, dstea);
+	cpuSetInstructionTime(22);
 }
 static void TST_4A00(ULO*opc_data)
 {
@@ -7638,43 +7646,43 @@ static void PEA_4850(ULO*opc_data)
 {
 	ULO dstea = cpuEA02(opc_data[0]);
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(8);
+	cpuSetInstructionTime(12);
 }
 static void PEA_4868(ULO*opc_data)
 {
 	ULO dstea = cpuEA05(opc_data[0]);
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(16);
 }
 static void PEA_4870(ULO*opc_data)
 {
 	ULO dstea = cpuEA06(opc_data[0]);
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(20);
 }
 static void PEA_4878(ULO*opc_data)
 {
 	ULO dstea = cpuEA70();
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(16);
 }
 static void PEA_4879(ULO*opc_data)
 {
 	ULO dstea = cpuEA71();
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(12);
+	cpuSetInstructionTime(20);
 }
 static void PEA_487A(ULO*opc_data)
 {
 	ULO dstea = cpuEA72();
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(10);
+	cpuSetInstructionTime(16);
 }
 static void PEA_487B(ULO*opc_data)
 {
 	ULO dstea = cpuEA73();
 	cpuPeaL(dstea);
-	cpuSetInstructionTime(14);
+	cpuSetInstructionTime(20);
 }
 static void JMP_4ED0(ULO*opc_data)
 {

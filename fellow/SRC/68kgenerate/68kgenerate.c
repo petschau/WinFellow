@@ -1279,7 +1279,11 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
       }
       else if (stricmp(i.instruction_name, "PEA") == 0)
       {
-        cgMakeInstructionTimeAbs(cg_jmp_time[eano]);
+        cgMakeInstructionTimeAbs(cg_pea_time[eano]);
+      }
+      else if (stricmp(i.instruction_name, "TAS") == 0)
+      {
+        cgMakeInstructionTimeAbs(((eano == 0) ? 4 : 10) + cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
       }
       else if ((stricmp(i.instruction_name, "MOVETOSR") == 0)
 	       || (stricmp(i.instruction_name, "MOVETOCCR") == 0))
