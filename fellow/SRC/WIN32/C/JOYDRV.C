@@ -216,7 +216,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND );
   if (res != DI_OK)
   {
-    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): ", res );
+    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel():", res );
   }
 
 #define INITDIPROP( diprp, obj, how ) \
@@ -232,7 +232,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_RANGE, &diprg.diph );
   if( res != DI_OK )
   {
-    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE X : ", res );
+    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE X :", res );
   }
 
   INITDIPROP( diprg, DIJOFS_Y, DIPH_BYOFFSET )
@@ -242,7 +242,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_RANGE, &diprg.diph );
   if( res != DI_OK ) 
   {
-    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE Y : ", res );
+    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty RANGE Y :", res );
   }
 
   INITDIPROP( dipdw, DIJOFS_X, DIPH_BYOFFSET )
@@ -251,7 +251,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_DEADZONE, &dipdw.diph );
   if( res != DI_OK ) 
   {
-    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE X : ", res );
+    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE X :", res );
   }
 
   INITDIPROP( dipdw, DIJOFS_Y, DIPH_BYOFFSET )
@@ -260,7 +260,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
   res = IDirectInputDevice8_SetProperty(joy_drv_lpDID[port], DIPROP_DEADZONE, &dipdw.diph );
   if( res != DI_OK ) 
   {
-    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE Y : ", res );
+    joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel(): SetProperty DEADZONE Y :", res );
   }
 
 #undef INITDIPROP
@@ -280,7 +280,7 @@ void joyDrvDInputUnacquire(int port)
     HRESULT res = IDirectInputDevice8_Unacquire( joy_drv_lpDID[port] );
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputUnacquire(): ", res);
+      joyDrvDInputFailure("joyDrvDInputUnacquire():", res);
     }
   }
 }
@@ -306,7 +306,7 @@ void joyDrvDInputAcquire(int port)
     res = IDirectInputDevice8_Acquire( joy_drv_lpDID[port] );
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputAcquire(): ", res);
+      joyDrvDInputFailure("joyDrvDInputAcquire():", res);
     }
   }
 }
@@ -320,14 +320,14 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
     res = CoCreateInstance(CLSID_DirectInputDevice8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID*) &(pDiD[port]));
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance() ", res );
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance()", res );
       return TRUE;
     }
 
     res = IDirectInputDevice8_Initialize(pDiD[port], win_drv_hInstance, DIRECTINPUT_VERSION, guid );
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize() ", res );
+      joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceInitialize()", res );
       return TRUE;
     }
   }
@@ -335,7 +335,7 @@ BOOLE joyDrvDxCreateAndInitDevice( IDirectInput8 *pDi, IDirectInputDevice8 *pDiD
   res = IDirectInputDevice8_SetDataFormat( pDiD[port], &c_dfDIJoystick );
   if (res != DI_OK)
   {
-    joyDrvDInputFailure("joyDrvDInputInitialize(): SetDataFormat() ", res );
+    joyDrvDInputFailure("joyDrvDInputInitialize(): SetDataFormat()", res );
     return TRUE;
   }
 		
@@ -379,7 +379,7 @@ void joyDrvDInputInitialize(void)
     res = CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID*) &joy_drv_lpDI);
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance() ", res );
+      joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance()", res );
       joy_drv_failed = TRUE;
       return;
     }
@@ -387,7 +387,7 @@ void joyDrvDInputInitialize(void)
     res = IDirectInput8_Initialize(joy_drv_lpDI, win_drv_hInstance, DIRECTINPUT_VERSION);
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputInitialize(): Initialize() ", res );
+      joyDrvDInputFailure("joyDrvDInputInitialize(): Initialize()", res );
       joy_drv_failed = TRUE;
       return;
     }
@@ -397,7 +397,7 @@ void joyDrvDInputInitialize(void)
     res = IDirectInput8_EnumDevices(joy_drv_lpDI, DI8DEVCLASS_GAMECTRL, joyDrvInitJoystickInput, joy_drv_lpDI, DIEDFL_ATTACHEDONLY);
     if (res != DI_OK)
     {
-      joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices() ", res );
+      joyDrvDInputFailure("joyDrvDInputInitialize(): EnumDevices()", res );
       joy_drv_failed = TRUE;
       return;
     }
@@ -494,7 +494,7 @@ BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOL
     {
       if (res != DI_BUFFEROVERFLOW)
       {
-	joyDrvDInputFailure( "joyDrvMovementHandler(): Poll() ", res );
+	joyDrvDInputFailure( "joyDrvMovementHandler(): Poll()", res );
       }
     }
 
@@ -505,7 +505,7 @@ BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOL
 
       if( LostCounter-- < 0 )
       {
-	joyDrvDInputFailure("joyDrvMovementHandler(): abort -- ", res );
+	joyDrvDInputFailure("joyDrvMovementHandler(): abort --", res );
 	joy_drv_failed = TRUE;
 	return TRUE;
       }
@@ -514,7 +514,7 @@ BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOL
   
   if (res != DI_OK)
   {
-    joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState() ", res );
+    joyDrvDInputFailure("joyDrvMovementHandler(): GetDeviceState()", res );
     return TRUE;
   }
 
