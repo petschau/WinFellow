@@ -173,7 +173,6 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
     case RP_IPC_TO_GUEST_PAUSE:
       if (wParam != 0) 
       { // pause emulation
-        fellowAddLog("RetroPlatformHostMessageFunction(): received pause event.\n");
         gfxDrvCommon->RunEventReset();
         RP.SetEmulationPaused(true);
         RP.SetEmulationState(false);
@@ -181,7 +180,6 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
       }
       else 
       { // resume emulation
-        fellowAddLog("RetroPlatformHostMessageFunction(): received resume event, requesting start.\n");
         gfxDrvCommon->RunEventSet();
         RP.SetEmulationPaused(false);
         RP.SetEmulationState(true);
@@ -1532,7 +1530,7 @@ bool RetroPlatform::SendInputDevice(const DWORD dwHostInputType,
     &rpInputDevDesc, sizeof rpInputDevDesc, &GuestInfo, &lResult);
   
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatform::SendInputDevice() - '%s' %s, result was %d.\n", 
+  fellowAddLog("RetroPlatform::SendInputDevice('%s') %s, lResult=%d.\n", 
     szHostInputNameA, bResult ? "successful" : "failed", lResult);
 #endif
    
