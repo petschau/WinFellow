@@ -827,7 +827,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	{
 	  if (stricmp(i.instruction_name, "DIVL") == 0)
 	  {
-	    fprintf(codef, "\t%s(src, ext);\n", i.function);
+	    fprintf(codef, "\t%s(src, ext, opc_data[2]);\n", i.function);
 	  }
 	  else if ((stricmp(i.instruction_name, "MULU") == 0) ||
 		   (stricmp(i.instruction_name, "MULS") == 0))
@@ -837,8 +837,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    fprintf(codef, "\tULO res = %s(dst, src);\n", i.function);
-	    cgStoreDst(0, reg_cpu_data_index, 4, "res");
+	    fprintf(codef, "\t%s(dst, src, opc_data[1], opc_data[2]);\n", i.function);
 	  }
 	}
 	else
@@ -925,11 +924,6 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	else if (stricmp(i.instruction_name, "LEA") == 0)
 	{
 	  cgMakeInstructionTimeAbs(cgGetLeaTime(eano));
-	}
-	else if ((stricmp(i.instruction_name, "MULU") != 0) &&
-		 (stricmp(i.instruction_name, "MULS") != 0))
-	{
-	  cgMakeInstructionTime(time_cpu_data_index);
 	}
 	cgMakeFunctionFooter(fname, templ_name);
 
