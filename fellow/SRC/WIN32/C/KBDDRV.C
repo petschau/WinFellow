@@ -657,9 +657,7 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
 
 void kbdDrvDInputFailure(STR *header, HRESULT err)
 {
-  fellowAddLog(header);
-  fellowAddLog(kbdDrvDInputErrorString(err));
-  fellowAddLog("\n");
+  fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
 
@@ -672,7 +670,7 @@ bool kbdDrvDInputSetCooperativeLevel(void)
   HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel(): ", res );
+    kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel():", res );
     return false;
   }
   return true;
@@ -728,7 +726,7 @@ void kbdDrvDInputUnacquire(void)
   HRESULT res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputUnacquire(): ", res);
+    kbdDrvDInputFailure("kbdDrvDInputUnacquire():", res);
   }
 }
 
@@ -748,7 +746,7 @@ void kbdDrvDInputAcquire(void)
   HRESULT res = IDirectInputDevice_Acquire(kbd_drv_lpDID); 
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputAcquire(): ", res);
+    kbdDrvDInputFailure("kbdDrvDInputAcquire():", res);
   }
 }
 
@@ -803,7 +801,7 @@ bool kbdDrvDInputInitialize(void)
   HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&kbd_drv_lpDI, NULL);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create() ", res );
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res );
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -814,7 +812,7 @@ bool kbdDrvDInputInitialize(void)
   res = IDirectInput_CreateDevice(kbd_drv_lpDI, GUID_SysKeyboard, &kbd_drv_lpDID, NULL);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice() ", res );
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice()", res );
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -825,7 +823,7 @@ bool kbdDrvDInputInitialize(void)
   res = IDirectInputDevice_SetDataFormat(kbd_drv_lpDID, &c_dfDIKeyboard);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat() ", res );
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat()", res );
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -855,7 +853,7 @@ bool kbdDrvDInputInitialize(void)
   res = IDirectInputDevice_SetProperty(kbd_drv_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetProperty() ", res );
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetProperty()", res );
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -865,7 +863,7 @@ bool kbdDrvDInputInitialize(void)
   res = IDirectInputDevice_SetEventNotification(kbd_drv_lpDID, kbd_drv_DIevent);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetEventNotification() ", res );
+    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetEventNotification()", res );
     kbd_drv_initialization_failed = true;
     kbdDrvDInputRelease();
     return false;
@@ -1167,7 +1165,7 @@ void kbdDrvKeypressHandler(void)
   
   if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
   {
-    kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData() ", res );
+    kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData()", res );
   }
   else
   {	

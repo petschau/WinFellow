@@ -116,9 +116,7 @@ STR *mouseDrvDInputErrorString(HRESULT hResult)
 
 void mouseDrvDInputFailure(STR *header, HRESULT err)
 {
-  fellowAddLog(header);
-  fellowAddLog(mouseDrvDInputErrorString(err));
-  fellowAddLog("\n");
+  fellowAddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
 
@@ -138,7 +136,7 @@ void mouseDrvDInputAcquire(void)
     {
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
       {
-        mouseDrvDInputFailure("mouseDrvDInputAcquire(): ", res);
+        mouseDrvDInputFailure("mouseDrvDInputAcquire():", res);
       }
     }
   }
@@ -148,7 +146,7 @@ void mouseDrvDInputAcquire(void)
     {
       if ((res = IDirectInputDevice_Unacquire(mouse_drv_lpDID)) != DI_OK)
       {
-        mouseDrvDInputFailure("mouseDrvDInputUnacquire(): ", res);
+        mouseDrvDInputFailure("mouseDrvDInputUnacquire():", res);
       }
     }
   }
@@ -221,7 +219,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, NULL);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create() ", res );
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create()", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -239,7 +237,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = IDirectInput_CreateDevice(mouse_drv_lpDI, GUID_SysMouse, &mouse_drv_lpDID, NULL);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): CreateDevice() ", res );
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): CreateDevice()", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -250,7 +248,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = IDirectInputDevice_SetDataFormat(mouse_drv_lpDID, &c_dfDIMouse);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetDataFormat() ", res);
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetDataFormat()", res);
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -260,7 +258,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = IDirectInputDevice_SetCooperativeLevel(mouse_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel() ", res );
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetCooperativeLevel()", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -280,7 +278,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = IDirectInputDevice_SetProperty(mouse_drv_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetProperty() ", res );
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetProperty()", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
   }
@@ -289,7 +287,7 @@ BOOLE mouseDrvDInputInitialize(void)
   res = IDirectInputDevice_SetEventNotification(mouse_drv_lpDID, mouse_drv_DIevent);
   if (res != DI_OK)
   {
-    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetEventNotification() ", res );
+    mouseDrvDInputFailure("mouseDrvDInputInitialize(): SetEventNotification()", res );
     mouse_drv_initialization_failed = TRUE;
     mouseDrvDInputRelease();
     return FALSE;
@@ -393,7 +391,7 @@ void mouseDrvMovementHandler(void)
 	
     if (res != DI_OK)
     {
-      mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData() ", res );
+      mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData()", res );
     }
     else
     {
