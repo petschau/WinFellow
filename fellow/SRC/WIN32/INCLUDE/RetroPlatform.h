@@ -67,15 +67,11 @@ public:
   ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
   bool       GetHeadlessMode(void);
   const STR *GetMessageText(ULO);
-  bool       GetMouseCaptureRequestedByHost(void);
   HWND       GetParentWindowHandle(void);
   bool       GetScanlines(void);
-  ULO        GetScreenHeight(void);
-  ULO        GetScreenWidth(void);
+  
   ULO        GetScreenHeightAdjusted(void);
   ULO        GetScreenWidthAdjusted(void);
-  bool       GetScreenWindowed(void);
-  ULO        GetScreenMode(void);
   ULONGLONG  GetTime(void);
 
   // IPC guest to host communication - asynchronous post
@@ -130,6 +126,9 @@ private:
   ULO        GetClippingOffsetLeft(void);
   ULO        GetClippingOffsetTop(void);
   bool       GetHostVersion(ULO *, ULO *, ULO *);
+  ULO        GetScreenHeight(void);
+  ULO        GetScreenWidth(void);
+  bool       GetScreenWindowed(void);
 
   // IPC guest to host communication - asynchronous post
   bool       PostMessageToHost(ULO, WPARAM, LPARAM, const RPGUESTINFO *);

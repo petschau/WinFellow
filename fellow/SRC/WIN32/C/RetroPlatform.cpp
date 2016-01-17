@@ -477,7 +477,8 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
   fellowAddLog("RetroPlatform::ConnectInputDeviceToPort(): port %d, device type %d, flags %d, name '%s'\n", 
     lGameport, lDeviceType, dwFlags, szName);
 
-  switch(lDeviceType) {
+  switch(lDeviceType)
+  {
     case RP_INPUTDEVICE_EMPTY:
       fellowAddLog(" Removing input device from gameport..\n");
       gameportSetInput(lGameport, GP_NONE);
@@ -488,27 +489,33 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
       gameportSetInput(lGameport, GP_MOUSE0);
       return true;
     case RP_INPUTDEVICE_JOYSTICK:
-      if(strcmp(szName, "GP_ANALOG0") == 0) {
+      if(strcmp(szName, "GP_ANALOG0") == 0)
+      {
         fellowAddLog(" Attaching joystick 1 to gameport..\n");
         gameportSetInput(lGameport, GP_ANALOG0);
       }
-      else if(strcmp(szName, "GP_ANALOG1") == 0) {
+      else if(strcmp(szName, "GP_ANALOG1") == 0)
+      {
         fellowAddLog(" Attaching joystick 2 to gameport..\n");
         gameportSetInput(lGameport, GP_ANALOG1);
       }
-      else if(_strnicmp(szName, "GP_JOYKEYCUSTOM", strlen("GP_JOYKEYCUSTOM")) == 0) { // custom layout
+      else if(_strnicmp(szName, "GP_JOYKEYCUSTOM", strlen("GP_JOYKEYCUSTOM")) == 0)
+      { // custom layout
         RetroPlatform::SetCustomKeyboardLayout(lGameport, szName + strlen("GP_JOYKEYCUSTOM") + 1);
         gameportSetInput(lGameport, (lGameport == 1) ? GP_JOYKEY1 : GP_JOYKEY0);
-        if(lGameport == 0) {
+        if(lGameport == 0)
+        {
           kbd_drv_joykey_enabled[lGameport][0] = true;
           kbd_drv_joykey_enabled[lGameport][1] = false;
         }
-        else if(lGameport == 1) {
+        else if(lGameport == 1)
+        {
           kbd_drv_joykey_enabled[lGameport][0] = false;
           kbd_drv_joykey_enabled[lGameport][1] = true;
         }
       }
-      else {
+      else 
+      {
         fellowAddLog (" WARNING: Unknown joystick input device name, ignoring..\n");
         return false;
       }
@@ -689,11 +696,6 @@ ULO RetroPlatform::GetScreenHeight(void)
    return lScreenHeightRP;
 }
 
-ULO RetroPlatform::GetScreenMode(void) 
-{
-  return lScreenMode;
-}
-
 /** Translate the screenmode configured in the configuration file and pass it along to the RetroPlatform Player.
  */
 void RetroPlatform::DetermineScreenModeFromConfig(struct RPScreenMode *RetroPlatformScreenMode, cfg *RetroPlatformConfig) 
@@ -738,15 +740,9 @@ bool RetroPlatform::GetEmulationState(void)
   return bEmulationState;
 }
 
-
 ULO RetroPlatform::GetDisplayScale(void)
 {
   return lDisplayScale;
-}
-
-bool RetroPlatform::GetMouseCaptureRequestedByHost(void) 
-{
-  return bMouseCaptureRequestedByHost;
 }
 
 /** Determine the RetroPlatform host version.
