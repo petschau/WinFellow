@@ -55,7 +55,7 @@ static __inline void cpuTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
+static __inline void cpuTscAfter(LLO* a, LLO* b, LON* c)
 {
   LLO local_a = *a;
   LLO local_b = *b;
