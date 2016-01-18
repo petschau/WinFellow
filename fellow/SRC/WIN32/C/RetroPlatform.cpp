@@ -108,8 +108,6 @@
 #include "gfxdrv_directdraw.h"
 #include "GfxDrvDXGI.h"
 
-extern BOOLE __cdecl kbd_drv_joykey_enabled[2][2];	///< For each port, the enabled joykeys
-
 RetroPlatform RP;
 
 // hook into RetroPlatform class to perform IPC communication with host
@@ -490,7 +488,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
     case RP_INPUTDEVICE_EMPTY:
       fellowAddLog(" Removing input device from gameport..\n");
       gameportSetInput(lGameport, GP_NONE);
-      kbd_drv_joykey_enabled[lGameport][lGameport] = false;
+      kbdDrvSetJoyKeyEnabled(lGameport, lGameport, FALSE);
       return true;
     case RP_INPUTDEVICE_MOUSE:
       fellowAddLog(" Attaching mouse device to gameport..\n");
@@ -513,13 +511,13 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
         gameportSetInput(lGameport, (lGameport == 1) ? GP_JOYKEY1 : GP_JOYKEY0);
         if(lGameport == 0)
         {
-          kbd_drv_joykey_enabled[lGameport][0] = true;
-          kbd_drv_joykey_enabled[lGameport][1] = false;
+          kbdDrvSetJoyKeyEnabled(lGameport, 0, TRUE);
+          kbdDrvSetJoyKeyEnabled(lGameport, 1, FALSE);
         }
         else if(lGameport == 1)
         {
-          kbd_drv_joykey_enabled[lGameport][0] = false;
-          kbd_drv_joykey_enabled[lGameport][1] = true;
+          kbdDrvSetJoyKeyEnabled(lGameport, 0, FALSE);
+          kbdDrvSetJoyKeyEnabled(lGameport, 1, TRUE);
         }
       }
       else 

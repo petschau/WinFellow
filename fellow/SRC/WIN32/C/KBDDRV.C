@@ -1431,6 +1431,11 @@ void kbdDrvInitializeDIKToSymbolKeyTable(void)
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
 }
 
+void kbdDrvSetJoyKeyEnabled(ULO lGameport, ULO lSetting, BOOLE bEnabled)
+{
+  kbd_drv_joykey_enabled[lGameport][lSetting] = bEnabled;
+}
+
 /*===========================================================================*/
 /* Hard Reset                                                                */
 /*===========================================================================*/
