@@ -48,8 +48,6 @@
 class RetroPlatform 
 {
 public:
-  bool       ConnectInputDeviceToPort(const ULO, const ULO, DWORD, const STR *);
-
   void       EmulationStart(void);
   void       EmulationStop(void);
   void       EnterHeadlessMode(void);
@@ -57,16 +55,13 @@ public:
   // getters
   ULO        GetClippingOffsetLeftAdjusted(void);
   ULO        GetClippingOffsetTopAdjusted(void);
-  ULO        GetCPUSpeed(void);
   ULO        GetDisplayScale(void);
   bool       GetEmulationPaused(void);
-  bool       GetEmulationState(void);
   ULO        GetEscapeKey(void);
   ULONGLONG  GetEscapeKeyHeldSince(void);
   ULO        GetEscapeKeyHoldTime(void);
   ULONGLONG  GetEscapeKeySimulatedTargetTime(void);
   bool       GetHeadlessMode(void);
-  const STR *GetMessageText(ULO);
   HWND       GetParentWindowHandle(void);
   bool       GetScanlines(void);
   
@@ -89,27 +84,25 @@ public:
   bool       SendHardDriveContent(const ULO, const STR *, const bool);
   bool       SendFloppyDriveReadOnly(const ULO, const bool);
   bool       SendFloppyTurbo(const bool);
-  bool       SendInputDevice(const DWORD, const DWORD, const DWORD, const WCHAR *, const WCHAR *);
   bool       SendMouseCapture(const bool);
 
   // setters
   void       SetClippingOffsetLeft(const ULO);
   void       SetClippingOffsetTop(const ULO);
-  void       SetEmulationPaused(const bool);
-  void       SetEmulationState(const bool);
-  void       SetEmulatorQuit(const bool);
   void       SetEscapeKey(const ULO);
   ULONGLONG  SetEscapeKeyHeld(const bool);
   void       SetEscapeKeyHoldTime(const ULO);
   void       SetEscapeKeySimulatedTargetTime(const ULONGLONG);
-  void       SetScanlines(const bool);
   void       SetHeadlessMode(const bool);
   void       SetHostID(const char *);
   void       SetScreenHeight(ULO);
   void       SetScreenMode(const char *);
-  void       SetScreenModeStruct(struct RPScreenMode *);
   void       SetScreenWidth(ULO);
   void       SetWindowInstance(HINSTANCE);
+
+  // public callback hooks
+  LRESULT CALLBACK HostMessageFunction(UINT, WPARAM, LPARAM, LPCVOID, DWORD, LPARAM);
+  BOOL FAR PASCAL  EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);
 
   void       Shutdown(void);
   void       Startup(void);
@@ -118,14 +111,17 @@ public:
   virtual   ~RetroPlatform();
   
 private:
-  // private functions  
+  // private functions
   bool       CheckEmulationNecessities(void);
+  bool       ConnectInputDeviceToPort(const ULO, const ULO, DWORD, const STR *);
   void       DetermineScreenModeFromConfig(struct RPScreenMode *, cfg *);
   int        EnumerateJoysticks(void);
 
   ULO        GetClippingOffsetLeft(void);
   ULO        GetClippingOffsetTop(void);
+  ULO        GetCPUSpeed(void);
   bool       GetHostVersion(ULO *, ULO *, ULO *);
+  const STR *GetMessageText(ULO);
   ULO        GetScreenHeight(void);
   ULO        GetScreenWidth(void);
   bool       GetScreenWindowed(void);
@@ -140,6 +136,11 @@ private:
   // setters
   void       SetCustomKeyboardLayout(const ULO, const STR *);
   void       SetDisplayScale(const ULO);
+  void       SetEmulationPaused(const bool);
+  void       SetEmulationState(const bool);
+  void       SetEmulatorQuit(const bool);
+  void       SetScanlines(const bool);
+  void       SetScreenModeStruct(struct RPScreenMode *);
   void       SetScreenWindowed(const bool);
 
   // IPC guest to host communication - send (sync.)
@@ -147,6 +148,7 @@ private:
   bool       SendEnabledHardDrives(void);
   bool       SendFeatures(void);
   bool       SendGameports(const ULO);
+  bool       SendInputDevice(const DWORD, const DWORD, const DWORD, const WCHAR *, const WCHAR *);
   bool       SendInputDevices(void);
   bool       SendScreenMode(HWND);
 
@@ -176,6 +178,8 @@ private:
   ULO lEscapeKeyHoldTime = 600;
   ULONGLONG lEscapeKeyHeldSince = 0;
   ULONGLONG lEscapeKeySimulatedTargetTime = 0;
+
+  int iNumberOfJoysticksAttached = 0;
 
   RPGUESTINFO GuestInfo;
 

@@ -112,26 +112,38 @@ extern BOOLE __cdecl kbd_drv_joykey_enabled[2][2];	///< For each port, the enabl
 
 RetroPlatform RP;
 
-/** host message function that is used as callback to receive IPC messages from the host.
-*/
+// hook into RetroPlatform class to perform IPC communication with host
 LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
   LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
 {
+  return RP.HostMessageFunction(uMessage, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
+}
 
+// hook into RetroPlatform class to enumerate joysticks
+BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
+{
+  return RP.EnumerateJoystick(pdinst, pvRef);
+}
+
+/** host message function that is used as callback to receive IPC messages from the host.
+*/
+LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
+  LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
+{
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatformHostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
+  fellowAddLog("RetroPlatform::HostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n",
     RP.GetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
 #endif
 
   switch (uMessage)
   {
     default:
-      fellowAddLog("RetroPlatformHostMessageFunction(): Unknown or unsupported command 0x%x\n", uMessage);
+      fellowAddLog("RetroPlatform::HostMessageFunction(): Unknown or unsupported command 0x%x\n", uMessage);
       break;
     case RP_IPC_TO_GUEST_PING:
       return true;
     case RP_IPC_TO_GUEST_CLOSE:
-      fellowAddLog("RetroPlatformHostMessageFunction(): received close event.\n");
+      fellowAddLog("RetroPlatform::HostMessageFunction(): received close event.\n");
       fellowRequestEmulationStop();
       gfxDrvCommon->RunEventSet();
       RP.SetEmulatorQuit(true);
@@ -150,7 +162,7 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
 
         if (lParam & RP_TURBO_CPU) 
         {
-          fellowAddLog("RetroPlatformHostMessageFunction(): enabling CPU turbo mode...\n");
+          fellowAddLog("RetroPlatform::HostMessageFunction(): enabling CPU turbo mode...\n");
           lOriginalSpeed = RP.GetCPUSpeed();
           cpuIntegrationSetSpeed(0);
           cpuIntegrationCalculateMultiplier();
@@ -159,7 +171,7 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
         }
         else 
         {
-          fellowAddLog("RetroPlatformHostMessageFunction(): disabling CPU turbo mode, reverting back to speed level %u...\n",
+          fellowAddLog("RetroPlatform::HostMessageFunction(): disabling CPU turbo mode, reverting back to speed level %u...\n",
             lOriginalSpeed);
           cpuIntegrationSetSpeed(lOriginalSpeed);
           cpuIntegrationCalculateMultiplier();
@@ -193,7 +205,7 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
       RP.SetEscapeKeyHoldTime(lParam);
       return true;
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
-      fellowAddLog("RetroPlatformHostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
+      fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICECONTENT:
@@ -202,7 +214,7 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
       STR name[CFG_FILENAME_LENGTH] = "";
       wcstombs(name, dc->szContent, CFG_FILENAME_LENGTH);
   #ifdef _DEBUG
-      fellowAddLog("RetroPlatformHostMessageFunction(): RP_IPC_TO_GUEST_DEVICECONTENT Cat=%d Num=%d Flags=%08x '%s'\n",
+      fellowAddLog("RetroPlatform::HostMessageFunction(): RP_IPC_TO_GUEST_DEVICECONTENT Cat=%d Num=%d Flags=%08x '%s'\n",
         dc->btDeviceCategory, dc->btDeviceNumber, dc->dwFlags, name);
   #endif
       int num = dc->btDeviceNumber;
@@ -213,12 +225,12 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
       case RP_DEVICECATEGORY_FLOPPY:
           if (name == NULL || name[0] == 0) 
           {
-            fellowAddLog("RetroPlatformHostMessageFunction(): remove floppy disk from drive %d.\n", num);
+            fellowAddLog("RetroPlatform::HostMessageFunction(): remove floppy disk from drive %d.\n", num);
             floppyImageRemove(num);
           }
           else 
           {
-            fellowAddLog("RetroPlatformHostMessageFunction(): set floppy image for drive %d to %s.\n",
+            fellowAddLog("RetroPlatform::HostMessageFunction(): set floppy image for drive %d to %s.\n",
               num, name);
             floppySetDiskImage(num, name);
           }
@@ -246,7 +258,7 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
         bool bResult = true;
         DWORD dResult = 0;
 
-        fellowAddLog("RetroPlatformHostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n",
+        fellowAddLog("RetroPlatform::HostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n",
           szScreenFiltered, szScreenRaw);
 
         if (szScreenFiltered[0])
@@ -300,11 +312,9 @@ LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, 
   return false;
 }
 
-static int iNumberOfJoysticksAttached = 0;
-
 /** Joystick enumeration function.
  */
-BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
+BOOL FAR PASCAL RetroPlatform::EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
   STR strHostInputID[CFG_FILENAME_LENGTH];
   WCHAR szHostInputID[CFG_FILENAME_LENGTH];
@@ -728,14 +738,6 @@ void RetroPlatform::DetermineScreenModeFromConfig(struct RPScreenMode *RetroPlat
 bool RetroPlatform::GetEmulationPaused(void)
 {
   return bEmulationPaused;
-}
-
-/** Verify state of the emulation engine.
- *  @return true, if emulation session if active, false if not.
- */
-bool RetroPlatform::GetEmulationState(void)
-{
-  return bEmulationState;
 }
 
 ULO RetroPlatform::GetDisplayScale(void)
