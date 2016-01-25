@@ -2703,9 +2703,9 @@ void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, ULO ea_or_reg, boo
     ULO shift = (8 - bf_data->normalized_offset - bf_data->width) & 7;
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
     {
-      ULL value = (ULL) memoryReadByte(address);
-      field_memory |= (value << (8*i));
-      field |= ((value >> shift) << (8*i));
+      ULL value = ((ULL)memoryReadByte(address)) << (8 * i);
+      field_memory |= value;
+      field |= (value >> shift);
       ++address;
     }
 
