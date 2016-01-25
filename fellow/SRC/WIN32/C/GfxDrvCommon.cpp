@@ -346,9 +346,10 @@ void GfxDrvCommon::ReleaseWindowClass()
 
 void GfxDrvCommon::DisplayWindow()
 {
-  fellowAddLog("gfxdrv: gfxDrvWindowShow()\n");
+  fellowAddLog("GfxDrvCommon::DisplayWindow()\n");
   if (!_current_draw_mode->windowed)
   {
+    // Later: Make dx11 run the normal size code. DX11 startup is always windowed.
     ShowWindow(_hwnd, SW_SHOWMAXIMIZED);
     UpdateWindow(_hwnd);
   }
@@ -450,7 +451,7 @@ bool GfxDrvCommon::InitializeWindow()
       win_drv_hInstance,
       NULL);
   }
-  fellowAddLog("gfxdrv: Window created\n");
+  fellowAddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
   free(versionstring);
 
   return (_hwnd != NULL);
@@ -493,7 +494,7 @@ bool GfxDrvCommon::EmulationStart()
 
   if (!InitializeWindow())
   {
-    fellowAddLog("gfxdrv: GfxDrvCommon::EmulationStart(): Failed to create window\n");
+    fellowAddLog("GfxDrvCommon::EmulationStart(): Failed to create window\n");
     return false;
   }
 
