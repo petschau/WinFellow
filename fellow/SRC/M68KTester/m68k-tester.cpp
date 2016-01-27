@@ -1068,7 +1068,11 @@ int main(int argc, char *argv[])
 #endif
 		}
                 if (strncmp(arg, "--file=", 7) == 0) {
-                  freopen(&arg[7], "rb", stdin);
+                  if (freopen(&arg[7], "rb", stdin) == NULL)
+                  {
+                    printf("File not found.\n");
+                    exit(1);
+                  }
                 }
                 else if (strcmp(arg, "--verbose") == 0)
 			verbose = true;
@@ -1224,6 +1228,7 @@ int main(int argc, char *argv[])
 			switch (cmd) {
 			case CMD_TEST:
 			case CMD_PRINT:
+                                stdout_on(&stdout_state);
 				print_test_end(&testcase, n_errors, n_tests, FORMAT_TEXT);
 				break;
 			case CMD_CONVERT:

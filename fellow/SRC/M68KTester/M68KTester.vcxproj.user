@@ -5,4 +5,14 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>test --file=gen-opcode-addw.bin --verbose</LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LocalDebuggerCommand>M68kTester.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>test --file=c:\Users\petsc\Downloads\m68ktests\bin\gen-opcode-bset.bin</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LocalDebuggerCommand>C:\fellow\github\WinFellow\fellow\SRC\M68KTester\Debug\M68KTester.exe</LocalDebuggerCommand>
+    <LocalDebuggerCommandArguments>test --verbose --file=c:\Users\petsc\Downloads\m68ktests\bin\gen-opcode-bset.bin &gt; bset.txt</LocalDebuggerCommandArguments>
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+  </PropertyGroup>
 </Project>
