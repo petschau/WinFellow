@@ -14,3 +14,4 @@ fellow/SRC/WIN32/MSVC/WinFellow.opensdf
 *.sdf
 fellow/Docs/WinFellow/WinFellow User Manual.pdf
 *.lyx#
+*.vcxproj.user
