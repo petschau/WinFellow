@@ -3,6 +3,8 @@ fellow/SRC/WIN32/INCLUDE/versioninfo.h
 fellow/SRC/WIN32/MSVC/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/Debug/
 fellow/SRC/WIN32/MSVC/Release/
+fellow/SRC/M68KTester/Debug
+fellow/SRC/M68KTester/Release
 *.lyx~
 fellow/doxygen/WinFellow-doxygen.*
 fellow/doxygen/WinFellow-doxygen.pdf
