@@ -2527,39 +2527,38 @@ static ULO cpuSubXL(ULO dst, ULO src)
 /// </summary>
 static UBY cpuAbcdB(UBY dst, UBY src)
 {
-  UBY xflag = (cpuGetFlagX()) ? 1:0;
-  UWO res = dst + src + xflag;
-  UWO res_unadjusted = res;
-  UBY res_bcd;
-  UBY low_nibble = (dst & 0xf) + (src & 0xf) + xflag;
+  UBY xflag = (cpuGetFlagX()) ? 1 : 0;
+  UWO low_nibble = (dst & 0xf) + (src & 0xf) + xflag;
+  UWO high_nibble = ((UWO)(dst & 0xf0)) + ((UWO)(src & 0xf0));
+  UWO result_unadjusted = low_nibble + high_nibble;
+  UWO result_bcd = result_unadjusted;
 
   if (low_nibble > 9)
   {
-    res += 6;
+    result_bcd += 6;
   }
 
-  if (res > 0x99)
+  BOOLE xc_flags = (result_bcd & 0xfff0) > 0x90;
+  if (xc_flags)
   {
-    res += 0x60;
-    cpuSetFlagXC(TRUE);
+    result_bcd += 0x60;
   }
-  else
-  {
-    cpuSetFlagXC(FALSE);
-  }
+  cpuSetFlagXC(xc_flags);
 
-  res_bcd = (UBY) res;
-
-  if (res_bcd != 0)
+  if (result_bcd & 0xff)
   {
     cpuSetFlagZ(FALSE);
   }
-  if (res_bcd & 0x80)
+
+  if (cpuGetModelMajor() >= 4)  // 040 apparently does not set these flags
   {
-    cpuSetFlagN(TRUE);
+    if (result_bcd & 0x80)
+    {
+      cpuSetFlagN(TRUE);
+    }
+    cpuSetFlagV(((result_unadjusted & 0x80) == 0) && (result_bcd & 0x80));
   }
-  cpuSetFlagV(((res_unadjusted & 0x80) == 0) && (res_bcd & 0x80));
-  return res_bcd;
+  return (UBY)result_bcd;
 }
 
 /// <summary>
