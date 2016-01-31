@@ -2550,12 +2550,9 @@ static UBY cpuAbcdB(UBY dst, UBY src)
     cpuSetFlagZ(FALSE);
   }
 
-  if (cpuGetModelMajor() >= 4)  // 040 apparently does not set these flags
+  if (cpuGetModelMajor() < 4)  // 040 apparently does not set these flags
   {
-    if (result_bcd & 0x80)
-    {
-      cpuSetFlagN(TRUE);
-    }
+    cpuSetFlagN(result_bcd & 0x80);
     cpuSetFlagV(((result_unadjusted & 0x80) == 0) && (result_bcd & 0x80));
   }
   return (UBY)result_bcd;
