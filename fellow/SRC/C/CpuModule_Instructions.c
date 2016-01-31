@@ -2419,7 +2419,7 @@ static void cpuCmpML(ULO regx, ULO regy)
 static void cpuChkW(UWO value, UWO ub)
 {
   cpuSetFlagZ(value == 0);
-  cpuSetFlagsVC(FALSE, FALSE);
+  cpuClearFlagsVC();
   if (((WOR)value) < 0)
   {
     cpuSetFlagN(TRUE);
@@ -2442,7 +2442,7 @@ static void cpuChkW(UWO value, UWO ub)
 static void cpuChkL(ULO value, ULO ub)
 {
   cpuSetFlagZ(value == 0);
-  cpuSetFlagsVC(FALSE, FALSE);
+  cpuClearFlagsVC();
   if (((LON)value) < 0)
   {
     cpuSetFlagN(TRUE);
@@ -2536,11 +2536,11 @@ static UBY cpuAbcdB(UBY dst, UBY src)
   }
 
   BOOLE xc_flags = (result_bcd & 0xfff0) > 0x90;
+  cpuSetFlagXC(xc_flags);
   if (xc_flags)
   {
     result_bcd += 0x60;
   }
-  cpuSetFlagXC(xc_flags);
 
   if (result_bcd & 0xff)
   {
@@ -2565,36 +2565,40 @@ static UBY cpuAbcdB(UBY dst, UBY src)
 /// </summary>
 static UBY cpuSbcdB(UBY dst, UBY src)
 {
-  UBY xflag = (cpuGetFlagX()) ? 1:0;
-  UWO res = dst - src - xflag;
-  UWO res_unadjusted = res;
-  UBY res_bcd;
+  UWO xflag = (cpuGetFlagX()) ? 1:0;
+  UWO result_plain_binary = (UWO)dst - (UWO)src - xflag;
+  UWO low_nibble = (UWO)(dst & 0xf) - (UWO)(src & 0xf) - xflag;
+  UWO high_nibble = ((UWO)(dst & 0xf0)) - ((UWO)(src & 0xf0));
+  UWO result_unadjusted = low_nibble + high_nibble;
+  UWO result_bcd = result_unadjusted;
 
-  if (((src & 0xf) + xflag) > (dst & 0xf))
+  if (((WOR)low_nibble) < 0)
   {
-    res -= 6;
+    result_bcd -= 6;
+    result_plain_binary -= 6;
   }
-  if (res & 0x80)
-  {
-    res -= 0x60;
-    cpuSetFlagXC(TRUE);
-  }
-  else
-  {
-    cpuSetFlagXC(FALSE);
-  }
-  res_bcd = (UBY) res;
 
-  if (res_bcd != 0)
+  BOOLE borrow = ((WOR)result_plain_binary < 0);
+  cpuSetFlagXC(borrow);
+  if (borrow)
+  {
+    result_bcd -= 0x60;
+  }
+
+  if (result_bcd & 0xff)
   {
     cpuSetFlagZ(FALSE);
   }
-  if (res_bcd & 0x80)
+
+  if (cpuGetModelMajor() < 4)
   {
-    cpuSetFlagN(TRUE);
+    if (result_bcd & 0x80)
+    {
+      cpuSetFlagN(TRUE);
+    }
+    cpuSetFlagV(((result_unadjusted & 0x80) == 0x80) && !(result_bcd & 0x80));
   }
-  cpuSetFlagV(((res_unadjusted & 0x80) == 0x80) && !(res_bcd & 0x80));
-  return res_bcd;
+  return (UBY) result_bcd;
 }
 
 /// <summary>

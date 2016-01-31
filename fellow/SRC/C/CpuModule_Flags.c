@@ -194,7 +194,7 @@ void cpuSetFlags0100(void)
 /// <summary>
 /// Clear V and C.
 /// </summary>
-static void cpuClearFlagsVC(void)
+void cpuClearFlagsVC(void)
 {
   cpu_sr = cpu_sr & 0xfffc;
 }
