@@ -1602,6 +1602,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\CIA.H" />
     <ClInclude Include="..\..\INCLUDE\CONFIG.H" />
     <ClInclude Include="..\..\INCLUDE\COPPER.H" />
+    <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h" />
     <ClInclude Include="..\..\INCLUDE\LineExactCopper.h" />
     <ClInclude Include="..\..\INCLUDE\CopperRegisters.h" />
     <ClInclude Include="..\..\INCLUDE\CpuIntegration.h" />

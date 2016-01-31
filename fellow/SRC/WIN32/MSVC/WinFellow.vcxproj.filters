@@ -827,6 +827,9 @@
     <ClInclude Include="..\..\INCLUDE\SpriteMerger.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp">

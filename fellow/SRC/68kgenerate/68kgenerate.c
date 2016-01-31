@@ -130,7 +130,10 @@ void cgProfileOut(char *name)
 
 void cgProfileLogHeader()
 {
-  fprintf(profilef, "#include \"fileops.h\"\n");
+  if (cpu_profile)
+  {
+    fprintf(profilef, "#include \"fileops.h\"\n");
+  }
   fprintf(profilef, "void cpuProfileWrite(void)\n");
   fprintf(profilef, "{\n");
 
