@@ -13,9 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <Filter Include="CPU Core">
+      <UniqueIdentifier>{c1053b3d-6212-4a49-8dd5-55e4ff981d22}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -36,91 +36,82 @@
     <ClInclude Include="sysdeps.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="vm_alloc.h">
-      <Filter>Source Files</Filter>
+    <ClInclude Include="..\INCLUDE\CpuModule.h">
+      <Filter>CPU Core</Filter>
     </ClInclude>
-    <ClInclude Include="fmem.h">
+    <ClInclude Include="..\INCLUDE\CpuModule_Code.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_Data.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_Decl.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_Disassembler.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_DisassemblerFunc.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_Internal.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\CpuModule_Profile.h">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\DEFS.H">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\WIN32\INCLUDE\MSVC\PORTABLE.H">
+      <Filter>CPU Core</Filter>
+    </ClInclude>
+    <ClInclude Include="FMEM_TEST.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DEFS.H">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="fileops.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="uae2fell.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Code.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Data.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Decl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Disassembler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_DisassemblerFunc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Internal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CpuModule_Profile.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="..\INCLUDE\CpuModule_Memory.h">
+      <Filter>CPU Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="M68KTester.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="m68k-tester.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="vm_alloc.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Disassembler.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_EffectiveAddress.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Exceptions.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Flags.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Instructions.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_InternalState.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Interrupts.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_Logging.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CpuModule_StackFrameGen.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="m68k-tester-fellow.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Disassembler.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_EffectiveAddress.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Exceptions.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Flags.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Instructions.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_InternalState.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Interrupts.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_Logging.c">
+      <Filter>CPU Core</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\CpuModule_StackFrameGen.c">
+      <Filter>CPU Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

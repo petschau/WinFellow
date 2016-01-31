@@ -19,7 +19,6 @@
  */
 
 #include "sysdeps.h"
-// PS #include "vm_alloc.h"
 #include "m68k-tester.h"
 
 #define DEBUG 0
@@ -109,7 +108,7 @@ m68k_cpu::~m68k_cpu()
 
 uint32 m68k_cpu::get_pc() const
 {
-	return cpuGetPC();
+  return cpuGetPC();
 }
 
 void m68k_cpu::set_pc(uint32 pc)
@@ -119,7 +118,7 @@ void m68k_cpu::set_pc(uint32 pc)
 
 uint32 m68k_cpu::get_ccr() const
 {
-	return cpuGetSR() & 0xff;
+  return cpuGetSR() & 0xff;
 }
 
 void m68k_cpu::set_ccr(uint32 ccr)
@@ -139,7 +138,7 @@ void m68k_cpu::set_dreg(int r, uint32 v)
 
 uint32 m68k_cpu::get_areg(int r) const
 {
-	return cpuGetAReg(r);
+  return cpuGetAReg(r);
 }
 
 void m68k_cpu::set_areg(int r, uint32 v)

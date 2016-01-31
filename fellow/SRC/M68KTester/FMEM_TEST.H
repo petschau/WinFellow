@@ -1,5 +1,5 @@
-#ifndef FMEM_H
-#define FMEM_H
+#ifndef FMEM_TEST_H
+#define FMEM_TEST_H
 
 // Stubs for memory access in M68KTester
 
@@ -14,5 +14,9 @@ extern void memoryWriteLong(ULO data, ULO address);
 
 extern ULO memory_fault_address;
 extern BOOLE memory_fault_read;
+
+// Stub for UAE calltrap in M68KTester
+
+#define call_calltrap
 
 #endif
