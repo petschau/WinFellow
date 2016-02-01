@@ -1,5 +1,5 @@
 /*
- *  m68k-tester-dummy.cpp - M68K emulator tester, glue template
+ *  m68k-tester-fellow.cpp - M68K emulator tester, Winfellow CPU core
  *
  *  m68k-tester (C) 2007 Gwenole Beauchesne
  *
