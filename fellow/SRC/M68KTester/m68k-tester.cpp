@@ -1104,7 +1104,7 @@ int main(int argc, char *argv[])
 		else if (strcmp(arg, "--cpu") == 0) {
 			if (++i < argc) {
 				arg = argv[i];
-				if (strcmp(arg, "680000") == 0 || strcmp(arg, "0") == 0)
+				if (strcmp(arg, "68000") == 0 || strcmp(arg, "0") == 0)
 					CPUType = 0;
 				else if (strcmp(arg, "68010") == 0 || strcmp(arg, "1") == 0)
 					CPUType = 1;

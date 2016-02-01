@@ -97,6 +97,7 @@ m68k_cpu::m68k_cpu()
 {
   memory = (unsigned char*) malloc(0x1000000);
   cpuStartup();
+  cpuSetModel(CPUType, 0);
   cpuSetRaiseInterrupt(FALSE);
 }
 
