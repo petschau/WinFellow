@@ -2572,6 +2572,11 @@ static UBY cpuSbcdB(UBY dst, UBY src)
   UWO result_unadjusted = low_nibble + high_nibble;
   UWO result_bcd = result_unadjusted;
 
+  if ((WOR)result_plain_binary < 0)
+  {
+    result_bcd -= 0x60;
+  }
+
   if (((WOR)low_nibble) < 0)
   {
     result_bcd -= 6;
@@ -2580,10 +2585,6 @@ static UBY cpuSbcdB(UBY dst, UBY src)
 
   BOOLE borrow = ((WOR)result_plain_binary < 0);
   cpuSetFlagXC(borrow);
-  if (borrow)
-  {
-    result_bcd -= 0x60;
-  }
 
   if (result_bcd & 0xff)
   {
@@ -2592,10 +2593,7 @@ static UBY cpuSbcdB(UBY dst, UBY src)
 
   if (cpuGetModelMajor() < 4)
   {
-    if (result_bcd & 0x80)
-    {
-      cpuSetFlagN(TRUE);
-    }
+    cpuSetFlagN(result_bcd & 0x80);
     cpuSetFlagV(((result_unadjusted & 0x80) == 0x80) && !(result_bcd & 0x80));
   }
   return (UBY) result_bcd;
