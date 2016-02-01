@@ -150,12 +150,14 @@ void m68k_cpu::set_areg(int r, uint32 v)
 void m68k_cpu::reset(void)
 {
   cpuStartup();
+  cpuSetModel(CPUType, 0);
   cpuSetRaiseInterrupt(FALSE);
 }
 
 void m68k_cpu::reset_jit(void)
 {
   cpuStartup();
+  cpuSetModel(CPUType, 0);
   cpuSetRaiseInterrupt(FALSE);
 }
 
