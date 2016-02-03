@@ -2,14 +2,26 @@
 #define GfxDrvDXGI_H
 
 #include <DXGI.h>
-#include <d3d11.h>
+#include <D3D11.h>
+#include <DirectXMath.h>
 
 #include "DEFS.H"
 #include "GfxDrvDXGIAdapter.h"
 #include "DRAW.H"
 
+using namespace DirectX;
+
 const static unsigned int AmigaScreenTextureCount = 1;
 const static unsigned int BackBufferCount = 2;
+
+template<typename T> void ReleaseCOM(T **comobject)
+{
+  if (*comobject != nullptr)
+  {
+    (*comobject)->Release();
+    *comobject = nullptr;
+  }
+}
 
 class GfxDrvDXGI
 {
@@ -23,9 +35,19 @@ private:
   ID3D11DeviceContext *_immediateContext;
   IDXGIFactory *_dxgiFactory;
   IDXGISwapChain *_swapChain;
+  ID3D11VertexShader *_vertexShader;
+  ID3D11PixelShader *_pixelShader;
+  ID3D11Buffer *_vertexBuffer;
+  ID3D11InputLayout* _polygonLayout;
+  ID3D11Buffer *_indexBuffer;
+  ID3D11Buffer* _matrixBuffer;
+  ID3D11Texture2D *_shaderInputTexture;
+  ID3D11Texture2D *_amigaScreenTexture[AmigaScreenTextureCount];
+  ID3D11DepthStencilState* _depthDisabledStencil;
+  ID3D11SamplerState* _samplerState;
+
   unsigned int _amigaScreenTextureCount;
   unsigned int _currentAmigaScreenTexture;
-  ID3D11Texture2D *_amigaScreenTexture[AmigaScreenTextureCount];
   draw_mode *_current_draw_mode;
 
 private:
@@ -55,9 +77,25 @@ private:
   void DeleteAmigaScreenTexture();
   ID3D11Texture2D *GetCurrentAmigaScreenTexture();
 
+  bool RenderAmigaScreenToBackBuffer();
+
   void FlipTexture();
 
   STR* GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel);
+
+  bool CreatePixelShader();
+  void DeletePixelShader();
+
+  bool CreateVertexShader();
+  void DeleteVertexShader();
+
+  bool CreateVertexAndIndexBuffers();
+  void DeleteVertexAndIndexBuffers();
+
+  bool CreateDepthDisabledStencil();
+  void DeleteDepthDisabledStencil();
+
+  bool SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix);
 
 public:
 

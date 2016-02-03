@@ -9,6 +9,7 @@
 #endif
 
 #include <InitGuid.h>
+
 #include "GfxDrvDXGI.h"
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
@@ -16,12 +17,11 @@
 #include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
 
-#include <d3d11.h> 
+#include <D3Dcompiler.h>
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #endif
-
 
 bool GfxDrvDXGI::Startup()
 {
@@ -65,17 +65,17 @@ void GfxDrvDXGI::CreateAdapterList()
 
 void GfxDrvDXGI::DeleteAdapterList()
 {
-  if (_adapters != 0)
+  if (_adapters != nullptr)
   {
     GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(_adapters);
-    _adapters = 0;
+    _adapters = nullptr;
   }
 }
 
 bool GfxDrvDXGI::CreateEnumerationFactory()
 {
   const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory) ,(void**)&_enumerationFactory);
-  if (result != S_OK)
+  if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
     return false;
@@ -86,11 +86,7 @@ bool GfxDrvDXGI::CreateEnumerationFactory()
 
 void GfxDrvDXGI::DeleteEnumerationFactory()
 {
-  if (_enumerationFactory != 0)
-  {
-    _enumerationFactory->Release();
-    _enumerationFactory = 0;
-  }
+  ReleaseCOM(&_enumerationFactory);
 }
 
 STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
@@ -152,9 +148,7 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   if (FAILED(hr))
   {
-    dxgiDevice->Release();
-    dxgiDevice = 0;
-
+    ReleaseCOM(&dxgiDevice);
     fellowAddLog("Failed to get IDXGIAdapter via GetParent() on IDXGIDevice\n");
     return false;
   }
@@ -167,55 +161,42 @@ bool GfxDrvDXGI::CreateD3D11Device()
 
   if (FAILED(hr))
   {
-    dxgiDevice->Release();
-    dxgiDevice = 0;
+    ReleaseCOM(&dxgiDevice);
 
     fellowAddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
     return false;
   }
 
-  dxgiDevice->Release();
-  dxgiDevice = 0;
-
+  ReleaseCOM(&dxgiDevice);
   return true;
 }
 
 void GfxDrvDXGI::DeleteD3D11Device()
 {
-  if (_d3d11device != 0)
-  {
 #ifdef _DEBUG
+  if (_d3d11device != nullptr)
+  {
     ID3D11Debug *d3d11Debug;
     _d3d11device->QueryInterface(__uuidof(ID3D11Debug), reinterpret_cast<void**>(&d3d11Debug));
     if (d3d11Debug != nullptr)
     {
       d3d11Debug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
-      d3d11Debug->Release();
+      ReleaseCOM(&d3d11Debug);
     }
-    d3d11Debug = 0;
+  }
 #endif
 
-    _d3d11device->Release();
-    _d3d11device = 0;
-  }
+  ReleaseCOM(&_d3d11device);
 }
 
 void GfxDrvDXGI::DeleteImmediateContext()
 {
-  if (_immediateContext != 0)
-  {
-    _immediateContext->Release();
-    _immediateContext = 0;
-  }
+  ReleaseCOM(&_immediateContext);
 }
 
 void GfxDrvDXGI::DeleteDXGIFactory()
 {
-  if (_dxgiFactory != 0)
-  {
-    _dxgiFactory->Release();
-    _dxgiFactory = 0;
-  }
+  ReleaseCOM(&_dxgiFactory);
 }
 
 bool GfxDrvDXGI::CreateAmigaScreenTexture()
@@ -247,6 +228,28 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
     }
   }
 
+  D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
+  texture2DDesc.Width = width;
+  texture2DDesc.Height = height;
+  texture2DDesc.MipLevels = 1;
+  texture2DDesc.ArraySize = 1;
+  texture2DDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+  texture2DDesc.SampleDesc.Count = 1;
+  texture2DDesc.SampleDesc.Quality = 0;
+  texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
+  texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+  texture2DDesc.CPUAccessFlags = 0;
+  texture2DDesc.MiscFlags = 0;
+
+  HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &_shaderInputTexture);
+
+  if (FAILED(hr))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create shader input texture.", hr);
+    return false;
+  }
+
+
   return true;
 }
 
@@ -254,12 +257,9 @@ void GfxDrvDXGI::DeleteAmigaScreenTexture()
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
-    if (_amigaScreenTexture[i] != 0)
-    {
-      _amigaScreenTexture[i]->Release();
-      _amigaScreenTexture[i] = 0;
-    }
+    ReleaseCOM(&_amigaScreenTexture[i]);
   }
+  ReleaseCOM(&_shaderInputTexture);
 }
 
 ID3D11Texture2D *GfxDrvDXGI::GetCurrentAmigaScreenTexture()
@@ -324,11 +324,7 @@ bool GfxDrvDXGI::CreateSwapChain()
 
 void GfxDrvDXGI::DeleteSwapChain()
 {
-  if (_swapChain != 0)
-  {
-    _swapChain->Release();
-    _swapChain = 0;
-  }
+  ReleaseCOM(&_swapChain);
 }
 
 bool GfxDrvDXGI::InitiateSwitchToFullScreen()
@@ -347,7 +343,7 @@ bool GfxDrvDXGI::InitiateSwitchToFullScreen()
     GfxDrvDXGIErrorLogger::LogError("Failed to set full-screen.", result);
     return false;
   }
-  
+
   _swapChain->ResizeTarget(modeDescription);
   return true;
 }
@@ -410,15 +406,492 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
 void GfxDrvDXGI::InvalidateBufferPointer()
 {
   ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
-  if (hostBuffer != 0)
+  if (hostBuffer != nullptr)
   {
     _immediateContext->Unmap(hostBuffer, 0);
   }
 }
 
+bool GfxDrvDXGI::CreateVertexShader()
+{
+  char *vertexShaderSource =
+    "  cbuffer MatrixBuffer"
+    "  {"
+    "    matrix worldMatrix;"
+    "    matrix viewMatrix;"
+    "    matrix projectionMatrix;"
+    "  };"
+    ""
+    "  struct VertexInputType"
+    "  {"
+    "    float4 position : POSITION;"
+    "    float2 tex : TEXCOORD0;"
+    "  };"
+    ""
+    "  struct PixelInputType"
+    "  {"
+    "    float4 position : SV_POSITION;"
+    "    float2 tex : TEXCOORD0;"
+    "  };"
+    ""
+    "  PixelInputType TextureVertexShader(VertexInputType input)"
+    "  {"
+    "    PixelInputType output;"
+    ""
+    ""
+    "    // Change the position vector to be 4 units for proper matrix calculations.\n"
+    "    input.position.w = 1.0f;"
+    ""
+    "    // Calculate the position of the vertex against the world, view, and projection matrices.\n"
+    "    output.position = mul(input.position, worldMatrix);"
+    "    //output.position = mul(output.position, viewMatrix);\n"
+    "    output.position = mul(output.position, projectionMatrix);"
+    ""
+    "    // Store the texture coordinates for the pixel shader.\n"
+    "    output.tex = input.tex;"
+    ""
+    "    return output;"
+    "  }";
+
+  UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+  LPCSTR profile = (_d3d11device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0) ? "vs_5_0" : "vs_4_0";
+  // TODO: More detailed profile selection.
+
+  ID3D10Blob* errorMessage = nullptr;
+  ID3D10Blob* vertexShaderBuffer = nullptr;
+
+  HRESULT result = D3DCompile(vertexShaderSource, 
+                              strlen(vertexShaderSource), 
+                              NULL,
+                              NULL, 
+                              NULL, 
+                              "TextureVertexShader", 
+                              profile,
+                              flags,
+                              0, 
+                              &vertexShaderBuffer, 
+                              &errorMessage);
+
+  if (FAILED(result))
+  {
+    char msg[255];
+    bool hasErrorMessage = ((char*)errorMessage) != nullptr;
+    sprintf(msg, "Failed to compile vertex shader. %s", (hasErrorMessage) ? ((char*)errorMessage->GetBufferPointer()) : "");
+    GfxDrvDXGIErrorLogger::LogError(msg, result);
+    ReleaseCOM(&errorMessage);
+    return false;
+  }
+
+  result = _d3d11device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &_vertexShader);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create vertex shader.", result);
+    ReleaseCOM(&vertexShaderBuffer);
+    return false;
+  }
+
+  D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
+
+  // Create the vertex input layout description.
+  // This setup needs to match the VertexType stucture in the shader.
+  polygonLayout[0].SemanticName = "POSITION";
+  polygonLayout[0].SemanticIndex = 0;
+  polygonLayout[0].Format = DXGI_FORMAT_R32G32B32_FLOAT;
+  polygonLayout[0].InputSlot = 0;
+  polygonLayout[0].AlignedByteOffset = 0;
+  polygonLayout[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+  polygonLayout[0].InstanceDataStepRate = 0;
+
+  polygonLayout[1].SemanticName = "TEXCOORD";
+  polygonLayout[1].SemanticIndex = 0;
+  polygonLayout[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+  polygonLayout[1].InputSlot = 0;
+  polygonLayout[1].AlignedByteOffset = D3D11_APPEND_ALIGNED_ELEMENT;
+  polygonLayout[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+  polygonLayout[1].InstanceDataStepRate = 0;
+
+  UINT numElements = 2;
+
+  result = _d3d11device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &_polygonLayout);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create polygon layout.", result);
+    ReleaseCOM(&vertexShaderBuffer);
+    return false;
+  }
+
+  ReleaseCOM(&vertexShaderBuffer);
+  return true;
+}
+
+void GfxDrvDXGI::DeleteVertexShader()
+{
+  ReleaseCOM(&_polygonLayout);
+  ReleaseCOM(&_vertexShader);
+}
+
+struct MatrixBufferType
+{
+  XMMATRIX world;
+  XMMATRIX view;
+  XMMATRIX projection;
+};
+
+bool GfxDrvDXGI::CreatePixelShader()
+{
+  char *pixelShader =
+    "Texture2D shaderTexture; "
+    "SamplerState SampleType; "
+    ""
+    "struct PixelInputType "
+    "{ "
+    "  float4 position : SV_POSITION; "
+    "  float2 tex : TEXCOORD0; "
+    "}; "
+    ""
+    "float4 TexturePixelShader(PixelInputType input) : SV_TARGET "
+    "{ "
+    "  float4 textureColor; "
+    ""
+    "  textureColor = shaderTexture.Sample(SampleType, input.tex); "
+    ""
+    "  return textureColor; "
+    "}";
+
+  UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
+  LPCSTR profile = (_d3d11device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0) ? "ps_5_0" : "ps_4_0";
+  // TODO: More detailed profile selection.
+
+  ID3D10Blob* errorMessage = nullptr;
+  ID3D10Blob* pixelShaderBuffer = nullptr;
+
+  HRESULT result = D3DCompile(pixelShader,
+    strlen(pixelShader),
+    NULL,
+    NULL,
+    NULL,
+    "TexturePixelShader",
+    profile,
+    flags,
+    0,
+    &pixelShaderBuffer,
+    &errorMessage);
+
+  if (FAILED(result))
+  {
+    char msg[255];
+    bool hasErrorMessage = ((char*)errorMessage) != nullptr;
+    sprintf(msg, "Failed to compile pixel shader. %s", (hasErrorMessage) ? ((char*)errorMessage->GetBufferPointer()) : "");
+    GfxDrvDXGIErrorLogger::LogError(msg, result);
+    ReleaseCOM(&errorMessage);
+    return false;
+  }
+
+  // Create the pixel shader from the buffer.
+  result = _d3d11device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &_pixelShader);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create pixel shader.", result);
+    ReleaseCOM(&pixelShaderBuffer);
+    return false;
+  }
+
+  ReleaseCOM(&pixelShaderBuffer);
+
+  // Create a texture sampler state description.
+  D3D11_SAMPLER_DESC samplerDesc;
+  samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+  samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+  samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+  samplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+  samplerDesc.MipLODBias = 0.0f;
+  samplerDesc.MaxAnisotropy = 1;
+  samplerDesc.ComparisonFunc = D3D11_COMPARISON_ALWAYS;
+  samplerDesc.BorderColor[0] = 0;
+  samplerDesc.BorderColor[1] = 0;
+  samplerDesc.BorderColor[2] = 0;
+  samplerDesc.BorderColor[3] = 0;
+  samplerDesc.MinLOD = 0;
+  samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+  // Create the texture sampler state.
+  result = _d3d11device->CreateSamplerState(&samplerDesc, &_samplerState);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create sampler state.", result);
+    return false;
+  }
+
+  // Setup the description of the dynamic matrix constant buffer that is in the vertex shader.
+  D3D11_BUFFER_DESC matrixBufferDesc;
+  matrixBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+  matrixBufferDesc.ByteWidth = sizeof(MatrixBufferType);
+  matrixBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+  matrixBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+  matrixBufferDesc.MiscFlags = 0;
+  matrixBufferDesc.StructureByteStride = 0;
+
+  // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
+  result = _d3d11device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBuffer);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create matrix buffer.", result);
+    return false;
+  }
+  return true;
+}
+
+void GfxDrvDXGI::DeletePixelShader()
+{
+  ReleaseCOM(&_matrixBuffer);
+  ReleaseCOM(&_samplerState);
+  ReleaseCOM(&_pixelShader);
+}
+
+struct VertexType
+{
+  XMFLOAT3 position;
+  XMFLOAT2 texture;
+};
+
+bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
+{
+  VertexType vertices[6];
+  unsigned long indices[6];
+  D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
+  D3D11_SUBRESOURCE_DATA vertexData, indexData;
+  HRESULT result;
+
+  for (int i = 0; i < 6; i++)
+  {
+    indices[i] = i;
+  }
+
+  // Destination rectangle, this fills the screen with whatever is in the source clip
+  // Can apply aspect ratio here
+  float halfWidth = ((float)_current_draw_mode->width) / 2.0;
+  float halfHeight = ((float)_current_draw_mode->height) / 2.0;
+
+  //float halfWidth = 640.0f; //((float)_current_draw_mode->width) / 2.0;
+  //float halfHeight = 512.0f; //((float)_current_draw_mode->height) / 2.0;
+
+  // Source clip rectangle in 0.0 to 1.0 coordinates...  
+
+  // Should not make the amiga-side buffer larger than 2X. Right now we get weird clip exception.
+  float baseWidth = (_current_draw_mode->width > 1536) ? 1536 : _current_draw_mode->width;
+  float baseHeight = (_current_draw_mode->height > 1152) ? 1152 : _current_draw_mode->height;
+
+  float xmin = 0.5f - (baseWidth / (float)_current_draw_mode->width / 2.0);
+  float xmax = 0.5f + (baseWidth / (float)_current_draw_mode->width / 2.0);
+
+  float ymin = 0.5f - (baseHeight / (float)_current_draw_mode->height / 2.0);
+  float ymax = 0.5f + (baseHeight / (float)_current_draw_mode->height / 2.0);
+
+
+  // First triangle.
+  vertices[0].position = XMFLOAT3(-halfWidth, halfHeight, 0.0f);  // Top left.
+  vertices[0].texture = XMFLOAT2(xmin, ymin);
+
+  vertices[1].position = XMFLOAT3(halfWidth, -halfHeight, 0.0f);  // Bottom right.
+  vertices[1].texture = XMFLOAT2(xmax, ymax);
+
+  vertices[2].position = XMFLOAT3(-halfWidth, -halfHeight, 0.0f);  // Bottom left.
+  vertices[2].texture = XMFLOAT2(xmin, ymax);
+
+  // Second triangle.
+  vertices[3].position = XMFLOAT3(-halfWidth, halfHeight, 0.0f);  // Top left.
+  vertices[3].texture = XMFLOAT2(xmin, ymin);
+
+  vertices[4].position = XMFLOAT3(halfWidth, halfHeight, 0.0f);  // Top right.
+  vertices[4].texture = XMFLOAT2(xmax, ymin);
+
+  vertices[5].position = XMFLOAT3(halfWidth, -halfHeight, 0.0f);  // Bottom right.
+  vertices[5].texture = XMFLOAT2(xmax, ymax);
+
+  // Set up the description of the static vertex buffer.
+  vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+  vertexBufferDesc.ByteWidth = sizeof(vertices);
+  vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+  vertexBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+  vertexBufferDesc.MiscFlags = 0;
+  vertexBufferDesc.StructureByteStride = 0;
+
+  // Give the subresource structure a pointer to the vertex data.
+  vertexData.pSysMem = vertices;
+  vertexData.SysMemPitch = 0;
+  vertexData.SysMemSlicePitch = 0;
+
+  // Now create the vertex buffer.
+  result = _d3d11device->CreateBuffer(&vertexBufferDesc, &vertexData, &_vertexBuffer);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create vertex buffer.", result);
+    return false;
+  }
+
+  // Index buffer
+
+  indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+  indexBufferDesc.ByteWidth = sizeof(indices);
+  indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
+  indexBufferDesc.CPUAccessFlags = 0;
+  indexBufferDesc.MiscFlags = 0;
+  indexBufferDesc.StructureByteStride = 0;
+
+  indexData.pSysMem = indices;
+  indexData.SysMemPitch = 0;
+  indexData.SysMemSlicePitch = 0;
+
+  result = _d3d11device->CreateBuffer(&indexBufferDesc, &indexData, &_indexBuffer);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create index buffer.", result);
+    ReleaseCOM(&_vertexBuffer);
+    return false;
+  }
+  return true;
+
+}
+
+void GfxDrvDXGI::DeleteVertexAndIndexBuffers()
+{
+  ReleaseCOM(&_vertexBuffer);
+  ReleaseCOM(&_indexBuffer);
+}
+
+bool GfxDrvDXGI::CreateDepthDisabledStencil()
+{
+  D3D11_DEPTH_STENCIL_DESC depthDisabledStencilDescription;
+
+  memset(&depthDisabledStencilDescription, 0, sizeof(depthDisabledStencilDescription));
+
+  depthDisabledStencilDescription.DepthEnable = false;
+  depthDisabledStencilDescription.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+  depthDisabledStencilDescription.DepthFunc = D3D11_COMPARISON_LESS;
+  depthDisabledStencilDescription.StencilEnable = true;
+  depthDisabledStencilDescription.StencilReadMask = 0xFF;
+  depthDisabledStencilDescription.StencilWriteMask = 0xFF;
+  depthDisabledStencilDescription.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+  depthDisabledStencilDescription.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+  depthDisabledStencilDescription.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+  depthDisabledStencilDescription.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+  depthDisabledStencilDescription.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+  depthDisabledStencilDescription.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+  depthDisabledStencilDescription.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+  depthDisabledStencilDescription.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+  HRESULT result = _d3d11device->CreateDepthStencilState(&depthDisabledStencilDescription, &_depthDisabledStencil);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create depth disabled stencil.", result);
+    return false;
+  }
+  return true;
+}
+
+void GfxDrvDXGI::DeleteDepthDisabledStencil()
+{
+  ReleaseCOM(&_depthDisabledStencil);
+}
+
+bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix)
+{
+    HRESULT result;
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    MatrixBufferType* dataPtr;
+    unsigned int bufferNumber;
+
+    XMMATRIX worldTransposed = XMMatrixTranspose(worldMatrix);
+    XMMATRIX viewTransposed = XMMatrixTranspose(viewMatrix);
+    XMMATRIX projectionTransposed = XMMatrixTranspose(projectionMatrix);
+
+    // Lock the constant buffer so it can be written to.
+    result = _immediateContext->Map(_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    if (FAILED(result))
+    {
+      GfxDrvDXGIErrorLogger::LogError("Failed to map matrix buffer.", result);
+      return false;
+    }
+
+    // Get a pointer to the data in the constant buffer.
+    dataPtr = (MatrixBufferType*)mappedResource.pData;
+
+    // Copy the matrices into the constant buffer.
+    dataPtr->world = worldMatrix;
+    dataPtr->view = viewMatrix;
+    dataPtr->projection = projectionMatrix;
+
+    // Unlock the constant buffer.
+    _immediateContext->Unmap(_matrixBuffer, 0);
+
+    // Set the position of the constant buffer in the vertex shader.
+    bufferNumber = 0;
+
+    // Now set the constant buffer in the vertex shader with the updated values.
+    _immediateContext->VSSetConstantBuffers(bufferNumber, 1, &_matrixBuffer);
+
+      // Set shader texture resource in the pixel shader.
+    ID3D11ShaderResourceView *shaderResourceView;
+    result = _d3d11device->CreateShaderResourceView(_shaderInputTexture, NULL, &shaderResourceView);
+    if (FAILED(result))
+    {
+      GfxDrvDXGIErrorLogger::LogError("Failed to create shader resource view.", result);
+      return false;
+    }
+    _immediateContext->PSSetShaderResources(0, 1, &shaderResourceView);
+    ReleaseCOM(&shaderResourceView);
+
+    // Set the vertex input layout.
+    _immediateContext->IASetInputLayout(_polygonLayout);
+
+    // Set the vertex and pixel shaders that will be used to render this triangle.
+    _immediateContext->VSSetShader(_vertexShader, NULL, 0);
+    _immediateContext->PSSetShader(_pixelShader, NULL, 0);
+
+    // Set the sampler state in the pixel shader.
+    _immediateContext->PSSetSamplers(0, 1, &_samplerState);
+
+    // Render the triangle.
+    UINT indexCount = 6;
+    _immediateContext->DrawIndexed(indexCount, 0, 0);
+
+    return true;
+}
+
+bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
+{
+  int width = _current_draw_mode->width;
+  int height = _current_draw_mode->height;
+
+  XMMATRIX orthogonalMatrix = XMMatrixOrthographicLH(width, height, 1000.0f, 0.1f);
+  XMMATRIX identityMatrix = XMMatrixIdentity();
+
+  // Switch to 2D
+  _immediateContext->OMSetDepthStencilState(_depthDisabledStencil, 1);
+
+  // Set vertex buffer stride and offset.
+  unsigned int stride = sizeof(VertexType);
+  unsigned int offset = 0;
+
+  // Set the vertex buffer to active in the input assembler so it can be rendered.
+  _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
+
+  // Set the index buffer to active in the input assembler so it can be rendered.
+  _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+  // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
+  _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+  SetShaderParameters(identityMatrix, identityMatrix, orthogonalMatrix);
+
+  return true;
+}
+
 void GfxDrvDXGI::FlipTexture()
 {
   ID3D11Texture2D *amigaScreenBuffer = GetCurrentAmigaScreenTexture();
+  _immediateContext->CopyResource(_shaderInputTexture, amigaScreenBuffer);
+
   ID3D11Texture2D *backBuffer;
   HRESULT getBufferResult = _swapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&backBuffer);
   if (FAILED(getBufferResult))
@@ -432,13 +905,14 @@ void GfxDrvDXGI::FlipTexture()
 
   if (FAILED(createRenderTargetViewResult))
   {
+    ReleaseCOM(&backBuffer);
     GfxDrvDXGIErrorLogger::LogError("Failed to create render target view.", createRenderTargetViewResult);
     return;
   }
 
   _immediateContext->OMSetRenderTargets(1, &renderTargetView, NULL);
-  renderTargetView->Release();
-  renderTargetView = 0;
+
+  ReleaseCOM(&renderTargetView);
 
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
@@ -455,10 +929,11 @@ void GfxDrvDXGI::FlipTexture()
   }
   else
 #endif
-  _immediateContext->CopyResource(backBuffer, amigaScreenBuffer);
+  {
+    RenderAmigaScreenToBackBuffer();
+  }
 
-  backBuffer->Release();
-  backBuffer = 0;
+  ReleaseCOM(&backBuffer);
 
   HRESULT presentResult = _swapChain->Present(0, 0);
 
@@ -624,7 +1099,7 @@ void GfxDrvDXGI::ClearCurrentBuffer()
 {
   UBY* buffer = ValidateBufferPointer();
 
-  if (buffer != 0)
+  if (buffer != nullptr)
   {
     for (unsigned int y = 0; y < _current_draw_mode->height; y++)
     {
@@ -643,19 +1118,43 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 {
   if (!CreateD3D11Device())
   {
-    fellowAddLog("Failed to create d3d11 device for host window\n");
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create d3d11 device for host window\n");
     return false;
   }
 
   if (!CreateSwapChain())
   {
-    fellowAddLog("Failed to create swap chain for host window\n");
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create swap chain for host window\n");
     return false;
   }
 
   if (!CreateAmigaScreenTexture())
   {
-    fellowAddLog("Failed to create amiga screen texture\n");
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create amiga screen texture\n");
+    return false;
+  }
+
+  if (!CreatePixelShader())
+  {
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create pixel shader\n");
+    return false;
+  }
+
+  if (!CreateVertexShader())
+  {
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex shader\n");
+    return false;
+  }
+
+  if (!CreateVertexAndIndexBuffers())
+  {
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex and index buffers\n");
+    return false;
+  }
+
+  if (!CreateDepthDisabledStencil())
+  {
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create depth disabled stencil\n");
     return false;
   }
   return true;
@@ -668,11 +1167,15 @@ unsigned int GfxDrvDXGI::EmulationStartPost()
 
 void GfxDrvDXGI::EmulationStop()
 {
-  if (_immediateContext != 0)
+  if (_immediateContext != nullptr)
   {
     _immediateContext->ClearState();
   }
 
+  DeleteDepthDisabledStencil();
+  DeleteVertexAndIndexBuffers();
+  DeleteVertexShader();
+  DeletePixelShader();
   DeleteAmigaScreenTexture();
   DeleteSwapChain();
   DeleteDXGIFactory();
@@ -681,18 +1184,27 @@ void GfxDrvDXGI::EmulationStop()
 }
 
 GfxDrvDXGI::GfxDrvDXGI()
-  : _enumerationFactory(0), 
-    _adapters(0), 
-    _dxgiFactory(0), 
-    _swapChain(0), 
-    _d3d11device(0), 
-    _immediateContext(0), 
+  : _enumerationFactory(nullptr), 
+    _adapters(nullptr),
+    _dxgiFactory(nullptr),
+    _swapChain(nullptr),
+    _d3d11device(nullptr),
+    _immediateContext(nullptr),
+    _pixelShader(nullptr),
+    _vertexShader(nullptr),
+    _vertexBuffer(nullptr),
+    _indexBuffer(nullptr),
+    _depthDisabledStencil(nullptr),
+    _samplerState(nullptr),
+    _polygonLayout(nullptr),
+    _matrixBuffer(nullptr),
+    _shaderInputTexture(nullptr),
     _amigaScreenTextureCount(AmigaScreenTextureCount),
     _currentAmigaScreenTexture(0)
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
-    _amigaScreenTexture[i] = 0;
+    _amigaScreenTexture[i] = nullptr;
   }
 }
 
@@ -789,16 +1301,15 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
 
-    screenshotTexture->Release();
-    screenshotTexture = 0;
+    ReleaseCOM(&screenshotTexture);
   }
 
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
     bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(NULL);
-  pSurface1->Release();
-  pSurface1 = 0;
+
+  ReleaseCOM(&pSurface1);
 
   return bResult;
 }

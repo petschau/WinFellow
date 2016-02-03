@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -21,28 +21,29 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B7683EB0-2BCD-40C5-BF39-57D896269140}</ProjectGuid>
     <RootNamespace>WinFellow</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -122,7 +123,7 @@
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;D3dcompiler.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -189,7 +190,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;D3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/ddraw/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
@@ -245,7 +246,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;D3dcompiler.lib;CAPSImg.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/caps;../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -305,7 +306,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <Culture>0x0409</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;comctl32.lib;dsound.lib;D3dcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\$(Platform)\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/ddraw/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
