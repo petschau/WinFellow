@@ -313,23 +313,22 @@ bool GfxDrvDXGI::CreateSwapChain()
  
   _immediateContext->RSSetViewports(1, &viewPort);
 
-  if (!_current_draw_mode->windowed)
-  {
-    // TODO: Add cleanup in case of error.
-    return InitiateSwitchToFullScreen();
-  }
-  
   return true;
 }
 
 void GfxDrvDXGI::DeleteSwapChain()
 {
+  if (!_current_draw_mode->windowed)
+  {
+    _swapChain->SetFullscreenState(FALSE, NULL);
+  }
+
   ReleaseCOM(&_swapChain);
 }
 
 bool GfxDrvDXGI::InitiateSwitchToFullScreen()
 {
-  fellowAddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()");
+  fellowAddLog("GfxDrvDXGI::InitiateSwitchToFullScreen()\n");
 
   DXGI_MODE_DESC *modeDescription = GetDXGIMode(_current_draw_mode->id);
   if (modeDescription == nullptr)
@@ -373,10 +372,11 @@ DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
 
 void GfxDrvDXGI::NotifyActiveStatus(bool active)
 {
-  fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)", active ? "TRUE" : "FALSE");
-  if (!_current_draw_mode->windowed)
+  fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)\n", active ? "TRUE" : "FALSE");
+  if (!_current_draw_mode->windowed && _swapChain != nullptr)
   {
     _swapChain->SetFullscreenState(active, 0);
+    if (!active) gfxDrvCommon->HideWindow();
   }
 }
 
@@ -1162,6 +1162,16 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 
 unsigned int GfxDrvDXGI::EmulationStartPost()
 {
+  if (!_current_draw_mode->windowed)
+  {
+    bool fullscreenOk = InitiateSwitchToFullScreen();
+
+    if (!fullscreenOk)
+    {
+      return 0;
+    }
+  }
+
   return _amigaScreenTextureCount;
 }
 
