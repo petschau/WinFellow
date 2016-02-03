@@ -172,25 +172,41 @@ static void fellowLogDateTime(void)
   fellowAddLog2(tmp);
 }
 
-void fellowAddLog(const char *format,...)
+void fellowAddLog(const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
+  char *buffer2 = NULL;
   va_list parms;
   int count = 0;
 
-  va_start (parms, format);
-  count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
+  if (fellow_newlogline)
+  {
+    // log date/time into buffer
+    time_t thetime;
+    struct tm *timedata;
 
-  if(fellow_newlogline)
-    fellowLogDateTime();
+    thetime = time(NULL);
+    timedata = localtime(&thetime);
+    strftime(buffer, 255, "%c: ", timedata);
+    // move buffer pointer ahead to log additional text after date/time
+    buffer2 = buffer + strlen(buffer);
+  }
+  else
+  {
+    // skip date/time, log to beginning of buffer
+    buffer2 = buffer;
+  }
+
+  va_start(parms, format);
+  count = _vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
 
   fellowAddLog2(buffer);
 
-  if(buffer[strlen(buffer)-1] == '\n')
+  if (buffer[strlen(buffer) - 1] == '\n')
     fellow_newlogline = TRUE;
   else
     fellow_newlogline = FALSE;
-  va_end (parms);
+  va_end(parms);
 }
 
 void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)

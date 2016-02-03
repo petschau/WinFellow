@@ -104,7 +104,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2016/01/13)
+v0.5.4 (2016/01/22)
 \end_layout
 
 \begin_layout Author
@@ -403,6 +403,14 @@ Bug fixes:
 \begin_deeper
 \begin_layout Itemize
 improved error handling for DMS floppy image extraction
+\end_layout
+
+\begin_layout Itemize
+improvements to CIA timer handling
+\end_layout
+
+\begin_layout Itemize
+improvements to CPU instruction timing (TAS and PEA instructions) 
 \end_layout
 
 \begin_layout Itemize

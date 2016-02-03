@@ -136,7 +136,8 @@ void gfxDrvEmulationStop()
 
 bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilename)
 {
-  STR szActualFilename[MAX_PATH];
+  STR szActualFilename[MAX_PATH] = "";
+  bool result = false;
 
   if (szFilename[0] == 0)
   {
@@ -144,12 +145,23 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
     fileopsGetScreenshotFileName(szActualFilename);
   }
   else
+  {
     strcpy(szActualFilename, szFilename);
+  }
 
   if (gfx_drv_use_dxgi)
-    return gfxDrvDXGI->SaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+  {
+    result = gfxDrvDXGI->SaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+  }
   else
-    return gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+  {
+    result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+  }
+
+  fellowAddLog("gfxDrvSaveScreenshot(%s, %s) %s.\n",
+    bSaveFilteredScreenshot ? "filtered" : "raw", szActualFilename, result ? "successful" : "failed");
+
+  return result;
 }
 
 bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
