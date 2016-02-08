@@ -982,16 +982,13 @@ void drawEmulationStart(void)
 BOOLE drawEmulationStartPost(void)
 {
   BOOLE result;
+  drawModeTablesInitialize(draw_mode_current);
+  draw_buffer_show = 0;
+  draw_buffer_draw = draw_buffer_count - 1;
 
   draw_buffer_count = gfxDrvEmulationStartPost();
   result = (draw_buffer_count != 0);
-  if (result)
-  {
-    drawModeTablesInitialize(draw_mode_current);
-    draw_buffer_show = 0;
-    draw_buffer_draw = draw_buffer_count - 1;
-  }
-  else
+  if (!result)
   {
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
       "Failure: The graphics driver failed to allocate enough graphics card memory");

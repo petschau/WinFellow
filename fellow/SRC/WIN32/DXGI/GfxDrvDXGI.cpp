@@ -667,22 +667,48 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
     indices[i] = i;
   }
 
-  // Destination rectangle, this fills the screen with whatever is in the source clip
+  // Destination rectangle, this fills the entire screen with whatever is in the source clip
   // Can apply aspect ratio here
-  float dstHalfWidth = ((float)_current_draw_mode->width) / 2.0;
-  float dstHalfHeight = ((float)_current_draw_mode->height) / 2.0;
+  float dstWidth = ((float)_current_draw_mode->width);
+  float dstHeight = ((float)_current_draw_mode->height);
+  float srcClipWidth = drawGetBufferClipSize().width;
+  float srcClipHeight = drawGetBufferClipSize().height;
 
-  // Source clip rectangle in 0.0 to 1.0 coordinates...  
+  float dstHalfWidth;
+  float dstHalfHeight;
 
-  // Should not make the amiga-side buffer larger than 2X. Right now we get weird clip exception.
-  float baseWidth = _current_draw_mode->width;
-  float baseHeight = _current_draw_mode->height;
+  // In fullscreen mode, check screen aspect ratio as well...
+  if (drawGetBufferClipSize().width == _current_draw_mode->width && drawGetBufferClipSize().height == _current_draw_mode->height)
+  {
+    dstHalfWidth = dstWidth / 2.0;
+    dstHalfHeight = dstHeight / 2.0;
+  }
+  else
+  {
+    float srcAspectRatio = srcClipWidth / srcClipHeight;
+    float dstAspectRatio = dstWidth / dstHeight;
+
+    if (dstAspectRatio > srcAspectRatio)
+    {
+      // Black vertical borders
+      dstHalfWidth = 0.5 * srcClipWidth * dstHeight / srcClipHeight;
+      dstHalfHeight = dstHeight / 2.0;
+    }
+    else
+    {
+      dstHalfWidth = dstWidth / 2.0;
+      dstHalfHeight = 0.5 * srcClipHeight * dstWidth / srcClipWidth;
+    }
+  }
+  
+  // Source clip rectangle in 0.0 to 1.0 coordinates...
+  float baseWidth = (float) _current_draw_mode->width; 
+  float baseHeight = (float) _current_draw_mode->height;
 
   float srcLeft = ((float)drawGetBufferClipOffset().x) / baseWidth;
   float srcTop = ((float)drawGetBufferClipOffset().y) / baseHeight;
   float srcRight = srcLeft + (((float)drawGetBufferClipSize().width) / baseWidth);
   float srcBottom = srcTop + (((float)drawGetBufferClipSize().height) / baseHeight);
-
 
   // First triangle.
   vertices[0].position = XMFLOAT3(-dstHalfWidth, dstHalfHeight, 0.0f);  // Top left.
@@ -1142,12 +1168,6 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
     return false;
   }
 
-  if (!CreateVertexAndIndexBuffers())
-  {
-    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex and index buffers\n");
-    return false;
-  }
-
   if (!CreateDepthDisabledStencil())
   {
     fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create depth disabled stencil\n");
@@ -1158,6 +1178,12 @@ bool GfxDrvDXGI::EmulationStart(unsigned int maxbuffercount)
 
 unsigned int GfxDrvDXGI::EmulationStartPost()
 {
+  if (!CreateVertexAndIndexBuffers())
+  {
+    fellowAddLog("GfxDrvDXGI::EmulationStart() - Failed to create vertex and index buffers\n");
+    return false;
+  }
+
   if (!_current_draw_mode->windowed)
   {
     bool fullscreenOk = InitiateSwitchToFullScreen();

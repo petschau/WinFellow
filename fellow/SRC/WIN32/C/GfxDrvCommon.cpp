@@ -400,7 +400,7 @@ bool GfxDrvCommon::InitializeWindow()
 
   if (_current_draw_mode->windowed)
   {
-    DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+    DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX; // | WS_SIZEBOX;
     DWORD dwExStyle = 0;
     HWND hParent = NULL;
     ULO width = _current_draw_mode->width;
