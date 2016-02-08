@@ -1088,10 +1088,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   }
   else
   {
-    srcwin.left = draw_hoffset;
-    srcwin.right = draw_hoffset + draw_width_amiga_real;
-    srcwin.top = draw_voffset;
-    srcwin.bottom = draw_voffset + draw_height_amiga_real;
+    srcwin.left = drawGetBufferClipOffset().x;
+    srcwin.top = drawGetBufferClipOffset().y;
+    srcwin.right = drawGetBufferClipOffset().x + drawGetBufferClipSize().width;
+    srcwin.bottom = drawGetBufferClipOffset().y + drawGetBufferClipSize().height;
   }
 
   /* Destination is always the primary or one the backbuffers attached to it */
@@ -1100,10 +1100,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   if (!ddraw_device->mode->windowed)
   {
     /* In full-screen mode, blit centered to the screen */
-    dstwin.left = draw_hoffset;
-    dstwin.top = draw_voffset;
-    dstwin.right = draw_hoffset + draw_width_amiga_real;
-    dstwin.bottom = draw_voffset + draw_height_amiga_real;
+    dstwin.left = drawGetBufferClipOffset().x;
+    dstwin.top = drawGetBufferClipOffset().y;
+    dstwin.right = drawGetBufferClipOffset().x + drawGetBufferClipSize().width;
+    dstwin.bottom = drawGetBufferClipOffset().y + drawGetBufferClipSize().height;
   }
 
   RECT *srcrect = NULL;

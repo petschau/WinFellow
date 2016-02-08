@@ -32,6 +32,15 @@ typedef struct {
   STR name[80];
 } draw_mode;
 
+typedef struct {
+  ULO x;
+  ULO y;
+} draw_point;
+
+typedef struct {
+  ULO width;
+  ULO height;
+} draw_size;
 
 /*===========================================================================*/
 /* Draw line routines and data                                               */
@@ -49,10 +58,6 @@ extern draw_line_func draw_line_dual_hires_routine;
 extern draw_line_func draw_line_dual_lores_routine;
 extern draw_line_func draw_line_HAM_lores_routine;
 
-extern ULO draw_hoffset;
-extern ULO draw_voffset;
-extern ULO draw_width_amiga_real;
-extern ULO draw_height_amiga_real;
 extern ULO draw_width_amiga;
 extern ULO draw_height_amiga;
 extern ULO draw_frame_count;
@@ -92,7 +97,15 @@ extern void drawSetDisplayDriver(DISPLAYDRIVER displaydriver);
 extern DISPLAYDRIVER drawGetDisplayDriver();
 extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode);
 extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
-extern ULO drawGetBufferCount(void);
+
+/*===========================================================================*/
+/* Host buffer management, units are host pixels                             */
+/*===========================================================================*/
+
+extern ULO drawGetBufferCount();
+extern draw_point& drawGetBufferClipOffset();
+extern draw_size& drawGetBufferClipSize();
+
 
 /*===========================================================================*/
 /* When switching rendering (progressive->interlaced)                        */

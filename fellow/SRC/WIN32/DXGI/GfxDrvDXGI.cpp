@@ -669,44 +669,40 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
 
   // Destination rectangle, this fills the screen with whatever is in the source clip
   // Can apply aspect ratio here
-  float halfWidth = ((float)_current_draw_mode->width) / 2.0;
-  float halfHeight = ((float)_current_draw_mode->height) / 2.0;
-
-  //float halfWidth = 640.0f; //((float)_current_draw_mode->width) / 2.0;
-  //float halfHeight = 512.0f; //((float)_current_draw_mode->height) / 2.0;
+  float dstHalfWidth = ((float)_current_draw_mode->width) / 2.0;
+  float dstHalfHeight = ((float)_current_draw_mode->height) / 2.0;
 
   // Source clip rectangle in 0.0 to 1.0 coordinates...  
 
   // Should not make the amiga-side buffer larger than 2X. Right now we get weird clip exception.
-  float baseWidth = (_current_draw_mode->width > 1536) ? 1536 : _current_draw_mode->width;
-  float baseHeight = (_current_draw_mode->height > 1152) ? 1152 : _current_draw_mode->height;
+  float baseWidth = _current_draw_mode->width;
+  float baseHeight = _current_draw_mode->height;
 
-  float xmin = 0.5f - (baseWidth / (float)_current_draw_mode->width / 2.0);
-  float xmax = 0.5f + (baseWidth / (float)_current_draw_mode->width / 2.0);
-
-  float ymin = 0.5f - (baseHeight / (float)_current_draw_mode->height / 2.0);
-  float ymax = 0.5f + (baseHeight / (float)_current_draw_mode->height / 2.0);
+  float srcLeft = ((float)drawGetBufferClipOffset().x) / baseWidth;
+  float srcTop = ((float)drawGetBufferClipOffset().y) / baseHeight;
+  float srcRight = srcLeft + (((float)drawGetBufferClipSize().width) / baseWidth);
+  float srcBottom = srcTop + (((float)drawGetBufferClipSize().height) / baseHeight);
 
 
   // First triangle.
-  vertices[0].position = XMFLOAT3(-halfWidth, halfHeight, 0.0f);  // Top left.
-  vertices[0].texture = XMFLOAT2(xmin, ymin);
+  vertices[0].position = XMFLOAT3(-dstHalfWidth, dstHalfHeight, 0.0f);  // Top left.
+  vertices[0].texture = XMFLOAT2(srcLeft, srcTop);
 
-  vertices[1].position = XMFLOAT3(halfWidth, -halfHeight, 0.0f);  // Bottom right.
-  vertices[1].texture = XMFLOAT2(xmax, ymax);
+  vertices[1].position = XMFLOAT3(dstHalfWidth, -dstHalfHeight, 0.0f);  // Bottom right.
+  vertices[1].texture = XMFLOAT2(srcRight, srcBottom);
 
-  vertices[2].position = XMFLOAT3(-halfWidth, -halfHeight, 0.0f);  // Bottom left.
-  vertices[2].texture = XMFLOAT2(xmin, ymax);
+  vertices[2].position = XMFLOAT3(-dstHalfWidth, -dstHalfHeight, 0.0f);  // Bottom left.
+  vertices[2].texture = XMFLOAT2(srcLeft, srcBottom);
 
   // Second triangle.
-  vertices[3].position = XMFLOAT3(-halfWidth, halfHeight, 0.0f);  // Top left.
-  vertices[3].texture = XMFLOAT2(xmin, ymin);
+  vertices[3].position = XMFLOAT3(-dstHalfWidth, dstHalfHeight, 0.0f);  // Top left.
+  vertices[3].texture = XMFLOAT2(srcLeft, srcTop);
 
-  vertices[4].position = XMFLOAT3(halfWidth, halfHeight, 0.0f);  // Top right.
-  vertices[4].texture = XMFLOAT2(xmax, ymin);
+  vertices[4].position = XMFLOAT3(dstHalfWidth, dstHalfHeight, 0.0f);  // Top right.
+  vertices[4].texture = XMFLOAT2(srcRight, srcTop);
 
-  vertices[5].position = XMFLOAT3(halfWidth, -halfHeight, 0.0f);  // Bottom right.
-  vertices[5].texture = XMFLOAT2(xmax, ymax);
+  vertices[5].position = XMFLOAT3(dstHalfWidth, -dstHalfHeight, 0.0f);  // Bottom right.
+  vertices[5].texture = XMFLOAT2(srcRight, srcBottom);
 
   // Set up the description of the static vertex buffer.
   vertexBufferDesc.Usage = D3D11_USAGE_DYNAMIC;

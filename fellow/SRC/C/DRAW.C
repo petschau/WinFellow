@@ -87,16 +87,24 @@ ULO draw_clear_buffers;
 
 ULO draw_width_amiga;                /* Width of screen in Amiga lores pixels */
 ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
-ULO draw_width_amiga_real;            /* Width of Amiga screen in real pixels */
-ULO draw_height_amiga_real;          /* Height of Amiga screen in real pixels */
 
 
 /*============================================================================*/
 /* Data concerning the positioning of the Amiga screen in the host buffer     */               
 /*============================================================================*/
 
-ULO draw_hoffset;            /* X-position of the first amiga pixel in a line */
-ULO draw_voffset;                       /* Y-position of the first amiga line */
+draw_point draw_buffer_clip_offset; /* Upper left corner of the amiga content in the host buffer in host pixel units */
+draw_size draw_buffer_clip_size; /* Width and height of the amiga content in host pixel units */
+
+draw_point& drawGetBufferClipOffset()
+{
+  return draw_buffer_clip_offset;
+}
+
+draw_size& drawGetBufferClipSize()
+{
+  return draw_buffer_clip_size;
+}
 
 
 /*============================================================================*/
@@ -598,7 +606,7 @@ BOOLE drawGetAllowMultipleBuffers(void)
   return draw_allow_multiple_buffers;
 }
 
-ULO drawGetBufferCount(void)
+ULO drawGetBufferCount()
 {
   return draw_buffer_count;
 }
@@ -679,7 +687,7 @@ static void drawColorTranslationInitialize(void)
 /* Calculate the width of the screen in Amiga lores pixels                    */
 /*============================================================================*/
 
-static void drawAmigaScreenWidth(draw_mode *dm)
+static void drawCalculateBufferClipWidth(draw_mode *dm)
 {
   ULO totalscale = drawGetDisplayScaleFactor();
 
@@ -708,17 +716,15 @@ static void drawAmigaScreenWidth(draw_mode *dm)
       draw_right = 472;
     draw_left = draw_right - draw_width_amiga;
   }
-  draw_width_amiga_real = draw_width_amiga*totalscale;
+  drawGetBufferClipSize().width = draw_width_amiga*totalscale;
 }
-
-
 
 
 /*============================================================================*/
 /* Calculate the height of the screen in Amiga lores pixels                   */
 /*============================================================================*/
 
-static void drawAmigaScreenHeight(draw_mode *dm)
+static void drawCalculateBufferClipHeight(draw_mode *dm)
 {
   ULO totalscale = drawGetDisplayScaleFactor();
 
@@ -737,7 +743,7 @@ static void drawAmigaScreenHeight(draw_mode *dm)
     draw_bottom = busGetMaxLinesInFrame();
     draw_top = busGetMaxLinesInFrame() - draw_height_amiga;
   }
-  draw_height_amiga_real = draw_height_amiga*totalscale;
+  drawGetBufferClipSize().height = draw_height_amiga*totalscale;
 }
 
 
@@ -745,10 +751,10 @@ static void drawAmigaScreenHeight(draw_mode *dm)
 /* Center the Amiga screen                                                    */
 /*============================================================================*/
 
-static void drawAmigaScreenCenter(draw_mode *dm)
+static void drawCalculateBufferClipOffset(draw_mode *dm)
 {
-  draw_hoffset = ((dm->width - draw_width_amiga_real)/2) & (~7);
-  draw_voffset = (dm->height - draw_height_amiga_real)/2 & (~1);
+  drawGetBufferClipOffset().x = ((dm->width - drawGetBufferClipSize().width)/2) & (~7);
+  drawGetBufferClipOffset().y = (dm->height - drawGetBufferClipSize().height) / 2 & (~1);
 }
 
 
@@ -758,9 +764,9 @@ static void drawAmigaScreenCenter(draw_mode *dm)
 
 static void drawAmigaScreenGeometry(draw_mode *dm)
 {
-  drawAmigaScreenWidth(dm);
-  drawAmigaScreenHeight(dm);
-  drawAmigaScreenCenter(dm);
+  drawCalculateBufferClipWidth(dm);
+  drawCalculateBufferClipHeight(dm);
+  drawCalculateBufferClipOffset(dm);
 }
 
 
@@ -922,7 +928,7 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
 
   draw_buffer_current_ptr = 
     draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
-    (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
+    (draw_mode_current->pitch * drawGetBufferClipOffset().y) + (drawGetBufferClipOffset().x * (draw_mode_current->bits >> 3));
 
   if (drawGetUseInterlacedRendering())
   {
