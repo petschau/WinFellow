@@ -86,7 +86,6 @@ void cfgSetDiskImage(cfg *config, ULO index, STR *diskimage)
   if (index < 4) 
   {
     strncpy(&(config->m_diskimage[index][0]), diskimage, CFG_FILENAME_LENGTH);
-    //fsNavigMakeRelativePath(&config->m_diskimage[index][0]);
   }
 }
 
@@ -145,9 +144,8 @@ BOOLE cfgGetDiskFast(cfg *config)
 
 void cfgSetLastUsedDiskDir(cfg *config, STR *directory)
 {
-  if(directory != NULL) {
+  if(directory != nullptr) {
     strncpy(config->m_lastuseddiskdir, directory, CFG_FILENAME_LENGTH);
-    //fsNavigMakeRelativePath(config->m_lastuseddiskdir);
   }
 }
 
@@ -592,7 +590,7 @@ bool cfgGetECS(cfg *config)
 
 cfg_hardfile cfgGetHardfile(cfg *config, ULO index)
 {
-  return *(cfg_hardfile *) listNode(listIndex(config->m_hardfiles, index));
+  return *static_cast<cfg_hardfile *>(listNode(listIndex(config->m_hardfiles, index)));
 }
 
 ULO cfgGetHardfileCount(cfg *config)
@@ -602,8 +600,7 @@ ULO cfgGetHardfileCount(cfg *config)
 
 void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile)
 {
-  cfg_hardfile *hf = (cfg_hardfile *) malloc(sizeof(cfg_hardfile));
-  //fsNavigMakeRelativePath(hardfile->filename);
+  cfg_hardfile *hf = static_cast<cfg_hardfile *>(malloc(sizeof(cfg_hardfile)));
   *hf = *hardfile;
   config->m_hardfiles = listAddLast(config->m_hardfiles, listNew(hf));
 }
@@ -622,7 +619,7 @@ void cfgHardfileRemove(cfg *config, ULO index)
 void cfgHardfilesFree(cfg *config)
 {
   listFreeAll(config->m_hardfiles, TRUE);
-  config->m_hardfiles = NULL;
+  config->m_hardfiles = nullptr;
 }
 
 void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile)
@@ -638,8 +635,7 @@ void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile)
 void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index)
 {
   felist *node = listIndex(config->m_hardfiles, index);
-  cfg_hardfile *hf = (cfg_hardfile *) listNode(node);
-  //fsNavigMakeRelativePath(hardfile->filename);
+  cfg_hardfile *hf = static_cast<cfg_hardfile *>(listNode(node));
   *hf = *hardfile;
 }
 
@@ -650,7 +646,7 @@ void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index)
 
 cfg_filesys cfgGetFilesystem(cfg *config, ULO index)
 {
-  return *(cfg_filesys *) listNode(listIndex(config->m_filesystems, index));
+  return *static_cast<cfg_filesys *>(listNode(listIndex(config->m_filesystems, index)));
 }
 
 ULO cfgGetFilesystemCount(cfg *config)
@@ -660,8 +656,7 @@ ULO cfgGetFilesystemCount(cfg *config)
 
 void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem)
 {
-  cfg_filesys *fsys = (cfg_filesys *) malloc(sizeof(cfg_filesys));
-  //fsNavigMakeRelativePath(filesystem->rootpath);
+  cfg_filesys *fsys = static_cast<cfg_filesys *>(malloc(sizeof(cfg_filesys)));
   *fsys = *filesystem;
   config->m_filesystems = listAddLast(config->m_filesystems, listNew(fsys));
 }
@@ -680,7 +675,7 @@ void cfgFilesystemRemove(cfg *config, ULO index)
 void cfgFilesystemsFree(cfg *config)
 {
   listFreeAll(config->m_filesystems, TRUE);
-  config->m_filesystems = NULL;
+  config->m_filesystems = nullptr;
 }
 
 void cfgSetFilesystemUnitDefaults(cfg_filesys *unit)
@@ -692,8 +687,7 @@ void cfgSetFilesystemUnitDefaults(cfg_filesys *unit)
 void cfgFilesystemChange(cfg *config, cfg_filesys *unit, ULO index)
 {
   felist *node = listIndex(config->m_filesystems, index);
-  cfg_filesys *fsys = (cfg_filesys *) listNode(node);
-  //fsNavigMakeRelativePath(unit->rootpath);
+  cfg_filesys *fsys = static_cast<cfg_filesys *>(listNode(node));
   *fsys = *unit;
 }
 
@@ -764,7 +758,7 @@ bool cfgGetMeasureSpeed(cfg *config)
 
 void cfgSetDefaults(cfg *config)
 {
-  if(config == NULL) return;
+  if(config == nullptr) return;
 
   /*==========================================================================*/
   /* Default configuration description                                        */
@@ -904,7 +898,7 @@ static BOOLE cfgGetBOOLEFromString(STR *value)
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static STR *cfgGetBOOLEToString(BOOLE value)
+static const STR *cfgGetBOOLEToString(BOOLE value)
 {
   return (value) ? "yes" : "no";
 }
@@ -914,7 +908,7 @@ static bool cfgGetboolFromString(STR *value)
   return (value[0] == 'y' || value[0] == 't');
 }
 
-static STR *cfgGetboolToString(bool value)
+static const STR *cfgGetboolToString(bool value)
 {
   return (value) ? "yes" : "no";
 }
@@ -930,19 +924,19 @@ static gameport_inputs cfgGetGameportFromString(STR *value)
   {
     return GP_MOUSE0;
   }
-  else if (stricmp(value, "joy0") == 0)
+  if (stricmp(value, "joy0") == 0)
   {
     return GP_ANALOG0;
   }
-  else if (stricmp(value, "joy1") == 0)
+  if (stricmp(value, "joy1") == 0)
   {
     return GP_ANALOG1;
   }
-  else if (stricmp(value, "kbd1") == 0)
+  if (stricmp(value, "kbd1") == 0)
   {
     return GP_JOYKEY0;
   }
-  else if (stricmp(value, "kbd2") == 0)
+  if (stricmp(value, "kbd2") == 0)
   {
     return GP_JOYKEY1;
   }
@@ -969,31 +963,31 @@ static cpu_integration_models cfgGetCPUTypeFromString(STR *value)
   {
     return M68000;
   }
-  else if (stricmp(value, "68010") == 0)
+  if (stricmp(value, "68010") == 0)
   {
     return M68010;
   }
-  else if (stricmp(value, "68020") == 0)
+  if (stricmp(value, "68020") == 0)
   {
     return M68020;
   }
-  else if (stricmp(value, "68020/68881") == 0)
+  if (stricmp(value, "68020/68881") == 0)
   {
     return M68020;  /* Unsupp */
   }
-  else if (stricmp(value, "68ec20") == 0)
+  if (stricmp(value, "68ec20") == 0)
   {
     return M68EC20;
   }
-  else if (stricmp(value, "68ec20/68881") == 0)
+  if (stricmp(value, "68ec20/68881") == 0)
   {
     return M68EC20; /* Unsupp */
   }
-  else if (stricmp(value, "68030") == 0)
+  if (stricmp(value, "68030") == 0)
   {
     return M68030;
   }
-  else if (stricmp(value, "68ec30") == 0)
+  if (stricmp(value, "68ec30") == 0)
   {
     return M68EC30;
   }
@@ -1022,7 +1016,7 @@ static ULO cfgGetCPUSpeedFromString(STR *value)
   {
     return 4;
   }
-  else if (stricmp(value, "max") == 0)
+  if (stricmp(value, "max") == 0)
   {
     return 1;
   }
@@ -1040,7 +1034,7 @@ static sound_notifications cfgGetSoundNotificationFromString(STR *value)
   {
     return SOUND_DSOUND_NOTIFICATION;
   }
-  else if (stricmp(value, "mmtimer") == 0)
+  if (stricmp(value, "mmtimer") == 0)
   {
     return SOUND_MMTIMER_NOTIFICATION;
   }
@@ -1063,14 +1057,14 @@ static sound_emulations cfgGetSoundEmulationFromString(STR *value)
   {
     return SOUND_NONE;
   }
-  else if (stricmp(value, "interrupts") == 0)
+  if (stricmp(value, "interrupts") == 0)
   {
     return SOUND_EMULATE;
   }
-  else if ((stricmp(value, "normal") == 0) ||
-    (stricmp(value, "exact") == 0) ||
-    (stricmp(value, "good") == 0) ||
-    (stricmp(value, "best") == 0))
+  if (stricmp(value, "normal") == 0 ||
+      stricmp(value, "exact") == 0 ||
+      stricmp(value, "good") == 0 ||
+      stricmp(value, "best") == 0)
   {
     return SOUND_PLAY;
   }
@@ -1090,13 +1084,13 @@ static STR *cfgGetSoundEmulationToString(sound_emulations soundemulation)
 
 static bool cfgGetSoundStereoFromString(STR *value)
 {
-  if ((stricmp(value, "mono") == 0) ||
-    (stricmp(value, "m") == 0) ||
-    (stricmp(value, "1") == 0))
+  if (stricmp(value, "mono") == 0 ||
+      stricmp(value, "m") == 0 ||
+      stricmp(value, "1") == 0)
   {
     return false;
   }
-  else if ((stricmp(value, "stereo") == 0) ||
+  if ((stricmp(value, "stereo") == 0) ||
     (stricmp(value, "s") == 0) ||
     (stricmp(value, "2") == 0))
   {
@@ -1105,17 +1099,17 @@ static bool cfgGetSoundStereoFromString(STR *value)
   return false;
 }
 
-static STR *cfgGetSoundStereoToString(bool soundstereo)
+static const STR *cfgGetSoundStereoToString(bool soundstereo)
 {
   return (soundstereo) ? "stereo" : "mono";
 }
 
 static bool cfgGetSound16BitsFromString(STR *value)
 {
-  return (stricmp(value, "16") == 0);
+  return stricmp(value, "16") == 0;
 }
 
-static STR *cfgGetSound16BitsToString(bool sound16bits)
+static const STR *cfgGetSound16BitsToString(bool sound16bits)
 {
   return (sound16bits) ? "16" : "8";
 }
@@ -1128,11 +1122,11 @@ static sound_rates cfgGetSoundRateFromString(STR *value)
   {
     return SOUND_15650;
   }
-  else if (rate < 31300)
+  if (rate < 31300)
   {
     return SOUND_22050;
   }
-  else if (rate < 44100)
+  if (rate < 44100)
   {
     return SOUND_31300;
   }
@@ -1157,11 +1151,11 @@ static sound_filters cfgGetSoundFilterFromString(STR *value)
   {
     return SOUND_FILTER_NEVER;
   }
-  else if (stricmp(value, "original") == 0)
+  if (stricmp(value, "original") == 0)
   {
     return SOUND_FILTER_ORIGINAL;
   }
-  else if (stricmp(value, "always") == 0)
+  if (stricmp(value, "always") == 0)
   {
     return SOUND_FILTER_ALWAYS;
   }
@@ -1187,7 +1181,7 @@ static ULO cfgGetBufferLengthFromString(STR *value)
   {
     return 10;
   }
-  else if (buffer_length > 80)
+  if (buffer_length > 80)
   {
     return 80;
   }
@@ -1272,22 +1266,22 @@ static ULO cfgGetColorBitsFromString(STR *value)
   {
     return 16; // Fallback to 16 bits, 8 bit support is removed
   }
-  else if ((stricmp(value, "15bit") == 0) ||
+  if ((stricmp(value, "15bit") == 0) ||
     (stricmp(value, "15") == 0))
   {
     return 15;
   }
-  else if ((stricmp(value, "16bit") == 0) ||
+  if ((stricmp(value, "16bit") == 0) ||
     (stricmp(value, "16") == 0))
   {
     return 16;
   }
-  else if ((stricmp(value, "24bit") == 0) ||
+  if ((stricmp(value, "24bit") == 0) ||
     (stricmp(value, "24") == 0))
   {
     return 24;
   }
-  else if ((stricmp(value, "32bit") == 0) ||
+  if ((stricmp(value, "32bit") == 0) ||
     (stricmp(value, "32") == 0))
   {
     return 32;
@@ -1313,7 +1307,7 @@ static bool cfgGetECSFromString(STR *value)
   {
     return false;
   }
-  else if ((stricmp(value, "ecs agnes") == 0) ||
+  if ((stricmp(value, "ecs agnes") == 0) ||
     (stricmp(value, "ecs denise") == 0) ||
     (stricmp(value, "ecs") == 0) ||
     (stricmp(value, "aga") == 0) ||
@@ -1326,7 +1320,7 @@ static bool cfgGetECSFromString(STR *value)
   return false;
 }
 
-static STR *cfgGetECSToString(bool chipset_ecs)
+static const STR *cfgGetECSToString(bool chipset_ecs)
 {
   return (chipset_ecs) ? "ecs" : "ocs";
 }
@@ -1364,10 +1358,10 @@ static STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE graphicsem
 {
   switch (graphicsemulationmode)
   {
-  case GRAPHICSEMULATIONMODE_LINEEXACT:
-    return "lineexact";
-  case GRAPHICSEMULATIONMODE_CYCLEEXACT:
-    return "cycleexact";
+    case GRAPHICSEMULATIONMODE_LINEEXACT:
+      return "lineexact";
+    case GRAPHICSEMULATIONMODE_CYCLEEXACT:
+      return "cycleexact";
   }
   return "lineexact";
 }
@@ -1398,7 +1392,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
   BOOLE result;
 
   value = strchr(optionstr, '=');
-  result = (value != NULL);
+  result = (value != nullptr);
   if (result)
   {
     option = optionstr;
@@ -1658,7 +1652,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
       STR *nextpos;
       cfg_hardfile hf;
 
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
   	return FALSE; /* Access */
       }
@@ -1676,35 +1670,35 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 	return FALSE;
       }
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
 	return FALSE; /* Secs */
       }
       *nextpos = '\0';
       hf.sectorspertrack = atoi(curpos);
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
 	return FALSE; /* Surfaces */
       }
       *nextpos = '\0';
       hf.surfaces = atoi(curpos);
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
 	return FALSE; /* Reserved */
       }
       *nextpos = '\0';
       hf.reservedblocks = atoi(curpos);
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
 	return FALSE; /* Blocksize */
       }
       *nextpos = '\0';
       hf.bytespersector = atoi(curpos);
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ',')) != NULL)
+      if ((nextpos = strchr(curpos, ',')) != nullptr)
       {
 	return FALSE; /* Filename */
       }
@@ -1717,7 +1711,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
       STR *nextpos;
       cfg_filesys fs;
 
-      if ((nextpos = strchr(curpos, ',')) == NULL)
+      if ((nextpos = strchr(curpos, ',')) == nullptr)
       {
 	return FALSE;    /* Access */
       }
@@ -1735,7 +1729,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 	return FALSE;
       }
       curpos = nextpos + 1;
-      if ((nextpos = strchr(curpos, ':')) == NULL)
+      if ((nextpos = strchr(curpos, ':')) == nullptr)
       {
 	return FALSE;   /* Volname */
       }
@@ -1952,7 +1946,7 @@ BOOLE cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset
   }
 
   cfgfile = fopen(newfilename, "r");
-  result = (cfgfile != NULL);
+  result = (cfgfile != nullptr);
   if (result)
   {
     result = cfgLoadFromFile(config, cfgfile);
@@ -1977,7 +1971,7 @@ BOOLE cfgSaveToFilename(cfg *config, STR *filename)
   BOOLE result;
 
   cfgfile = fopen(filename, "w");
-  result = (cfgfile != NULL);
+  result = (cfgfile != nullptr);
   if (result)
   {
     result = cfgSaveToFile(config, cfgfile);
@@ -2011,13 +2005,13 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       return FALSE;
     }
 #ifdef RETRO_PLATFORM
-    else if (stricmp(argv[i], "-rphost") == 0)
+    if (stricmp(argv[i], "-rphost") == 0)
     {
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetMode(TRUE);
-	      RetroPlatformSetHostID(argv[i]);
+        RetroPlatformSetMode(TRUE);
+        RetroPlatformSetHostID(argv[i]);
       }
       i++;
     }
@@ -2026,7 +2020,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
+        fellowAddLog("cfg: RetroPlatform data path: %s\n", argv[i]);
       }
       i++;
     }
@@ -2035,7 +2029,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetEscapeKey(argv[i]);
+        RetroPlatformSetEscapeKey(argv[i]);
       }
       i++;
     }
@@ -2044,7 +2038,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetEscapeKeyHoldTime(argv[i]);
+        RetroPlatformSetEscapeKeyHoldTime(argv[i]);
       }
       i++;
     }
@@ -2053,7 +2047,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	      RetroPlatformSetScreenMode(argv[i]);
+        RetroPlatformSetScreenMode(argv[i]);
       }
       i++;
     }
@@ -2077,16 +2071,16 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	fellowAddLog("cfg: configuration file: %s\n", argv[i]);
-	if(!cfgLoadFromFilename(config, argv[i], false))
-	{
-	  fellowAddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
-	}
-	i++;
+        fellowAddLog("cfg: configuration file: %s\n", argv[i]);
+        if(!cfgLoadFromFilename(config, argv[i], false))
+        {
+          fellowAddLog("cfg: ERROR using -f option, failed reading configuration file %s\n", argv[i]);
+        }
+        i++;
       }
       else
       {
-	fellowAddLog("cfg: ERROR using -f option, please supply a filename\n");
+        fellowAddLog("cfg: ERROR using -f option, please supply a filename\n");
       }
     }
     else if (stricmp(argv[i], "-s") == 0)
@@ -2094,13 +2088,13 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-	if (!cfgSetOption(config, argv[i]))
-	  fellowAddLog("cfg: -s option, unrecognized setting %s\n", argv[i]);
-	i++;
+        if (!cfgSetOption(config, argv[i]))
+          fellowAddLog("cfg: -s option, unrecognized setting %s\n", argv[i]);
+        i++;
       }
       else
       {
-	fellowAddLog("cfg: -s option, please supply a configuration setting\n");
+        fellowAddLog("cfg: -s option, please supply a configuration setting\n");
       }
     }
     else
@@ -2135,7 +2129,7 @@ cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager)
 /*============================================================================*/
 cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager)
 {
-  cfg *newconfig = (cfg *) malloc(sizeof(cfg));
+  cfg *newconfig = static_cast<cfg *>(malloc(sizeof(cfg)));
   memcpy(newconfig, configmanager->m_currentconfig, sizeof(cfg));
   newconfig->m_filesystems = listCopy(configmanager->m_currentconfig->m_filesystems, sizeof(cfg_filesys ));
   newconfig->m_hardfiles   = listCopy(configmanager->m_currentconfig->m_hardfiles,   sizeof(cfg_hardfile));
@@ -2333,9 +2327,9 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
 
 cfg *cfgManagerGetNewConfig(cfgManager *configmanager)
 {
-  cfg *config = (cfg *) malloc(sizeof(cfg));
-  config->m_hardfiles = NULL;
-  config->m_filesystems = NULL;
+  cfg *config = static_cast<cfg *>(malloc(sizeof(cfg)));
+  config->m_hardfiles = nullptr;
+  config->m_filesystems = nullptr;
   cfgSetDefaults(config);
   return config;
 }
@@ -2367,8 +2361,7 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
 
 void cfgManagerShutdown(cfgManager *configmanager)
 {
-  cfgManagerFreeConfig(configmanager, 
-    configmanager->m_currentconfig);
+  cfgManagerFreeConfig(configmanager, configmanager->m_currentconfig);
 }
 
 void cfgStartup(int argc, char **argv)
