@@ -669,19 +669,19 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
 
   // Destination rectangle, this fills the entire screen with whatever is in the source clip
   // Can apply aspect ratio here
-  float dstWidth = ((float)_current_draw_mode->width);
-  float dstHeight = ((float)_current_draw_mode->height);
-  float srcClipWidth = drawGetBufferClipSize().width;
-  float srcClipHeight = drawGetBufferClipSize().height;
+  float dstWidth = static_cast<float>(_current_draw_mode->width);
+  float dstHeight = static_cast<float>(_current_draw_mode->height);
+  float srcClipWidth = drawGetBufferClipWidthAsFloat();
+  float srcClipHeight = drawGetBufferClipHeightAsFloat();
 
   float dstHalfWidth;
   float dstHalfHeight;
 
   // In fullscreen mode, check screen aspect ratio as well...
-  if (drawGetBufferClipSize().width == _current_draw_mode->width && drawGetBufferClipSize().height == _current_draw_mode->height)
+  if (drawGetBufferClipWidth() == _current_draw_mode->width && drawGetBufferClipHeight() == _current_draw_mode->height)
   {
-    dstHalfWidth = dstWidth / 2.0;
-    dstHalfHeight = dstHeight / 2.0;
+    dstHalfWidth = dstWidth / 2.0f;
+    dstHalfHeight = dstHeight / 2.0f;
   }
   else
   {
@@ -691,24 +691,24 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
     if (dstAspectRatio > srcAspectRatio)
     {
       // Black vertical borders
-      dstHalfWidth = 0.5 * srcClipWidth * dstHeight / srcClipHeight;
-      dstHalfHeight = dstHeight / 2.0;
+      dstHalfWidth = 0.5f * srcClipWidth * dstHeight / srcClipHeight;
+      dstHalfHeight = dstHeight / 2.0f;
     }
     else
     {
-      dstHalfWidth = dstWidth / 2.0;
-      dstHalfHeight = 0.5 * srcClipHeight * dstWidth / srcClipWidth;
+      dstHalfWidth = dstWidth / 2.0f;
+      dstHalfHeight = 0.5f * srcClipHeight * dstWidth / srcClipWidth;
     }
   }
   
   // Source clip rectangle in 0.0 to 1.0 coordinates...
-  float baseWidth = (float) _current_draw_mode->width; 
-  float baseHeight = (float) _current_draw_mode->height;
+  float baseWidth = static_cast<float>(_current_draw_mode->width); 
+  float baseHeight = static_cast<float>(_current_draw_mode->height);
 
-  float srcLeft = ((float)drawGetBufferClipOffset().x) / baseWidth;
-  float srcTop = ((float)drawGetBufferClipOffset().y) / baseHeight;
-  float srcRight = srcLeft + (((float)drawGetBufferClipSize().width) / baseWidth);
-  float srcBottom = srcTop + (((float)drawGetBufferClipSize().height) / baseHeight);
+  float srcLeft = drawGetBufferClipLeftAsFloat() / baseWidth;
+  float srcTop = drawGetBufferClipTopAsFloat() / baseHeight;
+  float srcRight = srcLeft + drawGetBufferClipWidthAsFloat() / baseWidth;
+  float srcBottom = srcTop + drawGetBufferClipHeightAsFloat() / baseHeight;
 
   // First triangle.
   vertices[0].position = XMFLOAT3(-dstHalfWidth, dstHalfHeight, 0.0f);  // Top left.
@@ -882,8 +882,8 @@ bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX
 
 bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
 {
-  int width = _current_draw_mode->width;
-  int height = _current_draw_mode->height;
+  float width = static_cast<float>(_current_draw_mode->width);
+  float height = static_cast<float>(_current_draw_mode->height);
 
   XMMATRIX orthogonalMatrix = XMMatrixOrthographicLH(width, height, 1000.0f, 0.1f);
   XMMATRIX identityMatrix = XMMatrixIdentity();

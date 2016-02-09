@@ -103,9 +103,15 @@ extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 /*===========================================================================*/
 
 extern ULO drawGetBufferCount();
-extern draw_point& drawGetBufferClipOffset();
-extern draw_size& drawGetBufferClipSize();
 
+extern ULO drawGetBufferClipLeft();
+extern float drawGetBufferClipLeftAsFloat();
+extern ULO drawGetBufferClipTop();
+extern float drawGetBufferClipTopAsFloat();
+extern ULO drawGetBufferClipWidth();
+extern float drawGetBufferClipWidthAsFloat();
+extern ULO drawGetBufferClipHeight();
+extern float drawGetBufferClipHeightAsFloat();
 
 /*===========================================================================*/
 /* When switching rendering (progressive->interlaced)                        */

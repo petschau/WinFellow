@@ -35,8 +35,6 @@
 #include "timer.h"
 #include "fonts.h"
 #include "copper.h"
-#include "wgui.h"
-#include "fileops.h"
 #include "sprite.h"
 #include "CONFIG.H"
 
@@ -96,16 +94,45 @@ ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
 draw_point draw_buffer_clip_offset; /* Upper left corner of the amiga content in the host buffer in host pixel units */
 draw_size draw_buffer_clip_size; /* Width and height of the amiga content in host pixel units */
 
-draw_point& drawGetBufferClipOffset()
+ULO drawGetBufferClipLeft()
 {
-  return draw_buffer_clip_offset;
+	return draw_buffer_clip_offset.x;
 }
 
-draw_size& drawGetBufferClipSize()
+float drawGetBufferClipLeftAsFloat()
 {
-  return draw_buffer_clip_size;
+	return static_cast<float>(drawGetBufferClipLeft());
 }
 
+ULO drawGetBufferClipTop()
+{
+	return draw_buffer_clip_offset.y;
+}
+
+float drawGetBufferClipTopAsFloat()
+{
+	return static_cast<float>(drawGetBufferClipTop());
+}
+
+ULO drawGetBufferClipWidth()
+{
+	return draw_buffer_clip_size.width;
+}
+
+float drawGetBufferClipWidthAsFloat()
+{
+	return static_cast<float>(drawGetBufferClipWidth());
+}
+
+ULO drawGetBufferClipHeight()
+{
+	return draw_buffer_clip_size.height;	
+}
+
+float drawGetBufferClipHeightAsFloat()
+{
+	return static_cast<float>(drawGetBufferClipHeight());	
+}
 
 /*============================================================================*/
 /* Bounding box of the Amiga screen that is visible in the host buffer        */
@@ -716,7 +743,7 @@ static void drawCalculateBufferClipWidth(draw_mode *dm)
       draw_right = 472;
     draw_left = draw_right - draw_width_amiga;
   }
-  drawGetBufferClipSize().width = draw_width_amiga*totalscale;
+  draw_buffer_clip_size.width = draw_width_amiga*totalscale;
 }
 
 
@@ -743,7 +770,7 @@ static void drawCalculateBufferClipHeight(draw_mode *dm)
     draw_bottom = busGetMaxLinesInFrame();
     draw_top = busGetMaxLinesInFrame() - draw_height_amiga;
   }
-  drawGetBufferClipSize().height = draw_height_amiga*totalscale;
+  draw_buffer_clip_size.height = draw_height_amiga*totalscale;
 }
 
 
@@ -753,8 +780,8 @@ static void drawCalculateBufferClipHeight(draw_mode *dm)
 
 static void drawCalculateBufferClipOffset(draw_mode *dm)
 {
-  drawGetBufferClipOffset().x = ((dm->width - drawGetBufferClipSize().width)/2) & (~7);
-  drawGetBufferClipOffset().y = (dm->height - drawGetBufferClipSize().height) / 2 & (~1);
+  draw_buffer_clip_offset.x = ((dm->width - draw_buffer_clip_size.width) / 2) & ~7;
+  draw_buffer_clip_offset.y = ((dm->height - draw_buffer_clip_size.height) / 2) & ~1;
 }
 
 
@@ -927,8 +954,10 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
   }
 
   draw_buffer_current_ptr = 
-    draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
-    (draw_mode_current->pitch * drawGetBufferClipOffset().y) + (drawGetBufferClipOffset().x * (draw_mode_current->bits >> 3));
+    draw_buffer_top_ptr + 
+	draw_mode_current->pitch * scale * (amiga_line_number - draw_top) +
+    draw_mode_current->pitch * draw_buffer_clip_offset.y + 
+	draw_buffer_clip_offset.x * (draw_mode_current->bits >> 3);
 
   if (drawGetUseInterlacedRendering())
   {
