@@ -95,6 +95,8 @@ Write-Debug "Temporary Dir       : $temp"
 $TargetOutputDir   = Resolve-Path ("$SourceCodeBaseDir\..")
 Write-Debug "Target Output Dir   : $TargetOutputDir"
 
+$MSBuildLog = "$temp\WinFellow-MSBuild.log"
+
 Push-Location
 
 cd $SourceCodeBaseDir
@@ -132,7 +134,14 @@ if ((Get-Command "msbuild.exe" -ErrorAction SilentlyContinue) -eq $null)
    Write-Error "Unable to find msbuild.exe in your PATH"
 }
 Write-Verbose "Executing MSBuild.exe..."    
-$result = (msbuild.exe $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM)
+$result = (msbuild.exe $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
+
+If($LastExitCode -ne 0)
+{
+	ii $MSBuildLog
+	Pop-Location
+	Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+}
 
 Write-Verbose "Checking file version of file WinFellow\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe..."
 $FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.ProductVersion
