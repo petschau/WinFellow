@@ -273,6 +273,8 @@ bool GfxDrvDXGI::CreateSwapChain()
   int width = _current_draw_mode->width;
   int height = _current_draw_mode->height;
 
+  _resize_swapchain_buffers = false;
+
 #ifdef RETRO_PLATFORM
   if (RetroPlatformGetMode())
   {
@@ -383,10 +385,32 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
 
 void GfxDrvDXGI::SizeChanged()
 {
+  fellowAddLog("GfxDrvDXGI: SizeChanged()\n");
+
+  // Don't execute the resize here, do it in the thread that renders
+  _resize_swapchain_buffers = true;
+}
+
+void GfxDrvDXGI::ResizeSwapChainBuffers()
+{
+  fellowAddLog("GfxDrvDXGI: ResizeSwapChainBuffers()\n");
+
+  _resize_swapchain_buffers = false;
+
+  HRESULT result = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to resize buffers of swap chain in response to WM_SIZE:", result);
+  }
 }
 
 unsigned char *GfxDrvDXGI::ValidateBufferPointer()
 {
+  if (_resize_swapchain_buffers)
+  {
+    ResizeSwapChainBuffers();
+  }
+
   ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
   D3D11_MAPPED_SUBRESOURCE mappedRect = { 0 };
   D3D11_MAP mapFlag = D3D11_MAP_WRITE;
@@ -1110,7 +1134,8 @@ GfxDrvDXGI::GfxDrvDXGI()
     _matrixBuffer(nullptr),
     _shaderInputTexture(nullptr),
     _amigaScreenTextureCount(AmigaScreenTextureCount),
-    _currentAmigaScreenTexture(0)
+    _currentAmigaScreenTexture(0),
+    _resize_swapchain_buffers(false)
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {

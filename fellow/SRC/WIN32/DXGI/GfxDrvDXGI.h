@@ -50,6 +50,8 @@ private:
   unsigned int _currentAmigaScreenTexture;
   draw_mode *_current_draw_mode;
 
+  bool _resize_swapchain_buffers;
+
 private:
   void CreateAdapterList();
   void DeleteAdapterList();
@@ -71,6 +73,7 @@ private:
   bool CreateSwapChain();
   void DeleteSwapChain();
   bool InitiateSwitchToFullScreen();
+  void ResizeSwapChainBuffers();
   DXGI_MODE_DESC* GetDXGIMode(unsigned int id);
 
   bool CreateAmigaScreenTexture();
