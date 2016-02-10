@@ -886,4 +886,12 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\DXGI\PixelShader.hlsl">
+      <Filter>DXGI</Filter>
+    </FxCompile>
+    <FxCompile Include="..\DXGI\VertexShader.hlsl">
+      <Filter>DXGI</Filter>
+    </FxCompile>
+  </ItemGroup>
 </Project>

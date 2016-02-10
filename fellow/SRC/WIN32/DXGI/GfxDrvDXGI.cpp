@@ -17,7 +17,8 @@
 #include "FELLOW.H"
 #include "gfxdrv_directdraw.h"
 
-#include <D3Dcompiler.h>
+#include "VertexShader.h"
+#include "PixelShader.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -414,79 +415,10 @@ void GfxDrvDXGI::InvalidateBufferPointer()
 
 bool GfxDrvDXGI::CreateVertexShader()
 {
-  char *vertexShaderSource =
-    "  cbuffer MatrixBuffer"
-    "  {"
-    "    matrix worldMatrix;"
-    "    matrix viewMatrix;"
-    "    matrix projectionMatrix;"
-    "  };"
-    ""
-    "  struct VertexInputType"
-    "  {"
-    "    float4 position : POSITION;"
-    "    float2 tex : TEXCOORD0;"
-    "  };"
-    ""
-    "  struct PixelInputType"
-    "  {"
-    "    float4 position : SV_POSITION;"
-    "    float2 tex : TEXCOORD0;"
-    "  };"
-    ""
-    "  PixelInputType TextureVertexShader(VertexInputType input)"
-    "  {"
-    "    PixelInputType output;"
-    ""
-    ""
-    "    // Change the position vector to be 4 units for proper matrix calculations.\n"
-    "    input.position.w = 1.0f;"
-    ""
-    "    // Calculate the position of the vertex against the world, view, and projection matrices.\n"
-    "    output.position = mul(input.position, worldMatrix);"
-    "    //output.position = mul(output.position, viewMatrix);\n"
-    "    output.position = mul(output.position, projectionMatrix);"
-    ""
-    "    // Store the texture coordinates for the pixel shader.\n"
-    "    output.tex = input.tex;"
-    ""
-    "    return output;"
-    "  }";
-
-  UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-  LPCSTR profile = (_d3d11device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0) ? "vs_5_0" : "vs_4_0";
-  // TODO: More detailed profile selection.
-
-  ID3D10Blob* errorMessage = nullptr;
-  ID3D10Blob* vertexShaderBuffer = nullptr;
-
-  HRESULT result = D3DCompile(vertexShaderSource, 
-                              strlen(vertexShaderSource), 
-                              NULL,
-                              NULL, 
-                              NULL, 
-                              "TextureVertexShader", 
-                              profile,
-                              flags,
-                              0, 
-                              &vertexShaderBuffer, 
-                              &errorMessage);
-
-  if (FAILED(result))
-  {
-    char msg[255];
-    bool hasErrorMessage = ((char*)errorMessage) != nullptr;
-    sprintf(msg, "Failed to compile vertex shader. %s", (hasErrorMessage) ? ((char*)errorMessage->GetBufferPointer()) : "");
-    GfxDrvDXGIErrorLogger::LogError(msg, result);
-    ReleaseCOM(&errorMessage);
-    return false;
-  }
-
-  result = _d3d11device->CreateVertexShader(vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), NULL, &_vertexShader);
+  HRESULT result = _d3d11device->CreateVertexShader(vertex_shader, sizeof(vertex_shader), NULL, &_vertexShader);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create vertex shader.", result);
-    ReleaseCOM(&vertexShaderBuffer);
     return false;
   }
 
@@ -512,15 +444,13 @@ bool GfxDrvDXGI::CreateVertexShader()
 
   UINT numElements = 2;
 
-  result = _d3d11device->CreateInputLayout(polygonLayout, numElements, vertexShaderBuffer->GetBufferPointer(), vertexShaderBuffer->GetBufferSize(), &_polygonLayout);
+  result = _d3d11device->CreateInputLayout(polygonLayout, numElements, vertex_shader, sizeof(vertex_shader), &_polygonLayout);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create polygon layout.", result);
-    ReleaseCOM(&vertexShaderBuffer);
     return false;
   }
 
-  ReleaseCOM(&vertexShaderBuffer);
   return true;
 }
 
@@ -539,64 +469,12 @@ struct MatrixBufferType
 
 bool GfxDrvDXGI::CreatePixelShader()
 {
-  char *pixelShader =
-    "Texture2D shaderTexture; "
-    "SamplerState SampleType; "
-    ""
-    "struct PixelInputType "
-    "{ "
-    "  float4 position : SV_POSITION; "
-    "  float2 tex : TEXCOORD0; "
-    "}; "
-    ""
-    "float4 TexturePixelShader(PixelInputType input) : SV_TARGET "
-    "{ "
-    "  float4 textureColor; "
-    ""
-    "  textureColor = shaderTexture.Sample(SampleType, input.tex); "
-    ""
-    "  return textureColor; "
-    "}";
-
-  UINT flags = D3DCOMPILE_ENABLE_STRICTNESS;
-  LPCSTR profile = (_d3d11device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_11_0) ? "ps_5_0" : "ps_4_0";
-  // TODO: More detailed profile selection.
-
-  ID3D10Blob* errorMessage = nullptr;
-  ID3D10Blob* pixelShaderBuffer = nullptr;
-
-  HRESULT result = D3DCompile(pixelShader,
-    strlen(pixelShader),
-    NULL,
-    NULL,
-    NULL,
-    "TexturePixelShader",
-    profile,
-    flags,
-    0,
-    &pixelShaderBuffer,
-    &errorMessage);
-
-  if (FAILED(result))
-  {
-    char msg[255];
-    bool hasErrorMessage = ((char*)errorMessage) != nullptr;
-    sprintf(msg, "Failed to compile pixel shader. %s", (hasErrorMessage) ? ((char*)errorMessage->GetBufferPointer()) : "");
-    GfxDrvDXGIErrorLogger::LogError(msg, result);
-    ReleaseCOM(&errorMessage);
-    return false;
-  }
-
-  // Create the pixel shader from the buffer.
-  result = _d3d11device->CreatePixelShader(pixelShaderBuffer->GetBufferPointer(), pixelShaderBuffer->GetBufferSize(), NULL, &_pixelShader);
+  HRESULT result = _d3d11device->CreatePixelShader(pixel_shader, sizeof(pixel_shader), NULL, &_pixelShader);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create pixel shader.", result);
-    ReleaseCOM(&pixelShaderBuffer);
     return false;
   }
-
-  ReleaseCOM(&pixelShaderBuffer);
 
   // Create a texture sampler state description.
   D3D11_SAMPLER_DESC samplerDesc;
