@@ -15,7 +15,8 @@
 /* Mode handling, describes the geometry of the host screen                  */
 /*===========================================================================*/
 
-typedef struct {
+typedef struct 
+{
   ULO id;
   ULO width;
   ULO height;
@@ -32,15 +33,25 @@ typedef struct {
   STR name[80];
 } draw_mode;
 
-typedef struct {
+typedef struct
+{
   ULO x;
   ULO y;
 } draw_point;
 
-typedef struct {
+typedef struct
+{
   ULO width;
   ULO height;
 } draw_size;
+
+typedef struct
+{
+  ULO left;
+  ULO top;
+  ULO right;
+  ULO bottom;
+} draw_rect;
 
 /*===========================================================================*/
 /* Draw line routines and data                                               */
@@ -63,10 +74,6 @@ extern ULO draw_height_amiga;
 extern ULO draw_frame_count;
 extern ULO draw_view_scroll;
 extern ULO draw_color_table[4096];
-extern ULO draw_left;
-extern ULO draw_right;
-extern ULO draw_top;
-extern ULO draw_bottom;
 extern ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 
 extern LON draw_frame_skip;
@@ -99,7 +106,32 @@ extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulation
 extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 
 /*===========================================================================*/
-/* Host buffer management, units are host pixels                             */
+/* Which part of the Amiga screen is visible in the host buffer              */
+/* Units are cylinders (lores-pixels, non-interlaced height)                 */
+/*===========================================================================*/
+
+typedef enum 
+{
+  AUTOMATIC_CLIP = 0, // Calculate from screen/window
+  FIXED_CLIP = 1      // Set by configuration
+} DRAW_CLIP_MODE;
+
+extern void drawSetClipMode(DRAW_CLIP_MODE clip_mode);
+extern DRAW_CLIP_MODE drawGetClipMode();
+
+extern ULO drawGetClipLeft();
+extern ULO drawGetClipTop();
+extern ULO drawGetClipRight();
+extern ULO drawGetClipBottom();
+
+extern void drawSetClipLeft(ULO left);
+extern void drawSetClipTop(ULO top);
+extern void drawSetClipRight(ULO right);
+extern void drawSetClipBottom(ULO bottom);
+
+/*===========================================================================*/
+/* Where the visible part of the Amiga screen is located in the host buffer  */
+/* Units are host pixels                                                     */
 /*===========================================================================*/
 
 extern ULO drawGetBufferCount();

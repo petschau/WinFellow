@@ -1490,11 +1490,11 @@ void graphCalculateWindow(void)
       graph_DIW_first_visible = graph_DIW_last_visible = 256;
     }
 
-    graph_DIW_first_visible = draw_left;
+    graph_DIW_first_visible = drawGetClipLeft();
     if (diwxleft < graph_DDF_start) // cmp dword[diwxleft], dword[graph_DDF_start]
     {  
       // jb  .cwdiwless
-      if (graph_DDF_start > draw_left) // cmp dword[graph_DDF_start], dword[draw_left]
+      if (graph_DDF_start > drawGetClipLeft()) // cmp dword[graph_DDF_start], dword[drawGetClipLeft()]
       {  
 	// ja  .cwdiwnoclip2
 	graph_DIW_first_visible = graph_DDF_start;
@@ -1502,7 +1502,7 @@ void graphCalculateWindow(void)
     } 
     else 
     {
-      if (diwxleft > draw_left) // cmp word[diwxleft], word[draw_left]
+      if (diwxleft > drawGetClipLeft()) // cmp word[diwxleft], word[drawGetClipLeft()]
       {  
 	// ja  .cwdiwnoclip
 	graph_DIW_first_visible = diwxleft;
@@ -1522,11 +1522,11 @@ void graphCalculateWindow(void)
     }
 
     // .cwdiwlastpos2:
-    graph_DIW_last_visible = draw_right;
+    graph_DIW_last_visible = drawGetClipRight();
     if (last_position_in_line < diwxright) // cmp ecx, word[diwxright]
     {
       // jb  .cwdiwxx
-      if (last_position_in_line < draw_right) // cmp ecx, word[draw_right]
+      if (last_position_in_line < drawGetClipRight()) // cmp ecx, word[drawGetClipRight()]
       {
 	// jb  .cwdiwnoclip4
 	graph_DIW_last_visible = last_position_in_line;
@@ -1534,7 +1534,7 @@ void graphCalculateWindow(void)
     } 
     else 
     {
-      if (diwxright < draw_right) // cmp word[diwxright], word[draw_right]
+      if (diwxright < drawGetClipRight()) // cmp word[diwxright], word[drawGetClipRight()]
       {
 	// jb  .cwdiwnoclip3
 	graph_DIW_last_visible = diwxright;
@@ -1579,24 +1579,24 @@ void graphCalculateWindowHires(void)
 
   if ((diwxleft << 1) < graph_DDF_start) 
   {
-    if (graph_DDF_start > (draw_left << 1)) 
+    if (graph_DDF_start > (drawGetClipLeft() << 1)) 
     {
       graph_DIW_first_visible = graph_DDF_start;
     } 
     else
     {
-      graph_DIW_first_visible = draw_left << 1;
+      graph_DIW_first_visible = drawGetClipLeft() << 1;
     }
   }
   else
   {
-    if ((diwxleft << 1) > (draw_left << 1))
+    if ((diwxleft << 1) > (drawGetClipLeft() << 1))
     {
       graph_DIW_first_visible = diwxleft << 1;
     }
     else
     {
-      graph_DIW_first_visible = draw_left << 1;
+      graph_DIW_first_visible = drawGetClipLeft() << 1;
     }
   }
 
@@ -1613,24 +1613,24 @@ void graphCalculateWindowHires(void)
 
   if (last_position_in_line < (diwxright << 1)) 
   {
-    if (last_position_in_line < (draw_right << 1))
+    if (last_position_in_line < (drawGetClipRight() << 1))
     {
       graph_DIW_last_visible = last_position_in_line;
     }
     else
     {
-      graph_DIW_last_visible = draw_right << 1;
+      graph_DIW_last_visible = drawGetClipRight() << 1;
     }
   }
   else
   {
-    if ((diwxright << 1) < (draw_right << 1)) 
+    if ((diwxright << 1) < (drawGetClipRight() << 1)) 
     {
       graph_DIW_last_visible = diwxright << 1;
     }
     else
     {
-      graph_DIW_last_visible = draw_right << 1;
+      graph_DIW_last_visible = drawGetClipRight() << 1;
     }
   }
 }
@@ -1733,8 +1733,8 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   local_graph_DIW_first_visible = graph_DIW_first_visible;
   local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
-  local_draw_left               = draw_left;
-  local_draw_right              = draw_right;
+  local_draw_left               = drawGetClipLeft();
+  local_draw_right              = drawGetClipRight();
   shift                         = 0;
 
   /*===========================================================*/
@@ -1753,9 +1753,9 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > (LON) local_draw_right)
+  if (local_graph_DIW_last_visible >(LON) local_draw_right)
   {
-    local_graph_DIW_last_visible = (LON) local_draw_right;
+    local_graph_DIW_last_visible = (LON)local_draw_right;
   }
   local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
   if (local_graph_DIW_last_visible < 0)
@@ -1833,8 +1833,8 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   local_graph_DIW_first_visible = graph_DIW_first_visible;
   local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
-  local_draw_left               = draw_left;
-  local_draw_right              = draw_right;
+  local_draw_left               = drawGetClipLeft();
+  local_draw_right              = drawGetClipRight();
   shift                         = 0;
   line_desc_changed             = FALSE;
 
@@ -2285,7 +2285,7 @@ void graphEndOfLine(void)
       drawUpdateDrawmode();
 
       // check if we are clipped
-      if ((currentY >= draw_top) || (currentY < draw_bottom))
+      if ((currentY >= drawGetClipTop()) || (currentY < drawGetClipBottom()))
       {
 	// visible line, either background or bitplanes
         graphComposeLineOutputSmart(current_graph_line);
@@ -2312,7 +2312,7 @@ void graphEndOfLine(void)
       {
         // In the case when the display has more lines than the frame (AF or short frames)
         // this routine pads the remaining lines with background color
-        for (ULO y = currentY + 1; y < draw_bottom; ++y)
+        for (ULO y = currentY + 1; y < drawGetClipBottom(); ++y)
         {
           graph_line* graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
           graphLinedescSetBackgroundLine(graph_line_y);

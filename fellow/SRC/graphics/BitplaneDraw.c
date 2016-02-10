@@ -205,10 +205,10 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
   ULO *draw_buffer_first_ptr_local = (ULO *) draw_buffer_current_ptr;
   ULO *draw_buffer_second_ptr_local = (ULO *) (draw_buffer_current_ptr + real_pitch_in_bytes);
 
-  ULO startx = draw_left*2;
-  ULO stopx = draw_right*2;
+  ULO startx = drawGetClipLeft()*2;
+  ULO stopx = drawGetClipRight()*2;
 
-  for (ULO y = draw_top; y < draw_bottom; y++)
+  for (ULO y = drawGetClipTop(); y < drawGetClipBottom(); y++)
   {
     ULO *tmpline = _tmpframe[y];
     for (ULO x = startx; x < stopx; x++)

@@ -80,14 +80,6 @@ BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 ULO draw_clear_buffers;
 
 /*============================================================================*/
-/* Data concerning the dimensions of the Amiga screen to show                 */
-/*============================================================================*/
-
-ULO draw_width_amiga;                /* Width of screen in Amiga lores pixels */
-ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
-
-
-/*============================================================================*/
 /* Data concerning the positioning of the Amiga screen in the host buffer     */               
 /*============================================================================*/
 
@@ -96,53 +88,102 @@ draw_size draw_buffer_clip_size; /* Width and height of the amiga content in hos
 
 ULO drawGetBufferClipLeft()
 {
-	return draw_buffer_clip_offset.x;
+  return draw_buffer_clip_offset.x;
 }
 
 float drawGetBufferClipLeftAsFloat()
 {
-	return static_cast<float>(drawGetBufferClipLeft());
+  return static_cast<float>(drawGetBufferClipLeft());
 }
 
 ULO drawGetBufferClipTop()
 {
-	return draw_buffer_clip_offset.y;
+  return draw_buffer_clip_offset.y;
 }
 
 float drawGetBufferClipTopAsFloat()
 {
-	return static_cast<float>(drawGetBufferClipTop());
+  return static_cast<float>(drawGetBufferClipTop());
 }
 
 ULO drawGetBufferClipWidth()
 {
-	return draw_buffer_clip_size.width;
+  return draw_buffer_clip_size.width;
 }
 
 float drawGetBufferClipWidthAsFloat()
 {
-	return static_cast<float>(drawGetBufferClipWidth());
+  return static_cast<float>(drawGetBufferClipWidth());
 }
 
 ULO drawGetBufferClipHeight()
 {
-	return draw_buffer_clip_size.height;	
+  return draw_buffer_clip_size.height;	
 }
 
 float drawGetBufferClipHeightAsFloat()
 {
-	return static_cast<float>(drawGetBufferClipHeight());	
+  return static_cast<float>(drawGetBufferClipHeight());	
 }
 
 /*============================================================================*/
 /* Bounding box of the Amiga screen that is visible in the host buffer        */
 /*============================================================================*/
 
-ULO draw_left;
-ULO draw_right;
-ULO draw_top;
-ULO draw_bottom;
+DRAW_CLIP_MODE draw_clip_mode;
+draw_rect draw_clip;
+ULO draw_width_amiga;                /* Width of screen in Amiga lores pixels */
+ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
 
+void drawSetClipMode(DRAW_CLIP_MODE clip_mode)
+{
+  draw_clip_mode = clip_mode;
+}
+
+DRAW_CLIP_MODE drawGetClipMode()
+{
+  return draw_clip_mode;
+}
+
+void drawSetClipLeft(ULO left)
+{
+  draw_clip.left = left;
+}
+
+ULO drawGetClipLeft()
+{
+  return draw_clip.left;
+}
+
+void drawSetClipTop(ULO top)
+{
+  draw_clip.top = top;
+}
+
+ULO drawGetClipTop()
+{
+  return draw_clip.top;
+}
+
+void drawSetClipRight(ULO right)
+{
+  draw_clip.right = right;
+}
+
+ULO drawGetClipRight()
+{
+  return draw_clip.right;
+}
+
+void drawSetClipBottom(ULO bottom)
+{
+  draw_clip.bottom = bottom;
+}
+
+ULO drawGetClipBottom()
+{
+  return draw_clip.bottom;
+}
 
 /*============================================================================*/
 /* Color table, 12 bit Amiga color to host display color                      */
@@ -197,34 +238,34 @@ static void drawViewScroll(void)
 {
   if (draw_view_scroll == 80)
   {
-    if (draw_top > 0x1a)
+    if (draw_clip.top > 0x1a)
     {
-      draw_top--;
-      draw_bottom--;
+      draw_clip.top--;
+      draw_clip.bottom--;
     }
   }
   else if (draw_view_scroll == 72)
   {
-    if (draw_bottom < 0x139)
+    if (draw_clip.bottom < 0x139)
     {
-      draw_top++;
-      draw_bottom++;
+      draw_clip.top++;
+      draw_clip.bottom++;
     }
   }
   else if (draw_view_scroll == 75)
   {
-    if (draw_right < 472)
+    if (draw_clip.right < 472)
     {
-      draw_right++;
-      draw_left++;
+      draw_clip.right++;
+      draw_clip.left++;
     }
   }
   else if (draw_view_scroll == 77)
   {
-    if (draw_left > 88)
+    if (draw_clip.left > 88)
     {
-      draw_right--;
-      draw_left--;
+      draw_clip.right--;
+      draw_clip.left--;
     }
   }
   draw_view_scroll = 0;
@@ -727,21 +768,21 @@ static void drawCalculateBufferClipWidth(draw_mode *dm)
   {
 #ifdef RETRO_PLATFORM
     if (RetroPlatformGetMode())
-      draw_left = 125;
+      draw_clip.left = 125;
     else
 #endif
-      draw_left = 129;
-    draw_right = draw_left + draw_width_amiga;
+      draw_clip.left = 129;
+    draw_clip.right = draw_clip.left + draw_width_amiga;
   }
   else
   {
 #ifdef RETRO_PLATFORM
     if (RetroPlatformGetMode())
-      draw_right = 468;
+      draw_clip.right = 468;
     else
 #endif
-      draw_right = 472;
-    draw_left = draw_right - draw_width_amiga;
+      draw_clip.right = 472;
+    draw_clip.left = draw_clip.right - draw_width_amiga;
   }
   draw_buffer_clip_size.width = draw_width_amiga*totalscale;
 }
@@ -762,13 +803,13 @@ static void drawCalculateBufferClipHeight(draw_mode *dm)
   }
   if (draw_height_amiga <= 270)
   {
-    draw_top = 44;
-    draw_bottom = 44 + draw_height_amiga;
+    draw_clip.top = 44;
+    draw_clip.bottom = 44 + draw_height_amiga;
   }
   else
   {
-    draw_bottom = busGetMaxLinesInFrame();
-    draw_top = busGetMaxLinesInFrame() - draw_height_amiga;
+    draw_clip.bottom = busGetMaxLinesInFrame();
+    draw_clip.top = busGetMaxLinesInFrame() - draw_height_amiga;
   }
   draw_buffer_clip_size.height = draw_height_amiga*totalscale;
 }
@@ -955,7 +996,7 @@ ULO drawValidateBufferPointer(ULO amiga_line_number)
 
   draw_buffer_current_ptr = 
     draw_buffer_top_ptr + 
-	draw_mode_current->pitch * scale * (amiga_line_number - draw_top) +
+	draw_mode_current->pitch * scale * (amiga_line_number - draw_clip.top) +
     draw_mode_current->pitch * draw_buffer_clip_offset.y + 
 	draw_buffer_clip_offset.x * (draw_mode_current->bits >> 3);
 
@@ -1051,10 +1092,10 @@ BOOLE drawStartup(void)
   }
   draw_mode_current = (draw_mode *) listNode(draw_modes);
   drawDualTranslationInitialize();
-  draw_left = 120;
-  draw_right = 440;
-  draw_top = 0x45;
-  draw_bottom = 0x10d;
+  draw_clip.left = 120;
+  draw_clip.right = 440;
+  draw_clip.top = 0x45;
+  draw_clip.bottom = 0x10d;
   draw_view_scroll = 0;
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
@@ -1141,15 +1182,15 @@ void drawEndOfFrame(void)
       --draw_clear_buffers;
     }
 
-    ULO pitch_in_bytes = drawValidateBufferPointer(draw_top);
+    ULO pitch_in_bytes = drawValidateBufferPointer(draw_clip.top);
 
     // need to test for error
     if (draw_buffer_top_ptr != NULL)
     {
       if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT) {
 	UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-	for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
-	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
+	for (ULO i = 0; i < (draw_clip.bottom - draw_clip.top); i++) {
+	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_clip.top + i);
 	  if (graph_frame_ptr != NULL)
 	  {
 	    if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
