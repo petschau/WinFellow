@@ -63,7 +63,6 @@ draw_mode *draw_mode_current;
 /* Special keypresses normally trigger these events                           */
 /*============================================================================*/
 
-ULO draw_view_scroll;                        /* Scroll visible window runtime */
 
 
 /*============================================================================*/
@@ -132,8 +131,8 @@ float drawGetBufferClipHeightAsFloat()
 
 DRAW_CLIP_MODE draw_clip_mode;
 draw_rect draw_clip;
-ULO draw_width_amiga;                /* Width of screen in Amiga lores pixels */
-ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
+draw_size draw_clip_size;
+ULO draw_clip_scroll;
 
 void drawSetClipMode(DRAW_CLIP_MODE clip_mode)
 {
@@ -185,6 +184,57 @@ ULO drawGetClipBottom()
   return draw_clip.bottom;
 }
 
+ULO drawGetClipWidth()
+{
+  return draw_clip_size.width;
+}
+
+/*============================================================================*/
+/* Clip moved by user via keyboard shortcut                                   */
+/*============================================================================*/
+
+static void drawClipScroll(void)
+{
+  if (draw_clip_scroll == 80)
+  {
+    if (draw_clip.top > 0x1a)
+    {
+      draw_clip.top--;
+      draw_clip.bottom--;
+    }
+  }
+  else if (draw_clip_scroll == 72)
+  {
+    if (draw_clip.bottom < 0x139)
+    {
+      draw_clip.top++;
+      draw_clip.bottom++;
+    }
+  }
+  else if (draw_clip_scroll == 75)
+  {
+    if (draw_clip.right < 472)
+    {
+      draw_clip.right++;
+      draw_clip.left++;
+    }
+  }
+  else if (draw_clip_scroll == 77)
+  {
+    if (draw_clip.left > 88)
+    {
+      draw_clip.right--;
+      draw_clip.left--;
+    }
+  }
+  draw_clip_scroll = 0;
+}
+
+void drawSetClipScroll(ULO event_id)
+{
+  draw_clip_scroll = event_id;
+}
+
 /*============================================================================*/
 /* Color table, 12 bit Amiga color to host display color                      */
 /*============================================================================*/
@@ -229,47 +279,6 @@ ULO draw_frame_skip_factor;            /* Frame-skip factor, 1 / (factor + 1) */
 LON draw_frame_skip;                            /* Running frame-skip counter */
 ULO draw_switch_bg_to_bpl;       /* Flag TRUE if on current line, switch from */
 /* background color to bitplane data */
-
-/*============================================================================*/
-/* Centering changed                                                          */
-/*============================================================================*/
-
-static void drawViewScroll(void)
-{
-  if (draw_view_scroll == 80)
-  {
-    if (draw_clip.top > 0x1a)
-    {
-      draw_clip.top--;
-      draw_clip.bottom--;
-    }
-  }
-  else if (draw_view_scroll == 72)
-  {
-    if (draw_clip.bottom < 0x139)
-    {
-      draw_clip.top++;
-      draw_clip.bottom++;
-    }
-  }
-  else if (draw_view_scroll == 75)
-  {
-    if (draw_clip.right < 472)
-    {
-      draw_clip.right++;
-      draw_clip.left++;
-    }
-  }
-  else if (draw_view_scroll == 77)
-  {
-    if (draw_clip.left > 88)
-    {
-      draw_clip.right--;
-      draw_clip.left--;
-    }
-  }
-  draw_view_scroll = 0;
-}
 
 /*============================================================================*/
 /* These constants define the LED symbol appearance                           */
@@ -759,12 +768,12 @@ static void drawCalculateBufferClipWidth(draw_mode *dm)
 {
   ULO totalscale = drawGetDisplayScaleFactor();
 
-  draw_width_amiga = dm->width / totalscale;
-  if (draw_width_amiga > 384)
+  ULO width_amiga = dm->width / totalscale;
+  if (width_amiga > 384)
   {
-    draw_width_amiga = 384;
+    width_amiga = 384;
   }
-  if (draw_width_amiga <= 343)
+  if (width_amiga <= 343)
   {
 #ifdef RETRO_PLATFORM
     if (RetroPlatformGetMode())
@@ -772,7 +781,7 @@ static void drawCalculateBufferClipWidth(draw_mode *dm)
     else
 #endif
       draw_clip.left = 129;
-    draw_clip.right = draw_clip.left + draw_width_amiga;
+    draw_clip.right = draw_clip.left + width_amiga;
   }
   else
   {
@@ -782,9 +791,10 @@ static void drawCalculateBufferClipWidth(draw_mode *dm)
     else
 #endif
       draw_clip.right = 472;
-    draw_clip.left = draw_clip.right - draw_width_amiga;
+    draw_clip.left = draw_clip.right - width_amiga;
   }
-  draw_buffer_clip_size.width = draw_width_amiga*totalscale;
+  draw_buffer_clip_size.width = width_amiga*totalscale;
+  draw_clip_size.width = width_amiga;
 }
 
 
@@ -796,22 +806,24 @@ static void drawCalculateBufferClipHeight(draw_mode *dm)
 {
   ULO totalscale = drawGetDisplayScaleFactor();
 
-  draw_height_amiga = dm->height/totalscale;
-  if (draw_height_amiga > 288)
+  ULO height_amiga = dm->height/totalscale;
+  if (height_amiga > 288)
   {
-    draw_height_amiga = 288;
+    height_amiga = 288;
   }
-  if (draw_height_amiga <= 270)
+  if (height_amiga <= 270)
   {
     draw_clip.top = 44;
-    draw_clip.bottom = 44 + draw_height_amiga;
+    draw_clip.bottom = 44 + height_amiga;
   }
   else
   {
+    // NOTE: Take another look at this, max lines in frame should not be used like this, it is not constant enough (interlace)
     draw_clip.bottom = busGetMaxLinesInFrame();
-    draw_clip.top = busGetMaxLinesInFrame() - draw_height_amiga;
+    draw_clip.top = busGetMaxLinesInFrame() - height_amiga;
   }
-  draw_buffer_clip_size.height = draw_height_amiga*totalscale;
+  draw_buffer_clip_size.height = height_amiga*totalscale;
+  draw_clip_size.width = height_amiga;
 }
 
 
@@ -1096,7 +1108,7 @@ BOOLE drawStartup(void)
   draw_clip.right = 440;
   draw_clip.top = 0x45;
   draw_clip.bottom = 0x10d;
-  draw_view_scroll = 0;
+  draw_clip_scroll = 0;
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
   draw_clear_buffers = 0;
@@ -1212,7 +1224,7 @@ void drawEndOfFrame(void)
       drawFpsCounter();
       drawInvalidateBufferPointer();
 
-      drawViewScroll();
+      drawClipScroll();
       drawStatTimestamp();
       drawBufferFlip();
     }

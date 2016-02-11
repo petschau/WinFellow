@@ -1616,11 +1616,11 @@ void drawLineBPL4x4_16Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x1_16Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x1_16bit_pixels += draw_width_amiga;
+  dlsbg2x1_16bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x1_16bit_tmp);
 #endif
 
-  drawLineSegmentBG2x1_16Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x1_16Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x1_16bit_tmp, &dlsbg2x1_16bit, &dlsbg2x1_16bit_times);
@@ -1638,11 +1638,11 @@ void drawLineBG2x1_16Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x2_16Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x2_16bit_pixels += draw_width_amiga;
+  dlsbg2x2_16bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x2_16bit_tmp);
 #endif
 
-  drawLineSegmentBG2x2_16Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x2_16Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x2_16bit_tmp, &dlsbg2x2_16bit, &dlsbg2x2_16bit_times);
@@ -1660,11 +1660,11 @@ void drawLineBG2x2_16Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x2_16Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x2_16bit_pixels += draw_width_amiga;
+  dlsbg4x2_16bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x2_16bit_tmp);
 #endif
 
-  drawLineSegmentBG4x2_16Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x2_16Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x2_16bit_tmp, &dlsbg4x2_16bit, &dlsbg4x2_16bit_times);
@@ -1682,11 +1682,11 @@ void drawLineBG4x2_16Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x4_16Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x4_16bit_pixels += draw_width_amiga;
+  dlsbg4x4_16bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x4_16bit_tmp);
 #endif
 
-  drawLineSegmentBG4x4_16Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x4_16Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x4_16bit_tmp, &dlsbg4x4_16bit, &dlsbg4x4_16bit_times);
@@ -2592,11 +2592,11 @@ void drawLineBPL4x4_24Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x1_24Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x1_24bit_pixels += draw_width_amiga;
+  dlsbg2x1_24bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x1_24bit_tmp);
 #endif
 
-  drawLineSegmentBG2x1_24Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x1_24Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x1_24bit_tmp, &dlsbg2x1_24bit, &dlsbg2x1_24bit_times);
@@ -2614,11 +2614,11 @@ void drawLineBG2x1_24Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x2_24Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x2_24bit_pixels += draw_width_amiga;
+  dlsbg2x2_24bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x2_24bit_tmp);
 #endif
 
-  drawLineSegmentBG2x2_24Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x2_24Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x2_24bit_tmp, &dlsbg2x2_24bit, &dlsbg2x2_24bit_times);
@@ -2636,11 +2636,11 @@ void drawLineBG2x2_24Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x2_24Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x2_24bit_pixels += draw_width_amiga;
+  dlsbg4x2_24bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x2_24bit_tmp);
 #endif
 
-  drawLineSegmentBG4x2_24Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x2_24Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x2_24bit_tmp, &dlsbg4x2_24bit, &dlsbg4x2_24bit_times);
@@ -2658,11 +2658,11 @@ void drawLineBG4x2_24Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x4_24Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x4_24bit_pixels += draw_width_amiga;
+  dlsbg4x4_24bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x4_24bit_tmp);
 #endif
 
-  drawLineSegmentBG4x4_24Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x4_24Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x4_24bit_tmp, &dlsbg4x4_24bit, &dlsbg4x4_24bit_times);
@@ -3557,11 +3557,11 @@ void drawLineBPL4x4_32Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x1_32Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x1_32bit_pixels += draw_width_amiga;
+  dlsbg2x1_32bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x1_32bit_tmp);
 #endif
 
-  drawLineSegmentBG2x1_32Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x1_32Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x1_32bit_tmp, &dlsbg2x1_32bit, &dlsbg2x1_32bit_times);
@@ -3579,11 +3579,11 @@ void drawLineBG2x1_32Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG2x2_32Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg2x2_32bit_pixels += draw_width_amiga;
+  dlsbg2x2_32bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg2x2_32bit_tmp);
 #endif
 
-  drawLineSegmentBG2x2_32Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG2x2_32Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg2x2_32bit_tmp, &dlsbg2x2_32bit, &dlsbg2x2_32bit_times);
@@ -3601,11 +3601,11 @@ void drawLineBG2x2_32Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x2_32Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x2_32bit_pixels += draw_width_amiga;
+  dlsbg4x2_32bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x2_32bit_tmp);
 #endif
 
-  drawLineSegmentBG4x2_32Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x2_32Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x2_32bit_tmp, &dlsbg4x2_32bit, &dlsbg4x2_32bit_times);
@@ -3623,11 +3623,11 @@ void drawLineBG4x2_32Bit(graph_line *linedescription, ULO nextlineoffset)
 void drawLineBG4x4_32Bit(graph_line *linedescription, ULO nextlineoffset)
 {
 #ifdef DRAW_TSC_PROFILE
-  dlsbg4x4_32bit_pixels += draw_width_amiga;
+  dlsbg4x4_32bit_pixels += drawGetClipWidth();
   drawTscBefore(&dlsbg4x4_32bit_tmp);
 #endif
 
-  drawLineSegmentBG4x4_32Bit(draw_width_amiga, linedescription->colors[0], nextlineoffset);
+  drawLineSegmentBG4x4_32Bit(drawGetClipWidth(), linedescription->colors[0], nextlineoffset);
 
 #ifdef DRAW_TSC_PROFILE
   drawTscAfter(&dlsbg4x4_32bit_tmp, &dlsbg4x4_32bit, &dlsbg4x4_32bit_times);

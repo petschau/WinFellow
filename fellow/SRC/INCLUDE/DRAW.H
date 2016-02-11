@@ -18,8 +18,10 @@
 typedef struct 
 {
   ULO id;
-  ULO width;
+  ULO width;      // Physical size of the mode in the host
   ULO height;
+  ULO internal_width; // The size of the buffer that the core has access to
+  ULO internal_height;
   ULO bits;
   ULO refresh;
   BOOLE windowed;
@@ -69,10 +71,7 @@ extern draw_line_func draw_line_dual_hires_routine;
 extern draw_line_func draw_line_dual_lores_routine;
 extern draw_line_func draw_line_HAM_lores_routine;
 
-extern ULO draw_width_amiga;
-extern ULO draw_height_amiga;
 extern ULO draw_frame_count;
-extern ULO draw_view_scroll;
 extern ULO draw_color_table[4096];
 extern ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 
@@ -128,6 +127,10 @@ extern void drawSetClipLeft(ULO left);
 extern void drawSetClipTop(ULO top);
 extern void drawSetClipRight(ULO right);
 extern void drawSetClipBottom(ULO bottom);
+
+extern ULO drawGetClipWidth();
+
+extern void drawSetClipScroll(ULO event_id);
 
 /*===========================================================================*/
 /* Where the visible part of the Amiga screen is located in the host buffer  */
