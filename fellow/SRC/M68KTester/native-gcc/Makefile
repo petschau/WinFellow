@@ -3,7 +3,7 @@ CXX = m68k-amigaos-g++ -noixemul -s -std=c99
 CFLAGS = -Os -Wall -fomit-frame-pointer
 CXXFLAGS = -Os -Wall -fomit-frame-pointer -I /opt/m68k-amigaos/m68k-amigaos/sys-include -I /opt/m68k-amigaos/vbcc-include -I /usr/include
 
-BINS =  m68k-tester-native.exe
+BINS =  m68k-tester-native
 
 all: $(BINS) $(OBJS)
 
