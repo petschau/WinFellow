@@ -202,8 +202,8 @@ void GfxDrvDXGI::DeleteDXGIFactory()
 
 bool GfxDrvDXGI::CreateAmigaScreenTexture()
 {
-  int width = _current_draw_mode->width;
-  int height = _current_draw_mode->height;
+  int width = draw_buffer_info.width;
+  int height = draw_buffer_info.height;
 
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
@@ -266,6 +266,35 @@ void GfxDrvDXGI::DeleteAmigaScreenTexture()
 ID3D11Texture2D *GfxDrvDXGI::GetCurrentAmigaScreenTexture()
 {
   return _amigaScreenTexture[_currentAmigaScreenTexture];
+}
+
+void GfxDrvDXGI::GetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
+{
+  ULO actual_scale_factor = 2;
+  switch (drawGetDisplayScale())
+  {
+    case DISPLAYSCALE::DISPLAYSCALE_1X:
+      actual_scale_factor = 2;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_2X:
+      actual_scale_factor = 4;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_3X:
+      actual_scale_factor = 6;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_4X:
+      actual_scale_factor = 8;
+      break;
+  }
+
+  std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, actual_scale_factor);
+  std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, actual_scale_factor);
+
+  ULO internal_scale_factor = drawGetDisplayScaleFactor();
+  
+  buffer_information->width = (horizontal_clip.second - horizontal_clip.first)*internal_scale_factor;
+  buffer_information->height = (vertical_clip.second - vertical_clip.first)*internal_scale_factor;
+  buffer_information->pitch = buffer_information->width * 4;
 }
 
 bool GfxDrvDXGI::CreateSwapChain()
@@ -423,8 +452,6 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
     return 0;
   }
 
-  _current_draw_mode->pitch = mappedRect.RowPitch;
-
   return (unsigned char*)mappedRect.pData;
 }
 
@@ -556,6 +583,65 @@ struct VertexType
   XMFLOAT2 texture;
 };
 
+void GfxDrvDXGI::CalculateDestinationRectangle(float& dstHalfWidth, float& dstHalfHeight)
+{
+  float srcClipWidth = drawGetBufferClipWidthAsFloat();
+  float srcClipHeight = drawGetBufferClipHeightAsFloat();
+
+  if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_1X || drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_2X)
+  {
+    // Pixel by pixel copy to the center of the destination
+    dstHalfWidth = srcClipWidth * 0.5f;
+    dstHalfHeight = srcClipHeight * 0.5f;
+  }
+  else if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_3X)
+  {
+    // Source is "2X", use GPU scaling up to 3X
+    dstHalfWidth = srcClipWidth * 0.75f;
+    dstHalfHeight = srcClipHeight * 0.75f;
+  }
+  else if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_4X)
+  {
+    // Source is "2X", use GPU scaling up to 4X
+    dstHalfWidth = srcClipWidth;
+    dstHalfHeight = srcClipHeight;
+  }
+  else
+  {
+    // Automatic best fit in the destination
+    float dstWidth = static_cast<float>(_current_draw_mode->width);
+    float dstHeight = static_cast<float>(_current_draw_mode->height);
+
+    float srcAspectRatio = srcClipWidth / srcClipHeight;
+    float dstAspectRatio = dstWidth / dstHeight;
+
+    if (dstAspectRatio > srcAspectRatio)
+    {
+      // Stretch to full height, black vertical borders
+      dstHalfWidth = 0.5f * srcClipWidth * dstHeight / srcClipHeight;
+      dstHalfHeight = dstHeight * 0.5f;
+    }
+    else
+    {
+      // Stretch to full width, black horisontal borders
+      dstHalfWidth = dstWidth * 0.5f;
+      dstHalfHeight = 0.5f * srcClipHeight * dstWidth / srcClipWidth;
+    }
+  }
+}
+
+void GfxDrvDXGI::CalculateSourceRectangle(float& srcLeft, float& srcTop, float& srcRight, float& srcBottom)
+{
+  // Source clip rectangle in 0.0 to 1.0 coordinates...
+  float baseWidth = static_cast<float>(draw_buffer_info.width);
+  float baseHeight = static_cast<float>(draw_buffer_info.height);
+
+  srcLeft = drawGetBufferClipLeftAsFloat() / baseWidth;
+  srcTop = drawGetBufferClipTopAsFloat() / baseHeight;
+  srcRight = srcLeft + drawGetBufferClipWidthAsFloat() / baseWidth;
+  srcBottom = srcTop + drawGetBufferClipHeightAsFloat() / baseHeight;
+}
+
 bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
 {
   VertexType vertices[6];
@@ -569,48 +655,11 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
     indices[i] = i;
   }
 
-  // Destination rectangle, this fills the entire screen with whatever is in the source clip
-  // Can apply aspect ratio here
-  float dstWidth = static_cast<float>(_current_draw_mode->width);
-  float dstHeight = static_cast<float>(_current_draw_mode->height);
-  float srcClipWidth = drawGetBufferClipWidthAsFloat();
-  float srcClipHeight = drawGetBufferClipHeightAsFloat();
+  float dstHalfWidth, dstHalfHeight;
+  float srcLeft, srcTop, srcRight, srcBottom;
 
-  float dstHalfWidth;
-  float dstHalfHeight;
-
-  // In fullscreen mode, check screen aspect ratio as well...
-  if (drawGetBufferClipWidth() == _current_draw_mode->width && drawGetBufferClipHeight() == _current_draw_mode->height)
-  {
-    dstHalfWidth = dstWidth / 2.0f;
-    dstHalfHeight = dstHeight / 2.0f;
-  }
-  else
-  {
-    float srcAspectRatio = srcClipWidth / srcClipHeight;
-    float dstAspectRatio = dstWidth / dstHeight;
-
-    if (dstAspectRatio > srcAspectRatio)
-    {
-      // Black vertical borders
-      dstHalfWidth = 0.5f * srcClipWidth * dstHeight / srcClipHeight;
-      dstHalfHeight = dstHeight / 2.0f;
-    }
-    else
-    {
-      dstHalfWidth = dstWidth / 2.0f;
-      dstHalfHeight = 0.5f * srcClipHeight * dstWidth / srcClipWidth;
-    }
-  }
-  
-  // Source clip rectangle in 0.0 to 1.0 coordinates...
-  float baseWidth = static_cast<float>(_current_draw_mode->width); 
-  float baseHeight = static_cast<float>(_current_draw_mode->height);
-
-  float srcLeft = drawGetBufferClipLeftAsFloat() / baseWidth;
-  float srcTop = drawGetBufferClipTopAsFloat() / baseHeight;
-  float srcRight = srcLeft + drawGetBufferClipWidthAsFloat() / baseWidth;
-  float srcBottom = srcTop + drawGetBufferClipHeightAsFloat() / baseHeight;
+  CalculateDestinationRectangle(dstHalfWidth, dstHalfHeight);
+  CalculateSourceRectangle(srcLeft, srcTop, srcRight, srcBottom);
 
   // First triangle.
   vertices[0].position = XMFLOAT3(-dstHalfWidth, dstHalfHeight, 0.0f);  // Top left.
@@ -793,22 +842,16 @@ bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
   // Switch to 2D
   _immediateContext->OMSetDepthStencilState(_depthDisabledStencil, 1);
 
-  // Set vertex buffer stride and offset.
   unsigned int stride = sizeof(VertexType);
   unsigned int offset = 0;
 
-  // Set the vertex buffer to active in the input assembler so it can be rendered.
   _immediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-
-  // Set the index buffer to active in the input assembler so it can be rendered.
   _immediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-  // Set the type of primitive that should be rendered from this vertex buffer, in this case triangles.
   _immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-  SetShaderParameters(identityMatrix, identityMatrix, orthogonalMatrix);
+  bool shaderResult = SetShaderParameters(identityMatrix, identityMatrix, orthogonalMatrix);
 
-  return true;
+  return shaderResult;
 }
 
 void GfxDrvDXGI::FlipTexture()
@@ -890,7 +933,6 @@ void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int 
 
   if (mode)
   {
-
     mode->width = width;
     mode->height = height;
     mode->bits = 32;
@@ -902,7 +944,6 @@ void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int 
     mode->greensize = 8;
     mode->bluepos = 0;
     mode->bluesize = 8;
-    mode->pitch = width * 4;
 
     mode->id = id;
     if (!mode->windowed)
@@ -952,11 +993,11 @@ void GfxDrvDXGI::AddWindowModes()
 {
   const unsigned int GFXWIDTH_NORMAL = 640;
   const unsigned int GFXWIDTH_OVERSCAN = 752;
-  const unsigned int  GFXWIDTH_MAXOVERSCAN = 768;
+  const unsigned int GFXWIDTH_MAXOVERSCAN = 768;
 
-  const unsigned int  GFXHEIGHT_NTSC = 400;
-  const unsigned int  GFXHEIGHT_PAL = 512;
-  const unsigned int  GFXHEIGHT_OVERSCAN = 576;
+  const unsigned int GFXHEIGHT_NTSC = 400;
+  const unsigned int GFXHEIGHT_PAL = 512;
+  const unsigned int GFXHEIGHT_OVERSCAN = 576;
 
   // 1X
   RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_NTSC);
@@ -1032,7 +1073,7 @@ void GfxDrvDXGI::ClearCurrentBuffer()
       {
         *line_ptr++ = 0;
       }
-      buffer += _current_draw_mode->pitch;
+      buffer += draw_buffer_info.pitch;
     }
     InvalidateBufferPointer();
   }

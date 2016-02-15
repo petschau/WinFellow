@@ -100,6 +100,9 @@ private:
 
   bool SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix);
 
+  void CalculateDestinationRectangle(float& dstHalfWidth, float& dstHalfHeight);
+  void CalculateSourceRectangle(float& srcLeft, float& srcTop, float& srcRight, float& srcBottom);
+
 public:
 
   void ClearCurrentBuffer();
@@ -116,6 +119,7 @@ public:
 
   unsigned char *ValidateBufferPointer();
   void InvalidateBufferPointer();
+  void GetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information);
   void Flip();
 
   void RegisterRetroPlatformScreenMode(const bool, const ULO, const ULO, const ULO);

@@ -328,12 +328,12 @@ ULO cfgGetScreenColorBits(cfg *config)
   return config->m_screencolorbits;
 }
 
-void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed)
+void cfgSetScreenWindowed(cfg *config, bool screenwindowed)
 {
   config->m_screenwindowed = screenwindowed;
 }
 
-BOOLE cfgGetScreenWindowed(cfg *config)
+bool cfgGetScreenWindowed(cfg *config)
 {
   return config->m_screenwindowed;
 }
@@ -1190,6 +1190,18 @@ static ULO cfgGetBufferLengthFromString(STR *value)
 
 static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
 {
+  if (stricmp(value, "auto") == 0)
+  {
+    return DISPLAYSCALE_AUTO;
+  }
+  if (stricmp(value, "quadruple") == 0)
+  {
+    return DISPLAYSCALE_4X;
+  }
+  if (stricmp(value, "triple") == 0)
+  {
+    return DISPLAYSCALE_3X;
+  }
   if (stricmp(value, "double") == 0)
   {
     return DISPLAYSCALE_2X;
@@ -1205,8 +1217,11 @@ static STR* cfgGetDisplayScaleToString(DISPLAYSCALE displayscale)
 {
   switch (displayscale)
   {
-    case DISPLAYSCALE_1X: return "single";
-    case DISPLAYSCALE_2X: return "double";
+    case DISPLAYSCALE_AUTO: return "auto";
+    case DISPLAYSCALE_1X:   return "single";
+    case DISPLAYSCALE_2X:   return "double";
+    case DISPLAYSCALE_3X:   return "triple";
+    case DISPLAYSCALE_4X:   return "quadruple";
   }
   return "single";
 }
@@ -2190,11 +2205,6 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /* Screen configuration                                                     */
   /*==========================================================================*/
 
-  drawSetMode(cfgGetScreenWidth(config),
-              cfgGetScreenHeight(config),
-              cfgGetScreenColorBits(config),
-              cfgGetScreenRefresh(config),
-              cfgGetScreenWindowed(config));
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
@@ -2204,6 +2214,11 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetDeinterlace(cfgGetDeinterlace(config));
   drawSetDisplayDriver(cfgGetDisplayDriver(config));
   drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(config));
+  drawSetMode(cfgGetScreenWidth(config),
+    cfgGetScreenHeight(config),
+    cfgGetScreenColorBits(config),
+    cfgGetScreenRefresh(config),
+    cfgGetScreenWindowed(config));
 
 
   /*==========================================================================*/

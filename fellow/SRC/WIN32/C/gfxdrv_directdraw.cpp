@@ -672,7 +672,6 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device)
     mode->greensize = ddmode->greensize;
     mode->bluepos = ddmode->bluepos;
     mode->bluesize = ddmode->bluesize;
-    mode->pitch = ddmode->pitch;
     mode->id = id;
     if (!ddmode->windowed)
     {
@@ -1565,6 +1564,16 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
   return buffers;
 }
 
+void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
+{
+  // For the moment, ddraw wants a buffer that is the same size as the output window
+  // Will not work with 3X and 4X, or RP
+
+  buffer_information->width = mode->width;
+  buffer_information->height = mode->height;
+  buffer_information->pitch = 0; // Set later
+}
+
 
 /*==========================================================================*/
 /* Open the default DirectDraw device, and record information about what is */
@@ -1633,7 +1642,7 @@ UBY *gfxDrvDDrawValidateBufferPointer()
   UBY *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
   if (buffer != NULL)
   {
-    gfx_drv_ddraw_device_current->drawmode->pitch = pitch;
+    draw_buffer_info.pitch = pitch;
 
     /* Align pointer returned to drawing routines */
 

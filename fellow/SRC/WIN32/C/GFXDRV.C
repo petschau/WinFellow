@@ -93,6 +93,18 @@ void gfxDrvSetMode(draw_mode *dm)
   }
 }
 
+void gfxDrvGetBufferInformation(draw_mode *dm, draw_buffer_information *buffer_information)
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->GetBufferInformation(dm, buffer_information);
+  }
+  else
+  {
+    gfxDrvDDrawGetBufferInformation(dm, buffer_information);
+  }
+}
+
 bool gfxDrvEmulationStart(unsigned int maxbuffercount)
 {
   if (!gfxDrvCommon->EmulationStart())

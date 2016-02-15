@@ -32,8 +32,11 @@ typedef struct {
 } cfg_filesys;
 
 typedef enum {
+  DISPLAYSCALE_AUTO = 0,
   DISPLAYSCALE_1X = 1,
-  DISPLAYSCALE_2X = 2
+  DISPLAYSCALE_2X = 2,
+  DISPLAYSCALE_3X = 3,
+  DISPLAYSCALE_4X = 4
 } DISPLAYSCALE;
 
 typedef enum {
@@ -96,7 +99,7 @@ typedef struct {
   ULO	m_screenheight;
   ULO   m_screencolorbits;
   ULO   m_screenrefresh;
-  BOOLE m_screenwindowed;
+  bool  m_screenwindowed;
   bool  m_screendrawleds;
   ULO   m_frameskipratio;
   DISPLAYSCALE  m_displayscale;
@@ -243,8 +246,8 @@ extern void cfgSetScreenColorBits(cfg *config, ULO screencolorbits);
 extern ULO cfgGetScreenColorBits(cfg *config);
 extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
 extern ULO cfgGetScreenRefresh(cfg *config);
-extern void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed);
-extern BOOLE cfgGetScreenWindowed(cfg *config);
+extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
+extern bool cfgGetScreenWindowed(cfg *config);
 extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
 extern bool cfgGetScreenDrawLEDs(cfg *config);
 extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers);

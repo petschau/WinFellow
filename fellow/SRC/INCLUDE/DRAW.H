@@ -10,6 +10,7 @@
 #endif
 
 #include "CONFIG.H"
+#include <map>
 
 /*===========================================================================*/
 /* Mode handling, describes the geometry of the host screen                  */
@@ -18,20 +19,17 @@
 typedef struct 
 {
   ULO id;
-  ULO width;      // Physical size of the mode in the host
+  ULO width;
   ULO height;
-  ULO internal_width; // The size of the buffer that the core has access to
-  ULO internal_height;
   ULO bits;
   ULO refresh;
-  BOOLE windowed;
+  bool windowed;
   ULO redsize;
   ULO redpos;           
   ULO greensize;
   ULO greenpos;
   ULO bluesize;
   ULO bluepos;
-  ULO pitch;
   STR name[80];
 } draw_mode;
 
@@ -53,7 +51,20 @@ typedef struct
   ULO top;
   ULO right;
   ULO bottom;
+
+  ULO GetWidth() const { return right - left; }
+  ULO GetHeight() const { return bottom - top; }
+
 } draw_rect;
+
+typedef struct
+{
+  UBY *top_ptr;
+  UBY *current_ptr;
+  ULO width;
+  ULO height;
+  ULO pitch;
+} draw_buffer_information;
 
 /*===========================================================================*/
 /* Draw line routines and data                                               */
@@ -79,20 +90,21 @@ extern LON draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
 extern ULO draw_clear_buffers;
 
-extern UBY *draw_buffer_current_ptr;
+extern draw_buffer_information draw_buffer_info;
 
 /*===========================================================================*/
 /* Module properties                                                         */
 /*===========================================================================*/
 
 extern void drawModeAdd(draw_mode *modenode);
-extern BOOLE drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, BOOLE windowed);
+extern void drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, bool windowed);
 extern felist *drawGetModes(void);
 extern void drawModesFree();
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
 extern DISPLAYSCALE drawGetDisplayScale(void);
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void);
+extern ULO drawGetDisplayScaleFactor();
 extern void drawSetFrameskipRatio(ULO frameskipratio);
 extern void drawSetFPSCounterEnabled(bool enabled);
 extern void drawSetLEDsEnabled(bool enabled);
@@ -131,6 +143,10 @@ extern void drawSetClipBottom(ULO bottom);
 extern ULO drawGetClipWidth();
 
 extern void drawSetClipScroll(ULO event_id);
+
+extern std::pair<ULO, ULO> drawCalculateHorizontalClip(ULO buffer_width, ULO buffer_scale_factor);
+extern std::pair<ULO, ULO> drawCalculateVerticalClip(ULO buffer_height, ULO buffer_scale_factor);
+
 
 /*===========================================================================*/
 /* Where the visible part of the Amiga screen is located in the host buffer  */

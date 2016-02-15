@@ -10,6 +10,7 @@ void gfxDrvDDrawSizeChanged();
 
 UBY *gfxDrvDDrawValidateBufferPointer();
 void gfxDrvDDrawInvalidateBufferPointer();
+void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information);
 
 void gfxDrvDDrawFlip();
 
