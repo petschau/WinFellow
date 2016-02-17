@@ -1491,29 +1491,24 @@ void graphCalculateWindow(void)
     }
 
     graph_DIW_first_visible = drawGetClipLeft();
-    if (diwxleft < graph_DDF_start) // cmp dword[diwxleft], dword[graph_DDF_start]
+    if (diwxleft < graph_DDF_start)
     {  
-      // jb  .cwdiwless
-      if (graph_DDF_start > drawGetClipLeft()) // cmp dword[graph_DDF_start], dword[drawGetClipLeft()]
+      if (graph_DDF_start > drawGetClipLeft())
       {  
-	// ja  .cwdiwnoclip2
 	graph_DIW_first_visible = graph_DDF_start;
       } 
     } 
     else 
     {
-      if (diwxleft > drawGetClipLeft()) // cmp word[diwxleft], word[drawGetClipLeft()]
+      if (diwxleft > drawGetClipLeft())
       {  
-	// ja  .cwdiwnoclip
 	graph_DIW_first_visible = diwxleft;
       } 
     }
 
-    // .cwdiwlastpos:
     last_position_in_line = (graph_DDF_word_count << 4) + graph_DDF_start;
-    if (oddscroll > evenscroll) // cmp word[oddscroll], word[evenscroll]
+    if (oddscroll > evenscroll)
     {
-      // ja  .cwaddodd
       last_position_in_line += oddscroll;
     } 
     else 
@@ -1521,22 +1516,18 @@ void graphCalculateWindow(void)
       last_position_in_line += evenscroll;
     }
 
-    // .cwdiwlastpos2:
     graph_DIW_last_visible = drawGetClipRight();
-    if (last_position_in_line < diwxright) // cmp ecx, word[diwxright]
+    if (last_position_in_line < diwxright)
     {
-      // jb  .cwdiwxx
-      if (last_position_in_line < drawGetClipRight()) // cmp ecx, word[drawGetClipRight()]
+      if (last_position_in_line < drawGetClipRight())
       {
-	// jb  .cwdiwnoclip4
 	graph_DIW_last_visible = last_position_in_line;
       }
     } 
     else 
     {
-      if (diwxright < drawGetClipRight()) // cmp word[diwxright], word[drawGetClipRight()]
+      if (diwxright < drawGetClipRight())
       {
-	// jb  .cwdiwnoclip3
 	graph_DIW_last_visible = diwxright;
       }
     }
@@ -1545,7 +1536,7 @@ void graphCalculateWindow(void)
 
 void graphCalculateWindowHires(void)
 {
-  ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
+  ULO last_position_in_line;
 
   if (ddfstrt > ddfstop)
   {
@@ -1554,9 +1545,6 @@ void graphCalculateWindowHires(void)
     return;
   }
 
-  ddfstop_aligned = ddfstop & 0x07;
-  ddfstrt_aligned = ddfstrt & 0x07;
-
   if (ddfstop >= ddfstrt)
   {
     graph_DDF_word_count = (((ddfstop - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
@@ -1564,7 +1552,6 @@ void graphCalculateWindowHires(void)
   else
   {
     graph_DDF_word_count = (((0xd8 - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
-    ddfstop_aligned = 0;
   }
 
   graph_DDF_start = (ddfstrt << 2) + 18;
@@ -1601,9 +1588,8 @@ void graphCalculateWindowHires(void)
   }
 
   last_position_in_line = graph_DDF_start + (graph_DDF_word_count << 4);
-  if (oddhiscroll > evenhiscroll) // cmp word[oddhiscroll], word[evenhiscroll]
+  if (oddhiscroll > evenhiscroll)
   {
-    // ja  .cwaddoddh
     last_position_in_line += oddhiscroll;
   } 
   else 
