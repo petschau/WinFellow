@@ -191,7 +191,7 @@ void drawInitializePredefinedClipRectangles()
   draw_clip_max_pal.left = 88;
   draw_clip_max_pal.top = 26;
   draw_clip_max_pal.right = 472;
-  draw_clip_max_pal.bottom = 313;
+  draw_clip_max_pal.bottom = 314;
 }
 
 /*============================================================================*/
