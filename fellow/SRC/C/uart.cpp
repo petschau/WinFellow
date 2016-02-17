@@ -121,13 +121,31 @@ void UART::ClearState()
 void UART::LoadState(FILE *F)
 {
   fread(&_serper, sizeof(_serper), 1, F);
-  fread(&_serdat, sizeof(_serdat), 1, F);
+  fread(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
+  fread(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
+  fread(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
+  fread(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
+  fread(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
+  fread(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
+  fread(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
+  fread(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
+  fread(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
+  fread(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
 }
 
 void UART::SaveState(FILE *F)
 {
   fwrite(&_serper, sizeof(_serper), 1, F);
-  fwrite(&_serdat, sizeof(_serdat), 1, F);
+  fwrite(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
+  fwrite(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
+  fwrite(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
+  fwrite(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
+  fwrite(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
+  fwrite(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
+  fwrite(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
+  fwrite(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
+  fwrite(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
+  fwrite(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
 }
 
 bool UART::Is8BitMode()
@@ -197,6 +215,14 @@ void UART::EndOfFrame()
       _transmitDoneTime = 0;
     }
   }  
+  if (_receiveDoneTime != BUS_CYCLE_DISABLE)
+  {
+    _receiveDoneTime -= busGetCyclesInThisFrame();
+    if ((int)_receiveDoneTime < 0)
+    {
+      _receiveDoneTime = 0;
+    }
+  }
 }
 
 void UART::EmulationStart()

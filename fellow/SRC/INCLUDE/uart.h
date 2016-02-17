@@ -11,7 +11,6 @@ private:
   FILE *_outputFile;
 
   UWO _serper;
-  UWO _serdat;
 
   UWO _transmitBuffer;
   UWO _transmitShiftRegister;
