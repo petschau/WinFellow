@@ -69,7 +69,6 @@ extern ULO busGetLinesInThisFrame(void);
 extern ULO busGetCyclesInThisFrame(void);
 
 extern ULO busGetMaxLinesInFrame(void);
-extern ULO busGetMaxCyclesInLine(void);
 
 extern void busSetScreenLimits(bool is_long_frame);
 

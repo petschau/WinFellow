@@ -229,7 +229,6 @@ extern void cfgSetKey(cfg *config, STR *key);
 extern STR *cfgGetKey(cfg *config);
 extern void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig);
 extern BOOLE cfgGetUseAutoconfig(cfg *config);
-extern void cfgSetAddress32Bit(cfg *config, BOOLE address32bit);
 extern BOOLE cfgGetAddress32Bit(cfg *config);
 extern void cfgSetRtc(cfg *config, bool rtc);
 extern bool cfgGetRtc(cfg *config);
@@ -321,7 +320,6 @@ extern ULO cfgGetHardfileCount(cfg *config);
 extern cfg_hardfile cfgGetHardfile(cfg *config, ULO index);
 extern void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile);
 extern void cfgHardfileRemove(cfg *config, ULO index);
-extern void cfgHardfilesRemove(cfg *config);
 extern void cfgHardfilesFree(cfg *config);
 extern void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile);
 extern void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index);
@@ -335,7 +333,6 @@ extern ULO cfgGetFilesystemCount(cfg *config);
 extern cfg_filesys cfgGetFilesystem(cfg *config, ULO index);
 extern void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem);
 extern void cfgFilesystemRemove(cfg *config, ULO index);
-extern void cfgFilesystemsRemove(cfg *config);
 extern void cfgFilesystemsFree(cfg *config);
 extern void cfgSetFilesystemUnitDefaults(cfg_filesys *filesystem);
 extern void cfgFilesystemChange(cfg *config,
@@ -396,7 +393,6 @@ typedef struct {
 extern void cfgManagerSetCurrentConfig(cfgManager *configmanager, cfg *currentconfig);
 extern cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager);
 extern cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager);
-extern void cfgManagerSetDefaultConfig(cfgManager *configmanager);
 
 
 /*============================================================================*/

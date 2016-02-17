@@ -18,13 +18,10 @@ extern UBY *gfxDrvValidateBufferPointer();
 extern void gfxDrvInvalidateBufferPointer();
 extern void gfxDrvGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information);
 
-extern bool gfxDrvEmulationStart(ULO maxbuffercount);
 extern ULO gfxDrvEmulationStartPost();
 
+extern bool gfxDrvEmulationStart(unsigned int maxbuffercount);
 extern void gfxDrvEmulationStop();
-
-extern void gfxDrvRunEventSet();
-extern void gfxDrvRunEventReset();
 
 extern void gfxDrvNotifyActiveStatus(bool active);
 

@@ -10,7 +10,6 @@
 
 extern void fsWrapFullPath(STR *dst, STR *src);
 
-extern void fsWrapMakeRelativePath(STR *root_dir, STR *file_path);
 extern BOOLE fsWrapHasDrives(void);
 extern BOOLE *fsWrapGetDriveMap(void);
 extern BOOLE fsWrapSetCWD(fs_navig_point *fs_point);

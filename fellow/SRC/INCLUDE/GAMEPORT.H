@@ -62,7 +62,6 @@ extern void gameportSetInput(ULO index, gameport_inputs gameportinput);
 /* Fellow standard control functions                                         */
 /*===========================================================================*/
 
-extern void gameportEOFHandler(void);
 extern void gameportHardReset(void);
 extern void gameportEmulationStart(void);
 extern void gameportEmulationStop(void);

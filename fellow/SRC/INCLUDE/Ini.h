@@ -111,9 +111,6 @@ extern ini *iniManagerGetDefaultInitdata(iniManager *inimanager);
 /* struct iniManager utility functions                                        */
 /*============================================================================*/
 
-extern BOOLE iniManagerInitdataActivate(iniManager *initdatamanager);
-extern ini *iniManagerGetNewInitdata(iniManager *initdatamanager);
-extern void iniManagerFreeInitdata(iniManager *initdatamanager, ini *initdata);
 extern void iniManagerStartup(iniManager *initdatamanager);
 extern void iniManagerShutdown(iniManager *initdatamanager);
 
