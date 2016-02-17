@@ -364,11 +364,11 @@ BOOLE fellowEmulationStart(void) {
   interruptEmulationStart();
   ciaEmulationStart();
   cpuIntegrationEmulationStart();
-  graphEmulationStart();
   spriteEmulationStart();
   blitterEmulationStart();
   copperEmulationStart();
   drawEmulationStart();
+  graphEmulationStart();
   kbdEmulationStart();
   gameportEmulationStart();
   result = drawEmulationStartPost();
