@@ -56,6 +56,7 @@
 #include "sysinfo.h"
 #include "fileops.h"
 #include "interrupt.h"
+#include "uart.h"
 #include "RetroPlatform.h"
 
 #include "Graphics.h"
@@ -384,6 +385,8 @@ BOOLE fellowEmulationStart(void) {
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EmulationStart();
 
+  uart.EmulationStart();
+
   return result && memoryGetKickImageOK();
 }
 
@@ -416,6 +419,8 @@ void fellowEmulationStop(void) {
   iniEmulationStop();
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EmulationStop();
+
+  uart.EmulationStop();
 }
 
 /*============================================================================*/

@@ -432,6 +432,9 @@
     <ClCompile Include="..\..\C\SpriteMerger.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\c\uart.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -828,6 +831,9 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\uart.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>

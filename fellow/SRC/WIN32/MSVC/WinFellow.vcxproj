@@ -583,6 +583,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\C\SpriteMerger.cpp" />
     <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp" />
     <ClCompile Include="..\..\C\SpriteRegisters.cpp" />
+    <ClCompile Include="..\..\c\uart.cpp" />
     <ClCompile Include="..\..\graphics\Logger.cpp" />
     <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
     <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
@@ -1640,6 +1641,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\SpriteMerger.h" />
     <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h" />
+    <ClInclude Include="..\..\INCLUDE\uart.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />
