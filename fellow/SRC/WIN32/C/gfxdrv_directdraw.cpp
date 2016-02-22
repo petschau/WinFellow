@@ -1071,9 +1071,9 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #endif
     {
       srcwin.left = 0;
-      srcwin.right = ddraw_device->mode->width;
+      srcwin.right = draw_buffer_info.width;
       srcwin.top = 0;
-      srcwin.bottom = ddraw_device->mode->height;
+      srcwin.bottom = draw_buffer_info.height;
     }
 #ifdef RETRO_PLATFORM
     else
@@ -1108,7 +1108,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   RECT *srcrect = NULL;
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+//  if (RetroPlatformGetMode())
     srcrect = &srcwin;
 #endif
 
@@ -1234,8 +1234,8 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
     if (!RetroPlatformGetMode())
     {
 #endif
-      ddraw_device->ddsdSecondary.dwHeight = ddraw_device->drawmode->height;
-      ddraw_device->ddsdSecondary.dwWidth = ddraw_device->drawmode->width;
+      ddraw_device->ddsdSecondary.dwHeight = draw_buffer_info.height;
+      ddraw_device->ddsdSecondary.dwWidth = draw_buffer_info.width;
 #ifdef RETRO_PLATFORM
     }
     else {
@@ -1260,8 +1260,8 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
       buffer_allocated = true;
       fellowAddLog("gfxdrv: Allocated second offscreen surface in %s (%d, %d)\n",
         gfxDrvDDrawVideomemLocationStr(pass),
-        ddraw_device->drawmode->width,
-        ddraw_device->drawmode->height);
+        draw_buffer_info.width,
+        draw_buffer_info.height);
       gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
       result = true;
     }
@@ -1566,14 +1566,32 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 
 void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
 {
-  // For the moment, ddraw wants a buffer that is the same size as the output window
-  // Will not work with 3X and 4X, or RP
+  ULO actual_scale_factor = 2;
+  switch (drawGetDisplayScale())
+  {
+  case DISPLAYSCALE::DISPLAYSCALE_1X:
+    actual_scale_factor = 2;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_2X:
+    actual_scale_factor = 4;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_3X:
+    actual_scale_factor = 6;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_4X:
+    actual_scale_factor = 8;
+    break;
+  }
 
-  buffer_information->width = mode->width;
-  buffer_information->height = mode->height;
-  buffer_information->pitch = 0; // Set later
+  std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, actual_scale_factor);
+  std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, actual_scale_factor);
+
+  ULO internal_scale_factor = drawGetDisplayScaleFactor();
+
+  buffer_information->width = (horizontal_clip.second - horizontal_clip.first)*internal_scale_factor;
+  buffer_information->height = (vertical_clip.second - vertical_clip.first)*internal_scale_factor;
+  buffer_information->pitch = buffer_information->width * 4;
 }
-
 
 /*==========================================================================*/
 /* Open the default DirectDraw device, and record information about what is */

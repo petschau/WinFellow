@@ -1091,13 +1091,13 @@ void drawEmulationStart(void)
 
 BOOLE drawEmulationStartPost(void)
 {
-  drawModeTablesInitialize(draw_mode_current);
   draw_buffer_count = gfxDrvEmulationStartPost();
   bool result = (draw_buffer_count != 0);
   if (result)
   {
     draw_buffer_show = 0;
     draw_buffer_draw = draw_buffer_count - 1;
+    drawModeTablesInitialize(draw_mode_current);
   }
   else
   {

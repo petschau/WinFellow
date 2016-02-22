@@ -369,10 +369,10 @@ BOOLE fellowEmulationStart(void) {
   blitterEmulationStart();
   copperEmulationStart();
   drawEmulationStart();
-  graphEmulationStart();
   kbdEmulationStart();
   gameportEmulationStart();
   result = drawEmulationStartPost();
+  graphEmulationStart();
   soundEmulationStart();
   busEmulationStart();
   floppyEmulationStart();
