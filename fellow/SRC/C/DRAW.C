@@ -463,7 +463,7 @@ static void drawFpsText(STR *text)
 
 static void drawFpsToFramebuffer16(void)
 {
-  UWO *bufw = ((UWO *) draw_buffer_info.top_ptr) + draw_mode_current->width - 20;
+  UWO *bufw = ((UWO *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
@@ -481,7 +481,7 @@ static void drawFpsToFramebuffer16(void)
 
 static void drawFpsToFramebuffer24(void)
 {
-  UBY *bufb = draw_buffer_info.top_ptr + (draw_mode_current->width - 20)*3;
+  UBY *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
   for (int y = 0; y < 5; y++)
   {
@@ -503,7 +503,7 @@ static void drawFpsToFramebuffer24(void)
 
 static void drawFpsToFramebuffer32(void)
 {
-  ULO *bufl = ((ULO *) draw_buffer_info.top_ptr) + draw_mode_current->width - 20;
+  ULO *bufl = ((ULO *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
 
 #ifdef RETRO_PLATFORM
   if(RetroPlatformGetMode()) {
