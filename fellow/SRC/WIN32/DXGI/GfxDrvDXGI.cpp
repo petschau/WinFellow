@@ -43,7 +43,7 @@ bool GfxDrvDXGI::Startup()
     gfxDrvRegisterRetroPlatformScreenMode(true);
 #endif
 
-  bResult = (_adapters != 0) & (_adapters->size() > 0);
+  bResult = (_adapters != nullptr) & (_adapters->size() > 0);
 
   fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n\n", bResult ? "successful" : "failed");	
 
@@ -931,7 +931,7 @@ void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int 
 {
   draw_mode *mode = (draw_mode *)malloc(sizeof(draw_mode));
 
-  if (mode)
+  if (mode != nullptr)
   {
     mode->width = width;
     mode->height = height;

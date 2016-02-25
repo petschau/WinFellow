@@ -6,10 +6,10 @@
 #include "RetroPlatform.h"
 #include "fileops.h"
 
-bool gfx_drv_use_dxgi = true;
+bool gfx_drv_use_dxgi = false;
 
-GfxDrvCommon *gfxDrvCommon = 0;
-GfxDrvDXGI *gfxDrvDXGI = 0;
+GfxDrvCommon *gfxDrvCommon = nullptr;
+GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
 void gfxDrvClearCurrentBuffer()
 {
@@ -220,12 +220,10 @@ void gfxDrvShutdown()
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->Shutdown();
-
-    if (gfxDrvDXGI != 0)
+    if (gfxDrvDXGI != nullptr)
     {
       delete gfxDrvDXGI;
-      gfxDrvDXGI = 0;
+      gfxDrvDXGI = nullptr;
     }
   }
   else
@@ -233,10 +231,10 @@ void gfxDrvShutdown()
     gfxDrvDDrawShutdown();
   }
 
-  if (gfxDrvCommon != 0)
+  if (gfxDrvCommon != nullptr)
   {
     delete gfxDrvCommon;
-    gfxDrvCommon = 0;
+    gfxDrvCommon = nullptr;
   }
 }
 

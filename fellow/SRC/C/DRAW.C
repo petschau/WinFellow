@@ -888,7 +888,6 @@ static void drawModeTablesInitialize(draw_mode *dm)
   drawModeFunctionsInitialize(dm);
 
   memoryWriteWord((UWO) bplcon0, 0xdff100);
-  drawAmigaScreenGeometry(draw_buffer_info.width, draw_buffer_info.height);
   drawColorTranslationInitialize();
   graphInitializeShadowColors();
   draw_buffer_info.current_ptr = draw_buffer_info.top_ptr;
@@ -1091,6 +1090,7 @@ void drawEmulationStart(void)
 
 BOOLE drawEmulationStartPost(void)
 {
+  drawAmigaScreenGeometry(draw_buffer_info.width, draw_buffer_info.height);
   draw_buffer_count = gfxDrvEmulationStartPost();
   bool result = (draw_buffer_count != 0);
   if (result)
