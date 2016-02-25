@@ -988,15 +988,16 @@ bool gfxDrvDDrawSetCooperativeLevel(gfx_drv_ddraw_device *ddraw_device)
 /* Clear surface with blitter                                               */
 /*==========================================================================*/
 
-void gfxDrvDDrawSurfaceClear(LPDIRECTDRAWSURFACE surface)
+void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE surface, RECT *dstrect = NULL)
 {
   DDBLTFX ddbltfx;
 
   memset(&ddbltfx, 0, sizeof(ddbltfx));
   ddbltfx.dwSize = sizeof(ddbltfx);
   ddbltfx.dwFillColor = 0;
+
   HRESULT err = IDirectDrawSurface_Blt(surface,
-    NULL,
+    dstrect,
     NULL,
     NULL,
     DDBLT_COLORFILL | DDBLT_WAIT,
@@ -1022,10 +1023,10 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
   HRESULT err = IDirectDrawSurface_Restore(surface);
   if (err == DD_OK)
   {
-    gfxDrvDDrawSurfaceClear(surface);
+    gfxDrvDDrawSurfaceClear(ddraw_device, surface);
     if ((surface == ddraw_device->lpDDSPrimary) && (ddraw_device->buffercount > 1))
     {
-      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+      gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
       if (ddraw_device->buffercount == 3)
       {
         err = IDirectDrawSurface_Flip(surface, NULL, DDFLIP_WAIT);
@@ -1036,7 +1037,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
       }
       else
       {
-        gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+        gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
       }
     }
     graphLineDescClear();
@@ -1070,10 +1071,11 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
     if (!RetroPlatformGetMode())
 #endif
     {
-      srcwin.left = 0;
-      srcwin.right = draw_buffer_info.width;
-      srcwin.top = 0;
-      srcwin.bottom = draw_buffer_info.height;
+      // Windowed, stand alone mode.
+      srcwin.left = drawGetBufferClipLeft();
+      srcwin.top = drawGetBufferClipTop();
+      srcwin.right = drawGetBufferClipLeft() + drawGetBufferClipWidth();
+      srcwin.bottom = drawGetBufferClipTop() + drawGetBufferClipHeight();
     }
 #ifdef RETRO_PLATFORM
     else
@@ -1087,6 +1089,8 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   }
   else
   {
+    // Fullscreen mode
+    // Now same as windowed stand alone mode
     srcwin.left = drawGetBufferClipLeft();
     srcwin.top = drawGetBufferClipTop();
     srcwin.right = drawGetBufferClipLeft() + drawGetBufferClipWidth();
@@ -1095,27 +1099,26 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 
   /* Destination is always the primary or one the backbuffers attached to it */
   gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
-  /* Destination window, in windowed mode, use the clientrect */
-  if (!ddraw_device->mode->windowed)
+
+  /* Destination window */
+  /* Center output */
+
+  dstwin.left = (ddraw_device->mode->width - drawGetBufferClipWidth()) / 2;
+  dstwin.top = (ddraw_device->mode->height - drawGetBufferClipHeight()) / 2;
+  dstwin.right = dstwin.left + drawGetBufferClipWidth();
+  dstwin.bottom = dstwin.top + drawGetBufferClipHeight();
+
+  if (ddraw_device->mode->windowed)
   {
-    /* In full-screen mode, blit centered to the screen */
-    dstwin.left = drawGetBufferClipLeft();
-    dstwin.top = drawGetBufferClipTop();
-    dstwin.right = drawGetBufferClipLeft() + drawGetBufferClipWidth();
-    dstwin.bottom = drawGetBufferClipTop() + drawGetBufferClipHeight();
+    // Add client rect offset in window mode
+    dstwin.left += ddraw_device->hwnd_clientrect_screen.left;
+    dstwin.top += ddraw_device->hwnd_clientrect_screen.top;
+    dstwin.right += ddraw_device->hwnd_clientrect_screen.left;
+    dstwin.bottom += ddraw_device->hwnd_clientrect_screen.top;
   }
 
-  RECT *srcrect = NULL;
-
-#ifdef RETRO_PLATFORM
-//  if (RetroPlatformGetMode())
-    srcrect = &srcwin;
-#endif
-
   /* This can fail when a surface is lost */
-  err = IDirectDrawSurface_Blt(lpDDSDestination,
-    (ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
-    srcrect, DDBLT_ASYNC, &bltfx);
+  err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): 0x%x.\n", err);
@@ -1138,9 +1141,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
         return;
       }
       /* Restore was successful, do the blit */
-      err = IDirectDrawSurface_Blt(lpDDSDestination,
-        (ddraw_device->mode->windowed) ? &ddraw_device->hwnd_clientrect_screen : &dstwin, ddraw_device->lpDDSSecondary,
-        srcrect, DDBLT_ASYNC, &bltfx);
+      err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
       if (err != DD_OK)
       {
         /* failed second time, pass over */
@@ -1262,7 +1263,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
         gfxDrvDDrawVideomemLocationStr(pass),
         draw_buffer_info.width,
         draw_buffer_info.height);
-      gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSSecondary);
+      gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSSecondary);
       result = true;
     }
     pass++;
@@ -1338,8 +1339,8 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
         }
         else
         { /* Have a backbuffer, seems to work fine */
-          gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
-          gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary);
+          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
           if (buffer_count_want > 2)
           {
             err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary,
@@ -1352,17 +1353,14 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
             }
             else
             {
-              gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSBack);
+              gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
             }
           }
         }
       }
       else
-      { /* No backbuffer, don't clear if we are in a window */
-        if (!ddraw_device->mode->windowed)
-        {
-          gfxDrvDDrawSurfaceClear(ddraw_device->lpDDSPrimary);
-        }
+      { /* No backbuffer */
+          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, ddraw_device->mode->windowed ? &ddraw_device->hwnd_clientrect_screen : NULL);
       }
     }
     if (!success)
@@ -1532,9 +1530,9 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 
   if (gfxDrvDDrawSetCooperativeLevel(ddraw_device))
   {
-    ddraw_device->use_blitter =
-      ddraw_device->mode->windowed
-      || ddraw_device->no_dd_hardware;
+    ddraw_device->use_blitter = true;
+      //ddraw_device->mode->windowed
+      //|| ddraw_device->no_dd_hardware;
 
     if (!ddraw_device->mode->windowed)
     {
@@ -1590,7 +1588,7 @@ void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *b
 
   buffer_information->width = (horizontal_clip.second - horizontal_clip.first)*internal_scale_factor;
   buffer_information->height = (vertical_clip.second - vertical_clip.first)*internal_scale_factor;
-  buffer_information->pitch = buffer_information->width * 4;
+  buffer_information->pitch = buffer_information->width * 4; // Replaced later by actual value
 }
 
 /*==========================================================================*/
@@ -1647,7 +1645,7 @@ void gfxDrvDDrawClearCurrentBuffer()
   LPDDSURFACEDESC lpDDSD;
 
   gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device_current, &lpDDS, &lpDDSD);
-  gfxDrvDDrawSurfaceClear(lpDDS);
+  gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device_current, lpDDS);
 }
 
 /*==========================================================================*/
