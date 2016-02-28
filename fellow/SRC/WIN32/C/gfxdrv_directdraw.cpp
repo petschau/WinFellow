@@ -152,6 +152,8 @@ felist               *gfx_drv_ddraw_devices;
 
 bool gfx_drv_ddraw_initialized;
 bool gfx_drv_ddraw_clear_borders;
+ULO gfx_drv_output_width;
+ULO gfx_drv_output_height;
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
@@ -1037,7 +1039,7 @@ ULO gfxDrvDDrawGetOutputScaleFactor()
   return output_scale_factor;
 }
 
-void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
+void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_height, gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
 {
   int upscaled_clip_width = 0;
   int upscaled_clip_height = 0;
@@ -1059,8 +1061,8 @@ void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device
     float srcClipHeight = drawGetBufferClipHeightAsFloat();
 
     // Automatic best fit in the destination
-    dstWidth = static_cast<float>(ddraw_device->mode->width);
-    dstHeight = static_cast<float>(ddraw_device->mode->height);
+    dstWidth = static_cast<float>(output_width);
+    dstHeight = static_cast<float>(output_height);
 
     float srcAspectRatio = srcClipWidth / srcClipHeight;
     float dstAspectRatio = dstWidth / dstHeight;
@@ -1082,8 +1084,8 @@ void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device
     upscaled_clip_height = static_cast<int>(dstHeight);
   }
 
-  dstwin.left = (ddraw_device->mode->width - upscaled_clip_width) / 2;
-  dstwin.top = (ddraw_device->mode->height - upscaled_clip_height) / 2;
+  dstwin.left = (output_width - upscaled_clip_width) / 2;
+  dstwin.top = (output_height - upscaled_clip_height) / 2;
   dstwin.right = dstwin.left + upscaled_clip_width;
   dstwin.bottom = dstwin.top + upscaled_clip_height;
 
@@ -1153,7 +1155,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
 
   /* Destination window */
-  gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstwin);
+  gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_output_width, gfx_drv_output_height, ddraw_device, dstwin);
 
   /* This can fail when a surface is lost */
   err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
@@ -1451,7 +1453,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
 void gfxDrvDDrawClearWindowBorders(gfx_drv_ddraw_device *ddraw_device)
 {
   RECT dstwin;
-  gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstwin);
+  gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_output_width, gfx_drv_output_height, ddraw_device, dstwin);
 
   RECT screenrect;
 
@@ -1757,6 +1759,8 @@ void gfxDrvDDrawInvalidateBufferPointer()
 
 void gfxDrvDDrawSizeChanged(unsigned int width, unsigned int height)
 {
+  gfx_drv_output_width = width;
+  gfx_drv_output_height = height;
   if (gfx_drv_ddraw_device_current->mode->windowed)
   {
     gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
