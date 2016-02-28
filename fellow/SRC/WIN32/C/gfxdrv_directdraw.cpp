@@ -160,107 +160,107 @@ STR *gfxDrvDDrawErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
-  case DD_OK:				    return "DD_OK";
-  case DDERR_ALREADYINITIALIZED:	    return "DDERR_ALREADYINITIALIZED";
-  case DDERR_BLTFASTCANTCLIP:		    return "DDERR_BLTFASTCANTCLIP";
-  case DDERR_CANNOTATTACHSURFACE:	    return "DDERR_CANNOTATTACHSURFACE";
-  case DDERR_CANNOTDETACHSURFACE:	    return "DDERR_CANNOTDETACHSURFACE";
-  case DDERR_CANTCREATEDC:		    return "DDERR_CANTCREATEDC";
-  case DDERR_CANTDUPLICATE:               return "DDERR_CANTDUPLICATE";
-  case DDERR_CANTLOCKSURFACE:		    return "DDERR_CANTLOCKSURFACE";
-  case DDERR_CANTPAGELOCK:		    return "DDERR_CANTPAGELOCK";
-  case DDERR_CANTPAGEUNLOCK:		    return "DDERR_CANTPAGEUNLOCK";
-  case DDERR_CLIPPERISUSINGHWND:	    return "DDERR_CLIPPERISUSINGHWND";
-  case DDERR_COLORKEYNOTSET:		    return "DDERR_COLORKEYNOTSET";
-  case DDERR_CURRENTLYNOTAVAIL:	    return "DDERR_CURRENTLYNOTAVAIL";
-  case DDERR_DCALREADYCREATED:	    return "DDERR_DCALREADYCREATED";
-  case DDERR_DIRECTDRAWALREADYCREATED:    return "DDERR_DIRECTDRAWALREADYCREATED";
-  case DDERR_EXCEPTION:		    return "DDERR_EXCEPTION";
-  case DDERR_EXCLUSIVEMODEALREADYSET:     return "DDERR_EXCLUSIVEMODEALREADYSET";
-  case DDERR_GENERIC:			    return "DDERR_GENERIC";
-  case DDERR_HEIGHTALIGN:		    return "DDERR_HEIGHTALIGN";
-  case DDERR_HWNDALREADYSET:		    return "DDERR_HWNDALREADYSET";
-  case DDERR_HWNDSUBCLASSED:		    return "DDERR_HWNDSUBCLASSED";
-  case DDERR_IMPLICITLYCREATED:	    return "DDERR_IMPLICITLYCREATED";
-  case DDERR_INCOMPATIBLEPRIMARY:	    return "DDERR_INCOMPATIBLEPRIMARY";
-  case DDERR_INVALIDCAPS:		    return "DDERR_INVALIDCAPS";
-  case DDERR_INVALIDCLIPLIST:		    return "DDERR_INVALIDCLIPLIST";
-  case DDERR_INVALIDDIRECTDRAWGUID:       return "DDERR_INVALIDDIRECTDRAWGUID";
-  case DDERR_INVALIDMODE:		    return "DDERR_INVALIDMODE";
-  case DDERR_INVALIDOBJECT:		    return "DDERR_INVALIDOBJECT";
-  case DDERR_INVALIDPARAMS:		    return "DDERR_INVALIDPARAMS";
-  case DDERR_INVALIDPIXELFORMAT:	    return "DDERR_INVALIDPIXELFORMAT";
-  case DDERR_INVALIDPOSITION:		    return "DDERR_INVALIDPOSITION";
-  case DDERR_INVALIDRECT:		    return "DDERR_INVALIDRECT";
-  case DDERR_INVALIDSURFACETYPE:	    return "DDERR_INVALIDSURFACETYPE";
-  case DDERR_LOCKEDSURFACES:		    return "DDERR_LOCKEDSURFACES";
-  case DDERR_NO3D:			    return "DDERR_NO3D";
-  case DDERR_NOALPHAHW:		    return "DDERR_NOALPHAHW";
-  case DDERR_NOBLTHW:			    return "DDERR_NOBLTHW";
-  case DDERR_NOCLIPLIST:		    return "DDERR_NOCLIPLIST";
-  case DDERR_NOCLIPPERATTACHED:	    return "DDERR_NOCLIPPERATTACHED";
-  case DDERR_NOCOLORCONVHW:		    return "DDERR_NOCOLORCONVHW";
-  case DDERR_NOCOLORKEY:		    return "DDERR_NOCOLORKEY";
-  case DDERR_NOCOLORKEYHW:		    return "DDERR_NOCOLORKEYHW";
-  case DDERR_NOCOOPERATIVELEVELSET:       return "DDERR_NOCOOPERATIVELEVELSET";
-  case DDERR_NODC:			    return "DDERR_NODC";
-  case DDERR_NODDROPSHW:		    return "DDERR_NODDROPSHW";
-  case DDERR_NODIRECTDRAWHW:		    return "DDERR_NODIRECTDRAWHW";
-  case DDERR_NODIRECTDRAWSUPPORT:	    return "DDERR_NODIRECTDRAWSUPPORT";
-  case DDERR_NOEMULATION:		    return "DDERR_NOEMULATION";
-  case DDERR_NOEXCLUSIVEMODE:		    return "DDERR_NOEXCLUSIVEMODE";
-  case DDERR_NOFLIPHW:		    return "DDERR_NOFLIPHW";
-  case DDERR_NOGDI:			    return "DDERR_NOGDI";
-  case DDERR_NOHWND:			    return "DDERR_NOHWND";
-  case DDERR_NOMIPMAPHW:		    return "DDERR_NOMIPMAPHW";
-  case DDERR_NOMIRRORHW:		    return "DDERR_NOMIRRORHW";
-  case DDERR_NOOVERLAYDEST:		    return "DDERR_NOOVERLAYDEST";
-  case DDERR_NOOVERLAYHW:		    return "DDERR_NOOVERLAYHW";
-  case DDERR_NOPALETTEATTACHED:	    return "DDERR_NOPALETTEATTACHED";
-  case DDERR_NOPALETTEHW:		    return "DDERR_NOPALETTEHW";
-  case DDERR_NORASTEROPHW:		    return "DDERR_NORASTEROPHW";
-  case DDERR_NOROTATIONHW:		    return "DDERR_NOROTATIONHW";
-  case DDERR_NOSTRETCHHW:		    return "DDERR_NOSTRETCHHW";
-  case DDERR_NOT4BITCOLOR:		    return "DDERR_NOT4BITCOLOR";
-  case DDERR_NOT4BITCOLORINDEX:	    return "DDERR_NOT4BITCOLORINDEX";
-  case DDERR_NOT8BITCOLOR:		    return "DDERR_NOT8BITCOLOR";
-  case DDERR_NOTAOVERLAYSURFACE:	    return "DDERR_NOTAOVERLAYSURFACE";
-  case DDERR_NOTEXTUREHW:		    return "DDERR_NOTEXTUREHW";
-  case DDERR_NOTFLIPPABLE:		    return "DDERR_NOTFLIPPABLE";
-  case DDERR_NOTFOUND:		    return "DDERR_NOTFOUND";
-  case DDERR_NOTINITIALIZED:		    return "DDERR_NOTINITIALIZED";
-  case DDERR_NOTLOCKED:		    return "DDERR_NOTLOCKED";
-  case DDERR_NOTPAGELOCKED:		    return "DDERR_NOTPAGELOCKED";
-  case DDERR_NOTPALETTIZED:		    return "DDERR_NOTPALETTIZED";
-  case DDERR_NOVSYNCHW:		    return "DDERR_NOVSYNCHW";
-  case DDERR_NOZBUFFERHW:		    return "DDERR_NOZBUFFERHW";
-  case DDERR_NOZOVERLAYHW:		    return "DDERR_NOZOVERLAYHW";
-  case DDERR_OUTOFCAPS:		    return "DDERR_OUTOFCAPS";
-  case DDERR_OUTOFMEMORY:		    return "DDERR_OUTOFMEMORY";
-  case DDERR_OUTOFVIDEOMEMORY:	    return "DDERR_OUTOFVIDEOMEMORY";
-  case DDERR_OVERLAYCANTCLIP:		    return "DDERR_OVERLAYCANTCLIP";
-  case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:return "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
-  case DDERR_OVERLAYNOTVISIBLE:	    return "DDERR_OVERLAYNOTVISIBLE";
-  case DDERR_PALETTEBUSY:		    return "DDERR_PALETTEBUSY";
-  case DDERR_PRIMARYSURFACEALREADYEXISTS: return "DDERR_PRIMARYSURFACEALREADYEXISTS";
-  case DDERR_REGIONTOOSMALL:		    return "DDERR_REGIONTOOSMALL";
-  case DDERR_SURFACEALREADYATTACHED:      return "DDERR_SURFACEALREADYATTACHED";
-  case DDERR_SURFACEALREADYDEPENDENT:     return "DDERR_SURFACEALREADYDEPENDENT";
-  case DDERR_SURFACEBUSY:		    return "DDERR_SURFACEBUSY";
-  case DDERR_SURFACEISOBSCURED:	    return "DDERR_SURFACEISOBSCURED";
-  case DDERR_SURFACELOST:		    return "DDERR_SURFACELOST";
-  case DDERR_SURFACENOTATTACHED:          return "DDERR_SURFACENOTATTACHED";
-  case DDERR_TOOBIGHEIGHT:		    return "DDERR_TOOBIGHEIGHT";
-  case DDERR_TOOBIGSIZE:		    return "DDERR_TOOBIGSIZE";
-  case DDERR_TOOBIGWIDTH:		    return "DDERR_TOOBIGWIDTH";
-  case DDERR_UNSUPPORTED:		    return "DDERR_UNSUPPORTED";
-  case DDERR_UNSUPPORTEDFORMAT:	    return "DDERR_UNSUPPORTEDFORMAT";
-  case DDERR_UNSUPPORTEDMASK:		    return "DDERR_UNSUPPORTEDMASK";
-  case DDERR_UNSUPPORTEDMODE:		    return "DDERR_UNSUPPORTEDMODE";
-  case DDERR_VERTICALBLANKINPROGRESS:     return "DDERR_VERTICALBLANKINPROGRESS";
-  case DDERR_WASSTILLDRAWING:		    return "DDERR_WASSTILLDRAWING";
-  case DDERR_WRONGMODE:		    return "DDERR_WRONGMODE";
-  case DDERR_XALIGN:			    return "DDERR_XALIGN";
+    case DD_OK:				    return "DD_OK";
+    case DDERR_ALREADYINITIALIZED:	    return "DDERR_ALREADYINITIALIZED";
+    case DDERR_BLTFASTCANTCLIP:		    return "DDERR_BLTFASTCANTCLIP";
+    case DDERR_CANNOTATTACHSURFACE:	    return "DDERR_CANNOTATTACHSURFACE";
+    case DDERR_CANNOTDETACHSURFACE:	    return "DDERR_CANNOTDETACHSURFACE";
+    case DDERR_CANTCREATEDC:		    return "DDERR_CANTCREATEDC";
+    case DDERR_CANTDUPLICATE:               return "DDERR_CANTDUPLICATE";
+    case DDERR_CANTLOCKSURFACE:		    return "DDERR_CANTLOCKSURFACE";
+    case DDERR_CANTPAGELOCK:		    return "DDERR_CANTPAGELOCK";
+    case DDERR_CANTPAGEUNLOCK:		    return "DDERR_CANTPAGEUNLOCK";
+    case DDERR_CLIPPERISUSINGHWND:	    return "DDERR_CLIPPERISUSINGHWND";
+    case DDERR_COLORKEYNOTSET:		    return "DDERR_COLORKEYNOTSET";
+    case DDERR_CURRENTLYNOTAVAIL:	    return "DDERR_CURRENTLYNOTAVAIL";
+    case DDERR_DCALREADYCREATED:	    return "DDERR_DCALREADYCREATED";
+    case DDERR_DIRECTDRAWALREADYCREATED:    return "DDERR_DIRECTDRAWALREADYCREATED";
+    case DDERR_EXCEPTION:		    return "DDERR_EXCEPTION";
+    case DDERR_EXCLUSIVEMODEALREADYSET:     return "DDERR_EXCLUSIVEMODEALREADYSET";
+    case DDERR_GENERIC:			    return "DDERR_GENERIC";
+    case DDERR_HEIGHTALIGN:		    return "DDERR_HEIGHTALIGN";
+    case DDERR_HWNDALREADYSET:		    return "DDERR_HWNDALREADYSET";
+    case DDERR_HWNDSUBCLASSED:		    return "DDERR_HWNDSUBCLASSED";
+    case DDERR_IMPLICITLYCREATED:	    return "DDERR_IMPLICITLYCREATED";
+    case DDERR_INCOMPATIBLEPRIMARY:	    return "DDERR_INCOMPATIBLEPRIMARY";
+    case DDERR_INVALIDCAPS:		    return "DDERR_INVALIDCAPS";
+    case DDERR_INVALIDCLIPLIST:		    return "DDERR_INVALIDCLIPLIST";
+    case DDERR_INVALIDDIRECTDRAWGUID:       return "DDERR_INVALIDDIRECTDRAWGUID";
+    case DDERR_INVALIDMODE:		    return "DDERR_INVALIDMODE";
+    case DDERR_INVALIDOBJECT:		    return "DDERR_INVALIDOBJECT";
+    case DDERR_INVALIDPARAMS:		    return "DDERR_INVALIDPARAMS";
+    case DDERR_INVALIDPIXELFORMAT:	    return "DDERR_INVALIDPIXELFORMAT";
+    case DDERR_INVALIDPOSITION:		    return "DDERR_INVALIDPOSITION";
+    case DDERR_INVALIDRECT:		    return "DDERR_INVALIDRECT";
+    case DDERR_INVALIDSURFACETYPE:	    return "DDERR_INVALIDSURFACETYPE";
+    case DDERR_LOCKEDSURFACES:		    return "DDERR_LOCKEDSURFACES";
+    case DDERR_NO3D:			    return "DDERR_NO3D";
+    case DDERR_NOALPHAHW:		    return "DDERR_NOALPHAHW";
+    case DDERR_NOBLTHW:			    return "DDERR_NOBLTHW";
+    case DDERR_NOCLIPLIST:		    return "DDERR_NOCLIPLIST";
+    case DDERR_NOCLIPPERATTACHED:	    return "DDERR_NOCLIPPERATTACHED";
+    case DDERR_NOCOLORCONVHW:		    return "DDERR_NOCOLORCONVHW";
+    case DDERR_NOCOLORKEY:		    return "DDERR_NOCOLORKEY";
+    case DDERR_NOCOLORKEYHW:		    return "DDERR_NOCOLORKEYHW";
+    case DDERR_NOCOOPERATIVELEVELSET:       return "DDERR_NOCOOPERATIVELEVELSET";
+    case DDERR_NODC:			    return "DDERR_NODC";
+    case DDERR_NODDROPSHW:		    return "DDERR_NODDROPSHW";
+    case DDERR_NODIRECTDRAWHW:		    return "DDERR_NODIRECTDRAWHW";
+    case DDERR_NODIRECTDRAWSUPPORT:	    return "DDERR_NODIRECTDRAWSUPPORT";
+    case DDERR_NOEMULATION:		    return "DDERR_NOEMULATION";
+    case DDERR_NOEXCLUSIVEMODE:		    return "DDERR_NOEXCLUSIVEMODE";
+    case DDERR_NOFLIPHW:		    return "DDERR_NOFLIPHW";
+    case DDERR_NOGDI:			    return "DDERR_NOGDI";
+    case DDERR_NOHWND:			    return "DDERR_NOHWND";
+    case DDERR_NOMIPMAPHW:		    return "DDERR_NOMIPMAPHW";
+    case DDERR_NOMIRRORHW:		    return "DDERR_NOMIRRORHW";
+    case DDERR_NOOVERLAYDEST:		    return "DDERR_NOOVERLAYDEST";
+    case DDERR_NOOVERLAYHW:		    return "DDERR_NOOVERLAYHW";
+    case DDERR_NOPALETTEATTACHED:	    return "DDERR_NOPALETTEATTACHED";
+    case DDERR_NOPALETTEHW:		    return "DDERR_NOPALETTEHW";
+    case DDERR_NORASTEROPHW:		    return "DDERR_NORASTEROPHW";
+    case DDERR_NOROTATIONHW:		    return "DDERR_NOROTATIONHW";
+    case DDERR_NOSTRETCHHW:		    return "DDERR_NOSTRETCHHW";
+    case DDERR_NOT4BITCOLOR:		    return "DDERR_NOT4BITCOLOR";
+    case DDERR_NOT4BITCOLORINDEX:	    return "DDERR_NOT4BITCOLORINDEX";
+    case DDERR_NOT8BITCOLOR:		    return "DDERR_NOT8BITCOLOR";
+    case DDERR_NOTAOVERLAYSURFACE:	    return "DDERR_NOTAOVERLAYSURFACE";
+    case DDERR_NOTEXTUREHW:		    return "DDERR_NOTEXTUREHW";
+    case DDERR_NOTFLIPPABLE:		    return "DDERR_NOTFLIPPABLE";
+    case DDERR_NOTFOUND:		    return "DDERR_NOTFOUND";
+    case DDERR_NOTINITIALIZED:		    return "DDERR_NOTINITIALIZED";
+    case DDERR_NOTLOCKED:		    return "DDERR_NOTLOCKED";
+    case DDERR_NOTPAGELOCKED:		    return "DDERR_NOTPAGELOCKED";
+    case DDERR_NOTPALETTIZED:		    return "DDERR_NOTPALETTIZED";
+    case DDERR_NOVSYNCHW:		    return "DDERR_NOVSYNCHW";
+    case DDERR_NOZBUFFERHW:		    return "DDERR_NOZBUFFERHW";
+    case DDERR_NOZOVERLAYHW:		    return "DDERR_NOZOVERLAYHW";
+    case DDERR_OUTOFCAPS:		    return "DDERR_OUTOFCAPS";
+    case DDERR_OUTOFMEMORY:		    return "DDERR_OUTOFMEMORY";
+    case DDERR_OUTOFVIDEOMEMORY:	    return "DDERR_OUTOFVIDEOMEMORY";
+    case DDERR_OVERLAYCANTCLIP:		    return "DDERR_OVERLAYCANTCLIP";
+    case DDERR_OVERLAYCOLORKEYONLYONEACTIVE:return "DDERR_OVERLAYCOLORKEYONLYONEACTIVE";
+    case DDERR_OVERLAYNOTVISIBLE:	    return "DDERR_OVERLAYNOTVISIBLE";
+    case DDERR_PALETTEBUSY:		    return "DDERR_PALETTEBUSY";
+    case DDERR_PRIMARYSURFACEALREADYEXISTS: return "DDERR_PRIMARYSURFACEALREADYEXISTS";
+    case DDERR_REGIONTOOSMALL:		    return "DDERR_REGIONTOOSMALL";
+    case DDERR_SURFACEALREADYATTACHED:      return "DDERR_SURFACEALREADYATTACHED";
+    case DDERR_SURFACEALREADYDEPENDENT:     return "DDERR_SURFACEALREADYDEPENDENT";
+    case DDERR_SURFACEBUSY:		    return "DDERR_SURFACEBUSY";
+    case DDERR_SURFACEISOBSCURED:	    return "DDERR_SURFACEISOBSCURED";
+    case DDERR_SURFACELOST:		    return "DDERR_SURFACELOST";
+    case DDERR_SURFACENOTATTACHED:          return "DDERR_SURFACENOTATTACHED";
+    case DDERR_TOOBIGHEIGHT:		    return "DDERR_TOOBIGHEIGHT";
+    case DDERR_TOOBIGSIZE:		    return "DDERR_TOOBIGSIZE";
+    case DDERR_TOOBIGWIDTH:		    return "DDERR_TOOBIGWIDTH";
+    case DDERR_UNSUPPORTED:		    return "DDERR_UNSUPPORTED";
+    case DDERR_UNSUPPORTEDFORMAT:	    return "DDERR_UNSUPPORTEDFORMAT";
+    case DDERR_UNSUPPORTEDMASK:		    return "DDERR_UNSUPPORTEDMASK";
+    case DDERR_UNSUPPORTEDMODE:		    return "DDERR_UNSUPPORTEDMODE";
+    case DDERR_VERTICALBLANKINPROGRESS:     return "DDERR_VERTICALBLANKINPROGRESS";
+    case DDERR_WASSTILLDRAWING:		    return "DDERR_WASSTILLDRAWING";
+    case DDERR_WRONGMODE:		    return "DDERR_WRONGMODE";
+    case DDERR_XALIGN:			    return "DDERR_XALIGN";
   }
   return "Not a DirectDraw Error";
 }
@@ -318,10 +318,8 @@ void gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device,
   }
   else
   {
-    *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
-      ddraw_device->lpDDSBack;
-    *lpDDSD = (ddraw_device->buffercount == 1) ? &(ddraw_device->ddsdPrimary) :
-      &(ddraw_device->ddsdBack);
+    *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary : ddraw_device->lpDDSBack;
+    *lpDDSD = (ddraw_device->buffercount == 1) ? &(ddraw_device->ddsdPrimary) : &(ddraw_device->ddsdBack);
   }
 }
 
@@ -331,8 +329,7 @@ void gfxDrvDDrawDrawTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device,
 
 void gfxDrvDDrawBlitTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE *lpDDS)
 {
-  *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary :
-    ddraw_device->lpDDSBack;
+  *lpDDS = (ddraw_device->buffercount == 1) ? ddraw_device->lpDDSPrimary : ddraw_device->lpDDSBack;
 }
 
 /*==========================================================================*/
@@ -341,10 +338,10 @@ void gfxDrvDDrawBlitTargetSurfaceSelect(gfx_drv_ddraw_device *ddraw_device, LPDI
 
 void gfxDrvDDrawClipperRelease(gfx_drv_ddraw_device *ddraw_device)
 {
-  if (ddraw_device->lpDDClipper != NULL)
+  if (ddraw_device->lpDDClipper != nullptr)
   {
     IDirectDrawClipper_Release(ddraw_device->lpDDClipper);
-    ddraw_device->lpDDClipper = NULL;
+    ddraw_device->lpDDClipper = nullptr;
   }
 }
 
@@ -355,7 +352,7 @@ void gfxDrvDDrawClipperRelease(gfx_drv_ddraw_device *ddraw_device)
 
 bool gfxDrvDDrawClipperInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
-  HRESULT err = IDirectDraw2_CreateClipper(ddraw_device->lpDD2, 0, &ddraw_device->lpDDClipper, NULL);
+  HRESULT err = IDirectDraw2_CreateClipper(ddraw_device->lpDD2, 0, &ddraw_device->lpDDClipper, nullptr);
 
   if (err != DD_OK)
   {
@@ -395,15 +392,13 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
   LPSTR lpDriverName,
   LPVOID lpContext)
 {
-  gfx_drv_ddraw_device *tmpdev;
-
   winDrvSetThreadName(-1, "gfxDrvDDrawDeviceEnumerate()");
 
-  tmpdev = (gfx_drv_ddraw_device *)malloc(sizeof(gfx_drv_ddraw_device));
+  gfx_drv_ddraw_device *tmpdev = (gfx_drv_ddraw_device *)malloc(sizeof(gfx_drv_ddraw_device));
   memset(tmpdev, 0, sizeof(gfx_drv_ddraw_device));
-  if (lpGUID == NULL)
+  if (lpGUID == nullptr)
   {
-    tmpdev->lpGUID = NULL;
+    tmpdev->lpGUID = nullptr;
     gfx_drv_ddraw_device_current = tmpdev;
   }
   else
@@ -426,12 +421,11 @@ BOOL WINAPI gfxDrvDDrawDeviceEnumerate(GUID FAR *lpGUID,
 
 void gfxDrvDDrawDeviceInformationDump()
 {
-  felist *l;
   STR s[120];
 
   sprintf(s, "gfxdrv: DirectDraw devices found: %u\n", listCount(gfx_drv_ddraw_devices));
   fellowAddLog(s);
-  for (l = gfx_drv_ddraw_devices; l != NULL; l = listNext(l))
+  for (felist *l = gfx_drv_ddraw_devices; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_device *tmpdev = (gfx_drv_ddraw_device *)listNode(l);
     sprintf(s, "gfxdrv: DirectDraw Driver Description: %s\n", tmpdev->lpDriverDescription);
@@ -449,14 +443,14 @@ void gfxDrvDDrawDeviceInformationDump()
 
 bool gfxDrvDDrawDeviceInformationInitialize()
 {
-  gfx_drv_ddraw_devices = NULL;
-  gfx_drv_ddraw_device_current = NULL;
-  HRESULT err = DirectDrawEnumerate(gfxDrvDDrawDeviceEnumerate, NULL);
+  gfx_drv_ddraw_devices = nullptr;
+  gfx_drv_ddraw_device_current = nullptr;
+  HRESULT err = DirectDrawEnumerate(gfxDrvDDrawDeviceEnumerate, nullptr);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawDeviceInformationInitialize(), DirectDrawEnumerate(): ", err);
   }
-  if (gfx_drv_ddraw_device_current == NULL)
+  if (gfx_drv_ddraw_device_current == nullptr)
   {
     gfx_drv_ddraw_device_current = (gfx_drv_ddraw_device *)listNode(gfx_drv_ddraw_devices);
   }
@@ -472,12 +466,10 @@ bool gfxDrvDDrawDeviceInformationInitialize()
 
 void gfxDrvDDrawDeviceInformationRelease()
 {
-  felist *l;
-
-  for (l = gfx_drv_ddraw_devices; l != NULL; l = listNext(l))
+  for (felist *l = gfx_drv_ddraw_devices; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_device *tmpdev = (gfx_drv_ddraw_device *)listNode(l);
-    if (tmpdev->lpGUID != NULL)
+    if (tmpdev->lpGUID != nullptr)
     {
       free(tmpdev->lpGUID);
     }
@@ -485,8 +477,8 @@ void gfxDrvDDrawDeviceInformationRelease()
     free(tmpdev->lpDriverName);
   }
   listFreeAll(gfx_drv_ddraw_devices, TRUE);
-  gfx_drv_ddraw_device_current = NULL;
-  gfx_drv_ddraw_devices = NULL;
+  gfx_drv_ddraw_device_current = nullptr;
+  gfx_drv_ddraw_devices = nullptr;
 }
 
 
@@ -497,8 +489,8 @@ void gfxDrvDDrawDeviceInformationRelease()
 
 bool gfxDrvDDraw1ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
-  ddraw_device->lpDD = NULL;
-  HRESULT err = DirectDrawCreate(ddraw_device->lpGUID, &(ddraw_device->lpDD), NULL);
+  ddraw_device->lpDD = nullptr;
+  HRESULT err = DirectDrawCreate(ddraw_device->lpGUID, &(ddraw_device->lpDD), nullptr);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDraw1ObjectInitialize(): ", err);
@@ -516,10 +508,8 @@ bool gfxDrvDDraw1ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
 
 bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
-  ddraw_device->lpDD2 = NULL;
-  HRESULT err = IDirectDraw_QueryInterface(ddraw_device->lpDD,
-    IID_IDirectDraw2,
-    (LPVOID *)&(ddraw_device->lpDD2));
+  ddraw_device->lpDD2 = nullptr;
+  HRESULT err = IDirectDraw_QueryInterface(ddraw_device->lpDD, IID_IDirectDraw2, (LPVOID *)&(ddraw_device->lpDD2));
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDraw2ObjectInitialize(): ", err);
@@ -528,10 +518,9 @@ bool gfxDrvDDraw2ObjectInitialize(gfx_drv_ddraw_device *ddraw_device)
   else
   {
     DDCAPS caps;
-    HRESULT res;
     memset(&caps, 0, sizeof(caps));
     caps.dwSize = sizeof(caps);
-    res = IDirectDraw_GetCaps(ddraw_device->lpDD2, &caps, NULL);
+    HRESULT res = IDirectDraw_GetCaps(ddraw_device->lpDD2, &caps, nullptr);
     if (res != DD_OK)
     {
       gfxDrvDDrawFailure("GetCaps()", res);
@@ -566,14 +555,14 @@ bool gfxDrvDDraw1ObjectRelease(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err = DD_OK;
 
-  if (ddraw_device->lpDD != NULL)
+  if (ddraw_device->lpDD != nullptr)
   {
     err = IDirectDraw_Release(ddraw_device->lpDD);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDraw1ObjectRelease(): ", err);
     }
-    ddraw_device->lpDD = NULL;
+    ddraw_device->lpDD = nullptr;
   }
   return (err == DD_OK);
 }
@@ -588,14 +577,14 @@ bool gfxDrvDDraw2ObjectRelease(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err = DD_OK;
 
-  if (ddraw_device->lpDD2 != NULL)
+  if (ddraw_device->lpDD2 != nullptr)
   {
     err = IDirectDraw2_Release(ddraw_device->lpDD2);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDraw2ObjectRelease(): ", err);
     }
-    ddraw_device->lpDD2 = NULL;
+    ddraw_device->lpDD2 = nullptr;
   }
   return (err == DD_OK);
 }
@@ -629,9 +618,7 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeFind(gfx_drv_ddraw_device *ddraw_device,
   ULO height,
   ULO depth)
 {
-  felist *l;
-
-  for (l = ddraw_device->modes; l != NULL; l = listNext(l))
+  for (felist *l = ddraw_device->modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_mode *tmpmode = (gfx_drv_ddraw_mode *)listNode(l);
     if (tmpmode->width == width &&
@@ -641,7 +628,7 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeFind(gfx_drv_ddraw_device *ddraw_device,
       return tmpmode;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 
@@ -652,11 +639,9 @@ gfx_drv_ddraw_mode *gfxDrvDDrawModeFind(gfx_drv_ddraw_device *ddraw_device,
 
 void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device)
 {
-  felist *l;
-  ULO id;
+  ULO id = 0;
 
-  id = 0;
-  for (l = ddraw_device->modes; l != NULL; l = listNext(l))
+  for (felist *l = ddraw_device->modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_mode *ddmode = (gfx_drv_ddraw_mode *)listNode(l);
     draw_mode *mode = (draw_mode *)malloc(sizeof(draw_mode));
@@ -703,9 +688,7 @@ void gfxDrvDDrawModeInformationRegister(gfx_drv_ddraw_device *ddraw_device)
 
 ULO gfxDrvRGBMaskPos(ULO mask)
 {
-  ULO i;
-
-  for (i = 0; i < 32; i++)
+  for (ULO i = 0; i < 32; i++)
   {
     if (mask & (1 << i))
     {
@@ -717,10 +700,9 @@ ULO gfxDrvRGBMaskPos(ULO mask)
 
 ULO gfxDrvRGBMaskSize(ULO mask)
 {
-  ULO i, sz;
+  ULO sz = 0;
 
-  sz = 0;
-  for (i = 0; i < 32; i++)
+  for (ULO i = 0; i < 32; i++)
   {
     if (mask & (1 << i))
     {
@@ -736,12 +718,11 @@ ULO gfxDrvRGBMaskSize(ULO mask)
 
 void gfxDrvDDrawModeInformationDump(gfx_drv_ddraw_device *ddraw_device)
 {
-  felist *l;
   STR s[120];
 
   sprintf(s, "gfxdrv: DirectDraw modes found: %u\n", listCount(ddraw_device->modes));
   fellowAddLog(s);
-  for (l = ddraw_device->modes; l != NULL; l = listNext(l))
+  for (felist *l = ddraw_device->modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_mode *tmpmode = (gfx_drv_ddraw_mode *)listNode(l);
     if (!tmpmode->windowed)
@@ -825,11 +806,8 @@ HRESULT WINAPI gfxDrvDDrawModeEnumerate(LPDDSURFACEDESC lpDDSurfaceDesc,
       return DDENUMRET_OK;
     }
 
-    gfx_drv_ddraw_mode *tmpmode;
-    gfx_drv_ddraw_device *ddraw_device;
-
-    ddraw_device = (gfx_drv_ddraw_device *)lpContext;
-    tmpmode = gfxDrvDDrawModeNew(lpDDSurfaceDesc->dwWidth,
+    gfx_drv_ddraw_device *ddraw_device = (gfx_drv_ddraw_device *)lpContext;
+    gfx_drv_ddraw_mode *tmpmode = gfxDrvDDrawModeNew(lpDDSurfaceDesc->dwWidth,
       lpDDSurfaceDesc->dwHeight,
       lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
       lpDDSurfaceDesc->dwRefreshRate,
@@ -855,10 +833,10 @@ bool gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
   bool result;
 
-  ddraw_device->modes = NULL;
+  ddraw_device->modes = nullptr;
   HRESULT err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
     DDEDM_REFRESHRATES,
-    NULL,
+    nullptr,
     (LPVOID)ddraw_device,
     gfxDrvDDrawModeEnumerate);
   if (err != DD_OK)
@@ -873,11 +851,7 @@ bool gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
     if (!result)
     {
       fellowAddLog("gfxdrv: no valid draw modes found, retry while ignoring refresh rates...\n");
-      err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2,
-        NULL,
-        NULL,
-        (LPVOID)ddraw_device,
-        gfxDrvDDrawModeEnumerate);
+      err = IDirectDraw2_EnumDisplayModes(ddraw_device->lpDD2, 0, nullptr, (LPVOID)ddraw_device, gfxDrvDDrawModeEnumerate);
 
       result = listCount(ddraw_device->modes) != 0;
     }
@@ -944,7 +918,7 @@ bool gfxDrvDDrawModeInformationInitialize(gfx_drv_ddraw_device *ddraw_device)
 void gfxDrvDDrawModeInformationRelease(gfx_drv_ddraw_device *ddraw_device)
 {
   listFreeAll(ddraw_device->modes, TRUE);
-  ddraw_device->modes = NULL;
+  ddraw_device->modes = nullptr;
 }
 
 
@@ -988,7 +962,7 @@ bool gfxDrvDDrawSetCooperativeLevel(gfx_drv_ddraw_device *ddraw_device)
 /* Clear surface with blitter                                               */
 /*==========================================================================*/
 
-void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE surface, RECT *dstrect = NULL)
+void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSURFACE surface, RECT *dstrect = nullptr)
 {
   DDBLTFX ddbltfx;
 
@@ -996,12 +970,7 @@ void gfxDrvDDrawSurfaceClear(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDRAWSUR
   ddbltfx.dwSize = sizeof(ddbltfx);
   ddbltfx.dwFillColor = 0;
 
-  HRESULT err = IDirectDrawSurface_Blt(surface,
-    dstrect,
-    NULL,
-    NULL,
-    DDBLT_COLORFILL | DDBLT_WAIT,
-    &ddbltfx);
+  HRESULT err = IDirectDrawSurface_Blt(surface, dstrect, nullptr, nullptr, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceClear(): ", err);
@@ -1018,6 +987,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
 {
   if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST)
   {
+    fellowAddLog("gfxDrvDDrawSurfaceRestore(): Called but surface was not lost.");
     return DD_OK;
   }
   HRESULT err = IDirectDrawSurface_Restore(surface);
@@ -1029,7 +999,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
       gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
       if (ddraw_device->buffercount == 3)
       {
-        err = IDirectDrawSurface_Flip(surface, NULL, DDFLIP_WAIT);
+        err = IDirectDrawSurface_Flip(surface, nullptr, DDFLIP_WAIT);
         if (err != DD_OK)
         {
           gfxDrvDDrawFailure("gfxDrvDDrawSurfaceRestore(), Flip(): ", err);
@@ -1043,6 +1013,27 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
     graphLineDescClear();
   }
   return err;
+}
+
+ULO gfxDrvDDrawGetOutputScaleFactor()
+{
+  ULO output_scale_factor = 2;
+  switch (drawGetDisplayScale())
+  {
+  case DISPLAYSCALE::DISPLAYSCALE_1X:
+    output_scale_factor = 2;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_2X:
+    output_scale_factor = 4;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_3X:
+    output_scale_factor = 6;
+    break;
+  case DISPLAYSCALE::DISPLAYSCALE_4X:
+    output_scale_factor = 8;
+    break;
+  }
+  return output_scale_factor;
 }
 
 /*==========================================================================*/
@@ -1103,10 +1094,14 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   /* Destination window */
   /* Center output */
 
-  dstwin.left = (ddraw_device->mode->width - drawGetBufferClipWidth()) / 2;
-  dstwin.top = (ddraw_device->mode->height - drawGetBufferClipHeight()) / 2;
-  dstwin.right = dstwin.left + drawGetBufferClipWidth();
-  dstwin.bottom = dstwin.top + drawGetBufferClipHeight();
+  float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
+  int upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+  int upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+
+  dstwin.left = (ddraw_device->mode->width - upscaled_clip_width) / 2;
+  dstwin.top = (ddraw_device->mode->height - upscaled_clip_height) / 2;
+  dstwin.right = dstwin.left + upscaled_clip_width;
+  dstwin.bottom = dstwin.top + upscaled_clip_height;
 
   if (ddraw_device->mode->windowed)
   {
@@ -1160,28 +1155,28 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err;
 
-  if (ddraw_device->lpDDSPrimary != NULL)
+  if (ddraw_device->lpDDSPrimary != nullptr)
   {
     err = IDirectDrawSurface_Release(ddraw_device->lpDDSPrimary);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesRelease(): ", err);
     }
-    ddraw_device->lpDDSPrimary = NULL;
+    ddraw_device->lpDDSPrimary = nullptr;
     if (ddraw_device->mode->windowed)
     {
       gfxDrvDDrawClipperRelease(ddraw_device);
     }
   }
   ddraw_device->buffercount = 0;
-  if (ddraw_device->lpDDSSecondary != NULL)
+  if (ddraw_device->lpDDSSecondary != nullptr)
   {
     err = IDirectDrawSurface_Release(ddraw_device->lpDDSSecondary);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesRelease(): ", err);
     }
-    ddraw_device->lpDDSSecondary = NULL;
+    ddraw_device->lpDDSSecondary = nullptr;
   }
 }
 
@@ -1197,9 +1192,9 @@ char *gfxDrvDDrawVideomemLocationStr(ULO pass)
 {
   switch (pass)
   {
-  case 0: return "local videomemory (on card)";
-  case 1: return "non-local videomemory (AGP shared mem)";
-  case 2: return "system memory";
+    case 0: return "local videomemory (on card)";
+    case 1: return "non-local videomemory (AGP shared mem)";
+    case 2: return "system memory";
   }
   return "unknown memory";
 }
@@ -1208,22 +1203,20 @@ ULO gfxDrvDDrawVideomemLocationFlags(ULO pass)
 {
   switch (pass)
   {
-  case 0: return DDSCAPS_VIDEOMEMORY; /* Local videomemory (default oncard) */
-  case 1: return DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY; /* Shared videomemory */
-  case 2: return DDSCAPS_SYSTEMMEMORY; /* Plain memory */
+    case 0: return DDSCAPS_VIDEOMEMORY; /* Local videomemory (default oncard) */
+    case 1: return DDSCAPS_NONLOCALVIDMEM | DDSCAPS_VIDEOMEMORY; /* Shared videomemory */
+    case 2: return DDSCAPS_SYSTEMMEMORY; /* Plain memory */
   }
   return 0;
 }
 
 bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device)
 {
-  ULO pass;
-  bool buffer_allocated;
   bool result = true;
   HRESULT err;
 
-  pass = 0;
-  buffer_allocated = false;
+  ULO pass = 0;
+  bool buffer_allocated = false;
   while ((pass < 3) && !buffer_allocated)
   {
     ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
@@ -1245,10 +1238,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
       ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RetroPlatformGetDisplayScale() * 2;
     }
 #endif
-    err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
-      &(ddraw_device->ddsdSecondary),
-      &(ddraw_device->lpDDSSecondary),
-      NULL);
+    err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2, &(ddraw_device->ddsdSecondary), &(ddraw_device->lpDDSSecondary), nullptr);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() 0x%x\n", err);
@@ -1279,7 +1269,6 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
 ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
 {
   HRESULT err;
-  ULO buffer_count_want;
   DDSCAPS ddscaps;
   bool success = true;
 
@@ -1293,12 +1282,12 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
   }
 
   /* Want x backbuffers first, then reduce it until it succeeds */
-  buffer_count_want = (ddraw_device->use_blitter) ? 1 : ddraw_device->maxbuffercount;
+  ULO buffer_count_want = (ddraw_device->use_blitter) ? 1 : ddraw_device->maxbuffercount;
   success = false;
   while (buffer_count_want > 0 && !success)
   {
     success = true;
-    if (ddraw_device->lpDDSPrimary != NULL)
+    if (ddraw_device->lpDDSPrimary != nullptr)
     {
       gfxDrvDDrawSurfacesRelease(ddraw_device);
     }
@@ -1308,15 +1297,11 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
     if (buffer_count_want > 1)
     {
       ddraw_device->ddsdPrimary.dwFlags |= DDSD_BACKBUFFERCOUNT;
-      ddraw_device->ddsdPrimary.ddsCaps.dwCaps |= DDSCAPS_FLIP |
-        DDSCAPS_COMPLEX;
+      ddraw_device->ddsdPrimary.ddsCaps.dwCaps |= DDSCAPS_FLIP | DDSCAPS_COMPLEX;
       ddraw_device->ddsdPrimary.dwBackBufferCount = buffer_count_want - 1;
       ddraw_device->ddsdBack.dwSize = sizeof(ddraw_device->ddsdBack);
     }
-    err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2,
-      &(ddraw_device->ddsdPrimary),
-      &(ddraw_device->lpDDSPrimary),
-      NULL);
+    err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2, &(ddraw_device->ddsdPrimary), &(ddraw_device->lpDDSPrimary), nullptr);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): ", err);
@@ -1329,9 +1314,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
       if (buffer_count_want > 1)
       {
         ddscaps.dwCaps = DDSCAPS_BACKBUFFER;
-        err = IDirectDrawSurface_GetAttachedSurface(ddraw_device->lpDDSPrimary,
-          &ddscaps,
-          &(ddraw_device->lpDDSBack));
+        err = IDirectDrawSurface_GetAttachedSurface(ddraw_device->lpDDSPrimary, &ddscaps, &(ddraw_device->lpDDSBack));
         if (err != DD_OK)
         {
           gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(): (GetAttachedSurface()) ", err);
@@ -1343,9 +1326,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
           gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSBack);
           if (buffer_count_want > 2)
           {
-            err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary,
-              NULL,
-              DDFLIP_WAIT);
+            err = IDirectDrawSurface_Flip(ddraw_device->lpDDSPrimary, nullptr, DDFLIP_WAIT);
             if (err != DD_OK)
             {
               gfxDrvDDrawFailure("gfxDrvDDrawSurfacesInitialize(), Flip(): ", err);
@@ -1360,7 +1341,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
       }
       else
       { /* No backbuffer */
-          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, ddraw_device->mode->windowed ? &ddraw_device->hwnd_clientrect_screen : NULL);
+          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, ddraw_device->mode->windowed ? &ddraw_device->hwnd_clientrect_screen : nullptr);
       }
     }
     if (!success)
@@ -1434,7 +1415,8 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch)
   LPDDSURFACEDESC lpDDSD;
 
   gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
-  HRESULT err = IDirectDrawSurface_Lock(lpDDS, NULL, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
+  HRESULT err = IDirectDrawSurface_Lock(lpDDS, nullptr, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, nullptr);
+
   /* We sometimes have a pointer to a backbuffer, but only primary surfaces can
   be restored, it implicitly recreates backbuffers as well */
   if (err != DD_OK)
@@ -1444,32 +1426,31 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch)
     {
       /* Here we have lost the surface, restore it */
       /* Unlike when blitting, we only use 1 surface here */
-      err = gfxDrvDDrawSurfaceRestore(ddraw_device,
-        (ddraw_device->mode->windowed) ? lpDDS : ddraw_device->lpDDSPrimary);
+      err = gfxDrvDDrawSurfaceRestore(ddraw_device, (ddraw_device->mode->windowed || ddraw_device->use_blitter) ? lpDDS : ddraw_device->lpDDSPrimary);
       if (err != DD_OK)
       {
         /* Here we are in deep trouble, we can not provide a buffer pointer */
         gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Failed to restore surface 1) ", err);
-        return NULL;
+        return nullptr;
       }
       else
       {
         /* Try again to lock the surface */
-        err = IDirectDrawSurface_Lock(lpDDS, NULL, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, NULL);
+        gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
+        err = IDirectDrawSurface_Lock(lpDDS, nullptr, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, nullptr);
         if (err != DD_OK)
         {
           /* Here we are in deep trouble, we can not provide a buffer pointer */
           gfxDrvDDrawFailure("gfxDrvDDrawSurfaceLock(): (Lock failed after restore) ", err);
-          return NULL;
+          return nullptr;
         }
       }
     }
     else
     {
       /* Here we are in deep trouble, we can not provide a buffer pointer */
-      /* The error is something else than lost surface */
-      fellowAddLog("gfxdrv: gfxDrvDDrawSurfaceLock(): (Mega problem 3)\n");
-      return NULL;
+      fellowAddLog("gfxDrvDDrawSurfaceLock(): (Unkown reason for failure to lock surface)\n");
+      return nullptr;
     }
   }
   *pitch = lpDDSD->lPitch;
@@ -1507,7 +1488,7 @@ void gfxDrvDDrawFlip()
   }
   if (gfx_drv_ddraw_device_current->buffercount > 1)    /* Flip buffer if there are several */
   {
-    HRESULT err = IDirectDrawSurface_Flip(gfx_drv_ddraw_device_current->lpDDSPrimary, NULL, DDFLIP_WAIT);
+    HRESULT err = IDirectDrawSurface_Flip(gfx_drv_ddraw_device_current->lpDDSPrimary, nullptr, DDFLIP_WAIT);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawFlip(): ", err);
@@ -1531,8 +1512,6 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
   if (gfxDrvDDrawSetCooperativeLevel(ddraw_device))
   {
     ddraw_device->use_blitter = true;
-      //ddraw_device->mode->windowed
-      //|| ddraw_device->no_dd_hardware;
 
     if (!ddraw_device->mode->windowed)
     {
@@ -1564,25 +1543,9 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 
 void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
 {
-  ULO actual_scale_factor = 2;
-  switch (drawGetDisplayScale())
-  {
-  case DISPLAYSCALE::DISPLAYSCALE_1X:
-    actual_scale_factor = 2;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_2X:
-    actual_scale_factor = 4;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_3X:
-    actual_scale_factor = 6;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_4X:
-    actual_scale_factor = 8;
-    break;
-  }
-
-  std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, actual_scale_factor);
-  std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, actual_scale_factor);
+  ULO output_scale_factor = gfxDrvDDrawGetOutputScaleFactor();
+  std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, output_scale_factor);
+  std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, output_scale_factor);
 
   ULO internal_scale_factor = drawGetDisplayScaleFactor();
 
@@ -1656,7 +1619,7 @@ UBY *gfxDrvDDrawValidateBufferPointer()
 {
   ULO pitch;
   UBY *buffer = gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device_current, &pitch);
-  if (buffer != NULL)
+  if (buffer != nullptr)
   {
     draw_buffer_info.pitch = pitch;
 
