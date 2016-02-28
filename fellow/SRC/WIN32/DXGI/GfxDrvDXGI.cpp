@@ -452,6 +452,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
     return 0;
   }
 
+  draw_buffer_info.pitch = mappedRect.RowPitch;
   return (unsigned char*)mappedRect.pData;
 }
 
