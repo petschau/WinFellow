@@ -1384,7 +1384,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
       }
       else
       { /* No backbuffer */
-        gfx_drv_ddraw_clear_borders = ddraw_device->mode->windowed;
+        gfx_drv_ddraw_clear_borders = true;
       }
     }
     if (!success)
@@ -1450,45 +1450,54 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
 
 void gfxDrvDDrawClearWindowBorders(gfx_drv_ddraw_device *ddraw_device)
 {
-  if (!ddraw_device->mode->windowed)
-  {
-    return;
-  }
-
   RECT dstwin;
   gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstwin);
 
-  RECT clearrect;
-  if (ddraw_device->hwnd_clientrect_screen.top < dstwin.top)
+  RECT screenrect;
+
+  if (ddraw_device->mode->windowed)
   {
-    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
-    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
-    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
+    screenrect = ddraw_device->hwnd_clientrect_screen;
+  }
+  else
+  {
+    screenrect.left = 0;
+    screenrect.top = 0;
+    screenrect.right = ddraw_device->mode->width;
+    screenrect.bottom = ddraw_device->mode->height;
+  }
+
+  RECT clearrect;
+  if (screenrect.top < dstwin.top)
+  {
+    clearrect.left = screenrect.left;
+    clearrect.top = screenrect.top;
+    clearrect.right = screenrect.right;
     clearrect.bottom = dstwin.top;
     gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
   }
-  if (ddraw_device->hwnd_clientrect_screen.bottom > dstwin.bottom)
+  if (screenrect.bottom > dstwin.bottom)
   {
-    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
+    clearrect.left = screenrect.left;
     clearrect.top = dstwin.bottom;
-    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
-    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    clearrect.right = screenrect.right;
+    clearrect.bottom = screenrect.bottom;
     gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
   }
-  if (ddraw_device->hwnd_clientrect_screen.left < dstwin.left)
+  if (screenrect.left < dstwin.left)
   {
-    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
-    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
+    clearrect.left = screenrect.left;
+    clearrect.top = screenrect.top;
     clearrect.right = dstwin.left;
-    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    clearrect.bottom = screenrect.bottom;
     gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
   }
-  if (ddraw_device->hwnd_clientrect_screen.right > dstwin.right)
+  if (screenrect.right > dstwin.right)
   {
     clearrect.left = dstwin.right;
-    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
-    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
-    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    clearrect.top = screenrect.top;
+    clearrect.right = screenrect.right;
+    clearrect.bottom = screenrect.bottom;
     gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
   }
 }
@@ -1749,7 +1758,7 @@ void gfxDrvDDrawInvalidateBufferPointer()
 void gfxDrvDDrawSizeChanged()
 {
   gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
-  gfx_drv_ddraw_clear_borders = gfx_drv_ddraw_device_current->mode->windowed;
+  gfx_drv_ddraw_clear_borders = true;
 }
 
 /*==========================================================================*/
