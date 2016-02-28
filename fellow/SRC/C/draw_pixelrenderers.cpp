@@ -3704,9 +3704,10 @@ ULO drawGetColorDepthIndex(draw_mode *dm)
 
 ULO drawGetScaleIndex(void)
 {
+  ULO scale_factor = drawGetDisplayScaleFactor();
   if (drawGetUseInterlacedRendering())
   {
-    if (drawGetDisplayScale() == DISPLAYSCALE_1X)
+    if (scale_factor == 2)
     {
       return 0; // 2x1
     }
@@ -3717,19 +3718,19 @@ ULO drawGetScaleIndex(void)
   }
 
   // <Not interlaced>
-  if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  if (scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 0; // 2x1
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else if (scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
     return 1; // 2x2
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  else if (scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 2; // 4x2
   }
-  else // if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else // if (scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
     return 3; // 4x4
   }

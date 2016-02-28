@@ -622,8 +622,18 @@ DISPLAYSCALE drawGetDisplayScale(void)
   return draw_displayscale;
 }
 
+ULO drawGetAutomaticDisplayScaleFactor()
+{
+  return (draw_mode_current->width < 1280) ? 2 : 4;
+}
+
 ULO drawGetDisplayScaleFactor()
 {
+  if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+  {
+    return drawGetAutomaticDisplayScaleFactor();
+  }
+
   return (draw_displayscale == DISPLAYSCALE_1X) ? 2 : 4;
 }
 
@@ -1188,15 +1198,16 @@ void drawUpdateDrawmode(void)
 
 ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
 {
-  if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  ULO scale_factor = drawGetDisplayScaleFactor();
+  if (scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 0; // 2x1 (ie. nothing to offset to)
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else if (scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
     return pitch_in_bytes / 2; // 2x2
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  else if (scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return pitch_in_bytes / 4; // 4x2 (scanline - write two solid lines followed by two blank ones... Awful?)
   }

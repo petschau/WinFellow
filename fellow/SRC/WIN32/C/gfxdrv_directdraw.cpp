@@ -1020,20 +1020,46 @@ ULO gfxDrvDDrawGetOutputScaleFactor()
   ULO output_scale_factor = 2;
   switch (drawGetDisplayScale())
   {
-  case DISPLAYSCALE::DISPLAYSCALE_1X:
-    output_scale_factor = 2;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_2X:
-    output_scale_factor = 4;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_3X:
-    output_scale_factor = 6;
-    break;
-  case DISPLAYSCALE::DISPLAYSCALE_4X:
-    output_scale_factor = 8;
-    break;
+    case DISPLAYSCALE::DISPLAYSCALE_1X:
+      output_scale_factor = 2;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_2X:
+      output_scale_factor = 4;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_3X:
+      output_scale_factor = 6;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_4X:
+      output_scale_factor = 8;
+      break;
   }
   return output_scale_factor;
+}
+
+void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device, float& dstWidth, float& dstHeight)
+{
+  float srcClipWidth = drawGetBufferClipWidthAsFloat();
+  float srcClipHeight = drawGetBufferClipHeightAsFloat();
+
+  // Automatic best fit in the destination
+  dstWidth = static_cast<float>(ddraw_device->mode->width);
+  dstHeight = static_cast<float>(ddraw_device->mode->height);
+
+  float srcAspectRatio = srcClipWidth / srcClipHeight;
+  float dstAspectRatio = dstWidth / dstHeight;
+
+  if (dstAspectRatio > srcAspectRatio)
+  {
+    // Stretch to full height, black vertical borders
+    dstWidth = srcClipWidth * dstHeight / srcClipHeight;
+    dstHeight = dstHeight;
+  }
+  else
+  {
+    // Stretch to full width, black horisontal borders
+    dstWidth = dstWidth;
+    dstHeight = srcClipHeight * dstWidth / srcClipWidth;
+  }
 }
 
 /*==========================================================================*/
@@ -1093,10 +1119,27 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 
   /* Destination window */
   /* Center output */
+  int upscaled_clip_width = 0;
+  int upscaled_clip_height = 0;
 
-  float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
-  int upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-  int upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+  if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
+  {
+    // Fixed scaling
+    float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
+    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+  }
+  else
+  {
+    // Scale source clip to fit in the window
+    float dstWidth = 0.0;
+    float dstHeight = 0.0;
+
+    gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstWidth, dstHeight);
+    
+    upscaled_clip_width = static_cast<int>(dstWidth);
+    upscaled_clip_height = static_cast<int>(dstHeight);
+  }
 
   dstwin.left = (ddraw_device->mode->width - upscaled_clip_width) / 2;
   dstwin.top = (ddraw_device->mode->height - upscaled_clip_height) / 2;
