@@ -229,6 +229,14 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
     }
   }
 
+  unsigned int original_current_amiga_texture_index = _currentAmigaScreenTexture;
+  for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
+  {
+    _currentAmigaScreenTexture = i;
+    ClearCurrentBuffer();
+  }
+  _currentAmigaScreenTexture = original_current_amiga_texture_index;
+
   D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
   texture2DDesc.Width = width;
   texture2DDesc.Height = height;
@@ -1067,10 +1075,10 @@ void GfxDrvDXGI::ClearCurrentBuffer()
 
   if (buffer != nullptr)
   {
-    for (unsigned int y = 0; y < _current_draw_mode->height; y++)
+    for (unsigned int y = 0; y < draw_buffer_info.height; y++)
     {
       ULO *line_ptr = (ULO *)buffer;
-      for (unsigned int x = 0; x < _current_draw_mode->width; x++)
+      for (unsigned int x = 0; x < draw_buffer_info.width; x++)
       {
         *line_ptr++ = 0;
       }
