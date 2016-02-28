@@ -48,6 +48,8 @@ private:
 
   unsigned int _amigaScreenTextureCount;
   unsigned int _currentAmigaScreenTexture;
+  unsigned int _output_width;
+  unsigned int _output_height;
   draw_mode *_current_draw_mode;
 
   bool _resize_swapchain_buffers;
@@ -74,6 +76,8 @@ private:
   void DeleteSwapChain();
   bool InitiateSwitchToFullScreen();
   void ResizeSwapChainBuffers();
+  void SetViewport();
+
   DXGI_MODE_DESC* GetDXGIMode(unsigned int id);
 
   bool CreateAmigaScreenTexture();
@@ -100,14 +104,15 @@ private:
 
   bool SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix);
 
-  void CalculateDestinationRectangle(float& dstHalfWidth, float& dstHalfHeight);
+  void CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight);
   void CalculateSourceRectangle(float& srcLeft, float& srcTop, float& srcRight, float& srcBottom);
 
 public:
 
   void ClearCurrentBuffer();
   void SetMode(draw_mode *dm);
-  void SizeChanged();
+  void SizeChanged(unsigned int width, unsigned int height);
+  void PositionChanged();
   void NotifyActiveStatus(bool active);
 
   bool EmulationStart(unsigned int maxbuffercount);

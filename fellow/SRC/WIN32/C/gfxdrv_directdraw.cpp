@@ -1755,10 +1755,22 @@ void gfxDrvDDrawInvalidateBufferPointer()
   gfxDrvDDrawSurfaceUnlock(gfx_drv_ddraw_device_current);
 }
 
-void gfxDrvDDrawSizeChanged()
+void gfxDrvDDrawSizeChanged(unsigned int width, unsigned int height)
 {
-  gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
-  gfx_drv_ddraw_clear_borders = true;
+  if (gfx_drv_ddraw_device_current->mode->windowed)
+  {
+    gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
+    gfx_drv_ddraw_clear_borders = true;
+  }
+}
+
+void gfxDrvDDrawPositionChanged()
+{
+  if (gfx_drv_ddraw_device_current->mode->windowed)
+  {
+    gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
+    gfx_drv_ddraw_clear_borders = true;
+  }
 }
 
 /*==========================================================================*/

@@ -12,7 +12,8 @@ extern void gfxDrvClearCurrentBuffer();
 extern void gfxDrvBufferFlip();
 
 extern void gfxDrvSetMode(draw_mode *dm);
-extern void gfxDrvSizeChanged();
+extern void gfxDrvSizeChanged(unsigned int width, unsigned int height);
+extern void gfxDrvPositionChanged();
 
 extern UBY *gfxDrvValidateBufferPointer();
 extern void gfxDrvInvalidateBufferPointer();

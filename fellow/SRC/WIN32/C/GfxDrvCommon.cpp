@@ -180,11 +180,10 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     }
     break;
   case WM_MOVE:
+    gfxDrvPositionChanged();
+    break;
   case WM_SIZE:
-    if (_current_draw_mode->windowed)
-    {
-      gfxDrvSizeChanged();
-    }
+    gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam));
     break;
   case WM_ACTIVATE:
     /* WM_ACTIVATE tells us whether our window is active or not */
@@ -364,7 +363,7 @@ void GfxDrvCommon::DisplayWindow()
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
 
-    gfxDrvSizeChanged();
+    gfxDrvSizeChanged(_current_draw_mode->width, _current_draw_mode->height);
   }
 }
 
@@ -400,7 +399,11 @@ bool GfxDrvCommon::InitializeWindow()
 
   if (_current_draw_mode->windowed)
   {
-    DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX; // | WS_SIZEBOX;
+    DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+    if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+    {
+      dwStyle |= WS_SIZEBOX | WS_MAXIMIZEBOX;
+    }
     DWORD dwExStyle = 0;
     HWND hParent = NULL;
     ULO width = _current_draw_mode->width;

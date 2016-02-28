@@ -67,15 +67,27 @@ void gfxDrvNotifyActiveStatus(bool active)
   }
 }
 
-void gfxDrvSizeChanged()
+void gfxDrvSizeChanged(unsigned int width, unsigned int height)
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->SizeChanged();
+    gfxDrvDXGI->SizeChanged(width, height);
   }
   else
   {
-    gfxDrvDDrawSizeChanged();
+    gfxDrvDDrawSizeChanged(width, height);
+  }
+}
+
+void gfxDrvPositionChanged()
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->PositionChanged();
+  }
+  else
+  {
+    gfxDrvDDrawPositionChanged();
   }
 }
 

@@ -343,15 +343,7 @@ bool GfxDrvDXGI::CreateSwapChain()
     return false;
   }
 
-  D3D11_VIEWPORT viewPort;
-  viewPort.TopLeftX = 0;
-  viewPort.TopLeftY = 0;
-  viewPort.Width = (FLOAT) width;
-  viewPort.Height = (FLOAT) height;
-  viewPort.MinDepth = 0.0f;
-  viewPort.MaxDepth = 1.0f;
- 
-  _immediateContext->RSSetViewports(1, &viewPort);
+  SetViewport();
 
   return true;
 }
@@ -364,6 +356,19 @@ void GfxDrvDXGI::DeleteSwapChain()
   }
 
   ReleaseCOM(&_swapChain);
+}
+
+void GfxDrvDXGI::SetViewport()
+{
+  D3D11_VIEWPORT viewPort;
+  viewPort.TopLeftX = 0;
+  viewPort.TopLeftY = 0;
+  viewPort.Width = static_cast<FLOAT>(_output_width);
+  viewPort.Height = static_cast<FLOAT>(_output_height);
+  viewPort.MinDepth = 0.0f;
+  viewPort.MaxDepth = 1.0f;
+
+  _immediateContext->RSSetViewports(1, &viewPort);
 }
 
 bool GfxDrvDXGI::InitiateSwitchToFullScreen()
@@ -420,12 +425,20 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
   }
 }
 
-void GfxDrvDXGI::SizeChanged()
+void GfxDrvDXGI::SizeChanged(unsigned int width, unsigned int height)
 {
   fellowAddLog("GfxDrvDXGI: SizeChanged()\n");
 
+  _output_width = width;
+  _output_height = height;
+
   // Don't execute the resize here, do it in the thread that renders
   _resize_swapchain_buffers = true;
+}
+
+void GfxDrvDXGI::PositionChanged()
+{
+//  fellowAddLog("GfxDrvDXGI: PositionChanged()\n");
 }
 
 void GfxDrvDXGI::ResizeSwapChainBuffers()
@@ -438,6 +451,13 @@ void GfxDrvDXGI::ResizeSwapChainBuffers()
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to resize buffers of swap chain in response to WM_SIZE:", result);
+  }
+
+  // Output size could have been changed
+  SetViewport();
+  if (!CreateVertexAndIndexBuffers())
+  {
+    fellowAddLog("GfxDrvDXGI::ResizeSwapChainBuffers() - Failed to re-create vertex and index buffers\n");
   }
 }
 
@@ -592,7 +612,7 @@ struct VertexType
   XMFLOAT2 texture;
 };
 
-void GfxDrvDXGI::CalculateDestinationRectangle(float& dstHalfWidth, float& dstHalfHeight)
+void GfxDrvDXGI::CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight)
 {
   float srcClipWidth = drawGetBufferClipWidthAsFloat();
   float srcClipHeight = drawGetBufferClipHeightAsFloat();
@@ -618,8 +638,8 @@ void GfxDrvDXGI::CalculateDestinationRectangle(float& dstHalfWidth, float& dstHa
   else
   {
     // Automatic best fit in the destination
-    float dstWidth = static_cast<float>(_current_draw_mode->width);
-    float dstHeight = static_cast<float>(_current_draw_mode->height);
+    float dstWidth = static_cast<float>(output_width);
+    float dstHeight = static_cast<float>(output_height);
 
     float srcAspectRatio = srcClipWidth / srcClipHeight;
     float dstAspectRatio = dstWidth / dstHeight;
@@ -653,6 +673,7 @@ void GfxDrvDXGI::CalculateSourceRectangle(float& srcLeft, float& srcTop, float& 
 
 bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
 {
+  DeleteVertexAndIndexBuffers();
   VertexType vertices[6];
   unsigned long indices[6];
   D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
@@ -667,7 +688,7 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   float dstHalfWidth, dstHalfHeight;
   float srcLeft, srcTop, srcRight, srcBottom;
 
-  CalculateDestinationRectangle(dstHalfWidth, dstHalfHeight);
+  CalculateDestinationRectangle(_output_width, _output_height, dstHalfWidth, dstHalfHeight);
   CalculateSourceRectangle(srcLeft, srcTop, srcRight, srcBottom);
 
   // First triangle.
@@ -842,8 +863,10 @@ bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX
 
 bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
 {
-  float width = static_cast<float>(_current_draw_mode->width);
-  float height = static_cast<float>(_current_draw_mode->height);
+  //float width = static_cast<float>(_current_draw_mode->width);
+  //float height = static_cast<float>(_current_draw_mode->height);
+  float width = static_cast<float>(_output_width);
+  float height = static_cast<float>(_output_height);
 
   XMMATRIX orthogonalMatrix = XMMatrixOrthographicLH(width, height, 1000.0f, 0.1f);
   XMMATRIX identityMatrix = XMMatrixIdentity();
@@ -1185,7 +1208,9 @@ GfxDrvDXGI::GfxDrvDXGI()
     _shaderInputTexture(nullptr),
     _amigaScreenTextureCount(AmigaScreenTextureCount),
     _currentAmigaScreenTexture(0),
-    _resize_swapchain_buffers(false)
+    _resize_swapchain_buffers(false),
+    _output_width(0),
+    _output_height(0)
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
