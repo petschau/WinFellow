@@ -987,7 +987,7 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
 {
   if (IDirectDrawSurface_IsLost(surface) != DDERR_SURFACELOST)
   {
-    fellowAddLog("gfxDrvDDrawSurfaceRestore(): Called but surface was not lost.");
+    fellowAddLog("gfxDrvDDrawSurfaceRestore(): Called but surface was not lost.\n");
     return DD_OK;
   }
   HRESULT err = IDirectDrawSurface_Restore(surface);
@@ -1116,7 +1116,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
   if (err != DD_OK)
   {
-    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): 0x%x.\n", err);
+    gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blt failed) ", err);
     if (err == DDERR_SURFACELOST)
     {
       /* Reclaim surface, if that also fails, pass over the blit and hope it */
