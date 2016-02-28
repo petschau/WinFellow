@@ -151,6 +151,7 @@ felist               *gfx_drv_ddraw_devices;
 
 
 bool gfx_drv_ddraw_initialized;
+bool gfx_drv_ddraw_clear_borders;
 
 /*==========================================================================*/
 /* Returns textual error message. Adapted from DX SDK                       */
@@ -1036,29 +1037,63 @@ ULO gfxDrvDDrawGetOutputScaleFactor()
   return output_scale_factor;
 }
 
-void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device, float& dstWidth, float& dstHeight)
+void gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_ddraw_device *ddraw_device, RECT& dstwin)
 {
-  float srcClipWidth = drawGetBufferClipWidthAsFloat();
-  float srcClipHeight = drawGetBufferClipHeightAsFloat();
+  int upscaled_clip_width = 0;
+  int upscaled_clip_height = 0;
 
-  // Automatic best fit in the destination
-  dstWidth = static_cast<float>(ddraw_device->mode->width);
-  dstHeight = static_cast<float>(ddraw_device->mode->height);
-
-  float srcAspectRatio = srcClipWidth / srcClipHeight;
-  float dstAspectRatio = dstWidth / dstHeight;
-
-  if (dstAspectRatio > srcAspectRatio)
+  if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
   {
-    // Stretch to full height, black vertical borders
-    dstWidth = srcClipWidth * dstHeight / srcClipHeight;
-    dstHeight = dstHeight;
+    // Fixed scaling
+    float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
+    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
   }
   else
   {
-    // Stretch to full width, black horisontal borders
-    dstWidth = dstWidth;
-    dstHeight = srcClipHeight * dstWidth / srcClipWidth;
+    // Scale source clip to fit in the window
+    float dstWidth = 0.0;
+    float dstHeight = 0.0;
+
+    float srcClipWidth = drawGetBufferClipWidthAsFloat();
+    float srcClipHeight = drawGetBufferClipHeightAsFloat();
+
+    // Automatic best fit in the destination
+    dstWidth = static_cast<float>(ddraw_device->mode->width);
+    dstHeight = static_cast<float>(ddraw_device->mode->height);
+
+    float srcAspectRatio = srcClipWidth / srcClipHeight;
+    float dstAspectRatio = dstWidth / dstHeight;
+
+    if (dstAspectRatio > srcAspectRatio)
+    {
+      // Stretch to full height, black vertical borders
+      dstWidth = srcClipWidth * dstHeight / srcClipHeight;
+      dstHeight = dstHeight;
+    }
+    else
+    {
+      // Stretch to full width, black horisontal borders
+      dstWidth = dstWidth;
+      dstHeight = srcClipHeight * dstWidth / srcClipWidth;
+    }
+
+    upscaled_clip_width = static_cast<int>(dstWidth);
+    upscaled_clip_height = static_cast<int>(dstHeight);
+  }
+
+  dstwin.left = (ddraw_device->mode->width - upscaled_clip_width) / 2;
+  dstwin.top = (ddraw_device->mode->height - upscaled_clip_height) / 2;
+  dstwin.right = dstwin.left + upscaled_clip_width;
+  dstwin.bottom = dstwin.top + upscaled_clip_height;
+
+  if (ddraw_device->mode->windowed)
+  {
+    // Add client rect offset in window mode
+    dstwin.left += ddraw_device->hwnd_clientrect_screen.left;
+    dstwin.top += ddraw_device->hwnd_clientrect_screen.top;
+    dstwin.right += ddraw_device->hwnd_clientrect_screen.left;
+    dstwin.bottom += ddraw_device->hwnd_clientrect_screen.top;
   }
 }
 
@@ -1118,42 +1153,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   gfxDrvDDrawBlitTargetSurfaceSelect(ddraw_device, &lpDDSDestination);
 
   /* Destination window */
-  /* Center output */
-  int upscaled_clip_width = 0;
-  int upscaled_clip_height = 0;
-
-  if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
-  {
-    // Fixed scaling
-    float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
-    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
-  }
-  else
-  {
-    // Scale source clip to fit in the window
-    float dstWidth = 0.0;
-    float dstHeight = 0.0;
-
-    gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstWidth, dstHeight);
-    
-    upscaled_clip_width = static_cast<int>(dstWidth);
-    upscaled_clip_height = static_cast<int>(dstHeight);
-  }
-
-  dstwin.left = (ddraw_device->mode->width - upscaled_clip_width) / 2;
-  dstwin.top = (ddraw_device->mode->height - upscaled_clip_height) / 2;
-  dstwin.right = dstwin.left + upscaled_clip_width;
-  dstwin.bottom = dstwin.top + upscaled_clip_height;
-
-  if (ddraw_device->mode->windowed)
-  {
-    // Add client rect offset in window mode
-    dstwin.left += ddraw_device->hwnd_clientrect_screen.left;
-    dstwin.top += ddraw_device->hwnd_clientrect_screen.top;
-    dstwin.right += ddraw_device->hwnd_clientrect_screen.left;
-    dstwin.bottom += ddraw_device->hwnd_clientrect_screen.top;
-  }
+  gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstwin);
 
   /* This can fail when a surface is lost */
   err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
@@ -1384,7 +1384,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
       }
       else
       { /* No backbuffer */
-          gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, ddraw_device->mode->windowed ? &ddraw_device->hwnd_clientrect_screen : nullptr);
+        gfx_drv_ddraw_clear_borders = ddraw_device->mode->windowed;
       }
     }
     if (!success)
@@ -1448,6 +1448,51 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
   return ddraw_device->buffercount;
 }
 
+void gfxDrvDDrawClearWindowBorders(gfx_drv_ddraw_device *ddraw_device)
+{
+  if (!ddraw_device->mode->windowed)
+  {
+    return;
+  }
+
+  RECT dstwin;
+  gfxDrvDDrawCalculateDestinationRectangle(ddraw_device, dstwin);
+
+  RECT clearrect;
+  if (ddraw_device->hwnd_clientrect_screen.top < dstwin.top)
+  {
+    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
+    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
+    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
+    clearrect.bottom = dstwin.top;
+    gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
+  }
+  if (ddraw_device->hwnd_clientrect_screen.bottom > dstwin.bottom)
+  {
+    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
+    clearrect.top = dstwin.bottom;
+    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
+    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
+  }
+  if (ddraw_device->hwnd_clientrect_screen.left < dstwin.left)
+  {
+    clearrect.left = ddraw_device->hwnd_clientrect_screen.left;
+    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
+    clearrect.right = dstwin.left;
+    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
+  }
+  if (ddraw_device->hwnd_clientrect_screen.right > dstwin.right)
+  {
+    clearrect.left = dstwin.right;
+    clearrect.top = ddraw_device->hwnd_clientrect_screen.top;
+    clearrect.right = ddraw_device->hwnd_clientrect_screen.right;
+    clearrect.bottom = ddraw_device->hwnd_clientrect_screen.bottom;
+    gfxDrvDDrawSurfaceClear(ddraw_device, ddraw_device->lpDDSPrimary, &clearrect);
+  }
+}
+
 /*==========================================================================*/
 /* Lock the current drawing surface                                         */
 /*==========================================================================*/
@@ -1456,6 +1501,12 @@ UBY *gfxDrvDDrawSurfaceLock(gfx_drv_ddraw_device *ddraw_device, ULO *pitch)
 {
   LPDIRECTDRAWSURFACE lpDDS;
   LPDDSURFACEDESC lpDDSD;
+
+  if (gfx_drv_ddraw_clear_borders)
+  {
+    gfx_drv_ddraw_clear_borders = false;
+    gfxDrvDDrawClearWindowBorders(ddraw_device);
+  }
 
   gfxDrvDDrawDrawTargetSurfaceSelect(ddraw_device, &lpDDS, &lpDDSD);
   HRESULT err = IDirectDrawSurface_Lock(lpDDS, nullptr, lpDDSD, DDLOCK_SURFACEMEMORYPTR | DDLOCK_WAIT, nullptr);
@@ -1594,7 +1645,6 @@ void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *b
 
   buffer_information->width = (horizontal_clip.second - horizontal_clip.first)*internal_scale_factor;
   buffer_information->height = (vertical_clip.second - vertical_clip.first)*internal_scale_factor;
-  buffer_information->pitch = buffer_information->width * 4; // Replaced later by actual value
 }
 
 /*==========================================================================*/
@@ -1699,6 +1749,7 @@ void gfxDrvDDrawInvalidateBufferPointer()
 void gfxDrvDDrawSizeChanged()
 {
   gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device_current);
+  gfx_drv_ddraw_clear_borders = gfx_drv_ddraw_device_current->mode->windowed;
 }
 
 /*==========================================================================*/
@@ -1791,6 +1842,7 @@ void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool bStartup, const ULO l
 bool gfxDrvDDrawStartup()
 {
   graph_buffer_lost = FALSE;
+  gfx_drv_ddraw_clear_borders = false;
   gfx_drv_ddraw_initialized = gfxDrvDDrawInitialize();
 
 #ifdef RETRO_PLATFORM
