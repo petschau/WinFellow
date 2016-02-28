@@ -121,14 +121,8 @@ extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 /* Units are cylinders (lores-pixels, non-interlaced height)                 */
 /*===========================================================================*/
 
-typedef enum 
-{
-  AUTOMATIC_CLIP = 0, // Calculate from screen/window
-  FIXED_CLIP = 1      // Set by configuration
-} DRAW_CLIP_MODE;
-
-extern void drawSetClipMode(DRAW_CLIP_MODE clip_mode);
-extern DRAW_CLIP_MODE drawGetClipMode();
+extern void drawSetClipMode(DISPLAYCLIP_MODE clip_mode);
+extern DISPLAYCLIP_MODE drawGetClipMode();
 
 extern ULO drawGetClipLeft();
 extern ULO drawGetClipTop();

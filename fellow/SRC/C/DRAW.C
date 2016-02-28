@@ -125,18 +125,18 @@ float drawGetBufferClipHeightAsFloat()
 /* Bounding box of the Amiga screen that is visible in the host buffer        */
 /*============================================================================*/
 
-DRAW_CLIP_MODE draw_clip_mode;
+DISPLAYCLIP_MODE draw_clip_mode;
 draw_rect draw_clip_max_pal;
 draw_rect draw_clip;
 draw_size draw_clip_size;
 ULO draw_clip_scroll;
 
-void drawSetClipMode(DRAW_CLIP_MODE clip_mode)
+void drawSetClipMode(DISPLAYCLIP_MODE clip_mode)
 {
   draw_clip_mode = clip_mode;
 }
 
-DRAW_CLIP_MODE drawGetClipMode()
+DISPLAYCLIP_MODE drawGetClipMode()
 {
   return draw_clip_mode;
 }
@@ -791,33 +791,41 @@ static void drawColorTranslationInitialize(void)
 
 std::pair<ULO, ULO> drawCalculateHorizontalClip(ULO buffer_width, ULO buffer_scale_factor)
 {
-  ULO width_amiga = buffer_width / buffer_scale_factor;
   ULO left, right;
-
-  if (width_amiga > draw_clip_max_pal.GetWidth())
+  if (drawGetClipMode() == DISPLAYCLIP_MODE::AUTOMATIC_CLIP)
   {
-    width_amiga = draw_clip_max_pal.GetWidth();
-  }
+    ULO width_amiga = buffer_width / buffer_scale_factor;
 
-  if (width_amiga <= 343)
-  {
+    if (width_amiga > draw_clip_max_pal.GetWidth())
+    {
+      width_amiga = draw_clip_max_pal.GetWidth();
+    }
+
+    if (width_amiga <= 343)
+    {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      left = 125;
-    else
+      if (RetroPlatformGetMode())
+        left = 125;
+      else
 #endif
-      left = 129;
-    right = left + width_amiga;
+        left = 129;
+      right = left + width_amiga;
+    }
+    else
+    {
+#ifdef RETRO_PLATFORM
+      if (RetroPlatformGetMode())
+        right = 468;
+      else
+#endif
+        right = draw_clip_max_pal.right;
+      left = right - width_amiga;
+    }
   }
   else
   {
-#ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      right = 468;
-    else
-#endif
-      right = draw_clip_max_pal.right;
-    left = right - width_amiga;
+    left = drawGetClipLeft();
+    right = drawGetClipRight();
   }
   return std::pair<ULO, ULO>(left, right);
 }
@@ -829,23 +837,31 @@ std::pair<ULO, ULO> drawCalculateHorizontalClip(ULO buffer_width, ULO buffer_sca
 
 std::pair<ULO, ULO> drawCalculateVerticalClip(ULO buffer_height, ULO buffer_scale_factor)
 {
-  ULO height_amiga = buffer_height / buffer_scale_factor;
   ULO top, bottom;
-
-  if (height_amiga > draw_clip_max_pal.GetHeight())
+  if (drawGetClipMode() == DISPLAYCLIP_MODE::AUTOMATIC_CLIP)
   {
-    height_amiga = draw_clip_max_pal.GetHeight();
-  }
+    ULO height_amiga = buffer_height / buffer_scale_factor;
 
-  if (height_amiga <= 270)
-  {
-    top = 44;
-    bottom = 44 + height_amiga;
+    if (height_amiga > draw_clip_max_pal.GetHeight())
+    {
+      height_amiga = draw_clip_max_pal.GetHeight();
+    }
+
+    if (height_amiga <= 270)
+    {
+      top = 44;
+      bottom = 44 + height_amiga;
+    }
+    else
+    {
+      bottom = draw_clip_max_pal.bottom;
+      top = draw_clip_max_pal.bottom - height_amiga;
+    }
   }
   else
   {
-    bottom = draw_clip_max_pal.bottom;
-    top = draw_clip_max_pal.bottom - height_amiga;
+    top = drawGetClipTop();
+    bottom = drawGetClipBottom();
   }
   return std::pair<ULO, ULO>(top, bottom);
 }

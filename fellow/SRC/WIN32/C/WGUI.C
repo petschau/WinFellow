@@ -3423,6 +3423,22 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     else return FALSE;
   }	
 
+  void wguiSetClipFromDisplayScale()
+  {
+    if (cfgGetDisplayScaleStrategy(wgui_cfg) == DISPLAYSCALE_AUTO)
+    {
+      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::FIXED_CLIP);
+      cfgSetClipLeft(wgui_cfg, 88);
+      cfgSetClipTop(wgui_cfg, 26);
+      cfgSetClipRight(wgui_cfg, 472);
+      cfgSetClipBottom(wgui_cfg, 314);
+    }
+    else
+    {
+      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
+    }
+  }
+
   BOOLE wguiEnter(void)
   {
     BOOLE quit_emulator = FALSE;
@@ -3462,6 +3478,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    if (wguiCheckEmulationNecessities() == TRUE)
 	    {
 	      end_loop = TRUE;
+
+              wguiSetClipFromDisplayScale();
+
 	      cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	      // check for manual or needed reset
 	      fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
@@ -3584,7 +3603,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  //  break;
 	  case WGUI_DEBUGGER_START:
 	    end_loop = TRUE;
-	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+            wguiSetClipFromDisplayScale();
+            cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	    fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	    debugger_start = TRUE;
 	  default:

@@ -399,6 +399,56 @@ ULO cfgGetFrameskipRatio(cfg *config)
   return config->m_frameskipratio;
 }
 
+void cfgSetClipMode(cfg *config, DISPLAYCLIP_MODE clipmode)
+{
+  config->m_clipmode = clipmode;
+}
+
+DISPLAYCLIP_MODE cfgGetClipMode(cfg *config)
+{
+  return config->m_clipmode;
+}
+
+void cfgSetClipLeft(cfg *config, ULO clipleft)
+{
+  config->m_clipleft = clipleft;
+}
+
+ULO cfgGetClipLeft(cfg *config)
+{
+  return config->m_clipleft;
+}
+
+void cfgSetClipTop(cfg *config, ULO cliptop)
+{
+  config->m_cliptop = cliptop;
+}
+
+ULO cfgGetClipTop(cfg *config)
+{
+  return config->m_cliptop;
+}
+
+void cfgSetClipRight(cfg *config, ULO clipright)
+{
+  config->m_clipright = clipright;
+}
+
+ULO cfgGetClipRight(cfg *config)
+{
+  return config->m_clipright;
+}
+
+void cfgSetClipBottom(cfg *config, ULO clipbottom)
+{
+  config->m_clipbottom = clipbottom;
+}
+
+ULO cfgGetClipBottom(cfg *config)
+{
+  return config->m_clipbottom;
+}
+
 void cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale)
 {
   config->m_displayscale = displayscale;
@@ -816,6 +866,11 @@ void cfgSetDefaults(cfg *config)
   cfgSetDisplayScale(config, DISPLAYSCALE_1X);
   cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
   cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE_LINEEXACT);
+  cfgSetClipMode(config, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
+  cfgSetClipLeft(config, 129); // Match for 640x400 at 1x
+  cfgSetClipTop(config, 44);
+  cfgSetClipRight(config, 449);
+  cfgSetClipRight(config, 244);
 
   /*==========================================================================*/
   /* Default sound configuration                                              */
@@ -1186,6 +1241,29 @@ static ULO cfgGetBufferLengthFromString(STR *value)
     return 80;
   }
   return buffer_length;
+}
+
+static DISPLAYCLIP_MODE cfgGetClipModeFromString(STR *value)
+{
+  if (stricmp(value, "auto") == 0)
+  {
+    return DISPLAYCLIP_MODE::AUTOMATIC_CLIP;
+  }
+  if (stricmp(value, "fixed") == 0)
+  {
+    return DISPLAYCLIP_MODE::FIXED_CLIP;
+  }
+  return DISPLAYCLIP_MODE::AUTOMATIC_CLIP; // Default
+}
+
+static STR* cfgGetClipModeToString(DISPLAYCLIP_MODE clipmode)
+{
+  switch (clipmode)
+  {
+    case DISPLAYCLIP_MODE::AUTOMATIC_CLIP:  return "auto";
+    case DISPLAYCLIP_MODE::FIXED_CLIP:      return "fixed";
+  }
+  return "fixed";
 }
 
 static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
@@ -1635,6 +1713,26 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetScreenDrawLEDs(config, cfgGetboolFromString(value));
     }
+    else if (stricmp(option, "gfx_clip_mode") == 0)
+    {
+      cfgSetClipMode(config, cfgGetClipModeFromString(value));
+    }
+    else if (stricmp(option, "gfx_clip_left") == 0)
+    {
+      cfgSetClipLeft(config, cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_clip_top") == 0)
+    {
+      cfgSetClipTop(config, cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_clip_right") == 0)
+    {
+      cfgSetClipRight(config, cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_clip_bottom") == 0)
+    {
+      cfgSetClipBottom(config, cfgGetULOFromString(value));
+    }
     else if (stricmp(option, "gfx_display_scale") == 0)
     {
       cfgSetDisplayScale(config, cfgGetDisplayScaleFromString(value));
@@ -1884,6 +1982,11 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   // fprintf(cfgfile, "gfx_emulation_mode=%s\n"), cfgGetGraphicsEmulationModeToString(cfgGetGraphicsEmulationMode(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
+  fprintf(cfgfile, "gfx_clip_mode=%s\n", cfgGetClipModeToString(cfgGetClipMode(config)));
+  fprintf(cfgfile, "gfx_clip_left=%u\n", cfgGetClipLeft(config));
+  fprintf(cfgfile, "gfx_clip_top=%u\n", cfgGetClipTop(config));
+  fprintf(cfgfile, "gfx_clip_right=%u\n", cfgGetClipRight(config));
+  fprintf(cfgfile, "gfx_clip_bottom=%u\n", cfgGetClipBottom(config));
   fprintf(cfgfile, "gfx_display_scale=%s\n", cfgGetDisplayScaleToString(cfgGetDisplayScale(config)));
   fprintf(cfgfile, "gfx_display_scale_strategy=%s\n", cfgGetDisplayScaleStrategyToString(cfgGetDisplayScaleStrategy(config)));
   fprintf(cfgfile, "gfx_framerate=%u\n", cfgGetFrameskipRatio(config));
@@ -2208,6 +2311,11 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
+  drawSetClipMode(cfgGetClipMode(config));
+  drawSetClipLeft(cfgGetClipLeft(config));
+  drawSetClipTop(cfgGetClipTop(config));
+  drawSetClipRight(cfgGetClipRight(config));
+  drawSetClipBottom(cfgGetClipBottom(config));
   drawSetDisplayScale(cfgGetDisplayScale(config));
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));

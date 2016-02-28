@@ -20,10 +20,10 @@ typedef struct {
   /* Window positions (Main Window, Emulation Window)                         */
   /*==========================================================================*/
 
-  ULO  m_mainwindowxposition;
-  ULO  m_mainwindowyposition;
-  ULO  m_emulationwindowxposition;
-  ULO  m_emulationwindowyposition;
+  int  m_mainwindowxposition;
+  int  m_mainwindowyposition;
+  int  m_emulationwindowxposition;
+  int  m_emulationwindowyposition;
 
   /*==========================================================================*/
   /* History of used config files                                             */
@@ -53,10 +53,10 @@ extern ini* wgui_ini;
 /* struct ini property access functions                                       */
 /*============================================================================*/
 
-extern ULO iniGetMainWindowXPos(ini *);
-extern ULO iniGetMainWindowYPos(ini *);
-extern ULO iniGetEmulationWindowXPos(ini *);
-extern ULO iniGetEmulationWindowYPos(ini *);
+extern int iniGetMainWindowXPos(ini *);
+extern int iniGetMainWindowYPos(ini *);
+extern int iniGetEmulationWindowXPos(ini *);
+extern int iniGetEmulationWindowYPos(ini *);
  
 extern void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos);
 extern void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos);
