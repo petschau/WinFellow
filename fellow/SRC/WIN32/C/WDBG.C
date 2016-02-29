@@ -871,7 +871,7 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y++;
 
     sprintf(s, "Host window clip envelope (Hor) (Ver): (%u, %u) (%u, %u)",
-            draw_left, draw_right, draw_top, draw_bottom);
+            drawGetClipLeft(), drawGetClipRight(), drawGetClipTop(), drawGetClipBottom());
     y = wdbgLineOut(hDC, s, x, y);
     
     sprintf(s, "Even/odd scroll (lores/hires): (%u, %u) (%u, %u)",

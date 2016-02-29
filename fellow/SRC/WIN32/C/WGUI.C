@@ -1710,6 +1710,69 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   /* install display config */
 
+  void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
+  {
+    HWND displayScaleComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAYSCALE);
+
+    ComboBox_ResetContent(displayScaleComboboxHWND);
+    ComboBox_AddString(displayScaleComboboxHWND, "Automatic");
+    ComboBox_AddString(displayScaleComboboxHWND, "1x");
+    ComboBox_AddString(displayScaleComboboxHWND, "2x");
+    ComboBox_AddString(displayScaleComboboxHWND, "3x");
+    ComboBox_AddString(displayScaleComboboxHWND, "4x");
+
+    ComboBox_Enable(displayScaleComboboxHWND, TRUE);
+    int currentSelectionIndex = 1;
+
+    switch (cfgGetDisplayScale(conf))
+    {
+      case DISPLAYSCALE_AUTO:
+        currentSelectionIndex = 0;
+        break;
+      case DISPLAYSCALE_1X:
+        currentSelectionIndex = 1;
+        break;
+      case DISPLAYSCALE_2X:
+        currentSelectionIndex = 2;
+        break;
+      case DISPLAYSCALE_3X:
+        currentSelectionIndex = 3;
+        break;
+      case DISPLAYSCALE_4X:
+        currentSelectionIndex = 4;
+        break;
+    }
+
+    ComboBox_SetCurSel(displayScaleComboboxHWND, currentSelectionIndex);
+  }
+
+  void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
+  {
+    ULO currentSelectionIndex = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAYSCALE);
+    DISPLAYSCALE selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_1X;
+
+    switch (currentSelectionIndex)
+    {
+      case 0:
+        selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_AUTO;
+        break;
+      case 1:
+        selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_1X;
+        break;
+      case 2:
+        selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_2X;
+        break;
+      case 3:
+        selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_3X;
+        break;
+      case 4:
+        selectedDisplayScale = DISPLAYSCALE::DISPLAYSCALE_4X;
+        break;
+    }
+
+    cfgSetDisplayScale(conf, selectedDisplayScale);
+  }
+
   void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
   {
     HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
@@ -1789,12 +1852,7 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     }
 
     // add display scale option and scale strategy
-    BOOLE isDisplaySize1x = cfgGetDisplayScale(conf) == DISPLAYSCALE_1X;
-    ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X, isDisplaySize1x);
-    if (isDisplaySize1x == FALSE)
-    {
-      ccwButtonCheckConditional(hwndDlg, IDC_RADIO_DISPLAYSIZE_2X, TRUE);
-    }
+    wguiInstallDisplayScaleConfigInGUI(hwndDlg, conf);
 
     BOOLE isDisplayStrategySolid = cfgGetDisplayScaleStrategy(conf) == DISPLAYSCALE_STRATEGY_SOLID;
     ccwButtonCheckConditional(hwndDlg, IDC_RADIO_LINE_FILL_SOLID, isDisplayStrategySolid);
@@ -1855,7 +1913,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
     // get scaling
-    cfgSetDisplayScale(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_DISPLAYSIZE_1X)) ? DISPLAYSCALE_1X : DISPLAYSCALE_2X);
+    wguiExtractDisplayScaleConfigFromGUI(hwndDlg, conf);
+
     cfgSetDisplayScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID)) ? DISPLAYSCALE_STRATEGY_SOLID : DISPLAYSCALE_STRATEGY_SCANLINES);
 
     // get height and width
@@ -3364,6 +3423,22 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
     else return FALSE;
   }	
 
+  void wguiSetClipFromDisplayScale()
+  {
+    if (cfgGetDisplayScaleStrategy(wgui_cfg) == DISPLAYSCALE_AUTO)
+    {
+      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::FIXED_CLIP);
+      cfgSetClipLeft(wgui_cfg, 88);
+      cfgSetClipTop(wgui_cfg, 26);
+      cfgSetClipRight(wgui_cfg, 472);
+      cfgSetClipBottom(wgui_cfg, 314);
+    }
+    else
+    {
+      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
+    }
+  }
+
   BOOLE wguiEnter(void)
   {
     BOOLE quit_emulator = FALSE;
@@ -3403,6 +3478,9 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	    if (wguiCheckEmulationNecessities() == TRUE)
 	    {
 	      end_loop = TRUE;
+
+              wguiSetClipFromDisplayScale();
+
 	      cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	      // check for manual or needed reset
 	      fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
@@ -3525,7 +3603,8 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 	  //  break;
 	  case WGUI_DEBUGGER_START:
 	    end_loop = TRUE;
-	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+            wguiSetClipFromDisplayScale();
+            cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	    fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	    debugger_start = TRUE;
 	  default:

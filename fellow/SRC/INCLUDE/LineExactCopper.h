@@ -15,7 +15,6 @@ private:
   ULO ytable[512];
 
   void YTableInit();
-  void StartAfterLoad();
   ULO GetCheckedWaitCycle(ULO waitCycle);
   void RemoveEvent();
   void InsertEvent(ULO cycle);

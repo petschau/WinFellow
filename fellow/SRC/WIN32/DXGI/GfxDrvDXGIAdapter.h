@@ -16,6 +16,8 @@ private:
   void LogCapabilities(IDXGIAdapter *adapter);
 
 public:
+  const GfxDrvDXGIOutputList& GetOutputs();
+
   GfxDrvDXGIAdapter(IDXGIAdapter *adapter);
   virtual ~GfxDrvDXGIAdapter();
 };

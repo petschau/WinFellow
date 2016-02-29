@@ -45,6 +45,11 @@ void GfxDrvDXGIOutput::EnumerateModes(IDXGIOutput *output)
   GfxDrvDXGIModeEnumerator::EnumerateModes(output, _modes);
 }
 
+const GfxDrvDXGIModeList& GfxDrvDXGIOutput::GetModes()
+{
+  return _modes;
+}
+
 GfxDrvDXGIOutput::GfxDrvDXGIOutput(IDXGIOutput *output)
 {
   LogCapabilities(output);

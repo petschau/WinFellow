@@ -24,6 +24,7 @@
 #include "CIA.H"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
+#include "UART.h"
 
 
 #include "fileops.h"
@@ -225,6 +226,7 @@ void wintreq(UWO data, ULO address)
   if (interruptHasSetModeBit(data))
   {
     intreq = interruptSetBits(intreq, data);
+    uart.NotifyInterruptRequestBitsChanged(intreq);
   }
   else
   {

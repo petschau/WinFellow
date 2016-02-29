@@ -2,9 +2,16 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 
-char *GfxDrvDXGIMode::GetScalingDescription(DXGI_MODE_SCALING scaling)
+unsigned int GfxDrvDXGIMode::_next_id = 1;
+
+unsigned int GfxDrvDXGIMode::GetNewId()
 {
-  switch (scaling)
+  return _next_id++;
+}
+
+char *GfxDrvDXGIMode::GetScalingDescription()
+{
+  switch (GetScaling())
   {
     case DXGI_MODE_SCALING_UNSPECIFIED: return "UNSPECIFIED";
     case DXGI_MODE_SCALING_CENTERED: return "CENTERED";
@@ -13,9 +20,9 @@ char *GfxDrvDXGIMode::GetScalingDescription(DXGI_MODE_SCALING scaling)
   return "UNKNOWN SCALING";
 }
 
-char *GfxDrvDXGIMode::GetScanlineOrderDescription(DXGI_MODE_SCANLINE_ORDER scanline_order)
+char *GfxDrvDXGIMode::GetScanlineOrderDescription()
 {
-  switch (scanline_order)
+  switch (GetScanlineOrder())
   {
     case DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED: return "UNSPECIFIED";
     case DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE: return "PROGRESSIVE";
@@ -25,19 +32,29 @@ char *GfxDrvDXGIMode::GetScanlineOrderDescription(DXGI_MODE_SCANLINE_ORDER scanl
   return "UNKNOWN SCANLINE ORDER";
 }
 
-void GfxDrvDXGIMode::LogCapabilities(DXGI_MODE_DESC *desc)
+void GfxDrvDXGIMode::LogCapabilities()
 {
-  if (desc)
-  {
-    _width = desc->Width;
-    _height = desc->Height;
-    _refresh = desc->RefreshRate.Numerator / desc->RefreshRate.Denominator;
+  fellowAddLog("DXGI mode (%d): %dx%dx%dhz - Scaling: %s Scanline order: %s\n", 
+    GetId(), GetWidth(), GetHeight(), GetRefreshRate(), GetScalingDescription(), GetScanlineOrderDescription());
+}
 
-    fellowAddLog("DXGI mode: %dx%dx%dhz - Scaling: %s Scanline order: %s\n", _width, _height, _refresh, GetScalingDescription(desc->Scaling), GetScanlineOrderDescription(desc->ScanlineOrdering));
-  }
+bool GfxDrvDXGIMode::CanUseMode()
+{
+  bool scanlineOrderOk = (GetScanlineOrder() == DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED) || (GetScanlineOrder() == DXGI_MODE_SCANLINE_ORDER_PROGRESSIVE);
+  bool refreshRateOk = (GetRefreshRate() == 0) || (GetRefreshRate() >= 50);
+  bool sizeOk = (GetWidth() >= 640);
+
+  return scanlineOrderOk && refreshRateOk && sizeOk;
 }
 
 GfxDrvDXGIMode::GfxDrvDXGIMode(DXGI_MODE_DESC *desc)
+  : _dxgi_mode_description(*desc),
+    _id(GetNewId())
 {
-  LogCapabilities(desc);
+  LogCapabilities();
+}
+
+GfxDrvDXGIMode::~GfxDrvDXGIMode()
+{
+
 }

@@ -67,6 +67,8 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     {
       RunEventReset();
     }
+    gfxDrvNotifyActiveStatus(_win_active);
+
 #ifdef RETRO_PLATFORM
   }
 #endif
@@ -178,11 +180,10 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     }
     break;
   case WM_MOVE:
+    gfxDrvPositionChanged();
+    break;
   case WM_SIZE:
-    if (_current_draw_mode->windowed)
-    {
-      gfxDrvSizeChanged();
-    }
+    gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam));
     break;
   case WM_ACTIVATE:
     /* WM_ACTIVATE tells us whether our window is active or not */
@@ -344,9 +345,10 @@ void GfxDrvCommon::ReleaseWindowClass()
 
 void GfxDrvCommon::DisplayWindow()
 {
-  fellowAddLog("gfxdrv: gfxDrvWindowShow()\n");
+  fellowAddLog("GfxDrvCommon::DisplayWindow()\n");
   if (!_current_draw_mode->windowed)
   {
+    // Later: Make dx11 run the normal size code. DX11 startup is always windowed.
     ShowWindow(_hwnd, SW_SHOWMAXIMIZED);
     UpdateWindow(_hwnd);
   }
@@ -361,7 +363,7 @@ void GfxDrvCommon::DisplayWindow()
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
 
-    gfxDrvSizeChanged();
+    gfxDrvSizeChanged(_current_draw_mode->width, _current_draw_mode->height);
   }
 }
 
@@ -398,6 +400,10 @@ bool GfxDrvCommon::InitializeWindow()
   if (_current_draw_mode->windowed)
   {
     DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+    if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+    {
+      dwStyle |= WS_SIZEBOX | WS_MAXIMIZEBOX;
+    }
     DWORD dwExStyle = 0;
     HWND hParent = NULL;
     ULO width = _current_draw_mode->width;
@@ -448,7 +454,7 @@ bool GfxDrvCommon::InitializeWindow()
       win_drv_hInstance,
       NULL);
   }
-  fellowAddLog("gfxdrv: Window created\n");
+  fellowAddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
   free(versionstring);
 
   return (_hwnd != NULL);
@@ -491,7 +497,7 @@ bool GfxDrvCommon::EmulationStart()
 
   if (!InitializeWindow())
   {
-    fellowAddLog("gfxdrv: GfxDrvCommon::EmulationStart(): Failed to create window\n");
+    fellowAddLog("GfxDrvCommon::EmulationStart(): Failed to create window\n");
     return false;
   }
 
