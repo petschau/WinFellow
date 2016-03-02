@@ -175,14 +175,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   Chip read register functions	
   ----------------------------*/
 
-  /* SERDATR
-  $dff018 */
-
-  UWO rserdatr(ULO address)
-  {
-    return 0x2000;
-  }
-
   // To simulate noise, return 0 and -1 every second time.
   // Why? Bugged demos test write-only registers for various bit-values
   // and to break out of loops, both 0 and 1 values must be returned.
@@ -2297,11 +2289,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryBankClearAll();
   }
 
-  void memoryIoHandlersInstall(void)
-  {
-    memorySetIoReadStub(0x018, rserdatr);
-  }
-
   /*==============*/
   /* Generic init */
   /*==============*/
@@ -2347,7 +2334,6 @@ __inline  UWO memoryReadWord(ULO address)
   void memoryEmulationStart(void)
   {
     memoryIoClear();
-    memoryIoHandlersInstall();
   }
 
   void memoryEmulationStop(void)

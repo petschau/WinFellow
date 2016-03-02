@@ -123,10 +123,7 @@ private:
   void MergeHAM(graph_line *linedescription);
   void BuildItem(spr_action_list_item ** item);
 
-  void SprptChanged(UWO data, ULO address);
-
   void Log();
-  void SetDelay(ULO delay);
   void ClearState();
   void LogActiveSprites();
 

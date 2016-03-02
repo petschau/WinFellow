@@ -130,7 +130,10 @@ void cgProfileOut(char *name)
 
 void cgProfileLogHeader()
 {
-  fprintf(profilef, "#include \"fileops.h\"\n");
+  if (cpu_profile)
+  {
+    fprintf(profilef, "#include \"fileops.h\"\n");
+  }
   fprintf(profilef, "void cpuProfileWrite(void)\n");
   fprintf(profilef, "{\n");
 
@@ -141,7 +144,7 @@ void cgProfileLogHeader()
 
   fprintf(profilef, "\tchar filename[MAX_PATH];\n");
   fprintf(profilef, "\tFILE *F = NULL;\n");
-  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"cpuprofile.txt\");\n");
+  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
   fprintf(profilef, "\tF = fopen(filename, \"w\");\n");
   fprintf(profilef, "\tif (F != NULL)\n");
   fprintf(profilef, "\t{\n");
@@ -820,7 +823,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	{
 	  if (stricmp(i.instruction_name, "DIVL") == 0)
 	  {
-	    fprintf(codef, "\t%s(src, ext);\n", i.function);
+	    fprintf(codef, "\t%s(src, ext, opc_data[2]);\n", i.function);
 	  }
 	  else if ((stricmp(i.instruction_name, "MULU") == 0) ||
 		   (stricmp(i.instruction_name, "MULS") == 0))
@@ -830,8 +833,7 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	  }
 	  else
 	  {
-	    fprintf(codef, "\tULO res = %s(dst, src);\n", i.function);
-	    cgStoreDst(0, reg_cpu_data_index, 4, "res");
+	    fprintf(codef, "\t%s(dst, src, opc_data[1], opc_data[2]);\n", i.function);
 	  }
 	}
 	else
@@ -918,11 +920,6 @@ unsigned int cgAdd(cpu_data *cpudata, cpu_instruction_info i)
 	else if (stricmp(i.instruction_name, "LEA") == 0)
 	{
 	  cgMakeInstructionTimeAbs(cgGetLeaTime(eano));
-	}
-	else if ((stricmp(i.instruction_name, "MULU") != 0) &&
-		 (stricmp(i.instruction_name, "MULS") != 0))
-	{
-	  cgMakeInstructionTime(time_cpu_data_index);
 	}
 	cgMakeFunctionFooter(fname, templ_name);
 
@@ -1279,7 +1276,11 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
       }
       else if (stricmp(i.instruction_name, "PEA") == 0)
       {
-        cgMakeInstructionTimeAbs(cg_jmp_time[eano]);
+        cgMakeInstructionTimeAbs(cg_pea_time[eano]);
+      }
+      else if (stricmp(i.instruction_name, "TAS") == 0)
+      {
+        cgMakeInstructionTimeAbs(((eano == 0) ? 4 : 10) + cg_ea_time[cgGetSizeCycleIndex(size)][eano]);
       }
       else if ((stricmp(i.instruction_name, "MOVETOSR") == 0)
 	       || (stricmp(i.instruction_name, "MOVETOCCR") == 0))

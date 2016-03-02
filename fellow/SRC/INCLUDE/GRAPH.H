@@ -15,7 +15,6 @@ extern void graphCalculateWindowHires(void);
 extern void graphEndOfLine(void);
 extern void graphEndOfFrame(void);
 extern void graphPlayfieldOnOff(void);
-extern bool graphIsPal(void);
 
 /* IO register read and write */
 
@@ -27,8 +26,6 @@ UWO rid(ULO address);
 void wvpos(UWO data, ULO address);
 void wdiwstrt(UWO data, ULO address);
 void wdiwstop(UWO data, ULO address);
-void wserdat(UWO data, ULO address);
-void wserper(UWO data, ULO address);
 void wddfstrt(UWO data, ULO address);
 void wddfstop(UWO data, ULO address);
 void wdmacon(UWO data, ULO address);

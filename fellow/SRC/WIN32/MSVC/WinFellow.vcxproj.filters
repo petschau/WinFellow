@@ -432,6 +432,9 @@
     <ClCompile Include="..\..\C\SpriteMerger.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\c\uart.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -827,6 +830,12 @@
     <ClInclude Include="..\..\INCLUDE\SpriteMerger.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\uart.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp">
@@ -882,5 +891,13 @@
     <ResourceCompile Include="GUI_versioninfo.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="..\DXGI\PixelShader.hlsl">
+      <Filter>DXGI</Filter>
+    </FxCompile>
+    <FxCompile Include="..\DXGI\VertexShader.hlsl">
+      <Filter>DXGI</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

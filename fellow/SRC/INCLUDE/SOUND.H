@@ -103,7 +103,6 @@ extern void soundState5(ULO ch);
 typedef void (*soundStateFunc)(ULO);
 
 extern void soundEndOfLine(void);
-extern void soundEndOfFrame(void);
 extern void soundHardReset(void);
 extern void soundEmulationStart(void);
 extern void soundEmulationStop(void);

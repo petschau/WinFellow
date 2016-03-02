@@ -113,8 +113,6 @@ extern BOOLE floppy_fast;
 extern BOOLE floppy_DMA_started;
 extern ULO diskDMAen;   /* Counts the number of writes to dsklen */
 
-extern void floppyCacheAllocate(void);
-extern void floppyCacheFree(void);
 extern void floppyDMAStart(void);
 extern void floppyStartup(void);
 extern void floppyShutdown(void);

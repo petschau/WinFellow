@@ -1,40 +1,72 @@
-![WinFellow](./fellow/Docs/WinFellow/winfellow_logo_large.png) 
+![WinFellow](./fellow/Docs/WinFellow/winfellow_logo_large.png)
 #Amiga Emulator for Windows
 
-## Description
+WinFellow source code archive
+=============================
 
-WinFellow is a high performance Amiga Emulator primarily targeted for Windows. Its distinguished API and core do however allow a fairly easy port to other operating systems.
+This is a README file describing the contents of the source code archive.
 
-WinFellow is distributed under the terms of the [GNU General Public License version 2.0 (GPLv2)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html)
+Introduction
+------------
+WinFellow is a high performance Amiga Emulator primarily targeted for Windows.
+Its distinguished API and core do however allow a fairly easy port to other operating systems.
 
-[This site](https://github.com/petschau/WinFellow) is WinFellow's home on GitHub.
+WinFellow is targeted for Windows XP/Vista/7/8/10.
 
-The latest stable release can be found in WinFellow's former home at [SourceForge](https://sourceforge.net/projects/fellow/files/); the latest stable release published on SourceForge is v0.5.3.1004.
+Obtaining these sources
+-----------------------
+The entire source tree can be found as a Git repository at http://github.com/petschau/WinFellow.
 
-----------
+GNU General Public License (GPLv2)
+----------------------------------
+WinFellow and its source code are developed and distributed under the terms of the
+[GNU General Public License version 2.0 (GPLv2)](http://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 
-## The Team
+Source organisation
+-------------------
+```
+fellow/src/c
+fellow/src/include
+```
+These directories contain what can be refered to as the emulation engine. This is a
+generic implementation.
 
+The C-files are ANSI-C or C++, although the OS-dependent parts might require a specific
+compiler. In the event of changing the C-compiler, some generic header files need to be
+changed for the emulation engine files to work with it.
+```
+fellow/src/uae
+fellow/src/win32/uae
+```
+These directories contain the filesystem module from WinUAE V8.8 and some
+other stripped down UAE files needed to interact with it. This module is GPL.
+Explicit permission has been granted to use these files from the respective authors.
+```
+fellow/src/win32/c
+fellow/src/win32/include
+```
+These directories contain pure win32 (and DirectX) implementations needed to
+support Fellow on Win32. A workspace setup to compile WinFellow into
+an executable is provided for MS Visual Studio.
+```
+fellow/src/win32/msvc
+```
+This directory contains a MS Visual Studio workspace for the entire Fellow sources.
 
-| team member | Petter Schau           | Torsten Enderling                                                                   | Worfje                                               |
-|-------------|:-----------------------|:------------------------------------------------------------------------------------|:-----------------------------------------------------|
-| occupation  | programmer from Norway | virtual desktop engineer from Germany                                               | engineer from the Netherlands                        |
-| tasks       | various                | beta team manager<br>GitHub Pages/hugo website administration                       | cross platform development                           |
-| modules     | emulation core         | RetroPlatform integration<br>hardfile/file system<br>debugger<br>system information | graphics<br>sound<br>GUI                             |
-| email       | petschau@gmail.com     | carfesh@gmx.net                                                                     | worfje@gmx.net                                       |
+What you need to compile the sources
+------------------------------------
 
-----------
+Microsoft Visual Studio 2013 Update 5 and the February 2010 DirectX SDK.
+The community edition of Visual Studio can be used to compile WinFellow.
 
-## Contact us
+Other notes
+-----------
 
-Please check the FAQ that can be found in WinFellow's User Guide before contacting us, it is the fastest way to find a solution to your problem.
+There is a new configuration format, which was decided ages ago
+to be common for UAE and Fellow. Brian King specified most of it.
 
-There is a WinFellow specific support forum at the [English Amiga Board](http://eab.abime.net/forumdisplay.php?forumid=28), which is also monitored by us.
+These is also a keymapping file which allows you to redefine the
+mapping of PC-keys to Amiga keys. It is called mapping.key
 
-You could also make use of the [GitHub issue tracker](https://github.com/petschau/winfellow/issues).
-
-Any comments on how to improve WinFellow are welcome!
-
-You can also contact us directly by sending an email composed in English language to [Torsten Enderling](mailto:carfesh@gmx.net). Due to copyrights, all emails concerning Kickstart ROM images and ADF floppy images will be ignored. 
-
-You can buy Kickstart ROM images from [Cloanto](http://www.amigaforever.com).
+If you need more detailed information, you can contact me via mail at
+[petschau@gmail.com](mailto:petschau@gmail.com).

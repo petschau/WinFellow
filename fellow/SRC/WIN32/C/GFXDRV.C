@@ -6,10 +6,10 @@
 #include "RetroPlatform.h"
 #include "fileops.h"
 
-bool gfx_drv_use_dxgi = true;
+bool gfx_drv_use_dxgi = false;
 
-GfxDrvCommon *gfxDrvCommon = 0;
-GfxDrvDXGI *gfxDrvDXGI = 0;
+GfxDrvCommon *gfxDrvCommon = nullptr;
+GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
 void gfxDrvClearCurrentBuffer()
 {
@@ -59,15 +59,35 @@ void gfxDrvBufferFlip()
   }
 }
 
-void gfxDrvSizeChanged()
+void gfxDrvNotifyActiveStatus(bool active)
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->SizeChanged();
+    gfxDrvDXGI->NotifyActiveStatus(active);
+  }
+}
+
+void gfxDrvSizeChanged(unsigned int width, unsigned int height)
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->SizeChanged(width, height);
   }
   else
   {
-    gfxDrvDDrawSizeChanged();
+    gfxDrvDDrawSizeChanged(width, height);
+  }
+}
+
+void gfxDrvPositionChanged()
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->PositionChanged();
+  }
+  else
+  {
+    gfxDrvDDrawPositionChanged();
   }
 }
 
@@ -82,6 +102,18 @@ void gfxDrvSetMode(draw_mode *dm)
   else
   {
     gfxDrvDDrawSetMode(dm);
+  }
+}
+
+void gfxDrvGetBufferInformation(draw_mode *dm, draw_buffer_information *buffer_information)
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->GetBufferInformation(dm, buffer_information);
+  }
+  else
+  {
+    gfxDrvDDrawGetBufferInformation(dm, buffer_information);
   }
 }
 
@@ -200,12 +232,10 @@ void gfxDrvShutdown()
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->Shutdown();
-
-    if (gfxDrvDXGI != 0)
+    if (gfxDrvDXGI != nullptr)
     {
       delete gfxDrvDXGI;
-      gfxDrvDXGI = 0;
+      gfxDrvDXGI = nullptr;
     }
   }
   else
@@ -213,10 +243,10 @@ void gfxDrvShutdown()
     gfxDrvDDrawShutdown();
   }
 
-  if (gfxDrvCommon != 0)
+  if (gfxDrvCommon != nullptr)
   {
     delete gfxDrvCommon;
-    gfxDrvCommon = 0;
+    gfxDrvCommon = nullptr;
   }
 }
 

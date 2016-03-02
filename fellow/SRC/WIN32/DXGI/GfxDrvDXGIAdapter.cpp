@@ -28,6 +28,11 @@ void GfxDrvDXGIAdapter::EnumerateOutputs(IDXGIAdapter *adapter)
   GfxDrvDXGIOutputEnumerator::EnumerateOutputs(adapter, _outputs);
 }
 
+const GfxDrvDXGIOutputList& GfxDrvDXGIAdapter::GetOutputs()
+{
+  return _outputs;
+}
+
 GfxDrvDXGIAdapter::GfxDrvDXGIAdapter(IDXGIAdapter *adapter)
 {
   LogCapabilities(adapter);

@@ -269,26 +269,6 @@ void wvpos(UWO data, ULO address)
 }
 
 /*===========================================================================*/
-/* SERDAT - $dff030 Write                                                    */
-/*                                                                           */
-/*                                                                           */
-/*===========================================================================*/
-
-void wserdat(UWO data, ULO address)
-{
-}
-
-/*===========================================================================*/
-/* SERPER - $dff032 Write                                                    */
-/*                                                                           */
-/*                                                                           */
-/*===========================================================================*/
-
-void wserper(UWO data, ULO address)
-{
-}
-
-/*===========================================================================*/
 /* DIWSTRT - $dff08e Write                                                   */
 /*                                                                           */
 /*                                                                           */
@@ -1490,30 +1470,25 @@ void graphCalculateWindow(void)
       graph_DIW_first_visible = graph_DIW_last_visible = 256;
     }
 
-    graph_DIW_first_visible = draw_left;
-    if (diwxleft < graph_DDF_start) // cmp dword[diwxleft], dword[graph_DDF_start]
+    graph_DIW_first_visible = drawGetClipLeft();
+    if (diwxleft < graph_DDF_start)
     {  
-      // jb  .cwdiwless
-      if (graph_DDF_start > draw_left) // cmp dword[graph_DDF_start], dword[draw_left]
+      if (graph_DDF_start > drawGetClipLeft())
       {  
-	// ja  .cwdiwnoclip2
 	graph_DIW_first_visible = graph_DDF_start;
       } 
     } 
     else 
     {
-      if (diwxleft > draw_left) // cmp word[diwxleft], word[draw_left]
+      if (diwxleft > drawGetClipLeft())
       {  
-	// ja  .cwdiwnoclip
 	graph_DIW_first_visible = diwxleft;
       } 
     }
 
-    // .cwdiwlastpos:
     last_position_in_line = (graph_DDF_word_count << 4) + graph_DDF_start;
-    if (oddscroll > evenscroll) // cmp word[oddscroll], word[evenscroll]
+    if (oddscroll > evenscroll)
     {
-      // ja  .cwaddodd
       last_position_in_line += oddscroll;
     } 
     else 
@@ -1521,22 +1496,18 @@ void graphCalculateWindow(void)
       last_position_in_line += evenscroll;
     }
 
-    // .cwdiwlastpos2:
-    graph_DIW_last_visible = draw_right;
-    if (last_position_in_line < diwxright) // cmp ecx, word[diwxright]
+    graph_DIW_last_visible = drawGetClipRight();
+    if (last_position_in_line < diwxright)
     {
-      // jb  .cwdiwxx
-      if (last_position_in_line < draw_right) // cmp ecx, word[draw_right]
+      if (last_position_in_line < drawGetClipRight())
       {
-	// jb  .cwdiwnoclip4
 	graph_DIW_last_visible = last_position_in_line;
       }
     } 
     else 
     {
-      if (diwxright < draw_right) // cmp word[diwxright], word[draw_right]
+      if (diwxright < drawGetClipRight())
       {
-	// jb  .cwdiwnoclip3
 	graph_DIW_last_visible = diwxright;
       }
     }
@@ -1545,7 +1516,7 @@ void graphCalculateWindow(void)
 
 void graphCalculateWindowHires(void)
 {
-  ULO ddfstop_aligned, ddfstrt_aligned, last_position_in_line;
+  ULO last_position_in_line;
 
   if (ddfstrt > ddfstop)
   {
@@ -1554,9 +1525,6 @@ void graphCalculateWindowHires(void)
     return;
   }
 
-  ddfstop_aligned = ddfstop & 0x07;
-  ddfstrt_aligned = ddfstrt & 0x07;
-
   if (ddfstop >= ddfstrt)
   {
     graph_DDF_word_count = (((ddfstop - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
@@ -1564,7 +1532,6 @@ void graphCalculateWindowHires(void)
   else
   {
     graph_DDF_word_count = (((0xd8 - ddfstrt) + 15) >> 2) & 0x0FFFFFFFE;
-    ddfstop_aligned = 0;
   }
 
   graph_DDF_start = (ddfstrt << 2) + 18;
@@ -1579,31 +1546,30 @@ void graphCalculateWindowHires(void)
 
   if ((diwxleft << 1) < graph_DDF_start) 
   {
-    if (graph_DDF_start > (draw_left << 1)) 
+    if (graph_DDF_start > (drawGetClipLeft() << 1)) 
     {
       graph_DIW_first_visible = graph_DDF_start;
     } 
     else
     {
-      graph_DIW_first_visible = draw_left << 1;
+      graph_DIW_first_visible = drawGetClipLeft() << 1;
     }
   }
   else
   {
-    if ((diwxleft << 1) > (draw_left << 1))
+    if ((diwxleft << 1) > (drawGetClipLeft() << 1))
     {
       graph_DIW_first_visible = diwxleft << 1;
     }
     else
     {
-      graph_DIW_first_visible = draw_left << 1;
+      graph_DIW_first_visible = drawGetClipLeft() << 1;
     }
   }
 
   last_position_in_line = graph_DDF_start + (graph_DDF_word_count << 4);
-  if (oddhiscroll > evenhiscroll) // cmp word[oddhiscroll], word[evenhiscroll]
+  if (oddhiscroll > evenhiscroll)
   {
-    // ja  .cwaddoddh
     last_position_in_line += oddhiscroll;
   } 
   else 
@@ -1613,24 +1579,24 @@ void graphCalculateWindowHires(void)
 
   if (last_position_in_line < (diwxright << 1)) 
   {
-    if (last_position_in_line < (draw_right << 1))
+    if (last_position_in_line < (drawGetClipRight() << 1))
     {
       graph_DIW_last_visible = last_position_in_line;
     }
     else
     {
-      graph_DIW_last_visible = draw_right << 1;
+      graph_DIW_last_visible = drawGetClipRight() << 1;
     }
   }
   else
   {
-    if ((diwxright << 1) < (draw_right << 1)) 
+    if ((diwxright << 1) < (drawGetClipRight() << 1)) 
     {
       graph_DIW_last_visible = diwxright << 1;
     }
     else
     {
-      graph_DIW_last_visible = draw_right << 1;
+      graph_DIW_last_visible = drawGetClipRight() << 1;
     }
   }
 }
@@ -1733,8 +1699,8 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   local_graph_DIW_first_visible = graph_DIW_first_visible;
   local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
-  local_draw_left               = draw_left;
-  local_draw_right              = draw_right;
+  local_draw_left               = drawGetClipLeft();
+  local_draw_right              = drawGetClipRight();
   shift                         = 0;
 
   /*===========================================================*/
@@ -1753,9 +1719,9 @@ void graphLinedescGeometry(graph_line* current_graph_line)
   {
     local_graph_DIW_first_visible = local_draw_left;
   }
-  if (local_graph_DIW_last_visible > (LON) local_draw_right)
+  if (local_graph_DIW_last_visible >(LON) local_draw_right)
   {
-    local_graph_DIW_last_visible = (LON) local_draw_right;
+    local_graph_DIW_last_visible = (LON)local_draw_right;
   }
   local_graph_DIW_last_visible -= local_graph_DIW_first_visible;
   if (local_graph_DIW_last_visible < 0)
@@ -1833,8 +1799,8 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
   local_graph_DIW_first_visible = graph_DIW_first_visible;
   local_graph_DIW_last_visible  = (LON) graph_DIW_last_visible;
   local_graph_DDF_start         = graph_DDF_start;
-  local_draw_left               = draw_left;
-  local_draw_right              = draw_right;
+  local_draw_left               = drawGetClipLeft();
+  local_draw_right              = drawGetClipRight();
   shift                         = 0;
   line_desc_changed             = FALSE;
 
@@ -2285,7 +2251,7 @@ void graphEndOfLine(void)
       drawUpdateDrawmode();
 
       // check if we are clipped
-      if ((currentY >= draw_top) || (currentY < draw_bottom))
+      if ((currentY >= drawGetClipTop()) || (currentY < drawGetClipBottom()))
       {
 	// visible line, either background or bitplanes
         graphComposeLineOutputSmart(current_graph_line);
@@ -2312,7 +2278,7 @@ void graphEndOfLine(void)
       {
         // In the case when the display has more lines than the frame (AF or short frames)
         // this routine pads the remaining lines with background color
-        for (ULO y = currentY + 1; y < draw_bottom; ++y)
+        for (ULO y = currentY + 1; y < drawGetClipBottom(); ++y)
         {
           graph_line* graph_line_y = graphGetLineDesc(draw_buffer_draw, y);
           graphLinedescSetBackgroundLine(graph_line_y);

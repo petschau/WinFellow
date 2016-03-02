@@ -108,16 +108,16 @@ void kbdEventEOFHandler(void) {
 
 	      break;
       case EVENT_SCROLL_UP:
-	      draw_view_scroll = 0x48;
+	      drawSetClipScroll(0x48);
 	      break;
       case EVENT_SCROLL_DOWN:
-	      draw_view_scroll = 0x50;
+	      drawSetClipScroll(0x50);
 	      break;
       case EVENT_SCROLL_LEFT:
-	      draw_view_scroll = 0x4b;
+	      drawSetClipScroll(0x4b);
 	      break;
       case EVENT_SCROLL_RIGHT:
-	      draw_view_scroll = 0x4d;
+	      drawSetClipScroll(0x4d);
 	      break;
       case EVENT_HARD_RESET:
               // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
