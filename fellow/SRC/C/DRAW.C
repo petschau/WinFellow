@@ -815,7 +815,7 @@ std::pair<ULO, ULO> drawCalculateHorizontalClip(ULO buffer_width, ULO buffer_sca
     else
     {
 #ifdef RETRO_PLATFORM
-      if (RetroPlatformGetMode())
+      if (RP.GetHeadlessMode())
         right = 468;
       else
 #endif
