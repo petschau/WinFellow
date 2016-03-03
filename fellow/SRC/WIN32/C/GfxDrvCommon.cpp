@@ -224,8 +224,11 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 #ifdef RETRO_PLATFORM
     case SC_CLOSE:
       if (RetroPlatformGetMode())
+      {
         RetroPlatformSendClose();
-      return 0;
+        return 0;
+      }
+      // else fall through to DefWindowProc() to get WM_CLOSE etc.
 #endif
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
