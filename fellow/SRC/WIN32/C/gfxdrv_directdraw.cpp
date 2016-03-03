@@ -1020,7 +1020,13 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
 
 ULO gfxDrvDDrawGetOutputScaleFactor()
 {
+  if (RP.GetHeadlessMode())
+  {
+    return RP.GetDisplayScale()*2;
+  }
+
   ULO output_scale_factor = 2;
+
   switch (drawGetDisplayScale())
   {
     case DISPLAYSCALE::DISPLAYSCALE_1X:
@@ -1047,9 +1053,18 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
   if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
   {
     // Fixed scaling
-    float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
-    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+
+    if (RP.GetHeadlessMode())
+    {
+      upscaled_clip_width = output_width;
+      upscaled_clip_height = output_height;
+    }
+    else
+    {
+      float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
+      upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+      upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+    }
   }
   else
   {
@@ -1649,6 +1664,12 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
 {
   ULO output_scale_factor = gfxDrvDDrawGetOutputScaleFactor();
+
+  if (RP.GetHeadlessMode())
+  {
+    output_scale_factor = 2;
+  }
+
   std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, output_scale_factor);
   std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, output_scale_factor);
 
