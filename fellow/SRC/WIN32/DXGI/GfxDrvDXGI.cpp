@@ -429,8 +429,8 @@ void GfxDrvDXGI::SizeChanged(unsigned int width, unsigned int height)
 {
   fellowAddLog("GfxDrvDXGI: SizeChanged()\n");
 
-  _output_width = width;
-  _output_height = height;
+  _output_width = (width > 0) ? width : 1;
+  _output_height = (height > 0) ? height : 1;
 
   // Don't execute the resize here, do it in the thread that renders
   _resize_swapchain_buffers = true;
