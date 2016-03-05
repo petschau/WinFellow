@@ -14,7 +14,7 @@ extern STR *symbol_pretty_name[106];
 extern STR *kbdDrvKeyString(ULO symbolickey);
 extern STR *kbdDrvKeyPrettyString(ULO symbolickey);
 extern void kbdDrvJoystickReplacementSet(kbd_event event, ULO symbolickey);
-extern ULO kbdDrvJoystickReplacementGet(kbd_event event);
+extern ULO  kbdDrvJoystickReplacementGet(kbd_event event);
 extern void kbdDrvHardReset(void);
 extern void kbdDrvEmulationStart(void);
 extern void kbdDrvEmulationStop(void);
@@ -25,6 +25,7 @@ extern void kbdDrvKeypressHandler(void);
 
 #ifdef RETRO_PLATFORM
 extern void kbdDrvEOFHandler(void);
+extern void kbdDrvSetJoyKeyEnabled(ULO, ULO, BOOLE);
 #endif
 
 #endif

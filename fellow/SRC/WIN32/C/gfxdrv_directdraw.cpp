@@ -290,9 +290,9 @@ void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
   GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
   {
-    ULO lDisplayScale = RetroPlatformGetDisplayScale();
+    ULO lDisplayScale = RP.GetDisplayScale();
 
     ddraw_device->hwnd_clientrect_win.left   *= lDisplayScale;
     ddraw_device->hwnd_clientrect_win.top    *= lDisplayScale;
@@ -1020,7 +1020,13 @@ HRESULT gfxDrvDDrawSurfaceRestore(gfx_drv_ddraw_device *ddraw_device, LPDIRECTDR
 
 ULO gfxDrvDDrawGetOutputScaleFactor()
 {
+  if (RP.GetHeadlessMode())
+  {
+    return RP.GetDisplayScale()*2;
+  }
+
   ULO output_scale_factor = 2;
+
   switch (drawGetDisplayScale())
   {
     case DISPLAYSCALE::DISPLAYSCALE_1X:
@@ -1047,9 +1053,18 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
   if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
   {
     // Fixed scaling
-    float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
-    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+
+    if (RP.GetHeadlessMode())
+    {
+      upscaled_clip_width = output_width;
+      upscaled_clip_height = output_height;
+    }
+    else
+    {
+      float upscale_factor = static_cast<float>(gfxDrvDDrawGetOutputScaleFactor()) / static_cast<float>(drawGetDisplayScaleFactor());
+      upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+      upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
+    }
   }
   else
   {
@@ -1122,7 +1137,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   if (ddraw_device->mode->windowed)
   {
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
 #endif
     {
       // Windowed, stand alone mode.
@@ -1134,10 +1149,10 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 #ifdef RETRO_PLATFORM
     else
     {
-      srcwin.left   = RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.right  = RetroPlatformGetScreenWidthAdjusted() + RetroPlatformGetClippingOffsetLeftAdjusted();
-      srcwin.top    = RetroPlatformGetClippingOffsetTopAdjusted();
-      srcwin.bottom = RetroPlatformGetScreenHeightAdjusted() + RetroPlatformGetClippingOffsetTopAdjusted();
+      srcwin.left   = RP.GetClippingOffsetLeftAdjusted();
+      srcwin.right  = RP.GetScreenWidthAdjusted() + RP.GetClippingOffsetLeftAdjusted();
+      srcwin.top    = RP.GetClippingOffsetTopAdjusted();
+      srcwin.bottom = RP.GetScreenHeightAdjusted() + RP.GetClippingOffsetTopAdjusted();
     }
 #endif
   }
@@ -1270,7 +1285,7 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
       | DDSCAPS_OFFSCREENPLAIN;
 
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
     {
 #endif
       ddraw_device->ddsdSecondary.dwHeight = draw_buffer_info.height;
@@ -1279,8 +1294,8 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
     }
     else {
       // increase buffer size to accomodate different display scaling factors
-      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RetroPlatformGetDisplayScale() * 2;
-      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RetroPlatformGetDisplayScale() * 2;
+      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RP.GetDisplayScale() * 2;
+      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RP.GetDisplayScale() * 2;
     }
 #endif
     err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2, &(ddraw_device->ddsdSecondary), &(ddraw_device->lpDDSSecondary), nullptr);
@@ -1649,6 +1664,12 @@ unsigned int gfxDrvDDrawSetMode(gfx_drv_ddraw_device *ddraw_device)
 void gfxDrvDDrawGetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
 {
   ULO output_scale_factor = gfxDrvDDrawGetOutputScaleFactor();
+
+  if (RP.GetHeadlessMode())
+  {
+    output_scale_factor = 2;
+  }
+
   std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, output_scale_factor);
   std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, output_scale_factor);
 
@@ -1871,7 +1892,7 @@ bool gfxDrvDDrawStartup()
   gfx_drv_ddraw_initialized = gfxDrvDDrawInitialize();
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode() && gfx_drv_ddraw_initialized) {
+  if (RP.GetHeadlessMode() && gfx_drv_ddraw_initialized) {
     gfxDrvRegisterRetroPlatformScreenMode(true);
   }
 #endif
@@ -2003,13 +2024,13 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *fi
 
   if (bTakeFilteredScreenshot) {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
-      width = RetroPlatformGetScreenWidthAdjusted();
-      height = RetroPlatformGetScreenHeightAdjusted();
-      x = RetroPlatformGetClippingOffsetLeftAdjusted();
-      y = RetroPlatformGetClippingOffsetTopAdjusted();
-      lDisplayScale = RetroPlatformGetDisplayScale();
+      width = RP.GetScreenWidthAdjusted();
+      height = RP.GetScreenHeightAdjusted();
+      x = RP.GetClippingOffsetLeftAdjusted();
+      y = RP.GetClippingOffsetTopAdjusted();
+      lDisplayScale = RP.GetDisplayScale();
     }
     else
 #endif
@@ -2022,7 +2043,7 @@ bool gfxDrvDDrawSaveScreenshot(const bool bTakeFilteredScreenshot, const STR *fi
   }
   else {
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
       //width and height in RP mode are sized for maximum scale factor
       // use harcoded RetroPlatform max PAL dimensions from WinUAE

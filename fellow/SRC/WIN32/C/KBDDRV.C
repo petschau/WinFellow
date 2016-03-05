@@ -686,25 +686,25 @@ void kbdDrvEOFHandler(void)
 {
   ULONGLONG t = 0;
 
-  t = RetroPlatformGetEscapeKeyHeldSince();
+  t = RP.GetEscapeKeyHeldSince();
 
-  if(t && (RetroPlatformGetTime() - RetroPlatformGetEscapeKeyHeldSince()) > RetroPlatformGetEscapeKeyHoldTime())
+  if(t && (RP.GetTime() - RP.GetEscapeKeyHeldSince()) > RP.GetEscapeKeyHoldTime())
   {
     fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
-    RetroPlatformPostEscaped();
-    RetroPlatformSetEscapeKeyHeld(false);
+    RP.PostEscaped();
+    RP.SetEscapeKeyHeld(false);
   }
 
-  t = RetroPlatformGetEscapeKeySimulatedTargetTime();
+  t = RP.GetEscapeKeySimulatedTargetTime();
 
   if(t) {
-    ULONGLONG tCurrentTime = RetroPlatformGetTime();
+    ULONGLONG tCurrentTime = RP.GetTime();
 
     if(t < tCurrentTime) {
-      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+      UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
       fellowAddLog("RetroPlatform escape key simulation interval ended.\n");
-      RetroPlatformSetEscapeKeySimulatedTargetTime(0);
+      RP.SetEscapeKeySimulatedTargetTime(0);
       kbdKeyAdd(a_code | 0x80); // release escape key
     }
   }
@@ -964,30 +964,30 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       issue_event(EVENT_BMP_DUMP);
 
 #ifdef RETRO_PLATFORM
-    if(RetroPlatformGetMode())
+    if(RP.GetHeadlessMode())
     {
       if( ispressed ( PCK_LEFT_ALT ) )
         if(ispressed ( PCK_F4 ) )
           issue_event(EVENT_EXIT);
 
-      if(!RetroPlatformGetEmulationPaused())
+      if(!RP.GetEmulationPaused())
       {
-	if( pressed ( RetroPlatformGetEscapeKey() ))
+	if( pressed ( RP.GetEscapeKey() ))
 	{
-	  RetroPlatformSetEscapeKeyHeld(true);
+	  RP.SetEscapeKeyHeld(true);
 	  return TRUE;
 	}
-	if( released ( RetroPlatformGetEscapeKey() ))
+	if( released ( RP.GetEscapeKey() ))
 	{
-	  ULONGLONG t = RetroPlatformSetEscapeKeyHeld(false);
+	  ULONGLONG t = RP.SetEscapeKeyHeld(false);
           
-          if((t != 0) && (t < RetroPlatformGetEscapeKeyHoldTime())) 
+          if((t != 0) && (t < RP.GetEscapeKeyHoldTime())) 
 	  {
-            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RetroPlatformGetEscapeKey()];
+            UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[RP.GetEscapeKey()];
 
 	    fellowAddLog("RetroPlatform escape key held shorter than escape interval, simulate key being pressed for %u milliseconds...\n",
               t);
-            RetroPlatformSetEscapeKeySimulatedTargetTime(RetroPlatformGetTime() + RetroPlatformGetEscapeKeyHoldTime());
+            RP.SetEscapeKeySimulatedTargetTime(RP.GetTime() + RP.GetEscapeKeyHoldTime());
             kbdKeyAdd(a_code); // hold escape key
             return TRUE;
 	  }
@@ -997,14 +997,14 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       }
       else 
       {
-	if( pressed ( RetroPlatformGetEscapeKey() ))
-	  RetroPlatformPostEscaped();
+	if( pressed ( RP.GetEscapeKey() ))
+	  RP.PostEscaped();
       }
     }
 #endif
 
 #ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode())
+    if(!RP.GetHeadlessMode())
 #endif
     if( released( PCK_F11 ))
     {
@@ -1012,7 +1012,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     }
 	
 #ifdef RETRO_PLATFORM
-    if(!RetroPlatformGetMode())
+    if(!RP.GetHeadlessMode())
 #endif
     if( released( PCK_F12 ))
     {
@@ -1429,6 +1429,11 @@ void kbdDrvInitializeDIKToSymbolKeyTable(void)
   kbddrv_DIK_to_symbol[ DIK_RIGHT           ] = PCK_RIGHT;
   kbddrv_DIK_to_symbol[ DIK_NUMPAD0         ] = PCK_NUMPAD_0;
   kbddrv_DIK_to_symbol[ DIK_DECIMAL         ] = PCK_NUMPAD_DOT;
+}
+
+void kbdDrvSetJoyKeyEnabled(ULO lGameport, ULO lSetting, BOOLE bEnabled)
+{
+  kbd_drv_joykey_enabled[lGameport][lSetting] = bEnabled;
 }
 
 /*===========================================================================*/

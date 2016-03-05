@@ -235,7 +235,7 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 
   fellowAddLog(buffer);
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode())
+  if (!RP.GetHeadlessMode())
 #endif
     wguiRequester(buffer, uType);
 }
@@ -379,8 +379,8 @@ BOOLE fellowEmulationStart(void) {
   ffilesysEmulationStart();
   timerEmulationStart();
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformEmulationStart();
+  if(RP.GetHeadlessMode())
+    RP.EmulationStart();
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EmulationStart();
@@ -397,8 +397,8 @@ BOOLE fellowEmulationStart(void) {
 
 void fellowEmulationStop(void) {
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformEmulationStop();
+  if(RP.GetHeadlessMode())
+    RP.EmulationStop();
 #endif
   timerEmulationStop();
   ffilesysEmulationStop();
@@ -605,8 +605,8 @@ static void fellowModulesStartup(int argc, char *argv[])
   cpuIntegrationStartup();
   wguiStartup();
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformStartup();
+  if(RP.GetHeadlessMode())
+    RP.Startup();
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Startup();
@@ -621,8 +621,8 @@ static void fellowModulesShutdown(void)
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
-    RetroPlatformShutdown();
+  if (RP.GetHeadlessMode())
+    RP.Shutdown();
 #endif
   wguiShutdown();
   cpuIntegrationShutdown();
@@ -661,7 +661,7 @@ int __cdecl main(int argc, char *argv[]) {
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode()) {
+  if (!RP.GetHeadlessMode()) {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
     wguiSetProcessDPIAwareness("1");
@@ -670,7 +670,7 @@ int __cdecl main(int argc, char *argv[]) {
 #ifdef RETRO_PLATFORM
   }
   else
-    RetroPlatformEnter();
+    RP.EnterHeadlessMode();
 #endif
   
   fellowModulesShutdown();
