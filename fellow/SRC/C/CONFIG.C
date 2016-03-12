@@ -858,6 +858,7 @@ void cfgSetDefaults(cfg *config)
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
   cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECTDRAW);
+//  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECT3D11);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */

@@ -1410,6 +1410,7 @@ bool RetroPlatform::SendFeatures(void)
 
 #ifdef _DEBUG
     dFeatureFlags |= RP_FEATURE_FULLSCREEN;
+    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is direct draw\n");
 #endif
   }
   else if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11) 
@@ -1419,6 +1420,7 @@ bool RetroPlatform::SendFeatures(void)
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
 
 #ifdef _DEBUG
+    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is d3d11\n");
 #endif
   }
   else

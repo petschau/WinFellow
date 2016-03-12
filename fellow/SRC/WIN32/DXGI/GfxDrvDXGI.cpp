@@ -307,18 +307,23 @@ void GfxDrvDXGI::GetBufferInformation(draw_mode *mode, draw_buffer_information *
 
 bool GfxDrvDXGI::CreateSwapChain()
 {
-  int width = _current_draw_mode->width;
-  int height = _current_draw_mode->height;
-
-  _resize_swapchain_buffers = false;
+  int width;
+  int height;
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
   {
-    width = RP.GetScreenWidthAdjusted() / RP.GetDisplayScale();
-    height = RP.GetScreenHeightAdjusted() / RP.GetDisplayScale();
+    width = RP.GetScreenWidthAdjusted();
+    height = RP.GetScreenHeightAdjusted();
   }
+  else
 #endif
+  {
+    width = _current_draw_mode->width;
+    height = _current_draw_mode->height;
+  }
+  _resize_swapchain_buffers = false;
+
 
   DXGI_SWAP_CHAIN_DESC swapChainDescription = { 0 };
   DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -614,8 +619,49 @@ struct VertexType
 
 void GfxDrvDXGI::CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight)
 {
-  float srcClipWidth = drawGetBufferClipWidthAsFloat();
-  float srcClipHeight = drawGetBufferClipHeightAsFloat();
+  float srcClipWidth;
+  float srcClipHeight;
+
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode())
+  {
+    srcClipWidth = static_cast<float>(RP.GetSourceBufferWidth());
+    srcClipHeight = static_cast<float>(RP.GetSourceBufferHeight());
+  }
+  else
+#endif
+  {
+    srcClipWidth = drawGetBufferClipWidthAsFloat();
+    srcClipHeight = drawGetBufferClipHeightAsFloat();
+  }
+
+
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode())
+  {
+    if (RP.GetDisplayScale() == 1)
+    {
+      dstHalfWidth = srcClipWidth * 0.5f;
+      dstHalfHeight = srcClipHeight * 0.5f;
+    }
+    else if (RP.GetDisplayScale() == 2)
+    {
+      dstHalfWidth = srcClipWidth * 1.0f;
+      dstHalfHeight = srcClipHeight * 1.0f;
+    }
+    else if (RP.GetDisplayScale() == 3)
+    {
+      dstHalfWidth = srcClipWidth * 1.5f;
+      dstHalfHeight = srcClipHeight * 1.5f;
+    }
+    else if (RP.GetDisplayScale() == 4)
+    {
+      dstHalfWidth = srcClipWidth * 2.0f;
+      dstHalfHeight = srcClipHeight * 2.0f;
+    }
+  }
+  else
+#endif
 
   if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_1X || drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_2X)
   {
@@ -665,10 +711,27 @@ void GfxDrvDXGI::CalculateSourceRectangle(float& srcLeft, float& srcTop, float& 
   float baseWidth = static_cast<float>(draw_buffer_info.width);
   float baseHeight = static_cast<float>(draw_buffer_info.height);
 
-  srcLeft = drawGetBufferClipLeftAsFloat() / baseWidth;
-  srcTop = drawGetBufferClipTopAsFloat() / baseHeight;
-  srcRight = srcLeft + drawGetBufferClipWidthAsFloat() / baseWidth;
-  srcBottom = srcTop + drawGetBufferClipHeightAsFloat() / baseHeight;
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode())
+  {
+    srcLeft = static_cast<float>(RP.GetClippingOffsetLeftAdjusted());
+    srcRight = static_cast<float>(RP.GetClippingOffsetLeftAdjusted() + RP.GetSourceBufferWidth());
+    srcTop = static_cast<float>(RP.GetClippingOffsetTopAdjusted());
+    srcBottom = static_cast<float>(RP.GetClippingOffsetTopAdjusted() + RP.GetSourceBufferHeight());
+  }
+  else
+#endif
+  {
+    srcLeft = drawGetBufferClipLeftAsFloat();
+    srcTop = drawGetBufferClipTopAsFloat();
+    srcRight = srcLeft + drawGetBufferClipWidthAsFloat();
+    srcBottom = srcTop + drawGetBufferClipHeightAsFloat();
+  }
+
+  srcLeft /= baseWidth;
+  srcRight /= baseWidth;
+  srcTop /= baseHeight;
+  srcBottom /= baseHeight;
 }
 
 bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
@@ -863,8 +926,6 @@ bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX
 
 bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
 {
-  //float width = static_cast<float>(_current_draw_mode->width);
-  //float height = static_cast<float>(_current_draw_mode->height);
   float width = static_cast<float>(_output_width);
   float height = static_cast<float>(_output_height);
 
@@ -913,24 +974,7 @@ void GfxDrvDXGI::FlipTexture()
 
   ReleaseCOM(&renderTargetView);
 
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-  {
-    D3D11_BOX sourceRegion;
-    sourceRegion.left   = RP.GetClippingOffsetLeftAdjusted();
-    sourceRegion.right  = RP.GetClippingOffsetLeftAdjusted() + RP.GetScreenWidthAdjusted() / RP.GetDisplayScale();
-    sourceRegion.top    = RP.GetClippingOffsetTopAdjusted();
-    sourceRegion.bottom = RP.GetClippingOffsetTopAdjusted() + RP.GetScreenHeightAdjusted() / RP.GetDisplayScale();
-    sourceRegion.front  = 0;
-    sourceRegion.back   = 1;
-
-    _immediateContext->CopySubresourceRegion(backBuffer, 0, 0, 0, 0, amigaScreenBuffer, 0, &sourceRegion);
-  }
-  else
-#endif
-  {
-    RenderAmigaScreenToBackBuffer();
-  }
+  RenderAmigaScreenToBackBuffer();
 
   ReleaseCOM(&backBuffer);
 
@@ -1263,7 +1307,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
       lDisplayScale = 1;
     }
 
-    bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, lDisplayScale, 32, filename);
+    bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
   }
   else
   {
