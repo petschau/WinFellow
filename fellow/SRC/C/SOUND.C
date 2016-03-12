@@ -741,7 +741,7 @@ void soundPlaybackInitialize(void)
     soundVolumeTableInitialize(soundGetStereo());
     soundSetBufferSampleCount(0);
     sound_current_buffer = 0;
-    soundSetBufferSampleCountMax(soundGetRateReal() / (1000 / soundGetBufferLength()));
+    soundSetBufferSampleCountMax(static_cast<ULO>(static_cast<float>(soundGetRateReal()) / (1000.0f / static_cast<float>(soundGetBufferLength()))));
   }
 }
 
@@ -803,6 +803,18 @@ void soundIORegistersClear(void)
 }
 
 
+void soundCopyBufferOverrunToCurrentBuffer(ULO available_samples, ULO previous_buffer)
+{
+  ULO pos = 0;
+  for (ULO i = soundGetBufferSampleCountMax(); i < available_samples; i++)
+  {
+    sound_left[sound_current_buffer][pos] = sound_left[previous_buffer][i];
+    sound_right[sound_current_buffer][pos] = sound_right[previous_buffer][i];
+    pos++;
+  }
+  soundSetBufferSampleCount(pos + MAX_BUFFER_SAMPLES*sound_current_buffer);
+}
+
 /*===========================================================================*/
 /* Called on end of line                                                     */
 /*===========================================================================*/
@@ -812,20 +824,29 @@ void soundEndOfLine(void)
   if (soundGetEmulation() != SOUND_NONE)
   {
     soundFrequencyHandler();
-    if ((soundGetBufferSampleCount() - (sound_current_buffer*MAX_BUFFER_SAMPLES)) >=
-      soundGetBufferSampleCountMax())
+    ULO available_samples = soundGetBufferSampleCount() - sound_current_buffer*MAX_BUFFER_SAMPLES;
+    if (available_samples >= soundGetBufferSampleCountMax())
     {
-	if (soundGetEmulation() == SOUND_PLAY)
-	{
-	  soundDrvPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
-	}
-	if (soundGetWAVDump())
-	{
-	  wavPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
-	}
-	sound_current_buffer++;
-	if (sound_current_buffer > 1) sound_current_buffer = 0;
-	soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
+      if (soundGetEmulation() == SOUND_PLAY)
+      {
+        soundDrvPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
+      }
+      if (soundGetWAVDump())
+      {
+        wavPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
+      }
+      int previous_buffer = sound_current_buffer;
+      sound_current_buffer++;
+      if (sound_current_buffer > 1)
+      {
+        sound_current_buffer = 0;
+      }
+      soundSetBufferSampleCount(0 + MAX_BUFFER_SAMPLES*sound_current_buffer);
+
+      if (available_samples > soundGetBufferSampleCountMax())
+      {
+        soundCopyBufferOverrunToCurrentBuffer(available_samples, previous_buffer);
+      }
     }
   }
 }
