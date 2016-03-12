@@ -124,11 +124,13 @@ void soundDrvPollBufferPosition(void);
 /* Multimedia Callback fnc. Used when DirectSound notification unsupported  */
 /*==========================================================================*/
 
+__int64 timertime = 0;
+
 void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
   soundDrvPollBufferPosition();
+  timertime++;
 }
-
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
