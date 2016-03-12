@@ -1150,9 +1150,9 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
     else
     {
       srcwin.left   = RP.GetClippingOffsetLeftAdjusted();
-      srcwin.right  = RP.GetScreenWidthAdjusted() + RP.GetClippingOffsetLeftAdjusted();
+      srcwin.right  = RP.GetSourceBufferWidth() + RP.GetClippingOffsetLeftAdjusted();
       srcwin.top    = RP.GetClippingOffsetTopAdjusted();
-      srcwin.bottom = RP.GetScreenHeightAdjusted() + RP.GetClippingOffsetTopAdjusted();
+      srcwin.bottom = RP.GetSourceBufferHeight() + RP.GetClippingOffsetTopAdjusted();
     }
 #endif
   }

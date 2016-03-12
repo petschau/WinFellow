@@ -624,7 +624,9 @@ ULO RetroPlatform::GetClippingOffsetLeftAdjusted(void)
   ULO lClippingOffsetLeft = lClippingOffsetLeftRP;
     
   if (lClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
-    lClippingOffsetLeft = (lClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT) / 2;
+    lClippingOffsetLeft = (lClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT);
+
+  lClippingOffsetLeft /= 2;
 
 #ifdef _DEBUGVERBOSE
   fellowAddLog("RetroPlatform::GetClippingOffsetLeftAdjusted(): left offset adjusted from %u to %u\n", 
@@ -668,6 +670,11 @@ ULO RetroPlatform::GetScreenHeightAdjusted(void)
   return lScreenHeight;
 }
 
+ULO RetroPlatform::GetSourceBufferHeight(void)
+{
+  return lScreenHeightRP;
+}
+
 ULO RetroPlatform::GetCPUSpeed(void)
 {
   return cfgGetCPUSpeed(pConfig);
@@ -680,6 +687,11 @@ ULO RetroPlatform::GetScreenWidthAdjusted(void)
   lScreenWidth = lScreenWidthRP / 2 * RetroPlatform::GetDisplayScale();
 
   return lScreenWidth;
+}
+
+ULO RetroPlatform::GetSourceBufferWidth(void)
+{
+  return lScreenWidthRP / 2;
 }
 
 ULO RetroPlatform::GetScreenWidth(void) 

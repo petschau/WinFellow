@@ -67,6 +67,10 @@ public:
   
   ULO        GetScreenHeightAdjusted(void);
   ULO        GetScreenWidthAdjusted(void);
+
+  ULO        GetSourceBufferWidth(void);
+  ULO        GetSourceBufferHeight(void);
+
   ULONGLONG  GetTime(void);
 
   // IPC guest to host communication - asynchronous post
