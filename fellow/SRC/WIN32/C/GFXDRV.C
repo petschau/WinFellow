@@ -49,7 +49,7 @@ void gfxDrvInvalidateBufferPointer()
 
 __int64 t_previous = 0;
 
-extern __int64 timertime;
+extern volatile __int64 timertime;
 
 void DelayFlip()
 {
