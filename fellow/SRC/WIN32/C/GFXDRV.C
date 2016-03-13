@@ -241,11 +241,18 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
     if (!gfxDrvDXGIValidateRequirements())
     {
       fellowAddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+      gfx_drv_use_dxgi = false;
       return gfxDrvDDrawStartup();
     }
 
     gfxDrvDXGI = new GfxDrvDXGI();
-    return gfxDrvDXGI->Startup();
+    bool dxgiStartupResult = gfxDrvDXGI->Startup();
+    if (dxgiStartupResult)
+    {
+      return true;
+    }
+    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    gfx_drv_use_dxgi = false;
   }
 
   return gfxDrvDDrawStartup();
