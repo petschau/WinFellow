@@ -3425,18 +3425,18 @@ static STR FileType[7][CFG_FILENAME_LENGTH] = {
 
   void wguiSetClipFromDisplayScale()
   {
-    if (cfgGetDisplayScaleStrategy(wgui_cfg) == DISPLAYSCALE_AUTO)
-    {
-      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::FIXED_CLIP);
-      cfgSetClipLeft(wgui_cfg, 88);
-      cfgSetClipTop(wgui_cfg, 26);
-      cfgSetClipRight(wgui_cfg, 472);
-      cfgSetClipBottom(wgui_cfg, 314);
-    }
-    else
-    {
-      cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
-    }
+    //if (cfgGetDisplayScaleStrategy(wgui_cfg) == DISPLAYSCALE_AUTO)
+    //{
+    //  cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::FIXED_CLIP);
+    //  cfgSetClipLeft(wgui_cfg, 88);
+    //  cfgSetClipTop(wgui_cfg, 26);
+    //  cfgSetClipRight(wgui_cfg, 472);
+    //  cfgSetClipBottom(wgui_cfg, 314);
+    //}
+    //else
+    //{
+    cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
+    //}
   }
 
   BOOLE wguiEnter(void)
