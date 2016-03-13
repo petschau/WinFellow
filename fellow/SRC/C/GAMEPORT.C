@@ -67,6 +67,19 @@ void gameportSetInput(ULO index, gameport_inputs gameportinput) {
   gameport_input[index] = gameportinput;
 }
 
+BOOLE gameportGetAnalogJoystickInUse(void)
+{
+  BOOLE result = FALSE;
+  ULO i;
+
+  for(i = 0; i < 2; i++)
+  {
+    if (gameport_input[i] == GP_ANALOG0 || gameport_input[i] == GP_ANALOG1)
+      result = TRUE;
+  }
+
+  return result;
+}
 
 /*===========================================================================*/
 /* IO-Registers                                                              */

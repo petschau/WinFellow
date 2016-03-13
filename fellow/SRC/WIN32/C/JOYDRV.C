@@ -273,14 +273,17 @@ void joyDrvDInputSetCooperativeLevel(int port)
 
 void joyDrvDInputUnacquire(int port)
 {
-  fellowAddLog( "joyDrvDInputUnacquire(%d)\n", port );
-
-  if (!joy_drv_failed)
+  if (gameportGetAnalogJoystickInUse())
   {
-    HRESULT res = IDirectInputDevice8_Unacquire( joy_drv_lpDID[port] );
-    if (res != DI_OK)
+    fellowAddLog("joyDrvDInputUnacquire(%d)\n", port);
+
+    if (!joy_drv_failed)
     {
-      joyDrvDInputFailure("joyDrvDInputUnacquire():", res);
+      HRESULT res = IDirectInputDevice8_Unacquire(joy_drv_lpDID[port]);
+      if (res != DI_OK)
+      {
+        joyDrvDInputFailure("joyDrvDInputUnacquire():", res);
+      }
     }
   }
 }
@@ -292,21 +295,24 @@ void joyDrvDInputUnacquire(int port)
 
 void joyDrvDInputAcquire(int port)
 {
-  fellowAddLog( "joyDrvDInputAcquire(%d)\n", port );
-
-  if (joy_drv_in_use)
+  if (gameportGetAnalogJoystickInUse())
   {
-    HRESULT res;
-		
-    joyDrvDInputUnacquire( port );
+    fellowAddLog("joyDrvDInputAcquire(%d)\n", port);
 
-    /* A new window is sometimes created, so set new hwnd cooperative level */
-    joyDrvDInputSetCooperativeLevel( port );
-
-    res = IDirectInputDevice8_Acquire( joy_drv_lpDID[port] );
-    if (res != DI_OK)
+    if (joy_drv_in_use)
     {
-      joyDrvDInputFailure("joyDrvDInputAcquire():", res);
+      HRESULT res;
+
+      // joyDrvDInputUnacquire(port);
+
+      /* A new window is sometimes created, so set new hwnd cooperative level */
+      joyDrvDInputSetCooperativeLevel(port);
+
+      res = IDirectInputDevice8_Acquire(joy_drv_lpDID[port]);
+      if (res != DI_OK)
+      {
+        joyDrvDInputFailure("joyDrvDInputAcquire():", res);
+      }
     }
   }
 }
