@@ -1,6 +1,7 @@
 #include "uart.h"
 #include "BUS.H"
 #include "FMEM.H"
+#include "fileops.h"
 
 UART uart;
 
@@ -71,8 +72,10 @@ void UART::CopyTransmitBufferToShiftRegister()
 
     memoryWriteWord(0x8001, 0xdff09c); // TBE interrupt
 
+#ifdef _DEBUG
     OpenOutputFile();
     fwrite(&_transmitBuffer, 1, 1, _outputFile);
+#endif
   }
 }
 
@@ -236,9 +239,11 @@ void UART::EmulationStop()
 }
 
 UART::UART()
-  : _outputFileName("uart_output.bin"),
-  _outputFile(nullptr)
+  : _outputFile(nullptr)
 {
+  char tempFileName[256];
+  fileopsGetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
+  _outputFileName = tempFileName;
   ClearState();
 }
 
