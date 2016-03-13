@@ -666,7 +666,7 @@ static ULL drawMake64BitColorFrom16Bit(UWO color)
   return color64;
 }
 
-static ULL drawMake64BitColorFrom32Bit(ULO color)
+ULL drawMake64BitColorFrom32Bit(ULO color)
 {
   ULL color64 = ((ULL) color) | ((ULL) color) << 32;
   return color64;
@@ -3239,7 +3239,7 @@ static void drawLineHAM2x1_32Bit(graph_line *linedescription, ULO nextlineoffset
     drawSetPixel2x1_32Bit(framebuffer++, drawMake64BitColorFrom32Bit(hampixel));
   }
 
-  line_exact_sprites->MergeHAM2x32((ULO*)draw_buffer_current_ptr_local, linedescription);
+  line_exact_sprites->MergeHAM2x1x32((ULO*)draw_buffer_current_ptr_local, linedescription);
 
   draw_buffer_info.current_ptr = (UBY*)framebuffer;
 
@@ -3283,9 +3283,7 @@ static void drawLineHAM2x2_32Bit(graph_line *linedescription, ULO nextlineoffset
     drawSetPixel2x2_32Bit(framebuffer++, nextlineoffset1, drawMake64BitColorFrom32Bit(hampixel));
   }
 
-  // below and above calls to spriteMerge could be optimized by calling a single 2x2x32 function
-  line_exact_sprites->MergeHAM2x32((ULO*)draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM2x32(((ULO*)draw_buffer_current_ptr_local) + nextlineoffset1, linedescription);
+  line_exact_sprites->MergeHAM2x2x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (UBY*)framebuffer;
 
@@ -3330,9 +3328,7 @@ static void drawLineHAM4x2_32Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 2;
   }
 
-  // below and above calls to spriteMerge could be optimized by calling a single 2x2x32 function
-  line_exact_sprites->MergeHAM4x32((ULO*)draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM4x32(((ULO*)draw_buffer_current_ptr_local) + nextlineoffset1, linedescription);
+  line_exact_sprites->MergeHAM4x2x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1);
 
   draw_buffer_info.current_ptr = (UBY*)framebuffer;
 
@@ -3379,11 +3375,7 @@ static void drawLineHAM4x4_32Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 2;
   }
 
-  // below and above calls to spriteMerge could be optimized by calling a single 2x4x32 function
-  line_exact_sprites->MergeHAM4x32((ULO*)draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM4x32(((ULO*)draw_buffer_current_ptr_local) + nextlineoffset1, linedescription);
-  line_exact_sprites->MergeHAM4x32(((ULO*)draw_buffer_current_ptr_local) + nextlineoffset2, linedescription);
-  line_exact_sprites->MergeHAM4x32(((ULO*)draw_buffer_current_ptr_local) + nextlineoffset3, linedescription);
+  line_exact_sprites->MergeHAM4x4x32(reinterpret_cast<ULL*>(draw_buffer_current_ptr_local), linedescription, nextlineoffset1, nextlineoffset2, nextlineoffset3);
   draw_buffer_info.current_ptr = (UBY*)framebuffer;
 
 #ifdef DRAW_TSC_PROFILE

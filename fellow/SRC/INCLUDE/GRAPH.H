@@ -110,6 +110,7 @@ typedef struct {
   ULO frames_left_until_BG_skip;
   ULO sprite_ham_slot;
   ULO bplcon2;
+  bool has_ham_sprites_online;
 } graph_line;
 
 

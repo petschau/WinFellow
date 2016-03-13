@@ -92,6 +92,8 @@ extern ULO draw_clear_buffers;
 
 extern draw_buffer_information draw_buffer_info;
 
+extern ULL drawMake64BitColorFrom32Bit(ULO color);
+
 /*===========================================================================*/
 /* Module properties                                                         */
 /*===========================================================================*/

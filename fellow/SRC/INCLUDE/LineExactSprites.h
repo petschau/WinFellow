@@ -155,8 +155,10 @@ public:
   void MergeHAM4x16(ULL *frameptr, graph_line *linedescription);
   void MergeHAM2x24(UBY *frameptr, graph_line *linedescription);
   void MergeHAM4x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM2x32(ULO *frameptr, graph_line *linedescription);
-  void MergeHAM4x32(ULO *frameptr, graph_line *linedescription);
+  void MergeHAM2x1x32(ULO *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
 
   virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
   virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number);

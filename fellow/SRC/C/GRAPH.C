@@ -125,6 +125,7 @@ void graphLineDescClear(void)
       graph_frame[frame][line].colors[0] = 0;
       graph_frame[frame][line].frames_left_until_BG_skip = drawGetBufferCount(); /* ie. one more than normal to draw once in each buffer */
       graph_frame[frame][line].sprite_ham_slot = 0xffffffff;
+      graph_frame[frame][line].has_ham_sprites_online = false;
     }
   }
 }
@@ -1755,8 +1756,7 @@ void graphLinedescGeometry(graph_line* current_graph_line)
 
 /*-------------------------------------------------------------------------------
 /* Smart sets line routines for this line
-/* [4 + esp] - linedesc struct
-/* Return 1 if routines have changed (eax)
+/* Return TRUE if routines have changed
 /*-------------------------------------------------------------------------------*/
 BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 {
@@ -1783,8 +1783,7 @@ BOOLE graphLinedescRoutinesSmart(graph_line* current_graph_line)
 
 /*-------------------------------------------------------------------------------
 /* Sets line geometry data in line description
-/* [4 + esp] - linedesc struct
-/* Return 1 if geometry has changed (eax)
+/* Return TRUE if geometry has changed
 /*-------------------------------------------------------------------------------*/
 BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 {
@@ -1882,8 +1881,7 @@ BOOLE graphLinedescGeometrySmart(graph_line* current_graph_line)
 
 /*-------------------------------------------------------------------------------
 /* Smart copy color block to line description
-/* [4 + esp] - linedesc struct
-/* Return 1 if colors have changed (eax)
+/* Return TRUE if colors have changed
 /*-------------------------------------------------------------------------------*/
 
 BOOLE graphLinedescColorsSmart(graph_line* current_graph_line)
@@ -1941,11 +1939,7 @@ static BOOLE graphCompareCopyRest(ULO first_pixel, LON pixel_count, UBY* dest_li
 
 /*-------------------------------------------------------------------------------
 /* Copy data and compare
-/* [4 + esp] - source playfield
-/* [8 + esp] - destination playfield
-/* [12 + esp] - pixel count
-/* [16 + esp] - first pixel
-/* Return 1 = not equal (eax), 0 = equal
+/* Return TRUE = not equal FALSE = equal
 /*-------------------------------------------------------------------------------*/
 
 static BOOLE graphCompareCopy(ULO first_pixel, LON pixel_count, UBY* dest_line, UBY* source_line)
@@ -2076,8 +2070,7 @@ BOOLE graphLinedescSetBitplaneLine(graph_line* current_graph_line)
 
 /*-------------------------------------------------------------------------------
 /* Smart makes a description of this line
-/* [4 + esp] - linedesc struct
-/* Return 1 if linedesc has changed (eax)
+/* Return TRUE if linedesc has changed
 /*-------------------------------------------------------------------------------*/
 
 BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
@@ -2095,7 +2088,6 @@ BOOLE graphLinedescMakeSmart(graph_line* current_graph_line)
 
 /*===========================================================================*/
 /* Smart compose the visible layout of the line                              */
-/* [4 + esp] - linedesc struct                                               */
 /*===========================================================================*/
 
 void graphComposeLineOutputSmart(graph_line* current_graph_line)
@@ -2120,6 +2112,13 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
       line_desc_changed |= graphCompareCopy(current_graph_line->DIW_first_draw, (LON) (current_graph_line->DIW_pixel_count), current_graph_line->line2, graph_line2_tmp);
     }
 
+    if (current_graph_line->has_ham_sprites_online)
+    {
+      // Compare will not detect old HAM sprites by looking at pixel data etc. Always mark line as dirty.
+      line_desc_changed = TRUE;
+      current_graph_line->has_ham_sprites_online = false;
+    }
+
     // add sprites to the line image
     if (line_exact_sprites->HasSpritesOnLine())
     {
@@ -2136,6 +2135,10 @@ void graphComposeLineOutputSmart(graph_line* current_graph_line)
     {
       current_graph_line->linetype = GRAPH_LINE_BPL_SKIP;
     }
+  }
+  else
+  {
+    current_graph_line->has_ham_sprites_online = false;
   }
 }
 
