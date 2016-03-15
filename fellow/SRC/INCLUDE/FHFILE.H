@@ -22,6 +22,9 @@ typedef struct {
   fhfile_status status;
   FILE *F;
   ULO size;
+  bool hasRigidDiskBlock;
+  ULO lowCylinder;
+  ULO highCylinder;
 } fhfile_dev;
 
 extern void fhfileDo(ULO data);

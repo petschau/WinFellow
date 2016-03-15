@@ -65,7 +65,49 @@ ULO fhfile_bootcode;
 ULO fhfile_configdev;
 UBY fhfile_rom[65536];
 
+bool fhfileHasRigidDiskBlock(FILE *F)
+{
+  STR header[5];
+  fread(header, 1, 4, F);
+  header[4] = '\0';
+  return strcmp(header, "RDSK") == 0;
+}
 
+ULO fhfileReadLongFromFile(FILE *F, off_t offset)
+{
+  UBY value[4];
+  fseek(F, offset, SEEK_SET);
+  fread(&value, 1, 4, F);
+  return static_cast<ULO>(value[0]) << 24 | static_cast<ULO>(value[1]) << 16 | static_cast<ULO>(value[2]) << 8 | static_cast<ULO>(value[3]);
+}
+
+void fhfileSetPhysicalGeometryFromRigidDiskBlock(ULO index)
+{
+  ULO blockSize = fhfileReadLongFromFile(fhfile_devs[index].F, 16);
+  ULO cylinders = fhfileReadLongFromFile(fhfile_devs[index].F, 64);
+  ULO sectorsPerTrack = fhfileReadLongFromFile(fhfile_devs[index].F, 68);
+  ULO heads = fhfileReadLongFromFile(fhfile_devs[index].F, 72);
+//  ULO interleave = fhfileReadLongFromFile(fhfile_devs[index].F, 76);
+//  ULO parkingZone = fhfileReadLongFromFile(fhfile_devs[index].F, 80);
+//  ULO writePreComp = fhfileReadLongFromFile(fhfile_devs[index].F, 96);
+//  ULO reducedWrite = fhfileReadLongFromFile(fhfile_devs[index].F, 100);
+//  ULO stepRate = fhfileReadLongFromFile(fhfile_devs[index].F, 104);
+  ULO lowCylinder = fhfileReadLongFromFile(fhfile_devs[index].F, 136);    // Low limit of partitionable area
+  ULO highCylinder = fhfileReadLongFromFile(fhfile_devs[index].F, 140);   // High limit of partitionable area
+
+//  ULO highRDSKBlock = fhfileReadLongFromFile(fhfile_devs[index].F, 152);
+
+  fhfile_devs[index].bytespersector = blockSize;
+  fhfile_devs[index].bytespersector_original = blockSize;
+  fhfile_devs[index].sectorspertrack = sectorsPerTrack * heads;
+  fhfile_devs[index].surfaces = heads;
+  fhfile_devs[index].tracks = cylinders;
+  fhfile_devs[index].reservedblocks = 1;
+  fhfile_devs[index].reservedblocks_original = 1;
+  fhfile_devs[index].lowCylinder = lowCylinder;
+  fhfile_devs[index].highCylinder = highCylinder;
+
+}
 
 /*============================================================================*/
 /* Configuration properties                                                   */
@@ -86,28 +128,44 @@ static void fhfileInitializeHardfile(ULO index) {
   fs_navig_point *fsnp;
 
   if (fhfile_devs[index].F != NULL)                     /* Close old hardfile */
+  {
     fclose(fhfile_devs[index].F);
+  }
   fhfile_devs[index].F = NULL;                           /* Set config values */
   fhfile_devs[index].status = FHFILE_NONE;
-  if ((fsnp = fsWrapMakePoint(fhfile_devs[index].filename)) != NULL) {
+  if ((fsnp = fsWrapMakePoint(fhfile_devs[index].filename)) != NULL)
+  {
     fhfile_devs[index].readonly |= (!fsnp->writeable);
     size = fsnp->size;
-    fhfile_devs[index].F = fopen(fhfile_devs[index].filename,
-      (fhfile_devs[index].readonly) ? "rb" : "r+b");
-    if (fhfile_devs[index].F != NULL) {                          /* Open file */
-      ULO track_size = (fhfile_devs[index].sectorspertrack *
-	fhfile_devs[index].surfaces *
-	fhfile_devs[index].bytespersector);
-      if (size < track_size) {
-	/* Error: File must be at least one track long */
-	fclose(fhfile_devs[index].F);
-	fhfile_devs[index].F = NULL;
-	fhfile_devs[index].status = FHFILE_NONE;
+    fhfile_devs[index].F = fopen(fhfile_devs[index].filename, (fhfile_devs[index].readonly) ? "rb" : "r+b");
+
+    if (fhfile_devs[index].F != NULL)                          /* Open file */
+    {
+      if (fhfileHasRigidDiskBlock(fhfile_devs[index].F))
+      {
+        // RDB configured hardfile
+        fhfileSetPhysicalGeometryFromRigidDiskBlock(index);
+        fhfile_devs[index].size = size;
+        fhfile_devs[index].status = FHFILE_HDF;
       }
-      else {                                                    /* File is OK */
-	fhfile_devs[index].tracks = size / track_size;
-	fhfile_devs[index].size = fhfile_devs[index].tracks * track_size;
-	fhfile_devs[index].status = FHFILE_HDF;
+      else
+      {
+        // Manually configured hardfile
+
+        ULO track_size = (fhfile_devs[index].sectorspertrack * fhfile_devs[index].surfaces * fhfile_devs[index].bytespersector);
+        if (size < track_size)
+        {
+          /* Error: File must be at least one track long */
+          fclose(fhfile_devs[index].F);
+          fhfile_devs[index].F = NULL;
+          fhfile_devs[index].status = FHFILE_NONE;
+        }
+        else                                                    /* File is OK */
+        {
+          fhfile_devs[index].tracks = size / track_size;
+          fhfile_devs[index].size = fhfile_devs[index].tracks * track_size;
+          fhfile_devs[index].status = FHFILE_HDF;
+        }
       }
     }
     free(fsnp);
@@ -205,6 +263,10 @@ static BYT fhfileRead(ULO index)
   ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
   ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
+
+  char s[256];
+  sprintf(s, "FHFileRead: %X, %d\n", offset, length);
+  fellowAddLog(s);
 
   if ((offset + length) > fhfile_devs[index].size)
   {
@@ -317,7 +379,8 @@ static void fhfileBeginIO(void) {
   BYT error = 0;
   ULO unit = memoryReadLong(cpuGetAReg(1) + 24);
 
-  switch (memoryReadWord(cpuGetAReg(1) + 28)) {
+  UWO cmd = memoryReadWord(cpuGetAReg(1) + 28);
+  switch (cmd) {
     case 2:
       error = fhfileRead(unit);
       break;
@@ -503,8 +566,16 @@ static void fhfileMakeDOSDevPacket(ULO devno, ULO unitnameptr, ULO devnameptr){
     memoryDmemSetLong(fhfile_devs[devno].reservedblocks);    /* 40 Reserved blocks, min. 1 */
     memoryDmemSetLong(0);				     /* 44 mdn_prefac - Unused */
     memoryDmemSetLong(0);				     /* 48 Interleave */
-    memoryDmemSetLong(0);				     /* 52 Lower cylinder */
-    memoryDmemSetLong(fhfile_devs[devno].tracks - 1);	     /* 56 Upper cylinder */
+    if (fhfile_devs[devno].hasRigidDiskBlock)
+    {
+      memoryDmemSetLong(fhfile_devs[devno].lowCylinder);	     /* 52 Lower cylinder */
+      memoryDmemSetLong(fhfile_devs[devno].highCylinder);	     /* 56 Upper cylinder */
+    }
+    else
+    {
+      memoryDmemSetLong(0);				     /* 52 Lower cylinder */
+      memoryDmemSetLong(fhfile_devs[devno].tracks - 1);	     /* 56 Upper cylinder */
+    }
     memoryDmemSetLong(0);				     /* 60 Number of buffers */
     memoryDmemSetLong(0);				     /* 64 Type of memory for buffers */
     memoryDmemSetLong(0x7fffffff);			     /* 68 Largest transfer */
