@@ -141,7 +141,9 @@ static void fhfileInitializeHardfile(ULO index) {
 
     if (fhfile_devs[index].F != NULL)                          /* Open file */
     {
-      if (fhfileHasRigidDiskBlock(fhfile_devs[index].F))
+      fhfile_devs[index].hasRigidDiskBlock = fhfileHasRigidDiskBlock(fhfile_devs[index].F);
+
+      if (fhfile_devs[index].hasRigidDiskBlock)
       {
         // RDB configured hardfile
         fhfileSetPhysicalGeometryFromRigidDiskBlock(index);
@@ -151,7 +153,6 @@ static void fhfileInitializeHardfile(ULO index) {
       else
       {
         // Manually configured hardfile
-
         ULO track_size = (fhfile_devs[index].sectorspertrack * fhfile_devs[index].surfaces * fhfile_devs[index].bytespersector);
         if (size < track_size)
         {
