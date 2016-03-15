@@ -65,12 +65,10 @@ ULO fhfile_bootcode;
 ULO fhfile_configdev;
 UBY fhfile_rom[65536];
 
-bool fhfileHasRigidDiskBlock(FILE *F)
+void fhfileReadCharsFromFile(FILE *F, off_t offset, STR* destination, size_t count)
 {
-  STR header[5];
-  fread(header, 1, 4, F);
-  header[4] = '\0';
-  return strcmp(header, "RDSK") == 0;
+  fseek(F, offset, SEEK_SET);
+  fread(destination, 1, count, F);
 }
 
 ULO fhfileReadLongFromFile(FILE *F, off_t offset)
@@ -81,21 +79,150 @@ ULO fhfileReadLongFromFile(FILE *F, off_t offset)
   return static_cast<ULO>(value[0]) << 24 | static_cast<ULO>(value[1]) << 16 | static_cast<ULO>(value[2]) << 8 | static_cast<ULO>(value[3]);
 }
 
+bool fhfileHasRigidDiskBlock(FILE *F)
+{
+  STR header[5];
+  fhfileReadCharsFromFile(F, 0, header, 4);
+  header[4] = '\0';
+  return strcmp(header, "RDSK") == 0;
+}
+
 void fhfileSetPhysicalGeometryFromRigidDiskBlock(ULO index)
 {
+  ULO sizeInLongs = fhfileReadLongFromFile(fhfile_devs[index].F, 4);
+  LON checkSum = static_cast<LON>(fhfileReadLongFromFile(fhfile_devs[index].F, 8));
+  ULO hostId = fhfileReadLongFromFile(fhfile_devs[index].F, 12);
   ULO blockSize = fhfileReadLongFromFile(fhfile_devs[index].F, 16);
+  ULO flags = fhfileReadLongFromFile(fhfile_devs[index].F, 20);
+  ULO badBlockList = fhfileReadLongFromFile(fhfile_devs[index].F, 24);
+  ULO partitionList = fhfileReadLongFromFile(fhfile_devs[index].F, 28);
+  ULO fileSystemHeaderList = fhfileReadLongFromFile(fhfile_devs[index].F, 32);
+  ULO driveInitCode = fhfileReadLongFromFile(fhfile_devs[index].F, 36);
+  ULO reserved1 = fhfileReadLongFromFile(fhfile_devs[index].F, 40);
+  ULO reserved2 = fhfileReadLongFromFile(fhfile_devs[index].F, 44);
+  ULO reserved3 = fhfileReadLongFromFile(fhfile_devs[index].F, 48);
+  ULO reserved4 = fhfileReadLongFromFile(fhfile_devs[index].F, 52);
+  ULO reserved5 = fhfileReadLongFromFile(fhfile_devs[index].F, 56);
+  ULO reserved6 = fhfileReadLongFromFile(fhfile_devs[index].F, 60);
+
+  // Physical drive characteristics
   ULO cylinders = fhfileReadLongFromFile(fhfile_devs[index].F, 64);
   ULO sectorsPerTrack = fhfileReadLongFromFile(fhfile_devs[index].F, 68);
   ULO heads = fhfileReadLongFromFile(fhfile_devs[index].F, 72);
-//  ULO interleave = fhfileReadLongFromFile(fhfile_devs[index].F, 76);
-//  ULO parkingZone = fhfileReadLongFromFile(fhfile_devs[index].F, 80);
-//  ULO writePreComp = fhfileReadLongFromFile(fhfile_devs[index].F, 96);
-//  ULO reducedWrite = fhfileReadLongFromFile(fhfile_devs[index].F, 100);
-//  ULO stepRate = fhfileReadLongFromFile(fhfile_devs[index].F, 104);
+  ULO interleave = fhfileReadLongFromFile(fhfile_devs[index].F, 76);
+  ULO parkingZone = fhfileReadLongFromFile(fhfile_devs[index].F, 80);
+  ULO reserved7 = fhfileReadLongFromFile(fhfile_devs[index].F, 84);
+  ULO reserved8 = fhfileReadLongFromFile(fhfile_devs[index].F, 88);
+  ULO reserved9 = fhfileReadLongFromFile(fhfile_devs[index].F, 92);
+  ULO writePreComp = fhfileReadLongFromFile(fhfile_devs[index].F, 96);
+  ULO reducedWrite = fhfileReadLongFromFile(fhfile_devs[index].F, 100);
+  ULO stepRate = fhfileReadLongFromFile(fhfile_devs[index].F, 104);
+  ULO reserved10 = fhfileReadLongFromFile(fhfile_devs[index].F, 108);
+  ULO reserved11 = fhfileReadLongFromFile(fhfile_devs[index].F, 112);
+  ULO reserved12 = fhfileReadLongFromFile(fhfile_devs[index].F, 116);
+  ULO reserved13 = fhfileReadLongFromFile(fhfile_devs[index].F, 120);
+  ULO reserved14 = fhfileReadLongFromFile(fhfile_devs[index].F, 124);
+
+  // Logical drive characteristics
+  ULO rdbBlockLow = fhfileReadLongFromFile(fhfile_devs[index].F, 128);
+  ULO rdbBlockHigh = fhfileReadLongFromFile(fhfile_devs[index].F, 132);
   ULO lowCylinder = fhfileReadLongFromFile(fhfile_devs[index].F, 136);    // Low limit of partitionable area
   ULO highCylinder = fhfileReadLongFromFile(fhfile_devs[index].F, 140);   // High limit of partitionable area
+  ULO cylinderBlocks = fhfileReadLongFromFile(fhfile_devs[index].F, 144);
+  ULO autoParkSeconds = fhfileReadLongFromFile(fhfile_devs[index].F, 148);
+  ULO highRDSKBlock = fhfileReadLongFromFile(fhfile_devs[index].F, 152);
+  ULO reserved15 = fhfileReadLongFromFile(fhfile_devs[index].F, 156);
 
-//  ULO highRDSKBlock = fhfileReadLongFromFile(fhfile_devs[index].F, 152);
+  // Drive identification
+  STR diskVendor[8];
+  STR diskProduct[16];
+  STR diskRevision[4];
+  STR controllerVendor[8];
+  STR controllerProduct[16];
+  STR controllerRevision[4];
+
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 160, diskVendor, 8);
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 168, diskProduct, 16);
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 184, diskRevision, 4);
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 188, controllerVendor, 8);
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 196, controllerProduct, 16);
+  fhfileReadCharsFromFile(fhfile_devs[index].F, 212, controllerRevision, 4);
+
+  ULO reserved16 = fhfileReadLongFromFile(fhfile_devs[index].F, 216);
+  ULO reserved17 = fhfileReadLongFromFile(fhfile_devs[index].F, 220);
+  ULO reserved18 = fhfileReadLongFromFile(fhfile_devs[index].F, 224);
+  ULO reserved19 = fhfileReadLongFromFile(fhfile_devs[index].F, 228);
+  ULO reserved20 = fhfileReadLongFromFile(fhfile_devs[index].F, 232);
+  ULO reserved21 = fhfileReadLongFromFile(fhfile_devs[index].F, 236);
+  ULO reserved22 = fhfileReadLongFromFile(fhfile_devs[index].F, 240);
+  ULO reserved23 = fhfileReadLongFromFile(fhfile_devs[index].F, 244);
+  ULO reserved24 = fhfileReadLongFromFile(fhfile_devs[index].F, 248);
+  ULO reserved25 = fhfileReadLongFromFile(fhfile_devs[index].F, 252);
+
+#ifdef _DEBUG
+  fellowAddLog("RDB Hardfile at index %u: %s\n", index, fhfile_devs[index].filename);
+  fellowAddLog("-----------------------------------------\n");
+  fellowAddLog("0   - id:                     RDSK\n");
+  fellowAddLog("4   - size in longs:          %u\n", sizeInLongs);
+  fellowAddLog("8   - checksum:               %d\n", checkSum);
+  fellowAddLog("12  - host id:                %u\n", hostId);
+  fellowAddLog("16  - block size:             %u\n", blockSize);
+  fellowAddLog("20  - flags:                  %X\n", flags);
+  fellowAddLog("24  - bad block list:         %X\n", badBlockList);
+  fellowAddLog("28  - partition list:         %X\n", partitionList);
+  fellowAddLog("32  - filesystem header list: %X\n", fileSystemHeaderList);
+  fellowAddLog("36  - drive init code:        %X\n", driveInitCode);
+  fellowAddLog("40  - reserved 1:             %X\n", reserved1);
+  fellowAddLog("44  - reserved 2:             %X\n", reserved2);
+  fellowAddLog("48  - reserved 3:             %X\n", reserved3);
+  fellowAddLog("52  - reserved 4:             %X\n", reserved4);
+  fellowAddLog("56  - reserved 5:             %X\n", reserved5);
+  fellowAddLog("60  - reserved 6:             %X\n", reserved6);
+  fellowAddLog("Physical drive characteristics:---------\n");
+  fellowAddLog("64  - cylinders:              %u\n", cylinders);
+  fellowAddLog("68  - sectors per track:      %u\n", sectorsPerTrack);
+  fellowAddLog("72  - heads:                  %u\n", heads);
+  fellowAddLog("76  - interleave:             %u\n", interleave);
+  fellowAddLog("80  - parking zone:           %u\n", parkingZone);
+  fellowAddLog("84  - reserved 7:             %X\n", reserved7);
+  fellowAddLog("88  - reserved 8:             %X\n", reserved8);
+  fellowAddLog("92  - reserved 9:             %X\n", reserved9);
+  fellowAddLog("96  - write pre-compensation: %u\n", writePreComp);
+  fellowAddLog("100 - reduced write:          %u\n", reducedWrite);
+  fellowAddLog("104 - step rate:              %u\n", stepRate);
+  fellowAddLog("108 - reserved 10:            %X\n", reserved10);
+  fellowAddLog("112 - reserved 11:            %X\n", reserved11);
+  fellowAddLog("116 - reserved 12:            %X\n", reserved12);
+  fellowAddLog("120 - reserved 13:            %X\n", reserved13);
+  fellowAddLog("124 - reserved 14:            %X\n", reserved14);
+  fellowAddLog("Logical drive characteristics:----------\n");
+  fellowAddLog("128 - RDB block low:          %u\n", rdbBlockLow);
+  fellowAddLog("132 - RDB block high:         %u\n", rdbBlockHigh);
+  fellowAddLog("136 - low cylinder:           %u\n", lowCylinder);
+  fellowAddLog("140 - high cylinder:          %u\n", highCylinder);
+  fellowAddLog("144 - cylinder blocks:        %u\n", cylinderBlocks);
+  fellowAddLog("148 - auto park seconds:      %u\n", autoParkSeconds);
+  fellowAddLog("152 - high RDSK block:        %u\n", highRDSKBlock);
+  fellowAddLog("156 - reserved 15:            %X\n", reserved15);
+  fellowAddLog("Drive identification:-------------------\n");
+  fellowAddLog("160 - disk vendor:            %.8s\n", diskVendor);
+  fellowAddLog("168 - disk product:           %.16s\n", diskProduct);
+  fellowAddLog("184 - disk revision:          %.4s\n", diskRevision);
+  fellowAddLog("188 - controller vendor:      %.8s\n", controllerVendor);
+  fellowAddLog("196 - controller product:     %.16s\n", controllerProduct);
+  fellowAddLog("212 - controller revision:    %.4s\n", controllerRevision);
+  fellowAddLog("216 - reserved 16:            %X\n", reserved16);
+  fellowAddLog("220 - reserved 17:            %X\n", reserved17);
+  fellowAddLog("224 - reserved 18:            %X\n", reserved18);
+  fellowAddLog("228 - reserved 19:            %X\n", reserved19);
+  fellowAddLog("232 - reserved 20:            %X\n", reserved20);
+  fellowAddLog("236 - reserved 21:            %X\n", reserved21);
+  fellowAddLog("240 - reserved 22:            %X\n", reserved22);
+  fellowAddLog("244 - reserved 23:            %X\n", reserved23);
+  fellowAddLog("248 - reserved 24:            %X\n", reserved24);
+  fellowAddLog("252 - reserved 25:            %X\n", reserved25);
+  fellowAddLog("-----------------------------------------\n");
+#endif
 
   fhfile_devs[index].bytespersector = blockSize;
   fhfile_devs[index].bytespersector_original = blockSize;
@@ -106,7 +233,6 @@ void fhfileSetPhysicalGeometryFromRigidDiskBlock(ULO index)
   fhfile_devs[index].reservedblocks_original = 1;
   fhfile_devs[index].lowCylinder = lowCylinder;
   fhfile_devs[index].highCylinder = highCylinder;
-
 }
 
 /*============================================================================*/
@@ -264,10 +390,6 @@ static BYT fhfileRead(ULO index)
   ULO dest = memoryReadLong(cpuGetAReg(1) + 40);
   ULO offset = memoryReadLong(cpuGetAReg(1) + 44);
   ULO length = memoryReadLong(cpuGetAReg(1) + 36);
-
-  char s[256];
-  sprintf(s, "FHFileRead: %X, %d\n", offset, length);
-  fellowAddLog(s);
 
   if ((offset + length) > fhfile_devs[index].size)
   {
