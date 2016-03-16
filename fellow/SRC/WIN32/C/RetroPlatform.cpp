@@ -1250,7 +1250,7 @@ void RetroPlatform::SetScreenMode(const char *szScreenMode)
 
 void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm) 
 {
-  ULO lScalingFactor = 0, lDisplay = 0;
+  ULO lScalingFactor = 0, lDisplay = 0, lHeight = 0, lWidth = 0;
 
   lScalingFactor = RP_SCREENMODE_SCALE  (sm->dwScreenMode);
   lDisplay       = RP_SCREENMODE_DISPLAY(sm->dwScreenMode);
@@ -1266,7 +1266,12 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
     lScalingFactor, lDisplay);
 #endif
   
-  if(lDisplay == 0) {
+  // windowed mode
+  if(lDisplay == 0) 
+  {
+    lHeight = sm->lClipHeight;
+    lWidth  = sm->lClipWidth;
+
     RetroPlatform::SetScreenWindowed(true);
 
     switch(lScalingFactor)
@@ -1288,14 +1293,18 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
     }
   }
 
+  // fullscreen, primary monitor
   if(lDisplay == 1)
   {
+    lHeight = GetSystemMetrics(SM_CYSCREEN);
+    lWidth  = GetSystemMetrics(SM_CXSCREEN) * 2;
     RetroPlatform::SetScreenWindowed(false);
 
     switch(lScalingFactor)
     {
       case RP_SCREENMODE_SCALE_MAX:
         // automatically scale to max - set in conjunction with fullscreen mode
+        // TODO: this probably has to be set to automatic scaling (0)
         RetroPlatform::SetDisplayScale(1);
         break;
       default:
@@ -1305,10 +1314,10 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
 
   RetroPlatform::SetClippingOffsetLeft(sm->lClipLeft);
   RetroPlatform::SetClippingOffsetTop (sm->lClipTop);
-  RetroPlatform::SetScreenHeight      (sm->lClipHeight);
-  RetroPlatform::SetScreenWidth       (sm->lClipWidth);
-  cfgSetScreenHeight(pConfig, sm->lClipHeight);
-  cfgSetScreenWidth (pConfig, sm->lClipWidth);
+  RetroPlatform::SetScreenHeight      (lHeight);
+  RetroPlatform::SetScreenWidth       (lWidth);
+  cfgSetScreenHeight(pConfig, lHeight);
+  cfgSetScreenWidth (pConfig, lWidth);
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
@@ -1411,7 +1420,7 @@ bool RetroPlatform::SendFeatures(void)
 
 #ifdef _DEBUG
     dFeatureFlags |= RP_FEATURE_FULLSCREEN;
-    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is direct draw\n");
+    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is DirectDraw\n");
 #endif
   }
   else if (pConfig->m_displaydriver == DISPLAYDRIVER_DIRECT3D11) 
@@ -1419,9 +1428,10 @@ bool RetroPlatform::SendFeatures(void)
     dFeatureFlags |= RP_FEATURE_SCREEN2X | RP_FEATURE_SCREEN3X | RP_FEATURE_SCREEN4X;
     dFeatureFlags |= RP_FEATURE_SCANLINES;
     dFeatureFlags |= RP_FEATURE_SCREENCAPTURE;
+    dFeatureFlags |= RP_FEATURE_FULLSCREEN;
 
 #ifdef _DEBUG
-    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is d3d11\n");
+    fellowAddLog("RetroPlatform::SendFeatures(): Display driver is Direct3D\n");
 #endif
   }
   else

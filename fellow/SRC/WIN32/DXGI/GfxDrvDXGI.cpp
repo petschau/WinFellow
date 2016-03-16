@@ -1123,10 +1123,13 @@ void GfxDrvDXGI::RegisterModes()
 
 void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup, const ULO lWidth, const ULO lHeight, const ULO lDisplayScale)
 {
-  fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %ux Direct3D mode, insert resolution %ux%u into list of valid screen resolutions...\n",
-    lDisplayScale, lWidth, lHeight);
+  if (cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config))
+  {
+    fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %ux Direct3D mode, insert resolution %ux%u into list of valid screen resolutions...\n",
+      lDisplayScale, lWidth, lHeight);
 
-  RegisterMode(0, lHeight, lWidth);
+    RegisterMode(GfxDrvDXGIMode::GetNewId(), lHeight, lWidth);
+  }
 
   drawSetMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
     cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
