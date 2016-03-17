@@ -98,9 +98,7 @@ private:
   UBY sprite[8][16];
 
   typedef struct {
-    UBY data[8][16];
-    ULO x[8];
-    BOOLE online[8];
+    spr_merge_list_master merge_list_master[8];
   } sprite_ham_slot;
 
   sprite_ham_slot sprite_ham_slots[313];
