@@ -104,7 +104,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2016/01/22)
+v0.5.4 (2016/03/17)
 \end_layout
 
 \begin_layout Author
@@ -364,8 +364,8 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for the Direct3D 11 graphics API; this currently supports windowed
- display modes only, and requires DirectX 11 to be installed
+support for the Direct3D 11 graphics API; this requires DirectX 11 to be
+ installed
 \end_layout
 
 \begin_deeper
@@ -392,7 +392,23 @@ ability to save screenshots to the pictures folder (hit <Print Screen> to
 \end_layout
 
 \begin_layout Itemize
-support for 3x and 4x scaling in Amiga Forever
+support for automatic, as well as 3x and 4x scaling, which is useful for
+ 4K/high DPI displays; for the best results, try leaving the scaling at
+ 
+\begin_inset Quotes eld
+\end_inset
+
+automatic
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+very basic serial port/UART emulation; nothing can be connected to the serial
+ port; this is mostly used for serial debug logging (which is active only
+ in debug builds of WinFellow), but the port is always being emulated
 \end_layout
 
 \end_deeper
@@ -402,7 +418,7 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-improved error handling for DMS floppy image extraction
+improved frame timing to present frames in a more evenly paced manner
 \end_layout
 
 \begin_layout Itemize
@@ -410,7 +426,15 @@ improvements to CIA timer handling
 \end_layout
 
 \begin_layout Itemize
-improvements to CPU instruction timing (TAS and PEA instructions) 
+improvements to CPU instruction timing (TAS and PEA instructions)
+\end_layout
+
+\begin_layout Itemize
+fixed sound volume restoration during reset of Amiga session in Amiga Forever
+\end_layout
+
+\begin_layout Itemize
+improved error handling for DMS floppy image extraction
 \end_layout
 
 \begin_layout Itemize
