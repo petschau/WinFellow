@@ -4,7 +4,7 @@
 #include "DEFS.H"
 #include "SPRITE.H"
 
-#define SPRITE_MAX_LIST_ITEMS 5000
+#define SPRITE_MAX_LIST_ITEMS 50
 
 class LineExactSprites;
 

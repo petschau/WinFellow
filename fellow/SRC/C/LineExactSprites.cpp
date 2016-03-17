@@ -146,9 +146,24 @@ void LineExactSprites::asprxdatb(UWO data, ULO address)
   *(((UWO *)&sprdat[sprnr]) + 1) = data;
 }
 
+#ifdef _DEBUG
+static ULO max_items_seen = 0;
+#endif
+
 /* Increases the item count with 1 and returns the new (uninitialized) item */
 spr_action_list_item* LineExactSprites::ActionListAddLast(spr_action_list_master* l)
 {
+#ifdef _DEBUG
+  if (max_items_seen < l->count)
+  {
+    max_items_seen = l->count;
+  }
+  if (l->count >= SPRITE_MAX_LIST_ITEMS)
+  {
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+  }
+#endif
+
   return &l->items[l->count++];
 }
 
@@ -180,6 +195,18 @@ spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_mast
     if (l->items[i].raster_y >= raster_y && l->items[i].raster_x > raster_x)
     {
       for (ULO j = l->count; j > i; --j) l->items[j] = l->items[j - 1];
+
+#ifdef _DEBUG
+      if (max_items_seen < l->count)
+      {
+        max_items_seen = l->count;
+      }
+      if (l->count >= SPRITE_MAX_LIST_ITEMS)
+      {
+        fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+      }
+#endif
+
       l->count++;
       return &l->items[i];
     }
@@ -187,9 +214,20 @@ spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_mast
   return ActionListAddLast(l);
 }
 
+
 /* Increases the item count with 1 and returns the new (uninitialized) item */
 spr_merge_list_item* LineExactSprites::MergeListAddLast(spr_merge_list_master* l)
 {
+#ifdef _DEBUG
+  if (max_items_seen < l->count)
+  {
+    max_items_seen = l->count;
+  }
+  if (l->count >= SPRITE_MAX_LIST_ITEMS)
+  {
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
+  }
+#endif
   return &l->items[l->count++];
 }
 
