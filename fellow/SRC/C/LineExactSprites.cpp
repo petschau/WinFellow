@@ -1021,6 +1021,21 @@ void LineExactSprites::Decode16Sprite(ULO sprite_number)
   SpriteP2CDecoder::Decode16(chunky_destination, sprdat[sprite_number & 0xfe][0], sprdat[sprite_number & 0xfe][1], sprdat[sprite_number][0], sprdat[sprite_number][1]);
 }
 
+void LineExactSprites::ProcessDMAActionListNOP()
+{
+  for (ULO sprnr = 0; sprnr < 8; sprnr++)
+  {
+    ULO count = ActionListCount(&spr_dma_action_list[sprnr]);
+    for (ULO i = 0; i < count; i++)
+    {
+      spr_action_list_item * action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
+      // we can execute the coming action item
+      (this->*(action_item->called_function))(action_item->data, action_item->address);
+    }
+    ActionListClear(&spr_dma_action_list[sprnr]);
+  }
+}
+
 void LineExactSprites::DMASpriteHandler()
 {
   spr_action_list_item * dma_action_item;
@@ -1409,6 +1424,35 @@ void LineExactSprites::ProcessActionList()
         }
       }
     }
+    // clear the list at the end
+    ActionListClear(&spr_action_list[sprnr]);
+    sprnr++;
+  }
+}
+
+void LineExactSprites::ProcessActionListNOP()
+{
+  spr_action_list_item * action_item;
+  ULO x_pos;
+  ULO i, count;
+  ULO sprnr = 0;
+
+  sprites_online = false;
+  while (sprnr < 8)
+  {
+    x_pos = 0;
+    sprite_online[sprnr] = FALSE;
+    sprite_16col[sprnr] = FALSE;
+
+    count = ActionListCount(&spr_action_list[sprnr]);
+    for (i = 0; i < count; i++)
+    {
+      action_item = ActionListGet(&spr_action_list[sprnr], i);
+      // we can execute the coming action item
+      (this->*(action_item->called_function))(action_item->data, action_item->address);
+      x_pos = action_item->raster_x;
+    }
+
     // clear the list at the end
     ActionListClear(&spr_action_list[sprnr]);
     sprnr++;
@@ -2096,6 +2140,9 @@ void LineExactSprites::HardReset()
 
 void LineExactSprites::EndOfLine(ULO rasterY)
 {
+  // Make sure action lists and merge lists are empty
+  ProcessDMAActionListNOP();
+  ProcessActionListNOP();
   for (ULO i = 0; i < 8; i++)
   {
     MergeListClear(&spr_merge_list[i]);

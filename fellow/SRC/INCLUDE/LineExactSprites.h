@@ -142,6 +142,8 @@ private:
   void MergeHires(graph_line* current_graph_line);
   void MergeLores(graph_line* current_graph_line);
 
+  void ProcessActionListNOP();
+  void ProcessDMAActionListNOP();
 public:
   bool HasSpritesOnLine();
 
