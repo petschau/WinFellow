@@ -107,18 +107,18 @@ void kbdEventEOFHandler(void) {
               fellowRequestEmulationStop();
 
 	      break;
-      case EVENT_SCROLL_UP:
-	      drawSetClipScroll(0x48);
-	      break;
-      case EVENT_SCROLL_DOWN:
-	      drawSetClipScroll(0x50);
-	      break;
-      case EVENT_SCROLL_LEFT:
-	      drawSetClipScroll(0x4b);
-	      break;
-      case EVENT_SCROLL_RIGHT:
-	      drawSetClipScroll(0x4d);
-	      break;
+      //case EVENT_SCROLL_UP:
+	     // drawSetClipScroll(0x48);
+	     // break;
+      //case EVENT_SCROLL_DOWN:
+	     // drawSetClipScroll(0x50);
+	     // break;
+      //case EVENT_SCROLL_LEFT:
+	     // drawSetClipScroll(0x4b);
+	     // break;
+      //case EVENT_SCROLL_RIGHT:
+	     // drawSetClipScroll(0x4d);
+	     // break;
       case EVENT_HARD_RESET:
               // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
               // cpuIntegrationHardReset calls cpuHardReset, which in turn triggers a soft reset

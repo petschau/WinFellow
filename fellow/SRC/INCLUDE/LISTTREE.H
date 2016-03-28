@@ -25,22 +25,4 @@ felist *listFree(felist *node);
 felist *listIndex(felist *l, ULO index);
 void listFreeAll(felist *l, BOOLE freenodes);
 
-/* Generic tree */
-
-typedef struct _tree {
-  struct _tree *parent;
-  struct _tree *child;
-  void *node;
-  felist *lnode;
-} tree;
-
-tree *treeNew(tree *parent, void *node);
-void treeChild_add(tree *t, tree *child);
-tree *treeChild(tree *t);
-tree *treeSisterNext(tree *t);
-tree *treeSisterPrev(tree *t);
-void *treeNode(tree *t);
-tree *treeParent(tree *t);
-ULO treeChildCount(tree *t);
-
 #endif

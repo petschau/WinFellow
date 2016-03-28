@@ -104,6 +104,8 @@ public:
   void       SetScreenWidth(ULO);
   void       SetWindowInstance(HINSTANCE);
 
+  void       RegisterRetroPlatformScreenMode(const bool bStartup);
+
   // public callback hooks
   LRESULT CALLBACK HostMessageFunction(UINT, WPARAM, LPARAM, LPCVOID, DWORD, LPARAM);
   BOOL FAR PASCAL  EnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);

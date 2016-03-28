@@ -15,6 +15,7 @@ extern void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentif
 extern void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text);
 extern ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier);
 extern void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position);
+extern void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable);
 extern void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text);
 extern void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text);
 extern void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, ULO n);

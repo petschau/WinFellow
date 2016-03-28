@@ -20,6 +20,27 @@
 
 #include "windowsx.h"
 
+unsigned int GfxDrvCommon::GetOutputWidth()
+{
+  return _output_width;
+}
+
+unsigned int GfxDrvCommon::GetOutputHeight()
+{
+  return _output_height;
+}
+
+bool GfxDrvCommon::GetOutputWindowed()
+{
+  return _output_windowed;
+}
+
+void GfxDrvCommon::SizeChanged(unsigned int width, unsigned int height)
+{
+  _output_width = (width > 0) ? width : 1;
+  _output_height = (height > 0) ? height : 1;
+}
+
 bool GfxDrvCommon::RunEventInitialize()
 {
   _run_event = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -253,7 +274,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     break;
   case WM_DESTROY:
     // save emulation window position only if in windowed mode
-    if (_current_draw_mode->windowed)
+    if (GetOutputWindowed())
     {
       GetWindowRect(hWnd, &emulationRect);
       iniSetEmulationWindowPosition(_ini, emulationRect.left, emulationRect.top);
@@ -264,9 +285,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
   case WM_SHOWWINDOW:
     break;
   case WM_DISPLAYCHANGE:
-    if (_current_draw_mode->windowed)
+    if (GetOutputWindowed())
     {
-      _displaychange = (wParam != _current_draw_mode->bits) && (_current_draw_mode->windowed == TRUE);
+      _displaychange = (wParam != _current_draw_mode->bits);
       fellow_request_emulation_stop = TRUE;
     }
     break;
@@ -330,6 +351,7 @@ bool GfxDrvCommon::InitializeWindowClass()
   wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
   wc1.lpszClassName = "FellowWindowClass";
   wc1.lpszMenuName = "Fellow";
+  wc1.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   return (RegisterClassEx(&wc1) != 0);
 }
 
@@ -349,10 +371,10 @@ void GfxDrvCommon::ReleaseWindowClass()
 void GfxDrvCommon::DisplayWindow()
 {
   fellowAddLog("GfxDrvCommon::DisplayWindow()\n");
-  if (!_current_draw_mode->windowed)
+  if (!GetOutputWindowed())
   {
     // Later: Make dx11 run the normal size code. DX11 startup is always windowed.
-    ShowWindow(_hwnd, SW_SHOWMAXIMIZED);
+    ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
   }
   else
@@ -378,7 +400,7 @@ void GfxDrvCommon::DisplayWindow()
 
 void GfxDrvCommon::HideWindow()
 {
-  if (!_current_draw_mode->windowed)
+  if (!GetOutputWindowed())
   {
     ShowWindow(_hwnd, SW_SHOWMINIMIZED);
   }
@@ -400,7 +422,11 @@ bool GfxDrvCommon::InitializeWindow()
 {
   char *versionstring = fellowGetVersionString();
 
-  if (_current_draw_mode->windowed)
+  SizeChanged(_current_draw_mode->width, _current_draw_mode->height);
+  ULO width = _current_draw_mode->width;
+  ULO height = _current_draw_mode->height;
+
+  if (GetOutputWindowed())
   {
     DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
     if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
@@ -409,8 +435,6 @@ bool GfxDrvCommon::InitializeWindow()
     }
     DWORD dwExStyle = 0;
     HWND hParent = NULL;
-    ULO width = _current_draw_mode->width;
-    ULO height = _current_draw_mode->height;
 
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
@@ -419,8 +443,8 @@ bool GfxDrvCommon::InitializeWindow()
       dwExStyle = WS_EX_TOOLWINDOW;
       hParent = RP.GetParentWindowHandle();
 
-      width  = cfgGetScreenWidth(rp_startup_config);
-      height = cfgGetScreenHeight(rp_startup_config);
+      width  = cfgGetWindowWidth(rp_startup_config);
+      height = cfgGetWindowHeight(rp_startup_config);
 
       fellowAddLog("GfxDrvCommon::InitializeWindow(): RetroPlatform mode, override window dimensions to %ux%u, offset %u,%u...\n",
         width, height, RP.GetClippingOffsetLeftAdjusted(), RP.GetClippingOffsetTopAdjusted());
@@ -448,8 +472,8 @@ bool GfxDrvCommon::InitializeWindow()
       WS_POPUP,
       0,
       0,
-      GetSystemMetrics(SM_CXSCREEN),
-      GetSystemMetrics(SM_CYSCREEN),
+      width,
+      height,
       NULL,
       NULL,
       win_drv_hInstance,
@@ -481,9 +505,10 @@ draw_mode* GfxDrvCommon::GetDrawMode()
   return _current_draw_mode;
 }
 
-void GfxDrvCommon::SetDrawMode(draw_mode* mode)
+void GfxDrvCommon::SetDrawMode(draw_mode* mode, bool windowed)
 {
   _current_draw_mode = mode;
+  _output_windowed = windowed;
 }
 
 bool GfxDrvCommon::EmulationStart()

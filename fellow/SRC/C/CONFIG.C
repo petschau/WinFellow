@@ -221,7 +221,6 @@ ULO cfgGetBogoSize(cfg *config)
 void cfgSetKickImage(cfg *config, STR *kickimage)
 {
   strncpy(config->m_kickimage, kickimage, CFG_FILENAME_LENGTH);
-  //fsNavigMakeRelativePath(config->m_kickimage);
 }
 
 STR *cfgGetKickImage(cfg *config)
@@ -262,7 +261,6 @@ ULO cfgGetKickCRC32(cfg *config)
 void cfgSetKey(cfg *config, STR *key)
 {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
-  //fsNavigMakeRelativePath(config->m_key);
 }
 
 STR *cfgGetKey(cfg *config)
@@ -299,54 +297,74 @@ bool cfgGetRtc(cfg *config)
 /* Screen configuration property access                                       */
 /*============================================================================*/
 
-void cfgSetScreenWidth(cfg *config, ULO screenwidth)
+void cfgSetFullScreenWidth(cfg *config, ULO fullscreenwidth)
 {
-  config->m_screenwidth = screenwidth;
+  config->m_fullscreenwidth = fullscreenwidth;
 }
 
-ULO cfgGetScreenWidth(cfg *config)
+ULO cfgGetFullScreenWidth(cfg *config)
 {
-  return config->m_screenwidth;
+  return config->m_fullscreenwidth;
 }
 
-void cfgSetScreenHeight(cfg *config, ULO screenheight)
+void cfgSetFullScreenHeight(cfg *config, ULO fullscreenheight)
 {
-  config->m_screenheight = screenheight;
+  config->m_fullscreenheight = fullscreenheight;
 }
 
-ULO cfgGetScreenHeight(cfg *config)
+ULO cfgGetFullScreenHeight(cfg *config)
 {
-  return config->m_screenheight;
+  return config->m_fullscreenheight;
 }
 
-void cfgSetScreenColorBits(cfg *config, ULO screencolorbits)
+void cfgSetFullScreenColorBits(cfg *config, ULO fullscreencolorbits)
 {
-  config->m_screencolorbits = screencolorbits;
+  config->m_fullscreencolorbits = fullscreencolorbits;
 }
 
-ULO cfgGetScreenColorBits(cfg *config)
+ULO cfgGetFullScreenColorBits(cfg *config)
 {
-  return config->m_screencolorbits;
+  return config->m_fullscreencolorbits;
 }
 
-void cfgSetScreenWindowed(cfg *config, bool screenwindowed)
+void cfgSetFullScreenRefresh(cfg *config, ULO fullscreenrefresh)
 {
-  config->m_screenwindowed = screenwindowed;
+  config->m_fullscreenrefresh = fullscreenrefresh;
 }
 
-bool cfgGetScreenWindowed(cfg *config)
+ULO cfgGetFullScreenRefresh(cfg *config)
 {
-  return config->m_screenwindowed;
+  return config->m_fullscreenrefresh;
 }
 
-void cfgSetScreenRefresh(cfg *config, ULO screenrefresh)
+void cfgSetWindowed(cfg *config, bool windowed)
 {
-  config->m_screenrefresh = screenrefresh;
+  config->m_windowed = windowed;
 }
 
-ULO cfgGetScreenRefresh(cfg *config)
+bool cfgGetWindowed(cfg *config)
 {
-  return config->m_screenrefresh;
+  return config->m_windowed;
+}
+
+void cfgSetWindowWidth(cfg *config, ULO windowwidth)
+{
+  config->m_windowwidth = windowwidth;
+}
+
+ULO cfgGetWindowWidth(cfg *config)
+{
+  return config->m_windowwidth;
+}
+
+void cfgSetWindowHeight(cfg *config, ULO windowheight)
+{
+  config->m_windowheight = windowheight;
+}
+
+ULO cfgGetWindowHeight(cfg *config)
+{
+  return config->m_windowheight;
 }
 
 void cfgSetScreenDrawLEDs(cfg *config, bool drawleds)
@@ -400,19 +418,9 @@ ULO cfgGetFrameskipRatio(cfg *config)
   return config->m_frameskipratio;
 }
 
-void cfgSetClipMode(cfg *config, DISPLAYCLIP_MODE clipmode)
+void cfgSetClipLeft(cfg *config, ULO left)
 {
-  config->m_clipmode = clipmode;
-}
-
-DISPLAYCLIP_MODE cfgGetClipMode(cfg *config)
-{
-  return config->m_clipmode;
-}
-
-void cfgSetClipLeft(cfg *config, ULO clipleft)
-{
-  config->m_clipleft = clipleft;
+  config->m_clipleft = left;
 }
 
 ULO cfgGetClipLeft(cfg *config)
@@ -420,9 +428,9 @@ ULO cfgGetClipLeft(cfg *config)
   return config->m_clipleft;
 }
 
-void cfgSetClipTop(cfg *config, ULO cliptop)
+void cfgSetClipTop(cfg *config, ULO top)
 {
-  config->m_cliptop = cliptop;
+  config->m_cliptop = top;
 }
 
 ULO cfgGetClipTop(cfg *config)
@@ -430,9 +438,9 @@ ULO cfgGetClipTop(cfg *config)
   return config->m_cliptop;
 }
 
-void cfgSetClipRight(cfg *config, ULO clipright)
+void cfgSetClipRight(cfg *config, ULO right)
 {
-  config->m_clipright = clipright;
+  config->m_clipright = right;
 }
 
 ULO cfgGetClipRight(cfg *config)
@@ -440,9 +448,9 @@ ULO cfgGetClipRight(cfg *config)
   return config->m_clipright;
 }
 
-void cfgSetClipBottom(cfg *config, ULO clipbottom)
+void cfgSetClipBottom(cfg *config, ULO bottom)
 {
-  config->m_clipbottom = clipbottom;
+  config->m_clipbottom = bottom;
 }
 
 ULO cfgGetClipBottom(cfg *config)
@@ -849,16 +857,18 @@ void cfgSetDefaults(cfg *config)
   /* Default screen configuration                                             */
   /*==========================================================================*/
 
-  cfgSetScreenWidth(config, 640);
-  cfgSetScreenHeight(config, 400);
-  cfgSetScreenColorBits(config, 16);
-  cfgSetScreenWindowed(config, true);
-  cfgSetScreenRefresh(config, 0);
+  cfgSetFullScreenWidth(config, 800);
+  cfgSetFullScreenHeight(config, 600);
+  cfgSetFullScreenColorBits(config, 32);
+  cfgSetFullScreenRefresh(config, 0);
+  cfgSetWindowed(config, true);
+  cfgSetWindowWidth(config, 752);
+  cfgSetWindowHeight(config, 576);
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
-  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECTDRAW);
-//  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECT3D11);
+//  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECTDRAW);
+  cfgSetDisplayDriver(config, DISPLAYDRIVER_DIRECT3D11);
 
   /*==========================================================================*/
   /* Default graphics emulation configuration                                 */
@@ -868,11 +878,10 @@ void cfgSetDefaults(cfg *config)
   cfgSetDisplayScale(config, DISPLAYSCALE_1X);
   cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
   cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE_LINEEXACT);
-  cfgSetClipMode(config, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
-  cfgSetClipLeft(config, 129); // Match for 640x400 at 1x
-  cfgSetClipTop(config, 44);
-  cfgSetClipRight(config, 449);
-  cfgSetClipRight(config, 244);
+  cfgSetClipLeft(config, 96);
+  cfgSetClipTop(config, 26);
+  cfgSetClipRight(config, 472);
+  cfgSetClipBottom(config, 314);
 
   /*==========================================================================*/
   /* Default sound configuration                                              */
@@ -1243,29 +1252,6 @@ static ULO cfgGetBufferLengthFromString(STR *value)
     return 80;
   }
   return buffer_length;
-}
-
-static DISPLAYCLIP_MODE cfgGetClipModeFromString(STR *value)
-{
-  if (stricmp(value, "auto") == 0)
-  {
-    return DISPLAYCLIP_MODE::AUTOMATIC_CLIP;
-  }
-  if (stricmp(value, "fixed") == 0)
-  {
-    return DISPLAYCLIP_MODE::FIXED_CLIP;
-  }
-  return DISPLAYCLIP_MODE::AUTOMATIC_CLIP; // Default
-}
-
-static STR* cfgGetClipModeToString(DISPLAYCLIP_MODE clipmode)
-{
-  switch (clipmode)
-  {
-    case DISPLAYCLIP_MODE::AUTOMATIC_CLIP:  return "auto";
-    case DISPLAYCLIP_MODE::FIXED_CLIP:      return "fixed";
-  }
-  return "fixed";
 }
 
 static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
@@ -1680,20 +1666,28 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_width") == 0)
     {
-      cfgSetScreenWidth(config, cfgGetULOFromString(value));
+      cfgSetFullScreenWidth(config, cfgGetULOFromString(value));
     }
     else if (stricmp(option, "gfx_height") == 0)
     {
-      cfgSetScreenHeight(config, cfgGetULOFromString(value));
+      cfgSetFullScreenHeight(config, cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_windowwidth") == 0)
+    {
+      cfgSetWindowWidth(config, cfgGetULOFromString(value));
+    }
+    else if (stricmp(option, "gfx_windowheight") == 0)
+    {
+      cfgSetWindowHeight(config, cfgGetULOFromString(value));
     }
     else if ((stricmp(option, "fellow.gfx_refresh") == 0) ||
       (stricmp(option, "gfx_refresh") == 0))
     {
-      cfgSetScreenRefresh(config, cfgGetULOFromString(value));
+      cfgSetFullScreenRefresh(config, cfgGetULOFromString(value));
     }
     else if (stricmp(option, "gfx_fullscreen_amiga") == 0)
     {
-      cfgSetScreenWindowed(config, !cfgGetBOOLEFromString(value));
+      cfgSetWindowed(config, !cfgGetboolFromString(value));
     }
     else if (stricmp(option, "use_multiple_graphical_buffers") == 0)
     {
@@ -1709,15 +1703,11 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_colour_mode") == 0)
     {
-      cfgSetScreenColorBits(config, cfgGetColorBitsFromString(value));
+      cfgSetFullScreenColorBits(config, cfgGetColorBitsFromString(value));
     }
     else if (stricmp(option, "show_leds") == 0)
     {
       cfgSetScreenDrawLEDs(config, cfgGetboolFromString(value));
-    }
-    else if (stricmp(option, "gfx_clip_mode") == 0)
-    {
-      cfgSetClipMode(config, cfgGetClipModeFromString(value));
     }
     else if (stricmp(option, "gfx_clip_left") == 0)
     {
@@ -1976,15 +1966,16 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "kickstart_key_file=%s\n", cfgGetKey(config));
   fprintf(cfgfile, "gfx_immediate_blits=%s\n", cfgGetBOOLEToString(cfgGetBlitterFast(config)));
   fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECS(config)));
-  fprintf(cfgfile, "gfx_width=%u\n", cfgGetScreenWidth(config));
-  fprintf(cfgfile, "gfx_height=%u\n", cfgGetScreenHeight(config));
-  fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
+  fprintf(cfgfile, "gfx_width=%u\n", cfgGetFullScreenWidth(config));
+  fprintf(cfgfile, "gfx_height=%u\n", cfgGetFullScreenHeight(config));
+  fprintf(cfgfile, "gfx_windowwidth=%u\n", cfgGetWindowWidth(config));
+  fprintf(cfgfile, "gfx_windowheight=%u\n", cfgGetWindowHeight(config));
+  fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetboolToString(!cfgGetWindowed(config)));
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
   fprintf(cfgfile, "gfx_driver=%s\n", cfgGetDisplayDriverToString(cfgGetDisplayDriver(config)));
   // fprintf(cfgfile, "gfx_emulation_mode=%s\n"), cfgGetGraphicsEmulationModeToString(cfgGetGraphicsEmulationMode(config)));
-  fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
-  fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
-  fprintf(cfgfile, "gfx_clip_mode=%s\n", cfgGetClipModeToString(cfgGetClipMode(config)));
+  fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetFullScreenRefresh(config));
+  fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetFullScreenColorBits(config)));
   fprintf(cfgfile, "gfx_clip_left=%u\n", cfgGetClipLeft(config));
   fprintf(cfgfile, "gfx_clip_top=%u\n", cfgGetClipTop(config));
   fprintf(cfgfile, "gfx_clip_right=%u\n", cfgGetClipRight(config));
@@ -2315,23 +2306,26 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetClipMode(cfgGetClipMode(config));
-  drawSetClipLeft(cfgGetClipLeft(config));
-  drawSetClipTop(cfgGetClipTop(config));
-  drawSetClipRight(cfgGetClipRight(config));
-  drawSetClipBottom(cfgGetClipBottom(config));
+  drawSetInternalClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
+  drawSetOutputClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetDisplayScale(cfgGetDisplayScale(config));
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
   drawSetDisplayDriver(cfgGetDisplayDriver(config));
   drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(config));
-  drawSetMode(cfgGetScreenWidth(config),
-    cfgGetScreenHeight(config),
-    cfgGetScreenColorBits(config),
-    cfgGetScreenRefresh(config),
-    cfgGetScreenWindowed(config));
-
+  
+  if (cfgGetWindowed(config))
+  {
+    drawSetWindowedMode(cfgGetWindowWidth(config), cfgGetWindowHeight(config));
+  }
+  else
+  {
+    drawSetFullScreenMode(cfgGetFullScreenWidth(config),
+      cfgGetFullScreenHeight(config),
+      cfgGetFullScreenColorBits(config),
+      cfgGetFullScreenRefresh(config));
+  }
 
   /*==========================================================================*/
   /* Sound configuration                                                      */

@@ -38,11 +38,6 @@ bool GfxDrvDXGI::Startup()
   DeleteEnumerationFactory();
   RegisterModes();
 
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-    gfxDrvRegisterRetroPlatformScreenMode(true);
-#endif
-
   bResult = (_adapters != nullptr) & (_adapters->size() > 0);
 
   fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n\n", bResult ? "successful" : "failed");	
@@ -276,33 +271,18 @@ ID3D11Texture2D *GfxDrvDXGI::GetCurrentAmigaScreenTexture()
   return _amigaScreenTexture[_currentAmigaScreenTexture];
 }
 
-void GfxDrvDXGI::GetBufferInformation(draw_mode *mode, draw_buffer_information *buffer_information)
+void GfxDrvDXGI::GetBufferInformation(draw_buffer_information *buffer_information)
 {
-  ULO actual_scale_factor = 2;
-  switch (drawGetDisplayScale())
-  {
-    case DISPLAYSCALE::DISPLAYSCALE_1X:
-      actual_scale_factor = 2;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_2X:
-      actual_scale_factor = 4;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_3X:
-      actual_scale_factor = 6;
-      break;
-    case DISPLAYSCALE::DISPLAYSCALE_4X:
-      actual_scale_factor = 8;
-      break;
-  }
-
-  std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalClip(mode->width, actual_scale_factor);
-  std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalClip(mode->height, actual_scale_factor);
-
-  ULO internal_scale_factor = drawGetDisplayScaleFactor();
-  
-  buffer_information->width = (horizontal_clip.second - horizontal_clip.first)*internal_scale_factor;
-  buffer_information->height = (vertical_clip.second - vertical_clip.first)*internal_scale_factor;
-  buffer_information->pitch = buffer_information->width * 4;
+  ULO internal_scale_factor = drawGetInternalScaleFactor();
+  buffer_information->width = drawGetInternalClip().GetWidth()*internal_scale_factor;
+  buffer_information->height = drawGetInternalClip().GetHeight()*internal_scale_factor;
+  buffer_information->pitch = 0;  // Replaced later by actual value
+  buffer_information->redpos = 16;
+  buffer_information->redsize = 8;
+  buffer_information->greenpos = 8;
+  buffer_information->greensize = 8;
+  buffer_information->bluepos = 0;
+  buffer_information->bluesize = 8;
 }
 
 bool GfxDrvDXGI::CreateSwapChain()
@@ -310,14 +290,14 @@ bool GfxDrvDXGI::CreateSwapChain()
   int width;
   int height;
 
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-  {
-    width = RP.GetScreenWidthAdjusted();
-    height = RP.GetScreenHeightAdjusted();
-  }
-  else
-#endif
+//#ifdef RETRO_PLATFORM
+//  if (RP.GetHeadlessMode())
+//  {
+//    width = RP.GetScreenWidthAdjusted();
+//    height = RP.GetScreenHeightAdjusted();
+//  }
+//  else
+//#endif
   {
     width = _current_draw_mode->width;
     height = _current_draw_mode->height;
@@ -355,7 +335,7 @@ bool GfxDrvDXGI::CreateSwapChain()
 
 void GfxDrvDXGI::DeleteSwapChain()
 {
-  if (!_current_draw_mode->windowed)
+  if (!gfxDrvCommon->GetOutputWindowed())
   {
     _swapChain->SetFullscreenState(FALSE, NULL);
   }
@@ -368,8 +348,8 @@ void GfxDrvDXGI::SetViewport()
   D3D11_VIEWPORT viewPort;
   viewPort.TopLeftX = 0;
   viewPort.TopLeftY = 0;
-  viewPort.Width = static_cast<FLOAT>(_output_width);
-  viewPort.Height = static_cast<FLOAT>(_output_height);
+  viewPort.Width = static_cast<FLOAT>(gfxDrvCommon->GetOutputWidth());
+  viewPort.Height = static_cast<FLOAT>(gfxDrvCommon->GetOutputHeight());
   viewPort.MinDepth = 0.0f;
   viewPort.MaxDepth = 1.0f;
 
@@ -423,7 +403,7 @@ DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
 void GfxDrvDXGI::NotifyActiveStatus(bool active)
 {
   fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)\n", active ? "TRUE" : "FALSE");
-  if (!_current_draw_mode->windowed && _swapChain != nullptr)
+  if (!gfxDrvCommon->GetOutputWindowed() && _swapChain != nullptr)
   {
     _swapChain->SetFullscreenState(active, 0);
     if (!active) gfxDrvCommon->HideWindow();
@@ -433,9 +413,6 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
 void GfxDrvDXGI::SizeChanged(unsigned int width, unsigned int height)
 {
   fellowAddLog("GfxDrvDXGI: SizeChanged()\n");
-
-  _output_width = (width > 0) ? width : 1;
-  _output_height = (height > 0) ? height : 1;
 
   // Don't execute the resize here, do it in the thread that renders
   _resize_swapchain_buffers = true;
@@ -623,14 +600,14 @@ void GfxDrvDXGI::CalculateDestinationRectangle(ULO output_width, ULO output_heig
   float srcClipWidth;
   float srcClipHeight;
 
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-  {
-    srcClipWidth = static_cast<float>(RP.GetSourceBufferWidth());
-    srcClipHeight = static_cast<float>(RP.GetSourceBufferHeight());
-  }
-  else
-#endif
+//#ifdef RETRO_PLATFORM
+//  if (RP.GetHeadlessMode())
+//  {
+//    srcClipWidth = static_cast<float>(RP.GetSourceBufferWidth());
+//    srcClipHeight = static_cast<float>(RP.GetSourceBufferHeight());
+//  }
+//  else
+//#endif
   {
     srcClipWidth = drawGetBufferClipWidthAsFloat();
     srcClipHeight = drawGetBufferClipHeightAsFloat();
@@ -712,16 +689,16 @@ void GfxDrvDXGI::CalculateSourceRectangle(float& srcLeft, float& srcTop, float& 
   float baseWidth = static_cast<float>(draw_buffer_info.width);
   float baseHeight = static_cast<float>(draw_buffer_info.height);
 
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-  {
-    srcLeft = static_cast<float>(RP.GetClippingOffsetLeftAdjusted());
-    srcRight = static_cast<float>(RP.GetClippingOffsetLeftAdjusted() + RP.GetSourceBufferWidth());
-    srcTop = static_cast<float>(RP.GetClippingOffsetTopAdjusted());
-    srcBottom = static_cast<float>(RP.GetClippingOffsetTopAdjusted() + RP.GetSourceBufferHeight());
-  }
-  else
-#endif
+//#ifdef RETRO_PLATFORM
+//  if (RP.GetHeadlessMode())
+//  {
+//    srcLeft = static_cast<float>(RP.GetClippingOffsetLeftAdjusted());
+//    srcRight = static_cast<float>(RP.GetClippingOffsetLeftAdjusted() + RP.GetSourceBufferWidth());
+//    srcTop = static_cast<float>(RP.GetClippingOffsetTopAdjusted());
+//    srcBottom = static_cast<float>(RP.GetClippingOffsetTopAdjusted() + RP.GetSourceBufferHeight());
+//  }
+//  else
+//#endif
   {
     srcLeft = drawGetBufferClipLeftAsFloat();
     srcTop = drawGetBufferClipTopAsFloat();
@@ -752,7 +729,7 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   float dstHalfWidth, dstHalfHeight;
   float srcLeft, srcTop, srcRight, srcBottom;
 
-  CalculateDestinationRectangle(_output_width, _output_height, dstHalfWidth, dstHalfHeight);
+  CalculateDestinationRectangle(gfxDrvCommon->GetOutputWidth(), gfxDrvCommon->GetOutputHeight(), dstHalfWidth, dstHalfHeight);
   CalculateSourceRectangle(srcLeft, srcTop, srcRight, srcBottom);
 
   // First triangle.
@@ -927,8 +904,8 @@ bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX
 
 bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
 {
-  float width = static_cast<float>(_output_width);
-  float height = static_cast<float>(_output_height);
+  float width = static_cast<float>(gfxDrvCommon->GetOutputWidth());
+  float height = static_cast<float>(gfxDrvCommon->GetOutputHeight());
 
   XMMATRIX orthogonalMatrix = XMMatrixOrthographicLH(width, height, 1000.0f, 0.1f);
   XMMATRIX identityMatrix = XMMatrixIdentity();
@@ -999,48 +976,33 @@ void GfxDrvDXGI::Flip()
   }
 }
 
-void GfxDrvDXGI::SetMode(draw_mode *dm)
+void GfxDrvDXGI::SetMode(draw_mode *dm, bool windowed)
 {
   _current_draw_mode = dm;
 }
 
-void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate, bool isWindowed)
+void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate)
 {
-  draw_mode *mode = (draw_mode *)malloc(sizeof(draw_mode));
+  draw_mode *mode = new draw_mode();
 
   if (mode != nullptr)
   {
     mode->width = width;
     mode->height = height;
     mode->bits = 32;
-    mode->windowed = isWindowed;
     mode->refresh = refreshRate;
-    mode->redpos = 16;
-    mode->redsize = 8;
-    mode->greenpos = 8;
-    mode->greensize = 8;
-    mode->bluepos = 0;
-    mode->bluesize = 8;
-
     mode->id = id;
-    if (!mode->windowed)
+    char hz[16];
+    if (mode->refresh != 0)
     {
-      char hz[16];
-      if (mode->refresh != 0)
-      {
-	sprintf(hz, "%uHZ", mode->refresh);
-      }
-      else
-      {
-	hz[0] = 0;
-      }
-      sprintf(mode->name, "%uWx%uHx%uBPPx%s", mode->width, mode->height, mode->bits, hz);
+      sprintf(hz, "%uHZ", mode->refresh);
     }
     else
     {
-      sprintf(mode->name, "%uWx%uHxWindow", mode->width, mode->height);
+      hz[0] = 0;
     }
-    drawModeAdd(mode);
+    sprintf(mode->name, "%uWx%uHx%uBPPx%s", mode->width, mode->height, mode->bits, hz);
+    drawAddMode(mode);
   }
 }
 
@@ -1061,81 +1023,15 @@ void GfxDrvDXGI::AddFullScreenModes()
   {
     if (mode->CanUseMode())
     {
-      RegisterMode(mode->GetId(), mode->GetWidth(), mode->GetHeight(), mode->GetRefreshRate(), false);
+      RegisterMode(mode->GetId(), mode->GetWidth(), mode->GetHeight(), mode->GetRefreshRate());
     }
   }
-}
-
-void GfxDrvDXGI::AddWindowModes()
-{
-  const unsigned int GFXWIDTH_NORMAL = 640;
-  const unsigned int GFXWIDTH_OVERSCAN = 752;
-  const unsigned int GFXWIDTH_MAXOVERSCAN = 768;
-
-  const unsigned int GFXHEIGHT_NTSC = 400;
-  const unsigned int GFXHEIGHT_PAL = 512;
-  const unsigned int GFXHEIGHT_OVERSCAN = 576;
-
-  // 1X
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_NORMAL, GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_OVERSCAN, GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), GFXWIDTH_MAXOVERSCAN, GFXHEIGHT_OVERSCAN);
-
-  // 2X
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_NORMAL, 2 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_OVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 2 * GFXWIDTH_MAXOVERSCAN, 2 * GFXHEIGHT_OVERSCAN);
-
-  // 3X
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_NORMAL, 3 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_OVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 3 * GFXWIDTH_MAXOVERSCAN, 3 * GFXHEIGHT_OVERSCAN);
-
-  // 4X
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_NORMAL, 4 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_NTSC);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_PAL);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_OVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
-  RegisterMode(GfxDrvDXGIMode::GetNewId(), 4 * GFXWIDTH_MAXOVERSCAN, 4 * GFXHEIGHT_OVERSCAN);
 }
 
 void GfxDrvDXGI::RegisterModes()
 {
   AddFullScreenModes();
-  AddWindowModes();
 }
-
-#ifdef RETRO_PLATFORM
-
-void GfxDrvDXGI::RegisterRetroPlatformScreenMode(const bool bStartup, const ULO lWidth, const ULO lHeight, const ULO lDisplayScale)
-{
-  fellowAddLog("GfxDrvDXGI: operating in RetroPlatform %ux Direct3D mode, insert resolution %ux%u into list of valid screen resolutions...\n",
-    lDisplayScale, lWidth, lHeight);
-
-  RegisterMode(0, lHeight, lWidth);
-
-  drawSetMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
-    cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
-    cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
-    cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config),
-    cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config));
-}
-
-#endif
 
 void GfxDrvDXGI::ClearCurrentBuffer()
 {
@@ -1204,7 +1100,7 @@ unsigned int GfxDrvDXGI::EmulationStartPost()
     return false;
   }
 
-  if (!_current_draw_mode->windowed)
+  if (!gfxDrvCommon->GetOutputWindowed())
   {
     bool fullscreenOk = InitiateSwitchToFullScreen();
 
@@ -1253,9 +1149,7 @@ GfxDrvDXGI::GfxDrvDXGI()
     _shaderInputTexture(nullptr),
     _amigaScreenTextureCount(AmigaScreenTextureCount),
     _currentAmigaScreenTexture(0),
-    _resize_swapchain_buffers(false),
-    _output_width(0),
-    _output_height(0)
+    _resize_swapchain_buffers(false)
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {

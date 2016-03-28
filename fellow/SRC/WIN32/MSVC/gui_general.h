@@ -207,6 +207,10 @@
 #define IDC_CHECK_GRAPHICS_DEINTERLACE  1163
 #define IDC_DISPLAYSCALE_COMBO          1164
 #define IDC_COMBO_DISPLAYSCALE          1164
+#define IDC_EDIT_WINDOWWIDTH            1165
+#define IDC_EDIT_WINDOWHEIGHT           1166
+#define IDC_COMBO1                      1167
+#define IDC_COMBO_BORDER                1167
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
@@ -292,7 +296,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        185
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1165
+#define _APS_NEXT_CONTROL_VALUE         1168
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

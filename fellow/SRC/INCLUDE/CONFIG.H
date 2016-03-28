@@ -6,7 +6,6 @@
 #include "gameport.h"
 #include "listtree.h"
 
-
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -19,7 +18,6 @@ typedef struct {
   ULO   surfaces;
   ULO   reservedblocks;
 } cfg_hardfile;
-
 
 /*============================================================================*/
 /* struct that holds a complete filesystem configuration                      */
@@ -54,13 +52,6 @@ typedef enum {
   GRAPHICSEMULATIONMODE_CYCLEEXACT = 1
 } GRAPHICSEMULATIONMODE;
 
-typedef enum
-{
-  AUTOMATIC_CLIP = 0, // Calculate from screen/window
-  FIXED_CLIP = 1      // Set by configuration
-} DISPLAYCLIP_MODE;
-
-
 /*============================================================================*/
 /* struct that holds a complete Fellow configuration                          */
 /* the struct is copied in cfgManagerGetCopyOfCurrentConfig()                 */
@@ -71,7 +62,8 @@ typedef enum
 typedef struct {
 
   STR	m_description[CFG_FILENAME_LENGTH];
-	
+
+
   /*==========================================================================*/
   /* Floppy disk configuration                                                */
   /*==========================================================================*/
@@ -81,6 +73,7 @@ typedef struct {
   BOOLE  m_diskreadonly[4];
   BOOLE  m_diskfast;
   STR    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
+
 
   /*==========================================================================*/
   /* Memory configuration                                                     */
@@ -102,18 +95,23 @@ typedef struct {
   /* Screen configuration                                                     */
   /*==========================================================================*/
 
-  ULO	m_screenwidth;
-  ULO	m_screenheight;
-  ULO   m_screencolorbits;
-  ULO   m_screenrefresh;
-  bool  m_screenwindowed;
+  ULO   m_fullscreenwidth;
+  ULO   m_fullscreenheight;
+  ULO   m_fullscreencolorbits;
+  ULO   m_fullscreenrefresh;
+
+  bool  m_windowed;
+  ULO   m_windowwidth;
+  ULO   m_windowheight;
+
   bool  m_screendrawleds;
   ULO   m_frameskipratio;
-  DISPLAYCLIP_MODE m_clipmode;
+
   ULO m_clipleft;
   ULO m_cliptop;
   ULO m_clipright;
   ULO m_clipbottom;
+
   DISPLAYSCALE  m_displayscale;
   DISPLAYSCALE_STRATEGY m_displayscalestrategy;
   bool  m_deinterlace;
@@ -121,11 +119,13 @@ typedef struct {
   DISPLAYDRIVER m_displaydriver;
   GRAPHICSEMULATIONMODE m_graphicsemulationmode;
 
+
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
   /*==========================================================================*/
 
   BOOLE  m_use_multiple_graphical_buffers;
+
 
   /*==========================================================================*/
   /* Sound configuration                                                      */
@@ -172,6 +172,7 @@ typedef struct {
   felist* m_filesystems;
   BOOLE m_automount_drives;
 
+
   /*==========================================================================*/
   /* Game port configuration                                                  */
   /*==========================================================================*/
@@ -184,6 +185,7 @@ typedef struct {
   /*==========================================================================*/
 
   BOOLE m_useGUI;
+
 
   /*==========================================================================*/
   /* tracking flags                                                           */
@@ -249,16 +251,22 @@ extern bool cfgGetRtc(cfg *config);
 /* Host screen configuration property access                                 */
 /*===========================================================================*/
 
-extern void cfgSetScreenWidth(cfg *config, ULO screenwidth);
-extern ULO cfgGetScreenWidth(cfg *config);
-extern void cfgSetScreenHeight(cfg *config, ULO screenheight);
-extern ULO cfgGetScreenHeight(cfg *config);
-extern void cfgSetScreenColorBits(cfg *config, ULO screencolorbits);
-extern ULO cfgGetScreenColorBits(cfg *config);
-extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
-extern ULO cfgGetScreenRefresh(cfg *config);
-extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
-extern bool cfgGetScreenWindowed(cfg *config);
+extern void cfgSetFullScreenWidth(cfg *config, ULO fullscreenwidth);
+extern ULO cfgGetFullScreenWidth(cfg *config);
+extern void cfgSetFullScreenHeight(cfg *config, ULO fullscreenheight);
+extern ULO cfgGetFullScreenHeight(cfg *config);
+extern void cfgSetFullScreenColorBits(cfg *config, ULO fullscreencolorbits);
+extern ULO cfgGetFullScreenColorBits(cfg *config);
+extern void cfgSetFullScreenRefresh(cfg *config, ULO fullscreenrefresh);
+extern ULO cfgGetFullScreenRefresh(cfg *config);
+
+extern void cfgSetWindowed(cfg *config, bool windowed);
+extern bool cfgGetWindowed(cfg *config);
+extern void cfgSetWindowWidth(cfg *config, ULO windowwidth);
+extern ULO cfgGetWindowWidth(cfg *config);
+extern void cfgSetWindowHeight(cfg *config, ULO windowheight);
+extern ULO cfgGetWindowHeight(cfg *config);
+
 extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
 extern bool cfgGetScreenDrawLEDs(cfg *config);
 extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers);
@@ -273,23 +281,22 @@ extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
 extern void  cfgSetFrameskipRatio (cfg *config, ULO frameskipratio);
 extern ULO   cfgGetFrameskipRatio (cfg *config);
 
-extern void cfgSetClipMode(cfg *config, DISPLAYCLIP_MODE clipmode);
-extern DISPLAYCLIP_MODE cfgGetClipMode(cfg *config);
-extern void cfgSetClipLeft(cfg *config, ULO clipleft);
+extern void cfgSetClipLeft(cfg *config, ULO left);
 extern ULO cfgGetClipLeft(cfg *config);
-extern void cfgSetClipTop(cfg *config, ULO cliptop);
+extern void cfgSetClipTop(cfg *config, ULO top);
 extern ULO cfgGetClipTop(cfg *config);
-extern void cfgSetClipRight(cfg *config, ULO clipright);
+extern void cfgSetClipRight(cfg *config, ULO right);
 extern ULO cfgGetClipRight(cfg *config);
-extern void cfgSetClipBottom(cfg *config, ULO clipbottom);
+extern void cfgSetClipBottom(cfg *config, ULO bottom);
 extern ULO cfgGetClipBottom(cfg *config);
 
-extern void  cfgSetDisplayScale   (cfg *config, DISPLAYSCALE displayscale);
+extern void  cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale);
 extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
 extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
-extern void cfgSetDeinterlace(cfg *, bool);
-extern bool cfgGetDeinterlace(cfg *);
+extern void cfgSetDeinterlace(cfg *config, bool deinterlace);
+extern bool cfgGetDeinterlace(cfg *config);
+extern void cfgSetGraphicsEmulationMode(cfg *config, GRAPHICSEMULATIONMODE graphcisemulationmode);
 extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config);
 
 /*============================================================================*/

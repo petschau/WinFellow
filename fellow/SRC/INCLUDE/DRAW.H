@@ -1,51 +1,31 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#ifndef LISTTREE_H
-#include "listtree.h"
-#endif
-
 #ifndef GRAPH_H
 #include "graph.h"
 #endif
 
 #include "CONFIG.H"
 #include <map>
+#include <list>
 
 /*===========================================================================*/
 /* Mode handling, describes the geometry of the host screen                  */
 /*===========================================================================*/
 
-typedef struct 
+struct draw_mode
 {
   ULO id;
   ULO width;
   ULO height;
   ULO bits;
   ULO refresh;
-  bool windowed;
-  ULO redsize;
-  ULO redpos;           
-  ULO greensize;
-  ULO greenpos;
-  ULO bluesize;
-  ULO bluepos;
   STR name[80];
-} draw_mode;
+};
 
-typedef struct
-{
-  ULO x;
-  ULO y;
-} draw_point;
+typedef std::list<draw_mode*> draw_mode_list;
 
-typedef struct
-{
-  ULO width;
-  ULO height;
-} draw_size;
-
-typedef struct
+struct draw_rect
 {
   ULO left;
   ULO top;
@@ -55,16 +35,27 @@ typedef struct
   ULO GetWidth() const { return right - left; }
   ULO GetHeight() const { return bottom - top; }
 
-} draw_rect;
+  draw_rect(ULO clip_left, ULO clip_top, ULO clip_right, ULO clip_bottom)
+    : left(clip_left), top(clip_top), right(clip_right), bottom(clip_bottom) {}
 
-typedef struct
+  draw_rect() : left(0), top(0), right(0), bottom(0) {}
+};
+
+struct draw_buffer_information
 {
   UBY *top_ptr;
   UBY *current_ptr;
   ULO width;
   ULO height;
   ULO pitch;
-} draw_buffer_information;
+  ULO bits;
+  ULO redsize;
+  ULO redpos;
+  ULO greensize;
+  ULO greenpos;
+  ULO bluesize;
+  ULO bluepos;
+};
 
 /*===========================================================================*/
 /* Draw line routines and data                                               */
@@ -91,6 +82,7 @@ extern ULO draw_switch_bg_to_bpl;
 extern ULO draw_clear_buffers;
 
 extern draw_buffer_information draw_buffer_info;
+extern draw_mode draw_mode_windowed;
 
 extern ULL drawMake64BitColorFrom32Bit(ULO color);
 
@@ -98,15 +90,18 @@ extern ULL drawMake64BitColorFrom32Bit(ULO color);
 /* Module properties                                                         */
 /*===========================================================================*/
 
-extern void drawModeAdd(draw_mode *modenode);
-extern void drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, bool windowed);
-extern felist *drawGetModes(void);
-extern void drawModesFree();
+extern void drawAddMode(draw_mode *modenode);
+extern void drawClearModeList();
+extern draw_mode_list& drawGetModes();
+
+extern void drawSetFullScreenMode(ULO width, ULO height, ULO colorbits, ULO refresh);
+extern void drawSetWindowedMode(ULO width, ULO height);
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
 extern DISPLAYSCALE drawGetDisplayScale(void);
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void);
-extern ULO drawGetDisplayScaleFactor();
+extern ULO drawGetInternalScaleFactor();
+extern ULO drawGetOutputScaleFactor();
 extern void drawSetFrameskipRatio(ULO frameskipratio);
 extern void drawSetFPSCounterEnabled(bool enabled);
 extern void drawSetLEDsEnabled(bool enabled);
@@ -123,25 +118,17 @@ extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
 /* Units are cylinders (lores-pixels, non-interlaced height)                 */
 /*===========================================================================*/
 
-extern void drawSetClipMode(DISPLAYCLIP_MODE clip_mode);
-extern DISPLAYCLIP_MODE drawGetClipMode();
+extern void drawSetInternalClip(const draw_rect& internal_clip);
+extern const draw_rect& drawGetInternalClip();
+extern void drawSetOutputClip(const draw_rect& output_clip);
+extern const draw_rect& drawGetOutputClip();
 
-extern ULO drawGetClipLeft();
-extern ULO drawGetClipTop();
-extern ULO drawGetClipRight();
-extern ULO drawGetClipBottom();
+//extern ULO drawGetClipWidth();
 
-extern void drawSetClipLeft(ULO left);
-extern void drawSetClipTop(ULO top);
-extern void drawSetClipRight(ULO right);
-extern void drawSetClipBottom(ULO bottom);
+//extern void drawSetClipScroll(ULO event_id);
 
-extern ULO drawGetClipWidth();
-
-extern void drawSetClipScroll(ULO event_id);
-
-extern std::pair<ULO, ULO> drawCalculateHorizontalClip(ULO buffer_width, ULO buffer_scale_factor);
-extern std::pair<ULO, ULO> drawCalculateVerticalClip(ULO buffer_height, ULO buffer_scale_factor);
+extern const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, ULO buffer_scale_factor);
+extern const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO buffer_scale_factor);
 
 
 /*===========================================================================*/
