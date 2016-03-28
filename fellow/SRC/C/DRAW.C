@@ -635,14 +635,6 @@ void drawSetFullScreenMode(ULO width, ULO height, ULO colorbits, ULO refresh)
 
 void drawSetWindowedMode(ULO width, ULO height)
 {
-//#ifdef RETRO_PLATFORM
-//  if (RP.GetHeadlessMode())
-//  {
-//    height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
-//    width = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2;
-//  }
-//#endif
-
   draw_mode_windowed.width = width;
   draw_mode_windowed.height = height;
   draw_mode_windowed.bits = 32; // TODO, take from desktop
@@ -824,16 +816,7 @@ const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, UL
 
     if (width_amiga <= 343)
     {
-//#ifdef RETRO_PLATFORM
-//      if (RP.GetHeadlessMode())
-//      {
-//        left = 125;
-//      }
-//      else
-//#endif
-      {
-        left = 129;
-      }
+      left = 129;
       // Is hardcoded left inside the internal clip?
       if (left < internal_clip.left || left >= internal_clip.right || (left + width_amiga) > internal_clip.right)
       {
@@ -843,22 +826,13 @@ const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, UL
     }
     else
     {
-//#ifdef RETRO_PLATFORM
-//      if (RP.GetHeadlessMode())
-//      {
-//        right = 468;
-//      }
-//      else
-//#endif
-      {
-        right = internal_clip.right;
-      }
+      right = internal_clip.right;
       left = right - width_amiga;
     }
   }
   else
   {
-    // Always use configured output width
+    // Always use configured output width. RP always goes here.
     left = drawGetOutputClip().left;
     right = drawGetOutputClip().right;
   }

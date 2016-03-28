@@ -1343,9 +1343,9 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   drawSetInternalClip(draw_rect(92, 26, 468, 314)); // Max AF-PAL
   
   drawSetOutputClip(
-    draw_rect((RP.GetClippingOffsetLeft() / 4) + 1,
+    draw_rect((RP.GetClippingOffsetLeft() / 4),
               RP.GetClippingOffsetTop() / 2,
-              ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4) + 1,
+              ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4),
               (RP.GetClippingOffsetTop() + RP.GetScreenHeight()) / 2));
 
   if (cfgGetWindowed(gfxDrvCommon->rp_startup_config))

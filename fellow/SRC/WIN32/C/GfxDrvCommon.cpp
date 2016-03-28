@@ -443,11 +443,11 @@ bool GfxDrvCommon::InitializeWindow()
       dwExStyle = WS_EX_TOOLWINDOW;
       hParent = RP.GetParentWindowHandle();
 
-      width  = cfgGetWindowWidth(rp_startup_config);
-      height = cfgGetWindowHeight(rp_startup_config);
+      //width  = cfgGetWindowWidth(rp_startup_config);
+      //height = cfgGetWindowHeight(rp_startup_config);
 
-      fellowAddLog("GfxDrvCommon::InitializeWindow(): RetroPlatform mode, override window dimensions to %ux%u, offset %u,%u...\n",
-        width, height, RP.GetClippingOffsetLeftAdjusted(), RP.GetClippingOffsetTopAdjusted());
+      //fellowAddLog("GfxDrvCommon::InitializeWindow(): RetroPlatform mode, override window dimensions to %ux%u, offset %u,%u...\n",
+      //  width, height, RP.GetClippingOffsetLeftAdjusted(), RP.GetClippingOffsetTopAdjusted());
     }
 #endif
 
