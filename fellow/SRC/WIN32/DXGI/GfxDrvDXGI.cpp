@@ -287,23 +287,10 @@ void GfxDrvDXGI::GetBufferInformation(draw_buffer_information *buffer_informatio
 
 bool GfxDrvDXGI::CreateSwapChain()
 {
-  int width;
-  int height;
+  int width = _current_draw_mode->width;
+  int height = _current_draw_mode->height;
 
-//#ifdef RETRO_PLATFORM
-//  if (RP.GetHeadlessMode())
-//  {
-//    width = RP.GetScreenWidthAdjusted();
-//    height = RP.GetScreenHeightAdjusted();
-//  }
-//  else
-//#endif
-  {
-    width = _current_draw_mode->width;
-    height = _current_draw_mode->height;
-  }
   _resize_swapchain_buffers = false;
-
 
   DXGI_SWAP_CHAIN_DESC swapChainDescription = { 0 };
   DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;
@@ -412,15 +399,12 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
 
 void GfxDrvDXGI::SizeChanged(unsigned int width, unsigned int height)
 {
-  fellowAddLog("GfxDrvDXGI: SizeChanged()\n");
-
   // Don't execute the resize here, do it in the thread that renders
   _resize_swapchain_buffers = true;
 }
 
 void GfxDrvDXGI::PositionChanged()
 {
-//  fellowAddLog("GfxDrvDXGI: PositionChanged()\n");
 }
 
 void GfxDrvDXGI::ResizeSwapChainBuffers()
@@ -597,67 +581,17 @@ struct VertexType
 
 void GfxDrvDXGI::CalculateDestinationRectangle(ULO output_width, ULO output_height, float& dstHalfWidth, float& dstHalfHeight)
 {
-  float srcClipWidth;
-  float srcClipHeight;
+  float srcClipWidth = drawGetBufferClipWidthAsFloat();
+  float srcClipHeight = drawGetBufferClipHeightAsFloat();
 
-//#ifdef RETRO_PLATFORM
-//  if (RP.GetHeadlessMode())
-//  {
-//    srcClipWidth = static_cast<float>(RP.GetSourceBufferWidth());
-//    srcClipHeight = static_cast<float>(RP.GetSourceBufferHeight());
-//  }
-//  else
-//#endif
+  if (drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
   {
-    srcClipWidth = drawGetBufferClipWidthAsFloat();
-    srcClipHeight = drawGetBufferClipHeightAsFloat();
-  }
+    float internalScaleFactor = static_cast<float>(drawGetInternalScaleFactor());
+    float outputScaleFactor = static_cast<float>(drawGetOutputScaleFactor());
+    float scaleRatio = outputScaleFactor / internalScaleFactor;
 
-
-#ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode())
-  {
-    if (RP.GetDisplayScale() == 1)
-    {
-      dstHalfWidth = srcClipWidth * 0.5f;
-      dstHalfHeight = srcClipHeight * 0.5f;
-    }
-    else if (RP.GetDisplayScale() == 2)
-    {
-      dstHalfWidth = srcClipWidth * 1.0f;
-      dstHalfHeight = srcClipHeight * 1.0f;
-    }
-    else if (RP.GetDisplayScale() == 3)
-    {
-      dstHalfWidth = srcClipWidth * 1.5f;
-      dstHalfHeight = srcClipHeight * 1.5f;
-    }
-    else if (RP.GetDisplayScale() == 4)
-    {
-      dstHalfWidth = srcClipWidth * 2.0f;
-      dstHalfHeight = srcClipHeight * 2.0f;
-    }
-  }
-  else
-#endif
-
-  if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_1X || drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_2X)
-  {
-    // Pixel by pixel copy to the center of the destination
-    dstHalfWidth = srcClipWidth * 0.5f;
-    dstHalfHeight = srcClipHeight * 0.5f;
-  }
-  else if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_3X)
-  {
-    // Source is "2X", use GPU scaling up to 3X
-    dstHalfWidth = srcClipWidth * 0.75f;
-    dstHalfHeight = srcClipHeight * 0.75f;
-  }
-  else if (drawGetDisplayScale() == DISPLAYSCALE::DISPLAYSCALE_4X)
-  {
-    // Source is "2X", use GPU scaling up to 4X
-    dstHalfWidth = srcClipWidth;
-    dstHalfHeight = srcClipHeight;
+    dstHalfWidth = srcClipWidth * scaleRatio * 0.5f;
+    dstHalfHeight = srcClipHeight * scaleRatio * 0.5f;
   }
   else
   {
@@ -689,22 +623,10 @@ void GfxDrvDXGI::CalculateSourceRectangle(float& srcLeft, float& srcTop, float& 
   float baseWidth = static_cast<float>(draw_buffer_info.width);
   float baseHeight = static_cast<float>(draw_buffer_info.height);
 
-//#ifdef RETRO_PLATFORM
-//  if (RP.GetHeadlessMode())
-//  {
-//    srcLeft = static_cast<float>(RP.GetClippingOffsetLeftAdjusted());
-//    srcRight = static_cast<float>(RP.GetClippingOffsetLeftAdjusted() + RP.GetSourceBufferWidth());
-//    srcTop = static_cast<float>(RP.GetClippingOffsetTopAdjusted());
-//    srcBottom = static_cast<float>(RP.GetClippingOffsetTopAdjusted() + RP.GetSourceBufferHeight());
-//  }
-//  else
-//#endif
-  {
-    srcLeft = drawGetBufferClipLeftAsFloat();
-    srcTop = drawGetBufferClipTopAsFloat();
-    srcRight = srcLeft + drawGetBufferClipWidthAsFloat();
-    srcBottom = srcTop + drawGetBufferClipHeightAsFloat();
-  }
+  srcLeft = drawGetBufferClipLeftAsFloat();
+  srcTop = drawGetBufferClipTopAsFloat();
+  srcRight = srcLeft + drawGetBufferClipWidthAsFloat();
+  srcBottom = srcTop + drawGetBufferClipHeightAsFloat();
 
   srcLeft /= baseWidth;
   srcRight /= baseWidth;

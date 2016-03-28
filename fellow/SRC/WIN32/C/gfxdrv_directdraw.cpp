@@ -288,19 +288,6 @@ void gfxDrvDDrawFailure(STR *header, HRESULT err)
 void gfxDrvDDrawFindWindowClientRect(gfx_drv_ddraw_device *ddraw_device)
 {
   GetClientRect(gfxDrvCommon->GetHWND(), &ddraw_device->hwnd_clientrect_win);
-
-//#ifdef RETRO_PLATFORM
-//  if (RP.GetHeadlessMode())
-//  {
-//    ULO lDisplayScale = RP.GetDisplayScale();
-//
-//    ddraw_device->hwnd_clientrect_win.left   *= lDisplayScale;
-//    ddraw_device->hwnd_clientrect_win.top    *= lDisplayScale;
-//    ddraw_device->hwnd_clientrect_win.right  *= lDisplayScale;
-//    ddraw_device->hwnd_clientrect_win.bottom *= lDisplayScale;
-//   }
-//#endif
-//
   memcpy(&ddraw_device->hwnd_clientrect_screen, &ddraw_device->hwnd_clientrect_win, sizeof(RECT));
   ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen);
   ClientToScreen(gfxDrvCommon->GetHWND(), (LPPOINT)&ddraw_device->hwnd_clientrect_screen + 1);
@@ -946,18 +933,9 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
   if (drawGetDisplayScale() != DISPLAYSCALE_AUTO)
   {
     // Fixed scaling
-
-    //if (RP.GetHeadlessMode())
-    //{
-    //  upscaled_clip_width = output_width;
-    //  upscaled_clip_height = output_height;
-    //}
-    //else
-    {
-      float upscale_factor = static_cast<float>(drawGetOutputScaleFactor()) / static_cast<float>(drawGetInternalScaleFactor());
-      upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
-      upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
-    }
+    float upscale_factor = static_cast<float>(drawGetOutputScaleFactor()) / static_cast<float>(drawGetInternalScaleFactor());
+    upscaled_clip_width = static_cast<int>(drawGetBufferClipWidthAsFloat()*upscale_factor);
+    upscaled_clip_height = static_cast<int>(drawGetBufferClipHeightAsFloat()*upscale_factor);
   }
   else
   {
@@ -997,8 +975,6 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
   dstwin.right = dstwin.left + upscaled_clip_width;
   dstwin.bottom = dstwin.top + upscaled_clip_height;
 
-  fellowAddLog("Destination window: %u %u %u %u, output %u %u\n", dstwin.left, dstwin.top, dstwin.right, dstwin.bottom, output_width, output_height);
-
   if (ddraw_device->windowed)
   {
     // Add client rect offset in window mode
@@ -1007,7 +983,6 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
     dstwin.right += ddraw_device->hwnd_clientrect_screen.left;
     dstwin.bottom += ddraw_device->hwnd_clientrect_screen.top;
   }
-  fellowAddLog("Destination after window: %u %u %u %u, output %u %u\n", dstwin.left, dstwin.top, dstwin.right, dstwin.bottom, output_width, output_height);
 }
 
 /*==========================================================================*/
@@ -1032,25 +1007,11 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   /* Prevent horizontal scaling of the offscreen buffer */
   if (ddraw_device->windowed)
   {
-//#ifdef RETRO_PLATFORM
-//    if (!RP.GetHeadlessMode())
-//#endif
-    {
-      // Windowed, stand alone mode.
-      srcwin.left = drawGetBufferClipLeft();
-      srcwin.top = drawGetBufferClipTop();
-      srcwin.right = drawGetBufferClipLeft() + drawGetBufferClipWidth();
-      srcwin.bottom = drawGetBufferClipTop() + drawGetBufferClipHeight();
-    }
-//#ifdef RETRO_PLATFORM
-//    else
-//    {
-//      srcwin.left   = RP.GetClippingOffsetLeftAdjusted();
-//      srcwin.right  = RP.GetSourceBufferWidth() + RP.GetClippingOffsetLeftAdjusted();
-//      srcwin.top    = RP.GetClippingOffsetTopAdjusted();
-//      srcwin.bottom = RP.GetSourceBufferHeight() + RP.GetClippingOffsetTopAdjusted();
-//    }
-//#endif
+    // Windowed
+    srcwin.left = drawGetBufferClipLeft();
+    srcwin.top = drawGetBufferClipTop();
+    srcwin.right = drawGetBufferClipLeft() + drawGetBufferClipWidth();
+    srcwin.bottom = drawGetBufferClipTop() + drawGetBufferClipHeight();
   }
   else
   {
@@ -1169,7 +1130,6 @@ ULO gfxDrvDDrawVideomemLocationFlags(ULO pass)
 bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_device)
 {
   bool result = true;
-  HRESULT err;
 
   ULO pass = 0;
   bool buffer_allocated = false;
@@ -1177,29 +1137,15 @@ bool gfxDrvDDrawCreateSecondaryOffscreenSurface(gfx_drv_ddraw_device *ddraw_devi
   {
     ddraw_device->ddsdSecondary.dwSize = sizeof(ddraw_device->ddsdSecondary);
     ddraw_device->ddsdSecondary.dwFlags = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-    ddraw_device->ddsdSecondary.ddsCaps.dwCaps = gfxDrvDDrawVideomemLocationFlags(pass)
-      | DDSCAPS_OFFSCREENPLAIN;
+    ddraw_device->ddsdSecondary.ddsCaps.dwCaps = gfxDrvDDrawVideomemLocationFlags(pass) | DDSCAPS_OFFSCREENPLAIN;
 
-//#ifdef RETRO_PLATFORM
-//    if (!RP.GetHeadlessMode())
-//    {
-//#endif
-      ddraw_device->ddsdSecondary.dwHeight = draw_buffer_info.height;
-      ddraw_device->ddsdSecondary.dwWidth = draw_buffer_info.width;
-//#ifdef RETRO_PLATFORM
-//    }
-//    else {
-//      // increase buffer size to accomodate different display scaling factors
-//      ddraw_device->ddsdSecondary.dwHeight = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * RP.GetDisplayScale() * 2;
-//      ddraw_device->ddsdSecondary.dwWidth  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * RP.GetDisplayScale() * 2;
-//    }
-//#endif
-    err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2, &(ddraw_device->ddsdSecondary), &(ddraw_device->lpDDSSecondary), nullptr);
+    ddraw_device->ddsdSecondary.dwHeight = draw_buffer_info.height;
+    ddraw_device->ddsdSecondary.dwWidth = draw_buffer_info.width;
+    HRESULT err = IDirectDraw2_CreateSurface(ddraw_device->lpDD2, &(ddraw_device->ddsdSecondary), &(ddraw_device->lpDDSSecondary), nullptr);
     if (err != DD_OK)
     {
       gfxDrvDDrawFailure("gfxDrvDDrawCreateSecondaryOffscreenSurface() 0x%x\n", err);
-      fellowAddLog("gfxdrv: Failed to allocate second offscreen surface in %s\n",
-        gfxDrvDDrawVideomemLocationStr(pass));
+      fellowAddLog("gfxdrv: Failed to allocate second offscreen surface in %s\n", gfxDrvDDrawVideomemLocationStr(pass));
       result = false;
     }
     else
