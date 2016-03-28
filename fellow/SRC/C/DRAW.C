@@ -885,16 +885,6 @@ const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO
   return std::pair<ULO, ULO>(top, bottom);
 }
 
-
-/*============================================================================*/
-/* Center the Amiga screen in the host buffer                                 */
-/*============================================================================*/
-
-static void drawCalculateOutputClipSizeInBuffer(ULO buffer_width, ULO buffer_height)
-{
-}
-
-
 /*============================================================================*/
 /* Calulate needed geometry information about Amiga screen                    */
 /*============================================================================*/
@@ -1187,8 +1177,11 @@ BOOLE drawStartup(void)
 
   drawInitializePredefinedClipRectangles();
 
-  drawSetInternalClip(draw_clip_max_pal);
-  drawSetOutputClip(draw_clip_max_pal);
+  if (!RP.GetHeadlessMode())
+  {
+    drawSetInternalClip(draw_clip_max_pal);
+    drawSetOutputClip(draw_clip_max_pal);
+  }
 
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;

@@ -1338,15 +1338,20 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
 
   cfgSetFullScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
   cfgSetFullScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
-  fellowAddLog("1 SetScreenHeight and width: (%d, %d)\n", lWidth, lHeight);
 
-  drawSetInternalClip(draw_rect(92, 26, 468, 314)); // Max AF-PAL
+  drawSetInternalClip(draw_rect(92, 26, 468, 314));
   
-  drawSetOutputClip(
-    draw_rect((RP.GetClippingOffsetLeft() / 4),
-              RP.GetClippingOffsetTop() / 2,
-              ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4),
-              (RP.GetClippingOffsetTop() + RP.GetScreenHeight()) / 2));
+  draw_rect output_clip((RP.GetClippingOffsetLeft() / 4),
+                        RP.GetClippingOffsetTop() / 2,
+                        ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4),
+                        (RP.GetClippingOffsetTop() + RP.GetScreenHeight()) / 2);
+
+  cfgSetClipLeft(gfxDrvCommon->rp_startup_config, output_clip.left);
+  cfgSetClipTop(gfxDrvCommon->rp_startup_config, output_clip.top);
+  cfgSetClipRight(gfxDrvCommon->rp_startup_config, output_clip.right);
+  cfgSetClipBottom(gfxDrvCommon->rp_startup_config, output_clip.bottom);
+
+  drawSetOutputClip(output_clip);
 
   if (cfgGetWindowed(gfxDrvCommon->rp_startup_config))
   {
