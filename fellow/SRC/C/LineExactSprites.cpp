@@ -2141,7 +2141,6 @@ void LineExactSprites::HardReset()
 void LineExactSprites::EndOfLine(ULO rasterY)
 {
   // Make sure action lists and merge lists are empty
-  ProcessDMAActionListNOP();
   ProcessActionListNOP();
   for (ULO i = 0; i < 8; i++)
   {
@@ -2156,6 +2155,7 @@ void LineExactSprites::EndOfLine(ULO rasterY)
 
 void LineExactSprites::EndOfFrame()
 {
+  ProcessDMAActionListNOP();
   for (ULO i = 0; i < 8; i++)
   {
     sprite_state[i] = 0;
