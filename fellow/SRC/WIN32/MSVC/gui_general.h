@@ -207,8 +207,6 @@
 #define IDC_CHECK_GRAPHICS_DEINTERLACE  1163
 #define IDC_DISPLAYSCALE_COMBO          1164
 #define IDC_COMBO_DISPLAYSCALE          1164
-#define IDC_EDIT_WINDOWWIDTH            1165
-#define IDC_EDIT_WINDOWHEIGHT           1166
 #define IDC_COMBO1                      1167
 #define IDC_COMBO_BORDER                1167
 #define IDC_BUTTON_DF2_SWAP             2000

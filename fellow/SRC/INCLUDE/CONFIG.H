@@ -95,14 +95,11 @@ typedef struct {
   /* Screen configuration                                                     */
   /*==========================================================================*/
 
-  ULO   m_fullscreenwidth;
-  ULO   m_fullscreenheight;
-  ULO   m_fullscreencolorbits;
-  ULO   m_fullscreenrefresh;
-
-  bool  m_windowed;
-  ULO   m_windowwidth;
-  ULO   m_windowheight;
+  ULO	m_screenwidth;
+  ULO	m_screenheight;
+  ULO   m_screencolorbits;
+  ULO   m_screenrefresh;
+  bool  m_screenwindowed;
 
   bool  m_screendrawleds;
   ULO   m_frameskipratio;
@@ -251,21 +248,16 @@ extern bool cfgGetRtc(cfg *config);
 /* Host screen configuration property access                                 */
 /*===========================================================================*/
 
-extern void cfgSetFullScreenWidth(cfg *config, ULO fullscreenwidth);
-extern ULO cfgGetFullScreenWidth(cfg *config);
-extern void cfgSetFullScreenHeight(cfg *config, ULO fullscreenheight);
-extern ULO cfgGetFullScreenHeight(cfg *config);
-extern void cfgSetFullScreenColorBits(cfg *config, ULO fullscreencolorbits);
-extern ULO cfgGetFullScreenColorBits(cfg *config);
-extern void cfgSetFullScreenRefresh(cfg *config, ULO fullscreenrefresh);
-extern ULO cfgGetFullScreenRefresh(cfg *config);
-
-extern void cfgSetWindowed(cfg *config, bool windowed);
-extern bool cfgGetWindowed(cfg *config);
-extern void cfgSetWindowWidth(cfg *config, ULO windowwidth);
-extern ULO cfgGetWindowWidth(cfg *config);
-extern void cfgSetWindowHeight(cfg *config, ULO windowheight);
-extern ULO cfgGetWindowHeight(cfg *config);
+extern void cfgSetScreenWidth(cfg *config, ULO screenwidth);
+extern ULO cfgGetScreenWidth(cfg *config);
+extern void cfgSetScreenHeight(cfg *config, ULO screenheight);
+extern ULO cfgGetScreenHeight(cfg *config);
+extern void cfgSetScreenColorBits(cfg *config, ULO screencolorbits);
+extern ULO cfgGetScreenColorBits(cfg *config);
+extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
+extern ULO cfgGetScreenRefresh(cfg *config);
+extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
+extern bool cfgGetScreenWindowed(cfg *config);
 
 extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
 extern bool cfgGetScreenDrawLEDs(cfg *config);

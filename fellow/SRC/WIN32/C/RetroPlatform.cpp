@@ -1202,7 +1202,7 @@ void RetroPlatform::SetScreenWindowed(const bool bWindowed)
 
   if(pConfig != NULL) 
   {
-    cfgSetWindowed(pConfig, bWindowed);
+    cfgSetScreenWindowed(pConfig, bWindowed);
   }
 
   fellowAddLog("RetroPlatform::SetScreenWindowed(): configured to %s\n",
@@ -1308,8 +1308,8 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   RetroPlatform::SetScreenHeight      (sm->lClipHeight);
   RetroPlatform::SetScreenWidth       (sm->lClipWidth);
   fellowAddLog("2 - SetScreenHeight and width: (%d, %d)\n", sm->lClipWidth, sm->lClipHeight);
-  cfgSetFullScreenHeight(pConfig, sm->lClipHeight);
-  cfgSetFullScreenWidth (pConfig, sm->lClipWidth);
+  cfgSetScreenHeight(pConfig, sm->lClipHeight);
+  cfgSetScreenWidth (pConfig, sm->lClipWidth);
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
@@ -1328,16 +1328,16 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
     cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
 
   if (bStartup) {
-    RP.SetScreenHeight(cfgGetFullScreenHeight(gfxDrvCommon->rp_startup_config));
-    RP.SetScreenWidth(cfgGetFullScreenWidth(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
   }
 
   lHeight = RP.GetScreenHeightAdjusted();
   lWidth = RP.GetScreenWidthAdjusted();
   lDisplayScale = RP.GetDisplayScale();
 
-  cfgSetFullScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetFullScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
+  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
 
   drawSetInternalClip(draw_rect(92, 26, 468, 314));
   
@@ -1353,19 +1353,16 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
 
   drawSetOutputClip(output_clip);
 
-  if (cfgGetWindowed(gfxDrvCommon->rp_startup_config))
+  if (cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config))
   {
-    cfgSetWindowHeight(gfxDrvCommon->rp_startup_config, lHeight);
-    cfgSetWindowWidth(gfxDrvCommon->rp_startup_config, lWidth);
-
-    drawSetWindowedMode(cfgGetWindowWidth(gfxDrvCommon->rp_startup_config), cfgGetWindowHeight(gfxDrvCommon->rp_startup_config));
+    drawSetWindowedMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
   }
   else
   {
-    drawSetFullScreenMode(cfgGetFullScreenWidth(gfxDrvCommon->rp_startup_config),
-      cfgGetFullScreenHeight(gfxDrvCommon->rp_startup_config),
-      cfgGetFullScreenColorBits(gfxDrvCommon->rp_startup_config),
-      cfgGetFullScreenRefresh(gfxDrvCommon->rp_startup_config));
+    drawSetFullScreenMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config));
   }
 }
 

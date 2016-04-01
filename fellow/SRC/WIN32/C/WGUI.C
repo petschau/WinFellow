@@ -573,9 +573,9 @@ void wguiFreeGuiDrawModesLists()
 
 wgui_drawmode* wguiMatchFullScreenResolution()
 {
-  ULO width = cfgGetFullScreenWidth(wgui_cfg);
-  ULO height = cfgGetFullScreenHeight(wgui_cfg);
-  ULO colorbits	= cfgGetFullScreenColorBits(wgui_cfg);
+  ULO width = cfgGetScreenWidth(wgui_cfg);
+  ULO height = cfgGetScreenHeight(wgui_cfg);
+  ULO colorbits	= cfgGetScreenColorBits(wgui_cfg);
 
   wgui_drawmode_list& reslist = wguiGetFullScreenMatchingList(colorbits);
 
@@ -1696,10 +1696,10 @@ void wguiInstallDisplayScaleConfigInGUI(HWND hwndDlg, cfg *conf)
   HWND borderComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_BORDER);
 
   ComboBox_ResetContent(borderComboboxHWND);
-  ComboBox_AddString(borderComboboxHWND, "small");
+  ComboBox_AddString(borderComboboxHWND, "none");
   ComboBox_AddString(borderComboboxHWND, "normal");
-  ComboBox_AddString(borderComboboxHWND, "wide overscan");
-  ComboBox_AddString(borderComboboxHWND, "very wide overscan");
+  ComboBox_AddString(borderComboboxHWND, "large overscan");
+  ComboBox_AddString(borderComboboxHWND, "very large overscan");
 
   ULO currentLeft = cfgGetClipLeft(conf);
   ULO currentBorderSelectionIndex = 0;
@@ -1783,7 +1783,7 @@ void wguiExtractDisplayScaleConfigFromGUI(HWND hwndDlg, cfg *conf)
 void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
 {
   HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
-  bool isWindowed = cfgGetWindowed(conf);
+  bool isWindowed = cfgGetScreenWindowed(conf);
 
   ComboBox_ResetContent(colorBitsComboboxHWND);
   ULO comboboxid = 0;
@@ -1812,7 +1812,7 @@ void wguiInstallColorBitsConfigInGUI(HWND hwndDlg, cfg *conf)
 void wguiInstallFullScreenButtonConfigInGUI(HWND hwndDlg, cfg *conf)
 {
   // set fullscreen button check
-  if (cfgGetWindowed(conf))
+  if (cfgGetScreenWindowed(conf))
   {
     // windowed 
     ccwButtonUncheck(hwndDlg, IDC_CHECK_FULLSCREEN);
@@ -1867,7 +1867,7 @@ void wguiInstallFullScreenResolutionConfigInGUI(HWND hwndDlg, cfg *conf)
   }
   ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, pwgui_dm_match->id);
   wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
-  ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, !cfgGetWindowed(conf));
+  ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, !cfgGetScreenWindowed(conf));
 }
 
 void wguiInstallDisplayDriverConfigInGUI(HWND hwndDlg, cfg* conf)
@@ -1889,28 +1889,6 @@ void wguiInstallFrameSkipConfigInGUI(HWND hwndDlg, cfg* conf)
   wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING, IDC_STATIC_FRAME_SKIPPING, &wguiGetFrameSkippingStrWithIndex);
 }
 
-void wguiInstallWindowSizeConfigInGUI(HWND hwndDlg, cfg* conf)
-{
-  char s[32];
-  sprintf(s, "%d", cfgGetWindowWidth(conf));
-  ccwEditSetText(hwndDlg, IDC_EDIT_WINDOWWIDTH, s);
-  sprintf(s, "%d", cfgGetWindowHeight(conf));
-  ccwEditSetText(hwndDlg, IDC_EDIT_WINDOWHEIGHT, s);
-
-  BOOL isWindowed = cfgGetWindowed(conf) == true;
-  ccwEditEnableConditional(hwndDlg, IDC_EDIT_WINDOWWIDTH, isWindowed);
-  ccwEditEnableConditional(hwndDlg, IDC_EDIT_WINDOWHEIGHT, isWindowed);
-}
-
-void wguiExtractWindowSizeConfigFromGUI(HWND hwndDlg, cfg* conf)
-{
-  char s[32];
-  ccwEditGetText(hwndDlg, IDC_EDIT_WINDOWWIDTH, s, 31);
-  cfgSetWindowWidth(conf, atoi(s));
-  ccwEditGetText(hwndDlg, IDC_EDIT_WINDOWHEIGHT, s, 31);
-  cfgSetWindowHeight(conf, atoi(s));
-}
-
 void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
 {
   // match available resolutions with fullscreen configuration
@@ -1925,7 +1903,6 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
   wguiInstallDisplayScaleConfigInGUI(hwndDlg, conf);
   wguiInstallDisplayScaleStrategyConfigInGUI(hwndDlg, conf);
   wguiInstallFullScreenResolutionConfigInGUI(hwndDlg, conf);
-  wguiInstallWindowSizeConfigInGUI(hwndDlg, conf);
   wguiInstallFrameSkipConfigInGUI(hwndDlg, conf);
   wguiInstallBlitterConfig(hwndDlg, conf);
 }
@@ -1937,7 +1914,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
   HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
 
   // get current colorbits
-  cfgSetFullScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
+  cfgSetScreenColorBits(conf, wguiGetColorBitsFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS)));
 
   // get multiplebuffer check
   cfgSetUseMultipleGraphicalBuffers(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS));
@@ -1946,27 +1923,37 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
   cfgSetDisplayDriver(conf, wguiGetDisplayDriverFromComboboxIndex(ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_DISPLAY_DRIVER)));
 
   // get fullscreen check
-  cfgSetWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
+  cfgSetScreenWindowed(conf, !ccwButtonGetCheck(hwndDlg, IDC_CHECK_FULLSCREEN));
 
   // get scaling
   wguiExtractDisplayScaleConfigFromGUI(hwndDlg, conf);
 
   cfgSetDisplayScaleStrategy(conf, (ccwButtonGetCheck(hwndDlg, IDC_RADIO_LINE_FILL_SOLID)) ? DISPLAYSCALE_STRATEGY_SOLID : DISPLAYSCALE_STRATEGY_SCANLINES);
 
-  // get height and width
-  unsigned int slider_index = ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA);
-  wgui_drawmode_list& list = wguiGetFullScreenMatchingList(cfgGetFullScreenColorBits(conf));
-  wgui_drawmode* wgui_dm = wguiGetUIDrawModeFromIndex(slider_index, list);
-  cfgSetFullScreenWidth(conf, wgui_dm->width);
-  cfgSetFullScreenHeight(conf, wgui_dm->height);
+  // get height and width for full screen
+
+  if (cfgGetScreenWindowed(conf))
+  {
+    unsigned int scale = (cfgGetDisplayScale(conf) == DISPLAYSCALE_AUTO) ? 1 : (unsigned int)cfgGetDisplayScale(conf);
+    unsigned int width = (cfgGetClipRight(conf) - cfgGetClipLeft(conf)) * 2 * scale;
+    unsigned int height = (cfgGetClipBottom(conf) - cfgGetClipTop(conf)) * 2 * scale;
+    cfgSetScreenWidth(conf, width);
+    cfgSetScreenHeight(conf, height);
+  }
+  else
+  {
+    unsigned int slider_index = ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA);
+    wgui_drawmode_list& list = wguiGetFullScreenMatchingList(cfgGetScreenColorBits(conf));
+    wgui_drawmode* wgui_dm = wguiGetUIDrawModeFromIndex(slider_index, list);
+    cfgSetScreenWidth(conf, wgui_dm->width);
+    cfgSetScreenHeight(conf, wgui_dm->height);
+  }
 
   // get frame skipping rate choice
   cfgSetFrameskipRatio(conf, ccwSliderGetPosition(hwndDlg, IDC_SLIDER_FRAME_SKIPPING));
 
   // get blitter selection radio buttons
   wguiExtractBlitterConfig(hwndDlg, conf);
-
-  wguiExtractWindowSizeConfigFromGUI(hwndDlg, conf);
 }
 
 /*============================================================================*/
@@ -2484,8 +2471,6 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 	        ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), wguiGetComboboxIndexFromColorBits(desktop_bitsperpixel));
 	        ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
 	        Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
-                Edit_Enable(GetDlgItem(hwndDlg, IDC_EDIT_WINDOWWIDTH), TRUE);
-                Edit_Enable(GetDlgItem(hwndDlg, IDC_EDIT_WINDOWHEIGHT), TRUE);
                 ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, FALSE);
               }
               else 
@@ -2499,9 +2484,8 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 	        wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 	        ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
 	        Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
-                Edit_Enable(GetDlgItem(hwndDlg, IDC_EDIT_WINDOWWIDTH), FALSE);
-                Edit_Enable(GetDlgItem(hwndDlg, IDC_EDIT_WINDOWHEIGHT), FALSE);
                 ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, TRUE);
+                ComboBox_SetCurSel(GetDlgItem(hwndDlg, IDC_COMBO_DISPLAYSCALE), 0);
               }
               break;
           }
