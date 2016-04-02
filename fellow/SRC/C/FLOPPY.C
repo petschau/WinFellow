@@ -129,6 +129,7 @@ static UBY floppyBootBlockFFS[]={
   0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
 };
 
+#define FLOPPY_LOG
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
@@ -463,15 +464,18 @@ void floppyStepSet(BOOLE stp)
       {
 	if (!floppy[i].dir) 
 	{
+          if (floppy[i].track < floppy[i].tracks - 1)
+          {
 #ifdef FLOPPY_LOG
-	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+            floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
 #endif
-	  floppy[i].track++;
+            floppy[i].track++;
 
 #ifdef RETRO_PLATFORM
-	  if(RP.GetHeadlessMode())
-            RP.PostFloppyDriveSeek(i, floppy[i].track);
+            if (RP.GetHeadlessMode())
+              RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
+          }
 	}
 	else
 	{
