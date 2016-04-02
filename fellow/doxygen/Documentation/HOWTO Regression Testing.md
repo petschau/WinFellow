@@ -224,3 +224,11 @@ Edit a title to use Automatic clipping and verify the maximum screen area is vis
 Edit a title to use custom clipping of a small area and verify it is displayed correctly
 - in 1x mode. Take a screenshot, verify it is ok.
 - in 2x mode. Take a screenshot, verify it is ok.
+
+Git 86bd011: Two disk related fixes
+------------------------------------
+The game Amegas, packed into one file, does a disk access right after decrunching that requires the motor bit to be set in advance, and hung.
+This is a detail metioned in the HRM. Check that the game starts.
+
+The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. The fix adds a limit to stepping beyond the size of the
+disk image. Check that the game loads. Note that the game has broken intro graphics.
