@@ -203,93 +203,329 @@ void blitterOperationLog(void) {
 #define blitterMinterm01(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | b_dat | c_dat));            /* !(A+B+C) */
 #define blitterMinterm02(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & ~b_dat & c_dat);             /* abC */
 #define blitterMinterm03(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | b_dat));                    /* !(A+B) */
+
 #define blitterMinterm04(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & b_dat & ~c_dat);             /* aBc */
 #define blitterMinterm05(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | c_dat));                    /* !(A+C) */
 #define blitterMinterm06(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & (b_dat ^ c_dat));            /* a(B xor C) */
 #define blitterMinterm07(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | (b_dat & c_dat)));          /* !(A+BC) */
+
 #define blitterMinterm08(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & b_dat & c_dat);              /* aBC */
 #define blitterMinterm09(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | (b_dat ^ c_dat)));          /* !(A+(B xor C)) */
 #define blitterMinterm0a(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & c_dat);                      /* aC */
 #define blitterMinterm0b(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & (~b_dat | c_dat));           /* a(b+C) */
+
 #define blitterMinterm0c(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & b_dat);                      /* aB */
 #define blitterMinterm0d(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat | (~b_dat & c_dat)));         /* !(A+(bC)) */
 #define blitterMinterm0e(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat & (b_dat | c_dat));            /* a(B+C) */
 #define blitterMinterm0f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat);                              /* a */
+
 #define blitterMinterm10(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & a_dat & ~c_dat);             /* Abc */
 #define blitterMinterm11(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat | c_dat));                    /* !(B+C) */
 #define blitterMinterm12(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & (a_dat ^ c_dat));            /* b(A xor C) */
 #define blitterMinterm13(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat | (a_dat & c_dat)));          /* !(B+AC) */
-#define blitterMinterm16(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | ((a_dat ^ b_dat) & ~c_dat));          /* c(A xor B) + abC */
-#define blitterMinterm1a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & c_dat)); /* Abc + aC */
-#define blitterMinterm1f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | (a_dat & ~b_dat & ~c_dat));  /* Abc + a */
+
+#define blitterMinterm14(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) & ~c_dat);                               /* c(A xor B) */
+#define blitterMinterm15(a_dat, b_dat, c_dat, d_dat) d_dat = ((~(a_dat & b_dat)) & ~c_dat);                            /* c(!(AB)) */
+#define blitterMinterm16(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | ((a_dat ^ b_dat) & ~c_dat)); /* c(A xor B) + abC */
+#define blitterMinterm17(a_dat, b_dat, c_dat, d_dat) d_dat = (~((a_dat & (b_dat | c_dat)) | (b_dat & c_dat)));         /* !(A(B+C) + BC) */
+
+#define blitterMinterm18(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & ~b_dat & ~c_dat));   /* aBC + Abc */
+#define blitterMinterm19(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | ~(b_dat | c_dat));            /* aBC + !(B+C) */
+#define blitterMinterm1a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & c_dat));           /* Abc + aC */
+#define blitterMinterm1b(a_dat, b_dat, c_dat, d_dat) d_dat = (~((b_dat | c_dat) & (a_dat | ~c_dat)));                  /* !((B+C)(A+c)) */
+
+#define blitterMinterm1c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & b_dat));           /* Abc + aB */
+#define blitterMinterm1d(a_dat, b_dat, c_dat, d_dat) d_dat = (~((b_dat | c_dat) & (a_dat | ~b_dat)));                  /* !((B+C)(A+b)) */
+#define blitterMinterm1e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & (b_dat | c_dat))); /* Abc + !a(B+C) */
+#define blitterMinterm1f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | (a_dat & ~b_dat & ~c_dat));                     /* Abc + a */
+
 #define blitterMinterm20(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & a_dat & c_dat);              /* bAC */
 #define blitterMinterm21(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat | (a_dat ^ c_dat)));          /* !(B+(A xor C)) */
 #define blitterMinterm22(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & c_dat);                      /* bC */
 #define blitterMinterm23(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & (~a_dat | c_dat));           /* b(a+C) */
-#define blitterMinterm2a(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat & b_dat) & c_dat);            /* (!AB)C */
+
+#define blitterMinterm24(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat & ~c_dat));   /* AbC + aBc */
+#define blitterMinterm25(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | ~(a_dat | c_dat));            /* AbC + !(A+B) */
+#define blitterMinterm26(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (~b_dat & c_dat));           /* aBc + bC */
+#define blitterMinterm27(a_dat, b_dat, c_dat, d_dat) d_dat = (~((a_dat | c_dat) & (b_dat | ~c_dat)));                  /* !((A+C)(B+c)) */
+
+#define blitterMinterm28(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat & (a_dat ^ b_dat));                                /* C(A xor B) */
+#define blitterMinterm29(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & ~(b_dat ^ c_dat))); /* AbC + a!(B xor C) */
+#define blitterMinterm2a(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat & b_dat) & c_dat);                               /* (!AB)C */
+#define blitterMinterm2b(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & (~b_dat | c_dat)) | (~b_dat & c_dat));         /* a(b+C) + bC */
+
+#define blitterMinterm2c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat));            /* AbC + aB */
+#define blitterMinterm2d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & (b_dat | ~c_dat))); /* AbC + a(B + c)) */
+#define blitterMinterm2e(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat) | (~b_dat & c_dat));                    /* aB + bC */
+#define blitterMinterm2f(a_dat, b_dat, c_dat, d_dat) d_dat = ((~b_dat & c_dat) | ~a_dat);                              /* a + bC */
+
 #define blitterMinterm30(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & ~b_dat);                      /* Ab */
 #define blitterMinterm31(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat | (~a_dat & c_dat)));         /* !(B+(aC)) */
 #define blitterMinterm32(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat & (a_dat | c_dat));            /* b(A+C) */
 #define blitterMinterm33(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat);                              /* b */
-#define blitterMinterm3a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | (~a_dat & c_dat)); /* Ab + aC */
+
+#define blitterMinterm34(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & ~b_dat));           /* aBc + Ab */
+#define blitterMinterm35(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~c_dat) | (a_dat & ~b_dat));                   /* ac + Ab */
+#define blitterMinterm36(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (~b_dat & (a_dat | c_dat))); /* aBc + b(A+C) */
+#define blitterMinterm37(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat & (a_dat | c_dat)));                             /* !(B(A+C)) */
+
+#define blitterMinterm38(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & ~b_dat));            /* aBC + Ab */
+#define blitterMinterm39(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (~b_dat & (a_dat | ~c_dat))); /* aBC + b(A + c) */
+#define blitterMinterm3a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | (~a_dat & c_dat));                    /* Ab + aC */
+#define blitterMinterm3b(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | ~b_dat);                              /* aC + b */
+
 #define blitterMinterm3c(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ b_dat);                       /* A xor B */
-#define blitterMinterm40(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & ~c_dat);              /* ABc */
-#define blitterMinterm42(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~a_dat & ~b_dat & c_dat)); /* ABc + abC */
-#define blitterMinterm4a(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | (a_dat & b_dat & ~c_dat)); /* aC + ABc */
-#define blitterMinterm54(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat | (b_dat & ~a_dat)) & ~c_dat);	/* c(A + aB) */
-#define blitterMinterm5a(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ c_dat);						/* A xor C */
-#define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat))); /* bC + B(A xor C) */
-#define blitterMinterm80(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & c_dat);				/* ABC */
-#define blitterMinterm88(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & c_dat);			    /* BC */
-#define blitterMinterm8a(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat & (b_dat | ~a_dat));	    /* C(B+!A)) */
-#define blitterMinterm96(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~(b_dat ^ c_dat)) | ((b_dat ^ c_dat) & ~a_dat));	/* A(~(B xor C)) + a(B xor C) */
-#define blitterMinterm9a(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat & c_dat) | ((a_dat ^ c_dat) & ~b_dat));	    /* BC + b(A xor C)) */
-#define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);			    /* AC */
-#define blitterMinterma8(a_dat, b_dat, c_dat, d_dat) d_dat = (((a_dat & ~b_dat) | b_dat) & c_dat);  /* (Ab + B)C */
-#define blitterMintermaa(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat);                               /* C */
+#define blitterMinterm3d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | ~(a_dat | c_dat));  /* (A xor B) + !(A+C) */
+#define blitterMinterm3e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | (~a_dat & c_dat));  /* (A xor B) + aC */
+#define blitterMinterm3f(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat & b_dat));                    /* !(AB) */
+
+#define blitterMinterm40(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & ~c_dat);                                 /* ABc */
+#define blitterMinterm41(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat & (~(a_dat ^ b_dat)));                            /* c(!(A xor B)) */
+#define blitterMinterm42(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~a_dat & ~b_dat & c_dat));   /* ABc + abC */
+#define blitterMinterm43(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | ~(a_dat | b_dat));            /* ABc + !(A+B) */
+
+#define blitterMinterm44(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & ~c_dat);                                         /* Bc */
+#define blitterMinterm45(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat & (~a_dat | b_dat));                              /* c(a+B) */
+#define blitterMinterm46(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (b_dat & ~c_dat));           /* abC + Bc */
+#define blitterMinterm47(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | (b_dat & ~c_dat));                   /* ab + Bc */
+
+#define blitterMinterm48(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (a_dat ^ c_dat));                                /* B(A xor C) */
+#define blitterMinterm49(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (b_dat & (a_dat ^ c_dat))); /* abc + B(A xor C) */
+#define blitterMinterm4a(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | (a_dat & b_dat & ~c_dat));            /* aC + ABc */
+#define blitterMinterm4b(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & (~b_dat | c_dat)) | (a_dat & b_dat & ~c_dat)); /* ABc + a(b+C) */
+
+#define blitterMinterm4c(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (~a_dat | ~c_dat));                              /* B(a + c) */
+#define blitterMinterm4d(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & (b_dat | ~c_dat)) | (b_dat & ~c_dat));         /* a(B+c) + Bc */
+#define blitterMinterm4e(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | (b_dat & ~c_dat));                    /* aC + Bc */
+#define blitterMinterm4f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | (b_dat & ~c_dat));                              /* a + Bc */
+
+#define blitterMinterm50(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & ~c_dat);	                                       /* Ac */
+#define blitterMinterm51(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat & (a_dat | ~b_dat));	                       /* c(A+b) */
+#define blitterMinterm52(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (a_dat & ~c_dat));	       /* abC + Ac */
+#define blitterMinterm53(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | (a_dat & ~c_dat));	               /* ab + Ac */
+
+#define blitterMinterm54(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat | (b_dat & ~a_dat)) & ~c_dat);	               /* c(A + aB) */
+#define blitterMinterm55(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat);	                                               /* c */
+#define blitterMinterm56(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (~c_dat & (a_dat | b_dat))); /* abC + c(A+B) */
+#define blitterMinterm57(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | ~c_dat);	                       /* ab + c */
+
+#define blitterMinterm58(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & ~c_dat));	       /* aBC + Ac */
+#define blitterMinterm59(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (~c_dat & (a_dat | ~b_dat))); /* aBC + c(A + b) */
+#define blitterMinterm5a(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat ^ c_dat);					       /* A xor C */
+#define blitterMinterm5b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | ~(b_dat | c_dat));		       /* (A xor C) + bc */
+
+#define blitterMinterm5c(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat) | (a_dat & ~c_dat));		       /* aB + Ac */
+#define blitterMinterm5d(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat) | ~c_dat);		               /* aB + c */
+#define blitterMinterm5e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | (b_dat & ~c_dat));		       /* (A xor C) + Bc */
+#define blitterMinterm5f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | ~c_dat);		                               /* a + c */
+
+#define blitterMinterm60(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (b_dat ^ c_dat));                                /* A(B xor C) */
+#define blitterMinterm61(a_dat, b_dat, c_dat, d_dat) d_dat = ((~b_dat & ~(a_dat ^ c_dat)) | (a_dat & b_dat & ~c_dat)); /* b(!(A xor C)) + ABc */
+#define blitterMinterm62(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~b_dat & c_dat));            /* ABc + bC */
+#define blitterMinterm63(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~b_dat & (~a_dat | c_dat))); /* ABc + b(a + C) */
+
+#define blitterMinterm64(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (b_dat & ~c_dat));            /* AbC + Bc */
+#define blitterMinterm65(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~c_dat & (~a_dat | b_dat))); /* AbC + c(a + B) */
+#define blitterMinterm66(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat ^ c_dat);                                          /* B xor C */
+#define blitterMinterm67(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (~a_dat & ~c_dat));                    /* (B xor C) + ac */
+
+#define blitterMinterm68(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & (a_dat ^ b_dat)) | (a_dat & b_dat & ~c_dat));                       /* C(A xor B) + ABc */
+#define blitterMinterm69(a_dat, b_dat, c_dat, d_dat) d_dat = ((~c_dat & (~(a_dat ^b_dat))) | (c_dat & (a_dat ^ b_dat)));                   /* c(!(A xor B)) + C(A xor B) */
+#define blitterMinterm6a(a_dat, b_dat, c_dat, d_dat) d_dat = ((c_dat & ~b_dat) | (b_dat & (a_dat ^ c_dat)));                               /* bC + B(A xor C) */
+#define blitterMinterm6b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & ~c_dat) | (~a_dat & ~b_dat) | (c_dat & (~a_dat | ~b_dat))); /* ABc + ab + C(a + b) */
+
+#define blitterMinterm6c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (b_dat & ~c_dat));             /* AbC + aB + Bc */
+#define blitterMinterm6d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & c_dat) | (~a_dat & b_dat) | (~c_dat & (b_dat | ~a_dat)));  /* AbC + aB + c(B + a) */
+#define blitterMinterm6e(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (~a_dat & b_dat));                                         /* (B xor C) + aB */
+#define blitterMinterm6f(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | ~a_dat);                                                   /* (B xor C) + aB */
+
+#define blitterMinterm70(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (~b_dat | ~c_dat));                              /* A(b + c) */
+#define blitterMinterm71(a_dat, b_dat, c_dat, d_dat) d_dat = (~c_dat & (a_dat | ~b_dat) | (a_dat & ~b_dat));           /* c(A + b) + Ab */
+#define blitterMinterm72(a_dat, b_dat, c_dat, d_dat) d_dat = ((~b_dat & c_dat) | (a_dat & ~c_dat));                    /* bC + Ac */
+#define blitterMinterm73(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~c_dat) | ~b_dat);                              /* b + Ac */
+
+#define blitterMinterm74(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | (b_dat & ~c_dat));                    /* Bc + Ab */
+#define blitterMinterm75(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | ~c_dat);                              /* c + Ab */
+#define blitterMinterm76(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (a_dat & ~c_dat));                     /* (B xor C) + Ac */
+#define blitterMinterm77(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat | ~c_dat);                                        /* b + c */
+
+#define blitterMinterm78(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat)));                     /* aBC + A(b + c) */
+#define blitterMinterm79(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & c_dat) | (a_dat & (~b_dat | ~c_dat)) | (~b_dat & ~c_dat)); /* aBC + A(b + c) + bc */
+#define blitterMinterm7a(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | (a_dat & ~b_dat));                                         /* (A xor C) + Ab */
+#define blitterMinterm7b(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | ~b_dat);                                                   /* (A xor C) + b */
+
+#define blitterMinterm7c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | (a_dat & ~c_dat));                     /* (A xor B) + Ac */
+#define blitterMinterm7d(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | ~c_dat);                               /* (A xor B) + c */
+#define blitterMinterm7e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~c_dat) | (~a_dat & b_dat) | (~b_dat & c_dat)); /* Ac + aB + bC */
+#define blitterMinterm7f(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat & b_dat & c_dat));                               /* !(ABC) */
+
+#define blitterMinterm80(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat & c_dat);				       /* ABC */
+#define blitterMinterm81(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~a_dat & ~b_dat & ~c_dat));   /* ABC + abc */
+#define blitterMinterm82(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat & (~(a_dat ^ b_dat)));                             /* C(!(A xor B))*/
+#define blitterMinterm83(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~a_dat & ~b_dat));            /* ABC + ab */
+
+#define blitterMinterm84(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (~(a_dat ^ c_dat)));                             /* B(!(A xor C)) */
+#define blitterMinterm85(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~a_dat & ~c_dat));            /* ABC + ac */
+#define blitterMinterm86(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~a_dat & (b_dat ^ c_dat)));   /* ABC + a(B xor C) */
+#define blitterMinterm87(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | ~(a_dat | (b_dat & c_dat)));   /* ABC + !(A + BC) */
+
+#define blitterMinterm88(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & c_dat);			             /* BC */
+#define blitterMinterm89(a_dat, b_dat, c_dat, d_dat) d_dat = ((~(a_dat | b_dat | c_dat)) | (b_dat & c_dat)); /* !(A +B + C) + BC */
+#define blitterMinterm8a(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat & (b_dat | ~a_dat));	             /* C(B+!A)) */
+#define blitterMinterm8b(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | (b_dat & c_dat));	     /* ab + BC */
+
+#define blitterMinterm8c(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (c_dat | ~a_dat));	             /* B(a+C)) */
+#define blitterMinterm8d(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~c_dat) | (b_dat & c_dat));	     /* ac + BC */
+#define blitterMinterm8e(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & (b_dat | c_dat)) | (b_dat & c_dat)); /* a(B+C) + BC */
+#define blitterMinterm8f(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | (b_dat & c_dat));	             /* a + BC */
+
+#define blitterMinterm90(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~(b_dat ^ c_dat)));	                               /* A(~(B xor C)) */
+#define blitterMinterm91(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~b_dat & ~c_dat));	               /* ABC + bc */
+#define blitterMinterm92(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~b_dat & (a_dat ^ c_dat)));	       /* ABC + b(A xor C) */
+#define blitterMinterm93(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | ~((a_dat | b_dat) & (b_dat | c_dat))); /* ABC + !((A+B)(B+C)) */
+
+#define blitterMinterm94(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & (a_dat ^ b_dat)));	                 /* ABC + c(A xor B) */
+#define blitterMinterm95(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | (~c_dat & ~(a_dat & b_dat)));	                 /* ABC + c!(AB) */
+#define blitterMinterm96(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~(b_dat ^ c_dat)) | ((b_dat ^ c_dat) & ~a_dat));	                 /* A(~(B xor C)) + a(B xor C) */
+#define blitterMinterm97(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat & c_dat) | ~((a_dat | (b_dat & c_dat)) & (b_dat | c_dat))); /* ABC + !((A+BC)(B+C)) */
+
+#define blitterMinterm98(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (b_dat & c_dat));  /* Abc + BC */
+#define blitterMinterm99(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat));                             /* !(B xor C) */
+#define blitterMinterm9a(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat & c_dat) | ((a_dat ^ c_dat) & ~b_dat)); /* BC + b(A xor C)) */
+#define blitterMinterm9b(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (~a_dat & c_dat));          /* !(B xor C) + aC */
+
+#define blitterMinterm9c(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (b_dat & (~a_dat | c_dat)));                   /* Abc + B(a + C) */
+#define blitterMinterm9d(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (~a_dat & b_dat));                                      /* !(B xor C) + aB */
+#define blitterMinterm9e(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat & ~c_dat) | (~a_dat & (b_dat | c_dat)) | (b_dat & c_dat)); /* Abc + a(B + C) + BC */
+#define blitterMinterm9f(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | ~a_dat);                                                /* !(B xor C) + a */
+
+#define blitterMinterma0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & c_dat);			             /* AC */
+#define blitterMinterma1(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (a_dat & c_dat)); /* abc + AC */
+#define blitterMinterma2(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat & (a_dat | ~b_dat));                     /* C(A+b) */
+#define blitterMinterma3(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | (a_dat & c_dat));          /* ab + AC */
+
+#define blitterMinterma4(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & c_dat));            /* aBc + AC */
+#define blitterMinterma5(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat));                                       /* !(A xor C) */
+#define blitterMinterma6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (c_dat & (a_dat | ~b_dat))); /* aBc + C(A+b) */
+#define blitterMinterma7(a_dat, b_dat, c_dat, d_dat) d_dat = ((~(a_dat ^ c_dat)) | (~b_dat & c_dat));                  /* !(A xor C) + bC */
+
+#define blitterMinterma8(a_dat, b_dat, c_dat, d_dat) d_dat = (((a_dat & ~b_dat) | b_dat) & c_dat);                     /* (Ab + B)C */
+#define blitterMinterma9(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (c_dat & (a_dat | b_dat))); /* abc + C(A+B) */
+#define blitterMintermaa(a_dat, b_dat, c_dat, d_dat) d_dat = (c_dat);                                                  /* C */
+#define blitterMintermab(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat) | c_dat);                              /* ab + C */
+
 #define blitterMintermac(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~a_dat & b_dat));  /* AC + aB */
+#define blitterMintermad(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | (b_dat & c_dat));  /* !(A xor C) + BC */
+#define blitterMintermae(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat) | c_dat);            /* aB + C */
+#define blitterMintermaf(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | c_dat);                      /* a + C */
+
+#define blitterMintermb0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (~b_dat | c_dat));                     /* A(b + C) */
+#define blitterMintermb1(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~b_dat & ~c_dat));          /* AC + bc */
+#define blitterMintermb2(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~b_dat & (a_dat | c_dat))); /* AC + b(A + C) */
+#define blitterMintermb3(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | ~b_dat);                     /* AC + b */
+
+#define blitterMintermb4(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & (~b_dat | c_dat)));                    /* aBc + A(b + C) */
+#define blitterMintermb5(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | (a_dat & ~b_dat));                                       /* !(A xor C) + Ab */
+#define blitterMintermb6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & b_dat & ~c_dat) | (a_dat & ~b_dat) | (c_dat & (a_dat | ~b_dat))); /* aBc + Ab + C(A + b) */
+#define blitterMintermb7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | ~b_dat);                                                 /* !(A xor C) + b */
+
 #define blitterMintermb8(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat & c_dat) | (a_dat & ~b_dat));  /* BC + Ab */
-#define blitterMintermc0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat);                       /* AB */
-#define blitterMintermca(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~a_dat & c_dat));  /* AB + aC */
+#define blitterMintermb9(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (a_dat & c_dat));  /* !(B xor C) + AC */
+#define blitterMintermba(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~b_dat) | c_dat);            /* Ab + C */
+#define blitterMintermbb(a_dat, b_dat, c_dat, d_dat) d_dat = (~b_dat | c_dat);                      /* b + C */
+
+#define blitterMintermbc(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | (a_dat & c_dat));                       /* (A xor B) + AC */
+#define blitterMintermbd(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (~a_dat & b_dat) | (~b_dat & ~c_dat));  /* AC + aB + bc */
+#define blitterMintermbe(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ b_dat) | c_dat);                                 /* (A xor B) + C */
+#define blitterMintermbf(a_dat, b_dat, c_dat, d_dat) d_dat = (~a_dat | ~b_dat | c_dat);                                 /* a + b + C */
+
+#define blitterMintermc0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & b_dat);                                           /* AB */
+#define blitterMintermc1(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~a_dat & ~b_dat & ~c_dat));            /* AB + abc */
+#define blitterMintermc2(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~a_dat & ~b_dat & c_dat));             /* AB + abC */
+#define blitterMintermc3(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat));                                        /* !(A xor B) */
+
+#define blitterMintermc4(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (a_dat | ~c_dat));                                /* B(A + c) */
+#define blitterMintermc5(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~c_dat) | (a_dat & b_dat));                     /* ac + AB */
+#define blitterMintermc6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (b_dat & (a_dat | ~c_dat)));  /* abC + B(A + c) */
+#define blitterMintermc7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | (b_dat & ~c_dat));                     /* !(A xor B) + Bc */
+
+#define blitterMintermc8(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat & (a_dat | c_dat));                                 /* B(A + C) */
+#define blitterMintermc9(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (b_dat & (a_dat | c_dat)));  /* abc + B(A + C) */
+#define blitterMintermca(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~a_dat & c_dat));                      /* AB + aC */
+#define blitterMintermcb(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | (b_dat & c_dat));                      /* !(A xor B) + BC */
+
 #define blitterMintermcc(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat);                               /* B */
 #define blitterMintermcd(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (~a_dat & ~c_dat));           /* B + ac */
 #define blitterMintermce(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (~a_dat & c_dat));            /* B + aC */
 #define blitterMintermcf(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~a_dat);                      /* B + a */
-#define blitterMintermd8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~c_dat) | (b_dat & c_dat));  /* Ac + BC */
+
+#define blitterMintermd0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (b_dat | ~c_dat));                                /* A(B+c) */
+#define blitterMintermd1(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~b_dat & ~c_dat));                     /* AB + bc */
+#define blitterMintermd2(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (a_dat & (b_dat | ~c_dat)));  /* abC + A(B + c) */
+#define blitterMintermd3(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | (a_dat & ~c_dat));                     /* !(A xor B) + Ac */
+
+#define blitterMintermd4(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | ~c_dat)) | (b_dat & ~c_dat));                             /* A(B+c) + Bc */
+#define blitterMintermd5(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | ~c_dat);                                                  /* AB + c */
+#define blitterMintermd6(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & c_dat) | (b_dat & ~c_dat) | (a_dat & (b_dat | ~c_dat))); /* abC + Bc + Ac + AB */
+#define blitterMintermd7(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | ~c_dat);                                                 /* !(A xor B) + c */
+
+#define blitterMintermd8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & ~c_dat) | (b_dat & c_dat));                      /* Ac + BC */
+#define blitterMintermd9(a_dat, b_dat, c_dat, d_dat) d_dat = (~(b_dat ^ c_dat) | (a_dat & b_dat));                      /* !(B xor C) + AB */
+#define blitterMintermda(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat ^ c_dat) | (a_dat & b_dat));                       /* (A xor C) + AB */
+#define blitterMintermdb(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~a_dat & c_dat) | (~b_dat & ~c_dat));  /* AB + aC + bc */
+
 #define blitterMintermdc(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (a_dat & ~c_dat));            /* B + Ac */
 #define blitterMintermdd(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~c_dat);                      /* B + c */
 #define blitterMintermde(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (a_dat ^ c_dat));             /* B + (A xor C) */
 #define blitterMintermdf(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~a_dat | ~c_dat);             /* B + a + c */
-#define blitterMinterme2(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | c_dat)) | (~a_dat & ~b_dat & c_dat));  /* A(B+C) + abC */
-#define blitterMinterme8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (c_dat & (a_dat ^ b_dat))); /* AB + C(A xor B) */
-#define blitterMintermea(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | a_dat & (b_dat | c_dat));  /* aC + A(B+C) */
+
+#define blitterMinterme0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat & (b_dat | c_dat));                                 /* A(B+C) */
+#define blitterMinterme1(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | c_dat)) | (~a_dat & ~b_dat & ~c_dat));  /* A(B+C) + abc */
+#define blitterMinterme2(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & (b_dat | c_dat)) | (~a_dat & ~b_dat & c_dat));   /* A(B+C) + abC */
+#define blitterMinterme3(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | (a_dat & c_dat));                      /* !(A xor B) + AC */
+
+#define blitterMinterme4(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & c_dat) | (b_dat & ~c_dat));                      /* AC + Bc */
+#define blitterMinterme5(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ c_dat) | (a_dat & b_dat));                      /* !(A xor C) + AB */
+#define blitterMinterme6(a_dat, b_dat, c_dat, d_dat) d_dat = ((b_dat ^ c_dat) | (a_dat & b_dat));                       /* (B xor C) + AB */
+#define blitterMinterme7(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (~b_dat & c_dat) | (~a_dat & ~c_dat));  /* AB + bC + ac */
+
+#define blitterMinterme8(a_dat, b_dat, c_dat, d_dat) d_dat = ((a_dat & b_dat) | (c_dat & (a_dat ^ b_dat)));                              /* AB + C(A xor B) */
+#define blitterMinterme9(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & ~b_dat & ~c_dat) | (b_dat & c_dat) | (a_dat & (b_dat | c_dat))); /* abc + BC + A(B + C) */
+#define blitterMintermea(a_dat, b_dat, c_dat, d_dat) d_dat = ((~a_dat & c_dat) | a_dat & (b_dat | c_dat));                               /* aC + A(B+C) */
+#define blitterMintermeb(a_dat, b_dat, c_dat, d_dat) d_dat = (~(a_dat ^ b_dat) | c_dat);                                                 /* !(A xor B) + C */
+
 #define blitterMintermec(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | (a_dat & c_dat));             /* B + AC */
 #define blitterMintermed(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~(a_dat ^ c_dat));            /* B + ~(A xor C) */
 #define blitterMintermee(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | c_dat);                       /* B + C */
 #define blitterMintermef(a_dat, b_dat, c_dat, d_dat) d_dat = (b_dat | ~a_dat | c_dat);              /* B + a + C */
+
 #define blitterMintermf0(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat);                               /* A */
 #define blitterMintermf1(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | (~b_dat & ~c_dat));           /* A + bc */
 #define blitterMintermf2(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | (~b_dat & c_dat));            /* A + bC */
 #define blitterMintermf3(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | ~b_dat);                      /* A + b */
+
 #define blitterMintermf4(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | (b_dat & ~c_dat));            /* A + Bc */
 #define blitterMintermf5(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | ~c_dat);                      /* A + c */
 #define blitterMintermf6(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | (b_dat ^ c_dat));             /* A + (B xor C) */
 #define blitterMintermf7(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | ~b_dat | ~c_dat);             /* A + b + c */
+
 #define blitterMintermf8(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | (b_dat & c_dat));             /* A + BC */
 #define blitterMintermf9(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | ~(b_dat ^ c_dat));            /* A + ~(B xor C) */
 #define blitterMintermfa(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | c_dat);                       /* A + C */
 #define blitterMintermfb(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | ~b_dat | c_dat);              /* A + b + C */
+
 #define blitterMintermfc(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat);                       /* A + B */
 #define blitterMintermfd(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat | ~c_dat);              /* A + B + c */
 #define blitterMintermfe(a_dat, b_dat, c_dat, d_dat) d_dat = (a_dat | b_dat | c_dat);               /* A + B + C */
-#define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (0xffffffff);                          /* All 1 */
+#define blitterMintermff(a_dat, b_dat, c_dat, d_dat) d_dat = (0xffffffff);                          /* 1 */
 
 #ifdef BLIT_VERIFY_MINTERMS
-#define blitterSetMintermSeen(minterm) blit_minterm_seen[mins] = TRUE
+#define blitterSetMintermSeen(minterm) blit_minterm_seen[minterm] = TRUE
 #else
 #define blitterSetMintermSeen(minterm)
 #endif
 
+#ifdef BLIT_VERIFY_MINTERMS
 #define blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins) \
   blitterSetMintermSeen(mins); \
   d_dat = 0; \
@@ -301,6 +537,7 @@ void blitterOperationLog(void) {
   if (mins & 0x04) d_dat |= (~a_dat & b_dat & ~c_dat); \
   if (mins & 0x02) d_dat |= (~a_dat & ~b_dat & c_dat); \
   if (mins & 0x01) d_dat |= (~a_dat & ~b_dat & ~c_dat);
+#endif
 
 #define blitterMinterms(a_dat, b_dat, c_dat, d_dat, mins) \
   switch (mins) \
@@ -325,50 +562,222 @@ void blitterOperationLog(void) {
   case 0x11: blitterMinterm11(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x12: blitterMinterm12(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x13: blitterMinterm13(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x14: blitterMinterm14(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x15: blitterMinterm15(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x16: blitterMinterm16(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x17: blitterMinterm17(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x18: blitterMinterm18(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x19: blitterMinterm19(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x1a: blitterMinterm1a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1b: blitterMinterm1b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1c: blitterMinterm1c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1d: blitterMinterm1d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x1e: blitterMinterm1e(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x1f: blitterMinterm1f(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x20: blitterMinterm20(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x21: blitterMinterm21(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x22: blitterMinterm22(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x23: blitterMinterm23(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x24: blitterMinterm24(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x25: blitterMinterm25(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x26: blitterMinterm26(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x27: blitterMinterm27(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x28: blitterMinterm28(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x29: blitterMinterm29(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x2a: blitterMinterm2a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2b: blitterMinterm2b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2c: blitterMinterm2c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2d: blitterMinterm2d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2e: blitterMinterm2e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x2f: blitterMinterm2f(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x30: blitterMinterm30(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x31: blitterMinterm31(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x32: blitterMinterm32(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x33: blitterMinterm33(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x34: blitterMinterm34(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x35: blitterMinterm35(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x36: blitterMinterm36(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x37: blitterMinterm37(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x38: blitterMinterm38(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x39: blitterMinterm39(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x3a: blitterMinterm3a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3b: blitterMinterm3b(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x3c: blitterMinterm3c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3d: blitterMinterm3d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3e: blitterMinterm3e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x3f: blitterMinterm3f(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x40: blitterMinterm40(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x41: blitterMinterm41(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x42: blitterMinterm42(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x43: blitterMinterm43(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x44: blitterMinterm44(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x45: blitterMinterm45(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x46: blitterMinterm46(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x47: blitterMinterm47(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x48: blitterMinterm48(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x49: blitterMinterm49(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x4a: blitterMinterm4a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4b: blitterMinterm4b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4c: blitterMinterm4c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4d: blitterMinterm4d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4e: blitterMinterm4e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x4f: blitterMinterm4f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x50: blitterMinterm50(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x51: blitterMinterm51(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x52: blitterMinterm52(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x53: blitterMinterm53(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x54: blitterMinterm54(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x55: blitterMinterm55(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x56: blitterMinterm56(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x57: blitterMinterm57(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x58: blitterMinterm58(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x59: blitterMinterm59(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x5a: blitterMinterm5a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5b: blitterMinterm5b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5c: blitterMinterm5c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5d: blitterMinterm5d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5e: blitterMinterm5e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x5f: blitterMinterm5f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x60: blitterMinterm60(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x61: blitterMinterm61(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x62: blitterMinterm62(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x63: blitterMinterm63(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x64: blitterMinterm64(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x65: blitterMinterm65(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x66: blitterMinterm66(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x67: blitterMinterm67(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x68: blitterMinterm68(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x69: blitterMinterm69(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x6a: blitterMinterm6a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6b: blitterMinterm6b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6c: blitterMinterm6c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6d: blitterMinterm6d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6e: blitterMinterm6e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x6f: blitterMinterm6f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x70: blitterMinterm70(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x71: blitterMinterm71(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x72: blitterMinterm72(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x73: blitterMinterm73(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x74: blitterMinterm74(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x75: blitterMinterm75(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x76: blitterMinterm76(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x77: blitterMinterm77(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x78: blitterMinterm78(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x79: blitterMinterm79(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7a: blitterMinterm7a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7b: blitterMinterm7b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7c: blitterMinterm7c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7d: blitterMinterm7d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7e: blitterMinterm7e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x7f: blitterMinterm7f(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x80: blitterMinterm80(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x81: blitterMinterm81(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x82: blitterMinterm82(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x83: blitterMinterm83(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x84: blitterMinterm84(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x85: blitterMinterm85(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x86: blitterMinterm86(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x87: blitterMinterm87(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x88: blitterMinterm88(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x89: blitterMinterm89(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x8a: blitterMinterm8a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8b: blitterMinterm8b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8c: blitterMinterm8c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8d: blitterMinterm8d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8e: blitterMinterm8e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x8f: blitterMinterm8f(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x90: blitterMinterm90(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x91: blitterMinterm91(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x92: blitterMinterm92(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x93: blitterMinterm93(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x94: blitterMinterm94(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x95: blitterMinterm95(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x96: blitterMinterm96(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x97: blitterMinterm97(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x98: blitterMinterm98(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x99: blitterMinterm99(a_dat, b_dat, c_dat, d_dat); break; \
   case 0x9a: blitterMinterm9a(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9b: blitterMinterm9b(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9c: blitterMinterm9c(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9d: blitterMinterm9d(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9e: blitterMinterm9e(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0x9f: blitterMinterm9f(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xa0: blitterMinterma0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa1: blitterMinterma1(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa2: blitterMinterma2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa3: blitterMinterma3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa4: blitterMinterma4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa5: blitterMinterma5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa6: blitterMinterma6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa7: blitterMinterma7(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xa8: blitterMinterma8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xa9: blitterMinterma9(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xaa: blitterMintermaa(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xab: blitterMintermab(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xac: blitterMintermac(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xad: blitterMintermad(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xae: blitterMintermae(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xaf: blitterMintermaf(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb0: blitterMintermb0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb1: blitterMintermb1(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb2: blitterMintermb2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb3: blitterMintermb3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb4: blitterMintermb4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb5: blitterMintermb5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb6: blitterMintermb6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb7: blitterMintermb7(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xb8: blitterMintermb8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xb9: blitterMintermb9(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xba: blitterMintermba(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xbb: blitterMintermbb(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xbc: blitterMintermbc(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xbd: blitterMintermbd(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xbe: blitterMintermbe(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xbf: blitterMintermbf(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xc0: blitterMintermc0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc1: blitterMintermc1(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc2: blitterMintermc2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc3: blitterMintermc3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc4: blitterMintermc4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc5: blitterMintermc5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc6: blitterMintermc6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc7: blitterMintermc7(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc8: blitterMintermc8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xc9: blitterMintermc9(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xca: blitterMintermca(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xcb: blitterMintermcb(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xcc: blitterMintermcc(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xcd: blitterMintermcd(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xce: blitterMintermce(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xcf: blitterMintermcf(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd0: blitterMintermd0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd1: blitterMintermd1(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd2: blitterMintermd2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd3: blitterMintermd3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd4: blitterMintermd4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd5: blitterMintermd5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd6: blitterMintermd6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd7: blitterMintermd7(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xd8: blitterMintermd8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xd9: blitterMintermd9(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xda: blitterMintermda(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xdb: blitterMintermdb(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xdc: blitterMintermdc(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xdd: blitterMintermdd(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xde: blitterMintermde(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xdf: blitterMintermdf(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe0: blitterMinterme0(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe1: blitterMinterme1(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xe2: blitterMinterme2(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe3: blitterMinterme3(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe4: blitterMinterme4(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe5: blitterMinterme5(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe6: blitterMinterme6(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe7: blitterMinterme7(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xe8: blitterMinterme8(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xe9: blitterMinterme9(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xea: blitterMintermea(a_dat, b_dat, c_dat, d_dat); break; \
+  case 0xeb: blitterMintermeb(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xec: blitterMintermec(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xed: blitterMintermed(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xee: blitterMintermee(a_dat, b_dat, c_dat, d_dat); break; \
@@ -389,7 +798,6 @@ void blitterOperationLog(void) {
   case 0xfd: blitterMintermfd(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xfe: blitterMintermfe(a_dat, b_dat, c_dat, d_dat); break; \
   case 0xff: blitterMintermff(a_dat, b_dat, c_dat, d_dat); break; \
-  default: blitterMintermGeneric(a_dat, b_dat, c_dat, d_dat, mins); break; \
 }
 
 #define blitterReadWordEnabled(pt, dat, ascending) \
@@ -1567,7 +1975,7 @@ void verifyMinterms()
 {
   UBY minterm;
   ULO a_dat, b_dat, c_dat;
-  for (minterm = 0xe8; minterm <= 0xe8; minterm++)
+  for (minterm = 0xff; minterm < 0xff; minterm++)
   {
     BOOLE minterm_had_error = FALSE;
     char s[40];
@@ -1575,8 +1983,11 @@ void verifyMinterms()
       for (b_dat = 0; b_dat < 256; b_dat++)
 	for (c_dat = 0; c_dat < 256; c_dat++)
 	  minterm_had_error |= (correctMinterms(minterm, a_dat, b_dat, c_dat) != optimizedMinterms(minterm, a_dat, b_dat, c_dat));
-    sprintf(s, "Minterm %X was %s", minterm, (minterm_had_error) ? "incorrect" : "correct");
-    MessageBox(0, s, "Minterm check", 0);
+    if (minterm_had_error)
+    {
+      sprintf(s, "Minterm %X was %s", minterm, (minterm_had_error) ? "incorrect" : "correct");
+      MessageBox(0, s, "Minterm check", 0);
+    }
   }
 }
 
