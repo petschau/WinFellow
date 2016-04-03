@@ -12,6 +12,7 @@
 #include "MOUSEDRV.H"
 #include "JOYDRV.H"
 #include "KBDDRV.H"
+#include "TIMER.H"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -19,6 +20,75 @@
 #endif
 
 #include "windowsx.h"
+
+void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
+{
+  gfxDrvCommon->DelayFlipTimerCallback(timeMilliseconds);
+}
+
+void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
+{
+  _time = timeMilliseconds;
+
+  if (_wait_for_time > 0)
+  {
+    if (--_wait_for_time == 0)
+    {
+      SetEvent(_delay_flip_event);
+    }
+  }
+}
+
+void GfxDrvCommon::InitializeDelayFlipEvent()
+{
+  _delay_flip_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+void GfxDrvCommon::ReleaseDelayFlipEvent()
+{
+  if (_delay_flip_event != nullptr)
+  {
+    CloseHandle(_delay_flip_event);
+    _delay_flip_event = nullptr;
+  }
+}
+
+void GfxDrvCommon::InitializeDelayFlipTimerCallback()
+{
+  _previous_flip_time = 0;
+  _time = 0;
+  _wait_for_time = 0;
+  SetEvent(_delay_flip_event);
+  timerAddCallback(GfxDrvCommonDelayFlipTimerCallback);
+}
+
+int GfxDrvCommon::GetTimeSinceLastFlip()
+{
+  return static_cast<int>(_time - _previous_flip_time);
+}
+
+void GfxDrvCommon::RememberFlipTime()
+{
+  _previous_flip_time = _time;
+}
+
+void GfxDrvCommon::DelayFlipWait(int milliseconds)
+{
+  _wait_for_time = milliseconds;
+  ResetEvent(_delay_flip_event);
+  WaitForSingleObject(_delay_flip_event, INFINITE);
+}
+
+void GfxDrvCommon::MaybeDelayFlip()
+{
+  int elapsed_time = GetTimeSinceLastFlip();
+
+  if (elapsed_time < _frametime_target)
+  {
+    DelayFlipWait(_frametime_target - elapsed_time);
+  }
+  RememberFlipTime();
+}
 
 unsigned int GfxDrvCommon::GetOutputWidth()
 {
@@ -41,18 +111,18 @@ void GfxDrvCommon::SizeChanged(unsigned int width, unsigned int height)
   _output_height = (height > 0) ? height : 1;
 }
 
-bool GfxDrvCommon::RunEventInitialize()
+bool GfxDrvCommon::InitializeRunEvent()
 {
-  _run_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-  return (_run_event != NULL);
+  _run_event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+  return (_run_event != nullptr);
 }
 
-void GfxDrvCommon::RunEventRelease()
+void GfxDrvCommon::ReleaseRunEvent()
 {
-  if (_run_event != NULL)
+  if (_run_event != nullptr)
   {
     CloseHandle(_run_event);
-    _run_event = NULL;
+    _run_event = nullptr;
   }
 }
 
@@ -348,7 +418,7 @@ bool GfxDrvCommon::InitializeWindowClass()
     RP.SetWindowInstance(win_drv_hInstance);
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
-  wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wc1.hCursor = LoadCursor(nullptr, IDC_ARROW);
   wc1.lpszClassName = "FellowWindowClass";
   wc1.lpszMenuName = "Fellow";
   wc1.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
@@ -383,7 +453,7 @@ void GfxDrvCommon::DisplayWindow()
     ULO y = iniGetEmulationWindowYPos(_ini);
     RECT rc1;
     SetRect(&rc1, x, y, x + _current_draw_mode->width, y + _current_draw_mode->height);
-    AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != NULL, GetWindowExStyle(_hwnd));
+    AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != nullptr, GetWindowExStyle(_hwnd));
     MoveWindow(_hwnd, x, y, rc1.right - rc1.left, rc1.bottom - rc1.top, FALSE);
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
@@ -434,7 +504,7 @@ bool GfxDrvCommon::InitializeWindow()
       dwStyle |= WS_SIZEBOX | WS_MAXIMIZEBOX;
     }
     DWORD dwExStyle = 0;
-    HWND hParent = NULL;
+    HWND hParent = nullptr;
 
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
@@ -460,9 +530,9 @@ bool GfxDrvCommon::InitializeWindow()
       width,
       height,
       hParent,
-      NULL,
+      nullptr,
       win_drv_hInstance,
-      NULL);
+      nullptr);
   }
   else
   {
@@ -474,15 +544,15 @@ bool GfxDrvCommon::InitializeWindow()
       0,
       width,
       height,
-      NULL,
-      NULL,
+      nullptr,
+      nullptr,
       win_drv_hInstance,
-      NULL);
+      nullptr);
   }
   fellowAddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
   free(versionstring);
 
-  return (_hwnd != NULL);
+  return (_hwnd != nullptr);
 }
 
 
@@ -493,10 +563,10 @@ bool GfxDrvCommon::InitializeWindow()
 
 void GfxDrvCommon::ReleaseWindow()
 {
-  if (_hwnd != NULL)
+  if (_hwnd != nullptr)
   {
     DestroyWindow(_hwnd);
-    _hwnd = NULL;
+    _hwnd = nullptr;
   }
 }
 
@@ -509,6 +579,14 @@ void GfxDrvCommon::SetDrawMode(draw_mode* mode, bool windowed)
 {
   _current_draw_mode = mode;
   _output_windowed = windowed;
+}
+
+void GfxDrvCommon::Flip()
+{
+  if (soundGetEmulation() == SOUND_PLAY)
+  {
+    MaybeDelayFlip();
+  }
 }
 
 bool GfxDrvCommon::EmulationStart()
@@ -527,6 +605,8 @@ bool GfxDrvCommon::EmulationStart()
     return false;
   }
 
+  InitializeDelayFlipTimerCallback();
+
 #ifdef RETRO_PLATFORM
   // unpause emulation if in Retroplatform mode
   if (RP.GetHeadlessMode() && !RP.GetEmulationPaused())
@@ -538,7 +618,7 @@ bool GfxDrvCommon::EmulationStart()
 
 void GfxDrvCommon::EmulationStartPost()
 {
-  if (_hwnd != NULL)
+  if (_hwnd != nullptr)
   {
 #ifdef RETRO_PLATFORM
     if (!RP.GetHeadlessMode())
@@ -555,11 +635,13 @@ void GfxDrvCommon::EmulationStop()
 bool GfxDrvCommon::Startup()
 {
   _ini = iniManagerGetCurrentInitdata(&ini_manager);
-  bool initialized = RunEventInitialize();
+  bool initialized = InitializeRunEvent();
   if (initialized)
   {
     initialized = InitializeWindowClass();
   }
+
+  InitializeDelayFlipEvent();
 
   return initialized;
 }
@@ -568,11 +650,19 @@ void GfxDrvCommon::Shutdown()
 {
   ReleaseWindow();
   ReleaseWindowClass();
-  RunEventRelease();
+  ReleaseRunEvent();
+  ReleaseDelayFlipEvent();
 }
 
 GfxDrvCommon::GfxDrvCommon()
-  : _run_event(0), _hwnd(0), _ini(0)
+  : _run_event(nullptr),
+    _hwnd(nullptr),
+    _ini(nullptr),
+    _frametime_target(18), 
+    _previous_flip_time(0), 
+    _time(0), 
+    _wait_for_time(0), 
+    _delay_flip_event(nullptr)
 {
 }
 

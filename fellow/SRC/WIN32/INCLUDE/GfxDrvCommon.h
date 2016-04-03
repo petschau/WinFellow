@@ -22,6 +22,20 @@ private:
   unsigned int _output_height;
   bool _output_windowed;
 
+  int _frametime_target ;
+  int _previous_flip_time;
+  volatile int _time;
+  volatile int _wait_for_time;
+  HANDLE _delay_flip_event;
+
+  void MaybeDelayFlip();
+  void DelayFlipWait(int milliseconds);
+  void RememberFlipTime();
+  int GetTimeSinceLastFlip();
+  void InitializeDelayFlipTimerCallback();
+  void InitializeDelayFlipEvent();
+  void ReleaseDelayFlipEvent();
+
 public:
   bool _displaychange;
 
@@ -34,8 +48,10 @@ public:
   bool GetOutputWindowed();
   void SizeChanged(unsigned int width, unsigned int height);
 
-  bool RunEventInitialize();
-  void RunEventRelease();
+  void DelayFlipTimerCallback(ULO timeMilliseconds);
+
+  bool InitializeRunEvent();
+  void ReleaseRunEvent();
   void RunEventSet();
   void RunEventReset();
   void RunEventWait();
@@ -54,6 +70,7 @@ public:
   void SetDrawMode(draw_mode* dm, bool windowed);
   draw_mode *GetDrawMode();
 
+  void Flip();
   bool EmulationStart();
   void EmulationStartPost();
   void EmulationStop();

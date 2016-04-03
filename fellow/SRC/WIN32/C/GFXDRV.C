@@ -47,29 +47,9 @@ void gfxDrvInvalidateBufferPointer()
   }
 }
 
-__int64 t_previous = 0;
-
-extern volatile __int64 timertime;
-
-void DelayFlip()
-{
-  __int64 elapsed_time = timertime - t_previous;
-  __int64 timestamp = timertime;
-  __int64 wait_for = t_previous + 18;
-
-  // Busy loop...
-  // Replace with wait for an event set from the timer, if it is fast enough
-  while (wait_for > timertime);
-
-  t_previous = timertime;
-}
-
 void gfxDrvBufferFlip()
 {
-  if (soundGetEmulation() == SOUND_PLAY && soundGetNotification() == SOUND_MMTIMER_NOTIFICATION)
-  {
-    DelayFlip();
-  }
+  gfxDrvCommon->Flip();
 
   if (gfx_drv_use_dxgi)
   {
@@ -143,8 +123,6 @@ void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information)
 
 bool gfxDrvEmulationStart(unsigned int maxbuffercount)
 {
-  t_previous = timertime;
-
   if (!gfxDrvCommon->EmulationStart())
   {
     return false;
