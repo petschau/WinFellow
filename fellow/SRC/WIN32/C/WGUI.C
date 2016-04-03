@@ -409,6 +409,15 @@ int wguiGetDesktopBitsPerPixel()
   return desktopwindow_bitspixel;
 }
 
+std::pair<int, int> wguiGetDesktopSize()
+{
+  HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
+  int desktopwindow_width = GetDeviceCaps(desktopwindow_DC, HORZRES);
+  int desktopwindow_height = GetDeviceCaps(desktopwindow_DC, VERTRES);
+  ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
+  return std::pair<int, int>(desktopwindow_width, desktopwindow_height);
+}
+
 wgui_drawmode* wguiGetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list &list)
 {
   unsigned int i = 0;
@@ -1909,6 +1918,24 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
 
 /* extract display config */
 
+unsigned int wguiDecideScaleFromDesktop(unsigned int unscaled_width, unsigned int unscaled_height)
+{
+  std::pair<int, int> desktop_size = wguiGetDesktopSize();
+
+  unsigned int try_scale = 1;
+  unsigned int scale = 1;
+
+  for (unsigned int try_scale = 1; try_scale <= 4; try_scale++)
+  {
+    if (unscaled_width*try_scale <= desktop_size.first && unscaled_height*try_scale <= desktop_size.second)
+    {
+      scale = try_scale;
+    }
+  }
+
+  return scale;
+}
+
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 {
   HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
@@ -1934,9 +1961,11 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 
   if (cfgGetScreenWindowed(conf))
   {
-    unsigned int scale = (cfgGetDisplayScale(conf) == DISPLAYSCALE_AUTO) ? 1 : (unsigned int)cfgGetDisplayScale(conf);
-    unsigned int width = (cfgGetClipRight(conf) - cfgGetClipLeft(conf)) * 2 * scale;
-    unsigned int height = (cfgGetClipBottom(conf) - cfgGetClipTop(conf)) * 2 * scale;
+    unsigned int unscaled_width = (cfgGetClipRight(conf) - cfgGetClipLeft(conf)) * 2;
+    unsigned int unscaled_height = (cfgGetClipBottom(conf) - cfgGetClipTop(conf)) * 2;
+    unsigned int scale = (cfgGetDisplayScale(conf) == DISPLAYSCALE_AUTO) ? wguiDecideScaleFromDesktop(unscaled_width, unscaled_height) : (unsigned int)cfgGetDisplayScale(conf);
+    unsigned int width = unscaled_width * scale;
+    unsigned int height = unscaled_height * scale;
     cfgSetScreenWidth(conf, width);
     cfgSetScreenHeight(conf, height);
   }
