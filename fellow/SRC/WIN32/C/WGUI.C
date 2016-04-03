@@ -409,13 +409,13 @@ int wguiGetDesktopBitsPerPixel()
   return desktopwindow_bitspixel;
 }
 
-std::pair<int, int> wguiGetDesktopSize()
+std::pair<unsigned int, unsigned int> wguiGetDesktopSize()
 {
   HDC desktopwindow_DC = GetWindowDC(GetDesktopWindow());
-  int desktopwindow_width = GetDeviceCaps(desktopwindow_DC, HORZRES);
-  int desktopwindow_height = GetDeviceCaps(desktopwindow_DC, VERTRES);
+  unsigned int desktopwindow_width = static_cast<unsigned int>(GetDeviceCaps(desktopwindow_DC, HORZRES));
+  unsigned int desktopwindow_height = static_cast<unsigned int>(GetDeviceCaps(desktopwindow_DC, VERTRES));
   ReleaseDC(GetDesktopWindow(), desktopwindow_DC);
-  return std::pair<int, int>(desktopwindow_width, desktopwindow_height);
+  return std::pair<unsigned int, unsigned int>(desktopwindow_width, desktopwindow_height);
 }
 
 wgui_drawmode* wguiGetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list &list)
@@ -1113,21 +1113,30 @@ void wguiExtractFloppyConfig(HWND hwndDlg, cfg *conf) {
 
 /* Extract floppy config from main window */
 
-void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf) {
+void wguiExtractFloppyMain(HWND hwndDlg, cfg *conf)
+{
   char tmp[CFG_FILENAME_LENGTH];
+  char old_tmp[CFG_FILENAME_LENGTH];
+  bool config_changed = false;
   ULO i;
 
   /* Get floppy disk image names */
 
-  for (i=0; i<MAX_DISKDRIVES; i++) {
-    if (cfgGetDiskEnabled(conf, i) == FALSE) {
-      ccwEditGetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], tmp, CFG_FILENAME_LENGTH);
-      cfgSetDiskImage(conf, i, tmp);
+  for (i=0; i<MAX_DISKDRIVES; i++)
+  {
+    strcpy(old_tmp, cfgGetDiskImage(conf, i));
+    ccwEditGetText(hwndDlg, diskimage_data_main[i][DID_IMAGENAME_MAIN], tmp, CFG_FILENAME_LENGTH);
+    cfgSetDiskImage(conf, i, tmp);
+    if (strcmpi(old_tmp, tmp) != 0)
+    {
+      config_changed = true;
     }
   }
+  if (config_changed)
+  {
+    cfgSetConfigChangedSinceLastSave(conf, TRUE);
+  }
 }
-
-
 
 /*============================================================================*/
 /* Memory config                                                              */
@@ -1920,7 +1929,7 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
 
 unsigned int wguiDecideScaleFromDesktop(unsigned int unscaled_width, unsigned int unscaled_height)
 {
-  std::pair<int, int> desktop_size = wguiGetDesktopSize();
+  std::pair<unsigned int, unsigned int> desktop_size = wguiGetDesktopSize();
 
   unsigned int try_scale = 1;
   unsigned int scale = 1;
@@ -3397,22 +3406,6 @@ BOOLE wguiCheckEmulationNecessities(void) {
   else return FALSE;
 }	
 
-//void wguiSetClipFromDisplayScale()
-//{
-//  //if (cfgGetDisplayScaleStrategy(wgui_cfg) == DISPLAYSCALE_AUTO)
-//  //{
-//  //  cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::FIXED_CLIP);
-//  //  cfgSetClipLeft(wgui_cfg, 88);
-//  //  cfgSetClipTop(wgui_cfg, 26);
-//  //  cfgSetClipRight(wgui_cfg, 472);
-//  //  cfgSetClipBottom(wgui_cfg, 314);
-//  //}
-//  //else
-//  //{
-//  cfgSetClipMode(wgui_cfg, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
-//  //}
-//}
-
 BOOLE wguiEnter(void)
 {
   BOOLE quit_emulator = FALSE;
@@ -3453,9 +3446,8 @@ BOOLE wguiEnter(void)
 	  {
 	    end_loop = TRUE;
 
-//            wguiSetClipFromDisplayScale();
-
-	    cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
+            wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
+            cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	    // check for manual or needed reset
 	    fellowSetPreStartReset(fellowGetPreStartReset() | cfgManagerConfigurationActivate(&cfg_manager));
 	    break;
@@ -3466,6 +3458,8 @@ BOOLE wguiEnter(void)
 	case WGUI_QUIT_EMULATOR:
           {
             BOOLE bQuit = TRUE;
+
+            wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
 
             if(cfgGetConfigChangedSinceLastSave(wgui_cfg)) {
               int result;
@@ -3494,12 +3488,14 @@ BOOLE wguiEnter(void)
 	  wgui_action = WGUI_NO_ACTION;
 	  break;
 	case WGUI_SAVE_CONFIGURATION:
-	  cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
+          wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
+          cfgSaveToFilename(wgui_cfg, iniGetCurrentConfigurationFilename(wgui_ini));
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	  wgui_action = WGUI_NO_ACTION;
 	  break;
 	case WGUI_SAVE_CONFIGURATION_AS:
-	  wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
+          wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
+          wguiSaveConfigurationFileAs(wgui_cfg, wgui_hDialog);
           cfgSetConfigChangedSinceLastSave(wgui_cfg, FALSE);
 	  wguiInsertCfgIntoHistory(iniGetCurrentConfigurationFilename(wgui_ini));
 	  wgui_action = WGUI_NO_ACTION;
@@ -3565,7 +3561,7 @@ BOOLE wguiEnter(void)
 	  break;
 	case WGUI_DEBUGGER_START:
 	  end_loop = TRUE;
-//          wguiSetClipFromDisplayScale();
+          wguiExtractFloppyMain(wgui_hDialog, wgui_cfg);
           cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	  fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	  debugger_start = TRUE;
