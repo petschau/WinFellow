@@ -243,8 +243,16 @@ This is a detail metioned in the HRM. Check that the game starts.
 The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. The fix adds a limit to stepping beyond the size of the
 disk image. Check that the game loads. Note that the game has broken intro graphics.
 
+Git f99a94de - Last of several commits regarding "Sprites on HAM"
+-----------------------------------------------------------------
+Verify that sprites on top of HAM resolution bitplane graphics works.
 
+Two cases using this:
 
 Fairlight - My Room demo
+A red filled vector cube (the sprite) is moving around on the screen, part of the middle screen is HAM resolution.
 Make sure the cube looks perfect wherever it moves.
 
+Silents - Ice demo
+One of the first parts is a white screen with a picture of a warrior girl. The screen should contain a basic filled vector 
+geometry object (the sprite) on top of the image moving around with no artifacts.
