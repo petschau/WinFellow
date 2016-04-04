@@ -93,10 +93,20 @@ Before this change, the emulation session would always be closed.
 
 r898: increased sprite action/merge item list sizes to a maximum of 5.000 entries
 ---------------------------------------------------------------------------------
+
 Start the 1MB chipmem version of State of the Art (Spaceballs) with only 512kB of
 chipmem configured. The demo will cause a crash of the emulator session, but the
 emulator should remain responsive.
 Before this change, a crash to the desktop would occur.
+
+Update: 
+This fix is replaced by Git f99a94de. "To be safe increase sprite max list items to 100"
+It follows other code changes that reduced the need for very large sprite list buffers.
+This is still a valid test. 
+Also test the game Megalomania, it creates a larger sprite list than State of the Art
+when it crashes after the initial intro text when OCS is selected. (The actual crash is due
+to copy-protection.)
+
 
 r906: Sprite DMA was being disabled instead of waiting
 ------------------------------------------------------
