@@ -267,7 +267,7 @@ static void fhfileInitializeHardfile(ULO index) {
 
     if (fhfile_devs[index].F != NULL)                          /* Open file */
     {
-      fhfile_devs[index].hasRigidDiskBlock = fhfileHasRigidDiskBlock(fhfile_devs[index].F);
+      fhfile_devs[index].hasRigidDiskBlock = false; // fhfileHasRigidDiskBlock(fhfile_devs[index].F);
 
       if (fhfile_devs[index].hasRigidDiskBlock)
       {
