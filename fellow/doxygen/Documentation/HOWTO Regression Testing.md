@@ -93,10 +93,20 @@ Before this change, the emulation session would always be closed.
 
 r898: increased sprite action/merge item list sizes to a maximum of 5.000 entries
 ---------------------------------------------------------------------------------
+
 Start the 1MB chipmem version of State of the Art (Spaceballs) with only 512kB of
 chipmem configured. The demo will cause a crash of the emulator session, but the
 emulator should remain responsive.
 Before this change, a crash to the desktop would occur.
+
+Update: 
+This fix is replaced by Git f99a94de. "To be safe increase sprite max list items to 100"
+It follows other code changes that reduced the need for very large sprite list buffers.
+This is still a valid test. 
+Also test the game Megalomania, it creates a larger sprite list than State of the Art
+when it crashes after the initial intro text when OCS is selected. (The actual crash is due
+to copy-protection.)
+
 
 r906: Sprite DMA was being disabled instead of waiting
 ------------------------------------------------------
@@ -226,9 +236,23 @@ Edit a title to use custom clipping of a small area and verify it is displayed c
 - in 2x mode. Take a screenshot, verify it is ok.
 
 Git 86bd011: Two disk related fixes
-------------------------------------
+-----------------------------------
 The game Amegas, packed into one file, does a disk access right after decrunching that requires the motor bit to be set in advance, and hung.
 This is a detail metioned in the HRM. Check that the game starts.
 
 The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. The fix adds a limit to stepping beyond the size of the
 disk image. Check that the game loads. Note that the game has broken intro graphics.
+
+Git f99a94de - Last of several commits regarding "Sprites on HAM"
+-----------------------------------------------------------------
+Verify that sprites on top of HAM resolution bitplane graphics works.
+
+Two cases using this:
+
+Fairlight - My Room demo
+A red filled vector cube (the sprite) is moving around on the screen, part of the middle screen is HAM resolution.
+Make sure the cube looks perfect wherever it moves.
+
+Silents - Ice demo
+One of the first parts is a white screen with a picture of a warrior girl. The screen should contain a basic filled vector 
+geometry object (the sprite) on top of the image moving around with no artifacts.
