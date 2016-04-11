@@ -283,6 +283,7 @@ void GfxDrvDXGI::GetBufferInformation(draw_buffer_information *buffer_informatio
   buffer_information->greensize = 8;
   buffer_information->bluepos = 0;
   buffer_information->bluesize = 8;
+  buffer_information->bits = 32;
 }
 
 bool GfxDrvDXGI::CreateSwapChain()

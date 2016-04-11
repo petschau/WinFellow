@@ -273,13 +273,12 @@ void LineExactSprites::MergeHAM(graph_line *linedescription)
   sprite_ham_slot_next++;
 }
 
-
 /*===========================================================================*/
 /* Merge sprites with HAM, actual drawing                                    */
 /* 16-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x16(ULO *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -319,7 +318,8 @@ void LineExactSprites::MergeHAM2x16(ULO *frameptr, graph_line *linedescription)
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              *frame_ptr = (ULO)graph_color_shadow[pixel >> 2];
+              ULO color = graph_color_shadow[pixel >> 2];
+              *frame_ptr = color;
             }
             frame_ptr++;
           }
@@ -331,10 +331,10 @@ void LineExactSprites::MergeHAM2x16(ULO *frameptr, graph_line *linedescription)
 
 /*===========================================================================*/
 /* Merge sprites with HAM, actual drawing                                    */
-/* 16-bit pixels, 4x horisontal scale                                        */
+/* 16-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x16(ULL *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription, ULO nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -366,7 +366,7 @@ void LineExactSprites::MergeHAM4x16(ULL *frameptr, graph_line *linedescription)
           }
           UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible) * 2;
+          ULO *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -374,8 +374,125 @@ void LineExactSprites::MergeHAM4x16(ULL *frameptr, graph_line *linedescription)
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULO host_color = (ULO)graph_color_shadow[pixel >> 2];
-              *frame_ptr = (((ULL)host_color) << 32) | host_color;
+              ULO color = graph_color_shadow[pixel >> 2];
+              frame_ptr[0] = color;
+              frame_ptr[nextlineoffset] = color;
+            }
+            frame_ptr++;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*===========================================================================*/
+/* Merge sprites with HAM, actual drawing                                    */
+/* 16-bit pixels, 4x2 scale                                                  */
+/*===========================================================================*/
+
+void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset)
+{
+  if (linedescription->sprite_ham_slot != 0xffffffff)
+  {
+    sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
+    ULO DIW_first_visible = linedescription->DIW_first_draw;
+    ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+
+    linedescription->sprite_ham_slot = 0xffffffff;
+    for (ULO i = 0; i < 8; i++)
+    {
+      spr_merge_list_master &master = ham_slot.merge_list_master[i];
+
+      for (ULO j = 0; j < ham_slot.merge_list_master[i].count; j++)
+      {
+        spr_merge_list_item &item = master.items[j];
+
+        if ((item.sprx < DIW_last_visible) && ((item.sprx + 16) > DIW_first_visible))
+        {
+          ULO first_visible_cylinder = item.sprx;
+          ULO last_visible_cylinder = first_visible_cylinder + 16;
+
+          if (first_visible_cylinder < DIW_first_visible)
+          {
+            first_visible_cylinder = DIW_first_visible;
+          }
+          if (last_visible_cylinder > DIW_last_visible)
+          {
+            last_visible_cylinder = DIW_last_visible;
+          }
+          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          /* frameptr points to the first visible HAM pixel in the framebuffer */
+          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+
+          while (--pixel_count >= 0)
+          {
+            UBY pixel = *spr_ptr++;
+            if (pixel != 0)
+            {
+              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              frame_ptr[0] = color;
+              frame_ptr[nextlineoffset] = color;
+            }
+            frame_ptr++;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*===========================================================================*/
+/* Merge sprites with HAM, actual drawing                                    */
+/* 16-bit pixels, 4x4 scale                                                  */
+/*===========================================================================*/
+
+void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3)
+{
+  if (linedescription->sprite_ham_slot != 0xffffffff)
+  {
+    sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
+    ULO DIW_first_visible = linedescription->DIW_first_draw;
+    ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+
+    linedescription->sprite_ham_slot = 0xffffffff;
+    for (ULO i = 0; i < 8; i++)
+    {
+      spr_merge_list_master &master = ham_slot.merge_list_master[i];
+
+      for (ULO j = 0; j < ham_slot.merge_list_master[i].count; j++)
+      {
+        spr_merge_list_item &item = master.items[j];
+
+        if ((item.sprx < DIW_last_visible) && ((item.sprx + 16) > DIW_first_visible))
+        {
+          ULO first_visible_cylinder = item.sprx;
+          ULO last_visible_cylinder = first_visible_cylinder + 16;
+
+          if (first_visible_cylinder < DIW_first_visible)
+          {
+            first_visible_cylinder = DIW_first_visible;
+          }
+          if (last_visible_cylinder > DIW_last_visible)
+          {
+            last_visible_cylinder = DIW_last_visible;
+          }
+          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          /* frameptr points to the first visible HAM pixel in the framebuffer */
+          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
+          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+
+          while (--pixel_count >= 0)
+          {
+            UBY pixel = *spr_ptr++;
+            if (pixel != 0)
+            {
+              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              frame_ptr[0] = color;
+              frame_ptr[nextlineoffset] = color;
+              frame_ptr[nextlineoffset2] = color;
+              frame_ptr[nextlineoffset3] = color;
             }
             frame_ptr++;
           }
@@ -524,7 +641,7 @@ void LineExactSprites::MergeHAM4x24(UBY *frameptr, graph_line *linedescription)
 /* 32-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x32(ULO *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -556,7 +673,7 @@ void LineExactSprites::MergeHAM2x1x32(ULO *frameptr, graph_line *linedescription
           }
           UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
           /* frameptr points to the first visible HAM pixel in the framebuffer */
-          ULO *frame_ptr = frameptr + 2 * (first_visible_cylinder - DIW_first_visible);
+          ULL *frame_ptr = frameptr + (first_visible_cylinder - DIW_first_visible);
           LON pixel_count = last_visible_cylinder - first_visible_cylinder;
 
           while (--pixel_count >= 0)
@@ -564,11 +681,10 @@ void LineExactSprites::MergeHAM2x1x32(ULO *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULO color = graph_color_shadow[pixel >> 2];
-              *frame_ptr = color;
-              *(frame_ptr + 1) = color;
+              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              frame_ptr[0] = color;
             }
-            frame_ptr += 2;
+            frame_ptr++;
           }
         }
       }
