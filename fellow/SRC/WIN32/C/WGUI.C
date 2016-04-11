@@ -1945,6 +1945,15 @@ unsigned int wguiDecideScaleFromDesktop(unsigned int unscaled_width, unsigned in
   return scale;
 }
 
+void wguiExtractDisplayFullscreenConfig(HWND hwndDlg, cfg *cfg)
+{
+  unsigned int slider_index = ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA);
+  wgui_drawmode_list& list = wguiGetFullScreenMatchingList(cfgGetScreenColorBits(cfg));
+  wgui_drawmode* wgui_dm = wguiGetUIDrawModeFromIndex(slider_index, list);
+  cfgSetScreenWidth(cfg, wgui_dm->width);
+  cfgSetScreenHeight(cfg, wgui_dm->height);
+}
+
 void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 {
   HWND colorBitsComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS);
@@ -1980,11 +1989,7 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
   }
   else
   {
-    unsigned int slider_index = ccwSliderGetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA);
-    wgui_drawmode_list& list = wguiGetFullScreenMatchingList(cfgGetScreenColorBits(conf));
-    wgui_drawmode* wgui_dm = wguiGetUIDrawModeFromIndex(slider_index, list);
-    cfgSetScreenWidth(conf, wgui_dm->width);
-    cfgSetScreenHeight(conf, wgui_dm->height);
+    wguiExtractDisplayFullscreenConfig(hwndDlg, conf);
   }
 
   // get frame skipping rate choice
@@ -2510,15 +2515,17 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
 	        ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), FALSE);
 	        Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), FALSE);
                 ccwSliderEnable(hwndDlg, IDC_SLIDER_SCREEN_AREA, FALSE);
+                wguiExtractDisplayFullscreenConfig(hwndDlg, wgui_cfg); // Temporarily keep width and height in case we come back to full-screen.
               }
               else 
               {
 	        // the checkbox was checked - going to fullscreen
 	        comboboxIndexColorBits = ccwComboBoxGetCurrentSelection(hwndDlg, IDC_COMBO_COLOR_BITS);
 	        selectedColorBits = wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits);
-	        ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0);
+                pwgui_dm_match = wguiMatchFullScreenResolution();
+                ccwSliderSetPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, (pwgui_dm_match != nullptr) ? pwgui_dm_match->id : 0);
 	        ccwSliderSetRange(hwndDlg, IDC_SLIDER_SCREEN_AREA, 0, (wguiGetNumberOfScreenAreas(selectedColorBits) - 1));					
-	        pwgui_dm_match = wguiGetUIDrawModeFromIndex(0, wguiGetFullScreenMatchingList(wguiGetColorBitsFromComboboxIndex(comboboxIndexColorBits)));
+                  
 	        wguiSetSliderTextAccordingToPosition(hwndDlg, IDC_SLIDER_SCREEN_AREA, IDC_STATIC_SCREEN_AREA, &wguiGetResolutionStrWithIndex);
 	        ComboBox_Enable(GetDlgItem(hwndDlg, IDC_COMBO_COLOR_BITS), TRUE);
 	        Button_Enable(GetDlgItem(hwndDlg, IDC_CHECK_MULTIPLE_BUFFERS), TRUE);
