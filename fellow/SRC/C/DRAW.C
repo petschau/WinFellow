@@ -739,7 +739,7 @@ static void drawColorTranslationInitialize(void)
     g = ((k & 0xf0) >> 4) << (draw_buffer_info.greenpos + draw_buffer_info.greensize - 4);
     b = (k & 0xf) << (draw_buffer_info.bluepos + draw_buffer_info.bluesize - 4);
     draw_color_table[k] = r | g | b;
-    if (draw_mode_current->bits <= 16)
+    if (draw_buffer_info.bits <= 16)
     {
       draw_color_table[k] = draw_color_table[k]<<16 | draw_color_table[k];
     }
