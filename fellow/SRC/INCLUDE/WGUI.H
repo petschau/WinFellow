@@ -1,8 +1,8 @@
 #ifndef WGUI_H
 #define WGUI_H
 
-// 
-#include "listtree.h"
+#include <list>
+#include "DRAW.H"
 
 typedef enum {
   FSEL_ROM = 0,
@@ -14,28 +14,50 @@ typedef enum {
   FSEL_FST = 6
 } SelectFileFlags;
 
-typedef struct {
+struct wgui_drawmode
+{
   ULO id;
   ULO width;
   ULO height;
   ULO refresh;
-	BOOLE windowed;
-	ULO colorbits;
+  ULO colorbits;
   STR name[32];
-} wgui_drawmode;
+
+  bool operator<(const wgui_drawmode& dm)
+  {
+    if (width < dm.width)
+    {
+      return true;
+    }
+    else if (width == dm.width)
+    {
+      return height < dm.height;
+    }
+    return false;
+  }
+
+  wgui_drawmode(draw_mode *dm)
+  {
+    height = dm->height;
+    refresh = dm->refresh;
+    width = dm->width;
+    colorbits = dm->bits;
+  }
+
+};
+
+typedef std::list<wgui_drawmode> wgui_drawmode_list;
 
 typedef struct {
-	ULO numberofwindowed;
-	ULO numberof16bit;
-	ULO numberof24bit;
-	ULO numberof32bit;
-	LON comboxbox16bitindex;
-	LON comboxbox24bitindex;
-	LON comboxbox32bitindex;
-	felist *reswindowed;
-	felist *res16bit;
-	felist *res24bit;
-	felist *res32bit;
+  ULO numberof16bit;
+  ULO numberof24bit;
+  ULO numberof32bit;
+  LON comboxbox16bitindex;
+  LON comboxbox24bitindex;
+  LON comboxbox32bitindex;
+  wgui_drawmode_list res16bit;
+  wgui_drawmode_list res24bit;
+  wgui_drawmode_list res32bit;
 } wgui_drawmodes;
 
 typedef struct {

@@ -1307,14 +1307,63 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   RetroPlatform::SetClippingOffsetTop (sm->lClipTop);
   RetroPlatform::SetScreenHeight      (sm->lClipHeight);
   RetroPlatform::SetScreenWidth       (sm->lClipWidth);
+  fellowAddLog("2 - SetScreenHeight and width: (%d, %d)\n", sm->lClipWidth, sm->lClipHeight);
   cfgSetScreenHeight(pConfig, sm->lClipHeight);
   cfgSetScreenWidth (pConfig, sm->lClipWidth);
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
   gfxDrvCommon->RunEventSet();
-  gfxDrvRegisterRetroPlatformScreenMode(false);
+  RegisterRetroPlatformScreenMode(false);
   fellowRequestEmulationStop();
+}
+
+void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
+{
+  ULO lHeight, lWidth, lDisplayScale;
+
+  if (RP.GetScanlines())
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
+  else
+    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
+
+  if (bStartup) {
+    RP.SetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
+  }
+
+  lHeight = RP.GetScreenHeightAdjusted();
+  lWidth = RP.GetScreenWidthAdjusted();
+  lDisplayScale = RP.GetDisplayScale();
+
+  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
+  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+
+  drawSetInternalClip(draw_rect(92, 26, 468, 314));
+  
+  draw_rect output_clip((RP.GetClippingOffsetLeft() / 4),
+                        RP.GetClippingOffsetTop() / 2,
+                        ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4),
+                        (RP.GetClippingOffsetTop() + RP.GetScreenHeight()) / 2);
+
+  cfgSetClipLeft(gfxDrvCommon->rp_startup_config, output_clip.left);
+  cfgSetClipTop(gfxDrvCommon->rp_startup_config, output_clip.top);
+  cfgSetClipRight(gfxDrvCommon->rp_startup_config, output_clip.right);
+  cfgSetClipBottom(gfxDrvCommon->rp_startup_config, output_clip.bottom);
+
+  drawSetOutputClip(output_clip);
+
+  if (cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config))
+  {
+    drawSetWindowedMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+  }
+  else
+  {
+    drawSetFullScreenMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenHeight(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
+      cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config));
+  }
 }
 
 void RetroPlatform::SetWindowInstance(HINSTANCE hNewWindowInstance) 

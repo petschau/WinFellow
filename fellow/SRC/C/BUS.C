@@ -184,7 +184,6 @@ void busEndOfFrame(void)
   /* Perform graphics end of frame                                */
   /*==============================================================*/
   graphEndOfFrame();
-  timerEndOfFrame();
 
   /*==============================================================*/
   /* Decide interlace rendering status and switch bus screen      */

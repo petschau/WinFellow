@@ -664,7 +664,7 @@ int __cdecl main(int argc, char *argv[]) {
   if (!RP.GetHeadlessMode()) {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
-    wguiSetProcessDPIAwareness("1");
+    wguiSetProcessDPIAwareness("2");
     while (!wguiEnter())
       fellowRun();
 #ifdef RETRO_PLATFORM

@@ -1036,27 +1036,6 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       if( released( PCK_F4 )) issue_event( EVENT_EJECT_DF3 );
     }
 
-    if( ispressed(PCK_HOME) )
-    {
-      if( ispressed( PCK_NUMPAD_2 ))
-      {
-	issue_event( EVENT_SCROLL_DOWN );
-      }
-      if( ispressed( PCK_NUMPAD_4 ))
-      {
-	issue_event( EVENT_SCROLL_LEFT );
-      }
-	  
-      if( ispressed( PCK_NUMPAD_6 ))
-      {
-	issue_event( EVENT_SCROLL_RIGHT );
-      }
-      if( ispressed( PCK_NUMPAD_8 ))
-      {
-	issue_event( EVENT_SCROLL_UP );
-      }
-    }
-	
     // Check joysticks replacements
     // New here: Must remember last value to decide if a change has happened
 	

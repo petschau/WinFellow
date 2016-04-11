@@ -221,7 +221,6 @@ ULO cfgGetBogoSize(cfg *config)
 void cfgSetKickImage(cfg *config, STR *kickimage)
 {
   strncpy(config->m_kickimage, kickimage, CFG_FILENAME_LENGTH);
-  //fsNavigMakeRelativePath(config->m_kickimage);
 }
 
 STR *cfgGetKickImage(cfg *config)
@@ -262,7 +261,6 @@ ULO cfgGetKickCRC32(cfg *config)
 void cfgSetKey(cfg *config, STR *key)
 {
   strncpy(config->m_key, key, CFG_FILENAME_LENGTH);
-  //fsNavigMakeRelativePath(config->m_key);
 }
 
 STR *cfgGetKey(cfg *config)
@@ -400,19 +398,9 @@ ULO cfgGetFrameskipRatio(cfg *config)
   return config->m_frameskipratio;
 }
 
-void cfgSetClipMode(cfg *config, DISPLAYCLIP_MODE clipmode)
+void cfgSetClipLeft(cfg *config, ULO left)
 {
-  config->m_clipmode = clipmode;
-}
-
-DISPLAYCLIP_MODE cfgGetClipMode(cfg *config)
-{
-  return config->m_clipmode;
-}
-
-void cfgSetClipLeft(cfg *config, ULO clipleft)
-{
-  config->m_clipleft = clipleft;
+  config->m_clipleft = left;
 }
 
 ULO cfgGetClipLeft(cfg *config)
@@ -420,9 +408,9 @@ ULO cfgGetClipLeft(cfg *config)
   return config->m_clipleft;
 }
 
-void cfgSetClipTop(cfg *config, ULO cliptop)
+void cfgSetClipTop(cfg *config, ULO top)
 {
-  config->m_cliptop = cliptop;
+  config->m_cliptop = top;
 }
 
 ULO cfgGetClipTop(cfg *config)
@@ -430,9 +418,9 @@ ULO cfgGetClipTop(cfg *config)
   return config->m_cliptop;
 }
 
-void cfgSetClipRight(cfg *config, ULO clipright)
+void cfgSetClipRight(cfg *config, ULO right)
 {
-  config->m_clipright = clipright;
+  config->m_clipright = right;
 }
 
 ULO cfgGetClipRight(cfg *config)
@@ -440,9 +428,9 @@ ULO cfgGetClipRight(cfg *config)
   return config->m_clipright;
 }
 
-void cfgSetClipBottom(cfg *config, ULO clipbottom)
+void cfgSetClipBottom(cfg *config, ULO bottom)
 {
-  config->m_clipbottom = clipbottom;
+  config->m_clipbottom = bottom;
 }
 
 ULO cfgGetClipBottom(cfg *config)
@@ -849,11 +837,11 @@ void cfgSetDefaults(cfg *config)
   /* Default screen configuration                                             */
   /*==========================================================================*/
 
-  cfgSetScreenWidth(config, 640);
-  cfgSetScreenHeight(config, 400);
-  cfgSetScreenColorBits(config, 16);
-  cfgSetScreenWindowed(config, true);
+  cfgSetScreenWidth(config, 800);
+  cfgSetScreenHeight(config, 600);
+  cfgSetScreenColorBits(config, 32);
   cfgSetScreenRefresh(config, 0);
+  cfgSetScreenWindowed(config, true);
   cfgSetUseMultipleGraphicalBuffers(config, FALSE);
   cfgSetScreenDrawLEDs(config, true);
   cfgSetDeinterlace(config, true);
@@ -868,11 +856,10 @@ void cfgSetDefaults(cfg *config)
   cfgSetDisplayScale(config, DISPLAYSCALE_1X);
   cfgSetDisplayScaleStrategy(config, DISPLAYSCALE_STRATEGY_SOLID);
   cfgSetGraphicsEmulationMode(config, GRAPHICSEMULATIONMODE_LINEEXACT);
-  cfgSetClipMode(config, DISPLAYCLIP_MODE::AUTOMATIC_CLIP);
-  cfgSetClipLeft(config, 129); // Match for 640x400 at 1x
-  cfgSetClipTop(config, 44);
-  cfgSetClipRight(config, 449);
-  cfgSetClipRight(config, 244);
+  cfgSetClipLeft(config, 96);
+  cfgSetClipTop(config, 26);
+  cfgSetClipRight(config, 472);
+  cfgSetClipBottom(config, 314);
 
   /*==========================================================================*/
   /* Default sound configuration                                              */
@@ -1243,29 +1230,6 @@ static ULO cfgGetBufferLengthFromString(STR *value)
     return 80;
   }
   return buffer_length;
-}
-
-static DISPLAYCLIP_MODE cfgGetClipModeFromString(STR *value)
-{
-  if (stricmp(value, "auto") == 0)
-  {
-    return DISPLAYCLIP_MODE::AUTOMATIC_CLIP;
-  }
-  if (stricmp(value, "fixed") == 0)
-  {
-    return DISPLAYCLIP_MODE::FIXED_CLIP;
-  }
-  return DISPLAYCLIP_MODE::AUTOMATIC_CLIP; // Default
-}
-
-static STR* cfgGetClipModeToString(DISPLAYCLIP_MODE clipmode)
-{
-  switch (clipmode)
-  {
-    case DISPLAYCLIP_MODE::AUTOMATIC_CLIP:  return "auto";
-    case DISPLAYCLIP_MODE::FIXED_CLIP:      return "fixed";
-  }
-  return "fixed";
 }
 
 static DISPLAYSCALE cfgGetDisplayScaleFromString(STR *value)
@@ -1693,7 +1657,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     }
     else if (stricmp(option, "gfx_fullscreen_amiga") == 0)
     {
-      cfgSetScreenWindowed(config, !cfgGetBOOLEFromString(value));
+      cfgSetScreenWindowed(config, !cfgGetboolFromString(value));
     }
     else if (stricmp(option, "use_multiple_graphical_buffers") == 0)
     {
@@ -1714,10 +1678,6 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     else if (stricmp(option, "show_leds") == 0)
     {
       cfgSetScreenDrawLEDs(config, cfgGetboolFromString(value));
-    }
-    else if (stricmp(option, "gfx_clip_mode") == 0)
-    {
-      cfgSetClipMode(config, cfgGetClipModeFromString(value));
     }
     else if (stricmp(option, "gfx_clip_left") == 0)
     {
@@ -1935,6 +1895,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 
 BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
 {
+  fprintf(cfgfile, "config_version=2\n");
   fprintf(cfgfile, "config_description=%s\n", cfgGetDescription(config));
   fprintf(cfgfile, "autoconfig=%s\n", cfgGetBOOLEToString(cfgGetUseAutoconfig(config)));
   for (ULO i = 0; i < 4; i++)
@@ -1978,13 +1939,12 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "gfx_chipset=%s\n", cfgGetECSToString(cfgGetECS(config)));
   fprintf(cfgfile, "gfx_width=%u\n", cfgGetScreenWidth(config));
   fprintf(cfgfile, "gfx_height=%u\n", cfgGetScreenHeight(config));
-  fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetBOOLEToString(!cfgGetScreenWindowed(config)));
+  fprintf(cfgfile, "gfx_fullscreen_amiga=%s\n", cfgGetboolToString(!cfgGetScreenWindowed(config)));
   fprintf(cfgfile, "use_multiple_graphical_buffers=%s\n", cfgGetBOOLEToString(cfgGetUseMultipleGraphicalBuffers(config)));
   fprintf(cfgfile, "gfx_driver=%s\n", cfgGetDisplayDriverToString(cfgGetDisplayDriver(config)));
   // fprintf(cfgfile, "gfx_emulation_mode=%s\n"), cfgGetGraphicsEmulationModeToString(cfgGetGraphicsEmulationMode(config)));
   fprintf(cfgfile, "fellow.gfx_refresh=%u\n", cfgGetScreenRefresh(config));
   fprintf(cfgfile, "gfx_colour_mode=%s\n", cfgGetColorBitsToString(cfgGetScreenColorBits(config)));
-  fprintf(cfgfile, "gfx_clip_mode=%s\n", cfgGetClipModeToString(cfgGetClipMode(config)));
   fprintf(cfgfile, "gfx_clip_left=%u\n", cfgGetClipLeft(config));
   fprintf(cfgfile, "gfx_clip_top=%u\n", cfgGetClipTop(config));
   fprintf(cfgfile, "gfx_clip_right=%u\n", cfgGetClipRight(config));
@@ -2315,23 +2275,26 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
-  drawSetClipMode(cfgGetClipMode(config));
-  drawSetClipLeft(cfgGetClipLeft(config));
-  drawSetClipTop(cfgGetClipTop(config));
-  drawSetClipRight(cfgGetClipRight(config));
-  drawSetClipBottom(cfgGetClipBottom(config));
+  drawSetInternalClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
+  drawSetOutputClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetDisplayScale(cfgGetDisplayScale(config));
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));
   drawSetAllowMultipleBuffers(cfgGetUseMultipleGraphicalBuffers(config));
   drawSetDeinterlace(cfgGetDeinterlace(config));
   drawSetDisplayDriver(cfgGetDisplayDriver(config));
   drawSetGraphicsEmulationMode(cfgGetGraphicsEmulationMode(config));
-  drawSetMode(cfgGetScreenWidth(config),
-    cfgGetScreenHeight(config),
-    cfgGetScreenColorBits(config),
-    cfgGetScreenRefresh(config),
-    cfgGetScreenWindowed(config));
-
+  
+  if (cfgGetScreenWindowed(config))
+  {
+    drawSetWindowedMode(cfgGetScreenWidth(config), cfgGetScreenHeight(config));
+  }
+  else
+  {
+    drawSetFullScreenMode(cfgGetScreenWidth(config),
+      cfgGetScreenHeight(config),
+      cfgGetScreenColorBits(config),
+      cfgGetScreenRefresh(config));
+  }
 
   /*==========================================================================*/
   /* Sound configuration                                                      */

@@ -47,29 +47,9 @@ void gfxDrvInvalidateBufferPointer()
   }
 }
 
-__int64 t_previous = 0;
-
-extern volatile __int64 timertime;
-
-void DelayFlip()
-{
-  __int64 elapsed_time = timertime - t_previous;
-  __int64 timestamp = timertime;
-  __int64 wait_for = t_previous + 18;
-
-  // Busy loop...
-  // Replace with wait for an event set from the timer, if it is fast enough
-  while (wait_for > timertime);
-
-  t_previous = timertime;
-}
-
 void gfxDrvBufferFlip()
 {
-  if (soundGetEmulation() == SOUND_PLAY && soundGetNotification() == SOUND_MMTIMER_NOTIFICATION)
-  {
-    DelayFlip();
-  }
+  gfxDrvCommon->Flip();
 
   if (gfx_drv_use_dxgi)
   {
@@ -91,6 +71,8 @@ void gfxDrvNotifyActiveStatus(bool active)
 
 void gfxDrvSizeChanged(unsigned int width, unsigned int height)
 {
+  gfxDrvCommon->SizeChanged(width, height);
+
   if (gfx_drv_use_dxgi)
   {
     gfxDrvDXGI->SizeChanged(width, height);
@@ -113,36 +95,34 @@ void gfxDrvPositionChanged()
   }
 }
 
-void gfxDrvSetMode(draw_mode *dm)
+void gfxDrvSetMode(draw_mode *dm, bool windowed)
 {
-  gfxDrvCommon->SetDrawMode(dm);
+  gfxDrvCommon->SetDrawMode(dm, windowed);
 
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->SetMode(dm);
+    gfxDrvDXGI->SetMode(dm, windowed);
   }
   else
   {
-    gfxDrvDDrawSetMode(dm);
+    gfxDrvDDrawSetMode(dm, windowed);
   }
 }
 
-void gfxDrvGetBufferInformation(draw_mode *dm, draw_buffer_information *buffer_information)
+void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information)
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->GetBufferInformation(dm, buffer_information);
+    gfxDrvDXGI->GetBufferInformation(buffer_information);
   }
   else
   {
-    gfxDrvDDrawGetBufferInformation(dm, buffer_information);
+    gfxDrvDDrawGetBufferInformation(buffer_information);
   }
 }
 
 bool gfxDrvEmulationStart(unsigned int maxbuffercount)
 {
-  t_previous = timertime;
-
   if (!gfxDrvCommon->EmulationStart())
   {
     return false;
@@ -215,7 +195,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
 bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
 {
   gfxDrvShutdown();
-  drawModesFree();
+  drawClearModeList();
   return gfxDrvStartup(displaydriver);
 }
 
@@ -233,7 +213,10 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
+  {
     gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
+    RP.RegisterRetroPlatformScreenMode(true);
+  }
 #endif
 
   if (gfx_drv_use_dxgi)
@@ -308,33 +291,3 @@ bool gfxDrvDXGIValidateRequirements(void)
   return true;
 }
 
-void gfxDrvRegisterRetroPlatformScreenMode(const bool bStartup)
-{
-  ULO lHeight, lWidth, lDisplayScale;
-
-  if (RP.GetScanlines())
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
-  else
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
-
-  if (bStartup) {
-    RP.SetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-    RP.SetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
-  }
-
-  lHeight = RP.GetScreenHeightAdjusted();
-  lWidth  = RP.GetScreenWidthAdjusted();
-  lDisplayScale = RP.GetDisplayScale();
-
-  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetScreenWidth (gfxDrvCommon->rp_startup_config, lWidth);
-
-  if (gfx_drv_use_dxgi)
-  {
-    gfxDrvDXGI->RegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
-  }
-  else
-  {
-    gfxDrvDDrawRegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
-  }
-}
