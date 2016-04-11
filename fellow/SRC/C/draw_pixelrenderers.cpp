@@ -2275,7 +2275,7 @@ static void drawLineHAM2x1_24Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 6;
   }
 
-  line_exact_sprites->MergeHAM2x24(draw_buffer_current_ptr_local, linedescription);
+  line_exact_sprites->MergeHAM2x1x24(draw_buffer_current_ptr_local, linedescription);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -2319,8 +2319,7 @@ static void drawLineHAM2x2_24Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 6;
   }
 
-  line_exact_sprites->MergeHAM2x24(draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM2x24(draw_buffer_current_ptr_local + nextlineoffset * 4, linedescription);
+  line_exact_sprites->MergeHAM2x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -2364,8 +2363,7 @@ static void drawLineHAM4x2_24Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 12;
   }
 
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local + nextlineoffset * 4, linedescription);
+  line_exact_sprites->MergeHAM4x2x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset);
 
   draw_buffer_info.current_ptr = framebuffer;
 
@@ -2411,10 +2409,7 @@ static void drawLineHAM4x4_24Bit(graph_line *linedescription, ULO nextlineoffset
     framebuffer += 12;
   }
 
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local, linedescription);
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local + nextlineoffset * 4, linedescription);
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local + nextlineoffset2 * 4, linedescription);
-  line_exact_sprites->MergeHAM4x24(draw_buffer_current_ptr_local + nextlineoffset3 * 4, linedescription);
+  line_exact_sprites->MergeHAM4x4x24(draw_buffer_current_ptr_local, linedescription, nextlineoffset, nextlineoffset2, nextlineoffset3);
 
   draw_buffer_info.current_ptr = framebuffer;
 

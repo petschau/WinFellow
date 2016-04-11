@@ -513,7 +513,7 @@ union sprham24helper
 /* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x24(UBY *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -571,10 +571,10 @@ void LineExactSprites::MergeHAM2x24(UBY *frameptr, graph_line *linedescription)
 
 /*===========================================================================*/
 /* Merge sprites with HAM, actual drawing                                    */
-/* 24-bit pixels, 4x horisontal scale                                        */
+/* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x24(UBY *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
@@ -616,19 +616,209 @@ void LineExactSprites::MergeHAM4x24(UBY *frameptr, graph_line *linedescription)
             {
               union sprham24helper color;
               color.color_i = graph_color_shadow[pixel >> 2];
-              *frame_ptr++ = color.color_b[0];
-              *frame_ptr++ = color.color_b[1];
-              *frame_ptr++ = color.color_b[2];
-              *frame_ptr++ = color.color_b[0];
-              *frame_ptr++ = color.color_b[1];
-              *frame_ptr++ = color.color_b[2];
-              *frame_ptr++ = color.color_b[0];
-              *frame_ptr++ = color.color_b[1];
-              *frame_ptr++ = color.color_b[2];
-              *frame_ptr++ = color.color_b[0];
-              *frame_ptr++ = color.color_b[1];
-              *frame_ptr++ = color.color_b[2];
+              frame_ptr[0] = color.color_b[0];
+              frame_ptr[1] = color.color_b[1];
+              frame_ptr[2] = color.color_b[2];
+              frame_ptr[3] = color.color_b[0];
+              frame_ptr[4] = color.color_b[1];
+              frame_ptr[5] = color.color_b[2];
+
+              frame_ptr[nextlineoffset] = color.color_b[0];
+              frame_ptr[1 + nextlineoffset] = color.color_b[1];
+              frame_ptr[2 + nextlineoffset] = color.color_b[2];
+              frame_ptr[3 + nextlineoffset] = color.color_b[0];
+              frame_ptr[4 + nextlineoffset] = color.color_b[1];
+              frame_ptr[5 + nextlineoffset] = color.color_b[2];
             }
+            frame_ptr += 6;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*===========================================================================*/
+/* Merge sprites with HAM, actual drawing                                    */
+/* 24-bit pixels, 4x2 scale                                                  */
+/*===========================================================================*/
+
+void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset)
+{
+  if (linedescription->sprite_ham_slot != 0xffffffff)
+  {
+    sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
+    ULO DIW_first_visible = linedescription->DIW_first_draw;
+    ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+
+    linedescription->sprite_ham_slot = 0xffffffff;
+    for (ULO i = 0; i < 8; i++)
+    {
+      spr_merge_list_master &master = ham_slot.merge_list_master[i];
+
+      for (ULO j = 0; j < ham_slot.merge_list_master[i].count; j++)
+      {
+        spr_merge_list_item &item = master.items[j];
+
+        if ((item.sprx < DIW_last_visible) && ((item.sprx + 16) > DIW_first_visible))
+        {
+          ULO first_visible_cylinder = item.sprx;
+          ULO last_visible_cylinder = first_visible_cylinder + 16;
+
+          if (first_visible_cylinder < DIW_first_visible)
+          {
+            first_visible_cylinder = DIW_first_visible;
+          }
+          if (last_visible_cylinder > DIW_last_visible)
+          {
+            last_visible_cylinder = DIW_last_visible;
+          }
+          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          /* frameptr points to the first visible HAM pixel in the framebuffer */
+          UBY *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
+          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+
+          while (--pixel_count >= 0)
+          {
+            UBY pixel = *spr_ptr++;
+            if (pixel != 0)
+            {
+              union sprham24helper color;
+              color.color_i = graph_color_shadow[pixel >> 2];
+              frame_ptr[0] = color.color_b[0];
+              frame_ptr[1] = color.color_b[1];
+              frame_ptr[2] = color.color_b[2];
+              frame_ptr[3] = color.color_b[0];
+              frame_ptr[4] = color.color_b[1];
+              frame_ptr[5] = color.color_b[2];
+              frame_ptr[6] = color.color_b[0];
+              frame_ptr[7] = color.color_b[1];
+              frame_ptr[8] = color.color_b[2];
+              frame_ptr[9] = color.color_b[0];
+              frame_ptr[10] = color.color_b[1];
+              frame_ptr[11] = color.color_b[2];
+
+              frame_ptr[nextlineoffset] = color.color_b[0];
+              frame_ptr[1 + nextlineoffset] = color.color_b[1];
+              frame_ptr[2 + nextlineoffset] = color.color_b[2];
+              frame_ptr[3 + nextlineoffset] = color.color_b[0];
+              frame_ptr[4 + nextlineoffset] = color.color_b[1];
+              frame_ptr[5 + nextlineoffset] = color.color_b[2];
+              frame_ptr[6 + nextlineoffset] = color.color_b[1];
+              frame_ptr[7 + nextlineoffset] = color.color_b[2];
+              frame_ptr[8 + nextlineoffset] = color.color_b[0];
+              frame_ptr[9 + nextlineoffset] = color.color_b[1];
+              frame_ptr[10 + nextlineoffset] = color.color_b[2];
+              frame_ptr[11 + nextlineoffset] = color.color_b[2];
+            }
+            frame_ptr += 12;
+          }
+        }
+      }
+    }
+  }
+}
+
+/*===========================================================================*/
+/* Merge sprites with HAM, actual drawing                                    */
+/* 24-bit pixels, 4x4 scale                                                  */
+/*===========================================================================*/
+
+void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3)
+{
+  if (linedescription->sprite_ham_slot != 0xffffffff)
+  {
+    sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
+    ULO DIW_first_visible = linedescription->DIW_first_draw;
+    ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+
+    linedescription->sprite_ham_slot = 0xffffffff;
+    for (ULO i = 0; i < 8; i++)
+    {
+      spr_merge_list_master &master = ham_slot.merge_list_master[i];
+
+      for (ULO j = 0; j < ham_slot.merge_list_master[i].count; j++)
+      {
+        spr_merge_list_item &item = master.items[j];
+
+        if ((item.sprx < DIW_last_visible) && ((item.sprx + 16) > DIW_first_visible))
+        {
+          ULO first_visible_cylinder = item.sprx;
+          ULO last_visible_cylinder = first_visible_cylinder + 16;
+
+          if (first_visible_cylinder < DIW_first_visible)
+          {
+            first_visible_cylinder = DIW_first_visible;
+          }
+          if (last_visible_cylinder > DIW_last_visible)
+          {
+            last_visible_cylinder = DIW_last_visible;
+          }
+          UBY *spr_ptr = &(item.sprite_data[first_visible_cylinder - item.sprx]);
+          /* frameptr points to the first visible HAM pixel in the framebuffer */
+          UBY *frame_ptr = frameptr + 12 * (first_visible_cylinder - DIW_first_visible);
+          LON pixel_count = last_visible_cylinder - first_visible_cylinder;
+
+          while (--pixel_count >= 0)
+          {
+            UBY pixel = *spr_ptr++;
+            if (pixel != 0)
+            {
+              union sprham24helper color;
+              color.color_i = graph_color_shadow[pixel >> 2];
+              frame_ptr[0] = color.color_b[0];
+              frame_ptr[1] = color.color_b[1];
+              frame_ptr[2] = color.color_b[2];
+              frame_ptr[3] = color.color_b[0];
+              frame_ptr[4] = color.color_b[1];
+              frame_ptr[5] = color.color_b[2];
+              frame_ptr[6] = color.color_b[0];
+              frame_ptr[7] = color.color_b[1];
+              frame_ptr[8] = color.color_b[2];
+              frame_ptr[9] = color.color_b[0];
+              frame_ptr[10] = color.color_b[1];
+              frame_ptr[11] = color.color_b[2];
+
+              frame_ptr[nextlineoffset] = color.color_b[0];
+              frame_ptr[1 + nextlineoffset] = color.color_b[1];
+              frame_ptr[2 + nextlineoffset] = color.color_b[2];
+              frame_ptr[3 + nextlineoffset] = color.color_b[0];
+              frame_ptr[4 + nextlineoffset] = color.color_b[1];
+              frame_ptr[5 + nextlineoffset] = color.color_b[2];
+              frame_ptr[6 + nextlineoffset] = color.color_b[1];
+              frame_ptr[7 + nextlineoffset] = color.color_b[2];
+              frame_ptr[8 + nextlineoffset] = color.color_b[0];
+              frame_ptr[9 + nextlineoffset] = color.color_b[1];
+              frame_ptr[10 + nextlineoffset] = color.color_b[2];
+              frame_ptr[11 + nextlineoffset] = color.color_b[2];
+
+              frame_ptr[nextlineoffset2] = color.color_b[0];
+              frame_ptr[1 + nextlineoffset2] = color.color_b[1];
+              frame_ptr[2 + nextlineoffset2] = color.color_b[2];
+              frame_ptr[3 + nextlineoffset2] = color.color_b[0];
+              frame_ptr[4 + nextlineoffset2] = color.color_b[1];
+              frame_ptr[5 + nextlineoffset2] = color.color_b[2];
+              frame_ptr[6 + nextlineoffset2] = color.color_b[1];
+              frame_ptr[7 + nextlineoffset2] = color.color_b[2];
+              frame_ptr[8 + nextlineoffset2] = color.color_b[0];
+              frame_ptr[9 + nextlineoffset2] = color.color_b[1];
+              frame_ptr[10 + nextlineoffset2] = color.color_b[2];
+              frame_ptr[11 + nextlineoffset2] = color.color_b[2];
+
+              frame_ptr[nextlineoffset3] = color.color_b[0];
+              frame_ptr[1 + nextlineoffset3] = color.color_b[1];
+              frame_ptr[2 + nextlineoffset3] = color.color_b[2];
+              frame_ptr[3 + nextlineoffset3] = color.color_b[0];
+              frame_ptr[4 + nextlineoffset3] = color.color_b[1];
+              frame_ptr[5 + nextlineoffset3] = color.color_b[2];
+              frame_ptr[6 + nextlineoffset3] = color.color_b[1];
+              frame_ptr[7 + nextlineoffset3] = color.color_b[2];
+              frame_ptr[8 + nextlineoffset3] = color.color_b[0];
+              frame_ptr[9 + nextlineoffset3] = color.color_b[1];
+              frame_ptr[10 + nextlineoffset3] = color.color_b[2];
+              frame_ptr[11 + nextlineoffset3] = color.color_b[2];
+            }
+            frame_ptr += 12;
           }
         }
       }

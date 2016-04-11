@@ -358,7 +358,7 @@ static void drawLED(int index, bool state)
   ULO color = (state) ? DRAW_LED_COLOR_ON : DRAW_LED_COLOR_OFF;
   int height = DRAW_LED_HEIGHT;
 
-  switch (draw_mode_current->bits)
+  switch (draw_buffer_info.bits)
   {
     case 16:
       drawLED16(x, y, DRAW_LED_WIDTH, height, color);
@@ -533,7 +533,7 @@ static void drawFpsCounter(void)
 
     sprintf(s, "%u", drawStatLast50FramesFps());
     drawFpsText(s);
-    switch (draw_mode_current->bits)
+    switch (draw_buffer_info.bits)
     {
       case 16:
 	drawFpsToFramebuffer16();
@@ -1091,6 +1091,7 @@ BOOLE drawEmulationStartPost(void)
   {
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to allocate enough graphics card memory");
   }
+  fellowAddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
   return result;
 }
 

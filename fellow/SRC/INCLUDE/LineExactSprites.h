@@ -152,13 +152,15 @@ public:
 
   void Merge(graph_line* current_graph_line);
 
-  void MergeHAM2x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM4x24(UBY *frameptr, graph_line *linedescription);
-
   void MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription);
   void MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription, ULO nextlineoffset);
   void MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
   void MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+
+  void MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
 
   void MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription);
   void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
