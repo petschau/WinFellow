@@ -141,8 +141,6 @@ draw_rect draw_clip_max_pal;
 draw_rect draw_internal_clip;
 draw_rect draw_output_clip;
 
-//ULO draw_clip_scroll;
-
 void drawSetInternalClip(const draw_rect& internal_clip)
 {
   draw_internal_clip = internal_clip;
@@ -171,53 +169,6 @@ void drawInitializePredefinedClipRectangles()
   draw_clip_max_pal.bottom = 314;
 }
 
-/*============================================================================*/
-/* Clip moved by user via keyboard shortcut                                   */
-/*============================================================================*/
-
-//static void drawClipScroll()
-//{
-//  if (draw_clip_scroll == 80)
-//  {
-//    if (draw_output_clip.top > draw_clip_max_pal.top)
-//    {
-//      draw_output_clip.top--;
-//      draw_output_clip.bottom--;
-//      if (draw_output_clip)
-//    }
-//  }
-//  else if (draw_clip_scroll == 72)
-//  {
-//    if (draw_clip.bottom < draw_clip_max_pal.bottom)
-//    {
-//      draw_clip.top++;
-//      draw_clip.bottom++;
-//    }
-//  }
-//  else if (draw_clip_scroll == 75)
-//  {
-//    if (draw_clip.right < draw_clip_max_pal.right)
-//    {
-//      draw_clip.right++;
-//      draw_clip.left++;
-//    }
-//  }
-//  else if (draw_clip_scroll == 77)
-//  {
-//    if (draw_clip.left > draw_clip_max_pal.left)
-//    {
-//      draw_clip.right--;
-//      draw_clip.left--;
-//    }
-//  }
-//  draw_clip_scroll = 0;
-//}
-//
-//void drawSetClipScroll(ULO event_id)
-//{
-//  draw_clip_scroll = event_id;
-//}
-//
 /*============================================================================*/
 /* Add one mode to the list of useable modes                                  */
 /*============================================================================*/

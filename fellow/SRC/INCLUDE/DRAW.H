@@ -123,10 +123,6 @@ extern const draw_rect& drawGetInternalClip();
 extern void drawSetOutputClip(const draw_rect& output_clip);
 extern const draw_rect& drawGetOutputClip();
 
-//extern ULO drawGetClipWidth();
-
-//extern void drawSetClipScroll(ULO event_id);
-
 extern const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, ULO buffer_scale_factor);
 extern const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO buffer_scale_factor);
 
