@@ -499,17 +499,6 @@ static void drawFpsToFramebuffer32(void)
 {
   ULO *bufl = ((ULO *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
 
-#ifdef RETRO_PLATFORM
-  if(RP.GetHeadlessMode()) 
-  {
-    // move left to offset for clipping at the right; since width is adjusted dynamically for scale, reduce by that, all other values are static
-    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RP.GetScreenWidthAdjusted() / RP.GetDisplayScale() - RP.GetClippingOffsetLeftAdjusted();
-
-    // move down to compensate for clipping at top
-    bufl += RP.GetClippingOffsetTopAdjusted() * draw_buffer_info.pitch / 4;
-  }
-#endif
-
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
