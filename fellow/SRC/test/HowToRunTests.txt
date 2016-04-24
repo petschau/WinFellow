@@ -1,0 +1,26 @@
+How to run tests:
+-----------------
+winfellow -test <catch.hpp command line options>
+
+Example: 
+winfellow -test -r junit -o result.xml
+
+Currently it is using catch v1.3.0
+For more information, see https://github.com/philsquared/Catch
+
+How to view tests:
+------------------
+
+If you use the junit output reporter, there are several tools online, it is a commonly understood format.
+
+For local use, junit-viewer is quite easy to set up:
+
+1. Install node.js.
+
+2. Install junit-viewer: npm install junit-viewer -g
+
+3. Run junit-viewer on the command line, for instance in server mode when the result file(s) is located in ".":
+"junit-viewer --results=. --port=34123"
+
+4. Open the site: 
+http://localhost:34123
