@@ -418,6 +418,16 @@ std::pair<unsigned int, unsigned int> wguiGetDesktopSize()
   return std::pair<unsigned int, unsigned int>(desktopwindow_width, desktopwindow_height);
 }
 
+std::pair<unsigned int, unsigned int> wguiGetDesktopWorkAreaSize()
+{
+  RECT workAreaRect = { 0 };
+  if (!SystemParametersInfo(SPI_GETWORKAREA, 0, &workAreaRect, 0))
+  {
+    return wguiGetDesktopSize();
+  }
+  return std::pair<unsigned int, unsigned int>(workAreaRect.right - workAreaRect.left, workAreaRect.bottom - workAreaRect.top);
+}
+
 wgui_drawmode* wguiGetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list &list)
 {
   unsigned int i = 0;
@@ -1929,7 +1939,7 @@ void wguiInstallDisplayConfig(HWND hwndDlg, cfg *conf)
 
 unsigned int wguiDecideScaleFromDesktop(unsigned int unscaled_width, unsigned int unscaled_height)
 {
-  std::pair<unsigned int, unsigned int> desktop_size = wguiGetDesktopSize();
+  std::pair<unsigned int, unsigned int> desktop_size = wguiGetDesktopWorkAreaSize();
 
   unsigned int try_scale = 1;
   unsigned int scale = 1;
