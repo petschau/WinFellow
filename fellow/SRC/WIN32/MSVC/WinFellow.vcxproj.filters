@@ -61,6 +61,12 @@
     <Filter Include="DXGI">
       <UniqueIdentifier>{e654a72c-db78-41a3-a44b-3f7378035727}</UniqueIdentifier>
     </Filter>
+    <Filter Include="test">
+      <UniqueIdentifier>{a9e952b0-0319-4857-950a-a6a2f4c8f755}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="test\graphics">
+      <UniqueIdentifier>{7b59b14c-a071-48b8-9484-74b4c78dd019}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -434,6 +440,12 @@
     </ClCompile>
     <ClCompile Include="..\..\c\uart.cpp">
       <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\TestRunner.cpp">
+      <Filter>test</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\graphics\TestPixelSerializer.cpp">
+      <Filter>test\graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -835,6 +847,9 @@
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\uart.h">
       <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\catch.hpp">
+      <Filter>test</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

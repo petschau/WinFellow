@@ -33,6 +33,39 @@
 
 extern UBY draw_dual_translate[2][256][256];
 
+#define SERIALIZER_PLAYFIELD1 0
+#define SERIALIZER_PLAYFIELD2 1
+
+bool PixelSerializer::GetActivated()
+{
+  return _activated;
+}
+
+bool PixelSerializer::GetIsWaitingForActivationOnLine()
+{
+  return _newLine;
+}
+
+ULO PixelSerializer::GetLastCylinderOutput()
+{
+  return _lastCylinderOutput;
+}
+
+ULO PixelSerializer::GetFirstPossibleOutputCylinder()
+{
+  return FIRST_CYLINDER;
+}
+
+ULO PixelSerializer::GetLastPossibleOutputCylinder()
+{
+  return LAST_CYLINDER;
+}
+
+UWO PixelSerializer::GetPendingWord(unsigned int bitplaneNumber)
+{
+  return _pendingWord[bitplaneNumber];
+}
+
 void PixelSerializer::LogEndOfLine(ULO line, ULO cylinder)
 {
   if (GraphicsContext.Logger.IsLogEnabled())
@@ -60,93 +93,59 @@ void PixelSerializer::EventSetup(ULO arriveTime)
 
 void PixelSerializer::ShiftActive(ULO pixelCount)
 {
-  _active[0].l <<= pixelCount;
-  _active[1].l <<= pixelCount;
-  _active[2].l <<= pixelCount;
-  _active[3].l <<= pixelCount;
-  _active[4].l <<= pixelCount;
-  _active[5].l <<= pixelCount;
+  for (unsigned int i = 0; i < 6; i++)
+  {
+    _activeWord[i].w <<= pixelCount;
+  }
+}
+
+void PixelSerializer::CopyPendingToActive(unsigned int playfieldNumber)
+{
+  for (unsigned int i = playfieldNumber; i < 6; i+=2)
+  {
+    _activeWord[i].w = _pendingWord[i];
+    _pendingWord[i] = 0;
+  }
 }
 
 void PixelSerializer::Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6)
 {
-  ULO scrollodd, scrolleven;
-  ULO oddmask, invoddmask;
-  ULO evenmask, invevenmask;
-
   _activated = true;
 
-  if (BitplaneUtility::IsLores())
-  {
-    scrollodd = 16 - 1 - oddscroll;
-    scrolleven = 16 - 1 - evenscroll;
-  }
-  else
-  {
-    scrollodd = 16 - 2 - oddhiscroll;
-    scrolleven = 16 - 2 - evenhiscroll;
-  }
-
-  oddmask = 0xffff << scrollodd;
-  evenmask = 0xffff << scrolleven;
-  invoddmask = ~oddmask;
-  invevenmask = ~evenmask;
-
-  _active[0].l = (_active[0].l & invoddmask)  | ( ( ((ULO) dat1) << scrollodd)  & oddmask);
-  _active[1].l = (_active[1].l & invevenmask) | ( ( ((ULO) dat2) << scrolleven) & evenmask);
-  _active[2].l = (_active[2].l & invoddmask)  | ( ( ((ULO) dat3) << scrollodd)  & oddmask);
-  _active[3].l = (_active[3].l & invevenmask) | ( ( ((ULO) dat4) << scrolleven) & evenmask);
-  _active[4].l = (_active[4].l & invoddmask)  | ( ( ((ULO) dat5) << scrollodd)  & oddmask);
-  _active[5].l = (_active[5].l & invevenmask) | ( ( ((ULO) dat6) << scrolleven) & evenmask);
+  _pendingWord[0] = dat1;
+  _pendingWord[1] = dat2;
+  _pendingWord[2] = dat3;
+  _pendingWord[3] = dat4;
+  _pendingWord[4] = dat5;
+  _pendingWord[5] = dat6;
 }
 
-void PixelSerializer::SerializePixels(ULO pixelCount)
+void PixelSerializer::SerializeCylinders(ULO cylinderCount)
 {
-  ULO pixelIterations8 = pixelCount >> 3;
-  for (ULO i = 0; i < pixelIterations8; ++i)
-  {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNext8Pixels(_active[0].b[3],
-			                                _active[1].b[3],
-			                                _active[2].b[3],
-			                                _active[3].b[3],
-			                                _active[4].b[3],
-			                                _active[5].b[3]);
-    ShiftActive(8);
-  }
-  if (pixelCount & 4)
-  {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNext4Pixels(_active[0].b[3],
-			                                _active[1].b[3],
-			                                _active[2].b[3],
-			                                _active[3].b[3],
-			                                _active[4].b[3],
-			                                _active[5].b[3]);
-    ShiftActive(4);
-  }
-  
-  ULO remainingPixels = pixelCount & 3;
-  if (remainingPixels > 0)
-  {
-    GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(remainingPixels,
-                                                       _active[0].b[3],
-			                               _active[1].b[3],
-			                               _active[2].b[3],
-			                               _active[3].b[3],
-			                               _active[4].b[3],
-			                               _active[5].b[3]);
-    ShiftActive(remainingPixels);
-  }
-}
+  ULO pending_copy_mask = (BitplaneUtility::IsLores()) ? 0xf : 0x7;
+  ULO cylinderPixelCount = (BitplaneUtility::IsLores()) ? 1 : 2;
+  ULO currentCylinder = _lastCylinderOutput + 1;
 
-void PixelSerializer::SerializeBatch(ULO cylinderCount)
-{
-  if (BitplaneUtility::IsLores())
+  for (unsigned i = 0; i < cylinderCount; i++)
   {
-    SerializePixels(cylinderCount);
-  }
-  else
-  {
-    SerializePixels(cylinderCount*2);
+    GraphicsContext.Planar2ChunkyDecoder.P2CNextPixels(cylinderPixelCount,
+                                                       _activeWord[0].b[1],
+                                                       _activeWord[1].b[1],
+                                                       _activeWord[2].b[1],
+                                                       _activeWord[3].b[1],
+                                                       _activeWord[4].b[1],
+                                                       _activeWord[5].b[1]);
+    ShiftActive(cylinderPixelCount);
+
+    if ((currentCylinder & pending_copy_mask) == (oddscroll & pending_copy_mask))
+    {
+      CopyPendingToActive(SERIALIZER_PLAYFIELD1);
+    }
+    if ((currentCylinder & pending_copy_mask) == (evenscroll & pending_copy_mask))
+    {
+      CopyPendingToActive(SERIALIZER_PLAYFIELD2);
+    }
+    currentCylinder++;
   }
 }
 
@@ -202,7 +201,8 @@ void PixelSerializer::OutputCylindersUntil(ULO rasterY, ULO cylinder)
   }
 
   GraphicsContext.Planar2ChunkyDecoder.NewBatch();
-  SerializeBatch(cylinderCount);
+  SerializeCylinders(cylinderCount);
+
   if (GraphicsContext.DIWYStateMachine.IsVisible() && _activated)
   {
     cycle_exact_sprites->OutputSprites(_lastCylinderOutput + 1, cylinderCount);
@@ -228,7 +228,7 @@ void PixelSerializer::Handler(ULO rasterY, ULO cylinder)
 
   for (ULO i = 0; i < 6; ++i)
   {
-    _active[i].l = 0;
+    _activeWord[i].w = 0;
   }
   _lastCylinderOutput = FIRST_CYLINDER - 1;
   _newLine = true;

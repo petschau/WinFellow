@@ -101,7 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../test;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -168,7 +168,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../test;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -224,7 +224,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../test;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -286,7 +286,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../test;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -593,6 +593,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\graphics\GraphicsEvent.cpp" />
     <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp" />
     <ClCompile Include="..\..\graphics\CycleExactSprites.cpp" />
+    <ClCompile Include="..\..\test\graphics\TestPixelSerializer.cpp" />
+    <ClCompile Include="..\..\test\TestRunner.cpp" />
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1638,6 +1640,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h" />
     <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h" />
     <ClInclude Include="..\..\INCLUDE\uart.h" />
+    <ClInclude Include="..\..\test\catch.hpp" />
     <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />

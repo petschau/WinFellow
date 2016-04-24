@@ -492,6 +492,8 @@ LONG CALLBACK winDrvUnhandledExceptionHandler(EXCEPTION_POINTERS* e) {
 
 // #endif
 
+extern int testmain(int argc, char* const argv[]);
+
 int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance 
 		   HINSTANCE hPrevInstance, // handle to previous instance 
 		   LPSTR lpCmdLine,	    // pointer to command line 
@@ -514,7 +516,17 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   strcpy(cmdline, lpCmdLine);
   argv = winDrvCmdLineMakeArgv(cmdline, &argc);
   winDrvSetRegistryKeys(argv);
-  result = main(argc, argv);
+
+  if (argc > 1 && stricmp(argv[1], "-test") == 0)
+  {
+    argv[1][0] = '\0';
+    result = testmain(argc, argv);
+  }
+  else
+  {
+    result = main(argc, argv);
+  }
+
   free(cmdline);
   free(argv);
 

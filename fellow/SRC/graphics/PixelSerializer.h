@@ -34,7 +34,8 @@ private:
   const static ULO FIRST_CYLINDER = 56;
   const static ULO LAST_CYLINDER = 25;
 
-  ByteLongUnion _active[6];
+  ByteWordUnion _activeWord[6];
+  UWO _pendingWord[6];
 
   ULO _tmpline[960];
 
@@ -46,14 +47,21 @@ private:
   void LogOutput(ULO rasterY, ULO cylinder, ULO startCylinder, ULO untilCylinder);
   void EventSetup(ULO arriveTime);
   void ShiftActive(ULO pixelCount);
+  void CopyPendingToActive(unsigned int playfieldNumber);
 
   ULO GetOutputLine(ULO rasterY, ULO cylinder);
   ULO GetOutputCylinder(ULO cylinder);
   
-  void SerializePixels(ULO pixelCount);
-  void SerializeBatch(ULO cylinderCount);
+  void SerializeCylinders(ULO cylinderCount);
 
 public:
+  bool GetActivated();
+  bool GetIsWaitingForActivationOnLine();
+  ULO GetLastCylinderOutput();
+  ULO GetFirstPossibleOutputCylinder();
+  ULO GetLastPossibleOutputCylinder();
+  UWO GetPendingWord(unsigned int bitplaneNumber);
+
   void Commit(UWO dat1, UWO dat2, UWO dat3, UWO dat4, UWO dat5, UWO dat6);
 
   void OutputCylindersUntil(ULO rasterY, ULO cylinder);

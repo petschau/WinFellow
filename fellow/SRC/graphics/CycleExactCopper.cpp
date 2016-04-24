@@ -102,7 +102,7 @@ void CycleExactCopper::Wait()
   if ((rasterY & ve) > (vp & ve))
   {
     _skip_next = false;
-    SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2);
+    SetState(COPPER_STATE_READ_FIRST_WORD, busGetCycle() + 2 + 2); /* back to back penalty */
     return;
   }
 
@@ -113,7 +113,7 @@ void CycleExactCopper::Wait()
     while ((rasterX <= 0xe2) && ((rasterX & he) < (hp & he))) rasterX += 2;
     if (rasterX < 0xe4)
     {
-      if (initial_wait_rasterX == rasterX) rasterX += 2;
+      if (initial_wait_rasterX == rasterX) rasterX += 2;  /* back to back penalty */
       SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX);
       return;
     }
@@ -129,6 +129,7 @@ void CycleExactCopper::Wait()
   if (rasterX == 0xe4)
   {
     // There is no match on the horisontal position. The vertical position must be larger than vp to match
+    rasterX = 0;
     while ((rasterY < busGetLinesInThisFrame()) && ((rasterY & ve) <= (vp & ve))) rasterY++;
   }
   else
@@ -145,12 +146,12 @@ void CycleExactCopper::Wait()
   else if ((rasterY & ve) == (vp & ve))
   {
     // An exact match on both vp and hp was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX + 2);
   }
   else
   {
     // A match on vp being larger (not equal) was found
-    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + rasterX); // +2);
+    SetState(COPPER_STATE_READ_FIRST_WORD, rasterY*busGetCyclesInThisLine() + 2);
   }
 }
 
