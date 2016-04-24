@@ -67,6 +67,16 @@ cfgManager cfg_manager;
 /* Configuration                                                              */
 /*============================================================================*/
 
+void cfgSetConfigFileVersion(cfg *config, ULO version)
+{
+  config->m_configfileversion = version;
+}
+
+ULO cfgGetConfigFileVersion(cfg *config)
+{
+  return config->m_configfileversion;
+}
+
 void cfgSetDescription(cfg *config, STR *description)
 {
   strncpy(config->m_description, description, 255);
@@ -800,9 +810,10 @@ void cfgSetDefaults(cfg *config)
   if(config == nullptr) return;
 
   /*==========================================================================*/
-  /* Default configuration description                                        */
+  /* Default configuration version and description                            */
   /*==========================================================================*/
 
+  cfgSetConfigFileVersion(config, CONFIG_CURRENT_FILE_VERSION);
   cfgSetDescription(config, FELLOWLONGVERSION);
 
   /*==========================================================================*/
@@ -1468,6 +1479,10 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetUseAutoconfig(config, cfgGetBOOLEFromString(value));
     }
+    else if (stricmp(option, "config_version") == 0)
+    {
+      cfgSetConfigFileVersion(config, cfgGetULOFromString(value));
+    }
     else if (stricmp(option, "config_description") == 0)
     {
       cfgSetDescription(config, value);
@@ -1895,7 +1910,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 
 BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
 {
-  fprintf(cfgfile, "config_version=2\n");
+  fprintf(cfgfile, "config_version=%u\n", cfgGetConfigFileVersion(config));
   fprintf(cfgfile, "config_description=%s\n", cfgGetDescription(config));
   fprintf(cfgfile, "autoconfig=%s\n", cfgGetBOOLEToString(cfgGetUseAutoconfig(config)));
   for (ULO i = 0; i < 4; i++)
@@ -1976,6 +1991,56 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   return TRUE;
 }
 
+void cfgUpgradeLegacyConfigToCurrentVersion(cfg *config)
+{
+  //  New options:
+  //  ------------
+  //  config_version = <integer>
+  //  * Current file version is 2.
+
+  //  gfx_driver = <text>
+  //  * Values: "directdraw" (default if missing) and "direct3d11".
+
+  //  gfx_clip_left = <integer>
+  //  * Lores cylinder for left output border.
+
+  //  gfx_clip_top = <integer>
+  //  * Lores line number for top output border.
+
+  //  gfx_clip_right = <integer>
+  //  * Lores cylinder for right output border.
+
+  //  gfx_clip_bottom = <integer>
+  //  * Lores line number for bottom output border.
+
+  //  Extended options:
+  //  -----------------
+  //  gfx_display_scale = <text>
+  //  * Added : "auto", "triple" and "quadruple".
+
+  // Scale
+  if (cfgGetDisplayScale(config) == 0 || cfgGetDisplayScale(config) > 2)
+  {
+    cfgSetDisplayScale(config, DISPLAYSCALE::DISPLAYSCALE_1X);
+  }
+
+  // Set max pal clip, with scale limited to 1X or 2X, the actual integer clip values will be adjusted perfectly once the emulator starts up
+  cfgSetClipLeft(config, 88);
+  cfgSetClipTop(config, 26);
+  cfgSetClipRight(config, 472);
+  cfgSetClipBottom(config, 314);
+
+  cfgSetConfigFileVersion(config, CONFIG_CURRENT_FILE_VERSION);
+}
+
+void cfgUpgradeConfig(cfg *config)
+{
+  if (cfgGetConfigFileVersion(config) < CONFIG_CURRENT_FILE_VERSION)
+  {
+    cfgUpgradeLegacyConfigToCurrentVersion(config);
+  }
+}
+
 
 /*============================================================================*/
 /* Remove unwanted newline chars on the end of a string                       */
@@ -1996,7 +2061,7 @@ static void cfgStripTrailingNewlines(STR *line)
 /* Load configuration from file                                               */
 /*============================================================================*/
 
-static BOOLE cfgLoadFromFile(cfg *config, FILE *cfgfile)
+static bool cfgLoadFromFile(cfg *config, FILE *cfgfile)
 {
   char line[256];
   while (!feof(cfgfile))
@@ -2006,13 +2071,11 @@ static BOOLE cfgLoadFromFile(cfg *config, FILE *cfgfile)
     cfgSetOption(config, line);
   }
   cfgSetConfigAppliedOnce(config, true);
-  return TRUE;
+  return true;
 }
 
-BOOLE cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset)
+bool cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset)
 {
-  FILE *cfgfile;
-  BOOLE result;
   STR newfilename[CFG_FILENAME_LENGTH];
 
   fileopsResolveVariables(filename, newfilename);
@@ -2023,14 +2086,23 @@ BOOLE cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset
     // remove existing hardfiles
     cfgHardfilesFree(config);
     cfgFilesystemsFree(config);
+
+    // Full load from file, make sure we don't inherit the old file version number
+    cfgSetConfigFileVersion(config, 0);
   }
 
-  cfgfile = fopen(newfilename, "r");
-  result = (cfgfile != nullptr);
+  FILE *cfgfile = fopen(newfilename, "r");
+  bool result = (cfgfile != nullptr);
   if (result)
   {
     result = cfgLoadFromFile(config, cfgfile);
     fclose(cfgfile);
+
+    if (!bIsPreset && cfgGetConfigFileVersion(config) < CONFIG_CURRENT_FILE_VERSION)
+    {
+      fellowAddLog("cfg: Upgrading config from old version.\n");
+      cfgUpgradeConfig(config);
+    }
   }
   return result;
 }
@@ -2438,9 +2510,9 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
   if(!RP.GetHeadlessMode()) {
 #endif
   if(!cfgGetConfigAppliedOnce(config)) {
-	  // load configuration that the initdata contains
-	  cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
-	  cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata), false);
+    // load configuration that the initdata contains
+    cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
+    cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata), false);
   }
 #ifdef RETRO_PLATFORM
   }

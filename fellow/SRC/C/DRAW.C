@@ -353,8 +353,8 @@ static void drawLED32(int x, int y, int width, int height, ULO color)
 
 static void drawLED(int index, bool state)
 {
-  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index;
-  int y = DRAW_LED_FIRST_Y;
+  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index + (drawGetOutputClip().left - drawGetInternalClip().left)*drawGetOutputScaleFactor();
+  int y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top - drawGetInternalClip().top)*drawGetOutputScaleFactor();
   ULO color = (state) ? DRAW_LED_COLOR_ON : DRAW_LED_COLOR_OFF;
   int height = DRAW_LED_HEIGHT;
 

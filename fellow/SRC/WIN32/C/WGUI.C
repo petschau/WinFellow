@@ -3604,7 +3604,7 @@ static bool wguiInitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_pres
   HANDLE hFind = INVALID_HANDLE_VALUE;
   ULO i = 0;
   cfg *cfgTemp = NULL;
-  BOOLE bResult = false;
+  bool bResult = false;
   STR strFilename[CFG_FILENAME_LENGTH] = "";
 
   strncpy(strSearchPattern, wgui_preset_path, CFG_FILENAME_LENGTH);
@@ -3660,7 +3660,7 @@ static bool wguiInitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_pres
     FindClose(hFind);
   }
 
-  return TRUE;
+  return true;
 } 
 
 void wguiSetProcessDPIAwareness(const char *pszAwareness)
