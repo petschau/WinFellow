@@ -364,6 +364,14 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
+re-designed display settings to make use of modern higher resolution displays
+ more intuitive; instead of configuring a window resolution, scaling and
+ overscan area can be configured automatically to create an window of the
+ optimal size and scaling factor; both can also be configured manually to
+ arrive at frequently window sizes
+\end_layout
+
+\begin_layout Itemize
 support for the Direct3D 11 graphics API; this requires DirectX 11 to be
  installed
 \end_layout
