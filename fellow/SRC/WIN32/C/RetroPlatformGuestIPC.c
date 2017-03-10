@@ -2,14 +2,14 @@
  Name    : RetroPlatformGuestIPC.c
  Project : RetroPlatform Player
  Support : http://www.retroplatform.com
- Legal   : Copyright 2007-2012 Cloanto Italia srl - All rights reserved. This
+ Legal   : Copyright 2007-2016 Cloanto Italia srl - All rights reserved. This
          : file is multi-licensed under the terms of the Mozilla Public License
          : version 2.0 as published by Mozilla Corporation and the GNU General
          : Public License, version 2 or later, as published by the Free
          : Software Foundation.
  Authors : os, mcb
  Created : 2007-08-24 15:28:48
- Updated : 2012-11-29 13:47:00
+ Updated : 2016-06-17 11:18:00
  Comment : RetroPlatform Player interprocess communication functions (guest side)
  Note    : Can be compiled both in Unicode and Multibyte projects
  *****************************************************************************/
@@ -24,6 +24,7 @@ static LRESULT CALLBACK RPGuestWndProc(HWND hWnd, UINT message, WPARAM wParam, L
 static const _TCHAR g_szHostWndClass[]  = _T(RPIPC_HostWndClass);
 static const _TCHAR g_szGuestWndClass[] = _T(RPIPC_GuestWndClass);
 static const WCHAR g_szRegistration[]   = L"Cloanto(R) RetroPlatform(TM)";
+
 
 
 
@@ -46,6 +47,7 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 {
 	_TCHAR szGuestClass[(sizeof(g_szGuestWndClass)/sizeof(_TCHAR))+20];
 	_TCHAR *pszHostClass;
+	RAWINPUTDEVICE rid;
 	LRESULT lr;
 
 	if (!pInfo || !pszHostInfo)
@@ -62,18 +64,26 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 	//
 	pszHostClass = (_TCHAR *)LocalAlloc(LMEM_FIXED, (_tcslen(g_szHostWndClass) + _tcslen(pszHostInfo) + 1) * sizeof(_TCHAR));
 	if (!pszHostClass)
+	{
+		RPUninitializeGuest(pInfo);
 		return E_OUTOFMEMORY;
+	}
 	wsprintf(pszHostClass, g_szHostWndClass, pszHostInfo);
 	pInfo->hHostMessageWindow = FindWindow(pszHostClass, NULL);
 	LocalFree(pszHostClass);
 	if (!pInfo->hHostMessageWindow)
+	{
+		RPUninitializeGuest(pInfo);
 		return HRESULT_FROM_WIN32(ERROR_HOST_UNREACHABLE);
-
+	}
 	// create the guest message window
 	//
 	wsprintf(szGuestClass, g_szGuestWndClass, GetCurrentProcessId());
 	if (!RegisterWndClass(szGuestClass, hInstance))
+	{
+		RPUninitializeGuest(pInfo);
 		return HRESULT_FROM_WIN32(GetLastError());
+	}
 	pInfo->bGuestClassRegistered = TRUE;
 	//
 	pInfo->hGuestMessageWindow = CreateWindow(szGuestClass, NULL, 0, 0,0, 1,1, NULL, NULL, hInstance, (LPVOID)pInfo);
@@ -95,6 +105,13 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 		RPUninitializeGuest(pInfo);
 		return HRESULT_FROM_WIN32(ERROR_INVALID_ACCESS);
 	}
+	// disable system shortcuts (e.g. Windows-key shortcuts) while the guest is the foreground app
+	rid.usUsagePage = 0x01; 
+	rid.usUsage = 0x06; 
+	rid.dwFlags = RIDEV_NOHOTKEYS;
+	rid.hwndTarget = 0;
+	RegisterRawInputDevices(&rid, 1, sizeof(rid));
+
 	return S_OK;
 }
 
@@ -111,6 +128,8 @@ HRESULT RPInitializeGuest(RPGUESTINFO *pInfo, HINSTANCE hInstance, LPCTSTR pszHo
 
 void RPUninitializeGuest(RPGUESTINFO *pInfo)
 {
+	RAWINPUTDEVICE rid;
+
 	_TCHAR szGuestClass[(sizeof(g_szGuestWndClass)/sizeof(_TCHAR))+20];
 
 	if (!pInfo)
@@ -127,6 +146,11 @@ void RPUninitializeGuest(RPGUESTINFO *pInfo)
 		UnregisterClass(szGuestClass, pInfo->hInstance);
 		pInfo->bGuestClassRegistered = FALSE;
 	}
+	rid.usUsagePage = 0x01; 
+	rid.usUsage = 0x06; 
+	rid.dwFlags = RIDEV_REMOVE | RIDEV_NOHOTKEYS;
+	rid.hwndTarget = 0;
+	RegisterRawInputDevices(&rid, 1, sizeof(rid));
 }
 
 /*****************************************************************************
