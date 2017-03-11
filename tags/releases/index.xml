@@ -25,7 +25,7 @@
 &lt;li&gt;on Windows Vista, the platform update &lt;a href=&#34;https://support.microsoft.com/en-us/help/971644&#34; target=&#34;_blank&#34;&gt;KB971644&lt;/a&gt; should be installed, as it contains required updates to DirectX&lt;/li&gt;
 &lt;li&gt;the graphics card has to provide hardware acceleration for Direct3D&lt;/li&gt;
 &lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;ability to save screenshots to the pictures folder (hit &lt;Print Screen&gt; to trigger)&lt;/li&gt;
+&lt;li&gt;ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger)&lt;/li&gt;
 &lt;li&gt;support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic&lt;/li&gt;
 &lt;li&gt;very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated&lt;/li&gt;
 &lt;/ul&gt;
