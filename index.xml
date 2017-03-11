@@ -6,8 +6,41 @@
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
+    <lastBuildDate>Sat, 11 Mar 2017 18:15:00 +0000</lastBuildDate>
     <atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>WinFellow v0.5.4 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released/</link>
+      <pubDate>Sat, 11 Mar 2017 18:15:00 +0000</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;New features:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes&lt;/li&gt;
+&lt;li&gt;support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
+
+&lt;ul&gt;
+&lt;li&gt;on Windows Vista, the platform update &lt;a href=&#34;https://support.microsoft.com/en-us/help/971644&#34; target=&#34;_blank&#34;&gt;KB971644&lt;/a&gt; should be installed, as it contains required updates to DirectX&lt;/li&gt;
+&lt;li&gt;the graphics card has to provide hardware acceleration for Direct3D&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;ability to save screenshots to the pictures folder (hit &lt;Print Screen&gt; to trigger)&lt;/li&gt;
+&lt;li&gt;support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic&lt;/li&gt;
+&lt;li&gt;very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;
+* improved frame timing to present frames in a more evenly paced manner
+* improvements to CIA timer handling
+* improvements to CPU instruction timing (TAS and PEA instructions)
+* fixed sound volume restoration during reset of Amiga session in Amiga Forever
+* improved error handling for DMS floppy image extraction
+* fixed minor memory leaks&lt;/p&gt;
+
+&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>WinFellow has a new home</title>

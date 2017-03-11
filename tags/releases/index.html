@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<title>the team &middot; WinFellow - Amiga Emulator for Windows</title>
+	<title>WinFellow - Amiga Emulator for Windows</title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<!--[if lt IE 9]>
 	<script src="http://petschau.github.io/WinFellow/js/html5.js"></script>
@@ -108,7 +108,12 @@
 	<div id="primary" class="content-area">
 		<div id="content" class="site-content" role="main">
 
-			<article class="post type-post status-publish format-standard hentry">
+			<header class="archive-header">
+				<h1 class="archive-title">Releases Archive</h1>
+			</header>
+
+			
+				<article class="post type-post status-publish format-standard hentry">
 
 	
 	<header class="entry-header">
@@ -121,13 +126,13 @@
 			</span>
 		</div>
 
-		<h1 class="entry-title">the team</h1>
+		<h1 class="entry-title">WinFellow v0.5.4 released</h1>
 
 		<div class="entry-meta">
 			<span class="entry-date">
-				<a href="http://petschau.github.io/WinFellow/team//index.html" rel="bookmark">
-					<time class="entry-date" datetime="2016-01-12 06:43:18 &#43;0100 CET">
-						January 12
+				<a href="http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2017-03-11 18:15:00 &#43;0000 &#43;0000">
+						March 11
 					</time>
 				</a>
 			</span>
@@ -136,60 +141,46 @@
 	</header>
 	
 	<div class="entry-content">
-		<table>
-<thead>
-<tr>
-<th>team member</th>
-<th align="left">Petter Schau</th>
-<th align="left">Torsten Enderling</th>
-<th align="left">Worfje</th>
-</tr>
-</thead>
+		<p><strong>New features:</strong></p>
 
-<tbody>
-<tr>
-<td>occupation</td>
-<td align="left">programmer from Norway</td>
-<td align="left">virtual desktop engineer from Germany</td>
-<td align="left">engineer from the Netherlands</td>
-</tr>
+<ul>
+<li>re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes</li>
+<li>support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
 
-<tr>
-<td>tasks</td>
-<td align="left">various</td>
-<td align="left">beta team manager<br>GitHub Pages/hugo website administration</td>
-<td align="left">cross platform development</td>
-</tr>
+<ul>
+<li>on Windows Vista, the platform update <a href="https://support.microsoft.com/en-us/help/971644" target="_blank">KB971644</a> should be installed, as it contains required updates to DirectX</li>
+<li>the graphics card has to provide hardware acceleration for Direct3D</li>
+</ul></li>
+<li>ability to save screenshots to the pictures folder (hit <Print Screen> to trigger)</li>
+<li>support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic</li>
+<li>very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated</li>
+</ul>
 
-<tr>
-<td>modules</td>
-<td align="left">emulation core</td>
-<td align="left">RetroPlatform integration<br>hardfile/file system<br>debugger<br>system information</td>
-<td align="left">graphics<br>sound<br>GUI</td>
-</tr>
+<p><strong>Bug Fixes:</strong>
+* improved frame timing to present frames in a more evenly paced manner
+* improvements to CIA timer handling
+* improvements to CPU instruction timing (TAS and PEA instructions)
+* fixed sound volume restoration during reset of Amiga session in Amiga Forever
+* improved error handling for DMS floppy image extraction
+* fixed minor memory leaks</p>
 
-<tr>
-<td>email</td>
-<td align="left"><a href="mailto:petschau@gmail.com" target="_blank">petschau@gmail.com</a></td>
-<td align="left"><a href="mailto:carfesh@gmx.net" target="_blank">carfesh@gmx.net</a></td>
-<td align="left"><a href="mailto:worfje@gmx.net" target="_blank">worfje@gmx.net</a></td>
-</tr>
-</tbody>
-</table>
+<p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
 
 	</div>
 
 	<footer class="entry-meta">
 		<span class="tag-links">		
 			
+                <a href="http://petschau.github.io/WinFellow/tags/news/index.html" rel="tag">News</a>
+            
+                <a href="http://petschau.github.io/WinFellow/tags/releases/index.html" rel="tag">Releases</a>
+            
 		</span>
 	</footer>
 </article> 
-
 			
 		
 		</div>
-
 	</div>
 	<div id="secondary">
 
@@ -218,6 +209,15 @@
 
 		<aside id="recent-posts-3" class="widget widget_recent_entries">
 
+	
+	<h1 class="widget-title">Recent Posts</h1>
+		<ul>
+			
+			<li>
+				<a href="http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released//index.html">WinFellow v0.5.4 released</a>
+			</li>
+			
+		</ul>
 	
 </aside>
 
