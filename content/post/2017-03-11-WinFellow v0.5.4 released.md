@@ -16,6 +16,8 @@ tags = [ "News", "Releases" ]
 * very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated
 
 **Bug Fixes:**
+
+
 * improved frame timing to present frames in a more evenly paced manner
 * improvements to CIA timer handling
 * improvements to CPU instruction timing (TAS and PEA instructions)
