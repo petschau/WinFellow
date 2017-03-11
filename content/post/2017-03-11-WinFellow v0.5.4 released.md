@@ -11,7 +11,7 @@ tags = [ "News", "Releases" ]
 * support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
   * on Windows Vista, the platform update [KB971644](https://support.microsoft.com/en-us/help/971644) should be installed, as it contains required updates to DirectX
   * the graphics card has to provide hardware acceleration for Direct3D 
-* ability to save screenshots to the pictures folder (hit <Print Screen> to trigger)
+* ability to save screenshots to the pictures folder (hit < Print Screen > to trigger)
 * support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic
 * very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated
 
