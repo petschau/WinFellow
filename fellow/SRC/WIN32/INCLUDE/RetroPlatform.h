@@ -28,6 +28,9 @@
 
 #ifdef RETRO_PLATFORM
 
+// the conditional define below enables/disables support for the API changes introduced in 7.1
+#define FELLOW_SUPPORT_RP_API_VERSION_71
+
 // DirectInput resources are used in interfaces
 #include "dxver.h"
 #include <dinput.h>

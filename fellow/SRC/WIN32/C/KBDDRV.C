@@ -691,7 +691,9 @@ void kbdDrvEOFHandler(void)
   if(t && (RP.GetTime() - RP.GetEscapeKeyHeldSince()) > RP.GetEscapeKeyHoldTime())
   {
     fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
-    // RP.PostEscaped();
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+    RP.PostEscaped();
+#endif
     RP.SetEscapeKeyHeld(false);
   }
 
@@ -995,11 +997,13 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
             return TRUE;
 	}
       }
-      /* else 
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+      else 
       {
-	if( pressed ( RP.GetEscapeKey() ))
-	  RP.PostEscaped();
-      }*/
+	      if( pressed ( RP.GetEscapeKey() ))
+	        RP.PostEscaped();
+      }
+#endif
     }
 #endif
 

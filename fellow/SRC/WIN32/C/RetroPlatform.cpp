@@ -138,6 +138,11 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     default:
       fellowAddLog("RetroPlatform::HostMessageFunction(): Unknown or unsupported command 0x%x\n", uMessage);
       break;
+    case RP_IPC_TO_GUEST_EVENT:
+#ifdef _DEBUG
+      fellowAddLog("RetroPlatform::HostMessageFunction(): received an event.\n");
+#endif
+      return TRUE;
     case RP_IPC_TO_GUEST_PING:
       return true;
     case RP_IPC_TO_GUEST_CLOSE:
@@ -199,10 +204,12 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       soundSetVolume(wParam);
       soundDrvDSoundSetCurrentSoundDeviceVolume(wParam);
       return true;
-    /* case RP_IPC_TO_GUEST_ESCAPEKEY:
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+    case RP_IPC_TO_GUEST_ESCAPEKEY:
       RP.SetEscapeKey(wParam);
       RP.SetEscapeKeyHoldTime(lParam);
-      return true; */
+      return true;
+#endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
@@ -554,7 +561,9 @@ const STR *RetroPlatform::GetMessageText(ULO iMsg)
     case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
     case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
     case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
-    // case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+    case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+#endif
     case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
     case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
     case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
@@ -570,7 +579,9 @@ const STR *RetroPlatform::GetMessageText(ULO iMsg)
     case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
     case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
     case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
-    // case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+    case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+#endif
     case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
     case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
     case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
@@ -820,10 +831,14 @@ bool RetroPlatform::PostMessageToHost(ULO iMessage, WPARAM wParam, LPARAM lParam
 
 /** Post message to the player to signalize that the guest wants to escape the mouse cursor.
  */
-/* bool RetroPlatform::PostEscaped(void) 
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+
+bool RetroPlatform::PostEscaped(void) 
 {
   return RetroPlatform::PostMessageToHost(RP_IPC_TO_HOST_ESCAPED, 0, 0, &GuestInfo);
-} */
+}
+
+#endif
 
 /** Control status of the RetroPlatform hard drive LEDs.
  *
