@@ -30,13 +30,16 @@
 &lt;li&gt;very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated&lt;/li&gt;
 &lt;/ul&gt;
 
-&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;
-* improved frame timing to present frames in a more evenly paced manner
-* improvements to CIA timer handling
-* improvements to CPU instruction timing (TAS and PEA instructions)
-* fixed sound volume restoration during reset of Amiga session in Amiga Forever
-* improved error handling for DMS floppy image extraction
-* fixed minor memory leaks&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;improved frame timing to present frames in a more evenly paced manner&lt;/li&gt;
+&lt;li&gt;improvements to CIA timer handling&lt;/li&gt;
+&lt;li&gt;improvements to CPU instruction timing (TAS and PEA instructions)&lt;/li&gt;
+&lt;li&gt;fixed sound volume restoration during reset of Amiga session in Amiga Forever&lt;/li&gt;
+&lt;li&gt;improved error handling for DMS floppy image extraction&lt;/li&gt;
+&lt;li&gt;fixed minor memory leaks&lt;/li&gt;
+&lt;/ul&gt;
 
 &lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
 </description>
