@@ -111,19 +111,55 @@
 RetroPlatform RP;
 
 /** event handler function for events that are sent to WinFellow from Amiga Forever
- *  handles events like keyboard or joystick input events
+ *  handles multiple incoming events like keyboard or joystick input events that are queued within the event message
  *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
-BOOL HandleIncomingEvent(wchar_t *event)
+BOOL HandleIncomingGuestEvent(STR *strCurrentEvent)
 {
-  STR s[CFG_FILENAME_LENGTH] = "";
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatform::HandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
+#endif
+
+  return TRUE;
+}
+
+BOOL HandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
+{
+  STR strEventMessage[CFG_FILENAME_LENGTH] = "";
+  ULO lEvents = 0;
   
-  wcstombs(s, event, CFG_FILENAME_LENGTH);
+  wcstombs(strEventMessage, wcsEventMessage, CFG_FILENAME_LENGTH);
 
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatform::HostMessageFunction(): received an incoming event: '%s'.\n", s);
+  fellowAddLog("RetroPlatform::HandleIncomingGuestEventMessage(): received an incoming guest event message: '%s'.\n", strEventMessage);
 #endif
+
+  STR *strCurrentEvent = strEventMessage;
+  for (;;) {
+    STR *strNextEvent;
+    STR *blank1 = strchr(strCurrentEvent, ' ');
+    if (!blank1)
+      break;
+    STR *blank2 = strchr(blank1 + 1, ' ');
+    if (blank2) {
+      *blank2 = 0;
+      strNextEvent = blank2 + 1;
+    }
+    else {
+      strNextEvent = NULL;
+    }
+    lEvents++;
+    if (lEvents > 4) {
+      HandleIncomingGuestEvent("hdelay 120");
+      lEvents = 0;
+    }
+
+    HandleIncomingGuestEvent(strCurrentEvent);
+    if(!strNextEvent)
+      break;
+    strCurrentEvent = strNextEvent;
+  }
 
   return TRUE;
 }
@@ -158,7 +194,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       break;
     case RP_IPC_TO_GUEST_EVENT:
 #ifdef _DEBUG
-      return HandleIncomingEvent((wchar_t *)pData);
+      return HandleIncomingGuestEventMessage((wchar_t *)pData);
 #endif
       return TRUE;
     case RP_IPC_TO_GUEST_PING:
