@@ -121,6 +121,7 @@ BOOL HandleIncomingGuestEvent(STR *strCurrentEvent)
   fellowAddLog("RetroPlatform::HandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
 #endif
 
+  // handle key_raw_up and key_raw_down events
   return TRUE;
 }
 
@@ -151,8 +152,7 @@ BOOL HandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
     }
     lEvents++;
     if (lEvents > 4) {
-      HandleIncomingGuestEvent("hdelay 120");
-      lEvents = 0;
+      // asynchronously process further events, to be implemented later
     }
 
     HandleIncomingGuestEvent(strCurrentEvent);
