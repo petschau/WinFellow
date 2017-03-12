@@ -110,6 +110,24 @@
 
 RetroPlatform RP;
 
+/** event handler function for events that are sent to WinFellow from Amiga Forever
+ *  handles events like keyboard or joystick input events
+ *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
+ */
+
+BOOL HandleIncomingEvent(wchar_t *event)
+{
+  STR s[CFG_FILENAME_LENGTH] = "";
+  
+  wcstombs(s, event, CFG_FILENAME_LENGTH);
+
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatform::HostMessageFunction(): received an incoming event: '%s'.\n", s);
+#endif
+
+  return TRUE;
+}
+
 // hook into RetroPlatform class to perform IPC communication with host
 LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
   LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
@@ -140,7 +158,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       break;
     case RP_IPC_TO_GUEST_EVENT:
 #ifdef _DEBUG
-      fellowAddLog("RetroPlatform::HostMessageFunction(): received an event.\n");
+      return HandleIncomingEvent((wchar_t *)pData);
 #endif
       return TRUE;
     case RP_IPC_TO_GUEST_PING:
