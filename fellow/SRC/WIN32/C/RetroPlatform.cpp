@@ -115,17 +115,52 @@ RetroPlatform RP;
  *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
-BOOL HandleIncomingGuestEvent(STR *strCurrentEvent)
+BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 {
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatform::HandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
+  fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
 #endif
 
+  if(strCurrentEvent == NULL)
+	  return FALSE;
+
+  BOOL blnMatch = FALSE;
+  STR *strRawKeyCode = NULL;
+
   // handle key_raw_up and key_raw_down events
-  return TRUE;
+
+  if(!strnicmp(strCurrentEvent, "key_raw_down ", 13))
+  {
+    strRawKeyCode = strchr(strCurrentEvent, ' ');
+    if(strRawKeyCode)
+    {
+      *strRawKeyCode++;
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): strRawKeyCode '%s'\n", strRawKeyCode);
+      // forward key down event
+    }
+    blnMatch = TRUE;
+  }
+
+  if(!strnicmp(strCurrentEvent, "key_raw_up ", 11))
+  {
+    strRawKeyCode = strchr(strCurrentEvent, ' ');
+    if(strRawKeyCode)
+    {
+      *strRawKeyCode++;
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): strRawKeyCode '%s'\n", strRawKeyCode);
+		  // forward key up event
+	  }
+	  blnMatch = TRUE;
+  }
+
+  // if no matching event was found, the player should return 0
+  if (blnMatch)
+	  return TRUE;
+  else
+	  return FALSE;
 }
 
-BOOL HandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
+BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
   STR strEventMessage[CFG_FILENAME_LENGTH] = "";
   ULO lEvents = 0;
@@ -133,7 +168,7 @@ BOOL HandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   wcstombs(strEventMessage, wcsEventMessage, CFG_FILENAME_LENGTH);
 
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatform::HandleIncomingGuestEventMessage(): received an incoming guest event message: '%s'.\n", strEventMessage);
+  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message: '%s'.\n", strEventMessage);
 #endif
 
   STR *strCurrentEvent = strEventMessage;
@@ -155,7 +190,7 @@ BOOL HandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
       // asynchronously process further events, to be implemented later
     }
 
-    HandleIncomingGuestEvent(strCurrentEvent);
+	RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
     if(!strNextEvent)
       break;
     strCurrentEvent = strNextEvent;
@@ -194,7 +229,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       break;
     case RP_IPC_TO_GUEST_EVENT:
 #ifdef _DEBUG
-      return HandleIncomingGuestEventMessage((wchar_t *)pData);
+      return RetroPlatformHandleIncomingGuestEventMessage((wchar_t *)pData);
 #endif
       return TRUE;
     case RP_IPC_TO_GUEST_PING:
