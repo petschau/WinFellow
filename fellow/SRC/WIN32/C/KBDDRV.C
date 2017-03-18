@@ -1113,6 +1113,24 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
 
 /*===========================================================================*/
+/* Handle one specific RAW keycode change                                    */
+/*===========================================================================*/
+
+void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
+{
+  if(!pressed)
+  {
+    kbdKeyAdd(lRawKeyCode | 0x80);
+  }
+  else
+  {
+    kbdKeyAdd(lRawKeyCode);
+  }
+  return;
+}
+
+
+/*===========================================================================*/
 /* Keyboard keypress handler                                                 */
 /*===========================================================================*/
 

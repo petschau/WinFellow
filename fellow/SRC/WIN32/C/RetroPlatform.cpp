@@ -107,6 +107,7 @@
 #include "GfxDrvCommon.h"
 #include "gfxdrv_directdraw.h"
 #include "GfxDrvDXGI.h"
+#include "KBDDRV.H"
 
 RetroPlatform RP;
 
@@ -126,31 +127,31 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 
   BOOL blnMatch = FALSE;
   STR *strRawKeyCode = NULL;
-
+  ULO lRawKeyCode = 0;
+  
   // handle key_raw_up and key_raw_down events
-
   if(!strnicmp(strCurrentEvent, "key_raw_down ", 13))
   {
-    strRawKeyCode = strchr(strCurrentEvent, ' ');
-    if(strRawKeyCode)
+    if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
-      *strRawKeyCode++;
-      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): strRawKeyCode '%s'\n", strRawKeyCode);
-      // forward key down event
+      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, strRawKeyCode '%s'\n", strRawKeyCode);
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, lRawKeyCode '%u'\n", lRawKeyCode);
+      kbdDrvKeypressRaw(lRawKeyCode, TRUE);
     }
     blnMatch = TRUE;
   }
 
   if(!strnicmp(strCurrentEvent, "key_raw_up ", 11))
   {
-    strRawKeyCode = strchr(strCurrentEvent, ' ');
-    if(strRawKeyCode)
+    if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
-      *strRawKeyCode++;
-      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): strRawKeyCode '%s'\n", strRawKeyCode);
-		  // forward key up event
-	  }
-	  blnMatch = TRUE;
+      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, strRawKeyCode '%s'\n", strRawKeyCode);
+      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, lRawKeyCode '%u'\n", lRawKeyCode);
+      kbdDrvKeypressRaw(lRawKeyCode, FALSE);
+    }
+    blnMatch = TRUE;
   }
 
   // if no matching event was found, the player should return 0

@@ -18,6 +18,7 @@ extern ULO  kbdDrvJoystickReplacementGet(kbd_event event);
 extern void kbdDrvHardReset(void);
 extern void kbdDrvEmulationStart(void);
 extern void kbdDrvEmulationStop(void);
+extern void kbdDrvKeypressRaw(ULO, BOOL);
 extern void kbdDrvStartup(void);
 extern void kbdDrvShutdown(void);
 extern void kbdDrvStateHasChanged(BOOLE);
