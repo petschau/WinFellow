@@ -168,13 +168,14 @@ void GfxDrvCommon::EvaluateRunEventStatus()
 void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 {
   mouseDrvStateHasChanged(active);
-  joyDrvStateHasChanged(active);
+  
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
   if (!RP.GetHeadlessMode())
   {
 #endif
 #endif
+    joyDrvStateHasChanged(active);
     kbdDrvStateHasChanged(active);
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71

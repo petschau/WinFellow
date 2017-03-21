@@ -202,6 +202,40 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   return TRUE;
 }
 
+BOOL RetroPlatformHandleIncomingDeviceActivity(WPARAM wParam, LPARAM lParam)
+{
+  ULO lDeviceNumber   = HIBYTE(wParam);
+  ULO lDeviceCategory = LOBYTE(wParam);
+  ULO lMask           = lParam;
+
+  fellowAddLog("RetroPlatformHandleIncomingDeviceActivity(): wParam=%04x, lParam=%08x, lDeviceNumber=%u, lDeviceCategory=%u\n", wParam, lParam, lDeviceNumber, lDeviceCategory);
+
+  if(lDeviceCategory != RP_DEVICECATEGORY_INPUTPORT) 
+  {
+    fellowAddLog(" RetroPlatformHandleIncomingDeviceActivity(): unsupported device category.n");
+    return FALSE;
+  }
+
+  if(lDeviceNumber > 1)
+  {
+    fellowAddLog(" RetroPlatformHandleIncomingDeviceActivity(): invalid device number %u.\n", lDeviceNumber);
+    return FALSE;
+  }
+
+  // need to call gameportJoystickHandler() with the proper joystick flags
+
+  /*
+    ULO lMask = 0;
+    if (button1) lMask |= RP_JOYSTICK_BUTTON1;
+    if (button2) lMask |= RP_JOYSTICK_BUTTON2;
+    if (left)    lMask |= RP_JOYSTICK_LEFT;
+    if (up)      lMask |= RP_JOYSTICK_UP;
+    if (right)   lMask |= RP_JOYSTICK_RIGHT;
+    if (down)    lMask |= RP_JOYSTICK_DOWN;
+    */
+  return TRUE;
+}
+
 // hook into RetroPlatform class to perform IPC communication with host
 LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
   LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
@@ -306,6 +340,8 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
+    case RP_IPC_TO_GUEST_DEVICEACTIVITY:
+      return RetroPlatformHandleIncomingDeviceActivity(wParam, lParam);
     case RP_IPC_TO_GUEST_DEVICECONTENT:
     {
       struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
@@ -673,6 +709,7 @@ const STR *RetroPlatform::GetMessageText(ULO iMsg)
     case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
     case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
     case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
+    case RP_IPC_TO_GUEST_DEVICEACTIVITY:    return TEXT("RP_IPC_TO_GUEST_DEVICEACTIVITY");
     case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
     case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
     case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
