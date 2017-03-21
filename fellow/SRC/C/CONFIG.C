@@ -2176,6 +2176,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       }
       i++;
     }
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     else if (stricmp(argv[i], "-rpescapekey") == 0)
     {
       i++;
@@ -2196,6 +2197,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       }
       i++;
     }
+#endif
     else if (stricmp(argv[i], "-rpscreenmode") == 0)
     {
       i++;
@@ -2214,11 +2216,6 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       }
       i++;
     }
-    /* else if (stricmp(argv[i], "-logflush") == 0)
-    {
-    i++;
-    fellowAddLog("cfg: RetroPlatform log flush set.\n");
-    } */
 #endif
     else if (stricmp(argv[i], "-f") == 0)
     { /* Load configuration file */

@@ -135,8 +135,10 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+#ifdef _DEBUG
       fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, strRawKeyCode '%s'\n", strRawKeyCode);
       fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, lRawKeyCode '%u'\n", lRawKeyCode);
+#endif
       kbdDrvKeypressRaw(lRawKeyCode, TRUE);
     }
     blnMatch = TRUE;
@@ -618,6 +620,13 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
           kbdDrvSetJoyKeyEnabled(lGameport, 1, TRUE);
         }
       }
+#ifdef FELLOW_SUPPORT_RP_API_VERSION_71
+      else if (_strnicmp(szName, "", 1) == 0)
+      {
+        fellowAddLog(" RetroPlatform controlled joystick device, leaving control up to host.\n");
+        return true;
+      }
+#endif
       else 
       {
         fellowAddLog (" WARNING: Unknown joystick input device name, ignoring..\n");

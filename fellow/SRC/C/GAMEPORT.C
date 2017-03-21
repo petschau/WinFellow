@@ -259,7 +259,9 @@ void gameportJoystickHandler(gameport_inputs joydev,
         if(right)   lMask |= RP_JOYSTICK_RIGHT;
         if(down)    lMask |= RP_JOYSTICK_DOWN;
 
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
         RP.PostGameportActivity(i, lMask);
+#endif
       }
 #endif
     }
