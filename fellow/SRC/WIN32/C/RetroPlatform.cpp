@@ -175,7 +175,8 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 #endif
 
   STR *strCurrentEvent = strEventMessage;
-  for (;;) {
+  for(;;) 
+  {
     STR *strNextEvent;
     STR *blank1 = strchr(strCurrentEvent, ' ');
     if (!blank1)
@@ -193,9 +194,11 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
       // asynchronously process further events, to be implemented later
     }
 
-	RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
+	  RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
+    
     if(!strNextEvent)
       break;
+    
     strCurrentEvent = strNextEvent;
   }
 
