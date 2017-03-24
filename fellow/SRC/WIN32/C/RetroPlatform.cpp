@@ -149,8 +149,10 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+#ifdef _DEBUG
       fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, strRawKeyCode '%s'\n", strRawKeyCode);
       fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, lRawKeyCode '%u'\n", lRawKeyCode);
+#endif
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
     }
     blnMatch = TRUE;
@@ -167,6 +169,7 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
   STR strEventMessage[CFG_FILENAME_LENGTH] = "";
   ULO lEvents = 0;
+  STR *strNextEvent, *blank1, *blank2;
   
   wcstombs(strEventMessage, wcsEventMessage, CFG_FILENAME_LENGTH);
 
@@ -177,20 +180,19 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   STR *strCurrentEvent = strEventMessage;
   for(;;) 
   {
-    STR *strNextEvent;
-    STR *blank1 = strchr(strCurrentEvent, ' ');
-    if (!blank1)
+    strNextEvent = NULL;
+    blank1 = strchr(strCurrentEvent, ' ');
+    if(!blank1)
       break;
-    STR *blank2 = strchr(blank1 + 1, ' ');
-    if (blank2) {
-      *blank2 = 0;
+    blank2 = strchr(blank1 + 1, ' ');
+    if(blank2)
+    {
+      *blank2 = NULL;
       strNextEvent = blank2 + 1;
     }
-    else {
-      strNextEvent = NULL;
-    }
     lEvents++;
-    if (lEvents > 4) {
+    if(lEvents > 4)
+    {
       // asynchronously process further events, to be implemented later
     }
 
@@ -270,10 +272,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       fellowAddLog("RetroPlatform::HostMessageFunction(): Unknown or unsupported command 0x%x\n", uMessage);
       break;
     case RP_IPC_TO_GUEST_EVENT:
-#ifdef _DEBUG
       return RetroPlatformHandleIncomingGuestEventMessage((wchar_t *)pData);
-#endif
-      return TRUE;
     case RP_IPC_TO_GUEST_PING:
       return true;
     case RP_IPC_TO_GUEST_CLOSE:
