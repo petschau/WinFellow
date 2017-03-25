@@ -167,14 +167,19 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 
 BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
-  STR strEventMessage[CFG_FILENAME_LENGTH] = "";
-  ULO lEvents = 0;
+  STR *strEventMessage = NULL;
   STR *strNextEvent, *blank1, *blank2;
-  
-  wcstombs(strEventMessage, wcsEventMessage, CFG_FILENAME_LENGTH);
+  size_t lEventMessageLength = 0;
+
+  lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
+  strEventMessage = (STR *)malloc(lEventMessageLength+1);
+  if(strEventMessage == NULL)
+    return FALSE;
+  wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
 
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message: '%s'.\n", strEventMessage);
+  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message with length %u: '%s'.\n", 
+    lEventMessageLength, strEventMessage);
 #endif
 
   STR *strCurrentEvent = strEventMessage;
@@ -190,11 +195,6 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
       *blank2 = NULL;
       strNextEvent = blank2 + 1;
     }
-    lEvents++;
-    if(lEvents > 4)
-    {
-      // asynchronously process further events, to be implemented later
-    }
 
 	  RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
     
@@ -204,6 +204,7 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
     strCurrentEvent = strNextEvent;
   }
 
+  free(strEventMessage);
   return TRUE;
 }
 
