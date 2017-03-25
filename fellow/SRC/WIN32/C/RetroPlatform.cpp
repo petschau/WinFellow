@@ -118,12 +118,15 @@ RetroPlatform RP;
 
 BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 {
+  if(strCurrentEvent == NULL)
+  {
+    fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): WARNING: ignoring NULL event string.\n");
+    return FALSE;
+  }
+
 #ifdef _DEBUG
   fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
 #endif
-
-  if(strCurrentEvent == NULL)
-	  return FALSE;
 
   BOOL blnMatch = FALSE;
   STR *strRawKeyCode = NULL;
