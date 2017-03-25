@@ -169,17 +169,26 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
   STR *strEventMessage = NULL;
   STR *strNextEvent, *blank1, *blank2;
-  size_t lEventMessageLength = 0;
+  size_t lEventMessageLength = 0, lReturnCode = 0;
 
   lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
   strEventMessage = (STR *)malloc(lEventMessageLength+1);
   if(strEventMessage == NULL)
     return FALSE;
-  wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
+  lReturnCode = wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
+  if(lReturnCode == (size_t) -1)
+  {
+      fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): ERROR converting incoming guest event message with length %u to multi-byte string, ignoring message. Return code received was %u.\n", 
+        lEventMessageLength, lReturnCode);
+      free(strEventMessage);
+      return FALSE;
+  }
 
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message with length %u: '%s'.\n", 
-    lEventMessageLength, strEventMessage);
+  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message with length %u: ", 
+    lEventMessageLength);
+  fellowAddLog2(strEventMessage);
+  fellowAddLog2("\n");
 #endif
 
   STR *strCurrentEvent = strEventMessage;
