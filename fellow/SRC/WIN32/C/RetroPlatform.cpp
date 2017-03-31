@@ -110,13 +110,14 @@
 #include "KBDDRV.H"
 
 RetroPlatform RP;
+HANDLE hIncomingGuestEventMessageParserThread = NULL;
 
 /** event handler function for events that are sent to WinFellow from Amiga Forever
  *  handles multiple incoming events like keyboard or joystick input events that are queued within the event message
  *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
  */
 
-BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
+BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent, BOOL bDelay)
 {
   if(strCurrentEvent == NULL)
   {
@@ -158,6 +159,9 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 #endif
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
     }
+    if(bDelay)
+      Sleep(10);
+
     blnMatch = TRUE;
   }
 
@@ -168,10 +172,47 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 	  return FALSE;
 }
 
+DWORD WINAPI RetroPlatformHandleIncomingGuestEventMessageParser(void *strEventMessage)
+{
+  STR *strNextEvent, *blank1, *blank2;
+  STR *strCurrentEvent = (STR *)strEventMessage;
+  ULO lEventMessageLength = 0;
+  BOOL bDelay = FALSE;
+
+  // decide if input should be delayed to prevent overflow of keyboard buffer
+  lEventMessageLength = strlen(strCurrentEvent);
+  if(lEventMessageLength > 90)
+    bDelay = TRUE;
+
+  for(;;)
+  {
+    strNextEvent = NULL;
+    blank1 = strchr(strCurrentEvent, ' ');
+    if(!blank1)
+      break;
+    blank2 = strchr(blank1 + 1, ' ');
+    if(blank2)
+    {
+      *blank2 = NULL;
+      strNextEvent = blank2 + 1;
+    }
+
+	  RetroPlatformHandleIncomingGuestEvent(strCurrentEvent, bDelay);
+    
+    if(!strNextEvent)
+      break;
+    
+    strCurrentEvent = strNextEvent;
+  }
+
+  free(strEventMessage);
+  hIncomingGuestEventMessageParserThread = NULL;
+  return TRUE;
+}
+
 BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
 {
   STR *strEventMessage = NULL;
-  STR *strNextEvent, *blank1, *blank2;
   size_t lEventMessageLength = 0, lReturnCode = 0;
 
   lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
@@ -194,30 +235,40 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   fellowAddLog2("\n");
 #endif
 
-  STR *strCurrentEvent = strEventMessage;
-  for(;;) 
+  // call parser; if more than 5 events are received, create a separate parser thread
+  if(lEventMessageLength > 90)
   {
-    strNextEvent = NULL;
-    blank1 = strchr(strCurrentEvent, ' ');
-    if(!blank1)
-      break;
-    blank2 = strchr(blank1 + 1, ' ');
-    if(blank2)
+    // verify that no other parser thread is currently running
+    if(hIncomingGuestEventMessageParserThread == NULL)
     {
-      *blank2 = NULL;
-      strNextEvent = blank2 + 1;
+
+      hIncomingGuestEventMessageParserThread = CreateThread(NULL,                                               // Security attr
+        0,                                                  // Stack Size
+        RetroPlatformHandleIncomingGuestEventMessageParser, // Thread procedure
+        strEventMessage,                                    // Thread parameter
+        0,                                                  // Creation flags
+        0);                                                 // ThreadId
+      if(hIncomingGuestEventMessageParserThread != NULL)
+      {
+        return TRUE;
+      }
+      else
+      {
+        fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): ERROR creating thread to parse message asynchronously.\n");
+        return FALSE;
+      }
     }
-
-	  RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
-    
-    if(!strNextEvent)
-      break;
-    
-    strCurrentEvent = strNextEvent;
+    else
+    {
+      // another parser thread is currently active, abort
+      return FALSE;
+    }
   }
-
-  free(strEventMessage);
-  return TRUE;
+  else
+  {
+    RetroPlatformHandleIncomingGuestEventMessageParser(strEventMessage);
+    return TRUE;
+  }
 }
 
 BOOL RetroPlatformHandleIncomingDeviceActivity(WPARAM wParam, LPARAM lParam)
