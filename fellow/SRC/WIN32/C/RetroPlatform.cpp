@@ -181,8 +181,8 @@ DWORD WINAPI RetroPlatformHandleIncomingGuestEventMessageParser(void *strEventMe
 
   // decide if input should be delayed to prevent overflow of keyboard buffer
   lEventMessageLength = strlen(strCurrentEvent);
-  if(lEventMessageLength > 90)
-    bDelay = TRUE;
+  /* if(lEventMessageLength > 90)
+    bDelay = TRUE; */
 
   for(;;)
   {
@@ -235,32 +235,28 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   fellowAddLog2("\n");
 #endif
 
+  if(hIncomingGuestEventMessageParserThread != NULL)
+  {
+    fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): WARNING: another guest event parser thread is currently active, discarding input.\n");
+    return FALSE;
+  }
+
   // call parser; if more than 5 events are received, create a separate parser thread
   if(lEventMessageLength > 90)
   {
-    // verify that no other parser thread is currently running
-    if(hIncomingGuestEventMessageParserThread == NULL)
+    hIncomingGuestEventMessageParserThread = CreateThread(NULL,                                               // Security attr
+      0,                                                  // Stack Size
+      RetroPlatformHandleIncomingGuestEventMessageParser, // Thread procedure
+      strEventMessage,                                    // Thread parameter
+      0,                                                  // Creation flags
+      0);                                                 // ThreadId
+    if(hIncomingGuestEventMessageParserThread != NULL)
     {
-
-      hIncomingGuestEventMessageParserThread = CreateThread(NULL,                                               // Security attr
-        0,                                                  // Stack Size
-        RetroPlatformHandleIncomingGuestEventMessageParser, // Thread procedure
-        strEventMessage,                                    // Thread parameter
-        0,                                                  // Creation flags
-        0);                                                 // ThreadId
-      if(hIncomingGuestEventMessageParserThread != NULL)
-      {
-        return TRUE;
-      }
-      else
-      {
-        fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): ERROR creating thread to parse message asynchronously.\n");
-        return FALSE;
-      }
+      return TRUE;
     }
     else
     {
-      // another parser thread is currently active, abort
+      fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): ERROR creating thread to parse message asynchronously.\n");
       return FALSE;
     }
   }
