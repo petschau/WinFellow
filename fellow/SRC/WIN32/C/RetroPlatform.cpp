@@ -160,7 +160,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent, BOOL bDelay)
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
     }
     if(bDelay)
-      Sleep(10);
+      Sleep(20);
 
     blnMatch = TRUE;
   }
@@ -181,8 +181,8 @@ DWORD WINAPI RetroPlatformHandleIncomingGuestEventMessageParser(void *strEventMe
 
   // decide if input should be delayed to prevent overflow of keyboard buffer
   lEventMessageLength = strlen(strCurrentEvent);
-  /* if(lEventMessageLength > 90)
-    bDelay = TRUE; */
+  if(lEventMessageLength > 90)
+    bDelay = TRUE;
 
   for(;;)
   {
