@@ -169,7 +169,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
 	  return FALSE;
 }
 
-DWORD WINAPI RetroPlatformHandleIncomingGuestEventMessageParser(void *strEventMessage)
+BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
 {
   STR *strNextEvent, *blank1, *blank2;
   STR *strCurrentEvent = (STR *)strEventMessage;
