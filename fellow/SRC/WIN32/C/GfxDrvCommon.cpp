@@ -298,7 +298,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     _win_minimized_original = ((HIWORD(wParam)) != 0);
     NotifyDirectInputDevicesAboutActiveState(_win_active_original);
 #ifdef RETRO_PLATFORM
-    if (RP.GetHeadlessMode())
+    if (RP.GetHeadlessMode() && _win_active_original)
       RP.SendMouseCapture(true);
 #endif
     EvaluateRunEventStatus();
@@ -383,9 +383,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 
 #ifdef RETRO_PLATFORM
   case WM_LBUTTONUP:
-    if (RP.GetHeadlessMode())
+    if(RP.GetHeadlessMode())
     {
-      if (mouseDrvGetFocus())
+      if(mouseDrvGetFocus())
       {
         NotifyDirectInputDevicesAboutActiveState(_win_active_original);
         RP.SendMouseCapture(true);
@@ -524,12 +524,6 @@ bool GfxDrvCommon::InitializeWindow()
       dwStyle = WS_POPUP;
       dwExStyle = WS_EX_TOOLWINDOW;
       hParent = RP.GetParentWindowHandle();
-
-      //width  = cfgGetWindowWidth(rp_startup_config);
-      //height = cfgGetWindowHeight(rp_startup_config);
-
-      //fellowAddLog("GfxDrvCommon::InitializeWindow(): RetroPlatform mode, override window dimensions to %ux%u, offset %u,%u...\n",
-      //  width, height, RP.GetClippingOffsetLeftAdjusted(), RP.GetClippingOffsetTopAdjusted());
     }
 #endif
 
