@@ -2648,7 +2648,7 @@ static ULO cpuGetBfWidth(UWO ext, bool widthIsDataRegister)
   return width;
 }
 
-static void cpuSetBfField(cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
+static void cpuSetBfField(struct cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
 {
   if (has_ea)
   {
