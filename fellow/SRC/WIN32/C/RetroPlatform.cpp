@@ -125,7 +125,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
   }
 
 #ifdef _DEBUG
-  fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
+  fellowAddLog(" RetroPlatformHandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
 #endif
 
   BOOL blnMatch = FALSE;
@@ -138,9 +138,6 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-#ifdef _DEBUG
-      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key down, strRawKeyCode '%s'\n", strRawKeyCode);
-#endif
       kbdDrvKeypressRaw(lRawKeyCode, TRUE);
     }
     blnMatch = TRUE;
@@ -151,9 +148,6 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if(strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-#ifdef _DEBUG
-      fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): key up, strRawKeyCode '%s'\n", strRawKeyCode);
-#endif
       kbdDrvKeypressRaw(lRawKeyCode, FALSE);
     }
 

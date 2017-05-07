@@ -269,12 +269,14 @@ void kbdQueueHandler(void) {
       ULO scode;
 
       kbd_time_to_wait = 10;
-      scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos &
-	KBDBUFFERMASK];
+      scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
-	ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
-	ciaRaiseIRQ(0, 8);
+#ifdef _DEBUG
+        fellowAddLog("   kbdQueueHandler(): writing scancode 0x%x to CIA and raising interrupt.\n", scode);
+#endif
+	      ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+	      ciaRaiseIRQ(0, 8);
       }
     }
   }
