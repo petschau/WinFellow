@@ -1117,8 +1117,9 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
 {
 #ifdef _DEBUG
-  fellowAddLog("kbdDrvKeypressRaw(%u): current buffer pos %u, inpos %u\n", 
-    lRawKeyCode, kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
+  fellowAddLog("kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
+    lRawKeyCode, pressed ? "pressed" : "released", 
+    kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
 #endif
 
   if(!pressed)
