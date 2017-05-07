@@ -1130,6 +1130,7 @@ void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
   if((!keycode_pressed) && keycode_was_pressed)
   {
     kbdKeyAdd(lRawKeyCode | 0x80);
+    Sleep(10);
   }
   else if(keycode_pressed && !keycode_was_pressed)
   {
