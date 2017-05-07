@@ -1,5 +1,5 @@
 ![WinFellow](./fellow/Docs/WinFellow/winfellow_logo_large.png)
-#Amiga Emulator for Windows
+# Amiga Emulator for Windows
 
 WinFellow source code archive
 =============================
