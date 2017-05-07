@@ -1084,9 +1084,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
   BOOLE keycode_was_pressed = prevkeys[keycode];
 
   /* DEBUG info, not needed now*/
-  char szMsg[255];
-  sprintf( szMsg, "Keypress %s %s\n", kbdDrvKeyString( symbolic_key ), ( pressed ? "pressed" : "released" ));
-  fellowAddLog( szMsg );
+  fellowAddLog("Keypress %s %s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
 
   keys[keycode] = pressed;
 
@@ -1118,6 +1116,11 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
 void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
 {
+#ifdef _DEBUG
+  fellowAddLog("kbdDrvKeypressRaw(%u): current buffer pos %u, inpos %u\n", 
+    lRawKeyCode, kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
+#endif
+
   if(!pressed)
   {
     kbdKeyAdd(lRawKeyCode | 0x80);
