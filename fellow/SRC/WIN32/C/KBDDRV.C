@@ -1088,7 +1088,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
   keys[keycode] = pressed;
 
-  if ((!keycode_pressed) && keycode_was_pressed)
+  if((!keycode_pressed) && keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
@@ -1097,7 +1097,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
       kbdKeyAdd(a_code | 0x80);
     }
   }
-  else if (keycode_pressed && !keycode_was_pressed)
+  else if(keycode_pressed && !keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
@@ -1116,21 +1116,27 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
 void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
 {
+  BOOLE keycode_pressed = pressed;
+  BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
+
 #ifdef _DEBUG
   fellowAddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
     lRawKeyCode, pressed ? "pressed" : "released", 
     kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
 #endif
 
-  if(!pressed)
+  keys[lRawKeyCode] = pressed;
+
+  if((!keycode_pressed) && keycode_was_pressed)
   {
     kbdKeyAdd(lRawKeyCode | 0x80);
   }
-  else
+  else if(keycode_pressed && !keycode_was_pressed)
   {
     kbdKeyAdd(lRawKeyCode);
   }
-  return;
+
+  prevkeys[lRawKeyCode] = pressed;
 }
 
 
