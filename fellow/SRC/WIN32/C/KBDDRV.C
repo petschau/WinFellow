@@ -1116,8 +1116,9 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
 void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
 {
-  BOOLE keycode_pressed = pressed;
+#ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
   BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
+#endif
 
 #ifdef _DEBUG
   fellowAddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
@@ -1125,19 +1126,30 @@ void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
     kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
 #endif
 
+#ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
   keys[lRawKeyCode] = pressed;
 
-  if((!keycode_pressed) && keycode_was_pressed)
+  if((!pressed) && keycode_was_pressed)
   {
     kbdKeyAdd(lRawKeyCode | 0x80);
     Sleep(10);
   }
-  else if(keycode_pressed && !keycode_was_pressed)
+  else if(pressed && !keycode_was_pressed)
   {
     kbdKeyAdd(lRawKeyCode);
   }
 
   prevkeys[lRawKeyCode] = pressed;
+#else
+  if(!pressed)
+  {
+    kbdKeyAdd(lRawKeyCode | 0x80);
+  }
+  else
+  {
+    kbdKeyAdd(lRawKeyCode);
+  }
+#endif
 }
 
 
