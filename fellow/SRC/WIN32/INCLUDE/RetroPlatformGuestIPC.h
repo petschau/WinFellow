@@ -2,14 +2,14 @@
  Name    : RetroPlatformGuestIPC.h
  Project : RetroPlatform Player
  Support : http://www.retroplatform.com
- Legal   : Copyright 2007-2013 Cloanto Italia srl - All rights reserved. This
+ Legal   : Copyright 2007-2017 Cloanto Corporation - All rights reserved. This
          : file is multi-licensed under the terms of the Mozilla Public License
          : version 2.0 as published by Mozilla Corporation and the GNU General
          : Public License, version 2 or later, as published by the Free
          : Software Foundation.
- Authors : os, mcb
+ Authors : os, m
  Created : 2007-08-24 15:29:26
- Updated : 2012-11-29 13:47:00
+ Updated : 2017-01-04 06:15:00
  Comment : RetroPlatform Player interprocess communication include file (guest side)
  *****************************************************************************/
 

@@ -107,8 +107,154 @@
 #include "GfxDrvCommon.h"
 #include "gfxdrv_directdraw.h"
 #include "GfxDrvDXGI.h"
+#include "KBDDRV.H"
 
 RetroPlatform RP;
+
+/** event handler function for events that are sent to WinFellow from Amiga Forever
+ *  handles multiple incoming events like keyboard or joystick input events that are queued within the event message
+ *  returns TRUE if successful, FALSE otherwise (for instance if an unrecogized event is encountered)
+ */
+
+BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
+{
+  if(strCurrentEvent == NULL)
+  {
+    fellowAddLog("RetroPlatformHandleIncomingGuestEvent(): WARNING: ignoring NULL event string.\n");
+    return FALSE;
+  }
+
+#ifdef _DEBUG
+  fellowAddLog(" RetroPlatformHandleIncomingGuestEvent(): handling current event '%s'\n", strCurrentEvent);
+#endif
+
+  BOOL blnMatch = FALSE;
+  STR *strRawKeyCode = NULL;
+  ULO lRawKeyCode = 0;
+  
+  // handle key_raw_up and key_raw_down events
+  if(!strnicmp(strCurrentEvent, "key_raw_down ", 13))
+  {
+    if(strRawKeyCode = strchr(strCurrentEvent, ' '))
+    {
+      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      kbdDrvKeypressRaw(lRawKeyCode, TRUE);
+    }
+    blnMatch = TRUE;
+  }
+
+  if(!strnicmp(strCurrentEvent, "key_raw_up ", 11))
+  {
+    if(strRawKeyCode = strchr(strCurrentEvent, ' '))
+    {
+      lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
+      kbdDrvKeypressRaw(lRawKeyCode, FALSE);
+    }
+
+    blnMatch = TRUE;
+  }
+
+  // if no matching event was found, the player should return 0
+  if(blnMatch)
+	  return TRUE;
+  else
+	  return FALSE;
+}
+
+BOOL RetroPlatformHandleIncomingGuestEventMessageParser(STR *strEventMessage)
+{
+  STR *strNextEvent, *blank1, *blank2;
+  STR *strCurrentEvent = (STR *)strEventMessage;
+
+  for(;;)
+  {
+    strNextEvent = NULL;
+    blank1 = strchr(strCurrentEvent, ' ');
+    if(!blank1)
+      break;
+    blank2 = strchr(blank1 + 1, ' ');
+    if(blank2)
+    {
+      *blank2 = NULL;
+      strNextEvent = blank2 + 1;
+    }
+
+	  RetroPlatformHandleIncomingGuestEvent(strCurrentEvent);
+    
+    if(!strNextEvent)
+      break;
+    
+    strCurrentEvent = strNextEvent;
+  }
+
+  free(strEventMessage);
+  return TRUE;
+}
+
+BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
+{
+  STR *strEventMessage = NULL;
+  size_t lEventMessageLength = 0, lReturnCode = 0;
+
+  lEventMessageLength = wcstombs(NULL, wcsEventMessage, 0); // first call to wcstombs() determines how long the output buffer needs to be
+  strEventMessage = (STR *)malloc(lEventMessageLength+1);
+  if(strEventMessage == NULL)
+    return FALSE;
+  lReturnCode = wcstombs(strEventMessage, wcsEventMessage, lEventMessageLength+1);
+  if(lReturnCode == (size_t) -1)
+  {
+    fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): ERROR converting incoming guest event message with length %u to multi-byte string, ignoring message. Return code received was %u.\n", 
+      lEventMessageLength, lReturnCode);
+    free(strEventMessage);
+    return FALSE;
+  }
+
+#ifdef _DEBUG
+  fellowAddLog("RetroPlatformHandleIncomingGuestEventMessage(): received an incoming guest event message with length %u: ", 
+    lEventMessageLength);
+  fellowAddLog2(strEventMessage);
+  fellowAddLog2("\n");
+#endif
+
+  RetroPlatformHandleIncomingGuestEventMessageParser(strEventMessage);
+  return TRUE;
+}
+
+BOOL RetroPlatformHandleIncomingDeviceActivity(WPARAM wParam, LPARAM lParam)
+{
+  ULO lGamePort       = HIBYTE(wParam);
+  ULO lDeviceCategory = LOBYTE(wParam);
+  ULO lMask           = lParam;
+  BOOL bButton1, bButton2, bLeft, bRight, bUp, bDown;
+
+  fellowAddLog("RetroPlatformHandleIncomingDeviceActivity(): wParam=%04x, lParam=%08x, lGamePort=%u, lDeviceCategory=%u\n", wParam, lParam, lGamePort, lDeviceCategory);
+
+  if(lDeviceCategory != RP_DEVICECATEGORY_INPUTPORT) 
+  {
+    fellowAddLog(" RetroPlatformHandleIncomingDeviceActivity(): unsupported device category.n");
+    return FALSE;
+  }
+
+  if(lGamePort > 1)
+  {
+    fellowAddLog(" RetroPlatformHandleIncomingDeviceActivity(): invalid gameport %u.\n", lGamePort);
+    return FALSE;
+  }
+
+  bRight   = lMask & RP_JOYSTICK_RIGHT;
+  bLeft    = lMask & RP_JOYSTICK_LEFT;
+  bDown    = lMask & RP_JOYSTICK_DOWN;
+  bUp      = lMask & RP_JOYSTICK_UP;
+  bButton1 = lMask & RP_JOYSTICK_BUTTON1;
+  bButton2 = lMask & RP_JOYSTICK_BUTTON2;
+
+  if(lGamePort == 0)
+    gameportJoystickHandler(RP_JOYSTICK0, bLeft, bUp, bRight, bDown, bButton1, bButton2);
+  else if(lGamePort == 1)
+    gameportJoystickHandler(RP_JOYSTICK1, bLeft, bUp, bRight, bDown, bButton1, bButton2);
+
+  return TRUE;
+}
 
 // hook into RetroPlatform class to perform IPC communication with host
 LRESULT CALLBACK RetroPlatformHostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam,
@@ -138,6 +284,8 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     default:
       fellowAddLog("RetroPlatform::HostMessageFunction(): Unknown or unsupported command 0x%x\n", uMessage);
       break;
+    case RP_IPC_TO_GUEST_EVENT:
+      return RetroPlatformHandleIncomingGuestEventMessage((wchar_t *)pData);
     case RP_IPC_TO_GUEST_PING:
       return true;
     case RP_IPC_TO_GUEST_CLOSE:
@@ -147,18 +295,18 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       RP.SetEmulatorQuit(true);
       return true;
     case RP_IPC_TO_GUEST_RESET:
-      if (wParam == RP_RESET_HARD)
+      if(wParam == RP_RESET_HARD)
         fellowSetPreStartReset(true);
       RP.SetEmulationPaused(false);
       gfxDrvCommon->RunEventSet();
       fellowRequestEmulationStop();
       return true;
     case RP_IPC_TO_GUEST_TURBO:
-      if (wParam & RP_TURBO_CPU) 
+      if(wParam & RP_TURBO_CPU) 
       {
         static ULO lOriginalSpeed = 0;
 
-        if (lParam & RP_TURBO_CPU) 
+        if(lParam & RP_TURBO_CPU) 
         {
           fellowAddLog("RetroPlatform::HostMessageFunction(): enabling CPU turbo mode...\n");
           lOriginalSpeed = RP.GetCPUSpeed();
@@ -177,11 +325,11 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
           fellowRequestEmulationStop();
         }
       }
-      if (wParam & RP_TURBO_FLOPPY)
+      if(wParam & RP_TURBO_FLOPPY)
         floppySetFastDMA(lParam & RP_TURBO_FLOPPY ? true : false);
       return true;
     case RP_IPC_TO_GUEST_PAUSE:
-      if (wParam != 0) 
+      if(wParam != 0) 
       { // pause emulation
         gfxDrvCommon->RunEventReset();
         RP.SetEmulationPaused(true);
@@ -199,14 +347,18 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       soundSetVolume(wParam);
       soundDrvDSoundSetCurrentSoundDeviceVolume(wParam);
       return true;
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     case RP_IPC_TO_GUEST_ESCAPEKEY:
       RP.SetEscapeKey(wParam);
       RP.SetEscapeKeyHoldTime(lParam);
       return true;
+#endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       fellowAddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
+    case RP_IPC_TO_GUEST_DEVICEACTIVITY:
+      return RetroPlatformHandleIncomingDeviceActivity(wParam, lParam);
     case RP_IPC_TO_GUEST_DEVICECONTENT:
     {
       struct RPDeviceContent *dc = (struct RPDeviceContent*)pData;
@@ -222,7 +374,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       switch (dc->btDeviceCategory)
       {
       case RP_DEVICECATEGORY_FLOPPY:
-          if (name == NULL || name[0] == 0) 
+          if(name == NULL || name[0] == 0) 
           {
             fellowAddLog("RetroPlatform::HostMessageFunction(): remove floppy disk from drive %d.\n", num);
             floppyImageRemove(num);
@@ -252,7 +404,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       wcstombs(szScreenFiltered, rpsc->szScreenFiltered, CFG_FILENAME_LENGTH);
       wcstombs(szScreenRaw, rpsc->szScreenRaw, CFG_FILENAME_LENGTH);
 
-      if (szScreenFiltered[0] || szScreenRaw[0]) 
+      if(szScreenFiltered[0] || szScreenRaw[0]) 
       {
         bool bResult = true;
         DWORD dResult = 0;
@@ -260,15 +412,15 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
         fellowAddLog("RetroPlatform::HostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n",
           szScreenFiltered, szScreenRaw);
 
-        if (szScreenFiltered[0])
+        if(szScreenFiltered[0])
           if (!gfxDrvSaveScreenshot(true, szScreenFiltered))
             bResult = false;
 
-        if (szScreenRaw[0])
-          if (!gfxDrvSaveScreenshot(false, szScreenRaw))
+        if(szScreenRaw[0])
+          if(!gfxDrvSaveScreenshot(false, szScreenRaw))
             bResult = false;
 
-        if (bResult)
+        if(bResult)
         {
           dResult |= RP_GUESTSCREENFLAGS_MODE_PAL |
             RP_GUESTSCREENFLAGS_HORIZONTAL_HIRES |
@@ -290,10 +442,10 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     {
       DWORD ret = false;
       int device = LOBYTE(wParam);
-      if (device == RP_DEVICECATEGORY_FLOPPY) 
+      if(device == RP_DEVICECATEGORY_FLOPPY) 
       {
         int num = HIBYTE(wParam);
-        if (lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) 
+        if(lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) 
         {
           floppySetReadOnly(num, lParam == RP_DEVICE_READONLY ? true : false);
           ret = true;
@@ -352,7 +504,7 @@ int RetroPlatform::EnumerateJoysticks(void)
 			   CLSCTX_INPROC_SERVER,
 			   IID_IDirectInput8,
 			   (LPVOID*) &RP_lpDI);
-    if (hResult != DI_OK)
+    if(hResult != DI_OK)
     {
       fellowAddLog("RetroPlatform::EnumerateJoysticks(): CoCreateInstance() failed, errorcode %d\n", 
         hResult);
@@ -362,7 +514,7 @@ int RetroPlatform::EnumerateJoysticks(void)
     hResult = IDirectInput8_Initialize(RP_lpDI,
 				   win_drv_hInstance,
 				   DIRECTINPUT_VERSION);
-    if (hResult != DI_OK)
+    if(hResult != DI_OK)
     {
       fellowAddLog("RetroPlatform::EnumerateJoysticks(): Initialize() failed, errorcode %d\n", 
         hResult);
@@ -373,14 +525,14 @@ int RetroPlatform::EnumerateJoysticks(void)
 
     hResult = IDirectInput8_EnumDevices(RP_lpDI, DI8DEVCLASS_GAMECTRL,
 				    RetroPlatformEnumerateJoystick, RP_lpDI, DIEDFL_ATTACHEDONLY);
-    if (hResult != DI_OK)
+    if(hResult != DI_OK)
     {
       fellowAddLog("RetroPlatform::EnumerateJoysticks(): EnumDevices() failed, errorcode %d\n", 
         hResult);
       return 0;
     }
 
-    if (RP_lpDI != NULL)
+    if(RP_lpDI != NULL)
     {
       IDirectInput8_Release(RP_lpDI);
       RP_lpDI = NULL;
@@ -441,10 +593,10 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
     for (n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++) 
     {	  
       ln = strlen(CustomLayoutKeys[n]);	  
-      if (strnicmp(pszKeys, CustomLayoutKeys[n], ln) == 0 && *(pszKeys + ln) == '=')		  
+      if(strnicmp(pszKeys, CustomLayoutKeys[n], ln) == 0 && *(pszKeys + ln) == '=')		  
         break;  
     }
-    if (n < RETRO_PLATFORM_KEYSET_COUNT)
+    if(n < RETRO_PLATFORM_KEYSET_COUNT)
     {  
       pszKeys += ln + 1;  
       l[n] = kbddrv_DIK_to_symbol[strtoul(pszKeys, &psz, 0)]; // convert DIK_* DirectInput key codes to symbolic keycodes
@@ -478,7 +630,7 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
  */
 bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDeviceType, DWORD dwFlags, const STR *szName)
 {
-  if (lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)	
+  if(lGameport < 0 || lGameport >= RETRO_PLATFORM_NUM_GAMEPORTS)	
     return false;
 
   fellowAddLog("RetroPlatform::ConnectInputDeviceToPort(): port %d, device type %d, flags %d, name '%s'\n", 
@@ -521,6 +673,20 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
           kbdDrvSetJoyKeyEnabled(lGameport, 1, TRUE);
         }
       }
+#ifdef FELLOW_SUPPORT_RP_API_VERSION_71
+      else if(_strnicmp(szName, "", 1) == 0)
+      {
+        fellowAddLog(" RetroPlatform controlled joystick device connect to gameport %l, leaving control up to host.\n",
+          lGameport);
+
+        if(lGameport == 0)
+          gameportSetInput(lGameport, RP_JOYSTICK0);
+        else if(lGameport == 1)
+          gameportSetInput(lGameport, RP_JOYSTICK1);
+
+        return true;
+      }
+#endif
       else 
       {
         fellowAddLog (" WARNING: Unknown joystick input device name, ignoring..\n");
@@ -554,7 +720,9 @@ const STR *RetroPlatform::GetMessageText(ULO iMsg)
     case RP_IPC_TO_HOST_TURBO:              return TEXT("RP_IPC_TO_HOST_TURBO");
     case RP_IPC_TO_HOST_PING:               return TEXT("RP_IPC_TO_HOST_PING");
     case RP_IPC_TO_HOST_VOLUME:             return TEXT("RP_IPC_TO_HOST_VOLUME");
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     case RP_IPC_TO_HOST_ESCAPED:            return TEXT("RP_IPC_TO_HOST_ESCAPED");
+#endif
     case RP_IPC_TO_HOST_PARENT:             return TEXT("RP_IPC_TO_HOST_PARENT");
     case RP_IPC_TO_HOST_DEVICESEEK:         return TEXT("RP_IPC_TO_HOST_DEVICESEEK");
     case RP_IPC_TO_HOST_CLOSE:              return TEXT("RP_IPC_TO_HOST_CLOSE");
@@ -565,12 +733,15 @@ const STR *RetroPlatform::GetMessageText(ULO iMsg)
     case RP_IPC_TO_GUEST_SCREENMODE:        return TEXT("RP_IPC_TO_GUEST_SCREENMODE");
     case RP_IPC_TO_GUEST_SCREENCAPTURE:     return TEXT("RP_IPC_TO_GUEST_SCREENCAPTURE");
     case RP_IPC_TO_GUEST_PAUSE:             return TEXT("RP_IPC_TO_GUEST_PAUSE");
+    case RP_IPC_TO_GUEST_DEVICEACTIVITY:    return TEXT("RP_IPC_TO_GUEST_DEVICEACTIVITY");
     case RP_IPC_TO_GUEST_DEVICECONTENT:     return TEXT("RP_IPC_TO_GUEST_DEVICECONTENT");
     case RP_IPC_TO_GUEST_RESET:             return TEXT("RP_IPC_TO_GUEST_RESET");
     case RP_IPC_TO_GUEST_TURBO:             return TEXT("RP_IPC_TO_GUEST_TURBO");
     case RP_IPC_TO_GUEST_PING:              return TEXT("RP_IPC_TO_GUEST_PING");
     case RP_IPC_TO_GUEST_VOLUME:            return TEXT("RP_IPC_TO_GUEST_VOLUME");
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     case RP_IPC_TO_GUEST_ESCAPEKEY:         return TEXT("RP_IPC_TO_GUEST_ESCAPEKEY");
+#endif
     case RP_IPC_TO_GUEST_EVENT:             return TEXT("RP_IPC_TO_GUEST_EVENT");
     case RP_IPC_TO_GUEST_MOUSECAPTURE:      return TEXT("RP_IPC_TO_GUEST_MOUSECAPTURE");
     case RP_IPC_TO_GUEST_SAVESTATE:         return TEXT("RP_IPC_TO_GUEST_SAVESTATE");
@@ -592,7 +763,7 @@ ULONGLONG RetroPlatform::GetTime(void)
   ULARGE_INTEGER li;
 
   GetSystemTime(&st);
-  if (!SystemTimeToFileTime (&st, &ft))
+  if(!SystemTimeToFileTime (&st, &ft))
     return 0;
   li.LowPart = ft.dwLowDateTime;
   li.HighPart = ft.dwHighDateTime;
@@ -624,7 +795,7 @@ ULO RetroPlatform::GetClippingOffsetLeftAdjusted(void)
 {
   ULO lClippingOffsetLeft = lClippingOffsetLeftRP;
     
-  if (lClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
+  if(lClippingOffsetLeft >= RETRO_PLATFORM_OFFSET_ADJUST_LEFT)
     lClippingOffsetLeft = (lClippingOffsetLeft - RETRO_PLATFORM_OFFSET_ADJUST_LEFT);
 
   lClippingOffsetLeft /= 2;
@@ -767,7 +938,7 @@ bool RetroPlatform::GetHostVersion(ULO *lpMainVersion, ULO *lpRevision, ULO *lpB
 {
   ULO lResult = 0;
 
-  if (!RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &GuestInfo, (LRESULT*) &lResult))
+  if(!RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_HOSTVERSION, 0, 0, NULL, 0, &GuestInfo, (LRESULT*) &lResult))
     return false;
 
   *lpMainVersion = RP_HOSTVERSION_MAJOR(lResult);
@@ -820,10 +991,14 @@ bool RetroPlatform::PostMessageToHost(ULO iMessage, WPARAM wParam, LPARAM lParam
 
 /** Post message to the player to signalize that the guest wants to escape the mouse cursor.
  */
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+
 bool RetroPlatform::PostEscaped(void) 
 {
   return RetroPlatform::PostMessageToHost(RP_IPC_TO_HOST_ESCAPED, 0, 0, &GuestInfo);
 }
+
+#endif
 
 /** Control status of the RetroPlatform hard drive LEDs.
  *
