@@ -1,7 +1,9 @@
-#LyX 2.1 created this file. For more info see http://www.lyx.org/
-\lyxformat 474
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
 \begin_document
 \begin_header
+\save_transient_properties true
+\origin unavailable
 \textclass article
 \begin_preamble
 \usepackage[none]{hyphenat}
@@ -17,16 +19,16 @@ figs-within-sections
 \language_package default
 \inputencoding auto
 \fontencoding global
-\font_roman default
-\font_sans default
-\font_typewriter default
-\font_math auto
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
 \font_default_family sfdefault
 \use_non_tex_fonts false
 \font_sc false
 \font_osf false
-\font_sf_scale 100
-\font_tt_scale 100
+\font_sf_scale 100 100
+\font_tt_scale 100 100
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -104,7 +106,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.4 (2016/03/17)
+v0.5.5 (2017/05/17)
 \end_layout
 
 \begin_layout Author
@@ -313,132 +315,26 @@ Release Notes
 \end_layout
 
 \begin_layout Section
-What's New in WinFellow 0.5.4?
+What's New in WinFellow 0.5.5?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to version 0.5.3 there are a number of changes in this build, with
- the most significant ones being:
+ Compared to the earlier version 0.5.4, the following changes are included
+ in this build:
 \end_layout
 
-\begin_layout Itemize
-Project hosting:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-WinFellow development has found a new home on 
-\begin_inset CommandInset href
-LatexCommand href
-name "GitHub"
-target "http://github.com/petschau/WinFellow"
-
-\end_inset
-
-; the website is accessible via the URL 
-\begin_inset CommandInset href
-LatexCommand href
-name "petschau.github.io/WinFellow/"
-target "http://petschau.github.io/WinFellow/"
-
-\end_inset
-
-; it is still being developed by the same team.
- Our former SourceForge file repository, as well as the website 
-\begin_inset CommandInset href
-LatexCommand href
-name "fellow.sourceforge.net"
-target "http://fellow.sourceforge.net/new_version"
-
-\end_inset
-
-, will still be maintained for a while to keep earlier releases available.
- For future updates, please check the new GitHub website.
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 New features:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-support for the Direct3D 11 graphics API; this requires DirectX 11 to be
- installed
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-on Windows Vista, the 
-\begin_inset CommandInset href
-LatexCommand href
-name "platform update (KB971644)"
-target "https://support.microsoft.com/en-us/kb/971644"
-
-\end_inset
-
- should be installed, as it contains required updates to DirectX
-\end_layout
-
-\begin_layout Itemize
-the graphics card has to provide hardware acceleration for Direct3D
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-ability to save screenshots to the pictures folder (hit <Print Screen> to
- trigger)
-\end_layout
-
-\begin_layout Itemize
-support for automatic, as well as 3x and 4x scaling, which is useful for
- 4K/high DPI displays; for the best results, try leaving the scaling at
- 
-\begin_inset Quotes eld
-\end_inset
-
-automatic
-\begin_inset Quotes erd
+\begin_inset Separator latexpar
 \end_inset
 
 
 \end_layout
 
-\begin_layout Itemize
-very basic serial port/UART emulation; nothing can be connected to the serial
- port; this is mostly used for serial debug logging (which is active only
- in debug builds of WinFellow), but the port is always being emulated
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-Bug fixes:
-\end_layout
-
 \begin_deeper
 \begin_layout Itemize
-improved frame timing to present frames in a more evenly paced manner
-\end_layout
-
-\begin_layout Itemize
-improvements to CIA timer handling
-\end_layout
-
-\begin_layout Itemize
-improvements to CPU instruction timing (TAS and PEA instructions)
-\end_layout
-
-\begin_layout Itemize
-fixed sound volume restoration during reset of Amiga session in Amiga Forever
-\end_layout
-
-\begin_layout Itemize
-improved error handling for DMS floppy image extraction
-\end_layout
-
-\begin_layout Itemize
-fixed minor memory leaks
+support for Amiga Forever 2017 input device handling
 \end_layout
 
 \end_deeper
@@ -544,6 +440,10 @@ Before you can begin to use WinFellow, you will need two things: an Amiga
 
 \begin_layout Enumerate
 ROM image
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -606,6 +506,10 @@ Will copy the Kickstart ROM chip and write it into a file in RAM: called
 \end_deeper
 \begin_layout Enumerate
 Floppy image(s)
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -652,6 +556,10 @@ Will make an image of any disk present in DF0:.
 \end_deeper
 \begin_layout Enumerate
 Copying Files From PC to Amiga & Amiga to PC
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -675,6 +583,10 @@ target "http://www.amigaforever.com/kb/13-118"
 
 \begin_layout Enumerate
 Transfer vial terminal package and null-modem cable
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -725,6 +637,10 @@ If you're one of those people with an AmigaOS 1.2/1.3 A500, with only one
 \end_deeper
 \begin_layout Enumerate
 CrossDOS
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -768,6 +684,10 @@ Take the diskette over to the PC, copy the archive to the hard-disk, and
 \end_deeper
 \begin_layout Enumerate
 Amiga Explorer
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper
@@ -811,6 +731,10 @@ This guide is going to take you through the first basic steps required to
  configure an emulation session using a ROM image and a boot floppy, showing
  you the most important configuration settings that you should be familiar
  with along the way.
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -868,6 +792,10 @@ memory
 \end_inset
 
  tab and configure a ROM, like in the example below:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -929,6 +857,10 @@ presets
 \end_inset
 
  tab:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -977,6 +909,10 @@ floppy
 \end_inset
 
  tab to configure the floppy disk images used by the emulation session:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1021,6 +957,10 @@ display
 \end_inset
 
  tab:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
@@ -1227,6 +1167,10 @@ timing may be critical, as some games do timing delays not by the timer
 
 \begin_layout Itemize
 If in doubt, use a default A500 setting like:
+\begin_inset Separator latexpar
+\end_inset
+
+
 \end_layout
 
 \begin_deeper

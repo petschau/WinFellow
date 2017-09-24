@@ -19,3 +19,5 @@ fellow/Docs/WinFellow/WinFellow User Manual.pdf
 *.pdb
 *.tlog
 *.exe
+*.log
+fellow/SRC/WIN32/MSVC/.vs/WinFellow/v15/

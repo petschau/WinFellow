@@ -691,7 +691,9 @@ void kbdDrvEOFHandler(void)
   if(t && (RP.GetTime() - RP.GetEscapeKeyHeldSince()) > RP.GetEscapeKeyHoldTime())
   {
     fellowAddLog("RetroPlatform: Escape key held longer than hold time, releasing devices...\n");
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     RP.PostEscaped();
+#endif
     RP.SetEscapeKeyHeld(false);
   }
 
@@ -995,11 +997,13 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
             return TRUE;
 	}
       }
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
       else 
       {
-	if( pressed ( RP.GetEscapeKey() ))
-	  RP.PostEscaped();
+	      if( pressed ( RP.GetEscapeKey() ))
+	        RP.PostEscaped();
       }
+#endif
     }
 #endif
 
@@ -1080,13 +1084,11 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
   BOOLE keycode_was_pressed = prevkeys[keycode];
 
   /* DEBUG info, not needed now*/
-  char szMsg[255];
-  sprintf( szMsg, "Keypress %s %s\n", kbdDrvKeyString( symbolic_key ), ( pressed ? "pressed" : "released" ));
-  fellowAddLog( szMsg );
+  fellowAddLog("Keypress %s %s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
 
   keys[keycode] = pressed;
 
-  if ((!keycode_pressed) && keycode_was_pressed)
+  if((!keycode_pressed) && keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
@@ -1095,7 +1097,7 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
       kbdKeyAdd(a_code | 0x80);
     }
   }
-  else if (keycode_pressed && !keycode_was_pressed)
+  else if(keycode_pressed && !keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
     if (!kbdDrvEventChecker(symbolic_key))
@@ -1105,6 +1107,49 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
     }
   }
   prevkeys[keycode] = pressed;
+}
+
+
+/*===========================================================================*/
+/* Handle one specific RAW keycode change                                    */
+/*===========================================================================*/
+
+void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOL pressed)
+{
+#ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
+  BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
+#endif
+
+#ifdef _DEBUG
+  fellowAddLog("  kbdDrvKeypressRaw(0x%x, %s): current buffer pos %u, inpos %u\n", 
+    lRawKeyCode, pressed ? "pressed" : "released", 
+    kbd_state.scancodes.inpos & KBDBUFFERMASK, kbd_state.scancodes.inpos);
+#endif
+
+#ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
+  keys[lRawKeyCode] = pressed;
+
+  if((!pressed) && keycode_was_pressed)
+  {
+    kbdKeyAdd(lRawKeyCode | 0x80);
+    Sleep(10);
+  }
+  else if(pressed && !keycode_was_pressed)
+  {
+    kbdKeyAdd(lRawKeyCode);
+  }
+
+  prevkeys[lRawKeyCode] = pressed;
+#else
+  if(!pressed)
+  {
+    kbdKeyAdd(lRawKeyCode | 0x80);
+  }
+  else
+  {
+    kbdKeyAdd(lRawKeyCode);
+  }
+#endif
 }
 
 

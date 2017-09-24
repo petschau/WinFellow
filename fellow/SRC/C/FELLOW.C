@@ -158,6 +158,11 @@ void fellowAddLog2(STR *msg) {
     fflush(F);
     fclose(F);
   }
+
+  if (msg[strlen(msg) - 1] == '\n')
+    fellow_newlogline = TRUE;
+  else
+    fellow_newlogline = FALSE;
 }
 
 static void fellowLogDateTime(void)
@@ -203,10 +208,6 @@ void fellowAddLog(const char *format, ...)
 
   fellowAddLog2(buffer);
 
-  if (buffer[strlen(buffer) - 1] == '\n')
-    fellow_newlogline = TRUE;
-  else
-    fellow_newlogline = FALSE;
   va_end(parms);
 }
 

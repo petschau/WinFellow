@@ -249,6 +249,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
 	    gameport_down[i] = down;
 
 #ifdef RETRO_PLATFORM
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
       if(RP.GetHeadlessMode())
       {
         ULO lMask = 0;
@@ -261,6 +262,7 @@ void gameportJoystickHandler(gameport_inputs joydev,
 
         RP.PostGameportActivity(i, lMask);
       }
+#endif
 #endif
     }
 }
