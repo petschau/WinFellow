@@ -1762,10 +1762,21 @@ void floppyEndOfLine(void)
       UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
       BOOLE found_sync = floppyCheckSync(word_under_head);
       floppyNextByte(sel_drv, track);
-      tmpb2 = floppyGetByteUnderHead(sel_drv, track);
-      floppyNextByte(sel_drv, track);
-      word_under_head = (tmpb1 << 8) | tmpb2;
-      found_sync = floppyCheckSync(word_under_head);
+
+      if (!found_sync)  // Sync was found on a byte boundary, skip reading ahead to align.
+      {
+        tmpb2 = floppyGetByteUnderHead(sel_drv, track);
+        floppyNextByte(sel_drv, track);
+        word_under_head = (tmpb1 << 8) | tmpb2;
+        found_sync |= floppyCheckSync(word_under_head);
+      }
+#ifdef FLOPPY_LOG
+      else
+      {
+          floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
+      }
+#endif
+
       prev_byte_under_head = word_under_head & 0xff;
       dskbyt_tmp = word_under_head;
       dskbyt1_read = FALSE;
