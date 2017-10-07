@@ -137,24 +137,24 @@ void BitplaneDMA::FetchLores(void)
 {
   ULO bplsEnabled = BitplaneUtility::GetEnabledBitplaneCount();
 
-  GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
-		                         GetHold(2, bplsEnabled, &bpl2pt),
-		                         GetHold(3, bplsEnabled, &bpl3pt),
-		                         GetHold(4, bplsEnabled, &bpl4pt),
-		                         GetHold(5, bplsEnabled, &bpl5pt),
-		                         GetHold(6, bplsEnabled, &bpl6pt));
+  GraphicsContext.BitplaneSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
+		                            GetHold(2, bplsEnabled, &bpl2pt),
+		                            GetHold(3, bplsEnabled, &bpl3pt),
+		                            GetHold(4, bplsEnabled, &bpl4pt),
+		                            GetHold(5, bplsEnabled, &bpl5pt),
+		                            GetHold(6, bplsEnabled, &bpl6pt));
 }
 
 void BitplaneDMA::FetchHires(void)
 {
   ULO bplsEnabled = BitplaneUtility::GetEnabledBitplaneCount();
 
-  GraphicsContext.PixelSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
-		                         GetHold(2, bplsEnabled, &bpl2pt),
-		                         GetHold(3, bplsEnabled, &bpl3pt),
-		                         GetHold(4, bplsEnabled, &bpl4pt),
-		                         0,
-		                         0);
+  GraphicsContext.BitplaneSerializer.Commit(GetHold(1, bplsEnabled, &bpl1pt),
+		                            GetHold(2, bplsEnabled, &bpl2pt),
+		                            GetHold(3, bplsEnabled, &bpl3pt),
+		                            GetHold(4, bplsEnabled, &bpl4pt),
+		                            0,
+		                            0);
 }
 
 void BitplaneDMA::InitializeEvent(GraphicsEventQueue *queue)
@@ -167,7 +167,7 @@ void BitplaneDMA::Handler(ULO rasterY, ULO cylinder)
 {
   Log(rasterY, cylinder);
 
-  GraphicsContext.PixelSerializer.OutputCylindersUntil(rasterY, cylinder);
+  GraphicsContext.BitplaneSerializer.OutputCylindersUntil(rasterY, cylinder);
 
   if (BitplaneUtility::IsDMAEnabled())
   {

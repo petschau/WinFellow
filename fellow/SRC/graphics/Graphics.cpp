@@ -21,7 +21,7 @@ void Graphics::InitializeEventQueue(void)
   DIWYStateMachine.InitializeEvent(&_queue);
   DDFStateMachine.InitializeEvent(&_queue);
   BitplaneDMA.InitializeEvent(&_queue);
-  PixelSerializer.InitializeEvent(&_queue);
+  BitplaneSerializer.InitializeEvent(&_queue);
 }
 
 void Graphics::EndOfFrame(void)
@@ -30,7 +30,7 @@ void Graphics::EndOfFrame(void)
   DIWYStateMachine.EndOfFrame();
   DDFStateMachine.EndOfFrame();
   BitplaneDMA.EndOfFrame();
-  PixelSerializer.EndOfFrame();
+  BitplaneSerializer.EndOfFrame();
 }
 
 void Graphics::SoftReset(void)
@@ -38,7 +38,7 @@ void Graphics::SoftReset(void)
   DIWXStateMachine.SoftReset();
   DIWYStateMachine.SoftReset();
   DDFStateMachine.SoftReset();
-  PixelSerializer.SoftReset();
+  BitplaneSerializer.SoftReset();
 }
 
 void Graphics::HardReset(void)
@@ -46,7 +46,7 @@ void Graphics::HardReset(void)
   DIWXStateMachine.HardReset();
   DIWYStateMachine.HardReset();
   DDFStateMachine.HardReset();
-  PixelSerializer.HardReset();
+  BitplaneSerializer.HardReset();
 }
 
 void Graphics::EmulationStart(void)
@@ -54,7 +54,7 @@ void Graphics::EmulationStart(void)
   DIWXStateMachine.EmulationStart();
   DIWYStateMachine.EmulationStart();
   DDFStateMachine.EmulationStart();
-  PixelSerializer.EmulationStart();
+  BitplaneSerializer.EmulationStart();
 }
 
 void Graphics::EmulationStop(void)
@@ -62,7 +62,7 @@ void Graphics::EmulationStop(void)
   DIWXStateMachine.EmulationStop();
   DIWYStateMachine.EmulationStop();
   DDFStateMachine.EmulationStop();
-  PixelSerializer.EmulationStop();
+  BitplaneSerializer.EmulationStop();
 }
 
 void Graphics::Startup(void)
@@ -70,7 +70,7 @@ void Graphics::Startup(void)
   DIWXStateMachine.Startup();
   DIWYStateMachine.Startup();
   DDFStateMachine.Startup();
-  PixelSerializer.Startup();
+  BitplaneSerializer.Startup();
 
   InitializeEventQueue();
 }
@@ -80,7 +80,7 @@ void Graphics::Shutdown(void)
   DIWXStateMachine.Shutdown();
   DIWYStateMachine.Shutdown();
   DDFStateMachine.Shutdown();
-  PixelSerializer.Shutdown();
+  BitplaneSerializer.Shutdown();
   Logger.Shutdown();
 }
 

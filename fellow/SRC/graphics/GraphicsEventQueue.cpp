@@ -95,5 +95,5 @@ void GraphicsEventQueue::Run(ULO untilTime)
     ULO arrive_time = graphics_event->_arriveTime;
     graphics_event->Handler(arrive_time / GetCylindersPerLine(), arrive_time % GetCylindersPerLine());
   }
-  GraphicsContext.PixelSerializer.OutputCylindersUntil(untilTime / GetCylindersPerLine(), untilTime % GetCylindersPerLine());
+  GraphicsContext.BitplaneSerializer.OutputCylindersUntil(untilTime / GetCylindersPerLine(), untilTime % GetCylindersPerLine());
 }

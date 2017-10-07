@@ -580,11 +580,12 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp" />
     <ClCompile Include="..\..\C\SpriteRegisters.cpp" />
     <ClCompile Include="..\..\c\uart.cpp" />
+    <ClCompile Include="..\..\graphics\BitplaneSerializer.c" />
+    <ClCompile Include="..\..\graphics\BitplaneSerializerState.cpp" />
     <ClCompile Include="..\..\graphics\Logger.cpp" />
     <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
     <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
     <ClCompile Include="..\..\graphics\BitplaneDraw.c" />
-    <ClCompile Include="..\..\graphics\PixelSerializer.c" />
     <ClCompile Include="..\..\graphics\CycleExactCopper.cpp" />
     <ClCompile Include="..\..\graphics\DDFStateMachine.c" />
     <ClCompile Include="..\..\graphics\DIWXStateMachine.c" />
@@ -1582,12 +1583,13 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\graphics\BitplaneSerializer.h" />
+    <ClInclude Include="..\..\graphics\BitplaneSerializerState.h" />
     <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
     <ClInclude Include="..\..\graphics\Logger.h" />
     <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />
     <ClInclude Include="..\..\graphics\BitplaneDMA.h" />
     <ClInclude Include="..\..\graphics\BitplaneDraw.h" />
-    <ClInclude Include="..\..\graphics\PixelSerializer.h" />
     <ClInclude Include="..\..\graphics\CycleExactCopper.h" />
     <ClInclude Include="..\..\graphics\DDFStateMachine.h" />
     <ClInclude Include="..\..\graphics\DIWXStateMachine.h" />

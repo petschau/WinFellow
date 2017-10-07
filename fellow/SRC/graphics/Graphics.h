@@ -6,7 +6,7 @@
 #include "GraphicsEventQueue.h"
 #include "Planar2ChunkyDecoder.h"
 #include "BitplaneDMA.h"
-#include "PixelSerializer.h"
+#include "BitplaneSerializer.h"
 #include "BitplaneDraw.h"
 #include "CycleExactSprites.h"
 #include "DIWXStateMachine.h"
@@ -31,7 +31,7 @@ public:
   DIWYStateMachine DIWYStateMachine;
   DDFStateMachine DDFStateMachine;
   BitplaneDMA BitplaneDMA;
-  PixelSerializer PixelSerializer;
+  BitplaneSerializer BitplaneSerializer;
   Planar2ChunkyDecoder Planar2ChunkyDecoder;
   BitplaneDraw BitplaneDraw;
   Logger Logger;

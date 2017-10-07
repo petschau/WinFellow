@@ -197,33 +197,96 @@ void BitplaneDraw::DrawBatch(ULO rasterY, ULO start_cylinder)
   }
 }
 
-void BitplaneDraw::TmpFrame(ULO next_line_offset)
+void BitplaneDraw::TmpFrame(ULO pitch_in_bytes)
 {
-  ULO real_pitch_in_bytes = next_line_offset/2;
+  if (busGetLinesInThisFrame() < drawGetInternalClip().bottom)
+  {
+    // In the case when the display has more lines than the frame (AF or short frames)
+    // this routine pads the remaining lines with background color
+    ULO startx = drawGetInternalClip().left * 2;
+    ULO stopx = drawGetInternalClip().right * 2;
+    ULO pixel_color = graph_color_shadow[0];
 
-  ULO *draw_buffer_first_ptr_local = (ULO *) draw_buffer_info.current_ptr;
-  ULO *draw_buffer_second_ptr_local = (ULO *) (draw_buffer_info.current_ptr + real_pitch_in_bytes);
+    for (ULO y = busGetLinesInThisFrame(); y < drawGetInternalClip().bottom; ++y)
+    {
+      for (ULO x = startx; x < stopx; x++)
+      {
+        _tmpframe[y][x] = pixel_color;
+      }
+    }
+  }
 
-  ULO startx = drawGetInternalClip().left*2;
-  ULO stopx = drawGetInternalClip().right*2;
+  switch (drawGetInternalScaleFactor())
+  {
+    case 2: TmpFrame1X(pitch_in_bytes); break;
+    case 4: TmpFrame2X(pitch_in_bytes); break;
+  }
+}
+
+void BitplaneDraw::TmpFrame1X(ULO pitch_in_bytes)
+{
+  ULO pitch_in_longwords = pitch_in_bytes / 4;
+
+  ULO *draw_buffer_first_ptr_local = (ULO *)draw_buffer_info.current_ptr;
+  ULO *draw_buffer_second_ptr_local = (ULO *)(draw_buffer_info.current_ptr + pitch_in_bytes / 2);
+
+  ULO startx = drawGetInternalClip().left * 2;
+  ULO stopx = drawGetInternalClip().right * 2;
 
   for (ULO y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
   {
     ULO *tmpline = _tmpframe[y];
     for (ULO x = startx; x < stopx; x++)
     {
-      ULO index = (x-startx);
+      ULO index = (x - startx);
       ULO pixel_color = tmpline[x];
       draw_buffer_first_ptr_local[index] = pixel_color;
       draw_buffer_second_ptr_local[index] = pixel_color;
     }
-    draw_buffer_first_ptr_local += (real_pitch_in_bytes/2);
-    draw_buffer_second_ptr_local += (real_pitch_in_bytes/2);
+    draw_buffer_first_ptr_local += pitch_in_longwords;
+    draw_buffer_second_ptr_local += pitch_in_longwords;
+  }
+}
+
+void BitplaneDraw::TmpFrame2X(ULO pitch_in_bytes)
+{
+  ULO pitch_in_longwords = pitch_in_bytes / 4;
+  ULO real_pitch_in_bytes = (pitch_in_bytes / 4);
+
+  ULO *draw_buffer_first_ptr_local = (ULO *)draw_buffer_info.current_ptr;
+  ULO *draw_buffer_second_ptr_local = (ULO *)(draw_buffer_info.current_ptr + real_pitch_in_bytes);
+  ULO *draw_buffer_third_ptr_local = (ULO *)(draw_buffer_info.current_ptr + real_pitch_in_bytes * 2);
+  ULO *draw_buffer_fourth_ptr_local = (ULO *)(draw_buffer_info.current_ptr + real_pitch_in_bytes * 3);
+
+  ULO startx = drawGetInternalClip().left * 2;
+  ULO stopx = drawGetInternalClip().right * 2;
+
+  for (ULO y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
+  {
+    ULO *tmpline = _tmpframe[y];
+    for (ULO x = startx; x < stopx; x++)
+    {
+      ULO index = (x - startx) * 2;
+      ULO pixel_color = tmpline[x];
+      draw_buffer_first_ptr_local[index] = pixel_color;
+      draw_buffer_first_ptr_local[index + 1] = pixel_color;
+      draw_buffer_second_ptr_local[index] = pixel_color;
+      draw_buffer_second_ptr_local[index + 1] = pixel_color;
+      draw_buffer_third_ptr_local[index] = pixel_color;
+      draw_buffer_third_ptr_local[index + 1] = pixel_color;
+      draw_buffer_fourth_ptr_local[index] = pixel_color;
+      draw_buffer_fourth_ptr_local[index + 1] = pixel_color;
+    }
+    draw_buffer_first_ptr_local += pitch_in_longwords;
+    draw_buffer_second_ptr_local += pitch_in_longwords;
+    draw_buffer_third_ptr_local += pitch_in_longwords;
+    draw_buffer_fourth_ptr_local += pitch_in_longwords;
   }
 }
 
 BitplaneDraw::BitplaneDraw()
 {
+  // This contains actual pixel by pixel color output on this frame.
   _tmpframe = new ULO[313][1024];
 }
 

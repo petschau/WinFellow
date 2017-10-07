@@ -152,15 +152,27 @@ void Planar2ChunkyDecoder::P2CNext8PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO 
   _batch_size += 8;
 }
 
-void Planar2ChunkyDecoder::P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6)
+void Planar2ChunkyDecoder::P2CNextPixels(ULO pixelCount, ByteWordUnion* data)
 {
   if (BitplaneUtility::IsDualPlayfield())
   {
-    P2CNextPixelsDual(pixelCount, dat1, dat2, dat3, dat4, dat5, dat6);
+    P2CNextPixelsDual(pixelCount, 
+                      data[0].b[1],
+                      data[1].b[1],
+                      data[2].b[1],
+                      data[3].b[1],
+                      data[4].b[1],
+                      data[5].b[1]);
   }
   else
   {
-    P2CNextPixelsNormal(pixelCount, dat1, dat2, dat3, dat4, dat5, dat6);
+    P2CNextPixelsNormal(pixelCount, 
+                        data[0].b[1],
+                        data[1].b[1],
+                        data[2].b[1],
+                        data[3].b[1],
+                        data[4].b[1],
+                        data[5].b[1]);
   }
 }
 
@@ -188,27 +200,64 @@ void Planar2ChunkyDecoder::P2CNext8Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4
   }
 }
 
-void Planar2ChunkyDecoder::NewBatch(void)
+void Planar2ChunkyDecoder::P2CNextBackgroundNormal(ULO pixelCount)
+{
+  ULO *playfield_odd = GetOddPlayfieldULOPtr();
+
+  for (unsigned int i = 0; i < pixelCount; i += 4)
+  {
+    playfield_odd[i] = 0;
+  }
+  _batch_size += pixelCount;
+}
+
+void Planar2ChunkyDecoder::P2CNextBackgroundDual(ULO pixelCount)
+{
+  ULO *playfield_odd = GetOddPlayfieldULOPtr();
+  ULO *playfield_even = GetEvenPlayfieldULOPtr();
+
+  for (unsigned int i = 0; i < pixelCount; i += 4)
+  {
+    playfield_odd[i] = 0;
+    playfield_even[i] = 0;
+  }
+  _batch_size += pixelCount;
+}
+
+
+void Planar2ChunkyDecoder::P2CNextBackground(ULO pixelCount)
+{
+  if (BitplaneUtility::IsDualPlayfield())
+  {
+    P2CNextBackgroundDual(pixelCount);
+  }
+  else
+  {
+    P2CNextBackgroundNormal(pixelCount);
+  }
+}
+
+void Planar2ChunkyDecoder::NewBatch()
 {
   _batch_size = 0;
 }
 
-UBY *Planar2ChunkyDecoder::GetOddPlayfield(void)
+UBY *Planar2ChunkyDecoder::GetOddPlayfield()
 {
   return _playfield_odd.barray;
 }
 
-UBY *Planar2ChunkyDecoder::GetEvenPlayfield(void)
+UBY *Planar2ChunkyDecoder::GetEvenPlayfield()
 {
   return _playfield_even.barray;
 }
 
-UBY *Planar2ChunkyDecoder::GetHamSpritesPlayfield(void)
+UBY *Planar2ChunkyDecoder::GetHamSpritesPlayfield()
 {
   return _playfield_ham_sprites.barray;
 }
 
-ULO Planar2ChunkyDecoder::GetBatchSize(void)
+ULO Planar2ChunkyDecoder::GetBatchSize()
 {
   return _batch_size;
 }

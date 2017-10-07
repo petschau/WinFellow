@@ -91,7 +91,7 @@ void DDFStateMachine::SetStateWaitingForNextFetch(ULO rasterY, ULO cylinder)
   ULO start = GetStartPosition();
   ULO currentCycle = cylinder / 2;
 
-  if ((stop & 7) != (start & 7)) stop += GetFetchSize();
+  if ((stop & 7) != (start & 7)) stop += 4; // GetFetchSize();
   
   if (stop > currentCycle)
   {

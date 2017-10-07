@@ -43,8 +43,8 @@ private:
   ByteLongArrayUnion _playfield_even;
   ByteLongArrayUnion _playfield_ham_sprites;
 
-  ULO *GetEvenPlayfieldULOPtr(void);
-  ULO *GetOddPlayfieldULOPtr(void);
+  ULO *GetEvenPlayfieldULOPtr();
+  ULO *GetOddPlayfieldULOPtr();
 
   ULO P2COdd1(ULO dat1, ULO dat3, ULO dat5);
   ULO P2COdd2(ULO dat1, ULO dat3, ULO dat5);
@@ -60,16 +60,21 @@ private:
   void P2CNext8PixelsNormal(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext8PixelsDual(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
 
-public:
-  UBY *GetOddPlayfield(void);
-  UBY *GetEvenPlayfield(void);
-  UBY *GetHamSpritesPlayfield(void);
-  ULO GetBatchSize(void);
+  void P2CNextBackgroundNormal(ULO pixelCount);
+  void P2CNextBackgroundDual(ULO pixelCount);
 
-  void NewBatch(void);
-  void P2CNextPixels(ULO pixelCount, ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
+public:
+  UBY *GetOddPlayfield();
+  UBY *GetEvenPlayfield();
+  UBY *GetHamSpritesPlayfield();
+  ULO GetBatchSize();
+
+  void NewBatch();
+  void P2CNextPixels(ULO pixelCount, ByteWordUnion* data);
   void P2CNext4Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
   void P2CNext8Pixels(ULO dat1, ULO dat2, ULO dat3, ULO dat4, ULO dat5, ULO dat6);
+
+  void P2CNextBackground(ULO pixelCount);
 };
 
 #endif

@@ -31,10 +31,10 @@ typedef struct {
 
 typedef enum {
   DISPLAYSCALE_AUTO = 0,
-  DISPLAYSCALE_1X = 1,
-  DISPLAYSCALE_2X = 2,
-  DISPLAYSCALE_3X = 3,
-  DISPLAYSCALE_4X = 4
+  DISPLAYSCALE_1X = 1, // 640x512 + space for overscan
+  DISPLAYSCALE_2X = 2, // 1280x1024 + -"-
+  DISPLAYSCALE_3X = 3, // 1920x1536 + -"-
+  DISPLAYSCALE_4X = 4  // 2560x2048 + -"-
 } DISPLAYSCALE;
 
 typedef enum {

@@ -37,9 +37,12 @@ private:
   void TempHiresDual(ULO rasterY, ULO pixel_index, ULO pixel_count);
   void TempNothing(ULO rasterY, ULO pixel_index, ULO pixel_count);
 
+  void TmpFrame1X(ULO pitch_in_bytes);
+  void TmpFrame2X(ULO pitch_in_bytes);
+
 public:
   void DrawBatch(ULO rasterY, ULO rasterX);
-  void TmpFrame(ULO next_line_offset);
+  void TmpFrame(ULO pitch_in_bytes);
 
   BitplaneDraw();
   ~BitplaneDraw();

@@ -72,7 +72,7 @@ void DIWXStateMachine::OutputCylindersUntilPreviousCylinder(ULO rasterY, ULO cyl
     else outputLine = rasterY - 1;
   }
 
-  GraphicsContext.PixelSerializer.OutputCylindersUntil(outputLine, previousCylinder);
+  GraphicsContext.BitplaneSerializer.OutputCylindersUntil(outputLine, previousCylinder);
 }
 
 
