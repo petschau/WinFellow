@@ -315,12 +315,12 @@ Release Notes
 \end_layout
 
 \begin_layout Section
-What's New in WinFellow 0.5.5?
+What's New in WinFellow 0.5.6?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.4, the following changes are included
+ Compared to the earlier version 0.5.5, the following changes are included
  in this build:
 \end_layout
 
@@ -334,7 +334,19 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for Amiga Forever 2017 input device handling
+Amiga Forever 2017 support modules were updated to the latest version, improving
+ Amiga Forever input device handling by reducing lag
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Bug fixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+improve support for IPF images (align disk words to sync if sync is found
+ on an odd boundary)
 \end_layout
 
 \end_deeper
