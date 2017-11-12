@@ -6,8 +6,30 @@
     <description>Recent content in News on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 11 Mar 2017 18:15:00 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 12 Nov 2017 14:23:00 +0000</lastBuildDate>
     <atom:link href="http://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>WinFellow v0.5.6 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2017-11-12-WinFellow%20v0.5.6%20released/</link>
+      <pubDate>Sun, 12 Nov 2017 14:23:00 +0000</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2017-11-12-WinFellow%20v0.5.6%20released/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;New features:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;improve support for IPF images (align disk words to sync if sync is found on an odd boundary)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>WinFellow v0.5.4 released</title>
