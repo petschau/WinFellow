@@ -191,7 +191,6 @@ void cpuThrowFLineException(void)
 void cpuThrowTrapVException(void)
 {
   // The saved pc points to the next instruction, which is now in pc
-  if (cpuGetIsTraced()) cpuThrowTraceException(cpuGetInstructionTime());
   cpuThrowException(0x1c, cpuGetPC(), FALSE);
 }
 
@@ -204,7 +203,6 @@ void cpuThrowDivisionByZeroException()
 void cpuThrowTrapException(ULO vector_no)
 {
   // The saved pc points to the next instruction, which is now in pc
-  if (cpuGetIsTraced()) cpuThrowTraceException(cpuGetInstructionTime());
   cpuThrowException(0x80 + vector_no*4, cpuGetPC(), FALSE);
 }
 
