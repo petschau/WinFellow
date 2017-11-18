@@ -57,6 +57,10 @@ static ULO iniGetULOFromString(STR *value) {
   return atoi(value);
 }
 
+static int iniGetintFromString(STR *value) {
+  return atoi(value);
+}
+
 static BOOLE iniGetBOOLEFromString(STR *value) {
   return (atoi(value) == 1);
 }
@@ -81,35 +85,35 @@ STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index) {
   return initdata->m_configuration_history[index];
 }
 
-void iniSetMainWindowXPos(ini *initdata, ULO xpos) {
+void iniSetMainWindowXPos(ini *initdata, int xpos) {
   initdata->m_mainwindowxposition = xpos;
 }
 
-ULO iniGetMainWindowXPos(ini *initdata) {
+int iniGetMainWindowXPos(ini *initdata) {
   return initdata->m_mainwindowxposition;
 }
 
-void iniSetMainWindowYPos(ini *initdata, ULO ypos) {
+void iniSetMainWindowYPos(ini *initdata, int ypos) {
   initdata->m_mainwindowyposition = ypos;
 }
 
-ULO iniGetMainWindowYPos(ini *initdata) {
+int iniGetMainWindowYPos(ini *initdata) {
   return initdata->m_mainwindowyposition;
 }
 
-void iniSetEmulationWindowXPos(ini *initdata, ULO xpos) {
+void iniSetEmulationWindowXPos(ini *initdata, int xpos) {
   initdata->m_emulationwindowxposition = xpos;
 }
 
-ULO iniGetEmulationWindowXPos(ini *initdata) {
+int iniGetEmulationWindowXPos(ini *initdata) {
   return initdata->m_emulationwindowxposition;
 }
 
-void iniSetEmulationWindowYPos(ini *initdata, ULO ypos) {
+void iniSetEmulationWindowYPos(ini *initdata, int ypos) {
   initdata->m_emulationwindowyposition = ypos;
 }
 
-ULO iniGetEmulationWindowYPos(ini *initdata) {
+int iniGetEmulationWindowYPos(ini *initdata) {
   return initdata->m_emulationwindowyposition;
 }
 
@@ -354,16 +358,16 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
       iniSetLastUsedCfgDir(initdata, value);
     }
     else if (stricmp(option, "main_window_x_pos") == 0) {
-      iniSetMainWindowXPos(initdata, iniGetULOFromString(value));
+      iniSetMainWindowXPos(initdata, iniGetintFromString(value));
     }
     else if (stricmp(option, "main_window_y_pos") == 0) {
-      iniSetMainWindowYPos(initdata, iniGetULOFromString(value));
+      iniSetMainWindowYPos(initdata, iniGetintFromString(value));
     }
     else if (stricmp(option, "emu_window_x_pos") == 0) {
-      iniSetEmulationWindowXPos(initdata, iniGetULOFromString(value));
+      iniSetEmulationWindowXPos(initdata, iniGetintFromString(value));
     }
     else if (stricmp(option, "emu_window_y_pos") == 0) {
-      iniSetEmulationWindowYPos(initdata, iniGetULOFromString(value));
+      iniSetEmulationWindowYPos(initdata, iniGetintFromString(value));
     }
     else if (stricmp(option, "config_history_0") == 0) {
       iniSetConfigurationHistoryFilename(initdata, 0, value);
@@ -409,10 +413,10 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 
 BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "ini_description=%s\n", iniGetDescription(initdata));
-  fprintf(inifile, "main_window_x_pos=%u\n", iniGetMainWindowXPos(initdata));
-  fprintf(inifile, "main_window_y_pos=%u\n", iniGetMainWindowYPos(initdata));
-  fprintf(inifile, "emu_window_x_pos=%u\n", iniGetEmulationWindowXPos(initdata));
-  fprintf(inifile, "emu_window_y_pos=%u\n", iniGetEmulationWindowYPos(initdata));
+  fprintf(inifile, "main_window_x_pos=%d\n", iniGetMainWindowXPos(initdata));
+  fprintf(inifile, "main_window_y_pos=%d\n", iniGetMainWindowYPos(initdata));
+  fprintf(inifile, "emu_window_x_pos=%d\n", iniGetEmulationWindowXPos(initdata));
+  fprintf(inifile, "emu_window_y_pos=%d\n", iniGetEmulationWindowYPos(initdata));
   fprintf(inifile, "config_history_0=%s\n", iniGetConfigurationHistoryFilename(initdata,0));
   fprintf(inifile, "config_history_1=%s\n", iniGetConfigurationHistoryFilename(initdata,1));
   fprintf(inifile, "config_history_2=%s\n", iniGetConfigurationHistoryFilename(initdata,2));

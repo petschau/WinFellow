@@ -42,7 +42,6 @@
 
 #include "Graphics.h"
 
-extern UBY *draw_buffer_current_ptr;
 extern UBY draw_dual_translate[2][256][256];
 extern ULO draw_HAM_modify_table[4][2];
 
@@ -202,13 +201,13 @@ void BitplaneDraw::TmpFrame(ULO next_line_offset)
 {
   ULO real_pitch_in_bytes = next_line_offset/2;
 
-  ULO *draw_buffer_first_ptr_local = (ULO *) draw_buffer_current_ptr;
-  ULO *draw_buffer_second_ptr_local = (ULO *) (draw_buffer_current_ptr + real_pitch_in_bytes);
+  ULO *draw_buffer_first_ptr_local = (ULO *) draw_buffer_info.current_ptr;
+  ULO *draw_buffer_second_ptr_local = (ULO *) (draw_buffer_info.current_ptr + real_pitch_in_bytes);
 
-  ULO startx = draw_left*2;
-  ULO stopx = draw_right*2;
+  ULO startx = drawGetInternalClip().left*2;
+  ULO stopx = drawGetInternalClip().right*2;
 
-  for (ULO y = draw_top; y < draw_bottom; y++)
+  for (ULO y = drawGetInternalClip().top; y < drawGetInternalClip().bottom; y++)
   {
     ULO *tmpline = _tmpframe[y];
     for (ULO x = startx; x < stopx; x++)

@@ -11,25 +11,25 @@ extern void gfxDrvClearCurrentBuffer();
 
 extern void gfxDrvBufferFlip();
 
-extern void gfxDrvSetMode(draw_mode *dm);
-extern void gfxDrvSizeChanged();
+extern void gfxDrvSetMode(draw_mode *dm, bool windowed);
+extern void gfxDrvSizeChanged(unsigned int width, unsigned int height);
+extern void gfxDrvPositionChanged();
 
 extern UBY *gfxDrvValidateBufferPointer();
 extern void gfxDrvInvalidateBufferPointer();
+extern void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information);
 
-extern bool gfxDrvEmulationStart(ULO maxbuffercount);
 extern ULO gfxDrvEmulationStartPost();
 
+extern bool gfxDrvEmulationStart(unsigned int maxbuffercount);
 extern void gfxDrvEmulationStop();
 
-extern void gfxDrvRunEventSet();
-extern void gfxDrvRunEventReset();
+extern void gfxDrvNotifyActiveStatus(bool active);
 
 extern bool gfxDrvRestart(DISPLAYDRIVER displaydriver);
 extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
 extern void gfxDrvShutdown();
 
-extern void gfxDrvRegisterRetroPlatformScreenMode(const bool);
 extern bool gfxDrvSaveScreenshot(const bool, const STR *filename);
 
 extern bool gfxDrvDXGIValidateRequirements(void);

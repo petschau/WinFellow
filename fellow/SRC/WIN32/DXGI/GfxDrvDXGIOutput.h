@@ -17,6 +17,7 @@ private:
   void LogCapabilities(IDXGIOutput* output);
 
 public:
+  const GfxDrvDXGIModeList& GetModes();
 
   GfxDrvDXGIOutput(IDXGIOutput* output);
   virtual ~GfxDrvDXGIOutput();

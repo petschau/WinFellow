@@ -124,11 +124,13 @@ void soundDrvPollBufferPosition(void);
 /* Multimedia Callback fnc. Used when DirectSound notification unsupported  */
 /*==========================================================================*/
 
+volatile __int64 timertime = 0;
+
 void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
   soundDrvPollBufferPosition();
+  timertime++;
 }
-
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
@@ -379,7 +381,7 @@ static bool soundDrvDSoundSetVolume(sound_drv_dsound_device *dsound_device, cons
   HRESULT hResult;
   LONG vol;
 
-	if (volume <= 100 && volume > 0)
+  if (volume <= 100 && volume > 0)
     vol = (LONG) -((50-(volume/2))*(50-(volume/2)));
   else if (volume == 0)
     vol = DSBVOLUME_MIN;
@@ -391,9 +393,9 @@ static bool soundDrvDSoundSetVolume(sound_drv_dsound_device *dsound_device, cons
     volume, vol);
 #endif
 
-	hResult = IDirectSoundBuffer_SetVolume (dsound_device->lpDSBS, vol);
-	if (FAILED (hResult))
-		soundDrvDSoundFailure("soundDrvDSoundSetVolume(): SetVolume() failed: ", hResult);
+  hResult = IDirectSoundBuffer_SetVolume (dsound_device->lpDSBS, vol);
+  if (FAILED (hResult))
+    soundDrvDSoundFailure("soundDrvDSoundSetVolume(): SetVolume() failed: ", hResult);
 
   return (hResult == DS_OK);
 }
@@ -535,7 +537,7 @@ bool soundDrvCreateSecondaryBuffer(sound_drv_dsound_device *dsound_device)
   dsbdesc.dwFlags = DSBCAPS_CTRLPOSITIONNOTIFY |
 		    DSBCAPS_GETCURRENTPOSITION2 |
 		    DSBCAPS_GLOBALFOCUS |
-        DSBCAPS_CTRLVOLUME;
+                    DSBCAPS_CTRLVOLUME;
   dsbdesc.dwBufferBytes = dsound_device->mode_current->buffer_sample_count*wfm.nBlockAlign*2;
   dsbdesc.lpwfxFormat = &wfm;
 

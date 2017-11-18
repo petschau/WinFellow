@@ -387,16 +387,32 @@ void ciaWriteAprb(UBY data)
 
 void ciaWriteBprb(UBY data)
 {
-  int i, j;
+  int j = 0;
+  BOOLE motor_was_high = (cia[1].prb & 0x80) == 0x80;
+  BOOLE motor_is_high = (data & 0x80) == 0x80;
 
-  j = 0;
-  for (i = 8; i < 0x80; i <<= 1, j++)
-    if ((cia[1].prb & i) && !(data & i))
-      floppyMotorSet(j, (data & 0x80)>>7);
+  for (int i = 8; i < 0x80; i <<= 1, j++)
+  {
+    BOOLE sel_was_high = cia[1].prb & i;
+    BOOLE sel_is_high = data & i;
+    if (sel_was_high && !sel_is_high)
+    {
+      // Motor is latched when sel goes from high to low
+      // According to HRM motor bit must be set up in advance by software
+      if (!motor_was_high || !motor_is_high)
+      {
+        floppyMotorSet(j, 0); // 0 is on
+      }
+      else if (motor_was_high)
+      {
+        floppyMotorSet(j, 1); // 1 is off
+      }
+    }
+  }
   cia[1].prb = data;
-  floppySelectedSet((data & 0x78)>>3);
-  floppySideSet((data & 4)>>2);
-  floppyDirSet((data & 2)>>1);
+  floppySelectedSet((data & 0x78) >> 3);
+  floppySideSet((data & 4) >> 2);
+  floppyDirSet((data & 2) >> 1);
   floppyStepSet(data & 1);
 }
 

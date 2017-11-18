@@ -129,6 +129,7 @@ extern UWO cpuGetZFlagL(ULO res);
 extern UWO cpuGetNFlagB(UBY res);
 extern UWO cpuGetNFlagW(UWO res);
 extern UWO cpuGetNFlagL(ULO res);
+extern void cpuClearFlagsVC(void);
 
 extern BOOLE cpuCalculateConditionCode0(void);
 extern BOOLE cpuCalculateConditionCode1(void);

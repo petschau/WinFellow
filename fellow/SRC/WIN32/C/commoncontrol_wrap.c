@@ -101,6 +101,11 @@ void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG positio
   SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETPOS, TRUE, (LPARAM) position);
 }
 
+void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
+{
+  EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable);
+}
+
 void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text) {
 
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);

@@ -100,24 +100,12 @@ void kbdEventEOFHandler(void) {
 	      break;
       case EVENT_EXIT:
 #ifdef RETRO_PLATFORM
-              if(RetroPlatformGetMode())  
-                RetroPlatformSendClose();
+              if(RP.GetHeadlessMode())  
+                RP.SendClose();
               else
 #endif
               fellowRequestEmulationStop();
 
-	      break;
-      case EVENT_SCROLL_UP:
-	      draw_view_scroll = 0x48;
-	      break;
-      case EVENT_SCROLL_DOWN:
-	      draw_view_scroll = 0x50;
-	      break;
-      case EVENT_SCROLL_LEFT:
-	      draw_view_scroll = 0x4b;
-	      break;
-      case EVENT_SCROLL_RIGHT:
-	      draw_view_scroll = 0x4d;
 	      break;
       case EVENT_HARD_RESET:
               // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
@@ -281,12 +269,14 @@ void kbdQueueHandler(void) {
       ULO scode;
 
       kbd_time_to_wait = 10;
-      scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos &
-	KBDBUFFERMASK];
+      scode = kbd_state.scancodes.buffer[kbd_state.scancodes.outpos & KBDBUFFERMASK];
       kbd_state.scancodes.outpos++;
       if (scode != A_NONE) {
-	ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
-	ciaRaiseIRQ(0, 8);
+#ifdef _DEBUG
+        fellowAddLog("   kbdQueueHandler(): writing scancode 0x%x to CIA and raising interrupt.\n", scode);
+#endif
+	      ciaWritesp(0, (UBY) ~(((scode >> 7) & 1) | (scode << 1)));
+	      ciaRaiseIRQ(0, 8);
       }
     }
   }

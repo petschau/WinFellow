@@ -130,7 +130,10 @@ void cgProfileOut(char *name)
 
 void cgProfileLogHeader()
 {
-  fprintf(profilef, "#include \"fileops.h\"\n");
+  if (cpu_profile)
+  {
+    fprintf(profilef, "#include \"fileops.h\"\n");
+  }
   fprintf(profilef, "void cpuProfileWrite(void)\n");
   fprintf(profilef, "{\n");
 
@@ -141,7 +144,7 @@ void cgProfileLogHeader()
 
   fprintf(profilef, "\tchar filename[MAX_PATH];\n");
   fprintf(profilef, "\tFILE *F = NULL;\n");
-  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"cpuprofile.txt\");\n");
+  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
   fprintf(profilef, "\tF = fopen(filename, \"w\");\n");
   fprintf(profilef, "\tif (F != NULL)\n");
   fprintf(profilef, "\t{\n");

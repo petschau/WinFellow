@@ -1,7 +1,7 @@
 #ifndef GAMEPORT_H
 #define GAMEPORT_H
 
-/* ---------------- CHANGE LOG ----------------- 
+/* ---------------- CHANGE LOG -----------------
 Tuesday, September 19, 2000: nova
 - added gameport_autofire arrays
 */
@@ -32,7 +32,9 @@ typedef enum {
   GP_ANALOG0,
   GP_ANALOG1,
   GP_MOUSE0,
-  GP_MOUSE1
+  GP_MOUSE1, 
+  RP_JOYSTICK0, // dummy device used to associate joystick input received from RetroPlatform host with gameport
+  RP_JOYSTICK1  // dummy device used to associate joystick input received from RetroPlatform host with gameport
 } gameport_inputs;
 
 extern gameport_inputs gameport_input[2];
@@ -57,12 +59,13 @@ extern void gameportJoystickHandler(gameport_inputs joydev,
 									BOOLE button2);
 extern void gameportSetInput(ULO index, gameport_inputs gameportinput);
 
+extern BOOLE gameportGetAnalogJoystickInUse(void);
+
 
 /*===========================================================================*/
 /* Fellow standard control functions                                         */
 /*===========================================================================*/
 
-extern void gameportEOFHandler(void);
 extern void gameportHardReset(void);
 extern void gameportEmulationStart(void);
 extern void gameportEmulationStop(void);

@@ -27,9 +27,7 @@ extern void fsNavigSetCWDStartupDir(void);
 extern void fsNavigStartup(char *argv[]);
 extern void fsNavigShutdown(void);
 extern felist *fsNavigGetDirList(fs_navig_point *fs_point);
-extern void fsNavigFreeDirList(felist *fs_dir_list);
 extern fs_navig_point *fsNavigGetCWD(void);
 extern void fsNavigSetCWD(fs_navig_point *fs_point);
-//extern void fsNavigMakeRelativePath(STR *name);
 
 #endif

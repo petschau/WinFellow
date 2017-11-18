@@ -31,7 +31,6 @@
 
 #include "Graphics.h"
 
-extern UBY *draw_buffer_current_ptr;
 extern UBY draw_dual_translate[2][256][256];
 
 void PixelSerializer::LogEndOfLine(ULO line, ULO cylinder)

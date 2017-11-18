@@ -19,40 +19,29 @@
 /* You should have received a copy of the GNU General Public License       */
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
+
 /*=========================================================================*/
+#include <list>
 #include "defs.h"
 #include "sound.h"
 #include <windows.h>
 #include "fellow.h"
+#include "TIMER.H"
 
-BOOLE timer_use_50hz_timer;
-BOOLE timer_running;
+bool timer_running;
 ULO timer_mmresolution;
 ULO timer_mmtimer;
 ULO timer_ticks;
-HANDLE timer_event;
 
+std::list<timerCallbackFunction> timerCallbacks;
 
 /*===========================================================================*/
 /* Returns current time in ms                                                */
 /*===========================================================================*/
 
-ULO timerGetTimeMs(void) {
+ULO timerGetTimeMs()
+{
   return timeGetTime();
-}
-
-/*==========================================================================*/
-/* Config settings                                                          */
-/*==========================================================================*/
-
-void timerSetUse50HzTimer(BOOLE use_50hz_timer)
-{
-  timer_use_50hz_timer = use_50hz_timer;
-}
-
-BOOLE timerGetUse50HzTimer(void)
-{
-  return timer_use_50hz_timer;
 }
 
 /*==========================================================================*/
@@ -61,46 +50,38 @@ BOOLE timerGetUse50HzTimer(void)
 
 void CALLBACK timerCallback(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2)
 {
-  if (timer_ticks < 20)
+  timer_ticks++;
+
+  for (timerCallbackFunction callback : timerCallbacks)
   {
-    timer_ticks++;
-    if (timer_ticks == 20) SetEvent(timer_event);
+    callback(timer_ticks);
   }
 }
 
+void timerAddCallback(timerCallbackFunction callback)
+{
+  timerCallbacks.push_back(callback);
+}
 
 /*===========================================================================*/
 /* Fellow module functions                                                   */
 /*===========================================================================*/
 
-void timerEndOfFrame(void)
+void timerEmulationStart()
 {
-  if (timer_running && timer_use_50hz_timer)
-  {
-    WaitForSingleObject(timer_event, INFINITE);
-    timer_ticks = 0;
-  }
-}
-
-void timerEmulationStart(void)
-{
-  if (timer_use_50hz_timer && (soundGetEmulation() != SOUND_PLAY))
-  {
     TIMECAPS timecaps;
     MMRESULT mmres;
-    char s[100];
 
     timer_ticks = 0;
     mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
     if(mmres != TIMERR_NOERROR)
     {
       fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
-      timer_running = FALSE;
+      timer_running = false;
       return;
     }
 
-    sprintf(s, "timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
-    fellowAddLog(s);
+    fellowAddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
 
     timer_mmresolution = timecaps.wPeriodMin;
 
@@ -108,7 +89,7 @@ void timerEmulationStart(void)
     if(mmres != TIMERR_NOERROR)
     {
       fellowAddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
-      timer_running = FALSE;
+      timer_running = false;
       return;
     }
 
@@ -116,38 +97,34 @@ void timerEmulationStart(void)
     if(mmres == 0)
     {
       fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
-      timer_running = FALSE;
+      timer_running = false;
       return;
     }
     timer_mmtimer = mmres;
-    timer_running = TRUE;
-  }
+    timer_running = true;
 }
 
-void timerEmulationStop(void)
+void timerEmulationStop()
 {
   if (timer_running)
   {
-    MMRESULT mmres;
-    mmres = timeKillEvent(timer_mmtimer);
-  
+    MMRESULT mmres = timeKillEvent(timer_mmtimer);  
     mmres = timeEndPeriod(timer_mmresolution);
     if(mmres != TIMERR_NOERROR)
     {
-      fellowAddLog("timer: timerEmulationStop() timeEndPeriod() failed");
+      fellowAddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
     }
-    timer_running = FALSE;
+    timer_running = false;
   }
+  timerCallbacks.clear();
 }
 
-void timerStartup(void)
+void timerStartup()
 {
-  timer_running = FALSE;
-  timer_event = CreateEvent(0, FALSE, FALSE, 0);
-  timerSetUse50HzTimer(FALSE);
+  timerCallbacks.clear();
+  timer_running = false;
 }
 
-void timerShutdown(void)
+void timerShutdown()
 {
-  if (timer_event) CloseHandle(timer_event);
 }

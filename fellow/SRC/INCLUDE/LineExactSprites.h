@@ -4,7 +4,7 @@
 #include "DEFS.H"
 #include "SPRITE.H"
 
-#define SPRITE_MAX_LIST_ITEMS 5000
+#define SPRITE_MAX_LIST_ITEMS 100
 
 class LineExactSprites;
 
@@ -98,9 +98,7 @@ private:
   UBY sprite[8][16];
 
   typedef struct {
-    UBY data[8][16];
-    ULO x[8];
-    BOOLE online[8];
+    spr_merge_list_master merge_list_master[8];
   } sprite_ham_slot;
 
   sprite_ham_slot sprite_ham_slots[313];
@@ -123,10 +121,7 @@ private:
   void MergeHAM(graph_line *linedescription);
   void BuildItem(spr_action_list_item ** item);
 
-  void SprptChanged(UWO data, ULO address);
-
   void Log();
-  void SetDelay(ULO delay);
   void ClearState();
   void LogActiveSprites();
 
@@ -147,6 +142,8 @@ private:
   void MergeHires(graph_line* current_graph_line);
   void MergeLores(graph_line* current_graph_line);
 
+  void ProcessActionListNOP();
+  void ProcessDMAActionListNOP();
 public:
   bool HasSpritesOnLine();
 
@@ -154,12 +151,21 @@ public:
   void ProcessActionList();
 
   void Merge(graph_line* current_graph_line);
-  void MergeHAM2x16(ULO *frameptr, graph_line *linedescription);
-  void MergeHAM4x16(ULL *frameptr, graph_line *linedescription);
-  void MergeHAM2x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM4x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM2x32(ULO *frameptr, graph_line *linedescription);
-  void MergeHAM4x32(ULO *frameptr, graph_line *linedescription);
+
+  void MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+
+  void MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+
+  void MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription);
+  void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
+  void MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
 
   virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
   virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number);

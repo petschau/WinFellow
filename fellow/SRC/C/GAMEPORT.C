@@ -67,6 +67,19 @@ void gameportSetInput(ULO index, gameport_inputs gameportinput) {
   gameport_input[index] = gameportinput;
 }
 
+BOOLE gameportGetAnalogJoystickInUse(void)
+{
+  BOOLE result = FALSE;
+  ULO i;
+
+  for(i = 0; i < 2; i++)
+  {
+    if (gameport_input[i] == GP_ANALOG0 || gameport_input[i] == GP_ANALOG1)
+      result = TRUE;
+  }
+
+  return result;
+}
 
 /*===========================================================================*/
 /* IO-Registers                                                              */
@@ -236,7 +249,9 @@ void gameportJoystickHandler(gameport_inputs joydev,
 	    gameport_down[i] = down;
 
 #ifdef RETRO_PLATFORM
-      if(RetroPlatformGetMode()) {
+#ifndef FELLOW_SUPPORT_RP_API_VERSION_71
+      if(RP.GetHeadlessMode())
+      {
         ULO lMask = 0;
         if(button1) lMask |= RP_JOYSTICK_BUTTON1;
         if(button2) lMask |= RP_JOYSTICK_BUTTON2;
@@ -245,8 +260,9 @@ void gameportJoystickHandler(gameport_inputs joydev,
         if(right)   lMask |= RP_JOYSTICK_RIGHT;
         if(down)    lMask |= RP_JOYSTICK_DOWN;
 
-        RetroPlatformSendGameportActivity(i, lMask);
+        RP.PostGameportActivity(i, lMask);
       }
+#endif
 #endif
     }
 }

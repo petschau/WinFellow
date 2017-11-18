@@ -1,13 +1,13 @@
 #ifndef TIMER_H
 #define TIMER_H
 
-extern ULO timerGetTimeMs(void);
-void timerSetUse50HzTimer(BOOLE use_50hz_timer);
-BOOLE timerGetUse50HzTimer(void);
-void timerEndOfFrame(void);
-void timerEmulationStart(void);
-void timerEmulationStop(void);
-void timerStartup(void);
-void timerShutdown(void);
+typedef void(*timerCallbackFunction)(ULO millisecondTicks);
+
+extern void timerAddCallback(timerCallbackFunction callback);
+extern ULO timerGetTimeMs();
+void timerEmulationStart();
+void timerEmulationStop();
+void timerStartup();
+void timerShutdown();
 
 #endif

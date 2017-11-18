@@ -7,9 +7,6 @@
 #include "DRAW.H"
 #include "Ini.h"
 
-// Until it is moved here
-extern void gfxDrvDDrawRegisterRetroPlatformScreenMode(const bool, const ULO, const ULO, const ULO);
-
 class GfxDrvCommon
 {
 private:
@@ -21,6 +18,23 @@ private:
   volatile bool _win_minimized_original;
   draw_mode *_current_draw_mode;
   ini* _ini;
+  unsigned int _output_width;
+  unsigned int _output_height;
+  bool _output_windowed;
+
+  int _frametime_target ;
+  int _previous_flip_time;
+  volatile int _time;
+  volatile int _wait_for_time;
+  HANDLE _delay_flip_event;
+
+  void MaybeDelayFlip();
+  void DelayFlipWait(int milliseconds);
+  void RememberFlipTime();
+  int GetTimeSinceLastFlip();
+  void InitializeDelayFlipTimerCallback();
+  void InitializeDelayFlipEvent();
+  void ReleaseDelayFlipEvent();
 
 public:
   bool _displaychange;
@@ -29,8 +43,15 @@ public:
   cfg *rp_startup_config;
 #endif
 
-  bool RunEventInitialize();
-  void RunEventRelease();
+  unsigned int GetOutputWidth();
+  unsigned int GetOutputHeight();
+  bool GetOutputWindowed();
+  void SizeChanged(unsigned int width, unsigned int height);
+
+  void DelayFlipTimerCallback(ULO timeMilliseconds);
+
+  bool InitializeRunEvent();
+  void ReleaseRunEvent();
   void RunEventSet();
   void RunEventReset();
   void RunEventWait();
@@ -46,9 +67,10 @@ public:
   LRESULT EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   HWND GetHWND();
-  void SetDrawMode(draw_mode* dm);
+  void SetDrawMode(draw_mode* dm, bool windowed);
   draw_mode *GetDrawMode();
 
+  void Flip();
   bool EmulationStart();
   void EmulationStartPost();
   void EmulationStop();

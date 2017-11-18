@@ -12,6 +12,7 @@
 #include "MOUSEDRV.H"
 #include "JOYDRV.H"
 #include "KBDDRV.H"
+#include "TIMER.H"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -20,18 +21,108 @@
 
 #include "windowsx.h"
 
-bool GfxDrvCommon::RunEventInitialize()
+void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
 {
-  _run_event = CreateEvent(NULL, TRUE, FALSE, NULL);
-  return (_run_event != NULL);
+  gfxDrvCommon->DelayFlipTimerCallback(timeMilliseconds);
 }
 
-void GfxDrvCommon::RunEventRelease()
+void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
 {
-  if (_run_event != NULL)
+  _time = timeMilliseconds;
+
+  if (_wait_for_time > 0)
+  {
+    if (--_wait_for_time == 0)
+    {
+      SetEvent(_delay_flip_event);
+    }
+  }
+}
+
+void GfxDrvCommon::InitializeDelayFlipEvent()
+{
+  _delay_flip_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+}
+
+void GfxDrvCommon::ReleaseDelayFlipEvent()
+{
+  if (_delay_flip_event != nullptr)
+  {
+    CloseHandle(_delay_flip_event);
+    _delay_flip_event = nullptr;
+  }
+}
+
+void GfxDrvCommon::InitializeDelayFlipTimerCallback()
+{
+  _previous_flip_time = 0;
+  _time = 0;
+  _wait_for_time = 0;
+  SetEvent(_delay_flip_event);
+  timerAddCallback(GfxDrvCommonDelayFlipTimerCallback);
+}
+
+int GfxDrvCommon::GetTimeSinceLastFlip()
+{
+  return static_cast<int>(_time - _previous_flip_time);
+}
+
+void GfxDrvCommon::RememberFlipTime()
+{
+  _previous_flip_time = _time;
+}
+
+void GfxDrvCommon::DelayFlipWait(int milliseconds)
+{
+  _wait_for_time = milliseconds;
+  ResetEvent(_delay_flip_event);
+  WaitForSingleObject(_delay_flip_event, INFINITE);
+}
+
+void GfxDrvCommon::MaybeDelayFlip()
+{
+  int elapsed_time = GetTimeSinceLastFlip();
+
+  if (elapsed_time < _frametime_target)
+  {
+    DelayFlipWait(_frametime_target - elapsed_time);
+  }
+  RememberFlipTime();
+}
+
+unsigned int GfxDrvCommon::GetOutputWidth()
+{
+  return _output_width;
+}
+
+unsigned int GfxDrvCommon::GetOutputHeight()
+{
+  return _output_height;
+}
+
+bool GfxDrvCommon::GetOutputWindowed()
+{
+  return _output_windowed;
+}
+
+void GfxDrvCommon::SizeChanged(unsigned int width, unsigned int height)
+{
+  _output_width = (width > 0) ? width : 1;
+  _output_height = (height > 0) ? height : 1;
+}
+
+bool GfxDrvCommon::InitializeRunEvent()
+{
+  _run_event = CreateEvent(nullptr, TRUE, FALSE, nullptr);
+  return (_run_event != nullptr);
+}
+
+void GfxDrvCommon::ReleaseRunEvent()
+{
+  if (_run_event != nullptr)
   {
     CloseHandle(_run_event);
-    _run_event = NULL;
+    _run_event = nullptr;
   }
 }
 
@@ -57,7 +148,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     !_syskey_down);
 
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode()) {
+  if (!RP.GetHeadlessMode()) {
 #endif
     if (_win_active)
     {
@@ -67,6 +158,8 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     {
       RunEventReset();
     }
+    gfxDrvNotifyActiveStatus(_win_active);
+
 #ifdef RETRO_PLATFORM
   }
 #endif
@@ -75,8 +168,20 @@ void GfxDrvCommon::EvaluateRunEventStatus()
 void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 {
   mouseDrvStateHasChanged(active);
-  joyDrvStateHasChanged(active);
-  kbdDrvStateHasChanged(active);
+  
+#ifdef RETRO_PLATFORM
+#ifdef FELLOW_SUPPORT_RP_API_VERSION_71
+  if (!RP.GetHeadlessMode())
+  {
+#endif
+#endif
+    joyDrvStateHasChanged(active);
+    kbdDrvStateHasChanged(active);
+#ifdef RETRO_PLATFORM
+#ifdef FELLOW_SUPPORT_RP_API_VERSION_71
+  }
+#endif
+#endif
 }
 
 #define WM_DIACQUIRE  (WM_USER + 0)
@@ -178,11 +283,10 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     }
     break;
   case WM_MOVE:
+    gfxDrvPositionChanged();
+    break;
   case WM_SIZE:
-    if (_current_draw_mode->windowed)
-    {
-      gfxDrvSizeChanged();
-    }
+    gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam));
     break;
   case WM_ACTIVATE:
     /* WM_ACTIVATE tells us whether our window is active or not */
@@ -194,8 +298,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     _win_minimized_original = ((HIWORD(wParam)) != 0);
     NotifyDirectInputDevicesAboutActiveState(_win_active_original);
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      RetroPlatformSendMouseCapture(TRUE);
+    if (RP.GetHeadlessMode() && _win_active_original)
+      RP.SendMouseCapture(true);
 #endif
     EvaluateRunEventStatus();
     return 0; /* We processed this message */
@@ -222,9 +326,12 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       return 0;
 #ifdef RETRO_PLATFORM
     case SC_CLOSE:
-      if (RetroPlatformGetMode())
-        RetroPlatformSendClose();
-      return 0;
+      if (RP.GetHeadlessMode())
+      {
+        RP.SendClose();
+        return 0;
+      }
+      // else fall through to DefWindowProc() to get WM_CLOSE etc.
 #endif
     default:
       return DefWindowProc(hWnd, message, wParam, lParam);
@@ -241,15 +348,15 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     }
 
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      RetroPlatformSendActivate(wParam, lParam);
+    if (RP.GetHeadlessMode())
+      RP.SendActivated(wParam ? true : false, lParam);
 #endif
 
     return 0;
     break;
   case WM_DESTROY:
     // save emulation window position only if in windowed mode
-    if (_current_draw_mode->windowed)
+    if (GetOutputWindowed())
     {
       GetWindowRect(hWnd, &emulationRect);
       iniSetEmulationWindowPosition(_ini, emulationRect.left, emulationRect.top);
@@ -260,9 +367,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
   case WM_SHOWWINDOW:
     break;
   case WM_DISPLAYCHANGE:
-    if (_current_draw_mode->windowed)
+    if (GetOutputWindowed())
     {
-      _displaychange = (wParam != _current_draw_mode->bits) && (_current_draw_mode->windowed == TRUE);
+      _displaychange = (wParam != _current_draw_mode->bits);
       fellow_request_emulation_stop = TRUE;
     }
     break;
@@ -276,12 +383,12 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 
 #ifdef RETRO_PLATFORM
   case WM_LBUTTONUP:
-    if (RetroPlatformGetMode())
+    if(RP.GetHeadlessMode())
     {
-      if (mouseDrvGetFocus())
+      if(mouseDrvGetFocus())
       {
         NotifyDirectInputDevicesAboutActiveState(_win_active_original);
-        RetroPlatformSendMouseCapture(TRUE);
+        RP.SendMouseCapture(true);
       }
       else
       {
@@ -290,9 +397,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       return 0;
     }
   case WM_ENABLE:
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
-      RetroPlatformSendEnable(wParam ? 1 : 0);
+      RP.SendEnable(wParam ? 1 : 0);
       return 0;
     }
 #endif
@@ -319,13 +426,14 @@ bool GfxDrvCommon::InitializeWindowClass()
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
-    RetroPlatformSetWindowInstance(win_drv_hInstance);
+  if (RP.GetHeadlessMode())
+    RP.SetWindowInstance(win_drv_hInstance);
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
-  wc1.hCursor = LoadCursor(NULL, IDC_ARROW);
+  wc1.hCursor = LoadCursor(nullptr, IDC_ARROW);
   wc1.lpszClassName = "FellowWindowClass";
   wc1.lpszMenuName = "Fellow";
+  wc1.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
   return (RegisterClassEx(&wc1) != 0);
 }
 
@@ -344,10 +452,11 @@ void GfxDrvCommon::ReleaseWindowClass()
 
 void GfxDrvCommon::DisplayWindow()
 {
-  fellowAddLog("gfxdrv: gfxDrvWindowShow()\n");
-  if (!_current_draw_mode->windowed)
+  fellowAddLog("GfxDrvCommon::DisplayWindow()\n");
+  if (!GetOutputWindowed())
   {
-    ShowWindow(_hwnd, SW_SHOWMAXIMIZED);
+    // Later: Make dx11 run the normal size code. DX11 startup is always windowed.
+    ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
   }
   else
@@ -356,12 +465,12 @@ void GfxDrvCommon::DisplayWindow()
     ULO y = iniGetEmulationWindowYPos(_ini);
     RECT rc1;
     SetRect(&rc1, x, y, x + _current_draw_mode->width, y + _current_draw_mode->height);
-    AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != NULL, GetWindowExStyle(_hwnd));
+    AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != nullptr, GetWindowExStyle(_hwnd));
     MoveWindow(_hwnd, x, y, rc1.right - rc1.left, rc1.bottom - rc1.top, FALSE);
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
 
-    gfxDrvSizeChanged();
+    gfxDrvSizeChanged(_current_draw_mode->width, _current_draw_mode->height);
   }
 }
 
@@ -373,7 +482,7 @@ void GfxDrvCommon::DisplayWindow()
 
 void GfxDrvCommon::HideWindow()
 {
-  if (!_current_draw_mode->windowed)
+  if (!GetOutputWindowed())
   {
     ShowWindow(_hwnd, SW_SHOWMINIMIZED);
   }
@@ -395,28 +504,26 @@ bool GfxDrvCommon::InitializeWindow()
 {
   char *versionstring = fellowGetVersionString();
 
-  if (_current_draw_mode->windowed)
+  SizeChanged(_current_draw_mode->width, _current_draw_mode->height);
+  ULO width = _current_draw_mode->width;
+  ULO height = _current_draw_mode->height;
+
+  if (GetOutputWindowed())
   {
     DWORD dwStyle = WS_SYSMENU | WS_CAPTION | WS_MINIMIZEBOX;
+    if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+    {
+      dwStyle |= WS_SIZEBOX | WS_MAXIMIZEBOX;
+    }
     DWORD dwExStyle = 0;
-    HWND hParent = NULL;
-    ULO width = _current_draw_mode->width;
-    ULO height = _current_draw_mode->height;
+    HWND hParent = nullptr;
 
 #ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
+    if (RP.GetHeadlessMode())
     {
       dwStyle = WS_POPUP;
       dwExStyle = WS_EX_TOOLWINDOW;
-      hParent = RetroPlatformGetParentWindowHandle();
-
-      width = cfgGetScreenWidth(rp_startup_config);
-      height = cfgGetScreenHeight(rp_startup_config);
-
-      fellowAddLog("RetroPlatform: override window dimensions to %ux%u, offset %u,%u...\n",
-        width, height,
-        RetroPlatformGetClippingOffsetLeftAdjusted(),
-        RetroPlatformGetClippingOffsetTopAdjusted());
+      hParent = RP.GetParentWindowHandle();
     }
 #endif
 
@@ -429,9 +536,9 @@ bool GfxDrvCommon::InitializeWindow()
       width,
       height,
       hParent,
-      NULL,
+      nullptr,
       win_drv_hInstance,
-      NULL);
+      nullptr);
   }
   else
   {
@@ -441,17 +548,17 @@ bool GfxDrvCommon::InitializeWindow()
       WS_POPUP,
       0,
       0,
-      GetSystemMetrics(SM_CXSCREEN),
-      GetSystemMetrics(SM_CYSCREEN),
-      NULL,
-      NULL,
+      width,
+      height,
+      nullptr,
+      nullptr,
       win_drv_hInstance,
-      NULL);
+      nullptr);
   }
-  fellowAddLog("gfxdrv: Window created\n");
+  fellowAddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
   free(versionstring);
 
-  return (_hwnd != NULL);
+  return (_hwnd != nullptr);
 }
 
 
@@ -462,10 +569,10 @@ bool GfxDrvCommon::InitializeWindow()
 
 void GfxDrvCommon::ReleaseWindow()
 {
-  if (_hwnd != NULL)
+  if (_hwnd != nullptr)
   {
     DestroyWindow(_hwnd);
-    _hwnd = NULL;
+    _hwnd = nullptr;
   }
 }
 
@@ -474,9 +581,18 @@ draw_mode* GfxDrvCommon::GetDrawMode()
   return _current_draw_mode;
 }
 
-void GfxDrvCommon::SetDrawMode(draw_mode* mode)
+void GfxDrvCommon::SetDrawMode(draw_mode* mode, bool windowed)
 {
   _current_draw_mode = mode;
+  _output_windowed = windowed;
+}
+
+void GfxDrvCommon::Flip()
+{
+  if (soundGetEmulation() == SOUND_PLAY)
+  {
+    MaybeDelayFlip();
+  }
 }
 
 bool GfxDrvCommon::EmulationStart()
@@ -491,13 +607,15 @@ bool GfxDrvCommon::EmulationStart()
 
   if (!InitializeWindow())
   {
-    fellowAddLog("gfxdrv: GfxDrvCommon::EmulationStart(): Failed to create window\n");
+    fellowAddLog("GfxDrvCommon::EmulationStart(): Failed to create window\n");
     return false;
   }
 
+  InitializeDelayFlipTimerCallback();
+
 #ifdef RETRO_PLATFORM
   // unpause emulation if in Retroplatform mode
-  if (RetroPlatformGetMode() && !RetroPlatformGetEmulationPaused())
+  if (RP.GetHeadlessMode() && !RP.GetEmulationPaused())
     RunEventSet();
 #endif
 
@@ -506,10 +624,10 @@ bool GfxDrvCommon::EmulationStart()
 
 void GfxDrvCommon::EmulationStartPost()
 {
-  if (_hwnd != NULL)
+  if (_hwnd != nullptr)
   {
 #ifdef RETRO_PLATFORM
-    if (!RetroPlatformGetMode())
+    if (!RP.GetHeadlessMode())
 #endif
       DisplayWindow();
   }
@@ -523,11 +641,13 @@ void GfxDrvCommon::EmulationStop()
 bool GfxDrvCommon::Startup()
 {
   _ini = iniManagerGetCurrentInitdata(&ini_manager);
-  bool initialized = RunEventInitialize();
+  bool initialized = InitializeRunEvent();
   if (initialized)
   {
     initialized = InitializeWindowClass();
   }
+
+  InitializeDelayFlipEvent();
 
   return initialized;
 }
@@ -536,11 +656,19 @@ void GfxDrvCommon::Shutdown()
 {
   ReleaseWindow();
   ReleaseWindowClass();
-  RunEventRelease();
+  ReleaseRunEvent();
+  ReleaseDelayFlipEvent();
 }
 
 GfxDrvCommon::GfxDrvCommon()
-  : _run_event(0), _hwnd(0), _ini(0)
+  : _run_event(nullptr),
+    _hwnd(nullptr),
+    _ini(nullptr),
+    _frametime_target(18), 
+    _previous_flip_time(0), 
+    _time(0), 
+    _wait_for_time(0), 
+    _delay_flip_event(nullptr)
 {
 }
 

@@ -1,37 +1,61 @@
 #ifndef DRAW_H
 #define DRAW_H
 
-#ifndef LISTTREE_H
-#include "listtree.h"
-#endif
-
 #ifndef GRAPH_H
 #include "graph.h"
 #endif
 
 #include "CONFIG.H"
+#include <map>
+#include <list>
 
 /*===========================================================================*/
 /* Mode handling, describes the geometry of the host screen                  */
 /*===========================================================================*/
 
-typedef struct {
+struct draw_mode
+{
   ULO id;
   ULO width;
   ULO height;
   ULO bits;
   ULO refresh;
-  BOOLE windowed;
+  STR name[80];
+};
+
+typedef std::list<draw_mode*> draw_mode_list;
+
+struct draw_rect
+{
+  ULO left;
+  ULO top;
+  ULO right;
+  ULO bottom;
+
+  ULO GetWidth() const { return right - left; }
+  ULO GetHeight() const { return bottom - top; }
+
+  draw_rect(ULO clip_left, ULO clip_top, ULO clip_right, ULO clip_bottom)
+    : left(clip_left), top(clip_top), right(clip_right), bottom(clip_bottom) {}
+
+  draw_rect() : left(0), top(0), right(0), bottom(0) {}
+};
+
+struct draw_buffer_information
+{
+  UBY *top_ptr;
+  UBY *current_ptr;
+  ULO width;
+  ULO height;
+  ULO pitch;
+  ULO bits;
   ULO redsize;
-  ULO redpos;           
+  ULO redpos;
   ULO greensize;
   ULO greenpos;
   ULO bluesize;
   ULO bluepos;
-  ULO pitch;
-  STR name[80];
-} draw_mode;
-
+};
 
 /*===========================================================================*/
 /* Draw line routines and data                                               */
@@ -49,39 +73,35 @@ extern draw_line_func draw_line_dual_hires_routine;
 extern draw_line_func draw_line_dual_lores_routine;
 extern draw_line_func draw_line_HAM_lores_routine;
 
-extern ULO draw_hoffset;
-extern ULO draw_voffset;
-extern ULO draw_width_amiga_real;
-extern ULO draw_height_amiga_real;
-extern ULO draw_width_amiga;
-extern ULO draw_height_amiga;
 extern ULO draw_frame_count;
-extern ULO draw_view_scroll;
 extern ULO draw_color_table[4096];
-extern ULO draw_left;
-extern ULO draw_right;
-extern ULO draw_top;
-extern ULO draw_bottom;
 extern ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 
 extern LON draw_frame_skip;
 extern ULO draw_switch_bg_to_bpl;
 extern ULO draw_clear_buffers;
 
-extern UBY *draw_buffer_current_ptr;
+extern draw_buffer_information draw_buffer_info;
+extern draw_mode draw_mode_windowed;
+
+extern ULL drawMake64BitColorFrom32Bit(ULO color);
 
 /*===========================================================================*/
 /* Module properties                                                         */
 /*===========================================================================*/
 
-extern void drawModeAdd(draw_mode *modenode);
-extern BOOLE drawSetMode(ULO width, ULO height, ULO colorbits, ULO refresh, BOOLE windowed);
-extern felist *drawGetModes(void);
-extern void drawModesFree();
+extern void drawAddMode(draw_mode *modenode);
+extern void drawClearModeList();
+extern draw_mode_list& drawGetModes();
+
+extern void drawSetFullScreenMode(ULO width, ULO height, ULO colorbits, ULO refresh);
+extern void drawSetWindowedMode(ULO width, ULO height);
 extern void drawSetDisplayScale(DISPLAYSCALE displayscale);
 extern DISPLAYSCALE drawGetDisplayScale(void);
 extern void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY drawGetDisplayScaleStrategy(void);
+extern ULO drawGetInternalScaleFactor();
+extern ULO drawGetOutputScaleFactor();
 extern void drawSetFrameskipRatio(ULO frameskipratio);
 extern void drawSetFPSCounterEnabled(bool enabled);
 extern void drawSetLEDsEnabled(bool enabled);
@@ -92,7 +112,36 @@ extern void drawSetDisplayDriver(DISPLAYDRIVER displaydriver);
 extern DISPLAYDRIVER drawGetDisplayDriver();
 extern void drawSetGraphicsEmulationMode(GRAPHICSEMULATIONMODE graphicsemulationmode);
 extern GRAPHICSEMULATIONMODE drawGetGraphicsEmulationMode();
-extern ULO drawGetBufferCount(void);
+
+/*===========================================================================*/
+/* Which part of the Amiga screen is visible in the host buffer              */
+/* Units are cylinders (lores-pixels, non-interlaced height)                 */
+/*===========================================================================*/
+
+extern void drawSetInternalClip(const draw_rect& internal_clip);
+extern const draw_rect& drawGetInternalClip();
+extern void drawSetOutputClip(const draw_rect& output_clip);
+extern const draw_rect& drawGetOutputClip();
+
+extern const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, ULO buffer_scale_factor);
+extern const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO buffer_scale_factor);
+
+
+/*===========================================================================*/
+/* Where the visible part of the Amiga screen is located in the host buffer  */
+/* Units are host pixels                                                     */
+/*===========================================================================*/
+
+extern ULO drawGetBufferCount();
+
+extern ULO drawGetBufferClipLeft();
+extern float drawGetBufferClipLeftAsFloat();
+extern ULO drawGetBufferClipTop();
+extern float drawGetBufferClipTopAsFloat();
+extern ULO drawGetBufferClipWidth();
+extern float drawGetBufferClipWidthAsFloat();
+extern ULO drawGetBufferClipHeight();
+extern float drawGetBufferClipHeightAsFloat();
 
 /*===========================================================================*/
 /* When switching rendering (progressive->interlaced)                        */

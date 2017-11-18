@@ -43,6 +43,7 @@
 #include "draw_interlace_control.h"
 #include "fileops.h"
 #include "interrupt.h"
+#include "uart.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -99,6 +100,8 @@ void busEndOfLine(void)
   kbdQueueHandler();
   kbdEventEOLHandler();
 
+  uart.EndOfLine();
+
   /*==============================================================*/
   /* Set up the next end of line event                            */
   /*==============================================================*/
@@ -123,7 +126,7 @@ void busEndOfFrame(void)
   /* Handle keyboard events                                       */
   /*==============================================================*/
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
     kbdDrvEOFHandler();
 #endif
   kbdEventEOFHandler();
@@ -147,6 +150,8 @@ void busEndOfFrame(void)
   /* Recalculate blitter finished time                            */
   /*==============================================================*/
   blitterEndOfFrame();
+
+  uart.EndOfFrame();
 
   /*==============================================================*/
   /* Flag vertical refresh IRQ                                    */
@@ -179,7 +184,6 @@ void busEndOfFrame(void)
   /* Perform graphics end of frame                                */
   /*==============================================================*/
   graphEndOfFrame();
-  timerEndOfFrame();
 
   /*==============================================================*/
   /* Decide interlace rendering status and switch bus screen      */

@@ -56,6 +56,7 @@
 #include "sysinfo.h"
 #include "fileops.h"
 #include "interrupt.h"
+#include "uart.h"
 #include "RetroPlatform.h"
 
 #include "Graphics.h"
@@ -157,6 +158,11 @@ void fellowAddLog2(STR *msg) {
     fflush(F);
     fclose(F);
   }
+
+  if (msg[strlen(msg) - 1] == '\n')
+    fellow_newlogline = TRUE;
+  else
+    fellow_newlogline = FALSE;
 }
 
 static void fellowLogDateTime(void)
@@ -202,10 +208,6 @@ void fellowAddLog(const char *format, ...)
 
   fellowAddLog2(buffer);
 
-  if (buffer[strlen(buffer) - 1] == '\n')
-    fellow_newlogline = TRUE;
-  else
-    fellow_newlogline = FALSE;
   va_end(parms);
 }
 
@@ -234,7 +236,7 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 
   fellowAddLog(buffer);
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode())
+  if (!RP.GetHeadlessMode())
 #endif
     wguiRequester(buffer, uType);
 }
@@ -364,7 +366,6 @@ BOOLE fellowEmulationStart(void) {
   interruptEmulationStart();
   ciaEmulationStart();
   cpuIntegrationEmulationStart();
-  graphEmulationStart();
   spriteEmulationStart();
   blitterEmulationStart();
   copperEmulationStart();
@@ -372,17 +373,20 @@ BOOLE fellowEmulationStart(void) {
   kbdEmulationStart();
   gameportEmulationStart();
   result = drawEmulationStartPost();
+  graphEmulationStart();
   soundEmulationStart();
   busEmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
   timerEmulationStart();
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformEmulationStart();
+  if(RP.GetHeadlessMode())
+    RP.EmulationStart();
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EmulationStart();
+
+  uart.EmulationStart();
 
   return result && memoryGetKickImageOK();
 }
@@ -394,8 +398,8 @@ BOOLE fellowEmulationStart(void) {
 
 void fellowEmulationStop(void) {
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformEmulationStop();
+  if(RP.GetHeadlessMode())
+    RP.EmulationStop();
 #endif
   timerEmulationStop();
   ffilesysEmulationStop();
@@ -416,6 +420,8 @@ void fellowEmulationStop(void) {
   iniEmulationStop();
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EmulationStop();
+
+  uart.EmulationStop();
 }
 
 /*============================================================================*/
@@ -600,8 +606,8 @@ static void fellowModulesStartup(int argc, char *argv[])
   cpuIntegrationStartup();
   wguiStartup();
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformStartup();
+  if(RP.GetHeadlessMode())
+    RP.Startup();
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Startup();
@@ -616,8 +622,8 @@ static void fellowModulesShutdown(void)
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
-    RetroPlatformShutdown();
+  if (RP.GetHeadlessMode())
+    RP.Shutdown();
 #endif
   wguiShutdown();
   cpuIntegrationShutdown();
@@ -656,16 +662,16 @@ int __cdecl main(int argc, char *argv[]) {
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
-  if (!RetroPlatformGetMode()) {
+  if (!RP.GetHeadlessMode()) {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
-    wguiSetProcessDPIAwareness("1");
+    wguiSetProcessDPIAwareness("2");
     while (!wguiEnter())
       fellowRun();
 #ifdef RETRO_PLATFORM
   }
   else
-    RetroPlatformEnter();
+    RP.EnterHeadlessMode();
 #endif
   
   fellowModulesShutdown();

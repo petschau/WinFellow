@@ -23,6 +23,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include <math.h>
+#include <algorithm>
 
 #include "defs.h"
 #include "fellow.h"
@@ -35,8 +36,6 @@
 #include "timer.h"
 #include "fonts.h"
 #include "copper.h"
-#include "wgui.h"
-#include "fileops.h"
 #include "sprite.h"
 #include "CONFIG.H"
 
@@ -44,6 +43,8 @@
 #include "draw_interlace_control.h"
 
 #include "Graphics.h"
+
+#include <map>
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -56,16 +57,10 @@ cfg *draw_config;
 /* that is current                                                            */
 /*============================================================================*/
 
-felist *draw_modes;
+draw_mode_list draw_modes;
 draw_mode *draw_mode_current;
-
-
-/*============================================================================*/
-/* Event flags that trigger some action regarding the host display            */
-/* Special keypresses normally trigger these events                           */
-/*============================================================================*/
-
-ULO draw_view_scroll;                        /* Scroll visible window runtime */
+draw_mode draw_mode_windowed;
+draw_buffer_information draw_buffer_info;
 
 
 /*============================================================================*/
@@ -82,32 +77,162 @@ BOOLE draw_allow_multiple_buffers;          /* allows the use of more buffers */
 ULO draw_clear_buffers;
 
 /*============================================================================*/
-/* Data concerning the dimensions of the Amiga screen to show                 */
-/*============================================================================*/
-
-ULO draw_width_amiga;                /* Width of screen in Amiga lores pixels */
-ULO draw_height_amiga;                    /* Height of screen in Amiga pixels */
-ULO draw_width_amiga_real;            /* Width of Amiga screen in real pixels */
-ULO draw_height_amiga_real;          /* Height of Amiga screen in real pixels */
-
-
-/*============================================================================*/
 /* Data concerning the positioning of the Amiga screen in the host buffer     */               
 /*============================================================================*/
 
-ULO draw_hoffset;            /* X-position of the first amiga pixel in a line */
-ULO draw_voffset;                       /* Y-position of the first amiga line */
+draw_rect draw_buffer_clip;
 
+void drawSetBufferClip(const draw_rect& buffer_clip)
+{
+  draw_buffer_clip = buffer_clip;
+}
+
+const draw_rect& drawGetBufferClip()
+{
+  return draw_buffer_clip;
+}
+
+ULO drawGetBufferClipLeft()
+{
+  return draw_buffer_clip.left;
+}
+
+float drawGetBufferClipLeftAsFloat()
+{
+  return static_cast<float>(drawGetBufferClipLeft());
+}
+
+ULO drawGetBufferClipTop()
+{
+  return draw_buffer_clip.top;
+}
+
+float drawGetBufferClipTopAsFloat()
+{
+  return static_cast<float>(drawGetBufferClipTop());
+}
+
+ULO drawGetBufferClipWidth()
+{
+  return draw_buffer_clip.GetWidth();
+}
+
+float drawGetBufferClipWidthAsFloat()
+{
+  return static_cast<float>(drawGetBufferClipWidth());
+}
+
+ULO drawGetBufferClipHeight()
+{
+  return draw_buffer_clip.GetHeight();
+}
+
+float drawGetBufferClipHeightAsFloat()
+{
+  return static_cast<float>(drawGetBufferClipHeight());	
+}
 
 /*============================================================================*/
 /* Bounding box of the Amiga screen that is visible in the host buffer        */
 /*============================================================================*/
 
-ULO draw_left;
-ULO draw_right;
-ULO draw_top;
-ULO draw_bottom;
+draw_rect draw_clip_max_pal;
 
+draw_rect draw_internal_clip;
+draw_rect draw_output_clip;
+
+void drawSetInternalClip(const draw_rect& internal_clip)
+{
+  draw_internal_clip = internal_clip;
+}
+
+const draw_rect& drawGetInternalClip()
+{
+  return draw_internal_clip;
+}
+
+void drawSetOutputClip(const draw_rect& output_clip)
+{
+  draw_output_clip = output_clip;
+}
+
+const draw_rect& drawGetOutputClip()
+{
+  return draw_output_clip;
+}
+
+void drawInitializePredefinedClipRectangles()
+{
+  draw_clip_max_pal.left = 88;
+  draw_clip_max_pal.top = 26;
+  draw_clip_max_pal.right = 472;
+  draw_clip_max_pal.bottom = 314;
+}
+
+/*============================================================================*/
+/* Add one mode to the list of useable modes                                  */
+/*============================================================================*/
+
+void drawAddMode(draw_mode *modenode)
+{
+  draw_modes.push_back(modenode);
+}
+
+/*============================================================================*/
+/* Returns the first mode, or nullptr if list is empty                        */
+/*============================================================================*/
+
+static draw_mode* drawGetFirstMode()
+{
+  return (draw_modes.empty()) ? nullptr : draw_modes.front();
+}
+
+/*============================================================================*/
+/* Free mode list                                                             */
+/*============================================================================*/
+
+void drawClearModeList()
+{
+  for (draw_mode* dm : draw_modes)
+  {
+    delete dm;
+  }
+  draw_modes.clear();
+  draw_mode_current = &draw_mode_windowed;
+}
+
+static draw_mode* drawFindMode(ULO width, ULO height, ULO colorbits, ULO refresh, bool allow_any_refresh)
+{
+  auto item_iterator = std::find_if(draw_modes.begin(), draw_modes.end(),
+    [width, height, colorbits, refresh, allow_any_refresh](draw_mode* dm)
+  {
+    return (dm->width == width) &&
+      (dm->height == height) &&
+      (dm->bits == colorbits) &&
+      (allow_any_refresh || (dm->refresh == refresh));
+  });
+
+  return (item_iterator != draw_modes.end()) ? *item_iterator : nullptr;
+}
+
+draw_mode_list& drawGetModes()
+{
+  return draw_modes;
+}
+
+/*============================================================================*/
+/* Dump mode list to log                                                      */
+/*============================================================================*/
+
+static void drawLogModeList()
+{
+  fellowAddLog("Draw module mode list:\n");
+  for (draw_mode* dm : draw_modes)
+  {
+    fellowAddLog(dm->name);
+    fellowAddLog("\n");
+  }
+}
 
 /*============================================================================*/
 /* Color table, 12 bit Amiga color to host display color                      */
@@ -143,8 +268,6 @@ draw_line_func draw_line_HAM_lores_routine;
 /* Framebuffer information                                                    */
 /*============================================================================*/
 
-UBY *draw_buffer_top_ptr;    /* Pointer to the top of the current host buffer */
-UBY *draw_buffer_current_ptr;            /* Pointer to the next pixel to draw */
 ULO draw_buffer_show;                 /* Number of the currently shown buffer */
 ULO draw_buffer_draw;                 /* Number of the current drawing buffer */
 ULO draw_buffer_count;                    /* Number of available framebuffers */
@@ -153,47 +276,6 @@ ULO draw_frame_skip_factor;            /* Frame-skip factor, 1 / (factor + 1) */
 LON draw_frame_skip;                            /* Running frame-skip counter */
 ULO draw_switch_bg_to_bpl;       /* Flag TRUE if on current line, switch from */
 /* background color to bitplane data */
-
-/*============================================================================*/
-/* Centering changed                                                          */
-/*============================================================================*/
-
-static void drawViewScroll(void)
-{
-  if (draw_view_scroll == 80)
-  {
-    if (draw_top > 0x1a)
-    {
-      draw_top--;
-      draw_bottom--;
-    }
-  }
-  else if (draw_view_scroll == 72)
-  {
-    if (draw_bottom < 0x139)
-    {
-      draw_top++;
-      draw_bottom++;
-    }
-  }
-  else if (draw_view_scroll == 75)
-  {
-    if (draw_right < 472)
-    {
-      draw_right++;
-      draw_left++;
-    }
-  }
-  else if (draw_view_scroll == 77)
-  {
-    if (draw_left > 88)
-    {
-      draw_right--;
-      draw_left--;
-    }
-  }
-  draw_view_scroll = 0;
-}
 
 /*============================================================================*/
 /* These constants define the LED symbol appearance                           */
@@ -217,7 +299,7 @@ bool draw_LEDs_state[DRAW_LED_COUNT];
 
 static void drawLED16(int x, int y, int width, int height, ULO color)
 {
-  UWO *bufw = ((UWO *) (draw_buffer_top_ptr + draw_mode_current->pitch*y)) + x;
+  UWO *bufw = ((UWO *) (draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
   UWO color16 = (UWO) draw_color_table[((color & 0xf00000) >> 12) |
 		      ((color & 0x00f000) >> 8) |
 		      ((color & 0x0000f0) >> 4)];
@@ -227,14 +309,14 @@ static void drawLED16(int x, int y, int width, int height, ULO color)
     {
       *(bufw + x1) = color16;
     }
-    bufw = (UWO *) (((UBY *) bufw) + draw_mode_current->pitch);
+    bufw = (UWO *)(((UBY *)bufw) + draw_buffer_info.pitch);
   }
 }
 
 
 static void drawLED24(int x, int y, int width, int height, ULO color)
 {
-  UBY *bufb = draw_buffer_top_ptr + draw_mode_current->pitch*y + x*3;
+  UBY *bufb = draw_buffer_info.top_ptr + draw_buffer_info.pitch*y + x * 3;
   ULO color24 = draw_color_table[((color & 0xf00000) >> 12) |
 		((color & 0x00f000) >> 8) |
 		((color & 0x0000f0) >> 4)];
@@ -249,13 +331,13 @@ static void drawLED24(int x, int y, int width, int height, ULO color)
       *(bufb + x1*3 + 1) = color24_2;
       *(bufb + x1*3 + 2) = color24_3;
     }
-    bufb = bufb + draw_mode_current->pitch;
+    bufb = bufb + draw_buffer_info.pitch;
   }
 }
 
 static void drawLED32(int x, int y, int width, int height, ULO color)
 {
-  ULO *bufl = ((ULO *) (draw_buffer_top_ptr + draw_mode_current->pitch*y)) + x;
+  ULO *bufl = ((ULO *)(draw_buffer_info.top_ptr + draw_buffer_info.pitch*y)) + x;
   ULO color32 = draw_color_table[((color & 0xf00000) >> 12) |
 		((color & 0x00f000) >> 8) |
 		((color & 0x0000f0) >> 4)];
@@ -265,18 +347,18 @@ static void drawLED32(int x, int y, int width, int height, ULO color)
     {
       *(bufl + x1) = color32;
     }
-    bufl = (ULO *) (((UBY *) bufl) + draw_mode_current->pitch);
+    bufl = (ULO *)(((UBY *)bufl) + draw_buffer_info.pitch);
   }
 }
 
 static void drawLED(int index, bool state)
 {
-  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index;
-  int y = DRAW_LED_FIRST_Y;
+  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index + (drawGetOutputClip().left - drawGetInternalClip().left)*drawGetOutputScaleFactor();
+  int y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top - drawGetInternalClip().top)*drawGetOutputScaleFactor();
   ULO color = (state) ? DRAW_LED_COLOR_ON : DRAW_LED_COLOR_OFF;
   int height = DRAW_LED_HEIGHT;
 
-  switch (draw_mode_current->bits)
+  switch (draw_buffer_info.bits)
   {
     case 16:
       drawLED16(x, y, DRAW_LED_WIDTH, height, color);
@@ -375,14 +457,14 @@ static void drawFpsText(STR *text)
 
 static void drawFpsToFramebuffer16(void)
 {
-  UWO *bufw = ((UWO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
+  UWO *bufw = ((UWO *) draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
   for (int y = 0; y < 5; y++)
   {
     for (int x = 0; x < 20; x++)
     {
       *(bufw + x) = draw_fps_buffer[y][x] ? 0xffff : 0;
     }
-    bufw = (UWO *) (((UBY *) bufw) + draw_mode_current->pitch);
+    bufw = (UWO *)(((UBY *)bufw) + draw_buffer_info.pitch);
   }
 }
 
@@ -393,7 +475,7 @@ static void drawFpsToFramebuffer16(void)
 
 static void drawFpsToFramebuffer24(void)
 {
-  UBY *bufb = draw_buffer_top_ptr + (draw_mode_current->width - 20)*3;
+  UBY *bufb = draw_buffer_info.top_ptr + (draw_buffer_info.width - 20) * 3;
 
   for (int y = 0; y < 5; y++)
   {
@@ -404,7 +486,7 @@ static void drawFpsToFramebuffer24(void)
       *(bufb + x*3 + 1) = color;
       *(bufb + x*3 + 2) = color;
     }
-    bufb += draw_mode_current->pitch;
+    bufb += draw_buffer_info.pitch;
   }
 }
 
@@ -415,17 +497,7 @@ static void drawFpsToFramebuffer24(void)
 
 static void drawFpsToFramebuffer32(void)
 {
-  ULO *bufl = ((ULO *) draw_buffer_top_ptr) + draw_mode_current->width - 20;
-
-#ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode()) {
-    // move left to offset for clipping at the right; since width is adjusted dynamically for scale, reduce by that, all other values are static
-    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RetroPlatformGetScreenWidthAdjusted() / RetroPlatformGetDisplayScale() - RetroPlatformGetClippingOffsetLeftAdjusted();
-
-    // move down to compensate for clipping at top
-    bufl += RetroPlatformGetClippingOffsetTopAdjusted() * draw_mode_current->pitch / 4;
-  }
-#endif
+  ULO *bufl = ((ULO *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
 
   for (int y = 0; y < 5; y++)
   {
@@ -433,7 +505,7 @@ static void drawFpsToFramebuffer32(void)
     {
       *(bufl + x) = draw_fps_buffer[y][x] ? 0xffffffff : 0;
     }
-    bufl = (ULO *) (((UBY *) bufl) + draw_mode_current->pitch);
+    bufl = (ULO *)(((UBY *)bufl) + draw_buffer_info.pitch);
   }
 }
 
@@ -450,7 +522,7 @@ static void drawFpsCounter(void)
 
     sprintf(s, "%u", drawStatLast50FramesFps());
     drawFpsText(s);
-    switch (draw_mode_current->bits)
+    switch (draw_buffer_info.bits)
     {
       case 16:
 	drawFpsToFramebuffer16();
@@ -471,45 +543,46 @@ static void drawFpsCounter(void)
 /* Draw module properties                                                     */
 /*============================================================================*/
 
-BOOLE drawSetMode(ULO width,
-		  ULO height, 
-		  ULO colorbits, 
-		  ULO refresh,
-		  BOOLE windowed)
+void drawSetFullScreenMode(ULO width, ULO height, ULO colorbits, ULO refresh)
 {
-  felist *l;
-  ULO allow_any_refresh;
-
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
   {
     height = RETRO_PLATFORM_MAX_PAL_LORES_HEIGHT * 2;
     width  = RETRO_PLATFORM_MAX_PAL_LORES_WIDTH  * 2;
   }
 #endif
 
-  for (allow_any_refresh = 0; allow_any_refresh < 2; allow_any_refresh++)
+  // Find with exact refresh
+  draw_mode *mode_found = drawFindMode(width, height, colorbits, refresh, false);
+  if (mode_found == nullptr)
   {
-    for (l = draw_modes; l != NULL; l = listNext(l)) {
-      draw_mode *dm = (draw_mode*) listNode(l);
-      if ((dm->width == width) &&
-	(dm->height == height) &&
-	(windowed || (dm->bits == colorbits)) &&
-	(allow_any_refresh || (dm->refresh == refresh)) &&
-	(dm->windowed == windowed))
-      {
-	draw_mode_current = dm;
-	return TRUE;
-      }
-    }
+    // Try to ignore refresh
+    mode_found = drawFindMode(width, height, colorbits, refresh, true);
   }
-  draw_mode_current = (draw_mode*) listNode(draw_modes);
-  return FALSE;
+
+  if (mode_found != nullptr)
+  {
+    draw_mode_current = mode_found;
+  }
+  else
+  {
+    // No match, take the first in the list
+    draw_mode_current = drawGetFirstMode();
+  }
+  gfxDrvGetBufferInformation(&draw_buffer_info);
 }
 
-felist *drawGetModes(void)
+void drawSetWindowedMode(ULO width, ULO height)
 {
-  return draw_modes;
+  draw_mode_windowed.width = width;
+  draw_mode_windowed.height = height;
+  draw_mode_windowed.bits = 32; // TODO, take from desktop
+  draw_mode_windowed.refresh = 0;
+
+  draw_mode_current = &draw_mode_windowed;
+  
+  gfxDrvGetBufferInformation(&draw_buffer_info);
 }
 
 void drawSetDisplayScale(DISPLAYSCALE displayscale)
@@ -522,9 +595,46 @@ DISPLAYSCALE drawGetDisplayScale(void)
   return draw_displayscale;
 }
 
-ULO drawGetDisplayScaleFactor(void)
+static ULO drawGetAutomaticInternalScaleFactor()
 {
+  return (draw_mode_current->width < 1280) ? 2 : 4;
+}
+
+ULO drawGetInternalScaleFactor()
+{
+  if (drawGetDisplayScale() == DISPLAYSCALE_AUTO)
+  {
+    return drawGetAutomaticInternalScaleFactor();
+  }
+
   return (draw_displayscale == DISPLAYSCALE_1X) ? 2 : 4;
+}
+
+ULO drawGetOutputScaleFactor()
+{
+  if (RP.GetHeadlessMode())
+  {
+    return RP.GetDisplayScale() * 2;
+  }
+
+  ULO output_scale_factor = 2;
+
+  switch (drawGetDisplayScale())
+  {
+    case DISPLAYSCALE::DISPLAYSCALE_1X:
+      output_scale_factor = 2;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_2X:
+      output_scale_factor = 4;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_3X:
+      output_scale_factor = 6;
+      break;
+    case DISPLAYSCALE::DISPLAYSCALE_4X:
+      output_scale_factor = 8;
+      break;
+  }
+  return output_scale_factor;
 }
 
 void drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy)
@@ -598,59 +708,10 @@ BOOLE drawGetAllowMultipleBuffers(void)
   return draw_allow_multiple_buffers;
 }
 
-ULO drawGetBufferCount(void)
+ULO drawGetBufferCount()
 {
   return draw_buffer_count;
 }
-
-/*============================================================================*/
-/* Add one mode to the list of useable modes                                  */
-/*============================================================================*/
-
-void drawModeAdd(draw_mode *modenode)
-{
-  draw_modes = listAddLast(draw_modes, listNew(modenode));
-}
-
-
-/*============================================================================*/
-/* Clear mode list (on startup)                                               */
-/*============================================================================*/
-
-static void drawModesClear()
-{
-  draw_modes = NULL;
-  draw_mode_current = NULL;
-}
-
-
-/*============================================================================*/
-/* Free mode list                                                             */
-/*============================================================================*/
-
-void drawModesFree()
-{
-  listFreeAll(draw_modes, TRUE);
-  drawModesClear();
-}
-
-
-/*============================================================================*/
-/* Dump mode list to log                                                      */
-/*============================================================================*/
-
-static void drawModesDump(void)
-{
-  felist *tmp = draw_modes;
-  fellowAddLog("Draw module mode list:\n");
-  while (tmp != NULL)
-  {
-    fellowAddLog(((draw_mode *) listNode(tmp))->name);
-    fellowAddLog("\n");
-    tmp = listNext(tmp);
-  }
-}
-
 
 /*============================================================================*/
 /* Color translation initialization                                           */
@@ -663,11 +724,11 @@ static void drawColorTranslationInitialize(void)
   /* create color translation table */
   for (k = 0; k < 4096; k++) 
   {
-    r = ((k & 0xf00) >> 8) << (draw_mode_current->redpos + draw_mode_current->redsize - 4);
-    g = ((k & 0xf0) >> 4) << (draw_mode_current->greenpos + draw_mode_current->greensize - 4);
-    b = (k & 0xf) << (draw_mode_current->bluepos + draw_mode_current->bluesize - 4);
+    r = ((k & 0xf00) >> 8) << (draw_buffer_info.redpos + draw_buffer_info.redsize - 4);
+    g = ((k & 0xf0) >> 4) << (draw_buffer_info.greenpos + draw_buffer_info.greensize - 4);
+    b = (k & 0xf) << (draw_buffer_info.bluepos + draw_buffer_info.bluesize - 4);
     draw_color_table[k] = r | g | b;
-    if (draw_mode_current->bits <= 16)
+    if (draw_buffer_info.bits <= 16)
     {
       draw_color_table[k] = draw_color_table[k]<<16 | draw_color_table[k];
     }
@@ -679,88 +740,114 @@ static void drawColorTranslationInitialize(void)
 /* Calculate the width of the screen in Amiga lores pixels                    */
 /*============================================================================*/
 
-static void drawAmigaScreenWidth(draw_mode *dm)
+const std::pair<ULO, ULO> drawCalculateHorizontalOutputClip(ULO buffer_width, ULO buffer_scale_factor)
 {
-  ULO totalscale = drawGetDisplayScaleFactor();
+  ULO left, right;
+  if (!RP.GetHeadlessMode() && drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
+  {
+    // Output width must fit in the buffer or be reduced in width to fit
+    ULO width_amiga = buffer_width / buffer_scale_factor;
+    const draw_rect& internal_clip = drawGetInternalClip();
 
-  draw_width_amiga = dm->width / totalscale;
-  if (draw_width_amiga > 384)
-  {
-    draw_width_amiga = 384;
-  }
-  if (draw_width_amiga <= 343)
-  {
-#ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      draw_left = 125;
+    if (width_amiga > internal_clip.GetWidth())
+    {
+      width_amiga = internal_clip.GetWidth();
+    }
+
+    if (width_amiga <= 343)
+    {
+      left = 129;
+      // Is hardcoded left inside the internal clip?
+      if (left < internal_clip.left || left >= internal_clip.right || (left + width_amiga) > internal_clip.right)
+      {
+        left = internal_clip.left;
+      }
+      right = left + width_amiga;
+    }
     else
-#endif
-      draw_left = 129;
-    draw_right = draw_left + draw_width_amiga;
+    {
+      right = internal_clip.right;
+      left = right - width_amiga;
+    }
   }
   else
   {
-#ifdef RETRO_PLATFORM
-    if (RetroPlatformGetMode())
-      draw_right = 468;
-    else
-#endif
-      draw_right = 472;
-    draw_left = draw_right - draw_width_amiga;
+    // Always use configured output width. RP always goes here.
+    left = drawGetOutputClip().left;
+    right = drawGetOutputClip().right;
   }
-  draw_width_amiga_real = draw_width_amiga*totalscale;
+  return std::pair<ULO, ULO>(left, right);
 }
-
-
 
 
 /*============================================================================*/
 /* Calculate the height of the screen in Amiga lores pixels                   */
 /*============================================================================*/
 
-static void drawAmigaScreenHeight(draw_mode *dm)
+const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO buffer_scale_factor)
 {
-  ULO totalscale = drawGetDisplayScaleFactor();
+  ULO top, bottom;
+  if (!RP.GetHeadlessMode() && drawGetDisplayScale() != DISPLAYSCALE::DISPLAYSCALE_AUTO)
+  {
+    // Output height must fit in the buffer or be reduced in height to fit
+    ULO height_amiga = buffer_height / buffer_scale_factor;
+    const draw_rect& internal_clip = drawGetInternalClip();
 
-  draw_height_amiga = dm->height/totalscale;
-  if (draw_height_amiga > 288)
-  {
-    draw_height_amiga = 288;
-  }
-  if (draw_height_amiga <= 270)
-  {
-    draw_top = 44;
-    draw_bottom = 44 + draw_height_amiga;
+    if (height_amiga > internal_clip.GetHeight())
+    {
+      height_amiga = internal_clip.GetHeight();
+    }
+
+    if (height_amiga <= 270)
+    {
+      top = 44;
+
+      // Is hardcoded top inside the internal clip?
+      if (top < internal_clip.top || top >= internal_clip.bottom || (top + height_amiga) > internal_clip.bottom)
+      {
+        top = internal_clip.top;
+      }
+
+      bottom = top + height_amiga;
+    }
+    else
+    {
+      bottom = internal_clip.bottom;
+      top = bottom - height_amiga;
+    }
   }
   else
   {
-    draw_bottom = busGetMaxLinesInFrame();
-    draw_top = busGetMaxLinesInFrame() - draw_height_amiga;
+    // Always use configured output height
+    top = drawGetOutputClip().top;
+    bottom = drawGetOutputClip().bottom;
   }
-  draw_height_amiga_real = draw_height_amiga*totalscale;
+  return std::pair<ULO, ULO>(top, bottom);
 }
-
-
-/*============================================================================*/
-/* Center the Amiga screen                                                    */
-/*============================================================================*/
-
-static void drawAmigaScreenCenter(draw_mode *dm)
-{
-  draw_hoffset = ((dm->width - draw_width_amiga_real)/2) & (~7);
-  draw_voffset = (dm->height - draw_height_amiga_real)/2 & (~1);
-}
-
 
 /*============================================================================*/
 /* Calulate needed geometry information about Amiga screen                    */
 /*============================================================================*/
 
-static void drawAmigaScreenGeometry(draw_mode *dm)
+static void drawAmigaScreenGeometry(ULO buffer_width, ULO buffer_height)
 {
-  drawAmigaScreenWidth(dm);
-  drawAmigaScreenHeight(dm);
-  drawAmigaScreenCenter(dm);
+  ULO output_scale_factor = drawGetOutputScaleFactor();
+  ULO internal_scale_factor = drawGetInternalScaleFactor();
+
+  const std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalOutputClip(draw_mode_current->width, output_scale_factor);
+  const std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalOutputClip(draw_mode_current->height, output_scale_factor);
+
+  draw_rect output_clip(horizontal_clip.first, vertical_clip.first, horizontal_clip.second, vertical_clip.second);
+  drawSetOutputClip(output_clip);
+
+  const draw_rect& internal_clip = drawGetInternalClip();
+
+  ULO buffer_clip_left = (output_clip.left - internal_clip.left) * internal_scale_factor;
+  ULO buffer_clip_top = (output_clip.top - internal_clip.top) * internal_scale_factor;
+  ULO buffer_clip_width = output_clip.GetWidth() * internal_scale_factor;
+  ULO buffer_clip_height = output_clip.GetHeight() * internal_scale_factor;
+
+  drawSetBufferClip(draw_rect(buffer_clip_left, buffer_clip_top, buffer_clip_left + buffer_clip_width, buffer_clip_top + buffer_clip_height));
 }
 
 
@@ -768,20 +855,19 @@ static void drawAmigaScreenGeometry(draw_mode *dm)
 /* Selects drawing routines for the current mode                              */
 /*============================================================================*/
 
-static void drawModeTablesInitialize(draw_mode *dm)
+static void drawModeTablesInitialize()
 {
   // initialize some values
   draw_buffer_draw = 0;
   draw_buffer_show = 0;
 
-  drawModeFunctionsInitialize(dm);
+  drawModeFunctionsInitialize();
 
   memoryWriteWord((UWO) bplcon0, 0xdff100);
-  drawAmigaScreenGeometry(draw_mode_current);
   drawColorTranslationInitialize();
   graphInitializeShadowColors();
-  draw_buffer_current_ptr = draw_buffer_top_ptr;
-  drawHAMTableInit(draw_mode_current);
+  draw_buffer_info.current_ptr = draw_buffer_info.top_ptr;
+  drawHAMTableInit();
 }
 
 /*============================================================================*/
@@ -911,28 +997,34 @@ ULO drawStatSessionFps(void)
 
 ULO drawValidateBufferPointer(ULO amiga_line_number)
 {
-  ULO scale = drawGetDisplayScaleFactor();
+  ULO internal_scale_factor = drawGetInternalScaleFactor();
 
-  draw_buffer_top_ptr = gfxDrvValidateBufferPointer();
-  if (draw_buffer_top_ptr == NULL)
+  draw_buffer_info.top_ptr = gfxDrvValidateBufferPointer();
+
+  if (draw_buffer_info.top_ptr == nullptr)
   {
-    fellowAddLog("Buffer ptr is NULL\n");
+    fellowAddLog("Buffer ptr is nullptr\n");
     return 0;
   }
 
-  draw_buffer_current_ptr = 
-    draw_buffer_top_ptr + (draw_mode_current->pitch * scale * (amiga_line_number - draw_top)) +
-    (draw_mode_current->pitch * draw_voffset) + (draw_hoffset * (draw_mode_current->bits >> 3));
+  // Calculate a pointer to the first pixel on the requested line.
+  draw_buffer_info.current_ptr =
+    draw_buffer_info.top_ptr +
+    draw_buffer_info.pitch * internal_scale_factor * (amiga_line_number - drawGetInternalClip().top);
+  //+
+  //  draw_buffer_info.pitch * draw_buffer_clip_offset.y +
+  //  draw_buffer_clip_offset.x * (draw_mode_current->bits >> 3);
 
   if (drawGetUseInterlacedRendering())
   {
     if (!drawGetFrameIsLong())
     {
-      draw_buffer_current_ptr += ((draw_mode_current->pitch * scale) / 2);
+      // Draw on the short field.
+      draw_buffer_info.current_ptr += (draw_buffer_info.pitch * internal_scale_factor) / 2;
     }
   }
 
-  return draw_mode_current->pitch * scale;
+  return draw_buffer_info.pitch * internal_scale_factor;
 }
 
 
@@ -965,7 +1057,7 @@ void drawEmulationStart(void)
 
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_skip = 0;
-  gfxDrvSetMode(draw_mode_current);
+  gfxDrvSetMode(draw_mode_current, draw_mode_current == &draw_mode_windowed);
 
   gfxDrvEmulationStart(gfxModeNumberOfBuffers);
   drawStatClear();
@@ -975,21 +1067,20 @@ void drawEmulationStart(void)
 
 BOOLE drawEmulationStartPost(void)
 {
-  BOOLE result;
-
+  drawAmigaScreenGeometry(draw_buffer_info.width, draw_buffer_info.height);
   draw_buffer_count = gfxDrvEmulationStartPost();
-  result = (draw_buffer_count != 0);
+  bool result = (draw_buffer_count != 0);
   if (result)
   {
-    drawModeTablesInitialize(draw_mode_current);
     draw_buffer_show = 0;
     draw_buffer_draw = draw_buffer_count - 1;
+    drawModeTablesInitialize();
   }
   else
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, 
-      "Failure: The graphics driver failed to allocate enough graphics card memory");
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to allocate enough graphics card memory");
   }
+  fellowAddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
   return result;
 }
 
@@ -1012,21 +1103,31 @@ BOOLE drawStartup(void)
 {
   draw_config = cfgManagerGetCurrentConfig(&cfg_manager);
 
-  drawModesClear();
+  drawClearModeList();
   if (!gfxDrvStartup(cfgGetDisplayDriver(draw_config)))
   {
     return FALSE;
   }
-  draw_mode_current = (draw_mode *) listNode(draw_modes);
+
+  draw_mode_windowed.width = 640;
+  draw_mode_windowed.height = 400;
+  draw_mode_windowed.bits = 32;
+
+  draw_mode_current = &draw_mode_windowed;
   drawDualTranslationInitialize();
-  draw_left = 120;
-  draw_right = 440;
-  draw_top = 0x45;
-  draw_bottom = 0x10d;
-  draw_view_scroll = 0;
+
+  drawInitializePredefinedClipRectangles();
+
+  if (!RP.GetHeadlessMode())
+  {
+    drawSetInternalClip(draw_clip_max_pal);
+    drawSetOutputClip(draw_clip_max_pal);
+  }
+
   draw_switch_bg_to_bpl = FALSE;
   draw_frame_count = 0;
   draw_clear_buffers = 0;
+
   drawSetDisplayScale(DISPLAYSCALE_1X);
   drawSetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY_SOLID);
   drawSetFrameskipRatio(1);
@@ -1050,7 +1151,7 @@ BOOLE drawStartup(void)
 
 void drawShutdown(void)
 {
-  drawModesFree();
+  drawClearModeList();
   gfxDrvShutdown();
 
   drawWriteProfilingResultsToFile();
@@ -1074,15 +1175,16 @@ void drawUpdateDrawmode(void)
 
 ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
 {
-  if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  ULO internal_scale_factor = drawGetInternalScaleFactor();
+  if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return 0; // 2x1 (ie. nothing to offset to)
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_1X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
+  else if (internal_scale_factor == 2 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SOLID)
   {
     return pitch_in_bytes / 2; // 2x2
   }
-  else if (drawGetDisplayScale() == DISPLAYSCALE_2X && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
+  else if (internal_scale_factor == 4 && drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES)
   {
     return pitch_in_bytes / 4; // 4x2 (scanline - write two solid lines followed by two blank ones... Awful?)
   }
@@ -1091,7 +1193,7 @@ ULO drawGetNextLineOffsetInBytes(ULO pitch_in_bytes)
 
 void drawReinitializeRendering(void)
 {
-  drawModeTablesInitialize(draw_mode_current);
+  drawModeTablesInitialize();
   graphLineDescClear();
 }
 
@@ -1109,15 +1211,18 @@ void drawEndOfFrame(void)
       --draw_clear_buffers;
     }
 
-    ULO pitch_in_bytes = drawValidateBufferPointer(draw_top);
+    ULO pitch_in_bytes = drawValidateBufferPointer(drawGetInternalClip().top);
 
     // need to test for error
-    if (draw_buffer_top_ptr != NULL)
+    if (draw_buffer_info.top_ptr != nullptr)
     {
-      if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT) {
-	UBY *draw_buffer_current_ptr_local = draw_buffer_current_ptr;
-	for (ULO i = 0; i < (draw_bottom - draw_top); i++) {
-	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, draw_top + i);
+      if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_LINEEXACT)
+      {
+        ULO height = drawGetInternalClip().GetHeight();
+	UBY *draw_buffer_current_ptr_local = draw_buffer_info.current_ptr;
+	for (ULO i = 0; i < height; i++)
+        {
+	  graph_line *graph_frame_ptr = graphGetLineDesc(draw_buffer_draw, drawGetInternalClip().top + i);
 	  if (graph_frame_ptr != NULL)
 	  {
 	    if (graph_frame_ptr->linetype != GRAPH_LINE_SKIP)
@@ -1129,17 +1234,19 @@ void drawEndOfFrame(void)
 	    }
 	  }
 	  draw_buffer_current_ptr_local += pitch_in_bytes;
-	  draw_buffer_current_ptr = draw_buffer_current_ptr_local;
+	  draw_buffer_info.current_ptr = draw_buffer_current_ptr_local;
 	}
       }
       else
-	GraphicsContext.BitplaneDraw.TmpFrame(pitch_in_bytes);
+      {
+        GraphicsContext.BitplaneDraw.TmpFrame(pitch_in_bytes);
+      }
 
       drawLEDs();
       drawFpsCounter();
       drawInvalidateBufferPointer();
 
-      drawViewScroll();
+//      drawClipScroll();
       drawStatTimestamp();
       drawBufferFlip();
     }

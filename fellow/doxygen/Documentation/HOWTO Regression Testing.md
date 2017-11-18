@@ -1,13 +1,13 @@
 HOWTO: Regression Testing {#howtoregressiontesting}
 ===================================================
 
-Several issues were fixed over time in WinFellow's emulation core. 
-To avoid them resurfacing in the future, the following tests should be performed 
+Several issues were fixed over time in WinFellow's emulation core.
+To avoid them resurfacing in the future, the following tests should be performed
 on a regular basis, at the very least after major changes.
 
 When testing large batches of titles, to speed up testing it is possible to make
 the emulation run at maximum speed by setting the configuration file option
-_sound_output=interrupts_; this can also be configured in Amiga Forever's 
+_sound_output=interrupts_; this can also be configured in Amiga Forever's
 override.ini, allowing quick testing of a group of RP9 packages.
 
 r749: Changed the constant for lines in a frame
@@ -34,14 +34,14 @@ it would freeze before displaying the Psyclapse logo.
 Other known titles affected:
 Bombuzal, Brides of Dracula, Dungeon Master, F-18 Interceptor,
 Fiendish Freddy, Grand Prix Circuit, Indiana Jones 3,
-Loom, Neuromancer, Personal Nightmare, 
+Loom, Neuromancer, Personal Nightmare,
 Revenge of the Mutant Camels, Robocop, Test Drive,
 Test Drive 2, Vroom, Where in the world is Carmen Sandiego,
 Wings of Fury
 
 r831: Redesigned chipset interrupt handling
 -------------------------------------------
-Test that "Seeing is Believing" can be started without issues - 
+Test that "Seeing is Believing" can be started without issues -
 before this commit, the session would freeze immediately upon start.
 
 Other known titles affected:
@@ -81,27 +81,37 @@ sound would start garbling and the emulation session would reboot.
 
 r888: sprites in hires dual playfield mode
 ------------------------------------------
-Test that during the loader screen in Decaying Paradise by Andromeda, a blue rotating 
+Test that during the loader screen in Decaying Paradise by Andromeda, a blue rotating
 triangle-shaped logo is visible. Before this change, the triangle was invisible.
 
 r897: Alt+F4 in RetroPlatform mode when undo is enabled and a change was performed
 ----------------------------------------------------------------------------------
-Test that Alt+F4 in RetroPlatform mode will close the emulation session. 
-Perform a write operation on a floppy where undo is enabled, and close the session 
+Test that Alt+F4 in RetroPlatform mode will close the emulation session.
+Perform a write operation on a floppy where undo is enabled, and close the session
 using Alt+F4. The undo dialog must be usable both when clicking ok or cancel.
 Before this change, the emulation session would always be closed.
 
 r898: increased sprite action/merge item list sizes to a maximum of 5.000 entries
 ---------------------------------------------------------------------------------
+
 Start the 1MB chipmem version of State of the Art (Spaceballs) with only 512kB of
-chipmem configured. The demo will cause a crash of the emulator session, but the 
+chipmem configured. The demo will cause a crash of the emulator session, but the
 emulator should remain responsive.
 Before this change, a crash to the desktop would occur.
 
+Update: 
+This fix is replaced by Git f99a94de. "To be safe increase sprite max list items to 100"
+It follows other code changes that reduced the need for very large sprite list buffers.
+This is still a valid test. 
+Also test the game Megalomania, it creates a larger sprite list than State of the Art
+when it crashes after the initial intro text when OCS is selected. (The actual crash is due
+to copy-protection.)
+
+
 r906: Sprite DMA was being disabled instead of waiting
 ------------------------------------------------------
-Start Arkanoid, hit F1 and start in round 7 (move mouse to the right to select 
-level). Verify that enemy sprites are coming down from the top of the screen. 
+Start Arkanoid, hit F1 and start in round 7 (move mouse to the right to select
+level). Verify that enemy sprites are coming down from the top of the screen.
 Before this change, they were not visible.
 
 Arkanoid is updating vstart/vstop with the copper.
@@ -133,7 +143,7 @@ flickering.
 
 Before this change, it would have inverted lines.
 
-Also affected by this is the game The Ninja Warriors; the game would not load 
+Also affected by this is the game The Ninja Warriors; the game would not load
 before this change and can now be started.
 
 If copper DMA was off during "end of frame", and is being turned on for the first
@@ -163,7 +173,7 @@ can be left by pressing both mouse buttons simultaneously.
 
 Before this commit, it was impossible to proceed beyond the cracktro.
 
-Also known to be affected by this change is the game "Plan 9 From Outer Space", 
+Also known to be affected by this change is the game "Plan 9 From Outer Space",
 which would fail to proceed loading the second disk.
 
 r963: copjmp  lost if triggered while dma was off and copper had already run to the end of its copper list
@@ -216,11 +226,33 @@ Edit a title to use PAL standard clipping and verify it is displayed correctly i
 Edit a title to use PAL (maximum) clipping and verify it is displayed correctly in 1x mode. Take a screenshot, verify it is ok.
 
 Start Arkanoid and verify it is displayed correctly
-- in 1x mode. Take a screenshot, verify it is ok. 
+- in 1x mode. Take a screenshot, verify it is ok.
 - in 2x mode. Take a screenshot, verify it is ok.
 
 Edit a title to use Automatic clipping and verify the maximum screen area is visible in 1x mode. Take a screenshot, verify it is ok. 
 
 Edit a title to use custom clipping of a small area and verify it is displayed correctly
-- in 1x mode. Take a screenshot, verify it is ok. 
+- in 1x mode. Take a screenshot, verify it is ok.
 - in 2x mode. Take a screenshot, verify it is ok.
+
+Git 86bd011: Two disk related fixes
+-----------------------------------
+The game Amegas, packed into one file, does a disk access right after decrunching that requires the motor bit to be set in advance, and hung.
+This is a detail metioned in the HRM. Check that the game starts.
+
+The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. The fix adds a limit to stepping beyond the size of the
+disk image. Check that the game loads. Note that the game has broken intro graphics.
+
+Git f99a94de - Last of several commits regarding "Sprites on HAM"
+-----------------------------------------------------------------
+Verify that sprites on top of HAM resolution bitplane graphics works.
+
+Two cases using this:
+
+Fairlight - My Room demo
+A red filled vector cube (the sprite) is moving around on the screen, part of the middle screen is HAM resolution.
+Make sure the cube looks perfect wherever it moves.
+
+Silents - Ice demo
+One of the first parts is a white screen with a picture of a warrior girl. The screen should contain a basic filled vector 
+geometry object (the sprite) on top of the image moving around with no artifacts.

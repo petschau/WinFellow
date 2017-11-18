@@ -6,10 +6,10 @@
 #include "RetroPlatform.h"
 #include "fileops.h"
 
-bool gfx_drv_use_dxgi = true;
+bool gfx_drv_use_dxgi = false;
 
-GfxDrvCommon *gfxDrvCommon = 0;
-GfxDrvDXGI *gfxDrvDXGI = 0;
+GfxDrvCommon *gfxDrvCommon = nullptr;
+GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
 void gfxDrvClearCurrentBuffer()
 {
@@ -49,6 +49,8 @@ void gfxDrvInvalidateBufferPointer()
 
 void gfxDrvBufferFlip()
 {
+  gfxDrvCommon->Flip();
+
   if (gfx_drv_use_dxgi)
   {
     gfxDrvDXGI->Flip();
@@ -59,29 +61,63 @@ void gfxDrvBufferFlip()
   }
 }
 
-void gfxDrvSizeChanged()
+void gfxDrvNotifyActiveStatus(bool active)
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->SizeChanged();
-  }
-  else
-  {
-    gfxDrvDDrawSizeChanged();
+    gfxDrvDXGI->NotifyActiveStatus(active);
   }
 }
 
-void gfxDrvSetMode(draw_mode *dm)
+void gfxDrvSizeChanged(unsigned int width, unsigned int height)
 {
-  gfxDrvCommon->SetDrawMode(dm);
+  gfxDrvCommon->SizeChanged(width, height);
 
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->SetMode(dm);
+    gfxDrvDXGI->SizeChanged(width, height);
   }
   else
   {
-    gfxDrvDDrawSetMode(dm);
+    gfxDrvDDrawSizeChanged(width, height);
+  }
+}
+
+void gfxDrvPositionChanged()
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->PositionChanged();
+  }
+  else
+  {
+    gfxDrvDDrawPositionChanged();
+  }
+}
+
+void gfxDrvSetMode(draw_mode *dm, bool windowed)
+{
+  gfxDrvCommon->SetDrawMode(dm, windowed);
+
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->SetMode(dm, windowed);
+  }
+  else
+  {
+    gfxDrvDDrawSetMode(dm, windowed);
+  }
+}
+
+void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information)
+{
+  if (gfx_drv_use_dxgi)
+  {
+    gfxDrvDXGI->GetBufferInformation(buffer_information);
+  }
+  else
+  {
+    gfxDrvDDrawGetBufferInformation(buffer_information);
   }
 }
 
@@ -159,7 +195,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
 bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
 {
   gfxDrvShutdown();
-  drawModesFree();
+  drawClearModeList();
   return gfxDrvStartup(displaydriver);
 }
 
@@ -176,8 +212,11 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
   }
 
 #ifdef RETRO_PLATFORM
-  if (RetroPlatformGetMode())
+  if (RP.GetHeadlessMode())
+  {
     gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
+    RP.RegisterRetroPlatformScreenMode(true);
+  }
 #endif
 
   if (gfx_drv_use_dxgi)
@@ -185,11 +224,18 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
     if (!gfxDrvDXGIValidateRequirements())
     {
       fellowAddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+      gfx_drv_use_dxgi = false;
       return gfxDrvDDrawStartup();
     }
 
     gfxDrvDXGI = new GfxDrvDXGI();
-    return gfxDrvDXGI->Startup();
+    bool dxgiStartupResult = gfxDrvDXGI->Startup();
+    if (dxgiStartupResult)
+    {
+      return true;
+    }
+    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    gfx_drv_use_dxgi = false;
   }
 
   return gfxDrvDDrawStartup();
@@ -200,12 +246,10 @@ void gfxDrvShutdown()
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->Shutdown();
-
-    if (gfxDrvDXGI != 0)
+    if (gfxDrvDXGI != nullptr)
     {
       delete gfxDrvDXGI;
-      gfxDrvDXGI = 0;
+      gfxDrvDXGI = nullptr;
     }
   }
   else
@@ -213,10 +257,10 @@ void gfxDrvShutdown()
     gfxDrvDDrawShutdown();
   }
 
-  if (gfxDrvCommon != 0)
+  if (gfxDrvCommon != nullptr)
   {
     delete gfxDrvCommon;
-    gfxDrvCommon = 0;
+    gfxDrvCommon = nullptr;
   }
 }
 
@@ -247,33 +291,3 @@ bool gfxDrvDXGIValidateRequirements(void)
   return true;
 }
 
-void gfxDrvRegisterRetroPlatformScreenMode(const bool bStartup)
-{
-  ULO lHeight, lWidth, lDisplayScale;
-
-  if (RetroPlatformGetScanlines())
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SCANLINES);
-  else
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY_SOLID);
-
-  if (bStartup) {
-    RetroPlatformSetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-    RetroPlatformSetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
-  }
-
-  lHeight = RetroPlatformGetScreenHeightAdjusted();
-  lWidth = RetroPlatformGetScreenWidthAdjusted();
-  lDisplayScale = RetroPlatformGetDisplayScale();
-
-  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
-
-  if (gfx_drv_use_dxgi)
-  {
-    gfxDrvDXGI->RegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
-  }
-  else
-  {
-    gfxDrvDDrawRegisterRetroPlatformScreenMode(false, lWidth, lHeight, lDisplayScale);
-  }
-}

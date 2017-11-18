@@ -327,10 +327,10 @@ void mouseDrvToggleFocus(void)
   mouse_drv_focus = !mouse_drv_focus;
   mouseDrvStateHasChanged(mouse_drv_active);
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
   {
     fellowAddLog("mouseDrvToggleFocus(): mouse focus changed to to %s\n", mouse_drv_focus ? "true" : "false");
-    RetroPlatformSendMouseCapture(mouse_drv_focus);
+    RP.SendMouseCapture(mouse_drv_focus ? true : false);
   }
 #endif
 }
@@ -353,12 +353,12 @@ void mouseDrvSetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
     mouseDrvStateHasChanged(mouse_drv_active);
 
   #ifdef RETRO_PLATFORM
-    if(RetroPlatformGetMode())
+    if(RP.GetHeadlessMode())
       if(!bRequestedByRPHost)
       {
         fellowAddLog("mouseDrvSetFocus(%s): notifiying, as not requested by host.\n", 
           bNewFocus ? "true" : "false");
-        RetroPlatformSendMouseCapture(mouse_drv_focus);
+        RP.SendMouseCapture(mouse_drv_focus ? true : false);
       }
   #endif
   }

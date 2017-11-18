@@ -3,12 +3,21 @@ fellow/SRC/WIN32/INCLUDE/versioninfo.h
 fellow/SRC/WIN32/MSVC/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/Debug/
 fellow/SRC/WIN32/MSVC/Release/
+fellow/SRC/M68KTester/Debug
+fellow/SRC/M68KTester/Release
 *.lyx~
 fellow/doxygen/WinFellow-doxygen.*
 fellow/doxygen/WinFellow-doxygen.pdf
 fellow/SRC/WIN32/NSIS/WinFellow.log
 *.bak
-fellow/SRC/WIN32/MSVC/WinFellow.opensdf
+*.opensdf
 *.sdf
 fellow/Docs/WinFellow/WinFellow User Manual.pdf
 *.lyx#
+*.vcxproj.user
+*.obj
+*.pdb
+*.tlog
+*.exe
+*.log
+fellow/SRC/WIN32/MSVC/.vs/WinFellow/v15/

@@ -129,6 +129,7 @@ static UBY floppyBootBlockFFS[]={
   0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
 };
 
+//#define FLOPPY_LOG
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
@@ -420,8 +421,8 @@ void floppyMotorSet(ULO drive, BOOLE mtr)
   {
     drawSetLED(drive, !mtr);
 #ifdef RETRO_PLATFORM
-    if(RetroPlatformGetMode())
-      RetroPlatformSendFloppyDriveLED(drive, !mtr, FALSE);
+    if(RP.GetHeadlessMode())
+      RP.PostFloppyDriveLED(drive, !mtr ? true : false, false);
 #endif
   }
   floppy[drive].motor = !mtr;
@@ -463,15 +464,18 @@ void floppyStepSet(BOOLE stp)
       {
 	if (!floppy[i].dir) 
 	{
+          if (floppy[i].track < floppy[i].tracks - 1)
+          {
 #ifdef FLOPPY_LOG
-	  floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
+            floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
 #endif
-	  floppy[i].track++;
+            floppy[i].track++;
 
 #ifdef RETRO_PLATFORM
-	  if(RetroPlatformGetMode())
-	    RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+            if (RP.GetHeadlessMode())
+              RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
+          }
 	}
 	else
 	{
@@ -483,8 +487,8 @@ void floppyStepSet(BOOLE stp)
 	    floppy[i].track--;
 
 #ifdef RETRO_PLATFORM
-	    if(RetroPlatformGetMode())
-	      RetroPlatformSendFloppyDriveSeek(i, floppy[i].track);
+	    if(RP.GetHeadlessMode())
+	      RP.PostFloppyDriveSeek(i, floppy[i].track);
 #endif
 	  }
 	}
@@ -1035,9 +1039,9 @@ void floppyImageRemove(ULO drive)
   }
 #endif
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
+  if(RP.GetHeadlessMode())
   {
-    RetroPlatformSendFloppyDriveContent(drive, "", floppy[drive].writeprot);
+    RP.SendFloppyDriveContent(drive, "", floppy[drive].writeprot ? true : false);
   }
 #endif
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
@@ -1297,9 +1301,9 @@ void floppySetDiskImage(ULO drive, STR *diskname)
 		break;
 	    }
 #ifdef RETRO_PLATFORM
-	    if(RetroPlatformGetMode() && bSuccess)
+	    if(RP.GetHeadlessMode() && bSuccess)
 	    {
-		RetroPlatformSendFloppyDriveContent(drive, diskname, floppy[drive].writeprot);
+              RP.SendFloppyDriveContent(drive, diskname, floppy[drive].writeprot ? true : false);
 	    }
 #endif
 	  }
@@ -1326,8 +1330,8 @@ void floppySetReadOnly(ULO drive, BOOLE readonly)
   floppy[drive].writeprot = readonly;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyDriveReadOnly(drive, readonly);
+  if(RP.GetHeadlessMode())
+    RP.SendFloppyDriveReadOnly(drive, readonly ? true : false);
 #endif
 }
 
@@ -1340,8 +1344,8 @@ void floppySetFastDMA(BOOLE fastDMA)
   floppy_fast = fastDMA;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyTurbo(fastDMA);
+  if(RP.GetHeadlessMode())
+    RP.SendFloppyTurbo(fastDMA ? true : false);
 #endif
 }
 
@@ -1559,8 +1563,8 @@ void floppyDMAWriteInit(LON drive)
   BOOLE ended = FALSE;
 
 #ifdef RETRO_PLATFORM
-  if(RetroPlatformGetMode())
-    RetroPlatformSendFloppyDriveLED(drive, TRUE, TRUE);
+  if(RP.GetHeadlessMode())
+    RP.PostFloppyDriveLED(drive, true, true);
 #endif
 
   if ((drive == -1) || !floppyDMAChannelOn())
@@ -1758,10 +1762,21 @@ void floppyEndOfLine(void)
       UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
       BOOLE found_sync = floppyCheckSync(word_under_head);
       floppyNextByte(sel_drv, track);
-      tmpb2 = floppyGetByteUnderHead(sel_drv, track);
-      floppyNextByte(sel_drv, track);
-      word_under_head = (tmpb1 << 8) | tmpb2;
-      found_sync = floppyCheckSync(word_under_head);
+
+      if (!found_sync)  // Sync was found on a byte boundary, skip reading ahead to align.
+      {
+        tmpb2 = floppyGetByteUnderHead(sel_drv, track);
+        floppyNextByte(sel_drv, track);
+        word_under_head = (tmpb1 << 8) | tmpb2;
+        found_sync |= floppyCheckSync(word_under_head);
+      }
+#ifdef FLOPPY_LOG
+      else
+      {
+          floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
+      }
+#endif
+
       prev_byte_under_head = word_under_head & 0xff;
       dskbyt_tmp = word_under_head;
       dskbyt1_read = FALSE;

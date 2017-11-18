@@ -28,7 +28,7 @@ GfxDrvDXGIAdapterList* GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(IDXGIFacto
 
 void GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(GfxDrvDXGIAdapterList *adapters)
 {
-  if (adapters != 0)
+  if (adapters != nullptr)
   {
     for (GfxDrvDXGIAdapterList::iterator i = adapters->begin(); i != adapters->end(); ++i)
     {

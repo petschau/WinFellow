@@ -59,8 +59,8 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 0,5,4,$WCREV$
- PRODUCTVERSION 0,5,4,$WCREV$
+ FILEVERSION 0,5,6,$WCREV$
+ PRODUCTVERSION 0,5,6,$WCREV$
  FILEFLAGSMASK 0x17L
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -78,11 +78,11 @@ BEGIN
             VALUE "Comments", "http://petschau.github.io/WinFellow/"
             VALUE "FileDescription", "WinFellow Amiga Emulator"
             VALUE "InternalName", "WinFellow"
-            VALUE "LegalCopyright", "©1996-2016 under the GNU General Public License (GPL)"
+            VALUE "LegalCopyright", "©1996-2017 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
-            VALUE "FileVersion", "0.5.4.$WCREV$"
-            VALUE "ProductVersion", "0.5.4.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$"    
+            VALUE "FileVersion", "0.5.6.$WCREV$"
+            VALUE "ProductVersion", "0.5.6.$WCREV$-$WCBRANCH$-$WCCOMMITSHORT$"    
         END
     END
     BLOCK "VarFileInfo"

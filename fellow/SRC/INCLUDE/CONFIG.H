@@ -6,7 +6,6 @@
 #include "gameport.h"
 #include "listtree.h"
 
-
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
 /*============================================================================*/
@@ -20,7 +19,6 @@ typedef struct {
   ULO   reservedblocks;
 } cfg_hardfile;
 
-
 /*============================================================================*/
 /* struct that holds a complete filesystem configuration                      */
 /*============================================================================*/
@@ -32,8 +30,11 @@ typedef struct {
 } cfg_filesys;
 
 typedef enum {
+  DISPLAYSCALE_AUTO = 0,
   DISPLAYSCALE_1X = 1,
-  DISPLAYSCALE_2X = 2
+  DISPLAYSCALE_2X = 2,
+  DISPLAYSCALE_3X = 3,
+  DISPLAYSCALE_4X = 4
 } DISPLAYSCALE;
 
 typedef enum {
@@ -58,10 +59,14 @@ typedef enum {
 /* when changed here.                                                         */
 /*============================================================================*/
 
+#define CONFIG_CURRENT_FILE_VERSION 2
+
 typedef struct {
 
+  ULO   m_configfileversion;
   STR	m_description[CFG_FILENAME_LENGTH];
-	
+
+
   /*==========================================================================*/
   /* Floppy disk configuration                                                */
   /*==========================================================================*/
@@ -71,6 +76,7 @@ typedef struct {
   BOOLE  m_diskreadonly[4];
   BOOLE  m_diskfast;
   STR    m_lastuseddiskdir[CFG_FILENAME_LENGTH];	
+
 
   /*==========================================================================*/
   /* Memory configuration                                                     */
@@ -96,9 +102,16 @@ typedef struct {
   ULO	m_screenheight;
   ULO   m_screencolorbits;
   ULO   m_screenrefresh;
-  BOOLE m_screenwindowed;
+  bool  m_screenwindowed;
+
   bool  m_screendrawleds;
   ULO   m_frameskipratio;
+
+  ULO m_clipleft;
+  ULO m_cliptop;
+  ULO m_clipright;
+  ULO m_clipbottom;
+
   DISPLAYSCALE  m_displayscale;
   DISPLAYSCALE_STRATEGY m_displayscalestrategy;
   bool  m_deinterlace;
@@ -106,11 +119,13 @@ typedef struct {
   DISPLAYDRIVER m_displaydriver;
   GRAPHICSEMULATIONMODE m_graphicsemulationmode;
 
+
   /*==========================================================================*/
   /* Hold the option for using multiple graphical buffers                     */
   /*==========================================================================*/
 
   BOOLE  m_use_multiple_graphical_buffers;
+
 
   /*==========================================================================*/
   /* Sound configuration                                                      */
@@ -157,6 +172,7 @@ typedef struct {
   felist* m_filesystems;
   BOOLE m_automount_drives;
 
+
   /*==========================================================================*/
   /* Game port configuration                                                  */
   /*==========================================================================*/
@@ -169,6 +185,7 @@ typedef struct {
   /*==========================================================================*/
 
   BOOLE m_useGUI;
+
 
   /*==========================================================================*/
   /* tracking flags                                                           */
@@ -226,7 +243,6 @@ extern void cfgSetKey(cfg *config, STR *key);
 extern STR *cfgGetKey(cfg *config);
 extern void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig);
 extern BOOLE cfgGetUseAutoconfig(cfg *config);
-extern void cfgSetAddress32Bit(cfg *config, BOOLE address32bit);
 extern BOOLE cfgGetAddress32Bit(cfg *config);
 extern void cfgSetRtc(cfg *config, bool rtc);
 extern bool cfgGetRtc(cfg *config);
@@ -243,8 +259,9 @@ extern void cfgSetScreenColorBits(cfg *config, ULO screencolorbits);
 extern ULO cfgGetScreenColorBits(cfg *config);
 extern void cfgSetScreenRefresh(cfg *config, ULO screenrefresh);
 extern ULO cfgGetScreenRefresh(cfg *config);
-extern void cfgSetScreenWindowed(cfg *config, BOOLE screenwindowed);
-extern BOOLE cfgGetScreenWindowed(cfg *config);
+extern void cfgSetScreenWindowed(cfg *config, bool screenwindowed);
+extern bool cfgGetScreenWindowed(cfg *config);
+
 extern void cfgSetScreenDrawLEDs(cfg *config, bool drawleds);
 extern bool cfgGetScreenDrawLEDs(cfg *config);
 extern void cfgSetUseMultipleGraphicalBuffers(cfg *config, BOOLE use_multiple_graphical_buffers);
@@ -258,12 +275,23 @@ extern DISPLAYDRIVER cfgGetDisplayDriver(cfg *config);
 
 extern void  cfgSetFrameskipRatio (cfg *config, ULO frameskipratio);
 extern ULO   cfgGetFrameskipRatio (cfg *config);
-extern void  cfgSetDisplayScale   (cfg *config, DISPLAYSCALE displayscale);
+
+extern void cfgSetClipLeft(cfg *config, ULO left);
+extern ULO cfgGetClipLeft(cfg *config);
+extern void cfgSetClipTop(cfg *config, ULO top);
+extern ULO cfgGetClipTop(cfg *config);
+extern void cfgSetClipRight(cfg *config, ULO right);
+extern ULO cfgGetClipRight(cfg *config);
+extern void cfgSetClipBottom(cfg *config, ULO bottom);
+extern ULO cfgGetClipBottom(cfg *config);
+
+extern void  cfgSetDisplayScale(cfg *config, DISPLAYSCALE displayscale);
 extern DISPLAYSCALE cfgGetDisplayScale(cfg *config);
 extern void cfgSetDisplayScaleStrategy(cfg *config, DISPLAYSCALE_STRATEGY displayscalestrategy);
 extern DISPLAYSCALE_STRATEGY cfgGetDisplayScaleStrategy(cfg *config);
-extern void cfgSetDeinterlace(cfg *, bool);
-extern bool cfgGetDeinterlace(cfg *);
+extern void cfgSetDeinterlace(cfg *config, bool deinterlace);
+extern bool cfgGetDeinterlace(cfg *config);
+extern void cfgSetGraphicsEmulationMode(cfg *config, GRAPHICSEMULATIONMODE graphcisemulationmode);
 extern GRAPHICSEMULATIONMODE cfgGetGraphicsEmulationMode(cfg *config);
 
 /*============================================================================*/
@@ -318,7 +346,6 @@ extern ULO cfgGetHardfileCount(cfg *config);
 extern cfg_hardfile cfgGetHardfile(cfg *config, ULO index);
 extern void cfgHardfileAdd(cfg *config, cfg_hardfile *hardfile);
 extern void cfgHardfileRemove(cfg *config, ULO index);
-extern void cfgHardfilesRemove(cfg *config);
 extern void cfgHardfilesFree(cfg *config);
 extern void cfgSetHardfileUnitDefaults(cfg_hardfile *hardfile);
 extern void cfgHardfileChange(cfg *config, cfg_hardfile *hardfile, ULO index);
@@ -332,7 +359,6 @@ extern ULO cfgGetFilesystemCount(cfg *config);
 extern cfg_filesys cfgGetFilesystem(cfg *config, ULO index);
 extern void cfgFilesystemAdd(cfg *config, cfg_filesys *filesystem);
 extern void cfgFilesystemRemove(cfg *config, ULO index);
-extern void cfgFilesystemsRemove(cfg *config);
 extern void cfgFilesystemsFree(cfg *config);
 extern void cfgSetFilesystemUnitDefaults(cfg_filesys *filesystem);
 extern void cfgFilesystemChange(cfg *config,
@@ -373,7 +399,7 @@ extern bool cfgGetMeasureSpeed(cfg *config);
 extern void cfgSetDefaults(cfg *config);
 extern BOOLE cfgSetOption(cfg *config, STR *optionstr);
 extern BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern BOOLE cfgLoadFromFilename(cfg *, const STR *, const bool);
+extern bool cfgLoadFromFilename(cfg *, const STR *, const bool);
 extern BOOLE cfgSaveToFilename(cfg *config, STR *filename);
 extern void cfgSynopsis(cfg *config);
 
@@ -393,7 +419,6 @@ typedef struct {
 extern void cfgManagerSetCurrentConfig(cfgManager *configmanager, cfg *currentconfig);
 extern cfg *cfgManagerGetCurrentConfig(cfgManager *configmanager);
 extern cfg *cfgManagerGetCopyOfCurrentConfig(cfgManager *configmanager);
-extern void cfgManagerSetDefaultConfig(cfgManager *configmanager);
 
 
 /*============================================================================*/

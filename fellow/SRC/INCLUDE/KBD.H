@@ -23,10 +23,6 @@ typedef enum {
   EVENT_SCALEY_PREV,
   EVENT_SCALEX_NEXT,
   EVENT_SCALEX_PREV,
-  EVENT_SCROLL_UP,
-  EVENT_SCROLL_DOWN,
-  EVENT_SCROLL_LEFT,
-  EVENT_SCROLL_RIGHT,
   EVENT_HARD_RESET,
   EVENT_JOY0_UP_ACTIVE,
   EVENT_JOY0_UP_INACTIVE,
@@ -116,7 +112,6 @@ void kbdEventEOFHandler(void);
 extern void kbdQueueHandler(void);
 extern void kbdEventEOLHandler(void);
 
-extern volatile ULO f12pressed;
 extern UBY insert_dfX[4];
 
 #endif

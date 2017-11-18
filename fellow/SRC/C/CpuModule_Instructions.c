@@ -24,12 +24,9 @@
 /*=========================================================================*/
 
 #include "defs.h"
-#include "fellow.h"
-#include "fmem.h"
+#include "CpuModule_Memory.h"
 #include "CpuModule.h"
 #include "CpuModule_Internal.h"
-#include "uae2fell.h"
-#include "autoconf.h"
 
 /*============================================================================*/
 /* profiling help functions                                                   */
@@ -55,7 +52,7 @@ static __inline void cpuTscBefore(LLO* a)
   *a = local_a;
 }
 
-static __inline void cpuTscAfter(LLO* a, LLO* b, ULO* c)
+static __inline void cpuTscAfter(LLO* a, LLO* b, LON* c)
 {
   LLO local_a = *a;
   LLO local_b = *b;
@@ -2539,7 +2536,7 @@ static void cpuCmpML(ULO regx, ULO regy)
 static void cpuChkW(UWO value, UWO ub)
 {
   cpuSetFlagZ(value == 0);
-  cpuSetFlagsVC(FALSE, FALSE);
+  cpuClearFlagsVC();
   cpuPrefetchOpcode();
   if (((WOR)value) < 0)
   {
@@ -2563,7 +2560,7 @@ static void cpuChkW(UWO value, UWO ub)
 static void cpuChkL(ULO value, ULO ub)
 {
   cpuSetFlagZ(value == 0);
-  cpuSetFlagsVC(FALSE, FALSE);
+  cpuClearFlagsVC();
   cpuPrefetchOpcode();
   if (((LON)value) < 0)
   {
@@ -2652,40 +2649,36 @@ static ULO cpuSubXL(ULO dst, ULO src)
 /// </summary>
 static UBY cpuAbcdB(UBY dst, UBY src)
 {
-  UBY xflag = (cpuGetFlagX()) ? 1:0;
-  UWO res = dst + src + xflag;
-  UWO res_unadjusted = res;
-  UBY res_bcd;
-  UBY low_nibble = (dst & 0xf) + (src & 0xf) + xflag;
+  UBY xflag = (cpuGetFlagX()) ? 1 : 0;
+  UWO low_nibble = (dst & 0xf) + (src & 0xf) + xflag;
+  UWO high_nibble = ((UWO)(dst & 0xf0)) + ((UWO)(src & 0xf0));
+  UWO result_unadjusted = low_nibble + high_nibble;
+  UWO result_bcd = result_unadjusted;
 
   if (low_nibble > 9)
   {
-    res += 6;
+    result_bcd += 6;
   }
 
-  if (res > 0x99)
+  BOOLE xc_flags = (result_bcd & 0xfff0) > 0x90;
+  cpuSetFlagXC(xc_flags);
+  if (xc_flags)
   {
-    res += 0x60;
-    cpuSetFlagXC(TRUE);
-  }
-  else
-  {
-    cpuSetFlagXC(FALSE);
+    result_bcd += 0x60;
   }
 
-  res_bcd = (UBY) res;
-
-  if (res_bcd != 0)
+  if (result_bcd & 0xff)
   {
     cpuSetFlagZ(FALSE);
   }
-  if (res_bcd & 0x80)
+
+  if (cpuGetModelMajor() < 4)  // 040 apparently does not set these flags
   {
-    cpuSetFlagN(TRUE);
+    cpuSetFlagN(result_bcd & 0x80);
+    cpuSetFlagV(((result_unadjusted & 0x80) == 0) && (result_bcd & 0x80));
   }
-  cpuSetFlagV(((res_unadjusted & 0x80) == 0) && (res_bcd & 0x80));
   cpuPrefetchOpcode();
-  return res_bcd;
+  return (UBY)result_bcd;
 }
 
 /// <summary>
@@ -2698,37 +2691,39 @@ static UBY cpuAbcdB(UBY dst, UBY src)
 /// </summary>
 static UBY cpuSbcdB(UBY dst, UBY src)
 {
-  UBY xflag = (cpuGetFlagX()) ? 1:0;
-  UWO res = dst - src - xflag;
-  UWO res_unadjusted = res;
-  UBY res_bcd;
+  UWO xflag = (cpuGetFlagX()) ? 1:0;
+  UWO result_plain_binary = (UWO)dst - (UWO)src - xflag;
+  UWO low_nibble = (UWO)(dst & 0xf) - (UWO)(src & 0xf) - xflag;
+  UWO high_nibble = ((UWO)(dst & 0xf0)) - ((UWO)(src & 0xf0));
+  UWO result_unadjusted = low_nibble + high_nibble;
+  UWO result_bcd = result_unadjusted;
 
-  if (((src & 0xf) + xflag) > (dst & 0xf))
+  if ((WOR)result_plain_binary < 0)
   {
-    res -= 6;
+    result_bcd -= 0x60;
   }
-  if (res & 0x80)
-  {
-    res -= 0x60;
-    cpuSetFlagXC(TRUE);
-  }
-  else
-  {
-    cpuSetFlagXC(FALSE);
-  }
-  res_bcd = (UBY) res;
 
-  if (res_bcd != 0)
+  if (((WOR)low_nibble) < 0)
+  {
+    result_bcd -= 6;
+    result_plain_binary -= 6;
+  }
+
+  BOOLE borrow = ((WOR)result_plain_binary < 0);
+  cpuSetFlagXC(borrow);
+
+  if (result_bcd & 0xff)
   {
     cpuSetFlagZ(FALSE);
   }
-  if (res_bcd & 0x80)
+
+  if (cpuGetModelMajor() < 4)
   {
-    cpuSetFlagN(TRUE);
+    cpuSetFlagN(result_bcd & 0x80);
+    cpuSetFlagV(((result_unadjusted & 0x80) == 0x80) && !(result_bcd & 0x80));
   }
-  cpuSetFlagV(((res_unadjusted & 0x80) == 0x80) && !(res_bcd & 0x80));
   cpuPrefetchOpcode();
-  return res_bcd;
+  return (UBY) result_bcd;
 }
 
 /// <summary>
@@ -2780,7 +2775,7 @@ static ULO cpuGetBfWidth(UWO ext, bool widthIsDataRegister)
   return width;
 }
 
-static void cpuSetBfField(cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
+static void cpuSetBfField(struct cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
 {
   if (has_ea)
   {
@@ -2830,9 +2825,9 @@ void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, ULO ea_or_reg, boo
     ULO shift = (8 - bf_data->normalized_offset - bf_data->width) & 7;
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
     {
-      ULL value = (ULL) memoryReadByte(address);
-      field_memory |= (value << (8*i));
-      field |= ((value >> shift) << (8*i));
+      ULL value = ((ULL)memoryReadByte(address)) << (8 * i);
+      field_memory |= value;
+      field |= (value >> shift);
       ++address;
     }
 
