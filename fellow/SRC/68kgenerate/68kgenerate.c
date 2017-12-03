@@ -716,13 +716,13 @@ unsigned int cgGetBtstTime(unsigned int size, unsigned int eano, char regtype)
   unsigned int cycles = 0;
   if (size <= 2)
   {
-    if (regtype == 'D') cycles = 6;
-    else cycles = 4;
+    if (regtype == 'D') cycles = 4;
+    else cycles = 8;
   }
   else
   {
-    if (regtype == 'D') cycles = 10;
-    else cycles = 8;
+    if (regtype == 'D') cycles = 6;
+    else cycles = 10;
   }
   cycles += cg_ea_time[cgGetSizeCycleIndex(size)][eano];
   return cycles;
