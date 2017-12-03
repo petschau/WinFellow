@@ -1,4 +1,3 @@
-/* @(#) $Id: FLOPPY.C,v 1.31 2013-01-05 11:41:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -63,11 +62,12 @@
 #include "bus.h"
 #include "CpuModule.h"
 #include "fileops.h"
+#include "interrupt.h"
 #include <sys/timeb.h>
 
 #include "xdms.h"
 #include "zlibwrap.h"
-#include "interrupt.h"
+#include "fileops.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
@@ -337,7 +337,7 @@ LON floppySelectedGet(void)
   {
     if (floppy[i].enabled && floppy[i].sel)
     {
-      return i;
+        return i;
     }
     i++;
   }
@@ -547,16 +547,16 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync)
   /* Track and sector info */
 
   tmp = 0xff000000 | (tra<<16) | (sec<<8) | (11 - sec);
-  odd = (tmp & MFM_MASK);
-  even = ((tmp>>1) & MFM_MASK);
-  *(dest +  8) = (UBY) ((even & 0xff000000)>>24);
-  *(dest +  9) = (UBY) ((even & 0xff0000)>>16);
-  *(dest + 10) = (UBY) ((even & 0xff00)>>8);
-  *(dest + 11) = (UBY) ((even & 0xff));
-  *(dest + 12) = (UBY) ((odd & 0xff000000)>>24);
-  *(dest + 13) = (UBY) ((odd & 0xff0000)>>16);
-  *(dest + 14) = (UBY) ((odd & 0xff00)>>8);
-  *(dest + 15) = (UBY) ((odd & 0xff));
+  even = (tmp & MFM_MASK);
+  odd = ((tmp>>1) & MFM_MASK);
+  *(dest +  8) = (UBY) ((odd & 0xff000000)>>24);
+  *(dest +  9) = (UBY) ((odd & 0xff0000)>>16);
+  *(dest + 10) = (UBY)((odd & 0xff00) >> 8);
+  *(dest + 11) = (UBY)(odd & 0xff);
+  *(dest + 12) = (UBY)((even & 0xff000000) >> 24);
+  *(dest + 13) = (UBY)((even & 0xff0000) >> 16);
+  *(dest + 14) = (UBY)((even & 0xff00) >> 8);
+  *(dest + 15) = (UBY)(even & 0xff);
 
   /* Fill unused space */
 
@@ -673,10 +673,11 @@ BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc)
   {
     if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11)
     {
-      fseek(floppy[drive].F,
-	floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
+      fseek(floppy[drive].F, floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
       fwrite(tmptrack, 1, 512, floppy[drive].F);
-      memcpy(floppy[drive].trackinfo[track].mfm_data + sector*1088, mfmsrc - 8, 1088);
+
+      // Problem with keeping the MFM for ADFs is that the sector sequence could be anything and they are enumerated. Re-encode from plain data.
+      floppySectorMfmEncode(track, sector, tmptrack, floppy[drive].trackinfo[track].mfm_data + sector * 1088, 0x4489);
     }
     else
     {
@@ -1550,7 +1551,7 @@ void floppyDMAReadInit(ULO drive)
 
   floppy_DMA.wait_for_sync = (adcon & 0x0400) 
     && ( (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
-         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914)));
+         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
 
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
@@ -1589,7 +1590,8 @@ ULO floppyFindNextSync(ULO pos, LON length)
 
 void floppyDMAWriteInit(LON drive)
 {
-  LON length = (dsklen & 0x3fff)*2;
+  LON total_length = (dsklen & 0x3fff) * 2;
+  LON length = total_length;
   ULO pos = dskpt;
   ULO track_lin;
   BOOLE ended = FALSE;
@@ -1609,7 +1611,8 @@ void floppyDMAWriteInit(LON drive)
     ULO next_after_sync_offset = floppyFindNextSync(pos, length);
     length -= next_after_sync_offset;
     pos += next_after_sync_offset;
-    if (length > 0)
+
+    if (length >= 1080)
     {
       if (floppySectorSave(drive, track_lin, memory_chip + pos))
       {
@@ -1617,9 +1620,14 @@ void floppyDMAWriteInit(LON drive)
 	pos += 1080;
       }
     }
+    else
+    {
+      fellowAddLog("Floppy write MFM ended with an incomplete sector.\n");
+      break;
+    }
   }
   floppy_DMA_read = FALSE;
-  floppy_DMA.wait = (length / (floppy_fast ? FLOPPY_FAST_WORDS : 2)) + FLOPPY_WAIT_INITIAL;
+  floppy_DMA.wait = (total_length / (floppy_fast ? FLOPPY_FAST_WORDS : 2)) + FLOPPY_WAIT_INITIAL;
   floppy_DMA_started = TRUE;
 }
 
