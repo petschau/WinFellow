@@ -1,4 +1,3 @@
-/* @(#) $Id: CIA.C,v 1.10 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Cia emulation                                                           */
@@ -25,13 +24,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-/* ---------------- CHANGE LOG ----------------- 
-Tuesday, September 19, 2000
-- changed ciaReadApra in order to support autofire
-*/
-
 #include "defs.h"
-#include "FELLOW.H"
 #include "bus.h"
 #include "gameport.h"
 #include "fmem.h"
@@ -181,6 +174,14 @@ void ciaRaiseIndexIRQ(void) {
   ciaRaiseIRQ(1, CIA_FLAG_IRQ);
 }
 
+void ciaCheckAlarmMatch(ULO i)
+{
+  if (cia[i].ev == cia[i].evalarm)
+  {
+    ciaRaiseIRQ(i, CIA_ALARM_IRQ);
+  }
+}
+
 /* Timeout handlers */
 
 void ciaHandleTBTimeout(ULO i) {
@@ -218,8 +219,7 @@ void ciaUpdateEventCounter(ULO i)
   if (!cia[i].evwritelatching)
   {
     cia[i].ev = (cia[i].ev + 1) & 0xffffff;
-    if (cia[i].evalarm == cia[i].ev)
-      ciaRaiseIRQ(i, CIA_ALARM_IRQ);
+    ciaCheckAlarmMatch(i);
   }
 }
 
@@ -586,7 +586,9 @@ UBY ciaReadevlo(ULO i)
 UBY ciaReadevmi(ULO i)
 {
   if (cia[i].evlatching)
-    return (UBY)(cia[i].evlatch>>8);
+  {
+    return (UBY)(cia[i].evlatch >> 8);
+  }
   return (UBY)(cia[i].ev>>8);
 }
 
@@ -599,26 +601,45 @@ UBY ciaReadevhi(ULO i)
 
 void ciaWriteevlo(ULO i, UBY data)
 {
-  cia[i].evwritelatching = FALSE;
-  cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff00) | ((ULO)data);
-  if (cia[i].crb & 0x80)
-    cia[i].evalarm = cia[i].evwritelatch;
-  else
+  if (cia[i].crb & 0x80)  // Alarm
+  {
+    cia[i].evalarm = (cia[i].evalarm & 0xffff00) | (ULO)data;
+  }
+  else // Time of day
+  {
+    cia[i].evwritelatching = FALSE;
+    cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff00) | (ULO)data;
     cia[i].ev = cia[i].evwritelatch;
-  if (cia[i].ev == cia[i].evalarm)
-    ciaRaiseIRQ(i, CIA_ALARM_IRQ);
+  }
+  ciaCheckAlarmMatch(i);
 }
 
 void ciaWriteevmi(ULO i, UBY data)
 {
-  cia[i].evwritelatching = TRUE;
-  cia[i].evwritelatch = (cia[i].evwritelatch & 0xff00ff) | (((ULO)data)<<8);
+  if (cia[i].crb & 0x80)  // Alarm
+  {
+    cia[i].evalarm = (cia[i].evalarm & 0xff00ff) | ((ULO)data << 8);
+    ciaCheckAlarmMatch(i);
+  }
+  else // Time of day
+  {
+    cia[i].evwritelatching = TRUE;
+    cia[i].evwritelatch = (cia[i].evwritelatch & 0xff00ff) | (((ULO)data) << 8);
+  }
 }
 
 void ciaWriteevhi(ULO i, UBY data)
 {
-  cia[i].evwritelatching = TRUE;
-  cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff) | (((ULO)data)<<16);
+  if (cia[i].crb & 0x80)  // Alarm
+  {
+    cia[i].evalarm = (cia[i].evalarm & 0xffff) | ((ULO)data << 16);
+    ciaCheckAlarmMatch(i);
+  }
+  else // Time of day
+  {
+    cia[i].evwritelatching = TRUE;
+    cia[i].evwritelatch = (cia[i].evwritelatch & 0xffff) | (((ULO)data) << 16);
+  }
 }
 
 /* ICR */
