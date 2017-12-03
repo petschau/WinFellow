@@ -63,12 +63,11 @@
 #include "bus.h"
 #include "CpuModule.h"
 #include "fileops.h"
-#include "interrupt.h"
 #include <sys/timeb.h>
 
 #include "xdms.h"
 #include "zlibwrap.h"
-#include "fileops.h"
+#include "interrupt.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps_win32.h"
@@ -336,7 +335,7 @@ LON floppySelectedGet(void)
   LON i = 0;
   while (i < 4)
   {
-    if (floppy[i].sel)
+    if (floppy[i].enabled && floppy[i].sel)
     {
       return i;
     }
@@ -350,7 +349,10 @@ void floppySelectedSet(ULO selbits)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].sel = ((selbits & 1) == 0);
+    if (floppy[i].enabled)
+    {
+      floppy[i].sel = ((selbits & 1) == 0);
+    }
     selbits >>= 1;
   }
 }
@@ -359,7 +361,10 @@ BOOLE floppyIsTrack0(ULO drive)
 {
   if (drive != -1)
   {
-    return (floppy[drive].track == 0);
+    if (floppy[drive].enabled)
+    {
+      return (floppy[drive].track == 0);
+    }
   }
   return FALSE;
 }
@@ -368,7 +373,10 @@ BOOLE floppyIsWriteProtected(ULO drive)
 {
   if (drive != -1)
   {
-    return floppy[drive].writeprot;
+    if (floppy[drive].enabled)
+    {
+      return floppy[drive].writeprot;
+    }
   }
   return FALSE;
 }
@@ -396,7 +404,10 @@ BOOLE floppyIsChanged(ULO drive)
 {
   if (drive != -1)
   {
-    return floppy[drive].changed;
+    if (floppy[drive].enabled)
+    {
+      return floppy[drive].changed;
+    }
   }
   return FALSE;
 }
@@ -407,6 +418,11 @@ BOOLE floppyIsChanged(ULO drive)
 
 void floppyMotorSet(ULO drive, BOOLE mtr)
 {
+  if (!floppy[drive].enabled)
+  {
+    return;
+  }
+
   if (floppy[drive].motor && mtr)
   {
     floppy[drive].idmode = TRUE;
@@ -433,7 +449,10 @@ void floppySideSet(BOOLE s)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].side = !s;
+    if (floppy[i].enabled)
+    {
+      floppy[i].side = !s;
+    }
   }
 }
 
@@ -442,7 +461,10 @@ void floppyDirSet(BOOLE dr)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].dir = dr;
+    if (floppy[i].enabled)
+    {
+      floppy[i].dir = dr;
+    }
   }
 }
 
@@ -453,6 +475,11 @@ void floppyStepSet(BOOLE stp)
   ULO i;
   for (i = 0; i < 4; i++)
   {
+    if (!floppy[i].enabled)
+    {
+      continue;
+    }
+
     if (floppy[i].sel)
     {
       if (!stp && floppy[i].changed && floppy[i].inserted &&
@@ -1511,6 +1538,11 @@ void floppyDMAReadInit(ULO drive)
   floppy_DMA_read = TRUE;
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt;
+
+  if (drive == -1)
+  {
+    return;
+  }
 
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
   if(floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
