@@ -1194,7 +1194,7 @@ static void cpuDivL(ULO divisor, ULO ext, ULO instruction_time)
 
     if (sign)
     { 
-      if (size64) x_signed = ((LLO) (LON) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
+      if (size64) x_signed = (LLO) ((ULL) cpuGetDReg(dq_reg)) | (((LLO) cpuGetDReg(dr_reg))<<32);
       else x_signed = (LLO) (LON) cpuGetDReg(dq_reg);
       y_signed = (LLO) (LON) divisor;
 
