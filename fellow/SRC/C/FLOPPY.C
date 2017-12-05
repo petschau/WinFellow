@@ -491,7 +491,7 @@ void floppyStepSet(BOOLE stp)
       {
 	if (!floppy[i].dir) 
 	{
-          if (floppy[i].track < floppy[i].tracks - 1)
+          if (floppy[i].track < floppy[i].tracks + 3)
           {
 #ifdef FLOPPY_LOG
             floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
@@ -1724,14 +1724,11 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync)
 
 UWO floppyGetByteUnderHead(ULO sel_drv, ULO track)
 {
-  if ((track/2) >= floppy[sel_drv].tracks)
+  if ((track / 2) >= floppy[sel_drv].tracks)
   {
-    return 0x72; /* What is correct? Noise? */
+    return rand() % 256;
   }
-  else
-  {
-    return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
-  }
+  return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
 }
 
 void floppyNextByte(ULO sel_drv, ULO track)

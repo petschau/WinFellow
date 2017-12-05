@@ -235,13 +235,16 @@ Edit a title to use custom clipping of a small area and verify it is displayed c
 - in 1x mode. Take a screenshot, verify it is ok.
 - in 2x mode. Take a screenshot, verify it is ok.
 
-Git 86bd011: Two disk related fixes
------------------------------------
+Git 86bd011 and Git xxxxxx Two disk related fixes and modification later
+------------------------------------------------------------------------
 The game Amegas, packed into one file, does a disk access right after decrunching that requires the motor bit to be set in advance, and hung.
 This is a detail metioned in the HRM. Check that the game starts.
 
-The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. The fix adds a limit to stepping beyond the size of the
-disk image. Check that the game loads. Note that the game has broken intro graphics.
+The game "The Games: Summer edition" stepped the disk head beyond the end of the disk and hung. It reads (with disksync) from track 80
+where no data is. Max track set to 83 now, and data for upper tracks are random. (Will eventually generate sync.)
+Check that the game loads. Note that the game has broken intro graphics.
+
+Outrun steps to track 80 and needs the extended max track limit. Check that Outrun loads.
 
 Git f99a94de - Last of several commits regarding "Sprites on HAM"
 -----------------------------------------------------------------
@@ -256,3 +259,19 @@ Make sure the cube looks perfect wherever it moves.
 Silents - Ice demo
 One of the first parts is a white screen with a picture of a warrior girl. The screen should contain a basic filled vector 
 geometry object (the sprite) on top of the image moving around with no artifacts.
+
+Git 9a9ceb4 Added missing checks for disabled drives
+----------------------------------------------------
+Disabled floppy drives were not properly off-line with regard to some signals. This caused the game Winter olympics 94
+to endlessly scan for more drives. Check that the game loads. 
+
+Note: The game's scan is bugged, if you enable 4 drives, it will scan forever.
+
+Git 8b0c112 Re-encode track data to MFM from ADF after floppy-write
+-------------------------------------------------------------------
+Supercars with bytebandit virus would not load because the virus re-wrote track 0. The internal MFM buffer's sector headers
+was out of order with what the game's trackloader expected, and it failed when pressing fire to start game. (Loads some first.)
+Emulator now regenerates MFM from disk for ADF's after writes to get the sector order.
+
+Note: Supercars needs additional fix to work. See Git <TBD>.
+
