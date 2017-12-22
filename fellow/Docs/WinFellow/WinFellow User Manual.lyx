@@ -106,7 +106,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.6 (2017/11/10)
+v0.5.7 (2017/12/22)
 \end_layout
 
 \begin_layout Author
@@ -315,7 +315,7 @@ Release Notes
 \end_layout
 
 \begin_layout Section
-What's New in WinFellow 0.5.6?
+What's New in WinFellow 0.5.7?
 \end_layout
 
 \begin_layout Standard
@@ -325,28 +325,42 @@ Thank you for your interest in WinFellow.
 \end_layout
 
 \begin_layout Itemize
-New features:
-\begin_inset Separator latexpar
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-Amiga Forever 2017 support modules were updated to the latest version, improving
- Amiga Forever input device handling by reducing lag
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
 Bug fixes:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-improve support for IPF images (align disk words to sync if sync is found
- on an odd boundary)
+floppy code was updated to use a track limit > 80; it will output random
+ data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added
+ missing checks for disabled drives, fixing Winter Olympics 94
+\end_layout
+
+\begin_layout Itemize
+fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw
+ initialization
+\end_layout
+
+\begin_layout Itemize
+fixed screen area mismatch when Amiga Forever region/size settings are both
+ set to auto; auto clipping is still not supported
+\end_layout
+
+\begin_layout Itemize
+CPU instruction fixes:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+fixed a signed bug in 64-bit division
+\end_layout
+
+\begin_layout Itemize
+minor timing adjustment for btst
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+CIA event counter changes according to documentation
 \end_layout
 
 \end_deeper
