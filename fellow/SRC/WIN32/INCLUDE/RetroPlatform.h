@@ -176,7 +176,8 @@ private:
   ULO lMainVersion = 0, lRevision = 0, lBuild = 0;
 
   // screen settings
-  LON lClippingOffsetLeftRP = 0, lClippingOffsetTopRP = 0;
+  LON lClippingOffsetLeftRP = RETRO_PLATFORM_OFFSET_ADJUST_LEFT;
+  LON lClippingOffsetTopRP  = RETRO_PLATFORM_OFFSET_ADJUST_TOP;
   LON lScreenWidthRP        = 0, lScreenHeightRP      = 0;
   ULO lScreenMode = 0;
   bool bScreenWindowed = true;
