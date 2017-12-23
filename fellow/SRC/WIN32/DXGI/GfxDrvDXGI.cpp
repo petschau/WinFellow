@@ -414,7 +414,7 @@ void GfxDrvDXGI::ResizeSwapChainBuffers()
 
   _resize_swapchain_buffers = false;
 
-  HRESULT result = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+  HRESULT result = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to resize buffers of swap chain in response to WM_SIZE:", result);
