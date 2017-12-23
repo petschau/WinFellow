@@ -1093,8 +1093,13 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   ULO lDisplayScale;
   IDXGISurface1* pSurface1 = NULL;
   HDC hDC = NULL;
+
+#ifdef _DEBUG
+  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
+    bSaveFilteredScreenshot ? "true" : "false", filename);
+#endif
   
-  if (bSaveFilteredScreenshot) 
+  if(bSaveFilteredScreenshot) 
   {
     hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
     if (FAILED(hr))
@@ -1128,9 +1133,11 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
   }
   else
-  {
-    width = _current_draw_mode->width;
-    height = _current_draw_mode->height;
+  {  // save unfiltered screenshot
+    // width  = _current_draw_mode->width;
+    // height = _current_draw_mode->height;
+    width = draw_buffer_info.width;
+    height = draw_buffer_info.height;
     ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
     ID3D11Texture2D *screenshotTexture = NULL;
     D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
@@ -1152,9 +1159,9 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to create screenshot texture.", hr);
       return false;
-      
     }
 
+    // ID3D11DeviceContext::CopyResource: Cannot invoke CopyResource when the source and destination are not the same Resource type, nor have equivalent dimensions.
     _immediateContext->CopyResource(screenshotTexture, hostBuffer);
 
     hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)&pSurface1);
@@ -1176,8 +1183,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     ReleaseCOM(&screenshotTexture);
   }
 
-  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
-    bResult ? "successful" : "failed");
+  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
+    bSaveFilteredScreenshot ? "true" : "false", filename, bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(NULL);
 
