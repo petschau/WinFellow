@@ -186,8 +186,8 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
     result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  fellowAddLog("gfxDrvSaveScreenshot(%s, %s) %s.\n",
-    bSaveFilteredScreenshot ? "filtered" : "raw", szActualFilename, result ? "successful" : "failed");
+  fellowAddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
+    bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
 
   return result;
 }
