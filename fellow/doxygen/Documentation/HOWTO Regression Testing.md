@@ -275,3 +275,31 @@ Emulator now regenerates MFM from disk for ADF's after writes to get the sector 
 
 Note: Supercars needs additional fix to work. See Git <TBD>.
 
+Git 78ff087 (and other previous commits)
+----------------------------------------
+
+Start a standalone WinFellow session, configure it for DirectDraw mode. Configure scaling to 1x and and load Workbench. 
+Hit <PrntScrn> to take a screenshot and ensure it is being saved to the pictures folder. 
+Reconfigure to 2x, 3x and 4x as well as auto scaling and save a screenshot each time.
+Reconfigure the WinFellow session for Direct3D mode with 1x scaling and take another screenshot. 
+Do the same for 2, 3x, 4x and auto scaling. Ensure the screenshots are saved properly and that they look like expected.
+Test this both for reconfiguring a running session, as well as starting a new emulation session.
+
+Start Amiga Forever.
+Configure the WinFellow plugin for DirectDraw mode (Tools->Options->Emulation, Plugins, WinFellow, Graphics API). 
+Start the Amiga 1000 system; click the 1x scaling button and close the emulation session.
+Restart the emulation session (it should still be in 1x mode upon start), wait for it to boot, escape the mouse cursor 
+and start the clipping editor (Tools->Edit Screen Clip). Ensure that the whole Amiga screen buffer is visible with a blue 
+background in the clipping editor, there should be no missing black areas. 
+Cancel the clipping editor dialog. Save a screenshot to the pictures folder via the screenshot button and verify its creation.
+Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
+Close the emulation window, reopen it (it should still be in 1x mode upon start) and take screenshots again.
+
+Configure the WinFellow plugin for Direct3D mode (Tools->Options->Emulation, Plugins, WinFellow, Graphics API). 
+Start the Amiga 1000 system; click the 1x scaling button and close the emulation session.
+Restart the emulation session (it should still be in 1x mode upon start), wait for it to boot, escape the mouse cursor 
+and start the clipping editor (Tools->Edit Screen Clip). Ensure that the whole Amiga screen buffer is visible with a blue 
+background in the clipping editor, there should be no missing black areas. 
+Cancel the clipping editor dialog. Save a screenshot to the pictures folder via the screenshot button and verify its creation.
+Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
+Close the emulation window, reopen it (it should still be in 1x mode upon start) and take screenshots again.
