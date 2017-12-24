@@ -143,6 +143,10 @@ draw_rect draw_output_clip;
 
 void drawSetInternalClip(const draw_rect& internal_clip)
 {
+#ifdef _DEBUG
+  fellowAddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
+    internal_clip.left, internal_clip.top, internal_clip.right, internal_clip.bottom);
+#endif
   draw_internal_clip = internal_clip;
 }
 
