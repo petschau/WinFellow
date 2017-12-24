@@ -106,7 +106,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.7 (2017/12/22)
+v0.5.7 (2017/12/24)
 \end_layout
 
 \begin_layout Author
@@ -314,13 +314,13 @@ Feel free to mail us (petschau@gmail.com / carfesh@gmx.net) if you are intereste
 Release Notes
 \end_layout
 
-\begin_layout Section
+\begin_layout Section*
 What's New in WinFellow 0.5.7?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.5, the following changes are included
+ Compared to the earlier version 0.5.6, the following changes are included
  in this build:
 \end_layout
 
