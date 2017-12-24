@@ -2345,12 +2345,11 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
 #ifdef RETRO_PLATFORM
-  // apply internal clipping values in RetroPlatform headless mode
-  if(RP.GetHeadlessMode())
-    drawSetInternalClip(draw_rect(92, 26, 468, 314)); // this must match the values used in RetroPlatform::RegisterRetroPlatformScreenMode
-  else
+  // internal clipping values in RetroPlatform headless mode are configured by 
+  // RetroPlatform::RegisterRetroPlatformScreenMode, skip configuration
+  if(!RP.GetHeadlessMode())
 #endif
-    drawSetInternalClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
+  drawSetInternalClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetOutputClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetDisplayScale(cfgGetDisplayScale(config));
   drawSetDisplayScaleStrategy(cfgGetDisplayScaleStrategy(config));

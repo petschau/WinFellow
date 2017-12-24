@@ -341,6 +341,13 @@ fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw
 \end_layout
 
 \begin_layout Itemize
+several bugs in the screenshot code were fixed; standalone screenshots were
+ not saved correctly in D3D mode, and used with Amiga Forever raw screenshots
+ were missing screen areas due to faulty initialization of the internal
+ clipping areas
+\end_layout
+
+\begin_layout Itemize
 fixed screen area mismatch when Amiga Forever region/size settings are both
  set to auto; auto clipping is still not supported
 \end_layout
