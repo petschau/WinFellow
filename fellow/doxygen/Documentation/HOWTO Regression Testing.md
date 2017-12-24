@@ -19,15 +19,15 @@ before that appeared.
 r764: Flags for eorw and orw, calculation of flags fixed
 --------------------------------------------------------
 Test that Micro Machines [cr CSL] can be started without issues/the main menu
-appear. Before this commit, it would crash after the cracktro.
+appears. Before this commit, it would crash after the cracktro.
 
-r814: removed filling in mfm encoding of floppy sectors
+r814: removed filling in MFM encoding of floppy sectors
 -------------------------------------------------------
 Test that Ballistix [cr Defjam] can be started without issues. Before this commit,
 it froze right after starting it up.
 
-r824: Changed how the CPU driven sound stub issues irq's
---------------------------------------------------------
+r824: Changed how the CPU driven sound stub issues IRQs
+-------------------------------------------------------
 Test that Ballistix [cr Defjam] can be started without issues. Before this commit,
 it would freeze before displaying the Psyclapse logo.
 
@@ -41,7 +41,7 @@ Wings of Fury
 
 r831: Redesigned chipset interrupt handling
 -------------------------------------------
-Test that "Seeing is Believing" can be started without issues -
+Test that the demo "Seeing is Believing" can be started without issues -
 before this commit, the session would freeze immediately upon start.
 
 Other known titles affected:
@@ -51,16 +51,12 @@ Puffy's Saga, Speedball, Ugh!
 
 r832: fixed movep instruction bug, improved CPU exception handling
 ------------------------------------------------------------------
-Test that Airborne Ranger can be started sucessfully, without graphical issues.
+Test that the game Airborne Ranger can be started sucessfully, without graphical issues.
 Before this commit, the screen would look garbled.
 
 Other known titles affected:
 Barbarian 1 (Psygnosis), Fire Force, KGB, Larry 3, Larry 5, Police Quest 2,
 The Lost Vikings.
-
-r833: More checks for emulation stop (ie F11) to avoid deadlock in rare cases.
-------------------------------------------------------------------------------
-No test case is known yet.
 
 r865: Loaders using disksync different from 0x4489 and 0x8914 with standard ADF files
 -------------------------------------------------------------------------------------
@@ -75,9 +71,9 @@ account.
 
 r873: floppy words per line should be 2 instead of 3
 ----------------------------------------------------
-Test that Guardian Dragon II loads successfully, and continues beyond the first Kefrens logo.
-The scrolling text between the two blue statues needs to appear. Before this change, the
-sound would start garbling and the emulation session would reboot.
+Test that the demo Guardian Dragon II by Kefrens loads successfully, and continues beyond
+the first Kefrens logo. The scrolling text between the two blue statues needs to appear. 
+Before this change, the sound would start garbling and the emulation session would reboot.
 
 r888: sprites in hires dual playfield mode
 ------------------------------------------
@@ -116,10 +112,10 @@ Before this change, they were not visible.
 
 Arkanoid is updating vstart/vstop with the copper.
 
-r941: reset of RetroPlatform reset causes input devices to no longer function
------------------------------------------------------------------------------
+r941: reset of RetroPlatform causes input devices to no longer function
+-----------------------------------------------------------------------
 Start the A500 system, click into the emulator window to capture the cursor.
-Hold Esc to release cursor, click the Power symbol and select Reset.
+Hold Esc to release cursor and click the Reset button.
 After the reset, verify that the mouse is usable in Workbench.
 
 r949: PC -2 saved on the stack for address exception
@@ -158,7 +154,7 @@ game will crash, but the emulation session should remain open indefinitely.
 Before this commit, the emulator would crash to the desktop with a NULL
 pointer exception.
 
-r957: clear dma pending flag when blit is initiated from enabling dma in wdmacon
+r957: clear DMA pending flag when blit is initiated from enabling DMA in wdmacon
 --------------------------------------------------------------------------------
 Start the demo "Megademo 8" (Kefrens). Enter the "snake bite" section and verify
 that it loads normally.
@@ -283,7 +279,7 @@ Hit <PrntScrn> to take a screenshot and ensure it is being saved to the pictures
 Reconfigure to 2x, 3x and 4x as well as auto scaling and save a screenshot each time.
 Reconfigure the WinFellow session for Direct3D mode with 1x scaling and take another screenshot. 
 Do the same for 2, 3x, 4x and auto scaling. Ensure the screenshots are saved properly and that they look like expected.
-Test this both for reconfiguring a running session, as well as starting a new emulation session.
+Test this both for reconfiguring a running session, as well as starting a new emulation session/restarting the emulator.
 
 Start Amiga Forever.
 Configure the WinFellow plugin for DirectDraw mode (Tools->Options->Emulation, Plugins, WinFellow, Graphics API). 
@@ -293,7 +289,7 @@ and start the clipping editor (Tools->Edit Screen Clip). Ensure that the whole A
 background in the clipping editor, there should be no missing black areas. 
 Cancel the clipping editor dialog. Save a screenshot to the pictures folder via the screenshot button and verify its creation.
 Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
-Close the emulation window, reopen it (it should still be in 1x mode upon start) and take screenshots again.
+Close the emulation window, reopen it and take screenshots again.
 
 Configure the WinFellow plugin for Direct3D mode (Tools->Options->Emulation, Plugins, WinFellow, Graphics API). 
 Start the Amiga 1000 system; click the 1x scaling button and close the emulation session.
@@ -302,4 +298,4 @@ and start the clipping editor (Tools->Edit Screen Clip). Ensure that the whole A
 background in the clipping editor, there should be no missing black areas. 
 Cancel the clipping editor dialog. Save a screenshot to the pictures folder via the screenshot button and verify its creation.
 Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
-Close the emulation window, reopen it (it should still be in 1x mode upon start) and take screenshots again.
+Close the emulation window, reopen it and take screenshots again.
