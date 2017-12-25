@@ -80,12 +80,7 @@ bool GfxDrvDXGI::Startup()
   {
     RegisterModes();
   }
-
-  if (!success)
-  {
-    fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
-  }
-
+  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
   return success;
 }
 
