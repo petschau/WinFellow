@@ -26,9 +26,11 @@ template<typename T> void ReleaseCOM(T **comobject)
 class GfxDrvDXGI
 {
 private:
+  static bool _requirementsValidated;
+  static bool _requirementsValidationResult;
+
   // Information
   GfxDrvDXGIAdapterList* _adapters;
-  IDXGIFactory *_enumerationFactory;
 
   // Current session
   ID3D11Device *_d3d11device;
@@ -53,11 +55,8 @@ private:
   bool _resize_swapchain_buffers;
 
 private:
-  void CreateAdapterList();
+  bool CreateAdapterList();
   void DeleteAdapterList();
-
-  bool CreateEnumerationFactory();
-  void DeleteEnumerationFactory();
 
   void RegisterMode(unsigned int id, unsigned int width, unsigned int height, unsigned int refreshRate = 60);
   void RegisterModes();
@@ -125,6 +124,8 @@ public:
   void Flip();
 
   bool SaveScreenshot(const bool, const STR *);
+
+  static bool ValidateRequirements();
 
   GfxDrvDXGI();
   virtual ~GfxDrvDXGI();

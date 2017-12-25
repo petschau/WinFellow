@@ -24,39 +24,98 @@
 #include "RetroPlatform.h"
 #endif
 
-bool GfxDrvDXGI::Startup()
+bool GfxDrvDXGI::_requirementsValidated = false;
+bool GfxDrvDXGI::_requirementsValidationResult = false;
+
+bool GfxDrvDXGI::ValidateRequirements()
 {
-  bool bResult;
-
-  fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n\n");
-
-  if (!CreateEnumerationFactory())
+  if (_requirementsValidated)
   {
+    return _requirementsValidationResult;
+  }
+
+  _requirementsValidated = true;
+
+  HINSTANCE hDll = LoadLibrary("d3d11.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
+    _requirementsValidationResult = false;
     return false;
   }
-  CreateAdapterList();
-  DeleteEnumerationFactory();
-  RegisterModes();
 
-  bResult = (_adapters != nullptr) & (_adapters->size() > 0);
+  hDll = LoadLibrary("dxgi.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
+    _requirementsValidationResult = false;
+    return false;
+  }
 
-  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n\n", bResult ? "successful" : "failed");	
+  GfxDrvDXGI dxgi;
+  bool adaptersFound = dxgi.CreateAdapterList();
+  if (!adaptersFound)
+  {
+    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    _requirementsValidationResult = false;
+    return false;
+  }
 
-  return bResult;
+  _requirementsValidationResult = true;
+  return true;
+}
+
+bool GfxDrvDXGI::Startup()
+{
+  fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n");
+
+  bool success = CreateAdapterList();
+  if (success)
+  {
+    RegisterModes();
+  }
+
+  if (!success)
+  {
+    fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
+  }
+
+  return success;
 }
 
 void GfxDrvDXGI::Shutdown()
 {
-  fellowAddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n\n");
+  fellowAddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n");
 
   DeleteAdapterList();
 
-  fellowAddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n\n");
+  fellowAddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n");
 }
 
-void GfxDrvDXGI::CreateAdapterList()
+// Returns true if adapter enumeration was successful and the DXGI system actually has an adapter. (Like with VirtualBox in some hosts DXGI/D3D11 is present, but no adapters.)
+bool GfxDrvDXGI::CreateAdapterList()
 {
-  _adapters = GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(_enumerationFactory);
+  DeleteAdapterList();
+
+  IDXGIFactory *enumerationFactory;
+  const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&enumerationFactory);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
+    return false;
+  }
+
+  _adapters = GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(enumerationFactory);
+
+  ReleaseCOM(&enumerationFactory);
+
+  return _adapters != nullptr && _adapters->size() > 0;
 }
 
 void GfxDrvDXGI::DeleteAdapterList()
@@ -66,23 +125,6 @@ void GfxDrvDXGI::DeleteAdapterList()
     GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(_adapters);
     _adapters = nullptr;
   }
-}
-
-bool GfxDrvDXGI::CreateEnumerationFactory()
-{
-  const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory) ,(void**)&_enumerationFactory);
-  if (FAILED(result))
-  {
-    GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
-    return false;
-  }
-
-  return true;
-}
-
-void GfxDrvDXGI::DeleteEnumerationFactory()
-{
-  ReleaseCOM(&_enumerationFactory);
 }
 
 STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
@@ -1055,8 +1097,7 @@ void GfxDrvDXGI::EmulationStop()
 }
 
 GfxDrvDXGI::GfxDrvDXGI()
-  : _enumerationFactory(nullptr), 
-    _adapters(nullptr),
+  : _adapters(nullptr),
     _dxgiFactory(nullptr),
     _swapChain(nullptr),
     _d3d11device(nullptr),
