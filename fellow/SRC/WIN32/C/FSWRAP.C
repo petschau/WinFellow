@@ -118,8 +118,7 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
     pStatBuffer->st_size);
 #endif
 
-// #if (_MSC_VER >= 1900) // compiler version is Visual Studio 2015 or higher?
-#ifdef _WIN32
+#if (_MSC_VER >= 1900) // compiler version is Visual Studio 2015 or higher?
   // check OS version, only execute replacement code on Windows XP/OS versions before Vista
   OSVERSIONINFO osvi;
   BOOL bIsLegacyOS; // Windows 2000, XP, 2003
