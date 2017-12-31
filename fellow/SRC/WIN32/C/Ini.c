@@ -1,4 +1,3 @@
-/* @(#) $Id: Ini.c,v 1.16 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* WinFellow                                                               */
 /* Ini file for Windows                                                    */
@@ -26,6 +25,7 @@
 #include "draw.h"
 #include "fellow.h"
 #include "fileops.h"
+#include "fswrap.h"
 
 #define INI_FILENAME "WinFellow.ini"
 
@@ -342,16 +342,16 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
 
     if (stricmp(option, "last_used_configuration") == 0) {
       if (strcmp(value, "") == 0) {
-	fileopsGetDefaultConfigFileName(ini_default_config_filename);
-	iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+        fileopsGetDefaultConfigFileName(ini_default_config_filename);
+        iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
       } else {
-	if (stat(value,&bla) != 0) {
-	  fileopsGetDefaultConfigFileName(ini_default_config_filename);
-	  iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
-	} 
-	else {
-	  iniSetCurrentConfigurationFilename(initdata, value);
-	}
+	      if(fsWrapStat(value,&bla) != 0) {
+	        fileopsGetDefaultConfigFileName(ini_default_config_filename);
+	        iniSetCurrentConfigurationFilename(initdata, ini_default_config_filename);
+	      } 
+	      else {
+	        iniSetCurrentConfigurationFilename(initdata, value);
+	      }
       }
     }
     else if (stricmp(option, "last_used_cfg_dir") == 0) {

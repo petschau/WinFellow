@@ -1,4 +1,3 @@
-/* @(#) $Id: FSWRAP.C,v 1.7 2012-12-08 16:13:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -33,6 +32,8 @@
 #include "portable.h"
 #include "defs.h"
 #include "fswrap.h"
+#include "fellow.h"
+#include "errno.h"
 
 
 /*===========================================================================*/
@@ -92,6 +93,102 @@ void fsWrapMakeRelativePath(STR *root_dir, STR *file_path) {
 }
 */
 
+// this function is a very limited stat() workaround implementation to address
+// the stat() bug on Windows XP using later platform toolsets; the problem was 
+// addressed by Micosoft, but still persists for statically linked projects
+// https://connect.microsoft.com/VisualStudio/feedback/details/1600505/stat-not-working-on-windows-xp-using-v14-xp-platform-toolset-vs2015
+// https://stackoverflow.com/questions/32452777/visual-c-2015-express-stat-not-working-on-windows-xp
+// limitations: only sets a limited set of mode flags and calculates size information
+int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
+{
+  int result;
+
+#ifdef _DEBUG
+  fellowAddLog("fsWrapStat(szFilename=%s, pStatBuffer=0x%08x)\n", 
+    szFilename, pStatBuffer);
+#endif
+
+  result = stat(szFilename, pStatBuffer);
+
+#ifdef _DEBUG
+  fellowAddLog(" native result=%d mode=0x%04x nlink=%d size=%lu\n",
+    result,
+    pStatBuffer->st_mode,
+    pStatBuffer->st_nlink,
+    pStatBuffer->st_size);
+#endif
+
+#if (_MSC_VER >= 1900) // Visual Studio 2015 or higher?
+  WIN32_FILE_ATTRIBUTE_DATA hFileAttributeData;
+  // mark files as readable by default; set flags for user, group and other
+  unsigned short mode = _S_IREAD  | (_S_IREAD  >> 3) | (_S_IREAD  >> 6);
+
+  memset(pStatBuffer, 0, sizeof(struct stat));
+  pStatBuffer->st_nlink = 1;
+
+  if(!GetFileAttributesEx(szFilename, GetFileExInfoStandard, &hFileAttributeData))
+  {
+
+#ifdef _DEBUG
+    LPTSTR szErrorMessage=NULL;
+    DWORD hResult = GetLastError();
+
+    fellowAddLog("  fsWrapStat(): GetFileAttributesEx() failed, return code=%d", 
+      hResult);
+
+    FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
+      NULL, hResult, MAKELANGID(0, SUBLANG_ENGLISH_US), (LPTSTR)&szErrorMessage, 0, NULL);
+    if (szErrorMessage != NULL)
+    {
+        fellowAddTimelessLog(" (%s)\n", szErrorMessage);
+        LocalFree(szErrorMessage);
+        szErrorMessage = NULL;
+    }
+    else
+      fellowAddTimelessLog("\n");
+#endif
+
+    *_errno() = ENOENT;
+    result = -1;
+  }
+  else
+  {
+    // directory?
+    if(hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+    {
+      mode |= _S_IFDIR | _S_IEXEC  | (_S_IEXEC  >> 3) | (_S_IEXEC  >> 6);
+    }
+    else
+    {
+      mode |= _S_IFREG;
+      // detection of executable files is not supported for the time being
+
+      pStatBuffer->st_size  = ((__int64)hFileAttributeData.nFileSizeHigh << 32) + hFileAttributeData.nFileSizeLow;
+    }
+
+    if(!(hFileAttributeData.dwFileAttributes & FILE_ATTRIBUTE_READONLY))
+    {
+      mode |= _S_IWRITE | (_S_IWRITE >> 3) | (_S_IWRITE >> 6);
+    }
+      
+    pStatBuffer->st_mode  = mode;
+
+    result = 0;
+  }
+
+#ifdef _DEBUG
+  fellowAddLog(" fswrap result=%d mode=0x%04x nlink=%d size=%lu\n",
+    result,
+    pStatBuffer->st_mode,
+    pStatBuffer->st_nlink,
+    pStatBuffer->st_size);
+#endif
+
+#endif
+
+  return result;
+}
+
 /*===========================================================================*/
 /* Fills in file attributes in point structure                               */
 /* Return NULL on error                                                      */
@@ -103,26 +200,26 @@ fs_navig_point *fsWrapMakePoint(STR *point) {
   FILE *file_ptr;
 
   // check file permissions
-  if (stat(point, &mystat) == 0) {
+  if(fsWrapStat(point, &mystat) == 0) {
     fsnp = (fs_navig_point *) malloc(sizeof(fs_navig_point));
     strcpy(fsnp->name, point);
-    if (mystat.st_mode & _S_IFREG)
+    if(mystat.st_mode & _S_IFREG)
       fsnp->type = FS_NAVIG_FILE;
     else if (mystat.st_mode & _S_IFDIR)
       fsnp->type = FS_NAVIG_DIR;
     else
       fsnp->type = FS_NAVIG_OTHER;
     fsnp->writeable = !!(mystat.st_mode & _S_IWRITE);
-    if (fsnp->writeable)
+    if(fsnp->writeable)
     {
       file_ptr = fopen(point, "a");
-      if (file_ptr == NULL)
+      if(file_ptr == NULL)
       {
-	fsnp->writeable = FALSE;
+        fsnp->writeable = FALSE;
       }
       else
       {
-	fclose(file_ptr);
+        fclose(file_ptr);
       }
     }
     fsnp->size = mystat.st_size;
