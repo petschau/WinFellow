@@ -56,7 +56,7 @@ This directory contains a MS Visual Studio workspace for the entire Fellow sourc
 What you need to compile the sources
 ------------------------------------
 
-Microsoft Visual Studio 2013 Update 5 and the February 2010 DirectX SDK.
+Microsoft Visual Studio 2017 and the February 2010 DirectX SDK.
 The community edition of Visual Studio can be used to compile WinFellow.
 
 Other notes
