@@ -8,7 +8,7 @@ This HOWTO describes the steps necessary to prepare a new public WinFellow relea
 * For compiling the new release, the build environment should be setup like recommended here (\ref howtodevenvsetup).
 * Verify that no unnecessary debug/trace logs are written (floppy.log, capsdump.txt, ...)
 * Perform regression tests according to the \ref howtoregressiontesting.
-* The third digit of the version number should be increased by one (in the files versioninfo-wcrev.h and versioninfo-wcrev.rc, as well as in the doxyfile and the user guide).
+* The third digit of the version number should be increased by one (in the files versioninfo-wcrev.h and versioninfo-wcrev.rc, as well as in the doxyfile, the user guide and the NSIS installer file WinFellow.nsi).
 * The build configuration should be changed to Release.
 * Update the ReadMe/FAQ.
 * Compile the build using the script CompileReleaseBuild.ps1; this will take care of a number of things:

@@ -8,7 +8,7 @@
 !define COMP_NAME "The WinFellow Team"
 !define WEB_SITE "http://fellow.sourceforge.net"
 !define VERSION "${FELLOWVERSION}"
-!define COPYRIGHT "© 1996-2016 under the GNU General Public License"
+!define COPYRIGHT "© 1996-2018 under the GNU General Public License"
 !define DESCRIPTION "WinFellow Amiga Emulator"
 !define LICENSE_TXT "gpl-2.0.txt"
 !define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}.exe"
