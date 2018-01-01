@@ -78,7 +78,7 @@ BEGIN
             VALUE "Comments", "http://petschau.github.io/WinFellow/"
             VALUE "FileDescription", "WinFellow Amiga Emulator"
             VALUE "InternalName", "WinFellow"
-            VALUE "LegalCopyright", "©1996-2017 under the GNU General Public License (GPL)"
+            VALUE "LegalCopyright", "©1996-2018 under the GNU General Public License (GPL)"
             VALUE "OriginalFilename", "WinFellow.exe"
             VALUE "ProductName", "WinFellow"
             VALUE "FileVersion", "0.5.7.$WCREV$"

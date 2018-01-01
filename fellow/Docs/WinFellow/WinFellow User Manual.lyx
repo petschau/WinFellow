@@ -106,7 +106,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.7 (2017/12/24)
+v0.5.7 (2018/01/01)
 \end_layout
 
 \begin_layout Author
@@ -368,6 +368,10 @@ minor timing adjustment for btst
 \end_deeper
 \begin_layout Itemize
 CIA event counter changes according to documentation
+\end_layout
+
+\begin_layout Itemize
+the project files were updated to Visual Studio 2017
 \end_layout
 
 \end_deeper
