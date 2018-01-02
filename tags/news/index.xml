@@ -6,8 +6,36 @@
     <description>Recent content in News on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 12 Nov 2017 14:23:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Jan 2018 16:00:00 +0000</lastBuildDate>
     <atom:link href="http://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>WinFellow v0.5.7 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2018-01-02-WinFellow%20v0.5.7%20released/</link>
+      <pubDate>Tue, 02 Jan 2018 16:00:00 +0000</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2018-01-02-WinFellow%20v0.5.7%20released/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;Bug fixes:&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;– floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94&lt;/p&gt;
+
+&lt;p&gt;– fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization&lt;/p&gt;
+
+&lt;p&gt;– several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas&lt;/p&gt;
+
+&lt;p&gt;– fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported&lt;/p&gt;
+
+&lt;p&gt;– CPU instruction fixes:
+  * fixed a signed bug in 64-bit division
+  * minor timing adjustment for btst&lt;/p&gt;
+
+&lt;p&gt;– CIA event counter changes according to documentation&lt;/p&gt;
+
+&lt;p&gt;– the project files were updated to Visual Studio 2017&lt;/p&gt;
+
+&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>WinFellow v0.5.6 released</title>
