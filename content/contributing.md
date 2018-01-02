@@ -1,5 +1,4 @@
 ---
-layout: page
 title: contributing
 menu: main
 weight: 40

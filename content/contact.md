@@ -1,5 +1,4 @@
 ---
-layout: page
 title: contacting us
 menu: main
 weight: 30

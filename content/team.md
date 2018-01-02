@@ -1,5 +1,4 @@
 ---
-layout: page
 title: the team
 menu: main
 weight: 20
