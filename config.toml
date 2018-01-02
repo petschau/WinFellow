@@ -6,8 +6,6 @@ theme = "twentyfourteen-tags"
 [taxonomies]
 tag = "tags"
 
-[params] DateForm = "30.12.2006"
-
 [blackfriday]
     hrefTargetBlank = true
 
