@@ -138,21 +138,20 @@
 	<div class="entry-content">
 		<p><strong>Bug fixes:</strong></p>
 
-<p>– floppy code was updated to use a track limit &gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94</p>
+<ul>
+<li>floppy code was updated to use a track limit &gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94</li>
+<li>fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization</li>
+<li>several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas</li>
+<li>fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported</li>
+<li>CPU instruction fixes:
 
-<p>– fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization</p>
-
-<p>– several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas</p>
-
-<p>– fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported</p>
-
-<p>– CPU instruction fixes:
-  * fixed a signed bug in 64-bit division
-  * minor timing adjustment for btst</p>
-
-<p>– CIA event counter changes according to documentation</p>
-
-<p>– the project files were updated to Visual Studio 2017</p>
+<ul>
+<li>fixed a signed bug in 64-bit division</li>
+<li>minor timing adjustment for btst</li>
+</ul></li>
+<li>CIA event counter changes according to documentation</li>
+<li>the project files were updated to Visual Studio 2017</li>
+</ul>
 
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
 
