@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<title>WinFellow v0.5.7 released &middot; WinFellow - Amiga Emulator for Windows</title>
+	<title>WinFellow v0.5.4 released &middot; WinFellow - Amiga Emulator for Windows</title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<!--[if lt IE 9]>
 	<script src="http://petschau.github.io/WinFellow/js/html5.js"></script>
@@ -39,10 +39,6 @@
 					<ul>
 						
 						<li class="page_item"> 
-							<a href="/WinFellow/post/index.xml">RSS</a>
-						</li>
-						
-						<li class="page_item"> 
 							<a href="/WinFellow/about/">about</a>
 						</li>
 						
@@ -56,6 +52,10 @@
 						
 						<li class="page_item"> 
 							<a href="/WinFellow/contributing/">contributing</a>
+						</li>
+						
+						<li class="page_item"> 
+							<a href="/WinFellow/post/index.xml">RSS</a>
 						</li>
 						
                         
@@ -121,13 +121,13 @@
 			</span>
 		</div>
 
-		<h1 class="entry-title">WinFellow v0.5.7 released</h1>
+		<h1 class="entry-title">WinFellow v0.5.4 released</h1>
 
 		<div class="entry-meta">
 			<span class="entry-date">
-				<a href="http://petschau.github.io/WinFellow/post/2018-01-02-WinFellow%20v0.5.7%20released//index.html" rel="bookmark">
-					<time class="entry-date" datetime="2018-01-02 16:00:00 &#43;0000 &#43;0000">
-						January 2
+				<a href="http://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2017-03-11 18:15:00 &#43;0000 &#43;0000">
+						March 11, 2017
 					</time>
 				</a>
 			</span>
@@ -136,21 +136,30 @@
 	</header>
 	
 	<div class="entry-content">
-		<p><strong>Bug fixes:</strong></p>
+		<p><strong>New features:</strong></p>
 
 <ul>
-<li>floppy code was updated to use a track limit &gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94</li>
-<li>fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization</li>
-<li>several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas</li>
-<li>fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported</li>
-<li>CPU instruction fixes:
+<li>re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes</li>
+<li>support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
 
 <ul>
-<li>fixed a signed bug in 64-bit division</li>
-<li>minor timing adjustment for btst</li>
+<li>on Windows Vista, the platform update <a href="https://support.microsoft.com/en-us/help/971644" target="_blank">KB971644</a> should be installed, as it contains required updates to DirectX</li>
+<li>the graphics card has to provide hardware acceleration for Direct3D</li>
 </ul></li>
-<li>CIA event counter changes according to documentation</li>
-<li>the project files were updated to Visual Studio 2017</li>
+<li>ability to save screenshots to the pictures folder (hit &lt; Print Screen &gt; to trigger)</li>
+<li>support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic</li>
+<li>very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated</li>
+</ul>
+
+<p><strong>Bug Fixes:</strong></p>
+
+<ul>
+<li>improved frame timing to present frames in a more evenly paced manner</li>
+<li>improvements to CIA timer handling</li>
+<li>improvements to CPU instruction timing (TAS and PEA instructions)</li>
+<li>fixed sound volume restoration during reset of Amiga session in Amiga Forever</li>
+<li>improved error handling for DMS floppy image extraction</li>
+<li>fixed minor memory leaks</li>
 </ul>
 
 <p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
@@ -200,6 +209,11 @@
 
 		<aside id="recent-posts-3" class="widget widget_recent_entries">
 
+	
+	<h1 class="widget-title">Recent Posts</h1>
+		<ul>
+			
+		</ul>
 	
 </aside>
 

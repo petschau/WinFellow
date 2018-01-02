@@ -7,91 +7,39 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 02 Jan 2018 16:00:00 +0000</lastBuildDate>
-    <atom:link href="http://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    
+	<atom:link href="http://petschau.github.io/WinFellow/tags/news/index.xml" rel="self" type="application/rss+xml" />
+    
     
     <item>
       <title>WinFellow v0.5.7 released</title>
-      <link>http://petschau.github.io/WinFellow/post/2018-01-02-WinFellow%20v0.5.7%20released/</link>
+      <link>http://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</link>
       <pubDate>Tue, 02 Jan 2018 16:00:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2018-01-02-WinFellow%20v0.5.7%20released/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Bug fixes:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94&lt;/li&gt;
-&lt;li&gt;fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization&lt;/li&gt;
-&lt;li&gt;several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas&lt;/li&gt;
-&lt;li&gt;fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported&lt;/li&gt;
-&lt;li&gt;CPU instruction fixes:
-
-&lt;ul&gt;
-&lt;li&gt;fixed a signed bug in 64-bit division&lt;/li&gt;
-&lt;li&gt;minor timing adjustment for btst&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;CIA event counter changes according to documentation&lt;/li&gt;
-&lt;li&gt;the project files were updated to Visual Studio 2017&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
-</description>
+      <guid>http://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released/</guid>
+      <description>Bug fixes:
+ floppy code was updated to use a track limit &amp;gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94 fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported CPU instruction fixes:  fixed a signed bug in 64-bit division minor timing adjustment for btst  CIA event counter changes according to documentation the project files were updated to Visual Studio 2017  Please see the included file ChangeLog.</description>
     </item>
     
     <item>
       <title>WinFellow v0.5.6 released</title>
-      <link>http://petschau.github.io/WinFellow/post/2017-11-12-WinFellow%20v0.5.6%20released/</link>
+      <link>http://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</link>
       <pubDate>Sun, 12 Nov 2017 14:23:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2017-11-12-WinFellow%20v0.5.6%20released/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;New features:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;improve support for IPF images (align disk words to sync if sync is found on an odd boundary)&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
-</description>
+      <guid>http://petschau.github.io/WinFellow/post/2017-11-12-winfellow-v0.5.6-released/</guid>
+      <description>New features:
+ Amiga Forever 2017 support modules were updated to the latest version, improving Amiga Forever input device handling by reducing lag  Bug Fixes:
+ improve support for IPF images (align disk words to sync if sync is found on an odd boundary)  Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</description>
     </item>
     
     <item>
       <title>WinFellow v0.5.4 released</title>
-      <link>http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released/</link>
+      <link>http://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</link>
       <pubDate>Sat, 11 Mar 2017 18:15:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2017-03-11-WinFellow%20v0.5.4%20released/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;New features:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes&lt;/li&gt;
-&lt;li&gt;support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed
-
-&lt;ul&gt;
-&lt;li&gt;on Windows Vista, the platform update &lt;a href=&#34;https://support.microsoft.com/en-us/help/971644&#34; target=&#34;_blank&#34;&gt;KB971644&lt;/a&gt; should be installed, as it contains required updates to DirectX&lt;/li&gt;
-&lt;li&gt;the graphics card has to provide hardware acceleration for Direct3D&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
-&lt;li&gt;ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger)&lt;/li&gt;
-&lt;li&gt;support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic&lt;/li&gt;
-&lt;li&gt;very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;&lt;strong&gt;Bug Fixes:&lt;/strong&gt;&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;improved frame timing to present frames in a more evenly paced manner&lt;/li&gt;
-&lt;li&gt;improvements to CIA timer handling&lt;/li&gt;
-&lt;li&gt;improvements to CPU instruction timing (TAS and PEA instructions)&lt;/li&gt;
-&lt;li&gt;fixed sound volume restoration during reset of Amiga session in Amiga Forever&lt;/li&gt;
-&lt;li&gt;improved error handling for DMS floppy image extraction&lt;/li&gt;
-&lt;li&gt;fixed minor memory leaks&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.&lt;/p&gt;
-</description>
+      <guid>http://petschau.github.io/WinFellow/post/2017-03-11-winfellow-v0.5.4-released/</guid>
+      <description>New features:
+ re-designed display settings to make use of modern higher resolution displays more intuitive; instead of configuring a window resolution, scaling and overscan area can be configured automatically to create a window of the optimal size and scaling factor; both can also be configured manually to arrive at frequently window sizes support for the Direct3D 11 graphics API; this requires DirectX 11 to be installed  on Windows Vista, the platform update KB971644 should be installed, as it contains required updates to DirectX the graphics card has to provide hardware acceleration for Direct3D  ability to save screenshots to the pictures folder (hit &amp;lt; Print Screen &amp;gt; to trigger) support for automatic, as well as 3x and 4x scaling, which is useful for 4K/high DPI displays; for the best results, try leaving the scaling at automatic very basic serial port/UART emulation; nothing can be connected to the serial port; this is mostly used for serial debug logging (which is active only in debug builds of WinFellow), but the port is always being emulated  Bug Fixes:</description>
     </item>
     
     <item>
@@ -100,14 +48,10 @@
       <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</guid>
-      <description>&lt;p&gt;WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.&lt;/p&gt;
-
-&lt;p&gt;Downloads for older releases are still available at &lt;a href=&#34;http://sourceforge.net/projects/fellow/files/&#34; target=&#34;_blank&#34;&gt;SourceForge&lt;/a&gt; for reference; for future news and updates, please visit us &lt;a href=&#34;http://petschau.github.io/WinFellow&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;The GitHub source code repository is available &lt;a href=&#34;http://github.com/petschau/WinFellow&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
-
-&lt;p&gt;Future releases of WinFellow will be published in GitHub&amp;rsquo;s &lt;a href=&#34;https://github.com/petschau/WinFellow/releases&#34; target=&#34;_blank&#34;&gt;releases&lt;/a&gt; section.&lt;/p&gt;
-</description>
+      <description>WinFellow development has found a new home on GitHub; please update your bookmarks accordingly.
+Downloads for older releases are still available at SourceForge for reference; for future news and updates, please visit us here.
+The GitHub source code repository is available here.
+Future releases of WinFellow will be published in GitHub&amp;rsquo;s releases section.</description>
     </item>
     
   </channel>
