@@ -1031,6 +1031,9 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
       if( released( PCK_F2 )) issue_event( EVENT_INSERT_DF1 );
       if( released( PCK_F3 )) issue_event( EVENT_INSERT_DF2 );
       if( released( PCK_F4 )) issue_event( EVENT_INSERT_DF3 );
+      if( released( PCK_F5 )) issue_event( EVENT_DF1_INTO_DF0 );
+      if( released( PCK_F6 )) issue_event( EVENT_DF2_INTO_DF0 );
+      if( released( PCK_F7 )) issue_event( EVENT_DF3_INTO_DF0 );
     }
     else if( ispressed(PCK_END) )
     {

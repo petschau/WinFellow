@@ -44,6 +44,7 @@
 #include "fileops.h"
 #include "interrupt.h"
 #include "uart.h"
+#include "../automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -101,6 +102,7 @@ void busEndOfLine(void)
   kbdEventEOLHandler();
 
   uart.EndOfLine();
+  automator.EndOfLine();
 
   /*==============================================================*/
   /* Set up the next end of line event                            */
@@ -202,6 +204,8 @@ void busEndOfFrame(void)
 
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.EndOfFrame();
+
+  automator.EndOfFrame();
 
   eofEvent.cycle = busGetCyclesInThisFrame();
   busInsertEvent(&eofEvent);

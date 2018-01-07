@@ -330,6 +330,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\automation\Automator.cpp" />
+    <ClCompile Include="..\..\automation\Script.cpp" />
     <ClCompile Include="..\..\C\BLIT.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1580,6 +1582,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\automation\Automator.h" />
+    <ClInclude Include="..\..\automation\Script.h" />
     <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
     <ClInclude Include="..\..\graphics\Logger.h" />
     <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />

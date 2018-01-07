@@ -3434,7 +3434,7 @@ BOOLE wguiEnter(void)
     MSG myMsg;
     BOOLE end_loop = FALSE;
 
-    wgui_action = WGUI_NO_ACTION;
+    wgui_action = (cfgGetUseGUI(wgui_cfg)) ? WGUI_NO_ACTION : WGUI_START_EMULATION;
 
     wgui_hDialog = CreateDialog(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), NULL, wguiDialogProc); 
     SetWindowPos(wgui_hDialog, HWND_TOP, iniGetMainWindowXPos(wgui_ini), iniGetMainWindowYPos(wgui_ini), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
@@ -3603,6 +3603,11 @@ BOOLE wguiEnter(void)
       {
 	winDrvEmulationStart();
       } while (gfxDrvCommon->_displaychange);
+
+      if (!cfgGetUseGUI(wgui_cfg))
+      {
+        quit_emulator = true;
+      }
     }
   } while (!quit_emulator);
   return quit_emulator;

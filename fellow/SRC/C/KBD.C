@@ -1,4 +1,3 @@
-/* @(#) $Id: KBD.C,v 1.10 2012-12-30 12:59:37 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow Emulator                                                         */
 /* Keyboard emulation                                                      */
@@ -34,6 +33,9 @@ Tuesday, September 19, 2000: nova
 #include "graph.h"
 #include "cia.h"
 #include "draw.h"
+#include "FLOPPY.H"
+
+#include "../automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -55,6 +57,44 @@ ULO kbd_time_to_wait;
 UBY insert_dfX[4];                         /* 0 - nothing 1- insert 2-eject */
 
 
+/* Add an EOL event to the core, used by kbddrv */
+
+void kbdEventEOLAdd(UBY eventId)
+{
+  kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.inpos & KBDBUFFERMASK] = eventId;
+  kbd_state.eventsEOL.inpos++;
+}
+
+/* Add an EOF event to the core, used by kbddrv */
+
+void kbdEventEOFAdd(UBY eventId)
+{
+  kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.inpos & KBDBUFFERMASK] = eventId;
+  kbd_state.eventsEOF.inpos++;
+}
+
+/* Add a key to the core, used by kbddrv */
+
+void kbdKeyAdd(UBY keyCode)
+{
+  automator.RecordKey(keyCode);
+
+  kbd_state.scancodes.buffer[(kbd_state.scancodes.inpos) & KBDBUFFERMASK] = keyCode;
+  kbd_state.scancodes.inpos++;
+}
+
+void kbdEventDFxIntoDF0(ULO driveNumber)
+{
+  char tmp[CFG_FILENAME_LENGTH];
+  cfg *currentConfig = cfgManagerGetCurrentConfig(&cfg_manager);
+  strcpy(tmp, cfgGetDiskImage(currentConfig, 0));
+  cfgSetDiskImage(currentConfig, 0, cfgGetDiskImage(currentConfig, driveNumber));
+  cfgSetDiskImage(currentConfig, driveNumber, tmp);
+
+  floppySetDiskImage(0, cfgGetDiskImage(currentConfig, 0));
+  floppySetDiskImage(driveNumber, cfgGetDiskImage(currentConfig, driveNumber));
+}
+
 /*===========================================================================*/
 /* Called from the main end of frame handler                                 */
 /*===========================================================================*/
@@ -63,56 +103,67 @@ void kbdEventEOFHandler(void) {
   kbd_event thisev;
 
   while (kbd_state.eventsEOF.outpos < kbd_state.eventsEOF.inpos) {
-    thisev =(kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos &
-      KBDBUFFERMASK]);
+    thisev =(kbd_event)(kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.outpos & KBDBUFFERMASK]);
+
+    automator.RecordEmulatorAction(thisev);
+
     switch (thisev) {
       case EVENT_INSERT_DF0:
         insert_dfX[0] = 1;
-	      fellowRequestEmulationStop();
-	      break;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_INSERT_DF1:
-	      insert_dfX[1] = 1;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[1] = 1;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_INSERT_DF2:
-	      insert_dfX[2] = 1;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[2] = 1;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_INSERT_DF3:
-	      insert_dfX[3] = 1;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[3] = 1;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_EJECT_DF0:
-	      insert_dfX[0] = 2;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[0] = 2;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_EJECT_DF1:
-	      insert_dfX[1] = 2;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[1] = 2;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_EJECT_DF2:
-	      insert_dfX[2] = 2;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[2] = 2;
+	fellowRequestEmulationStop();
+	break;
       case EVENT_EJECT_DF3:
-	      insert_dfX[3] = 2;
-	      fellowRequestEmulationStop();
-	      break;
+	insert_dfX[3] = 2;
+	fellowRequestEmulationStop();
+	break;
+      case EVENT_DF1_INTO_DF0:
+        kbdEventDFxIntoDF0(1);
+        break;
+      case EVENT_DF2_INTO_DF0:
+        kbdEventDFxIntoDF0(2);
+        break;
+      case EVENT_DF3_INTO_DF0:
+        kbdEventDFxIntoDF0(3);
+        break;
       case EVENT_EXIT:
 #ifdef RETRO_PLATFORM
-              if(RP.GetHeadlessMode())  
-                RP.SendClose();
-              else
+        if(RP.GetHeadlessMode())  
+          RP.SendClose();
+        else
 #endif
-              fellowRequestEmulationStop();
+          fellowRequestEmulationStop();
 
-	      break;
+	break;
       case EVENT_HARD_RESET:
-              // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
-              // cpuIntegrationHardReset calls cpuHardReset, which in turn triggers a soft reset
-              fellowAddLog("kbd: keyboard-initiated reset triggered...\n");
-              cpuIntegrationHardReset();
-	      break;
+        // a reset triggered by keyboard should perform a soft reset and in addition reset the CPU state
+        // cpuIntegrationHardReset calls cpuHardReset, which in turn triggers a soft reset
+        fellowAddLog("kbd: keyboard-initiated reset triggered...\n");
+        cpuIntegrationHardReset();
+	break;
       case EVENT_BMP_DUMP:
 	gfxDrvSaveScreenshot(true, "");
 	break;

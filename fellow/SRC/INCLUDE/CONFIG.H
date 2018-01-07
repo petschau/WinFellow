@@ -184,7 +184,7 @@ typedef struct {
   /* GUI configuration                                                        */
   /*==========================================================================*/
 
-  BOOLE m_useGUI;
+  bool m_useGUI;
 
 
   /*==========================================================================*/
@@ -381,8 +381,8 @@ extern gameport_inputs cfgGetGameport(cfg *config, ULO index);
 /* GUI configuration property access                                          */
 /*============================================================================*/
 
-extern void cfgSetUseGUI(cfg *config, BOOLE useGUI);
-extern BOOLE cfgGetUseGUI(cfg *config);
+extern void cfgSetUseGUI(cfg *config, bool useGUI);
+extern bool cfgGetUseGUI(cfg *config);
 
 
 /*============================================================================*/
