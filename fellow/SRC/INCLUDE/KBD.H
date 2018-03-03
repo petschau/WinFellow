@@ -55,7 +55,10 @@ typedef enum {
   EVENT_JOY1_AUTOFIRE0_ACTIVE,
   EVENT_JOY1_AUTOFIRE0_INACTIVE,
   EVENT_JOY1_AUTOFIRE1_ACTIVE,
-  EVENT_JOY1_AUTOFIRE1_INACTIVE
+  EVENT_JOY1_AUTOFIRE1_INACTIVE,
+  EVENT_DF1_INTO_DF0,
+  EVENT_DF2_INTO_DF0,
+  EVENT_DF3_INTO_DF0
 } kbd_event;
 
 #define KBDBUFFERLENGTH 512
@@ -75,26 +78,9 @@ typedef struct {
 
 extern kbd_state_type kbd_state;
 
-/* Add an EOL event to the core, used by kbddrv */
-
-#define kbdEventEOLAdd(EVENTID) {\
-  kbd_state.eventsEOL.buffer[kbd_state.eventsEOL.inpos & KBDBUFFERMASK] = EVENTID; \
-  kbd_state.eventsEOL.inpos++; \
-}
-
-/* Add an EOF event to the core, used by kbddrv */
-
-#define kbdEventEOFAdd(EVENTID) {\
-  kbd_state.eventsEOF.buffer[kbd_state.eventsEOF.inpos & KBDBUFFERMASK] = EVENTID; \
-  kbd_state.eventsEOF.inpos++; \
-}
-
-/* Add a key to the core, used by kbddrv */
-
-#define kbdKeyAdd(KEYCODE) {\
-  kbd_state.scancodes.buffer[(kbd_state.scancodes.inpos) & KBDBUFFERMASK] = (KEYCODE); \
-  kbd_state.scancodes.inpos++; \
-}
+extern void kbdEventEOLAdd(UBY eventId);
+extern void kbdEventEOFAdd(UBY eventId);
+extern void kbdKeyAdd(UBY keyCode);
 
 extern void kbdHardReset(void);
 extern void kbdEmulationStart(void);

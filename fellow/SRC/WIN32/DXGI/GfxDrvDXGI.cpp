@@ -24,39 +24,93 @@
 #include "RetroPlatform.h"
 #endif
 
-bool GfxDrvDXGI::Startup()
+bool GfxDrvDXGI::_requirementsValidated = false;
+bool GfxDrvDXGI::_requirementsValidationResult = false;
+
+bool GfxDrvDXGI::ValidateRequirements()
 {
-  bool bResult;
-
-  fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n\n");
-
-  if (!CreateEnumerationFactory())
+  if (_requirementsValidated)
   {
+    return _requirementsValidationResult;
+  }
+
+  _requirementsValidated = true;
+
+  HINSTANCE hDll = LoadLibrary("d3d11.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
+    _requirementsValidationResult = false;
     return false;
   }
-  CreateAdapterList();
-  DeleteEnumerationFactory();
-  RegisterModes();
 
-  bResult = (_adapters != nullptr) & (_adapters->size() > 0);
+  hDll = LoadLibrary("dxgi.dll");
+  if (hDll) {
+    FreeLibrary(hDll);
+  }
+  else
+  {
+    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
+    _requirementsValidationResult = false;
+    return false;
+  }
 
-  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n\n", bResult ? "successful" : "failed");	
+  GfxDrvDXGI dxgi;
+  bool adaptersFound = dxgi.CreateAdapterList();
+  if (!adaptersFound)
+  {
+    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    _requirementsValidationResult = false;
+    return false;
+  }
 
-  return bResult;
+  _requirementsValidationResult = true;
+  return true;
+}
+
+bool GfxDrvDXGI::Startup()
+{
+  fellowAddLog("GfxDrvDXGI: Starting up DXGI driver\n");
+
+  bool success = CreateAdapterList();
+  if (success)
+  {
+    RegisterModes();
+  }
+  fellowAddLog("GfxDrvDXGI: Startup of DXGI driver %s\n", success ? "successful" : "failed");
+  return success;
 }
 
 void GfxDrvDXGI::Shutdown()
 {
-  fellowAddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n\n");
+  fellowAddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n");
 
   DeleteAdapterList();
 
-  fellowAddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n\n");
+  fellowAddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n");
 }
 
-void GfxDrvDXGI::CreateAdapterList()
+// Returns true if adapter enumeration was successful and the DXGI system actually has an adapter. (Like with VirtualBox in some hosts DXGI/D3D11 is present, but no adapters.)
+bool GfxDrvDXGI::CreateAdapterList()
 {
-  _adapters = GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(_enumerationFactory);
+  DeleteAdapterList();
+
+  IDXGIFactory *enumerationFactory;
+  const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory), (void**)&enumerationFactory);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
+    return false;
+  }
+
+  _adapters = GfxDrvDXGIAdapterEnumerator::EnumerateAdapters(enumerationFactory);
+
+  ReleaseCOM(&enumerationFactory);
+
+  return _adapters != nullptr && _adapters->size() > 0;
 }
 
 void GfxDrvDXGI::DeleteAdapterList()
@@ -66,23 +120,6 @@ void GfxDrvDXGI::DeleteAdapterList()
     GfxDrvDXGIAdapterEnumerator::DeleteAdapterList(_adapters);
     _adapters = nullptr;
   }
-}
-
-bool GfxDrvDXGI::CreateEnumerationFactory()
-{
-  const HRESULT result = CreateDXGIFactory(__uuidof(IDXGIFactory) ,(void**)&_enumerationFactory);
-  if (FAILED(result))
-  {
-    GfxDrvDXGIErrorLogger::LogError("CreateDXGIFactory failed with the error: ", result);
-    return false;
-  }
-
-  return true;
-}
-
-void GfxDrvDXGI::DeleteEnumerationFactory()
-{
-  ReleaseCOM(&_enumerationFactory);
 }
 
 STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
@@ -414,7 +451,7 @@ void GfxDrvDXGI::ResizeSwapChainBuffers()
 
   _resize_swapchain_buffers = false;
 
-  HRESULT result = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
+  HRESULT result = _swapChain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_GDI_COMPATIBLE);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to resize buffers of swap chain in response to WM_SIZE:", result);
@@ -1055,8 +1092,7 @@ void GfxDrvDXGI::EmulationStop()
 }
 
 GfxDrvDXGI::GfxDrvDXGI()
-  : _enumerationFactory(nullptr), 
-    _adapters(nullptr),
+  : _adapters(nullptr),
     _dxgiFactory(nullptr),
     _swapChain(nullptr),
     _d3d11device(nullptr),
@@ -1093,8 +1129,13 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   ULO lDisplayScale;
   IDXGISurface1* pSurface1 = NULL;
   HDC hDC = NULL;
+
+#ifdef _DEBUG
+  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
+    bSaveFilteredScreenshot ? "true" : "false", filename);
+#endif
   
-  if (bSaveFilteredScreenshot) 
+  if(bSaveFilteredScreenshot) 
   {
     hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
     if (FAILED(hr))
@@ -1128,9 +1169,11 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     bResult = gfxDrvDDrawSaveScreenshotFromDCArea(hDC, x, y, width, height, 1, 32, filename);
   }
   else
-  {
-    width = _current_draw_mode->width;
-    height = _current_draw_mode->height;
+  {  // save unfiltered screenshot
+    // width  = _current_draw_mode->width;
+    // height = _current_draw_mode->height;
+    width = draw_buffer_info.width;
+    height = draw_buffer_info.height;
     ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
     ID3D11Texture2D *screenshotTexture = NULL;
     D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
@@ -1152,9 +1195,9 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to create screenshot texture.", hr);
       return false;
-      
     }
 
+    // ID3D11DeviceContext::CopyResource: Cannot invoke CopyResource when the source and destination are not the same Resource type, nor have equivalent dimensions.
     _immediateContext->CopyResource(screenshotTexture, hostBuffer);
 
     hr = screenshotTexture->QueryInterface(__uuidof(IDXGISurface1), (void **)&pSurface1);
@@ -1176,8 +1219,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     ReleaseCOM(&screenshotTexture);
   }
 
-  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%d, filename='%s') %s.\n", bSaveFilteredScreenshot, filename,
-    bResult ? "successful" : "failed");
+  fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
+    bSaveFilteredScreenshot ? "true" : "false", filename, bResult ? "successful" : "failed");
 
   pSurface1->ReleaseDC(NULL);
 

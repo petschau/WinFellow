@@ -186,8 +186,8 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
     result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  fellowAddLog("gfxDrvSaveScreenshot(%s, %s) %s.\n",
-    bSaveFilteredScreenshot ? "filtered" : "raw", szActualFilename, result ? "successful" : "failed");
+  fellowAddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
+    bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
 
   return result;
 }
@@ -266,28 +266,5 @@ void gfxDrvShutdown()
 
 bool gfxDrvDXGIValidateRequirements(void)
 {
-  HINSTANCE hDll;
-
-  hDll = LoadLibrary("d3d11.dll");
-  if (hDll) {
-    FreeLibrary(hDll);
-  }
-  else
-  {
-    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
-    return false;
-  }
-
-  hDll = LoadLibrary("dxgi.dll");
-  if (hDll) {
-    FreeLibrary(hDll);
-  }
-  else
-  {
-    fellowAddLog("gfxDrvDXGIValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
-    return false;
-  }
-
-  return true;
+  return GfxDrvDXGI::ValidateRequirements();
 }
-

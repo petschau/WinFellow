@@ -1,4 +1,3 @@
-/* @(#) $Id: FELLOW.C,v 1.39 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -60,6 +59,7 @@
 #include "RetroPlatform.h"
 
 #include "Graphics.h"
+#include "../automation/Automator.h"
 
 BOOLE fellow_request_emulation_stop;
 
@@ -77,21 +77,6 @@ void fellowSetPreStartReset(BOOLE reset) {
 
 BOOLE fellowGetPreStartReset(void) {
   return fellow_pre_start_reset;
-}
-
-
-/*============================================================================*/
-/* Using GUI                                                                  */
-/*============================================================================*/
-
-static BOOLE fellow_use_gui;
-
-void fellowSetUseGUI(BOOLE use_gui) {
-  fellow_use_gui = use_gui;
-}
-
-BOOLE fellowGetUseGUI(void) {
-  return fellow_use_gui;
 }
 
 
@@ -611,6 +596,8 @@ static void fellowModulesStartup(int argc, char *argv[])
 #endif
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Startup();
+
+  automator.Startup();
 }
 
 /*============================================================================*/
@@ -619,6 +606,7 @@ static void fellowModulesStartup(int argc, char *argv[])
 
 static void fellowModulesShutdown(void)
 {
+  automator.Shutdown();
   if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
     GraphicsContext.Shutdown();
 #ifdef RETRO_PLATFORM

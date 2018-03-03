@@ -25,8 +25,6 @@ extern void fellowAddLog(const char *,...);
 extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
 extern void fellowAddTimelessLog(const char *,...);
 extern char *fellowGetVersionString(void);
-extern void fellowSetUseGUI(BOOLE use_gui);
-extern BOOLE fellowGetUseGUI(void);
 extern void fellowSetPreStartReset(BOOLE reset);
 extern BOOLE fellowGetPreStartReset(void);
 extern BOOLE fellowSaveState(STR *filename);

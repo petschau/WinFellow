@@ -54,6 +54,8 @@
 #include "wgui.h"
 #include "KBDDRV.H"
 
+#include "../automation/Automator.h"
+
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
 /*============================================================================*/
@@ -776,12 +778,12 @@ gameport_inputs cfgGetGameport(cfg *config, ULO index)
 /* GUI configuration property access                                          */
 /*============================================================================*/
 
-void cfgSetUseGUI(cfg *config, BOOLE useGUI)
+void cfgSetUseGUI(cfg *config, bool useGUI)
 {
   config->m_useGUI = useGUI;
 }
 
-BOOLE cfgGetUseGUI(cfg *config)
+bool cfgGetUseGUI(cfg *config)
 {
   return config->m_useGUI;
 }
@@ -929,7 +931,7 @@ void cfgSetDefaults(cfg *config)
   /* Default GUI configuration                                                */
   /*==========================================================================*/
 
-  cfgSetUseGUI(config, TRUE);
+  cfgSetUseGUI(config, true);
 
 
   /*==========================================================================*/
@@ -1565,9 +1567,9 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetGameport(config, 1, cfgGetGameportFromString(value));
     }
-    else if (stricmp(option, "use_gui") == 0)
+    else if (stricmp(option, "usegui") == 0)
     {
-      cfgSetUseGUI(config, cfgGetBOOLEFromString(value));
+      cfgSetUseGUI(config, cfgGetboolFromString(value));
     }
     else if (stricmp(option, "cpu_speed") == 0)
     {
@@ -1923,7 +1925,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "fellow.last_used_disk_dir=%s\n", cfgGetLastUsedDiskDir(config));
   fprintf(cfgfile, "joyport0=%s\n", cfgGetGameportToString(cfgGetGameport(config, 0)));
   fprintf(cfgfile, "joyport1=%s\n", cfgGetGameportToString(cfgGetGameport(config, 1)));
-  fprintf(cfgfile, "usegui=%s\n", cfgGetBOOLEToString(cfgGetUseGUI(config)));
+  fprintf(cfgfile, "usegui=%s\n", cfgGetboolToString(cfgGetUseGUI(config)));
   fprintf(cfgfile, "cpu_speed=%u\n", cfgGetCPUSpeed(config));
   fprintf(cfgfile, "cpu_compatible=%s\n", cfgGetBOOLEToString(TRUE));
   fprintf(cfgfile, "cpu_type=%s\n", cfgGetCPUTypeToString(cfgGetCPUType(config)));
@@ -2234,6 +2236,30 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
         fellowAddLog("cfg: ERROR using -f option, please supply a filename\n");
       }
     }
+    else if (stricmp(argv[i], "-autosnap") == 0)
+    {
+      i++;
+      automator.SnapshotDirectory = argv[i];
+      automator.SnapshotEnable = true;
+      i++;
+    }
+    else if (stricmp(argv[i], "-autosnapfrequency") == 0)
+    {
+      i++;
+      automator.SnapshotFrequency = atoi(argv[i]);
+      i++;
+    }
+    else if (stricmp(argv[i], "-autoscript") == 0)
+    {
+      i++;
+      automator.ScriptFilename = argv[i];
+      i++;
+    }
+    else if (stricmp(argv[i], "-autorecord") == 0)
+    {
+      i++;
+      automator.RecordScript = true;
+    }
     else if (stricmp(argv[i], "-s") == 0)
     { /* Configuration option */
       i++;
@@ -2344,6 +2370,11 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   drawSetLEDsEnabled(cfgGetScreenDrawLEDs(config));
   drawSetFPSCounterEnabled(cfgGetMeasureSpeed(config));
   drawSetFrameskipRatio(cfgGetFrameskipRatio(config));
+#ifdef RETRO_PLATFORM
+  // internal clipping values in RetroPlatform headless mode are configured by 
+  // RetroPlatform::RegisterRetroPlatformScreenMode, skip configuration
+  if(!RP.GetHeadlessMode())
+#endif
   drawSetInternalClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetOutputClip(draw_rect(cfgGetClipLeft(config), cfgGetClipTop(config), cfgGetClipRight(config), cfgGetClipBottom(config)));
   drawSetDisplayScale(cfgGetDisplayScale(config));
@@ -2475,12 +2506,6 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   gameportSetInput(0, cfgGetGameport(config, 0));
   gameportSetInput(1, cfgGetGameport(config, 1));
 
-
-  /*==========================================================================*/
-  /* GUI configuration                                                        */
-  /*==========================================================================*/
-
-  fellowSetUseGUI(cfgGetUseGUI(config));
   return needreset;
 }
 

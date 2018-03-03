@@ -143,6 +143,10 @@ draw_rect draw_output_clip;
 
 void drawSetInternalClip(const draw_rect& internal_clip)
 {
+#ifdef _DEBUG
+  fellowAddLog("drawSetInternalClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
+    internal_clip.left, internal_clip.top, internal_clip.right, internal_clip.bottom);
+#endif
   draw_internal_clip = internal_clip;
 }
 
@@ -1078,7 +1082,7 @@ BOOLE drawEmulationStartPost(void)
   }
   else
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to allocate enough graphics card memory");
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: The graphics driver failed to start. See fellow.log for more details.");
   }
   fellowAddLog("drawEmulationStartPost(): Buffer is (%d,%d,%d)\n", draw_buffer_info.width, draw_buffer_info.height, draw_buffer_info.bits);
   return result;

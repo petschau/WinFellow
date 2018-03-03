@@ -67,6 +67,9 @@
     <Filter Include="test\graphics">
       <UniqueIdentifier>{7b59b14c-a071-48b8-9484-74b4c78dd019}</UniqueIdentifier>
     </Filter>
+    <Filter Include="automation">
+      <UniqueIdentifier>{b409784d-dbc0-4bf3-81f0-589234dd4554}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -449,6 +452,12 @@
     </ClCompile>
     <ClCompile Include="..\..\graphics\BitplaneSerializerState.cpp">
       <Filter>graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\automation\Automator.cpp">
+      <Filter>automation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\automation\Script.cpp">
+      <Filter>automation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -856,6 +865,12 @@
     </ClInclude>
     <ClInclude Include="..\..\graphics\BitplaneSerializerState.h">
       <Filter>graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\automation\Automator.h">
+      <Filter>automation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\automation\Script.h">
+      <Filter>automation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

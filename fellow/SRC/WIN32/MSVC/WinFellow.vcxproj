@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -27,23 +27,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseOfMfc>false</UseOfMfc>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseOfMfc>false</UseOfMfc>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v141_xp</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -330,6 +330,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\automation\Automator.cpp" />
+    <ClCompile Include="..\..\automation\Script.cpp" />
     <ClCompile Include="..\..\C\BLIT.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -1585,6 +1587,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   <ItemGroup>
     <ClInclude Include="..\..\graphics\BitplaneSerializer.h" />
     <ClInclude Include="..\..\graphics\BitplaneSerializerState.h" />
+    <ClInclude Include="..\..\automation\Automator.h" />
+    <ClInclude Include="..\..\automation\Script.h" />
     <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
     <ClInclude Include="..\..\graphics\Logger.h" />
     <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />
@@ -1808,8 +1812,16 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x86;$(PATH);</ExecutablePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEventUseInBuild>true</PreBuildEventUseInBuild>
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x64;$(PATH);</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x86;$(PATH);</ExecutablePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x64;$(PATH);</ExecutablePath>
   </PropertyGroup>
 </Project>

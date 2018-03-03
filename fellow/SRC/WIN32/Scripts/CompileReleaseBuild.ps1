@@ -127,22 +127,32 @@ Function Main()
     $result = (git pull)
 
     ShowProgressIndicator 4 "Performing clean build of WinFellow..."
-
-    Write-Debug "Using Visual Studio command-line tools from: $CMDLINETOOLS"
-    $result = ("$CMDLINETOOLS\VsDevCmd.bat")
-
-    if ((Get-Command "msbuild.exe" -ErrorAction SilentlyContinue) -eq $null) 
+    
+    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null) 
     { 
-       Write-Error "Unable to find msbuild.exe in your PATH"
+        Write-Error "Unable to find Visual Studio Locator (vswhere.exe) in your PATH; you can obtain it from http://github.com/Microsoft/vswhere"
     }
-    Write-Verbose "Executing MSBuild.exe..."    
-    $result = (msbuild.exe $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
-
-    If($LastExitCode -ne 0)
+    
+    $MSBuildPath = vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+    If($MSBuildPath)
     {
-        ii $MSBuildLog
-        Pop-Location
-        Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+        $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\15.0\Bin\MSBuild.exe'
+        If(Test-Path $MSBuildPath) 
+        {
+            Write-Verbose "Executing MSBuild.exe..."    
+            $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
+
+            If($LastExitCode -ne 0)
+            {
+                ii $MSBuildLog
+                Pop-Location
+                Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+            }
+        }
+        Else
+        {
+            Write-Error "ERROR locating MSBuild.exe."
+        }
     }
 
     Write-Verbose "Checking file version of file WinFellow\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe..."

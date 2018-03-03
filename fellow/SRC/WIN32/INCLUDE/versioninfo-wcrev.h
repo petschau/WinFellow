@@ -1,8 +1,8 @@
 #ifndef VERSIONINFO_H
 #define VERSIONINFO_H
 
-#define FELLOWVERSION        "WinFellow v0.5.4 r$WCREV$ (Git-$WCBRANCH$-$WCCOMMITSHORT$)"
-#define FELLOWLONGVERSION    "WinFellow Amiga Emulator v0.5.4.$WCREV$ (Git-$WCBRANCH$-$WCCOMMITSHORT$)" 
-#define FELLOWNUMERICVERSION "0.5.4.$WCREV$"
+#define FELLOWVERSION        "WinFellow v0.5.7 r$WCREV$ (Git-$WCBRANCH$-$WCCOMMITSHORT$)"
+#define FELLOWLONGVERSION    "WinFellow Amiga Emulator v0.5.7.$WCREV$ (Git-$WCBRANCH$-$WCCOMMITSHORT$)" 
+#define FELLOWNUMERICVERSION "0.5.7.$WCREV$"
 
 #endif

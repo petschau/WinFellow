@@ -1,4 +1,3 @@
-/* @(#) $Id: FLOPPY.C,v 1.31 2013-01-05 11:41:09 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -336,9 +335,9 @@ LON floppySelectedGet(void)
   LON i = 0;
   while (i < 4)
   {
-    if (floppy[i].sel)
+    if (floppy[i].enabled && floppy[i].sel)
     {
-      return i;
+        return i;
     }
     i++;
   }
@@ -350,7 +349,10 @@ void floppySelectedSet(ULO selbits)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].sel = ((selbits & 1) == 0);
+    if (floppy[i].enabled)
+    {
+      floppy[i].sel = ((selbits & 1) == 0);
+    }
     selbits >>= 1;
   }
 }
@@ -359,7 +361,10 @@ BOOLE floppyIsTrack0(ULO drive)
 {
   if (drive != -1)
   {
-    return (floppy[drive].track == 0);
+    if (floppy[drive].enabled)
+    {
+      return (floppy[drive].track == 0);
+    }
   }
   return FALSE;
 }
@@ -368,7 +373,10 @@ BOOLE floppyIsWriteProtected(ULO drive)
 {
   if (drive != -1)
   {
-    return floppy[drive].writeprot;
+    if (floppy[drive].enabled)
+    {
+      return floppy[drive].writeprot;
+    }
   }
   return FALSE;
 }
@@ -396,7 +404,10 @@ BOOLE floppyIsChanged(ULO drive)
 {
   if (drive != -1)
   {
-    return floppy[drive].changed;
+    if (floppy[drive].enabled)
+    {
+      return floppy[drive].changed;
+    }
   }
   return FALSE;
 }
@@ -407,6 +418,11 @@ BOOLE floppyIsChanged(ULO drive)
 
 void floppyMotorSet(ULO drive, BOOLE mtr)
 {
+  if (!floppy[drive].enabled)
+  {
+    return;
+  }
+
   if (floppy[drive].motor && mtr)
   {
     floppy[drive].idmode = TRUE;
@@ -433,7 +449,10 @@ void floppySideSet(BOOLE s)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].side = !s;
+    if (floppy[i].enabled)
+    {
+      floppy[i].side = !s;
+    }
   }
 }
 
@@ -442,7 +461,10 @@ void floppyDirSet(BOOLE dr)
   ULO i;
   for (i = 0; i < 4; i++)
   {
-    floppy[i].dir = dr;
+    if (floppy[i].enabled)
+    {
+      floppy[i].dir = dr;
+    }
   }
 }
 
@@ -453,6 +475,11 @@ void floppyStepSet(BOOLE stp)
   ULO i;
   for (i = 0; i < 4; i++)
   {
+    if (!floppy[i].enabled)
+    {
+      continue;
+    }
+
     if (floppy[i].sel)
     {
       if (!stp && floppy[i].changed && floppy[i].inserted &&
@@ -464,7 +491,7 @@ void floppyStepSet(BOOLE stp)
       {
 	if (!floppy[i].dir) 
 	{
-          if (floppy[i].track < floppy[i].tracks - 1)
+          if (floppy[i].track < floppy[i].tracks + 3)
           {
 #ifdef FLOPPY_LOG
             floppyLogStep(i, floppy[i].track, floppy[i].track + 1);
@@ -520,16 +547,16 @@ void floppySectorMfmEncode(ULO tra, ULO sec, UBY *src, UBY *dest, ULO sync)
   /* Track and sector info */
 
   tmp = 0xff000000 | (tra<<16) | (sec<<8) | (11 - sec);
-  odd = (tmp & MFM_MASK);
-  even = ((tmp>>1) & MFM_MASK);
-  *(dest +  8) = (UBY) ((even & 0xff000000)>>24);
-  *(dest +  9) = (UBY) ((even & 0xff0000)>>16);
-  *(dest + 10) = (UBY) ((even & 0xff00)>>8);
-  *(dest + 11) = (UBY) ((even & 0xff));
-  *(dest + 12) = (UBY) ((odd & 0xff000000)>>24);
-  *(dest + 13) = (UBY) ((odd & 0xff0000)>>16);
-  *(dest + 14) = (UBY) ((odd & 0xff00)>>8);
-  *(dest + 15) = (UBY) ((odd & 0xff));
+  even = (tmp & MFM_MASK);
+  odd = ((tmp>>1) & MFM_MASK);
+  *(dest +  8) = (UBY) ((odd & 0xff000000)>>24);
+  *(dest +  9) = (UBY) ((odd & 0xff0000)>>16);
+  *(dest + 10) = (UBY)((odd & 0xff00) >> 8);
+  *(dest + 11) = (UBY)(odd & 0xff);
+  *(dest + 12) = (UBY)((even & 0xff000000) >> 24);
+  *(dest + 13) = (UBY)((even & 0xff0000) >> 16);
+  *(dest + 14) = (UBY)((even & 0xff00) >> 8);
+  *(dest + 15) = (UBY)(even & 0xff);
 
   /* Fill unused space */
 
@@ -646,10 +673,11 @@ BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc)
   {
     if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11)
     {
-      fseek(floppy[drive].F,
-	floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
+      fseek(floppy[drive].F, floppy[drive].trackinfo[track].file_offset + sector*512, SEEK_SET);
       fwrite(tmptrack, 1, 512, floppy[drive].F);
-      memcpy(floppy[drive].trackinfo[track].mfm_data + sector*1088, mfmsrc - 8, 1088);
+
+      // Problem with keeping the MFM for ADFs is that the sector sequence could be anything and they are enumerated. Re-encode from plain data.
+      floppySectorMfmEncode(track, sector, tmptrack, floppy[drive].trackinfo[track].mfm_data + sector * 1088, 0x4489);
     }
     else
     {
@@ -1512,13 +1540,18 @@ void floppyDMAReadInit(ULO drive)
   floppy_DMA.wordsleft = dsklen & 0x3fff;
   floppy_DMA.dskpt = dskpt;
 
+  if (drive == -1)
+  {
+    return;
+  }
+
   // Workaround, require normal sync with MFM generated from ADF. (North and South (?), Prince of Persia, Lemmings 2)
   if(floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && dsksync != 0 && dsksync != 0x4489 && dsksync != 0x8914)
     fellowAddLog("floppyDMAReadInit(): WARNING: unusual dsksync value encountered: 0x%x\n", dsksync);
 
   floppy_DMA.wait_for_sync = (adcon & 0x0400) 
     && ( (floppy[drive].imagestatus != FLOPPY_STATUS_NORMAL_OK && dsksync != 0) || 
-         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914)));
+         (floppy[drive].imagestatus == FLOPPY_STATUS_NORMAL_OK && (dsksync == 0x4489 || dsksync == 0x8914 || dsksync == 0x4124)));
 
   floppy_DMA.sync_found = FALSE;
   floppy_DMA.dont_use_gap = ((cpuGetPC() & 0xf80000) == 0xf80000);
@@ -1557,7 +1590,8 @@ ULO floppyFindNextSync(ULO pos, LON length)
 
 void floppyDMAWriteInit(LON drive)
 {
-  LON length = (dsklen & 0x3fff)*2;
+  LON total_length = (dsklen & 0x3fff) * 2;
+  LON length = total_length;
   ULO pos = dskpt;
   ULO track_lin;
   BOOLE ended = FALSE;
@@ -1577,7 +1611,8 @@ void floppyDMAWriteInit(LON drive)
     ULO next_after_sync_offset = floppyFindNextSync(pos, length);
     length -= next_after_sync_offset;
     pos += next_after_sync_offset;
-    if (length > 0)
+
+    if (length >= 1080)
     {
       if (floppySectorSave(drive, track_lin, memory_chip + pos))
       {
@@ -1585,9 +1620,14 @@ void floppyDMAWriteInit(LON drive)
 	pos += 1080;
       }
     }
+    else
+    {
+      fellowAddLog("Floppy write MFM ended with an incomplete sector.\n");
+      break;
+    }
   }
   floppy_DMA_read = FALSE;
-  floppy_DMA.wait = (length / (floppy_fast ? FLOPPY_FAST_WORDS : 2)) + FLOPPY_WAIT_INITIAL;
+  floppy_DMA.wait = (total_length / (floppy_fast ? FLOPPY_FAST_WORDS : 2)) + FLOPPY_WAIT_INITIAL;
   floppy_DMA_started = TRUE;
 }
 
@@ -1684,14 +1724,11 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync)
 
 UWO floppyGetByteUnderHead(ULO sel_drv, ULO track)
 {
-  if ((track/2) >= floppy[sel_drv].tracks)
+  if ((track / 2) >= floppy[sel_drv].tracks)
   {
-    return 0x72; /* What is correct? Noise? */
+    return rand() % 256;
   }
-  else
-  {
-    return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
-  }
+  return floppy[sel_drv].trackinfo[track].mfm_data[floppy[sel_drv].motor_ticks];
 }
 
 void floppyNextByte(ULO sel_drv, ULO track)
@@ -1762,10 +1799,21 @@ void floppyEndOfLine(void)
       UWO word_under_head = (prev_byte_under_head << 8) | tmpb1;
       BOOLE found_sync = floppyCheckSync(word_under_head);
       floppyNextByte(sel_drv, track);
-      tmpb2 = floppyGetByteUnderHead(sel_drv, track);
-      floppyNextByte(sel_drv, track);
-      word_under_head = (tmpb1 << 8) | tmpb2;
-      found_sync = floppyCheckSync(word_under_head);
+
+      if (!found_sync)  // Sync was found on a byte boundary, skip reading ahead to align.
+      {
+        tmpb2 = floppyGetByteUnderHead(sel_drv, track);
+        floppyNextByte(sel_drv, track);
+        word_under_head = (tmpb1 << 8) | tmpb2;
+        found_sync |= floppyCheckSync(word_under_head);
+      }
+#ifdef FLOPPY_LOG
+      else
+      {
+          floppyLogMessageWithTicks("Sync was found on byte boundary", floppy[sel_drv].motor_ticks);
+      }
+#endif
+
       prev_byte_under_head = word_under_head & 0xff;
       dskbyt_tmp = word_under_head;
       dskbyt1_read = FALSE;

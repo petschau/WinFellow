@@ -268,6 +268,29 @@ STR *gfxDrvDDrawErrorString(HRESULT hResult)
   return "Not a DirectDraw Error";
 }
 
+void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
+{
+  s[0] = '\0';
+  if (flags & DDPF_ALPHAPIXELS) strcat(s, "(DDPF_ALPHAPIXELS)");
+  if (flags & DDPF_ALPHA) strcat(s, "(DDPF_ALPHA)");
+  if (flags & DDPF_FOURCC) strcat(s, "(DDPF_FOURCC)");
+  if (flags & DDPF_PALETTEINDEXED4) strcat(s, "(DDPF_PALETTEINDEXED4)");
+  if (flags & DDPF_PALETTEINDEXEDTO8) strcat(s, "(DDPF_PALETTEINDEXEDTO8)");
+  if (flags & DDPF_PALETTEINDEXED8) strcat(s, "(DDPF_PALETTEINDEXED8)");
+  if (flags & DDPF_RGB) strcat(s, "(DDPF_RGB)");
+  if (flags & DDPF_COMPRESSED) strcat(s, "(DDPF_COMPRESSED)");
+  if (flags & DDPF_RGBTOYUV) strcat(s, "(DDPF_RGBTOYUV)");
+  if (flags & DDPF_YUV) strcat(s, "(DDPF_YUV)");
+  if (flags & DDPF_ZBUFFER) strcat(s, "(DDPF_ZBUFFER)");
+  if (flags & DDPF_PALETTEINDEXED1) strcat(s, "(DDPF_PALETTEINDEXED1)");
+  if (flags & DDPF_PALETTEINDEXED2) strcat(s, "(DDPF_PALETTEINDEXED2)");
+  if (flags & DDPF_ZPIXELS) strcat(s, "(DDPF_ZPIXELS)");
+  if (flags & DDPF_STENCILBUFFER) strcat(s, "(DDPF_STENCILBUFFER)");
+  if (flags & DDPF_ALPHAPREMULT) strcat(s, "(DDPF_ALPHAPREMULT)");
+  if (flags & DDPF_LUMINANCE) strcat(s, "(DDPF_LUMINANCE)");
+  if (flags & DDPF_BUMPLUMINANCE) strcat(s, "(DDPF_BUMPLUMINANCE)");
+  if (flags & DDPF_BUMPDUDV) strcat(s, "(DDPF_BUMPDUDV)");
+}
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
@@ -749,7 +772,7 @@ gfx_drv_ddraw_fullscreen_mode *gfxDrvDDrawNewFullScreenMode(ULO width,
 
 HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDesc, LPVOID lpContext)
 {
-  if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) &&
+  if (((lpDDSurfaceDesc->ddpfPixelFormat.dwFlags & DDPF_RGB) &&
     ((lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 16) ||
       (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 24) ||
       (lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount == 32))))
@@ -770,12 +793,12 @@ HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDes
       lpDDSurfaceDesc->dwHeight,
       lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
       lpDDSurfaceDesc->dwRefreshRate,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask) : 0,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask) : 0,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask) : 0,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask) : 0,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask) : 0,
-      (lpDDSurfaceDesc->ddpfPixelFormat.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask) : 0);
+      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
+      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwRBitMask),
+      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
+      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwGBitMask),
+      gfxDrvRGBMaskPos(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask),
+      gfxDrvRGBMaskSize(lpDDSurfaceDesc->ddpfPixelFormat.dwBBitMask));
     ddraw_device->fullscreen_modes = listAddLast(ddraw_device->fullscreen_modes, listNew(tmpmode));
   }
   return DDENUMRET_OK;
@@ -1270,18 +1293,24 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
     else
     {
       /* Examine pixelformat */
-      if (((ddpf.dwFlags == DDPF_RGB) &&
+      if (((ddpf.dwFlags & DDPF_RGB) &&
         ((ddpf.dwRGBBitCount == 16) ||
           (ddpf.dwRGBBitCount == 24) ||
           (ddpf.dwRGBBitCount == 32))))
       {
+        STR pixelFormats[512];
+        gfxDrvDDrawPrintPixelFlags(ddpf.dwFlags, pixelFormats);
+        fellowAddLog("gfxdrv: Surface has pixelformat flags %s (%.8X), (%d, %d, %d, %d, %d, %d, %d)\n",
+          pixelFormats, ddpf.dwFlags, ddpf.dwRGBBitCount, gfxDrvRGBMaskPos(ddpf.dwRBitMask), gfxDrvRGBMaskSize(ddpf.dwRBitMask), gfxDrvRGBMaskPos(ddpf.dwGBitMask), 
+          gfxDrvRGBMaskSize(ddpf.dwGBitMask), gfxDrvRGBMaskPos(ddpf.dwBBitMask), gfxDrvRGBMaskSize(ddpf.dwBBitMask));
+
         draw_buffer_info.bits = ddpf.dwRGBBitCount;
-        draw_buffer_info.redpos = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(ddpf.dwRBitMask) : 0;
-        draw_buffer_info.redsize = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(ddpf.dwRBitMask) : 0;
-        draw_buffer_info.greenpos = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(ddpf.dwGBitMask) : 0;
-        draw_buffer_info.greensize = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(ddpf.dwGBitMask) : 0;
-        draw_buffer_info.bluepos = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskPos(ddpf.dwBBitMask) : 0;
-        draw_buffer_info.bluesize = (ddpf.dwFlags == DDPF_RGB) ? gfxDrvRGBMaskSize(ddpf.dwBBitMask) : 0;
+        draw_buffer_info.redpos = gfxDrvRGBMaskPos(ddpf.dwRBitMask);
+        draw_buffer_info.redsize = gfxDrvRGBMaskSize(ddpf.dwRBitMask);
+        draw_buffer_info.greenpos = gfxDrvRGBMaskPos(ddpf.dwGBitMask);
+        draw_buffer_info.greensize = gfxDrvRGBMaskSize(ddpf.dwGBitMask);
+        draw_buffer_info.bluepos = gfxDrvRGBMaskPos(ddpf.dwBBitMask);
+        draw_buffer_info.bluesize = gfxDrvRGBMaskSize(ddpf.dwBBitMask);
 
         /* Set clipper */
 
@@ -1296,7 +1325,7 @@ ULO gfxDrvDDrawSurfacesInitialize(gfx_drv_ddraw_device *ddraw_device)
       }
       else
       { /* Unsupported pixel format..... */
-        fellowAddLog("gfxdrv: gfxDrvDDrawSurfacesInitialized(): Window mode - unsupported Pixelformat\n");
+        fellowAddLog("gfxdrv: gfxDrvDDrawSurfacesInitialized(): Window mode - unsupported Pixelformat, flags (%.8X)\n", ddpf.dwFlags);
         gfxDrvDDrawSurfacesRelease(ddraw_device);
         success = false;
       }
