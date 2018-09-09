@@ -1,16 +1,21 @@
 #include <stdio.h>
 
-FILE *I,*O;
+void main()
+{
+  int d, count = 0;
+  FILE *I = fopen("out.bin", "rb");
+  FILE *O = fopen("out.c", "w");
 
-void main(void) {
-      int j;
-        I=fopen("fhfile.cod","rb");
-        O=fopen("fhfileou","wb");
-
-        for (j=0; j < 194; j += 2) {
-          fprintf(O,"dsetb(0x%.2X); ",fgetc(I));
-          fprintf(O,"dsetb(0x%.2X);\n",fgetc(I));
-	}
-       fclose(O);
-       fclose(I);
+  while ((d = fgetc(I)) != -1)
+  {
+    fprintf(O, "VM->Memory.DmemSetByte(0x%.2X); ", d);
+    count++;
+    if ((count % 4) == 0)
+    {
+      fprintf(O, "\n");
+    }
+  }
+  fclose(O);
+  fclose(I);
+  return 0;
 }
