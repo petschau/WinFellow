@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files\testdata">
+      <UniqueIdentifier>{9462dd8d-ef41-48c8-bbba-43bbd2a5454c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fellow">
+      <UniqueIdentifier>{1c80cb15-68f8-4905-88b4-6c7edb1f779f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\framework">
+      <UniqueIdentifier>{fc7fb797-2794-450a-8539-80ecdbe2d2c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fellow\hardfile">
+      <UniqueIdentifier>{756ba8f1-61b2-4e39-bdda-00bb4ae8dda0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fellow\hardfile\hunks">
+      <UniqueIdentifier>{26237ddb-c5c8-46fb-af58-c40b4ba26e3c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\fellow\hardfile\rdb">
+      <UniqueIdentifier>{58c24674-4d13-4520-9eae-714554b91716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mock">
+      <UniqueIdentifier>{7bc6ab2c-abc9-4548-935f-35bd84cc4652}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mock\fellow">
+      <UniqueIdentifier>{c1eca638-fcbc-40d2-8e16-487ef81b4c99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mock\fellow\api">
+      <UniqueIdentifier>{49d737d6-83d6-4d73-874b-424f92f5eaf2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mock\fellow\api\service">
+      <UniqueIdentifier>{87d7f521-4f6b-43b3-aaf8-d430257ee13e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\testdata\fellow">
+      <UniqueIdentifier>{685e8a92-0362-4801-8ce1-0c0aec8b70ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\testdata\fellow\hardfile">
+      <UniqueIdentifier>{65f48b9a-8b6b-4ae8-a4ee-864b016ee187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\testdata\fellow\hardfile\hunks">
+      <UniqueIdentifier>{1fe09973-62c1-462c-95b9-524ef2d241e6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\testdata\fellow\hardfile\rdb">
+      <UniqueIdentifier>{c6a66d04-e749-4e28-9edf-ef2eade9e4d2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\rdb\RDBTest.cpp">
+      <Filter>Source Files\fellow\hardfile\rdb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\BSSHunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\CodeHunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\DataHunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\EndHunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\HeaderHunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\HunkFactoryTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\HunkParserTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\RawDataReaderTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\fellow\hardfile\hunks\Reloc32HunkTest.cpp">
+      <Filter>Source Files\fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\framework\TestBootstrap.cpp">
+      <Filter>Source Files\framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\FSWrapperMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\HUDMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\LogMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\RetroPlatformWrapperMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\SmartFilesystem">
+      <Filter>Source Files\testdata\fellow\hardfile\hunks</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\ProfFileSystem_195">
+      <Filter>Source Files\testdata\fellow\hardfile\hunks</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\ProfFileSystem_195_68020+">
+      <Filter>Source Files\testdata\fellow\hardfile\hunks</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\FastFileSystem13">
+      <Filter>Source Files\testdata\fellow\hardfile\hunks</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\FastFileSystem31">
+      <Filter>Source Files\testdata\fellow\hardfile\hunks</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\BlankWithRDB_SFS.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\BlankWithoutRDB_OFS.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\BlankWithRDB_FFS13.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\BlankWithRDB_FFS31.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\BlankWithRDB_PFS.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+    <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </ContentWithTargetPath>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\test\framework\TestBootstrap.h">
+      <Filter>Source Files\framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\FSWrapperMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\HUDMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\LogMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\RetroPlatformWrapperMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
