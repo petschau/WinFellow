@@ -43,7 +43,7 @@
 #include "eventid.h"
 #include "fswrap.h"
 #include "config.h"
-#include "fhfile.h"
+#include "fellow/api/module/IHardfileHandler.h"
 #include "ffilesys.h"
 #include "ini.h"
 #include "CpuIntegration.h"
@@ -55,6 +55,8 @@
 #include "KBDDRV.H"
 
 #include "../automation/Automator.h"
+
+using namespace fellow::api::module;
 
 ini *cfg_initdata;								 /* CONFIG copy of initialization data */
 
@@ -280,12 +282,12 @@ STR *cfgGetKey(cfg *config)
   return config->m_key;
 }
 
-void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig)
+void cfgSetUseAutoconfig(cfg *config, bool useautoconfig)
 {
   config->m_useautoconfig = useautoconfig;
 }
 
-BOOLE cfgGetUseAutoconfig(cfg *config)
+bool cfgGetUseAutoconfig(cfg *config)
 {
   return config->m_useautoconfig;
 }
@@ -1914,7 +1916,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
 {
   fprintf(cfgfile, "config_version=%u\n", cfgGetConfigFileVersion(config));
   fprintf(cfgfile, "config_description=%s\n", cfgGetDescription(config));
-  fprintf(cfgfile, "autoconfig=%s\n", cfgGetBOOLEToString(cfgGetUseAutoconfig(config)));
+  fprintf(cfgfile, "autoconfig=%s\n", cfgGetboolToString(cfgGetUseAutoconfig(config)));
   for (ULO i = 0; i < 4; i++)
   {
     fprintf(cfgfile, "floppy%u=%s\n", i, cfgGetDiskImage(config, i));
@@ -2352,7 +2354,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /* Memory configuration                                                     */
   /*==========================================================================*/
 
-  needreset |= memorySetUseAutoconfig(cfgGetUseAutoconfig(config));
+  needreset |= memorySetUseAutoconfig(cfgGetUseAutoconfig(config)) == true;
   needreset |= memorySetChipSize(cfgGetChipSize(config));
   needreset |= memorySetFastSize(cfgGetFastSize(config));
   needreset |= memorySetSlowSize(cfgGetBogoSize(config));
@@ -2431,34 +2433,34 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   /* Hardfile configuration                                                   */
   /*==========================================================================*/
 
-  if (cfgGetUseAutoconfig(config) != fhfileGetEnabled())
+  if (cfgGetUseAutoconfig(config) != HardfileHandler->GetEnabled())
   {
     needreset = TRUE;
-    fhfileClear();
-    fhfileSetEnabled(cfgGetUseAutoconfig(config));
+    HardfileHandler->Clear();
+    HardfileHandler->SetEnabled(cfgGetUseAutoconfig(config));
   }
-  if (fhfileGetEnabled())
+  if (HardfileHandler->GetEnabled())
   {
     for (i = 0; i < cfgGetHardfileCount(config); i++)
     {
-      cfg_hardfile hardfile;
-      fhfile_dev fhardfile;
-      hardfile = cfgGetHardfile(config, i);
+      HardfileDevice fhardfile;
+      cfg_hardfile hardfile = cfgGetHardfile(config, i);
       fhardfile.bytespersector_original = hardfile.bytespersector;
       fhardfile.readonly_original = hardfile.readonly;
       fhardfile.reservedblocks_original = hardfile.reservedblocks;
       fhardfile.sectorspertrack = hardfile.sectorspertrack;
       fhardfile.surfaces = hardfile.surfaces;
       strncpy(fhardfile.filename, hardfile.filename, CFG_FILENAME_LENGTH);
-      if (!fhfileCompareHardfile(fhardfile, i))
+      if (!HardfileHandler->CompareHardfile(fhardfile, i))
       {
-	needreset = TRUE;
-	fhfileSetHardfile(fhardfile, i);
+        needreset = TRUE;
+        HardfileHandler->SetHardfile(fhardfile, i);
       }
     }
-    for (i = cfgGetHardfileCount(config); i < FHFILE_MAX_DEVICES; i++)
+    const unsigned int maxDeviceCount = HardfileHandler->GetMaxHardfileCount();
+    for (unsigned int i = cfgGetHardfileCount(config); i < maxDeviceCount; i++)
     {
-      needreset |= fhfileRemoveHardfile(i);
+      needreset |= (HardfileHandler->RemoveHardfile(i) == true);
     }
   }
 

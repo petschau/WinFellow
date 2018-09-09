@@ -41,7 +41,6 @@
 #include "sound.h"
 #include "listtree.h"
 #include "gameport.h"
-#include "fhfile.h"
 #include "config.h"
 #include "draw.h"
 #include "CpuModule_Disassembler.h"

@@ -101,7 +101,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -117,6 +117,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <CompileAs>CompileAsCpp</CompileAs>
       <EnablePREfast>false</EnablePREfast>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -168,7 +169,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -184,6 +185,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <CallingConvention>FastCall</CallingConvention>
       <EnablePREfast>false</EnablePREfast>
       <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -224,7 +226,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../xdms/include;../../zlib/include;../CAPS/include;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -240,6 +242,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <CompileAs>CompileAsCpp</CompileAs>
       <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -286,7 +289,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../../xdms/include;../../zlib/include;../CAPS/include;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -300,6 +303,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>CompileAsCpp</CompileAs>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -510,22 +514,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\..\C\FHFILE.C">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
     <ClCompile Include="..\..\C\FLOPPY.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -582,6 +570,14 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp" />
     <ClCompile Include="..\..\C\SpriteRegisters.cpp" />
     <ClCompile Include="..\..\c\uart.cpp" />
+    <ClCompile Include="..\..\fellow\service\FSWrapper.cpp" />
+    <ClCompile Include="..\..\fellow\service\HUD.cpp" />
+    <ClCompile Include="..\..\fellow\service\Log.cpp" />
+    <ClCompile Include="..\..\fellow\service\RetroPlatformWrapper.cpp" />
+    <ClCompile Include="..\..\fellow\service\Services.cpp" />
+    <ClCompile Include="..\..\fellow\vm\M68K.cpp" />
+    <ClCompile Include="..\..\fellow\vm\MemorySystem.cpp" />
+    <ClCompile Include="..\..\fellow\vm\VM.cpp" />
     <ClCompile Include="..\..\graphics\Logger.cpp" />
     <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c" />
     <ClCompile Include="..\..\graphics\BitplaneDMA.c" />
@@ -1584,6 +1580,23 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   <ItemGroup>
     <ClInclude Include="..\..\automation\Automator.h" />
     <ClInclude Include="..\..\automation\Script.h" />
+    <ClInclude Include="..\..\fellow\api\defs.h" />
+    <ClInclude Include="..\..\fellow\api\module\IHardfileHandler.h" />
+    <ClInclude Include="..\..\fellow\api\portable.h" />
+    <ClInclude Include="..\..\fellow\api\Services.h" />
+    <ClInclude Include="..\..\fellow\api\service\IFSWrapper.h" />
+    <ClInclude Include="..\..\fellow\api\service\IHUD.h" />
+    <ClInclude Include="..\..\fellow\api\service\ILog.h" />
+    <ClInclude Include="..\..\fellow\api\service\IRetroPlatform.h" />
+    <ClInclude Include="..\..\fellow\api\VM.h" />
+    <ClInclude Include="..\..\fellow\api\vm\IM68K.h" />
+    <ClInclude Include="..\..\fellow\api\vm\IMemorySystem.h" />
+    <ClInclude Include="..\..\fellow\service\FSWrapper.h" />
+    <ClInclude Include="..\..\fellow\service\HUD.h" />
+    <ClInclude Include="..\..\fellow\service\Log.h" />
+    <ClInclude Include="..\..\fellow\service\RetroPlatformWrapper.h" />
+    <ClInclude Include="..\..\fellow\vm\M68K.h" />
+    <ClInclude Include="..\..\fellow\vm\MemorySystem.h" />
     <ClInclude Include="..\..\graphics\BitplaneUtility.h" />
     <ClInclude Include="..\..\graphics\Logger.h" />
     <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h" />
@@ -1623,7 +1636,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\EVENTID.H" />
     <ClInclude Include="..\..\INCLUDE\FELLOW.H" />
     <ClInclude Include="..\..\INCLUDE\FFILESYS.H" />
-    <ClInclude Include="..\..\INCLUDE\FHFILE.H" />
     <ClInclude Include="..\..\INCLUDE\FLOPPY.H" />
     <ClInclude Include="..\..\INCLUDE\FMEM.H" />
     <ClInclude Include="..\..\INCLUDE\FONTS.H" />
@@ -1797,6 +1809,11 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="WinFellow.Hardfile\WinFellow.Hardfile.vcxproj">
+      <Project>{4ab5c2b7-fa35-46be-82ca-97d5874c9333}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

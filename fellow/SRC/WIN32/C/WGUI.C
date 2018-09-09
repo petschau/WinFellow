@@ -53,11 +53,10 @@
 #include "sound.h"
 #include "listtree.h"
 #include "gameport.h"
-#include "fhfile.h"
+#include "fellow/api/module/IHardfileHandler.h"
 #include "config.h"
 #include "draw.h"
 #include "wdbg.h"
-#include "fhfile.h"
 #include "ini.h"
 #include "kbd.h"
 #include "kbddrv.h"
@@ -70,6 +69,7 @@
 #include "fileops.h"
 #include "GfxDrvCommon.h"
 
+using namespace fellow::api::module;
 
 HWND wgui_hDialog;                           /* Handle of the main dialog box */
 cfg *wgui_cfg;                               /* GUI copy of configuration */
@@ -2866,7 +2866,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
     case IDOK:
       {
         STR stmp[32];
-        fhfile_dev hfile;
+        HardfileDevice hfile;
         STR fname[CFG_FILENAME_LENGTH];
 
         ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, hfile.filename, 256);
@@ -2897,7 +2897,7 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
 	  break;
         }
         // creates the HDF file 
-        fhfileCreate(hfile);
+        HardfileHandler->Create(hfile);
         strncpy(wgui_current_hardfile_edit->filename, hfile.filename, CFG_FILENAME_LENGTH);
       }
     case IDCANCEL:

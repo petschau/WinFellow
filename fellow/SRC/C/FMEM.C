@@ -1,4 +1,3 @@
-/* @(#) $Id: FMEM.C,v 1.17 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Virtual Memory System                                                   */
@@ -32,7 +31,7 @@
 #include "draw.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
-#include "fhfile.h"
+#include "fellow/api/module/IHardfileHandler.h"
 #include "graph.h"
 #include "floppy.h"
 #include "copper.h"
@@ -49,6 +48,8 @@
 #include <tchar.h>
 #endif
 
+using namespace fellow::api::module;
+
 /*============================================================================*/
 /* Holds configuration for memory                                             */
 /*============================================================================*/
@@ -56,7 +57,7 @@
 ULO memory_chipsize;
 ULO memory_fastsize;
 ULO memory_slowsize;
-BOOLE memory_useautoconfig;
+bool memory_useautoconfig;
 BOOLE memory_address32bit;
 STR memory_kickimage[CFG_FILENAME_LENGTH];
 STR memory_kickimage_ext[CFG_FILENAME_LENGTH];
@@ -566,12 +567,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   {
     if ((address & 0xffffff) == 0xf40000)
     {
-      switch (data>>16)
-      {
-        case 0x0001:
-          fhfileDo(data);
-	  break;
-      }
+      HardfileHandler->Do(data);
     }
   }
 
@@ -590,7 +586,7 @@ const STR *memory_kickimage_versionstrings[14] = {
     return memory_dmemcounter + MEMORY_DMEM_OFFSET;
   }
 
-  void memoryDmemSetString(STR *st)
+  void memoryDmemSetString(const STR *st)
   {
     strcpy((STR *) (memory_dmem + memory_dmemcounter), st);
     memory_dmemcounter += (ULO) strlen(st) + 1;
@@ -2142,14 +2138,14 @@ __inline  UWO memoryReadWord(ULO address)
     return memory_slowsize;
   }
 
-  BOOLE memorySetUseAutoconfig(BOOLE useautoconfig)
+  bool memorySetUseAutoconfig(bool useautoconfig)
   {
-    BOOLE needreset = memory_useautoconfig != useautoconfig;
+    bool needreset = memory_useautoconfig != useautoconfig;
     memory_useautoconfig = useautoconfig;
     return needreset;
   }
 
-  BOOLE memoryGetUseAutoconfig(void)
+  bool memoryGetUseAutoconfig()
   {
     return memory_useautoconfig;
   }
