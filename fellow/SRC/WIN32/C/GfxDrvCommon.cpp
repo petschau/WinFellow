@@ -74,8 +74,8 @@ void GfxDrvCommon::RememberFlipTime()
 
 void GfxDrvCommon::DelayFlipWait(int milliseconds)
 {
-  _wait_for_time = milliseconds;
   ResetEvent(_delay_flip_event);
+  _wait_for_time = milliseconds;
   WaitForSingleObject(_delay_flip_event, INFINITE);
 }
 
