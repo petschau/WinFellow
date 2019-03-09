@@ -2,6 +2,9 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include <sstream>
+
+using namespace std;
 
 void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIModeList& modes)
 {
@@ -9,7 +12,7 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIMod
   UINT flags = 0;
   UINT numModes = 0;
   
-  HRESULT hr = output->GetDisplayModeList(format, flags, &numModes, NULL);
+  HRESULT hr = output->GetDisplayModeList(format, flags, &numModes, nullptr);
 
   if (FAILED(hr))
   {
@@ -28,9 +31,17 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIMod
     return;
   }
 
+  list<string> loglines;
   for (UINT i = 0; i < numModes; i++)
   {
-    modes.push_back(new GfxDrvDXGIMode(&descs[i]));
+    auto mode = new GfxDrvDXGIMode(&descs[i]);
+    modes.push_back(mode);
+
+    loglines.emplace_back(mode->GetModeDescriptionString());
+  }
+  if (numModes > 0)
+  {
+    fellowAddLogList(loglines);
   }
   delete[] descs;
 }
