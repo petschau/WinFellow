@@ -867,7 +867,7 @@ static void drawModeTablesInitialize()
 
   drawModeFunctionsInitialize();
 
-  memoryWriteWord((UWO) bplcon0, 0xdff100);
+  wbplcon0((UWO)bplcon0, 0xdff100);
   drawColorTranslationInitialize();
   graphInitializeShadowColors();
   draw_buffer_info.current_ptr = draw_buffer_info.top_ptr;
