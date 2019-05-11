@@ -48,7 +48,7 @@ namespace test::fellow::hardfile::hunks
 
     TEST_METHOD(Parse_SmartFilesystem_FileReadsOK)
     {
-      CreateInstanceWithFile("testdata\\fellow\\hardfile\\hunks\\SmartFilesystem");
+      CreateInstanceWithFile(R"(testdata\fellow\hardfile\hunks\SmartFilesystem)");
 
       bool result = _instance->Parse();
 
@@ -91,7 +91,7 @@ namespace test::fellow::hardfile::hunks
 
     TEST_METHOD(Parse_ProfFileSystem195_FileReadsOK)
     {
-      CreateInstanceWithFile("testdata\\fellow\\hardfile\\hunks\\ProfFileSystem_195");
+      CreateInstanceWithFile(R"(testdata\fellow\hardfile\hunks\ProfFileSystem_195)");
 
       bool result = _instance->Parse();
 
@@ -162,7 +162,7 @@ namespace test::fellow::hardfile::hunks
 
     TEST_METHOD(Parse_ProfFileSystem195_68020_FileReadsOK)
     {
-      CreateInstanceWithFile("testdata\\fellow\\hardfile\\hunks\\ProfFileSystem_195_68020+");
+      CreateInstanceWithFile(R"(testdata\fellow\hardfile\hunks\ProfFileSystem_195_68020+)");
 
       bool result = _instance->Parse();
 
@@ -233,7 +233,7 @@ namespace test::fellow::hardfile::hunks
 
     TEST_METHOD(Parse_FastFileSystem13_FileReadsOK)
     {
-      CreateInstanceWithFile("testdata\\fellow\\hardfile\\hunks\\FastFileSystem13");
+      CreateInstanceWithFile(R"(testdata\fellow\hardfile\hunks\FastFileSystem13)");
 
       bool result = _instance->Parse();
 
@@ -262,7 +262,7 @@ namespace test::fellow::hardfile::hunks
 
     TEST_METHOD(Parse_FastFileSystem31_FileReadsOK)
     {
-      CreateInstanceWithFile("testdata\\fellow\\hardfile\\hunks\\FastFileSystem31");
+      CreateInstanceWithFile(R"(testdata\fellow\hardfile\hunks\FastFileSystem31)");
 
       bool result = _instance->Parse();
 

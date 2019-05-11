@@ -15,7 +15,7 @@ namespace test::fellow::hardfile::hunks
     unique_ptr<HeaderHunk> _instance;
     unique_ptr<RawDataReader> _rawDataReader;
     unique_ptr<UBY[]> _hunkData;
-    ULO _hunkDataSize;
+    ULO _hunkDataSize = 0;
 
     int CreateResidentLibraryList(int residentLibraryCount, ULO index)
     {

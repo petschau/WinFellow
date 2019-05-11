@@ -10,6 +10,7 @@ namespace fellow::hardfile::rdb
   struct RDBLSegBlock
   {
     std::string ID;
+    LON Blocknumber;
     LON SizeInLongs;
     LON CheckSum;
     LON HostID;

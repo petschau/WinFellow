@@ -32,7 +32,7 @@ namespace test::fellow::hardfile::hunks
       _rawData[index++] = 'E';
       _rawData[index++] = 'F';
       _rawData[index++] = 'G';
-      _rawData[index++] = 'H';
+      _rawData[index] = 'H';
     }
 
     TEST_METHOD_INITIALIZE(TestInitialize)

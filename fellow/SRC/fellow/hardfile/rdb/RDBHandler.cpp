@@ -11,10 +11,10 @@ namespace fellow::hardfile::rdb
     return headerID == "RDSK";
   }
 
-  RDB* RDBHandler::GetDriveInformation(RDBFileReader& reader)
+  RDB* RDBHandler::GetDriveInformation(RDBFileReader& reader, bool geometryOnly)
   {
     RDB* rdb = new RDB();
-    rdb->ReadFromFile(reader);
+    rdb->ReadFromFile(reader, geometryOnly);
     rdb->Log();
     return rdb;
   }

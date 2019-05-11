@@ -32,7 +32,7 @@ namespace fellow::hardfile::hunks
       _offsetTables.push_back(unique_ptr<Reloc32OffsetTable>(offsetTable));
       offsetCount = rawDataReader.GetNextByteswappedLong();
 
-      Service->Log.AddLog("fhfile: RDB filesystem - Reloc32 hunk (%u), entry %u for hunk %u offset count %u\n", ID, _offsetTables.size() - 1, relatedHunk, offsetCount);
+      Service->Log.AddLogDebug("fhfile: RDB filesystem - Reloc32 hunk (%u), entry %u for hunk %u offset count %u\n", ID, _offsetTables.size() - 1, relatedHunk, offsetCount);
     }
   }
 

@@ -20,7 +20,7 @@ namespace fellow::hardfile::rdb
     vector<RDBLSegBlock> blocks;
     LON nextBlock = blockChainStart;
 
-    Service->Log.AddLog("Reading filesystem handler from block-chain at %d\n", blockChainStart);
+    Service->Log.AddLogDebug("Reading filesystem handler from block-chain at %d\n", blockChainStart);
 
     Size = 0;
     while (nextBlock != -1)
@@ -34,8 +34,8 @@ namespace fellow::hardfile::rdb
       nextBlock = block.Next;
     }
 
-    Service->Log.AddLog("%d LSegBlocks read\n", blocks.size());
-    Service->Log.AddLog("Total filesystem size was %d bytes\n", Size);
+    Service->Log.AddLogDebug("%d LSegBlocks read\n", blocks.size());
+    Service->Log.AddLogDebug("Total filesystem size was %d bytes\n", Size);
 
     RawData.reset(new UBY[Size]);
     ULO nextCopyPosition = 0;

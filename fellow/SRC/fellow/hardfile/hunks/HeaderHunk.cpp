@@ -42,25 +42,25 @@ namespace fellow::hardfile::hunks
 
   void HeaderHunk::Parse(RawDataReader& rawDataReader)
   {
-    Service->Log.AddLog("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
+    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
 
     ULO stringLength = rawDataReader.GetNextByteswappedLong();
     while (stringLength != 0)
     {
       _residentLibraries.push_back(rawDataReader.GetNextString(stringLength));
-      Service->Log.AddLog("fhfile: RDB filesystem - Header hunk resident library entry '%s'\n", _residentLibraries.back().c_str());
+      Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk resident library entry '%s'\n", _residentLibraries.back().c_str());
 
       stringLength = rawDataReader.GetNextByteswappedLong();
     }
 
     ULO tableSize = rawDataReader.GetNextByteswappedLong();
 
-    Service->Log.AddLog("fhfile: RDB filesystem - Header hunk table size: %u\n", tableSize);
+    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk table size: %u\n", tableSize);
 
     _firstLoadHunk = rawDataReader.GetNextByteswappedLong();
     _lastLoadHunk = rawDataReader.GetNextByteswappedLong();
 
-    Service->Log.AddLog("fhfile: RDB filesystem - Header hunk first load %u last load %u\n", _firstLoadHunk, _lastLoadHunk);
+    Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk first load %u last load %u\n", _firstLoadHunk, _lastLoadHunk);
 
     for (ULO i = _firstLoadHunk; i <= _lastLoadHunk; i++)
     {
@@ -74,14 +74,14 @@ namespace fellow::hardfile::hunks
       {
         additionalFlags = rawDataReader.GetNextByteswappedLong();
       }
-      _hunkSizes.push_back(HunkSize(hunkSize, memoryFlags, additionalFlags));
+      _hunkSizes.emplace_back(hunkSize, memoryFlags, additionalFlags);
 
-      Service->Log.AddLog("fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
+      Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk table entry %u size: %u %s\n", i, _hunkSizes.back().SizeInLongwords * 4, _hunkSizes.back().GetMemoryFlagsToString());
     }
   }
 
   HeaderHunk::HeaderHunk()
-    : _firstLoadHunk(0), _lastLoadHunk(0), HunkBase()
+    : _firstLoadHunk(0), _lastLoadHunk(0)  
   {
   }
 }

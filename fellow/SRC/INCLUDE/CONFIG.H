@@ -17,6 +17,7 @@ typedef struct {
   ULO   sectorspertrack;
   ULO   surfaces;
   ULO   reservedblocks;
+  bool  hasrdb;
 } cfg_hardfile;
 
 /*============================================================================*/

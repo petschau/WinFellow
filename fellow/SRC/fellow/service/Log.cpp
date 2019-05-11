@@ -8,38 +8,34 @@
 namespace fellow::service
 {
   Log::Log() :
-    _new_line(true), _first_time(true), _enabled(true)
+    _new_line(true), _first_time(true), _enabled(true), _level(LogLevelInformation)
   {
+  }
+
+  void Log::AddLogDebug(const char *format, ...)
+  {
+    if (_level >= LogLevelDebug)
+    {
+      va_list parms;
+      char buffer[WRITE_LOG_BUF_SIZE];
+      char *buffer2 = LogTime(buffer);
+
+      va_start(parms, format);
+      vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
+      AddLog2(buffer);
+      va_end(parms);
+    }
   }
 
   void Log::AddLog(const char *format, ...)
   {
-    char buffer[WRITE_LOG_BUF_SIZE];
-    char *buffer2 = nullptr;
     va_list parms;
-
-    if (_new_line)
-    {
-      // log date/time into buffer
-      time_t thetime = time(NULL);
-      struct tm timedata;
-      localtime_s(&timedata, &thetime);
-      strftime(buffer, 255, "%c: ", &timedata);
-      // move buffer pointer ahead to log additional text after date/time
-      buffer2 = buffer + strlen(buffer);
-    }
-    else
-    {
-      // skip date/time, log to beginning of buffer
-      buffer[0] = '\0';
-      buffer2 = buffer;
-    }
+    char buffer[WRITE_LOG_BUF_SIZE];
+    char *buffer2 = LogTime(buffer);
 
     va_start(parms, format);
     vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-
     AddLog2(buffer);
-
     va_end(parms);
   }
 
@@ -73,5 +69,23 @@ namespace fellow::service
     }
 
     _new_line = (msg[strlen(msg) - 1] == '\n');
+  }
+
+  STR *Log::LogTime(STR* buffer)
+  {
+    if (_new_line)
+    {
+      // log date/time into buffer
+      time_t thetime = time(NULL);
+      struct tm timedata;
+      localtime_s(&timedata, &thetime);
+      strftime(buffer, 255, "%c: ", &timedata);
+      // move buffer pointer ahead to log additional text after date/time
+      return buffer + strlen(buffer);
+    }
+
+    // skip date/time, log to beginning of buffer
+    buffer[0] = '\0';
+    return buffer;
   }
 }

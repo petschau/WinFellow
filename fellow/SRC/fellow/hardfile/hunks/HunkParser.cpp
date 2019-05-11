@@ -1,7 +1,6 @@
 #include <memory>
 #include "fellow/hardfile/hunks/HunkParser.h"
 #include "fellow/hardfile/hunks/HunkFactory.h"
-#include "fellow/hardfile/hunks/EndHunk.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
@@ -13,7 +12,7 @@ namespace fellow::hardfile::hunks
     ULO type = _rawDataReader.GetNextByteswappedLong();
     if (type != HeaderHunkID)
     {
-      Service->Log.AddLog("fhfile: Header hunk in RDB Filesystem handler is not type %X - Found type %X\n", HeaderHunkID, type);
+      Service->Log.AddLogDebug("fhfile: Header hunk in RDB Filesystem handler is not type %X - Found type %X\n", HeaderHunkID, type);
       return nullptr;
     }
 
@@ -28,7 +27,7 @@ namespace fellow::hardfile::hunks
     auto hunk = HunkFactory::CreateInitialHunk(type, allocateSizeInLongwords);
     if (hunk == nullptr)
     {
-      Service->Log.AddLog("fhfile: Unknown initial hunk type in RDB Filesystem handler - Type %.X\n", type);
+      Service->Log.AddLogDebug("fhfile: Unknown initial hunk type in RDB Filesystem handler - Type %.X\n", type);
       return nullptr;
     }
 
@@ -42,7 +41,7 @@ namespace fellow::hardfile::hunks
     auto hunk = HunkFactory::CreateAdditionalHunk(type, sourceHunkIndex);
     if (hunk == nullptr)
     {
-      Service->Log.AddLog("fhfile: Unknown additional hunk type in RDB Filesystem handler - Type %.X\n", type);
+      Service->Log.AddLogDebug("fhfile: Unknown additional hunk type in RDB Filesystem handler - Type %.X\n", type);
       return nullptr;
     }
 

@@ -13,12 +13,12 @@ namespace test::fellow::hardfile::rdb
   TEST_CLASS(RDBTest)
   {
     unique_ptr<RDB> _instance;
-    const STR* BlankWithRDB_SFS = "testdata\\fellow\\hardfile\\rdb\\BlankWithRDB_SFS.hdf";
-    const STR* BlankWithRDB_PFS = "testdata\\fellow\\hardfile\\rdb\\BlankWithRDB_PFS.hdf";
-    const STR* BlankWithRDB_FFS13 = "testdata\\fellow\\hardfile\\rdb\\BlankWithRDB_FFS13.hdf";
-    const STR* BlankWithRDB_FFS31 = "testdata\\fellow\\hardfile\\rdb\\BlankWithRDB_FFS31.hdf";
-    const STR* BlankWithoutRDB_OFS = "testdata\\fellow\\hardfile\\rdb\\BlankWithoutRDB_OFS.hdf";
-    const STR* ManyPartitionsWithRDB_ManyFS = "testdata\\fellow\\hardfile\\rdb\\ManyPartitionsWithRDB_ManyFS.hdf";
+    const STR* BlankWithRDB_SFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_SFS.hdf)";
+    const STR* BlankWithRDB_PFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_PFS.hdf)";
+    const STR* BlankWithRDB_FFS13 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS13.hdf)";
+    const STR* BlankWithRDB_FFS31 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS31.hdf)";
+    const STR* BlankWithoutRDB_OFS = R"(testdata\fellow\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
+    const STR* ManyPartitionsWithRDB_ManyFS = R"(testdata\fellow\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf)";
 
     void GetDriveInformation(const STR* filename)
     {

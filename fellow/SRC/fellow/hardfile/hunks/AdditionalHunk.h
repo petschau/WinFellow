@@ -12,9 +12,9 @@ namespace fellow::hardfile::hunks
 
   public:
     ULO GetSourceHunkIndex();
-    virtual void Parse(RawDataReader& rawReader) = 0;
+    void Parse(RawDataReader& rawReader) override = 0;
 
-    AdditionalHunk(ULO sourceHunk);
+    AdditionalHunk(ULO sourceHunkIndex);
   };
 }
 

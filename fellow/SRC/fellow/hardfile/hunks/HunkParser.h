@@ -13,7 +13,7 @@ namespace fellow::hardfile::hunks
     FileImage& _fileImage;
 
     HeaderHunk* ParseHeader();
-    InitialHunk* ParseNextInitialHunk(ULO allocateSize);
+    InitialHunk* ParseNextInitialHunk(ULO allocateSizeInLongwords);
     AdditionalHunk* ParseNextAdditionalHunk(ULO sourceHunkIndex);
 
   public:

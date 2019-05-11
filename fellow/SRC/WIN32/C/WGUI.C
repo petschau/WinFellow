@@ -741,7 +741,8 @@ BOOLE wguiSelectFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, 
   return GetOpenFileName(&ofn);
 }
 
-BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, SelectFileFlags SelectFileType) {
+BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, SelectFileFlags SelectFileType)
+{
   OPENFILENAME ofn;
   STR filters[CFG_FILENAME_LENGTH];
   STR *pfilters;
@@ -750,50 +751,54 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, Se
   pfilters = &filters[0];
 
   ofn.lStructSize = sizeof(ofn);       /* Set all members to familiarize with */
-  ofn.hwndOwner = hwndDlg;                            /* the possibilities... */
+  ofn.hwndOwner = hwndDlg;             /* the possibilities... */
   ofn.hInstance = win_drv_hInstance;
   ofn.lpstrFilter = pfilters;
   ofn.lpstrCustomFilter = NULL;
   ofn.nMaxCustFilter = 0;
   ofn.nFilterIndex = 1;
-  // filename[0] = '\0';
   ofn.lpstrFile = filename;
   ofn.nMaxFile = filenamesize;
   ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
 
-  switch (SelectFileType) {
-    case FSEL_ROM:
-      ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini);
-      break;
-    case FSEL_ADF:
-      ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
-      if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0) {
-	ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
-      }
-      break;
-    case FSEL_KEY:
-      ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini);
-      break;
-    case FSEL_HDF:
-      ofn.lpstrInitialDir = iniGetLastUsedHdfDir(wgui_ini);
-      if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0) {
-	cfgGetLastUsedDiskDir(wgui_cfg);
-      } else if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0) {
-	ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
-      }
-      break;
-    case FSEL_WFC:
-      ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
-      break;
-    case FSEL_MOD:
-      ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini);
-      break;
-    case FSEL_FST:
-      ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini);
-      break;
-    default:
-      ofn.lpstrInitialDir = NULL;
+  switch (SelectFileType)
+  {
+  case FSEL_ROM:
+    ofn.lpstrInitialDir = iniGetLastUsedKickImageDir(wgui_ini);
+    break;
+  case FSEL_ADF:
+    ofn.lpstrInitialDir = cfgGetLastUsedDiskDir(wgui_cfg);
+    if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
+    {
+      ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
+    }
+    break;
+  case FSEL_KEY:
+    ofn.lpstrInitialDir = iniGetLastUsedKeyDir(wgui_ini);
+    break;
+  case FSEL_HDF:
+    ofn.lpstrInitialDir = iniGetLastUsedHdfDir(wgui_ini);
+    if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
+    {
+      cfgGetLastUsedDiskDir(wgui_cfg);
+    }
+    else if (strncmp(ofn.lpstrInitialDir, "", CFG_FILENAME_LENGTH) == 0)
+    {
+      ofn.lpstrInitialDir = iniGetLastUsedGlobalDiskDir(wgui_ini);
+    }
+    break;
+  case FSEL_WFC:
+    ofn.lpstrInitialDir = iniGetLastUsedCfgDir(wgui_ini);
+    break;
+  case FSEL_MOD:
+    ofn.lpstrInitialDir = iniGetLastUsedModDir(wgui_ini);
+    break;
+  case FSEL_FST:
+    ofn.lpstrInitialDir = iniGetLastUsedStateFileDir(wgui_ini);
+    break;
+  default:
+    ofn.lpstrInitialDir = NULL;
   }
 
   ofn.lpstrTitle = title;
@@ -801,36 +806,39 @@ BOOLE wguiSaveFile(HWND hwndDlg, STR *filename, ULO filenamesize, STR *title, Se
   ofn.nFileOffset = 0;
   ofn.nFileExtension = 0;
   ofn.lpstrDefExt = (LPCSTR) &".wfc";
-  ofn.lCustData = (LPARAM) 0;
+  ofn.lCustData = (LPARAM)0;
   ofn.lpfnHook = NULL;
   ofn.lpTemplateName = NULL;
   return GetSaveFileName(&ofn);
 }
 
-BOOLE wguiSelectDirectory(HWND hwndDlg, STR *szPath, STR *szDescription, ULO filenamesize, STR *szTitle) {
-  BROWSEINFO bi = {
+BOOLE wguiSelectDirectory(HWND hwndDlg, STR *szPath, STR *szDescription, ULO filenamesize, STR *szTitle)
+{
+  BROWSEINFO bi =
+  {
     hwndDlg,								// hwndOwner
-    NULL,									// pidlRoot
-    szPath,									// pszDisplayName
+    NULL,								// pidlRoot
+    szPath,								// pszDisplayName
     szTitle,								// lpszTitle
-    BIF_RETURNONLYFSDIRS,					// ulFlags
-    NULL,									// lpfn
-    0,										// lParam
-    0										// iImage
+    BIF_RETURNONLYFSDIRS,					        // ulFlags
+    NULL,								// lpfn
+    0,									// lParam
+    0									// iImage
   };
 
-  LPITEMIDLIST pidlTarget;
-
-  if(pidlTarget = SHBrowseForFolder(&bi)) {
-    if(szDescription != NULL) 
+  LPITEMIDLIST pidlTarget = SHBrowseForFolder(&bi);
+  if (pidlTarget)
+  {
+    if (szDescription != NULL)
+    {
       strcpy(szDescription, bi.pszDisplayName);
+    }
     SHGetPathFromIDList(pidlTarget, szPath);   // Make sure it is a path
     CoTaskMemFree(pidlTarget);
     return TRUE;
   }
   return FALSE;
 }
-
 
 /*============================================================================*/
 /* Install history of configuration files into window menu                    */
@@ -1445,137 +1453,139 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
   cfgSetDeinterlace(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE));
 }
 
+void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumber, const HardfilePartition& partition)
+{
+  STR preferredName[512];
+  preferredName[0] = '\0';
 
-/*============================================================================*/
-/* Hardfile config                                                            */
-/*============================================================================*/
+  if (!partition.PreferredName.empty())
+  {
+    sprintf(preferredName, " (%s)", partition.PreferredName.c_str());
+  }
 
-/* Update hardfile description in the list view box */
+  const HardfileGeometry& geometry = partition.Geometry;
+  sprintf(
+    s,
+    "Partition %d%s: Tracks-%d (%d-%d) Sectors per track-%d Blocksize-%d Heads-%d Reserved-%d",
+    partitionNumber,
+    preferredName,
+    geometry.Tracks,
+    geometry.LowCylinder,
+    geometry.HighCylinder,
+    geometry.SectorsPerTrack,
+    geometry.BytesPerSector,
+    geometry.Surfaces,
+    geometry.ReservedBlocks);
+}
 
-void wguiHardfileUpdate(HWND lvHWND, cfg_hardfile *hf, ULO i, BOOL add) {
-  LV_ITEM lvi;
-  STR stmp[48];
+HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, STR* filename, bool hasRDB, const HardfileGeometry& geometry, int hardfileIndex)
+{
+  STR s[256];
+  snprintf(s, 256, "%s%s", filename, hasRDB ? " (RDB)" : "");
 
-  memset(&lvi, 0, sizeof(lvi));
-  lvi.mask = LVIF_TEXT;
-  sprintf(stmp, "FELLOW%u", i);
-  lvi.iItem = i;
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 0;
-  if (!add) ListView_SetItem(lvHWND, &lvi);
-  else ListView_InsertItem(lvHWND, &lvi);
-  lvi.pszText = hf->filename;
-  lvi.cchTextMax = (int) strlen(hf->filename);
-  lvi.iSubItem = 1;
-  ListView_SetItem(lvHWND, &lvi);
-  sprintf(stmp, "%s", (hf->readonly) ? "R" : "RW");
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 2;
-  ListView_SetItem(lvHWND, &lvi);
-  sprintf(stmp, "%u", hf->sectorspertrack);
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 3;
-  ListView_SetItem(lvHWND, &lvi);
-  sprintf(stmp, "%u", hf->surfaces);
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 4;
-  ListView_SetItem(lvHWND, &lvi);
-  sprintf(stmp, "%u", hf->reservedblocks);
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 5;
-  ListView_SetItem(lvHWND, &lvi);
-  sprintf(stmp, "%u", hf->bytespersector);
-  lvi.pszText = stmp;
-  lvi.cchTextMax = (int) strlen(stmp);
-  lvi.iSubItem = 6;
-  ListView_SetItem(lvHWND, &lvi);
+  TV_INSERTSTRUCT tvInsert;
+  memset(&tvInsert, 0, sizeof(tvInsert));
+  tvInsert.hParent = NULL;
+  tvInsert.hInsertAfter = TVI_LAST;
+  tvInsert.item.mask = TVIF_TEXT | TVIF_PARAM;
+  tvInsert.item.pszText = s;
+  tvInsert.item.lParam = hardfileIndex;
+  return TreeView_InsertItem(hwndTree, &tvInsert);
+}
+
+void wguiHardfileTreeViewAddPartition(HWND hwndTree, HTREEITEM parent, int partitionNumber, STR* deviceName, const HardfilePartition& partition, int hardfileIndex)
+{
+  STR s[256];
+  wguiHardfileSetInformationString(s, deviceName, partitionNumber, partition);
+
+  TV_INSERTSTRUCT tvInsert;
+  memset(&tvInsert, 0, sizeof(tvInsert));
+  tvInsert.hParent = parent;
+  tvInsert.hInsertAfter = TVI_LAST;
+  tvInsert.item.mask = TVIF_TEXT | TVIF_PARAM;
+  tvInsert.item.pszText = s;
+  tvInsert.item.lParam = hardfileIndex;
+  TreeView_InsertItem(hwndTree, &tvInsert);
+}
+
+void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfileIndex)
+{
+  HardfileConfiguration configuration;
+
+  if (hf->hasrdb)
+  {
+    configuration = HardfileHandler->GetConfigurationFromRDBGeometry(hf->filename);
+  }
+  else
+  {
+    configuration.Geometry.BytesPerSector = hf->bytespersector;
+    configuration.Geometry.LowCylinder = 0;
+    configuration.Geometry.HighCylinder = 9999;
+    configuration.Geometry.Readonly = hf->readonly;
+    configuration.Geometry.ReservedBlocks = hf->reservedblocks;
+    configuration.Geometry.SectorsPerTrack = hf->sectorspertrack;
+    configuration.Geometry.Surfaces = hf->surfaces;
+
+    HardfilePartition partition;
+    partition.PreferredName = "";
+    partition.Geometry = configuration.Geometry;
+    configuration.Partitions.push_back(partition);
+  }
+
+  HTREEITEM diskRootItem = wguiHardfileTreeViewAddDisk(hwndTree, hf->filename, hf->hasrdb, configuration.Geometry, hardfileIndex);
+
+  unsigned int partitionCount = configuration.Partitions.size();
+  for (unsigned int i = 0; i < partitionCount; i++)
+  {
+    wguiHardfileTreeViewAddPartition(hwndTree, diskRootItem, i, "Devicename", configuration.Partitions[i], hardfileIndex);
+  }
 }
 
 /* Install hardfile config */
 
-#define HARDFILE_COLS 7
-void wguiInstallHardfileConfig(HWND hwndDlg, cfg *conf) {
-  LV_COLUMN lvc;
-  HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_HARDFILES);
-  ULO i, hfcount;
-  STR *colheads[HARDFILE_COLS] = {"Unit",
-    "File",
-    "RW",
-    "Sectors per Track",
-    "Surfaces",
-    "Reserved Blocks",
-    "Bytes Per Sector"};
+void wguiInstallHardfileConfig(HWND hwndDlg, cfg *conf)
+{
+  HWND hwndTree = GetDlgItem(hwndDlg, IDC_TREE_HARDFILES);
+  TreeView_DeleteAllItems(hwndTree);
 
-  /* Create list view control columns */
-
-  memset(&lvc, 0, sizeof(lvc));
-  lvc.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
-  lvc.fmt = LVCFMT_LEFT;
-  for (i = 0; i < HARDFILE_COLS; i++) {
-    ULO colwidth = ListView_GetStringWidth(lvHWND, colheads[i]);
-    if (i == 0) colwidth += 48;
-    else if (i == 1) colwidth += 216;
-    else colwidth += 16;
-    lvc.pszText = colheads[i];
-    lvc.cchTextMax = (int) strlen(colheads[i]);
-    lvc.cx = colwidth;
-    ListView_InsertColumn(lvHWND, i, &lvc);
-  }
-
-  /* Add current hardfiles to the list */
-
-  hfcount = cfgGetHardfileCount(conf);
-  ListView_SetItemCount(lvHWND, hfcount);
-  for (i = 0; i < hfcount; i++) {
+  unsigned int hfcount = cfgGetHardfileCount(conf);
+  for (unsigned int i = 0; i < hfcount; i++)
+  {
     cfg_hardfile hf = cfgGetHardfile(conf, i);
-    wguiHardfileUpdate(lvHWND, &hf, i, TRUE);
+    wguiHardfileTreeViewAddHardfile(hwndTree, &hf, i);
   }
-  ListView_SetExtendedListViewStyle(lvHWND, LVS_EX_FULLROWSELECT);
 }
 
 /* Extract hardfile config */
 
-void wguiExtractHardfileConfig(HWND hwndDlg, cfg *conf) {
+void wguiExtractHardfileConfig(HWND hwndDlg, cfg *conf)
+{
 }
-
 
 /* Execute hardfile add or edit data */
 
-cfg_hardfile *wgui_current_hardfile_edit = NULL;
+cfg_hardfile *wgui_current_hardfile_edit = nullptr;
 ULO wgui_current_hardfile_edit_index = 0;
 
 /* Run a hardfile edit or add dialog */
 
-BOOLE wguiHardfileAdd(HWND hwndDlg, 
-  cfg *conf, 
-  BOOLE add, 
-  ULO index,
-  cfg_hardfile *target) {
-    wgui_current_hardfile_edit = target;
-    wgui_current_hardfile_edit_index = index;
-    if (add) cfgSetHardfileUnitDefaults(target);
-    return DialogBox(win_drv_hInstance,
-      MAKEINTRESOURCE(IDD_HARDFILE_ADD),
-      hwndDlg,
-      wguiHardfileAddDialogProc) == IDOK;
+bool wguiHardfileAdd(HWND hwndDlg, cfg *conf, bool add, ULO index, cfg_hardfile *target)
+{
+  wgui_current_hardfile_edit = target;
+  wgui_current_hardfile_edit_index = index;
+  if (add)
+  {
+    cfgSetHardfileUnitDefaults(target);
+  }
+  return DialogBox(win_drv_hInstance, MAKEINTRESOURCE(IDD_HARDFILE_ADD), hwndDlg, wguiHardfileAddDialogProc) == IDOK;
 }
 
-BOOLE wguiHardfileCreate(HWND hwndDlg,
-  cfg *conf,
-  ULO index,
-  cfg_hardfile *target) {
-    wgui_current_hardfile_edit = target;
-    wgui_current_hardfile_edit_index = index;
-    cfgSetHardfileUnitDefaults(target);
-    return DialogBox(win_drv_hInstance,
-      MAKEINTRESOURCE(IDD_HARDFILE_CREATE),
-      hwndDlg,
-      wguiHardfileCreateDialogProc) == IDOK;
+bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, ULO index, cfg_hardfile *target)
+{
+  wgui_current_hardfile_edit = target;
+  wgui_current_hardfile_edit_index = index;
+  cfgSetHardfileUnitDefaults(target);
+  return DialogBox(win_drv_hInstance, MAKEINTRESOURCE(IDD_HARDFILE_CREATE), hwndDlg, wguiHardfileCreateDialogProc) == IDOK;
 }
 
 /*============================================================================*/
@@ -2013,18 +2023,45 @@ void wguiExtractDisplayConfig(HWND hwndDlg, cfg *conf)
 /* List view selection investigate                                            */
 /*============================================================================*/
 
-LON wguiListViewNext(HWND ListHWND, ULO initialindex) {
+LON wguiListViewNext(HWND ListHWND, ULO initialindex)
+{
   ULO itemcount = ListView_GetItemCount(ListHWND);
   ULO index = initialindex;
 
   while (index < itemcount)
+  {
     if (ListView_GetItemState(ListHWND, index, LVIS_SELECTED))
+    {
       return index;
-    else index++;
-    return -1;
+    }
+    else
+    {
+      index++;
+    }
+  }
+  return -1;
 }
 
-   
+/*============================================================================*/
+/* Tree view selection investigate                                            */
+/*============================================================================*/
+
+int wguiTreeViewSelection(HWND hwndTree)
+{
+  HTREEITEM hItem = TreeView_GetSelection(hwndTree);
+  if (hItem == nullptr)
+  {
+    return -1;
+  }
+
+  TVITEM item;
+  memset(&item, 0, sizeof(item));
+  item.hItem = hItem;
+  item.mask = TVIF_PARAM;
+  TreeView_GetItem(hwndTree, &item);
+  return item.lParam;
+}
+
 /*===========================================================================*/
 /* Dialog Procedure for the Presets property sheet                            */
 /*============================================================================*/
@@ -2849,217 +2886,259 @@ INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam
   return FALSE;
 }
 
-
 /*============================================================================*/
 /* Dialog Procedure for the hardfile property sheet                           */
 /*============================================================================*/
 
-INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, "");
-      ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE, "0");
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-        switch (LOWORD(wParam)) {
-    case IDOK:
+INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+  {
+  case WM_INITDIALOG:
+    ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, "");
+    ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE, "0");
+    return TRUE;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
+      {
+      case IDOK:
       {
         STR stmp[32];
-        HardfileDevice hfile;
+        HardfileConfiguration hfile;
         STR fname[CFG_FILENAME_LENGTH];
+        ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, fname, CFG_FILENAME_LENGTH);
+        hfile.Filename = fname;
 
-        ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, hfile.filename, 256);
-
-        strncpy(fname, hfile.filename, CFG_FILENAME_LENGTH);
+        if (hfile.Filename.empty())
+        {
+          MessageBox(hwndDlg, "You must specify a hardfile name", "Create Hardfile", 0);
+          break;
+        }
         _strupr(fname);
-        if (strrchr(fname, '.HDF') == NULL) {
-	  if (strlen(hfile.filename) > 252) {
-	    MessageBox(hwndDlg, "Hardfile name too long, maximum is 252 characters", "Create Hardfile", 0);
-	    break;
-	  }
-	  strncat(hfile.filename, ".hdf",4);
+        if (strrchr(fname, '.HDF') == NULL)
+        {
+          if (hfile.Filename.length() > 252)
+          {
+            MessageBox(hwndDlg, "Hardfile name too long, maximum is 252 characters", "Create Hardfile", 0);
+            break;
+          }
+          hfile.Filename += ".hdf";
         }
 
+        ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE, stmp, 32);
+        __int64 size = _atoi64(stmp);
+        if (ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES))
+        {
+          size = size * 1024 * 1024;
+        }
+        if ((size < 1) || (size > 4294967295))
+        {
+          MessageBox(hwndDlg, "Size must be between 1 byte and 4294967295 bytes", "Create Hardfile", 0);
+          break;
+        }
 
-        if (hfile.filename[0] == '\0') {
-	  MessageBox(hwndDlg, "You must specify a hardfile name", "Create Hardfile", 0);
-	  break;
-        }
-        ccwEditGetText(hwndDlg, IDC_CREATE_HARDFILE_SIZE,	stmp, 32);
-        hfile.size = atoi(stmp);
-
-        if (ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_CREATE_HARDFILE_MEGABYTES)) {
-	  hfile.size = hfile.size * 1024 * 1024;
-        }
-        if ((hfile.size < 1) && (hfile.size > 4294967295)) {
-	  MessageBox(hwndDlg, "Size must be between 1 byte and 4294967295 bytes", "Create Hardfile", 0);
-	  break;
-        }
         // creates the HDF file 
-        HardfileHandler->Create(hfile);
-        strncpy(wgui_current_hardfile_edit->filename, hfile.filename, CFG_FILENAME_LENGTH);
+        if (!HardfileHandler->Create(hfile, (ULO) size))
+        {
+          MessageBox(hwndDlg, "Failed to create file", "Create Hardfile", 0);
+          break;
+        }
+        strncpy(wgui_current_hardfile_edit->filename, hfile.Filename.c_str(), CFG_FILENAME_LENGTH);
       }
-    case IDCANCEL:
-      EndDialog(hwndDlg, LOWORD(wParam));
-      return TRUE;
+      case IDCANCEL:
+        EndDialog(hwndDlg, LOWORD(wParam));
+        return TRUE;
 
-    case IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG:
-      if (wguiSaveFile(hwndDlg, wgui_current_hardfile_edit->filename, 
-        CFG_FILENAME_LENGTH, "Select Hardfile Name", FSEL_HDF)) {
-	  ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, wgui_current_hardfile_edit->filename);
-	  iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+      case IDC_BUTTON_HARDFILE_CREATE_FILEDIALOG:
+        if (wguiSaveFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile Name", FSEL_HDF))
+        {
+          ccwEditSetText(hwndDlg, IDC_CREATE_HARDFILE_NAME, wgui_current_hardfile_edit->filename);
+          iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+        }
+        break;
       }
-      break;
-
-      }
-      break;
+    }
+    break;
   }
   return FALSE;
 }
 
-INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+void wguiHardfileAddDialogEnableGeometry(HWND hwndDlg, bool enable)
+{
+  ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, enable);
+  ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, enable);
+  ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, enable);
+  ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, enable);
+}
+
+void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, int sectorsPerTrack, int surfaces, int reservedBlocks, int bytesPerSector, bool enable)
+{
+  STR stmp[64];
+
+  sprintf(stmp, "%u", wgui_current_hardfile_edit_index);
+  ccwStaticSetText(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT, stmp);
+  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, filename);
+  sprintf(stmp, "%u", sectorsPerTrack);
+  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp);
+  sprintf(stmp, "%u", surfaces);
+  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp);
+  sprintf(stmp, "%u", reservedBlocks);
+  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp);
+  sprintf(stmp, "%u", bytesPerSector);
+  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp);
+  wguiHardfileAddDialogEnableGeometry(hwndDlg, enable);
+}
+
+INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
   STR stmp[16];
 
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      sprintf(stmp, "%u", wgui_current_hardfile_edit_index);
-      ccwStaticSetText(hwndDlg, IDC_STATIC_HARDFILE_ADD_UNIT, stmp);
-      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
-      sprintf(stmp, "%u", wgui_current_hardfile_edit->sectorspertrack);
-      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp);
-      sprintf(stmp, "%u", wgui_current_hardfile_edit->surfaces);
-      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp);
-      sprintf(stmp, "%u", wgui_current_hardfile_edit->reservedblocks);
-      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp);
-      sprintf(stmp, "%u", wgui_current_hardfile_edit->bytespersector);
-      ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp);
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-	switch (LOWORD(wParam)) {
-    case IDC_BUTTON_HARDFILE_ADD_FILEDIALOG:
-      if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, 
-	CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF)) {
-	  ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
-	  iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
-      }
-      break;
-    case IDOK:
+  switch (uMsg)
+  {
+  case WM_INITDIALOG:
+    wguiHardfileAddDialogSetGeometryEdits(
+      hwndDlg, 
+      wgui_current_hardfile_edit->filename, 
+      wgui_current_hardfile_edit->sectorspertrack, 
+      wgui_current_hardfile_edit->surfaces, 
+      wgui_current_hardfile_edit->reservedblocks, 
+      wgui_current_hardfile_edit->bytespersector, 
+      !HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename));
+    return TRUE;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
       {
-	STR stmp[32];
-	ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename, 256);
-	if (wgui_current_hardfile_edit->filename[0] == '\0') {
-	  MessageBox(hwndDlg,
-	    "You must specify a hardfile name",
-	    "Edit Hardfile",
-	    0);
-	  break;
-	}
-	ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp, 32);
-	if (atoi(stmp) < 1) {
-	  MessageBox(hwndDlg,
-	    "Sectors Per Track must be 1 or higher",
-	    "Edit Hardfile",
-	    0);
-	  break;
-	}
-	wgui_current_hardfile_edit->sectorspertrack = atoi(stmp);
-	ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp, 32);
-	if (atoi(stmp) < 1) {
-	  MessageBox(hwndDlg,
-	    "The number of surfaces must be 1 or higher",
-	    "Edit Hardfile",
-	    0);
-	  break;
-	}
-	wgui_current_hardfile_edit->surfaces = atoi(stmp);
-	ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp, 32);
-	if (atoi(stmp) < 1) {
-	  MessageBox(hwndDlg,
-	    "The number of reserved blocks must be 1 or higher",
-	    "Edit Hardfile",
-	    0);
-	  break;
-	}
-	wgui_current_hardfile_edit->reservedblocks = atoi((char *) stmp);
-	ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp, 32);
-	wgui_current_hardfile_edit->bytespersector = atoi((char *) stmp);
+      case IDC_BUTTON_HARDFILE_ADD_FILEDIALOG:
+        if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF))
+        {
+          ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
+          if (HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename))
+          {
+            const HardfileConfiguration configuration = HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
+            const HardfileGeometry& geometry = configuration.Geometry;
+            wguiHardfileAddDialogSetGeometryEdits(hwndDlg, wgui_current_hardfile_edit->filename, geometry.SectorsPerTrack, geometry.Surfaces, geometry.ReservedBlocks, geometry.BytesPerSector, false);
+          }
+          iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+        }
+        break;
+      case IDOK:
+      {
+        STR stmp[32];
+        ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename, 256);
+        if (wgui_current_hardfile_edit->filename[0] == '\0')
+        {
+          MessageBox(hwndDlg, "You must specify a hardfile name", "Edit Hardfile", 0);
+          break;
+        }
+        wgui_current_hardfile_edit->hasrdb = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
+        ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp, 32);
+        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        {
+          MessageBox(hwndDlg, "Sectors Per Track must be 1 or higher", "Edit Hardfile", 0);
+          break;
+        }
+        wgui_current_hardfile_edit->sectorspertrack = atoi(stmp);
+        ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp, 32);
+        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        {
+          MessageBox(hwndDlg, "The number of surfaces must be 1 or higher", "Edit Hardfile", 0);
+          break;
+        }
+        wgui_current_hardfile_edit->surfaces = atoi(stmp);
+        ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp, 32);
+        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        {
+          MessageBox(hwndDlg, "The number of reserved blocks must be 1 or higher", "Edit Hardfile", 0);
+          break;
+        }
+        wgui_current_hardfile_edit->reservedblocks = atoi((char *)stmp);
+        ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp, 32);
+        wgui_current_hardfile_edit->bytespersector = atoi((char *)stmp);
       }
-    case IDCANCEL:
-      EndDialog(hwndDlg, LOWORD(wParam));
-      return TRUE;
+      case IDCANCEL:
+        EndDialog(hwndDlg, LOWORD(wParam));
+        return TRUE;
       }
-      break;
+    }
+    break;
   }
   return FALSE;
 }
 
+bool wguiHardfileTreeSelecting = false;
 
-INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      wgui_propsheetHWND[PROPSHEETHARDFILE] = hwndDlg;
-      wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-        switch (LOWORD(wParam)) {
-          case  IDC_BUTTON_HARDFILE_CREATE:
-            {  
-              cfg_hardfile fhd;
-              if (wguiHardfileCreate(hwndDlg, wgui_cfg, cfgGetHardfileCount(wgui_cfg), &fhd) == IDOK) {
-	        wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), &fhd, cfgGetHardfileCount(wgui_cfg), TRUE);
-	        cfgHardfileAdd(wgui_cfg, &fhd);
-              }
-            }
-            break;
-          case IDC_BUTTON_HARDFILE_ADD:
-            {  
-              cfg_hardfile fhd;
-              if (wguiHardfileAdd(hwndDlg, wgui_cfg, TRUE, cfgGetHardfileCount(wgui_cfg), &fhd) == IDOK) {
-	          wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), &fhd, cfgGetHardfileCount(wgui_cfg), TRUE);
-	          cfgHardfileAdd(wgui_cfg, &fhd);
-              }
-            }
-            break;
-          case IDC_BUTTON_HARDFILE_EDIT:
-            {
-              ULO sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), 0);
-              if (sel != -1) {
-	        cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, sel);
-	        if (wguiHardfileAdd(hwndDlg, wgui_cfg, FALSE, sel, &fhd) == IDOK) {
-	          cfgHardfileChange(wgui_cfg, &fhd, sel);
-	          wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), &fhd, sel, FALSE);
-	        }
-              }
-            }
-            break;
-          case IDC_BUTTON_HARDFILE_REMOVE:
-            { 
-              LON sel = 0;
-              while ((sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), sel)) != -1) {
-	        ULO i;
-	        cfgHardfileRemove(wgui_cfg, sel);
-	        ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), sel);
-	        for (i = sel; i < cfgGetHardfileCount(wgui_cfg); i++) {
-	          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, i);
-	          wguiHardfileUpdate(GetDlgItem(hwndDlg, IDC_LIST_HARDFILES), &fhd, i, FALSE);
-	        }
-              }
-            }
-            break;
-          default:
-            break;
+INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+  {
+  case WM_INITDIALOG:
+    wgui_propsheetHWND[PROPSHEETHARDFILE] = hwndDlg;
+    wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
+    return TRUE;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
+      {
+      case  IDC_BUTTON_HARDFILE_CREATE:
+      {
+        cfg_hardfile fhd;
+        if (wguiHardfileCreate(hwndDlg, wgui_cfg, cfgGetHardfileCount(wgui_cfg), &fhd) == IDOK)
+        {
+          cfgHardfileAdd(wgui_cfg, &fhd);
+          wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
+        }
       }
       break;
-    case WM_DESTROY:
-      wguiExtractHardfileConfig(hwndDlg, wgui_cfg);
+      case IDC_BUTTON_HARDFILE_ADD:
+      {
+        cfg_hardfile fhd;
+        if (wguiHardfileAdd(hwndDlg, wgui_cfg, true, cfgGetHardfileCount(wgui_cfg), &fhd) == IDOK)
+        {
+          cfgHardfileAdd(wgui_cfg, &fhd);
+          wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
+        }
+      }
       break;
+      case IDC_BUTTON_HARDFILE_EDIT:
+      {
+        int sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
+        if (sel != -1)
+        {
+          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, sel);
+          if (wguiHardfileAdd(hwndDlg, wgui_cfg, false, sel, &fhd) == IDOK)
+          {
+            cfgHardfileChange(wgui_cfg, &fhd, sel);
+            wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
+          }
+        }
+      }
+      break;
+      case IDC_BUTTON_HARDFILE_REMOVE:
+      {
+        int sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
+        if (sel != -1)
+        {
+          cfgHardfileRemove(wgui_cfg, sel);
+          wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
+        }
+      }
+      break;
+      default:
+        break;
+      }
+    }
+    break;
+  case WM_DESTROY:
+    wguiExtractHardfileConfig(hwndDlg, wgui_cfg);
+    break;
   }
   return FALSE;
 }
-
 
 /*============================================================================*/
 /* Dialog Procedure for the gameport property sheet                           */

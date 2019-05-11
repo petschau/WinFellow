@@ -208,7 +208,7 @@ int fsWrapStat(const char *szFilename, struct stat *pStatBuffer)
 /* Return NULL on error                                                      */
 /*===========================================================================*/
 
-fs_navig_point *fsWrapMakePoint(STR *point) {
+fs_navig_point *fsWrapMakePoint(const STR *point) {
   struct stat mystat;
   fs_navig_point *fsnp = NULL;
   FILE *file_ptr;

@@ -8,7 +8,7 @@ namespace fellow::service
   {
   }
 
-  fs_wrapper_point *FSWrapper::MakePoint(STR *point)
+  fs_wrapper_point *FSWrapper::MakePoint(const STR *point)
   {
     fs_navig_point *navig_point = fsWrapMakePoint(point);
     fs_wrapper_point *result = new fs_wrapper_point();

@@ -1,7 +1,6 @@
 #ifndef FELLOW_HARDFILE_RDB_RDBFILESYSTEMHANDLER_H
 #define FELLOW_HARDFILE_RDB_RDBFILESYSTEMHANDLER_H
 
-#include <vector>
 #include <string>
 #include "fellow/hardfile/hunks/FileImage.h"
 #include "fellow/hardfile/rdb/RDBFileReader.h"

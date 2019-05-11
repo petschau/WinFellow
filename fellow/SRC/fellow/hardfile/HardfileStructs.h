@@ -14,12 +14,12 @@ namespace fellow::hardfile
 
   struct HardfileMountListEntry
   {
-    int DeviceIndex;
+    unsigned int DeviceIndex;
     int PartitionIndex;
     std::string Name;
     ULO NameAddress;
 
-    HardfileMountListEntry(int deviceIndex, int partitionIndex, const std::string& name)
+    HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string& name)
       : DeviceIndex(deviceIndex), PartitionIndex(partitionIndex), Name(name), NameAddress(0)
     {
     }
@@ -27,7 +27,7 @@ namespace fellow::hardfile
 
   struct HardfileFileSystemEntry
   {
-    fellow::hardfile::rdb::RDBFileSystemHeader* Header;
+    rdb::RDBFileSystemHeader* Header;
     ULO SegListAddress;
 
     bool IsOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
@@ -38,24 +38,70 @@ namespace fellow::hardfile
 
     ULO GetDOSType();
     ULO GetVersion();
-    void CopyHunkToAddress(ULO destinationAddress, int hunkIndex);
+    void CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex);
 
-    HardfileFileSystemEntry(fellow::hardfile::rdb::RDBFileSystemHeader* header, ULO segListAddress);
+    HardfileFileSystemEntry(rdb::RDBFileSystemHeader* header, ULO segListAddress);
   };
 
-  class HardfileDevice : public fellow::api::module::HardfileDevice
+  class HardfileDevice
   {
   public:
-    ULO tracks;            /* Used by the driver */
-    bool readonly;
-    ULO bytespersector;
-    ULO reservedblocks;
-    fhfile_status status;
+    // Filename and geometry as listed in the config or on the RDB
+    fellow::api::module::HardfileConfiguration Configuration;
+
+    // Internal properties, actual runtime values used for the hardfile
+    bool Readonly;
+    unsigned int FileSize;    // Actual file size
+    unsigned int GeometrySize;// Size taken by configured geometry
+    fhfile_status Status;
     FILE *F;
-    bool hasRDB;
-    fellow::hardfile::rdb::RDB *rdb;
-    ULO lowCylinder;
-    ULO highCylinder;
+    bool HasRDB;
+    rdb::RDB *RDB;
+
+    bool CloseFile()
+    {
+      if (F != nullptr)
+      {
+        fflush(F);
+        fclose(F);
+        return true;
+      }
+
+      return false;
+    }
+
+    void DeleteRDB()
+    {
+      if (HasRDB)
+      {
+        delete RDB;
+        RDB = nullptr;
+        HasRDB = false;
+      }
+    }
+
+    bool Clear()
+    {
+      bool result = CloseFile();
+      DeleteRDB();
+      FileSize = 0;
+      GeometrySize = 0;
+      Readonly = false;
+      Status = FHFILE_NONE;
+      Configuration.Clear();
+      return result;
+    }
+
+    HardfileDevice()
+      : Readonly(false), FileSize(0), GeometrySize(0), Status(FHFILE_NONE), F(nullptr), HasRDB(false), RDB(nullptr)
+    {
+    }
+
+    virtual ~HardfileDevice()
+    {
+      CloseFile();
+      DeleteRDB();
+    }
   };
 }
 

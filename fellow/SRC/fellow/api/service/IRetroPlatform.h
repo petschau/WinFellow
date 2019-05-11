@@ -8,6 +8,7 @@ namespace fellow::api::service
   class IRetroPlatform
   {
   public:
+    virtual ~IRetroPlatform() = default;
     virtual bool SendHardDriveContent(const ULO lHardDriveNo, const STR *szImageName, const bool bWriteProtected) = 0;
     virtual bool PostHardDriveLED(const ULO lHardDriveNo, const bool bActive, const bool bWriteActivity) = 0;
   };

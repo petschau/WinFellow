@@ -12,7 +12,7 @@ namespace fellow::hardfile::hunks
 
   void EndHunk::Parse(RawDataReader& rawDataReader)
   {
-    Service->Log.AddLog("fhfile: RDB filesystem - End hunk (%u)\n", ID);
+    Service->Log.AddLogDebug("fhfile: RDB filesystem - End hunk (%u)\n", ID);
   }
 
   EndHunk::EndHunk()

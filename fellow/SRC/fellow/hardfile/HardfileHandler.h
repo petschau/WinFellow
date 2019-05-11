@@ -16,26 +16,27 @@ namespace fellow::hardfile
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
-    ULO _romstart;
-    ULO _bootcode;
-    ULO _configdev;
-    ULO _fsname;
+    ULO _romstart = 0;
+    ULO _bootcode = 0;
+    ULO _configdev = 0;
+    ULO _fsname = 0;
     UBY _rom[65536];
-    bool _enabled;
+    bool _enabled = false;
+    unsigned int _unitNoStartNumber;
 
     bool HasZeroDevices();
 
     void CreateMountList();
-    std::string MakeDeviceName(int no);
-    std::string MakeDeviceName(const std::string& preferredName, int no);
+    std::string MakeDeviceName();
+    std::string MakeDeviceName(const std::string& preferredName);
     bool PreferredNameExists(const std::string& preferredName);
-    int FindOlderOrSameFileSystemVersion(ULO dosType, ULO version);
-    HardfileFileSystemEntry *GetFileSystemForDOSType(ULO dosType);
+    bool FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int& olderOrSameFileSystemIndex);
+    HardfileFileSystemEntry *GetFileSystemForDOSType(ULO DOSType);
     void AddFileSystemsFromRdb(HardfileDevice& device);
     void AddFileSystemsFromRdb();
-    void EraseOlderOrSameFileSystemVersion(ULO dosType, ULO version);
-    void SetPhysicalGeometryFromRDB(HardfileDevice *fhfile);
-    void InitializeHardfile(ULO index);
+    void EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
+    void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb);
+    void InitializeHardfile(unsigned int index);
 
     // BeginIO commands
     void Ignore(ULO index);
@@ -68,8 +69,8 @@ namespace fellow::hardfile
     void DoLogOpenResourceResult(ULO result);
     void DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource);
 
-    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& partition, ULO deviceNameAddress);
-    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& partition, ULO deviceNameAddress);
+    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
+    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
 
   public:
     // Autoconfig and ROM memory
@@ -86,21 +87,26 @@ namespace fellow::hardfile
     void SetEnabled(bool enabled) override;
     bool GetEnabled() override;
     void Clear() override;
-    bool CompareHardfile(fellow::api::module::HardfileDevice hardfile, ULO index) override;
-    void SetHardfile(fellow::api::module::HardfileDevice hardfile, ULO index) override;
+    bool CompareHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
+    void SetHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
+    void SetUnitNoStartNumber(unsigned int unitNoStartNumber) override;
 
     // UI helper function
-    bool Create(fellow::api::module::HardfileDevice hfile) override;
+    bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;
+    bool HasRDB(const std::string& filename) override;
+    fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) override;
 
     // Global events
+    void EmulationStart() override;
+    void EmulationStop() override;
     void HardReset() override;
     void Startup() override;
     void Shutdown() override;
 
     HardfileHandler();
-    ~HardfileHandler();
+    virtual ~HardfileHandler();
   };
 }
 

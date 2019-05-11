@@ -10,7 +10,7 @@ namespace fellow::hardfile::rdb
   {
   public:
     static bool HasRigidDiskBlock(RDBFileReader& reader);
-    static fellow::hardfile::rdb::RDB* GetDriveInformation(RDBFileReader& reader);
+    static RDB* GetDriveInformation(RDBFileReader& reader, bool geometryOnly = false);
   };
 }
 

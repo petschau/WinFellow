@@ -500,7 +500,7 @@ int WINAPI WinMain(HINSTANCE hInstance,	    // handle to current instance
   SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
-  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF);
+  _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 
   char *cmdline = (char *) malloc(strlen(lpCmdLine) + 1);

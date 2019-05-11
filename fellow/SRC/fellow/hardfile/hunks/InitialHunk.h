@@ -15,7 +15,7 @@ namespace fellow::hardfile::hunks
     std::unique_ptr<UBY> _rawData;
 
   public:
-    virtual void Parse(RawDataReader& rawReader) = 0;
+    void Parse(RawDataReader& rawReader) override = 0;
     ULO GetAllocateSizeInLongwords();
     ULO GetAllocateSizeInBytes();
     ULO GetContentSizeInLongwords();

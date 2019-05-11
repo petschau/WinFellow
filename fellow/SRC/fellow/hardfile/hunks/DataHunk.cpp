@@ -15,7 +15,7 @@ namespace fellow::hardfile::hunks
     _contentSizeInLongwords = rawDataReader.GetNextByteswappedLong();
     _rawData.reset(rawDataReader.GetNextBytes(GetContentSizeInLongwords()));
 
-    Service->Log.AddLog("fhfile: RDB filesystem - Data hunk (%u), content length in bytes %u, allocate size in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
+    Service->Log.AddLogDebug("fhfile: RDB filesystem - Data hunk (%u), content length in bytes %u, allocate size in bytes %u\n", ID, GetContentSizeInBytes(), GetAllocateSizeInBytes());
   }
 
   DataHunk::DataHunk(ULO allocateSizeInLongwords)

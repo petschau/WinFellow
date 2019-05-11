@@ -9,6 +9,8 @@ namespace fellow::api::service
   class ILog
   {
   public:
+    virtual ~ILog() = default;
+    virtual void AddLogDebug(const char *format, ...) = 0;
     virtual void AddLog(const char *, ...) = 0;
     virtual void AddLog2(STR *msg) = 0;
   };

@@ -40,28 +40,28 @@ namespace fellow::hardfile::rdb
 
   void RDBFileSystemHeader::Log()
   {
-    Service->Log.AddLog("Filesystem header block\n");
-    Service->Log.AddLog("-----------------------------------------\n");
-    Service->Log.AddLog("0  - id:                     FSHD\n");
-    Service->Log.AddLog("4  - size in longs:          %u\n", SizeInLongs);
-    Service->Log.AddLog("8  - checksum:               %d\n", CheckSum);
-    Service->Log.AddLog("12 - host id:                %u\n", HostID);
-    Service->Log.AddLog("16 - next:                   %d\n", Next);
-    Service->Log.AddLog("20 - flags:                  %X\n", Flags);
-    Service->Log.AddLog("32 - dos type:               %.8X\n", DOSType);
-    Service->Log.AddLog("36 - version:                %.8X ie %d.%d\n", Version, (Version & 0xffff0000) >> 16, Version & 0xffff);
-    Service->Log.AddLog("40 - patch flags:            %.8X\n", PatchFlags);
-    Service->Log.AddLog("Device node:-----------------------------\n");
-    Service->Log.AddLog("44 - type:                   %u\n", DnType);
-    Service->Log.AddLog("48 - task:                   %u\n", DnTask);
-    Service->Log.AddLog("48 - task:                   %u\n", DnTask);
-    Service->Log.AddLog("52 - lock:                   %u\n", DnLock);
-    Service->Log.AddLog("56 - handler:                %u\n", DnHandler);
-    Service->Log.AddLog("60 - stack size:             %u\n", DnStackSize);
-    Service->Log.AddLog("64 - priority:               %u\n", DnPriority);
-    Service->Log.AddLog("68 - startup:                %u\n", DnStartup);
-    Service->Log.AddLog("72 - seg list block:         %u\n", DnSegListBlock);
-    Service->Log.AddLog("76 - global vec:             %d\n\n", DnGlobalVec);
+    Service->Log.AddLogDebug("Filesystem header block\n");
+    Service->Log.AddLogDebug("-----------------------------------------\n");
+    Service->Log.AddLogDebug("0  - id:                     FSHD\n");
+    Service->Log.AddLogDebug("4  - size in longs:          %u\n", SizeInLongs);
+    Service->Log.AddLogDebug("8  - checksum:               %d\n", CheckSum);
+    Service->Log.AddLogDebug("12 - host id:                %u\n", HostID);
+    Service->Log.AddLogDebug("16 - next:                   %d\n", Next);
+    Service->Log.AddLogDebug("20 - flags:                  %X\n", Flags);
+    Service->Log.AddLogDebug("32 - dos type:               %.8X\n", DOSType);
+    Service->Log.AddLogDebug("36 - version:                %.8X ie %d.%d\n", Version, (Version & 0xffff0000) >> 16, Version & 0xffff);
+    Service->Log.AddLogDebug("40 - patch flags:            %.8X\n", PatchFlags);
+    Service->Log.AddLogDebug("Device node:-----------------------------\n");
+    Service->Log.AddLogDebug("44 - type:                   %u\n", DnType);
+    Service->Log.AddLogDebug("48 - task:                   %u\n", DnTask);
+    Service->Log.AddLogDebug("48 - task:                   %u\n", DnTask);
+    Service->Log.AddLogDebug("52 - lock:                   %u\n", DnLock);
+    Service->Log.AddLogDebug("56 - handler:                %u\n", DnHandler);
+    Service->Log.AddLogDebug("60 - stack size:             %u\n", DnStackSize);
+    Service->Log.AddLogDebug("64 - priority:               %u\n", DnPriority);
+    Service->Log.AddLogDebug("68 - startup:                %u\n", DnStartup);
+    Service->Log.AddLogDebug("72 - seg list block:         %u\n", DnSegListBlock);
+    Service->Log.AddLogDebug("76 - global vec:             %d\n\n", DnGlobalVec);
   }
 
   RDBFileSystemHeader::RDBFileSystemHeader() :
@@ -83,5 +83,6 @@ namespace fellow::hardfile::rdb
     DnSegListBlock(0),
     DnGlobalVec(0)
   {
+    memset(Reserved2, 0, sizeof Reserved2);
   }
 }

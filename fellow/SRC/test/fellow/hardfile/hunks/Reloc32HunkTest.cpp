@@ -13,8 +13,6 @@ namespace test::fellow::hardfile::hunks
   TEST_CLASS(Reloc32HunkTest)
   {
     unique_ptr<Reloc32Hunk> _instance;
-    const ULO AllocateSizeInLongwords = 4567;
-    const ULO AllocateSizeInBytes = 18268;
     const int SourceHunkIndex = 1234;
     unique_ptr<RawDataReader> _rawDataReader;
     unique_ptr<UBY[]> _hunkData;

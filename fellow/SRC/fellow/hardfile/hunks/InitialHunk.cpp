@@ -38,7 +38,7 @@ namespace fellow::hardfile::hunks
   }
 
   InitialHunk::InitialHunk(ULO allocateSizeInLongwords)
-    : HunkBase(), _allocateSizeInLongwords(allocateSizeInLongwords), _contentSizeInLongwords(0), _vmAddress(0), _rawData(nullptr)
+    : _allocateSizeInLongwords(allocateSizeInLongwords), _contentSizeInLongwords(0), _vmAddress(0), _rawData(nullptr)
   {
   }
 }

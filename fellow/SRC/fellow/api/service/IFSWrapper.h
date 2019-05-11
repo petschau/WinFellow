@@ -26,7 +26,8 @@ namespace fellow::api::service
   class IFSWrapper
   {
   public:
-    virtual fs_wrapper_point *MakePoint(STR *point) = 0;
+    virtual ~IFSWrapper() = default;
+    virtual fs_wrapper_point *MakePoint(const STR *point) = 0;
   };
 }
 

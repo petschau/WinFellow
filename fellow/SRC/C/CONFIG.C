@@ -636,7 +636,6 @@ bool cfgGetECS(cfg *config)
   return config->m_ECS;
 }
 
-
 /*============================================================================*/
 /* Hardfile configuration property access                                     */
 /*============================================================================*/
@@ -1797,6 +1796,18 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
 	return FALSE; /* Filename */
       }
       strncpy(hf.filename, curpos, CFG_FILENAME_LENGTH);
+
+      hf.hasrdb = HardfileHandler->HasRDB(hf.filename);
+      if (hf.hasrdb)
+      {
+        HardfileConfiguration rdbConfiguration = HardfileHandler->GetConfigurationFromRDBGeometry(hf.filename);
+        hf.bytespersector = rdbConfiguration.Geometry.BytesPerSector;
+        hf.sectorspertrack = rdbConfiguration.Geometry.SectorsPerTrack;
+        hf.readonly = rdbConfiguration.Geometry.Readonly;
+        hf.surfaces = rdbConfiguration.Geometry.Surfaces;
+        hf.reservedblocks = rdbConfiguration.Geometry.ReservedBlocks;
+      }
+
       cfgHardfileAdd(config, &hf);
     }
     else if (stricmp(option, "filesystem") == 0)
@@ -2443,14 +2454,15 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   {
     for (i = 0; i < cfgGetHardfileCount(config); i++)
     {
-      HardfileDevice fhardfile;
+      HardfileConfiguration fhardfile;
       cfg_hardfile hardfile = cfgGetHardfile(config, i);
-      fhardfile.bytespersector_original = hardfile.bytespersector;
-      fhardfile.readonly_original = hardfile.readonly;
-      fhardfile.reservedblocks_original = hardfile.reservedblocks;
-      fhardfile.sectorspertrack = hardfile.sectorspertrack;
-      fhardfile.surfaces = hardfile.surfaces;
-      strncpy(fhardfile.filename, hardfile.filename, CFG_FILENAME_LENGTH);
+      fhardfile.Geometry.BytesPerSector = hardfile.bytespersector;
+      fhardfile.Geometry.Readonly = hardfile.readonly;
+      fhardfile.Geometry.ReservedBlocks = hardfile.reservedblocks;
+      fhardfile.Geometry.SectorsPerTrack = hardfile.sectorspertrack;
+      fhardfile.Geometry.Surfaces = hardfile.surfaces;
+      fhardfile.Filename = hardfile.filename;
+
       if (!HardfileHandler->CompareHardfile(fhardfile, i))
       {
         needreset = TRUE;
@@ -2463,7 +2475,6 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       needreset |= (HardfileHandler->RemoveHardfile(i) == true);
     }
   }
-
 
   /*==========================================================================*/
   /* Filesystem configuration                                                 */
@@ -2479,6 +2490,8 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
 
   if (ffilesysGetEnabled())
   {
+    HardfileHandler->SetUnitNoStartNumber(cfgGetFilesystemCount(config));
+
     for (i = 0; i < cfgGetFilesystemCount(config); i++)
     {
       cfg_filesys filesys;
@@ -2499,6 +2512,10 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       needreset |= ffilesysRemoveFilesys(i);
     }
     ffilesysSetAutomountDrives(cfgGetFilesystemAutomountDrives(config));
+  }
+  else
+  {
+    HardfileHandler->SetUnitNoStartNumber(0);
   }
 
   /*==========================================================================*/

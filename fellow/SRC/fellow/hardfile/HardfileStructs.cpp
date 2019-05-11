@@ -1,8 +1,6 @@
 #include "fellow/hardfile/HardfileStructs.h"
 #include "fellow/api/VM.h"
 
-#include "fellow/hardfile/hunks/Reloc32Hunk.h"
-
 using namespace fellow::api;
 using namespace fellow::hardfile::rdb;
 using namespace fellow::hardfile::hunks;
@@ -39,7 +37,7 @@ namespace fellow::hardfile
     return Header->Version;
   }
 
-  void HardfileFileSystemEntry::CopyHunkToAddress(ULO destinationAddress, int hunkIndex)
+  void HardfileFileSystemEntry::CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex)
   {
     InitialHunk* hunk = Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex);
     hunk->SetVMAddress(destinationAddress);

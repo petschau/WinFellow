@@ -31,7 +31,6 @@
 #include "chipset.h"
 #include "draw.h"
 #include "CpuModule.h"
-#include "CpuModule_Disassembler.h"
 #include "CpuIntegration.h"
 #include "fmem.h"
 #include "eventid.h"
@@ -60,6 +59,8 @@
 
 #include "Graphics.h"
 #include "../automation/Automator.h"
+#include "fellow/api/Services.h"
+#include "fellow/api/VM.h"
 
 using namespace fellow::api::module;
 
@@ -345,7 +346,7 @@ void fellowRequestEmulationStopClear(void) {
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
-BOOLE fellowEmulationStart(void) {
+BOOLE fellowEmulationStart() {
   BOOLE result;
   fellowRequestEmulationStopClear();
   iniEmulationStart();
@@ -383,7 +384,7 @@ BOOLE fellowEmulationStart(void) {
 /* Controls the process of halting actual emulation                           */
 /*============================================================================*/
 
-void fellowEmulationStop(void) {
+void fellowEmulationStop() {
 #ifdef RETRO_PLATFORM
   if(RP.GetHeadlessMode())
     RP.EmulationStop();
@@ -637,6 +638,10 @@ static void fellowModulesShutdown(void)
   fsNavigSetCWDStartupDir();
   fsNavigShutdown();
   timerShutdown();
+
+  delete HardfileHandler;
+  delete fellow::api::Service;
+  delete fellow::api::VM;
 }
 
 /*============================================================================*/

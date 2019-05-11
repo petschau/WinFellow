@@ -6,7 +6,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
-  void RDB::ReadFromFile(RDBFileReader& reader)
+  void RDB::ReadFromFile(RDBFileReader& reader, bool geometryOnly)
   {
     ID = reader.ReadString(0, 4);
     SizeInLongs = reader.ReadULO(4);
@@ -46,7 +46,7 @@ namespace fellow::hardfile::rdb
     ControllerRevision = reader.ReadString(212, 4);
 
     ULO nextPartition = PartitionList;
-    while (nextPartition != -1)
+    while (nextPartition != 0xffffffff)
     {
       RDBPartition* partition = new RDBPartition();
       partition->ReadFromFile(reader, nextPartition, BlockSize);
@@ -55,55 +55,58 @@ namespace fellow::hardfile::rdb
       nextPartition = partition->Next;
     }
 
-    ULO nextFilesystemHeader = FilesystemHeaderList;
-    while (nextFilesystemHeader != -1)
+    if (!geometryOnly)
     {
-      RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();
-      fileSystemHeader->ReadFromFile(reader, nextFilesystemHeader, BlockSize);
-      fileSystemHeader->Log();
-      FileSystemHeaders.push_back(unique_ptr<RDBFileSystemHeader>(fileSystemHeader));
-      nextFilesystemHeader = fileSystemHeader->Next;
+      ULO nextFilesystemHeader = FilesystemHeaderList;
+      while (nextFilesystemHeader != 0xffffffff)
+      {
+        RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();
+        fileSystemHeader->ReadFromFile(reader, nextFilesystemHeader, BlockSize);
+        fileSystemHeader->Log();
+        FileSystemHeaders.push_back(unique_ptr<RDBFileSystemHeader>(fileSystemHeader));
+        nextFilesystemHeader = fileSystemHeader->Next;
+      }
     }
   }
 
   void RDB::Log()
   {
-    Service->Log.AddLog("RDB Hardfile\n");
-    Service->Log.AddLog("-----------------------------------------\n");
-    Service->Log.AddLog("0   - id:                     %s\n", ID.c_str());
-    Service->Log.AddLog("4   - size in longs:          %u\n", SizeInLongs);
-    Service->Log.AddLog("8   - checksum:               %.8X\n", CheckSum);
-    Service->Log.AddLog("12  - host id:                %u\n", HostID);
-    Service->Log.AddLog("16  - block size:             %u\n", BlockSize);
-    Service->Log.AddLog("20  - flags:                  %X\n", Flags);
-    Service->Log.AddLog("24  - bad block list:         %d\n", BadBlockList);
-    Service->Log.AddLog("28  - partition list:         %d\n", PartitionList);
-    Service->Log.AddLog("32  - filesystem header list: %d\n", FilesystemHeaderList);
-    Service->Log.AddLog("36  - drive init code:        %X\n", DriveInitCode);
-    Service->Log.AddLog("Physical drive characteristics:---------\n");
-    Service->Log.AddLog("64  - cylinders:              %u\n", Cylinders);
-    Service->Log.AddLog("68  - sectors per track:      %u\n", SectorsPerTrack);
-    Service->Log.AddLog("72  - heads:                  %u\n", Heads);
-    Service->Log.AddLog("76  - interleave:             %u\n", Interleave);
-    Service->Log.AddLog("80  - parking zone:           %u\n", ParkingZone);
-    Service->Log.AddLog("96  - write pre-compensation: %u\n", WritePreComp);
-    Service->Log.AddLog("100 - reduced write:          %u\n", ReducedWrite);
-    Service->Log.AddLog("104 - step rate:              %u\n", StepRate);
-    Service->Log.AddLog("Logical drive characteristics:----------\n");
-    Service->Log.AddLog("128 - RDB block low:          %u\n", RDBBlockLow);
-    Service->Log.AddLog("132 - RDB block high:         %u\n", RDBBlockHigh);
-    Service->Log.AddLog("136 - low cylinder:           %u\n", LowCylinder);
-    Service->Log.AddLog("140 - high cylinder:          %u\n", HighCylinder);
-    Service->Log.AddLog("144 - cylinder blocks:        %u\n", CylinderBlocks);
-    Service->Log.AddLog("148 - auto park seconds:      %u\n", AutoParkSeconds);
-    Service->Log.AddLog("152 - high RDSK block:        %u\n", HighRDSKBlock);
-    Service->Log.AddLog("Drive identification:-------------------\n");
-    Service->Log.AddLog("160 - disk vendor:            %.8s\n", DiskVendor.c_str());
-    Service->Log.AddLog("168 - disk product:           %.16s\n", DiskProduct.c_str());
-    Service->Log.AddLog("184 - disk revision:          %.4s\n", DiskRevision.c_str());
-    Service->Log.AddLog("188 - controller vendor:      %.8s\n", ControllerVendor.c_str());
-    Service->Log.AddLog("196 - controller product:     %.16s\n", ControllerProduct.c_str());
-    Service->Log.AddLog("212 - controller revision:    %.4s\n", ControllerRevision.c_str());
-    Service->Log.AddLog("-----------------------------------------\n\n");
+    Service->Log.AddLogDebug("RDB Hardfile\n");
+    Service->Log.AddLogDebug("-----------------------------------------\n");
+    Service->Log.AddLogDebug("0   - id:                     %s\n", ID.c_str());
+    Service->Log.AddLogDebug("4   - size in longs:          %u\n", SizeInLongs);
+    Service->Log.AddLogDebug("8   - checksum:               %.8X\n", CheckSum);
+    Service->Log.AddLogDebug("12  - host id:                %u\n", HostID);
+    Service->Log.AddLogDebug("16  - block size:             %u\n", BlockSize);
+    Service->Log.AddLogDebug("20  - flags:                  %X\n", Flags);
+    Service->Log.AddLogDebug("24  - bad block list:         %d\n", BadBlockList);
+    Service->Log.AddLogDebug("28  - partition list:         %d\n", PartitionList);
+    Service->Log.AddLogDebug("32  - filesystem header list: %d\n", FilesystemHeaderList);
+    Service->Log.AddLogDebug("36  - drive init code:        %X\n", DriveInitCode);
+    Service->Log.AddLogDebug("Physical drive characteristics:---------\n");
+    Service->Log.AddLogDebug("64  - cylinders:              %u\n", Cylinders);
+    Service->Log.AddLogDebug("68  - sectors per track:      %u\n", SectorsPerTrack);
+    Service->Log.AddLogDebug("72  - heads:                  %u\n", Heads);
+    Service->Log.AddLogDebug("76  - interleave:             %u\n", Interleave);
+    Service->Log.AddLogDebug("80  - parking zone:           %u\n", ParkingZone);
+    Service->Log.AddLogDebug("96  - write pre-compensation: %u\n", WritePreComp);
+    Service->Log.AddLogDebug("100 - reduced write:          %u\n", ReducedWrite);
+    Service->Log.AddLogDebug("104 - step rate:              %u\n", StepRate);
+    Service->Log.AddLogDebug("Logical drive characteristics:----------\n");
+    Service->Log.AddLogDebug("128 - RDB block low:          %u\n", RDBBlockLow);
+    Service->Log.AddLogDebug("132 - RDB block high:         %u\n", RDBBlockHigh);
+    Service->Log.AddLogDebug("136 - low cylinder:           %u\n", LowCylinder);
+    Service->Log.AddLogDebug("140 - high cylinder:          %u\n", HighCylinder);
+    Service->Log.AddLogDebug("144 - cylinder blocks:        %u\n", CylinderBlocks);
+    Service->Log.AddLogDebug("148 - auto park seconds:      %u\n", AutoParkSeconds);
+    Service->Log.AddLogDebug("152 - high RDSK block:        %u\n", HighRDSKBlock);
+    Service->Log.AddLogDebug("Drive identification:-------------------\n");
+    Service->Log.AddLogDebug("160 - disk vendor:            %.8s\n", DiskVendor.c_str());
+    Service->Log.AddLogDebug("168 - disk product:           %.16s\n", DiskProduct.c_str());
+    Service->Log.AddLogDebug("184 - disk revision:          %.4s\n", DiskRevision.c_str());
+    Service->Log.AddLogDebug("188 - controller vendor:      %.8s\n", ControllerVendor.c_str());
+    Service->Log.AddLogDebug("196 - controller product:     %.16s\n", ControllerProduct.c_str());
+    Service->Log.AddLogDebug("212 - controller revision:    %.4s\n", ControllerRevision.c_str());
+    Service->Log.AddLogDebug("-----------------------------------------\n\n");
   }
 }
