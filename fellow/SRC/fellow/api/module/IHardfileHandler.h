@@ -43,9 +43,7 @@ namespace fellow::api::module
         SectorsPerTrack == other.SectorsPerTrack &&
         Surfaces == other.Surfaces &&
         Readonly == other.Readonly &&
-        ReservedBlocks == other.ReservedBlocks &&
-        LowCylinder == other.LowCylinder &&
-        HighCylinder == other.HighCylinder;
+        ReservedBlocks == other.ReservedBlocks;
     }
   };
 
