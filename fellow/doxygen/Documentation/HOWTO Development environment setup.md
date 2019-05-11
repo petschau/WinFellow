@@ -7,11 +7,8 @@ However the project files contained in the Git repository are built using Micros
 Currently the following software should be used for development in the Git master branch:
 
 - Visual Studio 2019
-- <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10084">February 2010 DirectX SDK</a>
 
 The community edition of Visual Studio 2019 can be used to compile WinFellow; it even features debugging and profiling.
-The directory containing the utility fxc.exe (which is usually located in 
-C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x64) must be added to search path.
 
 For access to the Git repository, the <a href="http://desktop.github.com">GitHub Desktop</a> client is required.
 
