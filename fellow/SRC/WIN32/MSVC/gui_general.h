@@ -108,7 +108,6 @@
 #define IDC_BUTTON_KICKSTART_EXT_FILEDIALOG 1061
 #define IDC_COMBO_GAMEPORT1             1062
 #define IDC_CHECK_VARIOUS_SPEED         1063
-#define IDC_LIST_HARDFILES              1064
 #define IDC_CHECK_HARDFILE_ENABLE       1065
 #define IDC_STATIC_HARDFILE_ADD_UNIT    1067
 #define IDC_EDIT_HARDFILE_ADD_FILENAME  1068
@@ -209,6 +208,9 @@
 #define IDC_COMBO_DISPLAYSCALE          1164
 #define IDC_COMBO1                      1167
 #define IDC_COMBO_BORDER                1167
+#define IDC_TREE1                       1168
+#define IDC_HARDFILE_TREE               1168
+#define IDC_TREE_HARDFILES              1168
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
@@ -292,9 +294,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        185
+#define _APS_NEXT_RESOURCE_VALUE        186
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1168
+#define _APS_NEXT_CONTROL_VALUE         1169
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

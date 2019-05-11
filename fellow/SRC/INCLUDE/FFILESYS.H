@@ -19,8 +19,8 @@ typedef struct {
 
 /* Configuring the filesys */
 
-extern void ffilesysSetEnabled(BOOLE enabled);
-extern BOOLE ffilesysGetEnabled(void);
+extern void ffilesysSetEnabled(bool enabled);
+extern bool ffilesysGetEnabled();
 extern void ffilesysSetFilesys(ffilesys_dev filesys, ULO index);
 extern BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index);
 extern BOOLE ffilesysRemoveFilesys(ULO index);

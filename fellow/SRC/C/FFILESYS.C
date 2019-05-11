@@ -47,7 +47,7 @@
 /*============================================================================*/
 
 ffilesys_dev ffilesys_devs[FFILESYS_MAX_DEVICES];
-BOOLE ffilesys_enabled;
+bool ffilesys_enabled;
 BOOLE ffilesys_automount_drives;
 
 /*============================================================================*/
@@ -68,12 +68,12 @@ BOOLE ffilesysRemoveFilesys(ULO index)
   return result;
 }
 
-void ffilesysSetEnabled(BOOLE enabled)
+void ffilesysSetEnabled(bool enabled)
 {
   ffilesys_enabled = enabled;
 }
 
-BOOLE ffilesysGetEnabled(void)
+bool ffilesysGetEnabled()
 {
   return ffilesys_enabled;
 }

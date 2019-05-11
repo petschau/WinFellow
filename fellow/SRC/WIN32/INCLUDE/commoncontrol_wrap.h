@@ -20,6 +20,7 @@ extern void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text
 extern void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text);
 extern void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, ULO n);
 extern void ccwEditEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable);
+extern void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifier, bool enable);
 extern void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst);
 
 #endif

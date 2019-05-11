@@ -17,6 +17,7 @@ typedef struct {
   ULO   sectorspertrack;
   ULO   surfaces;
   ULO   reservedblocks;
+  bool  hasrdb;
 } cfg_hardfile;
 
 /*============================================================================*/
@@ -90,7 +91,7 @@ typedef struct {
   STR    m_kickdescription[CFG_FILENAME_LENGTH];
   ULO    m_kickcrc32;
   STR    m_key[CFG_FILENAME_LENGTH];
-  BOOLE  m_useautoconfig;
+  bool   m_useautoconfig;
   bool   m_rtc;
 
 
@@ -241,8 +242,8 @@ extern void cfgSetKickCRC32(cfg *config, ULO kickcrc32);
 extern ULO  cfgGetKickCRC32(cfg *config);
 extern void cfgSetKey(cfg *config, STR *key);
 extern STR *cfgGetKey(cfg *config);
-extern void cfgSetUseAutoconfig(cfg *config, BOOLE useautoconfig);
-extern BOOLE cfgGetUseAutoconfig(cfg *config);
+extern void cfgSetUseAutoconfig(cfg *config, bool useautoconfig);
+extern bool cfgGetUseAutoconfig(cfg *config);
 extern BOOLE cfgGetAddress32Bit(cfg *config);
 extern void cfgSetRtc(cfg *config, bool rtc);
 extern bool cfgGetRtc(cfg *config);

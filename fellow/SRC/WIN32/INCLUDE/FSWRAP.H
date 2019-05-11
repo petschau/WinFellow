@@ -17,7 +17,7 @@ fs_navig_point *fsWrapGetCWD(void);
 extern BOOLE fsWrapOpenDir(fs_navig_point *fs_point);
 extern fs_navig_point *fsWrapReadDir(void);
 extern void fsWrapCloseDir(void);
-extern fs_navig_point *fsWrapMakePoint(STR *point);
+extern fs_navig_point *fsWrapMakePoint(const STR *point);
 extern int fsWrapStat(const char *szFilename, struct stat *pStatBuffer);
 
 #endif

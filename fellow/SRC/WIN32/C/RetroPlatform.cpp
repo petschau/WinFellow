@@ -101,7 +101,7 @@
 #include "CpuIntegration.h"
 #include "BUS.H"
 #include "kbddrv.h"
-#include "FHFILE.H"
+#include "fellow/api/module/IHardfileHandler.h"
 #include "dxver.h"    /// needed for DirectInput based joystick detection code
 #include "sounddrv.h" /// needed for DirectSound volume control
 #include "GfxDrvCommon.h"

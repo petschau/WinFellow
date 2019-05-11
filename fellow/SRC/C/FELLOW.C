@@ -31,7 +31,6 @@
 #include "chipset.h"
 #include "draw.h"
 #include "CpuModule.h"
-#include "CpuModule_Disassembler.h"
 #include "CpuIntegration.h"
 #include "fmem.h"
 #include "eventid.h"
@@ -40,7 +39,7 @@
 #include "gameport.h"
 #include "kbd.h"
 #include "graph.h"
-#include "fhfile.h"
+#include "fellow/api/module/IHardfileHandler.h"
 #include "bus.h"
 #include "copper.h"
 #include "cia.h"
@@ -60,6 +59,10 @@
 
 #include "Graphics.h"
 #include "../automation/Automator.h"
+#include "fellow/api/Services.h"
+#include "fellow/api/VM.h"
+
+using namespace fellow::api::module;
 
 BOOLE fellow_request_emulation_stop;
 
@@ -286,7 +289,7 @@ static void fellowRuntimeErrorCheck(void) {
 void fellowSoftReset(void) {
   memorySoftReset();
   interruptSoftReset();
-  fhfileHardReset();
+  HardfileHandler->HardReset();
   spriteHardReset();
   drawHardReset();
   kbdHardReset();
@@ -312,7 +315,7 @@ void fellowSoftReset(void) {
 void fellowHardReset(void) {
   memoryHardReset();
   interruptHardReset();
-  fhfileHardReset();
+  HardfileHandler->HardReset();
   spriteHardReset();
   drawHardReset();
   kbdHardReset();
@@ -350,7 +353,7 @@ void fellowRequestEmulationStopClear(void) {
 /* Controls the process of starting actual emulation                          */
 /*============================================================================*/
 
-BOOLE fellowEmulationStart(void) {
+BOOLE fellowEmulationStart() {
   BOOLE result;
   fellowRequestEmulationStopClear();
   iniEmulationStart();
@@ -388,7 +391,7 @@ BOOLE fellowEmulationStart(void) {
 /* Controls the process of halting actual emulation                           */
 /*============================================================================*/
 
-void fellowEmulationStop(void) {
+void fellowEmulationStop() {
 #ifdef RETRO_PLATFORM
   if(RP.GetHeadlessMode())
     RP.EmulationStop();
@@ -577,7 +580,7 @@ static void fellowModulesStartup(int argc, char *argv[])
   chipsetStartup();
   timerStartup();
   fsNavigStartup(argv);
-  fhfileStartup();
+  HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
   iniStartup();
@@ -638,10 +641,14 @@ static void fellowModulesShutdown(void)
   iniShutdown();
   spriteShutdown();
   ffilesysShutdown();
-  fhfileShutdown();
+  HardfileHandler->Shutdown();
   fsNavigSetCWDStartupDir();
   fsNavigShutdown();
   timerShutdown();
+
+  delete HardfileHandler;
+  delete fellow::api::Service;
+  delete fellow::api::VM;
 }
 
 /*============================================================================*/
