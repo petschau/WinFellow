@@ -21,6 +21,7 @@ To be able to compile release builds using the automated build script, a number 
 installed and added to the search path:
 
 - Visual Studio 2019 with C++ desktop development components must be installed, including the legacy XP toolset components (v141_xp)
+    - this is described in a little more detail in <a href="https://docs.microsoft.com/en-us/cpp/build/configuring-programs-for-windows-xp?view=vs-2019">this article</a>.
 - PowerShell execution policy must be set to unrestricted (both for the 32 as well as the 64 bit PowerShell)
 - Git for Windows 64 Bit must be installed and added to the search path; usually Notepad++ is used as default editor
 - the module posh-git must be installed
