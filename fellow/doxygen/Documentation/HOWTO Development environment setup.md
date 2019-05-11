@@ -6,10 +6,10 @@ However the project files contained in the Git repository are built using Micros
 
 Currently the following software should be used for development in the Git master branch:
 
-- Visual Studio 2017
+- Visual Studio 2019
 - <a href="http://www.microsoft.com/en-us/download/details.aspx?id=10084">February 2010 DirectX SDK</a>
 
-The community edition of Visual Studio 2017 can be used to compile WinFellow; it even features debugging and profiling.
+The community edition of Visual Studio 2019 can be used to compile WinFellow; it even features debugging and profiling.
 The directory containing the utility fxc.exe (which is usually located in 
 C:\Program Files (x86)\Microsoft DirectX SDK (February 2010)\Utilities\bin\x64) must be added to search path.
 
@@ -20,6 +20,8 @@ For basic contributions, the components mentioned above should be sufficient.
 To be able to compile release builds using the automated build script, a number of additional components must be
 installed and added to the search path:
 
+- Visual Studio 2019 with C++ desktop development components must be installed, including the legacy XP toolset components (v141_xp)
+    - this is described in a little more detail in <a href="https://docs.microsoft.com/en-us/cpp/build/configuring-programs-for-windows-xp?view=vs-2019">this article</a>.
 - PowerShell execution policy must be set to unrestricted (both for the 32 as well as the 64 bit PowerShell)
 - Git for Windows 64 Bit must be installed and added to the search path; usually Notepad++ is used as default editor
 - the module posh-git must be installed

@@ -136,7 +136,7 @@ Function Main()
     $MSBuildPath = vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
     If($MSBuildPath)
     {
-        $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\15.0\Bin\MSBuild.exe'
+        $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
         If(Test-Path $MSBuildPath) 
         {
             Write-Verbose "Executing MSBuild.exe..."    
