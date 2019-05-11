@@ -3,7 +3,9 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 
-char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
+using namespace std;
+
+const char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
 {
   switch (rotation)
   {
@@ -30,12 +32,19 @@ void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput *output)
 
     if (SUCCEEDED(hr))
     {
-      sprintf(_name, "%254ls", desc.DeviceName);
+      list<string> logmessages;
+      char s[255];
+      snprintf(_name, 255, "%ls", desc.DeviceName);
 
-      fellowAddLog("DXGI Output: %ls\n", desc.DeviceName);
-      fellowAddLog("Attached to desktop: %s\n", (desc.AttachedToDesktop) ? "YES" : "NO");
-      fellowAddLog("Desktop coordinates: (%d, %d) (%d, %d)\n", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
-      fellowAddLog("Rotation: %s\n\n", GetRotationDescription(desc.Rotation));
+      sprintf(s,"DXGI Output: %s", _name);
+      logmessages.emplace_back(s);
+      sprintf(s, "Attached to desktop: %s", (desc.AttachedToDesktop) ? "YES" : "NO");
+      logmessages.emplace_back(s);
+      sprintf(s, "Desktop coordinates: (%ld, %ld) (%ld, %ld)", desc.DesktopCoordinates.left, desc.DesktopCoordinates.top, desc.DesktopCoordinates.right, desc.DesktopCoordinates.bottom);
+      logmessages.emplace_back(s);
+      sprintf(s, "Rotation: %s", GetRotationDescription(desc.Rotation));
+      logmessages.emplace_back(s);
+      fellowAddLogList(logmessages);
     }
   }
 }

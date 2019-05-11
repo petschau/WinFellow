@@ -93,12 +93,17 @@
 #include "wgui.h"
 #include "ini.h"
 
+#include <list>
+#include <string>
+
 #include "GfxDrvCommon.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #include "config.h"
 #endif
+
+using namespace std;
 
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
@@ -159,7 +164,7 @@ ULO gfx_drv_output_height;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *gfxDrvDDrawErrorString(HRESULT hResult)
+const STR *gfxDrvDDrawErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -296,12 +301,11 @@ void gfxDrvDDrawPrintPixelFlags(DWORD flags, STR *s)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void gfxDrvDDrawFailure(STR *header, HRESULT err)
+void gfxDrvDDrawFailure(const STR *header, HRESULT err)
 {
-  fellowAddLog("gfxdrv: ");
-  fellowAddLog(header);
-  fellowAddLog(gfxDrvDDrawErrorString(err));
-  fellowAddLog("\n");
+  char s[255];
+  sprintf(s, "gfxdrv: %s %s\n", header, gfxDrvDDrawErrorString(err));
+  fellowAddLog(s);
 }
 
 /*==========================================================================*/
@@ -714,14 +718,16 @@ ULO gfxDrvRGBMaskSize(ULO mask)
 
 void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 {
-  STR s[120];
+  list<string> logmessages;
+  STR s[255];
 
-  sprintf(s, "gfxdrv: DirectDraw fullscreen modes found: %u\n", listCount(ddraw_device->fullscreen_modes));
-  fellowAddLog(s);
+  sprintf(s, "gfxdrv: DirectDraw fullscreen modes found: %u", listCount(ddraw_device->fullscreen_modes));
+  logmessages.emplace_back(s);
+
   for (felist *l = ddraw_device->fullscreen_modes; l != nullptr; l = listNext(l))
   {
     gfx_drv_ddraw_fullscreen_mode *tmpmode = reinterpret_cast<gfx_drv_ddraw_fullscreen_mode *>(listNode(l));
-    fellowAddLog("gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)\n",
+    sprintf(s, "gfxdrv: Mode Description: %uWx%uHx%uBPPx%uHZ (%u,%u,%u,%u,%u,%u)",
       tmpmode->width,
       tmpmode->height,
       tmpmode->depth,
@@ -732,7 +738,9 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
       tmpmode->greensize,
       tmpmode->bluepos,
       tmpmode->bluesize);
+    logmessages.emplace_back(s);
   }
+  fellowAddLogList(logmessages);
 }
 
 /*==========================================================================*/
@@ -779,11 +787,11 @@ HRESULT WINAPI gfxDrvDDrawEnumerateFullScreenMode(LPDDSURFACEDESC lpDDSurfaceDes
   {
     if ((lpDDSurfaceDesc->dwRefreshRate > 1 && lpDDSurfaceDesc->dwRefreshRate < 50) || lpDDSurfaceDesc->dwWidth < 640)
     {
-      fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
-        lpDDSurfaceDesc->dwWidth,
-        lpDDSurfaceDesc->dwHeight,
-        lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
-        lpDDSurfaceDesc->dwRefreshRate);
+      //fellowAddLog("gfxDrvDDrawModeEnumerate(): ignoring mode %ux%u, %u bit, %u Hz\n",
+      //  lpDDSurfaceDesc->dwWidth,
+      //  lpDDSurfaceDesc->dwHeight,
+      //  lpDDSurfaceDesc->ddpfPixelFormat.dwRGBBitCount,
+      //  lpDDSurfaceDesc->dwRefreshRate);
 
       return DDENUMRET_OK;
     }
@@ -1014,7 +1022,6 @@ void gfxDrvDDrawCalculateDestinationRectangle(ULO output_width, ULO output_heigh
 
 void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
 {
-  HRESULT err;
   RECT srcwin;
   RECT dstwin;
   LPDIRECTDRAWSURFACE lpDDSDestination;
@@ -1053,7 +1060,7 @@ void gfxDrvDDrawSurfaceBlit(gfx_drv_ddraw_device *ddraw_device)
   gfxDrvDDrawCalculateDestinationRectangle(gfx_drv_output_width, gfx_drv_output_height, ddraw_device, dstwin);
 
   /* This can fail when a surface is lost */
-  err = IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
+  HRESULT err =    IDirectDrawSurface_Blt(lpDDSDestination, &dstwin, ddraw_device->lpDDSSecondary, &srcwin, DDBLT_ASYNC, &bltfx);
   if (err != DD_OK)
   {
     gfxDrvDDrawFailure("gfxDrvDDrawSurfaceBlit(): (Blt failed) ", err);
@@ -1128,7 +1135,7 @@ void gfxDrvDDrawSurfacesRelease(gfx_drv_ddraw_device *ddraw_device)
 /* near full stop depending on the card and driver.                         */
 /*==========================================================================*/
 
-char *gfxDrvDDrawVideomemLocationStr(ULO pass)
+const char *gfxDrvDDrawVideomemLocationStr(ULO pass)
 {
   switch (pass)
   {

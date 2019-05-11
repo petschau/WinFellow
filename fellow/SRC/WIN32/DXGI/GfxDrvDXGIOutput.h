@@ -12,7 +12,7 @@ private:
   char _name[255];
   GfxDrvDXGIModeList _modes;
 
-  char* GetRotationDescription(DXGI_MODE_ROTATION rotation);
+  const char* GetRotationDescription(DXGI_MODE_ROTATION rotation);
   void EnumerateModes(IDXGIOutput* output);
   void LogCapabilities(IDXGIOutput* output);
 

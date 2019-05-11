@@ -2,6 +2,9 @@
 #include "GfxDrvDXGIOutputEnumerator.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include <list>
+
+using namespace std;
 
 void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
 {
@@ -10,16 +13,28 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
 
   if (SUCCEEDED(hr))
   {
-    sprintf(_name, "%254ls", desc.Description);
+    list<string> messages;
+    char s[512];
+ 
+    snprintf(_name, 255, "%ls", desc.Description);
 
-    fellowAddLog("DXGI Adapter: %ls\n", desc.Description);
-    fellowAddLog("Vendor ID: %.4X\n", desc.VendorId);
-    fellowAddLog("Device ID: %.4X\n", desc.DeviceId);
-    fellowAddLog("Subsys ID: %.4X\n", desc.SubSysId);
-    fellowAddLog("Revision:  %.4X\n", desc.Revision);
-    fellowAddLog("Dedicated system memory: %I64d\n", (__int64)desc.DedicatedSystemMemory);
-    fellowAddLog("Dedicated video memory:  %I64d\n", (__int64)desc.DedicatedVideoMemory);
-    fellowAddLog("Shared system memory:    %I64d\n", (__int64)desc.SharedSystemMemory);
+    sprintf(s, "DXGI Adapter: %s", _name);
+    messages.emplace_back(s);
+    sprintf(s, "Vendor ID: %.4X", desc.VendorId);
+    messages.emplace_back(s);
+    sprintf(s, "Device ID: %.4X", desc.DeviceId);
+    messages.emplace_back(s);
+    sprintf(s, "Subsys ID: %.4X", desc.SubSysId);
+    messages.emplace_back(s);
+    sprintf(s, "Revision:  %.4X", desc.Revision);
+    messages.emplace_back(s);
+    sprintf(s, "Dedicated system memory: %I64d", (__int64)desc.DedicatedSystemMemory);
+    messages.emplace_back(s);
+    sprintf(s, "Dedicated video memory:  %I64d", (__int64)desc.DedicatedVideoMemory);
+    messages.emplace_back(s);
+    sprintf(s, "Shared system memory:    %I64d", (__int64)desc.SharedSystemMemory);
+    messages.emplace_back(s);
+    fellowAddLogList(messages);
   }
 }
 

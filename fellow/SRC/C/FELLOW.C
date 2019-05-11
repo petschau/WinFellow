@@ -110,100 +110,112 @@ static BOOLE fellow_log_first_time = TRUE;
 static BOOLE fellow_log_enabled;
 static BOOLE fellow_newlogline = TRUE;
 
-static void fellowSetLogEnabled(BOOLE enabled) {
+static void fellowSetLogEnabled(BOOLE enabled)
+{
   fellow_log_enabled = enabled;
 }
 
-static BOOLE fellowGetLogEnabled(void) {
+static BOOLE fellowGetLogEnabled()
+{
   return fellow_log_enabled;
 }
 
-static void fellowSetLogFirstTime(BOOLE first_time) {
+static void fellowSetLogFirstTime(BOOLE first_time)
+{
   fellow_log_first_time = first_time;
 }
 
-static BOOLE fellowGetLogFirstTime(void) {
+static BOOLE fellowGetLogFirstTime()
+{
   return fellow_log_first_time;
 }
 
-void fellowAddLog2(STR *msg) {
-  FILE *F;
-
-  if (!fellowGetLogEnabled()) 
-    return;
-
-  if (fellowGetLogFirstTime()) {
+static FILE* fellowLogOpenFile()
+{
+  FILE *F = nullptr;
+  if (fellowGetLogFirstTime())
+  {
     fileopsGetFellowLogfileName(fellowlogfilename);
     F = fopen(fellowlogfilename, "w");
     fellowSetLogFirstTime(FALSE);
   }
-  else {
+  else
+  {
     F = fopen(fellowlogfilename, "a");
   }
-
-  if (F != NULL) {
-    fprintf(F, "%s", msg);
-    fflush(F);
-    fclose(F);
-  }
-
-  if (msg[strlen(msg) - 1] == '\n')
-    fellow_newlogline = TRUE;
-  else
-    fellow_newlogline = FALSE;
+  return F;
 }
 
-static void fellowLogDateTime(void)
+static void fellowLogFlushAndCloseFile(FILE *F)
 {
-  char tmp[255];
-  time_t thetime;
-  struct tm *timedata;
+  fflush(F);
+  fclose(F);
+}
 
-  thetime = time(NULL);
-  timedata = localtime(&thetime);
+void fellowAddLog2(STR *msg)
+{
+  if (!fellowGetLogEnabled())
+  {
+    return;
+  }
 
-  strftime(tmp, 255, "%c: ", timedata);
-  fellowAddLog2(tmp);
+  FILE *F = fellowLogOpenFile();
+  if (F != nullptr)
+  {
+    fputs(msg, F);
+    fellowLogFlushAndCloseFile(F);
+  }
+
+  fellow_newlogline = (msg[strlen(msg) - 1] == '\n');
+}
+
+char* fellowLogPrintTime(char *buffer)
+{
+  if (fellow_newlogline)
+  {
+    // log date/time into buffer
+    time_t thetime = time(nullptr);
+    struct tm* timedata = localtime(&thetime);
+    strftime(buffer, 255, "%c: ", timedata);
+    // move buffer pointer ahead to log additional text after date/time
+    return buffer + strlen(buffer);
+  }
+  // skip date/time, log to beginning of buffer
+  return buffer;
 }
 
 void fellowAddLog(const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
-  char *buffer2 = NULL;
   va_list parms;
-  int count = 0;
 
-  if (fellow_newlogline)
-  {
-    // log date/time into buffer
-    time_t thetime;
-    struct tm *timedata;
-
-    thetime = time(NULL);
-    timedata = localtime(&thetime);
-    strftime(buffer, 255, "%c: ", timedata);
-    // move buffer pointer ahead to log additional text after date/time
-    buffer2 = buffer + strlen(buffer);
-  }
-  else
-  {
-    // skip date/time, log to beginning of buffer
-    buffer2 = buffer;
-  }
+  char *buffer2 = fellowLogPrintTime(buffer);
 
   va_start(parms, format);
-  count = _vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-
+  _vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
   fellowAddLog2(buffer);
-
   va_end(parms);
+}
+
+void fellowAddLogList(const list<string>& messages)
+{
+  FILE *F = fellowLogOpenFile();
+  char timebuffer[WRITE_LOG_BUF_SIZE];
+
+  for (const string& msg : messages)
+  {
+    fellowLogPrintTime(timebuffer);
+    fputs(timebuffer, F);
+    fputs(msg.c_str(), F);
+    fputc('\n', F);
+  }
+  fellowLogFlushAndCloseFile(F);
 }
 
 void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
-  int count = 0;
   UINT uType = 0;
 
   switch (type)
@@ -220,7 +232,7 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
   }
 
   va_start(parms, format);
-  count = _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
 
   fellowAddLog(buffer);
 #ifdef RETRO_PLATFORM
@@ -233,27 +245,22 @@ void fellowAddTimelessLog(const char *format,...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
-  int count = 0;
 
   va_start (parms, format);
-  count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-
+  _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
   fellowAddLog2(buffer);
-
-  if(buffer[strlen(buffer)-1] == '\n')
-    fellow_newlogline = TRUE;
-  else
-    fellow_newlogline = FALSE;
-
+  fellow_newlogline = (buffer[strlen(buffer) - 1] == '\n');
   va_end (parms);
 }
 
-char *fellowGetVersionString(void)
+char *fellowGetVersionString()
 {
   char *result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4);
 
-  if(!result)
-    return NULL;
+  if (!result)
+  {
+    return nullptr;
+  }
 
   sprintf(result, "%s", FELLOWVERSION);
   return result;

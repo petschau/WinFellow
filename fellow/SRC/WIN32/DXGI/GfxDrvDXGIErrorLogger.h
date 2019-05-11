@@ -2,7 +2,6 @@
 #define GfxDrvDXGIErrorLogger_H
 
 #include <DXGI.h>
-#include <string>
 
 class GfxDrvDXGIErrorLogger
 {

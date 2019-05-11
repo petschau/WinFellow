@@ -110,7 +110,7 @@ bool GfxDrvDXGI::CreateAdapterList()
 
   ReleaseCOM(&enumerationFactory);
 
-  return _adapters != nullptr && _adapters->size() > 0;
+  return _adapters != nullptr && !_adapters->empty();
 }
 
 void GfxDrvDXGI::DeleteAdapterList()
@@ -122,7 +122,7 @@ void GfxDrvDXGI::DeleteAdapterList()
   }
 }
 
-STR* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
+const char* GfxDrvDXGI::GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel)
 {
   switch (featureLevel)
   {
@@ -151,11 +151,11 @@ bool GfxDrvDXGI::CreateD3D11Device()
   creationFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-  hr = D3D11CreateDevice(NULL,
+  hr = D3D11CreateDevice(nullptr,
                          D3D_DRIVER_TYPE_HARDWARE,
-                         NULL,
+                         nullptr,
                          creationFlags,
-                         NULL,
+                         nullptr,
                          0,
                          D3D11_SDK_VERSION,
                          &_d3d11device,
@@ -239,7 +239,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
 
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
-    D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
+    D3D11_TEXTURE2D_DESC texture2DDesc;
     texture2DDesc.Width = width;
     texture2DDesc.Height = height;
     texture2DDesc.MipLevels = 1;
@@ -252,7 +252,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
     texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     texture2DDesc.MiscFlags = 0;
 
-    HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &_amigaScreenTexture[i]);
+    HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, nullptr, &_amigaScreenTexture[i]);
 
     if (FAILED(hr))
     {
@@ -269,7 +269,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
   }
   _currentAmigaScreenTexture = original_current_amiga_texture_index;
 
-  D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
+  D3D11_TEXTURE2D_DESC texture2DDesc;
   texture2DDesc.Width = width;
   texture2DDesc.Height = height;
   texture2DDesc.MipLevels = 1;
@@ -282,7 +282,7 @@ bool GfxDrvDXGI::CreateAmigaScreenTexture()
   texture2DDesc.CPUAccessFlags = 0;
   texture2DDesc.MiscFlags = 0;
 
-  HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &_shaderInputTexture);
+  HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, nullptr, &_shaderInputTexture);
 
   if (FAILED(hr))
   {
@@ -330,7 +330,7 @@ bool GfxDrvDXGI::CreateSwapChain()
 
   _resize_swapchain_buffers = false;
 
-  DXGI_SWAP_CHAIN_DESC swapChainDescription = { 0 };
+  DXGI_SWAP_CHAIN_DESC swapChainDescription;
   DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
   swapChainDescription.BufferCount = BackBufferCount;
@@ -362,7 +362,7 @@ void GfxDrvDXGI::DeleteSwapChain()
 {
   if (!gfxDrvCommon->GetOutputWindowed())
   {
-    _swapChain->SetFullscreenState(FALSE, NULL);
+    _swapChain->SetFullscreenState(FALSE, nullptr);
   }
 
   ReleaseCOM(&_swapChain);
@@ -391,7 +391,7 @@ bool GfxDrvDXGI::InitiateSwitchToFullScreen()
     fellowAddLog("Selected fullscreen mode was not found.\n");
     return false;
   }
-  HRESULT result = _swapChain->SetFullscreenState(TRUE, 0); // TODO: Set which screen to use.
+  HRESULT result = _swapChain->SetFullscreenState(TRUE, nullptr); // TODO: Set which screen to use.
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to set full-screen.", result);
@@ -404,12 +404,12 @@ bool GfxDrvDXGI::InitiateSwitchToFullScreen()
 
 DXGI_MODE_DESC* GfxDrvDXGI::GetDXGIMode(unsigned int id)
 {
-  if (_adapters->size() == 0)
+  if (_adapters->empty())
   {
     return nullptr;
   }
   GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
-  if (firstAdapter->GetOutputs().size() == 0)
+  if (firstAdapter->GetOutputs().empty())
   {
     return nullptr;
   }
@@ -430,7 +430,7 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
   fellowAddLog("GfxDrvDXGI::NotifyActiveStatus(%s)\n", active ? "TRUE" : "FALSE");
   if (!gfxDrvCommon->GetOutputWindowed() && _swapChain != nullptr)
   {
-    _swapChain->SetFullscreenState(active, 0);
+    _swapChain->SetFullscreenState(active, nullptr);
     if (!active) gfxDrvCommon->HideWindow();
   }
 }
@@ -473,7 +473,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
   }
 
   ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
-  D3D11_MAPPED_SUBRESOURCE mappedRect = { 0 };
+  D3D11_MAPPED_SUBRESOURCE mappedRect;
   D3D11_MAP mapFlag = D3D11_MAP_WRITE;
   
   HRESULT mapResult = _immediateContext->Map(hostBuffer, 0, mapFlag, 0, &mappedRect);
@@ -481,7 +481,7 @@ unsigned char *GfxDrvDXGI::ValidateBufferPointer()
   if (FAILED(mapResult))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to map amiga screen texture:", mapResult);
-    return 0;
+    return nullptr;
   }
 
   draw_buffer_info.pitch = mappedRect.RowPitch;
@@ -499,7 +499,7 @@ void GfxDrvDXGI::InvalidateBufferPointer()
 
 bool GfxDrvDXGI::CreateVertexShader()
 {
-  HRESULT result = _d3d11device->CreateVertexShader(vertex_shader, sizeof(vertex_shader), NULL, &_vertexShader);
+  HRESULT result = _d3d11device->CreateVertexShader(vertex_shader, sizeof(vertex_shader), nullptr, &_vertexShader);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create vertex shader.", result);
@@ -553,7 +553,7 @@ struct MatrixBufferType
 
 bool GfxDrvDXGI::CreatePixelShader()
 {
-  HRESULT result = _d3d11device->CreatePixelShader(pixel_shader, sizeof(pixel_shader), NULL, &_pixelShader);
+  HRESULT result = _d3d11device->CreatePixelShader(pixel_shader, sizeof(pixel_shader), nullptr, &_pixelShader);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create pixel shader.", result);
@@ -595,7 +595,7 @@ bool GfxDrvDXGI::CreatePixelShader()
   matrixBufferDesc.StructureByteStride = 0;
 
   // Create the constant buffer pointer so we can access the vertex shader constant buffer from within this class.
-  result = _d3d11device->CreateBuffer(&matrixBufferDesc, NULL, &_matrixBuffer);
+  result = _d3d11device->CreateBuffer(&matrixBufferDesc, nullptr, &_matrixBuffer);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create matrix buffer.", result);
@@ -679,7 +679,6 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   unsigned long indices[6];
   D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
   D3D11_SUBRESOURCE_DATA vertexData, indexData;
-  HRESULT result;
 
   for (int i = 0; i < 6; i++)
   {
@@ -726,7 +725,7 @@ bool GfxDrvDXGI::CreateVertexAndIndexBuffers()
   vertexData.SysMemSlicePitch = 0;
 
   // Now create the vertex buffer.
-  result = _d3d11device->CreateBuffer(&vertexBufferDesc, &vertexData, &_vertexBuffer);
+  HRESULT result = _d3d11device->CreateBuffer(&vertexBufferDesc, &vertexData, &_vertexBuffer);
   if (FAILED(result))
   {
     GfxDrvDXGIErrorLogger::LogError("Failed to create vertex buffer.", result);
@@ -800,66 +799,63 @@ void GfxDrvDXGI::DeleteDepthDisabledStencil()
 
 bool GfxDrvDXGI::SetShaderParameters(const XMMATRIX& worldMatrix, const XMMATRIX& viewMatrix, const XMMATRIX& projectionMatrix)
 {
-    HRESULT result;
-    D3D11_MAPPED_SUBRESOURCE mappedResource;
-    MatrixBufferType* dataPtr;
-    unsigned int bufferNumber;
+  D3D11_MAPPED_SUBRESOURCE mappedResource;
 
-    XMMATRIX worldTransposed = XMMatrixTranspose(worldMatrix);
-    XMMATRIX viewTransposed = XMMatrixTranspose(viewMatrix);
-    XMMATRIX projectionTransposed = XMMatrixTranspose(projectionMatrix);
+  XMMATRIX worldTransposed = XMMatrixTranspose(worldMatrix);
+  XMMATRIX viewTransposed = XMMatrixTranspose(viewMatrix);
+  XMMATRIX projectionTransposed = XMMatrixTranspose(projectionMatrix);
 
-    // Lock the constant buffer so it can be written to.
-    result = _immediateContext->Map(_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
-    if (FAILED(result))
-    {
-      GfxDrvDXGIErrorLogger::LogError("Failed to map matrix buffer.", result);
-      return false;
-    }
+  // Lock the constant buffer so it can be written to.
+  HRESULT result = _immediateContext->Map(_matrixBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to map matrix buffer.", result);
+    return false;
+  }
 
-    // Get a pointer to the data in the constant buffer.
-    dataPtr = (MatrixBufferType*)mappedResource.pData;
+  // Get a pointer to the data in the constant buffer.
+  MatrixBufferType* dataPtr = (MatrixBufferType*)mappedResource.pData;
 
-    // Copy the matrices into the constant buffer.
-    dataPtr->world = worldMatrix;
-    dataPtr->view = viewMatrix;
-    dataPtr->projection = projectionMatrix;
+  // Copy the matrices into the constant buffer.
+  dataPtr->world = worldMatrix;
+  dataPtr->view = viewMatrix;
+  dataPtr->projection = projectionMatrix;
 
-    // Unlock the constant buffer.
-    _immediateContext->Unmap(_matrixBuffer, 0);
+  // Unlock the constant buffer.
+  _immediateContext->Unmap(_matrixBuffer, 0);
 
-    // Set the position of the constant buffer in the vertex shader.
-    bufferNumber = 0;
+  // Set the position of the constant buffer in the vertex shader.
+  unsigned int bufferNumber = 0;
 
-    // Now set the constant buffer in the vertex shader with the updated values.
-    _immediateContext->VSSetConstantBuffers(bufferNumber, 1, &_matrixBuffer);
+  // Now set the constant buffer in the vertex shader with the updated values.
+  _immediateContext->VSSetConstantBuffers(bufferNumber, 1, &_matrixBuffer);
 
-      // Set shader texture resource in the pixel shader.
-    ID3D11ShaderResourceView *shaderResourceView;
-    result = _d3d11device->CreateShaderResourceView(_shaderInputTexture, NULL, &shaderResourceView);
-    if (FAILED(result))
-    {
-      GfxDrvDXGIErrorLogger::LogError("Failed to create shader resource view.", result);
-      return false;
-    }
-    _immediateContext->PSSetShaderResources(0, 1, &shaderResourceView);
-    ReleaseCOM(&shaderResourceView);
+    // Set shader texture resource in the pixel shader.
+  ID3D11ShaderResourceView *shaderResourceView;
+  result = _d3d11device->CreateShaderResourceView(_shaderInputTexture, nullptr, &shaderResourceView);
+  if (FAILED(result))
+  {
+    GfxDrvDXGIErrorLogger::LogError("Failed to create shader resource view.", result);
+    return false;
+  }
+  _immediateContext->PSSetShaderResources(0, 1, &shaderResourceView);
+  ReleaseCOM(&shaderResourceView);
 
-    // Set the vertex input layout.
-    _immediateContext->IASetInputLayout(_polygonLayout);
+  // Set the vertex input layout.
+  _immediateContext->IASetInputLayout(_polygonLayout);
 
-    // Set the vertex and pixel shaders that will be used to render this triangle.
-    _immediateContext->VSSetShader(_vertexShader, NULL, 0);
-    _immediateContext->PSSetShader(_pixelShader, NULL, 0);
+  // Set the vertex and pixel shaders that will be used to render this triangle.
+  _immediateContext->VSSetShader(_vertexShader, nullptr, 0);
+  _immediateContext->PSSetShader(_pixelShader, nullptr, 0);
 
-    // Set the sampler state in the pixel shader.
-    _immediateContext->PSSetSamplers(0, 1, &_samplerState);
+  // Set the sampler state in the pixel shader.
+  _immediateContext->PSSetSamplers(0, 1, &_samplerState);
 
-    // Render the triangle.
-    UINT indexCount = 6;
-    _immediateContext->DrawIndexed(indexCount, 0, 0);
+  // Render the triangle.
+  UINT indexCount = 6;
+  _immediateContext->DrawIndexed(indexCount, 0, 0);
 
-    return true;
+  return true;
 }
 
 bool GfxDrvDXGI::RenderAmigaScreenToBackBuffer()
@@ -899,7 +895,7 @@ void GfxDrvDXGI::FlipTexture()
   }
 
   ID3D11RenderTargetView *renderTargetView;
-  HRESULT createRenderTargetViewResult = _d3d11device->CreateRenderTargetView(backBuffer, NULL, &renderTargetView);
+  HRESULT createRenderTargetViewResult = _d3d11device->CreateRenderTargetView(backBuffer, nullptr, &renderTargetView);
 
   if (FAILED(createRenderTargetViewResult))
   {
@@ -908,7 +904,7 @@ void GfxDrvDXGI::FlipTexture()
     return;
   }
 
-  _immediateContext->OMSetRenderTargets(1, &renderTargetView, NULL);
+  _immediateContext->OMSetRenderTargets(1, &renderTargetView, nullptr);
 
   ReleaseCOM(&renderTargetView);
 
@@ -968,12 +964,12 @@ void GfxDrvDXGI::RegisterMode(unsigned int id, unsigned int width, unsigned int 
 
 void GfxDrvDXGI::AddFullScreenModes()
 {
-  if (_adapters->size() == 0)
+  if (_adapters->empty())
   {
     return;
   }
   GfxDrvDXGIAdapter *firstAdapter = _adapters->front();
-  if (firstAdapter->GetOutputs().size() == 0)
+  if (firstAdapter->GetOutputs().empty())
   {
     return;
   }
@@ -1091,24 +1087,24 @@ void GfxDrvDXGI::EmulationStop()
   DeleteD3D11Device();
 }
 
-GfxDrvDXGI::GfxDrvDXGI()
-  : _adapters(nullptr),
-    _dxgiFactory(nullptr),
-    _swapChain(nullptr),
-    _d3d11device(nullptr),
-    _immediateContext(nullptr),
-    _pixelShader(nullptr),
-    _vertexShader(nullptr),
-    _vertexBuffer(nullptr),
-    _indexBuffer(nullptr),
-    _depthDisabledStencil(nullptr),
-    _samplerState(nullptr),
-    _polygonLayout(nullptr),
-    _matrixBuffer(nullptr),
-    _shaderInputTexture(nullptr),
-    _amigaScreenTextureCount(AmigaScreenTextureCount),
-    _currentAmigaScreenTexture(0),
-    _resize_swapchain_buffers(false)
+GfxDrvDXGI::GfxDrvDXGI() :
+  _adapters(nullptr),
+  _d3d11device(nullptr),
+  _immediateContext(nullptr),
+  _dxgiFactory(nullptr),
+  _swapChain(nullptr),
+  _vertexShader(nullptr),
+  _pixelShader(nullptr),
+  _vertexBuffer(nullptr),
+  _polygonLayout(nullptr),
+  _indexBuffer(nullptr),
+  _matrixBuffer(nullptr),
+  _shaderInputTexture(nullptr),
+  _depthDisabledStencil(nullptr),
+  _samplerState(nullptr),
+  _amigaScreenTextureCount(AmigaScreenTextureCount),
+  _currentAmigaScreenTexture(0),
+  _resize_swapchain_buffers(false)
 {
   for (unsigned int i = 0; i < _amigaScreenTextureCount; i++)
   {
@@ -1124,11 +1120,10 @@ GfxDrvDXGI::~GfxDrvDXGI()
 bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *filename)
 {
   bool bResult = false;
-  HRESULT hr;
   DWORD width = 0, height = 0, x = 0, y = 0;
   ULO lDisplayScale;
-  IDXGISurface1* pSurface1 = NULL;
-  HDC hDC = NULL;
+  IDXGISurface1* pSurface1 = nullptr;
+  HDC hDC = nullptr;
 
 #ifdef _DEBUG
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename=%s)\n",
@@ -1137,7 +1132,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   
   if(bSaveFilteredScreenshot) 
   {
-    hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
+    HRESULT hr = _swapChain->GetBuffer(0, __uuidof(IDXGISurface1), (void**)&pSurface1);
     if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to obtain IDXGISurface1 interface for filtered screenshot.", hr);
@@ -1175,8 +1170,8 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     width = draw_buffer_info.width;
     height = draw_buffer_info.height;
     ID3D11Texture2D *hostBuffer = GetCurrentAmigaScreenTexture();
-    ID3D11Texture2D *screenshotTexture = NULL;
-    D3D11_TEXTURE2D_DESC texture2DDesc = { 0 };
+    ID3D11Texture2D *screenshotTexture = nullptr;
+    D3D11_TEXTURE2D_DESC texture2DDesc;
     texture2DDesc.Width = width;
     texture2DDesc.Height = height;
     texture2DDesc.MipLevels = 1;
@@ -1190,7 +1185,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
     // texture2DDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
     texture2DDesc.MiscFlags = D3D11_RESOURCE_MISC_GDI_COMPATIBLE;
 
-    HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, 0, &screenshotTexture);
+    HRESULT hr = _d3d11device->CreateTexture2D(&texture2DDesc, nullptr, &screenshotTexture);
     if (FAILED(hr))
     {
       GfxDrvDXGIErrorLogger::LogError("GfxDrvDXGI::SaveScreenshot(): Failed to create screenshot texture.", hr);
@@ -1222,7 +1217,7 @@ bool GfxDrvDXGI::SaveScreenshot(const bool bSaveFilteredScreenshot, const STR *f
   fellowAddLog("GfxDrvDXGI::SaveScreenshot(filtered=%s, filename='%s') %s.\n", 
     bSaveFilteredScreenshot ? "true" : "false", filename, bResult ? "successful" : "failed");
 
-  pSurface1->ReleaseDC(NULL);
+  pSurface1->ReleaseDC(nullptr);
 
   ReleaseCOM(&pSurface1);
 

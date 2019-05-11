@@ -1,7 +1,7 @@
 #include "GfxDrvDXGIMode.h"
-#include "DEFS.H"
-#include "FELLOW.H"
+#include "sstream"
 
+using namespace std;
 unsigned int GfxDrvDXGIMode::_next_id = 1;
 
 unsigned int GfxDrvDXGIMode::GetNewId()
@@ -9,7 +9,7 @@ unsigned int GfxDrvDXGIMode::GetNewId()
   return _next_id++;
 }
 
-char *GfxDrvDXGIMode::GetScalingDescription()
+const char *GfxDrvDXGIMode::GetScalingDescription()
 {
   switch (GetScaling())
   {
@@ -20,7 +20,7 @@ char *GfxDrvDXGIMode::GetScalingDescription()
   return "UNKNOWN SCALING";
 }
 
-char *GfxDrvDXGIMode::GetScanlineOrderDescription()
+const char *GfxDrvDXGIMode::GetScanlineOrderDescription()
 {
   switch (GetScanlineOrder())
   {
@@ -32,10 +32,12 @@ char *GfxDrvDXGIMode::GetScanlineOrderDescription()
   return "UNKNOWN SCANLINE ORDER";
 }
 
-void GfxDrvDXGIMode::LogCapabilities()
+string GfxDrvDXGIMode::GetModeDescriptionString()
 {
-  fellowAddLog("DXGI mode (%d): %dx%dx%dhz - Scaling: %s Scanline order: %s\n", 
-    GetId(), GetWidth(), GetHeight(), GetRefreshRate(), GetScalingDescription(), GetScanlineOrderDescription());
+  std::ostringstream ss;
+  ss << "DXGI mode (" << GetId() << "): " << GetWidth() << "x" << GetHeight() << "x" << GetRefreshRate()
+    << " - Scaling: " << GetScalingDescription() << " Scanline order: " << GetScanlineOrderDescription();
+  return ss.str();
 }
 
 bool GfxDrvDXGIMode::CanUseMode()
@@ -48,13 +50,7 @@ bool GfxDrvDXGIMode::CanUseMode()
 }
 
 GfxDrvDXGIMode::GfxDrvDXGIMode(DXGI_MODE_DESC *desc)
-  : _dxgi_mode_description(*desc),
-    _id(GetNewId())
+  : _id(GetNewId()),
+    _dxgi_mode_description(*desc)    
 {
-  LogCapabilities();
-}
-
-GfxDrvDXGIMode::~GfxDrvDXGIMode()
-{
-
 }
