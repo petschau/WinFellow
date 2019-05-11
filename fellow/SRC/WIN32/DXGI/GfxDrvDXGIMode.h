@@ -11,11 +11,12 @@ private:
   unsigned int _id;
   DXGI_MODE_DESC _dxgi_mode_description;
 
-  void LogCapabilities();
-  char *GetScalingDescription();
-  char *GetScanlineOrderDescription();
+  const char *GetScalingDescription();
+  const char *GetScanlineOrderDescription();
 
 public:
+  std::string GetModeDescriptionString();
+
   unsigned int GetId() { return _id; }
   unsigned int GetWidth() { return _dxgi_mode_description.Width; }
   unsigned int GetHeight() { return _dxgi_mode_description.Height; }
@@ -28,7 +29,7 @@ public:
   bool CanUseMode();
 
   GfxDrvDXGIMode(DXGI_MODE_DESC *desc);
-  ~GfxDrvDXGIMode();
+  ~GfxDrvDXGIMode() = default;
 };
 
 typedef std::list<GfxDrvDXGIMode*> GfxDrvDXGIModeList;

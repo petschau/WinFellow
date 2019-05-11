@@ -84,7 +84,7 @@ private:
 
   void FlipTexture();
 
-  STR* GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel);
+  const char* GetFeatureLevelString(D3D_FEATURE_LEVEL featureLevel);
 
   bool CreatePixelShader();
   void DeletePixelShader();
