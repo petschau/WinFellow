@@ -1779,7 +1779,7 @@ static void blitterFillTableInit(void)
       {
 	fc_tmp = fc;
 	data = i;
-	for (bit = 0; bit < 16; bit++)
+	for (bit = 0; bit < 8; bit++)
 	{
 	  if (mode == 0) data |= fc_tmp<<bit;
 	  else data ^= fc_tmp<<bit;
