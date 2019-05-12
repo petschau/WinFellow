@@ -241,6 +241,11 @@ fs_navig_point *fsWrapMakePoint(const STR *point) {
     fsnp->relative = FALSE;
     fsnp->lnode = NULL;
   }
+  else
+  {
+    STR* strError = strerror(errno);
+    fellowAddLog("fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
+  }
   return fsnp;
 }
 
