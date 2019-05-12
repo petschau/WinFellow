@@ -12,13 +12,17 @@ The community edition of Visual Studio 2019 can be used to compile WinFellow; it
 
 For access to the Git repository, the <a href="http://desktop.github.com">GitHub Desktop</a> client is required.
 
-For basic contributions, the components mentioned above should be sufficient. 
+For basic contributions, the components mentioned above should be sufficient.
 
 To be able to compile release builds using the automated build script, a number of additional components must be
 installed and added to the search path:
 
-- Visual Studio 2019 with C++ desktop development components must be installed, including the legacy XP toolset components (v141_xp)
-    - this is described in a little more detail in <a href="https://docs.microsoft.com/en-us/cpp/build/configuring-programs-for-windows-xp?view=vs-2019">this article</a>.
+- Visual Studio 2019 with C++ desktop development components must be installedincluding
+    - the installation has to include the legacy XP toolset components (v141_xp; this is described in a little more detail in <a href="https://docs.microsoft.com/en-us/cpp/build/configuring-programs-for-windows-xp?view=vs-2019">this article</a>.
+    - due to a Visual Studio bug, CppUnitTest.h can sometimes not be located; as a workaround, the following command can be executed (see <a href="https://developercommunity.visualstudio.com/content/problem/472005/vs-2019-rc-cannot-open-include-file-cppunittesth-w.html">here</a>):
+
+    move "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\Common7\IDE\VC\VCTargets\*.props" "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v150"
+
 - PowerShell execution policy must be set to unrestricted (both for the 32 as well as the 64 bit PowerShell)
 - Git for Windows 64 Bit must be installed and added to the search path; usually Notepad++ is used as default editor
 - the module posh-git must be installed
