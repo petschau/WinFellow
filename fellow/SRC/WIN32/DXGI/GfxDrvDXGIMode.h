@@ -3,6 +3,7 @@
 
 #include <DXGI.h>
 #include <list>
+#include <string>
 
 class GfxDrvDXGIMode
 {
