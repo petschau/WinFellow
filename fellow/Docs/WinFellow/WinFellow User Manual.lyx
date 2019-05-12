@@ -1,5 +1,5 @@
-#LyX 2.2 created this file. For more info see http://www.lyx.org/
-\lyxformat 508
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
 \begin_document
 \begin_header
 \save_transient_properties true
@@ -29,6 +29,8 @@ figs-within-sections
 \font_osf false
 \font_sf_scale 100 100
 \font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
 \graphics default
 \default_output_format default
 \output_sync 0
@@ -69,6 +71,7 @@ figs-within-sections
 \suppress_date false
 \justification true
 \use_refstyle 1
+\use_minted 0
 \index Index
 \shortcut idx
 \color #008000
@@ -77,7 +80,10 @@ figs-within-sections
 \tocdepth 3
 \paragraph_separation indent
 \paragraph_indentation default
-\quotes_language english
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
 \papercolumns 1
 \papersides 1
 \paperpagestyle default
@@ -106,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.7 (2018/01/01)
+v0.5.8 (2019/05/12)
 \end_layout
 
 \begin_layout Author
@@ -114,7 +120,7 @@ v0.5.7 (2018/01/01)
 \noun on
 Torsten Enderling
 \noun default
- (carfesh@gmx.net) 
+ (torsten.enderling@gmail.com) 
 \begin_inset Newline newline
 \end_inset
 
@@ -135,6 +141,7 @@ Worfje
 LatexCommand href
 name "petschau.github.io/WinFellow"
 target "http://petschau.github.io/WinFellow/"
+literal "false"
 
 \end_inset
 
@@ -315,63 +322,67 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.7?
+What's New in WinFellow 0.5.8?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.6, the following changes are included
+ Compared to the earlier version 0.5.7, the following changes are included
  in this build:
 \end_layout
 
+\begin_layout Itemize
+New features:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+support for reading existing RDB hardfiles was implemented; creating a new
+ hardfile from the WinFellow GUI still creates 
+\begin_inset Quotes eld
+\end_inset
+
+plain
+\begin_inset Quotes erd
+\end_inset
+
+ hardfiles
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 Bug fixes:
 \end_layout
 
 \begin_deeper
 \begin_layout Itemize
-floppy code was updated to use a track limit > 80; it will output random
- data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added
- missing checks for disabled drives, fixing Winter Olympics 94
+fix wrong selection of render function after return from menu when application
+ did not write to bplcon0 every frame; fixes garbled graphics in a Legend
+ crackto when returning from menu
 \end_layout
 
 \begin_layout Itemize
-fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw
- initialization
+improve delay caused by logging in screen-mode enumeration (could amount
+ to many seconds with multiple screens)
 \end_layout
 
 \begin_layout Itemize
-several bugs in the screenshot code were fixed; standalone screenshots were
- not saved correctly in D3D mode, and used with Amiga Forever raw screenshots
- were missing screen areas due to faulty initialization of the internal
- clipping areas
-\end_layout
-
-\begin_layout Itemize
-fixed screen area mismatch when Amiga Forever region/size settings are both
- set to auto; auto clipping is still not supported
-\end_layout
-
-\begin_layout Itemize
-CPU instruction fixes:
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-fixed a signed bug in 64-bit division
-\end_layout
-
-\begin_layout Itemize
-minor timing adjustment for btst
+running in an environment with very slow graphics framerate, like a VM,
+ could cause a deadlock; set wait time after event reset to avoid race condition
 \end_layout
 
 \end_deeper
 \begin_layout Itemize
-CIA event counter changes according to documentation
+Maintenance updates:
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+project files were updated to Visual Studio 2019 using the toolset v141_xp
 \end_layout
 
 \begin_layout Itemize
-the project files were updated to Visual Studio 2017
+the February 2010 DirectX SDK dependency was eliminated
 \end_layout
 
 \end_deeper
@@ -454,6 +465,7 @@ For execution on Windows Vista, the
 LatexCommand href
 name "platform update (KB971644)"
 target "https://support.microsoft.com/en-us/kb/971644"
+literal "false"
 
 \end_inset
 
@@ -501,6 +513,7 @@ The correct way to obtain this file is to copy it from the Amiga you own;
 LatexCommand href
 name "Amiga Forever"
 target "http://www.amigaforever.com"
+literal "false"
 
 \end_inset
 
@@ -509,6 +522,7 @@ target "http://www.amigaforever.com"
 LatexCommand href
 name "Cloanto"
 target "http://www.cloanto.com"
+literal "false"
 
 \end_inset
 
@@ -612,6 +626,7 @@ There are different options to transfer files between your Amiga and your
 LatexCommand href
 name "here"
 target "http://www.amigaforever.com/kb/13-118"
+literal "false"
 
 \end_inset
 
@@ -637,6 +652,7 @@ If your PC is still equipped with a serial port, you can utilize a null-modem
 LatexCommand href
 name "RealTerm"
 target "https://sourceforge.net/projects/realterm/"
+literal "false"
 
 \end_inset
 
@@ -734,6 +750,7 @@ Cloanto provides a shareware tool called
 LatexCommand href
 name "Amiga Explorer"
 target "http://www.amigaforever.com/ae/"
+literal "false"
 
 \end_inset
 
@@ -744,6 +761,7 @@ target "http://www.amigaforever.com/ae/"
 LatexCommand href
 name "Amiga Forever"
 target "http://www.amigaforever.com"
+literal "false"
 
 \end_inset
 
@@ -1251,6 +1269,7 @@ You can buy the Kickstart ROM at
 LatexCommand href
 name "Cloanto"
 target "http://www.amigaforever.com"
+literal "false"
 
 \end_inset
 
@@ -1358,6 +1377,7 @@ Note that there is also an "Extended" ADF file format, which is used for
 LatexCommand href
 name "Factor 5"
 target "http://factor5.de/downloads.shtml"
+literal "false"
 
 \end_inset
 
@@ -1394,6 +1414,7 @@ Experimental support for *.ipf files (floppy disk images generated by the
 LatexCommand href
 name "Software Preservation Society"
 target "http://www.softpres.org"
+literal "false"
 
 \end_inset
 
@@ -1704,6 +1725,7 @@ input.
 LatexCommand href
 name "WinFellow support forum"
 target "http://eab.abime.net/forumdisplay.php?f=28"
+literal "false"
 
 \end_inset
 
@@ -1736,6 +1758,7 @@ Special thanks must go out to
 LatexCommand href
 name "ExoticA"
 target "http://www.exotica.org.uk/"
+literal "false"
 
 \end_inset
 
@@ -1745,6 +1768,7 @@ target "http://www.exotica.org.uk/"
 LatexCommand href
 name "Amiga Mod Packers Described Page"
 target "http://www.multimania.com/asle/ampd.html"
+literal "false"
 
 \end_inset
 
@@ -1760,6 +1784,7 @@ Without the information provided on these pages the mod-ripper wouldn't
 LatexCommand href
 name "Extended Module Player"
 target "http://xmp.sourceforge.net/"
+literal "false"
 
 \end_inset
 
@@ -1870,6 +1895,7 @@ LatexCommand href
 name "Torsten Enderling"
 target "carfesh@gmx.net"
 type "mailto:"
+literal "false"
 
 \end_inset
 
