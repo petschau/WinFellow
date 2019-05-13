@@ -62,7 +62,7 @@ If(-Not $NotAGitRepository)
     {
         $GitStatus = -1
         $GitStatus = (git status --porcelain)
-        If($GitStatus.HasWorking)
+        If($GitStatus -ne $null)
         {
             Write-Error "Local working copy contains modifications, aborting."
             $host.SetShouldExit($GitStatus)
@@ -71,7 +71,7 @@ If(-Not $NotAGitRepository)
 
         $GitBranch = (git rev-parse --abbrev-ref HEAD)
         $result = (git log origin/$GitBranch..HEAD)
-        If($result -ne 0)
+        If($result -ne $null)
         {
             Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build should always be produced from a clean and current working copy."
             $host.SetShouldExit($result)
