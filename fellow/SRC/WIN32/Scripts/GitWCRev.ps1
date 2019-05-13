@@ -62,7 +62,7 @@ If(-Not $NotAGitRepository)
     {
         $GitStatus = -1
         $GitStatus = (git status --porcelain)
-        If($GitStatus -ne 0)
+        If($GitStatus.HasWorking)
         {
             Write-Error "Local working copy contains modifications, aborting."
             $host.SetShouldExit($GitStatus)
