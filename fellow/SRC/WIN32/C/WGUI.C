@@ -1521,7 +1521,7 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
     configuration.Geometry.BytesPerSector = hf->bytespersector;
     configuration.Geometry.LowCylinder = 0;
     configuration.Geometry.HighCylinder = 9999;
-    configuration.Geometry.Readonly = hf->readonly;
+    configuration.Readonly = hf->readonly;
     configuration.Geometry.ReservedBlocks = hf->reservedblocks;
     configuration.Geometry.SectorsPerTrack = hf->sectorspertrack;
     configuration.Geometry.Surfaces = hf->surfaces;
@@ -2993,8 +2993,6 @@ void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, int sect
 
 INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  STR stmp[16];
-
   switch (uMsg)
   {
   case WM_INITDIALOG:

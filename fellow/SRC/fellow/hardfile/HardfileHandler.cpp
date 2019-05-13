@@ -305,7 +305,7 @@ namespace fellow::hardfile
     }
   }
 
-  void HardfileHandler::SetHardfileConfigurationFromRDB(HardfileConfiguration& config, RDB* rdb)
+  void HardfileHandler::SetHardfileConfigurationFromRDB(HardfileConfiguration& config, RDB* rdb, bool readonly)
   {
     HardfileGeometry& geometry = config.Geometry;
     geometry.LowCylinder = rdb->LowCylinder;
@@ -314,7 +314,6 @@ namespace fellow::hardfile
     geometry.SectorsPerTrack = rdb->SectorsPerTrack;
     geometry.Surfaces = rdb->Heads;
     geometry.Tracks = rdb->Cylinders;
-    geometry.Readonly = false;
 
     config.Partitions.clear();
     unsigned int partitionCount = rdb->Partitions.size();
@@ -329,7 +328,6 @@ namespace fellow::hardfile
       partition.Geometry.SectorsPerTrack = rdbPartition->BlocksPerTrack;
       partition.Geometry.Surfaces = rdbPartition->Surfaces;
       partition.Geometry.Tracks = rdbPartition->HighCylinder - rdbPartition->LowCylinder + 1;
-      partition.Geometry.Readonly = false;
       config.Partitions.push_back(partition);
     }
   }
@@ -353,10 +351,10 @@ namespace fellow::hardfile
     fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
     if (fsnp != nullptr)
     {
+      device.Readonly = /*device.Configuration.Readonly ||*/ (!fsnp->writeable);
       fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
       if (device.F != nullptr)
       {
-        device.Readonly |= (!fsnp->writeable);  // Configured readonly or file readonly
         device.FileSize = fsnp->size;
 
         RDBFileReader reader(device.F);
@@ -366,7 +364,7 @@ namespace fellow::hardfile
         {
           // RDB configured hardfile
           device.RDB = RDBHandler::GetDriveInformation(reader);
-          SetHardfileConfigurationFromRDB(device.Configuration, device.RDB);
+          SetHardfileConfigurationFromRDB(device.Configuration, device.RDB, device.Readonly);
         }
 
         HardfileGeometry& geometry = device.Configuration.Geometry;
@@ -427,10 +425,9 @@ namespace fellow::hardfile
     RemoveHardfile(index);
     HardfileDevice& device = _devices[index];
     device.Configuration = configuration;
-    device.Readonly = configuration.Geometry.Readonly;
     InitializeHardfile(index);
 
-    Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Geometry.Readonly);
+    Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
   }
 
   bool HardfileHandler::CompareHardfile(const HardfileConfiguration& configuration, unsigned int index)
@@ -611,11 +608,11 @@ namespace fellow::hardfile
       break;
     case 4:
     case 5:
-    case 9:
+    case 9: // TD_GETDRIVETYPE
     case 10:
-    case 12:
+    case 12: // TD_REMCHANGEINT
     case 13:
-    case 14:
+    case 14: // TD_EJECT
     case 20:
     case 21:
       Ignore(unit);
@@ -1542,7 +1539,7 @@ namespace fellow::hardfile
 
       if (rdb != nullptr)
       {
-        SetHardfileConfigurationFromRDB(configuration, rdb);
+        SetHardfileConfigurationFromRDB(configuration, rdb, false);
         delete rdb;
       }
     }

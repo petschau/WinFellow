@@ -11,7 +11,6 @@ namespace fellow::api::module
 {
   struct HardfileGeometry
   {
-    bool Readonly;
     unsigned int LowCylinder;
     unsigned int HighCylinder;
     unsigned int BytesPerSector;
@@ -27,7 +26,6 @@ namespace fellow::api::module
 
     void Clear()
     {
-      Readonly = false;
       LowCylinder = 0;
       HighCylinder = 0;
       BytesPerSector = 0;
@@ -42,7 +40,6 @@ namespace fellow::api::module
       return BytesPerSector == other.BytesPerSector &&
         SectorsPerTrack == other.SectorsPerTrack &&
         Surfaces == other.Surfaces &&
-        Readonly == other.Readonly &&
         ReservedBlocks == other.ReservedBlocks;
     }
   };
@@ -57,18 +54,20 @@ namespace fellow::api::module
   {
   public:
     std::string Filename;
+    bool Readonly;
     HardfileGeometry Geometry;
 
     std::vector<HardfilePartition> Partitions;
 
     bool operator==(const HardfileConfiguration& other) const
     {
-      return Filename == other.Filename && Geometry == other.Geometry;
+      return Filename == other.Filename && Geometry == other.Geometry && Readonly == other.Readonly;
     }
 
     void Clear()
     {
       Filename = "";
+      Readonly = false;
       Geometry.Clear();
       Partitions.clear();
     }

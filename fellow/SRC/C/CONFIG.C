@@ -1803,7 +1803,7 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
         HardfileConfiguration rdbConfiguration = HardfileHandler->GetConfigurationFromRDBGeometry(hf.filename);
         hf.bytespersector = rdbConfiguration.Geometry.BytesPerSector;
         hf.sectorspertrack = rdbConfiguration.Geometry.SectorsPerTrack;
-        hf.readonly = rdbConfiguration.Geometry.Readonly;
+        hf.readonly = rdbConfiguration.Readonly;
         hf.surfaces = rdbConfiguration.Geometry.Surfaces;
         hf.reservedblocks = rdbConfiguration.Geometry.ReservedBlocks;
       }
@@ -2457,7 +2457,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       HardfileConfiguration fhardfile;
       cfg_hardfile hardfile = cfgGetHardfile(config, i);
       fhardfile.Geometry.BytesPerSector = hardfile.bytespersector;
-      fhardfile.Geometry.Readonly = hardfile.readonly;
+      fhardfile.Readonly = hardfile.readonly;
       fhardfile.Geometry.ReservedBlocks = hardfile.reservedblocks;
       fhardfile.Geometry.SectorsPerTrack = hardfile.sectorspertrack;
       fhardfile.Geometry.Surfaces = hardfile.surfaces;
