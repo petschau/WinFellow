@@ -24,10 +24,9 @@
 
 <#
 .SYNOPSIS
-    Replaces the $WCREV$ keyword in an input file with the number of commits in the 
+    Replaces the $WCREV$ keyword in an input file with the number of commits in the
     Git working copy and writes the result to the output file.
 .DESCRIPTION
-    
 
 .PARAMETER PreventLocalModifications
     If true, aborts with an error code if the local working copy contains modifications
@@ -37,30 +36,59 @@
 Param(
     [Parameter(Mandatory=$true)][string]$InputFileName,
     [Parameter(Mandatory=$true)][string]$OutputFileName,
-    [switch]$PreventLocalModifications
+    [switch]$PreventLocalModifications=$false
 )
 
-if($PreventLocalModifications.IsPresent)
+$ErrorActionPreference='Stop'
+Set-StrictMode -Version 2
+
+$NotAGitRepository = $false
+Try
 {
-    $GitStatus = (git status --porcelain)
-    
-    if ($GitStatus -ne $0)
-    { 
-        Write-Host "Local working copy contains modifications, aborting."
-        exit $GitStatus
-    }
-    $GitBranch = (git rev-parse --abbrev-ref HEAD)
-    $result = (git log origin/$GitBranch..HEAD)
-    if ($result -ne $0)
+    $GitStatus = (git status)
+}
+Catch
+{
+    $ErrorMessage = $_.Exception.Message
+    If($ErrorMessage.Contains('not a git repository'))
     {
-        Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
-        exit $result
+        $NotAGitRepository = $true
     }
 }
 
-$GitWCREV         = (git rev-list --count HEAD)
-$GitWCBRANCH      = (git rev-parse --abbrev-ref HEAD)
-$GitWCCOMMITSHORT = (git rev-parse --short HEAD)
+If(-Not $NotAGitRepository)
+{
+    If($PreventLocalModifications)
+    {
+        $GitStatus = -1
+        $GitStatus = (git status --porcelain)
+        If($GitStatus -ne $null)
+        {
+            Write-Error "Local working copy contains modifications, aborting."
+            $host.SetShouldExit($GitStatus)
+            exit $GitStatus
+        }
+
+        $GitBranch = (git rev-parse --abbrev-ref HEAD)
+        $result = (git log origin/$GitBranch..HEAD)
+        If($result -ne $null)
+        {
+            Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build should always be produced from a clean and current working copy."
+            $host.SetShouldExit($result)
+            exit $result
+        }
+    }
+
+    $GitWCREV         = (git rev-list --count HEAD)
+    $GitWCBRANCH      = (git rev-parse --abbrev-ref HEAD)
+    $GitWCCOMMITSHORT = (git rev-parse --short HEAD)
+}
+Else
+{
+    $GitWCREV         = 99999
+    $GitWCBRANCH      = 'compiled-from-sources'
+    $GitWCCOMMITSHORT = 'test'
+}
 
 (Get-Content $InputFileName) |
     ForEach-Object {
@@ -68,5 +96,6 @@ $GitWCCOMMITSHORT = (git rev-parse --short HEAD)
            -replace '\$WCBRANCH\$',      $GitWCBRANCH      `
            -replace '\$WCCOMMITSHORT\$', $GitWCCOMMITSHORT
     } | Set-Content $OutputFileName
-    
-exit 0
+
+$host.SetShouldExit(0)
+Exit 0
