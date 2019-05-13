@@ -24,12 +24,11 @@
 
 <#
 .SYNOPSIS
-    Generates the binaries that make up a WinFellow release for distribution. 
-    
+    Generates the binaries that make up a WinFellow release for distribution.
+
     The binaries will be output to the parent directory into which the
     source code has been checked out from Git.
 .DESCRIPTION
-    
 
 .PARAMETER Test
     If set, a debug build will be produced while preserving local modifications
@@ -38,13 +37,13 @@
 
 [CmdletBinding()]
 Param(
-    [switch]$Test
+    [switch]$Test=$false
 )
 
 function CheckForExeInSearchPath([string] $exe)
 {
-    if ((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null) 
-    { 
+    if ((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null)
+    {
         Write-Error "ERROR: Unable to find $exe in your search PATH!"
         return $false
     }
@@ -54,16 +53,16 @@ function CheckForExeInSearchPath([string] $exe)
 function ShowProgressIndicator($step, $CurrentOperation)
 {
     $steps = 11
-    
+
     Write-Verbose $CurrentOperation
-    
+
     Write-Progress -Activity "Generating WinFellow release binaries..." `
         -PercentComplete (($step / $steps) * 100)                       `
         -CurrentOperation $CurrentOperation                             `
         -Status "Please wait."
 }
 
-if($Test.IsPresent)
+if($Test)
 {
     $FELLOWBUILDPROFILE="Debug"
     $DebugPreference   = 'Continue'
@@ -106,10 +105,10 @@ Function Main()
     if($FELLOWBUILDPROFILE -eq "Release")
     {
         ShowProgressIndicator 2 "Release build, checking Git working copy for local modifications..."
-        
+
         $result = (git status --porcelain)
         if ($result -ne $0)
-        { 
+        {
             Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
             exit $result
         }
@@ -127,19 +126,19 @@ Function Main()
     $result = (git pull)
 
     ShowProgressIndicator 4 "Performing clean build of WinFellow..."
-    
-    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null) 
-    { 
+
+    If((Get-Command "vswhere.exe" -ErrorAction SilentlyContinue) -eq $null)
+    {
         Write-Error "Unable to find Visual Studio Locator (vswhere.exe) in your PATH; you can obtain it from http://github.com/Microsoft/vswhere"
     }
-    
+
     $MSBuildPath = vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
     If($MSBuildPath)
     {
         $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
-        If(Test-Path $MSBuildPath) 
+        If(Test-Path $MSBuildPath)
         {
-            Write-Verbose "Executing MSBuild.exe..."    
+            Write-Verbose "Executing MSBuild.exe..."
             $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
 
             If($LastExitCode -ne 0)
@@ -210,7 +209,7 @@ Function Main()
     if($FELLOWBUILDPROFILE -eq "Release")
     {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
-        
+
         $result = (git status --porcelain --ignored |
             Select-String '^??' |
             ForEach-Object {
@@ -247,6 +246,6 @@ Catch
     Write-Host "[ERROR] A terminating error was encountered. See error details below." -ForegroundColor Red
     Write-Host "$($_.InvocationInfo.PositionMessage)"                                  -ForegroundColor Red
     Write-Host "$ErrorMessage"                                                         -ForegroundColor Red
-    
+
     Pop-Location
 }
