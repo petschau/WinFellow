@@ -11,7 +11,31 @@ It can help you in three ways:
 
 Doxygen is developed under Linux and Mac OS X, but is set-up to be highly portable. As a result, it runs on most other Unix flavors as well. Furthermore, executables for Windows are available.
 
-The following setup files were used to generate the WinFellow documentation on Windows 10.
+# doxygen setup using Windows Subsystem for Linux
+
+Since the compilation of the doxygen documentation using Windows has become error-prone and frustrating, involving components that are not necessarily well-maintained, an alternate method to compile it using the Windows Subsystem for Linux has been devised. Obviously, the same thing can be achieved on a native Ubuntu Linux system.
+
+First, setup WSL on Windows by executing
+
+`Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux`
+
+Reboot the system if required.
+
+Then install Ubuntu from the Windows store: https://www.microsoft.com/store/p/ubuntu/9nblggh4msv6
+
+When everything is set up and an initial username/password have been configured, install the required components by executing
+
+`sudo apt install doxygen graphviz texlive-latex-base texlive-latex-recommended texlive-latex-extra`
+
+Accept/confirm all prompts and wait for the packages to install.
+
+cd into the WinFellow source code directory and find the doxygen subdirectory. 
+
+Execute `Build-Doxygen-Documentation.sh`
+
+# doxygen setup using Windows
+
+The following setup files were used in the past to generate the WinFellow documentation on Windows 10. The newest version of doxygen where this could be tested successfully was 1.8.10.
 
 - doxygen: doxygen-1.8.10.windows.x64.bin (http://www.stack.nl/~dimitri/doxygen/download.html)
 - MiKTeX: basic MiKTeX installer (http://miktex.org/download)
