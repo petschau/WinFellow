@@ -7,7 +7,7 @@ This HOWTO describes the steps necessary to prepare a new public WinFellow relea
 * Ensure that there are no local modifications/uncommitted changes in the local Git repository (compiling a release build should automatically enforce this).
 * For compiling the new release, the build environment should be setup like recommended here (\ref howtodevenvsetup).
 * Verify that no unnecessary debug/trace logs are written (floppy.log, capsdump.txt, ...)
-* Using a debug build, verify that no memory leaks occur for basic as well as new functions; these would be logged in files called `WinFellowCrtMallocReport_WinFellowVersion_YYYYMMDD_hhmmss.log`. Ensure that all modules include code to support CRT malloc/C++ new debug logging, so that filnames and line numbers of the leaks are included.
+* Using a debug build, verify that no memory leaks occur for basic as well as new functions; these would be logged in files called `WinFellowCrtMallocReport_WinFellowVersion_YYYYMMDD_hhmmss.log`. Ensure that all modules include code to support CRT malloc/C++ new debug logging, so that filenames and line numbers of the leaks are included.
 * Perform regression tests according to the \ref howtoregressiontesting.
 * The third digit of the version number should usually be increased by one (in the files versioninfo-wcrev.h and versioninfo-wcrev.rc, as well as in the doxyfile, the user guide and the NSIS installer file WinFellow.nsi). Make sure to also update the VS_VERSION_INFO structure in GUI_versioninfo-wcrev.rc.
 * Update the ReadMe/FAQ to reflect the latest changes in this release.
