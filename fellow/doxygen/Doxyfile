@@ -546,7 +546,7 @@ INTERNAL_DOCS          = NO
 # and Mac users are advised to set this option to NO.
 # The default value is: system dependent.
 
-CASE_SENSE_NAMES       = NO
+CASE_SENSE_NAMES       = YES
 
 # If the HIDE_SCOPE_NAMES tag is set to NO then doxygen will show members with
 # their full class and namespace scopes in the documentation. If set to YES, the
@@ -840,9 +840,11 @@ INPUT_ENCODING         = UTF-8
 # *.f, *.for, *.tcl, *.vhd, *.vhdl, *.ucf, *.qsf and *.ice.
 
 FILE_PATTERNS          = *.c \
+                         *.C \
                          *.cc \
                          *.cxx \
                          *.cpp \
+                         *.CPP \
                          *.c++ \
                          *.d \
                          *.java \
@@ -852,6 +854,7 @@ FILE_PATTERNS          = *.c \
                          *.i++ \
                          *.inl \
                          *.h \
+                         *.H \
                          *.hh \
                          *.hxx \
                          *.hpp \
@@ -985,6 +988,7 @@ FILTER_SOURCE_FILES    = NO
 
 # The FILTER_SOURCE_PATTERNS tag can be used to specify source filters per file
 # pattern. A pattern will override the setting for FILTER_PATTERN (if any) and
+# it is also possible to disable source filtering for a specific pattern using
 # it is also possible to disable source filtering for a specific pattern using
 # *.ext= (so without naming a filter).
 # This tag requires that the tag FILTER_SOURCE_FILES is set to YES.
