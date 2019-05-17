@@ -13,25 +13,26 @@ Doxygen is developed under Linux and Mac OS X, but is set-up to be highly portab
 
 The following setup files were used to generate the WinFellow documentation on Windows 10.
 
-- doxygen: doxygen-1.8.3-setup.exe (http://www.stack.nl/~dimitri/doxygen/download.html)
+- doxygen: doxygen-1.8.10.windows.x64.bin (http://www.stack.nl/~dimitri/doxygen/download.html)
 - MiKTeX: basic MiKTeX installer (http://miktex.org/download)
-- GhostScript: gs905w32.exe (http://www.ghostscript.com/GPL_Ghostscript_9.05.html)
-- Graphviz: graphviz-2.28.0.msi (http://www.graphviz.org/Download_windows.php)
+- GhostScript: gs927w64.exe (https://www.ghostscript.com/download/gsdnld.html)
+- Graphviz: graphviz-2.38.0.msi (https://graphviz.gitlab.io/_pages/Download/Download_windows.html)
 
-1. Install doxygen using the default settings.
+1. Install doxygen using the default settings. Later versions than 1.8.10 have recently shown problematic; this needs to be examined in more detail.
 2. Install MiKTeX using the default settings. 
-3. Install GhostScript (32 bit Windows version) using the default settings. Append the directory "C:\Program Files (x86)\gs\gs9.05\bin" to the PATH environment variable, separated by a semicolon.
+3. Install GhostScript (64 bit Windows version) using the default settings. Append the directory "C:\Program Files\gs\gs9.27\bin" to the PATH environment variable, separated by a semicolon.
 4. Install Graphviz using the default settings. Confirm any UAC (user account control) prompts you might encounter.
-5. Verify that the following files can be executed from the commandline (directories need to be included in PATH - if one of them does not work, try logging off and back on again):
+5. Verify that the following files can be executed from the command-line before attempting to build the documentation (directories need to be included in PATH - if one of them does not work, try logging off and back on again):
    - doxygen.exe
    - latex.exe
    - pdflatex.exe
-   - gswin32c.exe
+   - gswin64c.exe
    - dot.exe
    
+
 The doxygen environment should now be properly configured to build the WinFellow documentation.
 
-To build the documentation, enter the doxygen directory and execute the file Build-Doxygen-Documentation.cmd.
+To build the documentation, enter the doxygen directory and execute the file Build-Doxygen-Documentation.cmd. Verify that the table of contents contains proper page numbers, and that the documentation contains graphs. If one of these is missing, then something is wrong with the installation that requires more troubleshooting.
 
 The documentation should be found as WinFellow-doxygen.pdf within the doxygen directory. 
 
