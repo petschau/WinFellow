@@ -1,5 +1,14 @@
 #include "fellow/hardfile/rdb/RDBFileReader.h"
 
+#ifdef _DEBUG
+  #define _CRTDBG_MAP_ALLOC
+  #include <cstdlib>
+  #include <crtdbg.h>
+  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+  #define DBG_NEW new
+#endif
+
 using namespace std;
 
 namespace fellow::hardfile::rdb
@@ -45,7 +54,7 @@ namespace fellow::hardfile::rdb
 
   UBY *RDBFileReader::ReadData(off_t offset, size_t byteCount)
   {
-    UBY *data = new UBY[byteCount];
+    UBY *data = DBG_NEW UBY[byteCount];
     fseek(_F, offset, SEEK_SET);
     fread(data, 1, byteCount, _F);
     return data;

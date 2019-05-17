@@ -1,6 +1,15 @@
 #include "fellow/hardfile/rdb/RDB.h"
 #include "fellow/api/Services.h"
 
+#ifdef _DEBUG
+  #define _CRTDBG_MAP_ALLOC
+  #include <cstdlib>
+  #include <crtdbg.h>
+  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+  #define DBG_NEW new
+#endif
+
 using namespace std;
 using namespace fellow::api;
 
@@ -48,7 +57,7 @@ namespace fellow::hardfile::rdb
     ULO nextPartition = PartitionList;
     while (nextPartition != 0xffffffff)
     {
-      RDBPartition* partition = new RDBPartition();
+      RDBPartition* partition = DBG_NEW RDBPartition();
       partition->ReadFromFile(reader, nextPartition, BlockSize);
       partition->Log();
       Partitions.push_back(unique_ptr<RDBPartition>(partition));
@@ -60,7 +69,7 @@ namespace fellow::hardfile::rdb
       ULO nextFilesystemHeader = FilesystemHeaderList;
       while (nextFilesystemHeader != 0xffffffff)
       {
-        RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();
+        RDBFileSystemHeader* fileSystemHeader = DBG_NEW RDBFileSystemHeader();
         fileSystemHeader->ReadFromFile(reader, nextFilesystemHeader, BlockSize);
         fileSystemHeader->Log();
         FileSystemHeaders.push_back(unique_ptr<RDBFileSystemHeader>(fileSystemHeader));

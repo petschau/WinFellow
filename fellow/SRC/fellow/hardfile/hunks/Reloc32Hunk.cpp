@@ -1,6 +1,15 @@
 #include "fellow/hardfile/hunks/Reloc32Hunk.h"
 #include "fellow/api/Services.h"
 
+#ifdef _DEBUG
+  #define _CRTDBG_MAP_ALLOC
+  #include <cstdlib>
+  #include <crtdbg.h>
+  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#else
+  #define DBG_NEW new
+#endif
+
 using namespace std;
 using namespace fellow::api;
 
@@ -27,7 +36,7 @@ namespace fellow::hardfile::hunks
     while (offsetCount != 0)
     {
       ULO relatedHunk = rawDataReader.GetNextByteswappedLong();
-      Reloc32OffsetTable* offsetTable = new Reloc32OffsetTable(relatedHunk);
+      Reloc32OffsetTable* offsetTable = DBG_NEW Reloc32OffsetTable(relatedHunk);
       offsetTable->Parse(rawDataReader, offsetCount);
       _offsetTables.push_back(unique_ptr<Reloc32OffsetTable>(offsetTable));
       offsetCount = rawDataReader.GetNextByteswappedLong();
