@@ -87,6 +87,11 @@ namespace fellow::hardfile::hunks
         _fileImage.AddAdditionalHunk(additionalHunk);
         additionalHunk = ParseNextAdditionalHunk(i);
       }
+
+      if (additionalHunk != nullptr && additionalHunk->GetID() == EndHunkID)
+      {
+        delete additionalHunk;
+      }
     }
     return true;
   }

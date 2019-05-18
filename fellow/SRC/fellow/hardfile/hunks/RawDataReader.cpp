@@ -1,4 +1,5 @@
 #include "fellow/hardfile/hunks/RawDataReader.h"
+#include <stdexcept>
 
 #ifdef _DEBUG
   #define _CRTDBG_MAP_ALLOC
