@@ -2981,7 +2981,7 @@ void wguiHardfileAddDialogEnableGeometry(HWND hwndDlg, bool enable)
   ccwEditEnableConditionalBool(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, enable);
 }
 
-void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, int sectorsPerTrack, int surfaces, int reservedBlocks, int bytesPerSector, bool enable)
+void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, bool readonly, int sectorsPerTrack, int surfaces, int reservedBlocks, int bytesPerSector, bool enable)
 {
   STR stmp[64];
 
@@ -2996,6 +2996,7 @@ void wguiHardfileAddDialogSetGeometryEdits(HWND hwndDlg, STR* filename, int sect
   ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp);
   sprintf(stmp, "%u", bytesPerSector);
   ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp);
+  ccwButtonCheckConditional(hwndDlg, IDC_CHECK_HARDFILE_ADD_READONLY, readonly ? TRUE : FALSE);
   wguiHardfileAddDialogEnableGeometry(hwndDlg, enable);
 }
 
@@ -3007,6 +3008,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
     wguiHardfileAddDialogSetGeometryEdits(
       hwndDlg, 
       wgui_current_hardfile_edit->filename, 
+      wgui_current_hardfile_edit->readonly,
       wgui_current_hardfile_edit->sectorspertrack, 
       wgui_current_hardfile_edit->surfaces, 
       wgui_current_hardfile_edit->reservedblocks, 
@@ -3026,7 +3028,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
           {
             const HardfileConfiguration configuration = HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
             const HardfileGeometry& geometry = configuration.Geometry;
-            wguiHardfileAddDialogSetGeometryEdits(hwndDlg, wgui_current_hardfile_edit->filename, geometry.SectorsPerTrack, geometry.Surfaces, geometry.ReservedBlocks, geometry.BytesPerSector, false);
+            wguiHardfileAddDialogSetGeometryEdits(hwndDlg, wgui_current_hardfile_edit->filename, false, geometry.SectorsPerTrack, geometry.Surfaces, geometry.ReservedBlocks, geometry.BytesPerSector, false);
           }
           iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
         }
@@ -3064,6 +3066,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
         wgui_current_hardfile_edit->reservedblocks = atoi((char *)stmp);
         ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR, stmp, 32);
         wgui_current_hardfile_edit->bytespersector = atoi((char *)stmp);
+        wgui_current_hardfile_edit->readonly = ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_HARDFILE_ADD_READONLY);
       }
       case IDCANCEL:
         EndDialog(hwndDlg, LOWORD(wParam));

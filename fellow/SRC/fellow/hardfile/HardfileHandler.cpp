@@ -360,7 +360,7 @@ namespace fellow::hardfile
     fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
     if (fsnp != nullptr)
     {
-      device.Readonly = /*device.Configuration.Readonly ||*/ (!fsnp->writeable);
+      device.Readonly = device.Configuration.Readonly || (!fsnp->writeable);
       fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
       if (device.F != nullptr)
       {

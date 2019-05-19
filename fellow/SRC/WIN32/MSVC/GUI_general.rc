@@ -12,7 +12,8 @@
 
 #ifndef IDC_STATIC
 #define IDC_STATIC -1
-#endif
+#endif
+
 
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
@@ -311,6 +312,7 @@ BEGIN
     LTEXT           "Static",IDC_STATIC_HARDFILE_ADD_UNIT,53,13,19,8
     LTEXT           "Bytes Per Sector:",IDC_STATIC,7,72,56,8
     EDITTEXT        IDC_EDIT_HARDFILE_ADD_BYTES_PER_SECTOR,70,70,30,12,ES_AUTOHSCROLL
+    CONTROL         "Readonly",IDC_CHECK_HARDFILE_ADD_READONLY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,111,71,57,10
 END
 
 IDD_ABOUT DIALOGEX 0, 0, 215, 137
@@ -727,7 +729,7 @@ END
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian, Bokmål (Norway) resources
+// Norwegian Bokmål (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -740,7 +742,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
 
-#endif    // Norwegian, Bokmål (Norway) resources
+#endif    // Norwegian Bokmål (Norway) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
