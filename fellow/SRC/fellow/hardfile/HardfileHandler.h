@@ -22,7 +22,7 @@ namespace fellow::hardfile
     ULO _fsname = 0;
     UBY _rom[65536];
     bool _enabled = false;
-    unsigned int _unitNoStartNumber;
+    unsigned int _deviceNameStartNumber;
 
     bool HasZeroDevices();
 
@@ -38,13 +38,22 @@ namespace fellow::hardfile
     void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
     void InitializeHardfile(unsigned int index);
 
+    void SetIOError(BYT errorCode);
+    void SetIOActual(ULO ioActual);
+    ULO GetUnitNumber();
+    UWO GetCommand();
+    unsigned int GetIndexFromUnitNumber(ULO unit);
+    ULO GetUnitNumberFromIndex(unsigned int index);
+
     // BeginIO commands
-    void Ignore(ULO index);
+    void IgnoreOK(ULO index);
     BYT Read(ULO index);
     BYT Write(ULO index);
-    void GetNumberOfTracks(ULO index);
-    void GetDriveType(ULO index);
+    BYT GetNumberOfTracks(ULO index);
+    BYT GetDiskDriveType(ULO index);
     void WriteProt(ULO index);
+    BYT ScsiDirect(ULO index);
+
     void DoDiag();
     void DoOpen();
     void DoClose();
@@ -52,6 +61,7 @@ namespace fellow::hardfile
     void DoNULL();
     void DoBeginIO();
     void DoAbortIO();
+
     ULO DoGetRDBFileSystemCount();
     ULO DoGetRDBFileSystemHunkCount(ULO fileSystemIndex);
     ULO DoGetRDBFileSystemHunkSize(ULO fileSystemIndex, ULO hunkIndex);
@@ -91,7 +101,7 @@ namespace fellow::hardfile
     void SetHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
-    void SetUnitNoStartNumber(unsigned int unitNoStartNumber) override;
+    void SetDeviceNameStartNumber(unsigned int unitNoStartNumber) override;
 
     // UI helper function
     bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;

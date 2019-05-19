@@ -2,6 +2,7 @@
 #define FELLOW_HARDFILE_RDB_RDBLSEGBLOCK_H
 
 #include <string>
+#include <memory>
 #include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDBFileReader.h"
 

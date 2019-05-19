@@ -198,7 +198,7 @@ namespace fellow::hardfile
     do
     {
       ostringstream o;
-      o << "DH" << _unitNoStartNumber++;
+      o << "DH" << _deviceNameStartNumber++;
       deviceName = o.str();
     } while (PreferredNameExists(deviceName));
 
@@ -380,8 +380,11 @@ namespace fellow::hardfile
         if (!device.HasRDB)
         {
           // Manually configured hardfile
-          ULO trackSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
-          geometry.Tracks = device.FileSize / trackSize;
+          ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+          ULO cylinders = device.FileSize / cylinderSize;
+          geometry.Tracks = cylinders / geometry.Surfaces;
+          geometry.LowCylinder = 0;
+          geometry.HighCylinder = cylinders - 1;
         }
         device.GeometrySize = geometry.Tracks * geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
         device.Status = FHFILE_HDF;
@@ -424,6 +427,26 @@ namespace fellow::hardfile
     return _enabled;
   }
 
+  unsigned int HardfileHandler::GetIndexFromUnitNumber(ULO unit)
+  {
+    ULO address = unit % 10;
+    ULO lun = (unit / 10) % 10;
+
+    if (lun > 7)
+    {
+      Service->Log.AddLogDebug("ERROR: Unit number is not in a valid format.");
+      return 0xffffffff;
+    }
+    return lun + address * 8;
+  }
+
+  ULO HardfileHandler::GetUnitNumberFromIndex(unsigned int index)
+  {
+    ULO address = index / 8;
+    ULO lun = index % 8;
+
+    return lun * 10 + address;
+  }
   void HardfileHandler::SetHardfile(const HardfileConfiguration& configuration, unsigned int index)
   {
     if (index >= GetMaxHardfileCount())
@@ -459,32 +482,59 @@ namespace fellow::hardfile
     _mountList.clear();
   }
 
+  void HardfileHandler::SetIOError(BYT errorCode)
+  {
+    VM->Memory.WriteByte(errorCode, VM->CPU.GetAReg(1) + 31);
+  }
+
+  void HardfileHandler::SetIOActual(ULO ioActual)
+  {
+    VM->Memory.WriteLong(ioActual, VM->CPU.GetAReg(1) + 32);
+  }
+
+  ULO HardfileHandler::GetUnitNumber()
+  {
+    return VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 24);
+  }
+
+  UWO HardfileHandler::GetCommand()
+  {
+    return VM->Memory.ReadWord(VM->CPU.GetAReg(1) + 28);
+  }
+
   /*==================*/
   /* BeginIO Commands */
   /*==================*/
 
-  void HardfileHandler::Ignore(ULO index)
+  void HardfileHandler::IgnoreOK(ULO index)
   {
-    VM->Memory.WriteLong(0, VM->CPU.GetAReg(1) + 32);
-    VM->CPU.SetDReg(0, 0);
+    SetIOError(0); // io_Error - 0 - success
   }
 
   BYT HardfileHandler::Read(ULO index)
   {
+    if (_devices[index].F == nullptr)
+    {
+      Service->Log.AddLogDebug("CMD_READ Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
+      return 32; // TDERR_BadUnitNum
+    }
+
     ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
     ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
     ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
+    Service->Log.AddLogDebug("CMD_READ Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
+
     if ((offset + length) > _devices[index].GeometrySize)
     {
-      return -3;
+      return -3; // TODO: Out of range, -3 is not the right code
     }
 
     Service->HUD.SetHarddiskLED(index, true, false);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fread(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
-    VM->Memory.WriteLong(length, VM->CPU.GetAReg(1) + 32);
+    SetIOActual(length);
 
     Service->HUD.SetHarddiskLED(index, false, false);
 
@@ -493,39 +543,297 @@ namespace fellow::hardfile
 
   BYT HardfileHandler::Write(ULO index)
   {
+    if (_devices[index].F == nullptr)
+    {
+      Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
+      return 32; // TDERR_BadUnitNum
+    }
+
     ULO dest = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40);
     ULO offset = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 44);
     ULO length = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 36);
 
+    Service->Log.AddLogDebug("CMD_WRITE Unit %d (%d) Destination %.8X Offset %.8X Length %.8X\n", GetUnitNumberFromIndex(index), index, dest, offset, length);
+
     if (_devices[index].Readonly || (offset + length) > _devices[index].GeometrySize)
     {
-      return -3;
+      return -3;  // TODO: Out of range, -3 is probably not the right one.
     }
 
     Service->HUD.SetHarddiskLED(index, true, true);
 
     fseek(_devices[index].F, offset, SEEK_SET);
     fwrite(VM->Memory.AddressToPtr(dest), 1, length, _devices[index].F);
-    VM->Memory.WriteLong(length, VM->CPU.GetAReg(1) + 32);
+    SetIOActual(length);
 
     Service->HUD.SetHarddiskLED(index, false, true);
 
     return 0;
   }
 
-  void HardfileHandler::GetNumberOfTracks(ULO index)
+  BYT HardfileHandler::GetNumberOfTracks(ULO index)
   {
-    VM->Memory.WriteLong(_devices[index].Configuration.Geometry.Tracks, VM->CPU.GetAReg(1) + 32);
+    if (_devices[index].F == nullptr)
+    {
+      return 32; // TDERR_BadUnitNum
+    }
+
+    SetIOActual(_devices[index].Configuration.Geometry.Tracks);
+    return 0;
   }
 
-  void HardfileHandler::GetDriveType(ULO index)
+  BYT HardfileHandler::GetDiskDriveType(ULO index)
   {
-    VM->Memory.WriteLong(1, VM->CPU.GetAReg(1) + 32);
+    if (_devices[index].F == nullptr)
+    {
+      return 32; // TDERR_BadUnitNum
+    }
+
+    SetIOActual(1);
+
+    return 0;
   }
 
   void HardfileHandler::WriteProt(ULO index)
   {
-    VM->Memory.WriteLong(_devices[index].Readonly, VM->CPU.GetAReg(1) + 32);
+    SetIOActual(_devices[index].Readonly ? 1 : 0);
+  }
+
+  BYT HardfileHandler::ScsiDirect(ULO index)
+  {
+    BYT error = 0;
+    ULO scsiCmdStruct = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 40); // io_Data
+
+    Service->Log.AddLogDebug("HD_SCSICMD Unit %d (%d) ScsiCmd at %.8X\n", GetUnitNumberFromIndex(index), index, scsiCmdStruct);
+
+    ULO scsiCommand = VM->Memory.ReadLong(scsiCmdStruct + 12);
+    UWO scsiCommandLength = VM->Memory.ReadWord(scsiCmdStruct + 16);
+
+    Service->Log.AddLogDebug("HD_SCSICMD Command length %d, data", scsiCommandLength);
+
+    for (int i = 0; i < scsiCommandLength; i++)
+    {
+      Service->Log.AddLogDebug(" %.2X", VM->Memory.ReadByte(scsiCommand + i));
+    }
+    Service->Log.AddLogDebug("\n");
+
+    UBY commandNumber = VM->Memory.ReadByte(scsiCommand);
+    ULO returnData = VM->Memory.ReadLong(scsiCmdStruct);
+    switch (commandNumber)
+    {
+    case 0x25: // Read capacity (10)
+      Service->Log.AddLogDebug("SCSI direct command 0x25 Read Capacity\n");
+      {
+        ULO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
+        bool pmi = !!(VM->Memory.ReadByte(scsiCommand + 8) & 1);
+
+        if (pmi)
+        {
+          ULO blocksPerCylinder = (_devices[index].Configuration.Geometry.SectorsPerTrack * _devices[index].Configuration.Geometry.Surfaces) - 1;
+          VM->Memory.WriteByte(blocksPerCylinder >> 24, returnData);
+          VM->Memory.WriteByte(blocksPerCylinder >> 16, returnData + 1);
+          VM->Memory.WriteByte(blocksPerCylinder >> 8, returnData + 2);
+          VM->Memory.WriteByte(blocksPerCylinder, returnData + 3);
+        }
+        else
+        {
+          ULO blocksOnDevice = (_devices[index].GeometrySize / _devices[index].Configuration.Geometry.BytesPerSector) - 1;
+          VM->Memory.WriteByte(blocksOnDevice >> 24, returnData);
+          VM->Memory.WriteByte(blocksOnDevice >> 16, returnData + 1);
+          VM->Memory.WriteByte(blocksOnDevice >> 8, returnData + 2);
+          VM->Memory.WriteByte(blocksOnDevice, returnData + 3);
+        }
+        VM->Memory.WriteByte(bytesPerSector >> 24, returnData + 4);
+        VM->Memory.WriteByte(bytesPerSector >> 16, returnData + 5);
+        VM->Memory.WriteByte(bytesPerSector >> 8, returnData + 6);
+        VM->Memory.WriteByte(bytesPerSector, returnData + 7);
+
+        VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+        VM->Memory.WriteByte(0, scsiCmdStruct + 9);
+        VM->Memory.WriteByte(0, scsiCmdStruct + 10);
+        VM->Memory.WriteByte(8, scsiCmdStruct + 11);
+
+        VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+      }
+      break;
+    case 0x37: // Read defect Data (10)
+      Service->Log.AddLogDebug("SCSI direct command 0x37 Read defect Data\n");
+
+      VM->Memory.WriteByte(0, returnData);
+      VM->Memory.WriteByte(VM->Memory.ReadByte(scsiCommand + 2), returnData + 1);
+      VM->Memory.WriteByte(0, returnData + 2); // No defects (word)
+      VM->Memory.WriteByte(0, returnData + 3); 
+
+      VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+      VM->Memory.WriteByte(0, scsiCmdStruct + 9);
+      VM->Memory.WriteByte(0, scsiCmdStruct + 10);
+      VM->Memory.WriteByte(4, scsiCmdStruct + 11);
+
+      VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+      break;
+    case 0x12: // Inquiry
+      Service->Log.AddLogDebug("SCSI direct command 0x12 Inquiry\n");
+
+      VM->Memory.WriteByte(0, returnData); // Pheripheral type 0 connected (magnetic disk)
+      VM->Memory.WriteByte(0, returnData + 1); // Not removable
+      VM->Memory.WriteByte(0, returnData + 2); // Does not claim conformance to any standard
+      VM->Memory.WriteByte(2, returnData + 3); 
+      VM->Memory.WriteByte(32, returnData + 4); // Additional length
+      VM->Memory.WriteByte(0, returnData + 5);
+      VM->Memory.WriteByte(0, returnData + 6);
+      VM->Memory.WriteByte(0, returnData + 7);
+      VM->Memory.WriteByte('F', returnData + 8);
+      VM->Memory.WriteByte('E', returnData + 9);
+      VM->Memory.WriteByte('L', returnData + 10);
+      VM->Memory.WriteByte('L', returnData + 11);
+      VM->Memory.WriteByte('O', returnData + 12);
+      VM->Memory.WriteByte('W', returnData + 13);
+      VM->Memory.WriteByte(' ', returnData + 14);
+      VM->Memory.WriteByte(' ', returnData + 15);
+      VM->Memory.WriteByte('H', returnData + 16);
+      VM->Memory.WriteByte('A', returnData + 17);
+      VM->Memory.WriteByte('R', returnData + 18);
+      VM->Memory.WriteByte('D', returnData + 19);
+      VM->Memory.WriteByte('F', returnData + 20);
+      VM->Memory.WriteByte('I', returnData + 21);
+      VM->Memory.WriteByte('L', returnData + 22);
+      VM->Memory.WriteByte('E', returnData + 23);
+      VM->Memory.WriteByte(' ', returnData + 24);
+      VM->Memory.WriteByte('D', returnData + 25);
+      VM->Memory.WriteByte('E', returnData + 26);
+      VM->Memory.WriteByte('V', returnData + 27);
+      VM->Memory.WriteByte('I', returnData + 28);
+      VM->Memory.WriteByte('C', returnData + 29);
+      VM->Memory.WriteByte('E', returnData + 30);
+      VM->Memory.WriteByte(' ', returnData + 31);
+      VM->Memory.WriteByte('1', returnData + 32);
+      VM->Memory.WriteByte('0', returnData + 33);
+      VM->Memory.WriteByte('0', returnData + 34);
+      VM->Memory.WriteByte('0', returnData + 35);
+
+      VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+      VM->Memory.WriteByte(0, scsiCmdStruct + 9);
+      VM->Memory.WriteByte(0, scsiCmdStruct + 10);
+      VM->Memory.WriteByte(36, scsiCmdStruct + 11);
+
+      VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+      break;
+    case 0x1a: // Mode sense
+      Service->Log.AddLogDebug("SCSI direct command 0x1a Mode sense\n");
+      {
+        // Show values for debug
+        ULO senseData = VM->Memory.ReadLong(scsiCmdStruct + 22); // senseData and related fields are only used for autosensing error condition when the command fail
+        UWO senseLengthAllocated = VM->Memory.ReadWord(scsiCmdStruct + 26); // Primary mode sense data go to scsi_Data
+        UBY scsciCommandFlags = VM->Memory.ReadByte(scsiCmdStruct + 20);
+
+        UBY pageCode = VM->Memory.ReadByte(scsiCommand + 2) & 0x3f;
+        if (pageCode == 3)
+        {
+          UWO sectorsPerTrack = _devices[index].Configuration.Geometry.SectorsPerTrack;
+          UWO bytesPerSector = _devices[index].Configuration.Geometry.BytesPerSector;
+
+          // Header
+          VM->Memory.WriteByte(24 + 3, returnData);
+          VM->Memory.WriteByte(0, returnData + 1);
+          VM->Memory.WriteByte(0, returnData + 2);
+          VM->Memory.WriteByte(0, returnData + 3);
+
+          // Page
+          ULO destination = returnData + 4;
+          VM->Memory.WriteByte(3, destination);         // Page 3 format device
+          VM->Memory.WriteByte(0x16, destination + 1);  // Page length
+          VM->Memory.WriteByte(0, destination + 2);     // Tracks per zone
+          VM->Memory.WriteByte(1, destination + 3);
+          VM->Memory.WriteByte(0, destination + 4);     // Alternate sectors per zone
+          VM->Memory.WriteByte(0, destination + 5);
+          VM->Memory.WriteByte(0, destination + 6);     // Alternate tracks per zone
+          VM->Memory.WriteByte(0, destination + 7);
+          VM->Memory.WriteByte(0, destination + 8);     // Alternate tracks per volume
+          VM->Memory.WriteByte(0, destination + 9);
+          VM->Memory.WriteByte(sectorsPerTrack >> 8, destination + 10); // Sectors per track
+          VM->Memory.WriteByte(sectorsPerTrack & 0xff, destination + 11);
+          VM->Memory.WriteByte(bytesPerSector >> 8, destination + 12); // Data bytes per physical sector
+          VM->Memory.WriteByte(bytesPerSector & 0xff, destination + 13);
+          VM->Memory.WriteByte(0, destination + 14);     // Interleave
+          VM->Memory.WriteByte(1, destination + 15);
+          VM->Memory.WriteByte(0, destination + 16);     // Track skew factor
+          VM->Memory.WriteByte(0, destination + 17);
+          VM->Memory.WriteByte(0, destination + 18);     // Cylinder skew factor
+          VM->Memory.WriteByte(0, destination + 19);
+          VM->Memory.WriteByte(0x80, destination + 20);
+          VM->Memory.WriteByte(0, destination + 21);
+          VM->Memory.WriteByte(0, destination + 22);
+          VM->Memory.WriteByte(0, destination + 23);
+
+          VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+          VM->Memory.WriteByte(0, scsiCmdStruct + 9);
+          VM->Memory.WriteByte(0, scsiCmdStruct + 10);
+          VM->Memory.WriteByte(24 + 4, scsiCmdStruct + 11);
+
+          VM->Memory.WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
+          VM->Memory.WriteByte(0, scsiCmdStruct + 29);
+          VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+        }
+        else if (pageCode == 4)
+        {
+          ULO numberOfCylinders = _devices[index].Configuration.Geometry.HighCylinder + 1;
+          UBY surfaces = _devices[index].Configuration.Geometry.Surfaces;
+
+          // Header
+          VM->Memory.WriteByte(24 + 3, returnData);
+          VM->Memory.WriteByte(0, returnData + 1);
+          VM->Memory.WriteByte(0, returnData + 2);
+          VM->Memory.WriteByte(0, returnData + 3);
+
+          // Page
+          ULO destination = returnData + 4;
+          VM->Memory.WriteByte(4, destination);         // Page 4 Rigid disk geometry
+          VM->Memory.WriteByte(0x16, destination + 1);  // Page length
+          VM->Memory.WriteByte(numberOfCylinders >> 16, destination + 2);     // Number of cylinders (3 bytes)
+          VM->Memory.WriteByte(numberOfCylinders >> 8, destination + 3);
+          VM->Memory.WriteByte(numberOfCylinders, destination + 4);
+          VM->Memory.WriteByte(surfaces, destination + 5);     // Number of heads
+          VM->Memory.WriteByte(0, destination + 6);     // Starting cylinder write precomp (3 bytes)
+          VM->Memory.WriteByte(0, destination + 7);
+          VM->Memory.WriteByte(0, destination + 8);
+          VM->Memory.WriteByte(0, destination + 9);     // Starting cylinder reduces write current (3 bytes)
+          VM->Memory.WriteByte(0, destination + 10);
+          VM->Memory.WriteByte(0, destination + 11);
+          VM->Memory.WriteByte(0, destination + 12);    // Drive step rate
+          VM->Memory.WriteByte(0, destination + 13);
+          VM->Memory.WriteByte(numberOfCylinders >> 16, destination + 14);    // Landing zone cylinder (3 bytes)
+          VM->Memory.WriteByte(numberOfCylinders >> 8, destination + 15);
+          VM->Memory.WriteByte(numberOfCylinders, destination + 16);
+          VM->Memory.WriteByte(0, destination + 17);    // Nothing
+          VM->Memory.WriteByte(0, destination + 18);    // Rotational offset
+          VM->Memory.WriteByte(0, destination + 19);    // Reserved
+          VM->Memory.WriteByte(0x1c, destination + 20);    // Medium rotation rate
+          VM->Memory.WriteByte(0x20, destination + 21);
+          VM->Memory.WriteByte(0, destination + 22);    // Reserved
+          VM->Memory.WriteByte(0, destination + 23);    // Reserved
+
+          VM->Memory.WriteByte(0, scsiCmdStruct + 8); // data actual length (long word)
+          VM->Memory.WriteByte(0, scsiCmdStruct + 9);
+          VM->Memory.WriteByte(0, scsiCmdStruct + 10);
+          VM->Memory.WriteByte(24 + 4, scsiCmdStruct + 11);
+
+          VM->Memory.WriteByte(0, scsiCmdStruct + 28); // sense actual length (word)
+          VM->Memory.WriteByte(0, scsiCmdStruct + 29);
+          VM->Memory.WriteByte(0, scsiCmdStruct + 21); // Status
+        }
+        else
+        {
+          error = -3;
+        }
+      }
+      break;
+    default:
+      Service->Log.AddLogDebug("SCSI direct command Unimplemented 0x%.2X\n", commandNumber);
+
+      error = -3;
+      break;
+    }
+    return error;
   }
 
   unsigned int HardfileHandler::GetMaxHardfileCount()
@@ -533,9 +841,9 @@ namespace fellow::hardfile
     return FHFILE_MAX_DEVICES;
   }
 
-  void HardfileHandler::SetUnitNoStartNumber(unsigned int unitNoStartNumber)
+  void HardfileHandler::SetDeviceNameStartNumber(unsigned int deviceNameStartNumber)
   {
-    _unitNoStartNumber = unitNoStartNumber;
+    _deviceNameStartNumber = deviceNameStartNumber;
   }
 
   /*======================================================*/
@@ -557,28 +865,32 @@ namespace fellow::hardfile
   /* Native callbacks for device commands */
   /*======================================*/
 
+  // Returns D0 - 0 - Success, non-zero - Error
   void HardfileHandler::DoOpen()
   {
-    if (VM->CPU.GetDReg(0) < FHFILE_MAX_DEVICES)
+    ULO unit = VM->CPU.GetDReg(0);
+    unsigned int index = GetIndexFromUnitNumber(unit);
+
+    if (index < FHFILE_MAX_DEVICES && _devices[index].F != nullptr)
     {
       VM->Memory.WriteByte(7, VM->CPU.GetAReg(1) + 8);                     /* ln_type (NT_REPLYMSG) */
-      VM->Memory.WriteByte(0, VM->CPU.GetAReg(1) + 31);                    /* io_error */
+      SetIOError(0);                                                       /* io_error */
       VM->Memory.WriteLong(VM->CPU.GetDReg(0), VM->CPU.GetAReg(1) + 24);   /* io_unit */
       VM->Memory.WriteLong(VM->Memory.ReadLong(VM->CPU.GetAReg(6) + 32) + 1, VM->CPU.GetAReg(6) + 32);  /* LIB_OPENCNT */
-      VM->CPU.SetDReg(0, 0);                                               /* ? */
+      VM->CPU.SetDReg(0, 0);                                               /* Success */
     }
     else
     {
       VM->Memory.WriteLong(static_cast<ULO>(-1), VM->CPU.GetAReg(1) + 20);
-      VM->Memory.WriteByte(static_cast<UBY>(-1), VM->CPU.GetAReg(1) + 31); /* io_error */
-      VM->CPU.SetDReg(0, static_cast<ULO>(-1));                            /* ? */
+      SetIOError(-1);                                                      /* io_error */
+      VM->CPU.SetDReg(0, static_cast<ULO>(-1));                            /* Fail */
     }
   }
 
   void HardfileHandler::DoClose()
   {
     VM->Memory.WriteLong(VM->Memory.ReadLong(VM->CPU.GetAReg(6) + 32) - 1, VM->CPU.GetAReg(6) + 32); /* LIB_OPENCNT */
-    VM->CPU.SetDReg(0, 0);                                                                           /* ? */
+    VM->CPU.SetDReg(0, 0);                                                                           /* Causes invalid free-mem entry recoverable alert if omitted */
   }
 
   void HardfileHandler::DoExpunge()
@@ -588,55 +900,113 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoNULL()
   {
-    // Deliberately left empty
+    VM->CPU.SetDReg(0, 0); /* ? */
   }
 
+  // void BeginIO(io_req)
   void HardfileHandler::DoBeginIO()
   {
     BYT error = 0;
-    ULO unit = VM->Memory.ReadLong(VM->CPU.GetAReg(1) + 24);
+    ULO unit = GetUnitNumber();
+    unsigned int index = GetIndexFromUnitNumber(unit);
+    UWO cmd = GetCommand();
 
-    UWO cmd = VM->Memory.ReadWord(VM->CPU.GetAReg(1) + 28);
     switch (cmd)
     {
-    case 2:
-      error = Read(unit);
+    case 2:  // CMD_READ
+      error = Read(index);
       break;
-    case 3:
-    case 11:
-      error = Write(unit);
+    case 3:  // CMD_WRITE
+      error = Write(index);
       break;
-    case 18:
-      GetDriveType(unit);
+    case 11: // TD_FORMAT
+      Service->Log.AddLogDebug("TD_FORMAT Unit %d\n", unit);
+      error = Write(index);
       break;
-    case 19:
-      GetNumberOfTracks(unit);
+    case 18: // TD_GETDRIVETYPE
+      Service->Log.AddLogDebug("TD_GETDRIVETYPE Unit %d\n", unit);
+      // This does not make sense for us, options are 3.5" and 5 1/4"
+      error = GetDiskDriveType(index);
       break;
-    case 15:
-      WriteProt(unit);
+    case 19: // TD_GETNUMTRACKS
+      Service->Log.AddLogDebug("TD_GETNUMTRACKS Unit %d\n", unit);
+      error = GetNumberOfTracks(index);
       break;
-    case 4:
-    case 5:
-    case 9: // TD_GETDRIVETYPE
-    case 10:
-    case 12: // TD_REMCHANGEINT
-    case 13:
-    case 14: // TD_EJECT
-    case 20:
-    case 21:
-      Ignore(unit);
+    case 15: // TD_PROTSTATUS
+      Service->Log.AddLogDebug("TD_PROTSTATUS Unit %d\n", unit);
+      WriteProt(index);
+      break;
+    case 4: // CMD_UPDATE ie. flush
+      Service->Log.AddLogDebug("CMD_UPDATE Unit %d\n", unit);
+      IgnoreOK(index);
+      break;
+    case 5: // CMD_CLEAR
+      Service->Log.AddLogDebug("CMD 5 Unit %d\n", unit);
+      IgnoreOK(index);
+      break;
+    case 9:  // TD_MOTOR Only really used to turn motor off since device will turn on the motor automatically if reads and writes are received
+      Service->Log.AddLogDebug("TD_MOTOR Unit %d\n", unit);
+      // Should set previous state of motor
+      IgnoreOK(index);
+      break;
+    case 10: // TD_SEEK Used to pre-seek in advance, but reads and writes will also do the necessary seeks, so not useful here.
+      Service->Log.AddLogDebug("TD_SEEK Unit %d\n", unit);
+      IgnoreOK(index);
+      break;
+    case 12: // TD_REMOVE
+      Service->Log.AddLogDebug("TD_REMOVE Unit %d\n", unit);
+      // Perhaps unsupported instead?
+      IgnoreOK(index);
+      break;
+    case 13: // TD_CHANGENUM
+      Service->Log.AddLogDebug("TD_CHANGENUM Unit %d\n", unit);
+      // Should perhaps set some data here
+      IgnoreOK(index);
+      break;
+    case 14: // TD_CHANGESTATE - check if a disk is currently in a drive. io_Actual - 0 - disk, 1 - no disk
+      Service->Log.AddLogDebug("TD_CHANGESTATE Unit %d\n", unit);
+      SetIOError(0); // io_Error - 0 - success
+      SetIOActual(0);
+      break;
+    case 20: // TD_ADDCHANGEINT
+      Service->Log.AddLogDebug("TD_ADDCHANGEINT Unit %d\n", unit);
+      IgnoreOK(index);
+      break;
+    case 21: // TD_REMCHANGEINT
+      Service->Log.AddLogDebug("TD_REMCHANGEINT Unit %d\n", unit);
+      IgnoreOK(index);
+      break;
+    case 16: // TD_RAWREAD
+      Service->Log.AddLogDebug("TD_RAWREAD Unit %d\n", unit);
+      error = -3;
+      break;
+    case 17: // TD_RAWWRITE
+      Service->Log.AddLogDebug("TD_RAWWRITE Unit %d\n", unit);
+      error = -3;
+      break;
+    case 22: // TD_GETGEOMETRY
+      Service->Log.AddLogDebug("TD_GEOMETRY Unit %d\n", unit);
+      error = -3;
+      break;
+    case 23: // TD_EJECT
+      Service->Log.AddLogDebug("TD_EJECT Unit %d\n", unit);
+      error = -3;
+      break;
+    case 28:
+      error = ScsiDirect(index);
       break;
     default:
+      Service->Log.AddLogDebug("CMD Unknown %d Unit %d\n", cmd, unit);
       error = -3;
-      VM->CPU.SetDReg(0, 0);
       break;
     }
-    VM->Memory.WriteByte(5, VM->CPU.GetAReg(1) + 8);      /* ln_type */
-    VM->Memory.WriteByte(error, VM->CPU.GetAReg(1) + 31); /* ln_error */
+    VM->Memory.WriteByte(5, VM->CPU.GetAReg(1) + 8);      /* ln_type (Reply message) */
+    SetIOError(error); // ln_error
   }
 
   void HardfileHandler::DoAbortIO()
   {
+    // Set some more success values here, this is ok, we never have pending io.
     VM->CPU.SetDReg(0, static_cast<ULO>(-3));
   }
 
@@ -983,13 +1353,13 @@ namespace fellow::hardfile
     const HardfileDevice& device = _devices[mountListEntry.DeviceIndex];
     if (device.F != nullptr)
     {
+      ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
       const HardfileGeometry& geometry = device.Configuration.Geometry;
       VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);   /* Flag to initcode */
 
       VM->Memory.DmemSetLong(mountListEntry.NameAddress);   /*  0 Unit name "FELLOWX" or similar */
       VM->Memory.DmemSetLong(deviceNameAddress);            /*  4 Device name "fhfile.device" */
-      // Might need to be partition index?
-      VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);   /*  8 Unit # */
+      VM->Memory.DmemSetLong(unit);                         /*  8 Unit # */
       VM->Memory.DmemSetLong(0);                            /* 12 OpenDevice flags */
 
       // Struct DosEnvec
@@ -1020,11 +1390,13 @@ namespace fellow::hardfile
     RDBPartition* partition = device.RDB->Partitions[mountListEntry.PartitionIndex].get();
     if (device.F != nullptr)
     {
+      ULO unit = GetUnitNumberFromIndex(mountListEntry.DeviceIndex);
+
       VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);            /* Flag to initcode */
 
       VM->Memory.DmemSetLong(mountListEntry.NameAddress);            /*  0 Unit name "FELLOWX" or similar */
       VM->Memory.DmemSetLong(deviceNameAddress);                     /*  4 Device name "fhfile.device" */
-      VM->Memory.DmemSetLong(mountListEntry.DeviceIndex);            /*  8 Unit # */
+      VM->Memory.DmemSetLong(unit);                                  /*  8 Unit # */
       VM->Memory.DmemSetLong(0);                                     /* 12 OpenDevice flags */
 
       // Struct DosEnvec
@@ -1089,40 +1461,40 @@ namespace fellow::hardfile
       ULO fhfile_t_open = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010002); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010002,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
+      VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.close */
 
       ULO fhfile_t_close = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010003); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010003,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
+      VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.expunge */
 
       ULO fhfile_t_expunge = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010004); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010004,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
+      VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.null */
 
       ULO fhfile_t_null = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010005); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010005,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
+      VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* fhfile.beginio */
 
       ULO fhfile_t_beginio = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
-      VM->Memory.DmemSetLong(0x00010006); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010006,$f40000 */
-      VM->Memory.DmemSetLong(0x48e78002);                                     /* movem.l d0/a6,-(a7) */
-      VM->Memory.DmemSetLong(0x08290000); VM->Memory.DmemSetWord(0x001e);   /* btst   #$0,30(a1)   */
-      VM->Memory.DmemSetWord(0x6608);                                         /* bne    (to rts)     */
-      VM->Memory.DmemSetLong(0x2c780004);                                     /* move.l $4.w,a6      */
-      VM->Memory.DmemSetLong(0x4eaefe86);                                     /* jsr    -378(a6)     */
-      VM->Memory.DmemSetLong(0x4cdf4001);                                     /* movem.l (a7)+,d0/a6 */
+      VM->Memory.DmemSetLong(0x00010006); VM->Memory.DmemSetLong(0xf40000);   /* move.l #$00010006,$f40000  BeginIO */
+      VM->Memory.DmemSetLong(0x48e78002);                                     /* movem.l d0/a6,-(a7)    push        */
+      VM->Memory.DmemSetLong(0x08290000); VM->Memory.DmemSetWord(0x001e);     /* btst   #$0,30(a1)      IOF_QUICK   */
+      VM->Memory.DmemSetWord(0x6608);                                         /* bne    (to pop)                    */
+      VM->Memory.DmemSetLong(0x2c780004);                                     /* move.l $4.w,a6         exec        */
+      VM->Memory.DmemSetLong(0x4eaefe86);                                     /* jsr    -378(a6)        ReplyMsg(a1)*/
+      VM->Memory.DmemSetLong(0x4cdf4001);                                     /* movem.l (a7)+,d0/a6    pop         */
       VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
 
       /* fhfile.abortio */
@@ -1130,7 +1502,7 @@ namespace fellow::hardfile
       ULO fhfile_t_abortio = VM->Memory.DmemGetCounter();
       VM->Memory.DmemSetWord(0x23fc);
       VM->Memory.DmemSetLong(0x00010007); VM->Memory.DmemSetLong(0xf40000); /* move.l #$00010007,$f40000 */
-      VM->Memory.DmemSetWord(0x4e75);                                         /* rts */
+      VM->Memory.DmemSetWord(0x4e75);                                       /* rts */
 
       /* Func-table */
 

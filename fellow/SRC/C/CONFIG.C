@@ -2490,7 +2490,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
 
   if (ffilesysGetEnabled())
   {
-    HardfileHandler->SetUnitNoStartNumber(cfgGetFilesystemCount(config));
+    HardfileHandler->SetDeviceNameStartNumber(cfgGetFilesystemCount(config));
 
     for (i = 0; i < cfgGetFilesystemCount(config); i++)
     {
@@ -2515,7 +2515,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
   }
   else
   {
-    HardfileHandler->SetUnitNoStartNumber(0);
+    HardfileHandler->SetDeviceNameStartNumber(0);
   }
 
   /*==========================================================================*/
