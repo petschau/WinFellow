@@ -68,6 +68,7 @@
 #include "GFXDRV.H"
 #include "fileops.h"
 #include "GfxDrvCommon.h"
+#include "FSWRAP.H"
 
 using namespace fellow::api::module;
 
@@ -1518,9 +1519,16 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
   }
   else
   {
+    struct stat StatBuffer;
+    memset(&StatBuffer, 0, sizeof(StatBuffer));
+    int result = fsWrapStat(hf->filename, &StatBuffer);
+    if (result == 0 && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
+    {
+      configuration.Geometry.HighCylinder = (StatBuffer.st_size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
+    }
+    
     configuration.Geometry.BytesPerSector = hf->bytespersector;
     configuration.Geometry.LowCylinder = 0;
-    configuration.Geometry.HighCylinder = 9999;
     configuration.Readonly = hf->readonly;
     configuration.Geometry.ReservedBlocks = hf->reservedblocks;
     configuration.Geometry.SectorsPerTrack = hf->sectorspertrack;
