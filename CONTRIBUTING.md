@@ -1,6 +1,6 @@
 Contributing to WinFellow
 =========================
-WinFellow is developed by a team of volunteers in their spare time; you
+WinFellow is developed by a team of volunteers in their spare time; you 
 are very welcome to make contributions of your own.
 Contributions can be improvements to the code, new features, but can also
 include documentation updates or whatever else you feel could be an improvement.
@@ -26,7 +26,7 @@ in the directory "fellow\doxygen\Documentation" called
 setting up a development environment for WinFellow.
 
 Feel free to mail us
-([Petter Schau](mailto:petschau@gmail.com) / [Torsten Enderling](mailto:carfesh@gmx.net))
+([Petter Schau](mailto:petschau@gmail.com) / [Torsten Enderling](mailto:torsten.enderling@gmail.com))
 if you are interested in helping!
 
 Coding Style Guidelines
