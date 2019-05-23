@@ -63,6 +63,8 @@
 #include "fellow/api/VM.h"
 
 using namespace fellow::api::module;
+using namespace fellow::api::service;
+using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
 
@@ -184,17 +186,16 @@ char* fellowLogPrintTime(char *buffer)
   return buffer;
 }
 
-void fellowAddLog(const char *format, ...)
+void fellowAddLog(const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
-
-  char *buffer2 = fellowLogPrintTime(buffer);
-
+  
   va_start(parms, format);
-  _vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-  fellowAddLog2(buffer);
+  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
+
+  Service->Log.AddLog(buffer);
 }
 
 void fellowAddLogList(const list<string>& messages)
