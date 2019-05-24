@@ -244,7 +244,7 @@ fs_navig_point *fsWrapMakePoint(const STR *point) {
   else
   {
     STR* strError = strerror(errno);
-    fellowAddLog("fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "fsWrapMakePoint(): ERROR getting file information for %s: error code %i (%s)\n", point, errno, strError);
   }
   return fsnp;
 }
