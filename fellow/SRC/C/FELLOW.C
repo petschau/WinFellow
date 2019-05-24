@@ -67,7 +67,7 @@ using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
 
-char fellowlogfilename[MAX_PATH];
+// char fellowlogfilename[MAX_PATH];
 
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
@@ -107,67 +107,9 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 
 #define WRITE_LOG_BUF_SIZE 512
 
-static BOOLE fellow_log_first_time = TRUE;
-static BOOLE fellow_log_enabled;
-static BOOLE fellow_newlogline = TRUE;
-
-static void fellowSetLogEnabled(BOOLE enabled)
+void fellowAddLog2(STR* msg)
 {
-  fellow_log_enabled = enabled;
-}
-
-static BOOLE fellowGetLogEnabled()
-{
-  return fellow_log_enabled;
-}
-
-static void fellowSetLogFirstTime(BOOLE first_time)
-{
-  fellow_log_first_time = first_time;
-}
-
-static BOOLE fellowGetLogFirstTime()
-{
-  return fellow_log_first_time;
-}
-
-static FILE* fellowLogOpenFile()
-{
-  FILE *F = nullptr;
-  if (fellowGetLogFirstTime())
-  {
-    fileopsGetFellowLogfileName(fellowlogfilename);
-    F = fopen(fellowlogfilename, "w");
-    fellowSetLogFirstTime(FALSE);
-  }
-  else
-  {
-    F = fopen(fellowlogfilename, "a");
-  }
-  return F;
-}
-
-static void fellowLogFlushAndCloseFile(FILE *F)
-{
-  fflush(F);
-  fclose(F);
-}
-
-void fellowAddLog2(STR *msg)
-{
-  if (!fellowGetLogEnabled())
-  {
-    return;
-  }
-
-  FILE *F = fellowLogOpenFile();
-  if (F != nullptr)
-  {
-    fputs(msg, F);
-    fellowLogFlushAndCloseFile(F);
-  }
-
-  fellow_newlogline = (msg[strlen(msg) - 1] == '\n');
+  Service->Log.AddLog2(msg);
 }
 
 void fellowAddLog(const char* format, ...)
@@ -638,9 +580,6 @@ static void fellowModulesShutdown(void)
 /*============================================================================*/
 
 int __cdecl main(int argc, char *argv[]) {
-  fellowSetLogFirstTime(TRUE);
-  fellowSetLogEnabled(TRUE);
-
   sysinfoLogSysInfo();
   fellowSetPreStartReset(TRUE);
   fellowModulesStartup(argc, argv);
