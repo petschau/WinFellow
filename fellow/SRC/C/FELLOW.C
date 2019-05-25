@@ -67,8 +67,6 @@ using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
 
-// char fellowlogfilename[MAX_PATH];
-
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
 /*============================================================================*/
