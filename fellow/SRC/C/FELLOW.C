@@ -63,10 +63,9 @@
 #include "fellow/api/VM.h"
 
 using namespace fellow::api::module;
+using namespace fellow::api;
 
 BOOLE fellow_request_emulation_stop;
-
-char fellowlogfilename[MAX_PATH];
 
 /*============================================================================*/
 /* Perform reset before starting emulation flag                               */
@@ -106,110 +105,32 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode(void) {
 
 #define WRITE_LOG_BUF_SIZE 512
 
-static BOOLE fellow_log_first_time = TRUE;
-static BOOLE fellow_log_enabled;
-static BOOLE fellow_newlogline = TRUE;
-
-static void fellowSetLogEnabled(BOOLE enabled)
+void fellowAddLog2(STR* msg)
 {
-  fellow_log_enabled = enabled;
+  Service->Log.AddLog2(msg);
 }
 
-static BOOLE fellowGetLogEnabled()
-{
-  return fellow_log_enabled;
-}
-
-static void fellowSetLogFirstTime(BOOLE first_time)
-{
-  fellow_log_first_time = first_time;
-}
-
-static BOOLE fellowGetLogFirstTime()
-{
-  return fellow_log_first_time;
-}
-
-static FILE* fellowLogOpenFile()
-{
-  FILE *F = nullptr;
-  if (fellowGetLogFirstTime())
-  {
-    fileopsGetFellowLogfileName(fellowlogfilename);
-    F = fopen(fellowlogfilename, "w");
-    fellowSetLogFirstTime(FALSE);
-  }
-  else
-  {
-    F = fopen(fellowlogfilename, "a");
-  }
-  return F;
-}
-
-static void fellowLogFlushAndCloseFile(FILE *F)
-{
-  fflush(F);
-  fclose(F);
-}
-
-void fellowAddLog2(STR *msg)
-{
-  if (!fellowGetLogEnabled())
-  {
-    return;
-  }
-
-  FILE *F = fellowLogOpenFile();
-  if (F != nullptr)
-  {
-    fputs(msg, F);
-    fellowLogFlushAndCloseFile(F);
-  }
-
-  fellow_newlogline = (msg[strlen(msg) - 1] == '\n');
-}
-
-char* fellowLogPrintTime(char *buffer)
-{
-  if (fellow_newlogline)
-  {
-    // log date/time into buffer
-    time_t thetime = time(nullptr);
-    struct tm* timedata = localtime(&thetime);
-    strftime(buffer, 255, "%c: ", timedata);
-    // move buffer pointer ahead to log additional text after date/time
-    return buffer + strlen(buffer);
-  }
-  // skip date/time, log to beginning of buffer
-  return buffer;
-}
-
-void fellowAddLog(const char *format, ...)
+void fellowAddLog(const char* format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
-
-  char *buffer2 = fellowLogPrintTime(buffer);
-
+  
   va_start(parms, format);
-  _vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-  fellowAddLog2(buffer);
+  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
   va_end(parms);
+
+  Service->Log.AddLog(buffer);
 }
 
 void fellowAddLogList(const list<string>& messages)
 {
-  FILE *F = fellowLogOpenFile();
-  char timebuffer[WRITE_LOG_BUF_SIZE];
-
+  char buffer[WRITE_LOG_BUF_SIZE];
+ 
   for (const string& msg : messages)
   {
-    fellowLogPrintTime(timebuffer);
-    fputs(timebuffer, F);
-    fputs(msg.c_str(), F);
-    fputc('\n', F);
+    _snprintf(buffer, WRITE_LOG_BUF_SIZE - 1, "%s\n", msg.c_str());
+    Service->Log.AddLog(buffer);
   }
-  fellowLogFlushAndCloseFile(F);
 }
 
 void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
@@ -233,8 +154,9 @@ void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 
   va_start(parms, format);
   _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+  va_end(parms);
 
-  fellowAddLog(buffer);
+  Service->Log.AddLog(buffer);
 #ifdef RETRO_PLATFORM
   if (!RP.GetHeadlessMode())
 #endif
@@ -246,11 +168,11 @@ void fellowAddTimelessLog(const char *format,...)
   char buffer[WRITE_LOG_BUF_SIZE];
   va_list parms;
 
-  va_start (parms, format);
-  _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-  fellowAddLog2(buffer);
-  fellow_newlogline = (buffer[strlen(buffer) - 1] == '\n');
-  va_end (parms);
+  va_start(parms, format);
+  _vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+  va_end(parms);
+
+  Service->Log.AddLog2(buffer);
 }
 
 char *fellowGetVersionString()
@@ -656,9 +578,6 @@ static void fellowModulesShutdown(void)
 /*============================================================================*/
 
 int __cdecl main(int argc, char *argv[]) {
-  fellowSetLogFirstTime(TRUE);
-  fellowSetLogEnabled(TRUE);
-
   sysinfoLogSysInfo();
   fellowSetPreStartReset(TRUE);
   fellowModulesStartup(argc, argv);
