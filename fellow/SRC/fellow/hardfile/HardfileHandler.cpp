@@ -356,6 +356,12 @@ namespace fellow::hardfile
     device.FileSize = 0;
     device.GeometrySize = 0;
     device.Readonly = true;
+    if (device.RDB != nullptr)
+    {
+      delete device.RDB;
+      device.RDB = nullptr;
+      device.HasRDB = false;
+    }
 
     fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
     if (fsnp != nullptr)
