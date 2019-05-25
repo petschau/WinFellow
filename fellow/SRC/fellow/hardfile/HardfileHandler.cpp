@@ -470,6 +470,8 @@ namespace fellow::hardfile
     device.Configuration = configuration;
     InitializeHardfile(index);
 
+    Service->Log.AddLog("SetHardfile('%s', %u)\n", configuration.Filename.c_str(), index);
+
     Service->RP.SendHardDriveContent(index, configuration.Filename.c_str(), configuration.Readonly);
   }
 
