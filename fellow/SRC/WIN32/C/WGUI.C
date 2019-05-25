@@ -1467,10 +1467,10 @@ void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumb
   const HardfileGeometry& geometry = partition.Geometry;
   sprintf(
     s,
-    "Partition %d%s: Tracks-%d (%d-%d) Sectors per track-%d Blocksize-%d Heads-%d Reserved-%d",
+    "Partition %d%s: Cylinders-%d (%d-%d) Sectors per track-%d Blocksize-%d Heads-%d Reserved-%d",
     partitionNumber,
     preferredName,
-    geometry.Tracks,
+    geometry.HighCylinder + 1,
     geometry.LowCylinder,
     geometry.HighCylinder,
     geometry.SectorsPerTrack,

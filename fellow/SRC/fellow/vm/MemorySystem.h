@@ -22,6 +22,7 @@ namespace fellow::vm
     void DmemSetString(const STR *data) override;
     void DmemSetCounter(ULO val) override;
     ULO DmemGetCounter() override;
+    ULO DmemGetCounterWithoutOffset() override;
     void DmemClear() override;
 
     void EmemClear() override;

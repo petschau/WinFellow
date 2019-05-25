@@ -70,6 +70,11 @@ namespace fellow::vm
     return memoryDmemGetCounter();
   }
 
+  ULO MemorySystem::DmemGetCounterWithoutOffset()
+  {
+    return memoryDmemGetCounterWithoutOffset();
+  }
+
   void MemorySystem::DmemClear()
   {
     memoryDmemClear();

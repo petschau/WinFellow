@@ -58,6 +58,7 @@ extern void memoryDmemSetLongNoCounter(ULO data, ULO offset);
 extern void memoryDmemSetString(const STR *data);
 extern void memoryDmemSetCounter(ULO val);
 extern ULO memoryDmemGetCounter(void);
+extern ULO memoryDmemGetCounterWithoutOffset();
 extern void memoryDmemClear(void);
 
 /* Module management functions */

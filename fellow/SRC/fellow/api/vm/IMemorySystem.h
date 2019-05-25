@@ -32,6 +32,7 @@ namespace fellow::api::vm
     virtual void DmemSetString(const STR *data) = 0;
     virtual void DmemSetCounter(ULO val) = 0;
     virtual ULO DmemGetCounter() = 0;
+    virtual ULO DmemGetCounterWithoutOffset() = 0;
     virtual void DmemClear() = 0;
 
     virtual void EmemClear() = 0;

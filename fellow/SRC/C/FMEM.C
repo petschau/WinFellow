@@ -581,6 +581,11 @@ const STR *memory_kickimage_versionstrings[14] = {
     memory_dmemcounter = c;
   }
 
+  ULO memoryDmemGetCounterWithoutOffset()
+  {
+    return memory_dmemcounter;
+  }
+
   ULO memoryDmemGetCounter(void)
   {
     return memory_dmemcounter + MEMORY_DMEM_OFFSET;

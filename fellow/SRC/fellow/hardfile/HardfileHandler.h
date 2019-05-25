@@ -16,10 +16,13 @@ namespace fellow::hardfile
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
     std::vector<std::unique_ptr<HardfileFileSystemEntry>> _fileSystems;
     std::vector<std::unique_ptr<HardfileMountListEntry>> _mountList;
+    ULO _devicename = 0;
     ULO _romstart = 0;
     ULO _bootcode = 0;
     ULO _configdev = 0;
     ULO _fsname = 0;
+    ULO _endOfDmem = 0;
+    ULO _dosDevPacketListStart = 0;
     UBY _rom[65536];
     bool _enabled = false;
     unsigned int _deviceNameStartNumber;
@@ -37,6 +40,7 @@ namespace fellow::hardfile
     void EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
     void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
     void InitializeHardfile(unsigned int index);
+    void RebuildHardfileConfiguration();
 
     void SetIOError(BYT errorCode);
     void SetIOActual(ULO ioActual);
@@ -70,6 +74,7 @@ namespace fellow::hardfile
     void DoInitializeRDBFileSystemEntry(ULO fileSystemEntry, ULO fileSystemIndex);
     void DoPatchDOSDeviceNode(ULO node, ULO packet);
     void DoUnknownOperation(ULO operation);
+    ULO DoGetDosDevPacketListStart();
 
     std::string LogGetStringFromMemory(ULO address);
 
@@ -79,6 +84,7 @@ namespace fellow::hardfile
     void DoLogOpenResourceResult(ULO result);
     void DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource);
 
+    void CreateDOSDevPackets(ULO devicename);
     void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
     void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
 

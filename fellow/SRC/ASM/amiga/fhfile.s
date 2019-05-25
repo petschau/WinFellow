@@ -36,7 +36,8 @@ MakeDosDevPackages:
 	jsr		-408(a6)
 	move.l	d0, a4
 		
-	lea		EndOfCode(pc), a0
+	bsr		GetDosDevPacketListStart	; Get start of the dos dev packet list
+	move.l	d0, a0
 	move.l	a0, d7
 loop2:		
 	move.l	d7, a0				; Loop through packets prepared by fhfile
@@ -154,6 +155,11 @@ PatchDOSDeviceNode:
 ;--------------------------------------------------------------------
 RelocateFileSystem:
 	move.l	#$00020008, $f40000	; Input D1 FileSystemIndex
+	rts
+
+;--------------------------------------------------------------------
+GetDosDevPacketListStart:
+	move.l	#$00020009, $f40000	; Returns D0 Start address of the dos dev packet list
 	rts
 
 ;--------------------------------------------------------------------
