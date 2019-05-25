@@ -369,6 +369,12 @@ namespace fellow::hardfile
     }
 
     fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
+    if (fsnp == nullptr)
+    {
+      Service->Log.AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
+      return;
+    }
+
     if (fsnp != nullptr)
     {
       device.Readonly = device.Configuration.Readonly || (!fsnp->writeable);
@@ -1887,7 +1893,8 @@ namespace fellow::hardfile
     {
       if ((hf = CreateFile(configuration.Filename.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
       {
-        if (SetFilePointer(hf, size, NULL, FILE_BEGIN) == size)
+        LONG high = 0;
+        if (SetFilePointer(hf, size, &high, FILE_BEGIN) == size)
           result = SetEndOfFile(hf) == TRUE;
         else
           Service->Log.AddLog("SetFilePointer() failure.\n");

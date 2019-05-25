@@ -1522,11 +1522,19 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
     struct stat StatBuffer;
     memset(&StatBuffer, 0, sizeof(StatBuffer));
     int result = fsWrapStat(hf->filename, &StatBuffer);
+
+    if (result != 0)
+    {
+      STR s[256];
+      sprintf(s, "ERROR: Unable to open hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", hf->filename);
+      MessageBox(wgui_hDialog, s, "Configuration Error", 0);
+    }
+
     if (result == 0 && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
     {
       configuration.Geometry.HighCylinder = (StatBuffer.st_size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
     }
-    
+
     configuration.Geometry.BytesPerSector = hf->bytespersector;
     configuration.Geometry.LowCylinder = 0;
     configuration.Readonly = hf->readonly;
@@ -2941,9 +2949,9 @@ INT_PTR CALLBACK wguiHardfileCreateDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wP
         {
           size = size * 1024 * 1024;
         }
-        if ((size < 1) || (size > 4294967295))
+        if ((size < 1) || (size > 2147483647))
         {
-          MessageBox(hwndDlg, "Size must be between 1 byte and 4294967295 bytes", "Create Hardfile", 0);
+          MessageBox(hwndDlg, "Size must be between 1 byte and 2147483647 bytes", "Create Hardfile", 0);
           break;
         }
 
