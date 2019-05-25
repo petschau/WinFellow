@@ -307,7 +307,7 @@ namespace fellow::hardfile
     bool hasOlderOrSameFileSystemVersion = FindOlderOrSameFileSystemVersion(DOSType, version, olderOrSameFileSystemIndex);
     if (hasOlderOrSameFileSystemVersion)
     {
-      Service->Log.AddLog("fhfile: Erased RDB filesystem entry (%.8X, %.8X), newer version (%.8X, %.8X) found in RDB or newer/same version supported by Kickstart.\n",
+      Service->Log.AddLogDebug("fhfile: Erased RDB filesystem entry (%.8X, %.8X), newer version (%.8X, %.8X) found in RDB or newer/same version supported by Kickstart.\n",
         _fileSystems[olderOrSameFileSystemIndex]->GetDOSType(), _fileSystems[olderOrSameFileSystemIndex]->GetVersion(), DOSType, version);
 
       _fileSystems.erase(_fileSystems.begin() + olderOrSameFileSystemIndex);
@@ -361,6 +361,11 @@ namespace fellow::hardfile
       delete device.RDB;
       device.RDB = nullptr;
       device.HasRDB = false;
+    }
+
+    if (device.Configuration.Filename.empty())
+    {
+      return;
     }
 
     fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
@@ -1027,27 +1032,27 @@ namespace fellow::hardfile
   ULO HardfileHandler::DoGetRDBFileSystemCount()
   {
     ULO count = (ULO)_fileSystems.size();
-    Service->Log.AddLog("fhfile: DoGetRDBFilesystemCount() - Returns %u\n", count);
+    Service->Log.AddLogDebug("fhfile: DoGetRDBFilesystemCount() - Returns %u\n", count);
     return count;
   }
 
   ULO HardfileHandler::DoGetRDBFileSystemHunkCount(ULO fileSystemIndex)
   {
     ULO hunkCount = (ULO)_fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunkCount();
-    Service->Log.AddLog("fhfile: DoGetRDBFileSystemHunkCount(fileSystemIndex: %u) Returns %u\n", fileSystemIndex, hunkCount);
+    Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkCount(fileSystemIndex: %u) Returns %u\n", fileSystemIndex, hunkCount);
     return hunkCount;
   }
 
   ULO HardfileHandler::DoGetRDBFileSystemHunkSize(ULO fileSystemIndex, ULO hunkIndex)
   {
     ULO hunkSize = _fileSystems[fileSystemIndex]->Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex)->GetAllocateSizeInBytes();
-    Service->Log.AddLog("fhfile: DoGetRDBFileSystemHunkSize(fileSystemIndex: %u, hunkIndex: %u) Returns %u\n", fileSystemIndex, hunkIndex, hunkSize);
+    Service->Log.AddLogDebug("fhfile: DoGetRDBFileSystemHunkSize(fileSystemIndex: %u, hunkIndex: %u) Returns %u\n", fileSystemIndex, hunkIndex, hunkSize);
     return hunkSize;
   }
 
   void HardfileHandler::DoCopyRDBFileSystemHunk(ULO destinationAddress, ULO fileSystemIndex, ULO hunkIndex)
   {
-    Service->Log.AddLog("fhfile: DoCopyRDBFileSystemHunk(destinationAddress: %.8X, fileSystemIndex: %u, hunkIndex: %u)\n", destinationAddress, fileSystemIndex, hunkIndex);
+    Service->Log.AddLogDebug("fhfile: DoCopyRDBFileSystemHunk(destinationAddress: %.8X, fileSystemIndex: %u, hunkIndex: %u)\n", destinationAddress, fileSystemIndex, hunkIndex);
 
     HardfileFileSystemEntry* fileSystem = _fileSystems[fileSystemIndex].get();
     fileSystem->CopyHunkToAddress(destinationAddress + 8, hunkIndex);
@@ -1065,7 +1070,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoRelocateFileSystem(ULO fileSystemIndex)
   {
-    Service->Log.AddLog("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
+    Service->Log.AddLogDebug("fhfile: DoRelocateFileSystem(fileSystemIndex: %u\n", fileSystemIndex);
     HardfileFileSystemEntry* fsEntry = _fileSystems[fileSystemIndex].get();
     fellow::hardfile::hunks::HunkRelocator hunkRelocator(fsEntry->Header->FileSystemHandler.FileImage);
     hunkRelocator.RelocateHunks();
@@ -1073,7 +1078,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoInitializeRDBFileSystemEntry(ULO fileSystemEntry, ULO fileSystemIndex)
   {
-    Service->Log.AddLog("fhfile: DoInitializeRDBFileSystemEntry(fileSystemEntry: %.8X, fileSystemIndex: %u\n", fileSystemEntry, fileSystemIndex);
+    Service->Log.AddLogDebug("fhfile: DoInitializeRDBFileSystemEntry(fileSystemEntry: %.8X, fileSystemIndex: %u\n", fileSystemEntry, fileSystemIndex);
 
     HardfileFileSystemEntry* fsEntry = _fileSystems[fileSystemIndex].get();
     RDBFileSystemHeader* fsHeader = fsEntry->Header;
@@ -1125,12 +1130,12 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoLogAvailableResources()
   {
-    Service->Log.AddLog("fhfile: DoLogAvailableResources()\n");
+    Service->Log.AddLogDebug("fhfile: DoLogAvailableResources()\n");
 
     ULO execBase = VM->Memory.ReadLong(4);  // Fetch list from exec
     ULO rsListHeader = VM->Memory.ReadLong(execBase + 0x150);
 
-    Service->Log.AddLog("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n",
+    Service->Log.AddLogDebug("fhfile: Resource list header (%.8X): Head %.8X Tail %.8X TailPred %.8X Type %d\n",
       rsListHeader,
       VM->Memory.ReadLong(rsListHeader),
       VM->Memory.ReadLong(rsListHeader + 4),
@@ -1139,14 +1144,14 @@ namespace fellow::hardfile
 
     if (rsListHeader == VM->Memory.ReadLong(rsListHeader + 8))
     {
-      Service->Log.AddLog("fhfile: Resource list is empty.\n");
+      Service->Log.AddLogDebug("fhfile: Resource list is empty.\n");
       return;
     }
 
     ULO fsNode = VM->Memory.ReadLong(rsListHeader);
     while (fsNode != 0 && (fsNode != rsListHeader + 4))
     {
-      Service->Log.AddLog("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n",
+      Service->Log.AddLogDebug("fhfile: ResourceEntry Node (%.8X): Succ %.8X Pred %.8X Type %d Pri %d NodeName '%s'\n",
         fsNode,
         VM->Memory.ReadLong(fsNode),
         VM->Memory.ReadLong(fsNode + 4),
@@ -1160,22 +1165,22 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoLogAllocMemResult(ULO result)
   {
-    Service->Log.AddLog("fhfile: AllocMem() returned %.8X\n", result);
+    Service->Log.AddLogDebug("fhfile: AllocMem() returned %.8X\n", result);
   }
 
   void HardfileHandler::DoLogOpenResourceResult(ULO result)
   {
-    Service->Log.AddLog("fhfile: OpenResource() returned %.8X\n", result);
+    Service->Log.AddLogDebug("fhfile: OpenResource() returned %.8X\n", result);
   }
 
   void HardfileHandler::DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource)
   {
-    Service->Log.AddLog("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
+    Service->Log.AddLogDebug("fhfile: DoRemoveRDBFileSystemsAlreadySupportedBySystem(filesystemResource: %.8X)\n", filesystemResource);
 
     ULO fsList = filesystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
-      Service->Log.AddLog("fhfile: FileSystemEntry list is empty.\n");
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
@@ -1186,18 +1191,18 @@ namespace fellow::hardfile
       ULO dosType = VM->Memory.ReadLong(fsEntry);
       ULO version = VM->Memory.ReadLong(fsEntry + 4);
 
-      Service->Log.AddLog("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
-      Service->Log.AddLog("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
-      Service->Log.AddLog("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLog("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLog("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLog("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLog("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLog("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLog("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLog("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLog("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLog("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", VM->Memory.ReadLong(fsEntry));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", VM->Memory.ReadLong(fsEntry + 4));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
       fsNode = VM->Memory.ReadLong(fsNode);
 
       EraseOlderOrSameFileSystemVersion(dosType, version);
@@ -1207,12 +1212,12 @@ namespace fellow::hardfile
   // D0 - pointer to FileSystem.resource
   void HardfileHandler::DoLogAvailableFileSystems(ULO fileSystemResource)
   {
-    Service->Log.AddLog("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
+    Service->Log.AddLogDebug("fhfile: DoLogAvailableFileSystems(fileSystemResource: %.8X)\n", fileSystemResource);
 
     ULO fsList = fileSystemResource + 18;
     if (fsList == VM->Memory.ReadLong(fsList + 8))
     {
-      Service->Log.AddLog("fhfile: FileSystemEntry list is empty.\n");
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry list is empty.\n");
       return;
     }
 
@@ -1224,25 +1229,25 @@ namespace fellow::hardfile
       ULO dosType = VM->Memory.ReadLong(fsEntry);
       ULO version = VM->Memory.ReadLong(fsEntry + 4);
 
-      Service->Log.AddLog("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
-      Service->Log.AddLog("fhfile: FileSystemEntry Version   : %.8X\n", version);
-      Service->Log.AddLog("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
-      Service->Log.AddLog("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
-      Service->Log.AddLog("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
-      Service->Log.AddLog("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
-      Service->Log.AddLog("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
-      Service->Log.AddLog("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
-      Service->Log.AddLog("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
-      Service->Log.AddLog("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
-      Service->Log.AddLog("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
-      Service->Log.AddLog("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry DosType   : %.8X\n", dosType);
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Version   : %.8X\n", version);
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry PatchFlags: %.8X\n", VM->Memory.ReadLong(fsEntry + 8));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Type      : %.8X\n", VM->Memory.ReadLong(fsEntry + 12));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Task      : %.8X\n", VM->Memory.ReadLong(fsEntry + 16));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Lock      : %.8X\n", VM->Memory.ReadLong(fsEntry + 20));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Handler   : %.8X\n", VM->Memory.ReadLong(fsEntry + 24));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry StackSize : %.8X\n", VM->Memory.ReadLong(fsEntry + 28));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Priority  : %.8X\n", VM->Memory.ReadLong(fsEntry + 32));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry Startup   : %.8X\n", VM->Memory.ReadLong(fsEntry + 36));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry SegList   : %.8X\n", VM->Memory.ReadLong(fsEntry + 40));
+      Service->Log.AddLogDebug("fhfile: FileSystemEntry GlobalVec : %.8X\n\n", VM->Memory.ReadLong(fsEntry + 44));
       fsNode = VM->Memory.ReadLong(fsNode);
     }
   }
 
   void HardfileHandler::DoPatchDOSDeviceNode(ULO node, ULO packet)
   {
-    Service->Log.AddLog("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
+    Service->Log.AddLogDebug("fhfile: DoPatchDOSDeviceNode(node: %.8X, packet: %.8X)\n", node, packet);
 
     VM->Memory.WriteLong(0, node + 8); // dn_Task = 0
     VM->Memory.WriteLong(0, node + 16); // dn_Handler = 0
@@ -1268,7 +1273,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::DoUnknownOperation(ULO operation)
   {
-    Service->Log.AddLog("fhfile: Unknown operation called %X\n", operation);
+    Service->Log.AddLogDebug("fhfile: Unknown operation called %X\n", operation);
   }
 
   /*=================================================*/

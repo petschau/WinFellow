@@ -11,9 +11,9 @@ namespace fellow::service
   fs_wrapper_point *FSWrapper::MakePoint(const STR *point)
   {
     fs_navig_point *navig_point = fsWrapMakePoint(point);
-    fs_wrapper_point* result = new fs_wrapper_point();
     if (navig_point)
     {
+      fs_wrapper_point* result = new fs_wrapper_point();
       result->drive = navig_point->drive;
       result->name = navig_point->name;
       result->relative = navig_point->relative;
@@ -23,11 +23,8 @@ namespace fellow::service
       free(navig_point);
       return result;
     }
-    else
-    {
-      return NULL;
-    }
-    
+
+    return nullptr;
   }
 
   fs_wrapper_file_types FSWrapper::MapFileType(fs_navig_file_types type)
