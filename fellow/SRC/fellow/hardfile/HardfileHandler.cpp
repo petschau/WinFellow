@@ -322,7 +322,7 @@ namespace fellow::hardfile
     geometry.BytesPerSector = rdb->BlockSize;
     geometry.SectorsPerTrack = rdb->SectorsPerTrack;
     geometry.Surfaces = rdb->Heads;
-    geometry.Tracks = rdb->Cylinders;
+    geometry.Tracks = rdb->Cylinders * rdb->Heads;
 
     config.Partitions.clear();
     unsigned int partitionCount = rdb->Partitions.size();
@@ -336,7 +336,7 @@ namespace fellow::hardfile
       partition.Geometry.BytesPerSector = rdbPartition->SizeBlock * 4;
       partition.Geometry.SectorsPerTrack = rdbPartition->BlocksPerTrack;
       partition.Geometry.Surfaces = rdbPartition->Surfaces;
-      partition.Geometry.Tracks = rdbPartition->HighCylinder - rdbPartition->LowCylinder + 1;
+      partition.Geometry.Tracks = (rdbPartition->HighCylinder - rdbPartition->LowCylinder + 1) * rdbPartition->Surfaces;
       config.Partitions.push_back(partition);
     }
   }
@@ -399,11 +399,11 @@ namespace fellow::hardfile
           // Manually configured hardfile
           ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
           ULO cylinders = device.FileSize / cylinderSize;
-          geometry.Tracks = cylinders / geometry.Surfaces;
+          geometry.Tracks = cylinders * geometry.Surfaces;
           geometry.LowCylinder = 0;
           geometry.HighCylinder = cylinders - 1;
         }
-        device.GeometrySize = geometry.Tracks * geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+        device.GeometrySize = geometry.Tracks * geometry.SectorsPerTrack * geometry.BytesPerSector;
         device.Status = FHFILE_HDF;
 
         if (device.FileSize < device.GeometrySize)
@@ -1406,7 +1406,7 @@ namespace fellow::hardfile
       VM->Memory.DmemSetLong(0);                            /* 44 mdn_prefac - Unused */
       VM->Memory.DmemSetLong(0);                            /* 48 Interleave */
       VM->Memory.DmemSetLong(0);                            /* 52 Lower cylinder */
-      VM->Memory.DmemSetLong(geometry.Tracks - 1);          /* 56 Upper cylinder */
+      VM->Memory.DmemSetLong(geometry.HighCylinder);        /* 56 Upper cylinder */
       VM->Memory.DmemSetLong(0);                            /* 60 Number of buffers */
       VM->Memory.DmemSetLong(0);                            /* 64 Type of memory for buffers */
       VM->Memory.DmemSetLong(0x7fffffff);                   /* 68 Largest transfer */

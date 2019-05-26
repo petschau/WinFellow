@@ -1470,7 +1470,7 @@ void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumb
     "Partition %d%s: Cylinders-%d (%d-%d) Sectors per track-%d Blocksize-%d Heads-%d Reserved-%d",
     partitionNumber,
     preferredName,
-    geometry.HighCylinder + 1,
+    geometry.HighCylinder - geometry.LowCylinder + 1,
     geometry.LowCylinder,
     geometry.HighCylinder,
     geometry.SectorsPerTrack,
