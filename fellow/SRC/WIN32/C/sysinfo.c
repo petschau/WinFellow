@@ -276,12 +276,12 @@ static void sysinfoParseOSVersionInfo(void) {
       break;
     case VER_PLATFORM_WIN32_WINDOWS:
       if((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 0)) {
-	fellowAddTimelessLog("\toperating system: \tWindows 95 ");
-	if (osInfo.szCSDVersion[1] == 'C' || osInfo.szCSDVersion[1] == 'B' ) {
+	      fellowAddTimelessLog("\toperating system: \tWindows 95 ");
+	      if (osInfo.szCSDVersion[1] == 'C' || osInfo.szCSDVersion[1] == 'B' ) {
           fellowAddTimelessLog("OSR2\n");
-	} else {
+        } else {
           fellowAddTimelessLog("\n");
-	}
+	      }
       }
 
       if((osInfo.dwMajorVersion == 4) && (osInfo.dwMinorVersion == 10)) {
@@ -337,16 +337,43 @@ static void sysinfoParseOSVersionInfo(void) {
         }
         break;
 	  case 10:
-        switch (osInfo.dwMinorVersion) {
+      switch (osInfo.dwMinorVersion) {
         case 0:
-          fellowAddTimelessLog("\toperating system: \tWindows 10\n");
+          STR strOS[24] = "Windows 10";
+          switch (osInfo.dwBuildNumber)
+          {
+            case 10240:
+              sprintf(strOS, "Windows 10 version 1507");
+              break;
+            case 10586:
+              sprintf(strOS, "Windows 10 version 1511");
+              break;
+            case 14393:
+              sprintf(strOS, "Windows 10 version 1607");
+              break;
+            case 15063:
+              sprintf(strOS, "Windows 10 version 1703");
+              break;
+            case 16299:
+              sprintf(strOS, "Windows 10 version 1709");
+              break;
+            case 17134:
+              sprintf(strOS, "Windows 10 version 1803");
+              break;
+            case 17763:
+              sprintf(strOS, "Windows 10 version 1809");
+              break;
+            case 18362:
+              sprintf(strOS, "Windows 10 version 1903");
+              break;
+          }
+          fellowAddTimelessLog("\toperating system : \t%s\n", strOS);
           break;
         }
         break;
       default:
-	fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
+        fellowAddTimelessLog("\toperating system: \tunknown platform Win32 NT\n");
       }
-		
       break;
     default:	
       fellowAddTimelessLog("\toperating system: \tunknown\n");	
@@ -355,6 +382,22 @@ static void sysinfoParseOSVersionInfo(void) {
   fellowAddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", 
     osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
     strcmp(osInfo.szCSDVersion, "") != 0 ? osInfo.szCSDVersion : "no servicepack");
+
+  switch (osInfo.wProductType)
+  {
+    case VER_NT_WORKSTATION:
+      fellowAddTimelessLog("\tproduct type: \t\tworkstation\n");
+      break;
+    case VER_NT_SERVER:
+      fellowAddTimelessLog("\tproduct type: \t\tserver\n");
+      break;
+    case VER_NT_DOMAIN_CONTROLLER:
+      fellowAddTimelessLog("\tproduct type: \t\tdomain controller\n");
+      break;
+    default:
+      fellowAddTimelessLog("\tproduct type: \t\tunknown product type\n");
+      break;
+  }
 }
 
 static void sysinfoParseRegistry(void) {
