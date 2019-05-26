@@ -8,7 +8,12 @@
 namespace fellow::service
 {
   Log::Log() :
-    _new_line(true), _first_time(true), _enabled(true), _level(LogLevelInformation)
+    _new_line(true), _first_time(true), _enabled(true), 
+#ifdef _DEBUG
+      _level(LogLevelDebug)
+#else
+      _level(LogLevelInformation)
+#endif
   {
   }
 

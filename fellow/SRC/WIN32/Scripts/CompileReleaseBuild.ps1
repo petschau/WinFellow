@@ -167,7 +167,7 @@ Function Main()
     ShowProgressIndicator 6 "Generating ChangeLog..."
 
     cd $SourceCodeBaseDir
-    $result = (git log --date=short --pretty=format:"%h - %<(17)%an, %ad : %w(80,0,42)%s%n%w(80,42,42)%b" --invert-grep --grep="" > $temp\ChangeLog.txt)
+    $result = (git log --date=short --pretty=format:"%h - %<(17)%an, %ad : %w(80,0,42)%s%n%w(80,42,42)%b" --invert-grep --grep="" --no-merges > $temp\ChangeLog.txt)
 
     ShowProgressIndicator 7 "Generating User Manual..."
 
