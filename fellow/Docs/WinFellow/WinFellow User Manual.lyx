@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/05/19)
+v0.5.8 (2019/05/26)
 \end_layout
 
 \begin_layout Author
@@ -309,8 +309,8 @@ HOWTO Development environment setup.md
 \end_layout
 
 \begin_layout Standard
-Feel free to mail us (petschau@gmail.com / carfesh@gmx.net) if you are interested
- in helping!
+Feel free to mail us (petschau@gmail.com / torsten.enderling@gmail.com) if
+ you are interested in helping!
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -337,8 +337,8 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for reading existing RDB hardfiles was implemented; creating a new
- hardfile from the WinFellow GUI still creates 
+support for RDB hardfiles was implemented; while creating a new hardfile
+ from the WinFellow GUI still creates 
 \begin_inset Quotes eld
 \end_inset
 
@@ -346,7 +346,7 @@ plain
 \begin_inset Quotes erd
 \end_inset
 
- hardfiles
+ hardfiles, the Rigid Disk Block can be created by using tools like HD Toolbox.
 \end_layout
 
 \end_deeper
@@ -1947,7 +1947,7 @@ Worfje
 \noun on
 Torsten Enderling
 \noun default
- (carfesh@gmx.net)
+ (torsten.enderling@gmail.com)
 \end_layout
 
 \begin_layout Section*
