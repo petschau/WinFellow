@@ -54,7 +54,7 @@ namespace fellow::api::module
   {
   public:
     std::string Filename;
-    bool Readonly;
+    bool Readonly = false;
     HardfileGeometry Geometry;
 
     std::vector<HardfilePartition> Partitions;
