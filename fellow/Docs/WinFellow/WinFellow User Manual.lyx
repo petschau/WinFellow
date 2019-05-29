@@ -1614,8 +1614,21 @@ fhfile.device
 
 \begin_layout Standard
 There are plenty of tutorials available online that explain this process,
- which is not specific to WinFellow; for example the following guide can
- be followed; make sure to use the fhfile.device:
+ which is not specific to WinFellow; make sure to take the following points
+ into account:
+\end_layout
+
+\begin_layout Enumerate
+WinFellow's SCSI-based hardfile device name is fhfile.device
+\end_layout
+
+\begin_layout Enumerate
+the emulated Amiga must be rebooted after an RDB has been created using
+ HD Toolbox; WinFellow's hard reset function can be used to achieve that
+\end_layout
+
+\begin_layout Standard
+An example of a guide that can be followed is linked to below:
 \end_layout
 
 \begin_layout Standard
