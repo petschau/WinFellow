@@ -307,3 +307,39 @@ background in the clipping editor, there should be no missing black areas.
 Cancel the clipping editor dialog. Save a screenshot to the pictures folder via the screenshot button and verify its creation.
 Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
 Close the emulation window, reopen it and take screenshots again.
+
+### RDB hardfiles and read-only hardfile configuration
+
+Apply the Amiga 3000 model preset to a new configuration.
+
+Enable all floppy drives, configure all floppy drives to read-only and enable the "fast disk-DMA" configuration option. Insert the following floppies into DF0: through DF3:
+
+- amiga-os-310-install.adf (DF0:)
+- amiga-os-310-locale.adf (DF1:)
+- amiga-os-310-workbench.adf (DF2:)
+- amiga-os-310-extras.adf (DF3:)
+
+Create 3 new hardfiles:
+
+- test1.hdf (300 MB, leave writable)
+- test2.hdf (200 MB, edit hardfile to set read-only flag)
+- test3.hdf (100 MB, leave writable)
+
+Set the write-protection flag in the Windows file properties of test3.hdf.
+
+Disable the "disable Autoconfig-devices" configuration option.
+
+Start the emulation session. Attempt to quick format drives DH0: through DH2: as FHF0 to FHF2; compare the capacities shown on screen with the expected disk capacities. DH0: should be writable, the others should fail to format with an error message about the disk being write-protected.
+
+Hold the right mouse button and from the Workbench menu, select "Execute Command...". Execute the command "DF0:HDTools/HDToolBox fhfile.device"; HD Toolbox should launch and show 3 SCSI drives/LUNs. Select the disk with LUN 0 and click "Change Drive Type". With the drive type being SCSI, click "Define New...". Click "Read Configuration" and "Continue". Verify the drive capacity and confirm by clicking "OK" twice. Click "Save Changes to Drive". Click "Exit".
+
+Press F11, and in the emulator window that appears click "hard reset" and "start emulation". The emulation session should restart and two unformatted partitions should appear (FDH0: and FDH1:). Format partition FDH0: by holding the right mouse button and selecting the menu Icons==>Format Disk...; enter "Workbench" as disk name and quick-format the disk using default parameters.
+
+Start the Workbench 3.1 installation by opening the Install3.1 floppy, browsing into the "Install" directory and opening the installer in the language of your choice. Follow the on-screen steps to finish the Workbench installation. When prompted, swap the floppy disks as they are requested (F11, click ... besides one of the floppies to exchange it with another one and click "start emulation"). The installation should finish successfully.
+
+Eject all floppies (F11 and click all four eject buttons, save configuration and click "start emulation"), click "Continue" to reset the emulation session. Workbench should boot up from the hardfile.
+
+
+
+
+

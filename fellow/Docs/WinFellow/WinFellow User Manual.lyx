@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/05/19)
+v0.5.8 (2019/05/29)
 \end_layout
 
 \begin_layout Author
@@ -309,8 +309,8 @@ HOWTO Development environment setup.md
 \end_layout
 
 \begin_layout Standard
-Feel free to mail us (petschau@gmail.com / carfesh@gmx.net) if you are interested
- in helping!
+Feel free to mail us (petschau@gmail.com / torsten.enderling@gmail.com) if
+ you are interested in helping!
 \begin_inset Newpage pagebreak
 \end_inset
 
@@ -337,8 +337,8 @@ New features:
 
 \begin_deeper
 \begin_layout Itemize
-support for reading existing RDB hardfiles was implemented; creating a new
- hardfile from the WinFellow GUI still creates 
+support for RDB hardfiles was implemented; while creating a new hardfile
+ from the WinFellow GUI still creates 
 \begin_inset Quotes eld
 \end_inset
 
@@ -346,7 +346,7 @@ plain
 \begin_inset Quotes erd
 \end_inset
 
- hardfiles
+ hardfiles, the Rigid Disk Block can be created by using tools like HD Toolbox.
 \end_layout
 
 \end_deeper
@@ -369,6 +369,12 @@ improve delay caused by logging in screen-mode enumeration (could amount
 \begin_layout Itemize
 running in an environment with very slow graphics framerate, like a VM,
  could cause a deadlock; set wait time after event reset to avoid race condition
+\end_layout
+
+\begin_layout Itemize
+fix an issue where screenshots would occasionally not be taken in Direct3D
+ graphics mode; this may also have impacted the ability to use Amiga Forever's
+ clipping editor
 \end_layout
 
 \end_deeper
@@ -1474,23 +1480,64 @@ What are hardfiles?
 \end_layout
 
 \begin_layout Standard
-Most of you probably already know this and may skip this paragraph.
- For the ones that are new to emulation here a short description: 
+Hardfiles are used to simulate a harddrive connected to the emulated Amiga.
+ There are two types of hardfiles:
+\end_layout
+
+\begin_layout Enumerate
+The first type is most often just referred to as 
+\begin_inset Quotes eld
+\end_inset
+
+hardfile
+\begin_inset Quotes erd
+\end_inset
+
+ or 
+\begin_inset Quotes eld
+\end_inset
+
+plain hardfile
+\begin_inset Quotes erd
+\end_inset
+
+, and it is technically a 1:1 copy of the contents of an Amiga hard disk
+ partition into a file.
+ Plain hardfiles can be booted from using Kickstart 2.0 or higher.
+ This device supports only a subset of the features a real Amiga hard drive
+ has (you can for example defragment it).
+\end_layout
+
+\begin_layout Enumerate
+The second type is called 
+\begin_inset Quotes eld
+\end_inset
+
+RDB hardfile
+\begin_inset Quotes erd
+\end_inset
+
+, and it is a hardfile that simulates the copy of a full hard drive which
+ has been prepared with a rigid disk block using tools like HD Toolbox.
+ This device supports all features a real Amiga hard drive has (you may
+ for example create partitions, or defrag it).
+ It can contain multiple partitions, and can under some conditions be booted
+ from using Kickstart versions as early as 1.3.
 \end_layout
 
 \begin_layout Standard
-A hardfile is used to simulate a harddrive connected to the emulated Amiga.
- Technically a hardfile is a 1:1 copy of the contents of an Amiga harddisk
- partition into a file.
- Having this in mind the restriction a hardfile has comes clear: a hardfile
- is of a fixed size and doesn't grow as it is written to (like perhaps the
- Amiga RAM disk).
- When creating a hardfile you have to specify the size the hardfile shall
- have, i.e.
+A plain hardfile can be converted into an RDB hardfile by creating a rigid
+ disk block using HD Toolbox.
+\end_layout
+
+\begin_layout Standard
+Both types of hardfile are of a fixed size and don't grow as they are written
+ to (in contrast to, for example, the Amiga RAM disk, or the filesystems
+ that are explained below).
+ When creating a new hardfile you have to specify the size the hardfile
+ shall have, i.e.
  the amount of storage space you will be able to use on the simulated Amiga
- harddrive.
- This device supports all features a real Amiga harddrive has (so you may
- for example defrag it).
+ hard drive.
 \end_layout
 
 \begin_layout Subsection
@@ -1500,10 +1547,11 @@ How do I use a hardfile?
 \begin_layout Standard
 First of all you need a hardfile that is to be used.
  Perhaps you already have one from UAE or DOSFellow; if you don't have one
- you may now create it in the configuration menu under the hardfile tab.
+ you can create an empty one in the configuration menu under the hardfile
+ tab.
  Note that a newly created hardfile is just a file containing scratch; you
- need to format it on the Amiga side to be able to write any data to it.
- 
+ need to format it on the Amiga side to be able to write any data to it
+ (plain hardfiles), or prepare it using HD Toolbox (RDB based hardfiles).
 \end_layout
 
 \begin_layout Standard
@@ -1518,25 +1566,68 @@ not
 \end_layout
 
 \begin_layout Standard
-Also make sure you use a Kickstart version 2.0 or newer; with Kickstart 1.x
- the only way to use hardfiles is by the use of mount files (this possibility
- may be explained in more detail in a later version of this manual) and
- booting directly from them is not possible (since the old Kickstart versions
- don't support Autoconfig).
+If you're going to use an already existing file (and this file is bootable)
+ eject all inserted floppy images and boot from it (you should make sure
+ the used Kickstart version fits the one the hardfile has been installed
+ with).
 \end_layout
 
 \begin_layout Standard
-You should now be able to use the file.
- If you have configured a newly created file, you should insert a Workbench
- disk file fitting the configured Kickstart, boot it and format the hardfile
- the way you want it (it will appear as FELLOW0).
+The minimum Kickstart version required to boot from a hardfile depends on
+ the type of hardfile.
 \end_layout
 
 \begin_layout Standard
-If you're going to use an already existing file (and this file is bootable,
- not only a data partition) eject all inserted floppy images and boot from
- it (again you should make sure the used Kickstart version fits the one
- the hardfile has been installed with).
+\begin_inset Quotes eld
+\end_inset
+
+Plain
+\begin_inset Quotes erd
+\end_inset
+
+ hardfiles require Kickstart version 2.0 or newer to boot from them; with
+ Kickstart 1.x the only way to use these hardfiles is by the use of mount
+ files and booting directly from them is not possible.
+\end_layout
+
+\begin_layout Standard
+RDB based hardfiles can be booted from using Kickstart 1.3 if FastFileSystem
+ is installed in the RDB; from version 2.0 onwards FastFileSystem is contained
+ in the ROM.
+\end_layout
+
+\begin_layout Standard
+If you want to prepare an RDB based hardfile using HD Toolbox, make sure
+ to use the device with SCSI_DEVICE_NAME 
+\begin_inset Quotes eld
+\end_inset
+
+fhfile.device
+\begin_inset Quotes erd
+\end_inset
+
+.
+ It can be configured in the properties of the HD Toolbox icon, or you can
+ call HD Toolbox in a CLI window and pass the device name fhfile.device to
+ it.
+\end_layout
+
+\begin_layout Standard
+There are plenty of tutorials available online that explain this process,
+ which is not specific to WinFellow; for example the following guide can
+ be followed; make sure to use the fhfile.device:
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset href
+LatexCommand href
+name "How to use HDToolbox on Workbench 3.x"
+target "http://www.pjhutchison.org/emulation/uae_hdtoolbox.html"
+literal "false"
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Subsection
@@ -1947,7 +2038,7 @@ Worfje
 \noun on
 Torsten Enderling
 \noun default
- (carfesh@gmx.net)
+ (torsten.enderling@gmail.com)
 \end_layout
 
 \begin_layout Section*
