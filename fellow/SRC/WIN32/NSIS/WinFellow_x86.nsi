@@ -1,17 +1,17 @@
 ############################################################################################
 #      NSIS Installation Script created by NSIS Quick Setup Script Generator v1.09.18
-#               Entirely Edited with NullSoft Scriptable Installation System                
-#              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006               
+#               Entirely Edited with NullSoft Scriptable Installation System
+#              by Vlasis K. Barkas aka Red Wine red_wine@freemail.gr Sep 2006
 ############################################################################################
 
 !define APP_NAME "WinFellow"
 !define COMP_NAME "The WinFellow Team"
-!define WEB_SITE "http://fellow.sourceforge.net"
+!define WEB_SITE "http://petschau.github.io"
 !define VERSION "${FELLOWVERSION}"
 !define COPYRIGHT "© 1996-2019 under the GNU General Public License"
 !define DESCRIPTION "WinFellow Amiga Emulator"
 !define LICENSE_TXT "gpl-2.0.txt"
-!define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}.exe"
+!define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}_x86.exe"
 !define MAIN_APP_EXE "WinFellow.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
@@ -40,7 +40,7 @@ OutFile "$%TEMP%\${INSTALLER_NAME}"
 BrandingText "${APP_NAME}"
 XPStyle on
 InstallDirRegKey "${REG_ROOT}" "${REG_APP_PATH}" ""
-InstallDir "$PROGRAMFILES\WinFellow"
+InstallDir "$PROGRAMFILES32\WinFellow"
 
 ######################################################################
 

@@ -219,9 +219,19 @@ Function Main()
     $NSISDIR = Resolve-Path ("$SourceCodeBaseDir\fellow\SRC\WIN32\NSIS")
     Write-Debug "NSIS dir: $NSISDIR"
     cd $temp
-    $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow.log")
-    Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir
-    Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
+
+    # build 32 bit NSIS installer
+    $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow_x86.nsi" > "WinFellow_NSIS_x86.log")
+    Move-Item -Force "WinFellow_v${FELLOWVERSION}_x86.exe" $TargetOutputDir
+    Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}_x86.exe"
+
+    # build 64 bit NSIS installer
+    If($Generate64BitBuild)
+    {
+        $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow_x64.nsi" > "WinFellow_NSIS_x64.log")
+        Move-Item -Force "WinFellow_v${FELLOWVERSION}_x64.exe" $TargetOutputDir
+        Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}_x64.exe"
+    }
 
     cd $SourceCodeBaseDir
 
