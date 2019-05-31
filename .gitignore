@@ -4,8 +4,12 @@ fellow/SRC/WIN32/MSVC/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/.vs/
 fellow/SRC/WIN32/MSVC/Debug/
 fellow/SRC/WIN32/MSVC/Release/
-fellow/SRC/WIN32/MSVC/WinFellow.Hardfile/Release/
+fellow/SRC/WIN32/MSVC/x64/Debug/
+fellow/SRC/WIN32/MSVC/x64/Release/
 fellow/SRC/WIN32/MSVC/WinFellow.Hardfile/Debug/
+fellow/SRC/WIN32/MSVC/WinFellow.Hardfile/Release/
+fellow/SRC/WIN32/MSVC/WinFellow.Hardfile/x64/Debug/
+fellow/SRC/WIN32/MSVC/WinFellow.Hardfile/x64/Release/
 fellow/SRC/M68KTester/Debug
 fellow/SRC/M68KTester/Release
 *.lyx~

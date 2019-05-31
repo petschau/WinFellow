@@ -52,9 +52,6 @@
     <Filter Include="icons">
       <UniqueIdentifier>{33d76fb7-c7ea-48f4-88c8-dc1922fdb79d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CAPS Header Files">
-      <UniqueIdentifier>{16e17f05-c0df-4b6f-8422-957ed77e46d6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="graphics">
       <UniqueIdentifier>{b87ae76d-615b-4620-818c-936fab6ea5a0}</UniqueIdentifier>
     </Filter>
@@ -84,6 +81,9 @@
     </Filter>
     <Filter Include="fellow\api\vm">
       <UniqueIdentifier>{3fd128fb-e4d3-49ad-a62f-72d00f4b2e54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="IPF Access API">
+      <UniqueIdentifier>{8a43c7b9-d400-45fc-8ff4-a80b9c0718be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -185,9 +185,6 @@
     </ClCompile>
     <ClCompile Include="..\..\C\zlibwrap.c">
       <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Caps\C\caps_win32.c">
-      <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\commoncontrol_wrap.c">
       <Filter>Win32 C Files</Filter>
@@ -486,6 +483,12 @@
     <ClCompile Include="..\..\fellow\service\Services.cpp">
       <Filter>fellow\service</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\IPF\CapsPlug.cpp">
+      <Filter>IPF Access API</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Caps\C\caps.c">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -586,9 +589,6 @@
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
       <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Caps\include\caps_win32.h">
-      <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h">
       <Filter>Win32 C Header Files</Filter>
@@ -739,18 +739,6 @@
     </ClInclude>
     <ClInclude Include="gui_general.h">
       <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CAPS\include\CapsAPI.h">
-      <Filter>CAPS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CAPS\include\CapsLib.h">
-      <Filter>CAPS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CAPS\include\Comlib.h">
-      <Filter>CAPS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\CAPS\include\Comtype.h">
-      <Filter>CAPS Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\RetroPlatformGuestIPC.h">
       <Filter>Win32 C Header Files</Filter>
@@ -940,6 +928,18 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\service\RetroPlatformWrapper.h">
       <Filter>fellow\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IPF\CapsAPI.h">
+      <Filter>IPF Access API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IPF\CapsPlug.h">
+      <Filter>IPF Access API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\IPF\Comtype.h">
+      <Filter>IPF Access API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Caps\include\caps.h">
+      <Filter>Win32 C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
