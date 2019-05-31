@@ -790,7 +790,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
-    <ClCompile Include="..\Caps\C\caps_win32.c">
+    <ClCompile Include="..\Caps\C\caps.c">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)%(Filename)1.obj</ObjectFileName>
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)%(Filename)1.obj</ObjectFileName>
@@ -1663,7 +1663,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\SPRITE.H" />
     <ClInclude Include="..\..\INCLUDE\WAV.H" />
     <ClInclude Include="..\..\INCLUDE\zlibwrap.h" />
-    <ClInclude Include="..\Caps\include\caps_win32.h" />
+    <ClInclude Include="..\Caps\include\caps.h" />
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h" />
     <ClInclude Include="..\INCLUDE\FSWRAP.H" />
     <ClInclude Include="..\..\INCLUDE\GFXDRV.H" />

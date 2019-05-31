@@ -1,7 +1,7 @@
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
-/* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
+/* C.A.P.S. Support - The Classic Amiga Preservation Society               */
 /* http://www.softpres.org                                                 */
 /*                                                                         */
 /* (w)2004-2019 by Torsten Enderling                                       */
@@ -24,7 +24,7 @@
 /*=========================================================================*/
 
 #include <assert.h>
-#include "caps_win32.h"
+#include "caps.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 

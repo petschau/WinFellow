@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/05/29)
+v0.5.8 (2019/05/31)
 \end_layout
 
 \begin_layout Author
@@ -389,6 +389,11 @@ project files were updated to Visual Studio 2019 using the toolset v141_xp
 
 \begin_layout Itemize
 the February 2010 DirectX SDK dependency was eliminated
+\end_layout
+
+\begin_layout Itemize
+IPF Access API files were updated to the lastest version, and support for
+ it was enabled in 64 bit builds
 \end_layout
 
 \end_deeper
