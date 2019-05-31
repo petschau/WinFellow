@@ -37,7 +37,8 @@
 
 [CmdletBinding()]
 Param(
-    [switch]$Test=$false
+    [switch]$Test,
+    [switch]$Generate64BitBuild
 )
 
 function CheckForExeInSearchPath([string] $exe)
@@ -76,8 +77,8 @@ $ErrorActionPreference="Stop"
 
 Function Main()
 {
-    $FELLOWPLATFORM="Win32"
-    $CMDLINETOOLS = [Environment]::GetEnvironmentVariable("VS120COMNTOOLS", "Machine")
+    $FELLOWPLATFORM  ='Win32'
+    $FELLOWPLATFORM64='x64'
 
     ShowProgressIndicator 1 "Checking prerequisites..."
 
@@ -138,7 +139,7 @@ Function Main()
         $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
         If(Test-Path $MSBuildPath)
         {
-            Write-Verbose "Executing MSBuild.exe..."
+            Write-Verbose "Executing 32 bit build..."
             $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
 
             If($LastExitCode -ne 0)
@@ -146,6 +147,19 @@ Function Main()
                 ii $MSBuildLog
                 Pop-Location
                 Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+            }
+
+            If($Generate64BitBuild)
+            {
+                Write-Verbose "Executing 64 bit build..."
+                $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM64 /fl /flp:logfile=$MSBuildLog)
+
+                If($LastExitCode -ne 0)
+                {
+                    ii $MSBuildLog
+                    Pop-Location
+                    Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+                }
             }
         }
         Else
@@ -180,13 +194,18 @@ Function Main()
     $OUTPUTDIR = Resolve-Path $OUTPUTDIR
     Write-Debug "Build output dir: $OUTPUTDIR"
 
-    Move-Item -Force "$temp\ChangeLog.txt"                                                        "$OUTPUTDIR\ChangeLog.txt"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf"         "$OUTPUTDIR\WinFellow User Manual.pdf"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow.exe"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow.pdb"
-    Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"                                          "$OUTPUTDIR\Presets" -Recurse
-    Copy-Item -Force "$SourceCodeBaseDir\fellow\Utilities"                                        "$OUTPUTDIR\Utilities" -Recurse
-    Copy-Item -Force "$temp\gpl-2.0.pdf"                                                          "$OUTPUTDIR\gpl-2.0.pdf"
+    Move-Item -Force "$temp\ChangeLog.txt"                                                                "$OUTPUTDIR\ChangeLog.txt"
+    Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf"                 "$OUTPUTDIR\WinFellow User Manual.pdf"
+    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe"         "$OUTPUTDIR\WinFellow.exe"
+    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb"         "$OUTPUTDIR\WinFellow.pdb"
+    If($Generate64BitBuild)
+    {
+        Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\x64\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow_x64.exe"
+        Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\x64\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow_x64.pdb"
+    }
+    Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"                                                  "$OUTPUTDIR\Presets" -Recurse
+    Copy-Item -Force "$SourceCodeBaseDir\fellow\Utilities"                                                "$OUTPUTDIR\Utilities" -Recurse
+    Copy-Item -Force "$temp\gpl-2.0.pdf"                                                                  "$OUTPUTDIR\gpl-2.0.pdf"
 
     Write-Verbose "Compressing release binary distribution archive..."
     CD $OUTPUTDIR
