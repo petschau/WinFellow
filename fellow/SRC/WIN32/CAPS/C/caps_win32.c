@@ -1,11 +1,10 @@
-/* @(#) $Id: caps_win32.c,v 1.9 2013-01-13 21:42:34 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
 /* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
 /* http://www.softpres.org                                                 */
 /*                                                                         */
-/* (w)2004-2013 by Torsten Enderling (carfesh@gmx.net)                     */
+/* (w)2004-2019 by Torsten Enderling                                       */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -38,16 +37,15 @@
 extern "C" {
 #endif
 
-#include "ComType.h"
+#include "Comtype.h"
 #include "CapsAPI.h"
 
-#define CAPS_USER
-#include "CapsLib.h"
 
 #ifdef __cplusplus
 }
 #endif
 
+#include "CapsPlug.h"
 
 #ifdef _DEBUG
 #define TRACECAPS 1
@@ -65,53 +63,28 @@ static BOOLE capsUserIsNotified = FALSE;    /* if the library is missing, did we
 
 BOOLE capsStartup(void) {
   int i;
-  STR szCommonCAPSFileName[CFG_FILENAME_LENGTH];
-
+  
   if(capsIsInitialized) 
     return TRUE;
 
-#ifdef X64
-  capshModule = LoadLibrary("CAPSImg_x64.dll");
-#else
-  capshModule = LoadLibrary("CAPSImg.dll");
-#endif
-  
-  if(!capshModule) {
+  SDWORD result;
+  result = CapsInit("CapsImg.dll");
 
-#ifdef X64
-    fileopsResolveVariables("%CommonProgramFiles%\\Software Preservation Society\\CAPSImg_x64.dll", szCommonCAPSFileName);
-#else
-    fileopsResolveVariables("%CommonProgramFiles(x86)%\\Software Preservation Society\\CAPSImg.dll", szCommonCAPSFileName);
-#endif
-
-    capshModule = LoadLibrary(szCommonCAPSFileName);
-    if(!capshModule) {
-      if(capsUserIsNotified)
-        return FALSE;
-      else {
-        fellowAddLogRequester(FELLOW_REQUESTER_TYPE_INFO, 
-	  "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
-        capsUserIsNotified = TRUE;
-        fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
-        return FALSE;
-      }
-    }
+  if(result != 0)
+  {
+    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_INFO, 
+	    "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
+    capsUserIsNotified = TRUE;
+    fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
+    return FALSE;
   }
-
-  if(!GetProcAddress(capshModule, "CAPSLockImageMemory")) {
-    if(capsUserIsNotified)
-      return FALSE;
-    else {
-      fellowAddLogRequester(FELLOW_REQUESTER_TYPE_INFO, 
-	"IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
-      capsUserIsNotified = TRUE;
-      fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
-      return FALSE;
-    }
+  else
+  {
+    capsIsInitialized = TRUE;
   }
 
   for(i = 0; i < 4; i++)
-    capsDriveContainer[i] = CAPSAddImage();
+    capsDriveContainer[i] = CapsAddImage();
 
   capsIsInitialized = TRUE;
   fellowAddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
@@ -120,22 +93,15 @@ BOOLE capsStartup(void) {
 }
 
 BOOLE capsShutdown(void) {
-  if(capshModule) {
-    FreeLibrary(capshModule);
-    capshModule = NULL;
-  }
-  capsIsInitialized = FALSE;
-  fellowAddLog("capsShutdown(): CAPS IPF Image library unloaded.\n");
-
-  return TRUE;
+  return CapsExit();
 }
 
 BOOLE capsUnloadImage(ULO drive) {
   if(!capsDriveIsLocked[drive])
     return FALSE;
 
-  CAPSUnlockAllTracks(capsDriveContainer[drive]);
-  CAPSUnlockImage(capsDriveContainer[drive]);
+  CapsUnlockAllTracks(capsDriveContainer[drive]);
+  CapsUnlockImage(capsDriveContainer[drive]);
   capsDriveIsLocked[drive] = FALSE;
   fellowAddLog("capsUnloadImage(): Image %s unloaded from drive no %u.\n", floppy[drive].imagename, drive);
   return TRUE;
@@ -176,12 +142,12 @@ static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive) {
   for(i = 0; capsImageInfo->platform[i] != 0; i++) {
     if(i > 0) {
       char AppendString[100];
-      sprintf(AppendString, CAPSGetPlatformName(capsImageInfo->platform[i]));
+      sprintf(AppendString, CapsGetPlatformName(capsImageInfo->platform[i]));
       strcat(PlatformString, ", ");
       strcat(PlatformString, AppendString);
     }
     else   
-      sprintf(PlatformString, CAPSGetPlatformName(capsImageInfo->platform[i]));
+      sprintf(PlatformString, CapsGetPlatformName(capsImageInfo->platform[i]));
   }
 
   /* log the information */
@@ -221,7 +187,7 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
   if(fread(ImageBuffer, ImageSize, 1, F) == 0)
     return FALSE;
 
-  ReturnCode = CAPSLockImageMemory(capsDriveContainer[drive], ImageBuffer, ImageSize, 0);
+  ReturnCode = CapsLockImageMemory(capsDriveContainer[drive], ImageBuffer, ImageSize, 0);
   free(ImageBuffer);
 
   if(ReturnCode != imgeOk)
@@ -229,10 +195,10 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
 
   capsDriveIsLocked[drive] = TRUE;
 
-  CAPSGetImageInfo(&capsImageInfo, capsDriveContainer[drive]);
+  CapsGetImageInfo(&capsImageInfo, capsDriveContainer[drive]);
   *tracks = ((capsImageInfo.maxcylinder - capsImageInfo.mincylinder + 1) * (capsImageInfo.maxhead - capsImageInfo.minhead + 1) + 1) / 2;
 
-  CAPSLoadImage(capsDriveContainer[drive], capsFlags);
+  CapsLoadImage(capsDriveContainer[drive], capsFlags);
   capsLogImageInfo(&capsImageInfo, drive);
   fellowAddLog("capsLoadImage(): Image loaded successfully.\n");
   return TRUE;
@@ -243,7 +209,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
   struct CapsTrackInfo capsTrackInfo;
 
   *timebuf = 0;
-  CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
+  CapsLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
   *flakey = (capsTrackInfo.type & CTIT_FLAG_FLAKEY) ? TRUE : FALSE;
   type = capsTrackInfo.type & CTIT_MASK_TYPE;
   len = capsTrackInfo.tracksize[0];
@@ -299,7 +265,7 @@ BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *trackleng
   struct CapsTrackInfo capsTrackInfo;
 
   revolutioncount++;
-  CAPSLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
+  CapsLockTrack(&capsTrackInfo, capsDriveContainer[drive], track / 2, track & 1, capsFlags);
   revolution = revolutioncount % capsTrackInfo.trackcnt;
   len = capsTrackInfo.tracksize[revolution];
   /*if(*tracklength != len)
