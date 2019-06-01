@@ -1,11 +1,10 @@
-/* @(#) $Id: caps_win32.h,v 1.5 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
-/* Win32 C.A.P.S. Support - The Classic Amiga Preservation Society         */
-/* http://www.caps-project.org                                             */
+/* C.A.P.S. Support - The Classic Amiga Preservation Society               */
+/* http://www.softpres.org                                                 */
 /*                                                                         */
-/* (w)2004 by Torsten Enderling (carfesh@gmx.net)                          */
+/* (w)2004-2019 by Torsten Enderling                                       */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -24,8 +23,8 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _CAPS_WIN32_H_
-#define _CAPS_WIN32_H_
+#ifndef _CAPS_H_
+#define _CAPS_H_
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "defs.h"

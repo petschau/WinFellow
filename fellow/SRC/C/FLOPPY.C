@@ -70,7 +70,7 @@
 #include "fileops.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
-#include "caps_win32.h"
+#include "caps.h"
 #endif
 
 #ifdef RETRO_PLATFORM

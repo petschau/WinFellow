@@ -2,7 +2,11 @@
 #define COMTYPE_H
 
 typedef void *PVOID;
+typedef BYTE *PBYTE;
+typedef WORD *PWORD;
+typedef DWORD *PDWORD;
 typedef char *PCHAR;
+typedef long IOREG;
 
 typedef unsigned char UBYTE;
 typedef unsigned short UWORD;
