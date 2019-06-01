@@ -30,6 +30,10 @@
 #include "fmem.h"
 #include "floppy.h"
 #include "cia.h"
+#include "interrupt.h"
+#include "fellow/api/Services.h"
+
+using namespace fellow::api;
 
 #define CIA_NO_EVENT          0
 #define CIAA_TA_TIMEOUT_EVENT 1
@@ -46,6 +50,10 @@
 #define CIA_BUS_CYCLE_RATIO 5
 
 //#define CIA_LOGGING
+
+#ifdef CIA_LOGGING
+extern ULO cpuGetOriginalPC();
+#endif
 
 typedef UBY (*ciaFetchFunc)(ULO i);
 typedef void (*ciaWriteFunc)(ULO i, UBY data);
@@ -80,7 +88,8 @@ typedef struct cia_state_
   UBY prb;              
   UBY ddra;             
   UBY ddrb;             
-  UBY sp;  
+  UBY sp;
+  bool irq;
 } cia_state;
 
 cia_state cia[2];
@@ -108,62 +117,82 @@ ULO ciaStabilizeValueRemainder(ULO value) {
 
 ULO ciaGetTimerValue(ULO value)
 {
-  if (value == 0) return 1; // Avoid getting stuck on zero timeout.
+  if (value == 0)
+  {
+#ifdef CIA_LOGGING  
+    Service->Log.AddLogDebug("CIA Warning timer latch is zero. PC %X", cpuGetOriginalPC());
+#endif    
+    return 1; // Avoid getting stuck on zero timeout.
+  }
   return value;
 }
 
-void ciaTAStabilize(ULO i) {
-  if (cia[i].cra & 1) {
+void ciaTAStabilize(ULO i)
+{
+  if (cia[i].cra & 1)
+  {
     cia[i].ta = ciaStabilizeValue(cia[i].taleft);
     cia[i].ta_rem = ciaStabilizeValueRemainder(cia[i].taleft);
   }
   cia[i].taleft = BUS_CYCLE_DISABLE;
 }
 
-void ciaTBStabilize(ULO i) {
-  if ((cia[i].crb & 0x41) == 1) { // Timer B started and not attached to timer A
+void ciaTBStabilize(ULO i)
+{
+  if ((cia[i].crb & 0x41) == 1)
+  { // Timer B started and not attached to timer A
     cia[i].tb = ciaStabilizeValue(cia[i].tbleft);
     cia[i].tb_rem = ciaStabilizeValueRemainder(cia[i].tbleft);
   }
   cia[i].tbleft = BUS_CYCLE_DISABLE;
 }
 
-void ciaStabilize(ULO i) {
+void ciaStabilize(ULO i)
+{
   ciaTAStabilize(i);
   ciaTBStabilize(i);
 }
 
-void ciaTAUnstabilize(ULO i) {
+void ciaTAUnstabilize(ULO i)
+{
   if (cia[i].cra & 1)
     cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, cia[i].ta_rem);
 }
 
-void ciaTBUnstabilize(ULO i) {
+void ciaTBUnstabilize(ULO i)
+{
   if ((cia[i].crb & 0x41) == 1) // Timer B started and not attached to timer A
     cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, cia[i].tb_rem);
 }
 
-void ciaUnstabilize(ULO i) {
+void ciaUnstabilize(ULO i) 
+{
   ciaTAUnstabilize(i);
   ciaTBUnstabilize(i);
 }  
 
-/* This used to clear the corresponding bit in INTREQ when
-/* no CIA IRQs were waiting (anymore), according to the HRM it will take */
-/* the irq line from the CIA high (off), but the bit in INTREQ */
-/* should probably remain set until it is cleared by other means. */
+// According to HRM Paula will set CIA irq request bits whenever INT2 or INT6 goes low.
+// Which means that if a program forgets to clear the CIA req bits, but clears intreq, 
+// the Paula intreq bits will not go back to 1 until the CIA INT line goes high and then low again.
+// The CIA will keep its irq line low for as long as there are matching bits in icrreq and icrmsk.
+// (ie. Until it is read and cleared by software)
 
 void ciaUpdateIRQ(ULO i)
 {
   if (cia[i].icrreq & cia[i].icrmsk)
   {
     // This CIA wants IRQ.
-    cia[i].icrreq |= 0x80;
-    memoryWriteWord((i == 0) ? 0x8008 : 0xa000, 0xdff09c);
+    if (!cia[i].irq)
+    {
+      cia[i].irq = true;
+      cia[i].icrreq |= 0x80;
+      wintreq_direct((i == 0) ? 0x8008 : 0xa000, 0xdff09c, true);
+    }
   }
-}  
+}
 
-void ciaRaiseIRQ(ULO i, ULO req) {
+void ciaRaiseIRQ(ULO i, ULO req)
+{
   cia[i].icrreq |= (req & 0x1f);
   ciaUpdateIRQ(i);
 }
@@ -178,6 +207,10 @@ void ciaCheckAlarmMatch(ULO i)
 {
   if (cia[i].ev == cia[i].evalarm)
   {
+#ifdef CIA_LOGGING  
+    Service->Log.AddLogDebug("CIA %c Alarm IRQ\n", (i == 0) ? 'A' : 'B');
+#endif
+
     ciaRaiseIRQ(i, CIA_ALARM_IRQ);
   }
 }
@@ -185,30 +218,50 @@ void ciaCheckAlarmMatch(ULO i)
 /* Timeout handlers */
 
 void ciaHandleTBTimeout(ULO i) {
+#ifdef CIA_LOGGING  
+  Service->Log.AddLogDebug("CIA %c Timer B expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].crb & 8) ? "one-shot" : "continuous", cia[i].tblatch);
+#endif
+
   cia[i].tb = ciaGetTimerValue(cia[i].tblatch);      /* Reload from latch */
     
-  if (cia[i].crb & 8) {            /* One Shot Mode */
+  if (cia[i].crb & 8)              /* One Shot Mode */
+  {            
     cia[i].crb &= 0xfe;            /* Stop timer */
     cia[i].tbleft = BUS_CYCLE_DISABLE;
   }
   else if (!(cia[i].crb & 0x40))   /* Continuous mode, no attach */
+  {
     cia[i].tbleft = ciaUnstabilizeValue(cia[i].tb, 0);
+  }
+
   ciaRaiseIRQ(i, CIA_TB_IRQ);     /* Raise irq */
 }
 
-void ciaHandleTATimeout(ULO i) {
+void ciaHandleTATimeout(ULO i)
+{
+#ifdef CIA_LOGGING  
+  Service->Log.AddLogDebug("CIA %c Timer A expired in %s mode, reloading %X\n", (i == 0) ? 'A' : 'B', (cia[i].cra & 8) ? "one-shot" : "continuous", cia[i].talatch);
+#endif
+
   cia[i].ta = ciaGetTimerValue(cia[i].talatch);      /* Reload from latch */
-  if ((cia[i].crb & 0x41) == 0x41){/* Timer B attached and started */
+  if ((cia[i].crb & 0x41) == 0x41)
+  {                                                  /* Timer B attached and started */
     cia[i].tb = (cia[i].tb - 1) & 0xffff;
     if (cia[i].tb == 0)
+    {
       ciaHandleTBTimeout(i);
+    }
   }
-  if (cia[i].cra & 8) {            /* One Shot Mode */
+  if (cia[i].cra & 8)              /* One Shot Mode */
+  {
     cia[i].cra &= 0xfe;            /* Stop timer */
     cia[i].taleft = BUS_CYCLE_DISABLE;
   }
   else                             /* Continuous mode */
+  {
     cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, 0);
+  }
+
   ciaRaiseIRQ(i, CIA_TA_IRQ);    /* Raise irq */
 }
 
@@ -485,7 +538,7 @@ void ciaWritetalo(ULO i, UBY data)
   cia[i].talatch = (cia[i].talatch & 0xff00) | (ULO)data;
 
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer A %d written: %X\n", i, cia[i].talatch);
+  Service->Log.AddLogDebug("CIA %c Timer A written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].talatch, cpuGetOriginalPC());
 #endif
 }
 
@@ -499,7 +552,7 @@ void ciaWritetahi(ULO i, UBY data)
 {
   cia[i].talatch = (cia[i].talatch & 0xff) | (((ULO)data)<<8);
 
-  if (ciaMustReloadOnTHiWrite(cia[i].cra))
+  if (ciaMustReloadOnTHiWrite(cia[i].cra)) // Reload when not started, or one-shot mode
   {
     cia[i].ta = ciaGetTimerValue(cia[i].talatch);
     cia[i].ta_rem = 0;
@@ -507,7 +560,7 @@ void ciaWritetahi(ULO i, UBY data)
   }
 
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer A %d written: %X\n", i, cia[i].talatch);
+  Service->Log.AddLogDebug("CIA %c Timer A written (hi-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].talatch, cpuGetOriginalPC());
 #endif
 
   if (cia[i].cra & 8) // Timer A is one-shot, write starts it
@@ -517,7 +570,7 @@ void ciaWritetahi(ULO i, UBY data)
     ciaSetupNextEvent();
 
 #ifdef CIA_LOGGING  
-    fellowAddLog("Timer A %d one-shot mode automatically started\n", i);
+    Service->Log.AddLogDebug("CIA %c Timer A one-shot mode automatically started PC %X\n", (i == 0) ? 'A' : 'B', cpuGetOriginalPC());
 #endif
   }
 }
@@ -542,7 +595,7 @@ void ciaWritetblo(ULO i, UBY data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff00) | ((ULO)data);
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer B %d written: %X\n", i, cia[i].tblatch);
+  Service->Log.AddLogDebug("CIA %c Timer B written (low-part): %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tblatch, cpuGetOriginalPC());
 #endif
 }
 
@@ -550,7 +603,7 @@ void ciaWritetbhi(ULO i, UBY data)
 {
   cia[i].tblatch = (cia[i].tblatch & 0xff) | (((ULO)data)<<8);
 
-  if (ciaMustReloadOnTHiWrite(cia[i].crb))
+  if (ciaMustReloadOnTHiWrite(cia[i].crb)) // Reload when not started, or one-shot mode
   {
     cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
     cia[i].tb_rem = 0;
@@ -558,15 +611,15 @@ void ciaWritetbhi(ULO i, UBY data)
   }
 
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer B %d written: %X\n", i, cia[i].tblatch);
+  Service->Log.AddLogDebug("CIA %c Timer B (hi-part) written: %X PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tblatch, cpuGetOriginalPC());
 #endif
-  if (cia[i].crb & 8)
+  if (cia[i].crb & 8) // Timer B is one-shot, write starts it
   {
     cia[i].crb |= 1;
     ciaUnstabilize(i);
     ciaSetupNextEvent();
 #ifdef CIA_LOGGING  
-    fellowAddLog("Timer B %d one-shot mode automatically started\n", i);
+    Service->Log.AddLogDebug("CIA %c Timer B one-shot mode automatically started. PC %X\n", (i == 0) ? 'A' : 'B', cpuGetOriginalPC());
 #endif
   }
 }
@@ -648,11 +701,13 @@ UBY ciaReadicr(ULO i)
 {
   UBY tmp = cia[i].icrreq;
   cia[i].icrreq = 0;
+  cia[i].irq = false;
   return tmp;
 }
 
 void ciaWriteicr(ULO i, UBY data)
 {
+  ULO old = cia[i].icrmsk;
   if (data & 0x80)
   {
     cia[i].icrmsk |= (data & 0x1f);
@@ -661,6 +716,12 @@ void ciaWriteicr(ULO i, UBY data)
   {
     cia[i].icrmsk &= ~(data & 0x1f);
   }
+
+  ciaUpdateIRQ(i);
+
+#ifdef CIA_LOGGING  
+  Service->Log.AddLogDebug("CIA %c IRQ mask data %X, mask was %X is %X. PC %X\n", (i == 0) ? 'A' : 'B', data, old, cia[i].icrmsk, cpuGetOriginalPC());
+#endif
 }
 
 /* CRA */
@@ -677,13 +738,16 @@ void ciaWritecra(ULO i, UBY data)
   {
     cia[i].ta = ciaGetTimerValue(cia[i].talatch);
     cia[i].ta_rem = 0;
-    data &= 0xef;
+    data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING  
-    fellowAddLog("Timer A %d force load %X\n", i, cia[i].ta);
+    Service->Log.AddLogDebug("CIA %c Timer A force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].ta, cpuGetOriginalPC());
 #endif
   }
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer A %d is %s\n", i, (data & 1) ? "started" : "stopped");
+  if ((data & 1) != (cia[i].cra & 1))
+  {
+    Service->Log.AddLogDebug("CIA %c Timer A is %s, was %s. PC %X\n", (i == 0) ? 'A' : 'B', (data & 1) ? "started" : "stopped", (cia[i].cra & 1) ? "started" : "stopped", cpuGetOriginalPC());
+  }
 #endif
   cia[i].cra = data;
   ciaUnstabilize(i);
@@ -704,13 +768,16 @@ void ciaWritecrb(ULO i, UBY data)
   {
     cia[i].tb = ciaGetTimerValue(cia[i].tblatch);
     cia[i].tb_rem = 0;
-    data &= 0xef;
+    data &= 0xef; // Clear force load bit
 #ifdef CIA_LOGGING  
-    fellowAddLog("Timer B %d force load %X\n", i, cia[i].tb);
+    Service->Log.AddLogDebug("CIA %c Timer B force load %X. PC %X\n", (i == 0) ? 'A' : 'B', cia[i].tb, cpuGetOriginalPC());
 #endif
   }
 #ifdef CIA_LOGGING  
-  fellowAddLog("Timer B %d is %s\n", i, (data & 1) ? "started" : "stopped");
+  if ((data & 1) != (cia[i].cra & 1))
+  {
+    Service->Log.AddLogDebug("CIA %c Timer B is %s, was %s. PC %X\n", (i == 0) ? 'A' : 'B', (data & 1) ? "started" : "stopped", (cia[i].crb & 1) ? "started" : "stopped", cpuGetOriginalPC());
+  }
 #endif
   cia[i].crb = data;
   ciaUnstabilize(i);
@@ -730,15 +797,20 @@ void ciaWriteNothing(ULO i, UBY data)
 
 /* Table of CIA read/write functions */
 
-ciaFetchFunc cia_read[16] = {ciaReadpra, ciaReadprb, ciaReadddra,ciaReadddrb,
-ciaReadtalo,ciaReadtahi,ciaReadtblo,ciaReadtbhi,
-ciaReadevlo,ciaReadevmi,ciaReadevhi,ciaReadNothing,
-ciaReadsp,  ciaReadicr, ciaReadcra, ciaReadcrb};
-ciaWriteFunc cia_write[16]={
+ciaFetchFunc cia_read[16] =
+{
+  ciaReadpra, ciaReadprb, ciaReadddra,ciaReadddrb,
+  ciaReadtalo,ciaReadtahi,ciaReadtblo,ciaReadtbhi,
+  ciaReadevlo,ciaReadevmi,ciaReadevhi,ciaReadNothing,
+  ciaReadsp,  ciaReadicr, ciaReadcra, ciaReadcrb
+};
+ciaWriteFunc cia_write[16] =
+{
   ciaWritepra, ciaWriteprb, ciaWriteddra,ciaWriteddrb,
   ciaWritetalo,ciaWritetahi,ciaWritetblo,ciaWritetbhi,
   ciaWriteevlo,ciaWriteevmi,ciaWriteevhi,ciaWriteNothing,
-  ciaWritesp,  ciaWriteicr, ciaWritecra, ciaWritecrb};
+  ciaWritesp,  ciaWriteicr, ciaWritecra, ciaWritecrb
+};
 
   UBY ciaReadByte(ULO address)
   {
@@ -835,6 +907,7 @@ ciaWriteFunc cia_write[16]={
       cia[i].icrmsk = 0;
       cia[i].cra = 0;
       cia[i].crb = 0;
+      cia[i].irq = false;
     }
     cia_next_event_type = 0;
   }

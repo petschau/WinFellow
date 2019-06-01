@@ -1,4 +1,3 @@
-/* @(#) $Id: interrupt.c,v 1.16 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* WinFellow                                                               */
 /* Chipset side of interrupt control                                       */
@@ -149,21 +148,19 @@ BOOLE interruptIsRequested(UWO bitmask)
   return !!(intreq & bitmask);
 }
 
-/*=====================================================
-  Set the interrupt in the CPU
-  =====================================================*/
-void interruptHandleEvent(void)
-{
-  interruptEvent.cycle = BUS_CYCLE_DISABLE;
-  cpuIntegrationSetIrqLevel(interruptGetPendingCpuLevel(), interruptGetPendingChipInterruptNumber());
-}
-
 extern BOOLE cpuGetRaiseInterrupt(void);
 
 /*=====================================================
   Raise any waiting interrupts
+
+  This routine is made complicated by the fact that in reality hardware
+  interrupts become visible while CPU is running, while the emulator
+  runs entire instructions as one unit. So busy loops on intreq does not see
+  irq's coming in if the program is also running a IRQ service routine (that clears the intreq bits).
+  Unless hardware irq are given a slight time in waiting before set up, these loops will be stuck.
+  Software initiated irq's are set up immediately.
   =====================================================*/
-void interruptRaisePending(void)
+void interruptRaisePendingInternal(bool delayIRQ)
 {
   if (!interruptMasterSwitchIsEnabled())
   {
@@ -176,25 +173,51 @@ void interruptRaisePending(void)
     return;
   }
 
-  if (interruptEvent.cycle != BUS_CYCLE_DISABLE || cpuGetRaiseInterrupt())
+  if (cpuGetRaiseInterrupt())
   {
-    // Interrupt already scheduled, wait for it to finish being set up
+    // Wait for CPU to switch IRQ level after current instruction, this function will be called again.
     return;
   }
 
+  if (interruptEvent.cycle != BUS_CYCLE_DISABLE)
+  {
+    // Waiting for a delayed IRQ
+    if (delayIRQ)
+    {
+      // The new one is also delayed, wait for the current wait to finish, this function will be called again.
+      return;
+    }
+    else
+    {
+      // Cancel wait, evaluate irq immediately
+      busRemoveEvent(&interruptEvent);
+      interruptEvent.cycle = BUS_CYCLE_DISABLE;
+    }
+  }
+
+  // Evaluate which interrupt is next
   ULO current_cpu_level = cpuGetIrqLevel();
+  if (current_cpu_level == 7)
+  {
+    return;
+  }
+
   for (int interrupt_number = 13; interrupt_number >= 0; interrupt_number--)
   {
     if (interruptIsPending(interrupt_number, pending_chip_interrupts))
     {
-      // Found a chip-irq that is both flagged and enabled.
+      // Found a chip-irq that is both requested and enabled.
       unsigned int interrupt_level = interruptGetCpuLevel(interrupt_number);
       if (interrupt_level > current_cpu_level)
       {
-	interruptSetPendingChipInterruptNumber(interrupt_number);
-	interruptSetPendingCpuLevel(interrupt_level);
-	interruptEvent.cycle = busGetCycle() + interruptGetScheduleLatency();
-	busInsertEvent(&interruptEvent);
+        if (delayIRQ && !cpuGetStop())
+        {
+          interruptEvent.cycle = busGetCycle() + interruptGetScheduleLatency();
+          busInsertEvent(&interruptEvent);
+          return;
+        }
+        // This will make the CPU switch to IRQ at the beginning of the next instruction. Also ending possible stop state.
+        cpuIntegrationSetIrqLevel(interrupt_level, interrupt_number);
 	return;
       }
       else
@@ -204,6 +227,20 @@ void interruptRaisePending(void)
       }
     }
   }
+}
+
+void interruptRaisePending()
+{
+  interruptRaisePendingInternal(false);
+}
+
+/*=====================================================
+  Used to introduce a slight delay for hardware irqs
+  =====================================================*/
+void interruptHandleEvent(void)
+{
+  interruptEvent.cycle = BUS_CYCLE_DISABLE;
+  interruptRaisePendingInternal(false);
 }
 
 /*
@@ -221,7 +258,7 @@ UWO rintreqr(ULO address)
   return intreq;
 }
 
-void wintreq(UWO data, ULO address)
+void wintreq_direct(UWO data, ULO address, bool delayIRQ)
 {
   if (interruptHasSetModeBit(data))
   {
@@ -234,7 +271,12 @@ void wintreq(UWO data, ULO address)
     ciaUpdateIRQ(0);
     ciaUpdateIRQ(1);
   }
-  interruptRaisePending();
+  interruptRaisePendingInternal(delayIRQ);
+}
+
+void wintreq(UWO data, ULO address)
+{
+  wintreq_direct(data, address, false);
 }
 
 /*
@@ -270,7 +312,7 @@ void wintena(UWO data, ULO address)
   if (interruptMasterSwitchIsEnabled())
   {
     // Interrupts are enabled, check if any has not been serviced
-    interruptRaisePending();
+    interruptRaisePendingInternal(false);
   }
 }
 

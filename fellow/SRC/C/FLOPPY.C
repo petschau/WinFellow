@@ -1665,7 +1665,7 @@ void floppyDMAWrite(void)
     floppyLogMessageWithTicks(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Write, irq not enabled)" : "DSKDONEIRQ (Write, irq enabled)", floppy[floppySelectedGet()].motor_ticks);
 #endif
 
-    memoryWriteWord(0x8002, 0xdff09c);
+    wintreq_direct(0x8002, 0xdff09c, true);
   }
 }
 
@@ -1685,7 +1685,7 @@ BOOLE floppyCheckSync(UWO word_under_head)
       floppyLogMessageWithTicks(((intena & 0x5000) != 0x5000) ? "DSKSYNCIRQ, IRQ not enabled" : "DSKSYNCIRQ, IRQ enabled", floppy[floppySelectedGet()].motor_ticks);
 #endif
 
-      memoryWriteWord(0x9000, 0xdff09c);
+      wintreq_direct(0x9000, 0xdff09c, true);
     }
     floppy_has_sync = word_is_sync;
     return found_sync;
@@ -1716,7 +1716,7 @@ void floppyReadWord(UWO word_under_head, BOOLE found_sync)
       floppyLogMessageWithTicks(((intena & 0x4002) != 0x4002) ? "DSKDONEIRQ (Read, IRQ not enabled)" : "DSKDONEIRQ (Read, IRQ enabled)", floppy[floppySelectedGet()].motor_ticks);
 #endif
 
-      memoryWriteWord(0x8002, 0xdff09c);
+      wintreq_direct(0x8002, 0xdff09c, true);
       floppy_DMA_started = FALSE;
     }
   }

@@ -1,4 +1,3 @@
-/* @(#) $Id: BUS.C,v 1.16 2013-01-15 18:40:44 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow							           */
 /*                                                                         */
@@ -159,7 +158,7 @@ void busEndOfFrame(void)
   /* Flag vertical refresh IRQ                                    */
   /*==============================================================*/
 
-  memoryWriteWord(0x8020, 0xdff09c);
+  wintreq_direct(0x8020, 0xdff09c, true);
 
   /*==============================================================*/
   /* Update next CPU instruction time                             */
