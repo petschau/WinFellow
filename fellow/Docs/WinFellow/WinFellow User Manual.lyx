@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/05/31)
+v0.5.8 (2019/06/02)
 \end_layout
 
 \begin_layout Author
@@ -346,7 +346,7 @@ plain
 \begin_inset Quotes erd
 \end_inset
 
- hardfiles, the Rigid Disk Block can be created by using tools like HD Toolbox.
+ hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox
 \end_layout
 
 \end_deeper
@@ -355,6 +355,11 @@ Bug fixes:
 \end_layout
 
 \begin_deeper
+\begin_layout Itemize
+improved handling of hardware interrupts; this fixes freezes that previously
+ could occur during installation of Workbench in all 0.5.x versions of WinFellow
+\end_layout
+
 \begin_layout Itemize
 fix wrong selection of render function after return from menu when application
  did not write to bplcon0 every frame; fixes garbled graphics in a Legend
