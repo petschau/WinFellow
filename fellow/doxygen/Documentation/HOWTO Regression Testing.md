@@ -308,7 +308,7 @@ Cancel the clipping editor dialog. Save a screenshot to the pictures folder via 
 Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
 Close the emulation window, reopen it and take screenshots again.
 
-### RDB hardfiles and read-only hardfile configuration
+### Git a8178da: RDB hardfiles, read-only hardfile configuration & improved hardware interrupt handling
 
 Apply the Amiga 3000 model preset to a new configuration.
 
@@ -335,11 +335,9 @@ Hold the right mouse button and from the Workbench menu, select "Execute Command
 
 Press F11, and in the emulator window that appears click "hard reset" and "start emulation". The emulation session should restart and two unformatted partitions should appear (FDH0: and FDH1:). Format partition FDH0: by holding the right mouse button and selecting the menu Icons==>Format Disk...; enter "Workbench" as disk name and quick-format the disk using default parameters.
 
-Start the Workbench 3.1 installation by opening the Install3.1 floppy, browsing into the "Install" directory and opening the installer in the language of your choice. Follow the on-screen steps to finish the Workbench installation. When prompted, swap the floppy disks as they are requested (F11, click ... besides one of the floppies to exchange it with another one and click "start emulation"). The installation should finish successfully.
+Start the Workbench 3.1 installation by opening the Install3.1 floppy, browsing into the "Install" directory and opening the installer in the language of your choice. Follow the on-screen steps to finish the Workbench installation; during installation, keep moving the mouse continuously to verify that no freezes related to hardware interrupts occur (a8178daa2195acdc15f586d3fef6fdcc492e5417) . When prompted, swap the floppy disks as they are requested (F11, click ... besides one of the floppies to exchange it with another one and click "start emulation"). The installation should finish successfully, without freezes.
 
 Eject all floppies (F11 and click all four eject buttons, save configuration and click "start emulation"), click "Continue" to reset the emulation session. Workbench should boot up from the hardfile.
 
-
-
-
+Repeat a second time to ensure that no freezes occur when the mouse is being moved permanently.
 
