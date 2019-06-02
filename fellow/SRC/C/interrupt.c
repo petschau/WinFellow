@@ -24,8 +24,6 @@
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "UART.h"
-
-
 #include "fileops.h"
 
 /** @file
@@ -216,7 +214,8 @@ void interruptRaisePendingInternal(bool delayIRQ)
           busInsertEvent(&interruptEvent);
           return;
         }
-        // This will make the CPU switch to IRQ at the beginning of the next instruction. Also ending possible stop state.
+
+        // This will make the CPU switch to IRQ at the beginning of the next instruction. Also ending possible stop state.        
         cpuIntegrationSetIrqLevel(interrupt_level, interrupt_number);
 	return;
       }
@@ -264,14 +263,16 @@ void wintreq_direct(UWO data, ULO address, bool delayIRQ)
   {
     intreq = interruptSetBits(intreq, data);
     uart.NotifyInterruptRequestBitsChanged(intreq);
+    interruptRaisePendingInternal(delayIRQ);
   }
   else
   {
     intreq = interruptClearBits(intreq, data);
-    ciaUpdateIRQ(0);
-    ciaUpdateIRQ(1);
+    if (data & 0x2000 || data & 0x0008)
+    {
+      ciaRecheckIRQ();
+    }
   }
-  interruptRaisePendingInternal(delayIRQ);
 }
 
 void wintreq(UWO data, ULO address)

@@ -40,6 +40,7 @@ using namespace fellow::api;
 #define CIAA_TB_TIMEOUT_EVENT 2
 #define CIAB_TA_TIMEOUT_EVENT 3
 #define CIAB_TB_TIMEOUT_EVENT 4
+#define CIA_RECHECK_IRQ_EVENT 5
 
 #define CIA_TA_IRQ    1
 #define CIA_TB_IRQ    2
@@ -89,10 +90,12 @@ typedef struct cia_state_
   UBY ddra;             
   UBY ddrb;             
   UBY sp;
-  bool irq;
 } cia_state;
 
 cia_state cia[2];
+
+bool cia_recheck_irq;
+ULO cia_recheck_irq_time;
 
 BOOLE ciaIsSoundFilterEnabled(void)
 {
@@ -171,22 +174,19 @@ void ciaUnstabilize(ULO i)
   ciaTBUnstabilize(i);
 }  
 
-// According to HRM Paula will set CIA irq request bits whenever INT2 or INT6 goes low.
-// Which means that if a program forgets to clear the CIA req bits, but clears intreq, 
-// the Paula intreq bits will not go back to 1 until the CIA INT line goes high and then low again.
-// The CIA will keep its irq line low for as long as there are matching bits in icrreq and icrmsk.
-// (ie. Until it is read and cleared by software)
-
 void ciaUpdateIRQ(ULO i)
 {
   if (cia[i].icrreq & cia[i].icrmsk)
   {
-    // This CIA wants IRQ.
-    if (!cia[i].irq)
+#ifdef CIA_LOGGING 
+    Service->Log.AddLogDebug("CIA %c IRQ, req is %X, icrmsk is %X\n", (i == 0) ? 'A' : 'B', cia[i].icrreq, cia[i].icrmsk);
+#endif
+
+    cia[i].icrreq |= 0x80;
+    UWO mask = (i == 0) ? 0x0008 : 0x2000;
+    if (!interruptIsRequested(mask))
     {
-      cia[i].irq = true;
-      cia[i].icrreq |= 0x80;
-      wintreq_direct((i == 0) ? 0x8008 : 0xa000, 0xdff09c, true);
+      wintreq_direct(mask | 0x8000, 0xdff09c, true);
     }
   }
 }
@@ -262,6 +262,9 @@ void ciaHandleTATimeout(ULO i)
     cia[i].taleft = ciaUnstabilizeValue(cia[i].ta, 0);
   }
 
+#ifdef CIA_LOGGING  
+  Service->Log.AddLogDebug("CIA %c Timer A attempt to raise irq, TA icr mask is %d\n", (i == 0) ? 'A' : 'B', cia[i].icrmsk & 1);
+#endif
   ciaRaiseIRQ(i, CIA_TA_IRQ);    /* Raise irq */
 }
 
@@ -278,31 +281,47 @@ void ciaUpdateEventCounter(ULO i)
 
 /* Called from the eof-handler to update timers */
 
-void ciaUpdateTimersEOF(void)
+void ciaUpdateTimersEOF()
 {
-  int i;
-  for (i = 0; i < 2; i++)
+  for (int i = 0; i < 2; i++)
   {
     if (cia[i].taleft >= 0)
+    {
       if ((cia[i].taleft -= busGetCyclesInThisFrame()) < 0)
-	cia[i].taleft = 0;
+      {
+        cia[i].taleft = 0;
+      }
+    }
     if (cia[i].tbleft >= 0)
+    {
       if ((cia[i].tbleft -= busGetCyclesInThisFrame()) < 0)
-	cia[i].tbleft = 0;
+      {
+        cia[i].tbleft = 0;
+      }
+    }
   }
+
+  if (cia_recheck_irq)
+  {
+    cia_recheck_irq_time -= busGetCyclesInThisFrame();
+  }
+
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
   {
     if (((LON)(ciaEvent.cycle -= busGetCyclesInThisFrame())) < 0)
+    {
       ciaEvent.cycle = 0;
+    }
     busRemoveEvent(&ciaEvent);
     busInsertEvent(&ciaEvent);
   }
+
   ciaUpdateEventCounter(0);
 }
 
 /* Record next timer timeout */
 
-void ciaEventSetup(void)
+void ciaEventSetup()
 {
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
   {
@@ -310,23 +329,36 @@ void ciaEventSetup(void)
   }
 }
 
-void ciaSetupNextEvent(void) {
+void ciaSetupNextEvent()
+{
   ULO nextevtime = BUS_CYCLE_DISABLE, nextevtype = CIA_NO_EVENT, i;
-  for (i = 0; i < 2; i++) {
-    if (((ULO) cia[i].taleft) < nextevtime) {
+
+  if (cia_recheck_irq)
+  {
+    nextevtime = cia_recheck_irq_time;
+    nextevtype = CIA_RECHECK_IRQ_EVENT;
+  }
+
+  for (i = 0; i < 2; i++)
+  {
+    if (((ULO) cia[i].taleft) < nextevtime)
+    {
       nextevtime = cia[i].taleft;
       nextevtype = (i*2) + 1;
     }
-    if (((ULO) cia[i].tbleft) < nextevtime) {
+    if (((ULO) cia[i].tbleft) < nextevtime)
+    {
       nextevtime = cia[i].tbleft;
       nextevtype = (i*2) + 2;
     }
   }
+
   if (ciaEvent.cycle != BUS_CYCLE_DISABLE)
   {
     busRemoveEvent(&ciaEvent);
     ciaEvent.cycle = BUS_CYCLE_DISABLE;
   }
+
   ciaEvent.cycle = nextevtime;
   cia_next_event_type = nextevtype;
   ciaEventSetup();
@@ -349,9 +381,22 @@ void ciaHandleEvent(void)
   case CIAB_TB_TIMEOUT_EVENT:
     ciaHandleTBTimeout(1);
     break;
+  case CIA_RECHECK_IRQ_EVENT:
+    cia_recheck_irq = false;
+    cia_recheck_irq_time = BUS_CYCLE_DISABLE;
+    ciaUpdateIRQ(0);
+    ciaUpdateIRQ(1);
+    break;
   default:
     break;
   }
+  ciaSetupNextEvent();
+}
+
+void ciaRecheckIRQ()
+{
+  cia_recheck_irq = true;
+  cia_recheck_irq_time = busGetCycle() + 10;
   ciaSetupNextEvent();
 }
 
@@ -701,7 +746,11 @@ UBY ciaReadicr(ULO i)
 {
   UBY tmp = cia[i].icrreq;
   cia[i].icrreq = 0;
-  cia[i].irq = false;
+
+#ifdef CIA_LOGGING 
+  Service->Log.AddLogDebug("CIA %c ICR read, req is %X\n", (i == 0) ? 'A' : 'B', cia[i].icrreq);
+#endif
+
   return tmp;
 }
 
@@ -907,8 +956,9 @@ ciaWriteFunc cia_write[16] =
       cia[i].icrmsk = 0;
       cia[i].cra = 0;
       cia[i].crb = 0;
-      cia[i].irq = false;
     }
+    cia_recheck_irq = false;
+    cia_recheck_irq_time = BUS_CYCLE_DISABLE;
     cia_next_event_type = 0;
   }
 
