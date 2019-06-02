@@ -341,6 +341,30 @@ namespace fellow::hardfile
     }
   }
 
+  bool HardfileHandler::OpenHardfileFile(HardfileDevice& device)
+  {
+    if (device.Configuration.Filename.empty())
+    {
+      return false;
+    }
+
+    fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
+    if (fsnp == nullptr)
+    {
+      Service->Log.AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
+      return false;
+    }
+
+    if (fsnp != nullptr)
+    {
+      device.Readonly = device.Configuration.Readonly || (!fsnp->writeable);
+      fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
+      device.FileSize = fsnp->size;
+      delete fsnp;
+    }
+    return true;
+  }
+
   void HardfileHandler::InitializeHardfile(unsigned int index)
   {
     HardfileDevice& device = _devices[index];
@@ -363,62 +387,42 @@ namespace fellow::hardfile
       device.HasRDB = false;
     }
 
-    if (device.Configuration.Filename.empty())
+    if (OpenHardfileFile(device))
     {
-      return;
-    }
+      RDBFileReader reader(device.F);
+      device.HasRDB = RDBHandler::HasRigidDiskBlock(reader);
 
-    fs_wrapper_point* fsnp = Service->FSWrapper.MakePoint(device.Configuration.Filename.c_str());
-    if (fsnp == nullptr)
-    {
-      Service->Log.AddLog("ERROR: Unable to access hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", device.Configuration.Filename.c_str());
-      return;
-    }
-
-    if (fsnp != nullptr)
-    {
-      device.Readonly = device.Configuration.Readonly || (!fsnp->writeable);
-      fopen_s(&device.F, device.Configuration.Filename.c_str(), device.Readonly ? "rb" : "r+b");
-      if (device.F != nullptr)
+      if (device.HasRDB)
       {
-        device.FileSize = fsnp->size;
-
-        RDBFileReader reader(device.F);
-        device.HasRDB = RDBHandler::HasRigidDiskBlock(reader);
-
-        if (device.HasRDB)
-        {
-          // RDB configured hardfile
-          device.RDB = RDBHandler::GetDriveInformation(reader);
-          SetHardfileConfigurationFromRDB(device.Configuration, device.RDB, device.Readonly);
-        }
-
-        HardfileGeometry& geometry = device.Configuration.Geometry;
-        if (!device.HasRDB)
-        {
-          // Manually configured hardfile
-          ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
-          ULO cylinders = device.FileSize / cylinderSize;
-          geometry.Tracks = cylinders * geometry.Surfaces;
-          geometry.LowCylinder = 0;
-          geometry.HighCylinder = cylinders - 1;
-        }
-        device.GeometrySize = geometry.Tracks * geometry.SectorsPerTrack * geometry.BytesPerSector;
-        device.Status = FHFILE_HDF;
-
-        if (device.FileSize < device.GeometrySize)
-        {
-          fclose(device.F);
-          device.F = nullptr;
-          device.Status = FHFILE_NONE;
-          device.FileSize = 0;
-          device.GeometrySize = 0;
-          device.Readonly = true;
-
-          Service->Log.AddLog("Hardfile: File skipped, geometry for %s is larger than the file.", device.Configuration.Filename.c_str());
-        }
+        // RDB configured hardfile
+        device.RDB = RDBHandler::GetDriveInformation(reader);
+        SetHardfileConfigurationFromRDB(device.Configuration, device.RDB, device.Readonly);
       }
-      delete fsnp;
+
+      HardfileGeometry& geometry = device.Configuration.Geometry;
+      if (!device.HasRDB)
+      {
+        // Manually configured hardfile
+        ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+        ULO cylinders = device.FileSize / cylinderSize;
+        geometry.Tracks = cylinders * geometry.Surfaces;
+        geometry.LowCylinder = 0;
+        geometry.HighCylinder = cylinders - 1;
+      }
+      device.GeometrySize = geometry.Tracks * geometry.SectorsPerTrack * geometry.BytesPerSector;
+      device.Status = FHFILE_HDF;
+
+      if (device.FileSize < device.GeometrySize)
+      {
+        fclose(device.F);
+        device.F = nullptr;
+        device.Status = FHFILE_NONE;
+        device.FileSize = 0;
+        device.GeometrySize = 0;
+        device.Readonly = true;
+
+        Service->Log.AddLog("Hardfile: File skipped, geometry for %s is larger than the file.", device.Configuration.Filename.c_str());
+      }
     }
   }
 
@@ -1862,10 +1866,25 @@ namespace fellow::hardfile
 
   void HardfileHandler::EmulationStart()
   {
+    for (int i = 0; i < FHFILE_MAX_DEVICES; i++)
+    {
+      if (_devices[i].Status == FHFILE_HDF && _devices[i].F == nullptr)
+      {
+        OpenHardfileFile(_devices[i]);
+      }
+    }
   }
 
   void HardfileHandler::EmulationStop()
   {
+    for (int i = 0; i < FHFILE_MAX_DEVICES; i++)
+    {
+      if (_devices[i].Status == FHFILE_HDF && _devices[i].F != nullptr)
+      {
+        fclose(_devices[i].F);
+        _devices[i].F = nullptr;
+      }
+    }
   }
 
   void HardfileHandler::Startup()
