@@ -457,12 +457,6 @@ static void sysinfoVersionInfo (void) {
   fellowAddTimelessLog(versionstring);
   free(versionstring);
 
-  #ifdef X64
-    fellowAddTimelessLog(" 64 bit");
-  #else
-    fellowAddTimelessLog(" 32 bit");
-  #endif
-
   #ifdef _DEBUG
     fellowAddTimelessLog(" (debug build)\n");
   #else

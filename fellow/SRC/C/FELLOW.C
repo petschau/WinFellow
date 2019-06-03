@@ -177,14 +177,19 @@ void fellowAddTimelessLog(const char *format,...)
 
 char *fellowGetVersionString()
 {
-  char *result = (char *) malloc(strlen(FELLOWVERSION)+ strlen(__DATE__) + 4);
+  char *result = (char *) malloc(strlen(FELLOWVERSION)+ 12);
 
   if (!result)
   {
     return nullptr;
   }
 
-  sprintf(result, "%s", FELLOWVERSION);
+#ifdef X64
+   sprintf(result, "%s - %d bit", FELLOWVERSION, 64);
+#else
+   sprintf(result, "%s - %d bit", FELLOWVERSION, 32);
+#endif
+
   return result;
 }
 
