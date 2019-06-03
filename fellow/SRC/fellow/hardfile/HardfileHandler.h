@@ -39,6 +39,7 @@ namespace fellow::hardfile
     void AddFileSystemsFromRdb();
     void EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
     void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
+    bool OpenHardfileFile(HardfileDevice& device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
 

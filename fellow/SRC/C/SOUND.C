@@ -1,4 +1,3 @@
-/* @(#) $Id: SOUND.C,v 1.9 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -263,7 +262,7 @@ void soundState1(ULO ch)
 
   if (audlenw[ch] != 1) audlenw[ch]--; 
   audstate[ch] = soundState5;
-  memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
+  wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
 }
 
 /*==============================================================================
@@ -319,7 +318,7 @@ void soundState3(ULO ch)
     {
       audlenw[ch] = audlen[ch];
       audptw[ch] = audpt[ch];
-      memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
+      wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
     }
   }
   else
@@ -364,7 +363,7 @@ void soundState5(ULO ch)
   {
     audlenw[ch] = audlen[ch];
     audptw[ch] = audpt[ch];
-    memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
+    wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
   }
 }
 
@@ -463,7 +462,7 @@ ULO soundChannelUpdate(ULO ch, WOR *buffer_left, WOR *buffer_right, ULO count, B
     if (!interruptIsRequested(audioirqmask[ch]) && auddat_set[ch])
     {
       auddat_set[ch] = FALSE;
-      memoryWriteWord((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c);
+      wintreq_direct((UWO) (audioirqmask[ch] | 0x8000), 0xdff09c, true);
     }
     if (!halfscale)
     {

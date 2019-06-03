@@ -309,7 +309,8 @@ BOOLE fellowEmulationStart() {
     GraphicsContext.EmulationStart();
 
   uart.EmulationStart();
-
+  HardfileHandler->EmulationStart();
+  
   return result && memoryGetKickImageOK();
 }
 
@@ -323,6 +324,7 @@ void fellowEmulationStop() {
   if(RP.GetHeadlessMode())
     RP.EmulationStop();
 #endif
+  HardfileHandler->EmulationStop();
   timerEmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();

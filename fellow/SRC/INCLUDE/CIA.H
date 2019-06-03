@@ -14,8 +14,9 @@ extern void ciaRaiseIndexIRQ(void); /* For the floppy loader */
 extern void ciaRaiseIRQ(ULO i, ULO req); /* For kbd.c */
 extern void ciaWritesp(ULO i, UBY data); /* For kbd.c */
 extern void ciaUpdateEventCounter(ULO);
-extern void ciaUpdateTimersEOF(void);
+extern void ciaUpdateTimersEOF();
 extern void ciaUpdateIRQ(ULO i);
+extern void ciaRecheckIRQ();
 
 extern BOOLE ciaIsSoundFilterEnabled(void);
 

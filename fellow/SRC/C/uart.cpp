@@ -1,6 +1,7 @@
 #include "uart.h"
 #include "BUS.H"
 #include "FMEM.H"
+#include "interrupt.h"
 #include "fileops.h"
 
 UART uart;
@@ -70,7 +71,7 @@ void UART::CopyTransmitBufferToShiftRegister()
     _transmitBufferEmpty = true;
     _transmitDoneTime = GetTransmitDoneTime() + busGetCycle();
 
-    memoryWriteWord(0x8001, 0xdff09c); // TBE interrupt
+    wintreq_direct(0x8001, 0xdff09c, true); // TBE interrupt
 
 #ifdef _DEBUG
     OpenOutputFile();
@@ -83,7 +84,7 @@ void UART::CopyReceiveShiftRegisterToBuffer()
 {
   _receiveBuffer = _receiveShiftRegister;
   _receiveBufferFull = true;  
-  memoryWriteWord(0x8400, 0xdff09c); // RBF interrupt
+  wintreq_direct(0x8400, 0xdff09c, true); // RBF interrupt
 }
 
 void UART::NotifyInterruptRequestBitsChanged(UWO intreq)

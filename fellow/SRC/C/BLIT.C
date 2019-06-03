@@ -1,4 +1,3 @@
-/* @(#) $Id: BLIT.C,v 1.19 2012-12-07 14:05:43 carfesh Exp $ */
 /*============================================================================*/
 /* Fellow Amiga Emulator                                                      */
 /* Blitter Initialization                                                     */
@@ -19,6 +18,7 @@
 #include "fileops.h"
 #include "CpuIntegration.h"
 #include "chipset.h"
+#include "interrupt.h"
 
 //#define BLIT_VERIFY_MINTERMS
 //#define BLIT_OPERATION_LOG
@@ -941,7 +941,7 @@ void blitterOperationLog(void) {
   } \
   if (d_enabled) blitter.bltdpt = d_pt_tmp; \
   blitter.bltzero = zero_flag; \
-  memoryWriteWord(0x8040, 0xdff09c); \
+  wintreq_direct(0x8040, 0xdff09c, true); \
 }
 
 void blitterCopyABCD(void)
@@ -1296,7 +1296,7 @@ void blitInitiate(void)
   blitter.dma_pending = FALSE;
   blitter.started = TRUE;
   dmaconr |= 0x4000; /* Blitter busy bit */
-  memoryWriteWord(0x0040, 0xdff09c);
+  wintreq_direct(0x0040, 0xdff09c, true);
   blitterInsertEvent(cycle_length + bus.cycle);
 }
 
