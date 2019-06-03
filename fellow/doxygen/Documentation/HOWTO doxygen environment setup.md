@@ -25,6 +25,8 @@ Then install Ubuntu from the Windows store: https://www.microsoft.com/store/p/ub
 
 When everything is set up and an initial username/password have been configured, install the required components by executing
 
+`sudo apt update`
+
 `sudo apt install doxygen graphviz texlive-latex-base texlive-latex-recommended texlive-latex-extra`
 
 Accept/confirm all prompts and wait for the packages to install.

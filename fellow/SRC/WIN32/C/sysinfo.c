@@ -1,10 +1,9 @@
-/* @(#) $Id: sysinfo.c,v 1.23 2013-01-13 11:42:38 carfesh Exp $ */
 /*=========================================================================*/
-/* Fellow                                                                  */
+/* WinFellow                                                               */
 /*                                                                         */
 /* System information retrieval                                            */
 /*                                                                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/* Author: Torsten Enderling                                               */
 /*                                                                         */
 /* Outputs valuable debugging information like hardware details and        */
 /* OS specifics into the logfile                                           */
@@ -457,10 +456,6 @@ static void sysinfoVersionInfo (void) {
   char *versionstring = fellowGetVersionString();
   fellowAddTimelessLog(versionstring);
   free(versionstring);
-
-  #ifdef USE_DIRECTX
-    fellowAddTimelessLog(" (DirectX");
-  #endif
 
   #ifdef _DEBUG
     fellowAddTimelessLog(" (debug build)\n");

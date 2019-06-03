@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/02)
+v0.5.8 (2019/06/03)
 \end_layout
 
 \begin_layout Author
@@ -347,6 +347,11 @@ plain
 \end_inset
 
  hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox
+\end_layout
+
+\begin_layout Itemize
+a 64 bit build is now provided; the NSIS installer will install either the
+ 32 or 64 bit version depending on the operating system that is used
 \end_layout
 
 \end_deeper

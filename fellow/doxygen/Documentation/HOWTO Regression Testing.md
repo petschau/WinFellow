@@ -12,8 +12,7 @@ override.ini, allowing quick testing of a group of RP9 packages.
 
 ## Automated Test Cases
 
-The following is a list of test cases where the excution can be automated using WinFellow's automation capabilities;
-most of these are emulator core bugfixes.
+The following is a list of test cases where the execution can be automated using WinFellow's automation capabilities; most of these are emulator core bugfixes.
 
 The actual individual test case result must be gathered by examining the resulting screenshots.
 
@@ -58,7 +57,7 @@ Puffy's Saga, Speedball, Ugh!
 
 ### r832: fixed movep instruction bug, improved CPU exception handling
 ----------------------------------------------------------------------
-Test that the game Airborne Ranger can be started sucessfully, without graphical issues.
+Test that the game Airborne Ranger can be started successfully, without graphical issues.
 Before this commit, the screen would look garbled.
 
 Other known titles affected:

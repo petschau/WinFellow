@@ -37,12 +37,12 @@
 
 [CmdletBinding()]
 Param(
-    [switch]$Test=$false
+    [switch]$Test
 )
 
-function CheckForExeInSearchPath([string] $exe)
+Function CheckForExeInSearchPath([string] $exe)
 {
-    if ((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null)
+    If((Get-Command $exe -ErrorAction SilentlyContinue) -eq $null)
     {
         Write-Error "ERROR: Unable to find $exe in your search PATH!"
         return $false
@@ -50,7 +50,7 @@ function CheckForExeInSearchPath([string] $exe)
     return $true
 }
 
-function ShowProgressIndicator($step, $CurrentOperation)
+Function ShowProgressIndicator($step, $CurrentOperation)
 {
     $steps = 11
 
@@ -62,23 +62,22 @@ function ShowProgressIndicator($step, $CurrentOperation)
         -Status "Please wait."
 }
 
-if($Test)
+[string[]] $BuildPlatforms = @('win32', 'x64')
+
+If($Test)
 {
-    $FELLOWBUILDPROFILE="Debug"
+    $FELLOWBUILDPROFILE='Debug'
     $DebugPreference   = 'Continue'
     $VerbosePreference = 'Continue'
 }
-else
+Else
 {
-    $FELLOWBUILDPROFILE="Release"
+    $FELLOWBUILDPROFILE='Release'
 }
-$ErrorActionPreference="Stop"
+$ErrorActionPreference='Stop'
 
 Function Main()
 {
-    $FELLOWPLATFORM="Win32"
-    $CMDLINETOOLS = [Environment]::GetEnvironmentVariable("VS120COMNTOOLS", "Machine")
-
     ShowProgressIndicator 1 "Checking prerequisites..."
 
     $result = CheckForExeInSearchPath "git.exe"
@@ -102,19 +101,19 @@ Function Main()
 
     cd $SourceCodeBaseDir
 
-    if($FELLOWBUILDPROFILE -eq "Release")
+    If($FELLOWBUILDPROFILE -eq "Release")
     {
         ShowProgressIndicator 2 "Release build, checking Git working copy for local modifications..."
 
         $result = (git status --porcelain)
-        if ($result -ne $0)
+        If($result -ne $0)
         {
             Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
             exit $result
         }
         $GitBranch = (git rev-parse --abbrev-ref HEAD)
         $result = (git log origin/$GitBranch..HEAD)
-        if ($result -ne $0)
+        If($result -ne $0)
         {
             Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
             exit $result
@@ -138,14 +137,17 @@ Function Main()
         $MSBuildPath = Join-Path $MSBuildPath 'MSBuild\Current\Bin\MSBuild.exe'
         If(Test-Path $MSBuildPath)
         {
-            Write-Verbose "Executing MSBuild.exe..."
-            $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$FELLOWPLATFORM /fl /flp:logfile=$MSBuildLog)
-
-            If($LastExitCode -ne 0)
+            ForEach($CurrentPlatform In $BuildPlatforms)
             {
-                ii $MSBuildLog
-                Pop-Location
-                Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+                Write-Verbose "Executing $CurrentPlatform platform build..."
+                $result = (& $MSBuildPath $SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\WinFellow.vcxproj /t:"Clean;Build" /p:Configuration=$FELLOWBUILDPROFILE /p:Platform=$CurrentPlatform /fl /flp:logfile=$MSBuildLog)
+
+                If($LastExitCode -ne 0)
+                {
+                    ii $MSBuildLog
+                    Pop-Location
+                    Write-Error "ERROR executing MSBuild, opening logfile '$MSBuildLog'."
+                }
             }
         }
         Else
@@ -155,7 +157,7 @@ Function Main()
     }
 
     Write-Verbose "Checking file version of file WinFellow\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe..."
-    $FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.ProductVersion
+    $FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.ProductVersion.Replace("/", "_")
     Write-Debug "Detected file version: $FELLOWVERSION"
 
     ShowProgressIndicator 5 "Generating GPL terms..."
@@ -180,13 +182,24 @@ Function Main()
     $OUTPUTDIR = Resolve-Path $OUTPUTDIR
     Write-Debug "Build output dir: $OUTPUTDIR"
 
-    Move-Item -Force "$temp\ChangeLog.txt"                                                        "$OUTPUTDIR\ChangeLog.txt"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf"         "$OUTPUTDIR\WinFellow User Manual.pdf"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe" "$OUTPUTDIR\WinFellow.exe"
-    Move-Item -Force "$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE\WinFellow.pdb" "$OUTPUTDIR\WinFellow.pdb"
-    Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"                                          "$OUTPUTDIR\Presets" -Recurse
-    Copy-Item -Force "$SourceCodeBaseDir\fellow\Utilities"                                        "$OUTPUTDIR\Utilities" -Recurse
-    Copy-Item -Force "$temp\gpl-2.0.pdf"                                                          "$OUTPUTDIR\gpl-2.0.pdf"
+    Move-Item -Force "$temp\ChangeLog.txt"                                                "$OUTPUTDIR\ChangeLog.txt"
+    Move-Item -Force "$SourceCodeBaseDir\fellow\Docs\WinFellow\WinFellow User Manual.pdf" "$OUTPUTDIR\WinFellow User Manual.pdf"
+
+    $PlatformBuildOutputDirs = @{
+        'x86'="$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\$FELLOWBUILDPROFILE";
+        'x64'="$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\x64\$FELLOWBUILDPROFILE"}
+    ForEach($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator())
+    {
+        $PlatformOutputDir = Join-Path -Path $OUTPUTDIR -ChildPath $CurrentPlatform
+        New-Item $PlatformOutputDir -Type Directory -Force | Out-Null
+        $PlatformBuildOutputDir = $PlatformBuildOutputDirs[$CurrentPlatform]
+        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.exe" "$PlatformOutputDir\WinFellow.exe"
+        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.pdb" "$PlatformOutputDir\WinFellow.pdb"
+    }
+
+    Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"   "$OUTPUTDIR\Presets" -Recurse
+    Copy-Item -Force "$SourceCodeBaseDir\fellow\Utilities" "$OUTPUTDIR\Utilities" -Recurse
+    Copy-Item -Force "$temp\gpl-2.0.pdf"                   "$OUTPUTDIR\gpl-2.0.pdf"
 
     Write-Verbose "Compressing release binary distribution archive..."
     CD $OUTPUTDIR
@@ -200,13 +213,15 @@ Function Main()
     $NSISDIR = Resolve-Path ("$SourceCodeBaseDir\fellow\SRC\WIN32\NSIS")
     Write-Debug "NSIS dir: $NSISDIR"
     cd $temp
-    $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow.log")
+
+    # build combined 32/64 bit installer
+    $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow_NSIS.log")
     Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir
     Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
 
     cd $SourceCodeBaseDir
 
-    if($FELLOWBUILDPROFILE -eq "Release")
+    If($FELLOWBUILDPROFILE -eq "Release")
     {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
 
