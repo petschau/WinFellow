@@ -6,7 +6,7 @@
 
 !define APP_NAME "WinFellow"
 !define COMP_NAME "The WinFellow Team"
-!define WEB_SITE "http://petschau.github.io"
+!define WEB_SITE "http://petschau.github.io/WinFellow"
 !define VERSION "${FELLOWVERSION}"
 !define COPYRIGHT "© 1996-2019 under the GNU General Public License"
 !define DESCRIPTION "WinFellow Amiga Emulator"
