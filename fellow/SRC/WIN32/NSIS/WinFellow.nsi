@@ -11,7 +11,7 @@
 !define COPYRIGHT "© 1996-2019 under the GNU General Public License"
 !define DESCRIPTION "WinFellow Amiga Emulator"
 !define LICENSE_TXT "gpl-2.0.txt"
-!define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}_x86.exe"
+!define INSTALLER_NAME "WinFellow_v${FELLOWVERSION}.exe"
 !define MAIN_APP_EXE "WinFellow.exe"
 !define INSTALL_TYPE "SetShellVarContext all"
 !define REG_ROOT "HKLM"
@@ -40,7 +40,36 @@ OutFile "$%TEMP%\${INSTALLER_NAME}"
 BrandingText "${APP_NAME}"
 XPStyle on
 InstallDirRegKey "${REG_ROOT}" "${REG_APP_PATH}" ""
-InstallDir "$PROGRAMFILES32\WinFellow"
+
+######################################################################
+
+!include LogicLib.nsh
+!include x64.nsh
+
+Function .onInit
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" \
+  "UninstallString"
+  StrCmp $R0 "" done
+
+  MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
+  "${APP_NAME} is already installed. $\n$\nClick `OK` to remove the \
+  previous version or `Cancel` to cancel this upgrade." \
+  IDOK uninst
+  Abort
+
+;Run the uninstaller
+uninst:
+    ClearErrors
+    Exec $R0
+		
+done:
+	${If} ${RunningX64}
+		StrCpy $InstDir "$PROGRAMFILES64\${APP_NAME}"
+	${Else}
+		StrCpy $InstDir "$PROGRAMFILES32\${APP_NAME}"
+	${EndIf}
+FunctionEnd
 
 ######################################################################
 
@@ -90,8 +119,13 @@ SetOutPath "$INSTDIR"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\ChangeLog.txt"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\gpl-2.0.pdf"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow User Manual.pdf"
-File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.exe"
-File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow.pdb"
+${If} ${RunningX64}
+    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x64\WinFellow.exe"
+    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x64\WinFellow.pdb"
+${Else}
+    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x86\WinFellow.exe"
+    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x86\WinFellow.pdb"
+${EndIf}
 SetOutPath "$INSTDIR\Presets"
 File /r "$%TEMP%\WinFellow_v${FELLOWVERSION}\Presets\*"
 SetOutPath "$INSTDIR\Utilities"
@@ -187,4 +221,3 @@ DeleteRegKey ${REG_ROOT} "${UNINSTALL_PATH}"
 SectionEnd
 
 ######################################################################
-
