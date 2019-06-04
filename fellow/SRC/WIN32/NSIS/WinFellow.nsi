@@ -120,11 +120,11 @@ File "$%TEMP%\WinFellow_v${FELLOWVERSION}\ChangeLog.txt"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\gpl-2.0.pdf"
 File "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow User Manual.pdf"
 ${If} ${RunningX64}
-    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x64\WinFellow.exe"
-    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x64\WinFellow.pdb"
+    File /oname=WinFellow.exe "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow-x64.exe"
+    File /oname=WinFellow.pdb "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow-x64.pdb"
 ${Else}
-    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x86\WinFellow.exe"
-    File "$%TEMP%\WinFellow_v${FELLOWVERSION}\x86\WinFellow.pdb"
+    File /oname=WinFellow.exe "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow-x86.exe"
+    File /oname=WinFellow.pdb "$%TEMP%\WinFellow_v${FELLOWVERSION}\WinFellow-x86.pdb"
 ${EndIf}
 SetOutPath "$INSTDIR\Presets"
 File /r "$%TEMP%\WinFellow_v${FELLOWVERSION}\Presets\*"

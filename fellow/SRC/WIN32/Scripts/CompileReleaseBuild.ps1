@@ -190,11 +190,10 @@ Function Main()
         'x64'="$SourceCodeBaseDir\fellow\SRC\WIN32\MSVC\x64\$FELLOWBUILDPROFILE"}
     ForEach($CurrentPlatform In $PlatformBuildOutputDirs.Keys.GetEnumerator())
     {
-        $PlatformOutputDir = Join-Path -Path $OUTPUTDIR -ChildPath $CurrentPlatform
-        New-Item $PlatformOutputDir -Type Directory -Force | Out-Null
         $PlatformBuildOutputDir = $PlatformBuildOutputDirs[$CurrentPlatform]
-        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.exe" "$PlatformOutputDir\WinFellow.exe"
-        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.pdb" "$PlatformOutputDir\WinFellow.pdb"
+        Write-Debug "PlatformBuildOutputDir = $PlatformBuildOutputDir"
+        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.exe" "$OUTPUTDIR\WinFellow-$CurrentPlatform.exe"
+        Move-Item -Force "$PlatformBuildOutputDir\WinFellow.pdb" "$OUTPUTDIR\WinFellow-$CurrentPlatform.pdb"
     }
 
     Copy-Item -Force "$SourceCodeBaseDir\fellow\Presets"   "$OUTPUTDIR\Presets" -Recurse
