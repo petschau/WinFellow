@@ -122,17 +122,6 @@ void fellowAddLog(const char* format, ...)
   Service->Log.AddLog(buffer);
 }
 
-void fellowAddLogList(const list<string>& messages)
-{
-  char buffer[WRITE_LOG_BUF_SIZE];
- 
-  for (const string& msg : messages)
-  {
-    _snprintf(buffer, WRITE_LOG_BUF_SIZE - 1, "%s\n", msg.c_str());
-    Service->Log.AddLog(buffer);
-  }
-}
-
 void fellowAddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
 {
   char buffer[WRITE_LOG_BUF_SIZE];

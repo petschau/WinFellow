@@ -2,8 +2,10 @@
 #include "GfxDrvDXGIModeEnumerator.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "fellow/api/Services.h"
 
 using namespace std;
+using namespace fellow::api;
 
 const char* GfxDrvDXGIOutput::GetRotationDescription(DXGI_MODE_ROTATION rotation)
 {
@@ -44,7 +46,7 @@ void GfxDrvDXGIOutput::LogCapabilities(IDXGIOutput *output)
       logmessages.emplace_back(s);
       sprintf(s, "Rotation: %s", GetRotationDescription(desc.Rotation));
       logmessages.emplace_back(s);
-      fellowAddLogList(logmessages);
+      Service->Log.AddLogList(logmessages);
     }
   }
 }

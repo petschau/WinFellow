@@ -39,6 +39,5 @@ extern void fellowAddLog(const char *, ...);
 extern void fellowAddLogRequester(FELLOW_REQUESTER_TYPE, const char *, ...);
 extern void fellowAddTimelessLog(const char *, ...);
 extern void fellowAddLog2(STR *msg);
-extern void fellowAddLogList(const std::list<std::string>& messages);
 
 #endif

@@ -20,10 +20,14 @@ namespace fellow::service
     std::string _logfilename;
 
     STR* LogTime(STR* buffer);
+    FILE* OpenLogFile();
+    void CloseLogFile(FILE* F);
+    void AddLogInternal(FILE* F, STR* msg);
 
   public:
     void AddLogDebug(const char *format, ...) override;
     void AddLog(const char *, ...) override;
+    void AddLogList(const std::list<std::string>& messages) override;
     void AddLog2(STR *msg) override ;
 
     Log();

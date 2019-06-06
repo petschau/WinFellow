@@ -3,8 +3,10 @@
 #include "DEFS.H"
 #include "FELLOW.H"
 #include <list>
+#include "fellow/api/Services.h"
 
 using namespace std;
+using namespace fellow::api;
 
 void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
 {
@@ -34,7 +36,7 @@ void GfxDrvDXGIAdapter::LogCapabilities(IDXGIAdapter *adapter)
     messages.emplace_back(s);
     sprintf(s, "Shared system memory:    %I64d", (__int64)desc.SharedSystemMemory);
     messages.emplace_back(s);
-    fellowAddLogList(messages);
+    Service->Log.AddLogList(messages);
   }
 }
 

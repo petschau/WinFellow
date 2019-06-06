@@ -11,6 +11,7 @@ namespace test::mock::fellow::api::service
     void AddLogDebug(const char *, ...) override;
     void AddLog(const char *, ...) override;
     void AddLog2(STR *msg) override;
+    void AddLogList(const std::list<std::string>& messages) override;
   };
 }
 

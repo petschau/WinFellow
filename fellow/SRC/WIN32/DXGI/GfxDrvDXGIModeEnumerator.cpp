@@ -2,9 +2,11 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "DEFS.H"
 #include "FELLOW.H"
+#include "fellow/api/Services.h"
 #include <sstream>
 
 using namespace std;
+using namespace fellow::api;
 
 void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIModeList& modes)
 {
@@ -41,7 +43,7 @@ void GfxDrvDXGIModeEnumerator::EnumerateModes(IDXGIOutput *output, GfxDrvDXGIMod
   }
   if (numModes > 0)
   {
-    fellowAddLogList(loglines);
+    Service->Log.AddLogList(loglines);
   }
   delete[] descs;
 }

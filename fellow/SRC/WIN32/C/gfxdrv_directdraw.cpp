@@ -97,6 +97,7 @@
 #include <string>
 
 #include "GfxDrvCommon.h"
+#include "fellow/api/Services.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -104,6 +105,7 @@
 #endif
 
 using namespace std;
+using namespace fellow::api;
 
 /*==========================================================================*/
 /* Structs for holding information about a DirectDraw device and mode       */
@@ -445,7 +447,7 @@ void gfxDrvDDrawDeviceInformationDump()
     gfx_drv_ddraw_device *tmpdev = (gfx_drv_ddraw_device *)listNode(l);
     sprintf(s, "gfxdrv: DirectDraw Driver Description: %s\n", tmpdev->lpDriverDescription);
     fellowAddLog(s);
-    sprintf(s, "gfxdrv: DirectDraw Driver Name       : %s\n\n", tmpdev->lpDriverName);
+    sprintf(s, "gfxdrv: DirectDraw Driver Name       : %s\n", tmpdev->lpDriverName);
     fellowAddLog(s);
   }
 }
@@ -740,7 +742,7 @@ void gfxDrvDDrawLogFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
       tmpmode->bluesize);
     logmessages.emplace_back(s);
   }
-  fellowAddLogList(logmessages);
+  Service->Log.AddLogList(logmessages);
 }
 
 /*==========================================================================*/
