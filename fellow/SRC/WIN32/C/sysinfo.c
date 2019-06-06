@@ -240,6 +240,36 @@ static void sysinfoEnumRegistry (void) {
   }
 }
 
+const char* sysinfoGetProcessorArchitectureDescription(WORD wProcessorArchitecture)
+{
+  switch(wProcessorArchitecture)
+  {
+  case PROCESSOR_ARCHITECTURE_INTEL:
+    return "INTEL";
+  case PROCESSOR_ARCHITECTURE_MIPS:
+    return "MIPS";
+  case PROCESSOR_ARCHITECTURE_ALPHA:
+    return "ALPHA";
+  case PROCESSOR_ARCHITECTURE_PPC:
+    return "PPC";
+  case PROCESSOR_ARCHITECTURE_SHX:
+    return "SHX";
+  case PROCESSOR_ARCHITECTURE_ARM:
+    return "ARM";
+  case PROCESSOR_ARCHITECTURE_IA64:
+    return "IA64";
+  case PROCESSOR_ARCHITECTURE_ALPHA64:
+    return "ALPHA64";
+  case PROCESSOR_ARCHITECTURE_MSIL:
+    return "MSIL";
+  case PROCESSOR_ARCHITECTURE_AMD64:
+    return "AMD64";
+  case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
+    return "IA32_ON_WIN64";
+  }
+  return "UNKNOWN PROCESSUR ARCHITECTURE";
+}
+
 /*================================*/
 /* windows system info structures */
 /*================================*/
@@ -247,10 +277,11 @@ static void sysinfoEnumRegistry (void) {
 static void sysinfoParseSystemInfo (void)
 {
   SYSTEM_INFO SystemInfo;
-  GetSystemInfo(&SystemInfo);
-  fellowAddTimelessLog("\tnumber of processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
-  fellowAddTimelessLog("\tprocessor type: \t%d\n", SystemInfo.dwProcessorType);
-  fellowAddTimelessLog("\tarchitecture: \t\t%d\n", SystemInfo.wProcessorArchitecture);
+  GetNativeSystemInfo(&SystemInfo);
+  fellowAddTimelessLog("\tlogical processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
+  fellowAddTimelessLog("\tarchitecture: \t\t%s\n", sysinfoGetProcessorArchitectureDescription(SystemInfo.wProcessorArchitecture));
+  fellowAddTimelessLog("\tlevel: \t\t\t%d\n", SystemInfo.wProcessorLevel);
+  fellowAddTimelessLog("\trevision: \t\t%d\n", SystemInfo.wProcessorRevision);
 }
 
 static void sysinfoParseOSVersionInfo(void) {
