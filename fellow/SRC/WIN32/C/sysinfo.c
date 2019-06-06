@@ -271,7 +271,7 @@ static const char* sysinfoGetProcessorArchitectureDescription(WORD wProcessorArc
   case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
     return "IA32_ON_WIN64";
   }
-  return "UNKNOWN PROCESSUR ARCHITECTURE";
+  return "UNKNOWN PROCESSOR ARCHITECTURE";
 }
 
 /*================================*/
