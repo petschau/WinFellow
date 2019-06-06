@@ -36,6 +36,10 @@
 
 #define MYREGBUFFERSIZE 1024
 
+typedef BOOL(WINAPI* LPFN_GLPI)(
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION,
+  PDWORD);
+
 /*=======================*/
 /* handle error messages */
 /*=======================*/
@@ -240,6 +244,36 @@ static void sysinfoEnumRegistry (void) {
   }
 }
 
+static const char* sysinfoGetProcessorArchitectureDescription(WORD wProcessorArchitecture)
+{
+  switch(wProcessorArchitecture)
+  {
+  case PROCESSOR_ARCHITECTURE_INTEL:
+    return "INTEL";
+  case PROCESSOR_ARCHITECTURE_MIPS:
+    return "MIPS";
+  case PROCESSOR_ARCHITECTURE_ALPHA:
+    return "ALPHA";
+  case PROCESSOR_ARCHITECTURE_PPC:
+    return "PPC";
+  case PROCESSOR_ARCHITECTURE_SHX:
+    return "SHX";
+  case PROCESSOR_ARCHITECTURE_ARM:
+    return "ARM";
+  case PROCESSOR_ARCHITECTURE_IA64:
+    return "IA64";
+  case PROCESSOR_ARCHITECTURE_ALPHA64:
+    return "ALPHA64";
+  case PROCESSOR_ARCHITECTURE_MSIL:
+    return "MSIL";
+  case PROCESSOR_ARCHITECTURE_AMD64:
+    return "AMD64";
+  case PROCESSOR_ARCHITECTURE_IA32_ON_WIN64:
+    return "IA32_ON_WIN64";
+  }
+  return "UNKNOWN PROCESSUR ARCHITECTURE";
+}
+
 /*================================*/
 /* windows system info structures */
 /*================================*/
@@ -247,10 +281,150 @@ static void sysinfoEnumRegistry (void) {
 static void sysinfoParseSystemInfo (void)
 {
   SYSTEM_INFO SystemInfo;
-  GetSystemInfo(&SystemInfo);
-  fellowAddTimelessLog("\tnumber of processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
-  fellowAddTimelessLog("\tprocessor type: \t%d\n", SystemInfo.dwProcessorType);
-  fellowAddTimelessLog("\tarchitecture: \t\t%d\n", SystemInfo.wProcessorArchitecture);
+  GetNativeSystemInfo(&SystemInfo);
+  fellowAddTimelessLog("\tlogical processors: \t%d\n", SystemInfo.dwNumberOfProcessors);
+  fellowAddTimelessLog("\tarchitecture: \t\t%s\n", sysinfoGetProcessorArchitectureDescription(SystemInfo.wProcessorArchitecture));
+  fellowAddTimelessLog("\tlevel: \t\t\t%d\n", SystemInfo.wProcessorLevel);
+  fellowAddTimelessLog("\trevision: \t\t%d\n", SystemInfo.wProcessorRevision);
+}
+
+// https://docs.microsoft.com/de-de/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getlogicalprocessorinformation
+// Helper function to count set bits in the processor mask.
+static DWORD sysinfoCountSetBits(ULONG_PTR bitMask)
+{
+  DWORD LSHIFT = sizeof(ULONG_PTR) * 8 - 1;
+  DWORD bitSetCount = 0;
+  ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;
+  DWORD i;
+
+  for (i = 0; i <= LSHIFT; ++i)
+  {
+    bitSetCount += ((bitMask & bitTest) ? 1 : 0);
+    bitTest /= 2;
+  }
+
+  return bitSetCount;
+}
+
+static int sysinfoParseProcessorInformation()
+{
+  LPFN_GLPI glpi;
+  BOOL done = FALSE;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = NULL;
+  PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = NULL;
+  DWORD returnLength = 0;
+  DWORD logicalProcessorCount = 0;
+  DWORD numaNodeCount = 0;
+  DWORD processorCoreCount = 0;
+  DWORD processorL1CacheCount = 0;
+  DWORD processorL2CacheCount = 0;
+  DWORD processorL3CacheCount = 0;
+  DWORD processorPackageCount = 0;
+  DWORD byteOffset = 0;
+  PCACHE_DESCRIPTOR Cache;
+
+  glpi = (LPFN_GLPI)GetProcAddress(
+    GetModuleHandle(TEXT("kernel32")),
+    "GetLogicalProcessorInformation");
+  if (NULL == glpi)
+  {
+    fellowAddTimelessLog("\n\tGetLogicalProcessorInformation is not supported.\n");
+    return (1);
+  }
+
+  while (!done)
+  {
+    DWORD rc = glpi(buffer, &returnLength);
+
+    if (FALSE == rc)
+    {
+      if (GetLastError() == ERROR_INSUFFICIENT_BUFFER)
+      {
+        if (buffer)
+          free(buffer);
+
+        buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc(
+          returnLength);
+
+        if (NULL == buffer)
+        {
+          fellowAddTimelessLog("\n\tError: Allocation failure\n");
+          return (2);
+        }
+      }
+      else
+      {
+        fellowAddTimelessLog(("\n\tError %d\n"), GetLastError());
+        return (3);
+      }
+    }
+    else
+    {
+      done = TRUE;
+    }
+  }
+
+  ptr = buffer;
+
+  while (byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength)
+  {
+    switch (ptr->Relationship)
+    {
+    case RelationNumaNode:
+      // Non-NUMA systems report a single record of this type.
+      numaNodeCount++;
+      break;
+
+    case RelationProcessorCore:
+      processorCoreCount++;
+
+      // A hyperthreaded core supplies more than one logical processor.
+      logicalProcessorCount += sysinfoCountSetBits(ptr->ProcessorMask);
+      break;
+
+    case RelationCache:
+      // Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
+      Cache = &ptr->Cache;
+      if (Cache->Level == 1)
+      {
+        processorL1CacheCount++;
+      }
+      else if (Cache->Level == 2)
+      {
+        processorL2CacheCount++;
+      }
+      else if (Cache->Level == 3)
+      {
+        processorL3CacheCount++;
+      }
+      break;
+
+    case RelationProcessorPackage:
+      // Logical processors share a physical package.
+      processorPackageCount++;
+      break;
+
+    default:
+      fellowAddTimelessLog("\n\tError: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n");
+      break;
+    }
+    byteOffset += sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION);
+    ptr++;
+  }
+
+  fellowAddTimelessLog("\tnumber of NUMA nodes: \t\t\t%d\n", numaNodeCount);
+  fellowAddTimelessLog("\tnumber of physical processor packages: \t%d\n", processorPackageCount);
+  fellowAddTimelessLog("\tnumber of processor cores: \t\t%d\n", processorCoreCount);
+  fellowAddTimelessLog("\tnumber of logical processors: \t\t%d\n", logicalProcessorCount);
+  fellowAddTimelessLog("\tnumber of processor L1/L2/L3 caches: \t%d/%d/%d\n",
+    processorL1CacheCount,
+    processorL2CacheCount,
+    processorL3CacheCount);
+  fellowAddTimelessLog("\n");
+
+  free(buffer);
+
+  return 0;
 }
 
 static void sysinfoParseOSVersionInfo(void) {
@@ -477,6 +651,7 @@ void sysinfoLogSysInfo(void)
   fellowAddTimelessLog("\n");
   sysinfoParseSystemInfo();
   fellowAddTimelessLog("\n");
+  sysinfoParseProcessorInformation();
   sysinfoParseMemoryStatus();
   fellowAddTimelessLog("\n");
   sysinfoEnumRegistry();
