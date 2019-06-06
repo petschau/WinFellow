@@ -76,14 +76,21 @@ blitter_state blitter;
 /* Unit is bus cycles (3.58MHz)						      */
 /*============================================================================*/
 
-ULO blit_cyclelength[16] = {2, 2, 2, 3, /* How long it takes for a blit to complete */
-3, 3, 3, 4, 
-2, 2, 2, 3, 
-3, 3, 3, 4};
-ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
-2, 1, 1, 1, 
-1, 0, 0, 0, 
-1, 0, 0, 0};
+ULO blit_cyclelength[16] = 
+{
+  2, 2, 2, 3, /* How long it takes for a blit to complete */
+  3, 3, 3, 4,
+  2, 2, 2, 3, 
+  3, 3, 3, 4
+};
+
+ULO blit_cyclefree[16] = 
+{
+  2, 1, 1, 1, /* Free cycles during blit */
+  2, 1, 1, 1, 
+  1, 0, 0, 0, 
+  1, 0, 0, 0
+};
 
 /*============================================================================*/
 /* Blitter fill-mode lookup tables                                            */
@@ -1277,7 +1284,7 @@ void blitInitiate(void)
     }
     else
     {
-      cycle_free = cycle_length / 5;
+      cycle_free = cycle_length / 10;
       cycle_length += cycle_free;
     }
   }
