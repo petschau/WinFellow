@@ -1087,7 +1087,9 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
   BOOLE keycode_was_pressed = prevkeys[keycode];
 
   /* DEBUG info, not needed now*/
+#ifdef _DEBUG
   fellowAddLog("Keypress %s %s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+#endif
 
   keys[keycode] = pressed;
 
