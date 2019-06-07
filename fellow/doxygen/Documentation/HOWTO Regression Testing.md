@@ -307,7 +307,7 @@ Cancel the clipping editor dialog. Save a screenshot to the pictures folder via 
 Do the same in 2x, 3x and 4x modes and ensure the screenshots are saved correctly; use the clipping editor accordingly.
 Close the emulation window, reopen it and take screenshots again.
 
-### Git a8178da: RDB hardfiles, read-only hardfile configuration & improved hardware interrupt handling
+### Git a118850: RDB hardfiles, read-only hardfile configuration & improved hardware interrupt handling
 
 Apply the Amiga 3000 model preset to a new configuration.
 
@@ -340,3 +340,4 @@ Eject all floppies (F11 and click all four eject buttons, save configuration and
 
 Repeat a second time to ensure that no freezes occur when the mouse is being moved permanently.
 
+This test case summarizes a number of commits surrounding interrupt handling (a8178da, bdceabd), as well as blitter delays (a118850); by the first commits, a number of titles were negatively impacted at first but were fixed by later commits.

@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/03)
+v0.5.8 (2019/06/07)
 \end_layout
 
 \begin_layout Author
@@ -361,8 +361,9 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-improved handling of hardware interrupts; this fixes freezes that previously
- could occur during installation of Workbench in all 0.5.x versions of WinFellow
+improved handling of hardware interrupts and blitter delays; this fixes
+ freezes that previously could occur during installation of Workbench in
+ all 0.5.x versions of WinFellow
 \end_layout
 
 \begin_layout Itemize
