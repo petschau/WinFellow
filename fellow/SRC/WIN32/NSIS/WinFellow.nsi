@@ -61,7 +61,15 @@ Function .onInit
 ;Run the uninstaller
 uninst:
     ClearErrors
-    Exec $R0
+		Var /GLOBAL ReturnCode
+    ExecWait '"$R0" /S' $ReturnCode
+		
+		# Error handler
+		${If} $ReturnCode != 0 
+		${AndIf} $ReturnCode != 3010
+			MessageBox MB_OK|MB_ICONSTOP "${APP_NAME} uninstallation failed, aborting. "
+			Abort
+		${EndIf}
 		
 done:
 	${If} ${RunningX64}
