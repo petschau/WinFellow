@@ -28,3 +28,5 @@ fellow/Docs/WinFellow/WinFellow User Manual.pdf
 *.exe
 *.log
 fellow/SRC/WIN32/MSVC/.vs/WinFellow/v15/
+fellow/SRC/WIN32/DXGI/PixelShader.h
+fellow/SRC/WIN32/DXGI/VertexShader.h
