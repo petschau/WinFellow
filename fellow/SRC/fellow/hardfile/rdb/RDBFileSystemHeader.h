@@ -31,6 +31,9 @@ namespace fellow::hardfile::rdb
     ULO DnGlobalVec;
     ULO Reserved2[23];
 
+    bool HasValidCheckSum;
+    bool HasFileSystemDataErrors;
+
     RDBFileSystemHandler FileSystemHandler;
 
     void ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);

@@ -1,5 +1,6 @@
 #include "fellow/hardfile/rdb/RDBFileReader.h"
 #include "fellow/hardfile/rdb/RDBHandler.h"
+#include "fellow/hardfile/rdb/CheckSumCalculator.h"
 
 #ifdef _DEBUG
   #define _CRTDBG_MAP_ALLOC
@@ -11,19 +12,62 @@
 #endif
 
 using namespace std;
+using namespace fellow::api::module;
 
 namespace fellow::hardfile::rdb
 {
-  bool RDBHandler::HasRigidDiskBlock(RDBFileReader& reader)
+  unsigned int RDBHandler::GetIndexOfRDB(RDBFileReader& reader)
   {
-    string headerID = reader.ReadString(0, 4);
-    return headerID == "RDSK";
+    for (unsigned int i = 0; i < 16; i++)
+    {
+      unsigned int index = i * 512;
+      string headerID = reader.ReadString(index, 4);
+      if (headerID == "RDSK")
+      {
+        return index;
+      }
+    }
+    return 0xffffffff;
+  }
+
+  rdb_status RDBHandler::HasRigidDiskBlock(RDBFileReader& reader)
+  {
+    unsigned int indexOfRDB = GetIndexOfRDB(reader);
+
+    if (indexOfRDB == 0xffffffff)
+    {
+      return rdb_status::RDB_NOT_FOUND;
+    }
+
+    bool hasValidCheckSum = CheckSumCalculator::HasValidCheckSum(reader, 128, indexOfRDB);
+
+    if (!hasValidCheckSum)
+    {
+      return rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR;
+    }
+
+    RDB* rdb = GetDriveInformation(reader, true);
+    if (rdb->HasPartitionErrors)
+    {
+      delete rdb;
+      return rdb_status::RDB_FOUND_WITH_PARTITION_ERROR;
+    }
+
+    delete rdb;
+    return rdb_status::RDB_FOUND;
   }
 
   RDB* RDBHandler::GetDriveInformation(RDBFileReader& reader, bool geometryOnly)
   {
+    unsigned int indexOfRDB = GetIndexOfRDB(reader);
+
+    if (indexOfRDB == 0xffffffff)
+    {
+      return nullptr;
+    }
+
     RDB* rdb = DBG_NEW RDB();
-    rdb->ReadFromFile(reader, geometryOnly);
+    rdb->ReadFromFile(reader, indexOfRDB, geometryOnly);
     rdb->Log();
     return rdb;
   }

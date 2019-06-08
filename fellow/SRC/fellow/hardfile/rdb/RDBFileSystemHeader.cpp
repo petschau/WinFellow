@@ -1,4 +1,5 @@
 #include "fellow/hardfile/rdb/RDBFileSystemHeader.h"
+#include "fellow/hardfile/rdb/CheckSumCalculator.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
@@ -35,7 +36,19 @@ namespace fellow::hardfile::rdb
       Reserved2[i] = reader.ReadULO(index + i + 80);
     }
 
-    FileSystemHandler.ReadFromFile(reader, DnSegListBlock, blockSize);
+    HasValidCheckSum = (SizeInLongs == 64) && CheckSumCalculator::HasValidCheckSum(reader, 64, index);
+
+    if (!HasValidCheckSum)
+    {
+      return;
+    }
+
+    bool fileSystemHandlerLoadSuccessful = FileSystemHandler.ReadFromFile(reader, DnSegListBlock, blockSize);
+    if (!fileSystemHandlerLoadSuccessful)
+    {
+      HasFileSystemDataErrors = true;
+      return;
+    }
   }
 
   void RDBFileSystemHeader::Log()
@@ -44,7 +57,7 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("-----------------------------------------\n");
     Service->Log.AddLogDebug("0  - id:                     FSHD\n");
     Service->Log.AddLogDebug("4  - size in longs:          %u\n", SizeInLongs);
-    Service->Log.AddLogDebug("8  - checksum:               %d\n", CheckSum);
+    Service->Log.AddLogDebug("8  - checksum:               %d (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
     Service->Log.AddLogDebug("12 - host id:                %u\n", HostID);
     Service->Log.AddLogDebug("16 - next:                   %d\n", Next);
     Service->Log.AddLogDebug("20 - flags:                  %X\n", Flags);
@@ -81,7 +94,9 @@ namespace fellow::hardfile::rdb
     DnPriority(0),
     DnStartup(0),
     DnSegListBlock(0),
-    DnGlobalVec(0)
+    DnGlobalVec(0),
+    HasValidCheckSum(false),
+    HasFileSystemDataErrors(false)
   {
     memset(Reserved2, 0, sizeof Reserved2);
   }

@@ -245,7 +245,7 @@ namespace fellow::hardfile
 
   bool HardfileHandler::FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int& olderOrSameFileSystemIndex)
   {
-    unsigned int size = _fileSystems.size();
+    unsigned int size = (unsigned int) _fileSystems.size();
     for (unsigned int index = 0; index < size; index++)
     {
       if (_fileSystems[index]->IsOlderOrSameFileSystemVersion(DOSType, version))
@@ -325,7 +325,7 @@ namespace fellow::hardfile
     geometry.Tracks = rdb->Cylinders * rdb->Heads;
 
     config.Partitions.clear();
-    unsigned int partitionCount = rdb->Partitions.size();
+    unsigned int partitionCount = (unsigned int) rdb->Partitions.size();
     for (unsigned int i = 0; i < partitionCount; i++)
     {
       fellow::hardfile::rdb::RDBPartition* rdbPartition = rdb->Partitions[i].get();
@@ -362,40 +362,83 @@ namespace fellow::hardfile
       device.FileSize = fsnp->size;
       delete fsnp;
     }
+
+    const auto& geometry = device.Configuration.Geometry;
+    ULO cylinderSize = geometry.Surfaces * geometry.SectorsPerTrack * geometry.BytesPerSector;
+    if (device.FileSize < cylinderSize)
+    {
+      fclose(device.F);
+      device.F = nullptr;
+      Service->Log.AddLog("ERROR: Hardfile '%s' was not mounted, size is less than one cylinder.\n", device.Configuration.Filename.c_str());
+      return false;
+    }
     return true;
   }
 
-  void HardfileHandler::InitializeHardfile(unsigned int index)
+  void HardfileHandler::ClearDeviceRuntimeInfo(HardfileDevice& device)
   {
-    HardfileDevice& device = _devices[index];
-
     if (device.F != nullptr)
     {
       fclose(device.F);
       device.F = nullptr;
     }
 
-    // Clear all runtime info
     device.Status = FHFILE_NONE;
     device.FileSize = 0;
     device.GeometrySize = 0;
     device.Readonly = true;
+
     if (device.RDB != nullptr)
     {
       delete device.RDB;
       device.RDB = nullptr;
       device.HasRDB = false;
     }
+  }
+
+  void HardfileHandler::InitializeHardfile(unsigned int index)
+  {
+    HardfileDevice& device = _devices[index];
+
+    ClearDeviceRuntimeInfo(device);
 
     if (OpenHardfileFile(device))
     {
       RDBFileReader reader(device.F);
-      device.HasRDB = RDBHandler::HasRigidDiskBlock(reader);
+      rdb_status rdbResult = RDBHandler::HasRigidDiskBlock(reader);
+
+      if (rdbResult == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
+      {
+        ClearDeviceRuntimeInfo(device);
+
+        Service->Log.AddLog("Hardfile: File skipped '%s', RDB header has checksum error.\n", device.Configuration.Filename.c_str());
+        return;
+      }
+
+      if (rdbResult == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR)
+      {
+        ClearDeviceRuntimeInfo(device);
+
+        Service->Log.AddLog("Hardfile: File skipped '%s', RDB partition has checksum error.\n", device.Configuration.Filename.c_str());
+        return;
+      }
+
+      device.HasRDB = rdbResult == rdb_status::RDB_FOUND;
 
       if (device.HasRDB)
       {
         // RDB configured hardfile
-        device.RDB = RDBHandler::GetDriveInformation(reader);
+        RDB* rdb = RDBHandler::GetDriveInformation(reader);
+
+        if (rdb->HasFileSystemHandlerErrors)
+        {
+          ClearDeviceRuntimeInfo(device);
+
+          Service->Log.AddLog("Hardfile: File skipped '%s', RDB filesystem handler has checksum error.\n", device.Configuration.Filename.c_str());
+          return;
+        }
+
+        device.RDB = rdb;
         SetHardfileConfigurationFromRDB(device.Configuration, device.RDB, device.Readonly);
       }
 
@@ -414,14 +457,9 @@ namespace fellow::hardfile
 
       if (device.FileSize < device.GeometrySize)
       {
-        fclose(device.F);
-        device.F = nullptr;
-        device.Status = FHFILE_NONE;
-        device.FileSize = 0;
-        device.GeometrySize = 0;
-        device.Readonly = true;
+        ClearDeviceRuntimeInfo(device);
 
-        Service->Log.AddLog("Hardfile: File skipped, geometry for %s is larger than the file.", device.Configuration.Filename.c_str());
+        Service->Log.AddLog("Hardfile: File skipped, geometry for %s is larger than the file.\n", device.Configuration.Filename.c_str());
       }
     }
   }
@@ -455,7 +493,7 @@ namespace fellow::hardfile
 
     if (lun > 7)
     {
-      Service->Log.AddLogDebug("ERROR: Unit number is not in a valid format.");
+      Service->Log.AddLogDebug("ERROR: Unit number is not in a valid format.\n");
       return 0xffffffff;
     }
     return lun + address * 8;
@@ -536,6 +574,12 @@ namespace fellow::hardfile
 
   BYT HardfileHandler::Read(ULO index)
   {
+    if (index == 2)
+    {
+      int ihj = 0;
+    }
+
+
     if (_devices[index].F == nullptr)
     {
       Service->Log.AddLogDebug("CMD_READ Unit %d (%d) ERROR-TDERR_BadUnitNum\n", GetUnitNumberFromIndex(index), index);
@@ -1966,9 +2010,9 @@ namespace fellow::hardfile
 #endif
   }
 
-  bool HardfileHandler::HasRDB(const std::string& filename)
+  rdb_status HardfileHandler::HasRDB(const std::string& filename)
   {
-    bool result = false;
+    rdb_status result = rdb_status::RDB_NOT_FOUND;
     FILE *F = nullptr;
     fopen_s(&F, filename.c_str(), "rb");
     if (F != nullptr)

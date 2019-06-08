@@ -52,8 +52,14 @@ namespace fellow::hardfile::rdb
     std::vector<std::unique_ptr<RDBPartition>> Partitions;
     std::vector<std::unique_ptr<RDBFileSystemHeader>> FileSystemHeaders;
 
-    void ReadFromFile(RDBFileReader& reader, bool geometryOnly = false);
+    bool HasValidCheckSum;
+    bool HasPartitionErrors;
+    bool HasFileSystemHandlerErrors;
+
+    void ReadFromFile(RDBFileReader& reader, unsigned int index, bool geometryOnly = false);
     void Log();
+
+    RDB();
   };
 }
 
