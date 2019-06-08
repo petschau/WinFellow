@@ -265,6 +265,7 @@ const STR *memory_kickimage_versionstrings[14] = {
   /*============================================================================*/
 
   /* Unmapped memory interface */
+  // Some memory tests use CLR to write and read present memory (Last Ninja 2), so 0 can not be returned, ever.
 
   UBY memoryUnmappedReadByte(ULO address)
   {
@@ -2275,14 +2276,14 @@ __inline  UWO memoryReadWord(ULO address)
 
   void memoryNoiseSettingsClear(void)
   {
-    memory_noise[0] = 0;
-    memory_noise[1] = 0xffffffff;
+    memory_noise[0] = 0x01010101;
+    memory_noise[1] = 0xfefefefe;
     memory_noisecounter = 0;
   }
 
   void memoryMysterySettingsClear(void)
   {
-    memory_mystery_value = 0xff00ff00;
+    memory_mystery_value = 0xfe01fe01;
   }
 
   void memoryBankSettingsClear(void)
