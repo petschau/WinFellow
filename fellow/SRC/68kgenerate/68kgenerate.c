@@ -1,4 +1,3 @@
-/* @(#) $Id: 68kgenerate.c,v 1.11 2012-08-12 16:51:02 peschau Exp $          */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -1153,8 +1152,14 @@ unsigned int cgClr(cpu_data *cpudata, cpu_instruction_info i)
       }
       else if (regtype == '0')
       {
-	fprintf(codef, "\t%s dst = 0;\n", cgSize(size));
+	fprintf(codef, "\tconst %s dst = 0;\n", cgSize(size));
 	cgFetchDstEa(eano, eareg_cpu_data_index, size);
+
+        if (stricmp(i.instruction_name, "CLR") == 0 && (eano >= 2 && eano < 11))
+        {
+          // CLR reads memory and throws away value, memory mapped IO sometimes need this read to happen.
+          fprintf(codef, "\t%s(dstea);\n", cgMemoryFetch(size));
+        }
       }
       else if (regtype == 'S' || regtype == 'C' || regtype == 'H')
       {
