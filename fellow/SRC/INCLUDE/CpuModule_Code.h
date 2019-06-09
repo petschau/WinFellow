@@ -5950,189 +5950,210 @@ static void MOVEM_4CFB(ULO*opc_data)
 }
 static void CLR_4200(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	cpuClr();
 	cpuSetDRegByte(opc_data[0], dst);
 	cpuSetInstructionTime(4);
 }
 static void CLR_4210(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA02(opc_data[0]);
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(12);
 }
 static void CLR_4218(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA03(opc_data[0], 1);
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(12);
 }
 static void CLR_4220(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA04(opc_data[0], 1);
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(14);
 }
 static void CLR_4228(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA05(opc_data[0]);
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(16);
 }
 static void CLR_4230(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA06(opc_data[0]);
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(18);
 }
 static void CLR_4238(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA70();
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(16);
 }
 static void CLR_4239(ULO*opc_data)
 {
-	UBY dst = 0;
+	const UBY dst = 0;
 	ULO dstea = cpuEA71();
+	memoryReadByte(dstea);
 	cpuClr();
 	memoryWriteByte(dst, dstea);
 	cpuSetInstructionTime(20);
 }
 static void CLR_4240(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	cpuClr();
 	cpuSetDRegWord(opc_data[0], dst);
 	cpuSetInstructionTime(4);
 }
 static void CLR_4250(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA02(opc_data[0]);
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(12);
 }
 static void CLR_4258(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA03(opc_data[0], 2);
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(12);
 }
 static void CLR_4260(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA04(opc_data[0], 2);
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(14);
 }
 static void CLR_4268(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA05(opc_data[0]);
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(16);
 }
 static void CLR_4270(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA06(opc_data[0]);
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(18);
 }
 static void CLR_4278(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA70();
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(16);
 }
 static void CLR_4279(ULO*opc_data)
 {
-	UWO dst = 0;
+	const UWO dst = 0;
 	ULO dstea = cpuEA71();
+	memoryReadWord(dstea);
 	cpuClr();
 	memoryWriteWord(dst, dstea);
 	cpuSetInstructionTime(20);
 }
 static void CLR_4280(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	cpuClr();
 	cpuSetDReg(opc_data[0], dst);
 	cpuSetInstructionTime(6);
 }
 static void CLR_4290(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA02(opc_data[0]);
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(20);
 }
 static void CLR_4298(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA03(opc_data[0], 4);
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(20);
 }
 static void CLR_42A0(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA04(opc_data[0], 4);
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(22);
 }
 static void CLR_42A8(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA05(opc_data[0]);
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(24);
 }
 static void CLR_42B0(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA06(opc_data[0]);
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(26);
 }
 static void CLR_42B8(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA70();
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(24);
 }
 static void CLR_42B9(ULO*opc_data)
 {
-	ULO dst = 0;
+	const ULO dst = 0;
 	ULO dstea = cpuEA71();
+	memoryReadLong(dstea);
 	cpuClr();
 	memoryWriteLong(dst, dstea);
 	cpuSetInstructionTime(28);

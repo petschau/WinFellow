@@ -1090,7 +1090,7 @@ void blitterLineMode(void)
   BOOLE c_enabled = blitter.bltcon & 0x02000000;
 
   BOOLE decision_is_signed = (((blitter.bltcon >> 6) & 1) == 1);
-  LON decision_variable = (LON) blitter.bltapt;
+  LON decision_variable = (LON) (WOR) blitter.bltapt;
 
   // Quirk: Set decision increases to 0 if a is disabled, ensures bltapt remains unchanged
   WOR decision_inc_signed = (a_enabled) ? ((WOR) blitter.bltbmod) : 0;
@@ -1228,7 +1228,7 @@ void blitterLineMode(void)
   blitter.a_shift_asc = blit_a_shift_local;
   blitter.a_shift_desc = 16 - blitter.a_shift_asc;
   blitter.bltbdat = bltbdat_local;
-  blitter.bltapt = decision_variable;
+  blitter.bltapt = (blitter.bltapt & 0xffff0000) | (decision_variable & 0xffff);
   blitter.bltcpt = bltcpt_local;
   blitter.bltdpt = bltdpt_local;
   blitter.bltzero = bltzero_local;
