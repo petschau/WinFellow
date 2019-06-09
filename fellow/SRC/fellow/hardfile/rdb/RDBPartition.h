@@ -43,11 +43,15 @@ namespace fellow::hardfile::rdb
     ULO Control;
     ULO Bootblocks;
 
+    bool HasValidCheckSum;
+
     bool IsAutomountable();
     bool IsBootable();
 
     void ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
     void Log();
+
+    RDBPartition();
   };
 }
 

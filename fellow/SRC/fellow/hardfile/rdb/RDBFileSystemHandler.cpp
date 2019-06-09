@@ -30,6 +30,19 @@ namespace fellow::hardfile::rdb
       RDBLSegBlock &block = blocks.back();
       block.ReadFromFile(reader, index);
       block.Log();
+
+      if (!block.HasValidCheckSum)
+      {
+        Service->Log.AddLog("Hardfile LSegBlock had an invalid checksum.");
+        return false;
+      }
+
+      if (nextBlock == block.Next)
+      {
+        Service->Log.AddLog("Hardfile LSegBlock next-block points to itself.");
+        return false;
+      }
+
       Size += block.GetDataSize();
       nextBlock = block.Next;
     }

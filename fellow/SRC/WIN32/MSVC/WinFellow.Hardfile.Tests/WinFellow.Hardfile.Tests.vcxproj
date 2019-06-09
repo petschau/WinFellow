@@ -262,6 +262,11 @@
     <ClInclude Include="..\..\..\test\mock\fellow\api\service\RetroPlatformWrapperMock.h" />
     <ClInclude Include="..\..\..\test\mock\fellow\api\service\LogMock.h" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf" />
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf" />
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDSKMarkerInvalidCheckSum.hdf" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

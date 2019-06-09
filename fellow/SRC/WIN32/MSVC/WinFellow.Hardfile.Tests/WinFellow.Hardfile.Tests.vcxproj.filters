@@ -151,4 +151,15 @@
       <Filter>Source Files\mock\fellow\api\service</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </None>
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDSKMarkerInvalidCheckSum.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </None>
+    <None Include="..\..\..\test\testdata\fellow\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf">
+      <Filter>Source Files\testdata\fellow\hardfile\rdb</Filter>
+    </None>
+  </ItemGroup>
 </Project>

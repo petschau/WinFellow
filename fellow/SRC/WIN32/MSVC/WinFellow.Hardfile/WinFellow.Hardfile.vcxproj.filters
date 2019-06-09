@@ -97,6 +97,9 @@
     <ClInclude Include="..\..\..\fellow\hardfile\hunks\HunkRelocator.h">
       <Filter>fellow\hardfile\hunks</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\fellow\hardfile\rdb\CheckSumCalculator.h">
+      <Filter>fellow\hardfile\rdb</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\fellow\hardfile\hunks\BSSHunk.cpp">
@@ -170,6 +173,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\hardfile\hunks\HunkRelocator.cpp">
       <Filter>fellow\hardfile\hunks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\fellow\hardfile\rdb\CheckSumCalculator.cpp">
+      <Filter>fellow\hardfile\rdb</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

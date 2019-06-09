@@ -1479,10 +1479,10 @@ void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumb
     geometry.ReservedBlocks);
 }
 
-HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, STR* filename, bool hasRDB, const HardfileGeometry& geometry, int hardfileIndex)
+HTREEITEM wguiHardfileTreeViewAddDisk(HWND hwndTree, STR* filename, rdb_status rdbStatus, const HardfileGeometry& geometry, int hardfileIndex)
 {
   STR s[256];
-  snprintf(s, 256, "%s%s", filename, hasRDB ? " (RDB)" : "");
+  snprintf(s, 256, "%s%s", filename, rdbStatus == rdb_status::RDB_FOUND ? " (RDB)" : (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR || rdbStatus == RDB_FOUND_WITH_PARTITION_ERROR ? " (Invalid RDB)" : ""));
 
   TV_INSERTSTRUCT tvInsert;
   memset(&tvInsert, 0, sizeof(tvInsert));
@@ -1513,44 +1513,59 @@ void wguiHardfileTreeViewAddHardfile(HWND hwndTree, cfg_hardfile *hf, int hardfi
 {
   HardfileConfiguration configuration;
 
-  if (hf->hasrdb)
+  if (hf->rdbstatus == rdb_status::RDB_FOUND)
   {
     configuration = HardfileHandler->GetConfigurationFromRDBGeometry(hf->filename);
   }
-  else
+
+  if (hf->rdbstatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
   {
-    struct stat StatBuffer;
-    memset(&StatBuffer, 0, sizeof(StatBuffer));
-    int result = fsWrapStat(hf->filename, &StatBuffer);
+    STR s[256];
+    sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with errors.\n", hf->filename);
+    MessageBox(wgui_hDialog, s, "Configuration Error", 0);
+  }
 
-    if (result != 0)
-    {
-      STR s[256];
-      sprintf(s, "ERROR: Unable to open hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", hf->filename);
-      MessageBox(wgui_hDialog, s, "Configuration Error", 0);
-    }
+  if (hf->rdbstatus == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR)
+  {
+    STR s[256];
+    sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with partition errors.\n", hf->filename);
+    MessageBox(wgui_hDialog, s, "Configuration Error", 0);
+  }
 
-    if (result == 0 && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
-    {
-      configuration.Geometry.HighCylinder = (StatBuffer.st_size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
-    }
+  struct stat StatBuffer;
+  memset(&StatBuffer, 0, sizeof(StatBuffer));
+  int result = fsWrapStat(hf->filename, &StatBuffer);
 
-    configuration.Geometry.BytesPerSector = hf->bytespersector;
-    configuration.Geometry.LowCylinder = 0;
-    configuration.Readonly = hf->readonly;
-    configuration.Geometry.ReservedBlocks = hf->reservedblocks;
-    configuration.Geometry.SectorsPerTrack = hf->sectorspertrack;
-    configuration.Geometry.Surfaces = hf->surfaces;
+  if (result != 0)
+  {
+    STR s[256];
+    sprintf(s, "ERROR: Unable to open hardfile '%s', it is either inaccessible, or too big (2GB or more).\n", hf->filename);
+    MessageBox(wgui_hDialog, s, "Configuration Error", 0);
+  }
 
+  if (result == 0 && hf->bytespersector != 0 && hf->sectorspertrack != 0 && hf->surfaces != 0)
+  {
+    configuration.Geometry.HighCylinder = (StatBuffer.st_size / hf->bytespersector / hf->sectorspertrack / hf->surfaces) - 1;
+  }
+
+  configuration.Geometry.BytesPerSector = hf->bytespersector;
+  configuration.Geometry.LowCylinder = 0;
+  configuration.Readonly = hf->readonly;
+  configuration.Geometry.ReservedBlocks = hf->reservedblocks;
+  configuration.Geometry.SectorsPerTrack = hf->sectorspertrack;
+  configuration.Geometry.Surfaces = hf->surfaces;
+
+  if (hf->rdbstatus == rdb_status::RDB_NOT_FOUND)
+  {
     HardfilePartition partition;
     partition.PreferredName = "";
     partition.Geometry = configuration.Geometry;
     configuration.Partitions.push_back(partition);
   }
+  
+  HTREEITEM diskRootItem = wguiHardfileTreeViewAddDisk(hwndTree, hf->filename, hf->rdbstatus, configuration.Geometry, hardfileIndex);
 
-  HTREEITEM diskRootItem = wguiHardfileTreeViewAddDisk(hwndTree, hf->filename, hf->hasrdb, configuration.Geometry, hardfileIndex);
-
-  unsigned int partitionCount = configuration.Partitions.size();
+  unsigned int partitionCount = (unsigned int) configuration.Partitions.size();
   for (unsigned int i = 0; i < partitionCount; i++)
   {
     wguiHardfileTreeViewAddPartition(hwndTree, diskRootItem, i, "Devicename", configuration.Partitions[i], hardfileIndex);
@@ -3021,7 +3036,7 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
       wgui_current_hardfile_edit->surfaces, 
       wgui_current_hardfile_edit->reservedblocks, 
       wgui_current_hardfile_edit->bytespersector, 
-      !HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename));
+      HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename) == rdb_status::RDB_NOT_FOUND);
     return TRUE;
   case WM_COMMAND:
     if (HIWORD(wParam) == BN_CLICKED)
@@ -3031,14 +3046,30 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
       case IDC_BUTTON_HARDFILE_ADD_FILEDIALOG:
         if (wguiSelectFile(hwndDlg, wgui_current_hardfile_edit->filename, CFG_FILENAME_LENGTH, "Select Hardfile", FSEL_HDF))
         {
-          ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
-          if (HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename))
+          rdb_status rdbStatus = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
+          if (rdbStatus == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
           {
-            const HardfileConfiguration configuration = HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
-            const HardfileGeometry& geometry = configuration.Geometry;
-            wguiHardfileAddDialogSetGeometryEdits(hwndDlg, wgui_current_hardfile_edit->filename, false, geometry.SectorsPerTrack, geometry.Surfaces, geometry.ReservedBlocks, geometry.BytesPerSector, false);
+            STR s[256];
+            sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with errors.\n", wgui_current_hardfile_edit->filename);
+            MessageBox(wgui_hDialog, s, "Configuration Error", 0);
           }
-          iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+          else if (rdbStatus == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR)
+          {
+            STR s[256];
+            sprintf(s, "ERROR: Unable to use hardfile '%s', it has RDB with partition errors.\n", wgui_current_hardfile_edit->filename);
+            MessageBox(wgui_hDialog, s, "Configuration Error", 0);
+          }
+          else
+          {
+            ccwEditSetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_FILENAME, wgui_current_hardfile_edit->filename);
+            if (rdbStatus == rdb_status::RDB_FOUND)
+            {
+              const HardfileConfiguration configuration = HardfileHandler->GetConfigurationFromRDBGeometry(wgui_current_hardfile_edit->filename);
+              const HardfileGeometry& geometry = configuration.Geometry;
+              wguiHardfileAddDialogSetGeometryEdits(hwndDlg, wgui_current_hardfile_edit->filename, false, geometry.SectorsPerTrack, geometry.Surfaces, geometry.ReservedBlocks, geometry.BytesPerSector, false);
+            }
+            iniSetLastUsedHdfDir(wgui_ini, wguiExtractPath(wgui_current_hardfile_edit->filename));
+          }
         }
         break;
       case IDOK:
@@ -3050,23 +3081,23 @@ INT_PTR CALLBACK wguiHardfileAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPara
           MessageBox(hwndDlg, "You must specify a hardfile name", "Edit Hardfile", 0);
           break;
         }
-        wgui_current_hardfile_edit->hasrdb = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
+        wgui_current_hardfile_edit->rdbstatus = HardfileHandler->HasRDB(wgui_current_hardfile_edit->filename);
         ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SECTORS, stmp, 32);
-        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        if (wgui_current_hardfile_edit->rdbstatus == rdb_status::RDB_NOT_FOUND && atoi(stmp) < 1)
         {
           MessageBox(hwndDlg, "Sectors Per Track must be 1 or higher", "Edit Hardfile", 0);
           break;
         }
         wgui_current_hardfile_edit->sectorspertrack = atoi(stmp);
         ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_SURFACES, stmp, 32);
-        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        if (wgui_current_hardfile_edit->rdbstatus == rdb_status::RDB_NOT_FOUND && atoi(stmp) < 1)
         {
           MessageBox(hwndDlg, "The number of surfaces must be 1 or higher", "Edit Hardfile", 0);
           break;
         }
         wgui_current_hardfile_edit->surfaces = atoi(stmp);
         ccwEditGetText(hwndDlg, IDC_EDIT_HARDFILE_ADD_RESERVED, stmp, 32);
-        if (!wgui_current_hardfile_edit->hasrdb && atoi(stmp) < 1)
+        if (wgui_current_hardfile_edit->rdbstatus == rdb_status::RDB_NOT_FOUND && atoi(stmp) < 1)
         {
           MessageBox(hwndDlg, "The number of reserved blocks must be 1 or higher", "Edit Hardfile", 0);
           break;

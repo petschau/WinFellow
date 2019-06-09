@@ -1797,13 +1797,12 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
       }
       strncpy(hf.filename, curpos, CFG_FILENAME_LENGTH);
 
-      hf.hasrdb = HardfileHandler->HasRDB(hf.filename);
-      if (hf.hasrdb)
+      hf.rdbstatus = HardfileHandler->HasRDB(hf.filename);
+      if (hf.rdbstatus == rdb_status::RDB_FOUND)
       {
         HardfileConfiguration rdbConfiguration = HardfileHandler->GetConfigurationFromRDBGeometry(hf.filename);
         hf.bytespersector = rdbConfiguration.Geometry.BytesPerSector;
         hf.sectorspertrack = rdbConfiguration.Geometry.SectorsPerTrack;
-        // hf.readonly = rdbConfiguration.Readonly;
         hf.surfaces = rdbConfiguration.Geometry.Surfaces;
         hf.reservedblocks = rdbConfiguration.Geometry.ReservedBlocks;
       }

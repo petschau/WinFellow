@@ -7,6 +7,7 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::rdb;
+using namespace fellow::api::module;
 
 namespace test::fellow::hardfile::rdb
 {
@@ -19,6 +20,10 @@ namespace test::fellow::hardfile::rdb
     const STR* BlankWithRDB_FFS31 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS31.hdf)";
     const STR* BlankWithoutRDB_OFS = R"(testdata\fellow\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
     const STR* ManyPartitionsWithRDB_ManyFS = R"(testdata\fellow\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf)";
+    const STR* RDBInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDSKMarkerInvalidChecksum.hdf)";
+    const STR* RDBPartitionInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
+    const STR* RDBFileSystemHeaderInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf)";
+    const STR* RDBLSegBlockInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf)";
 
     void GetDriveInformation(const STR* filename)
     {
@@ -33,9 +38,9 @@ namespace test::fellow::hardfile::rdb
       }
     }
 
-    bool HasRigidDiskBlock(const STR* filename)
+    rdb_status HasRigidDiskBlock(const STR* filename)
     {
-      bool result = false;
+      rdb_status result;
       FILE *F = nullptr;
       fopen_s(&F, filename, "rb");
       if (F != nullptr)
@@ -61,18 +66,62 @@ namespace test::fellow::hardfile::rdb
       ShutdownTestframework();
     }
 
-    TEST_METHOD(HasRigidDiskBlock_HDFWithRDBAndSFS_ReturnsTrue)
+    TEST_METHOD(HasRigidDiskBlock_HDFWithRDBAndSFS_Returns_RDB_FOUND)
     {
-      bool result = HasRigidDiskBlock(BlankWithRDB_SFS);
+      rdb_status result = HasRigidDiskBlock(BlankWithRDB_SFS);
 
-      Assert::IsTrue(result);
+      Assert::IsTrue(result == rdb_status::RDB_FOUND);
     }
 
-    TEST_METHOD(HasRigidDiskBlock_HDFWithoutRDB_ReturnsFalse)
+    TEST_METHOD(HasRigidDiskBlock_HDFWithoutRDB_Returns_RDB_NOT_FOUND)
     {
-      bool result = HasRigidDiskBlock(BlankWithoutRDB_OFS);
+      rdb_status result = HasRigidDiskBlock(BlankWithoutRDB_OFS);
 
-      Assert::IsFalse(result);
+      Assert::IsTrue(result == rdb_status::RDB_NOT_FOUND);
+    }
+
+    TEST_METHOD(HasRigidDiskBlock_HDFWithRDSKMarkerAndInvalidCheckSum_Returns_RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR)
+    {
+      rdb_status result = HasRigidDiskBlock(RDBInvalidCheckSum);
+
+      Assert::IsTrue(result == rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR);
+    }
+
+    TEST_METHOD(HasRigidDiskBlock_HDFWithRDBAndInvalidPartitionCheckSum_Returns_RDB_FOUND_WITH_PARTITION_ERROR)
+    {
+      rdb_status result = HasRigidDiskBlock(RDBPartitionInvalidCheckSum);
+
+      Assert::IsTrue(result == rdb_status::RDB_FOUND_WITH_PARTITION_ERROR);
+    }
+
+    TEST_METHOD(GetDriveInformation_HDFWithRDBAndInvalidPartitionCheckSum_ShouldFindError)
+    {
+      GetDriveInformation(RDBPartitionInvalidCheckSum);
+
+      Assert::IsTrue(_instance->HasPartitionErrors);
+      Assert::IsFalse(_instance->HasFileSystemHandlerErrors);
+      Assert::IsTrue(_instance->HasValidCheckSum);
+      Assert::AreEqual<size_t>(0, _instance->Partitions.size());
+    }
+
+    TEST_METHOD(GetDriveInformation_HDFWithRDBAndInvalidFileSystemHeaderCheckSum_ShouldFindError)
+    {
+      GetDriveInformation(RDBFileSystemHeaderInvalidCheckSum);
+
+      Assert::IsTrue(_instance->HasFileSystemHandlerErrors);
+      Assert::IsFalse(_instance->HasPartitionErrors);
+      Assert::IsTrue(_instance->HasValidCheckSum);
+      Assert::AreEqual<size_t>(0, _instance->FileSystemHeaders.size());
+    }
+
+    TEST_METHOD(GetDriveInformation_HDFWithRDBAndInvalidLSegBlockCheckSum_ShouldFindError)
+    {
+      GetDriveInformation(RDBLSegBlockInvalidCheckSum);
+
+      Assert::IsTrue(_instance->HasFileSystemHandlerErrors);
+      Assert::IsFalse(_instance->HasPartitionErrors);
+      Assert::IsTrue(_instance->HasValidCheckSum);
+      Assert::AreEqual<size_t>(0, _instance->FileSystemHeaders.size());
     }
 
     TEST_METHOD(GetDriveInformation_HDFWithRDBAndPFS_HeaderValuesReadCorrectly)

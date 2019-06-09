@@ -5,6 +5,9 @@
 #include "CpuIntegration.h"
 #include "gameport.h"
 #include "listtree.h"
+#include "fellow/api/module/IHardfileHandler.h"
+
+using namespace fellow::api::module;
 
 /*============================================================================*/
 /* struct that holds a complete hardfile configuration                        */
@@ -17,7 +20,7 @@ typedef struct {
   ULO   sectorspertrack;
   ULO   surfaces;
   ULO   reservedblocks;
-  bool  hasrdb;
+  rdb_status rdbstatus;
 } cfg_hardfile;
 
 /*============================================================================*/

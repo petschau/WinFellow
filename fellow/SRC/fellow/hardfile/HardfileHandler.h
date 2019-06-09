@@ -42,6 +42,7 @@ namespace fellow::hardfile
     bool OpenHardfileFile(HardfileDevice& device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
+    void ClearDeviceRuntimeInfo(HardfileDevice& device);
 
     void SetIOError(BYT errorCode);
     void SetIOActual(ULO ioActual);
@@ -112,7 +113,7 @@ namespace fellow::hardfile
 
     // UI helper function
     bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;
-    bool HasRDB(const std::string& filename) override;
+    fellow::api::module::rdb_status HasRDB(const std::string& filename) override;
     fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) override;
 
     // Global events

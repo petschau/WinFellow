@@ -1,4 +1,5 @@
 #include "fellow/hardfile/rdb/RDBLSegBlock.h"
+#include "fellow/hardfile/rdb/CheckSumCalculator.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
@@ -10,7 +11,8 @@ namespace fellow::hardfile::rdb
     SizeInLongs(0),
     CheckSum(0),
     HostID(0),
-    Next(-1)
+    Next(-1),
+    HasValidCheckSum(false)
   {
   }
 
@@ -32,10 +34,15 @@ namespace fellow::hardfile::rdb
     CheckSum = reader.ReadLON(index + 8);
     HostID = reader.ReadLON(index + 12);
     Next = reader.ReadLON(index + 16);
-    if (SizeInLongs > 0)
+
+    HasValidCheckSum = (SizeInLongs >= 5 && SizeInLongs <= 128) && CheckSumCalculator::HasValidCheckSum(reader, SizeInLongs, index);
+
+    if (!HasValidCheckSum)
     {
-      Data.reset(reader.ReadData(index + 20, GetDataSize()));
+      return;
     }
+
+    Data.reset(reader.ReadData(index + 20, GetDataSize()));
   }
 
   void RDBLSegBlock::Log()
@@ -44,7 +51,7 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("-----------------------------------------\n");
     Service->Log.AddLogDebug("0   - id:                     %.4s\n", ID.c_str());
     Service->Log.AddLogDebug("4   - size in longs:          %d\n", SizeInLongs);
-    Service->Log.AddLogDebug("8   - checksum:               %.8X\n", CheckSum);
+    Service->Log.AddLogDebug("8   - checksum:               %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
     Service->Log.AddLogDebug("12  - host id:                %d\n", HostID);
     Service->Log.AddLogDebug("16  - next:                   %d\n\n", Next);
   }

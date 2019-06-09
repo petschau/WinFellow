@@ -73,6 +73,14 @@ namespace fellow::api::module
     }
   };
 
+  typedef enum
+  {
+    RDB_NOT_FOUND = 0,
+    RDB_FOUND = 1,
+    RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR = 2,
+    RDB_FOUND_WITH_PARTITION_ERROR = 3
+  } rdb_status;
+
   // Abstract interface to HardfileHandler
   class IHardfileHandler
   {
@@ -101,7 +109,7 @@ namespace fellow::api::module
 
     // UI helper function
     virtual bool Create(const HardfileConfiguration& configuration, ULO size) = 0;
-    virtual bool HasRDB(const std::string& filename) = 0;
+    virtual rdb_status HasRDB(const std::string& filename) = 0;
     virtual HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) = 0;
     
     // Global events

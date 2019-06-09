@@ -18,12 +18,14 @@ namespace fellow::hardfile::rdb
     LON Next;
     std::unique_ptr<const UBY> Data;
 
-    RDBLSegBlock();
+    bool HasValidCheckSum;
 
     LON GetDataSize() const;
     const UBY* GetData() const;
     void ReadFromFile(RDBFileReader& reader, ULO index);
     void Log();
+
+    RDBLSegBlock();
   };
 }
 

@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\..\fellow\hardfile\hunks\RawDataReader.h" />
     <ClInclude Include="..\..\..\fellow\hardfile\hunks\Reloc32Hunk.h" />
     <ClInclude Include="..\..\..\fellow\hardfile\hunks\Reloc32OffsetTable.h" />
+    <ClInclude Include="..\..\..\fellow\hardfile\rdb\CheckSumCalculator.h" />
     <ClInclude Include="..\..\..\fellow\hardfile\rdb\RDB.h" />
     <ClInclude Include="..\..\..\fellow\hardfile\rdb\RDBFileReader.h" />
     <ClInclude Include="..\..\..\fellow\hardfile\rdb\RDBFileSystemHandler.h" />
@@ -64,6 +65,7 @@
     <ClCompile Include="..\..\..\fellow\hardfile\hunks\RawDataReader.cpp" />
     <ClCompile Include="..\..\..\fellow\hardfile\hunks\Reloc32Hunk.cpp" />
     <ClCompile Include="..\..\..\fellow\hardfile\hunks\Reloc32OffsetTable.cpp" />
+    <ClCompile Include="..\..\..\fellow\hardfile\rdb\CheckSumCalculator.cpp" />
     <ClCompile Include="..\..\..\fellow\hardfile\rdb\RDB.cpp" />
     <ClCompile Include="..\..\..\fellow\hardfile\rdb\RDBFileReader.cpp" />
     <ClCompile Include="..\..\..\fellow\hardfile\rdb\RDBFileSystemHandler.cpp" />

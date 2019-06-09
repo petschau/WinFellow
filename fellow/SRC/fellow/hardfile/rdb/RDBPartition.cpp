@@ -1,4 +1,5 @@
 #include "fellow/hardfile/rdb/RDBPartition.h"
+#include "fellow/hardfile/rdb/CheckSumCalculator.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
@@ -40,6 +41,8 @@ namespace fellow::hardfile::rdb
     Baud = reader.ReadULO(index + 196);
     Control = reader.ReadULO(index + 200);
     Bootblocks = reader.ReadULO(index + 204);
+
+    HasValidCheckSum = (SizeInLongs == 64) && CheckSumCalculator::HasValidCheckSum(reader, 64, index);
   }
 
   bool RDBPartition::IsAutomountable()
@@ -58,7 +61,7 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("----------------------------------------------------\n");
     Service->Log.AddLogDebug("0   - id:                       %s (Should be PART)\n", ID.c_str());
     Service->Log.AddLogDebug("4   - size in longs:            %u (Should be 64)\n", SizeInLongs);
-    Service->Log.AddLogDebug("8   - checksum:                 %.8X\n", CheckSum);
+    Service->Log.AddLogDebug("8   - checksum:                 %.8X (%s)\n", CheckSum, HasValidCheckSum ? "Valid" : "Invalid");
     Service->Log.AddLogDebug("12  - host id:                  %u\n", HostID);
     Service->Log.AddLogDebug("16  - next block:               %d\n", Next);
     Service->Log.AddLogDebug("20  - flags:                    %X (%s, %s)\n", Flags, IsBootable() ? "Bootable" : "Not bootable", IsAutomountable() ? "Automount" : "No automount");
@@ -86,5 +89,38 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("196 - Baud:                     %u\n", Baud);
     Service->Log.AddLogDebug("200 - Control:                  %u\n", Control);
     Service->Log.AddLogDebug("204 - Bootblocks:               %u\n", Bootblocks);
+  }
+
+  RDBPartition::RDBPartition() :
+    SizeInLongs(0),
+    CheckSum(0),
+    HostID(0),
+    Next(0),
+    Flags(0),
+    BadBlockList(0),
+    DevFlags(0),
+    DriveNameLength(0),
+    SizeOfVector(0),
+    SizeBlock(0),
+    SecOrg(0),
+    Surfaces(0),
+    SectorsPerBlock(0),
+    BlocksPerTrack(0),
+    Reserved(0),
+    PreAlloc(0),
+    Interleave(0),
+    LowCylinder(0),
+    HighCylinder(0),
+    NumBuffer(0),
+    BufMemType(0),
+    MaxTransfer(0),
+    Mask(0),
+    BootPri(0),
+    DOSType(0),
+    Baud(0),
+    Control(0),
+    Bootblocks(0),
+    HasValidCheckSum(false)
+  {
   }
 }
