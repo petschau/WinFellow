@@ -1903,6 +1903,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
     memoryKickExtendedFree();
 
+    if (stricmp(memory_kickimage_ext, "") == 0)
+    {
+      return;
+    }
+
     if ((fsnp = fsWrapMakePoint(memory_kickimage_ext)) == NULL)
       return;
     else
