@@ -145,12 +145,6 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* Some run-time scratch variables                                            */
   /*============================================================================*/
 
-  ULO memory_mystery_value;          /* Pattern needed in an unknown bank (hmm) */
-  ULO memory_noise[2];                     /* Returns alternating bitpattern in */
-  ULO memory_noisecounter;    /* unused IO-registers to keep apps from hanging */
-  ULO memory_undefined_io_writecounter = 0;
-
-
   void memoryKickA1000BootstrapSetMapped(const bool);
 
   void memoryWriteByteToPointer(UBY data, UBY *address)
@@ -182,13 +176,11 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UWO rdefault(ULO address)
   {
-    memory_noisecounter++;
-    return (UWO) memory_noise[memory_noisecounter & 0x1];
+    return (UWO)(rand() % 65536);
   }
 
   void wdefault(UWO data, ULO address)
   {
-    memory_undefined_io_writecounter++;
   }
 
   /*============================================================================*/
@@ -267,20 +259,44 @@ const STR *memory_kickimage_versionstrings[14] = {
   /* Unmapped memory interface */
   // Some memory tests use CLR to write and read present memory (Last Ninja 2), so 0 can not be returned, ever.
 
+  static UBY memory_previous_unmapped_byte = 0;
   UBY memoryUnmappedReadByte(ULO address)
   {
-    memory_mystery_value = ~memory_mystery_value;
-    return (UBY) memory_mystery_value;
+    UBY val;
+    do
+    {
+      val = rand() % 256;
+    }
+    while (val == 0 || val == memory_previous_unmapped_byte);
+
+    memory_previous_unmapped_byte = val;
+    return val;
   }
 
+  static UWO memory_previous_unmapped_word = 0;
   UWO memoryUnmappedReadWord(ULO address)
   {
-    return 0x6100;
+    UWO val;
+    do
+    {
+      val = rand() % 65536;
+    } while (val == 0 || val == memory_previous_unmapped_word);
+
+    memory_previous_unmapped_word = val;
+    return val;
   }
 
+  static ULO memory_previous_unmapped_long = 0;
   ULO memoryUnmappedReadLong(ULO address)
   {
-    return 0x61006100;
+    ULO val;
+    do
+    {
+      val = rand();
+    } while (val == 0 || val == memory_previous_unmapped_long);
+
+    memory_previous_unmapped_long = val;
+    return val;
   }
 
   void memoryUnmappedWriteByte(UBY data, ULO address)
@@ -1047,35 +1063,29 @@ const STR *memory_kickimage_versionstrings[14] = {
 
   UBY memoryMysteryReadByte(ULO address)
   {
-    memory_mystery_value = ~memory_mystery_value;
-    return (UBY) memory_mystery_value;
+    return memoryUnmappedReadByte(address);
   }
 
   UWO memoryMysteryReadWord(ULO address)
   {
-    memory_mystery_value = ~memory_mystery_value;
-    return (UWO) memory_mystery_value;
+    return memoryUnmappedReadWord(address);
   }
 
   ULO memoryMysteryReadLong(ULO address)
   {
-    memory_mystery_value = ~memory_mystery_value;
-    return memory_mystery_value;
+    return memoryUnmappedReadLong(address);
   }
 
   void memoryMysteryWriteByte(UBY data, ULO address)
   {
-    // NOP
   }
 
   void memoryMysteryWriteWord(UWO data, ULO address)
   {
-    // NOP
   }
 
   void memoryMysteryWriteLong(ULO data, ULO address)
   {
-    // NOP
   }
 
   void memoryMysteryMap(void)
@@ -2274,18 +2284,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryDmemClear();
   }
 
-  void memoryNoiseSettingsClear(void)
-  {
-    memory_noise[0] = 0x01010101;
-    memory_noise[1] = 0xfefefefe;
-    memory_noisecounter = 0;
-  }
-
-  void memoryMysterySettingsClear(void)
-  {
-    memory_mystery_value = 0xfe01fe01;
-  }
-
   void memoryBankSettingsClear(void)
   {
     memoryBankClearAll();
@@ -2401,8 +2399,6 @@ __inline  UWO memoryReadWord(ULO address)
     memoryKickSettingsClear();
     memoryEmemSettingsClear();
     memoryDmemSettingsClear();
-    memoryNoiseSettingsClear();
-    memoryMysterySettingsClear(); /* ;-) */
   }
 
   void memoryShutdown(void)
