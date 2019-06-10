@@ -4,7 +4,7 @@
 /* This file contains  specific functionality to register as RetroPlatform */
 /* guest and interact with the host.                                       */
 /*                                                                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/* Author: Torsten Enderling                                               */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */

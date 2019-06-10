@@ -157,6 +157,10 @@ const draw_rect& drawGetInternalClip()
 
 void drawSetOutputClip(const draw_rect& output_clip)
 {
+#ifdef _DEBUG
+  fellowAddLog("drawSetOutputClip(rectangle left=%d, top=%d, right=%d, bottom=%d)\n",
+    output_clip.left, output_clip.top, output_clip.right, output_clip.bottom);
+#endif
   draw_output_clip = output_clip;
 }
 
@@ -830,13 +834,14 @@ const std::pair<ULO, ULO> drawCalculateVerticalOutputClip(ULO buffer_height, ULO
 }
 
 /*============================================================================*/
-/* Calulate needed geometry information about Amiga screen                    */
+/* Calculate needed geometry information about Amiga screen                   */
 /*============================================================================*/
 
 static void drawAmigaScreenGeometry(ULO buffer_width, ULO buffer_height)
 {
   ULO output_scale_factor = drawGetOutputScaleFactor();
   ULO internal_scale_factor = drawGetInternalScaleFactor();
+  ULO buffer_clip_left, buffer_clip_top, buffer_clip_width, buffer_clip_height;
 
   const std::pair<ULO, ULO> horizontal_clip = drawCalculateHorizontalOutputClip(draw_mode_current->width, output_scale_factor);
   const std::pair<ULO, ULO> vertical_clip = drawCalculateVerticalOutputClip(draw_mode_current->height, output_scale_factor);
@@ -846,11 +851,21 @@ static void drawAmigaScreenGeometry(ULO buffer_width, ULO buffer_height)
 
   const draw_rect& internal_clip = drawGetInternalClip();
 
-  ULO buffer_clip_left = (output_clip.left - internal_clip.left) * internal_scale_factor;
-  ULO buffer_clip_top = (output_clip.top - internal_clip.top) * internal_scale_factor;
-  ULO buffer_clip_width = output_clip.GetWidth() * internal_scale_factor;
-  ULO buffer_clip_height = output_clip.GetHeight() * internal_scale_factor;
-
+  if(!RP.GetHeadlessMode())
+  {
+    buffer_clip_left = (output_clip.left - internal_clip.left) * internal_scale_factor;
+    buffer_clip_top = (output_clip.top - internal_clip.top) * internal_scale_factor;
+    buffer_clip_width = output_clip.GetWidth() * internal_scale_factor;
+    buffer_clip_height = output_clip.GetHeight() * internal_scale_factor;
+  }
+  else
+  {    
+    buffer_clip_left = output_clip.left - (internal_clip.left * internal_scale_factor);
+    buffer_clip_top = output_clip.top - (internal_clip.top * internal_scale_factor);
+    buffer_clip_width = output_clip.GetWidth();
+    buffer_clip_height = output_clip.GetHeight();
+  }
+  
   drawSetBufferClip(draw_rect(buffer_clip_left, buffer_clip_top, buffer_clip_left + buffer_clip_width, buffer_clip_top + buffer_clip_height));
 }
 

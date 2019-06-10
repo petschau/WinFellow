@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/07)
+v0.5.8 (2019/06/10)
 \end_layout
 
 \begin_layout Author
@@ -370,6 +370,14 @@ improved handling of hardware interrupts and blitter delays; this fixes
 fix wrong selection of render function after return from menu when application
  did not write to bplcon0 every frame; fixes garbled graphics in a Legend
  crackto when returning from menu
+\end_layout
+
+\begin_layout Itemize
+replaced alternating patterns for unmapped memory with proper random numbers
+\end_layout
+
+\begin_layout Itemize
+CLR reads before write; fixes loading of Outrun/Last Ninja 2
 \end_layout
 
 \begin_layout Itemize
