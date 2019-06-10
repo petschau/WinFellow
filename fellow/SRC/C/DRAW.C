@@ -361,10 +361,28 @@ static void drawLED32(int x, int y, int width, int height, ULO color)
 
 static void drawLED(int index, bool state)
 {
-  int x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP)*index + (drawGetOutputClip().left - drawGetInternalClip().left)*drawGetOutputScaleFactor();
-  int y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top - drawGetInternalClip().top)*drawGetOutputScaleFactor();
+  int x, y, height, width;
+  
+#ifdef RETRO_PLATFORM
+  if(!RP.GetHeadlessMode())
+  {
+#endif
+    x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP) * index + (drawGetOutputClip().left - drawGetInternalClip().left) * drawGetOutputScaleFactor();
+    y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top - drawGetInternalClip().top) * drawGetOutputScaleFactor();
+    height = DRAW_LED_HEIGHT;
+    width = DRAW_LED_WIDTH;
+#ifdef RETRO_PLATFORM
+  }
+  else
+  {
+    x = DRAW_LED_FIRST_X + (DRAW_LED_WIDTH + DRAW_LED_GAP) * index + (drawGetOutputClip().left/2 - drawGetInternalClip().left)*2 ;
+    y = DRAW_LED_FIRST_Y + (drawGetOutputClip().top/2 - drawGetInternalClip().top)*2;
+    height = DRAW_LED_HEIGHT / 2;
+    width = DRAW_LED_WIDTH / 2;
+  }
+#endif
+
   ULO color = (state) ? DRAW_LED_COLOR_ON : DRAW_LED_COLOR_OFF;
-  int height = DRAW_LED_HEIGHT;
 
   switch (draw_buffer_info.bits)
   {
@@ -505,7 +523,18 @@ static void drawFpsToFramebuffer24(void)
 
 static void drawFpsToFramebuffer32(void)
 {
-  ULO *bufl = ((ULO *)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+  ULO* bufl = ((ULO*)draw_buffer_info.top_ptr) + draw_buffer_info.width - 20;
+
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode()) 
+  {
+    // move left to offset for clipping at the right; since width is adjusted dynamically for scale, reduce by that, all other values are static
+    bufl -= RETRO_PLATFORM_MAX_PAL_LORES_WIDTH * 2 - RP.GetScreenWidthAdjusted() / RP.GetDisplayScale() - RP.GetClippingOffsetLeftAdjusted();
+
+    // move down to compensate for clipping at top
+    bufl += RP.GetClippingOffsetTopAdjusted() * draw_buffer_info.pitch / 4;
+  }
+#endif
 
   for (int y = 0; y < 5; y++)
   {
