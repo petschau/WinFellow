@@ -860,10 +860,10 @@ static void drawAmigaScreenGeometry(ULO buffer_width, ULO buffer_height)
   }
   else
   {    
-    buffer_clip_left   = output_clip.left - 55;
-    buffer_clip_top    = output_clip.top - 8;
-    buffer_clip_width  = (output_clip.right - output_clip.left)*2;
-    buffer_clip_height = (output_clip.bottom - output_clip.top)*2;
+    buffer_clip_left   = (output_clip.left   - internal_clip.left) * 2;
+    buffer_clip_top    = (output_clip.top    - internal_clip.top)  * 2;
+    buffer_clip_width  = (output_clip.right  - output_clip.left)   * 2;
+    buffer_clip_height = (output_clip.bottom - output_clip.top)    * 2;
   }
   
   drawSetBufferClip(draw_rect(buffer_clip_left, buffer_clip_top, buffer_clip_left + buffer_clip_width, buffer_clip_top + buffer_clip_height));
