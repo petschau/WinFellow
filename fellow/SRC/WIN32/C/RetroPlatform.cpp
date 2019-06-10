@@ -3,7 +3,7 @@
 /*                                                                         */
 /* Cloanto RetroPlatform GUI integration                                   */
 /*                                                                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/* Author: Torsten Enderling                                               */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
