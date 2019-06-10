@@ -1515,10 +1515,10 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
 
   drawSetInternalClip(draw_rect(92, 26, 468, 314));
   
-  draw_rect output_clip((RP.GetClippingOffsetLeft() / 4),
-                        RP.GetClippingOffsetTop() / 2,
-                        ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 4),
-                        (RP.GetClippingOffsetTop() + RP.GetScreenHeight()) / 2);
+  draw_rect output_clip((RP.GetClippingOffsetLeft() / 2),
+                        RP.GetClippingOffsetTop(),
+                        ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 2),
+                        (RP.GetClippingOffsetTop() + RP.GetScreenHeight()));
 
   cfgSetClipLeft(gfxDrvCommon->rp_startup_config, output_clip.left);
   cfgSetClipTop(gfxDrvCommon->rp_startup_config, output_clip.top);
