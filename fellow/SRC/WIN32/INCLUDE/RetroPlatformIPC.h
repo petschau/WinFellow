@@ -2,14 +2,14 @@
  Name    : RetroPlatformIPC.h
  Project : RetroPlatform Player
  Support : http://www.retroplatform.com
- Legal   : Copyright 2007-2017 Cloanto Corporation - All rights reserved. This
+ Legal   : Copyright 2007-2019 Cloanto Corporation - All rights reserved. This
          : file is multi-licensed under the terms of the Mozilla Public License
          : version 2.0 as published by Mozilla Corporation and the GNU General
          : Public License, version 2 or later, as published by the Free
          : Software Foundation.
  Authors : os, m
  Created : 2007-08-27 13:55:49
- Updated : 2017-09-10 12:13:00
+ Updated : 2019-01-27 10:47:18
  Comment : RetroPlatform Player interprocess communication include file
  *****************************************************************************/
 
@@ -18,9 +18,9 @@
 
 #include <windows.h>
 
-#define RETROPLATFORM_API_VER       "7.2"
+#define RETROPLATFORM_API_VER       "7.6"
 #define RETROPLATFORM_API_VER_MAJOR  7
-#define RETROPLATFORM_API_VER_MINOR  2
+#define RETROPLATFORM_API_VER_MINOR  6
 
 #define RPIPC_HostWndClass   "RetroPlatformHost%s"
 #define RPIPC_GuestWndClass  "RetroPlatformGuest%d"
@@ -62,6 +62,12 @@
 #define RP_IPC_TO_HOST_PRIVATE_TYPECLIPDONE (WM_APP + 32) // introduced in RetroPlatform API 7.2
 #define RP_IPC_TO_HOST_PRIVATE_KEYEVENT     (WM_APP + 33) // introduced in RetroPlatform API 7.2
 #define RP_IPC_TO_HOST_PRIVATE_GUESTEVENT   (WM_APP + 34) // introduced in RetroPlatform API 7.2
+#define RP_IPC_TO_HOST_PRIVATE_KEYREMINDER  (WM_APP + 35) // introduced in RetroPlatform API 7.2
+#define RP_IPC_TO_HOST_RAWINPUT_EVENT       (WM_APP + 36) // introduced in RetroPlatform API 7.3
+#define RP_IPC_TO_HOST_PRIVATE_CLOSEKBDWIN  (WM_APP + 37) // introduced in RetroPlatform API 7.4
+#define RP_IPC_TO_HOST_MOUSEMOVE            (WM_APP + 38) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_HOST_MOUSEBUTTON          (WM_APP + 39) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_HOST_PRIVATE_MENUEVENT    (WM_APP + 40) // introduced in RetroPlatform API 7.5
 
 // ****************************************************************************
 //  Host-to-Guest Messages
@@ -92,6 +98,15 @@
 #define	RP_IPC_TO_GUEST_PRIVATE_CANESCAPE    (WM_APP + 226) // introduced in RetroPlatform API 7.2
 #define	RP_IPC_TO_GUEST_PRIVATE_LOGGING      (WM_APP + 227) // introduced in RetroPlatform API 7.2
 #define	RP_IPC_TO_GUEST_PRIVATE_INPUTDEVICES (WM_APP + 228) // introduced in RetroPlatform API 7.2
+#define RP_IPC_TO_GUEST_PRIVATE_KEYREMINDER  (WM_APP + 229) // introduced in RetroPlatform API 7.2
+#define RP_IPC_TO_GUEST_PRIVATE_KEYBOARDWINDOW (WM_APP + 230) // introduced in RetroPlatform API 7.4
+#define RP_IPC_TO_GUEST_SCREENOVERLAY        (WM_APP + 231) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_GUEST_MOVESCREENOVERLAY    (WM_APP + 232) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_GUEST_DELETESCREENOVERLAY  (WM_APP + 233) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_GUEST_SENDMOUSEEVENTS      (WM_APP + 234) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_GUEST_PRIVATE_MENUMODE     (WM_APP + 235) // introduced in RetroPlatform API 7.5
+#define RP_IPC_TO_GUEST_PRIVATE_SETFRGWINDOW (WM_APP + 236) // introduced in RetroPlatform API 7.5
+#define	RP_IPC_TO_GUEST_SHOWDEBUGGER         (WM_APP + 237) // introduced in RetroPlatform API 7.6
 
 // ****************************************************************************
 //  Message Data Structures and Defines
@@ -126,6 +141,8 @@
 #define RP_FEATURE_MEMORY_BASIC   		    0x02000000 // Memory I/O basic features: Read, Write
 #define RP_FEATURE_MEMORY_ADVANCED		    0x04000000 // Memory I/O advanced features: Watch, Find, Alert, Freeze, Lock, Unlock, Off (must set both flags if full set is supported!)
 #define RP_FEATURE_SCREENCAPTURE   			0x08000000 // new screen capture functionality is available (see RP_IPC_TO_GUEST_SCREENCAPTURE message)
+#define RP_FEATURE_RAWINPUT_EVENT			0x10000000 // RawInput mouse buttons events are forwarded via RP_IPC_TO_HOST_RAWINPUT_EVENT messages
+#define RP_FEATURE_SCREENOVERLAY			0x20000000 // supports screen overlays
 
 typedef struct RPScreenMode
 {
@@ -185,8 +202,8 @@ typedef struct RPScreenMode
 //
 // Integer vs. subpixel scaling, and stretching with or without original ratio
 //
-// By default, the guest is only expected to be able to scale (resize) the window by an integer number of times, e.g. 1X, 2X, 3X, etc., as indicated in RP_FEATURE_SCREEN...
-// This means that when going to fullscreen mode (RP_SCREENMODE_SCALE_MAX) or to a window mode with lTargetWidth and lTargetHeight set (RP_SCREENMODE_SCALE_TARGET), the content will be an integer number of times the original, and surrounded by black bars if necessary. Integer scaling is thus the default behavior, and it can be modified by setting RP_SCREENMODE_SCALING_SUBPIXEL and RP_SCREENMODE_SCALING_STRETCH.
+// By default, the guest is only expected to be able to scale (resize, units being guest to host pixels) the emulated screen by an integer number of times, e.g. 1X, 2X, 3X, etc., as indicated in RP_FEATURE_SCREEN...
+// This means that when going to fullscreen mode (RP_SCREENMODE_SCALE_MAX) or to a window mode with lTargetWidth and lTargetHeight set (RP_SCREENMODE_SCALE_TARGET), the content will be an integer number of times the original number of pixels, and surrounded by black bars if necessary. Integer scaling is thus the default behavior, and it can be modified by setting RP_SCREENMODE_SCALING_SUBPIXEL and RP_SCREENMODE_SCALING_STRETCH.
 //
 // In a known-size target (e.g. fullscreen), unless RP_SCREENMODE_SCALING_SUBPIXEL or RP_SCREENMODE_SCALING_STRETCH are set, there may be up to four black bars to fill any unused space.
 //
@@ -243,7 +260,8 @@ typedef struct RPScreenMode
 //
 // If the user wants to adjust clipping, or for automated grabs and calculations, it is possible to set RP_CLIPFLAGS_NOCLIP, which will widen the window to the maximum (within lTargetWidth+lTargetHeight/fullscreen constraints).
 //
-// Whenever the guest sets or changes the "container" window size or scaling factor (initially, or due to a command it receives, or due to Amiga-sourced changes), it sends an RPScreenMode update to the host.
+// Both in fullscreen and in window mode, whenever the guest sets or changes the net window size or the scaling factor (initially, or due to a command it receives, or due to Amiga-sourced changes), it sends an RPScreenMode update to the host. This is useful also in fullscreen mode, as it allows to display the appropriate scaling options to return in window mode.
+
 //
 // In window mode, if no lTargetWidth and lTargetHeight are set, when the host asks for a change in clipping (net content size), the host window size will be adjusted taking into account the current integer multiplication factor.
 //
@@ -489,6 +507,33 @@ typedef struct RPScreenCapture
 #define PRIVATETYPECLIP_FAILED		1
 #define PRIVATETYPECLIP_SUCCEDED	2
 #define PRIVATETYPECLIP_INPROGRESS	3 // a RP_IPC_TO_HOST_PRIVATE_TYPECLIPDONE will be sent when done
+
+
+// RPScreenOverlay (used by RP_IPC_TO_GUEST_SCREENOVERLAY)
+
+typedef struct RPScreenOverlay
+{
+	DWORD dwIndex;	 // overlay index
+	LONG  lLeft;	 // horizontal offset from screen left edge
+	LONG  lTop;	     // vertical offset from screen top edge
+	LONG  lWidth;	 // image width (if set to 0, clears a previously set overlay)
+	LONG  lHeight;	 // image height (if set to 0, clears a previously set overlay)
+	DWORD dwFormat;  // pixel format (see RPSOPF_* defines below)
+	BYTE  btData[1]; // image data
+} RPSCREENOVERLAY;
+
+// RPSCREENOVERLAY dwFormat
+#define RPSOPF_32BIT_BGRA  0 // 4 bytes per pixel (blue, green, red, alpha)
+
+
+// RP_IPC_TO_HOST_PRIVATE_MENUEVENT wParam
+#define RP_MENU_EVENT_RIGHT		1
+#define RP_MENU_EVENT_LEFT		2
+#define RP_MENU_EVENT_DOWN		3
+#define RP_MENU_EVENT_UP		4
+#define RP_MENU_EVENT_SELECT	5	
+#define RP_MENU_EVENT_BACK		6
+
 
 // Legacy Compatibility
 #ifndef RP_NO_LEGACY
