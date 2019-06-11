@@ -330,7 +330,7 @@ bool GfxDrvDXGI::CreateSwapChain()
 
   _resize_swapchain_buffers = false;
 
-  DXGI_SWAP_CHAIN_DESC swapChainDescription;
+  DXGI_SWAP_CHAIN_DESC swapChainDescription = { 0 };
   DXGI_SWAP_EFFECT swapEffect = DXGI_SWAP_EFFECT_DISCARD;
 
   swapChainDescription.BufferCount = BackBufferCount;
