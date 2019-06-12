@@ -247,7 +247,7 @@ Function Main()
 
     cd $SourceCodeBaseDir
 
-    If($FELLOWBUILDPROFILE -eq "Release")
+    If(($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true))
     {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
 
