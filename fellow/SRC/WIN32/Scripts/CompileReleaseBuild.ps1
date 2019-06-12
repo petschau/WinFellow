@@ -117,14 +117,14 @@ Function Main()
         ShowProgressIndicator 2 "Release build, checking Git working copy for local modifications..."
 
         $result = (git status --porcelain)
-        If($result -ne $0)
+        If($result -ne '')
         {
             Write-Error "Local working copy contains modifications, aborting - a release build must always be produced from a clean and current working copy."
             exit $result
         }
         $GitBranch = (git rev-parse --abbrev-ref HEAD)
         $result = (git log origin/$GitBranch..HEAD)
-        If($result -ne $0)
+        If($result -ne '')
         {
             Write-Error "Local working copy (branch $GitBranch) contains commits there were not pushed yet - a release build must always be produced from a clean and current working copy."
             exit $result
