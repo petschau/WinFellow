@@ -166,6 +166,10 @@ Function Main()
             Write-Error "ERROR locating MSBuild.exe."
         }
     }
+    Else
+    {
+        Write-Error "ERROR locating MSBuild.exe."
+    }
 
     Write-Verbose "Checking file version of file WinFellow\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe..."
     $FELLOWVERSION = (Get-Item $SourceCodeBaseDir\fellow\SRC\Win32\MSVC\$FELLOWBUILDPROFILE\WinFellow.exe).VersionInfo.ProductVersion.Replace("/", "_")
