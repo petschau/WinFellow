@@ -27,17 +27,24 @@
     Generates the binaries that make up a WinFellow release for distribution.
 
     The binaries will be output to the parent directory into which the
-    source code has been checked out from Git.
+    source code has been checked out from Git. By default, the script will
+    perform a clean build, removing all local modifications from the repository.
+
 .DESCRIPTION
+
+.PARAMETER Debug
+    If set, a clean debug build will be produced, local modifications will be
+    cleaned from the repository beforehand.
 
 .PARAMETER Test
     If set, a debug build will be produced while preserving local modifications
-    that may be present in the Git repository.
+    that may be present in the Git repository; the repository will not be cleaned.
 #>
 
 [CmdletBinding()]
 Param(
-    [switch]$Test
+    [switch]$DebugBuild,
+    [switch]$TestBuild
 )
 
 Function CheckForExeInSearchPath([string] $exe)
@@ -62,19 +69,23 @@ Function ShowProgressIndicator($step, $CurrentOperation)
         -Status "Please wait."
 }
 
+Set-StrictMode -Version 2.0
+$ErrorActionPreference='Stop'
+
 [string[]] $BuildPlatforms = @('win32', 'x64')
 
-If($Test)
+$FELLOWBUILDPROFILE='Release'
+
+If($DebugBuild)
+{
+    $FELLOWBUILDPROFILE='Debug'
+}
+If($TestBuild)
 {
     $FELLOWBUILDPROFILE='Debug'
     $DebugPreference   = 'Continue'
     $VerbosePreference = 'Continue'
 }
-Else
-{
-    $FELLOWBUILDPROFILE='Release'
-}
-$ErrorActionPreference='Stop'
 
 Function Main()
 {
@@ -202,10 +213,18 @@ Function Main()
 
     Write-Verbose "Compressing release binary distribution archive..."
     CD $OUTPUTDIR
-    Write-Debug "Release binary archive name: $TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
+    If($FELLOWBUILDPROFILE -eq 'Release')
+    {
+        $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
+    }
+    Else
+    {
+        $BinaryArchiveFullName = "$TargetOutputDir\WinFellow_v$FELLOWVERSION-Debug.zip"
+    }
+    Write-Debug "Release binary archive name: $BinaryArchiveFullName"
 
     $result = (SevenZip a -tzip "$temp\WinFellow_v$FELLOWVERSION.zip" "*" -r)
-    Move-Item -Force "$temp\WinFellow_v$FELLOWVERSION.zip" "$TargetOutputDir\WinFellow_v$FELLOWVERSION.zip"
+    Move-Item -Force "$temp\WinFellow_v$FELLOWVERSION.zip" "$BinaryArchiveFullName"
 
     ShowProgressIndicator 9 "Generating NSIS Installer..."
 
@@ -214,13 +233,21 @@ Function Main()
     cd $temp
 
     # build combined 32/64 bit installer
+    If($FELLOWBUILDPROFILE -eq 'Release')
+    {
+        $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
+    }
+    Else
+    {
+        $NSISInstallerFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}-Debug.exe"
+    }
     $result = (makensis.exe /DFELLOWVERSION=$FELLOWVERSION "$NSISDIR\WinFellow.nsi" > "WinFellow_NSIS.log")
-    Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $TargetOutputDir
-    Write-Debug "NSIS installer output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}.exe"
+    Write-Debug "NSIS installer output name: $NSISInstallerFullName"
+    Move-Item -Force "WinFellow_v${FELLOWVERSION}.exe" $NSISInstallerFullName
 
     cd $SourceCodeBaseDir
 
-    If($FELLOWBUILDPROFILE -eq "Release")
+    If(($FELLOWBUILDPROFILE -eq 'Release') -Or ($DebugBuild -eq $true))
     {
         ShowProgressIndicator 10 "Cleaning up unwanted parts within Git working copy..."
 
@@ -233,13 +260,21 @@ Function Main()
     }
 
     ShowProgressIndicator 11 "Compressing release source code archive..."
-    Write-Debug "Release source code archive output name: $TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
+     If($FELLOWBUILDPROFILE -eq 'Release')
+    {
+        $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
+    }
+    Else
+    {
+        $SourceArchiveFullName = "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src-Debug.zip"
+    }
+    Write-Debug "Release source code archive output name: $SourceArchiveFullName"
 
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "fellow")
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" ".git")
     cd $OUTPUTDIR
     $result = (SevenZip a -tzip "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "gpl-2.0.pdf")
-    Move-Item -Force "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$TargetOutputDir\WinFellow_v${FELLOWVERSION}_src.zip"
+    Move-Item -Force "$temp\WinFellow_v${FELLOWVERSION}_src.zip" "$SourceArchiveFullName"
 
     cd $SourceCodeBaseDir
     Remove-Item "$OUTPUTDIR" -Recurse -Force
