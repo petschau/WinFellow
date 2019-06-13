@@ -59,6 +59,8 @@ What you need to compile the sources
 Microsoft Visual Studio 2019 with the Windows XP toolkit. 
 The community edition of Visual Studio can be used to compile WinFellow.
 
+The build process currently also requires git to be located in the search path, as well as posh-git to be installed. The execution policy must allow execution of PowerShell scripts for both 32 as well as 64 bit PowerShell processes
+
 Other notes
 -----------
 

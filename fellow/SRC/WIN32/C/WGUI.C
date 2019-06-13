@@ -3,7 +3,7 @@
 /* Windows GUI code                                                        */
 /* Author: Petter Schau                                                    */
 /* Author: Worfje (worfje@gmx.net)                                         */
-/* Author: Torsten Enderling (carfesh@gmx.net)                             */
+/* Author: Torsten Enderling                                               */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -1266,16 +1266,28 @@ void wguiInstallBlitterConfig(HWND hwndDlg, cfg *conf) {
   /* Set blitter operation type */
 
   if (cfgGetBlitterFast(conf))
+  {
     ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE);
+    ccwButtonUncheck(hwndDlg, IDC_RADIO_BLITTER_NORMAL);
+  }
   else
+  {
     ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_NORMAL);
-
+    ccwButtonUncheck(hwndDlg, IDC_RADIO_BLITTER_IMMEDIATE);
+  }
+   
   /* Set chipset type */
 
   if (cfgGetECS(conf))
+  {
     ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_ECS);
+    ccwButtonUncheck(hwndDlg, IDC_RADIO_BLITTER_OCS);
+  }
   else
+  {
     ccwButtonSetCheck(hwndDlg, IDC_RADIO_BLITTER_OCS);
+    ccwButtonUncheck(hwndDlg, IDC_RADIO_BLITTER_ECS);
+  } 
 }
 
 /* Extract Blitter config */

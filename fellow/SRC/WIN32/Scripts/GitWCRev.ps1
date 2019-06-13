@@ -47,6 +47,11 @@ Try
 {
     $GitStatus = (git status)
 }
+Catch [System.Management.Automation.CommandNotFoundException]
+{
+    Write-Warning "Could not locate git in search path; please make sure that git and the PowerShell module posh-git are installed."
+    $NotAGitRepository = $true
+}
 Catch
 {
     $ErrorMessage = $_.Exception.Message

@@ -307,3 +307,7 @@ Eject all floppies (F11 and click all four eject buttons, save configuration and
 Repeat a second time to ensure that no freezes occur when the mouse is being moved permanently.
 
 This test case summarizes a number of commits surrounding interrupt handling (a8178da, bdceabd), as well as blitter delays (a118850); by the first commits, a number of titles were negatively impacted at first but were fixed by later commits.
+
+### Git 1192d51: Direct3D fullscreen mode
+
+Create a configuration that uses fullscreen mode. Verify that an emulation session can be started both for DirectDraw, as well as for Direct3D graphics modes.
