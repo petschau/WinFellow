@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/10)
+v0.5.8 (2019/06/13)
 \end_layout
 
 \begin_layout Author
@@ -361,9 +361,8 @@ Bug fixes:
 
 \begin_deeper
 \begin_layout Itemize
-improved handling of hardware interrupts and blitter delays; this fixes
- freezes that previously could occur during installation of Workbench in
- all 0.5.x versions of WinFellow
+improved handling of hardware interrupts and blitter delays; fixes freezes
+ that could occur during installation of Workbench in earlier 0.5.x versions
 \end_layout
 
 \begin_layout Itemize
@@ -396,6 +395,11 @@ fix an issue where screenshots would occasionally not be taken in Direct3D
  clipping editor
 \end_layout
 
+\begin_layout Itemize
+fix an issue where applying a new model preset would leave multiple blitter
+ radio buttons selected
+\end_layout
+
 \end_deeper
 \begin_layout Itemize
 Maintenance updates:
@@ -418,7 +422,7 @@ IPF Access API files were updated to the lastest version, and support for
 \end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
- minor bug fixes which are not listed above.
+ minor bug fixes which may not be listed above.
 \begin_inset Newpage pagebreak
 \end_inset
 
