@@ -1,7 +1,7 @@
 ---
 name: Bug report
 about: Create a report to help us improve
-title: ''
+title: "[BUG] "
 labels: bug
 assignees: ''
 
@@ -30,7 +30,7 @@ If applicable, add screenshots to help explain your problem.
 In some cases it is helpful to examine the exact configuration. Please upload your configuration (.wfc) file if you believe that might be the case.
 
 **WinFellow logfile**
-In many cases additional information required for troubleshooting may be available in the logfile. upload the logfile (fellow.log) of a session in which the bug occurred, which is usually found either in the folder %AppData%\WinFellow, or "C:\Users\Public\Documents\Amiga Files\WinFellow" for Amiga Forever installations.
+In many cases additional information required for troubleshooting may be available in the logfile. Upload the logfile (fellow.log) of a session in which the bug occurred, which is usually found either in the folder %AppData%\WinFellow, or "C:\Users\Public\Documents\Amiga Files\WinFellow" for Amiga Forever installations.
 
 **Additional context**
 Add any other context about the problem here.
