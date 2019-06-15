@@ -191,6 +191,12 @@ Emulator now regenerates MFM from disk for ADF's after writes to get the sector 
 
 Note: Supercars needs additional fix to work. See Git <TBD>.
 
+### Git 85629ef: max. number of sprite action list items
+
+Verify that the demo "Tornado of Souls" by Animators runs without any crashes.
+
+Before this change, it would crash to the desktop when the maximum number of sprite action list items was exceeded.
+
 ## Manual Test Cases
 
 The following test cases must be executed manually as they have not been automated.
