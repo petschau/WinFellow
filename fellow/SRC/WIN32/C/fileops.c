@@ -210,7 +210,11 @@ BOOLE fileopsGetWinFellowPresetPath(char *strBuffer, const DWORD lBufferSize)
 #ifdef _DEBUG
       // in debug mode, look for presets directory also with relative path from output exe
       fileopsGetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
+#ifdef X64
+      strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\..\\Presets", 24);
+#else
       strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\Presets", 21);
+#endif
       
       if(fileopsDirectoryExists(strWinFellowInstallPath)) {
         strncpy(strBuffer, strWinFellowInstallPath, lBufferSize);
