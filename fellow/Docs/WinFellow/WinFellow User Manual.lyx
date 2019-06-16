@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/14)
+v0.5.8 (2019/06/16)
 \end_layout
 
 \begin_layout Author
@@ -376,7 +376,8 @@ replaced alternating patterns for unmapped memory with proper random numbers
 \end_layout
 
 \begin_layout Itemize
-CLR reads before write; fixes loading of Outrun/Last Ninja 2
+CLR reads before write; fixes loading of Outrun and a fast-mem test in Last
+ Ninja 2
 \end_layout
 
 \begin_layout Itemize
