@@ -4,7 +4,7 @@
 /* Floppy Emulation                                                        */
 /*                                                                         */
 /* Authors: Petter Schau                                                   */
-/*          Torsten Enderling (carfesh@gmx.net)                            */
+/*          Torsten Enderling                                              */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -369,16 +369,37 @@ BOOLE floppyIsTrack0(ULO drive)
   return FALSE;
 }
 
-BOOLE floppyIsWriteProtected(ULO drive)
+BOOLE floppyIsWriteProtectedConfig(ULO drive)
 {
   if (drive != -1)
   {
     if (floppy[drive].enabled)
     {
-      return floppy[drive].writeprot;
+      return floppy[drive].writeprotconfig;
     }
   }
   return FALSE;
+}
+
+BOOLE floppyIsWriteProtectedEnforced(ULO drive)
+{
+  if (drive != -1)
+  {
+    if (floppy[drive].enabled)
+    {
+      return floppy[drive].writeprotenforce;
+    }
+  }
+  return FALSE;
+}
+
+/* write-protection can result from several states */
+/* the user may have configured write-protection in the fellow config */
+/* the floppy module can enforce write-protection if the file cannot be written to or is an IPF image */
+
+BOOLE floppyIsWriteProtected(ULO drive)
+{
+  return (floppyIsWriteProtectedConfig(drive) || floppyIsWriteProtectedEnforced(drive));
 }
 
 BOOLE floppyIsReady(ULO drive)
@@ -669,7 +690,7 @@ ULO floppySectorMfmDecode(UBY *src, UBY *dst, ULO track)
 BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc)
 {
   ULO sector;
-  if (!floppy[drive].writeprot)
+  if (!floppyIsWriteProtected(drive))
   {
     if ((sector = floppySectorMfmDecode(mfmsrc, tmptrack, track)) < 11)
     {
@@ -685,6 +706,18 @@ BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc)
     }
   }
   return TRUE;
+}
+
+/** Set read-only enforced flag for a drive.
+ */
+static void floppySetReadOnlyEnforced(ULO drive)
+{
+  floppy[drive].writeprotenforce = TRUE;
+
+#ifdef RETRO_PLATFORM
+  if (RP.GetHeadlessMode())
+    RP.SendFloppyDriveReadOnly(drive, true);
+#endif
 }
 
 /*===============================*/
@@ -969,7 +1002,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive)
   floppy[drive].zipped = TRUE;
   if((access(diskname, 2 )) == -1 )
   {
-    floppy[drive].writeprot = TRUE;
+    floppySetReadOnlyEnforced(drive);
   }
   return TRUE;
 }
@@ -980,30 +1013,30 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive)
 
 void floppyImageCompressedRemove(ULO drive)
 {
-  if (floppy[drive].zipped)
+  if(floppy[drive].zipped)
   {
-    if( (!floppy[drive].writeprot) && 
-      ((access(floppy[drive].imagename, 2 )) != -1 ))
+    if( (!floppyIsWriteProtected(drive)) && 
+      ((access(floppy[drive].imagename, 4)) != -1 )) // file is not read-only
     {
-	STR *dotptr = strrchr(floppy[drive].imagename, '.');
-	if (dotptr != NULL)
-	{
-	  if ((strcmpi(dotptr, ".gz") == 0) ||
-	    (strcmpi(dotptr, ".z") == 0) ||
-	    (strcmpi(dotptr, ".adz") == 0))
-	  {
-	    if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
+	    STR *dotptr = strrchr(floppy[drive].imagename, '.');
+	    if (dotptr != NULL)
 	    {
-	      fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
-			    floppy[drive].imagename);
+	      if ((strcmpi(dotptr, ".gz") == 0) ||
+	        (strcmpi(dotptr, ".z") == 0) ||
+	        (strcmpi(dotptr, ".adz") == 0))
+	      {
+	        if(!gzPack(floppy[drive].imagenamereal, floppy[drive].imagename))
+	        {
+	          fellowAddLog("floppyImageCompressedRemove(): Couldn't recompress file %s\n", 
+			        floppy[drive].imagename);
+	        }
+	        else
+	        {
+	          fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
+			        floppy[drive].imagename);
+	        }
+	      }
 	    }
-	    else
-	    {
-	      fellowAddLog("floppyImageCompressedRemove(): Succesfully recompressed file %s\n",
-			    floppy[drive].imagename);
-	    }
-	  }
-	}
     }
     floppy[drive].zipped = FALSE;
     remove(floppy[drive].imagenamereal);
@@ -1069,7 +1102,7 @@ void floppyImageRemove(ULO drive)
 #ifdef RETRO_PLATFORM
   if(RP.GetHeadlessMode())
   {
-    RP.SendFloppyDriveContent(drive, "", floppy[drive].writeprot ? true : false);
+    RP.SendFloppyDriveContent(drive, "", floppyIsWriteProtected(drive) ? true : false);
   }
 #endif
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
@@ -1239,7 +1272,7 @@ void floppyImageIPFLoad(ULO drive)
     floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
   }
 
-  floppy[drive].writeprot = TRUE;
+  floppySetReadOnlyEnforced(drive);
   floppy[drive].inserted = TRUE;
   floppy[drive].insertedframe = draw_frame_count;
 }
@@ -1293,9 +1326,10 @@ void floppySetDiskImage(ULO drive, STR *diskname)
 	}
 	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
 	{
-	  floppy[drive].writeprot = !fsnp->writeable;
+    if (!fsnp->writeable)
+      floppySetReadOnlyEnforced(drive);
 	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
-	    (floppy[drive].writeprot ? "rb" : "r+b"))) == NULL)
+	    (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == NULL)
 	  {
 	    floppyError(drive, (floppy[drive].zipped) ? FLOPPY_ERROR_COMPRESS : FLOPPY_ERROR_FILE);
 	  }
@@ -1331,7 +1365,7 @@ void floppySetDiskImage(ULO drive, STR *diskname)
 #ifdef RETRO_PLATFORM
 	    if(RP.GetHeadlessMode() && bSuccess)
 	    {
-              RP.SendFloppyDriveContent(drive, diskname, floppy[drive].writeprot ? true : false);
+        RP.SendFloppyDriveContent(drive, diskname, floppyIsWriteProtected(drive) ? true : false);
 	    }
 #endif
 	  }
@@ -1353,9 +1387,13 @@ void floppySetEnabled(ULO drive, BOOLE enabled)
 
 /** Set read-only flag for a drive.
  */
-void floppySetReadOnly(ULO drive, BOOLE readonly)
+void floppySetReadOnlyConfig(ULO drive, BOOLE readonly)
 {
-  floppy[drive].writeprot = readonly;
+  if (floppy[drive].writeprotconfig != readonly)
+  {
+    floppy[drive].writeprotconfig = readonly;
+    floppy[drive].changed = TRUE;
+  }
 
 #ifdef RETRO_PLATFORM
   if(RP.GetHeadlessMode())
@@ -1389,7 +1427,8 @@ void floppyDriveTableInit(void)
     floppy[i].F = NULL;
     floppy[i].sel = FALSE;
     floppy[i].track = 0;
-    floppy[i].writeprot = FALSE;
+    floppy[i].writeprotconfig = FALSE;
+    floppy[i].writeprotenforce = FALSE;
     floppy[i].dir = FALSE;
     floppy[i].motor = FALSE;
     floppy[i].motor_ticks = 0;

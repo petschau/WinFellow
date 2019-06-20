@@ -1,10 +1,9 @@
-/* @(#) $Id: WDBG.C,v 1.35 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /*                                                                         */
-/* Authors: Torsten Enderling (carfesh@gmx.net)                            */
+/* Authors: Torsten Enderling                                              */
 /*          Petter Schau                                                   */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
@@ -547,7 +546,7 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 	      floppy[i].sel,
 	      floppy[i].motor,
 	      floppy[i].side,
-	      floppy[i].writeprot);
+	      floppy[i].writeprotconfig);
       y = wdbgLineOut(hDC, s, x, y);
     }
 
