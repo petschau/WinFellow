@@ -1016,7 +1016,7 @@ void floppyImageCompressedRemove(ULO drive)
   if(floppy[drive].zipped)
   {
     if( (!floppyIsWriteProtected(drive)) && 
-      ((access(floppy[drive].imagename, 4)) != -1 )) // file is not read-only
+      ((access(floppy[drive].imagename, 2)) != -1 )) // file is not read-only
     {
 	    STR *dotptr = strrchr(floppy[drive].imagename, '.');
 	    if (dotptr != NULL)
