@@ -710,13 +710,13 @@ BOOLE floppySectorSave(ULO drive, ULO track, UBY *mfmsrc)
 
 /** Set read-only enforced flag for a drive.
  */
-static void floppySetReadOnlyEnforced(ULO drive)
+static void floppySetReadOnlyEnforced(ULO drive, bool enforce)
 {
-  floppy[drive].writeprotenforce = TRUE;
+  floppy[drive].writeprotenforce = enforce;
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
-    RP.SendFloppyDriveReadOnly(drive, true);
+    RP.SendFloppyDriveReadOnly(drive, enforce);
 #endif
 }
 
@@ -1002,7 +1002,7 @@ BOOLE floppyImageCompressedGZipPrepare(STR *diskname, ULO drive)
   floppy[drive].zipped = TRUE;
   if((access(diskname, 2 )) == -1 )
   {
-    floppySetReadOnlyEnforced(drive);
+    floppySetReadOnlyEnforced(drive, true);
   }
   return TRUE;
 }
@@ -1108,6 +1108,7 @@ void floppyImageRemove(ULO drive)
   floppy[drive].imagestatus = FLOPPY_STATUS_NONE;
   floppy[drive].inserted = FALSE;
   floppy[drive].changed = TRUE;
+  floppySetReadOnlyEnforced(drive, false);
 }
 
 /*========================================================*/
@@ -1272,7 +1273,7 @@ void floppyImageIPFLoad(ULO drive)
     floppy[drive].trackinfo[i].file_offset = 0xffffffff; /* set file offset to something pretty invalid */
   }
 
-  floppySetReadOnlyEnforced(drive);
+  floppySetReadOnlyEnforced(drive, true);
   floppy[drive].inserted = TRUE;
   floppy[drive].insertedframe = draw_frame_count;
 }
@@ -1327,7 +1328,7 @@ void floppySetDiskImage(ULO drive, STR *diskname)
 	if (floppy[drive].imagestatus != FLOPPY_STATUS_ERROR)
 	{
     if (!fsnp->writeable)
-      floppySetReadOnlyEnforced(drive);
+      floppySetReadOnlyEnforced(drive, true);
 	  if ((floppy[drive].F = fopen(floppy[drive].imagenamereal,
 	    (floppyIsWriteProtected(drive) ? "rb" : "r+b"))) == NULL)
 	  {
