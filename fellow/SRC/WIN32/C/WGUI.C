@@ -89,8 +89,6 @@ HBITMAP diskdrive_led_off_bitmap = 0;
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
 
-// #define FELLOW_USE_LEGACY_DEBUGGER
-
 kbd_event gameport_keys_events[MAX_JOYKEY_PORT][MAX_JOYKEY_VALUE] = {
   {
     EVENT_JOY0_UP_ACTIVE,

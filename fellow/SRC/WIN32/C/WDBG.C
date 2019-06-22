@@ -58,6 +58,15 @@
 #include "blit.h"
 #include "wgui.h"
 
+/*===============================*/
+/* Handle of the main dialog box */
+/*===============================*/
+
+HWND wdbg_hDialog;
+
+#ifdef FELLOW_USE_LEGACY_DEBUGGER
+// the legacy debugger has more features, but is text-based and has been replaced
+// by a more modern version; the code is retained for educational reasons
 
 /*=======================================================*/
 /* external references not exported by the include files */
@@ -81,12 +90,6 @@ extern ULO audper[4];
 extern ULO audvol[4];
 extern ULO audlen[4];
 extern ULO audpercounter[4];
-
-/*===============================*/
-/* Handle of the main dialog box */
-/*===============================*/
-
-HWND wdbg_hDialog;
 
 #define WDBG_CPU_REGISTERS_X 24
 #define WDBG_CPU_REGISTERS_Y 26
@@ -1418,6 +1421,7 @@ void wdbgDebugSessionRun(HWND parent)
     MessageBox(parent, "Specified KickImage does not exist", "Configuration Error", 0);
 }
 
+#else
 
 HWND wdeb_hDialog = 0;
 ULO WDEB_DISASM_LINES = 42;
@@ -1797,3 +1801,5 @@ void wdebDebug()
     MessageBox(NULL, "Specified KickImage does not exist", "Configuration Error", 0);
   }
 }
+
+#endif
