@@ -91,6 +91,39 @@ extern ULO audvol[4];
 extern ULO audlen[4];
 extern ULO audpercounter[4];
 
+/* cia.c */
+
+typedef struct cia_state_
+{
+  ULO ta;
+  ULO tb;
+  ULO ta_rem; /* Preserves remainder when downsizing from bus cycles */
+  ULO tb_rem;
+  ULO talatch;
+  ULO tblatch;
+  LON taleft;
+  LON tbleft;
+  ULO evalarm;
+  ULO evlatch;
+  ULO evlatching;
+  ULO evwritelatch;
+  ULO evwritelatching;
+  ULO evalarmlatch;
+  ULO evalarmlatching;
+  ULO ev;
+  UBY icrreq;
+  UBY icrmsk;
+  UBY cra;
+  UBY crb;
+  UBY pra;
+  UBY prb;
+  UBY ddra;
+  UBY ddrb;
+  UBY sp;
+} cia_state;
+
+extern cia_state cia[2];
+
 #define WDBG_CPU_REGISTERS_X 24
 #define WDBG_CPU_REGISTERS_Y 26
 #define WDBG_DISASSEMBLY_X 16
@@ -423,98 +456,101 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 
 void wdbgUpdateCIAState(HWND hwndDlg)
 {
-  //STR s[WDBG_STRLEN];
-  //HDC hDC;
-  //PAINTSTRUCT paint_struct;
+  STR s[WDBG_STRLEN];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
 
-  //hDC = BeginPaint(hwndDlg, &paint_struct);
-  //if (hDC != NULL) {
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    ULO i;
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
 
-  //  ULO y = WDBG_CPU_REGISTERS_Y;
-  //  ULO x = WDBG_CPU_REGISTERS_X;
-  //  ULO i;
-  //  HFONT myfont = CreateFont(8,
-		//	      8,
-		//	      0,
-		//	      0,
-		//	      FW_NORMAL,
-		//	      FALSE,
-		//	      FALSE,
-		//	      FALSE,
-		//	      DEFAULT_CHARSET,
-		//	      OUT_DEFAULT_PRECIS,
-		//	      CLIP_DEFAULT_PRECIS,
-		//	      DEFAULT_QUALITY,
-		//	      FF_DONTCARE | FIXED_PITCH,
-		//	      "fixedsys");
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-  //  HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
-		//		 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
-  //  HDC hDC_image = CreateCompatibleDC(hDC);
-  //  SelectObject(hDC_image, myarrow);
-  //  SelectObject(hDC, myfont);
-  //  SetBkMode(hDC, TRANSPARENT);
-  //  SetBkMode(hDC_image, TRANSPARENT);
-  //  y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
-  //  y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
-  //  y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-  //  x = WDBG_DISASSEMBLY_X;
-  //  y = WDBG_DISASSEMBLY_Y;
-  //  BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-  //  x += WDBG_DISASSEMBLY_INDENT;
+    for (i = 0; i < 2; i++) {
+      sprintf(s, "CIA %s Registers:", (i == 0) ? "A" : "B");
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //  for (i = 0; i < 2; i++) {
-  //    sprintf(s, "Cia %s Registers:", (i == 0) ? "A" : "B");
-  //    y = wdbgLineOut(hDC, s, x, y);
+      sprintf(s, "  CRA-%.2X CRB-%.2X IREQ-%.2X IMSK-%.2X SP-%.2X",
+	      cia[i].cra, cia[i].crb, cia[i].icrreq, cia[i].icrmsk, cia[i].sp);
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    sprintf(s, "CRA-%.2X CRB-%.2X IREQ-%.2X IMSK-%.2X SP-%.2X",
-	 //     cia_cra[i], cia_crb[i], cia_icrreq[i], cia_icrmsk[i], cia_sp[i]);
-  //    y = wdbgLineOut(hDC, s, x, y);
+      sprintf(s, "  EV-%.8X ALARM-%.8X", cia[i].ev, cia[i].evalarm);
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    sprintf(s, "EV-%.8X ALARM-%.8X", cia_ev[i], cia_evalarm[i]);
-  //    y = wdbgLineOut(hDC, s, x, y);
+      sprintf(s, "  TA-%.4X TAHELP-%.8X TB-%.4X TBHELP-%.8X", cia[i].ta,
+	      cia[i].taleft, cia[i].tb, cia[i].tbleft);
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    sprintf(s, "TA-%.4X TAHELP-%.8X TB-%.4X TBHELP-%.8X", cia_ta[i],
-	 //     cia_taleft[i], cia_tb[i], cia_tbleft[i]);
-  //    y = wdbgLineOut(hDC, s, x, y);
+      sprintf(s, "  TALATCH-%.4X TBLATCH-%.4X", cia[i].talatch, cia[i].tblatch);
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    sprintf(s, "TALATCH-%.4X TBLATCH-%.4X", cia_talatch[i], cia_tblatch[i]);
-  //    y = wdbgLineOut(hDC, s, x, y);
+      strcpy(s, "");
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    strcpy(s, "");
-  //    y = wdbgLineOut(hDC, s, x, y);
+      if (cia[i].cra & 1)
+        strcpy(s, "  Timer A started, ");
+      else
+        strcpy(s, "  Timer A stopped, ");
 
-  //    if (cia_cra[i] & 1)
-  //      strcpy(s, "Timer A started, ");
-  //    else
-  //      strcpy(s, "Timer A stopped, ");
+      if (cia[i].cra & 8)
+        strcat(s, "One-shot mode");
+      else
+        strcat(s, "Continuous");
 
-  //    if (cia_cra[i] & 8)
-  //      strcat(s, "One-shot mode");
-  //    else
-  //      strcat(s, "Continuous");
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    y = wdbgLineOut(hDC, s, x, y);
+      if (cia[i].crb & 1)
+        strcpy(s, "  Timer B started, ");
+      else
+        strcpy(s, "  Timer B stopped, ");
 
-  //    if (cia_crb[i] & 1)
-  //      strcpy(s, "Timer B started, ");
-  //    else
-  //      strcpy(s, "Timer B stopped, ");
+      if (cia[i].crb & 8)
+        strcat(s, "One-shot mode");
+      else
+        strcat(s, "Continuous");
 
-  //    if (cia_crb[i] & 8)
-  //      strcat(s, "One-shot mode");
-  //    else
-  //      strcat(s, "Continuous");
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //    y = wdbgLineOut(hDC, s, x, y);
-  //    y++;
-  //  }
+      strcpy(s, "");
+      y = wdbgLineOut(hDC, s, x, y);
 
-  //  DeleteDC(hDC_image);
-  //  DeleteObject(myarrow);
-  //  DeleteObject(myfont);
-  //  EndPaint(hwndDlg, &paint_struct);
-  //}
+      y++;
+    }
+
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
 }
 
 /*============================================================================*/
