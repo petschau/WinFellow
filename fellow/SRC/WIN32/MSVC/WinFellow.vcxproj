@@ -1719,6 +1719,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\zlib\include\zconf.h" />
     <ClInclude Include="..\..\zlib\include\zlib.h" />
     <ClInclude Include="..\..\zlib\include\zutil.h" />
+    <ClInclude Include="gui_debugger.h" />
     <ClInclude Include="gui_general.h" />
     <ClInclude Include="GUI_versioninfo.h" />
   </ItemGroup>
@@ -1740,6 +1741,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <None Include="..\icons\arrow.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <ResourceCompile Include="GUI_debugger.rc" />
     <ResourceCompile Include="GUI_general.rc">
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">0x0417</Culture>

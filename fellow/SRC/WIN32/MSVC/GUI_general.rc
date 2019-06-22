@@ -8,7 +8,7 @@
 // Generated from the TEXTINCLUDE 2 resource.
 //
 #include "windows.h"
-#include "gui_debugger.h"
+// #include "gui_debugger.h"
 
 #ifndef IDC_STATIC
 #define IDC_STATIC -1
