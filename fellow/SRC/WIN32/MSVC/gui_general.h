@@ -212,6 +212,7 @@
 #define IDC_HARDFILE_TREE               1168
 #define IDC_TREE_HARDFILES              1168
 #define IDC_CHECK_HARDFILE_ADD_READONLY 1169
+#define IDC_EDIT_PREFIX_FILESYSTEMS     1170
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
@@ -295,9 +296,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        187
+#define _APS_NEXT_RESOURCE_VALUE        188
 #define _APS_NEXT_COMMAND_VALUE         40018
-#define _APS_NEXT_CONTROL_VALUE         1170
+#define _APS_NEXT_CONTROL_VALUE         1171
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

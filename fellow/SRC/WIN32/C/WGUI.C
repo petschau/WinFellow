@@ -1674,7 +1674,6 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 {
   LV_COLUMN lvc;
   HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS);
-  ULO i, fscount;
   STR *colheads[FILESYSTEM_COLS] = {"Unit", "Volume", "Root Path", "RW"};
 
   /* Create list view control columns */
@@ -1682,7 +1681,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
   memset(&lvc, 0, sizeof(lvc));
   lvc.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
   lvc.fmt = LVCFMT_LEFT;
-  for (i = 0; i < FILESYSTEM_COLS; i++)
+  for (ULO i = 0; i < FILESYSTEM_COLS; i++)
   {
     ULO colwidth = ListView_GetStringWidth(lvHWND, colheads[i]);
     if (i == 0) colwidth += 32;
@@ -1696,15 +1695,16 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 
   /* Add current hardfiles to the list */
 
-  fscount = cfgGetFilesystemCount(conf);
+  ULO fscount = cfgGetFilesystemCount(conf);
   ListView_SetItemCount(lvHWND, fscount);
-  for (i = 0; i < fscount; i++)
+  for (ULO i = 0; i < fscount; i++)
   {
     cfg_filesys fs = cfgGetFilesystem(conf, i);
     wguiFilesystemUpdate(lvHWND, &fs, i, TRUE, cfgGetFilesystemDeviceNamePrefix(conf));
   }
   ListView_SetExtendedListViewStyle(lvHWND, LVS_EX_FULLROWSELECT);
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS, cfgGetFilesystemAutomountDrives(conf));
+  ccwEditSetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, cfgGetFilesystemDeviceNamePrefix(conf));
 }
 
 /* Extract filesystem config */
@@ -1712,8 +1712,8 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 {
   cfgSetFilesystemAutomountDrives(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS));
+  ccwEditGetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, cfgGetFilesystemDeviceNamePrefix(conf), CFG_FILENAME_LENGTH);
 }
-
 
 /* Execute filesystem add or edit data */
 
