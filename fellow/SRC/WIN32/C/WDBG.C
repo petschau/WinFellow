@@ -635,11 +635,10 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-    for (i = 0; i < 4; i++) {
-      sprintf(s, "DF%u:", i);
-      y = wdbgLineOut(hDC, s, x, y);
-
-      sprintf(s, "Track-%u Sel-%d Motor-%d Side-%d WP-%d",
+    for (i = 0; i < 4; i++)
+    {
+      sprintf(s, "DF%u: Track-%u Sel-%d Motor-%d Side-%d WP-%d",
+        i,
 	      floppy[i].track,
 	      floppy[i].sel,
 	      floppy[i].motor,
@@ -647,6 +646,9 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 	      floppy[i].writeprot);
       y = wdbgLineOut(hDC, s, x, y);
     }
+
+    strcpy(s, "");
+    y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Dskpt-%.6X dsklen-%.4X dsksync-%.4X", dskpt, dsklen, dsksync);
     y = wdbgLineOut(hDC, s, x, y);
