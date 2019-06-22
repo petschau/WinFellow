@@ -941,9 +941,6 @@
     <ClInclude Include="..\Caps\include\caps.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gui_debugger.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp">
@@ -997,9 +994,6 @@
       <Filter>Resource Files</Filter>
     </ResourceCompile>
     <ResourceCompile Include="GUI_versioninfo.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="GUI_debugger.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
