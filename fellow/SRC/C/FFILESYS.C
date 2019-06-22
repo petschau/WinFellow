@@ -1,4 +1,3 @@
-/* @(#) $Id: FFILESYS.C,v 1.16 2012-12-07 14:05:43 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Filesystem wrapper                                                      */
@@ -42,6 +41,10 @@
 #include "fileops.h"
 #include "filesys.h"
 
+#include <string>
+
+using namespace std;
+
 /*============================================================================*/
 /* Filesys device data                                                        */
 /*============================================================================*/
@@ -49,6 +52,8 @@
 ffilesys_dev ffilesys_devs[FFILESYS_MAX_DEVICES];
 bool ffilesys_enabled;
 BOOLE ffilesys_automount_drives;
+string ffilesys_device_name_prefix;
+
 
 /*============================================================================*/
 /* Filesys device configuration                                               */
@@ -116,6 +121,16 @@ BOOLE ffilesysGetAutomountDrives(void)
   return ffilesys_automount_drives;
 }
 
+void ffilesysSetDeviceNamePrefix(const string& prefix)
+{
+  ffilesys_device_name_prefix = prefix;
+}
+
+const string& ffilesysGetDeviceNamePrefix()
+{
+  return ffilesys_device_name_prefix;
+}
+
 static BOOLE ffilesysHasZeroDevices(void)
 {
   ULO i;
@@ -161,7 +176,7 @@ void ffilesysDumpConfig(void)
 }
 
 /*============================================================================*/
-/* Install the user defined Reset filesys device                                                       */
+/* Install the user defined Reset filesys device                              */
 /*============================================================================*/
 
 void ffilesysInstall(void)
@@ -193,12 +208,12 @@ void ffilesysHardReset(void)
       rtarea_setup();		/* Maps the trap memory area into memory */
       rtarea_init();		/* Sets up a lot of traps */
       hardfile_install();
-      filesys_install();		/* Sets some traps and information in the trap memory area */
+      filesys_install();	/* Sets some traps and information in the trap memory area */
       filesys_init(ffilesysGetAutomountDrives());	/* Mounts all Windows drives as filesystems */
       filesys_prepare_reset();	/* Cleans up mounted filesystems(?) */
       filesys_reset();		/* More cleaning up(?) */
-      ffilesysInstall();		/* Install user defined filesystems */
-      filesys_start_threads();	/* Installs registersed filesystems mounts */
+      ffilesysInstall();	/* Install user defined filesystems */
+      filesys_start_threads();	/* Installs registered filesystem mounts, this also names the device "<prefix>x" */
       memoryEmemCardAdd(expamem_init_filesys, expamem_map_filesys);
   }
 }
@@ -234,6 +249,7 @@ void ffilesysStartup(void)
 {
   ffilesysClear();
   ffilesysSetAutomountDrives(FALSE);
+  ffilesysSetDeviceNamePrefix("FS");
 }
 
 /*=======================================*/

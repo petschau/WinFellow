@@ -69,6 +69,7 @@
 #include "fileops.h"
 #include "GfxDrvCommon.h"
 #include "FSWRAP.H"
+#include "FFILESYS.H"
 
 using namespace fellow::api::module;
 
@@ -1637,13 +1638,14 @@ bool wguiHardfileCreate(HWND hwndDlg, cfg *conf, ULO index, cfg_hardfile *target
 
 /* Update filesystem description in the list view box */
 
-void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add) {
+void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add, STR* prefix)
+{
   LV_ITEM lvi;
   STR stmp[48];
 
   memset(&lvi, 0, sizeof(lvi));
   lvi.mask = LVIF_TEXT;
-  sprintf(stmp, "DH%u", i);
+  sprintf(stmp, "%s%u", prefix, i);
   lvi.iItem = i;
   lvi.pszText = stmp;
   lvi.cchTextMax = (int) strlen(stmp);
@@ -1668,21 +1670,20 @@ void wguiFilesystemUpdate(HWND lvHWND, cfg_filesys *fs, ULO i, BOOL add) {
 /* Install filesystem config */
 
 #define FILESYSTEM_COLS 4
-void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf) {
+void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
+{
   LV_COLUMN lvc;
   HWND lvHWND = GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS);
   ULO i, fscount;
-  STR *colheads[FILESYSTEM_COLS] = {"Unit",
-    "Volume",
-    "Root Path",
-    "RW"};
+  STR *colheads[FILESYSTEM_COLS] = {"Unit", "Volume", "Root Path", "RW"};
 
   /* Create list view control columns */
 
   memset(&lvc, 0, sizeof(lvc));
   lvc.mask = LVCF_FMT | LVCF_TEXT | LVCF_WIDTH;
   lvc.fmt = LVCFMT_LEFT;
-  for (i = 0; i < FILESYSTEM_COLS; i++) {
+  for (i = 0; i < FILESYSTEM_COLS; i++)
+  {
     ULO colwidth = ListView_GetStringWidth(lvHWND, colheads[i]);
     if (i == 0) colwidth += 32;
     else if (i == 2) colwidth += 164;
@@ -1697,9 +1698,10 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf) {
 
   fscount = cfgGetFilesystemCount(conf);
   ListView_SetItemCount(lvHWND, fscount);
-  for (i = 0; i < fscount; i++) {
+  for (i = 0; i < fscount; i++)
+  {
     cfg_filesys fs = cfgGetFilesystem(conf, i);
-    wguiFilesystemUpdate(lvHWND, &fs, i, TRUE);
+    wguiFilesystemUpdate(lvHWND, &fs, i, TRUE, cfgGetFilesystemDeviceNamePrefix(conf));
   }
   ListView_SetExtendedListViewStyle(lvHWND, LVS_EX_FULLROWSELECT);
   ccwButtonCheckConditional(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS, cfgGetFilesystemAutomountDrives(conf));
@@ -1707,7 +1709,8 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf) {
 
 /* Extract filesystem config */
 
-void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf) {
+void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
+{
   cfgSetFilesystemAutomountDrives(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS));
 }
 
@@ -1719,18 +1722,12 @@ ULO wgui_current_filesystem_edit_index = 0;
 
 /* Run a filesystem edit or add dialog */
 
-BOOLE wguiFilesystemAdd(HWND hwndDlg, 
-  cfg *conf, 
-  BOOLE add, 
-  ULO index,
-  cfg_filesys *target) {
+BOOLE wguiFilesystemAdd(HWND hwndDlg, cfg *conf, BOOLE add, ULO index, cfg_filesys *target)
+{
     wgui_current_filesystem_edit = target;
     if (add) cfgSetFilesystemUnitDefaults(target);
     wgui_current_filesystem_edit_index = index;
-    return DialogBox(win_drv_hInstance,
-      MAKEINTRESOURCE(IDD_FILESYSTEM_ADD),
-      hwndDlg,
-      wguiFilesystemAddDialogProc) == IDOK;
+    return DialogBox(win_drv_hInstance, MAKEINTRESOURCE(IDD_FILESYSTEM_ADD), hwndDlg, wguiFilesystemAddDialogProc) == IDOK;
 }
 
 /*============================================================================*/
@@ -2089,7 +2086,7 @@ LON wguiListViewNext(HWND ListHWND, ULO initialindex)
 /* Tree view selection investigate                                            */
 /*============================================================================*/
 
-int wguiTreeViewSelection(HWND hwndTree)
+LPARAM wguiTreeViewSelection(HWND hwndTree)
 {
   HTREEITEM hItem = TreeView_GetSelection(hwndTree);
   if (hItem == nullptr)
@@ -2800,49 +2797,49 @@ INT_PTR CALLBACK wguiSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 /* Dialog Procedure for the filesystem property sheet                         */
 /*============================================================================*/
 
-INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
+INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+  {
+  case WM_INITDIALOG:
+  {
+    ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
+    ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
+    ccwButtonCheckConditional(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY, wgui_current_filesystem_edit->readonly);
+  }
+  return TRUE;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
       {
-        ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
-        ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
-        ccwButtonCheckConditional(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY,	wgui_current_filesystem_edit->readonly);
-      }
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-        switch (LOWORD(wParam)) {
-    case IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG:
-      if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath,
-        wgui_current_filesystem_edit->volumename, CFG_FILENAME_LENGTH, 
-        "Select Filesystem Root Directory:")) {
-	  ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
-	  ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
-      }
-      break;
-    case IDOK:
+      case IDC_BUTTON_FILESYSTEM_ADD_DIRDIALOG:
+        if (wguiSelectDirectory(hwndDlg, wgui_current_filesystem_edit->rootpath, wgui_current_filesystem_edit->volumename, CFG_FILENAME_LENGTH, "Select Filesystem Root Directory:"))
+        {
+          ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath);
+          ccwEditSetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename);
+        }
+        break;
+      case IDOK:
       {
         ccwEditGetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_VOLUMENAME, wgui_current_filesystem_edit->volumename, 64);
-        if (wgui_current_filesystem_edit->volumename[0] == '\0') {
-	  MessageBox(hwndDlg,
-	    "You must specify a volume name",
-	    "Edit Filesystem",
-	    0);
-	  break;
+        if (wgui_current_filesystem_edit->volumename[0] == '\0')
+        {
+          MessageBox(hwndDlg, "You must specify a volume name", "Edit Filesystem", 0);
+          break;
         }
         ccwEditGetText(hwndDlg, IDC_EDIT_FILESYSTEM_ADD_ROOTPATH, wgui_current_filesystem_edit->rootpath, CFG_FILENAME_LENGTH);
-        if (wgui_current_filesystem_edit->rootpath[0] == '\0') {
-	  MessageBox(hwndDlg,
-	    "You must specify a root path",
-	    "Edit Filesystem",
-	    0);
-	  break;
+        if (wgui_current_filesystem_edit->rootpath[0] == '\0')
+        {
+          MessageBox(hwndDlg, "You must specify a root path", "Edit Filesystem", 0);
+          break;
         }
         wgui_current_filesystem_edit->readonly = ccwButtonGetCheck(hwndDlg, IDC_CHECK_FILESYSTEM_ADD_READONLY);
       }
-    case IDCANCEL:
-      EndDialog(hwndDlg, LOWORD(wParam));
-      return TRUE;
+      case IDCANCEL:
+        EndDialog(hwndDlg, LOWORD(wParam));
+        return TRUE;
+      }
     }
     break;
   }
@@ -2850,81 +2847,66 @@ INT_PTR CALLBACK wguiFilesystemAddDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wPa
 }
 
 
-INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-  switch (uMsg) {
-    case WM_INITDIALOG:
-      wgui_propsheetHWND[PROPSHEETFILESYSTEM] = hwndDlg;
-      wguiInstallFilesystemConfig(hwndDlg, wgui_cfg);
-      return TRUE;
-    case WM_COMMAND:
-      if (HIWORD(wParam) == BN_CLICKED)
-        switch (LOWORD(wParam)) {
-    case IDC_BUTTON_FILESYSTEM_ADD:
-      {  
-        cfg_filesys fs;
-        if (wguiFilesystemAdd(hwndDlg,
-	  wgui_cfg,
-	  TRUE,
-	  cfgGetFilesystemCount(wgui_cfg),
-	  &fs) == IDOK) {
-	    wguiFilesystemUpdate(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 
-	      &fs,
-	      cfgGetFilesystemCount(wgui_cfg), 
-	      TRUE);
-	    cfgFilesystemAdd(wgui_cfg, &fs);
-        }
-      }
-      break;
-    case IDC_BUTTON_FILESYSTEM_EDIT:
+INT_PTR CALLBACK wguiFilesystemDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+  switch (uMsg)
+  {
+  case WM_INITDIALOG:
+    wgui_propsheetHWND[PROPSHEETFILESYSTEM] = hwndDlg;
+    wguiInstallFilesystemConfig(hwndDlg, wgui_cfg);
+    return TRUE;
+  case WM_COMMAND:
+    if (HIWORD(wParam) == BN_CLICKED)
+    {
+      switch (LOWORD(wParam))
       {
-        ULO sel = wguiListViewNext(GetDlgItem(hwndDlg,
-	  IDC_LIST_FILESYSTEMS),
-	  0);
-        if (sel != -1) {
-	  cfg_filesys fs = cfgGetFilesystem(wgui_cfg, sel);
-	  if (wguiFilesystemAdd(hwndDlg, 
-	    wgui_cfg, 
-	    FALSE, 
-	    sel, 
-	    &fs) == IDOK) {
-	      cfgFilesystemChange(wgui_cfg, &fs, sel);
-	      wguiFilesystemUpdate(GetDlgItem(hwndDlg,
-	        IDC_LIST_FILESYSTEMS), 
-	        &fs, 
-	        sel, 
-	        FALSE);
-	  }
+      case IDC_BUTTON_FILESYSTEM_ADD:
+      {
+        cfg_filesys fs;
+        if (wguiFilesystemAdd(hwndDlg, wgui_cfg, TRUE, cfgGetFilesystemCount(wgui_cfg), &fs) == IDOK)
+        {
+          wguiFilesystemUpdate(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), &fs, cfgGetFilesystemCount(wgui_cfg), TRUE, cfgGetFilesystemDeviceNamePrefix(wgui_cfg));
+          cfgFilesystemAdd(wgui_cfg, &fs);
         }
       }
       break;
-    case IDC_BUTTON_FILESYSTEM_REMOVE:
-      { 
+      case IDC_BUTTON_FILESYSTEM_EDIT:
+      {
+        ULO sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 0);
+        if (sel != -1)
+        {
+          cfg_filesys fs = cfgGetFilesystem(wgui_cfg, sel);
+          if (wguiFilesystemAdd(hwndDlg, wgui_cfg, FALSE, sel, &fs) == IDOK)
+          {
+            cfgFilesystemChange(wgui_cfg, &fs, sel);
+            wguiFilesystemUpdate(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), &fs, sel, FALSE, cfgGetFilesystemDeviceNamePrefix(wgui_cfg));
+          }
+        }
+      }
+      break;
+      case IDC_BUTTON_FILESYSTEM_REMOVE:
+      {
         LON sel = 0;
-        while ((sel = wguiListViewNext(GetDlgItem(hwndDlg,
-	  IDC_LIST_FILESYSTEMS),
-	  sel)) != -1) {
-	    ULO i;
-	    cfgFilesystemRemove(wgui_cfg, sel);
-	    ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), 
-	      sel);
-	    for (i = sel; i < cfgGetFilesystemCount(wgui_cfg); i++) {
-	      cfg_filesys fs = cfgGetFilesystem(wgui_cfg, i);
-	      wguiFilesystemUpdate(GetDlgItem(hwndDlg,
-	        IDC_LIST_FILESYSTEMS), 
-	        &fs, 
-	        i, 
-	        FALSE);
-	    }
+        while ((sel = wguiListViewNext(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), sel)) != -1)
+        {
+          cfgFilesystemRemove(wgui_cfg, sel);
+          ListView_DeleteItem(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), sel);
+          for (ULO i = sel; i < cfgGetFilesystemCount(wgui_cfg); i++)
+          {
+            cfg_filesys fs = cfgGetFilesystem(wgui_cfg, i);
+            wguiFilesystemUpdate(GetDlgItem(hwndDlg, IDC_LIST_FILESYSTEMS), &fs, i, FALSE, cfgGetFilesystemDeviceNamePrefix(wgui_cfg));
+          }
         }
       }
       break;
-    default:
-      break;
+      default:
+        break;
       }
-      break;
-    case WM_DESTROY:
-      wguiExtractFilesystemConfig(hwndDlg, wgui_cfg);
-      break;
+    }
+    break;
+  case WM_DESTROY:
+    wguiExtractFilesystemConfig(hwndDlg, wgui_cfg);
+    break;
   }
   return FALSE;
 }
@@ -3166,13 +3148,13 @@ INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
       break;
       case IDC_BUTTON_HARDFILE_EDIT:
       {
-        int sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
+        LPARAM sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
         if (sel != -1)
         {
-          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, sel);
-          if (wguiHardfileAdd(hwndDlg, wgui_cfg, false, sel, &fhd) == IDOK)
+          cfg_hardfile fhd = cfgGetHardfile(wgui_cfg, (ULO) sel);
+          if (wguiHardfileAdd(hwndDlg, wgui_cfg, false, (ULO) sel, &fhd) == IDOK)
           {
-            cfgHardfileChange(wgui_cfg, &fhd, sel);
+            cfgHardfileChange(wgui_cfg, &fhd, (ULO) sel);
             wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
           }
         }
@@ -3180,10 +3162,10 @@ INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
       break;
       case IDC_BUTTON_HARDFILE_REMOVE:
       {
-        int sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
+        LPARAM sel = wguiTreeViewSelection(GetDlgItem(hwndDlg, IDC_TREE_HARDFILES));
         if (sel != -1)
         {
-          cfgHardfileRemove(wgui_cfg, sel);
+          cfgHardfileRemove(wgui_cfg, (ULO) sel);
           wguiInstallHardfileConfig(hwndDlg, wgui_cfg);
         }
       }

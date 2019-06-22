@@ -105,7 +105,6 @@ namespace fellow::api::module
     virtual void SetHardfile(const HardfileConfiguration& hardfile, unsigned int index) = 0;
     virtual bool RemoveHardfile(unsigned int index) = 0;
     virtual unsigned int GetMaxHardfileCount() = 0;
-    virtual void SetDeviceNameStartNumber(unsigned int unitNoStartNumber) = 0;
 
     // UI helper function
     virtual bool Create(const HardfileConfiguration& configuration, ULO size) = 0;

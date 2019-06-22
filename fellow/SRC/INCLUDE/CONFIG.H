@@ -7,6 +7,8 @@
 #include "listtree.h"
 #include "fellow/api/module/IHardfileHandler.h"
 
+#include <string>
+
 using namespace fellow::api::module;
 
 /*============================================================================*/
@@ -63,7 +65,7 @@ typedef enum {
 /* when changed here.                                                         */
 /*============================================================================*/
 
-#define CONFIG_CURRENT_FILE_VERSION 2
+#define CONFIG_CURRENT_FILE_VERSION 3
 
 typedef struct {
 
@@ -175,7 +177,7 @@ typedef struct {
 
   felist* m_filesystems;
   BOOLE m_automount_drives;
-
+  STR m_filesystem_device_name_prefix[CFG_FILENAME_LENGTH];
 
   /*==========================================================================*/
   /* Game port configuration                                                  */
@@ -371,6 +373,9 @@ extern void cfgFilesystemChange(cfg *config,
 extern void cfgSetFilesystemAutomountDrives(cfg *config,
 					    BOOLE automount_drives);
 extern BOOLE cfgGetFilesystemAutomountDrives(cfg *config);
+
+extern void cfgSetFilesystemDeviceNamePrefix(cfg* config, STR* prefix);
+extern STR* cfgGetFilesystemDeviceNamePrefix(cfg* config);
 
 
 /*============================================================================*/

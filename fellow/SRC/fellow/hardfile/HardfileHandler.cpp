@@ -541,6 +541,7 @@ namespace fellow::hardfile
     }
     _fileSystems.clear();
     _mountList.clear();
+    _deviceNameStartNumber = 0;
   }
 
   void HardfileHandler::SetIOError(BYT errorCode)
@@ -906,11 +907,6 @@ namespace fellow::hardfile
   unsigned int HardfileHandler::GetMaxHardfileCount()
   {
     return FHFILE_MAX_DEVICES;
-  }
-
-  void HardfileHandler::SetDeviceNameStartNumber(unsigned int deviceNameStartNumber)
-  {
-    _deviceNameStartNumber = deviceNameStartNumber;
   }
 
   /*======================================================*/
@@ -1504,6 +1500,7 @@ namespace fellow::hardfile
 
   void HardfileHandler::RebuildHardfileConfiguration()
   {
+    _deviceNameStartNumber = 0;
     _fileSystems.clear(); // This is rebuild later in this functions
 
     // Re-initialize device in case RDB config and partition table has been rewritten inside the emulator

@@ -79,6 +79,7 @@
 #include "uae2fell.h"
 #include "penguin.h"
 #include "filesys.h"
+#include "FFILESYS.H"
 #include "autoconf.h"
 #include "fsusage.h"
 
@@ -417,11 +418,11 @@ int sprintf_filesys_unit (struct uaedev_mount_info *mountinfo, char *buffer, int
 	return -1;
 
     if (uip[num].volname != 0)
-	sprintf (buffer, "(DH%d:) Filesystem, %s: %s %s", num, uip[num].volname,
+	sprintf (buffer, "(%s%d:) Filesystem, %s: %s %s", ffilesysGetDeviceNamePrefix().c_str(), num, uip[num].volname,
 		 uip[num].rootdir, uip[num].readonly ? "ro" : "");
     else
-	sprintf (buffer, "(DH%d:) Hardfile, \"%s\", size %u bytes", num,
-		 uip[num].rootdir, uip[num].hf.size);
+      sprintf(buffer, "(%s%d:) Hardfile, \"%s\", size %u bytes", ffilesysGetDeviceNamePrefix().c_str(), num,
+        uip[num].rootdir, uip[num].hf.size);
     return 0;
 }
 
@@ -1265,7 +1266,7 @@ static uae_u32 startup_handler (void)
     /* find UnitInfo with correct device name */
     s = strchr (devname, ':');
     if (s)
-	*s = '\0';
+      *s = '\0';
 
     for (i = 0; i < current_mountinfo->num_units; i++) {
 	/* Hardfile volume name? */
@@ -3168,7 +3169,7 @@ static int get_new_device (char **devname, uaecptr *devname_amiga, int cdrom)
 	sprintf (buffer, "CD%d", current_cdrom);
 	result = current_cdrom++;
     } else {
-	sprintf (buffer, "DH%d", current_deviceno);
+	sprintf (buffer, "%s%d", ffilesysGetDeviceNamePrefix().c_str(), current_deviceno);
 	result = current_deviceno++;
     }
 

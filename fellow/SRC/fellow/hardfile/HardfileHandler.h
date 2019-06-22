@@ -109,7 +109,6 @@ namespace fellow::hardfile
     void SetHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
-    void SetDeviceNameStartNumber(unsigned int unitNoStartNumber) override;
 
     // UI helper function
     bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;

@@ -753,6 +753,18 @@ BOOLE cfgGetFilesystemAutomountDrives(cfg *config)
   return config->m_automount_drives;
 }
 
+void cfgSetFilesystemDeviceNamePrefix(cfg* config, STR* prefix)
+{
+  if (prefix != nullptr) {
+    strncpy(config->m_filesystem_device_name_prefix, prefix, CFG_FILENAME_LENGTH);
+  }
+}
+
+STR* cfgGetFilesystemDeviceNamePrefix(cfg* config)
+{
+  return config->m_filesystem_device_name_prefix;
+}
+
 /*============================================================================*/
 /* Game port configuration property access                                    */
 /*============================================================================*/
@@ -918,6 +930,7 @@ void cfgSetDefaults(cfg *config)
 
   cfgFilesystemsFree(config);
   cfgSetFilesystemAutomountDrives(config, FALSE);
+  cfgSetFilesystemDeviceNamePrefix(config, "FS");
 
 
   /*==========================================================================*/
@@ -1850,6 +1863,10 @@ BOOLE cfgSetOption(cfg *config, STR *optionstr)
     {
       cfgSetFilesystemAutomountDrives(config, cfgGetBOOLEFromString(value));
     }
+    else if (stricmp(option, "filesystem_device_name_prefix") == 0)
+    {
+      cfgSetFilesystemDeviceNamePrefix(config, value);
+    }
     else if (stricmp(option, "gxfcard_size") == 0) {           /* Unsupported */
     }
     else if (stricmp(option, "use_debugger") == 0) {           /* Unsupported */
@@ -1986,6 +2003,7 @@ BOOLE cfgSaveOptions(cfg *config, FILE *cfgfile)
   fprintf(cfgfile, "fellow.measure_speed=%s\n", cfgGetboolToString(cfgGetMeasureSpeed(config)));
   fprintf(cfgfile, "rtc=%s\n", cfgGetboolToString(cfgGetRtc(config)));
   fprintf(cfgfile, "win32.map_drives=%s\n", cfgGetBOOLEToString(cfgGetFilesystemAutomountDrives(config)));
+  fprintf(cfgfile, "filesystem_device_name_prefix=%s\n", cfgGetFilesystemDeviceNamePrefix(config));
   for (ULO i = 0; i < cfgGetHardfileCount(config); i++)
   {
     cfg_hardfile hf = cfgGetHardfile(config, i);
@@ -2489,8 +2507,6 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
 
   if (ffilesysGetEnabled())
   {
-    HardfileHandler->SetDeviceNameStartNumber(cfgGetFilesystemCount(config));
-
     for (i = 0; i < cfgGetFilesystemCount(config); i++)
     {
       cfg_filesys filesys;
@@ -2511,10 +2527,7 @@ BOOLE cfgManagerConfigurationActivate(cfgManager *configmanager)
       needreset |= ffilesysRemoveFilesys(i);
     }
     ffilesysSetAutomountDrives(cfgGetFilesystemAutomountDrives(config));
-  }
-  else
-  {
-    HardfileHandler->SetDeviceNameStartNumber(0);
+    ffilesysSetDeviceNamePrefix(cfgGetFilesystemDeviceNamePrefix(config));
   }
 
   /*==========================================================================*/

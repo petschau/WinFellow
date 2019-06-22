@@ -1,6 +1,8 @@
 #ifndef FFILESYS_H
 #define FFILESYS_H
 
+#include <string>
+
 #define FFILESYS_MAX_DEVICES 20
 #define FFILESYS_MAX_VOLUMENAME 64
 
@@ -27,7 +29,8 @@ extern BOOLE ffilesysRemoveFilesys(ULO index);
 extern void ffilesysClear(void);
 extern void ffilesysSetAutomountDrives(BOOLE automount_drives);
 extern BOOLE ffilesysGetAutomountDrives(void);
-
+extern void ffilesysSetDeviceNamePrefix(const std::string& prefix);
+extern const std::string& ffilesysGetDeviceNamePrefix();
 
 /* Starting and stopping the filesys */
 
