@@ -357,8 +357,8 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO disasm_pc;
     ULO i;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8*g_DPIScaleY),
+            (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -413,8 +413,8 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i, j;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -501,8 +501,8 @@ void wdbgUpdateCIAState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -605,8 +605,8 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -702,8 +702,8 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -774,8 +774,8 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i, list1, list2, atpc;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -854,8 +854,8 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -922,8 +922,8 @@ void wdbgUpdateScreenState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -1015,8 +1015,8 @@ void wdbgUpdateEventState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
@@ -1083,8 +1083,8 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i;
-    HFONT myfont = CreateFont(8,
-			      8,
+    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY),
+      (ULO)(8 * g_DPIScaleX),
 			      0,
 			      0,
 			      FW_NORMAL,
