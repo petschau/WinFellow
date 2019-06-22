@@ -1,10 +1,9 @@
-/* @(#) $Id: WDBG.C,v 1.35 2013-01-13 18:31:09 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
 /* Windows GUI code for debugger                                           */
 /*                                                                         */
-/* Authors: Torsten Enderling (carfesh@gmx.net)                            */
+/* Authors: Torsten Enderling                                              */
 /*          Petter Schau                                                   */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
@@ -105,6 +104,8 @@ static ULO memory_padd = WDBG_DISASSEMBLY_LINES * 32;
 static ULO memory_adress = 0;
 static BOOLE memory_ascii = FALSE;
 
+static float g_DPIScaleX = 1, g_DPIScaleY = 1;
+
 /*============*/
 /* Prototypes */
 /*============*/
@@ -152,6 +153,18 @@ wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
   wdbgSoundDialogProc
 };
 
+/*===============================*/
+/* calculate DIP scaling factors */
+/*===============================*/
+
+void wdbgInitializeDPIScale(HWND hwnd)
+{
+  HDC hdc = GetDC(hwnd);
+  g_DPIScaleX = GetDeviceCaps(hdc, LOGPIXELSX) / 96.0f;
+  g_DPIScaleY = GetDeviceCaps(hdc, LOGPIXELSY) / 96.0f;
+  ReleaseDC(hwnd, hdc);
+}
+
 /*===========================*/
 /* debugger main dialog proc */
 /*===========================*/
@@ -186,6 +199,9 @@ INT_PTR wdbgSessionMainDialog(void)
   propertysheetheader.nStartPage = 0;
   propertysheetheader.ppsp = propertysheets;
   propertysheetheader.pfnCallback = NULL;
+
+  wdbgInitializeDPIScale(wdbg_hDialog);
+
   return PropertySheet(&propertysheetheader);
 }
 
@@ -243,7 +259,13 @@ ULO wdbgLineOut(HDC hDC, STR * s, ULO x, ULO y)
 
 STR *wdbgGetDisassemblyLineStr(STR * s, ULO * disasm_pc)
 {
-//  *disasm_pc = cpuDisOpcode(*disasm_pc, s);
+  STR inst_address[256]  = "";
+  STR inst_data[256]     = "";
+  STR inst_name[256]     = "";
+  STR inst_operands[256] = "";
+
+  *disasm_pc = cpuDisOpcode(*disasm_pc, inst_address, inst_data, inst_name, inst_operands);
+  sprintf(s, "%-9s %-18s %-11s %s", inst_address, inst_data, inst_name, inst_operands);
   return s;
 }
 
@@ -259,8 +281,8 @@ void wdbgUpdateCPUState(HWND hwndDlg)
 
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO disasm_pc;
     ULO i;
     HFONT myfont = CreateFont(8,
@@ -287,15 +309,13 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
     disasm_pc = cpuGetPC();
     for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++)
       y = wdbgLineOut(hDC, wdbgGetDisassemblyLineStr(s, &disasm_pc), x, y);
-
-    
 
     DeleteDC(hDC_image);
     DeleteObject(myarrow);
@@ -318,8 +338,8 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i, j;
     HFONT myfont = CreateFont(8,
 			      8,
@@ -346,42 +366,44 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(st), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(st), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     for (i = 0; i < WDBG_DISASSEMBLY_LINES; i++) {
-      if (memory_ascii) {
-	sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
-		(memory_adress + i * 16) & 0xffffff,
-		memoryReadLong(memory_adress + i * 16 + 0),
-		memoryReadLong(memory_adress + i * 16 + 4),
-		memoryReadLong(memory_adress + i * 16 + 8),
-		memoryReadLong(memory_adress + i * 16 + 12));
+      if (memory_ascii)
+      {
+	      sprintf(st, "%.6X %.8X%.8X %.8X%.8X ",
+		      (memory_adress + i * 16) & 0xffffff,
+		      memoryReadLong(memory_adress + i * 16 + 0),
+		      memoryReadLong(memory_adress + i * 16 + 4),
+		      memoryReadLong(memory_adress + i * 16 + 8),
+		      memoryReadLong(memory_adress + i * 16 + 12));
 
-	for (j = 0; j < 16; j++) {
-	  k = memoryReadByte(memory_adress + i * 16 + j) & 0xff;
-	  if (k < 32)
-	    st[j + 41] = '.';
-	  else
-	    st[j + 41] = k;
-	}
-	st[16 + 41] = '\0';
-	y = wdbgLineOut(hDC, st, x, y);
+	      for (j = 0; j < 16; j++) {
+	        k = memoryReadByte(memory_adress + i * 16 + j) & 0xff;
+	        if (k < 32)
+	          st[j + 41] = '.';
+	        else
+	          st[j + 41] = k;
+	      }
+	      st[16 + 41] = '\0';
+	      y = wdbgLineOut(hDC, st, x, y);
       }
-      else {
-	sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
-		(memory_adress + i * 32) & 0xffffff,
-		memoryReadLong(memory_adress + i * 32),
-		memoryReadLong(memory_adress + i * 32 + 4),
-		memoryReadLong(memory_adress + i * 32 + 8),
-		memoryReadLong(memory_adress + i * 32 + 12),
-		memoryReadLong(memory_adress + i * 32 + 16),
-		memoryReadLong(memory_adress + i * 32 + 20),
-		memoryReadLong(memory_adress + i * 32 + 24),
-		memoryReadLong(memory_adress + i * 32 + 28));
-	y = wdbgLineOut(hDC, st, x, y);
+      else 
+      {
+	      sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
+		      (memory_adress + i * 32) & 0xffffff,
+		      memoryReadLong(memory_adress + i * 32),
+		      memoryReadLong(memory_adress + i * 32 + 4),
+		      memoryReadLong(memory_adress + i * 32 + 8),
+		      memoryReadLong(memory_adress + i * 32 + 12),
+		      memoryReadLong(memory_adress + i * 32 + 16),
+		      memoryReadLong(memory_adress + i * 32 + 20),
+		      memoryReadLong(memory_adress + i * 32 + 24),
+		      memoryReadLong(memory_adress + i * 32 + 28));
+	      y = wdbgLineOut(hDC, st, x, y);
       }
     }
 
@@ -505,8 +527,8 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
@@ -533,10 +555,10 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     for (i = 0; i < 4; i++) {
       sprintf(s, "DF%u:", i);
@@ -672,8 +694,8 @@ void wdbgUpdateCopperState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i, list1, list2, atpc;
     HFONT myfont = CreateFont(8,
 			      8,
@@ -700,10 +722,10 @@ void wdbgUpdateCopperState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT* g_DPIScaleX);
 
     list1 = (copper_registers.cop1lc & 0xfffffe);
     list2 = (copper_registers.cop2lc & 0xfffffe);
@@ -753,8 +775,8 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -780,10 +802,10 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "Spr0pt-%.6X Spr1pt-%.6X Spr2pt-%.6X Spr3pt - %.6X", sprite_registers.sprpt[0],
       sprite_registers.sprpt[1], sprite_registers.sprpt[2], sprite_registers.sprpt[3]);
@@ -821,8 +843,8 @@ void wdbgUpdateScreenState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -848,10 +870,10 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
     sprintf(s, "DIWSTRT - %.4X DIWSTOP - %.4X DDFSTRT - %.4X DDFSTOP - %.4X LOF     - %.4X",
 	    diwstrt, diwstop, ddfstrt, ddfstop, lof);
@@ -914,8 +936,8 @@ void wdbgUpdateEventState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     HFONT myfont = CreateFont(8,
 			      8,
 			      0,
@@ -941,12 +963,12 @@ void wdbgUpdateEventState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-    sprintf(s, "Next Cpu      - %u", cpuEvent.cycle);
+    sprintf(s, "Next CPU      - %u", cpuEvent.cycle);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "Next Copper   - %u", copperEvent.cycle);
@@ -981,8 +1003,8 @@ void wdbgUpdateSoundState(HWND hwndDlg)
   hDC = BeginPaint(hwndDlg, &paint_struct);
   if (hDC != NULL) {
 
-    ULO y = WDBG_CPU_REGISTERS_Y;
-    ULO x = WDBG_CPU_REGISTERS_X;
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO i;
     HFONT myfont = CreateFont(8,
 			      8,
@@ -1009,10 +1031,10 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
     y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
-    x = WDBG_DISASSEMBLY_X;
-    y = WDBG_DISASSEMBLY_Y;
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
-    x += WDBG_DISASSEMBLY_INDENT;
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
 /*
     sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", soundState0, soundState1,
