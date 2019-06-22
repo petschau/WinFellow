@@ -97,7 +97,7 @@ typedef struct cia_state_
 {
   ULO ta;
   ULO tb;
-  ULO ta_rem; /* Preserves remainder when downsizing from bus cycles */
+  ULO ta_rem;
   ULO tb_rem;
   ULO talatch;
   ULO tblatch;
@@ -123,6 +123,42 @@ typedef struct cia_state_
 } cia_state;
 
 extern cia_state cia[2];
+
+/* blit.c */
+
+typedef struct blitter_state_
+{
+  ULO bltcon;
+  ULO bltafwm;
+  ULO bltalwm;
+  ULO bltapt;
+  ULO bltbpt;
+  ULO bltcpt;
+  ULO bltdpt;
+  ULO bltamod;
+  ULO bltbmod;
+  ULO bltcmod;
+  ULO bltdmod;
+  ULO bltadat;
+  ULO bltbdat;
+  ULO bltbdat_original;
+  ULO bltcdat;
+  ULO bltzero;
+  ULO height;
+  ULO width;
+  ULO a_shift_asc;
+  ULO a_shift_desc;
+  ULO b_shift_asc;
+  ULO b_shift_desc;
+  BOOLE started;
+  BOOLE dma_pending;
+  ULO cycle_length;
+  ULO cycle_free;
+} blitter_state;
+
+extern blitter_state blitter;
+
+/* text layout definitions */
 
 #define WDBG_CPU_REGISTERS_X 24
 #define WDBG_CPU_REGISTERS_Y 26
@@ -655,69 +691,69 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
 void wdbgUpdateBlitterState(HWND hwndDlg)
 {
- // STR s[WDBG_STRLEN];
- // HDC hDC;
- // PAINTSTRUCT paint_struct;
+  STR s[WDBG_STRLEN];
+  HDC hDC;
+  PAINTSTRUCT paint_struct;
 
- // hDC = BeginPaint(hwndDlg, &paint_struct);
- // if (hDC != NULL) {
+  hDC = BeginPaint(hwndDlg, &paint_struct);
+  if (hDC != NULL) {
 
- //   ULO y = WDBG_CPU_REGISTERS_Y;
- //   ULO x = WDBG_CPU_REGISTERS_X;
- //   HFONT myfont = CreateFont(8,
-	//		      8,
-	//		      0,
-	//		      0,
-	//		      FW_NORMAL,
-	//		      FALSE,
-	//		      FALSE,
-	//		      FALSE,
-	//		      DEFAULT_CHARSET,
-	//		      OUT_DEFAULT_PRECIS,
-	//		      CLIP_DEFAULT_PRECIS,
-	//		      DEFAULT_QUALITY,
-	//		      FF_DONTCARE | FIXED_PITCH,
-	//		      "fixedsys");
+    ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
+    ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
+    HFONT myfont = CreateFont(8,
+			      8,
+			      0,
+			      0,
+			      FW_NORMAL,
+			      FALSE,
+			      FALSE,
+			      FALSE,
+			      DEFAULT_CHARSET,
+			      OUT_DEFAULT_PRECIS,
+			      CLIP_DEFAULT_PRECIS,
+			      DEFAULT_QUALITY,
+			      FF_DONTCARE | FIXED_PITCH,
+			      "fixedsys");
 
- //   HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
-	//			 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
- //   HDC hDC_image = CreateCompatibleDC(hDC);
- //   SelectObject(hDC_image, myarrow);
- //   SelectObject(hDC, myfont);
- //   SetBkMode(hDC, TRANSPARENT);
- //   SetBkMode(hDC_image, TRANSPARENT);
- //   y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
- //   y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
- //   y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
- //   x = WDBG_DISASSEMBLY_X;
- //   y = WDBG_DISASSEMBLY_Y;
- //   BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
- //   x += WDBG_DISASSEMBLY_INDENT;
+    HBITMAP myarrow = LoadBitmap(win_drv_hInstance,
+				 MAKEINTRESOURCE(IDB_DEBUG_ARROW));
+    HDC hDC_image = CreateCompatibleDC(hDC);
+    SelectObject(hDC_image, myarrow);
+    SelectObject(hDC, myfont);
+    SetBkMode(hDC, TRANSPARENT);
+    SetBkMode(hDC_image, TRANSPARENT);
+    y = wdbgLineOut(hDC, wdbgGetDataRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetAddressRegistersStr(s), x, y);
+    y = wdbgLineOut(hDC, wdbgGetSpecialRegistersStr(s), x, y);
+    x = (ULO)(WDBG_DISASSEMBLY_X * g_DPIScaleX);
+    y = (ULO)(WDBG_DISASSEMBLY_Y * g_DPIScaleY);
+    BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
+    x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
- //   sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
- //     bltcon, bltafwm, bltalwm);
- //   y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "bltcon:  %08X bltafwm: %08X bltalwm: %08X", 
+      blitter.bltcon, blitter.bltafwm, blitter.bltalwm);
+    y = wdbgLineOut(hDC, s, x, y);
 
-	//sprintf(s, "");
- //   y = wdbgLineOut(hDC, s, x, y);
+	sprintf(s, "");
+    y = wdbgLineOut(hDC, s, x, y);
 
-	//sprintf(s, "bltapt:  %08X bltbpt:  %08X bltcpt:  %08X bltdpt:  %08X ",
- //     bltapt, bltbpt, bltcpt, bltdpt);
- //   y = wdbgLineOut(hDC, s, x, y);
+	sprintf(s, "bltapt:  %08X bltbpt:  %08X bltcpt:  %08X bltdpt:  %08X ",
+    blitter.bltapt, blitter.bltbpt, blitter.bltcpt, blitter.bltdpt);
+    y = wdbgLineOut(hDC, s, x, y);
 
- //   sprintf(s, "bltamod: %08X bltbmod: %08X bltcmod: %08X bltdmod: %08X ",
- //     bltamod, bltbmod, bltcmod, bltdmod);
- //   y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "bltamod: %08X bltbmod: %08X bltcmod: %08X bltdmod: %08X ",
+      blitter.bltamod, blitter.bltbmod, blitter.bltcmod, blitter.bltdmod);
+    y = wdbgLineOut(hDC, s, x, y);
 
- //   sprintf(s, "bltadat: %08X bltbdat: %08X bltcdat: %08X bltzero: %08X ",
- //     bltadat, bltbdat, bltcdat, bltzero);
- //   y = wdbgLineOut(hDC, s, x, y);
+    sprintf(s, "bltadat: %08X bltbdat: %08X bltcdat: %08X bltzero: %08X ",
+      blitter.bltadat, blitter.bltbdat, blitter.bltcdat, blitter.bltzero);
+    y = wdbgLineOut(hDC, s, x, y);
 
- //   DeleteDC(hDC_image);
- //   DeleteObject(myarrow);
- //   DeleteObject(myfont);
- //   EndPaint(hwndDlg, &paint_struct);
- // }
+    DeleteDC(hDC_image);
+    DeleteObject(myarrow);
+    DeleteObject(myfont);
+    EndPaint(hwndDlg, &paint_struct);
+  }
 }
 
 /*============================================================================*/
