@@ -1111,11 +1111,10 @@ void wdbgUpdateSoundState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-/*
     sprintf(s, "A0: %X A1: %X A2: %X A3: %X A5: %X", soundState0, soundState1,
 	    soundState2, soundState3, soundState5);
     y = wdbgLineOut(hDC, s, x, y);
-*/
+
     for (i = 0; i < 4; i++) {
       sprintf(s,
 	      "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u",
