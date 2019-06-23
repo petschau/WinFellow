@@ -1711,8 +1711,18 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
 
 void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
 {
+  STR strFilesystemDeviceNamePrefix[CFG_FILENAME_LENGTH];
   cfgSetFilesystemAutomountDrives(conf, ccwButtonGetCheck(hwndDlg, IDC_CHECK_AUTOMOUNT_FILESYSTEMS));
-  ccwEditGetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, cfgGetFilesystemDeviceNamePrefix(conf), CFG_FILENAME_LENGTH);
+
+  ccwEditGetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, strFilesystemDeviceNamePrefix, CFG_FILENAME_LENGTH);
+  if(strlen(strFilesystemDeviceNamePrefix) > 16)
+  {
+    wguiRequester("The length of the device name prefix is limited to 16 characters. Your change was ignored.", MB_OK);
+  }
+  else
+  {
+    cfgSetFilesystemDeviceNamePrefix(conf, strFilesystemDeviceNamePrefix);
+  }
 }
 
 /* Execute filesystem add or edit data */
