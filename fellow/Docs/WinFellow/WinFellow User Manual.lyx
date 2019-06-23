@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/16)
+v0.5.8 (2019/06/23)
 \end_layout
 
 \begin_layout Author
@@ -349,6 +349,13 @@ plain
  hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox
 \end_layout
 
+\begin_deeper
+\begin_layout Itemize
+the default naming scheme for filesystem devices has been changed from DHx:
+ to FSx: to avoid naming conflicts with existing RDB hardfiles
+\end_layout
+
+\end_deeper
 \begin_layout Itemize
 a 64 bit build is now provided; the NSIS installer will install either the
  32 or 64 bit version depending on the operating system that is used
@@ -1465,7 +1472,7 @@ flakey
 , which usually means copy protected).
  IPF images will only function when the user DLL from the IPF Support Library
  is downloaded and copied into the WinFellow directory.
- The Windows (32-bit) version 4.2 has been tested to work.
+ The Windows version 5.1 has been tested to work.
 \end_layout
 
 \begin_layout Subsection
@@ -1692,7 +1699,7 @@ What are filesystems?
 \end_layout
 
 \begin_layout Standard
-Like a hardfile, a filesystem is also used to simulate some kind of device
+Like a hardfile, a filesystem is also used to simulate a storage device
  connected to the emulated Amiga.
  But instead of using a file you configure WinFellow to use a directory
  on one your windows devices that shall be used to store or read data.

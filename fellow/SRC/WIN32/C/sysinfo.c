@@ -274,6 +274,38 @@ static const char* sysinfoGetProcessorArchitectureDescription(WORD wProcessorArc
   return "UNKNOWN PROCESSOR ARCHITECTURE";
 }
 
+bool sysinfoIs64BitWindows(void)
+{
+#if defined(_WIN64)
+  return true;  // 64-bit programs run only on Win64
+#elif defined(_WIN32)
+  // 32-bit programs run on both 32-bit and 64-bit Windows
+  // so must run detection
+  BOOL bIsWow64 = FALSE;
+  // IsWow64Process() is not available on all supported versions of Windows
+  // use GetModuleHandle() to get a handle to the DLL that contains the function
+  // and GetProcAddress() to get a pointer to the function, if available
+
+  typedef BOOL(WINAPI * LPFN_ISWOW64PROCESS) (HANDLE, PBOOL);
+  LPFN_ISWOW64PROCESS fnIsWow64Process;
+  fnIsWow64Process = (LPFN_ISWOW64PROCESS) GetProcAddress(GetModuleHandle(TEXT("kernel32")), "IsWow64Process");
+  if(fnIsWow64Process != NULL)
+  {
+    if(!fnIsWow64Process(GetCurrentProcess(), &bIsWow64))
+    {
+      fellowAddLog("sysinfoIs64BitWindows(): ERROR: IsWow64Process() failed.\n");
+    }
+  }
+  else
+  {
+    fellowAddLog("sysinfoIs64BitWindows(): ERROR: GetProcAddress() failed.\n");
+  }
+  return (bool) bIsWow64;
+#else
+  return false; // Win64 does not support Win16
+#endif
+}
+
 /*================================*/
 /* windows system info structures */
 /*================================*/
@@ -571,6 +603,8 @@ static void sysinfoParseOSVersionInfo(void) {
       fellowAddTimelessLog("\tproduct type: \t\tunknown product type\n");
       break;
   }
+
+  fellowAddTimelessLog("\t64 bit OS:\t\t%s\n", sysinfoIs64BitWindows() ? "yes" : "no");
 }
 
 static void sysinfoParseRegistry(void) {
