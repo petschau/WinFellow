@@ -1717,11 +1717,20 @@ void wguiExtractFilesystemConfig(HWND hwndDlg, cfg *conf)
   ccwEditGetText(hwndDlg, IDC_EDIT_PREFIX_FILESYSTEMS, strFilesystemDeviceNamePrefix, CFG_FILENAME_LENGTH);
   if(strlen(strFilesystemDeviceNamePrefix) > 16)
   {
-    wguiRequester("The length of the device name prefix is limited to 16 characters. Your change was ignored.", MB_OK);
+    wguiRequester("The length of the device name prefix is limited to 16 characters. Your change was ignored because it exceeded that length.", 
+      MB_OK | MB_ICONEXCLAMATION);
   }
   else
   {
-    cfgSetFilesystemDeviceNamePrefix(conf, strFilesystemDeviceNamePrefix);
+    if(floppyValidateAmigaDOSVolumeName(strFilesystemDeviceNamePrefix))
+    {
+      cfgSetFilesystemDeviceNamePrefix(conf, strFilesystemDeviceNamePrefix);
+    }
+    else
+    {
+      wguiRequester("The device name prefix you entered results in an invalid volume name. Your change was ignored.", 
+        MB_OK | MB_ICONEXCLAMATION);
+    }
   }
 }
 
