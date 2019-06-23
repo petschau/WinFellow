@@ -375,7 +375,7 @@ improved handling of hardware interrupts and blitter delays; fixes freezes
 \begin_layout Itemize
 fix wrong selection of render function after return from menu when application
  did not write to bplcon0 every frame; fixes garbled graphics in a Legend
- crackto when returning from menu
+ cracktro when returning from menu
 \end_layout
 
 \begin_layout Itemize
