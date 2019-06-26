@@ -288,9 +288,6 @@
     <ClCompile Include="..\..\xdms\C\u_rle.c">
       <Filter>ADF Compression Files\xDMS C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xdms\C\xdms.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\zlib\C\adler32.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
@@ -488,6 +485,9 @@
     </ClCompile>
     <ClCompile Include="..\Caps\C\caps.c">
       <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\xdmswrap.c">
+      <Filter>core C Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

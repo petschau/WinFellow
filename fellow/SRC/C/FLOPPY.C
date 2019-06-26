@@ -918,20 +918,20 @@ BOOLE floppyImageCompressedBZipPrepare(STR *diskname, ULO drive)
 BOOLE floppyImageCompressedDMSPrepare(STR *diskname, ULO drive)
 {
   char *gzname;
-  USHORT iResult;
-  if( (gzname = fileopsGetTemporaryFilename()) == NULL)
+  USHORT result;
+
+  if((gzname = fileopsGetTemporaryFilename()) == NULL)
   {
     floppyError(drive, FLOPPY_ERROR_COMPRESS_TMPFILEOPEN);
     return FALSE;
   }
   
-  iResult = dmsUnpack(diskname, gzname);
-
-  if(iResult != 0)
+  result = dmsUnpack(diskname, gzname);
+  if(result != 0)
   {
     STR szErrorMessage[1024] = "";
 
-    dmsErrMsg(iResult, (char *) diskname, gzname, (char *) szErrorMessage);
+    dmsErrMsg(result, (char *) diskname, gzname, (char *) szErrorMessage);
 
     fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
 

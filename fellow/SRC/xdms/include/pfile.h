@@ -3,7 +3,7 @@
 
 /* Functions return codes */
 #define NO_PROBLEM 0
-#define DMS_FILE_END 1
+#define FILE_END 1
 #define ERR_NOMEMORY 2
 #define ERR_CANTOPENIN 3
 #define ERR_CANTOPENOUT 4
@@ -40,6 +40,9 @@
 #define OPT_QUIET 2
 
 
-USHORT Process_File(char *, char *, USHORT, USHORT, USHORT);
+extern int OverrideErrors;
+
+
+USHORT Process_File(char *, char *, USHORT, USHORT, USHORT, USHORT);
 
 #endif /* ndef PFILE_H */
