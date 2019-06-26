@@ -4,7 +4,7 @@
 /* Author: Torsten Enderling                                               */
 /*         (Wraps xDMS code to have one simple call for decompression.)    */
 /*                                                                         */
-/* originates from minigzip.c                                              */
+/* originates from xdms.c                                                  */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
