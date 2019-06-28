@@ -12,7 +12,7 @@ Compared to the earlier version 0.5.7, the following changes are included in thi
 **New features**
 
 - support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates "plain" hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox
-– the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles
+- the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles
 - a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used
 
 **Bug fixes**
