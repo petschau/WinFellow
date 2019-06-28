@@ -2,7 +2,7 @@
 title: contributing
 menu: main
 weight: 40
-date: 2016-01-12T06:43:18+01:00
+date: 2019-06-26T05:45:18+01:00
 ---
 
 WinFellow is developed by a team of volunteers in their spare time; you
@@ -31,5 +31,5 @@ in the directory "fellow\doxygen\Documentation" called
 setting up a development environment for WinFellow.
  
 Feel free to mail us 
-([Petter Schau](mailto:petschau@gmail.com) / [Torsten Enderling](mailto:carfesh@gmx.net)) 
+([Petter Schau](mailto:petschau@gmail.com) / [Torsten Enderling](mailto:torsten.enderling@gmail.com)) 
 if you are interested in helping!
