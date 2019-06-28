@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width">
-	<title>WinFellow v0.5.7 released &middot; WinFellow - Amiga Emulator for Windows</title>
+	<title>WinFellow v0.5.8 release candidate 1 &middot; WinFellow - Amiga Emulator for Windows</title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<!--[if lt IE 9]>
 	<script src="http://petschau.github.io/WinFellow/js/html5.js"></script>
@@ -121,13 +121,13 @@
 			</span>
 		</div>
 
-		<h1 class="entry-title">WinFellow v0.5.7 released</h1>
+		<h1 class="entry-title">WinFellow v0.5.8 release candidate 1</h1>
 
 		<div class="entry-meta">
 			<span class="entry-date">
-				<a href="http://petschau.github.io/WinFellow/post/2018-01-02-winfellow-v0.5.7-released//index.html" rel="bookmark">
-					<time class="entry-date" datetime="2018-01-02 16:00:00 &#43;0000 &#43;0000">
-						January 2, 2018
+				<a href="http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1//index.html" rel="bookmark">
+					<time class="entry-date" datetime="2019-06-28 05:49:00 &#43;0000 &#43;0000">
+						June 28, 2019
 					</time>
 				</a>
 			</span>
@@ -136,24 +136,55 @@
 	</header>
 	
 	<div class="entry-content">
-		<p><strong>Bug fixes:</strong></p>
+		<p>A new public release candidate build of WinFellow v0.5.8 has been uploaded to the downloads in the GitHub releases section.</p>
+
+<p>Compared to the earlier version 0.5.7, the following changes are included in this build:</p>
+
+<p><strong>New features</strong></p>
 
 <ul>
-<li>floppy code was updated to use a track limit &gt; 80; it will output random data beyond track 80 - fixes Outrun/The Games: Summer Edition; also added missing checks for disabled drives, fixing Winter Olympics 94</li>
-<li>fixed a bug where unexpected pixel format flags besides RGB stopped DirectDraw initialization</li>
-<li>several bugs in the screenshot code were fixed; standalone screenshots were not saved correctly in D3D mode, and used with Amiga Forever raw screenshots were missing screen areas due to faulty initialization of the internal clipping areas</li>
-<li>fixed screen area mismatch when Amiga Forever region/size settings are both set to auto; auto clipping is still not supported</li>
-<li>CPU instruction fixes:
-
-<ul>
-<li>fixed a signed bug in 64-bit division</li>
-<li>minor timing adjustment for btst</li>
-</ul></li>
-<li>CIA event counter changes according to documentation</li>
-<li>the project files were updated to Visual Studio 2017</li>
+<li>support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &ldquo;plain&rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox</li>
 </ul>
 
-<p>Please see the included file ChangeLog.txt for a full list of changes, including minor bug fixes which are not listed above.</p>
+<p>– the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles</p>
+
+<ul>
+<li>a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used</li>
+</ul>
+
+<p><strong>Bug fixes</strong></p>
+
+<ul>
+<li><p>improved handling of hardware interrupts and blitter delays; fixes freezes that could occur during installation of Workbench in earlier 0.5.x versions</p></li>
+
+<li><p>fix wrong selection of render function after return from menu when application did not write to bplcon0 every frame; fixes garbled graphics in a Legend cracktro when returning from menu</p></li>
+
+<li><p>replaced alternating patterns for unmapped memory with proper random numbers</p></li>
+
+<li><p>CLR reads before write; fixes loading of Outrun and a fast-mem test in Last Ninja 2</p></li>
+
+<li><p>improve delay caused by logging in screen-mode enumeration (could amount to many seconds with multiple screens)</p></li>
+
+<li><p>running in an environment with very slow graphics framerate, like a VM, could cause a deadlock; set wait time after event reset to avoid race condition</p></li>
+
+<li><p>fix an issue where screenshots would occasionally not be taken in Direct3D graphics mode; this may also have impacted the ability to use Amiga Forever&rsquo;s clipping editor</p></li>
+
+<li><p>fix an issue where applying a new model preset would leave multiple blitter radio buttons selected</p></li>
+</ul>
+
+<p><strong>Maintenance updates</strong></p>
+
+<ul>
+<li><p>project files were updated to Visual Studio 2019 using the toolset v141_xp</p></li>
+
+<li><p>the February 2010 DirectX SDK dependency was eliminated</p></li>
+
+<li><p>IPF Access API files were updated to the latest version, and support for it was enabled in 64 bit builds</p></li>
+</ul>
+
+<p>See the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.</p>
+
+<p>Please report any issues you find with this pre-release build in our issue tracker: <a href="https://github.com/petschau/WinFellow/issues" target="_blank">https://github.com/petschau/WinFellow/issues</a></p>
 
 	</div>
 

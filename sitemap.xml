@@ -9,17 +9,52 @@
   
   <url>
     <loc>http://petschau.github.io/WinFellow/team/</loc>
-    <lastmod>2016-01-12T06:43:18+01:00</lastmod>
+    <lastmod>2019-06-26T05:43:18+01:00</lastmod>
   </url>
   
   <url>
     <loc>http://petschau.github.io/WinFellow/contact/</loc>
-    <lastmod>2016-01-12T06:43:18+01:00</lastmod>
+    <lastmod>2019-06-26T05:45:18+01:00</lastmod>
   </url>
   
   <url>
     <loc>http://petschau.github.io/WinFellow/contributing/</loc>
-    <lastmod>2016-01-12T06:43:18+01:00</lastmod>
+    <lastmod>2019-06-26T05:45:18+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/tags/news/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/post/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/tags/releases/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/tags/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1/</loc>
+    <lastmod>2019-06-28T05:49:00+00:00</lastmod>
   </url>
   
   <url>
@@ -38,44 +73,14 @@
   </url>
   
   <url>
-    <loc>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</loc>
-    <lastmod>2016-01-12T06:43:18+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>http://petschau.github.io/WinFellow/tags/github/</loc>
     <lastmod>2016-01-12T06:43:18+01:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://petschau.github.io/WinFellow/tags/news/</loc>
-    <lastmod>2018-01-02T16:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://petschau.github.io/WinFellow/post/</loc>
-    <lastmod>2018-01-02T16:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://petschau.github.io/WinFellow/tags/releases/</loc>
-    <lastmod>2018-01-02T16:00:00+00:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://petschau.github.io/WinFellow/tags/</loc>
+    <loc>http://petschau.github.io/WinFellow/post/2016-01-11-winfellow-has-a-new-home/</loc>
     <lastmod>2016-01-12T06:43:18+01:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://petschau.github.io/WinFellow/</loc>
-    <lastmod>2016-01-12T06:43:18+01:00</lastmod>
-    <priority>0</priority>
   </url>
   
 </urlset>

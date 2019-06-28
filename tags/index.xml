@@ -6,24 +6,15 @@
     <description>Recent content in Tags on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 28 Jun 2019 05:49:00 +0000</lastBuildDate>
     
 	<atom:link href="http://petschau.github.io/WinFellow/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Github</title>
-      <link>http://petschau.github.io/WinFellow/tags/github/</link>
-      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
-      
-      <guid>http://petschau.github.io/WinFellow/tags/github/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>News</title>
       <link>http://petschau.github.io/WinFellow/tags/news/</link>
-      <pubDate>Tue, 02 Jan 2018 16:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Jun 2019 05:49:00 +0000</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/tags/news/</guid>
       <description></description>
@@ -32,9 +23,18 @@
     <item>
       <title>Releases</title>
       <link>http://petschau.github.io/WinFellow/tags/releases/</link>
-      <pubDate>Tue, 02 Jan 2018 16:00:00 +0000</pubDate>
+      <pubDate>Fri, 28 Jun 2019 05:49:00 +0000</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/tags/releases/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>GitHub</title>
+      <link>http://petschau.github.io/WinFellow/tags/github/</link>
+      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/tags/github/</guid>
       <description></description>
     </item>
     

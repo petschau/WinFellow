@@ -6,7 +6,7 @@
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 12 Jan 2016 06:43:18 +0100</lastBuildDate>
+    <lastBuildDate>Fri, 28 Jun 2019 05:49:00 +0000</lastBuildDate>
     
 	<atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
     
@@ -26,7 +26,7 @@ The latest stable release can be found in WinFellow&amp;rsquo;s former home at S
     <item>
       <title>the team</title>
       <link>http://petschau.github.io/WinFellow/team/</link>
-      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      <pubDate>Wed, 26 Jun 2019 05:43:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/team/</guid>
       <description>   team member Petter Schau Torsten Enderling Worfje     occupation programmer from Norway virtual desktop engineer from Germany engineer from the Netherlands   tasks various beta team manager
@@ -35,13 +35,13 @@ hardfile/file system
 debugger
 system information graphics
 sound
-GUI   email petschau@gmail.com carfesh@gmx.net worfje@gmx.net    </description>
+GUI   email petschau@gmail.com torsten.enderling@gmail.com worfje@gmx.net    </description>
     </item>
     
     <item>
       <title>contacting us</title>
       <link>http://petschau.github.io/WinFellow/contact/</link>
-      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      <pubDate>Wed, 26 Jun 2019 05:45:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/contact/</guid>
       <description>Please check the FAQ that can be found in WinFellow&amp;rsquo;s User Manual before contacting us, it is usually the fastest way to find a solution to your problem.
@@ -54,10 +54,22 @@ You can also contact us directly by sending an email composed in English languag
     <item>
       <title>contributing</title>
       <link>http://petschau.github.io/WinFellow/contributing/</link>
-      <pubDate>Tue, 12 Jan 2016 06:43:18 +0100</pubDate>
+      <pubDate>Wed, 26 Jun 2019 05:45:18 +0100</pubDate>
       
       <guid>http://petschau.github.io/WinFellow/contributing/</guid>
       <description>WinFellow is developed by a team of volunteers in their spare time; you are very welcome to make contributions of your own. Contributions can be improvements to the code, new features, but can also include documentation updates or whatever else you feel could be an improvement. It is best if you find something you want to work on rather than mailing us and ask to be assigned a task. Since WinFellow is developed on an idealistic basis, the basic idea is that everyone should do something they like.</description>
+    </item>
+    
+    <item>
+      <title>WinFellow v0.5.8 release candidate 1</title>
+      <link>http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1/</link>
+      <pubDate>Fri, 28 Jun 2019 05:49:00 +0000</pubDate>
+      
+      <guid>http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1/</guid>
+      <description>A new public release candidate build of WinFellow v0.5.8 has been uploaded to the downloads in the GitHub releases section.
+Compared to the earlier version 0.5.7, the following changes are included in this build:
+New features
+ support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox  – the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles</description>
     </item>
     
     <item>
