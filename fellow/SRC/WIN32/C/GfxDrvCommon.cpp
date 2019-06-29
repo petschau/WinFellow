@@ -294,8 +294,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     /* It is monitored so that we can know whether we should claim */
     /* the DirectInput devices */
 
-    _win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) ||
-      ((LOWORD(wParam)) == WA_CLICKACTIVE));
+    _win_active_original = (((LOWORD(wParam)) == WA_ACTIVE) || ((LOWORD(wParam)) == WA_CLICKACTIVE));
     _win_minimized_original = ((HIWORD(wParam)) != 0);
     NotifyDirectInputDevicesAboutActiveState(_win_active_original);
 #ifdef RETRO_PLATFORM

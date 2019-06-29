@@ -70,6 +70,7 @@ BOOLE			mouse_drv_focus;
 BOOLE			mouse_drv_active;
 BOOLE			mouse_drv_in_use;
 BOOLE			mouse_drv_initialization_failed;
+bool                    mouse_drv_unacquired;
 static BOOLE		bLeftButton;
 static BOOLE		bRightButton;
 
@@ -93,7 +94,7 @@ STR *mouseDrvDInputErrorString(HRESULT hResult)
     case DIERR_BETADIRECTINPUTVERSION:	return "The application was written for an unsupported prerelease version of DirectInput.";
     case DIERR_DEVICENOTREG:		return "The device or device instance is not registered with DirectInput.";
     case DIERR_GENERIC:			return "An undetermined error occurred inside the DirectInput subsystem.";
-    case DIERR_HANDLEEXISTS:		return "The device already has an event notification associated with it.";
+    case DIERR_HANDLEEXISTS:		return "The device already has an event notification associated with it, or another app has a higher priority level, preventing this call from succeeding.";
     case DIERR_INPUTLOST:		return "Access to the input device has been lost. It must be re-acquired.";
     case DIERR_INVALIDPARAM:		return "An invalid parameter was passed to the returning function, or the object was not in a state that permitted the function to be called.";
     case DIERR_NOAGGREGATION:		return "This object does not support aggregation.";
@@ -109,6 +110,15 @@ STR *mouseDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
+STR* mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
+{
+  switch (hResult)
+  {
+  case DI_OK:	    return "The operation completed successfully.";
+  case DI_NOEFFECT: return "The device was not in an acquired state.";
+  }
+  return "Not a known Unacquire() DirectInput return value.";
+}
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
@@ -119,7 +129,23 @@ void mouseDrvDInputFailure(STR *header, HRESULT err)
   fellowAddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
+void mouseDrvDInputUnacquireFailure(STR* header, HRESULT err)
+{
+  fellowAddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
+}
 
+void mouseDrvDInputAcquireFailure(STR* header, HRESULT err)
+{
+  STR* errorString;
+  if (err == DI_NOEFFECT)
+  {
+    fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
+  }
+  else
+  {
+    mouseDrvDInputFailure(header, err);
+  }
+}
 /*===========================================================================*/
 /* Acquire DirectInput mouse device                                          */
 /*===========================================================================*/
@@ -128,30 +154,33 @@ void mouseDrvDInputAcquire(void)
 {
   HRESULT res;
 
-  fellowAddLog("mouseDrvDInputAcquire()\n");
-
   if (mouse_drv_in_use)
   {
     if (mouse_drv_lpDID != NULL)
     {
       if ((res = IDirectInputDevice_Acquire(mouse_drv_lpDID)) != DI_OK)
       {
-        mouseDrvDInputFailure("mouseDrvDInputAcquire():", res);
+        mouseDrvDInputAcquireFailure("mouseDrvDInputAcquire():", res);
+      }
+      else
+      {
+        mouse_drv_unacquired = false;
       }
     }
   }
   else
   {
-    if (mouse_drv_lpDID != NULL)
+    if (mouse_drv_lpDID != NULL && !mouse_drv_unacquired)
     {
+      mouse_drv_unacquired = true;
       if ((res = IDirectInputDevice_Unacquire(mouse_drv_lpDID)) != DI_OK)
       {
-        mouseDrvDInputFailure("mouseDrvDInputUnacquire():", res);
+        // Should only "fail" if device is not acquired, it is not an error.
+        mouseDrvDInputUnacquireFailure("mouseDrvDInputUnacquire():", res);
       }
     }
   }
 }
-
 
 /*===========================================================================*/
 /* Release DirectInput for mouse                                             */
@@ -215,6 +244,7 @@ BOOLE mouseDrvDInputInitialize(void)
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
   mouse_drv_initialization_failed = FALSE;
+  mouse_drv_unacquired = true;
 
   res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&mouse_drv_lpDI, NULL);
   if (res != DI_OK)
@@ -382,6 +412,10 @@ void mouseDrvMovementHandler(void)
     do
     {
       res = IDirectInputDevice_GetDeviceData(mouse_drv_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
+      if (res != DI_OK)
+      {
+        mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData()", res);
+      }
       if (res == DIERR_INPUTLOST)
       {
 	mouseDrvDInputAcquire();
@@ -389,11 +423,7 @@ void mouseDrvMovementHandler(void)
     }
     while (res == DIERR_INPUTLOST);
 	
-    if (res != DI_OK)
-    {
-      mouseDrvDInputFailure("mouseDrvMovementHandler(): GetDeviceData()", res );
-    }
-    else
+    if (res == DI_OK || res == DI_BUFFEROVERFLOW)
     {
       ULO i = 0;
       DWORD oldSequence = 0;
@@ -500,6 +530,7 @@ void mouseDrvStartup(void)
   mouse_drv_focus = TRUE;
   mouse_drv_in_use = FALSE;
   mouse_drv_initialization_failed = TRUE;
+  mouse_drv_unacquired = true;
   mouse_drv_lpDI = NULL;
   mouse_drv_lpDID = NULL;
   mouse_drv_DIevent = NULL;
