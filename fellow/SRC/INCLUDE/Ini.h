@@ -45,6 +45,11 @@ typedef struct {
   STR  m_lastusedstatefiledir[CFG_FILENAME_LENGTH];
   STR  m_lastusedpresetromdir[CFG_FILENAME_LENGTH];
   
+  /*==========================================================================*/
+  /* pause emulation when window loses focus                                  */
+  /*==========================================================================*/
+  BOOLE m_pauseemulationwhenwindowlosesfocus;
+
 } ini;
 
 extern ini* wgui_ini;
@@ -84,6 +89,8 @@ extern void iniSetLastUsedStateFileDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedStateFileDir(ini *initdata);
 extern void iniSetLastUsedPresetROMDir(ini *initdata, STR *directory);
 extern STR *iniGetLastUsedPresetROMDir(ini *initdata);
+extern BOOLE iniGetPauseEmulationWhenWindowLosesFocus(ini* initdata);
+extern void  iniSetPauseEmulationWhenWindowLosesFocus(ini* initdata, BOOLE pause);
 
 extern BOOLE iniSetOption(ini *initdata, STR *initoptionstr);
 extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);

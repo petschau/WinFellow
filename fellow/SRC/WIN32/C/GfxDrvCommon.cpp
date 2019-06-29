@@ -146,7 +146,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
   _win_active = (_win_active_original &&
     !_win_minimized_original &&
     !_syskey_down);
-
+  
 #ifdef RETRO_PLATFORM
   if (!RP.GetHeadlessMode()) {
 #endif
@@ -156,10 +156,11 @@ void GfxDrvCommon::EvaluateRunEventStatus()
     }
     else
     {
-      RunEventReset();
+      if (_pause_emulation_when_window_loses_focus)
+        RunEventReset();
     }
+    
     gfxDrvNotifyActiveStatus(_win_active);
-
 #ifdef RETRO_PLATFORM
   }
 #endif
@@ -585,6 +586,11 @@ void GfxDrvCommon::SetDrawMode(draw_mode* mode, bool windowed)
 {
   _current_draw_mode = mode;
   _output_windowed = windowed;
+}
+
+void GfxDrvCommon::SetPauseEmulationWhenWindowLosesFocus(bool pause)
+{
+  _pause_emulation_when_window_loses_focus = pause;
 }
 
 void GfxDrvCommon::Flip()

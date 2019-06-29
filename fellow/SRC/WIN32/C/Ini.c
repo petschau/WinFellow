@@ -207,6 +207,16 @@ STR *iniGetLastUsedModDir(ini *initdata) {
   return initdata->m_lastusedmoddir;
 }
 
+BOOLE iniGetPauseEmulationWhenWindowLosesFocus(ini* initdata)
+{
+  return initdata->m_pauseemulationwhenwindowlosesfocus;
+}
+
+void iniSetPauseEmulationWhenWindowLosesFocus(ini* initdata, BOOLE pause)
+{
+  initdata->m_pauseemulationwhenwindowlosesfocus = pause;
+}
+
 /*============================================================================*/
 /* struct iniManager property access functions                                */
 /*============================================================================*/
@@ -272,6 +282,7 @@ void iniSetDefaults(ini *initdata) {
   iniSetLastUsedModDir(initdata, "");
   iniSetLastUsedStateFileDir(initdata, "");
   iniSetLastUsedPresetROMDir(initdata, "");
+  iniSetPauseEmulationWhenWindowLosesFocus(initdata, true);
 }
 
 /*============================================================================*/
@@ -405,6 +416,12 @@ BOOLE iniSetOption(ini *initdata, STR *initoptionstr) {
     else if (stricmp(option, "last_used_preset_rom_dir") == 0) {
       iniSetLastUsedPresetROMDir(initdata, value);
     }
+    else if (stricmp(option, "pause_emulation_when_window_loses_focus") == 0) {
+      if (stricmp(value, "true") == 0)
+        iniSetPauseEmulationWhenWindowLosesFocus(initdata, TRUE);
+      else
+        iniSetPauseEmulationWhenWindowLosesFocus(initdata, FALSE);
+    }
     else result = FALSE;
   }
   else result = FALSE;
@@ -431,6 +448,7 @@ BOOLE iniSaveOptions(ini *initdata, FILE *inifile) {
   fprintf(inifile, "last_used_mod_dir=%s\n", iniGetLastUsedModDir(initdata));
   fprintf(inifile, "last_used_statefile_dir=%s\n", iniGetLastUsedStateFileDir(initdata));
   fprintf(inifile, "last_used_preset_rom_dir=%s\n", iniGetLastUsedPresetROMDir(initdata));
+  fprintf(inifile, "pause_emulation_when_window_loses_focus=%s\n", iniGetPauseEmulationWhenWindowLosesFocus(initdata) ? "true" : "false");
 
   return TRUE;
 }

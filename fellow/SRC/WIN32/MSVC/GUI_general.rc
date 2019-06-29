@@ -14,12 +14,13 @@
 #define IDC_STATIC -1
 #endif
 
-
+
+
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
+// Englisch (USA) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
@@ -632,6 +633,10 @@ BEGIN
         MENUITEM "E&xit",                       ID_FILE_QUIT
         MENUITEM SEPARATOR
     END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Pause emulation when window loses focus", ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
+    END
     POPUP "&Help"
     BEGIN
         MENUITEM "&About",                      ID_HELP_ABOUT
@@ -731,12 +736,12 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // English (United States) resources
+#endif    // Englisch (USA) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegian Bokmål (Norway) resources
+// Norwegisch Bokmål (Norwegen) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
@@ -749,7 +754,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
 
-#endif    // Norwegian Bokmål (Norway) resources
+#endif    // Norwegisch Bokmål (Norwegen) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

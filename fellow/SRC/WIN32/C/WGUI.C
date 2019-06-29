@@ -246,7 +246,8 @@ typedef enum {
   WGUI_DEBUGGER_START,
   WGUI_ABOUT,
   WGUI_LOAD_STATE,
-  WGUI_SAVE_STATE
+  WGUI_SAVE_STATE,
+  WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
 } wguiActions;
 
 wguiActions wgui_action;
@@ -1465,6 +1466,43 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 
   /* get automatic interlace compensation */
   cfgSetDeinterlace(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE));
+}
+
+/* configure pause emulation when window loses focus menu item */
+void wguiInstallPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+{
+  HMENU hmenu = GetMenu(hwndDlg);
+
+  MENUITEMINFO menuItem = { 0 };
+  menuItem.cbSize = sizeof(MENUITEMINFO);
+  menuItem.fMask = MIIM_STATE;
+
+  GetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+
+  menuItem.fState = ini->m_pauseemulationwhenwindowlosesfocus ? MFS_CHECKED : MFS_UNCHECKED;
+
+  SetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->m_pauseemulationwhenwindowlosesfocus);
+}
+
+void wguiTogglePauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+{
+  HMENU hmenu = GetMenu(wgui_hDialog);
+  BOOLE ischecked;
+
+  MENUITEMINFO menuItem = { 0 };
+  menuItem.cbSize = sizeof(MENUITEMINFO);
+  menuItem.fMask = MIIM_STATE;
+
+  GetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+
+  ischecked = menuItem.fState & MFS_CHECKED;
+  iniSetPauseEmulationWhenWindowLosesFocus(ini, !ischecked);
+  menuItem.fState = !ischecked ? MFS_CHECKED : MFS_UNCHECKED;
+
+  SetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(!ischecked);
 }
 
 void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumber, const HardfilePartition& partition)
@@ -3423,6 +3461,9 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
     case ID_FILE_HISTORYCONFIGURATION3:   
       wgui_action = WGUI_LOAD_HISTORY3;
       break;
+    case ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
+      wgui_action = WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS;
+      break;
     case IDC_CONFIGURATION:
       {
         cfg *configbackup;
@@ -3584,6 +3625,8 @@ BOOLE wguiEnter(void)
 
     // install history into menu
     wguiInstallHistoryIntoMenu();
+    wguiInstallPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+
     ShowWindow(wgui_hDialog, win_drv_nCmdShow);
 
     while (!end_loop)
@@ -3722,6 +3765,10 @@ BOOLE wguiEnter(void)
           cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	  fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	  debugger_start = TRUE;
+  case WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
+    wguiTogglePauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+    wgui_action = WGUI_NO_ACTION;
+    break;
 	default:
 	  break;
       }
