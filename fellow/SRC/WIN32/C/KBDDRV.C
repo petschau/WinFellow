@@ -87,6 +87,8 @@ bool		      kbd_drv_initialization_failed;
 BOOLE		      prs_rewrite_mapping_file;
 char		      kbd_drv_mapping_filename[MAX_PATH];
 
+bool kbd_in_task_switcher = false;
+
 
 /*===========================================================================*/
 /* Map symbolic key to a description string                                  */
@@ -1088,8 +1090,46 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
   /* DEBUG info, not needed now*/
 #ifdef _DEBUG
-  fellowAddLog("Keypress %s %s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+  fellowAddLog("Keypress %s %s%s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released", kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
 #endif
+
+  // Bad hack
+  // Unfortunately Windows does not tell the app in any way that the task switcher has been activated,
+  // unless you use a hook in the windows accessibility framework.
+
+  // left-alt already pressed, and now TAB pressed as well
+  if (!kbd_in_task_switcher && keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
+  {
+    fellowAddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
+
+    // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
+    kbd_in_task_switcher = gfxDrvCommon->GetOutputWindowed();
+
+    // Don't pass this TAB press along to emulation, pass left-ALT release instead
+    keycode = map(PCK_LEFT_ALT);
+    symbolic_key = symbolickey(keycode);
+    pressed = false;
+    keycode_pressed = pressed;
+    keycode_was_pressed = prevkeys[keycode];
+
+#ifdef _DEBUG
+    fellowAddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+#endif
+  }
+  else if (kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
+  {
+    fellowAddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
+    kbd_in_task_switcher = false;
+
+#ifdef _DEBUG
+    fellowAddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
+#endif    
+    return;
+  }
+  else if (kbd_in_task_switcher)
+  {
+    return;
+  }
 
   keys[keycode] = pressed;
 
@@ -1488,6 +1528,7 @@ void kbdDrvEmulationStart(void)
 
   kbdDrvClearPressedKeys();  
   kbdDrvDInputInitialize();
+  kbd_in_task_switcher = false;
 }
 
 
