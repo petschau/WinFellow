@@ -635,7 +635,7 @@ BEGIN
     END
     POPUP "&Options"
     BEGIN
-        MENUITEM "Pause emulation when window loses focus", ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
+        MENUITEM "&Pause emulation when window loses focus", ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
     END
     POPUP "&Help"
     BEGIN
