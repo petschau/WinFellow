@@ -650,6 +650,15 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
+STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+{
+  switch (hResult)
+  {
+  case DI_OK:	    return "The operation completed successfully.";
+  case DI_NOEFFECT: return "The device was not in an acquired state.";
+  }
+  return "Not a known Unacquire() DirectInput return value.";
+}
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
@@ -660,6 +669,10 @@ void kbdDrvDInputFailure(STR *header, HRESULT err)
   fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
+void kbdDrvDInputUnacquireFailure(STR* header, HRESULT err)
+{
+  fellowAddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
+}
 
 /*===========================================================================*/
 /* Set keyboard cooperative level                                            */
@@ -674,6 +687,18 @@ bool kbdDrvDInputSetCooperativeLevel(void)
     return false;
   }
   return true;
+}
+
+void kbdDrvDInputAcquireFailure(STR* header, HRESULT err)
+{
+  if (err == DI_NOEFFECT)
+  {
+    fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
+  }
+  else
+  {
+    kbdDrvDInputFailure(header, err);
+  }
 }
 
 #ifdef RETRO_PLATFORM
@@ -720,18 +745,18 @@ void kbdDrvEOFHandler(void)
 
 void kbdDrvDInputUnacquire(void) 
 {
-  fellowAddLog("kbdDrvDInputUnacquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
+
   HRESULT res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputUnacquire():", res);
+    // Should only "fail" if device is not acquired, it is not an error.
+    kbdDrvDInputUnacquireFailure("kbdDrvDInputUnacquire():", res);
   }
 }
-
 
 /*===========================================================================*/
 /* Acquire DirectInput keyboard device                                       */
@@ -739,19 +764,17 @@ void kbdDrvDInputUnacquire(void)
 
 void kbdDrvDInputAcquire(void) 
 {
-  fellowAddLog("kbdDrvDInputAcquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
-  kbdDrvDInputUnacquire();
+
   HRESULT res = IDirectInputDevice_Acquire(kbd_drv_lpDID); 
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputAcquire():", res);
+    kbdDrvDInputAcquireFailure("kbdDrvDInputAcquire():", res);
   }
 }
-
 
 /*===========================================================================*/
 /* Release DirectInput for keyboard                                          */

@@ -136,7 +136,6 @@ void mouseDrvDInputUnacquireFailure(STR* header, HRESULT err)
 
 void mouseDrvDInputAcquireFailure(STR* header, HRESULT err)
 {
-  STR* errorString;
   if (err == DI_NOEFFECT)
   {
     fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
@@ -146,6 +145,7 @@ void mouseDrvDInputAcquireFailure(STR* header, HRESULT err)
     mouseDrvDInputFailure(header, err);
   }
 }
+
 /*===========================================================================*/
 /* Acquire DirectInput mouse device                                          */
 /*===========================================================================*/
