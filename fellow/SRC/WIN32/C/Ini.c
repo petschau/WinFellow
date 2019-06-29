@@ -282,7 +282,7 @@ void iniSetDefaults(ini *initdata) {
   iniSetLastUsedModDir(initdata, "");
   iniSetLastUsedStateFileDir(initdata, "");
   iniSetLastUsedPresetROMDir(initdata, "");
-  iniSetPauseEmulationWhenWindowLosesFocus(initdata, true);
+  iniSetPauseEmulationWhenWindowLosesFocus(initdata, TRUE);
 }
 
 /*============================================================================*/
