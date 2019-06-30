@@ -1469,36 +1469,18 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 }
 
 /* configure pause emulation when window loses focus menu item */
-void wguiInstallPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+void wguiInstallMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
 {
-  HMENU hMenu = GetMenu(hwndDlg);
-
-  MENUITEMINFO mii = { 0 };
-  mii.cbSize = sizeof(MENUITEMINFO);
-  mii.fMask = MIIM_STATE;
-
-  GetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
-
-  mii.fState |= ini->m_pauseemulationwhenwindowlosesfocus ? MFS_CHECKED : MFS_UNCHECKED;
-  SetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->m_pauseemulationwhenwindowlosesfocus);
+  ccwMenuCheckedSetConditional(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, ini->m_pauseemulationwhenwindowlosesfocus);
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->m_pauseemulationwhenwindowlosesfocus); // should this be here?
 }
 
-void wguiTogglePauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+void wguiToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
 {
-  HMENU hMenu = GetMenu(hwndDlg);
-  BOOLE ischecked;
+  BOOLE ischecked = ccwMenuCheckedToggle(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS);
 
-  MENUITEMINFO mii = { 0 };
-  mii.cbSize = sizeof(MENUITEMINFO);
-  mii.fMask = MIIM_STATE;
-
-  GetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
-  ischecked = mii.fState & MFS_CHECKED;
-
-  iniSetPauseEmulationWhenWindowLosesFocus(ini, !ischecked);
-  CheckMenuItem(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, !ischecked ? MFS_CHECKED : MFS_UNCHECKED);
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(!ischecked);
+  iniSetPauseEmulationWhenWindowLosesFocus(ini, ischecked);
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
 void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumber, const HardfilePartition& partition)
@@ -3621,7 +3603,7 @@ BOOLE wguiEnter(void)
 
     // install history into menu
     wguiInstallHistoryIntoMenu();
-    wguiInstallPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+    wguiInstallMenuPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
 
     ShowWindow(wgui_hDialog, win_drv_nCmdShow);
 
@@ -3762,7 +3744,7 @@ BOOLE wguiEnter(void)
 	  fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	  debugger_start = TRUE;
   case WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
-    wguiTogglePauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+    wguiToggleMenuPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
     wgui_action = WGUI_NO_ACTION;
     break;
 	default:

@@ -22,5 +22,7 @@ extern void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, 
 extern void ccwEditEnableConditional(HWND windowHandle, int controlIdentifier, BOOLE enable);
 extern void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifier, bool enable);
 extern void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst);
+extern void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE enable);
+extern BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier);
 
 #endif
