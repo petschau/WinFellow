@@ -1471,36 +1471,33 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 /* configure pause emulation when window loses focus menu item */
 void wguiInstallPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
 {
-  HMENU hmenu = GetMenu(hwndDlg);
+  HMENU hMenu = GetMenu(hwndDlg);
 
-  MENUITEMINFO menuItem = { 0 };
-  menuItem.cbSize = sizeof(MENUITEMINFO);
-  menuItem.fMask = MIIM_STATE;
+  MENUITEMINFO mii = { 0 };
+  mii.cbSize = sizeof(MENUITEMINFO);
+  mii.fMask = MIIM_STATE;
 
-  GetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+  GetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
 
-  menuItem.fState |= ini->m_pauseemulationwhenwindowlosesfocus ? MFS_CHECKED : MFS_UNCHECKED;
-
-  SetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+  mii.fState |= ini->m_pauseemulationwhenwindowlosesfocus ? MFS_CHECKED : MFS_UNCHECKED;
+  SetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
   gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->m_pauseemulationwhenwindowlosesfocus);
 }
 
 void wguiTogglePauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
 {
-  HMENU hmenu = GetMenu(wgui_hDialog);
+  HMENU hMenu = GetMenu(hwndDlg);
   BOOLE ischecked;
 
-  MENUITEMINFO menuItem = { 0 };
-  menuItem.cbSize = sizeof(MENUITEMINFO);
-  menuItem.fMask = MIIM_STATE;
+  MENUITEMINFO mii = { 0 };
+  mii.cbSize = sizeof(MENUITEMINFO);
+  mii.fMask = MIIM_STATE;
 
-  GetMenuItemInfo(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &menuItem);
+  GetMenuItemInfo(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, FALSE, &mii);
+  ischecked = mii.fState & MFS_CHECKED;
 
-  ischecked = menuItem.fState & MFS_CHECKED;
   iniSetPauseEmulationWhenWindowLosesFocus(ini, !ischecked);
-
-  CheckMenuItem(hmenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, !ischecked ? MFS_CHECKED : MFS_UNCHECKED);
-
+  CheckMenuItem(hMenu, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, !ischecked ? MFS_CHECKED : MFS_UNCHECKED);
   gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(!ischecked);
 }
 
