@@ -643,7 +643,7 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 	      floppy[i].sel,
 	      floppy[i].motor,
 	      floppy[i].side,
-	      floppy[i].writeprot);
+	      floppy[i].writeprotconfig);
       y = wdbgLineOut(hDC, s, x, y);
     }
 
