@@ -87,7 +87,6 @@ HBITMAP power_led_off_bitmap = 0;
 HBITMAP diskdrive_led_disabled_bitmap = 0;
 HBITMAP diskdrive_led_off_bitmap = 0;
 
-
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
 
@@ -3735,7 +3734,11 @@ BOOLE wguiEnter(void)
     if (!quit_emulator && debugger_start)
     {
       debugger_start = FALSE;
+#ifdef FELLOW_USE_LEGACY_DEBUGGER
+      wdbgDebugSessionRun(NULL);
+#else
       wdebDebug();
+#endif
     }
     else if (!quit_emulator)
     {
