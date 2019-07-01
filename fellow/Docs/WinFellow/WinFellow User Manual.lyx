@@ -112,7 +112,7 @@ User Manual
 \end_layout
 
 \begin_layout Date
-v0.5.8 (2019/06/23)
+v0.5.9 (2019/07/01)
 \end_layout
 
 \begin_layout Author
@@ -322,12 +322,12 @@ Release Notes
 \end_layout
 
 \begin_layout Section*
-What's New in WinFellow 0.5.8?
+What's New in WinFellow 0.5.9?
 \end_layout
 
 \begin_layout Standard
 Thank you for your interest in WinFellow.
- Compared to the earlier version 0.5.7, the following changes are included
+ Compared to the earlier version 0.5.8, the following changes are included
  in this build:
 \end_layout
 
@@ -335,99 +335,14 @@ Thank you for your interest in WinFellow.
 New features:
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-support for RDB hardfiles was implemented; while creating a new hardfile
- from the WinFellow GUI still creates 
-\begin_inset Quotes eld
-\end_inset
-
-plain
-\begin_inset Quotes erd
-\end_inset
-
- hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox
-\end_layout
-
-\begin_deeper
-\begin_layout Itemize
-the default naming scheme for filesystem devices has been changed from DHx:
- to FSx: to avoid naming conflicts with existing RDB hardfiles
-\end_layout
-
-\end_deeper
-\begin_layout Itemize
-a 64 bit build is now provided; the NSIS installer will install either the
- 32 or 64 bit version depending on the operating system that is used
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 Bug fixes:
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-improved handling of hardware interrupts and blitter delays; fixes freezes
- that could occur during installation of Workbench in earlier 0.5.x versions
-\end_layout
-
-\begin_layout Itemize
-fix wrong selection of render function after return from menu when application
- did not write to bplcon0 every frame; fixes garbled graphics in a Legend
- cracktro when returning from menu
-\end_layout
-
-\begin_layout Itemize
-replaced alternating patterns for unmapped memory with proper random numbers
-\end_layout
-
-\begin_layout Itemize
-CLR reads before write; fixes loading of Outrun and a fast-mem test in Last
- Ninja 2
-\end_layout
-
-\begin_layout Itemize
-improve delay caused by logging in screen-mode enumeration (could amount
- to many seconds with multiple screens)
-\end_layout
-
-\begin_layout Itemize
-running in an environment with very slow graphics framerate, like a VM,
- could cause a deadlock; set wait time after event reset to avoid race condition
-\end_layout
-
-\begin_layout Itemize
-fix an issue where screenshots would occasionally not be taken in Direct3D
- graphics mode; this may also have impacted the ability to use Amiga Forever's
- clipping editor
-\end_layout
-
-\begin_layout Itemize
-fix an issue where applying a new model preset would leave multiple blitter
- radio buttons selected
-\end_layout
-
-\end_deeper
 \begin_layout Itemize
 Maintenance updates:
 \end_layout
 
-\begin_deeper
-\begin_layout Itemize
-project files were updated to Visual Studio 2019 using the toolset v141_xp
-\end_layout
-
-\begin_layout Itemize
-the February 2010 DirectX SDK dependency was eliminated
-\end_layout
-
-\begin_layout Itemize
-IPF Access API files were updated to the latest version, and support for
- it was enabled in 64 bit builds
-\end_layout
-
-\end_deeper
 \begin_layout Standard
 Please see the included file ChangeLog.txt for a full list of changes, including
  minor bug fixes which may not be listed above.
