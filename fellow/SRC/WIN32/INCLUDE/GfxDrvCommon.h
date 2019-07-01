@@ -16,6 +16,7 @@ private:
   volatile bool _win_active;
   volatile bool _win_active_original;
   volatile bool _win_minimized_original;
+  bool          _pause_emulation_when_window_loses_focus;
   draw_mode *_current_draw_mode;
   ini* _ini;
   unsigned int _output_width;
@@ -69,6 +70,8 @@ public:
   HWND GetHWND();
   void SetDrawMode(draw_mode* dm, bool windowed);
   draw_mode *GetDrawMode();
+
+  void SetPauseEmulationWhenWindowLosesFocus(bool pause);
 
   void Flip();
   bool EmulationStart();
