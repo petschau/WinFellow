@@ -60,8 +60,15 @@
 #define A_FIBF_EXECUTE (1<<1)
 #define A_FIBF_DELETE  (1<<0)
 
+#ifdef _DEBUG
+#define AINO_DEBUG
+#endif
+
 /* AmigaOS "keys" */
 typedef struct a_inode_struct {
+#ifdef AINO_DEBUG
+  uae_u32 checksum1;
+#endif
     /* Circular list of recycleable a_inodes.  */
     struct a_inode_struct *next, *prev;
     /* This a_inode's relatives in the directory structure.  */
@@ -96,6 +103,9 @@ typedef struct a_inode_struct {
     /* If nonzero, this represents a deleted file; the corresponding
      * entry in the database must be cleared.  */
     unsigned int deleted:1;
+#ifdef AINO_DEBUG
+    uae_u32 checksum2;
+#endif
 } a_inode;
 
 extern char *nname_begin (char *);

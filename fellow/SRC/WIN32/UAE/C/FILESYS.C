@@ -111,7 +111,8 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 #endif
 
 #ifdef _DEBUG
-#define TRACING_ENABLED 0
+#define TRACING_ENABLED 1
+#define AINO_DEBUG
 #endif 
 
 #if TRACING_ENABLED
@@ -121,6 +122,35 @@ char *cfgfile_subst_path (const char *path, const char *subst, const char *file)
 #define TRACE(x)
 #define DUMPLOCK(u,x)
 #endif
+
+static void aino_test(a_inode* aino)
+{
+#ifdef AINO_DEBUG
+  a_inode* aino2 = aino, * aino3;
+  for (;;) {
+    if (!aino || !aino->next)
+      return;
+    if ((aino->checksum1 ^ aino->checksum2) != 0xaaaa5555) {
+      write_log("PANIC: corrupted or freed but used aino detected!\n", aino);
+    }
+    aino3 = aino;
+    aino = aino->next;
+    if (aino->prev != aino3) {
+      write_log("PANIC: corrupted aino linking!\n");
+      break;
+    }
+    if (aino == aino2) break;
+}
+#endif
+}
+
+static void aino_test_init(a_inode* aino)
+{
+#ifdef AINO_DEBUG
+  aino->checksum1 = (uae_u32)aino;
+  aino->checksum2 = aino->checksum1 ^ 0xaaaa5555;
+#endif
+}
 
 /* FELLOW IN (START)---------------- */
 #ifndef DONT_HAVE_POSIX
@@ -999,26 +1029,27 @@ static char *get_nname (Unit *unit, a_inode *base, char *rel,
 
 static char *create_nname (Unit *unit, a_inode *base, char *rel)
 {
-    char *p;
+  char *p;
 
-    /* We are trying to create a file called REL.  */
+  aino_test(base);
+  /* We are trying to create a file called REL.  */
     
-    /* If the name is used otherwise in the directory (or globally), we
-     * need a new unique nname.  */
-    if (fsdb_name_invalid (rel) || fsdb_used_as_nname (base, rel)) {
-	oh_dear:
-	p = fsdb_create_unique_nname (base, rel);
-	return p;
-    }
-    p = build_nname (base->nname, rel);
+  /* If the name is used otherwise in the directory (or globally), we
+    * need a new unique nname.  */
+  if (fsdb_name_invalid (rel) || fsdb_used_as_nname (base, rel)) {
+	  oh_dear:
+	  p = fsdb_create_unique_nname (base, rel);
+	  return p;
+  }
+  p = build_nname (base->nname, rel);
 
-    /* Delete this code once we know everything works.  */
-    if (access (p, R_OK) >= 0 || errno != ENOENT) {
-	write_log ("Filesystem in trouble... please report.\n");
-	free (p);
-	goto oh_dear;
-    }
-    return p;
+  /* Delete this code once we know everything works.  */
+  if (access (p, R_OK) >= 0 || errno != ENOENT) {
+	  write_log ("Filesystem in trouble... please report.\n");
+	  free (p);
+	  goto oh_dear;
+  }
+  return p;
 }
 
 /*
@@ -1037,11 +1068,21 @@ static char *get_aname (Unit *unit, a_inode *base, char *rel)
     return my_strdup (rel);
 }
 
+static void init_child_aino_tree(Unit* unit, a_inode* base, a_inode* aino)
+{
+  /* Update tree structure */
+  aino->parent = base;
+  aino->child = 0;
+  aino->sibling = base->child;
+  base->child = aino;
+  aino->next = aino->prev = 0;
+}
+
 static void init_child_aino (Unit *unit, a_inode *base, a_inode *aino)
 {
     aino->uniq = ++unit->a_uniq;
     if (unit->a_uniq == 0xFFFFFFFF) {
-	write_log ("Running out of a_inodes (prepare for big trouble)!\n");
+	    write_log ("Running out of a_inodes (prepare for big trouble)!\n");
     }
     aino->shlock = 0;
     aino->elock = 0;
@@ -1054,16 +1095,13 @@ static void init_child_aino (Unit *unit, a_inode *base, a_inode *aino)
     aino->exnext_count = 0;
     /* But the parent might be.  */
     if (base->exnext_count) {
-	unit->total_locked_ainos++;
-	base->locked_children++;
+	    unit->total_locked_ainos++;
+	    base->locked_children++;
     }
+    init_child_aino_tree(unit, base, aino);
 
-    /* Update tree structure */
-    aino->parent = base;
-    aino->child = 0;
-    aino->sibling = base->child;
-    base->child = aino;
-    aino->next = aino->prev = 0;
+    aino_test_init(aino);
+    aino_test(aino);
 }
 
 static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
@@ -1076,23 +1114,23 @@ static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
 
     aino = fsdb_lookup_aino_aname (base, rel);
     if (aino == 0) {
-	nn = get_nname (unit, base, rel, &modified_rel);
-	if (nn == 0)
-	    return 0;
+	    nn = get_nname (unit, base, rel, &modified_rel);
+	    if (nn == 0)
+	        return 0;
 
-	aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
-	if (aino == 0)
-	    return 0;
+	    aino = (a_inode *) xcalloc (sizeof (a_inode), 1);
+	    if (aino == 0)
+	        return 0;
 
-	aino->aname = modified_rel ? modified_rel : my_strdup (rel);
-	aino->nname = nn;
+	    aino->aname = modified_rel ? modified_rel : my_strdup (rel);
+	    aino->nname = nn;
 
-	aino->comment = 0;
-	aino->has_dbentry = 0;
+	    aino->comment = 0;
+	    aino->has_dbentry = 0;
 
-	fsdb_fill_file_attrs (aino);
-	if (aino->dir)
-	    fsdb_clean_dir (aino);
+	    fsdb_fill_file_attrs (aino);
+	    if (aino->dir)
+	        fsdb_clean_dir (aino);
     }
     init_child_aino (unit, base, aino);
 
