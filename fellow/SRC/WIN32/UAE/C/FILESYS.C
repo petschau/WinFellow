@@ -740,12 +740,13 @@ static void prepare_for_open (char *name)
 
 static void de_recycle_aino (Unit *unit, a_inode *aino)
 {
-    if (aino->next == 0 || aino == &unit->rootnode)
-	return;
-    aino->next->prev = aino->prev;
-    aino->prev->next = aino->next;
-    aino->next = aino->prev = 0;
-    unit->aino_cache_size--;
+  aino_test(aino);
+  if (aino->next == 0 || aino == &unit->rootnode)
+    return;
+  aino->next->prev = aino->prev;
+  aino->prev->next = aino->next;
+  aino->next = aino->prev = 0;
+  unit->aino_cache_size--;
 }
 
 static void dispose_aino (Unit *unit, a_inode **aip, a_inode *aino)
@@ -767,52 +768,53 @@ static void dispose_aino (Unit *unit, a_inode **aip, a_inode *aino)
 
 static void recycle_aino (Unit *unit, a_inode *new_aino)
 {
-    if (new_aino->dir || new_aino->shlock > 0
-	|| new_aino->elock || new_aino == &unit->rootnode)
-	/* Still in use */
-	return;
+  aino_test(new_aino);
+  if (new_aino->dir || new_aino->shlock > 0
+	  || new_aino->elock || new_aino == &unit->rootnode)
+	  /* Still in use */
+	  return;
 
     TRACE (("Recycling; cache size %d, total_locked %d\n",
-	unit->aino_cache_size, unit->total_locked_ainos));
+	    unit->aino_cache_size, unit->total_locked_ainos));
     if (unit->aino_cache_size > 500 + unit->total_locked_ainos) {
-	/* Reap a few. */
-	int i = 0;
-	while (i < 50) {
-		a_inode *parent = unit->rootnode.prev->parent;
-	    a_inode **aip;
-	    aip = &parent->child;
+	    /* Reap a few. */
+	    int i = 0;
+	    while (i < 50) {
+		    a_inode *parent = unit->rootnode.prev->parent;
+	      a_inode **aip;
+	      aip = &parent->child;
 
-	    if (! parent->locked_children)
-	    for (;;) {
-		a_inode *aino = *aip;
-		if (aino == 0)
-		    break;
+	      if (! parent->locked_children)
+	      for (;;) {
+		      a_inode *aino = *aip;
+		      if (aino == 0)
+		          break;
 
-		/* Not recyclable if next == 0 (i.e., not chained into
-		       recyclable list), or if parent directory is being
-		       ExNext()ed.  */
-		if (aino->next == 0)
-		    aip = &aino->sibling;
-		else {
-		    if (aino->shlock > 0 || aino->elock)
-			write_log ("panic: freeing locked a_inode!\n");
+		      /* Not recyclable if next == 0 (i.e., not chained into
+		              recyclable list), or if parent directory is being
+		              ExNext()ed.  */
+		      if (aino->next == 0)
+		          aip = &aino->sibling;
+		      else {
+		          if (aino->shlock > 0 || aino->elock)
+			          write_log ("panic: freeing locked a_inode!\n");
 
-		    de_recycle_aino (unit, aino);
-		    dispose_aino (unit, aip, aino);
-		    i++;
-		}
-	    }
+		          de_recycle_aino (unit, aino);
+		          dispose_aino (unit, aip, aino);
+		          i++;
+		      }
+         }
         /* In the previous loop, we went through all children of one
-	       parent.  Re-arrange the recycled list so that we'll find a
-	       different parent the next time around.  */
-	    do {
-		unit->rootnode.next->prev = unit->rootnode.prev;
-		unit->rootnode.prev->next = unit->rootnode.next;
-		unit->rootnode.next = unit->rootnode.prev;
-		unit->rootnode.prev = unit->rootnode.prev->prev;
-		unit->rootnode.prev->next = unit->rootnode.next->prev = &unit->rootnode;
-	    } while (unit->rootnode.prev->parent == parent);
-	}
+	        parent.  Re-arrange the recycled list so that we'll find a
+	        different parent the next time around.  */
+	      do {
+		      unit->rootnode.next->prev = unit->rootnode.prev;
+		      unit->rootnode.prev->next = unit->rootnode.next;
+		      unit->rootnode.next = unit->rootnode.prev;
+		      unit->rootnode.prev = unit->rootnode.prev->prev;
+		      unit->rootnode.prev->next = unit->rootnode.next->prev = &unit->rootnode;
+	      } while (unit->rootnode.prev->parent == parent);
+	    }
 #if 0
 	{
 	    char buffer[40];
@@ -822,11 +824,15 @@ static void recycle_aino (Unit *unit, a_inode *new_aino)
 #endif
     }
 
+    aino_test(new_aino);
     /* Chain it into circular list. */
     new_aino->next = unit->rootnode.next;
     new_aino->prev = &unit->rootnode;
     new_aino->prev->next = new_aino;
     new_aino->next->prev = new_aino;
+    aino_test(new_aino->next);
+    aino_test(new_aino->prev);
+
     unit->aino_cache_size++;
 }
 
@@ -859,46 +865,48 @@ static void update_child_names (Unit *unit, a_inode *a, a_inode *parent)
 
 static void move_aino_children (Unit *unit, a_inode *from, a_inode *to)
 {
-    to->child = from->child;
-    from->child = 0;
-    update_child_names (unit, to->child, to);
+  aino_test(from);
+  aino_test(to);
+  to->child = from->child;
+  from->child = 0;
+  update_child_names (unit, to->child, to);
 }
 
 static void delete_aino (Unit *unit, a_inode *aino)
 {
     a_inode **aip;
-    /* FELLOW REMOVE (unreferenced): int hash; */
 
     TRACE(("deleting aino %x\n", aino->uniq));
 
+    aino_test(aino);
     aino->dirty = 1;
     aino->deleted = 1;
     de_recycle_aino (unit, aino);
 
     /* If any ExKeys are currently pointing at us, advance them.  */
     if (aino->parent->exnext_count > 0) {
-	  int i;
-	  TRACE(("entering exkey validation\n"));
-	  for (i = 0; i < EXKEYS; i++) {
-	    ExamineKey *k = unit->examine_keys + i;
-	    if (k->uniq == 0)
-		continue;
-	    if (k->aino == aino->parent) {
-		TRACE(("Same parent found for %d\n", i));
-		if (k->curr_file == aino) {
-		    k->curr_file = aino->sibling;
-		    TRACE(("Advancing curr_file\n"));
-		}
+	      int i;
+	      TRACE(("entering exkey validation\n"));
+	      for (i = 0; i < EXKEYS; i++) {
+	        ExamineKey *k = unit->examine_keys + i;
+	        if (k->uniq == 0)
+		        continue;
+	        if (k->aino == aino->parent) {
+		        TRACE(("Same parent found for %d\n", i));
+		        if (k->curr_file == aino) {
+		            k->curr_file = aino->sibling;
+		            TRACE(("Advancing curr_file\n"));
+		        }
+	        }
 	    }
-	}
     }
 
     aip = &aino->parent->child;
     while (*aip != aino && *aip != 0)
-	aip = &(*aip)->sibling;
+	    aip = &(*aip)->sibling;
     if (*aip != aino) {
-	write_log ("Couldn't delete aino.\n");
-	return;
+	    write_log ("Couldn't delete aino.\n");
+	    return;
     }
     dispose_aino (unit, aip, aino);
 }
@@ -939,19 +947,20 @@ static a_inode *lookup_sub (a_inode *dir, uae_u32 uniq)
 
 static a_inode *lookup_aino (Unit *unit, uae_u32 uniq)
 {
-    a_inode *a;
-    int hash = uniq % MAX_AINO_HASH;
+  a_inode *a;
+  int hash = uniq % MAX_AINO_HASH;
 
-    if (uniq == 0)
-	return &unit->rootnode;
-    a = unit->aino_hash[hash];
-    if (a == 0 || a->uniq != uniq)
-	a = lookup_sub (&unit->rootnode, uniq);
-    else
-	unit->nr_cache_hits++;
-    unit->nr_cache_lookups++;
-    unit->aino_hash[hash] = a;
-    return a;
+  if (uniq == 0)
+    return &unit->rootnode;
+  a = unit->aino_hash[hash];
+  if (a == 0 || a->uniq != uniq)
+    a = lookup_sub (&unit->rootnode, uniq);
+  else
+    unit->nr_cache_hits++;
+  unit->nr_cache_lookups++;
+  unit->aino_hash[hash] = a;
+  aino_test(a);
+  return a;
 }
 
 /* FELLOW IN (START)----------------- */
@@ -996,10 +1005,11 @@ static char *get_nname (Unit *unit, a_inode *base, char *rel,
 			char **modified_rel)
 {
     char *found;
-    char *p = 0;
 
     *modified_rel = 0;
     
+    aino_test(base);
+
     /* If we have a mapping of some other aname to "rel", we must pretend
      * it does not exist.
      * This can happen for example if an Amiga program creates a
@@ -1009,19 +1019,19 @@ static char *get_nname (Unit *unit, a_inode *base, char *rel,
      * program looks up "uae_xxx" (yes, it's contrived).  The filesystem
      * should not make the uae_xxx file visible to the Amiga side.  */
     if (fsdb_used_as_nname (base, rel))
-	return 0;
+	    return 0;
     /* A file called "." (or whatever else is invalid on this filesystem)
-	* does not exist, as far as the Amiga side is concerned.  */
+	  * does not exist, as far as the Amiga side is concerned.  */
     if (fsdb_name_invalid (rel))
-	return 0;
+	    return 0;
 
     /* See if we have a file that has the same name as the aname we are
      * looking for.  */
     found = fsdb_search_dir (base->nname, rel);
     if (found == 0)
-	return found;
+	    return found;
     if (found == rel)
-	return build_nname (base->nname, rel);
+	    return build_nname (base->nname, rel);
 
     *modified_rel = found;
     return build_nname (base->nname, found);
@@ -1080,28 +1090,28 @@ static void init_child_aino_tree(Unit* unit, a_inode* base, a_inode* aino)
 
 static void init_child_aino (Unit *unit, a_inode *base, a_inode *aino)
 {
-    aino->uniq = ++unit->a_uniq;
-    if (unit->a_uniq == 0xFFFFFFFF) {
-	    write_log ("Running out of a_inodes (prepare for big trouble)!\n");
-    }
-    aino->shlock = 0;
-    aino->elock = 0;
+  aino->uniq = ++unit->a_uniq;
+  if (unit->a_uniq == 0xFFFFFFFF) {
+	  write_log ("Running out of a_inodes (prepare for big trouble)!\n");
+  }
+  aino->shlock = 0;
+  aino->elock = 0;
 
-    aino->dirty = 0;
-    aino->deleted = 0;
+  aino->dirty = 0;
+  aino->deleted = 0;
 
-    /* For directories - this one isn't being ExNext()ed yet.  */
-    aino->locked_children = 0;
-    aino->exnext_count = 0;
-    /* But the parent might be.  */
-    if (base->exnext_count) {
-	    unit->total_locked_ainos++;
-	    base->locked_children++;
-    }
-    init_child_aino_tree(unit, base, aino);
+  /* For directories - this one isn't being ExNext()ed yet.  */
+  aino->locked_children = 0;
+  aino->exnext_count = 0;
+  /* But the parent might be.  */
+  if (base->exnext_count) {
+	  unit->total_locked_ainos++;
+	  base->locked_children++;
+  }
+  init_child_aino_tree(unit, base, aino);
 
-    aino_test_init(aino);
-    aino_test(aino);
+  aino_test_init(aino);
+  aino_test(aino);
 }
 
 static a_inode *new_child_aino (Unit *unit, a_inode *base, char *rel)
@@ -1167,69 +1177,80 @@ static a_inode *create_child_aino (Unit *unit, a_inode *base, char *rel, int isd
 
 static a_inode *lookup_child_aino (Unit *unit, a_inode *base, char *rel, uae_u32 *err)
 {
-    a_inode *c = base->child;
-    size_t l0 = strlen (rel);
+  a_inode *c = base->child;
+  size_t l0 = strlen (rel);
 
-    if (base->dir == 0) {
-	*err = ERROR_OBJECT_WRONG_TYPE;
-	return 0;
-    }
+  if (base->dir == 0) {
+    *err = ERROR_OBJECT_WRONG_TYPE;
+    return 0;
+  }
 
-    while (c != 0) {
-	size_t l1 = strlen (c->aname);
-	if (l0 <= l1 && same_aname (rel, c->aname + l1 - l0)
-	    && (l0 == l1 || c->aname[l1-l0-1] == '/'))
-	    break;
-	c = c->sibling;
-    }
-    if (c != 0)
-	return c;
-    c = new_child_aino (unit, base, rel);
-    if (c == 0)
-	*err = ERROR_OBJECT_NOT_AROUND;
+  aino_test(base);
+  aino_test(c);
+
+  if (base->dir == 0) {
+    *err = ERROR_OBJECT_WRONG_TYPE;
+    return 0;
+  }
+
+  while (c != 0) {
+    size_t l1 = strlen (c->aname);
+    if (l0 <= l1 && same_aname (rel, c->aname + l1 - l0)
+	      && (l0 == l1 || c->aname[l1-l0-1] == '/'))
+	      break;
+    c = c->sibling;
+  }
+  if (c != 0)
     return c;
+  c = new_child_aino (unit, base, rel);
+  if (c == 0)
+    *err = ERROR_OBJECT_NOT_AROUND;
+  return c;
 }
 
 /* Different version because for this one, REL is an nname.  */
 static a_inode *lookup_child_aino_for_exnext (Unit *unit, a_inode *base, char *rel, uae_u32 *err)
 {
-    a_inode *c = base->child;
-    size_t l0 = strlen (rel);
+  a_inode *c = base->child;
+  size_t l0 = strlen (rel);
 
-    *err = 0;
-    while (c != 0) {
-	size_t l1 = strlen (c->nname);
-	/* Note: using strcmp here.  */
-	if (l0 <= l1 && strcmp (rel, c->nname + l1 - l0) == 0
-	    && (l0 == l1 || c->nname[l1-l0-1] == FSDB_DIR_SEPARATOR))
-	    break;
-	c = c->sibling;
-    }
-    if (c != 0)
-	return c;
-    c = fsdb_lookup_aino_nname (base, rel);
+  aino_test(base);
+  aino_test(c);
+
+  *err = 0;
+  while (c != 0) {
+    size_t l1 = strlen (c->nname);
+    /* Note: using strcmp here.  */
+    if (l0 <= l1 && strcmp (rel, c->nname + l1 - l0) == 0
+	      && (l0 == l1 || c->nname[l1-l0-1] == FSDB_DIR_SEPARATOR))
+	      break;
+    c = c->sibling;
+  }
+  if (c != 0)
+    return c;
+  c = fsdb_lookup_aino_nname (base, rel);
+  if (c == 0) {
+    /* FELLOW BUGFIX: c = (a_inode *)malloc (sizeof (a_inode)); */
+    c = (a_inode *) calloc (sizeof (a_inode), 1);
     if (c == 0) {
-	/* FELLOW BUGFIX: c = (a_inode *)malloc (sizeof (a_inode)); */
-	c = (a_inode *) calloc (sizeof (a_inode), 1);
-	if (c == 0) {
 	    *err = ERROR_NO_FREE_STORE;
 	    return 0;
-	}
-
-	c->nname = build_nname (base->nname, rel);
-	c->aname = get_aname (unit, base, rel);
-	c->comment = 0;
-	c->has_dbentry = 0;
-	fsdb_fill_file_attrs (c);
-	if (c->dir)
-	    fsdb_clean_dir (c);
     }
-    init_child_aino (unit, base, c);
 
-    recycle_aino (unit, c);
-    TRACE(("created aino %x, exnext\n", c->uniq));
+    c->nname = build_nname (base->nname, rel);
+    c->aname = get_aname (unit, base, rel);
+    c->comment = 0;
+    c->has_dbentry = 0;
+    fsdb_fill_file_attrs (c);
+    if (c->dir)
+	      fsdb_clean_dir (c);
+  }
+  init_child_aino (unit, base, c);
 
-    return c;
+  recycle_aino (unit, c);
+  TRACE(("created aino %x, exnext\n", c->uniq));
+
+  return c;
 }
 
 static a_inode *get_aino (Unit *unit, a_inode *base, const char *rel, uae_u32 *err)
@@ -1239,47 +1260,48 @@ static a_inode *get_aino (Unit *unit, a_inode *base, const char *rel, uae_u32 *e
     a_inode *curr;
     int i;
 
+    aino_test(base);
+
     *err = 0;
     TRACE(("get_path(%s,%s)\n", base->aname, rel));
 
     /* root-relative path? */
     for (i = 0; rel[i] && rel[i] != '/' && rel[i] != ':'; i++)
-	;
+	    ;
     if (':' == rel[i])
-	rel += i+1;
+	    rel += i+1;
 
     tmp = my_strdup (rel);
     p = tmp;
     curr = base;
 
     while (*p) {
-	/* start with a slash? go up a level. */
-	if (*p == '/') {
-	    if (curr->parent != 0)
-		curr = curr->parent;
-	    p++;
-	} else {
-	    a_inode *next;
+	    /* start with a slash? go up a level. */
+	    if (*p == '/') {
+	      if (curr->parent != 0)
+		      curr = curr->parent;
+	      p++;
+	    } else {
+	      a_inode *next;
 
-	    char *component_end;
-	    component_end = strchr (p, '/');
-	    if (component_end != 0)
-		*component_end = '\0';
-	    next = lookup_child_aino (unit, curr, p, err);
-	    if (next == 0) {
-		/* if only last component not found, return parent dir. */
-		if (*err != ERROR_OBJECT_NOT_AROUND || component_end != 0)
-		    curr = 0;
-		/* ? what error is appropriate? */
-		break;
+	      char *component_end;
+	      component_end = strchr (p, '/');
+	      if (component_end != 0)
+		      *component_end = '\0';
+	      next = lookup_child_aino (unit, curr, p, err);
+	      if (next == 0) {
+		      /* if only last component not found, return parent dir. */
+		      if (*err != ERROR_OBJECT_NOT_AROUND || component_end != 0)
+		          curr = 0;
+		      /* ? what error is appropriate? */
+		      break;
+	      }
+	      curr = next;
+	      if (component_end)
+		      p = component_end+1;
+	      else
+		      break;
 	    }
-	    curr = next;
-	    if (component_end)
-		p = component_end+1;
-	    else
-		break;
-
-	}
     }
     free (tmp);
     return curr;
@@ -1414,6 +1436,8 @@ static uae_u32 startup_handler (void)
 
     put_long (pkt + dp_Res1, DOS_TRUE);
 
+    aino_test_init(&unit->rootnode);
+
     fsdb_clean_dir (&unit->rootnode);
 
     return 0;
@@ -1539,21 +1563,22 @@ static a_inode *find_aino (Unit *unit, uaecptr lock, const char *name, uae_u32 *
     a_inode *a;
 
     if (lock) {
-	a_inode *olda = lookup_aino (unit, get_long (lock + 4));
-	if (olda == 0) {
-	    /* That's the best we can hope to do. */
-	    a = get_aino (unit, &unit->rootnode, name, err);
-	} else {
-	    TRACE(("aino: 0x%08lx", (unsigned long int)olda->uniq));
-	    TRACE((" \"%s\"\n", olda->nname));
-	    a = get_aino (unit, olda, name, err);
-	}
+	    a_inode *olda = lookup_aino (unit, get_long (lock + 4));
+	    if (olda == 0) {
+	        /* That's the best we can hope to do. */
+	        a = get_aino (unit, &unit->rootnode, name, err);
+	    } else {
+	        TRACE(("aino: 0x%08lx", (unsigned long int)olda->uniq));
+	        TRACE((" \"%s\"\n", olda->nname));
+	        a = get_aino (unit, olda, name, err);
+	    }
     } else {
-	a = get_aino (unit, &unit->rootnode, name, err);
+	    a = get_aino (unit, &unit->rootnode, name, err);
     }
     if (a) {
-	TRACE(("aino=\"%s\"\n", a->nname));
+	    TRACE(("aino=\"%s\"\n", a->nname));
     }
+    aino_test(a);
     return a;
 }
 
