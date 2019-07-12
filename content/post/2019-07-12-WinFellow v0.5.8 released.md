@@ -1,11 +1,11 @@
 +++
-date = "2019-06-28T05:49:00+00:00"
+date = "2019-07-12T05:49:00+00:00"
 draft = false
-title = "WinFellow v0.5.8 release candidate 1"
+title = "WinFellow v0.5.8 released"
 tags = [ "News", "Releases" ]
 +++
 
-A new public release candidate build of WinFellow v0.5.8 has been uploaded to the downloads in the GitHub releases section.
+This is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
 
 Compared to the earlier version 0.5.7, the following changes are included in this build:
 
@@ -33,5 +33,3 @@ Compared to the earlier version 0.5.7, the following changes are included in thi
 -  IPF Access API files were updated to the latest version, and support for it was enabled in 64 bit builds
 
 See the included file ChangeLog.txt for a full list of changes, including minor bug fixes which may not be listed above.
-
-Please report any issues you find with this pre-release build in our issue tracker: https://github.com/petschau/WinFellow/issues
