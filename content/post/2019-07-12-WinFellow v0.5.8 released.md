@@ -5,7 +5,7 @@ title = "WinFellow v0.5.8 released"
 tags = [ "News", "Releases" ]
 +++
 
-This is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
+There is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
 
 Compared to the earlier version 0.5.7, the following changes are included in this build:
 
