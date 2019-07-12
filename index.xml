@@ -6,7 +6,7 @@
     <description>Recent content on WinFellow - Amiga Emulator for Windows</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 28 Jun 2019 05:49:00 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 12 Jul 2019 05:49:00 +0000</lastBuildDate>
     
 	<atom:link href="http://petschau.github.io/WinFellow/index.xml" rel="self" type="application/rss+xml" />
     
@@ -61,12 +61,12 @@ You can also contact us directly by sending an email composed in English languag
     </item>
     
     <item>
-      <title>WinFellow v0.5.8 release candidate 1</title>
-      <link>http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1/</link>
-      <pubDate>Fri, 28 Jun 2019 05:49:00 +0000</pubDate>
+      <title>WinFellow v0.5.8 released</title>
+      <link>http://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</link>
+      <pubDate>Fri, 12 Jul 2019 05:49:00 +0000</pubDate>
       
-      <guid>http://petschau.github.io/WinFellow/post/2019-06-28-winfellow-v0.5.8-release-candidate-1/</guid>
-      <description>A new public release candidate build of WinFellow v0.5.8 has been uploaded to the downloads in the GitHub releases section.
+      <guid>http://petschau.github.io/WinFellow/post/2019-07-12-winfellow-v0.5.8-released/</guid>
+      <description>This is a new public release of WinFellow v0.5.8 in the GitHub releases section; it had been published earlier as release candidate 1.
 Compared to the earlier version 0.5.7, the following changes are included in this build:
 New features
  support for RDB hardfiles was implemented; while creating a new hardfile from the WinFellow GUI still creates &amp;ldquo;plain&amp;rdquo; hardfiles, a Rigid Disk Block can be created using tools like HD Toolbox the default naming scheme for filesystem devices has been changed from DHx: to FSx: to avoid naming conflicts with existing RDB hardfiles a 64 bit build is now provided; the NSIS installer will install either the 32 or 64 bit version depending on the operating system that is used  Bug fixes</description>
