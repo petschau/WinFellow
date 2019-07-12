@@ -1,11 +1,10 @@
-/* @(#) $Id: FLOPPY.H,v 1.9 2013-01-04 19:43:25 carfesh Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
 /* Floppy Emulation                                                        */
 /*                                                                         */
 /* Authors: Petter Schau                                                   */
-/*          Torsten Enderling (carfesh@gmx.net)                            */
+/*          Torsten Enderling                                              */
 /*                                                                         */
 /* Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           */
 /*                                                                         */
@@ -68,7 +67,8 @@ typedef struct {
   ULO compress_serno;     /* Tmp file serial number */
   BOOLE sel;              /* Drive selected when TRUE */
   ULO track;              /* Current head position */
-  BOOLE writeprot;        /* Drive is writeprotected */
+  BOOLE writeprotconfig;  /* Drive is write-protected via user configuration */
+  BOOLE writeprotenforce; /* Drive is write-protected because of read-only filesystem or IPF image */
   BOOLE dir;              /* Direction for step */
   BOOLE motor;            /* Motor on or off */
   BOOLE side;             /* Which side is active */
@@ -133,7 +133,7 @@ extern bool floppyValidateAmigaDOSVolumeName(const STR *);
 
 extern void floppySetDiskImage(ULO drive, STR *diskname);
 extern void floppySetEnabled(ULO drive, BOOLE enabled);
-extern void floppySetReadOnly(ULO drive, BOOLE readonly);
+extern void floppySetReadOnlyConfig(ULO drive, BOOLE readonly);
 extern void floppySetFastDMA(BOOLE fastDMA);
 
 /* Module control */

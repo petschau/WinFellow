@@ -87,6 +87,8 @@ bool		      kbd_drv_initialization_failed;
 BOOLE		      prs_rewrite_mapping_file;
 char		      kbd_drv_mapping_filename[MAX_PATH];
 
+bool kbd_in_task_switcher = false;
+
 
 /*===========================================================================*/
 /* Map symbolic key to a description string                                  */
@@ -650,6 +652,15 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
+STR* kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+{
+  switch (hResult)
+  {
+  case DI_OK:	    return "The operation completed successfully.";
+  case DI_NOEFFECT: return "The device was not in an acquired state.";
+  }
+  return "Not a known Unacquire() DirectInput return value.";
+}
 
 /*==========================================================================*/
 /* Logs a sensible error message                                            */
@@ -660,6 +671,10 @@ void kbdDrvDInputFailure(STR *header, HRESULT err)
   fellowAddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
+void kbdDrvDInputUnacquireFailure(STR* header, HRESULT err)
+{
+  fellowAddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
+}
 
 /*===========================================================================*/
 /* Set keyboard cooperative level                                            */
@@ -674,6 +689,18 @@ bool kbdDrvDInputSetCooperativeLevel(void)
     return false;
   }
   return true;
+}
+
+void kbdDrvDInputAcquireFailure(STR* header, HRESULT err)
+{
+  if (err == DI_NOEFFECT)
+  {
+    fellowAddLog("%s %s\n", header, "The device was already in an acquired state.");
+  }
+  else
+  {
+    kbdDrvDInputFailure(header, err);
+  }
 }
 
 #ifdef RETRO_PLATFORM
@@ -720,18 +747,18 @@ void kbdDrvEOFHandler(void)
 
 void kbdDrvDInputUnacquire(void) 
 {
-  fellowAddLog("kbdDrvDInputUnacquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
+
   HRESULT res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputUnacquire():", res);
+    // Should only "fail" if device is not acquired, it is not an error.
+    kbdDrvDInputUnacquireFailure("kbdDrvDInputUnacquire():", res);
   }
 }
-
 
 /*===========================================================================*/
 /* Acquire DirectInput keyboard device                                       */
@@ -739,19 +766,17 @@ void kbdDrvDInputUnacquire(void)
 
 void kbdDrvDInputAcquire(void) 
 {
-  fellowAddLog("kbdDrvDInputAcquire()\n");
   if (kbd_drv_lpDID == NULL)
   {
     return;
   }
-  kbdDrvDInputUnacquire();
+
   HRESULT res = IDirectInputDevice_Acquire(kbd_drv_lpDID); 
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputAcquire():", res);
+    kbdDrvDInputAcquireFailure("kbdDrvDInputAcquire():", res);
   }
 }
-
 
 /*===========================================================================*/
 /* Release DirectInput for keyboard                                          */
@@ -1088,8 +1113,46 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
 
   /* DEBUG info, not needed now*/
 #ifdef _DEBUG
-  fellowAddLog("Keypress %s %s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+  fellowAddLog("Keypress %s %s%s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released", kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
 #endif
+
+  // Bad hack
+  // Unfortunately Windows does not tell the app in any way that the task switcher has been activated,
+  // unless you use a hook in the windows accessibility framework.
+
+  // left-alt already pressed, and now TAB pressed as well
+  if (!kbd_in_task_switcher && keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
+  {
+    fellowAddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
+
+    // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
+    kbd_in_task_switcher = gfxDrvCommon->GetOutputWindowed();
+
+    // Don't pass this TAB press along to emulation, pass left-ALT release instead
+    keycode = map(PCK_LEFT_ALT);
+    symbolic_key = symbolickey(keycode);
+    pressed = false;
+    keycode_pressed = pressed;
+    keycode_was_pressed = prevkeys[keycode];
+
+#ifdef _DEBUG
+    fellowAddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+#endif
+  }
+  else if (kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
+  {
+    fellowAddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
+    kbd_in_task_switcher = false;
+
+#ifdef _DEBUG
+    fellowAddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
+#endif    
+    return;
+  }
+  else if (kbd_in_task_switcher)
+  {
+    return;
+  }
 
   keys[keycode] = pressed;
 
@@ -1488,6 +1551,7 @@ void kbdDrvEmulationStart(void)
 
   kbdDrvClearPressedKeys();  
   kbdDrvDInputInitialize();
+  kbd_in_task_switcher = false;
 }
 
 

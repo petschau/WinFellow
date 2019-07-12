@@ -136,3 +136,35 @@ void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bi
 {
   SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) (setFirst ? bitmapFirst : bitmapSecond));
 }
+
+void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE enable)
+{
+  HMENU hMenu = GetMenu(windowHandle);
+
+  MENUITEMINFO mii = { 0 };
+  mii.cbSize = sizeof(MENUITEMINFO);
+  mii.fMask = MIIM_STATE;
+
+  GetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
+
+  mii.fState |= enable ? MFS_CHECKED : MFS_UNCHECKED;
+  SetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
+}
+
+BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)
+{
+  HMENU hMenu = GetMenu(windowHandle);
+  BOOLE ischecked, result;
+
+  MENUITEMINFO mii = { 0 };
+  mii.cbSize = sizeof(MENUITEMINFO);
+  mii.fMask = MIIM_STATE;
+
+  GetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
+  ischecked = mii.fState & MFS_CHECKED;
+  result = !ischecked;
+
+  CheckMenuItem(hMenu, menuIdentifier, result ? MFS_CHECKED : MFS_UNCHECKED);
+
+  return result;
+}

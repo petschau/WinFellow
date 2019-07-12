@@ -447,7 +447,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
         int num = HIBYTE(wParam);
         if(lParam == RP_DEVICE_READONLY || lParam == RP_DEVICE_READWRITE) 
         {
-          floppySetReadOnly(num, lParam == RP_DEVICE_READONLY ? true : false);
+          floppySetReadOnlyConfig(num, lParam == RP_DEVICE_READONLY ? true : false);
           ret = true;
         }
       }

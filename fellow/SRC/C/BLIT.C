@@ -169,6 +169,10 @@ void blitterInsertEvent(ULO cycle)
 /* Blitter operation log                                                      */
 /*============================================================================*/
 
+#ifdef FELLOW_USE_LEGACY_DEBUGGER
+#define BLIT_OPERATION_LOG
+#endif 
+
 #ifdef BLIT_OPERATION_LOG
 
 BOOLE blitter_operation_log;

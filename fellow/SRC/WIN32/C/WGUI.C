@@ -87,7 +87,6 @@ HBITMAP power_led_off_bitmap = 0;
 HBITMAP diskdrive_led_disabled_bitmap = 0;
 HBITMAP diskdrive_led_off_bitmap = 0;
 
-
 #define MAX_JOYKEY_PORT 2
 #define MAX_DISKDRIVES 4
 
@@ -246,7 +245,8 @@ typedef enum {
   WGUI_DEBUGGER_START,
   WGUI_ABOUT,
   WGUI_LOAD_STATE,
-  WGUI_SAVE_STATE
+  WGUI_SAVE_STATE,
+  WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
 } wguiActions;
 
 wguiActions wgui_action;
@@ -1465,6 +1465,21 @@ void wguiExtractVariousConfig(HWND hwndDlg, cfg *conf) {
 
   /* get automatic interlace compensation */
   cfgSetDeinterlace(conf, ccwButtonGetCheckBool(hwndDlg, IDC_CHECK_GRAPHICS_DEINTERLACE));
+}
+
+/* configure pause emulation when window loses focus menu item */
+void wguiInstallMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+{
+  ccwMenuCheckedSetConditional(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, ini->m_pauseemulationwhenwindowlosesfocus);
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->m_pauseemulationwhenwindowlosesfocus); // should this be here?
+}
+
+void wguiToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, ini* ini)
+{
+  BOOLE ischecked = ccwMenuCheckedToggle(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS);
+
+  iniSetPauseEmulationWhenWindowLosesFocus(ini, ischecked);
+  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
 void wguiHardfileSetInformationString(STR *s, STR *deviceName, int partitionNumber, const HardfilePartition& partition)
@@ -3423,6 +3438,9 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
     case ID_FILE_HISTORYCONFIGURATION3:   
       wgui_action = WGUI_LOAD_HISTORY3;
       break;
+    case ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
+      wgui_action = WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS;
+      break;
     case IDC_CONFIGURATION:
       {
         cfg *configbackup;
@@ -3584,6 +3602,8 @@ BOOLE wguiEnter(void)
 
     // install history into menu
     wguiInstallHistoryIntoMenu();
+    wguiInstallMenuPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+
     ShowWindow(wgui_hDialog, win_drv_nCmdShow);
 
     while (!end_loop)
@@ -3722,6 +3742,10 @@ BOOLE wguiEnter(void)
           cfgManagerSetCurrentConfig(&cfg_manager, wgui_cfg);
 	  fellowSetPreStartReset(cfgManagerConfigurationActivate(&cfg_manager) || fellowGetPreStartReset());
 	  debugger_start = TRUE;
+  case WGUI_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS:
+    wguiToggleMenuPauseEmulationWhenWindowLosesFocus(wgui_hDialog, wgui_ini);
+    wgui_action = WGUI_NO_ACTION;
+    break;
 	default:
 	  break;
       }
@@ -3735,7 +3759,11 @@ BOOLE wguiEnter(void)
     if (!quit_emulator && debugger_start)
     {
       debugger_start = FALSE;
+#ifdef FELLOW_USE_LEGACY_DEBUGGER
+      wdbgDebugSessionRun(NULL);
+#else
       wdebDebug();
+#endif
     }
     else if (!quit_emulator)
     {
