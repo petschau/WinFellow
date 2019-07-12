@@ -18,11 +18,12 @@ This HOWTO describes the steps necessary to prepare a new public WinFellow relea
   - copy GPL license terms (PDF) into the WinFellow_... folder
   - zip the folder using 7-Zip
   - clean up the source code directory, copy the GPL license terms into it and zip the folder using 7-Zip
-* beta testing is usually performed before a public release; recently beta builds have been distributed via Dropbox; in the past we posted the betas to the EAB 
-  [private : WinFellow beta release](http://eab.abime.net/forumdisplay.php?f=60) forum
-* announce availability of the beta in the forum and to the fellow-beta mailing list
-* If feedback is positive, upload the release with highlight information to GitHub and post announcements (public EAB support forum, fellow-announce, ...)
-* update the hugo website with the release highlights (WinFellow branch 'hugo', insert a new post), recompile the hugo website and commit/push the resulting files to the gh-pages branch to update the public website
+* a closed beta test is usually performed before a public release; recently beta builds have been distributed via Dropbox, communication with beta testers was done via eMail; in the past we also posted the betas to the EAB [private : WinFellow beta release](http://eab.abime.net/forumdisplay.php?f=60) forum
+* If beta feedback is positive, upload a public release candidate with highlight information to GitHub and post announcements (public EAB support forum, hugo website/GitHub-Pages, ...);
+* monitor download counts via
+  `curl -l https://api.github.com/repos/petschau/WinFellow/releases`
+*  repeat until there is no feedback preventing a public release and a reasonable number of downloads was performed
+* prepare final release, update the hugo website with the release highlights (WinFellow branch 'hugo', insert a new post), recompile the hugo website and commit/push the resulting files to the gh-pages branch to update the public website
 
 Unclarified points:
 * Do we use profile-guided optimization, and if we do, how do we run it? Or do we use whole-program optimization instead?
