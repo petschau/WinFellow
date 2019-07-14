@@ -489,6 +489,9 @@
     <ClCompile Include="..\..\C\xdmswrap.c">
       <Filter>core C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\UAE\C\fsdb_mywin32.cpp">
+      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">

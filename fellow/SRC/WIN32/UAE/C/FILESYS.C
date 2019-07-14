@@ -2762,68 +2762,70 @@ action_set_date (Unit *unit, dpacket packet)
 	PUT_PCK_RES1 (packet, DOS_TRUE);
 }
 
-static void
-action_rename_object (Unit *unit, dpacket packet)
+static void action_rename_object (Unit *unit, dpacket packet)
 {
-    uaecptr lock1 = GET_PCK_ARG1 (packet) << 2;
-    uaecptr name1 = GET_PCK_ARG2 (packet) << 2;
-    uaecptr lock2 = GET_PCK_ARG3 (packet) << 2;
-    uaecptr name2 = GET_PCK_ARG4 (packet) << 2;
-    a_inode *a1, *a2;
-    uae_u32 err1, err2;
+  uaecptr lock1 = GET_PCK_ARG1 (packet) << 2;
+  uaecptr name1 = GET_PCK_ARG2 (packet) << 2;
+  uaecptr lock2 = GET_PCK_ARG3 (packet) << 2;
+  uaecptr name2 = GET_PCK_ARG4 (packet) << 2;
+  a_inode *a1, *a2;
+  uae_u32 err1, err2;
 
-    TRACE(("ACTION_RENAME_OBJECT(0x%lx,\"%s\",", lock1, bstr (unit, name1)));
-    TRACE(("0x%lx,\"%s\")\n", lock2, bstr (unit, name2)));
+  TRACE(("ACTION_RENAME_OBJECT(0x%lx,\"%s\",", lock1, bstr (unit, name1)));
+  TRACE(("0x%lx,\"%s\")\n", lock2, bstr (unit, name2)));
 
-    if (unit->ui.readonly) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_DISK_WRITE_PROTECTED);
-	return;
-    }
+  if (unit->ui.readonly) {
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, ERROR_DISK_WRITE_PROTECTED);
+    return;
+  }
 
-    a1 = find_aino (unit, lock1, bstr (unit, name1), &err1);
-    if (err1 != 0) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, err1);
-	return;
-    }
-    /* See whether the other name already exists in the filesystem.  */
-    a2 = find_aino (unit, lock2, bstr (unit, name2), &err2);
-    if (a2 == a1) {
-	/* Renaming to the same name, but possibly different case.  */
-	if (strcmp (a1->aname, bstr_cut (unit, name2)) == 0) {
+  a1 = find_aino (unit, lock1, bstr (unit, name1), &err1);
+  if (err1 != 0) {
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, err1);
+    return;
+  }
+  /* See whether the other name already exists in the filesystem.  */
+  a2 = find_aino (unit, lock2, bstr (unit, name2), &err2);
+
+  if (a2 == a1) {
+    /* Renaming to the same name, but possibly different case.  */
+    if (strcmp (a1->aname, bstr_cut (unit, name2)) == 0) {
 	    /* Exact match -> do nothing.  */
 	    PUT_PCK_RES1 (packet, DOS_TRUE);
 	    return;
-	}
-	a2 = a2->parent;
-    } else if (a2 == 0 || err2 != ERROR_OBJECT_NOT_AROUND) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, err2 == 0 ? ERROR_OBJECT_EXISTS : err2);
-	return;
     }
+    a2 = a2->parent;
+  } else if (a2 == 0 || err2 != ERROR_OBJECT_NOT_AROUND) {
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, err2 == 0 ? ERROR_OBJECT_EXISTS : err2);
+    return;
+  }
 
-    a2 = create_child_aino (unit, a2, bstr_cut (unit, name2), a1->dir);
-    if (a2 == 0) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, ERROR_DISK_IS_FULL); /* best we can do */
-	return;
-    }
+  a2 = create_child_aino (unit, a2, bstr_cut (unit, name2), a1->dir);
+  if (a2 == 0) {
+    PUT_PCK_RES1 (packet, DOS_FALSE);
+    PUT_PCK_RES2 (packet, ERROR_DISK_IS_FULL); /* best we can do */
+    return;
+  }
 
-    /* @@@ what should we do if there are locks on a1? */
-    if (-1 == rename (a1->nname, a2->nname)) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, dos_errno ());
-	return;
-    }
-    a2->comment = a1->comment;
-    a1->comment = 0;
-    a2->amigaos_mode = a1->amigaos_mode;
-	a2->uniq = a1->uniq;
-    move_exkeys (unit, a1, a2);
-    move_aino_children (unit, a1, a2);
-    delete_aino (unit, a1);
-    PUT_PCK_RES1 (packet, DOS_TRUE);
+  /* @@@ what should we do if there are locks on a1? */
+  if (-1 == my_rename (a1->nname, a2->nname)) {
+    fellowAddLog("action_rename_object(): rename '%s' -> '%s' failed..\n", a1->nname, a2->nname);
+    delete_aino(unit, a2);
+	  PUT_PCK_RES1 (packet, DOS_FALSE);
+	  PUT_PCK_RES2 (packet, dos_errno ());
+	  return;
+  }
+  a2->comment = a1->comment;
+  a1->comment = 0;
+  a2->amigaos_mode = a1->amigaos_mode;
+  a2->uniq = a1->uniq;
+  move_exkeys (unit, a1, a2);
+  move_aino_children (unit, a1, a2);
+  delete_aino (unit, a1);
+  PUT_PCK_RES1 (packet, DOS_TRUE);
 }
 
 static void

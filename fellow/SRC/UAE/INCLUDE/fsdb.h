@@ -130,3 +130,5 @@ extern void fsdb_fill_file_attrs (a_inode *);
 extern int fsdb_set_file_attrs (a_inode *, int);
 extern int fsdb_mode_representable_p (const a_inode *);
 extern char *fsdb_create_unique_nname (a_inode *base, const char *);
+
+extern int my_rename(const char*, const char*);
