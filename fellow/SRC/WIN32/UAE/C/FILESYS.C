@@ -2812,7 +2812,7 @@ static void action_rename_object (Unit *unit, dpacket packet)
 
   /* @@@ what should we do if there are locks on a1? */
   if (-1 == my_rename (a1->nname, a2->nname)) {
-    fellowAddLog("action_rename_object(): rename '%s' -> '%s' failed..\n", a1->nname, a2->nname);
+    fellowAddLog("action_rename_object() ERROR: rename '%s' -> '%s' failed..\n", a1->nname, a2->nname);
     delete_aino(unit, a2);
 	  PUT_PCK_RES1 (packet, DOS_FALSE);
 	  PUT_PCK_RES2 (packet, dos_errno ());

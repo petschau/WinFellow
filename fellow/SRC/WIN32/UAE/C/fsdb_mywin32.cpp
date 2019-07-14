@@ -10,6 +10,8 @@ struct uae_prefs {
   bool win32_filesystem_mangle_reserved_names;
 } currprefs = { true };
 
+// the code below has been ported over from WinUAE
+
 /* FELLOW IN END */
 
 int my_rename(const TCHAR* oldname, const TCHAR* newname)
