@@ -49,8 +49,8 @@ public:
   static bool IsDualPlayfield(void) {return (bplcon0 & 0x0400) == 0x0400;}
   static bool IsHam(void) {return (bplcon0 & 0x0800) == 0x0800;}
   static bool IsPlayfield1Pri(void) {return (bplcon2 & 0x0040) == 0;}
-  static bool IsDMAEnabled(void) {return ((dmaconr & 0x0300) == 0x0300);}
   static ULO GetEnabledBitplaneCount(void) {return (bplcon0 >> 12) & 7;}
+  static bool IsDMAEnabled(void) { return ((dmaconr & 0x0300) == 0x0300); }
 };
 
 #endif
