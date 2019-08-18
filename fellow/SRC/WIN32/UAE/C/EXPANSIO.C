@@ -40,8 +40,10 @@
 
 #include <stdio.h>
 #include "uae2fell.h"
-#include "fmem.h"
+#include "FMEM.H"
 #include "autoconf.h"
+
+using namespace fellow::api::vm;
 
 /* FELLOW IN (END)-----------------------*/
 
@@ -300,12 +302,23 @@ void expamem_map_filesys (ULO mapping)
 {
     uaecptr a;
     /* FELLOW IN (START) -------------------*/
-    int bank;
 
     filesys_start = (mapping<<8) & (RTAREA_BASE + 0xf0000);
-    bank = filesys_start>>16;
-    memoryBankSet(filesys_bget, filesys_wget, filesys_lget, filesys_bput,
-                  filesys_wput, filesys_lput, filesysory, bank, bank, FALSE);
+    ULO bank = filesys_start>>16;
+    memoryBankSet(MemoryBankDescriptor
+      {
+	.Kind = MemoryKind::FilesystemROM,
+	.BankNumber = bank,
+	.BaseBankNumber = bank,
+	.ReadByteFunc = filesys_bget,
+	.ReadWordFunc = filesys_wget,
+	.ReadLongFunc = filesys_lget,
+	.WriteByteFunc = filesys_bput,
+	.WriteWordFunc = filesys_wput,
+	.WriteLongFunc = filesys_lput,
+	.BasePointer = filesysory,
+	.IsBasePointerWritable = false 
+      });
     /* FELLOW IN (END) ----------------------*/
     
     /* FELLOW OUT (START)------------------------

@@ -1,14 +1,21 @@
 #include "GfxDrvCommon.h"
-#include "GfxDrvDXGI.h"
+#include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
+#include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
 #include "GFXDRV.H"
-#include "FELLOW.H"
-#include "gfxdrv_directdraw.h"
+#include "fellow/api/Services.h"
+#include "fellow/hud/HudPropertyProvider.h"
+
+#ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
-#include "fileops.h"
+#endif
+
+using namespace std;
+using namespace fellow::api;
 
 bool gfx_drv_use_dxgi = false;
 
 GfxDrvCommon *gfxDrvCommon = nullptr;
+GfxDrvDirectDraw* gfxDrvDirectDraw = nullptr;
 GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
 void gfxDrvClearCurrentBuffer()
@@ -19,31 +26,29 @@ void gfxDrvClearCurrentBuffer()
   }
   else
   {
-    gfxDrvDDrawClearCurrentBuffer();
+    gfxDrvDirectDraw->ClearCurrentBuffer();
   }
 }
 
-UBY* gfxDrvValidateBufferPointer()
+GfxDrvMappedBufferPointer gfxDrvMapChipsetFramebuffer()
 {
-  gfxDrvCommon->RunEventWait();
-
   if (gfx_drv_use_dxgi)
   {
-    return gfxDrvDXGI->ValidateBufferPointer();
+    return gfxDrvDXGI->MapChipsetFramebuffer();
   }
 
-  return gfxDrvDDrawValidateBufferPointer();
+  return gfxDrvDirectDraw->MapChipsetFramebuffer();
 }
 
-void gfxDrvInvalidateBufferPointer()
+void gfxDrvUnmapChipsetFramebuffer()
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->InvalidateBufferPointer();
+    gfxDrvDXGI->UnmapChipsetFramebuffer();
   }
   else
   {
-    gfxDrvDDrawInvalidateBufferPointer();
+    gfxDrvDirectDraw->UnmapChipsetFramebuffer();
   }
 }
 
@@ -57,7 +62,20 @@ void gfxDrvBufferFlip()
   }
   else
   {
-    gfxDrvDDrawFlip();
+    gfxDrvDirectDraw->Flip();
+  }
+
+  gfxDrvCommon->RunEventWait();
+}
+
+void gfxDrvDrawHUD(const MappedChipsetFramebuffer& mappedFramebuffer)
+{
+  if (gfx_drv_use_dxgi)
+  {
+  }
+  else
+  {
+    gfxDrvDirectDraw->RenderHud(mappedFramebuffer);
   }
 }
 
@@ -79,7 +97,7 @@ void gfxDrvSizeChanged(unsigned int width, unsigned int height)
   }
   else
   {
-    gfxDrvDDrawSizeChanged(width, height);
+    gfxDrvDirectDraw->SizeChanged(width, height);
   }
 }
 
@@ -91,52 +109,46 @@ void gfxDrvPositionChanged()
   }
   else
   {
-    gfxDrvDDrawPositionChanged();
+    gfxDrvDirectDraw->PositionChanged();
   }
 }
 
-void gfxDrvSetMode(draw_mode *dm, bool windowed)
-{
-  gfxDrvCommon->SetDrawMode(dm, windowed);
-
-  if (gfx_drv_use_dxgi)
-  {
-    gfxDrvDXGI->SetMode(dm, windowed);
-  }
-  else
-  {
-    gfxDrvDDrawSetMode(dm, windowed);
-  }
-}
-
-void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information)
+GfxDrvColorBitsInformation gfxDrvGetColorBitsInformation()
 {
   if (gfx_drv_use_dxgi)
   {
-    gfxDrvDXGI->GetBufferInformation(buffer_information);
+    return gfxDrvDXGI->GetColorBitsInformation();
   }
-  else
-  {
-    gfxDrvDDrawGetBufferInformation(buffer_information);
-  }
+
+  return gfxDrvDirectDraw->GetColorBitsInformation();
 }
 
-bool gfxDrvEmulationStart(unsigned int maxbuffercount)
+list<DisplayMode> gfxDrvGetDisplayModeList()
 {
-  if (!gfxDrvCommon->EmulationStart())
+  if (gfx_drv_use_dxgi)
+  {
+    return gfxDrvDXGI->GetDisplayModeList();
+  }
+
+  return gfxDrvDirectDraw->GetDisplayModeList();
+}
+
+bool gfxDrvEmulationStart(const HostRenderConfiguration& hostRenderConfiguration, const HostRenderRuntimeSettings& hostRenderRuntimeSettings, const ChipsetBufferRuntimeSettings& chipsetBufferRuntimeSettings, HudPropertyProvider* hudPropertyProvider)
+{
+  if (!gfxDrvCommon->EmulationStart(hostRenderConfiguration, hostRenderRuntimeSettings.DisplayMode))
   {
     return false;
   }
 
   if (gfx_drv_use_dxgi)
   {
-    return gfxDrvDXGI->EmulationStart(maxbuffercount);
+    return gfxDrvDXGI->EmulationStart(hostRenderConfiguration, chipsetBufferRuntimeSettings, hostRenderRuntimeSettings.DisplayMode, hudPropertyProvider);
   }
 
-  return gfxDrvDDrawEmulationStart(maxbuffercount);
+  return gfxDrvDirectDraw->EmulationStart(hostRenderConfiguration, hostRenderRuntimeSettings, chipsetBufferRuntimeSettings, hudPropertyProvider);
 }
 
-ULO gfxDrvEmulationStartPost()
+ULO gfxDrvEmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings)
 {
   gfxDrvCommon->EmulationStartPost();
 
@@ -145,7 +157,7 @@ ULO gfxDrvEmulationStartPost()
     return gfxDrvDXGI->EmulationStartPost();
   }
 
-  return gfxDrvDDrawEmulationStartPost();
+  return gfxDrvDirectDraw->EmulationStartPost(chipsetBufferRuntimeSettings, gfxDrvCommon->GetHWND());
 }
 
 void gfxDrvEmulationStop()
@@ -156,7 +168,7 @@ void gfxDrvEmulationStop()
   }
   else
   {
-    gfxDrvDDrawEmulationStop();
+    gfxDrvDirectDraw->EmulationStop();
   }
 
   gfxDrvCommon->EmulationStop();
@@ -170,7 +182,7 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
   if (szFilename[0] == 0)
   {
     // filename not set, automatically generate one
-    fileopsGetScreenshotFileName(szActualFilename);
+    Service->Fileops.GetScreenshotFileName(szActualFilename);
   }
   else
   {
@@ -183,26 +195,18 @@ bool gfxDrvSaveScreenshot(const bool bSaveFilteredScreenshot, const STR *szFilen
   }
   else
   {
-    result = gfxDrvDDrawSaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
+    result = gfxDrvDirectDraw->SaveScreenshot(bSaveFilteredScreenshot, szActualFilename);
   }
 
-  fellowAddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n",
-    bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
+  Service->Log.AddLog("gfxDrvSaveScreenshot(filtered=%s, filename=%s) %s.\n", bSaveFilteredScreenshot ? "true" : "false", szActualFilename, result ? "successful" : "failed");
 
   return result;
-}
-
-bool gfxDrvRestart(DISPLAYDRIVER displaydriver)
-{
-  gfxDrvShutdown();
-  drawClearModeList();
-  return gfxDrvStartup(displaydriver);
 }
 
 // Called when the application starts up
 bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 {
-  gfx_drv_use_dxgi = (displaydriver == DISPLAYDRIVER_DIRECT3D11);
+  gfx_drv_use_dxgi = (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
 
   gfxDrvCommon = new GfxDrvCommon();
 
@@ -221,11 +225,12 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
 
   if (gfx_drv_use_dxgi)
   {
-    if (!gfxDrvDXGIValidateRequirements())
+    if (!gfxDrvValidateRequirements())
     {
-      fellowAddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+      Service->Log.AddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
       gfx_drv_use_dxgi = false;
-      return gfxDrvDDrawStartup();
+      gfxDrvDirectDraw = new GfxDrvDirectDraw();
+      return gfxDrvDirectDraw->Startup();
     }
 
     gfxDrvDXGI = new GfxDrvDXGI();
@@ -234,11 +239,12 @@ bool gfxDrvStartup(DISPLAYDRIVER displaydriver)
     {
       return true;
     }
-    fellowAddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    Service->Log.AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
     gfx_drv_use_dxgi = false;
   }
 
-  return gfxDrvDDrawStartup();
+  gfxDrvDirectDraw = new GfxDrvDirectDraw();
+  return gfxDrvDirectDraw->Startup();
 }
 
 // Called when the application is closed
@@ -254,7 +260,12 @@ void gfxDrvShutdown()
   }
   else
   {
-    gfxDrvDDrawShutdown();
+    gfxDrvDirectDraw->Shutdown();
+    if (gfxDrvDirectDraw != nullptr)
+    {
+      delete gfxDrvDirectDraw;
+      gfxDrvDirectDraw = nullptr;
+    }
   }
 
   if (gfxDrvCommon != nullptr)
@@ -264,7 +275,7 @@ void gfxDrvShutdown()
   }
 }
 
-bool gfxDrvDXGIValidateRequirements(void)
+bool gfxDrvValidateRequirements()
 {
   return GfxDrvDXGI::ValidateRequirements();
 }

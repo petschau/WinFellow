@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBFILESYSTEMHEADER_H
-#define FELLOW_HARDFILE_RDB_RDBFILESYSTEMHEADER_H
+#pragma once
 
 #include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDBFileReader.h"
@@ -36,11 +35,9 @@ namespace fellow::hardfile::rdb
 
     RDBFileSystemHandler FileSystemHandler;
 
-    void ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
+    void ReadFromFile(RDBFileReader &reader, ULO blockChainStart, ULO blockSize);
     void Log();
 
     RDBFileSystemHeader();
   };
 }
-
-#endif

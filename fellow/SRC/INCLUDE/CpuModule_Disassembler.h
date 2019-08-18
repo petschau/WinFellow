@@ -1,5 +1,4 @@
-#ifndef CPUMODULE_DISASSEMBLER_H
-#define CPUMODULE_DISASSEMBLER_H
+#pragma once
 
 extern ULO cpuDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);
 
@@ -93,5 +92,3 @@ extern ULO cpuDisTrapcc(ULO prc, ULO opc, STR *sdata, STR *sinstruction, STR *so
 extern ULO cpuDisUnpk(ULO prc, ULO opc, STR *sdata, STR *sinstruction, STR *soperands);
 extern ULO cpuDisCallm(ULO prc, ULO opc, STR *sdata, STR *sinstruction, STR *soperands);
 extern ULO cpuDisRtm(ULO prc, ULO opc, STR *sdata, STR *sinstruction, STR *soperands);
-
-#endif

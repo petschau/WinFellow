@@ -1,36 +1,31 @@
-#ifndef BLIT_H
-#define BLIT_H
+#pragma once
 
 /*===========================================================================*/
 /* Blitter-properties                                                        */
 /*===========================================================================*/
 
 extern void blitterSetFast(BOOLE fast);
-extern BOOLE blitterGetFast(void);
+extern BOOLE blitterGetFast();
 
 extern void blitterSetOperationLog(BOOLE operation_log);
-extern BOOLE blitterGetOperationLog(void);
+extern BOOLE blitterGetOperationLog();
 
-extern BOOLE blitterGetDMAPending(void);
-extern BOOLE blitterGetZeroFlag(void);
-extern ULO blitterGetFreeCycles(void);
-extern BOOLE blitterIsStarted(void);
+extern BOOLE blitterGetDMAPending();
+extern BOOLE blitterGetZeroFlag();
+extern ULO blitterGetFreeCycles();
+extern BOOLE blitterIsStarted();
 
 /*===========================================================================*/
 /* Declare C blitter functions                                               */
 /*===========================================================================*/
 
-extern void blitterSaveState(FILE *F);
-extern void blitterLoadState(FILE *F);
-void blitterEndOfFrame(void);
-void blitterEmulationStart(void);
-void blitterEmulationStop(void);
-void blitterHardReset(void);
-void blitterStartup(void);
-void blitterShutdown(void);
-void blitterLineMode(void);
-void blitFinishBlit(void);
-void blitForceFinish(void);
-void blitterCopy(void);
-
-#endif
+void blitterEndOfFrame();
+void blitterEmulationStart();
+void blitterEmulationStop();
+void blitterHardReset();
+void blitterStartup();
+void blitterShutdown();
+void blitterLineMode();
+void blitFinishBlit();
+void blitForceFinish();
+void blitterCopy();

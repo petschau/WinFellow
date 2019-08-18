@@ -1,4 +1,3 @@
-/* @(#) $Id: UAESUPP.C,v 1.8 2008-02-21 00:08:54 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -38,6 +37,10 @@
 
 #include "uae2fell.h"
 #include "fmem.h"
+
+#include "fellow/api/Services.h"
+
+using namespace fellow::api;
 
 char uaehf0[256];
 ULO hardfile_size = 0;
@@ -79,9 +82,9 @@ void do_put_mem_byte(uae_u8 *address, uae_u8 data) {
 
 /*-------------------------------------------------*/
 
-int valid_address(uaecptr adr, uae_u32 size) {
-  return ((memory_bank_pointer[(adr & 0xffffff)>>16] != NULL) &&
-	  (memory_bank_pointer[((adr + size) & 0xffffff)>>16] != NULL));
+bool valid_address(uaecptr adr, uae_u32 size)
+{
+  return memoryIsValidPointerAddress(adr, size);
 }
 
 /* This was taken from compiler.c in duae075b */
@@ -109,7 +112,7 @@ void write_log (const char *format,...)
     /* FELLOW REMOVE: int *blah = (int *)0xdeadbeef; */
 
     va_start (parms, format);
-    count = _vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
-	fellowAddLog(buffer);
+    count = vsnprintf( buffer, WRITE_LOG_BUF_SIZE-1, format, parms );
+    Service->Log.AddLog(buffer);
     va_end (parms);
 }

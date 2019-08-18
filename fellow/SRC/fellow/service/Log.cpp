@@ -2,20 +2,26 @@
 #include <string>
 #include <list>
 #include "fellow/service/Log.h"
-#include "fileops.h"
+#include "fellow/api/Services.h"
+#include "WGUI.H"
+
+#ifdef RETRO_PLATFORM
+#include "RetroPlatform.h"
+#endif
 
 #define WRITE_LOG_BUF_SIZE 512
 
 using namespace std;
+using namespace fellow::api;
 
 namespace fellow::service
 {
-  Log::Log() :
-    _new_line(true), _first_time(true), _enabled(true), 
+  Log::Log()
+      : _new_line(true), _first_time(true), _enabled(true),
 #ifdef _DEBUG
-      _level(LogLevelDebug)
+        _level(LogLevelDebug)
 #else
-      _level(LogLevelInformation)
+        _level(LogLevelInformation)
 #endif
   {
   }
@@ -31,11 +37,12 @@ namespace fellow::service
     {
       va_list parms;
       char buffer[WRITE_LOG_BUF_SIZE];
-      char *buffer2 = LogTime(buffer);
+      char *buffer2 = LogTime(buffer); // Pointer into buffer to after the end of the logged time string
+      size_t timeStringLength = strlen(buffer);
 
       va_start(parms, format);
-      vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-      FILE* F = OpenLogFile();
+      vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - timeStringLength, format, parms);
+      FILE *F = OpenLogFile();
       if (F != nullptr)
       {
         AddLogInternal(F, buffer);
@@ -54,11 +61,12 @@ namespace fellow::service
 
     va_list parms;
     char buffer[WRITE_LOG_BUF_SIZE];
-    char *buffer2 = LogTime(buffer);
+    char *buffer2 = LogTime(buffer); // Pointer into buffer to after the end of the logged time string
+    size_t timeStringLength = strlen(buffer);
 
     va_start(parms, format);
-    vsprintf_s(buffer2, WRITE_LOG_BUF_SIZE - 1 - strlen(buffer), format, parms);
-    FILE* F = OpenLogFile();
+    vsnprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - timeStringLength, format, parms);
+    FILE *F = OpenLogFile();
     if (F != nullptr)
     {
       AddLogInternal(F, buffer);
@@ -66,8 +74,13 @@ namespace fellow::service
     }
     va_end(parms);
   }
-  
-  void Log::AddLogList(const list<string>& messages)
+
+  void Log::AddLog(const std::string &message)
+  {
+    AddLog(message.c_str());
+  }
+
+  void Log::AddLogList(const list<string> &messages)
   {
     if (!_enabled)
     {
@@ -75,12 +88,13 @@ namespace fellow::service
     }
 
     char buffer[WRITE_LOG_BUF_SIZE];
-    FILE* F = OpenLogFile();
+    FILE *F = OpenLogFile();
 
-    for (const string& msg : messages)
+    for (const string &msg : messages)
     {
-      STR* buffer2 = LogTime(buffer);
-      _snprintf(buffer2, WRITE_LOG_BUF_SIZE - 1, "%s\n", msg.c_str());
+      STR *buffer2 = LogTime(buffer);
+      size_t timeStringLength = strlen(buffer);
+      snprintf(buffer2, WRITE_LOG_BUF_SIZE - 1 - timeStringLength, "%s\n", msg.c_str());
       AddLogInternal(F, buffer);
     }
 
@@ -102,13 +116,41 @@ namespace fellow::service
     }
   }
 
-  void Log::AddLogInternal(FILE *F, STR* msg)
+  void Log::AddTimelessLog(const char *format, ...)
+  {
+    char buffer[WRITE_LOG_BUF_SIZE];
+    va_list parms;
+
+    va_start(parms, format);
+    vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+    va_end(parms);
+
+    Service->Log.AddLog2(buffer);
+  }
+  void Log::AddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
+  {
+    char buffer[WRITE_LOG_BUF_SIZE];
+    va_list parms;
+
+    va_start(parms, format);
+    vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
+    va_end(parms);
+
+    AddLog(buffer);
+
+#ifdef RETRO_PLATFORM
+    if (!RP.GetHeadlessMode())
+#endif
+      wguiRequester(type, buffer);
+  }
+
+  void Log::AddLogInternal(FILE *F, STR *msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');
   }
 
-  STR *Log::LogTime(STR* buffer)
+  STR *Log::LogTime(STR *buffer)
   {
     if (_new_line)
     {
@@ -126,21 +168,21 @@ namespace fellow::service
     return buffer;
   }
 
-  FILE* Log::OpenLogFile()
+  FILE *Log::OpenLogFile()
   {
-    FILE* F = nullptr;
+    FILE *F = nullptr;
 
     if (_first_time)
     {
-      STR logfilename[MAX_PATH];
-      fileopsGetFellowLogfileName(logfilename);
+      STR logfilename[CFG_FILENAME_LENGTH];
+      Service->Fileops.GetFellowLogfileName(logfilename);
       _logfilename = logfilename;
-      fopen_s(&F, _logfilename.c_str(), "w");
+      F = fopen(_logfilename.c_str(), "w");
       _first_time = false;
     }
     else
     {
-      fopen_s(&F, _logfilename.c_str(), "a");
+      F = fopen(_logfilename.c_str(), "a");
     }
     return F;
   }

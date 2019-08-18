@@ -37,8 +37,7 @@ namespace fellow::hardfile::hunks
     return _vmAddress;
   }
 
-  InitialHunk::InitialHunk(ULO allocateSizeInLongwords)
-    : _allocateSizeInLongwords(allocateSizeInLongwords), _contentSizeInLongwords(0), _vmAddress(0), _rawData(nullptr)
+  InitialHunk::InitialHunk(ULO allocateSizeInLongwords) : _allocateSizeInLongwords(allocateSizeInLongwords), _contentSizeInLongwords(0), _vmAddress(0), _rawData(nullptr)
   {
   }
 }

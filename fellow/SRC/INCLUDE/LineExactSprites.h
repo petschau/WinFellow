@@ -1,16 +1,16 @@
-#ifndef LINEEXACTSPRITES_H
-#define LINEEXACTSPRITES_H
+#pragma once
 
-#include "DEFS.H"
+#include "fellow/api/defs.h"
 #include "SPRITE.H"
 
 #define SPRITE_MAX_LIST_ITEMS 275
 
 class LineExactSprites;
 
-typedef void(LineExactSprites::*spr_register_func)(UWO data, ULO address);
+typedef void (LineExactSprites::*spr_register_func)(UWO data, ULO address);
 
-typedef struct {
+typedef struct
+{
   ULO raster_y;
   ULO raster_x;
   spr_register_func called_function;
@@ -18,18 +18,20 @@ typedef struct {
   ULO address;
 } spr_action_list_item;
 
-typedef struct {
+typedef struct
+{
   ULO count;
   spr_action_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_action_list_master;
 
-
-typedef struct {
+typedef struct
+{
   UBY sprite_data[16];
   ULO sprx;
 } spr_merge_list_item;
 
-typedef struct {
+typedef struct
+{
   ULO count;
   spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
 } spr_merge_list_master;
@@ -97,7 +99,8 @@ private:
 
   UBY sprite[8][16];
 
-  typedef struct {
+  typedef struct
+  {
     spr_merge_list_master merge_list_master[8];
   } sprite_ham_slot;
 
@@ -108,18 +111,18 @@ private:
   ULO sprite_write_next;
   ULO sprite_write_real;
 
-  spr_action_list_item* ActionListAddLast(spr_action_list_master* l);
-  ULO ActionListCount(spr_action_list_master* l);
-  spr_action_list_item* ActionListGet(spr_action_list_master* l, ULO i);
-  void ActionListClear(spr_action_list_master* l);
-  spr_action_list_item* ActionListAddSorted(spr_action_list_master* l, ULO raster_x, ULO raster_y);
-  spr_merge_list_item* MergeListAddLast(spr_merge_list_master* l);
-  ULO MergeListCount(spr_merge_list_master* l);
-  spr_merge_list_item* MergeListGet(spr_merge_list_master* l, ULO i);
-  void MergeListClear(spr_merge_list_master* l);
+  spr_action_list_item *ActionListAddLast(spr_action_list_master *l);
+  ULO ActionListCount(spr_action_list_master *l);
+  spr_action_list_item *ActionListGet(spr_action_list_master *l, ULO i);
+  void ActionListClear(spr_action_list_master *l);
+  spr_action_list_item *ActionListAddSorted(spr_action_list_master *l, ULO raster_x, ULO raster_y);
+  spr_merge_list_item *MergeListAddLast(spr_merge_list_master *l);
+  ULO MergeListCount(spr_merge_list_master *l);
+  spr_merge_list_item *MergeListGet(spr_merge_list_master *l, ULO i);
+  void MergeListClear(spr_merge_list_master *l);
 
   void MergeHAM(graph_line *linedescription);
-  void BuildItem(spr_action_list_item ** item);
+  void BuildItem(spr_action_list_item **item);
 
   void Log();
   void ClearState();
@@ -129,60 +132,58 @@ private:
   void Decode16Sprite(ULO sprite_number);
   void SetDebugging();
 
-  void MergeDualLoresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualLoresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualLoresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualLoresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualLoresPlayfield(graph_line* current_graph_line);
-  void MergeDualHiresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualHiresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualHiresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualHiresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr);
-  void MergeDualHiresPlayfield(graph_line* current_graph_line);
-  void MergeHires(graph_line* current_graph_line);
-  void MergeLores(graph_line* current_graph_line);
+  void MergeDualLoresPF2loopinfront2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualLoresPF1loopinfront2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualLoresPF1loopbehind2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualLoresPF2loopbehind2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualLoresPlayfield(graph_line *current_graph_line);
+  void MergeDualHiresPF2loopinfront2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualHiresPF1loopinfront2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualHiresPF1loopbehind2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualHiresPF2loopbehind2(graph_line *current_graph_line, ULO sprnr);
+  void MergeDualHiresPlayfield(graph_line *current_graph_line);
+  void MergeHires(graph_line *current_graph_line);
+  void MergeLores(graph_line *current_graph_line);
 
   void ProcessActionListNOP();
   void ProcessDMAActionListNOP();
+
 public:
   bool HasSpritesOnLine();
 
   void DMASpriteHandler();
   void ProcessActionList();
 
-  void Merge(graph_line* current_graph_line);
+  void Merge(graph_line *current_graph_line);
 
-  void MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription);
-  void MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+  void MergeHAM2x1x16(ULO *frameptr, const graph_line *const linedescription);
+  void MergeHAM2x2x16(ULO *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x2x16(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x4x16(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3);
 
-  void MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription);
-  void MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+  void MergeHAM2x1x24(UBY *frameptr, const graph_line *const linedescription);
+  void MergeHAM2x2x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x2x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x4x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3);
 
-  void MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription);
-  void MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset);
-  void MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3);
+  void MergeHAM2x1x32(ULL *frameptr, const graph_line *const linedescription);
+  void MergeHAM2x2x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x2x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset);
+  void MergeHAM4x4x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3);
 
-  virtual void NotifySprpthChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprptlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprposChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprctlChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdataChanged(UWO data, unsigned int sprite_number);
-  virtual void NotifySprdatbChanged(UWO data, unsigned int sprite_number);
+  virtual void NotifySprpthChanged(UWO data, const unsigned int sprite_number);
+  virtual void NotifySprptlChanged(UWO data, const unsigned int sprite_number);
+  virtual void NotifySprposChanged(UWO data, const unsigned int sprite_number);
+  virtual void NotifySprctlChanged(UWO data, const unsigned int sprite_number);
+  virtual void NotifySprdataChanged(UWO data, const unsigned int sprite_number);
+  virtual void NotifySprdatbChanged(UWO data, const unsigned int sprite_number);
 
   virtual void HardReset();
-  virtual void EndOfLine(ULO rasterY);
+  virtual void EndOfLine(ULO line);
   virtual void EndOfFrame();
   virtual void EmulationStart();
   virtual void EmulationStop();
 
   LineExactSprites();
   virtual ~LineExactSprites();
-
 };
-
-#endif

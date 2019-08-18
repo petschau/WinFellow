@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_RAWDATAREADER_H
-#define FELLOW_HARDFILE_HUNKS_RAWDATAREADER_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
@@ -9,7 +8,7 @@ namespace fellow::hardfile::hunks
   class RawDataReader
   {
   private:
-    UBY * _rawData;
+    UBY *_rawData;
     ULO _rawDataLength;
     ULO _index;
 
@@ -27,5 +26,3 @@ namespace fellow::hardfile::hunks
     RawDataReader(UBY *rawData, ULO rawDataLength);
   };
 }
-
-#endif

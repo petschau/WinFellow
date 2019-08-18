@@ -1,16 +1,15 @@
-#ifndef FELLOW_HARDFILE_HARDFILEHANDLER_H
-#define FELLOW_HARDFILE_HARDFILEHANDLER_H
+#pragma once
 
 #include <string>
 #include <vector>
-#include "fellow/api/module/IHardfileHandler.h"
+#include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/hardfile/HardfileStructs.h"
 
 #define FHFILE_MAX_DEVICES 20
 
 namespace fellow::hardfile
 {
-  class HardfileHandler : public fellow::api::module::IHardfileHandler
+  class HardfileHandler : public fellow::api::modules::IHardfileHandler
   {
   private:
     HardfileDevice _devices[FHFILE_MAX_DEVICES];
@@ -31,18 +30,18 @@ namespace fellow::hardfile
 
     void CreateMountList();
     std::string MakeDeviceName();
-    std::string MakeDeviceName(const std::string& preferredName);
-    bool PreferredNameExists(const std::string& preferredName);
-    bool FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int& olderOrSameFileSystemIndex);
+    std::string MakeDeviceName(const std::string &preferredName);
+    bool PreferredNameExists(const std::string &preferredName);
+    bool FindOlderOrSameFileSystemVersion(ULO DOSType, ULO version, unsigned int &olderOrSameFileSystemIndex);
     HardfileFileSystemEntry *GetFileSystemForDOSType(ULO DOSType);
-    void AddFileSystemsFromRdb(HardfileDevice& device);
+    void AddFileSystemsFromRdb(HardfileDevice &device);
     void AddFileSystemsFromRdb();
     void EraseOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
-    void SetHardfileConfigurationFromRDB(fellow::api::module::HardfileConfiguration& config, rdb::RDB* rdb, bool readonly);
-    bool OpenHardfileFile(HardfileDevice& device);
+    void SetHardfileConfigurationFromRDB(fellow::api::modules::HardfileConfiguration &config, rdb::RDB *rdb, bool readonly);
+    bool OpenHardfileFile(HardfileDevice &device);
     void InitializeHardfile(unsigned int index);
     void RebuildHardfileConfiguration();
-    void ClearDeviceRuntimeInfo(HardfileDevice& device);
+    void ClearDeviceRuntimeInfo(HardfileDevice &device);
 
     void SetIOError(BYT errorCode);
     void SetIOActual(ULO ioActual);
@@ -87,8 +86,8 @@ namespace fellow::hardfile
     void DoRemoveRDBFileSystemsAlreadySupportedBySystem(ULO filesystemResource);
 
     void CreateDOSDevPackets(ULO devicename);
-    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
-    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry& mountListEntry, ULO deviceNameAddress);
+    void MakeDOSDevPacketForPlainHardfile(const HardfileMountListEntry &mountListEntry, ULO deviceNameAddress);
+    void MakeDOSDevPacketForRDBPartition(const HardfileMountListEntry &mountListEntry, ULO deviceNameAddress);
 
   public:
     // Autoconfig and ROM memory
@@ -105,15 +104,15 @@ namespace fellow::hardfile
     void SetEnabled(bool enabled) override;
     bool GetEnabled() override;
     void Clear() override;
-    bool CompareHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
-    void SetHardfile(const fellow::api::module::HardfileConfiguration& configuration, unsigned int index) override;
+    bool CompareHardfile(const fellow::api::modules::HardfileConfiguration &configuration, unsigned int index) override;
+    void SetHardfile(const fellow::api::modules::HardfileConfiguration &configuration, unsigned int index) override;
     bool RemoveHardfile(unsigned int index) override;
     unsigned int GetMaxHardfileCount() override;
 
     // UI helper function
-    bool Create(const fellow::api::module::HardfileConfiguration& configuration, ULO size) override;
-    fellow::api::module::rdb_status HasRDB(const std::string& filename) override;
-    fellow::api::module::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string& filename) override;
+    bool Create(const fellow::api::modules::HardfileConfiguration &configuration, ULO size) override;
+    fellow::api::modules::rdb_status HasRDB(const std::string &filename) override;
+    fellow::api::modules::HardfileConfiguration GetConfigurationFromRDBGeometry(const std::string &filename) override;
 
     // Global events
     void EmulationStart() override;
@@ -126,5 +125,3 @@ namespace fellow::hardfile
     virtual ~HardfileHandler();
   };
 }
-
-#endif

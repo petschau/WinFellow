@@ -1,10 +1,11 @@
-#ifndef WGUI_H
-#define WGUI_H
+#pragma once
 
 #include <list>
-#include "DRAW.H"
+#include "fellow/api/Services.h"
+#include "fellow/application/HostRenderer.h"
 
-typedef enum {
+enum class SelectFileFlags
+{
   FSEL_ROM = 0,
   FSEL_ADF = 1,
   FSEL_KEY = 2,
@@ -12,18 +13,18 @@ typedef enum {
   FSEL_WFC = 4,
   FSEL_MOD = 5,
   FSEL_FST = 6
-} SelectFileFlags;
+};
 
 struct wgui_drawmode
 {
-  ULO id;
+  int id;
   ULO width;
   ULO height;
   ULO refresh;
   ULO colorbits;
   STR name[32];
 
-  bool operator<(const wgui_drawmode& dm)
+  bool operator<(const wgui_drawmode &dm)
   {
     if (width < dm.width)
     {
@@ -36,19 +37,21 @@ struct wgui_drawmode
     return false;
   }
 
-  wgui_drawmode(draw_mode *dm)
+  wgui_drawmode(const DisplayMode *dm)
   {
-    height = dm->height;
-    refresh = dm->refresh;
-    width = dm->width;
-    colorbits = dm->bits;
+    id = -1;
+    height = dm->Height;
+    refresh = dm->Refresh;
+    width = dm->Width;
+    colorbits = dm->Bits;
+    name[0] = '\0';
   }
-
 };
 
 typedef std::list<wgui_drawmode> wgui_drawmode_list;
 
-typedef struct {
+struct wgui_drawmodes
+{
   ULO numberof16bit;
   ULO numberof24bit;
   ULO numberof32bit;
@@ -58,29 +61,26 @@ typedef struct {
   wgui_drawmode_list res16bit;
   wgui_drawmode_list res24bit;
   wgui_drawmode_list res32bit;
-} wgui_drawmodes;
+};
 
-typedef struct {
+struct wgui_preset
+{
   STR strPresetFilename[CFG_FILENAME_LENGTH];
   STR strPresetDescription[CFG_FILENAME_LENGTH];
-} wgui_preset;
+};
 
 /*===========================================================================*/
 /* This is the generic interface that must be implemented to create a GUI    */
 /* Fellow                                                                    */
 /*===========================================================================*/
 
-extern BOOLE wguiSaveFile(HWND, STR *, ULO, STR *, SelectFileFlags);
 extern STR *wguiExtractPath(STR *);
 
-extern void wguiStartup(void);
-extern void wguiStartupPost(void);
-extern void wguiShutdown(void);
-extern BOOLE wguiCheckEmulationNecessities(void);
-extern BOOLE wguiEnter(void);
-extern void wguiRequester(STR *szMessage, UINT uType);
+extern void wguiStartup();
+extern void wguiStartupPost();
+extern void wguiShutdown();
+extern bool wguiCheckEmulationNecessities();
+extern BOOLE wguiEnter();
+extern void wguiRequester(fellow::api::FELLOW_REQUESTER_TYPE type, STR *szMessage);
 extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);
-
-#endif /* End of WGUI_H */
-

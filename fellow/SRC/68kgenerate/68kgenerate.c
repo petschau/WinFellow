@@ -131,9 +131,9 @@ void cgProfileLogHeader()
 {
   if (cpu_profile)
   {
-    fprintf(profilef, "#include \"fileops.h\"\n");
+    fprintf(profilef, "#include \"fellow/api/Services.h\"\n");
   }
-  fprintf(profilef, "void cpuProfileWrite(void)\n");
+  fprintf(profilef, "void cpuProfileWrite()\n");
   fprintf(profilef, "{\n");
 
   if (!cpu_profile)
@@ -143,7 +143,7 @@ void cgProfileLogHeader()
 
   fprintf(profilef, "\tchar filename[MAX_PATH];\n");
   fprintf(profilef, "\tFILE *F = NULL;\n");
-  fprintf(profilef, "\tfileopsGetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
+  fprintf(profilef, "\tService->Fileops.GetGenericFileName(filename, \"WinFellow\", \"cpuprofile.txt\");\n");
   fprintf(profilef, "\tF = fopen(filename, \"w\");\n");
   fprintf(profilef, "\tif (F != NULL)\n");
   fprintf(profilef, "\t{\n");
@@ -194,7 +194,7 @@ void cgSetDisassemblyFunction(unsigned int opcode, char *dis_func_no)
   cpu_opcode_data[opcode].dis_func_no = atoi(dis_func_no);
 }
 
-void cgDisFunc(void)
+void cgDisFunc()
 {
   unsigned int opcode;
   fprintf(disfuncf, "static UBY cpu_dis_func_tab[65536] = \n{");

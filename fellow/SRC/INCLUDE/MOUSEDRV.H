@@ -1,15 +1,12 @@
-#ifndef MOUSEDRV_H
-#define MOUSEDRV_H
+#pragma once
 
-extern void  mouseDrvHardReset(void);
-extern BOOLE mouseDrvEmulationStart(void);
-extern void  mouseDrvEmulationStop(void);
-extern BOOLE mouseDrvGetFocus(void);
-extern void  mouseDrvStartup(void);
-extern void  mouseDrvShutdown(void);
-extern void  mouseDrvStateHasChanged(BOOLE);
-extern void  mouseDrvToggleFocus(void);
-extern void  mouseDrvMovementHandler(void);
-extern void  mouseDrvSetFocus(const BOOLE, const BOOLE);
-
-#endif
+extern void mouseDrvHardReset();
+extern BOOLE mouseDrvEmulationStart();
+extern void mouseDrvEmulationStop();
+extern BOOLE mouseDrvGetFocus();
+extern void mouseDrvStartup();
+extern void mouseDrvShutdown();
+extern void mouseDrvStateHasChanged(BOOLE);
+extern void mouseDrvToggleFocus();
+extern void mouseDrvMovementHandler();
+extern void mouseDrvSetFocus(const BOOLE, const BOOLE);

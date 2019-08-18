@@ -1,5 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
+#pragma code_page(65001)
+
 #include "gui_general.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -7,24 +9,15 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "windows.h"
-#include "gui_debugger.h"
-
-#ifndef IDC_STATIC
-#define IDC_STATIC -1
-#endif
-
-
-
+#include <windows.h>
 /////////////////////////////////////////////////////////////////////////////
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Englisch (USA) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -352,50 +345,60 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "display"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    GROUPBOX        "Agnus blitter",IDC_STATIC,175,82,60,40
-    CONTROL         "original",IDC_RADIO_BLITTER_NORMAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,180,140,38,10
-    CONTROL         "immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,180,155,47,10
+    COMBOBOX        IDC_COMBO_BORDER,10,28,85,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_DISPLAYSCALE,10,53,85,94,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "use fullscreen",IDC_CHECK_FULLSCREEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,108,17,61,10
+    COMBOBOX        IDC_COMBO_COLOR_BITS,108,33,120,135,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "Slider1",IDC_SLIDER_SCREEN_AREA,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,123,51,85,15
+    COMBOBOX        IDC_COMBO_DISPLAY_DRIVER,10,107,85,135,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
+    CONTROL         "Slider2",IDC_SLIDER_FRAME_SKIPPING,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,10,140,85,15
+    CONTROL         "solid",IDC_RADIO_LINE_FILL_SOLID,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,110,92,30,10
+    CONTROL         "scanlines",IDC_RADIO_LINE_FILL_SCANLINES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,110,106,45,10
     CONTROL         "OCS",IDC_RADIO_BLITTER_OCS,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,180,92,31,10
     CONTROL         "ECS",IDC_RADIO_BLITTER_ECS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,180,106,30,10
+    CONTROL         "per line",IDC_RADIO_GRAPHICS_PER_LINE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,110,139,39,10
+    CONTROL         "per cycle",IDC_RADIO_GRAPHICS_PER_CYCLE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,110,154,47,10
+    CONTROL         "original",IDC_RADIO_BLITTER_NORMAL,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,180,140,38,10
+    CONTROL         "immediate",IDC_RADIO_BLITTER_IMMEDIATE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,180,154,47,10
+    GROUPBOX        "custom chipset",IDC_STATIC,175,82,60,40
     GROUPBOX        "blitter speed",IDC_STATIC,175,125,60,45
     GROUPBOX        "options",IDC_STATIC,5,82,95,40
-    CONTROL         "Slider1",IDC_SLIDER_SCREEN_AREA,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,123,51,85,15
     LTEXT           "less",IDC_STATIC,108,53,13,8
     LTEXT           "more",IDC_STATIC,212,53,16,8
     CTEXT           "not set",IDC_STATIC_SCREEN_AREA,122,67,85,8,SS_CENTERIMAGE
-    CONTROL         "use fullscreen",IDC_CHECK_FULLSCREEN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,108,17,61,10
     GROUPBOX        "fullscreen resolution",IDC_STATIC,105,7,130,72
-    CONTROL         "Slider2",IDC_SLIDER_FRAME_SKIPPING,"msctls_trackbar32",TBS_AUTOTICKS | TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,10,140,85,15
     CTEXT           "not set",IDC_STATIC_FRAME_SKIPPING,15,155,75,8,SS_CENTERIMAGE
-    CONTROL         "multiple buffers",IDC_CHECK_MULTIPLE_BUFFERS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,10,93,63,10
     GROUPBOX        "frame skipping",IDC_STATIC,5,125,95,45
-    COMBOBOX        IDC_COMBO_COLOR_BITS,108,33,120,135,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
     GROUPBOX        "line fill strategy",IDC_STATIC,106,82,65,40
-    CONTROL         "solid",IDC_RADIO_LINE_FILL_SOLID,"Button",BS_AUTORADIOBUTTON | WS_GROUP,110,92,30,10
-    CONTROL         "scanlines",IDC_RADIO_LINE_FILL_SCANLINES,"Button",BS_AUTORADIOBUTTON | WS_GROUP,110,106,45,10
-    COMBOBOX        IDC_COMBO_DISPLAY_DRIVER,10,107,85,135,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_DISPLAYSCALE,10,53,85,94,CBS_DROPDOWNLIST | WS_VSCROLL | WS_GROUP | WS_TABSTOP
-    COMBOBOX        IDC_COMBO_BORDER,10,28,85,87,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "screen size",IDC_STATIC,5,7,95,72
     LTEXT           "overscan",IDC_STATIC,10,18,29,8
     LTEXT           "scale",IDC_STATIC,11,41,17,8
+    GROUPBOX        "gfx emulation",IDC_STATIC,106,125,65,45
 END
 
-IDD_DEBUGGER DIALOGEX 0, 0, 577, 417
+IDD_DEBUGGER DIALOGEX 0, 0, 834, 416
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "WinFellow Debugger"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    PUSHBUTTON      "Exit Debugger",IDCANCEL,502,396,68,14
-    CONTROL         "",IDC_LST_INSTRUCTIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,27,456,382
-    CONTROL         "",IDC_LST_REGISTERS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,7,103,235
-    CONTROL         "",IDC_LST_INFO,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,467,244,103,143
-    PUSHBUTTON      "Step One",IDC_BTN_STEP1,7,7,50,14
-    PUSHBUTTON      "Step Over",IDC_BTN_STEP_OVER,67,7,50,14
-    PUSHBUTTON      "Run",IDC_BTN_RUN,127,7,50,14
-    PUSHBUTTON      "Break",IDC_BTN_BREAK,187,7,50,14
-    PUSHBUTTON      "Dump Chip-memory",IDC_BTN_DUMPCHIP,392,7,71,14
-    PUSHBUTTON      "Rip Modules",IDC_BTN_MODRIP,335,7,50,14
+    PUSHBUTTON      "Exit Debugger",IDCANCEL,759,395,68,14
+    CONTROL         "",IDC_LST_INSTRUCTIONS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,7,27,279,382
+    CONTROL         "",IDC_LST_REGISTERS,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,724,7,103,235
+    CONTROL         "",IDC_LST_INFO,"SysListView32",LVS_REPORT | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,724,244,103,143
+    PUSHBUTTON      "Step One",IDC_BTN_STEP1,57,7,50,14
+    PUSHBUTTON      "Step Over",IDC_BTN_STEP_OVER,107,7,50,14
+    PUSHBUTTON      "Run",IDC_BTN_RUN,7,7,50,14
+    PUSHBUTTON      "Break",IDC_BTN_BREAK,275,7,50,14
+    PUSHBUTTON      "Dump Chip-memory",IDC_BTN_DUMPCHIP,486,7,71,14
+    PUSHBUTTON      "Rip Modules",IDC_BTN_MODRIP,435,7,50,14
+    CONTROL         "",IDC_DEBUG_LOG,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | WS_BORDER | WS_TABSTOP,288,48,435,361
+    CONTROL         "Bitplane DMA",IDC_FILTER_BITPLANE_DMA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,288,35,61,10
+    CONTROL         "Copper DMA",IDC_FILTER_COPPER_DMA,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,349,35,58,10
+    LTEXT           "Log source filters:",IDC_STATIC,287,27,61,8
+    PUSHBUTTON      "Step One Line",IDC_BTN_STEP1_LINE,157,7,50,14
+    PUSHBUTTON      "Step End of Frame",IDC_BTN_STEP1_FRAME,207,7,68,14
+    CONTROL         "DIWY",IDC_FILTER_DIWY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,407,35,35,10
+    CONTROL         "Shifter",IDC_FILTER_SHIFTER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,443,35,35,10
 END
 
 IDD_FLOPPY_ADF_CREATE DIALOGEX 0, 0, 309, 126
@@ -568,9 +571,9 @@ BEGIN
     IDD_DEBUGGER, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 570
+        RIGHTMARGIN, 827
         TOPMARGIN, 7
-        BOTTOMMARGIN, 410
+        BOTTOMMARGIN, 409
     END
 
     IDD_FLOPPY_ADF_CREATE, DIALOG
@@ -630,12 +633,17 @@ BEGIN
         MENUITEM "&Save Configuration",         ID_FILE_SAVECONFIGURATION
         MENUITEM "Save Configuration &As...",   ID_FILE_SAVECONFIGURATIONAS
         MENUITEM SEPARATOR
+        MENUITEM "Rip Modules",                 ID_FILE_RIPMODULES
+        MENUITEM "Dump Memory",                 ID_FILE_DUMPCHIPMEM
+        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_FILE_QUIT
         MENUITEM SEPARATOR
     END
     POPUP "&Options"
     BEGIN
         MENUITEM "&Pause emulation when window loses focus", ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS
+        MENUITEM SEPARATOR
+        MENUITEM "Debug: Use immediate rendering", ID_OPTIONS_GFX_DEBUG_IMMEDIATE_RENDERING
     END
     POPUP "&Help"
     BEGIN
@@ -725,6 +733,29 @@ BEGIN
     0
 END
 
+IDD_DEBUGGER AFX_DIALOG_LAYOUT
+BEGIN
+    0,
+    0, 0, 0, 0,
+    0, 0, 100, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 100, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, 0
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -736,16 +767,15 @@ BEGIN
     ID_OPTIONS_MULTIPLE_GRAPHICAL_BUFFERS "hello?"
 END
 
-#endif    // Englisch (USA) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// Norwegisch Bokmål (Norwegen) resources
+// Norwegian BokmÃ¥l (Norway) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NOR)
 LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
-#pragma code_page(1252)
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -754,7 +784,7 @@ LANGUAGE LANG_NORWEGIAN, SUBLANG_NORWEGIAN_BOKMAL
 
 IDB_DEBUG_ARROW         BITMAP                  "..\\icons\\arrow.bmp"
 
-#endif    // Norwegisch Bokmål (Norwegen) resources
+#endif    // Norwegian BokmÃ¥l (Norway) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

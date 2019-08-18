@@ -1247,163 +1247,163 @@ static a_inode *get_aino (Unit *unit, a_inode *base, const char *rel, uae_u32 *e
     return curr;
 }
 
-static uae_u32 startup_handler (void)
+static uae_u32 startup_handler(void)
 {
-    /* Just got the startup packet. It's in A4. DosBase is in A2,
-     * our allocated volume structure is in D6, A5 is a pointer to
-     * our port. */
-    uaecptr rootnode = get_long (m68k_areg (regs, 2) + 34);
-    uaecptr dos_info = get_long (rootnode + 24) << 2;
-    uaecptr pkt = m68k_dreg (regs, 3);
-    uaecptr arg2 = get_long (pkt + dp_Arg2);
-    int i;
-    size_t namelen, j;
-    char* devname = bstr1 (get_long (pkt + dp_Arg1) << 2);
-    char* s;
-    Unit *unit;
-    UnitInfo *uinfo;
+  /* Just got the startup packet. It's in A4. DosBase is in A2,
+   * our allocated volume structure is in D6, A5 is a pointer to
+   * our port. */
+  uaecptr rootnode = get_long(m68k_areg(regs, 2) + 34);
+  uaecptr dos_info = get_long(rootnode + 24) << 2;
+  uaecptr pkt = m68k_dreg(regs, 3);
+  uaecptr arg2 = get_long(pkt + dp_Arg2);
+  int i;
+  size_t namelen, j;
+  char* devname = bstr1(get_long(pkt + dp_Arg1) << 2);
+  char* s;
+  Unit* unit;
+  UnitInfo* uinfo;
 
-    /* find UnitInfo with correct device name */
-    s = strchr (devname, ':');
-    if (s)
-      *s = '\0';
+  /* find UnitInfo with correct device name */
+  s = strchr(devname, ':');
+  if (s)
+    *s = '\0';
 
-    for (i = 0; i < current_mountinfo->num_units; i++) {
-	/* Hardfile volume name? */
-	if (current_mountinfo->ui[i].volname == 0)
-	    continue;
+  for (i = 0; i < current_mountinfo->num_units; i++) {
+    /* Hardfile volume name? */
+    if (current_mountinfo->ui[i].volname == 0)
+      continue;
 
-	if (current_mountinfo->ui[i].startup == arg2)
-	    break;
-    }
+    if (current_mountinfo->ui[i].startup == arg2)
+      break;
+  }
 
-    if (i == current_mountinfo->num_units
-	|| access (current_mountinfo->ui[i].rootdir, R_OK) != 0)
-    {
-/* FELLOW CHANGE: write_log ("Failed attempt to mount device\n", devname); */
-	write_log ("Failed attempt to mount Amiga device %s with filesys root %s\n", devname, current_mountinfo->ui[i].rootdir); /* changed to fit the logfile routine */
-	put_long (pkt + dp_Res1, DOS_FALSE);
-	put_long (pkt + dp_Res2, ERROR_DEVICE_NOT_MOUNTED);
-	return 1;
-    }
-    uinfo = current_mountinfo->ui + i;
+  if (i == current_mountinfo->num_units
+    || access(current_mountinfo->ui[i].rootdir, R_OK) != 0)
+  {
+    /* FELLOW CHANGE: write_log ("Failed attempt to mount device\n", devname); */
+    write_log("Failed attempt to mount Amiga device %s with filesys root %s\n", devname, current_mountinfo->ui[i].rootdir); /* changed to fit the logfile routine */
+    put_long(pkt + dp_Res1, DOS_FALSE);
+    put_long(pkt + dp_Res2, ERROR_DEVICE_NOT_MOUNTED);
+    return 1;
+  }
+  uinfo = current_mountinfo->ui + i;
 
-    unit = (Unit *) xcalloc (sizeof (Unit), 1);
-    unit->next = units;
-    units = unit;
-    uinfo->self = unit;
+  unit = (Unit*)xcalloc(sizeof(Unit), 1);
+  unit->next = units;
+  units = unit;
+  uinfo->self = unit;
 
-    unit->volume = 0;
-    unit->port = m68k_areg (regs, 5);
-    unit->unit = unit_num++;
+  unit->volume = 0;
+  unit->port = m68k_areg(regs, 5);
+  unit->unit = unit_num++;
 
-    unit->ui.devname = uinfo->devname;
-    unit->ui.volname = my_strdup (uinfo->volname); /* might free later for rename */
-    unit->ui.rootdir = uinfo->rootdir;
-    unit->ui.readonly = uinfo->readonly;
-    unit->ui.unit_pipe = uinfo->unit_pipe;
-    unit->ui.back_pipe = uinfo->back_pipe;
-    unit->cmds_complete = 0;
-    unit->cmds_sent = 0;
-    unit->cmds_acked = 0;
-    for (i = 0; i < EXKEYS; i++) {
-	unit->examine_keys[i].aino = 0;
-	unit->examine_keys[i].curr_file = 0;
-	unit->examine_keys[i].uniq = 0;
-    }
-	unit->total_locked_ainos = 0;
-    unit->next_exkey = 1;
-    unit->keys = 0;
-    unit->a_uniq = unit->key_uniq = 0;
+  unit->ui.devname = uinfo->devname;
+  unit->ui.volname = my_strdup(uinfo->volname); /* might free later for rename */
+  unit->ui.rootdir = uinfo->rootdir;
+  unit->ui.readonly = uinfo->readonly;
+  unit->ui.unit_pipe = uinfo->unit_pipe;
+  unit->ui.back_pipe = uinfo->back_pipe;
+  unit->cmds_complete = 0;
+  unit->cmds_sent = 0;
+  unit->cmds_acked = 0;
+  for (i = 0; i < EXKEYS; i++) {
+    unit->examine_keys[i].aino = 0;
+    unit->examine_keys[i].curr_file = 0;
+    unit->examine_keys[i].uniq = 0;
+  }
+  unit->total_locked_ainos = 0;
+  unit->next_exkey = 1;
+  unit->keys = 0;
+  unit->a_uniq = unit->key_uniq = 0;
 
-    unit->rootnode.aname = uinfo->volname;
-    unit->rootnode.nname = uinfo->rootdir;
-    unit->rootnode.sibling = 0;
-    unit->rootnode.next = unit->rootnode.prev = &unit->rootnode;
-    unit->rootnode.uniq = 0;
-    unit->rootnode.parent = 0;
-    unit->rootnode.child = 0;
-    unit->rootnode.dir = 1;
-    unit->rootnode.amigaos_mode = 0;
-    unit->rootnode.shlock = 0;
-    unit->rootnode.elock = 0;
-	unit->rootnode.comment = 0;
-    unit->rootnode.has_dbentry = 0;
-/* FELLOW BUGFIX (START): needs to be initialized */
-	unit->rootnode.needs_dbentry = 0;
-/* FELLOW BUGFIX (END): needs to be initialized */
-    unit->aino_cache_size = 0;
-    for (i = 0; i < MAX_AINO_HASH; i++)
-	unit->aino_hash[i] = 0;
+  unit->rootnode.aname = uinfo->volname;
+  unit->rootnode.nname = uinfo->rootdir;
+  unit->rootnode.sibling = 0;
+  unit->rootnode.next = unit->rootnode.prev = &unit->rootnode;
+  unit->rootnode.uniq = 0;
+  unit->rootnode.parent = 0;
+  unit->rootnode.child = 0;
+  unit->rootnode.dir = 1;
+  unit->rootnode.amigaos_mode = 0;
+  unit->rootnode.shlock = 0;
+  unit->rootnode.elock = 0;
+  unit->rootnode.comment = 0;
+  unit->rootnode.has_dbentry = 0;
+  /* FELLOW BUGFIX (START): needs to be initialized */
+  unit->rootnode.needs_dbentry = 0;
+  /* FELLOW BUGFIX (END): needs to be initialized */
+  unit->aino_cache_size = 0;
+  for (i = 0; i < MAX_AINO_HASH; i++)
+    unit->aino_hash[i] = 0;
 
-/*    write_comm_pipe_int (unit->ui.unit_pipe, -1, 1);*/
+  /*    write_comm_pipe_int (unit->ui.unit_pipe, -1, 1);*/
 
-    TRACE(("**** STARTUP volume %s\n", unit->ui.volname));
+  TRACE(("**** STARTUP volume %s\n", unit->ui.volname));
 
-    /* fill in our process in the device node */
-    put_long ((get_long (pkt + dp_Arg3) << 2) + 8, unit->port);
-    unit->dosbase = m68k_areg (regs, 2);
+  /* fill in our process in the device node */
+  put_long((get_long(pkt + dp_Arg3) << 2) + 8, unit->port);
+  unit->dosbase = m68k_areg(regs, 2);
 
-    /* make new volume */
-    unit->volume = m68k_areg (regs, 3) + 32;
+  /* make new volume */
+  unit->volume = m68k_areg(regs, 3) + 32;
 #ifdef UAE_FILESYS_THREADS
-    unit->locklist = m68k_areg (regs, 3) + 8;
+  unit->locklist = m68k_areg(regs, 3) + 8;
 #else
-    unit->locklist = m68k_areg (regs, 3);
+  unit->locklist = m68k_areg(regs, 3);
 #endif
-    unit->dummy_message = m68k_areg (regs, 3) + 12;
+  unit->dummy_message = m68k_areg(regs, 3) + 12;
 
-    put_long (unit->dummy_message + 10, 0);
+  put_long(unit->dummy_message + 10, 0);
 
-    put_long (unit->volume + 4, 2); /* Type = dt_volume */
-    put_long (unit->volume + 12, 0); /* Lock */
-    put_long (unit->volume + 16, 3800); /* Creation Date */
-    put_long (unit->volume + 20, 0);
-    put_long (unit->volume + 24, 0);
-    put_long (unit->volume + 28, 0); /* lock list */
-    put_long (unit->volume + 40, (unit->volume + 44) >> 2); /* Name */
-    namelen = strlen (unit->ui.volname);
-    put_byte (unit->volume + 44, (UBY)namelen);
-    for (j = 0; j < namelen; j++)
-	put_byte (unit->volume + 45 + j, unit->ui.volname[j]);
+  put_long(unit->volume + 4, 2); /* Type = dt_volume */
+  put_long(unit->volume + 12, 0); /* Lock */
+  put_long(unit->volume + 16, 3800); /* Creation Date */
+  put_long(unit->volume + 20, 0);
+  put_long(unit->volume + 24, 0);
+  put_long(unit->volume + 28, 0); /* lock list */
+  put_long(unit->volume + 40, (unit->volume + 44) >> 2); /* Name */
+  namelen = strlen(unit->ui.volname);
+  put_byte(unit->volume + 44, (UBY)namelen);
+  for (j = 0; j < namelen; j++)
+    put_byte(unit->volume + 45 + (unsigned int) j, unit->ui.volname[j]);
 
-    /* link into DOS list */
-    put_long (unit->volume, get_long (dos_info + 4));
-    put_long (dos_info + 4, unit->volume >> 2);
+  /* link into DOS list */
+  put_long(unit->volume, get_long(dos_info + 4));
+  put_long(dos_info + 4, unit->volume >> 2);
 
-    put_long (unit->volume + 8, unit->port);
-    put_long (unit->volume + 32, DISK_TYPE);
+  put_long(unit->volume + 8, unit->port);
+  put_long(unit->volume + 32, DISK_TYPE);
 
-    put_long (pkt + dp_Res1, DOS_TRUE);
+  put_long(pkt + dp_Res1, DOS_TRUE);
 
-    fsdb_clean_dir (&unit->rootnode);
+  fsdb_clean_dir(&unit->rootnode);
 
-    return 0;
+  return 0;
 }
 
 static void
-do_info (Unit *unit, dpacket packet, uaecptr info)
+do_info(Unit* unit, dpacket packet, uaecptr info)
 {
-    struct fs_usage fsu;
-    
-    if (get_fs_usage (unit->ui.rootdir, 0, &fsu) != 0) {
-	PUT_PCK_RES1 (packet, DOS_FALSE);
-	PUT_PCK_RES2 (packet, dos_errno ());
-	return;
-    }
+  struct fs_usage fsu;
 
-    fsu.fsu_blocks >>= 1;
-    fsu.fsu_bavail >>= 1;
-    put_long (info, 0); /* errors */
-    put_long (info + 4, unit->unit); /* unit number */
-    put_long (info + 8, unit->ui.readonly ? 80 : 82); /* state  */
-    put_long (info + 12, fsu.fsu_blocks ); /* numblocks */
-    put_long (info + 16, fsu.fsu_blocks - fsu.fsu_bavail); /* inuse */
-    put_long (info + 20, 1024); /* bytesperblock */
-    put_long (info + 24, DISK_TYPE); /* disk type */
-    put_long (info + 28, unit->volume >> 2); /* volume node */
-    put_long (info + 32, 0); /* inuse */
-    PUT_PCK_RES1 (packet, DOS_TRUE);
+  if (get_fs_usage(unit->ui.rootdir, 0, &fsu) != 0) {
+    PUT_PCK_RES1(packet, DOS_FALSE);
+    PUT_PCK_RES2(packet, dos_errno());
+    return;
+  }
+
+  fsu.fsu_blocks >>= 1;
+  fsu.fsu_bavail >>= 1;
+  put_long(info, 0); /* errors */
+  put_long(info + 4, unit->unit); /* unit number */
+  put_long(info + 8, unit->ui.readonly ? 80 : 82); /* state  */
+  put_long(info + 12, fsu.fsu_blocks); /* numblocks */
+  put_long(info + 16, fsu.fsu_blocks - fsu.fsu_bavail); /* inuse */
+  put_long(info + 20, 1024); /* bytesperblock */
+  put_long(info + 24, DISK_TYPE); /* disk type */
+  put_long(info + 28, unit->volume >> 2); /* volume node */
+  put_long(info + 32, 0); /* inuse */
+  PUT_PCK_RES1(packet, DOS_TRUE);
 }
 
 static void

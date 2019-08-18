@@ -1,4 +1,3 @@
-/* @(#) $Id: modrip.h,v 1.8 2008-02-21 00:00:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,8 +22,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _MODRIP_H_
-#define _MODRIP_H_
+#pragma once
 
 #define MODRIP_TEMPSTRLEN 2048
 #define MODRIP_MAXMODLEN (1024 * 1024)
@@ -33,25 +31,24 @@
 typedef UBY (*MemoryAccessFunc)(ULO);
 
 /* module type detection functions */
-typedef void (*ModuleDetectFunc)(ULO, MemoryAccessFunc); 
+typedef void (*ModuleDetectFunc)(ULO, MemoryAccessFunc);
 
 /* structure to be filled with module information for passing on */
-struct ModuleInfo {
+struct ModuleInfo
+{
   char filename[MODRIP_TEMPSTRLEN]; /* filename for the module-file */
   char modname[MODRIP_TEMPSTRLEN];  /* name of the module */
   char typedesc[MODRIP_TEMPSTRLEN]; /* detailed file format */
   char typesig[MODRIP_TEMPSTRLEN];  /* file format signature */
   ULO start, end;                   /* start and end of the module in mem */
-  unsigned samplesize; /* no. of all sample-data used in bytes */
-  unsigned patternsize; /* no. of all pattern-data used in bytes */
-  unsigned songlength; /* how many patterns does the song play? */
-  unsigned maxpattern; 
+  unsigned samplesize;              /* no. of all sample-data used in bytes */
+  unsigned patternsize;             /* no. of all pattern-data used in bytes */
+  unsigned songlength;              /* how many patterns does the song play? */
+  unsigned maxpattern;
   unsigned channels;
   unsigned instruments;
 };
 
-extern void modripRIP(void);
-extern void modripChipDump(void);
+extern void modripRIP();
+extern void modripChipDump();
 extern BOOLE modripSaveMem(struct ModuleInfo *, MemoryAccessFunc);
-
-#endif

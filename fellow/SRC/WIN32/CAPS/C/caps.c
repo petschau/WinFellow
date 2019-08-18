@@ -28,18 +28,17 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 
-#include "wgui.h"
-#include "fellow.h"
-#include "floppy.h"
-#include "fileops.h"
+#include "WGUI.H"
+#include "fellow/api/Services.h"
+#include "FLOPPY.H"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include "Comtype.h"
 #include "CapsAPI.h"
-
 
 #ifdef __cplusplus
 }
@@ -47,35 +46,36 @@ extern "C" {
 
 #include "CapsPlug.h"
 
+using namespace fellow::api;
+
 #ifdef _DEBUG
 #define TRACECAPS 1
 #else
 #define TRACECAPS 0
 #endif
 
-static int    capsFlags = DI_LOCK_INDEX | DI_LOCK_DENVAR|DI_LOCK_DENNOISE|DI_LOCK_NOISE|DI_LOCK_UPDATEFD;
-static BOOLE  capsDriveIsLocked [4]= { FALSE, FALSE, FALSE, FALSE };
-static SDWORD capsDriveContainer[4]= { -1,    -1,    -1,    -1    };
+static int capsFlags = DI_LOCK_INDEX | DI_LOCK_DENVAR | DI_LOCK_DENNOISE | DI_LOCK_NOISE | DI_LOCK_UPDATEFD;
+static BOOLE capsDriveIsLocked[4] = {FALSE, FALSE, FALSE, FALSE};
+static SDWORD capsDriveContainer[4] = {-1, -1, -1, -1};
 
-static HMODULE capshModule = NULL;          /* handle for the library */
-static BOOLE capsIsInitialized = FALSE;     /* is the module initialized? */
-static BOOLE capsUserIsNotified = FALSE;    /* if the library is missing, did we already notify the user? */
+static HMODULE capshModule = NULL;       /* handle for the library */
+static BOOLE capsIsInitialized = FALSE;  /* is the module initialized? */
+static BOOLE capsUserIsNotified = FALSE; /* if the library is missing, did we already notify the user? */
 
-BOOLE capsStartup(void) {
+BOOLE capsStartup()
+{
   int i;
-  
-  if(capsIsInitialized) 
-    return TRUE;
+
+  if (capsIsInitialized) return TRUE;
 
   SDWORD result;
   result = CapsInit("CapsImg.dll");
 
-  if(result != 0)
+  if (result != 0)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_INFO, 
-	    "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
+    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_INFO, "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download");
     capsUserIsNotified = TRUE;
-    fellowAddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
+    Service->Log.AddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
     return FALSE;
   }
   else
@@ -83,115 +83,102 @@ BOOLE capsStartup(void) {
     capsIsInitialized = TRUE;
   }
 
-  for(i = 0; i < 4; i++)
+  for (i = 0; i < 4; i++)
     capsDriveContainer[i] = CapsAddImage();
 
   capsIsInitialized = TRUE;
-  fellowAddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
+  Service->Log.AddLog("capsStartup(): CAPS IPF Image library loaded successfully.\n");
 
   return TRUE;
 }
 
-BOOLE capsShutdown(void) {
+BOOLE capsShutdown()
+{
   return CapsExit();
 }
 
-BOOLE capsUnloadImage(ULO drive) {
-  if(!capsDriveIsLocked[drive])
-    return FALSE;
+BOOLE capsUnloadImage(ULO drive)
+{
+  if (!capsDriveIsLocked[drive]) return FALSE;
 
   CapsUnlockAllTracks(capsDriveContainer[drive]);
   CapsUnlockImage(capsDriveContainer[drive]);
   capsDriveIsLocked[drive] = FALSE;
-  fellowAddLog("capsUnloadImage(): Image %s unloaded from drive no %u.\n", floppy[drive].imagename, drive);
+  Service->Log.AddLog("capsUnloadImage(): Image %s unloaded from drive no %u.\n", floppy[drive].imagename, drive);
   return TRUE;
 }
 
-static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive) {
+static void capsLogImageInfo(struct CapsImageInfo *capsImageInfo, ULO drive)
+{
   int i;
   char DateString[100], TypeString[100], PlatformString[100];
   struct CapsDateTimeExt *capsDateTimeExt;
 
-  if(!capsImageInfo)
-    return;
+  if (!capsImageInfo) return;
 
   /* extract the date from information */
   capsDateTimeExt = &capsImageInfo->crdt;
-  sprintf(DateString, "%02u.%02u.%04u %02u:%02u:%02u", 
-    capsDateTimeExt->day, 
-    capsDateTimeExt->month,
-    capsDateTimeExt->year,
-    capsDateTimeExt->hour,
-    capsDateTimeExt->min,
-    capsDateTimeExt->sec);
+  sprintf(DateString, "%02u.%02u.%04u %02u:%02u:%02u", capsDateTimeExt->day, capsDateTimeExt->month, capsDateTimeExt->year, capsDateTimeExt->hour, capsDateTimeExt->min, capsDateTimeExt->sec);
 
   /* generate a type string */
-  switch(capsImageInfo->type) {
-    case ciitNA:
-      sprintf(TypeString, "ciitNA (invalid image)");
-      break;
-    case ciitFDD:
-      sprintf(TypeString, "ciitFDD (floppy disk)");
-      break;
-    default:
-      sprintf(TypeString, "N/A ()");
-      break;
+  switch (capsImageInfo->type)
+  {
+    case ciitNA: sprintf(TypeString, "ciitNA (invalid image)"); break;
+    case ciitFDD: sprintf(TypeString, "ciitFDD (floppy disk)"); break;
+    default: sprintf(TypeString, "N/A ()"); break;
   }
 
   /* generate a platform string */
-  for(i = 0; capsImageInfo->platform[i] != 0; i++) {
-    if(i > 0) {
+  for (i = 0; capsImageInfo->platform[i] != 0; i++)
+  {
+    if (i > 0)
+    {
       char AppendString[100];
       sprintf(AppendString, CapsGetPlatformName(capsImageInfo->platform[i]));
       strcat(PlatformString, ", ");
       strcat(PlatformString, AppendString);
     }
-    else   
+    else
       sprintf(PlatformString, CapsGetPlatformName(capsImageInfo->platform[i]));
   }
 
   /* log the information */
-  fellowAddTimelessLog("\nCAPS Image Information:\n");
-  fellowAddTimelessLog("Floppy Drive No: %u\n", drive);
-  fellowAddTimelessLog("Filename: %s\n", floppy[drive].imagename);
-  fellowAddTimelessLog("Type:%s\n", TypeString);
-  fellowAddTimelessLog("Date:%s\n", DateString);
-  fellowAddTimelessLog("Release:%04d Revision:%d\n",
-    capsImageInfo->release, 
-    capsImageInfo->revision);
-  fellowAddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
+  Service->Log.AddTimelessLog("\nCAPS Image Information:\n");
+  Service->Log.AddTimelessLog("Floppy Drive No: %u\n", drive);
+  Service->Log.AddTimelessLog("Filename: %s\n", floppy[drive].imagename);
+  Service->Log.AddTimelessLog("Type:%s\n", TypeString);
+  Service->Log.AddTimelessLog("Date:%s\n", DateString);
+  Service->Log.AddTimelessLog("Release:%04d Revision:%d\n", capsImageInfo->release, capsImageInfo->revision);
+  Service->Log.AddTimelessLog("Intended platform(s):%s\n\n", PlatformString);
 }
 
-BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
+BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks)
+{
   struct CapsImageInfo capsImageInfo;
   ULO ImageSize, ReturnCode;
   UBY *ImageBuffer;
 
   /* make sure we're up and running beforehand */
-  if(!capsIsInitialized)
-    if(!capsStartup()) 
-      return FALSE;
+  if (!capsIsInitialized)
+    if (!capsStartup()) return FALSE;
 
   capsUnloadImage(drive);
 
-  fellowAddLog("capsLoadImage(): Attempting to load IPF Image %s into drive %u.\n", floppy[drive].imagename, drive);
+  Service->Log.AddLog("capsLoadImage(): Attempting to load IPF Image %s into drive %u.\n", floppy[drive].imagename, drive);
 
   fseek(F, 0, SEEK_END);
   ImageSize = ftell(F);
   fseek(F, 0, SEEK_SET);
 
-  ImageBuffer = (UBY *) malloc(ImageSize);
-  if(!ImageBuffer)
-    return FALSE;
+  ImageBuffer = (UBY *)malloc(ImageSize);
+  if (!ImageBuffer) return FALSE;
 
-  if(fread(ImageBuffer, ImageSize, 1, F) == 0)
-    return FALSE;
+  if (fread(ImageBuffer, ImageSize, 1, F) == 0) return FALSE;
 
   ReturnCode = CapsLockImageMemory(capsDriveContainer[drive], ImageBuffer, ImageSize, 0);
   free(ImageBuffer);
 
-  if(ReturnCode != imgeOk)
-    return FALSE;
+  if (ReturnCode != imgeOk) return FALSE;
 
   capsDriveIsLocked[drive] = TRUE;
 
@@ -200,11 +187,12 @@ BOOLE capsLoadImage(ULO drive, FILE *F, ULO *tracks) {
 
   CapsLoadImage(capsDriveContainer[drive], capsFlags);
   capsLogImageInfo(&capsImageInfo, drive);
-  fellowAddLog("capsLoadImage(): Image loaded successfully.\n");
+  Service->Log.AddLog("capsLoadImage(): Image loaded successfully.\n");
   return TRUE;
 }
 
-BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *timebuf, BOOLE *flakey) {
+BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *maxtracklength, ULO *timebuf, BOOLE *flakey)
+{
   ULO i, len, type;
   struct CapsTrackInfo capsTrackInfo;
 
@@ -215,16 +203,15 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
   len = capsTrackInfo.tracksize[0];
   *tracklength = len;
   *maxtracklength = 0;
-  /* trackcnt contains number of valid entries, we need to determine the max tracklen value for 
-  correct sizing of the MFM buffer in case these lengths differ between revolutions; each 
-  track should be loaded once with capsLoadTrack() to reserve the correct space in the MFM 
+  /* trackcnt contains number of valid entries, we need to determine the max tracklen value for
+  correct sizing of the MFM buffer in case these lengths differ between revolutions; each
+  track should be loaded once with capsLoadTrack() to reserve the correct space in the MFM
   buffer, later capsLoadRevolution() can be called successively to update the existing MFM buffer
   */
-  for(i = 0; i < capsTrackInfo.trackcnt; i++)
-    if(capsTrackInfo.tracksize[i] > *maxtracklength)
-      *maxtracklength = capsTrackInfo.tracksize[i];
+  for (i = 0; i < capsTrackInfo.trackcnt; i++)
+    if (capsTrackInfo.tracksize[i] > *maxtracklength) *maxtracklength = capsTrackInfo.tracksize[i];
 
-  if(*maxtracklength % 2 == 1) /* like it better always even */
+  if (*maxtracklength % 2 == 1) /* like it better always even */
     *maxtracklength += 1;
 
   memset(mfm_data, 0, *maxtracklength);
@@ -235,7 +222,7 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
     FILE *f;
     char filename[MAX_PATH];
 
-    fileopsGetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
+    Service->Fileops.GetGenericFileName(filename, "WinFellow", "CAPSDump.txt");
     f = fopen(filename, "wb");
     fwrite(capsTrackInfo.trackdata[0], len, 1, f);
     fclose(f);
@@ -243,23 +230,19 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
 #endif
 
   if (capsTrackInfo.timelen > 0)
-    for(i = 0; i < capsTrackInfo.timelen; i++)
-      timebuf[i] = (ULO) capsTrackInfo.timebuf[i];
+    for (i = 0; i < capsTrackInfo.timelen; i++)
+      timebuf[i] = (ULO)capsTrackInfo.timebuf[i];
 
 #if TRACECAPS
-  fellowAddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n",
-    drive, 
-    track, 
-    *flakey ? "TRUE " : "FALSE", 
-    capsTrackInfo.trackcnt, 
-    capsTrackInfo.timelen, 
-    type);
+  Service->Log.AddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n", drive, track, *flakey ? "TRUE " : "FALSE", capsTrackInfo.trackcnt,
+                              capsTrackInfo.timelen, type);
 #endif
 
   return TRUE;
 }
 
-BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength) {
+BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength)
+{
   static ULO revolutioncount = 0;
   ULO revolution, len;
   struct CapsTrackInfo capsTrackInfo;
@@ -270,7 +253,7 @@ BOOLE capsLoadNextRevolution(ULO drive, ULO track, UBY *mfm_data, ULO *trackleng
   len = capsTrackInfo.tracksize[revolution];
   /*if(*tracklength != len)
   {
-  fellowAddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
+  Service->Log.AddLog("capsLoadRevolution(): Variable track size not implemented, will result in MFM buffer corruption!!!\n");
   assert(0);
   }*/
   *tracklength = len;

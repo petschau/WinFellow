@@ -1,12 +1,12 @@
-#ifndef KBD_H
-#define KBD_H
+#pragma once
 
-/* ---------------- CHANGE LOG ----------------- 
+/* ---------------- CHANGE LOG -----------------
 Tuesday, September 19, 2000: nova
 - added autofire events
 */
 
-typedef enum {
+enum class kbd_event
+{
   EVENT_INSERT_DF0,
   EVENT_INSERT_DF1,
   EVENT_INSERT_DF2,
@@ -58,46 +58,49 @@ typedef enum {
   EVENT_JOY1_AUTOFIRE1_INACTIVE,
   EVENT_DF1_INTO_DF0,
   EVENT_DF2_INTO_DF0,
-  EVENT_DF3_INTO_DF0
-} kbd_event;
+  EVENT_DF3_INTO_DF0,
+  EVENT_DEBUG_TOGGLE_RENDERER,
+  EVENT_DEBUG_TOGGLE_LOGGING,
+  EVENT_NONE
+};
 
-#define KBDBUFFERLENGTH 512
-#define KBDBUFFERMASK   511
+constexpr unsigned int KBDBUFFERLENGTH = 512;
+constexpr unsigned int KBDBUFFERMASK = 511;
 
-typedef struct {
-  UBY buffer[KBDBUFFERLENGTH];
+template <typename T> struct kbd_buffer_type
+{
+  T buffer[KBDBUFFERLENGTH];
   ULO inpos;
   ULO outpos;
-} kbd_buffer_type;
+};
 
-typedef struct {
-  kbd_buffer_type scancodes;
-  kbd_buffer_type eventsEOL;
-  kbd_buffer_type eventsEOF;
-} kbd_state_type;
+struct kbd_state_type
+{
+  kbd_buffer_type<UBY> scancodes;
+  kbd_buffer_type<kbd_event> eventsEOL;
+  kbd_buffer_type<kbd_event> eventsEOF;
+};
 
 extern kbd_state_type kbd_state;
 
-extern void kbdEventEOLAdd(UBY eventId);
-extern void kbdEventEOFAdd(UBY eventId);
+extern void kbdEventEOLAdd(kbd_event eventId);
+extern void kbdEventEOFAdd(kbd_event eventId);
 extern void kbdKeyAdd(UBY keyCode);
 
-extern void kbdHardReset(void);
-extern void kbdEmulationStart(void);
-extern void kbdEmulationStop(void);
-extern void kbdStartup(void);
-extern void kbdShutdown(void);
+extern void kbdHardReset();
+extern void kbdEmulationStart();
+extern void kbdEmulationStop();
+extern void kbdStartup();
+extern void kbdShutdown();
 
-extern void kbdQueueHandler(void);
-extern void kbdEventEOLHandler(void);
+extern void kbdQueueHandler();
+extern void kbdEventEOLHandler();
 
-void kbdQueueHandler(void);
-void kbdEventEOLHandler(void);
-void kbdEventEOFHandler(void);
+void kbdQueueHandler();
+void kbdEventEOLHandler();
+void kbdEventEOFHandler();
 
-extern void kbdQueueHandler(void);
-extern void kbdEventEOLHandler(void);
+extern void kbdQueueHandler();
+extern void kbdEventEOLHandler();
 
 extern UBY insert_dfX[4];
-
-#endif

@@ -106,7 +106,7 @@ namespace test::fellow::hardfile::hunks
       _hunkDataSize = CreateHunkTable(index);
     }
 
-    RawDataReader& GetNewRawDataReader()
+    RawDataReader &GetNewRawDataReader()
     {
       _rawDataReader.reset(new RawDataReader(_hunkData.get(), _hunkDataSize));
       return *_rawDataReader;

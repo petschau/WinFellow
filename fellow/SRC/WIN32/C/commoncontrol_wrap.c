@@ -26,7 +26,7 @@
 #include <stdio.h>
 #include <commctrl.h>
 
-#include "defs.h"
+#include "fellow/api/defs.h"
 #include "commoncontrol_wrap.h"
 
 //#include "windrv.h"
@@ -43,8 +43,15 @@ void ccwButtonUncheck(HWND windowHandle, int controlIdentifier)
 
 void ccwButtonCheckConditional(HWND windowHandle, int controlIdentifier, BOOLE check)
 {
-  if (check) ccwButtonSetCheck(windowHandle, controlIdentifier);
-  else ccwButtonUncheck(windowHandle, controlIdentifier);
+  ccwButtonCheckConditionalBool(windowHandle, controlIdentifier, !!check);
+}
+
+void ccwButtonCheckConditionalBool(HWND windowHandle, int controlIdentifier, bool check)
+{
+  if (check)
+    ccwButtonSetCheck(windowHandle, controlIdentifier);
+  else
+    ccwButtonUncheck(windowHandle, controlIdentifier);
 }
 
 BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier)
@@ -74,7 +81,7 @@ void ccwButtonEnable(HWND windowHandle, int controlIdentifier)
 
 void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, ULO minPos, ULO maxPos)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETRANGE, TRUE, (LPARAM) MAKELONG(minPos, maxPos));
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETRANGE, TRUE, (LPARAM)MAKELONG(minPos, maxPos));
 }
 
 ULO ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier)
@@ -94,12 +101,12 @@ void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text)
 
 ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier)
 {
-  return (ULO) SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
+  return (ULO)SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_GETPOS, 0, 0);
 }
 
 void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETPOS, TRUE, (LPARAM) position);
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), TBM_SETPOS, TRUE, (LPARAM)position);
 }
 
 void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
@@ -107,12 +114,17 @@ void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable)
   EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable);
 }
 
+void ccwSliderEnableBool(HWND windowHandle, int controlIdentifier, bool enable)
+{
+  EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable ? 1 : 0);
+}
+
 void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text)
 {
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
 
-void ccwEditSetText(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwEditSetText(HWND windowHandle, int controlIdentifier, const STR *text)
 {
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
 }
@@ -134,14 +146,14 @@ void ccwEditEnableConditionalBool(HWND windowHandle, int controlIdentifier, bool
 
 void ccwSetImageConditional(HWND windowHandle, int controlIdentifier, HBITMAP bitmapFirst, HBITMAP bitmapSecond, BOOLE setFirst)
 {
-  SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) (setFirst ? bitmapFirst : bitmapSecond));
+  SendMessage(GetDlgItem(windowHandle, controlIdentifier), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)(setFirst ? bitmapFirst : bitmapSecond));
 }
 
 void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE enable)
 {
   HMENU hMenu = GetMenu(windowHandle);
 
-  MENUITEMINFO mii = { 0 };
+  MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 
@@ -153,10 +165,15 @@ void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE e
 
 BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)
 {
-  HMENU hMenu = GetMenu(windowHandle);
-  BOOLE ischecked, result;
+  return ccwMenuCheckedToggleBool(windowHandle, menuIdentifier) == true;
+}
 
-  MENUITEMINFO mii = { 0 };
+bool ccwMenuCheckedToggleBool(HWND windowHandle, int menuIdentifier)
+{
+  HMENU hMenu = GetMenu(windowHandle);
+  bool ischecked, result;
+
+  MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 

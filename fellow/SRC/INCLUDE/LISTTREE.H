@@ -1,7 +1,4 @@
-#ifndef LISTTREE_H
-#define LISTTREE_H
-
-/* Generic list */
+#pragma once
 
 class felist
 {
@@ -10,8 +7,8 @@ public:
   felist *prev;
   void *node;
 
-  felist(void* nodeptr);
-  felist(felist* prevptr, void* nodeptr);
+  felist(void *nodeptr);
+  felist(felist *prevptr, void *nodeptr);
 };
 
 felist *listNew(void *node);
@@ -29,5 +26,3 @@ void listRemove(felist *l);
 felist *listFree(felist *node);
 felist *listIndex(felist *l, unsigned int index);
 void listFreeAll(felist *l, bool freenodes);
-
-#endif

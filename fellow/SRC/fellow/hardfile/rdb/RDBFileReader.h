@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBFILEREADER_H
-#define FELLOW_HARDFILE_RDB_RDBFILEREADER_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
@@ -9,7 +8,7 @@ namespace fellow::hardfile::rdb
   class RDBFileReader
   {
   private:
-    FILE * _F;
+    FILE *_F;
 
   public:
     std::string ReadString(off_t offset, size_t maxCount);
@@ -21,5 +20,3 @@ namespace fellow::hardfile::rdb
     RDBFileReader(FILE *F);
   };
 }
-
-#endif

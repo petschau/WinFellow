@@ -1,15 +1,17 @@
-#ifndef FELLOW_API_SERVICE_IHUD_H
-#define FELLOW_API_SERVICE_IHUD_H
+#pragma once
 
-namespace fellow::api::service
+#include "fellow/api/configuration/HudConfiguration.h"
+
+namespace fellow::api
 {
   class IHUD
   {
   public:
     virtual ~IHUD() = default;
-    virtual void SetFloppyLED(int driveIndex, bool active, bool write) = 0;
-    virtual void SetHarddiskLED(int deviceIndex, bool active, bool write) = 0;
-  };
-}
 
-#endif
+    virtual HudConfiguration &GetHudConfiguration() = 0;
+
+    virtual void NotifyFloppyLEDChanged(int driveIndex, bool active, bool write) = 0;
+    virtual void NotifyHarddiskLEDChanged(int deviceIndex, bool active, bool write) = 0;
+  };
+} // namespace fellow::api

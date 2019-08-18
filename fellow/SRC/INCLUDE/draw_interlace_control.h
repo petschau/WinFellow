@@ -1,12 +1,12 @@
-#ifndef DRAW_INTERLACE_CONTROL
-#define DRAW_INTERLACE_CONTROL
+#pragma once
 
-bool drawGetUseInterlacedRendering(void);
-bool drawGetFrameIsLong(void);
+#include "fellow/application/HostRenderConfiguration.h"
 
-void drawDecideInterlaceStatusForNextFrame(void);
-void drawInterlaceStartup(void);
-void drawInterlaceEndOfFrame(void);
-void drawSetDeinterlace(bool);
+bool drawGetUseInterlacedRendering();
+bool drawGetFrameIsLong();
+bool drawGetFrameIsInterlaced();
 
-#endif
+void drawDecideInterlaceStatusForNextFrame();
+void drawInterlaceStartup();
+void drawInterlaceEndOfFrame();
+void drawInterlaceConfigure(bool deinterlace, DisplayScaleStrategy displayScaleStrategy);

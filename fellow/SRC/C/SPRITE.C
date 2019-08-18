@@ -23,25 +23,25 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "fellow.h"
-#include "chipset.h"
-#include "fmem.h"
-#include "graph.h"
-#include "draw.h"
-#include "ListTree.h"
-#include "bus.h"
+#include "FELLOW.H"
+#include "fellow/chipset/ChipsetInfo.h"
+#include "FMEM.H"
+#include "GRAPH.H"
+#include "fellow/application/HostRenderer.h"
+#include "LISTTREE.H"
+#include "fellow/scheduler/Scheduler.h"
 
-#include "SpriteRegisters.h"
-#include "SpriteP2CDecoder.h"
-#include "SpriteMerger.h"
+#include "fellow/chipset/SpriteRegisters.h"
+#include "fellow/chipset/SpriteP2CDecoder.h"
+#include "fellow/chipset/SpriteMerger.h"
 #include "LineExactSprites.h"
-#include "CycleExactSprites.h"
+#include "fellow/chipset/CycleExactSprites.h"
 
 Sprites *sprites = nullptr;
 LineExactSprites *line_exact_sprites = nullptr;
 CycleExactSprites *cycle_exact_sprites = nullptr;
 
-void spriteInitializeFromEmulationMode()
+void spriteInitializeForLineOrCycleExactEmulation()
 {
   if (sprites != nullptr)
   {
@@ -51,7 +51,7 @@ void spriteInitializeFromEmulationMode()
     cycle_exact_sprites = nullptr;
   }
 
-  if (drawGetGraphicsEmulationMode() == GRAPHICSEMULATIONMODE_CYCLEEXACT)
+  if (chipsetIsCycleExact())
   {
     sprites = cycle_exact_sprites = new CycleExactSprites();
   }
@@ -75,9 +75,9 @@ void spriteHardReset()
 /* Called on emulation end of line                                           */
 /*===========================================================================*/
 
-void spriteEndOfLine(ULO rasterY)
+void spriteEndOfLine(ULO line)
 {
-  sprites->EndOfLine(rasterY);
+  sprites->EndOfLine(line);
 }
 
 /*===========================================================================*/
@@ -95,6 +95,7 @@ void spriteEndOfFrame()
 
 void spriteEmulationStart()
 {
+  spriteInitializeForLineOrCycleExactEmulation();
   sprite_registers.InstallIOHandlers();
   sprites->EmulationStart();
 }
@@ -114,8 +115,11 @@ void spriteEmulationStop()
 
 void spriteStartup()
 {
+  sprites = nullptr;
+  cycle_exact_sprites = nullptr;
+  line_exact_sprites = nullptr;
+
   sprite_registers.ClearState();
-  spriteInitializeFromEmulationMode();
   SpriteP2CDecoder::Initialize();
   SpriteMerger::Initialize();
 }

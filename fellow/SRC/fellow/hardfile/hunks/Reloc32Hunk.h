@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_RELOC32HUNK_H
-#define FELLOW_HARDFILE_HUNKS_RELOC32HUNK_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -16,14 +15,12 @@ namespace fellow::hardfile::hunks
 
   public:
     ULO GetID() override;
-    
-    ULO GetOffsetTableCount();
-    Reloc32OffsetTable* GetOffsetTable(ULO index);
 
-    void Parse(RawDataReader& rawDataReader) override;
+    ULO GetOffsetTableCount();
+    Reloc32OffsetTable *GetOffsetTable(ULO index);
+
+    void Parse(RawDataReader &rawDataReader) override;
 
     Reloc32Hunk(ULO sourceHunkIndex);
   };
 }
-
-#endif

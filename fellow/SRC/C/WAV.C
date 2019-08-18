@@ -1,4 +1,3 @@
-/* @(#) $Id: WAV.C,v 1.6 2012-12-08 16:13:32 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Wav file sound dump                                                     */
@@ -22,15 +21,17 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-#include "defs.h"
-#include "fellow.h"
-#include "sound.h"
-#include "graph.h"
-#include "draw.h"
-#include "fileops.h"
+#include "fellow/api/defs.h"
+#include "FELLOW.H"
+#include "SOUND.H"
+#include "GRAPH.H"
+#include "fellow/application/HostRenderer.h"
+#include "fellow/api/Services.h"
+
+using namespace fellow::api;
 
 FILE *wav_FILE;
-STR wav_filename[MAX_PATH];
+STR wav_filename[CFG_FILENAME_LENGTH];
 ULO wav_serial;
 sound_rates wav_rate;
 ULO wav_rate_real;
@@ -40,7 +41,6 @@ ULO wav_filelength;
 ULO wav_samplecount;
 LON wav_samplesum;
 
-
 /*============================================================*/
 /* Add samples to device                                      */
 /* We're not very concerned with performance here. After all, */
@@ -48,100 +48,108 @@ LON wav_samplesum;
 /* anything we can do on our own.                             */
 /*============================================================*/
 
-void wav8BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
-
-  if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
-      wav_samplesum = (((LON) left[i] + (LON) right[i])>>8) + 0x80;
+void wav8BitsMonoAdd(WOR *left, WOR *right, ULO sample_count)
+{
+  if (wav_FILE)
+  {
+    for (ULO i = 0; i < sample_count; i++)
+    {
+      wav_samplesum = (((LON)left[i] + (LON)right[i]) >> 8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
     }
     wav_filelength += sample_count;
   }
 }
 
-void wav8BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
-
-  if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
-      wav_samplesum = (((LON) left[i])>>8) + 0x80;
+void wav8BitsStereoAdd(WOR *left, WOR *right, ULO sample_count)
+{
+  if (wav_FILE)
+  {
+    for (ULO i = 0; i < sample_count; i++)
+    {
+      wav_samplesum = (((LON)left[i]) >> 8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
-      wav_samplesum = (((LON) right[i])>>8) + 0x80;
+      wav_samplesum = (((LON)right[i]) >> 8) + 0x80;
       fwrite(&wav_samplesum, 1, 1, wav_FILE);
     }
-    wav_filelength += sample_count*2;
+    wav_filelength += sample_count * 2;
   }
 }
 
-void wav16BitsMonoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
-
-  if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+void wav16BitsMonoAdd(WOR *left, WOR *right, ULO sample_count)
+{
+  if (wav_FILE)
+  {
+    for (ULO i = 0; i < sample_count; i++)
+    {
       wav_samplesum = left[i] + right[i];
       fwrite(&wav_samplesum, 2, 1, wav_FILE);
     }
-    wav_filelength += sample_count*2;
+    wav_filelength += sample_count * 2;
   }
 }
 
-void wav16BitsStereoAdd(WOR *left, WOR *right, ULO sample_count) {
-  ULO i;
-
-  if (wav_FILE) {
-    for (i = 0; i < sample_count; i++) {
+void wav16BitsStereoAdd(WOR *left, WOR *right, ULO sample_count)
+{
+  if (wav_FILE)
+  {
+    for (ULO i = 0; i < sample_count; i++)
+    {
       fwrite(&left[i], 2, 1, wav_FILE);
       fwrite(&right[i], 2, 1, wav_FILE);
     }
-    wav_filelength += sample_count*4;
+    wav_filelength += sample_count * 4;
   }
 }
-
 
 /*===========================================================================*/
 /* Write WAV header                                                          */
 /*===========================================================================*/
 
-void wavHeaderWrite(void) {
-  static STR *wav_RIFF = {"RIFF"};
-  static STR *wav_WAVEfmt = {"WAVEfmt "};
+void wavHeaderWrite()
+{
+  static const STR *wav_RIFF = {"RIFF"};
+  static const STR *wav_WAVEfmt = {"WAVEfmt "};
   static ULO wav_fmtchunklength = 16;
-  static STR *wav_data = {"data"};
-  ULO bytespersecond=wav_rate_real*(wav_stereo+1)*(wav_16bits+1);
-  ULO bits = (wav_16bits + 1)*8;
-  ULO blockalign = (wav_stereo + 1)*(wav_16bits + 1);
+  static const STR *wav_data = {"data"};
+  ULO bytespersecond = wav_rate_real * (wav_stereo + 1) * (wav_16bits + 1);
+  ULO bits = (wav_16bits + 1) * 8;
+  ULO blockalign = (wav_stereo + 1) * (wav_16bits + 1);
 
   /* This must still be wrong since wav-editors only reluctantly reads it */
 
-  if ((wav_FILE = fopen(wav_filename, "wb")) != NULL) {
+  if ((wav_FILE = fopen(wav_filename, "wb")) != NULL)
+  {
     wav_filelength = 36;
-    fwrite(wav_RIFF, 4, 1, wav_FILE);           /* 0  RIFF signature */
-    fwrite(&wav_filelength, 4, 1, wav_FILE);    /* 4  Length of file, that is, the number of bytes following the RIFF/Length pair */
+    fwrite(wav_RIFF, 4, 1, wav_FILE);        /* 0  RIFF signature */
+    fwrite(&wav_filelength, 4, 1, wav_FILE); /* 4  Length of file, that is, the number of bytes following the RIFF/Length pair */
 
-    fwrite(wav_WAVEfmt, 8, 1, wav_FILE);        /* 8  Wave format chunk coming up */
-    fwrite(&wav_fmtchunklength, 1, 4, wav_FILE);/* 16 Length of data in WAVEfmt chunk */
+    fwrite(wav_WAVEfmt, 8, 1, wav_FILE);         /* 8  Wave format chunk coming up */
+    fwrite(&wav_fmtchunklength, 1, 4, wav_FILE); /* 16 Length of data in WAVEfmt chunk */
 
     /* Write a WAVEFORMATEX struct */
 
-    fputc(0x01, wav_FILE); fputc(0, wav_FILE);  /* 20 Wave-format WAVE_FORMAT_PCM */
-    fputc(wav_stereo + 1, wav_FILE);		/* 22 Channels in file */
+    fputc(0x01, wav_FILE);
+    fputc(0, wav_FILE);              /* 20 Wave-format WAVE_FORMAT_PCM */
+    fputc(wav_stereo + 1, wav_FILE); /* 22 Channels in file */
     fputc(0, wav_FILE);
-    fwrite(&wav_rate_real, 4, 1, wav_FILE);          /* 24 Samples per second */
-    fwrite(&bytespersecond, 4, 1, wav_FILE);    /* 28 Average bytes per second */
-    fwrite(&blockalign, 2, 1, wav_FILE);        /* 32 Block align */
-    fwrite(&bits, 2, 1, wav_FILE);        /* 34 Bits per sample */
-    fwrite(wav_data, 4, 1, wav_FILE);		/* 36 Data chunk */
+    fwrite(&wav_rate_real, 4, 1, wav_FILE);  /* 24 Samples per second */
+    fwrite(&bytespersecond, 4, 1, wav_FILE); /* 28 Average bytes per second */
+    fwrite(&blockalign, 2, 1, wav_FILE);     /* 32 Block align */
+    fwrite(&bits, 2, 1, wav_FILE);           /* 34 Bits per sample */
+    fwrite(wav_data, 4, 1, wav_FILE);        /* 36 Data chunk */
     wav_filelength -= 36;
-    fwrite(&wav_filelength, 4, 1, wav_FILE);    /* 40 Bytes in data chunk */
+    fwrite(&wav_filelength, 4, 1, wav_FILE); /* 40 Bytes in data chunk */
     wav_filelength += 36;
     fclose(wav_FILE);
     wav_FILE = NULL;
   }
-}  
+}
 
-void wavLengthUpdate(void) {
-  if (wav_FILE != NULL) {
+void wavLengthUpdate()
+{
+  if (wav_FILE != NULL)
+  {
     fseek(wav_FILE, 4, SEEK_SET);
     fwrite(&wav_filelength, 4, 1, wav_FILE);
     fseek(wav_FILE, 40, SEEK_SET);
@@ -151,40 +159,38 @@ void wavLengthUpdate(void) {
   }
 }
 
-
 /*===========================================================================*/
 /* Set up WAV file                                                           */
 /*===========================================================================*/
 
 void wavFileInit(sound_rates rate, BOOLE bits16, BOOLE stereo)
 {
-  char generic_wav_filename[MAX_PATH];
+  char generic_wav_filename[CFG_FILENAME_LENGTH];
 
-  if ((wav_rate != rate) ||
-    (wav_16bits != bits16) ||
-    (wav_stereo != stereo)) {
-      sprintf(wav_filename, "FWAV%u.WAV", wav_serial++);
+  if ((wav_rate != rate) || (wav_16bits != bits16) || (wav_stereo != stereo))
+  {
+    sprintf(wav_filename, "FWAV%u.WAV", wav_serial++);
 
-      fileopsGetGenericFileName(generic_wav_filename, "WinFellow", wav_filename);
-      strcpy(wav_filename, generic_wav_filename);
+    Service->Fileops.GetGenericFileName(generic_wav_filename, "WinFellow", wav_filename);
+    strcpy(wav_filename, generic_wav_filename);
 
-      wav_rate = rate;
-      wav_rate_real = soundGetRateReal();
-      wav_16bits = bits16;
-      wav_stereo = stereo;
-      wav_filelength = 0;
-      wavHeaderWrite();
+    wav_rate = rate;
+    wav_rate_real = soundGetRateReal();
+    wav_16bits = bits16;
+    wav_stereo = stereo;
+    wav_filelength = 0;
+    wavHeaderWrite();
   }
   wav_FILE = fopen(wav_filename, "r+b");
   if (wav_FILE != NULL) fseek(wav_FILE, 0, SEEK_END);
 }
 
-
 /*===========================================================================*/
 /* Play samples, or in this case, save it                                    */
 /*===========================================================================*/
 
-void wavPlay(WOR *left, WOR *right, ULO sample_count) {
+void wavPlay(WOR *left, WOR *right, ULO sample_count)
+{
   if (wav_stereo && wav_16bits)
     wav16BitsStereoAdd(left, right, sample_count);
   else if (!wav_stereo && wav_16bits)
@@ -195,7 +201,6 @@ void wavPlay(WOR *left, WOR *right, ULO sample_count) {
     wav8BitsMonoAdd(left, right, sample_count);
 }
 
-
 /*===========================================================================*/
 /* Emulation start and stop                                                  */
 /*                                                                           */
@@ -204,22 +209,21 @@ void wavPlay(WOR *left, WOR *right, ULO sample_count) {
 /* or create new (changed settings)                                          */
 /*===========================================================================*/
 
-void wavEmulationStart(sound_rates rate,
-		       BOOLE bits16,
-		       BOOLE stereo,
-		       ULO buffersamplecountmax) {
-			 wavFileInit(rate, bits16, stereo);
+void wavEmulationStart(sound_rates rate, BOOLE bits16, BOOLE stereo, ULO buffersamplecountmax)
+{
+  wavFileInit(rate, bits16, stereo);
 }
 
-void wavEmulationStop(void) {
+void wavEmulationStop()
+{
   wavLengthUpdate();
-  if (wav_FILE != NULL) {
+  if (wav_FILE != NULL)
+  {
     fflush(wav_FILE);
     fclose(wav_FILE);
     wav_FILE = NULL;
   }
 }
-
 
 /*===========================================================================*/
 /* Called once on startup                                                    */
@@ -227,23 +231,21 @@ void wavEmulationStop(void) {
 /* WAV supports any sound quality                                            */
 /*===========================================================================*/
 
-void wavStartup(void) {
+void wavStartup()
+{
   wav_serial = 0;
-  wav_rate = (sound_rates) 9999;
+  wav_rate = (sound_rates)9999;
   wav_16bits = 2;
   wav_stereo = 2; /* ILLEGAL */
   wav_FILE = NULL;
   wav_filelength = 0;
 }
 
-
 /*===========================================================================*/
 /* Called once on shutdown                                                   */
 /*===========================================================================*/
 
-void wavShutdown(void) {
-  if (wav_FILE != NULL)
-    fclose(wav_FILE);
+void wavShutdown()
+{
+  if (wav_FILE != NULL) fclose(wav_FILE);
 }
-
-

@@ -1,13 +1,17 @@
-#ifndef FMEM_H
-#define FMEM_H
+#pragma once
+
+#include <string>
+#include <vector>
+#include "fellow/api/defs.h"
+#include "fellow/api/vm/MemorySystemTypes.h"
 
 /* Access for chipset emulation that already have validated addresses */
 
 #define chipmemReadByte(address) (memory_chip[address])
-#define chipmemReadWord(address) ((((UWO) memory_chip[address]) << 8) | ((UWO) memory_chip[address + 1]))
-#define chipmemWriteWord(data, address) \
-  memory_chip[address] = (UBY) (data >> 8); \
-  memory_chip[address + 1] = (UBY) data
+#define chipmemReadWord(address) ((((UWO)memory_chip[address]) << 8) | ((UWO)memory_chip[(address) + 1]))
+#define chipmemWriteWord(data, address)                                                                                                                                                                \
+  memory_chip[address] = (UBY)((data) >> 8);                                                                                                                                                           \
+  memory_chip[(address) + 1] = (UBY)data
 
 /* Memory access functions */
 
@@ -21,32 +25,27 @@ extern void memoryWriteLong(ULO data, ULO address);
 extern UWO memoryChipReadWord(ULO address);
 extern void memoryChipWriteWord(UWO data, ULO address);
 
-#define memoryReadByteFromPointer(address) (address[0])
-#define memoryReadWordFromPointer(address) ((address[0] << 8) | address[1])
-#define memoryReadLongFromPointer(address) ((address[0] << 24) | (address[1] << 16) | (address[2] << 8) | address[3])
+#define memoryReadByteFromPointer(address) ((address)[0])
+#define memoryReadWordFromPointer(address) (((address)[0] << 8) | (address)[1])
+#define memoryReadLongFromPointer(address) (((address)[0] << 24) | ((address)[1] << 16) | ((address)[2] << 8) | (address)[3])
 
 extern void memoryWriteLongToPointer(ULO data, UBY *address);
+extern bool memoryIsValidPointerAddress(ULO address, ULO size);
 
 /* IO Bank functions */
 
-typedef UWO (*memoryIoReadFunc)(ULO address);
-typedef void (*memoryIoWriteFunc)(UWO data, ULO address);
+extern void memorySetIoReadStub(ULO index, fellow::api::vm::IoReadFunc ioreadfunction);
+extern void memorySetIoWriteStub(ULO index, fellow::api::vm::IoWriteFunc iowritefunction);
 
-extern void memorySetIoReadStub(ULO index, memoryIoReadFunc ioreadfunction);
-extern void memorySetIoWriteStub(ULO index, memoryIoWriteFunc iowritefunction);
-
-/* For the copper */
-extern memoryIoWriteFunc memory_iobank_write[257];
+/* For the copper and testing */
+extern fellow::api::vm::IoReadFunc memory_iobank_read[257];
+extern fellow::api::vm::IoWriteFunc memory_iobank_write[257];
 
 /* Expansion card functions */
 
-typedef void (*memoryEmemCardInitFunc)(void);
-typedef void (*memoryEmemCardMapFunc)(ULO);
-
-extern void memoryEmemClear(void);
-extern void memoryEmemCardAdd(memoryEmemCardInitFunc cardinit,
-			      memoryEmemCardMapFunc cardmap);
-extern void memoryEmemSet(ULO index, ULO data);
+extern void memoryEmemClear();
+extern void memoryEmemCardAdd(fellow::api::vm::EmemCardInitFunc cardinit, fellow::api::vm::EmemCardMapFunc cardmap);
+extern void memoryEmemSet(ULO index, ULO value);
 extern void memoryEmemMirror(ULO emem_offset, UBY *src, ULO size);
 
 /* Device memory functions. fhfile is using these. */
@@ -55,99 +54,73 @@ extern void memoryDmemSetByte(UBY data);
 extern void memoryDmemSetWord(UWO data);
 extern void memoryDmemSetLong(ULO data);
 extern void memoryDmemSetLongNoCounter(ULO data, ULO offset);
-extern void memoryDmemSetString(const STR *data);
+extern void memoryDmemSetString(const STR *st);
 extern void memoryDmemSetCounter(ULO val);
-extern ULO memoryDmemGetCounter(void);
+extern ULO memoryDmemGetCounter();
 extern ULO memoryDmemGetCounterWithoutOffset();
-extern void memoryDmemClear(void);
+extern void memoryDmemClear();
 
 /* Module management functions */
 
-extern void memorySaveState(FILE *F);
-extern void memoryLoadState(FILE *F);
-extern void memorySoftReset(void);
-extern void memoryHardReset(void);
-extern void memoryHardResetPost(void);
-extern void memoryEmulationStart(void);
-extern void memoryEmulationStop(void);
-extern void memoryStartup(void);
-extern void memoryShutdown(void);
+extern void memorySoftReset();
+extern void memoryHardReset();
+extern void memoryHardResetPost();
+extern void memoryEmulationStart();
+extern void memoryEmulationStop();
+extern void memoryStartup();
+extern void memoryShutdown();
 
-/* Memory bank functions */
+// Memory bank functions
 
-typedef UBY (*memoryReadByteFunc)(ULO address);
-typedef UWO (*memoryReadWordFunc)(ULO address);
-typedef ULO (*memoryReadLongFunc)(ULO address);
-typedef void (*memoryWriteByteFunc)(UBY data, ULO address);
-typedef void (*memoryWriteWordFunc)(UWO data, ULO address);
-typedef void (*memoryWriteLongFunc)(ULO data, ULO address);
-
-extern memoryReadByteFunc memory_bank_readbyte[65536];
-extern memoryReadWordFunc memory_bank_readword[65536];
-extern memoryReadLongFunc memory_bank_readlong[65536];
-extern memoryWriteByteFunc memory_bank_writebyte[65536];
-extern memoryWriteWordFunc memory_bank_writeword[65536];
-extern memoryWriteLongFunc memory_bank_writelong[65536];
-
-extern UBY *memory_bank_pointer[65536];
-extern UBY *memory_bank_datapointer[65536];
-
-extern void memoryBankSet(memoryReadByteFunc rb,
-			  memoryReadWordFunc rw,
-			  memoryReadLongFunc rl,
-			  memoryWriteByteFunc wb,
-			  memoryWriteWordFunc ww,
-			  memoryWriteLongFunc wl,
-			  UBY *basep,
-			  ULO bank, 
-			  ULO basebank,
-			  BOOLE pointer_can_write);
+extern void memoryBankSet(const fellow::api::vm::MemoryBankDescriptor& memoryBankDescriptor);
 extern UBY *memoryAddressToPtr(ULO address);
 extern void memoryChipMap(bool overlay);
 
 /* Memory configuration properties */
 
-extern BOOLE memorySetChipSize(ULO chipsize);
-extern ULO memoryGetChipSize(void);
-extern BOOLE memorySetFastSize(ULO fastsize);
-extern ULO memoryGetFastSize(void);
+extern bool memorySetChipSize(ULO chipsize);
+extern ULO memoryGetChipSize();
+extern bool memorySetFastSize(ULO fastsize);
+extern ULO memoryGetFastSize();
 extern void memorySetFastAllocatedSize(ULO fastallocatedsize);
-extern ULO memoryGetFastAllocatedSize(void);
-extern BOOLE memorySetSlowSize(ULO bogosize);
-extern ULO memoryGetSlowSize(void);
+extern ULO memoryGetFastAllocatedSize();
+extern bool memorySetSlowSize(ULO slowsize);
+extern ULO memoryGetSlowSize();
 extern bool memorySetUseAutoconfig(bool useautoconfig);
 extern bool memoryGetUseAutoconfig();
-extern BOOLE memorySetAddress32Bit(BOOLE address32bit);
-extern BOOLE memoryGetAddress32Bit(void);
-extern BOOLE memorySetKickImage(STR *kickimage);
-extern BOOLE memorySetKickImageExtended(STR *kickimageext);
-extern STR *memoryGetKickImage(void);
+extern bool memorySetAddressSpace32Bit(bool address32bit);
+extern bool memoryGetAddressSpace32Bit();
+extern bool memorySetKickImage(STR *kickimage);
+extern bool memorySetKickImageExtended(STR *kickimageext);
+extern STR *memoryGetKickImage();
 extern void memorySetKey(STR *key);
-extern STR *memoryGetKey(void);
-extern BOOLE memoryGetKickImageOK(void);
+extern STR *memoryGetKey();
+extern BOOLE memoryGetKickImageOK();
+
+extern std::vector<fellow::api::vm::MemoryMapDescriptor> memoryGetMemoryMapDescriptors();
 
 /* Derived from memory configuration */
 
-extern ULO memoryGetKickImageBaseBank(void);
-extern ULO memoryGetKickImageVersion(void);
-extern ULO memoryInitialPC(void);
-extern ULO memoryInitialSP(void);
+extern ULO memoryGetKickImageBaseBank();
+extern ULO memoryGetKickImageVersion();
+extern ULO memoryInitialPC();
+extern ULO memoryInitialSP();
 
 /* Kickstart decryption */
 extern int memoryKickLoadAF2(STR *filename, FILE *F, UBY *memory_kick, const bool);
 
 /* Kickstart load error handling */
 
-#define MEMORY_ROM_ERROR_SIZE           0
+#define MEMORY_ROM_ERROR_SIZE 0
 #define MEMORY_ROM_ERROR_AMIROM_VERSION 1
-#define MEMORY_ROM_ERROR_AMIROM_READ    2
-#define MEMORY_ROM_ERROR_KEYFILE        3
-#define MEMORY_ROM_ERROR_EXISTS_NOT     4
-#define MEMORY_ROM_ERROR_FILE           5
-#define MEMORY_ROM_ERROR_KICKDISK_NOT   6
-#define MEMORY_ROM_ERROR_CHECKSUM       7
+#define MEMORY_ROM_ERROR_AMIROM_READ 2
+#define MEMORY_ROM_ERROR_KEYFILE 3
+#define MEMORY_ROM_ERROR_EXISTS_NOT 4
+#define MEMORY_ROM_ERROR_FILE 5
+#define MEMORY_ROM_ERROR_KICKDISK_NOT 6
+#define MEMORY_ROM_ERROR_CHECKSUM 7
 #define MEMORY_ROM_ERROR_KICKDISK_SUPER 8
-#define MEMORY_ROM_ERROR_BAD_BANK       9
+#define MEMORY_ROM_ERROR_BAD_BANK 9
 
 /* Global variables */
 
@@ -162,5 +135,3 @@ extern ULO potgor;
 
 extern ULO memory_fault_address;
 extern BOOLE memory_fault_read;
-
-#endif

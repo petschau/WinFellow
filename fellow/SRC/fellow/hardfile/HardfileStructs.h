@@ -1,16 +1,15 @@
-#ifndef FELLOW_HARDFILE_HARDFILESTRUCTS_H
-#define FELLOW_HARDFILE_HARDFILESTRUCTS_H
+#pragma once
 
-#include "fellow/api/module/IHardfileHandler.h"
+#include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/hardfile/rdb/RDB.h"
 
 namespace fellow::hardfile
 {
-  typedef enum
+  enum class fhfile_status
   {
     FHFILE_NONE = 0,
     FHFILE_HDF = 1
-  } fhfile_status;
+  };
 
   struct HardfileMountListEntry
   {
@@ -19,15 +18,14 @@ namespace fellow::hardfile
     std::string Name;
     ULO NameAddress;
 
-    HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string& name)
-      : DeviceIndex(deviceIndex), PartitionIndex(partitionIndex), Name(name), NameAddress(0)
+    HardfileMountListEntry(unsigned int deviceIndex, int partitionIndex, const std::string &name) : DeviceIndex(deviceIndex), PartitionIndex(partitionIndex), Name(name), NameAddress(0)
     {
     }
   };
 
   struct HardfileFileSystemEntry
   {
-    rdb::RDBFileSystemHeader* Header;
+    rdb::RDBFileSystemHeader *Header;
     ULO SegListAddress;
 
     bool IsOlderOrSameFileSystemVersion(ULO DOSType, ULO version);
@@ -40,19 +38,19 @@ namespace fellow::hardfile
     ULO GetVersion();
     void CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex);
 
-    HardfileFileSystemEntry(rdb::RDBFileSystemHeader* header, ULO segListAddress);
+    HardfileFileSystemEntry(rdb::RDBFileSystemHeader *header, ULO segListAddress);
   };
 
   class HardfileDevice
   {
   public:
     // Filename and geometry as listed in the config or on the RDB
-    fellow::api::module::HardfileConfiguration Configuration;
+    fellow::api::modules::HardfileConfiguration Configuration;
 
     // Internal properties, actual runtime values used for the hardfile
     bool Readonly;
-    unsigned int FileSize;    // Actual file size
-    unsigned int GeometrySize;// Size taken by configured geometry
+    unsigned int FileSize;     // Actual file size
+    unsigned int GeometrySize; // Size taken by configured geometry
     fhfile_status Status;
     FILE *F;
     bool HasRDB;
@@ -87,13 +85,12 @@ namespace fellow::hardfile
       FileSize = 0;
       GeometrySize = 0;
       Readonly = false;
-      Status = FHFILE_NONE;
+      Status = fellow::hardfile::fhfile_status::FHFILE_NONE;
       Configuration.Clear();
       return result;
     }
 
-    HardfileDevice()
-      : Readonly(false), FileSize(0), GeometrySize(0), Status(FHFILE_NONE), F(nullptr), HasRDB(false), RDB(nullptr)
+    HardfileDevice() : Readonly(false), FileSize(0), GeometrySize(0), Status(fellow::hardfile::fhfile_status::FHFILE_NONE), F(nullptr), HasRDB(false), RDB(nullptr)
     {
     }
 
@@ -104,5 +101,3 @@ namespace fellow::hardfile
     }
   };
 }
-
-#endif

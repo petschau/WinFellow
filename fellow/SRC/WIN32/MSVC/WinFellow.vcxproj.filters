@@ -52,12 +52,6 @@
     <Filter Include="icons">
       <UniqueIdentifier>{33d76fb7-c7ea-48f4-88c8-dc1922fdb79d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="graphics">
-      <UniqueIdentifier>{b87ae76d-615b-4620-818c-936fab6ea5a0}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DXGI">
-      <UniqueIdentifier>{e654a72c-db78-41a3-a44b-3f7378035727}</UniqueIdentifier>
-    </Filter>
     <Filter Include="automation">
       <UniqueIdentifier>{b409784d-dbc0-4bf3-81f0-589234dd4554}</UniqueIdentifier>
     </Filter>
@@ -72,9 +66,6 @@
     </Filter>
     <Filter Include="fellow\vm">
       <UniqueIdentifier>{2c26c775-ae0b-4bda-9d2d-41c9c45dc9bb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="fellow\api\module">
-      <UniqueIdentifier>{bea23d8d-ea57-414c-8500-178645ffc0b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="fellow\api\service">
       <UniqueIdentifier>{737e3c60-d979-4f05-a032-f1469bcd8e6b}</UniqueIdentifier>
@@ -97,57 +88,69 @@
     <Filter Include="test\fellow\chipset">
       <UniqueIdentifier>{07e02b47-0046-4ab6-a04f-eb9ba6835663}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\chipset">
+      <UniqueIdentifier>{01c39341-cc4f-47cf-a151-9bc415aa5a9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\debug">
+      <UniqueIdentifier>{95f4893f-e105-4e6c-a47e-c1feee3be0eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\time">
+      <UniqueIdentifier>{bef34209-afec-4af0-a734-c119d7656c7b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\api\modules">
+      <UniqueIdentifier>{bea23d8d-ea57-414c-8500-178645ffc0b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\debug\commands">
+      <UniqueIdentifier>{a1347851-1f44-49a7-88ef-69ebea338061}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\hud">
+      <UniqueIdentifier>{9b915286-8d62-4cb6-8a57-bf95d03ee25e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\api\configuration">
+      <UniqueIdentifier>{55fe389e-8ed7-4c23-9d4e-825652e8a913}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\debug\console">
+      <UniqueIdentifier>{07521ccf-12f0-4fe0-b8a4-d0fbfa0051f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\scheduler">
+      <UniqueIdentifier>{360531cd-f6c7-4a3e-a32c-3aeab302dc75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\api\debug">
+      <UniqueIdentifier>{b684f86c-b594-467d-9a73-8008ac7794a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os">
+      <UniqueIdentifier>{b0413665-ce85-451d-a5ad-0bfdf8f01615}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows">
+      <UniqueIdentifier>{ff38e285-2b98-4fe4-b1f7-73917da90c51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\directdraw">
+      <UniqueIdentifier>{7e4c26a5-5ff3-473d-aa9b-fe20947a6d84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\dxgi">
+      <UniqueIdentifier>{5a05d349-a0b1-4c49-9550-9f3152e0b0c5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\configuration">
+      <UniqueIdentifier>{189eafd3-d24f-4363-b15c-0da23a148e1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\application">
+      <UniqueIdentifier>{733a8fce-6fe2-4b2b-8307-2886161e873b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\debug\log">
+      <UniqueIdentifier>{62e8c6fd-2522-48cb-b7bf-5c916b670a02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\debugger">
+      <UniqueIdentifier>{ccd9b7b8-b2e3-4432-850e-0dba9e62cbb3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\io">
+      <UniqueIdentifier>{7e4bbcc3-acc6-47b1-9826-6e1cb8b37923}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\BUS.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\CIA.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CONFIG.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\COPPER.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuIntegration.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Disassembler.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_EffectiveAddress.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Exceptions.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Flags.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Instructions.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_InternalState.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Interrupts.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Logging.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_StackFrameGen.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\DRAW.C">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\FELLOW.C">
@@ -162,25 +165,13 @@
     <ClCompile Include="..\..\C\FMEM.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\FSNAVIG.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\fsysamnt.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\GAMEPORT.C">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\GRAPH.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\C\Ini.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\KBD.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\modrip.c">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\SOUND.C">
@@ -198,25 +189,7 @@
     <ClCompile Include="..\C\commoncontrol_wrap.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\C\fileops.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\FSWRAP.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\JOYDRV.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\KBDDRV.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\kbdparser.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\modrip_win32.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\MOUSEDRV.C">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\SOUNDDRV.C">
@@ -333,9 +306,6 @@
     <ClCompile Include="..\C\RetroPlatform.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\interrupt.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\c\rtc.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -357,103 +327,22 @@
     <ClCompile Include="..\..\zlib\C\infback.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\graphics\BitplaneDMA.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\BitplaneDraw.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\DDFStateMachine.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\DIWXStateMachine.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\DIWYStateMachine.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\Graphics.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\GraphicsEvent.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\Planar2ChunkyDecoder.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\PixelSerializer.c">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\Logger.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\c\draw_pixelrenderers.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\c\draw_interlace_control.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\chipset.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGI.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapter.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIErrorLogger.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIModeEnumerator.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIOutput.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIOutputEnumerator.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\GFXDRV.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\gfxdrv_directdraw.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\GfxDrvCommon.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\DXGI\GfxDrvDXGIMode.cpp">
-      <Filter>DXGI</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CopperRegisters.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\SpriteRegisters.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\LineExactCopper.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\LineExactSprites.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\CycleExactCopper.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\graphics\CycleExactSprites.cpp">
-      <Filter>graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\SpriteP2CDecoder.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\SpriteMerger.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\c\uart.cpp">
@@ -486,9 +375,6 @@
     <ClCompile Include="..\..\fellow\service\RetroPlatformWrapper.cpp">
       <Filter>fellow\service</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\service\Services.cpp">
-      <Filter>fellow\service</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\IPF\CapsPlug.cpp">
       <Filter>IPF Access API</Filter>
     </ClCompile>
@@ -504,21 +390,354 @@
     <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
       <Filter>test\fellow\chipset</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\BitplaneRegisters.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\ChipsetInfo.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\fellow\chipset\BitplaneRegistersTest.cpp">
+      <Filter>test\fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\DDFStateMachine.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\CycleExactCopper.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Planar2ChunkyDecoder.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\CycleExactSprites.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\DIWYStateMachine.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\DIWXStateMachine.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\fellow\chipset\DIWYStateMachineTest.cpp">
+      <Filter>test\fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\BitplaneShifter.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\SpriteDMA.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\SpriteRegisters.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\SpriteMerger.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\SpriteP2CDecoder.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\DualPlayfieldMapper.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\DMAController.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\vm\Clocks.cpp">
+      <Filter>fellow\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\vm\Display.cpp">
+      <Filter>fellow\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\vm\Copper.cpp">
+      <Filter>fellow\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\vm\Chipset.cpp">
+      <Filter>fellow\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\CopperRegisters.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\time\Timestamps.cpp">
+      <Filter>fellow\time</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\HostFrame.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\HostFrameCopier.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\HostFrameDelayedRenderer.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\HostFrameImmediateRenderer.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\vm\EventLog.cpp">
+      <Filter>fellow\vm</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\GfxDrvHudLegacy.cpp">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\PerformanceCounterWin32.cpp">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\service\CoreServicesFactory.cpp">
+      <Filter>fellow\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\OSServicesFactory.cpp">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\api\Services.cpp">
+      <Filter>fellow\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CopperCommon.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuIntegration.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Disassembler.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_EffectiveAddress.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Exceptions.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Flags.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Instructions.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_InternalState.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Interrupts.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_StackFrameGen.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\CpuModule_Logging.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\interrupt.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\modrip.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\C\Ini.c">
+      <Filter>Win32 C Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\DisassembleCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\MemoryCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\CPURegisterCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\hud\HudPropertyProvider.cpp">
+      <Filter>fellow\hud</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\MemoryMapCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\ChipsetRegisterHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\MemoryMapHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\CPURegisterHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\DisassembleHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\HelpHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\MemoryHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\ConsoleDebugger.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\DebugWriter.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\ParameterUtils.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\scheduler\Scheduler.cpp">
+      <Filter>fellow\scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\scheduler\SchedulerQueue.cpp">
+      <Filter>fellow\scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\scheduler\SchedulerEvent.cpp">
+      <Filter>fellow\scheduler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\CPUStepCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\CPUStepHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\CPUWriterUtils.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\test\fellow\chipset\HostColorMapTest.cpp">
+      <Filter>test\fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.cpp">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGI.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.cpp">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.cpp">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\configuration\Configuration.cpp">
+      <Filter>fellow\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\configuration\HostRenderConfigurationMapper.cpp">
+      <Filter>fellow\configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\HostRenderer.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\HostRenderConfiguration.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\DisplayMode.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\HostRenderStatistics.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.cpp">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.cpp">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\console\LogHandler.cpp">
+      <Filter>fellow\debug\console</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\commands\LogCommand.cpp">
+      <Filter>fellow\debug\commands</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\BitplaneShifterLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\ChipBusLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\DebugLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\DebugLogHandler.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\DiagnosticFeatures.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\DIWXLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\DIWYLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\EventQueueLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp">
+      <Filter>fellow\os\windows\debugger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\FileopsWin32.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\FSWrapStat.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\FilesystemAutomount.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\JoystickDriver.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\KeyboardDriver.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\Keyparser.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\io\MouseDriver.cpp">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\debug\log\LineChangeLogEntry.cpp">
+      <Filter>fellow\debug\log</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\BUS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\CIA.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CONFIG.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\COPPER.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\CpuIntegration.h">
@@ -548,12 +767,6 @@
     <ClInclude Include="..\..\INCLUDE\CpuModule_Profile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\DEFS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\DRAW.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\EVENTID.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -567,12 +780,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\FMEM.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\FONTS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\FSNAVIG.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\GAMEPORT.H">
@@ -590,9 +797,6 @@
     <ClInclude Include="..\..\INCLUDE\modrip.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\SPRITE.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -605,46 +809,13 @@
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\INCLUDE\FSWRAP.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GFXDRV.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\JOYDRV.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\KBD.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\KBDDRV.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\kbdparser.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\modrip_win32.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\MOUSEDRV.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SOUND.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SOUNDDRV.H">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\sysinfo.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\TIMER.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\WDBG.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\WGUI.H">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\WINDRV.H">
@@ -758,9 +929,6 @@
     <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\INCLUDE\fileops.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\RetroPlatform.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
@@ -779,103 +947,19 @@
     <ClInclude Include="..\..\include\rtc.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\graphics\BitplaneDMA.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\BitplaneDraw.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\DDFStateMachine.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\DIWXStateMachine.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\DIWYStateMachine.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\Graphics.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\GraphicsEvent.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\GraphicsEventQueue.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\Planar2ChunkyDecoder.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\PixelSerializer.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\BitplaneUtility.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\Logger.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\draw_pixelrenderers.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\draw_interlace_control.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\chipset.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGI.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIErrorLogger.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIModeEnumerator.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIOutput.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIOutputEnumerator.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\gfxdrv_directdraw.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\GfxDrvCommon.h">
       <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\DXGI\GfxDrvDXGIMode.h">
-      <Filter>DXGI</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CopperRegisters.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SpriteRegisters.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\CycleExactSprites.h">
-      <Filter>graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\LineExactCopper.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\LineExactSprites.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\graphics\CycleExactCopper.h">
-      <Filter>graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SpriteP2CDecoder.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SpriteMerger.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h">
@@ -901,9 +985,6 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\VM.h">
       <Filter>fellow\api</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\api\module\IHardfileHandler.h">
-      <Filter>fellow\api\module</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\service\IFSWrapper.h">
       <Filter>fellow\api\service</Filter>
@@ -953,14 +1034,395 @@
     <ClInclude Include="..\Caps\include\caps.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\ListTree.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\test\catch\catch.hpp">
       <Filter>test\catch</Filter>
     </ClInclude>
     <ClInclude Include="..\..\test\catch\CustomCatchMain.h">
       <Filter>test\catch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\BitplaneRegisters.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\ChipsetInfo.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\BitplaneDMA.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\DDFStateMachine.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\CycleExactCopper.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Planar2ChunkyDecoder.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\BitplaneUtility.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\CycleExactSprites.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\DIWXStateMachine.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\DIWYStateMachine.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\BitplaneShifter.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\SpriteDMA.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\SpriteRegisters.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\SpriteMerger.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\SpriteP2CDecoder.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\DualPlayfieldMapper.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\DMAController.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\SOUND.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\KBD.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\LISTTREE.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\test\catch\catch_discover.hpp">
+      <Filter>test\catch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\ChipsetCallbacks.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\IClocks.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\vm\Clocks.h">
+      <Filter>fellow\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\IChipset.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\ICopper.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\IDisplay.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\vm\Display.h">
+      <Filter>fellow\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\vm\Copper.h">
+      <Filter>fellow\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\vm\Chipset.h">
+      <Filter>fellow\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\CopperRegisters.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\CopperCommon.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\CopperUtility.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\time\Timestamps.h">
+      <Filter>fellow\time</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\HostFrame.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\HostFrameCopier.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\HostFrameDelayedRenderer.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\HostFrameImmediateRenderer.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\vm\EventLog.h">
+      <Filter>fellow\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\IEventLog.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\GfxDrvHudLegacy.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\WGUI.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\wgui_win32.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\PerformanceCounterWin32.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\service\CoreServicesFactory.h">
+      <Filter>fellow\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\GFXDRV.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\JOYDRV.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\KBDDRV.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\MOUSEDRV.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\SOUNDDRV.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\TIMER.H">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h">
+      <Filter>fellow\api\modules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\DebuggerCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\DisassembleCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\MemoryCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\CPURegisterCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\hud\HudPropertyProvider.h">
+      <Filter>fellow\hud</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\configuration\HudConfiguration.h">
+      <Filter>fellow\api\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\MemoryMapCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\vm\MemorySystemTypes.h">
+      <Filter>fellow\api\vm</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\ChipsetRegisterHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\MemoryMapHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\CPURegisterHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\DisassembleHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\MemoryHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\HelpHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\ConsoleCommandHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\ConsoleDebugger.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\DebugWriter.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\ParameterUtils.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\service\IFileops.h">
+      <Filter>fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\service\IPerformanceCounter.h">
+      <Filter>fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\INCLUDE\OSServicesFactory.h">
+      <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\scheduler\Scheduler.h">
+      <Filter>fellow\scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\scheduler\SchedulerQueue.h">
+      <Filter>fellow\scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\scheduler\SchedulerEvent.h">
+      <Filter>fellow\scheduler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\CPUStepCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\CPUStepHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\CPUWriterUtils.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\GfxDrvMappedBufferPointer.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\MappedChipsetFramebuffer.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\GfxDrvColorBitsInformation.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\ChipsetBufferRuntimeSettings.h">
+      <Filter>core C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.h">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGI.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIUtils.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\PixelShader.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxgi\VertexShader.h">
+      <Filter>fellow\os\windows\dxgi</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.h">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\configuration\Configuration.h">
+      <Filter>fellow\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\configuration\HostRenderConfigurationMapper.h">
+      <Filter>fellow\configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\HostRenderer.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\HostRenderConfiguration.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\DisplayMode.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\DrawDimensionTypes.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\IFpsProvider.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.h">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.h">
+      <Filter>fellow\os\windows\directdraw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\console\LogHandler.h">
+      <Filter>fellow\debug\console</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\commands\LogCommand.h">
+      <Filter>fellow\debug\commands</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\BitplaneShifterLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\ChipBusLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\DebugLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\DebugLogHandler.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\DIWXLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\DIWYLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\EventQueueLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h">
+      <Filter>fellow\os\windows\debugger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\FileopsWin32.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\FSWrapStat.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\Keyparser.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\debug\log\LineChangeLogEntry.h">
+      <Filter>fellow\debug\log</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1009,6 +1471,7 @@
     <None Include="..\icons\arrow.bmp">
       <Filter>bitmaps</Filter>
     </None>
+    <None Include="WinFellow.ruleset" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_general.rc">
@@ -1019,11 +1482,11 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\DXGI\PixelShader.hlsl">
-      <Filter>DXGI</Filter>
+    <FxCompile Include="..\..\fellow\os\windows\dxgi\PixelShader.hlsl">
+      <Filter>fellow\os\windows\dxgi</Filter>
     </FxCompile>
-    <FxCompile Include="..\DXGI\VertexShader.hlsl">
-      <Filter>DXGI</Filter>
+    <FxCompile Include="..\..\fellow\os\windows\dxgi\VertexShader.hlsl">
+      <Filter>fellow\os\windows\dxgi</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

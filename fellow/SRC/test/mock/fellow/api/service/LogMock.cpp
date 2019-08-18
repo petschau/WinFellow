@@ -2,25 +2,34 @@
 
 using namespace std;
 
-namespace test::mock::fellow::api::service
+namespace test::mock::fellow::api
 {
   void LogMock::AddLogDebug(const char *, ...)
   {
-    // Stub
   }
 
   void LogMock::AddLog(const char *, ...)
   {
-    // Stub
+  }
+
+  void LogMock::AddLog(const string &message)
+  {
   }
 
   void LogMock::AddLog2(STR *msg)
   {
-    // Stub
   }
 
-  void LogMock::AddLogList(const list<string>& messages)
+  void LogMock::AddLogList(const list<string> &messages)
   {
-    // Stub
   }
+
+  void LogMock::AddTimelessLog(const char *format, ...)
+  {
+  }
+
+  void LogMock::AddLogRequester(::fellow::api::FELLOW_REQUESTER_TYPE type, const char *format, ...)
+  {
+  }
+
 }

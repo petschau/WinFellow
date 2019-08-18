@@ -1,44 +1,38 @@
-#ifndef CpuIntegration_H
-#define CpuIntegration_H
+#pragma once
 
-typedef enum {
-  M68000  = 0,
-  M68010  = 1,
-  M68020  = 2,
-  M68030  = 3,
+enum class cpu_integration_models
+{
+  M68000 = 0,
+  M68010 = 1,
+  M68020 = 2,
+  M68030 = 3,
   M68EC30 = 4,
   M68EC20 = 9
-} cpu_integration_models;
+};
 
-extern void cpuIntegrationCalculateMultiplier(void);
+extern void cpuIntegrationCalculateMultiplier();
 
-extern void cpuIntegrationExecuteInstructionEventHandler68000Fast(void);
-extern void cpuIntegrationExecuteInstructionEventHandler68000General(void);
-extern void cpuIntegrationExecuteInstructionEventHandler68020(void);
-extern ULO cpuIntegrationDisOpcode(ULO disasm_pc, STR *saddress, STR *sdata, STR *sinstruction, STR *soperands);
+extern void cpuIntegrationExecuteInstructionEventHandler68000Fast();
+extern void cpuIntegrationExecuteInstructionEventHandler68000General();
+extern void cpuIntegrationExecuteInstructionEventHandler68020();
 
-extern BOOLE cpuIntegrationSetModel(cpu_integration_models model);
-extern cpu_integration_models cpuIntegrationGetModel(void);
-extern ULO cpuIntegrationGetModelMajor(void);
+extern bool cpuIntegrationSetModel(cpu_integration_models model);
+extern cpu_integration_models cpuIntegrationGetModel();
 
 void cpuIntegrationSetIrqLevel(ULO new_interrupt_level, ULO chip_interrupt_number);
-extern ULO cpuIntegrationGetInstructionTime(void);
 extern void cpuIntegrationSetSpeed(ULO speed);
-extern ULO cpuIntegrationGetSpeed(void);
+extern ULO cpuIntegrationGetSpeed();
 extern void cpuIntegrationSetChipCycles(ULO chip_cycles);
-extern ULO cpuIntegrationGetChipCycles(void);
+extern ULO cpuIntegrationGetChipCycles();
 extern void cpuIntegrationSetChipSlowdown(ULO chip_slowdown);
-extern ULO cpuIntegrationGetChipSlowdown(void);
+extern ULO cpuIntegrationGetChipSlowdown();
+extern ULO cpuIntegrationGetTimeUsedRemainder();
 
 extern jmp_buf cpu_integration_exception_buffer;
 
 // Fellow limecycle events
-extern void cpuIntegrationSaveState(FILE *F);
-extern void cpuIntegrationLoadState(FILE *F);
-extern void cpuIntegrationEmulationStart(void);
-extern void cpuIntegrationEmulationStop(void);
-extern void cpuIntegrationHardReset(void);
-extern void cpuIntegrationStartup(void);
-extern void cpuIntegrationShutdown(void);
-
-#endif
+extern void cpuIntegrationEmulationStart();
+extern void cpuIntegrationEmulationStop();
+extern void cpuIntegrationHardReset();
+extern void cpuIntegrationStartup();
+extern void cpuIntegrationShutdown();

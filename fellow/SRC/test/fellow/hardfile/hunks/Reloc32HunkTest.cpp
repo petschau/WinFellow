@@ -59,7 +59,7 @@ namespace test::fellow::hardfile::hunks
       _hunkData[index++] = 0;
     }
 
-    RawDataReader& GetNewRawDataReader()
+    RawDataReader &GetNewRawDataReader()
     {
       _rawDataReader.reset(new RawDataReader(_hunkData.get(), 128));
       return *_rawDataReader;

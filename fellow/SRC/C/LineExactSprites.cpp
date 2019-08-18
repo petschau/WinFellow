@@ -1,36 +1,21 @@
-#include "SpriteRegisters.h"
-#include "SpriteP2CDecoder.h"
-#include "SpriteMerger.h"
+#include "fellow/chipset/SpriteRegisters.h"
+#include "fellow/chipset/SpriteP2CDecoder.h"
+#include "fellow/chipset/SpriteMerger.h"
 #include "LineExactSprites.h"
-#include "FELLOW.H"
-#include "BUS.H"
+#include "fellow/api/Services.h"
+#include "fellow/scheduler/Scheduler.h"
 #include "FMEM.H"
-#include "DRAW.H"
-#include "chipset.h"
+#include "fellow/application/HostRenderer.h"
+#include "fellow/chipset/ChipsetInfo.h"
+#include "fellow/chipset/BitplaneRegisters.h"
 
-spr_register_func LineExactSprites::sprxptl_functions[8] =
-{
-  &LineExactSprites::aspr0ptl,
-  &LineExactSprites::aspr1ptl,
-  &LineExactSprites::aspr2ptl,
-  &LineExactSprites::aspr3ptl,
-  &LineExactSprites::aspr4ptl,
-  &LineExactSprites::aspr5ptl,
-  &LineExactSprites::aspr6ptl,
-  &LineExactSprites::aspr7ptl
-};
+using namespace fellow::api;
 
-spr_register_func LineExactSprites::sprxpth_functions[8] =
-{
-  &LineExactSprites::aspr0pth,
-  &LineExactSprites::aspr1pth,
-  &LineExactSprites::aspr2pth,
-  &LineExactSprites::aspr3pth,
-  &LineExactSprites::aspr4pth,
-  &LineExactSprites::aspr5pth,
-  &LineExactSprites::aspr6pth,
-  &LineExactSprites::aspr7pth
-};
+spr_register_func LineExactSprites::sprxptl_functions[8] = {&LineExactSprites::aspr0ptl, &LineExactSprites::aspr1ptl, &LineExactSprites::aspr2ptl, &LineExactSprites::aspr3ptl,
+                                                            &LineExactSprites::aspr4ptl, &LineExactSprites::aspr5ptl, &LineExactSprites::aspr6ptl, &LineExactSprites::aspr7ptl};
+
+spr_register_func LineExactSprites::sprxpth_functions[8] = {&LineExactSprites::aspr0pth, &LineExactSprites::aspr1pth, &LineExactSprites::aspr2pth, &LineExactSprites::aspr3pth,
+                                                            &LineExactSprites::aspr4pth, &LineExactSprites::aspr5pth, &LineExactSprites::aspr6pth, &LineExactSprites::aspr7pth};
 
 void LineExactSprites::aspr0pth(UWO data, ULO address)
 {
@@ -151,7 +136,7 @@ static ULO max_items_seen = 0;
 #endif
 
 /* Increases the item count with 1 and returns the new (uninitialized) item */
-spr_action_list_item* LineExactSprites::ActionListAddLast(spr_action_list_master* l)
+spr_action_list_item *LineExactSprites::ActionListAddLast(spr_action_list_master *l)
 {
 #ifdef _DEBUG
   if (max_items_seen < l->count)
@@ -160,7 +145,7 @@ spr_action_list_item* LineExactSprites::ActionListAddLast(spr_action_list_master
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
   }
 #endif
 
@@ -168,33 +153,34 @@ spr_action_list_item* LineExactSprites::ActionListAddLast(spr_action_list_master
 }
 
 /* Returns the number of items in the list */
-ULO LineExactSprites::ActionListCount(spr_action_list_master* l)
+ULO LineExactSprites::ActionListCount(spr_action_list_master *l)
 {
   return l->count;
 }
 
 /* Returns the list item at position i */
-spr_action_list_item* LineExactSprites::ActionListGet(spr_action_list_master* l, ULO i)
+spr_action_list_item *LineExactSprites::ActionListGet(spr_action_list_master *l, ULO i)
 {
-  if (i >= l->count) return NULL;
+  if (i >= l->count) return nullptr;
   return &l->items[i];
 }
 
 /* Clears the list */
-void LineExactSprites::ActionListClear(spr_action_list_master* l)
+void LineExactSprites::ActionListClear(spr_action_list_master *l)
 {
   l->count = 0;
 }
 
 /* Makes room for an item in the list based on the raster x position of the action */
 /* Returns the new uninitialized item. */
-spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_master* l, ULO raster_x, ULO raster_y)
+spr_action_list_item *LineExactSprites::ActionListAddSorted(spr_action_list_master *l, ULO raster_x, ULO raster_y)
 {
   for (ULO i = 0; i < l->count; i++)
   {
     if (l->items[i].raster_y >= raster_y && l->items[i].raster_x > raster_x)
     {
-      for (ULO j = l->count; j > i; --j) l->items[j] = l->items[j - 1];
+      for (ULO j = l->count; j > i; --j)
+        l->items[j] = l->items[j - 1];
 
 #ifdef _DEBUG
       if (max_items_seen < l->count)
@@ -203,7 +189,7 @@ spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_mast
       }
       if (l->count >= SPRITE_MAX_LIST_ITEMS)
       {
-        fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+        Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
       }
 #endif
 
@@ -214,9 +200,8 @@ spr_action_list_item* LineExactSprites::ActionListAddSorted(spr_action_list_mast
   return ActionListAddLast(l);
 }
 
-
 /* Increases the item count with 1 and returns the new (uninitialized) item */
-spr_merge_list_item* LineExactSprites::MergeListAddLast(spr_merge_list_master* l)
+spr_merge_list_item *LineExactSprites::MergeListAddLast(spr_merge_list_master *l)
 {
 #ifdef _DEBUG
   if (max_items_seen < l->count)
@@ -225,27 +210,27 @@ spr_merge_list_item* LineExactSprites::MergeListAddLast(spr_merge_list_master* l
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    fellowAddLogRequester(FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
+    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
   }
 #endif
   return &l->items[l->count++];
 }
 
 /* Returns the number of items in the list */
-ULO LineExactSprites::MergeListCount(spr_merge_list_master* l)
+ULO LineExactSprites::MergeListCount(spr_merge_list_master *l)
 {
   return l->count;
 }
 
 /* Returns the list item at position i */
-spr_merge_list_item* LineExactSprites::MergeListGet(spr_merge_list_master* l, ULO i)
+spr_merge_list_item *LineExactSprites::MergeListGet(spr_merge_list_master *l, ULO i)
 {
-  if (i >= l->count) return NULL;
+  if (i >= l->count) return nullptr;
   return &l->items[i];
 }
 
 /* Clears the list */
-void LineExactSprites::MergeListClear(spr_merge_list_master* l)
+void LineExactSprites::MergeListClear(spr_merge_list_master *l)
 {
   l->count = 0;
 }
@@ -278,15 +263,15 @@ void LineExactSprites::MergeHAM(graph_line *linedescription)
 /* 16-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x16(uint32_t *frameptr, const graph_line *const linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -318,7 +303,7 @@ void LineExactSprites::MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULO color = graph_color_shadow[pixel >> 2];
+              ULO color = (ULO)hostColors[pixel];
               *frame_ptr = color;
             }
             frame_ptr++;
@@ -334,15 +319,15 @@ void LineExactSprites::MergeHAM2x1x16(ULO *frameptr, graph_line *linedescription
 /* 16-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM2x2x16(ULO *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -374,7 +359,7 @@ void LineExactSprites::MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULO color = graph_color_shadow[pixel >> 2];
+              ULO color = (ULO)hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
             }
@@ -391,15 +376,15 @@ void LineExactSprites::MergeHAM2x2x16(ULO *frameptr, graph_line *linedescription
 /* 16-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -431,7 +416,7 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
             }
@@ -448,15 +433,15 @@ void LineExactSprites::MergeHAM4x2x16(ULL *frameptr, graph_line *linedescription
 /* 16-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -488,7 +473,7 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
               frame_ptr[nextlineoffset2] = color;
@@ -502,8 +487,7 @@ void LineExactSprites::MergeHAM4x4x16(ULL *frameptr, graph_line *linedescription
   }
 }
 
-union sprham24helper
-{
+union sprham24helper {
   ULO color_i;
   UBY color_b[4];
 };
@@ -513,15 +497,15 @@ union sprham24helper
 /* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, const graph_line *const linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -554,7 +538,7 @@ void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription
             if (pixel != 0)
             {
               union sprham24helper color;
-              color.color_i = graph_color_shadow[pixel >> 2];
+              color.color_i = (ULO)hostColors[pixel];
               *frame_ptr++ = color.color_b[0];
               *frame_ptr++ = color.color_b[1];
               *frame_ptr++ = color.color_b[2];
@@ -574,15 +558,15 @@ void LineExactSprites::MergeHAM2x1x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -615,7 +599,7 @@ void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription
             if (pixel != 0)
             {
               union sprham24helper color;
-              color.color_i = graph_color_shadow[pixel >> 2];
+              color.color_i = (ULO)hostColors[pixel];
               frame_ptr[0] = color.color_b[0];
               frame_ptr[1] = color.color_b[1];
               frame_ptr[2] = color.color_b[2];
@@ -643,15 +627,15 @@ void LineExactSprites::MergeHAM2x2x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -684,7 +668,7 @@ void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription
             if (pixel != 0)
             {
               union sprham24helper color;
-              color.color_i = graph_color_shadow[pixel >> 2];
+              color.color_i = (ULO)hostColors[pixel];
               frame_ptr[0] = color.color_b[0];
               frame_ptr[1] = color.color_b[1];
               frame_ptr[2] = color.color_b[2];
@@ -724,15 +708,15 @@ void LineExactSprites::MergeHAM4x2x24(UBY *frameptr, graph_line *linedescription
 /* 24-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -765,7 +749,7 @@ void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription
             if (pixel != 0)
             {
               union sprham24helper color;
-              color.color_i = graph_color_shadow[pixel >> 2];
+              color.color_i = (ULO)hostColors[pixel];
               frame_ptr[0] = color.color_b[0];
               frame_ptr[1] = color.color_b[1];
               frame_ptr[2] = color.color_b[2];
@@ -831,15 +815,15 @@ void LineExactSprites::MergeHAM4x4x24(UBY *frameptr, graph_line *linedescription
 /* 32-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription)
+void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, const graph_line *const linedescription)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -871,7 +855,7 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
             }
             frame_ptr++;
@@ -887,15 +871,15 @@ void LineExactSprites::MergeHAM2x1x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 2x horisontal scale                                        */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -927,7 +911,7 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[nextlineoffset] = color;
             }
@@ -944,15 +928,15 @@ void LineExactSprites::MergeHAM2x2x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 4x2 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset)
+void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -984,7 +968,7 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[1] = color;
               frame_ptr[nextlineoffset] = color;
@@ -1003,15 +987,15 @@ void LineExactSprites::MergeHAM4x2x32(ULL *frameptr, graph_line *linedescription
 /* 32-bit pixels, 4x4 scale                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription, ULO nextlineoffset, ULO nextlineoffset2, ULO nextlineoffset3)
+void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, const graph_line *const linedescription, const ptrdiff_t nextlineoffset, const ptrdiff_t nextlineoffset2, const ptrdiff_t nextlineoffset3)
 {
   if (linedescription->sprite_ham_slot != 0xffffffff)
   {
     sprite_ham_slot &ham_slot = sprite_ham_slots[linedescription->sprite_ham_slot];
     ULO DIW_first_visible = linedescription->DIW_first_draw;
     ULO DIW_last_visible = DIW_first_visible + linedescription->DIW_pixel_count;
+    const ULL *hostColors = Draw.GetHostColors();
 
-    linedescription->sprite_ham_slot = 0xffffffff;
     for (ULO i = 0; i < 8; i++)
     {
       spr_merge_list_master &master = ham_slot.merge_list_master[i];
@@ -1043,7 +1027,7 @@ void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription
             UBY pixel = *spr_ptr++;
             if (pixel != 0)
             {
-              ULL color = drawMake64BitColorFrom32Bit(graph_color_shadow[pixel >> 2]);
+              ULL color = hostColors[pixel];
               frame_ptr[0] = color;
               frame_ptr[1] = color;
               frame_ptr[nextlineoffset] = color;
@@ -1065,13 +1049,13 @@ void LineExactSprites::MergeHAM4x4x32(ULL *frameptr, graph_line *linedescription
 /* Sprite control registers                                                  */
 /*===========================================================================*/
 
-void LineExactSprites::BuildItem(spr_action_list_item ** item)
+void LineExactSprites::BuildItem(spr_action_list_item **item)
 {
-  ULO currentX = busGetRasterX();
+  ULO currentX = scheduler.GetRasterX();
   if (currentX >= 18)
   {
     // Petter has put an delay in the Copper calls of 16 cycles, we need to compensate for that
-    if ((bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
+    if ((bitplane_registers.bplcon0 & 0x8000) == 0x8000) // check if hires bit is set (bit 15 of register BPLCON0)
     {
       // hires (x position is cycle position times four)
       (*item)->raster_x = (currentX - 16) * 4;
@@ -1084,7 +1068,7 @@ void LineExactSprites::BuildItem(spr_action_list_item ** item)
   }
   else
   {
-    if ((bplcon0 & 0x8000) == 0x8000)
+    if ((bitplane_registers.bplcon0 & 0x8000) == 0x8000)
     {
       // hires
       (*item)->raster_x = 8;
@@ -1095,7 +1079,7 @@ void LineExactSprites::BuildItem(spr_action_list_item ** item)
       (*item)->raster_x = 4;
     }
   }
-  (*item)->raster_y = busGetRasterY();
+  (*item)->raster_y = scheduler.GetRasterY();
 }
 
 bool LineExactSprites::HasSpritesOnLine()
@@ -1104,7 +1088,7 @@ bool LineExactSprites::HasSpritesOnLine()
 }
 
 /* Makes a log of the writes to the sprpt registers */
-void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprpthChanged(UWO data, const unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_dma_action_list[sprite_number]);
   BuildItem(&item);
@@ -1115,20 +1099,16 @@ void LineExactSprites::NotifySprpthChanged(UWO data, unsigned int sprite_number)
   if (output_sprite_log == TRUE)
   {
     *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
-    sprintf(buffer,
-      "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-      busGetRasterY(),
-      2 * (busGetRasterX() - 16),
-      sprite_number,
-      (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
-      chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
-      chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number,
+            (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
+            chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
+            chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
+    Service->Log.AddLog2(buffer);
   }
 }
 
 /* Makes a log of the writes to the sprpt registers */
-void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprptlChanged(UWO data, const unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_dma_action_list[sprite_number]);
   BuildItem(&item);
@@ -1139,23 +1119,19 @@ void LineExactSprites::NotifySprptlChanged(UWO data, unsigned int sprite_number)
   if (output_sprite_log == TRUE)
   {
     *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
-    sprintf(buffer,
-      "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
-      busGetRasterY(),
-      2 * (busGetRasterX() - 16),
-      sprite_number,
-      (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
-      chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
-      chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number,
+            (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
+            chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
+            chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
+    Service->Log.AddLog2(buffer);
   }
 }
 
 /* SPRXPOS - $dff140 to $dff178 */
 
-void LineExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprposChanged(UWO data, const unsigned int sprite_number)
 {
-  spr_action_list_item * item = ActionListAddLast(&spr_action_list[sprite_number]);
+  spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
   item->called_function = &LineExactSprites::asprxpos;
   item->data = data;
@@ -1166,16 +1142,17 @@ void LineExactSprites::NotifySprposChanged(UWO data, unsigned int sprite_number)
   spry_debug[sprite_number] = (spry_debug[sprite_number] & 0x100) | ((data & 0xff00) >> 8);
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number, sprx_debug[sprite_number], sprly_debug[sprite_number]);
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number, sprx_debug[sprite_number],
+            sprly_debug[sprite_number]);
+    Service->Log.AddLog2(buffer);
   }
 }
 
 /* SPRXCTL $dff142 to $dff17a */
 
-void LineExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprctlChanged(UWO data, const unsigned int sprite_number)
 {
-  spr_action_list_item * item = ActionListAddLast(&spr_action_list[sprite_number]);
+  spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
   item->called_function = &LineExactSprites::asprxctl;
   item->data = data;
@@ -1187,14 +1164,15 @@ void LineExactSprites::NotifySprctlChanged(UWO data, unsigned int sprite_number)
   sprly_debug[sprite_number] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number, sprx_debug[sprite_number], spry_debug[sprite_number], sprly_debug[sprite_number]);
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number, sprx_debug[sprite_number],
+            spry_debug[sprite_number], sprly_debug[sprite_number]);
+    Service->Log.AddLog2(buffer);
   }
 }
 
 /* SPRXDATA $dff144 to $dff17c */
 
-void LineExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprdataChanged(UWO data, const unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
@@ -1205,12 +1183,12 @@ void LineExactSprites::NotifySprdataChanged(UWO data, unsigned int sprite_number
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udata\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number);
+    Service->Log.AddLog2(buffer);
   }
 }
 
-void LineExactSprites::NotifySprdatbChanged(UWO data, unsigned int sprite_number)
+void LineExactSprites::NotifySprdatbChanged(UWO data, const unsigned int sprite_number)
 {
   spr_action_list_item *item = ActionListAddLast(&spr_action_list[sprite_number]);
   BuildItem(&item);
@@ -1221,39 +1199,29 @@ void LineExactSprites::NotifySprdatbChanged(UWO data, unsigned int sprite_number
   // for debugging only
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", busGetRasterY(), 2 * (busGetRasterX() - 16), sprite_number);
-    fellowAddLog2(buffer);
+    sprintf(buffer, "(y, x) = (%u, %u): call to spr%udatb\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number);
+    Service->Log.AddLog2(buffer);
   }
 }
 
-/*===========================================================================*/
-/* Sprite decode, C-version                                                  */
-/*===========================================================================*/
-
-typedef enum {
-  SPRITE_STATE_CONTROL_WORDS = 0,
-  SPRITE_STATE_WAITING_FOR_FIRST_LINE = 1,
-  SPRITE_STATE_
-} sprite_states;
-
-void LineExactSprites::Log()
-{
-  for (ULO no = 0; no < 8; no++)
-  {
-    char s[80];
-    sprintf(s, "%u %u, sprite %u fy %u ly %u x %u state %u att %u atto %u pt %.6X\n", draw_frame_count,
-      busGetRasterY(),
-      no,
-      spry[no],
-      sprly[no],
-      sprx[no],
-      sprite_state[no],
-      spratt[no & 6],
-      spratt[no | 1],
-      sprite_registers.sprpt[no]);
-    fellowAddLog(s);
-  }
-}
+// void LineExactSprites::Log()
+//{
+//   for (ULO no = 0; no < 8; no++)
+//   {
+//     char s[80];
+//     sprintf(s, "%u %u, sprite %u fy %u ly %u x %u state %u att %u atto %u pt %.6X\n", draw_frame_count,
+//       scheduler.GetRasterY(),
+//       no,
+//       spry[no],
+//       sprly[no],
+//       sprx[no],
+//       sprite_state[no],
+//       spratt[no & 6],
+//       spratt[no | 1],
+//       sprite_registers.sprpt[no]);
+//     Service->Log.AddLog(s);
+//   }
+// }
 
 /*===========================================================================*/
 /* Called on emulation hard reset                                            */
@@ -1272,7 +1240,7 @@ void LineExactSprites::ClearState()
     spr_arm_comparator[i] = FALSE;
     for (ULO j = 0; j < 2; j++)
     {
-      sprdat[i][j];
+      sprdat[i][j] = 0;
     }
     sprite_state[i] = 0;
     sprite_state_old[i] = 0;
@@ -1280,7 +1248,7 @@ void LineExactSprites::ClearState()
     sprite_online[i] = FALSE;
     for (ULO j = 0; j < 16; j++)
     {
-      sprite[i][j];
+      sprite[i][j] = 0;
     }
   }
   sprites_online = false;
@@ -1288,12 +1256,11 @@ void LineExactSprites::ClearState()
   {
     for (ULO j = 0; j < 2; j++)
     {
-      sprite_write_buffer[i][j];
+      sprite_write_buffer[i][j] = 0;
     }
   }
   sprite_write_next = 0;
   sprite_write_real = 0;
-
 }
 
 void LineExactSprites::LogActiveSprites()
@@ -1304,7 +1271,7 @@ void LineExactSprites::LogActiveSprites()
     if (sprite_online[i])
     {
       sprintf(s, "Sprite %d position %u\n", i, sprx[i]);
-      fellowAddLog(s);
+      Service->Log.AddLog(s);
     }
   }
 }
@@ -1334,7 +1301,7 @@ void LineExactSprites::ProcessDMAActionListNOP()
     ULO count = ActionListCount(&spr_dma_action_list[sprnr]);
     for (ULO i = 0; i < count; i++)
     {
-      spr_action_list_item * action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
+      spr_action_list_item *action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
       // we can execute the coming action item
       (this->*(action_item->called_function))(action_item->data, action_item->address);
     }
@@ -1344,69 +1311,166 @@ void LineExactSprites::ProcessDMAActionListNOP()
 
 void LineExactSprites::DMASpriteHandler()
 {
-  spr_action_list_item * dma_action_item;
-  spr_action_list_item * item;
+  spr_action_list_item *dma_action_item;
+  spr_action_list_item *item;
   ULO local_sprx;
   ULO local_spry;
   ULO local_sprly;
   ULO local_data_ctl;
   ULO local_data_pos;
   ULO i, count;
-  ULO sprnr;
-  ULO currentY = busGetRasterY();
+  ULO currentY = scheduler.GetRasterY();
 
   sprites_online = false;
-  sprnr = 0;
+  ULO sprnr = 0;
 
   while (sprnr < 8)
   {
     switch (sprite_state[sprnr])
     {
-    case 0:
-      count = ActionListCount(&spr_dma_action_list[sprnr]);
-      // inactive (waiting for a write to sprxptl)
-      for (i = 0; i < count; i++)
-      {
-        // move through DMA action list
-        dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
+      case 0:
+        count = ActionListCount(&spr_dma_action_list[sprnr]);
+        // inactive (waiting for a write to sprxptl)
+        for (i = 0; i < count; i++)
         {
-          // a write to sprxptl was made during this line, execute it now
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-
-          // data from sprxpos
-          local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-          local_spry = ((local_data_pos & 0xff00) >> 8);
-          local_sprx = ((local_data_pos & 0xff) << 1);
-
-          // data from sprxctl
-          local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-          local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
-          local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
-          local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
-
-          if (((local_spry < local_sprly)) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+          // move through DMA action list
+          dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
+          // check if item is a write to register sprxptl
+          if (dma_action_item->called_function == sprxptl_functions[sprnr])
           {
-            // insert a write to sprxpos at time raster_x
-            item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
+            // a write to sprxptl was made during this line, execute it now
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
 
-            item->raster_x = dma_action_item->raster_x;
-            item->raster_y = dma_action_item->raster_y;
-            item->called_function = &LineExactSprites::asprxpos;
-            item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-            item->address = sprnr << 3;
+            // data from sprxpos
+            local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+            local_spry = ((local_data_pos & 0xff00) >> 8);
+            local_sprx = ((local_data_pos & 0xff) << 1);
 
-            // insert a write to sprxctl at time raster_x
-            item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
-            item->raster_x = dma_action_item->raster_x;
-            item->raster_y = dma_action_item->raster_y;
-            item->called_function = &LineExactSprites::asprxctl;
-            item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-            item->address = sprnr << 3;
+            // data from sprxctl
+            local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+            local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
+            local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+            local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
+
+            if (((local_spry < local_sprly)) || ((local_data_ctl == 0) && (local_data_pos == 0)))
+            {
+              // insert a write to sprxpos at time raster_x
+              item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
+
+              item->raster_x = dma_action_item->raster_x;
+              item->raster_y = dma_action_item->raster_y;
+              item->called_function = &LineExactSprites::asprxpos;
+              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+              item->address = sprnr << 3;
+
+              // insert a write to sprxctl at time raster_x
+              item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
+              item->raster_x = dma_action_item->raster_x;
+              item->raster_y = dma_action_item->raster_y;
+              item->called_function = &LineExactSprites::asprxctl;
+              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+              item->address = sprnr << 3;
+            }
+
+            if ((local_spry < local_sprly) && (local_sprx > 40))
+            {
+              // point to next two data words
+              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+            }
+
+            sprite_state[sprnr] = 1;
           }
 
-          if ((local_spry < local_sprly) && (local_sprx > 40))
+          // check if item is a write to register sprxpth
+          if (dma_action_item->called_function == sprxpth_functions[sprnr])
+          {
+            // update the sprxpth
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
+          }
+        }
+        ActionListClear(&spr_dma_action_list[sprnr]);
+        break;
+
+      case 1:
+        // waiting for (graph_raster_y == spry)
+        if ((currentY >= spry[sprnr]) && ((currentY < sprly[sprnr]) || (currentY == spry[sprnr] && spry[sprnr] == sprly[sprnr])))
+        {
+          // we can start to display the first line of the sprite
+
+          // insert a write to sprxdatb
+          item = ActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
+          item->raster_x = 60;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxdatb;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->address = sprnr << 3;
+
+          // insert a write to sprxdata
+          item = ActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
+          item->raster_x = 61;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxdata;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->address = sprnr << 3;
+
+          // point to next two data words
+          sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+
+          // we move to state 2 to wait for the last line sprly
+          sprite_state[sprnr] = 2;
+        }
+
+        // handle writes to sprxptl and sprxpth
+        count = ActionListCount(&spr_dma_action_list[sprnr]);
+        for (i = 0; i < count; i++)
+        {
+          // move through DMA action list
+          dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
+          // check if item is a write to register sprxptl
+          if (dma_action_item->called_function == sprxptl_functions[sprnr])
+          {
+            // a write to sprxptl was made during this line, execute it now
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
+          }
+
+          // check if item is a write to register sprxpth
+          if (dma_action_item->called_function == sprxpth_functions[sprnr])
+          {
+            // update the sprxpth
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
+          }
+        }
+        ActionListClear(&spr_dma_action_list[sprnr]);
+        break;
+
+      case 2:
+        // waiting for (graph_raster_y == sprly)
+        if (currentY >= sprly[sprnr])
+        {
+          // we interpret the next two data words as the next two control words
+          local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          local_spry = ((local_data_ctl & 0xff00) >> 8);
+          local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          local_spry = (local_spry & 0x0ff) | ((local_data_pos & 0x4) << 6);
+          local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
+
+          // insert a write to sprxpos at time raster_x
+          item = ActionListAddSorted(&spr_action_list[sprnr], 0, currentY);
+          item->raster_x = 0;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxpos;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->address = sprnr << 3;
+
+          // insert a write to sprxctl at time raster_x
+          item = ActionListAddSorted(&spr_action_list[sprnr], 1, currentY);
+          item->raster_x = 1;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxctl;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->address = sprnr << 3;
+
+          if (local_spry < local_sprly)
           {
             // point to next two data words
             sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
@@ -1414,194 +1478,96 @@ void LineExactSprites::DMASpriteHandler()
 
           sprite_state[sprnr] = 1;
         }
-
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
+        else
         {
-          // update the sprxpth
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-        }
-      }
-      ActionListClear(&spr_dma_action_list[sprnr]);
-      break;
+          // we can continue to display the next line of the sprite
+          // insert a write to sprxdatb
+          item = ActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
+          item->raster_x = 60;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxdatb;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+          item->address = sprnr << 3;
 
-    case 1:
-      // waiting for (graph_raster_y == spry)
-      if ((currentY >= spry[sprnr]) && ((currentY < sprly[sprnr]) || (currentY == spry[sprnr] && spry[sprnr] == sprly[sprnr])))
-      {
-        // we can start to display the first line of the sprite
+          // insert a write to sprxdata
+          item = ActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
+          item->raster_x = 61;
+          item->raster_y = currentY;
+          item->called_function = &LineExactSprites::asprxdata;
+          item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+          item->address = sprnr << 3;
 
-        // insert a write to sprxdatb 
-        item = ActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
-        item->raster_x = 60;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxdatb;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-        item->address = sprnr << 3;
-
-        // insert a write to sprxdata 
-        item = ActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
-        item->raster_x = 61;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxdata;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-        item->address = sprnr << 3;
-
-        // point to next two data words
-        sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
-
-        // we move to state 2 to wait for the last line sprly
-        sprite_state[sprnr] = 2;
-      }
-
-      // handle writes to sprxptl and sprxpth
-      count = ActionListCount(&spr_dma_action_list[sprnr]);
-      for (i = 0; i < count; i++)
-      {
-        // move through DMA action list
-        dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
-        {
-          // a write to sprxptl was made during this line, execute it now
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-        }
-
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
-        {
-          // update the sprxpth
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-        }
-      }
-      ActionListClear(&spr_dma_action_list[sprnr]);
-      break;
-
-    case 2:
-      // waiting for (graph_raster_y == sprly)
-      if (currentY >= sprly[sprnr])
-      {
-        // we interpret the next two data words as the next two control words
-        local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-        local_spry = ((local_data_ctl & 0xff00) >> 8);
-        local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-        local_spry = (local_spry & 0x0ff) | ((local_data_pos & 0x4) << 6);
-        local_sprly = ((local_data_pos & 0xff00) >> 8) | ((local_data_pos & 0x2) << 7);
-
-        // insert a write to sprxpos at time raster_x
-        item = ActionListAddSorted(&spr_action_list[sprnr], 0, currentY);
-        item->raster_x = 0;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxpos;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-        item->address = sprnr << 3;
-
-        // insert a write to sprxctl at time raster_x
-        item = ActionListAddSorted(&spr_action_list[sprnr], 1, currentY);
-        item->raster_x = 1;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxctl;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-        item->address = sprnr << 3;
-
-        if (local_spry < local_sprly)
-        {
           // point to next two data words
           sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
         }
 
-        sprite_state[sprnr] = 1;
-      }
-      else
-      {
-        // we can continue to display the next line of the sprite
-        // insert a write to sprxdatb 
-        item = ActionListAddSorted(&spr_action_list[sprnr], 60, currentY);
-        item->raster_x = 60;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxdatb;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-        item->address = sprnr << 3;
-
-        // insert a write to sprxdata 
-        item = ActionListAddSorted(&spr_action_list[sprnr], 61, currentY);
-        item->raster_x = 61;
-        item->raster_y = currentY;
-        item->called_function = &LineExactSprites::asprxdata;
-        item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-        item->address = sprnr << 3;
-
-        // point to next two data words
-        sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
-      }
-
-      // handle writes to sprxptl and sprxpth
-      count = ActionListCount(&spr_dma_action_list[sprnr]);
-      for (i = 0; i < count; i++)
-      {
-        // move through DMA action list
-        dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
-        // check if item is a write to register sprxptl
-        if (dma_action_item->called_function == sprxptl_functions[sprnr])
+        // handle writes to sprxptl and sprxpth
+        count = ActionListCount(&spr_dma_action_list[sprnr]);
+        for (i = 0; i < count; i++)
         {
-          // a write to sprxptl was made during this line, execute it now
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-
-          // data from sprxpos
-          local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-          local_spry = ((local_data_pos & 0xff00) >> 8);
-          local_sprx = ((local_data_pos & 0xff) << 1);
-
-          // data from sprxctl
-          local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-          local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
-          local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
-          local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
-
-          if (((local_spry < local_sprly)))
+          // move through DMA action list
+          dma_action_item = ActionListGet(&spr_dma_action_list[sprnr], i);
+          // check if item is a write to register sprxptl
+          if (dma_action_item->called_function == sprxptl_functions[sprnr])
           {
-            // insert a write to sprxpos at time raster_x
-            item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
-            item->raster_x = dma_action_item->raster_x;
-            item->raster_y = dma_action_item->raster_y;
-            item->called_function = &LineExactSprites::asprxpos;
-            item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
-            item->address = sprnr << 3;
+            // a write to sprxptl was made during this line, execute it now
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
 
-            // insert a write to sprxctl at time raster_x
-            item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x + 1, dma_action_item->raster_y);
-            item->raster_x = dma_action_item->raster_x + 1;
-            item->raster_y = dma_action_item->raster_y;
-            item->called_function = &LineExactSprites::asprxctl;
-            item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
-            item->address = sprnr << 3;
+            // data from sprxpos
+            local_data_pos = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+            local_spry = ((local_data_pos & 0xff00) >> 8);
+            local_sprx = ((local_data_pos & 0xff) << 1);
+
+            // data from sprxctl
+            local_data_ctl = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+            local_sprx = (local_sprx & 0x1fe) | (local_data_ctl & 0x1);
+            local_spry = (local_spry & 0x0ff) | ((local_data_ctl & 0x4) << 6);
+            local_sprly = ((local_data_ctl & 0xff00) >> 8) | ((local_data_ctl & 0x2) << 7);
+
+            if (((local_spry < local_sprly)))
+            {
+              // insert a write to sprxpos at time raster_x
+              item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x, dma_action_item->raster_y);
+              item->raster_x = dma_action_item->raster_x;
+              item->raster_y = dma_action_item->raster_y;
+              item->called_function = &LineExactSprites::asprxpos;
+              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr]);
+              item->address = sprnr << 3;
+
+              // insert a write to sprxctl at time raster_x
+              item = ActionListAddSorted(&spr_action_list[sprnr], dma_action_item->raster_x + 1, dma_action_item->raster_y);
+              item->raster_x = dma_action_item->raster_x + 1;
+              item->raster_y = dma_action_item->raster_y;
+              item->called_function = &LineExactSprites::asprxctl;
+              item->data = chipmemReadWord(sprite_registers.sprpt[sprnr] + 2);
+              item->address = sprnr << 3;
+            }
+
+            if ((local_spry < local_sprly) && (local_sprx > 40))
+            {
+              // point to next two data words
+              sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
+            }
+
+            if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
+            {
+              sprite_state[sprnr] = 0;
+            }
+            else
+            {
+              sprite_state[sprnr] = 1;
+            }
           }
 
-          if ((local_spry < local_sprly) && (local_sprx > 40))
+          // check if item is a write to register sprxpth
+          if (dma_action_item->called_function == sprxpth_functions[sprnr])
           {
-            // point to next two data words
-            sprite_registers.sprpt[sprnr] = chipsetMaskPtr(sprite_registers.sprpt[sprnr] + 4);
-          }
-
-          if ((currentY < 25) && ((local_data_ctl == 0) && (local_data_pos == 0)))
-          {
-            sprite_state[sprnr] = 0;
-          }
-          else
-          {
-            sprite_state[sprnr] = 1;
+            // update the sprxpth
+            (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
           }
         }
-
-        // check if item is a write to register sprxpth
-        if (dma_action_item->called_function == sprxpth_functions[sprnr])
-        {
-          // update the sprxpth
-          (this->*(dma_action_item->called_function))(dma_action_item->data, dma_action_item->address);
-        }
-      }
-      ActionListClear(&spr_dma_action_list[sprnr]);
-      break;
+        ActionListClear(&spr_dma_action_list[sprnr]);
+        break;
     }
     sprnr++;
   }
@@ -1609,22 +1575,19 @@ void LineExactSprites::DMASpriteHandler()
 
 void LineExactSprites::ProcessActionList()
 {
-  spr_action_list_item * action_item;
-  ULO x_pos;
-  ULO i, count;
   ULO sprnr = 0;
 
   sprites_online = false;
   while (sprnr < 8)
   {
-    x_pos = 0;
+    ULO x_pos = 0;
     sprite_online[sprnr] = FALSE;
     sprite_16col[sprnr] = FALSE;
 
-    count = ActionListCount(&spr_action_list[sprnr]);
-    for (i = 0; i < count; i++)
+    ULO count = ActionListCount(&spr_action_list[sprnr]);
+    for (ULO i = 0; i < count; i++)
     {
-      action_item = ActionListGet(&spr_action_list[sprnr], i);
+      spr_action_list_item *action_item = ActionListGet(&spr_action_list[sprnr], i);
       if (spr_arm_data[sprnr] == TRUE)
       {
         // flipflop is armed by a write to sprxdata
@@ -1638,10 +1601,10 @@ void LineExactSprites::ProcessActionList()
               // the comparator is armed before the coming action item, we may display the sprite data
               if ((sprnr & 0x01) == 0)
               {
-                // even sprite 
-                if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
+                // even sprite
+                if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite
                 {
-                  // even sprite not attached to next odd sprite -> 3 color decode 
+                  // even sprite not attached to next odd sprite -> 3 color decode
                   Decode4Sprite(sprnr);
                   sprites_online = true;
                   sprite_online[sprnr] = TRUE;
@@ -1649,10 +1612,10 @@ void LineExactSprites::ProcessActionList()
               }
               else
               {
-                // odd sprite 
+                // odd sprite
                 if (spratt[sprnr] == 0)
                 {
-                  // odd sprite not attached to previous even sprite -> 3 color decode 
+                  // odd sprite not attached to previous even sprite -> 3 color decode
                   Decode4Sprite(sprnr);
                   sprites_online = true;
                   sprite_online[sprnr] = TRUE;
@@ -1671,9 +1634,8 @@ void LineExactSprites::ProcessActionList()
               // for debugging only
               if (output_action_sprite_log == TRUE)
               {
-                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n",
-                  sprnr, busGetRasterY(), sprx[sprnr]);
-                fellowAddLog2(buffer);
+                sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, scheduler.GetRasterY(), sprx[sprnr]);
+                Service->Log.AddLog2(buffer);
               }
             }
           }
@@ -1693,10 +1655,10 @@ void LineExactSprites::ProcessActionList()
         // the comparator becomes armed in time left, we may display the sprite data
         if ((sprnr & 0x01) == 0)
         {
-          // even sprite 
-          if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite 
+          // even sprite
+          if (spratt[sprnr + 1] == 0) // if attached, work is done when handling odd sprite
           {
-            // even sprite not attached to next odd sprite -> 3 color decode 
+            // even sprite not attached to next odd sprite -> 3 color decode
             Decode4Sprite(sprnr);
             sprites_online = true;
             sprite_online[sprnr] = TRUE;
@@ -1704,10 +1666,10 @@ void LineExactSprites::ProcessActionList()
         }
         else
         {
-          // odd sprite 
+          // odd sprite
           if (spratt[sprnr] == 0)
           {
-            // odd sprite not attached to previous even sprite -> 3 color decode 
+            // odd sprite not attached to previous even sprite -> 3 color decode
             Decode4Sprite(sprnr);
             sprites_online = true;
             sprite_online[sprnr] = TRUE;
@@ -1724,9 +1686,8 @@ void LineExactSprites::ProcessActionList()
         // for debugging only
         if (output_action_sprite_log == TRUE)
         {
-          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n",
-            sprnr, busGetRasterY(), sprx[sprnr]);
-          fellowAddLog2(buffer);
+          sprintf((char *)&buffer, "sprite %u data displayed on (y, x) = (%u, %u)\n", sprnr, scheduler.GetRasterY(), sprx[sprnr]);
+          Service->Log.AddLog2(buffer);
         }
       }
     }
@@ -1738,22 +1699,19 @@ void LineExactSprites::ProcessActionList()
 
 void LineExactSprites::ProcessActionListNOP()
 {
-  spr_action_list_item * action_item;
-  ULO x_pos;
-  ULO i, count;
   ULO sprnr = 0;
 
   sprites_online = false;
   while (sprnr < 8)
   {
-    x_pos = 0;
+    ULO x_pos = 0;
     sprite_online[sprnr] = FALSE;
     sprite_16col[sprnr] = FALSE;
 
-    count = ActionListCount(&spr_action_list[sprnr]);
-    for (i = 0; i < count; i++)
+    ULO count = ActionListCount(&spr_action_list[sprnr]);
+    for (ULO i = 0; i < count; i++)
     {
-      action_item = ActionListGet(&spr_action_list[sprnr], i);
+      spr_action_list_item *action_item = ActionListGet(&spr_action_list[sprnr], i);
       // we can execute the coming action item
       (this->*(action_item->called_function))(action_item->data, action_item->address);
       x_pos = action_item->raster_x;
@@ -1780,7 +1738,7 @@ void LineExactSprites::SetDebugging()
 }
 
 // current sprite is in front of playfield 2, and thus also in front of playfield 1
-void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line *current_graph_line, ULO sprnr)
 {
   UBY line2_buildup[4];
 
@@ -1788,36 +1746,36 @@ void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line* current_graph_l
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line2 = current_graph_line->line2 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line2 = current_graph_line->line2 + next_item->sprx + 1;
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
       *((ULO *)line2_buildup) = *((ULO *)line2);
       if ((UBY)(*((ULO *)sprite_data)) != 0)
       {
-        //cl = dl; 
-        line2_buildup[0] = (UBY)*((ULO *)sprite_data);
+        // cl = dl;
+        line2_buildup[0] = (UBY) * ((ULO *)sprite_data);
       }
 
       // mdlpf21:
       if ((UBY)((*((ULO *)sprite_data)) >> 8) != 0)
       {
-        //ch = dh; 
+        // ch = dh;
         line2_buildup[1] = (UBY)((*((ULO *)sprite_data) >> 8));
       }
 
       // mdlph22:
       if ((UBY)((*((ULO *)sprite_data)) >> 16) != 0)
       {
-        //cl = dl; 
+        // cl = dl;
         line2_buildup[2] = (UBY)((*((ULO *)sprite_data) >> 16));
       }
 
       // mdlpf23:
       if ((UBY)((*((ULO *)sprite_data)) >> 24) != 0)
       {
-        //ch = dh; 
+        // ch = dh;
         line2_buildup[3] = (UBY)((*((ULO *)sprite_data) >> 24));
       }
 
@@ -1830,7 +1788,7 @@ void LineExactSprites::MergeDualLoresPF2loopinfront2(graph_line* current_graph_l
 }
 
 // current sprite is behind of playfield 2, but in front of playfield 1
-void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line *current_graph_line, ULO sprnr)
 {
   UBY line_buildup[4];
 
@@ -1838,36 +1796,36 @@ void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line* current_graph_l
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line1 = current_graph_line->line1 + next_item->sprx + 1;
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
       *((ULO *)line_buildup) = *((ULO *)line1);
       if ((UBY)(*((ULO *)sprite_data)) != 0)
       {
-        //cl = dl; 
-        line_buildup[0] = (UBY)*((ULO *)sprite_data);
+        // cl = dl;
+        line_buildup[0] = (UBY) * ((ULO *)sprite_data);
       }
 
       // mdlpf21:
       if ((UBY)((*((ULO *)sprite_data)) >> 8) != 0)
       {
-        //ch = dh; 
+        // ch = dh;
         line_buildup[1] = (UBY)((*((ULO *)sprite_data) >> 8));
       }
 
       // mdlph22:
       if ((UBY)((*((ULO *)sprite_data)) >> 16) != 0)
       {
-        //cl = dl; 
+        // cl = dl;
         line_buildup[2] = (UBY)((*((ULO *)sprite_data) >> 16));
       }
 
       // mdlpf23:
       if ((UBY)((*((ULO *)sprite_data)) >> 24) != 0)
       {
-        //ch = dh; 
+        // ch = dh;
         line_buildup[3] = (UBY)((*((ULO *)sprite_data) >> 24));
       }
 
@@ -1880,7 +1838,7 @@ void LineExactSprites::MergeDualLoresPF1loopinfront2(graph_line* current_graph_l
 }
 
 // current sprite is behind of playfield 2, and also behind playfield 1
-void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line *current_graph_line, ULO sprnr)
 {
   UBY line_buildup[4];
 
@@ -1888,8 +1846,8 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line1 = current_graph_line->line1 + next_item->sprx + 1;
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
@@ -1898,7 +1856,7 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)(*((ULO *)sprite_data)) != 0)
         {
-          line_buildup[0] = (UBY)*((ULO *)sprite_data);
+          line_buildup[0] = (UBY) * ((ULO *)sprite_data);
         }
       }
 
@@ -1907,7 +1865,7 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 8) != 0)
         {
-          //ch = dh; 
+          // ch = dh;
           line_buildup[1] = (UBY)((*((ULO *)sprite_data) >> 8));
         }
       }
@@ -1917,7 +1875,7 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 16) != 0)
         {
-          //cl = dl; 
+          // cl = dl;
           line_buildup[2] = (UBY)((*((ULO *)sprite_data) >> 16));
         }
       }
@@ -1927,7 +1885,7 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 24) != 0)
         {
-          //ch = dh; 
+          // ch = dh;
           line_buildup[3] = (UBY)((*((ULO *)sprite_data) >> 24));
         }
       }
@@ -1941,7 +1899,7 @@ void LineExactSprites::MergeDualLoresPF1loopbehind2(graph_line* current_graph_li
 }
 
 // current sprite is in behind of playfield 2, and thus also behind playfield 1
-void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line *current_graph_line, ULO sprnr)
 {
   UBY line_buildup[4];
 
@@ -1949,8 +1907,8 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line2 = current_graph_line->line2 + next_item->sprx + 1;
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line2 = current_graph_line->line2 + next_item->sprx + 1;
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
@@ -1959,7 +1917,7 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)(*((ULO *)sprite_data)) != 0)
         {
-          line_buildup[0] = (UBY)*((ULO *)sprite_data);
+          line_buildup[0] = (UBY) * ((ULO *)sprite_data);
         }
       }
 
@@ -1968,7 +1926,7 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 8) != 0)
         {
-          //ch = dh; 
+          // ch = dh;
           line_buildup[1] = (UBY)((*((ULO *)sprite_data) >> 8));
         }
       }
@@ -1978,7 +1936,7 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 16) != 0)
         {
-          //cl = dl; 
+          // cl = dl;
           line_buildup[2] = (UBY)((*((ULO *)sprite_data) >> 16));
         }
       }
@@ -1988,7 +1946,7 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
       {
         if ((UBY)((*((ULO *)sprite_data)) >> 24) != 0)
         {
-          //ch = dh; 
+          // ch = dh;
           line_buildup[3] = (UBY)((*((ULO *)sprite_data) >> 24));
         }
       }
@@ -2001,17 +1959,17 @@ void LineExactSprites::MergeDualLoresPF2loopbehind2(graph_line* current_graph_li
   }
 }
 
-void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
+void LineExactSprites::MergeDualLoresPlayfield(graph_line *current_graph_line)
 {
   for (ULO sprnr = 0; sprnr < 8; sprnr++)
   {
     if (sprite_online[sprnr] == TRUE)
     {
       // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
-      if ((bplcon2 & 0x40) == 0x40)
+      if ((bitplane_registers.bplcon2 & 0x40) == 0x40)
       {
         // playfield 2 is in front of playfield 1
-        if ((bplcon2 & 0x38) > sprnr * 4)
+        if (((ULO)bitplane_registers.bplcon2 & 0x38) > sprnr * 4)
         {
           // current sprite is in front of playfield 2, and thus also in front of playfield 1
           MergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
@@ -2019,7 +1977,7 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
         else
         {
           // current sprite is behind of playfield 2
-          if (((bplcon2 & 0x7) << 1) > sprnr)
+          if ((((ULO)bitplane_registers.bplcon2 & 0x7) << 1) > sprnr)
           {
             // current sprite is behind of playfield 2, but in front of playfield 1
             MergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
@@ -2034,14 +1992,14 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
       else
       {
         // playfield 1 is in front of playfield 2
-        if (((bplcon2 & 0x7) << 1) > sprnr)
+        if ((((ULO)bitplane_registers.bplcon2 & 0x7) << 1) > sprnr)
         {
           // current sprite is in front of playfield 1, and thus also in front of playfield 2
           MergeDualLoresPF1loopinfront2(current_graph_line, sprnr);
         }
         else
         {
-          if ((bplcon2 & 0x38) > sprnr * 4)
+          if (((ULO)bitplane_registers.bplcon2 & 0x38) > sprnr * 4)
           {
             // current sprite is in front of playfield 2, but behind playfield 1 (in between)
             MergeDualLoresPF2loopinfront2(current_graph_line, sprnr);
@@ -2058,7 +2016,7 @@ void LineExactSprites::MergeDualLoresPlayfield(graph_line* current_graph_line)
 }
 
 // current sprite is in front of playfield 2, and thus also in front of playfield 1
-void LineExactSprites::MergeDualHiresPF2loopinfront2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualHiresPF2loopinfront2(graph_line *current_graph_line, ULO sprnr)
 {
   ULO count = MergeListCount(&spr_merge_list[sprnr]);
   for (ULO j = 0; j < count; j++)
@@ -2104,14 +2062,14 @@ void LineExactSprites::MergeDualHiresPF2loopinfront2(graph_line* current_graph_l
 }
 
 // current sprite is behind of playfield 2, but in front of playfield 1
-void LineExactSprites::MergeDualHiresPF1loopinfront2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualHiresPF1loopinfront2(graph_line *current_graph_line, ULO sprnr)
 {
   ULO count = MergeListCount(&spr_merge_list[sprnr]);
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
@@ -2150,14 +2108,14 @@ void LineExactSprites::MergeDualHiresPF1loopinfront2(graph_line* current_graph_l
 }
 
 // current sprite is behind of playfield 2, and also behind playfield 1
-void LineExactSprites::MergeDualHiresPF1loopbehind2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualHiresPF1loopbehind2(graph_line *current_graph_line, ULO sprnr)
 {
   ULO count = MergeListCount(&spr_merge_list[sprnr]);
   for (ULO j = 0; j < count; j++)
   {
     spr_merge_list_item *next_item = MergeListGet(&spr_merge_list[sprnr], j);
-    UBY* line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
-    UBY* sprite_data = next_item->sprite_data;
+    UBY *line1 = current_graph_line->line1 + 2 * (next_item->sprx + 1);
+    UBY *sprite_data = next_item->sprite_data;
 
     for (ULO i = 0; i < 4; i++)
     {
@@ -2219,7 +2177,7 @@ void LineExactSprites::MergeDualHiresPF1loopbehind2(graph_line* current_graph_li
 }
 
 // current sprite is in behind of playfield 2, and thus also behind playfield 1
-void LineExactSprites::MergeDualHiresPF2loopbehind2(graph_line* current_graph_line, ULO sprnr)
+void LineExactSprites::MergeDualHiresPF2loopbehind2(graph_line *current_graph_line, ULO sprnr)
 {
   ULO count = MergeListCount(&spr_merge_list[sprnr]);
   for (ULO j = 0; j < count; j++)
@@ -2287,17 +2245,17 @@ void LineExactSprites::MergeDualHiresPF2loopbehind2(graph_line* current_graph_li
   }
 }
 
-void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
+void LineExactSprites::MergeDualHiresPlayfield(graph_line *current_graph_line)
 {
   for (ULO sprnr = 0; sprnr < 8; sprnr++)
   {
     if (sprite_online[sprnr] == TRUE)
     {
       // determine whetever this sprite is in front of playfield 1 and/or in front or behind playfield 2
-      if ((bplcon2 & 0x40) == 0x40)
+      if ((bitplane_registers.bplcon2 & 0x40) == 0x40)
       {
         // playfield 2 is in front of playfield 1
-        if ((bplcon2 & 0x38) > sprnr * 4)
+        if (((ULO)bitplane_registers.bplcon2 & 0x38) > sprnr * 4)
         {
           // current sprite is in front of playfield 2, and thus also in front of playfield 1
           MergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
@@ -2305,7 +2263,7 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
         else
         {
           // current sprite is behind of playfield 2
-          if (((bplcon2 & 0x7) << 1) > sprnr)
+          if ((((ULO)bitplane_registers.bplcon2 & 0x7) << 1) > sprnr)
           {
             // current sprite is behind of playfield 2, but in front of playfield 1
             MergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
@@ -2320,14 +2278,14 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
       else
       {
         // playfield 1 is in front of playfield 2
-        if (((bplcon2 & 0x7) << 1) > sprnr)
+        if ((((ULO)bitplane_registers.bplcon2 & 0x7) << 1) > sprnr)
         {
           // current sprite is in front of playfield 1, and thus also in front of playfield 2
           MergeDualHiresPF1loopinfront2(current_graph_line, sprnr);
         }
         else
         {
-          if ((bplcon2 & 0x38) > sprnr * 4)
+          if (((ULO)bitplane_registers.bplcon2 & 0x38) > sprnr * 4)
           {
             // current sprite is in front of playfield 2, but behind playfield 1 (in between)
             MergeDualHiresPF2loopinfront2(current_graph_line, sprnr);
@@ -2343,9 +2301,9 @@ void LineExactSprites::MergeDualHiresPlayfield(graph_line* current_graph_line)
   }
 }
 
-void LineExactSprites::MergeHires(graph_line* current_graph_line)
+void LineExactSprites::MergeHires(graph_line *current_graph_line)
 {
-  for (ULO sprnr = 0; sprnr < 8; sprnr++)
+  for (unsigned int sprnr = 0; sprnr < 8; ++sprnr)
   {
     if (sprite_online[sprnr] == TRUE)
     {
@@ -2357,7 +2315,7 @@ void LineExactSprites::MergeHires(graph_line* current_graph_line)
         // there is sprite data waiting within this line
         if (next_item->sprx <= graph_DIW_last_visible)
         {
-          // set destination and source 
+          // set destination and source
           UBY *line1 = (current_graph_line->line1 + 2 * (next_item->sprx + 1));
           UBY *sprite_data = next_item->sprite_data;
 
@@ -2368,7 +2326,7 @@ void LineExactSprites::MergeHires(graph_line* current_graph_line)
   }
 }
 
-void LineExactSprites::MergeLores(graph_line* current_graph_line)
+void LineExactSprites::MergeLores(graph_line *current_graph_line)
 {
   for (int sprnr = 7; sprnr >= 0; sprnr--)
   {
@@ -2381,33 +2339,33 @@ void LineExactSprites::MergeLores(graph_line* current_graph_line)
         // there is sprite data waiting within this line
         if (next_item->sprx <= graph_DIW_last_visible)
         {
-          // set destination and source 
+          // set destination and source
           UBY *line1 = (current_graph_line->line1 + (next_item->sprx) + 1);
           UBY *sprite_data = next_item->sprite_data;
 
-          SpriteMerger::MergeLores(sprnr, line1, sprite_data, 16);
+          SpriteMerger::MergeLores((unsigned int)sprnr, line1, sprite_data, 16);
         }
       }
     }
   }
 }
 
-void LineExactSprites::Merge(graph_line* current_graph_line)
+void LineExactSprites::Merge(graph_line *current_graph_line)
 {
   sprites_online = false;
 
-  if ((bplcon0 & 0x800) == 0x800)
+  if ((bitplane_registers.bplcon0 & 0x800) == 0x800)
   {
     // HAM mode bit is set
     MergeHAM(current_graph_line);
     return;
   }
 
-  if ((bplcon0 & 0x400) == 0x400)
+  if ((bitplane_registers.bplcon0 & 0x400) == 0x400)
   {
     // dual playfield bit is set
 
-    if ((bplcon0 & 0x8000) == 0x8000)
+    if ((bitplane_registers.bplcon0 & 0x8000) == 0x8000)
     {
       MergeDualHiresPlayfield(current_graph_line);
     }
@@ -2418,17 +2376,16 @@ void LineExactSprites::Merge(graph_line* current_graph_line)
     return;
   }
 
-  if ((bplcon0 & 0x8000) == 0x8000)
+  if ((bitplane_registers.bplcon0 & 0x8000) == 0x8000)
   {
     MergeHires(current_graph_line);
   }
   else
   {
-    // lores 
+    // lores
     MergeLores(current_graph_line);
   }
 }
-
 
 /*===========================================================================*/
 /* Called on emulation hard reset                                            */
@@ -2439,21 +2396,19 @@ void LineExactSprites::HardReset()
   ClearState();
 }
 
-
 /*===========================================================================*/
 /* Called on emulation end of line                                           */
 /*===========================================================================*/
 
-void LineExactSprites::EndOfLine(ULO rasterY)
+void LineExactSprites::EndOfLine(ULO line)
 {
   // Make sure action lists and merge lists are empty
   ProcessActionListNOP();
-  for (ULO i = 0; i < 8; i++)
+  for (unsigned int i = 0; i < 8; i++)
   {
     MergeListClear(&spr_merge_list[i]);
   }
 }
-
 
 /*===========================================================================*/
 /* Called on emulation end of frame                                          */
@@ -2473,7 +2428,6 @@ void LineExactSprites::EndOfFrame()
   sprite_ham_slot_next = 0;
 }
 
-
 /*===========================================================================*/
 /* Called on emulation start                                                 */
 /*===========================================================================*/
@@ -2490,12 +2444,7 @@ void LineExactSprites::EmulationStop()
 {
 }
 
-LineExactSprites::LineExactSprites()
-  : Sprites(),
-  sprite_to_block(0),
-  output_sprite_log(FALSE),
-  output_action_sprite_log(FALSE),
-  sprite_ham_slot_next(0)
+LineExactSprites::LineExactSprites() : Sprites(), sprite_to_block(0), output_sprite_log(FALSE), output_action_sprite_log(FALSE), sprite_ham_slot_next(0)
 {
   for (int i = 0; i < 8; i++)
   {

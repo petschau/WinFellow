@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_INITIALHUNK_H
-#define FELLOW_HARDFILE_HUNKS_INITIALHUNK_H
+#pragma once
 
 #include <memory>
 #include "fellow/hardfile/hunks/HunkBase.h"
@@ -15,7 +14,7 @@ namespace fellow::hardfile::hunks
     std::unique_ptr<UBY> _rawData;
 
   public:
-    void Parse(RawDataReader& rawReader) override = 0;
+    void Parse(RawDataReader &rawReader) override = 0;
     ULO GetAllocateSizeInLongwords();
     ULO GetAllocateSizeInBytes();
     ULO GetContentSizeInLongwords();
@@ -27,5 +26,3 @@ namespace fellow::hardfile::hunks
     InitialHunk(ULO allocateSizeInLongwords);
   };
 }
-
-#endif

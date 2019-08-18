@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+
+  <Catch2Adapter>
+    <FilenameFilter>WinFellow</FilenameFilter>
+    <DiscoverCommandLine>--discover *</DiscoverCommandLine>
+  </Catch2Adapter>
+
+</RunSettings>

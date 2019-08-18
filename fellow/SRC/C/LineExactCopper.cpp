@@ -1,80 +1,91 @@
-#include "CopperRegisters.h"
+#include "fellow/chipset/CopperRegisters.h"
+#include "fellow/chipset/ChipsetInfo.h"
+#include "fellow/chipset/BitplaneRegisters.h"
+#include "fellow/chipset/CopperUtility.h"
 #include "LineExactCopper.h"
-#include "BUS.H"
-#include "SPRITE.H"
-#include "chipset.h"
+#include "fellow/scheduler/Scheduler.h"
 #include "FMEM.H"
 #include "BLIT.H"
 
+LineExactCopper line_exact_copper;
 
-ULO LineExactCopper::cycletable[16] = { 4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4 };
+ULO LineExactCopper::_cycletable[16] = {4, 4, 4, 4, 4, 5, 6, 4, 4, 4, 4, 8, 16, 4, 4, 4};
 
 void LineExactCopper::YTableInit()
 {
-  int ex = 16;
+  const int ex = scheduler.GetCycleFromCycle280ns(16);
 
   for (int i = 0; i < 512; i++)
   {
-    ytable[i] = i*busGetCyclesInThisLine() + ex;
+    _ytable[i] = i * scheduler.GetCyclesInLine() + ex;
   }
 }
 
 void LineExactCopper::RemoveEvent()
 {
-  if (copperEvent.cycle != BUS_CYCLE_DISABLE)
+  if (copperEvent.IsEnabled())
   {
-    busRemoveEvent(&copperEvent);
-    copperEvent.cycle = BUS_CYCLE_DISABLE;
+    scheduler.RemoveEvent(&copperEvent);
+    copperEvent.Disable();
   }
 }
 
-void LineExactCopper::InsertEvent(ULO cycle)
+void LineExactCopper::InsertEvent(const ULO cycle)
 {
-  if (cycle != BUS_CYCLE_DISABLE)
+  if (cycle != SchedulerEvent::EventDisableCycle)
   {
-    copperEvent.cycle = cycle;
-    busInsertEvent(&copperEvent);
+    ULO lineCycle280ns = scheduler.GetCycle280nsFromCycle(cycle % scheduler.GetCyclesInLine());
+    if (lineCycle280ns == 0xe2)
+    {
+      copperEvent.cycle = cycle + scheduler.GetCycleFromCycle280ns(2);
+    }
+    else
+    {
+      copperEvent.cycle = cycle;
+    }
+    scheduler.InsertEvent(&copperEvent);
   }
 }
 
-void LineExactCopper::Load(ULO new_copper_pc)
+void LineExactCopper::Load(const ULO new_copper_pc)
 {
-  copper_registers.copper_pc = new_copper_pc;
+  copper_registers.PC = new_copper_pc;
+  copper_registers.InstructionStart = new_copper_pc;
 
-  if (copper_registers.copper_dma == true)
+  if (copper_registers.IsDMAEnabled == true)
   {
     RemoveEvent();
-    InsertEvent(bus.cycle + 4);
+    InsertEvent(scheduler.GetFrameCycle() + scheduler.GetCycleFromCycle280ns(4));
   }
   else
   {
     // DMA is off
-    if (copper_registers.copper_suspended_wait == BUS_CYCLE_DISABLE)
+    if (copper_registers.SuspendedWait == SchedulerEvent::EventDisableCycle)
     {
-      copper_registers.copper_suspended_wait = busGetCycle();
+      copper_registers.SuspendedWait = scheduler.GetFrameCycle();
     }
   }
 }
 
-ULO LineExactCopper::GetCheckedWaitCycle(ULO waitCycle)
+ULO LineExactCopper::GetCheckedWaitCycle(const ULO waitCycle)
 {
-  if (waitCycle <= bus.cycle)
+  const ULO frameCycle = scheduler.GetFrameCycle();
+  if (waitCycle <= frameCycle)
   {
     // Do not ever go back in time
-    waitCycle = bus.cycle + 4;
-    //fellowAddLog("Warning: Copper went back in time.\n");
+    return frameCycle + scheduler.GetCycleFromCycle280ns(4);
   }
   return waitCycle;
 }
 
-/*-------------------------------------------------------------------------------
-; Called by wdmacon every time that register is written
-; This routine takes action when the copper DMA state is changed
-;--------------------------------------------------------------------------*/
+//----------------------------------------------------------------
+// Called by wdmacon every time that register is written
+// This routine takes action when the copper DMA state is changed
+//----------------------------------------------------------------
 
-void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
+void LineExactCopper::NotifyDMAEnableChanged(const bool new_dma_enable_state)
 {
-  if (copper_registers.copper_dma == new_dma_enable_state)
+  if (copper_registers.IsDMAEnabled == new_dma_enable_state)
   {
     return;
   }
@@ -85,7 +96,7 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     // here copper DMA is being turned off
     // record which cycle the copper was waiting for
     // remove copper from the event list
-    copper_registers.copper_suspended_wait = copperEvent.cycle;
+    copper_registers.SuspendedWait = copperEvent.cycle;
     RemoveEvent();
   }
   else
@@ -94,123 +105,126 @@ void LineExactCopper::NotifyDMAEnableChanged(bool new_dma_enable_state)
     // reactivate the cycle the copper was waiting for the last time it was on.
     // if we have passed it in the mean-time, execute immediately.
     RemoveEvent();
-    if (copper_registers.copper_suspended_wait != BUS_CYCLE_DISABLE)
+    if (copper_registers.SuspendedWait != SchedulerEvent::EventDisableCycle)
     {
+      const ULO frameCycle = scheduler.GetFrameCycle();
       // dma not hanging
-      if (copper_registers.copper_suspended_wait <= bus.cycle)
+      if (copper_registers.SuspendedWait <= frameCycle)
       {
-        InsertEvent(bus.cycle + 4);
+        InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
       }
       else
       {
-        InsertEvent(copper_registers.copper_suspended_wait);
+        InsertEvent(copper_registers.SuspendedWait);
       }
     }
     else
     {
-      InsertEvent(copper_registers.copper_suspended_wait);
+      InsertEvent(copper_registers.SuspendedWait);
     }
   }
-  copper_registers.copper_dma = new_dma_enable_state;
+  copper_registers.IsDMAEnabled = new_dma_enable_state;
 }
 
 void LineExactCopper::NotifyCop1lcChanged()
 {
   // Have been hanging since end of frame
-  if (copper_registers.copper_dma == false && copper_registers.copper_suspended_wait == 40)
+  if (copper_registers.IsDMAEnabled == false && copper_registers.SuspendedWait == _firstCopperCycle)
   {
-    copper_registers.copper_pc = copper_registers.cop1lc;
+    copper_registers.PC = copper_registers.cop1lc;
+    copper_registers.InstructionStart = copper_registers.cop1lc;
   }
 }
 
-/*-------------------------------------------------------------------------------
-; Emulates one copper instruction
-;-------------------------------------------------------------------------------*/
+UWO LineExactCopper::ReadWord()
+{
+  const ULO word = chipmemReadWord(copper_registers.PC);
+  copper_registers.PC = chipsetMaskPtr(copper_registers.PC + 2);
+  return word;
+}
+
+//---------------------------------
+// Emulates one copper instruction
+//---------------------------------
 
 void LineExactCopper::EventHandler()
 {
-  ULO bswapRegC;
-  ULO bswapRegD;
-  bool correctLine;
   ULO maskedY;
   ULO maskedX;
   ULO waitY;
-  ULO currentY = busGetRasterY();
-  ULO currentX = busGetRasterX();
+  ULO frameCycle = scheduler.GetFrameCycle(); // Base cycle unit
+  ULO currentLine = scheduler.GetRasterY();
+  ULO currentLineCycle280ns = scheduler.GetLineCycle280ns();
 
-  copperEvent.cycle = BUS_CYCLE_DISABLE;
-  if (cpuEvent.cycle != BUS_CYCLE_DISABLE)
+  copperEvent.Disable();
+  if (cpuEvent.IsEnabled())
   {
-    cpuEvent.cycle += 2;
+    cpuEvent.cycle += scheduler.GetCycleFromCycle280ns(2);
   }
 
   // retrieve Copper command (two words)
-  bswapRegC = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
-  bswapRegD = chipmemReadWord(copper_registers.copper_pc);
-  copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 2);
+  ULO firstWord = ReadWord();
+  ULO secondWord = ReadWord();
 
-  if (bswapRegC != 0xffff || bswapRegD != 0xfffe)
+  copper_registers.InstructionStart = copper_registers.PC;
+
+  if (firstWord != 0xffff || secondWord != 0xfffe)
   {
     // check bit 0 of first instruction word, zero is move
-    if ((bswapRegC & 0x1) == 0x0)
+    if (CopperUtility::IsMove(firstWord))
     {
       // MOVE instruction
-      bswapRegC &= 0x1fe;
+      firstWord &= 0x1fe;
 
-      // check if access to $40 - $7f (if so, Copper is using Blitter)
-      if ((bswapRegC >= 0x80) || ((bswapRegC >= 0x40) && ((copper_registers.copcon & 0xffff) != 0x0)))
+      if (CopperUtility::IsRegisterAllowed(firstWord))
       {
         // move data to Blitter register
-        InsertEvent(cycletable[(bplcon0 >> 12) & 0xf] + bus.cycle);
-        memory_iobank_write[bswapRegC >> 1]((UWO)bswapRegD, bswapRegC);
+        InsertEvent(scheduler.GetCycleFromCycle280ns(_cycletable[(bitplane_registers.bplcon0 >> 12) & 0xf]) + frameCycle);
+        memory_iobank_write[firstWord >> 1]((UWO)secondWord, firstWord);
       }
     }
     else
     {
       // wait instruction or skip instruction
-      bswapRegC &= 0xfffe;
+      firstWord &= 0xfffe;
+
       // check bit BFD (Bit Finish Disable)
-      if (((bswapRegD & 0x8000) == 0x0) && blitterIsStarted())
+      if (!CopperUtility::HasBlitterFinishedDisable(secondWord) && blitterIsStarted())
       {
         // Copper waits until Blitter is finished
-        copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc - 4);
-        if ((blitterEvent.cycle + 4) <= bus.cycle)
+        copper_registers.PC = chipsetMaskPtr(copper_registers.PC - 4);
+        copper_registers.InstructionStart = copper_registers.PC;
+
+        if ((blitterEvent.cycle + scheduler.GetCycleFromCycle280ns(4)) <= frameCycle)
         {
-          InsertEvent(bus.cycle + 4);
+          InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
         }
         else
         {
-          InsertEvent(blitterEvent.cycle + 4);
+          InsertEvent(blitterEvent.cycle + scheduler.GetCycleFromCycle280ns(4));
         }
       }
       else
       {
         // Copper will not wait for Blitter to finish for executing wait or skip
 
-        // zero is wait (works??)
-        // (not really!)
-        if ((bswapRegD & 0x1) == 0x0)
+        // zero is wait
+        if (CopperUtility::IsWait(secondWord))
         {
-          // WAIT instruction 
+          // WAIT instruction
 
           // calculate our line, masked with vmask
-          // bl - masked graph_raster_y 
-
           // use mask on graph_raster_y
-          bswapRegD |= 0x8000;
-          // used to indicate correct line or not
-          correctLine = false;
+          secondWord |= 0x8000;
+          bool correctLine = false;
 
           // compare masked y with wait line
-          //maskedY = graph_raster_y;
-          maskedY = currentY;
+          maskedY = currentLine;
 
-          *((UBY*)&maskedY) &= (UBY)(bswapRegD >> 8);
-          if (*((UBY*)&maskedY) > ((UBY)(bswapRegC >> 8)))
+          *((UBY *)&maskedY) &= (UBY)(secondWord >> 8);
+          if (*((UBY *)&maskedY) > ((UBY)(firstWord >> 8)))
           {
             // we have passed the line, set up next instruction immediately
-            // cexit
 
             // to help the copper to wait line 256, do some tests here
             // Here we have detected a wait position that we are past.
@@ -219,21 +233,19 @@ void LineExactCopper::EventHandler()
             // Here we have detected a wait that has been passed.
 
             // do some tests if line is 255
-            if (currentY != 255)
+            if (currentLine != 255)
             {
-              // ctrueexit
-              //Here we must do a new copper access immediately (in 4 cycles)
-              InsertEvent(bus.cycle + 4);
+              // Here we must do a new copper access immediately (in 4 cycles)
+              InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
             }
             else
             {
               // test line to be waited for
-              if ((bswapRegC >> 8) > 0x40)
+              if ((firstWord >> 8) > 0x40)
               {
                 // line is 256-313, wrong to not wait
-                // ctrueexit
-                //Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(bus.cycle + 4);
+                // Here we must do a new copper access immediately (in 4 cycles)
+                InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
               }
               else
               {
@@ -241,126 +253,114 @@ void LineExactCopper::EventHandler()
                 // here we recalculate the wait stuff
 
                 // invert masks
-                bswapRegD = ~bswapRegD;
+                secondWord = ~secondWord;
 
                 // get missing bits
-                maskedY = (currentY | 0x100);
-                *((UBY*)&maskedY) &= (bswapRegD >> 8);
+                maskedY = (currentLine | 0x100);
+                *((UBY *)&maskedY) &= (secondWord >> 8);
                 // mask them into vertical position
-                *((UBY*)&maskedY) |= (bswapRegC >> 8);
-                maskedY *= busGetCyclesInThisLine();
-                bswapRegC &= 0xfe;
-                bswapRegD &= 0xfe;
+                *((UBY *)&maskedY) |= (firstWord >> 8);
+                maskedY *= scheduler.GetCyclesInLine();
+                firstWord &= 0xfe;
+                secondWord &= 0xfe;
 
-                maskedX = (currentX & bswapRegD);
+                maskedX = (currentLineCycle280ns & secondWord);
                 // mask in horizontal
-                bswapRegC |= maskedX;
-                bswapRegC = bswapRegC + maskedY + 4;
-                if (bswapRegC <= bus.cycle)
+                firstWord |= maskedX;
+                firstWord = scheduler.GetCycleFromCycle280ns(firstWord + 4) + maskedY;
+                if (firstWord <= frameCycle)
                 {
-                  // fix
-                  bswapRegC = bus.cycle + 4;
+                  firstWord = frameCycle + scheduler.GetCycleFromCycle280ns(4);
                 }
-                InsertEvent(bswapRegC);
+                InsertEvent(firstWord);
               }
             }
           }
-          else if (*((UBY*)&maskedY) < (UBY)(bswapRegC >> 8))
+          else if (*((UBY *)&maskedY) < (UBY)(firstWord >> 8))
           {
             // we are above the line, calculate the cycle when wait is true
-            // notnever
-
             // invert masks
-            bswapRegD = ~bswapRegD;
+            secondWord = ~secondWord;
 
             // get bits that is not masked out
-            maskedY = currentY;
-            *((UBY*)&maskedY) &= (bswapRegD >> 8);
+            maskedY = currentLine;
+            *((UBY *)&maskedY) &= (secondWord >> 8);
             // mask in bits from waitgraph_raster_y
-            *((UBY*)&maskedY) |= (bswapRegC >> 8);
-            waitY = ytable[maskedY];
+            *((UBY *)&maskedY) |= (firstWord >> 8);
+            waitY = _ytable[maskedY];
 
             // when wait is on same line, use masking stuff on graph_raster_x
             // else on graph_raster_x = 0
             // prepare waitxpos
-            bswapRegC &= 0xfe;
-            bswapRegD &= 0xfe;
+            firstWord &= 0xfe;
+            secondWord &= 0xfe;
             if (correctLine == true)
             {
-              if (bswapRegD < currentX)
+              if (secondWord < currentLineCycle280ns)
               {
                 // get unmasked bits from current x
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & currentLineCycle280ns) | firstWord) + 4)));
               }
               else
               {
-                // copwaitnotsameline
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & 0) | firstWord) + 4)));
               }
             }
             else
             {
-              // copwaitnotsameline
-              InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+              InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & 0) | firstWord) + 4)));
             }
           }
           else
           {
             // here we are on the correct line
             // calculate our xposition, masked with hmask
-            // al - masked graph_raster_x
 
             correctLine = true;
             // use mask on graph_raster_x
-            maskedX = currentX;
-            *((UBY*)&maskedX) &= (bswapRegD & 0xff);
+            maskedX = currentLineCycle280ns;
+            *((UBY *)&maskedX) &= (secondWord & 0xff);
             // compare masked x with wait x
-            if (*((UBY*)&maskedX) < (UBY)(bswapRegC & 0xff))
+            if (*((UBY *)&maskedX) < (UBY)(firstWord & 0xff))
             {
               // here the wait position is not reached yet, calculate cycle when wait is true
               // previous position checks should assure that a calculated position is not less than the current cycle
-              // notnever
 
               // invert masks
-              bswapRegD = ~bswapRegD;
-              //bswapRegD &= 0xffff;
+              secondWord = ~secondWord;
 
               // get bits that is not masked out
-              maskedY = currentY;
-              *((UBY*)&maskedY) &= (UBY)(bswapRegD >> 8);
+              maskedY = currentLine;
+              *((UBY *)&maskedY) &= (UBY)(secondWord >> 8);
               // mask in bits from waitgraph_raster_y
-              *((UBY*)&maskedY) |= (UBY)(bswapRegC >> 8);
-              waitY = ytable[maskedY];
+              *((UBY *)&maskedY) |= (UBY)(firstWord >> 8);
+              waitY = _ytable[maskedY];
 
               // when wait is on same line, use masking stuff on graph_raster_x
-              // else on graph_raster_x = 0
 
               // prepare waitxpos
-              bswapRegC &= 0xfe;
-              bswapRegD &= 0xfe;
+              firstWord &= 0xfe;
+              secondWord &= 0xfe;
               if (correctLine == true)
               {
-                if (bswapRegD < currentX)
+                if (secondWord < currentLineCycle280ns)
                 {
                   // get unmasked bits from current x
-                  InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & currentX) | bswapRegC) + 4));
+                  InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & currentLineCycle280ns) | firstWord) + 4)));
                 }
                 else
                 {
-                  // copwaitnotsameline
-                  InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                  InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & 0) | firstWord) + 4)));
                 }
               }
               else
               {
-                // copwaitnotsameline
-                InsertEvent(GetCheckedWaitCycle(waitY + ((bswapRegD & 0) | bswapRegC) + 4));
+                InsertEvent(GetCheckedWaitCycle(waitY + scheduler.GetCycleFromCycle280ns(((secondWord & 0) | firstWord) + 4)));
               }
             }
             else
             {
               // position reached, set up next instruction immediately
-              // cexit
 
               // to help the copper to wait line 256, do some tests here
               // Here we have detected a wait position that we are past.
@@ -370,21 +370,19 @@ void LineExactCopper::EventHandler()
               // Here we have detected a wait that has been passed.
 
               // do some tests if line is 255
-              if (currentY != 255)
+              if (currentLine != 255)
               {
-                // ctrueexit
-                //Here we must do a new copper access immediately (in 4 cycles)
-                InsertEvent(bus.cycle + 4);
+                // Here we must do a new copper access immediately (in 4 cycles)
+                InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
               }
               else
               {
                 // test line to be waited for
-                if ((bswapRegC >> 8) > 0x40)
+                if ((firstWord >> 8) > 0x40)
                 {
                   // line is 256-313, wrong to not wait
-                  // ctrueexit
-                  //Here we must do a new copper access immediately (in 4 cycles)
-                  InsertEvent(bus.cycle + 4);
+                  // Here we must do a new copper access immediately (in 4 cycles)
+                  InsertEvent(frameCycle + 4);
                 }
                 else
                 {
@@ -392,27 +390,26 @@ void LineExactCopper::EventHandler()
                   // here we recalculate the wait stuff
 
                   // invert masks
-                  bswapRegD = ~bswapRegD;
+                  secondWord = ~secondWord;
 
                   // get missing bits
-                  maskedY = (currentY | 0x100);
-                  *((UBY*)&maskedY) &= (bswapRegD >> 8);
+                  maskedY = (currentLine | 0x100);
+                  *((UBY *)&maskedY) &= (secondWord >> 8);
                   // mask them into vertical position
-                  *((UBY*)&maskedY) |= (bswapRegC >> 8);
-                  maskedY *= busGetCyclesInThisLine();
-                  bswapRegC &= 0xfe;
-                  bswapRegD &= 0xfe;
+                  *((UBY *)&maskedY) |= (firstWord >> 8);
+                  maskedY *= scheduler.GetCyclesInLine();
+                  firstWord &= 0xfe;
+                  secondWord &= 0xfe;
 
-                  maskedX = (currentX & bswapRegD);
+                  maskedX = (currentLineCycle280ns & secondWord);
                   // mask in horizontal
-                  bswapRegC |= maskedX;
-                  bswapRegC = bswapRegC + maskedY + 4;
-                  if (bswapRegC <= bus.cycle)
+                  firstWord |= maskedX;
+                  firstWord = scheduler.GetCycleFromCycle280ns(firstWord + 4) + maskedY;
+                  if (firstWord <= frameCycle)
                   {
-                    // fix
-                    bswapRegC = bus.cycle + 4;
+                    firstWord = frameCycle + scheduler.GetCycleFromCycle280ns(4);
                   }
-                  InsertEvent(GetCheckedWaitCycle(bswapRegC));
+                  InsertEvent(GetCheckedWaitCycle(firstWord));
                 }
               }
             }
@@ -421,49 +418,42 @@ void LineExactCopper::EventHandler()
         else
         {
           // SKIP instruction
-
-          // new skip, copied from cwait just to try something
-          // cskip
-
           // calculate our line, masked with vmask
-          // bl - masked graph_raster_y 
-
           // use mask on graph_raster_y
-          bswapRegD |= 0x8000;
+          secondWord |= 0x8000;
           // used to indicate correct line or not
-          correctLine = false;
-          maskedY = currentY;
-          *((UBY*)&maskedY) &= ((bswapRegD >> 8));
-          if (*((UBY*)&maskedY) > (UBY)(bswapRegC >> 8))
+          maskedY = currentLine;
+          *((UBY *)&maskedY) &= ((secondWord >> 8));
+          if (*((UBY *)&maskedY) > (UBY)(firstWord >> 8))
           {
             // do skip
             // we have passed the line, set up next instruction immediately
-            copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
-            InsertEvent(bus.cycle + 4);
+            copper_registers.PC = chipsetMaskPtr(copper_registers.PC + 4);
+            copper_registers.InstructionStart = copper_registers.PC;
+
+            InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
           }
-          else if (*((UBY *)&maskedY) < (UBY)(bswapRegC >> 8))
+          else if (*((UBY *)&maskedY) < (UBY)(firstWord >> 8))
           {
             // above line, don't skip
-            InsertEvent(bus.cycle + 4);
+            InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
           }
           else
           {
             // here we are on the correct line
 
             // calculate our xposition, masked with hmask
-            // al - masked graph_raster_x
-            correctLine = true;
-
             // use mask on graph_raster_x
             // Compare masked x with wait x
-            maskedX = currentX;
-            *((UBY*)&maskedX) &= bswapRegD;
-            if (*((UBY*)&maskedX) >= (UBY)(bswapRegC & 0xff))
+            maskedX = currentLineCycle280ns;
+            *((UBY *)&maskedX) &= secondWord;
+            if (*((UBY *)&maskedX) >= (UBY)(firstWord & 0xff))
             {
               // position reached, set up next instruction immediately
-              copper_registers.copper_pc = chipsetMaskPtr(copper_registers.copper_pc + 4);
+              copper_registers.PC = chipsetMaskPtr(copper_registers.PC + 4);
+              copper_registers.InstructionStart = copper_registers.PC;
             }
-            InsertEvent(bus.cycle + 4);
+            InsertEvent(frameCycle + scheduler.GetCycleFromCycle280ns(4));
           }
         }
       }
@@ -473,12 +463,14 @@ void LineExactCopper::EventHandler()
 
 void LineExactCopper::EndOfFrame()
 {
-  copper_registers.copper_pc = copper_registers.cop1lc;
-  copper_registers.copper_suspended_wait = 40;
-  if (copper_registers.copper_dma == true)
+  copper_registers.PC = copper_registers.cop1lc;
+  copper_registers.InstructionStart = copper_registers.PC;
+
+  copper_registers.SuspendedWait = _firstCopperCycle;
+  if (copper_registers.IsDMAEnabled == true)
   {
     RemoveEvent();
-    InsertEvent(40);
+    InsertEvent(_firstCopperCycle);
   }
 }
 
@@ -494,12 +486,14 @@ void LineExactCopper::EmulationStop()
 {
 }
 
-LineExactCopper::LineExactCopper()
-  : Copper()
+void LineExactCopper::Startup()
 {
+  _firstCopperCycle = scheduler.GetCycleFromCycle280ns(40);
   YTableInit();
 }
 
-LineExactCopper::~LineExactCopper()
+void LineExactCopper::Shutdown()
 {
 }
+
+LineExactCopper::LineExactCopper() = default;

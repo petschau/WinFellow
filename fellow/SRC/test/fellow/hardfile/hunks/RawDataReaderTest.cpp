@@ -81,7 +81,7 @@ namespace test::fellow::hardfile::hunks
     TEST_METHOD(GetNextString_ReadStringPastDataLength_ThrowsException)
     {
       RawDataReader *reader = _instance.get();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextString(4); });
+      Assert::ExpectException<out_of_range>([reader] { reader->GetNextString(4); });
     }
 
     TEST_METHOD(GetNextByteswappedLong_ReadOneLong_ReturnsCorrectLong)
@@ -104,7 +104,7 @@ namespace test::fellow::hardfile::hunks
       reader->GetNextByteswappedLong();
       reader->GetNextByteswappedLong();
       reader->GetNextByteswappedLong();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextByteswappedLong(); });
+      Assert::ExpectException<out_of_range>([reader] { reader->GetNextByteswappedLong(); });
     }
 
     TEST_METHOD(GetNextBytes_ReadTwoLongwords_ReturnsPointerToBytes)
@@ -123,7 +123,7 @@ namespace test::fellow::hardfile::hunks
     TEST_METHOD(GetNextBytes_ReadBytesPastDataLength_ThrowsException)
     {
       RawDataReader *reader = _instance.get();
-      Assert::ExpectException<out_of_range>([reader] {reader->GetNextBytes(4); });
+      Assert::ExpectException<out_of_range>([reader] { reader->GetNextBytes(4); });
     }
 
     TEST_METHOD(GetNextBytes_ReadLongwordTwoTimes_ReturnsPointersToCorrectBytes)

@@ -1,6 +1,6 @@
-#include "DEFS.H"
+#include "fellow/api/defs.h"
 #include "Automator.h"
-#include "BUS.H"
+#include "fellow/scheduler/Scheduler.h"
 #include "GFXDRV.H"
 #
 Automator automator;
@@ -17,7 +17,7 @@ void Automator::TakeSnapshot()
     _snapshotCounter = 0;
     _snapshotsTaken++;
     char filename[CFG_FILENAME_LENGTH];
-    sprintf(filename, "%s\\Snap%.4d_%I64d.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, busGetRasterFrameCount() + 1);
+    sprintf(filename, "%s\\Snap%.4d_%llu.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, scheduler.GetRasterFrameCount() + 1);
     gfxDrvSaveScreenshot(false, filename);
   }
 }
@@ -58,8 +58,8 @@ void Automator::EndOfLine()
 {
   if (!RecordScript)
   {
-    ULL frameNumber = busGetRasterFrameCount();
-    ULO line = busGetRasterY();
+    ULL frameNumber = scheduler.GetRasterFrameCount();
+    ULO line = scheduler.GetRasterY();
     _script.ExecuteUntil(frameNumber, line);
   }
 }
@@ -88,10 +88,7 @@ void Automator::Shutdown()
   }
 }
 
-Automator::Automator()
-  : SnapshotFrequency(100),
-  SnapshotEnable(false),
-  RecordScript(false)
+Automator::Automator() : SnapshotFrequency(100), SnapshotEnable(false), RecordScript(false)
 {
 }
 

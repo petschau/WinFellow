@@ -1,29 +1,30 @@
-#ifndef FELLOW_API_SERVICES_H
-#define FELLOW_API_SERVICES_H
+#pragma once
 
 #include "fellow/api/service/IHUD.h"
 #include "fellow/api/service/IFSWrapper.h"
 #include "fellow/api/service/ILog.h"
 #include "fellow/api/service/IRetroPlatform.h"
+#include "fellow/api/service/IPerformanceCounter.h"
+#include "fellow/api/service/IFileops.h"
 
 namespace fellow::api
 {
   class Services
   {
   public:
-    fellow::api::service::IHUD& HUD;
-    fellow::api::service::IFSWrapper& FSWrapper;
-    fellow::api::service::ILog& Log;
-    fellow::api::service::IRetroPlatform& RP;
+    fellow::api::IHUD &HUD;
+    fellow::api::IFSWrapper &FSWrapper;
+    fellow::api::ILog &Log;
+    fellow::api::IRetroPlatform &RP;
+    fellow::api::IPerformanceCounterFactory &PerformanceCounterFactory;
+    fellow::api::IFileops &Fileops;
 
-    // Must be inline to allow tests etc to create it with mocks without referencing the core
-    Services(fellow::api::service::IHUD& hud, fellow::api::service::IFSWrapper& fsWrapper, fellow::api::service::ILog& log, fellow::api::service::IRetroPlatform& retroPlatform)
-      : HUD(hud), FSWrapper(fsWrapper), Log(log), RP(retroPlatform)
+    Services(fellow::api::IHUD &hud, fellow::api::IFSWrapper &fsWrapper, fellow::api::ILog &log, fellow::api::IRetroPlatform &retroPlatform,
+             fellow::api::IPerformanceCounterFactory &performanceCounterFactory, fellow::api::IFileops &fileops)
+        : HUD(hud), FSWrapper(fsWrapper), Log(log), RP(retroPlatform), PerformanceCounterFactory(performanceCounterFactory), Fileops(fileops)
     {
     }
   };
 
-  extern Services* Service;
+  extern Services *Service;
 }
-
-#endif

@@ -14,21 +14,21 @@ namespace fellow::hardfile::hunks
 
   ULO Reloc32Hunk::GetOffsetTableCount()
   {
-    return (ULO) _offsetTables.size();
+    return (ULO)_offsetTables.size();
   }
 
-  Reloc32OffsetTable* Reloc32Hunk::GetOffsetTable(ULO index)
+  Reloc32OffsetTable *Reloc32Hunk::GetOffsetTable(ULO index)
   {
     return _offsetTables[index].get();
   }
 
-  void Reloc32Hunk::Parse(RawDataReader& rawDataReader)
+  void Reloc32Hunk::Parse(RawDataReader &rawDataReader)
   {
     ULO offsetCount = rawDataReader.GetNextByteswappedLong();
     while (offsetCount != 0)
     {
       ULO relatedHunk = rawDataReader.GetNextByteswappedLong();
-      Reloc32OffsetTable* offsetTable = new Reloc32OffsetTable(relatedHunk);
+      Reloc32OffsetTable *offsetTable = new Reloc32OffsetTable(relatedHunk);
       offsetTable->Parse(rawDataReader, offsetCount);
       _offsetTables.push_back(unique_ptr<Reloc32OffsetTable>(offsetTable));
       offsetCount = rawDataReader.GetNextByteswappedLong();
@@ -37,8 +37,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  Reloc32Hunk::Reloc32Hunk(ULO sourceHunkIndex)
-    : AdditionalHunk(sourceHunkIndex)
+  Reloc32Hunk::Reloc32Hunk(ULO sourceHunkIndex) : AdditionalHunk(sourceHunkIndex)
   {
   }
 }

@@ -2,17 +2,21 @@
 /* Windows data, misc.                                                       */
 /*===========================================================================*/
 
-#ifndef WinDrv_H
-#define WinDrv_H
+#pragma once
 
-#include "wdbg.h"
+#include "WDBG.H"
 
 extern HINSTANCE win_drv_hInstance;
 extern int win_drv_nCmdShow;
 
-extern void winDrvHandleInputDevices(void);
-extern void winDrvEmulationStart(void);
-extern BOOLE winDrvDebugStart(dbg_operations operation, HWND hwndDlg);
+extern void winDrvEmulationStart();
+
+extern bool winDrvDebugStartClient();
+extern bool winDrvDebugStart(dbg_operations operation, ULO breakpoint);
+extern void winDrvDebugMessageLoop();
+extern void winDrvDebugStopMessageLoop();
+
+extern bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, LPVOID in);
 extern void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName);
 
-#endif
+extern void winDrvHandleInputDevices();

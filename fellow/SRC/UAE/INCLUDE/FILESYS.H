@@ -34,8 +34,8 @@ extern struct hardfiledata *get_hardfile_data (int nr);
 
 /* FELLOW IN (START): moved from filesys.c because other modules need it */
 
-#include "penguin.h"
-#include "uae2fell.h"
+#include "PENGUIN.H"
+#include "UAE2FELL.H"
 
 typedef struct {
     char *devname; /* device name, e.g. UAE0: */

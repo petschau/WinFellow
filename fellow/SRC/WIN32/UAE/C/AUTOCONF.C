@@ -38,7 +38,9 @@
 #include <setjmp.h>
 #include "uae2fell.h"
 #include "autoconf.h"
-#include "fmem.h"
+#include "FMEM.H"
+
+using namespace fellow::api::vm;
 
 /* To support memory get/set in C, assembly stubs are in uaesupp.s */
 
@@ -571,11 +573,24 @@ void set_uae_int_flag (void)
 void rtarea_setup(void)
 {
   /* FELLOW IN (START)------------------- */
-  if (memoryGetKickImageBaseBank() >= 0xf8) {
-    int bank = RTAREA_BASE >> 16;
+  if (memoryGetKickImageBaseBank() >= 0xf8)
+  {
+    constexpr int bank = RTAREA_BASE >> 16;
 
-    memoryBankSet(rtarea_bget, rtarea_wget, rtarea_lget, rtarea_bput,
-		  rtarea_wput, rtarea_lput, rtarea, bank, bank, FALSE);
+    memoryBankSet(MemoryBankDescriptor
+      {
+	.Kind = MemoryKind::FilesystemRTArea,
+	.BankNumber = bank,
+	.BaseBankNumber = bank,
+	.ReadByteFunc = rtarea_bget,
+	.ReadWordFunc = rtarea_wget,
+	.ReadLongFunc = rtarea_lget,
+	.WriteByteFunc = rtarea_bput,
+	.WriteWordFunc = rtarea_wput,
+	.WriteLongFunc = rtarea_lput,
+	.BasePointer = rtarea,
+	.IsBasePointerWritable = false 
+      });
   }
     /* NOTE: No direct pointer must be used */
   /* FELLOW IN (END)------------------- */

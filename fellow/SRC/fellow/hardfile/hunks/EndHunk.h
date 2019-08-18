@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_ENDHUNK_H
-#define FELLOW_HARDFILE_HUNKS_ENDHUNK_H
+#pragma once
 
 #include "fellow/hardfile/hunks/AdditionalHunk.h"
 
@@ -12,10 +11,8 @@ namespace fellow::hardfile::hunks
 
   public:
     ULO GetID() override;
-    void Parse(RawDataReader& rawDataReader) override;
+    void Parse(RawDataReader &rawDataReader) override;
 
     EndHunk();
   };
 }
-
-#endif

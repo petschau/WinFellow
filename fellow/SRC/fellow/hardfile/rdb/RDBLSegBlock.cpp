@@ -6,13 +6,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
-  RDBLSegBlock::RDBLSegBlock() :
-    Blocknumber(-1),
-    SizeInLongs(0),
-    CheckSum(0),
-    HostID(0),
-    Next(-1),
-    HasValidCheckSum(false)
+  RDBLSegBlock::RDBLSegBlock() : Blocknumber(-1), SizeInLongs(0), CheckSum(0), HostID(0), Next(-1), HasValidCheckSum(false)
   {
   }
 
@@ -21,12 +15,12 @@ namespace fellow::hardfile::rdb
     return 4 * (SizeInLongs - 5);
   }
 
-  const UBY* RDBLSegBlock::GetData() const
+  const UBY *RDBLSegBlock::GetData() const
   {
     return Data.get();
   }
 
-  void RDBLSegBlock::ReadFromFile(RDBFileReader& reader, ULO index)
+  void RDBLSegBlock::ReadFromFile(RDBFileReader &reader, ULO index)
   {
     Blocknumber = index / 512;
     ID = reader.ReadString(index, 4);

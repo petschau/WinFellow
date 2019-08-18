@@ -10,12 +10,11 @@ using namespace fellow::hardfile::hunks;
 
 namespace fellow::hardfile::rdb
 {
-  RDBFileSystemHandler::RDBFileSystemHandler()
-    : Size(0)
+  RDBFileSystemHandler::RDBFileSystemHandler() : Size(0)
   {
   }
 
-  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  bool RDBFileSystemHandler::ReadFromFile(RDBFileReader &reader, ULO blockChainStart, ULO blockSize)
   {
     vector<RDBLSegBlock> blocks;
     LON nextBlock = blockChainStart;
@@ -52,7 +51,7 @@ namespace fellow::hardfile::rdb
 
     RawData.reset(new UBY[Size]);
     ULO nextCopyPosition = 0;
-    for (const RDBLSegBlock& block : blocks)
+    for (const RDBLSegBlock &block : blocks)
     {
       LON size = block.GetDataSize();
       memcpy(RawData.get() + nextCopyPosition, block.GetData(), size);

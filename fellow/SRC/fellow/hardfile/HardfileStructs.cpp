@@ -39,7 +39,7 @@ namespace fellow::hardfile
 
   void HardfileFileSystemEntry::CopyHunkToAddress(ULO destinationAddress, ULO hunkIndex)
   {
-    InitialHunk* hunk = Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex);
+    InitialHunk *hunk = Header->FileSystemHandler.FileImage.GetInitialHunk(hunkIndex);
     hunk->SetVMAddress(destinationAddress);
     memcpy(VM->Memory.AddressToPtr(destinationAddress), hunk->GetContent(), hunk->GetContentSizeInBytes());
     if (hunk->GetAllocateSizeInBytes() > hunk->GetContentSizeInBytes())
@@ -49,8 +49,7 @@ namespace fellow::hardfile
     }
   }
 
-  HardfileFileSystemEntry::HardfileFileSystemEntry(RDBFileSystemHeader* header, ULO segListAddress)
-    : Header(header), SegListAddress(segListAddress)
+  HardfileFileSystemEntry::HardfileFileSystemEntry(RDBFileSystemHeader *header, ULO segListAddress) : Header(header), SegListAddress(segListAddress)
   {
   }
 }

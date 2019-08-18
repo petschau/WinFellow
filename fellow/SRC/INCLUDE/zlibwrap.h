@@ -1,4 +1,3 @@
-/* @(#) $Id: zlibwrap.h,v 1.5 2008-02-21 00:00:44 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow - zlib wrapper                                                   */
 /*                                                                         */
@@ -24,7 +23,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "defs.h"
+#include "fellow/api/defs.h"
 
 BOOLE gzUnpack(const char *src, const char *dest);
-BOOLE gzPack  (const char *src, const char *dest);
+BOOLE gzPack(const char *src, const char *dest);

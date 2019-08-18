@@ -1,7 +1,6 @@
-#ifndef UART_H
-#define UART_H
+#pragma once
 
-#include "DEFS.H"
+#include "fellow/api/defs.h"
 #include <string>
 
 class UART
@@ -27,8 +26,6 @@ private:
   void InstallIOHandlers();
 
   void ClearState();
-  void LoadState(FILE *F);
-  void SaveState(FILE *F);  
 
   void OpenOutputFile();
   void CloseOutputFile();
@@ -57,10 +54,11 @@ public:
   void EmulationStart();
   void EmulationStop();
 
+  void Startup();
+  void Shutdown();
+
   UART();
   ~UART();
 };
 
 extern UART uart;
-
-#endif

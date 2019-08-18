@@ -1,34 +1,29 @@
-#ifndef FELLOW_API_SERVICE_IFSWRAPPER_H
-#define FELLOW_API_SERVICE_IFSWRAPPER_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
 
-namespace fellow::api::service
+namespace fellow::api
 {
-  typedef enum
+  enum class fs_wrapper_object_types
   {
-    FS_NAVIG_FILE,
-    FS_NAVIG_DIR,
-    FS_NAVIG_OTHER
-  } fs_wrapper_file_types;
+    FILE,
+    DIRECTORY,
+    OTHER
+  };
 
-  typedef struct
+  struct fs_wrapper_object_info
   {
-    UBY drive;
     std::string name;
-    bool relative;
     bool writeable;
     ULO size;
-    fs_wrapper_file_types type;
-  } fs_wrapper_point;
+    fs_wrapper_object_types type;
+  };
 
   class IFSWrapper
   {
   public:
+    virtual fs_wrapper_object_info *GetFSObjectInfo(const std::string &pathToObject) = 0;
     virtual ~IFSWrapper() = default;
-    virtual fs_wrapper_point *MakePoint(const STR *point) = 0;
   };
-}
-
-#endif
+} // namespace fellow::api

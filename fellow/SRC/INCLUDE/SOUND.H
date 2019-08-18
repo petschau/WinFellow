@@ -1,4 +1,5 @@
-/* @(#) $Id: SOUND.H,v 1.6 2008-02-21 00:00:44 peschau Exp $ */
+#pragma once
+
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,32 +24,49 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef SOUND_H
-#define SOUND_H
-
+#include "fellow/api/defs.h"
 
 /*===========================*/
 /* Symbols for configuration */
 /*===========================*/
 
-typedef enum {SOUND_15650, SOUND_22050, SOUND_31300, SOUND_44100} sound_rates;
-typedef enum {SOUND_NONE, SOUND_PLAY, SOUND_EMULATE} sound_emulations;
-typedef enum {SOUND_FILTER_ORIGINAL, SOUND_FILTER_ALWAYS, SOUND_FILTER_NEVER} sound_filters;
-typedef enum {SOUND_DSOUND_NOTIFICATION, SOUND_MMTIMER_NOTIFICATION} sound_notifications;
-
+enum class sound_rates
+{
+  SOUND_15650,
+  SOUND_22050,
+  SOUND_31300,
+  SOUND_44100
+};
+enum class sound_emulations
+{
+  SOUND_NONE,
+  SOUND_PLAY,
+  SOUND_EMULATE
+};
+enum class sound_filters
+{
+  SOUND_FILTER_ORIGINAL,
+  SOUND_FILTER_ALWAYS,
+  SOUND_FILTER_NEVER
+};
+enum class sound_notifications
+{
+  SOUND_DSOUND_NOTIFICATION,
+  SOUND_MMTIMER_NOTIFICATION
+};
 
 /*==========================*/
 /* Sound device information */
 /*==========================*/
 
-typedef struct {
+typedef struct
+{
   BOOLE mono;
   BOOLE stereo;
   BOOLE bits8;
   BOOLE bits16;
-  ULO rates_max[2][2]; /* Maximum playback rate for [8/16 bits][mono/stereo] */
+  ULO rates_max[2][2]; // Maximum playback rate for [8/16 bits][mono/stereo]
 } sound_device;
-
 
 extern sound_emulations sound_emulation;
 extern sound_rates sound_rate;
@@ -59,33 +77,31 @@ extern ULO sound_buffer_length;
 extern sound_filters sound_filter;
 extern sound_notifications sound_notification;
 
-
 /*==================================*/
 /* Property access                  */
 /*==================================*/
 
 extern void soundSetRate(sound_rates rate);
-extern sound_rates soundGetRate(void);
-extern ULO soundGetRateReal(void);
+extern sound_rates soundGetRate();
+extern ULO soundGetRateReal();
 extern void soundSetStereo(bool stereo);
-extern bool soundGetStereo(void);
+extern bool soundGetStereo();
 extern void soundSet16Bits(bool bits16);
-extern bool soundGet16Bits(void);
+extern bool soundGet16Bits();
 extern void soundSetEmulation(sound_emulations emulation);
-extern sound_emulations soundGetEmulation(void);
+extern sound_emulations soundGetEmulation();
 extern void soundSetFilter(sound_filters filter);
-extern sound_filters soundGetFilter(void);
+extern sound_filters soundGetFilter();
 extern void soundSetBufferLength(ULO ms);
-extern ULO soundGetBufferLength(void);
+extern ULO soundGetBufferLength();
 extern void soundSetVolume(ULO volume);
-extern ULO soundGetVolume(void);
+extern ULO soundGetVolume();
 extern void soundSetWAVDump(BOOLE wav_capture);
-extern BOOLE soundGetWAVDump(void);
+extern BOOLE soundGetWAVDump();
 extern void soundSetNotification(sound_notifications notification);
-extern sound_notifications soundGetNotification(void);
+extern sound_notifications soundGetNotification();
 
-extern void soundEndOfLine(void); /* for bus.c */
-extern void soundChannelKill(ULO ch); /* for wdmacon */
+extern void soundChannelKill(ULO ch);   /* for wdmacon */
 extern void soundChannelEnable(ULO ch); /* for wdmacon */
 
 extern void soundState0(ULO ch); /* for wdbg.c */
@@ -95,20 +111,15 @@ extern void soundState3(ULO ch);
 extern void soundState4(ULO ch);
 extern void soundState5(ULO ch);
 
-
 /*==================================*/
 /* Standard Fellow Module Functions */
 /*==================================*/
 
 typedef void (*soundStateFunc)(ULO);
 
-extern void soundEndOfLine(void);
-extern void soundHardReset(void);
-extern void soundEmulationStart(void);
-extern void soundEmulationStop(void);
-extern BOOLE soundStartup(void);
-extern void soundShutdown(void);
-
-#endif
-
-
+extern void soundEndOfLine();
+extern void soundHardReset();
+extern void soundEmulationStart();
+extern void soundEmulationStop();
+extern BOOLE soundStartup();
+extern void soundShutdown();

@@ -23,21 +23,18 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _CAPS_H_
-#define _CAPS_H_
+#pragma once
 
 #ifdef FELLOW_SUPPORT_CAPS
-#include "defs.h"
+#include "fellow/api/defs.h"
 
 /* function prototypes */
 
-extern BOOLE capsStartup(void);
-extern BOOLE capsShutdown(void);
+extern BOOLE capsStartup();
+extern BOOLE capsShutdown();
 extern BOOLE capsLoadImage(ULO, FILE *, ULO *);
 extern BOOLE capsUnloadImage(ULO);
 extern BOOLE capsLoadNextRevolution(ULO, ULO, UBY *, ULO *);
 extern BOOLE capsLoadTrack(ULO, ULO, UBY *, ULO *, ULO *, ULO *, BOOLE *);
-
-#endif
 
 #endif

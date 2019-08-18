@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBPARTITION_H
-#define FELLOW_HARDFILE_RDB_RDBPARTITION_H
+#pragma once
 
 #include <string>
 #include "fellow/api/defs.h"
@@ -48,11 +47,9 @@ namespace fellow::hardfile::rdb
     bool IsAutomountable();
     bool IsBootable();
 
-    void ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
+    void ReadFromFile(RDBFileReader &reader, ULO blockChainStart, ULO blockSize);
     void Log();
 
     RDBPartition();
   };
 }
-
-#endif

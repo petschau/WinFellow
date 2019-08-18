@@ -52,8 +52,7 @@ namespace fellow::hardfile::rdb
     return data;
   }
 
-  RDBFileReader::RDBFileReader(FILE *F)
-    : _F(F)
+  RDBFileReader::RDBFileReader(FILE *F) : _F(F)
   {
   }
 }

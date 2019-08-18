@@ -1,4 +1,3 @@
-/* @(#) $Id: modrip_win32.h,v 1.9 2008-02-21 00:08:24 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /*                                                                         */
@@ -23,25 +22,22 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifndef _MODRIP_WIN32_H_
-#define _MODRIP_WIN32_H_
+#pragma once
 
 /* fellow includes */
-#include "defs.h"
+#include "fellow/api/defs.h"
 
 /* own includes */
 #include "modrip.h"
 
-extern BOOLE modripGuiInitialize(void);
-extern void modripGuiSetBusy(void);
-extern void modripGuiUnSetBusy(void);
+extern BOOLE modripGuiInitialize();
+extern void modripGuiSetBusy();
+extern void modripGuiUnSetBusy();
 extern BOOLE modripGuiSaveRequest(struct ModuleInfo *, MemoryAccessFunc);
 extern void modripGuiErrorSave(struct ModuleInfo *);
 extern BOOLE modripGuiRipFloppy(int);
-extern BOOLE modripGuiRipMemory(void);
-extern void modripGuiUnInitialize(void);
+extern BOOLE modripGuiRipMemory();
+extern void modripGuiUnInitialize();
 extern void modripGuiError(char *);
-extern BOOLE modripGuiDumpChipMem(void);
-extern BOOLE modripGuiRunProWiz(void);
-
-#endif
+extern BOOLE modripGuiDumpChipMem();
+extern BOOLE modripGuiRunProWiz();

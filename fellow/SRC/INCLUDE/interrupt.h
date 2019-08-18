@@ -1,22 +1,20 @@
-#ifndef INTERRUPT_H
-#define INTERRUPT_H
+#pragma once
 
 extern UWO intena;
 
-void interruptHandleEvent(void);
+void interruptHandleEvent();
 void interruptRaisePending();
-STR *interruptGetInterruptName(ULO interrupt_number);
+const STR *interruptGetInterruptName(ULO interrupt_number);
 BOOLE interruptIsRequested(UWO bitmask);
 
 void wintreq_direct(UWO data, ULO address, bool delayIRQ);
 
 // Fellow standard module events
 
-void interruptSoftReset(void);
-void interruptHardReset(void);
-void interruptEmulationStart(void);
-void interruptEmulationStop(void);
-void interruptStartup(void);
-void interruptShutdown(void);
-
-#endif
+void interruptEndOfFrame();
+void interruptSoftReset();
+void interruptHardReset();
+void interruptEmulationStart();
+void interruptEmulationStop();
+void interruptStartup();
+void interruptShutdown();

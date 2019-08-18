@@ -1,7 +1,16 @@
-#ifndef GFXDRV_H
-#define GFXDRV_H
+#pragma once
 
-#include "draw.h"
+#include <list>
+
+#include "fellow/configuration/Configuration.h"
+#include "GfxDrvMappedBufferPointer.h"
+#include "GfxDrvColorBitsInformation.h"
+#include "MappedChipsetFramebuffer.h"
+#include "fellow/application/HostRenderConfiguration.h"
+#include "fellow/application/HostRenderRuntimeSettings.h"
+#include "ChipsetBufferRuntimeSettings.h"
+#include "fellow/application/DisplayMode.h"
+#include "fellow/hud/HudPropertyProvider.h"
 
 /*===========================================================================*/
 /* Implementing these functions creates a graphics driver for Fellow         */
@@ -11,27 +20,27 @@ extern void gfxDrvClearCurrentBuffer();
 
 extern void gfxDrvBufferFlip();
 
-extern void gfxDrvSetMode(draw_mode *dm, bool windowed);
 extern void gfxDrvSizeChanged(unsigned int width, unsigned int height);
 extern void gfxDrvPositionChanged();
 
-extern UBY *gfxDrvValidateBufferPointer();
-extern void gfxDrvInvalidateBufferPointer();
-extern void gfxDrvGetBufferInformation(draw_buffer_information *buffer_information);
+extern GfxDrvMappedBufferPointer gfxDrvMapChipsetFramebuffer();
+extern void gfxDrvUnmapChipsetFramebuffer();
 
-extern ULO gfxDrvEmulationStartPost();
+extern GfxDrvColorBitsInformation gfxDrvGetColorBitsInformation();
+extern std::list<DisplayMode> gfxDrvGetDisplayModeList();
 
-extern bool gfxDrvEmulationStart(unsigned int maxbuffercount);
+extern void gfxDrvDrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer);
+
+extern bool gfxDrvEmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const HostRenderRuntimeSettings& hostRenderRuntimeSettings, const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings, HudPropertyProvider* hudPropertyProvider);
+extern ULO gfxDrvEmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings);
+
 extern void gfxDrvEmulationStop();
 
 extern void gfxDrvNotifyActiveStatus(bool active);
 
-extern bool gfxDrvRestart(DISPLAYDRIVER displaydriver);
 extern bool gfxDrvStartup(DISPLAYDRIVER displaydriver);
 extern void gfxDrvShutdown();
 
 extern bool gfxDrvSaveScreenshot(const bool, const STR *filename);
 
-extern bool gfxDrvDXGIValidateRequirements(void);
-
-#endif
+extern bool gfxDrvValidateRequirements();

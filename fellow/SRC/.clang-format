@@ -1,0 +1,21 @@
+BasedOnStyle: Microsoft
+Standard: Latest
+ColumnLimit: 200
+IndentWidth: 2
+IndentCaseLabels: true
+UseTab: Never
+AllowShortIfStatementsOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+SortIncludes: false
+BreakBeforeBraces: Custom
+BraceWrapping:
+  AfterClass: true
+  AfterEnum: true
+  AfterCaseLabel: true
+NamespaceIndentation: All
+FixNamespaceComments: false
+ConstructorInitializerIndentWidth: 2
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+AlignAfterOpenBracket: AlwaysBreak
+BinPackArguments: false
+BinPackParameters: false

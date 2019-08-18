@@ -21,7 +21,7 @@ namespace test::fellow::hardfile::hunks
       _hunkData.reset(new UBY[0]);
     }
 
-    RawDataReader& GetRawDataReaderWithHunkData()
+    RawDataReader &GetRawDataReaderWithHunkData()
     {
       CreateHunkData();
       _rawDataReader.reset(new RawDataReader(_hunkData.get(), 0));

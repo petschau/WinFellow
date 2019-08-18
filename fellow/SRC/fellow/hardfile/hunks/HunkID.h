@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKID_H
-#define FELLOW_HARDFILE_HUNKS_HUNKID_H
+#pragma once
 
 #include "fellow/api/defs.h"
 
@@ -12,5 +11,3 @@ namespace fellow::hardfile::hunks
   static const ULO EndHunkID = 0x3f2;
   static const ULO HeaderHunkID = 0x3f3;
 }
-
-#endif

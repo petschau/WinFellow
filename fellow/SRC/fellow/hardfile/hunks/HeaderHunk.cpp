@@ -12,20 +12,20 @@ namespace fellow::hardfile::hunks
 
   ULO HeaderHunk::GetHunkSizeCount()
   {
-    return (ULO) _hunkSizes.size();
+    return (ULO)_hunkSizes.size();
   }
 
-  const HunkSize& HeaderHunk::GetHunkSize(ULO index)
+  const HunkSize &HeaderHunk::GetHunkSize(ULO index)
   {
     return _hunkSizes[index];
   }
 
   ULO HeaderHunk::GetResidentLibraryCount()
   {
-    return (ULO) _residentLibraries.size();
+    return (ULO)_residentLibraries.size();
   }
 
-  const std::string& HeaderHunk::GetResidentLibrary(ULO index)
+  const std::string &HeaderHunk::GetResidentLibrary(ULO index)
   {
     return _residentLibraries[index];
   }
@@ -40,7 +40,7 @@ namespace fellow::hardfile::hunks
     return _lastLoadHunk;
   }
 
-  void HeaderHunk::Parse(RawDataReader& rawDataReader)
+  void HeaderHunk::Parse(RawDataReader &rawDataReader)
   {
     Service->Log.AddLogDebug("fhfile: RDB filesystem - Header hunk (%u)\n", ID);
 
@@ -80,8 +80,7 @@ namespace fellow::hardfile::hunks
     }
   }
 
-  HeaderHunk::HeaderHunk()
-    : _firstLoadHunk(0), _lastLoadHunk(0)  
+  HeaderHunk::HeaderHunk() : _firstLoadHunk(0), _lastLoadHunk(0)
   {
   }
 }

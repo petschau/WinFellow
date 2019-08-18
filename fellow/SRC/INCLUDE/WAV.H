@@ -1,12 +1,7 @@
-#ifndef WAV_H
-#define WAV_H
-
+#pragma once
 
 extern void wavPlay(WOR *left, WOR *right, ULO sample_count);
 extern void wavEmulationStart(sound_rates rate, BOOLE bits16, BOOLE stereo, ULO buffersamplecountmax);
-extern void wavEmulationStop(void);
-extern void wavStartup(void);
-extern void wavShutdown(void);
-
-#endif
-
+extern void wavEmulationStop();
+extern void wavStartup();
+extern void wavShutdown();

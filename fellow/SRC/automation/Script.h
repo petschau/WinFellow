@@ -1,7 +1,6 @@
-#ifndef SCRIPT_H
-#define SCRIPT_H
+#pragma once
 
-#include "DEFS.H"
+#include "fellow/api/defs.h"
 #include "GAMEPORT.H"
 #include "KBD.H"
 
@@ -17,7 +16,7 @@ struct ScriptLine
   string Command;
   string Parameters;
 
-  ScriptLine(ULL frameNumber, ULO lineNumber, const string& command, const string& parameters);
+  ScriptLine(ULL frameNumber, ULO lineNumber, const string &command, const string &parameters);
 };
 
 class Script
@@ -33,14 +32,14 @@ private:
   bool _record;
 
   string GetStringForAction(kbd_event action);
-  UBY GetIdForAction(const string& action);
+  kbd_event GetKbdEventForAction(const string &action);
 
-  void ExecuteMouseCommand(const string& parameters);
-  void ExecuteKeyCommand(const string& parameters);
-  void ExecuteJoystickCommand(const string& parameters);
-  void ExecuteEmulatorActionCommand(const string& parameters);
+  void ExecuteMouseCommand(const string &parameters);
+  void ExecuteKeyCommand(const string &parameters);
+  void ExecuteJoystickCommand(const string &parameters);
+  void ExecuteEmulatorActionCommand(const string &parameters);
 
-  void Execute(const ScriptLine& line);
+  void Execute(const ScriptLine &line);
 
 public:
   void RecordKey(UBY keyCode);
@@ -49,11 +48,9 @@ public:
   void RecordEmulatorAction(kbd_event action);
 
   void ExecuteUntil(ULL frameNumber, ULO lineNumber);
-  void Load(const string& filename);
-  void Save(const string& filename);
+  void Load(const string &filename);
+  void Save(const string &filename);
 
   Script();
   ~Script();
 };
-
-#endif

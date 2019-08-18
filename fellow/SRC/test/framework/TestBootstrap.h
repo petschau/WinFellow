@@ -1,7 +1,4 @@
-#ifndef TESTBOOTSTRAP_H
-#define TESTBOOTSTRAP_H
+#pragma once
 
 extern void InitializeTestframework();
 extern void ShutdownTestframework();
-
-#endif

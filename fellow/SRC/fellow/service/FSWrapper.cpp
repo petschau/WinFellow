@@ -1,42 +1,67 @@
 #include "fellow/service/FSWrapper.h"
+#include "fellow/api/Services.h"
+#include "fellow/os/windows/io/FSWrapStat.h"
 
-using namespace fellow::api::service;
+using namespace std;
+using namespace fellow::api;
 
 namespace fellow::service
 {
-  FSWrapper::FSWrapper()
-  {
-  }
+  //===========================================================================
+  // Fills in file or directory attributes in fs_object_info structure
+  //
+  // Depends on OS specific stat wrapper fsWrapStat()
+  //
+  // Return the fs_object_info object, or nullptr on error
+  //===========================================================================
 
-  fs_wrapper_point *FSWrapper::MakePoint(const STR *point)
+  fs_wrapper_object_info *FSWrapper::GetFSObjectInfo(const string &pathToObject)
   {
-    fs_navig_point *navig_point = fsWrapMakePoint(point);
-    if (navig_point)
+    struct stat mystat;
+
+    // check file permissions
+    if (fsWrapStat(pathToObject, &mystat) != 0)
     {
-      fs_wrapper_point* result = new fs_wrapper_point();
-      result->drive = navig_point->drive;
-      result->name = navig_point->name;
-      result->relative = navig_point->relative;
-      result->size = navig_point->size;
-      result->type = MapFileType(navig_point->type);
-      result->writeable = navig_point->writeable;
-      free(navig_point);
-      return result;
+      const STR *strError = strerror(errno);
+      Service->Log.AddLog("GetFSObjectInfo(): ERROR getting file information for %s: error code %i (%s)\n", pathToObject.c_str(), errno, strError);
+      return nullptr;
     }
 
-    return nullptr;
+    fs_wrapper_object_info *fsnp = new fs_wrapper_object_info();
+
+    fsnp->name = pathToObject;
+    fsnp->size = mystat.st_size;
+    fsnp->type = GetFSObjectType(mystat.st_mode);
+    fsnp->writeable = GetFSObjectIsWriteable(mystat.st_mode, pathToObject);
+
+    return fsnp;
   }
 
-  fs_wrapper_file_types FSWrapper::MapFileType(fs_navig_file_types type)
+  fs_wrapper_object_types FSWrapper::GetFSObjectType(unsigned short st_mode)
   {
-    if (type == fs_navig_file_types::FS_NAVIG_FILE)
-    {
-      return fs_wrapper_file_types::FS_NAVIG_FILE;
-    }
-    if (type == fs_navig_file_types::FS_NAVIG_DIR)
-    {
-      return fs_wrapper_file_types::FS_NAVIG_DIR;
-    }
-    return fs_wrapper_file_types::FS_NAVIG_OTHER;
+    if (st_mode & _S_IFREG) return fs_wrapper_object_types::FILE;
+    if (st_mode & _S_IFDIR) return fs_wrapper_object_types::DIRECTORY;
+
+    return fs_wrapper_object_types::OTHER;
   }
+
+  bool FSWrapper::GetFSObjectIsWriteable(unsigned short st_mode, const string &pathToObject)
+  {
+    bool isWriteable = st_mode & _S_IWRITE;
+    if (isWriteable)
+    {
+      FILE *file_ptr = fopen(pathToObject.c_str(), "a");
+      if (file_ptr == nullptr)
+      {
+        isWriteable = false;
+      }
+      else
+      {
+        fclose(file_ptr);
+      }
+    }
+
+    return isWriteable;
+  }
+
 }

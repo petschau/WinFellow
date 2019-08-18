@@ -1,4 +1,3 @@
-/* @(#) $Id: TIMER.C,v 1.7 2009-07-25 10:24:00 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Provides timer routines                                                 */
@@ -22,11 +21,13 @@
 
 /*=========================================================================*/
 #include <list>
-#include "defs.h"
+#include "fellow/api/defs.h"
 #include "sound.h"
 #include <windows.h>
-#include "fellow.h"
+#include "fellow/api/Services.h"
 #include "TIMER.H"
+
+using namespace fellow::api;
 
 bool timer_running;
 ULO timer_mmresolution;
@@ -69,50 +70,50 @@ void timerAddCallback(timerCallbackFunction callback)
 
 void timerEmulationStart()
 {
-    TIMECAPS timecaps;
-    MMRESULT mmres;
+  TIMECAPS timecaps;
+  MMRESULT mmres;
 
-    timer_ticks = 0;
-    mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
-    if(mmres != TIMERR_NOERROR)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
-      timer_running = false;
-      return;
-    }
+  timer_ticks = 0;
+  mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+  if (mmres != TIMERR_NOERROR)
+  {
+    Service->Log.AddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
+    timer_running = false;
+    return;
+  }
 
-    fellowAddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+  Service->Log.AddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
 
-    timer_mmresolution = timecaps.wPeriodMin;
+  timer_mmresolution = timecaps.wPeriodMin;
 
-    mmres = timeBeginPeriod(timer_mmresolution);
-    if(mmres != TIMERR_NOERROR)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
-      timer_running = false;
-      return;
-    }
+  mmres = timeBeginPeriod(timer_mmresolution);
+  if (mmres != TIMERR_NOERROR)
+  {
+    Service->Log.AddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
+    timer_running = false;
+    return;
+  }
 
-    mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
-    if(mmres == 0)
-    {
-      fellowAddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
-      timer_running = false;
-      return;
-    }
-    timer_mmtimer = mmres;
-    timer_running = true;
+  mmres = timeSetEvent(1, 0, timerCallback, (DWORD_PTR)0, (UINT)TIME_PERIODIC);
+  if (mmres == 0)
+  {
+    Service->Log.AddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
+    timer_running = false;
+    return;
+  }
+  timer_mmtimer = mmres;
+  timer_running = true;
 }
 
 void timerEmulationStop()
 {
   if (timer_running)
   {
-    MMRESULT mmres = timeKillEvent(timer_mmtimer);  
+    MMRESULT mmres = timeKillEvent(timer_mmtimer);
     mmres = timeEndPeriod(timer_mmresolution);
-    if(mmres != TIMERR_NOERROR)
+    if (mmres != TIMERR_NOERROR)
     {
-      fellowAddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
+      Service->Log.AddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
     }
     timer_running = false;
   }

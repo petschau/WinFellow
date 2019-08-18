@@ -7,8 +7,7 @@ namespace fellow::hardfile::hunks
     return _sourceHunkIndex;
   }
 
-  AdditionalHunk::AdditionalHunk(ULO sourceHunkIndex)
-    : _sourceHunkIndex(sourceHunkIndex)
+  AdditionalHunk::AdditionalHunk(ULO sourceHunkIndex) : _sourceHunkIndex(sourceHunkIndex)
   {
   }
 }

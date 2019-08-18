@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDB_H
-#define FELLOW_HARDFILE_RDB_RDB_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -56,11 +55,9 @@ namespace fellow::hardfile::rdb
     bool HasPartitionErrors;
     bool HasFileSystemHandlerErrors;
 
-    void ReadFromFile(RDBFileReader& reader, unsigned int index, bool geometryOnly = false);
+    void ReadFromFile(RDBFileReader &reader, unsigned int index, bool geometryOnly = false);
     void Log();
 
     RDB();
   };
 }
-
-#endif

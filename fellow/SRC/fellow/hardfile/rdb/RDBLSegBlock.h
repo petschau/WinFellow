@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBLSEGBLOCK_H
-#define FELLOW_HARDFILE_RDB_RDBLSEGBLOCK_H
+#pragma once
 
 #include <string>
 #include <memory>
@@ -21,12 +20,10 @@ namespace fellow::hardfile::rdb
     bool HasValidCheckSum;
 
     LON GetDataSize() const;
-    const UBY* GetData() const;
-    void ReadFromFile(RDBFileReader& reader, ULO index);
+    const UBY *GetData() const;
+    void ReadFromFile(RDBFileReader &reader, ULO index);
     void Log();
 
     RDBLSegBlock();
   };
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef PORTABLE_H
-#define PORTABLE_H
+#pragma once
 
 /*====================================================*/
 /* Wrapper definitions for system dependent functions */
@@ -37,7 +36,6 @@
 #define strnicmp _strnicmp
 #define strlwr _strlwr
 
-
 /*====================================*/
 /* memory manipulation and allocation */
 /*====================================*/
@@ -53,11 +51,10 @@
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
 #include <crtdbg.h>
 
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
+#define DBG_NEW new (_NORMAL_BLOCK, __FILE__, __LINE__)
 #define new DBG_NEW
 
 #endif
-
 
 /*========*/
 /* setjmp */
@@ -65,12 +62,8 @@
 
 #include <setjmp.h>
 
-
 /*=====================*/
 /* Integer types       */
 /*=====================*/
 
 #define FELLOW_LONG_LONG __int64
-
-#endif /* PORTABLE_H */
-

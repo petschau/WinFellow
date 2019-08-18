@@ -4,11 +4,11 @@
 #include "fellow/hardfile/rdb/CheckSumCalculator.h"
 
 using namespace std;
-using namespace fellow::api::module;
+using namespace fellow::api::modules;
 
 namespace fellow::hardfile::rdb
 {
-  unsigned int RDBHandler::GetIndexOfRDB(RDBFileReader& reader)
+  unsigned int RDBHandler::GetIndexOfRDB(RDBFileReader &reader)
   {
     for (unsigned int i = 0; i < 16; i++)
     {
@@ -22,7 +22,7 @@ namespace fellow::hardfile::rdb
     return 0xffffffff;
   }
 
-  rdb_status RDBHandler::HasRigidDiskBlock(RDBFileReader& reader)
+  rdb_status RDBHandler::HasRigidDiskBlock(RDBFileReader &reader)
   {
     unsigned int indexOfRDB = GetIndexOfRDB(reader);
 
@@ -38,7 +38,7 @@ namespace fellow::hardfile::rdb
       return rdb_status::RDB_FOUND_WITH_HEADER_CHECKSUM_ERROR;
     }
 
-    RDB* rdb = GetDriveInformation(reader, true);
+    RDB *rdb = GetDriveInformation(reader, true);
     if (rdb->HasPartitionErrors)
     {
       delete rdb;
@@ -49,7 +49,7 @@ namespace fellow::hardfile::rdb
     return rdb_status::RDB_FOUND;
   }
 
-  RDB* RDBHandler::GetDriveInformation(RDBFileReader& reader, bool geometryOnly)
+  RDB *RDBHandler::GetDriveInformation(RDBFileReader &reader, bool geometryOnly)
   {
     unsigned int indexOfRDB = GetIndexOfRDB(reader);
 
@@ -58,7 +58,7 @@ namespace fellow::hardfile::rdb
       return nullptr;
     }
 
-    RDB* rdb = new RDB();
+    RDB *rdb = new RDB();
     rdb->ReadFromFile(reader, indexOfRDB, geometryOnly);
     rdb->Log();
     return rdb;

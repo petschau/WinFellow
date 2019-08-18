@@ -26,10 +26,10 @@
 #ifndef UAE2FELLH
 #define UAE2FELLH
 
-#include "defs.h"
+#include "fellow/api/defs.h"
 #include "CpuModule.h"
-#include "fmem.h"
-#include "fellow.h"
+#include "FMEM.H"
+#include "FELLOW.H"
 
 
 /*------------------------*/
@@ -108,7 +108,7 @@ extern ULO do_get_mem_long(uae_u32 *address);
 extern void do_put_mem_long(uae_u32 *address, uae_u32 data);
 extern void do_put_mem_word(uae_u16 *address, uae_u16 data);
 extern void do_put_mem_byte(uae_u8 *address, uae_u8 data);
-extern int valid_address(uaecptr adr, uae_u32 size);
+extern bool valid_address(uaecptr adr, uae_u32 size);
 #define get_real_address(ADR) (memoryAddressToPtr(ADR))
 
 
@@ -148,7 +148,7 @@ extern char warning_buffer[256];
 /* Taken from sysdeps.h on WinUAE */
 /*================================*/
 
-#include <windows.h>
+//#include <windows.h>
 #define O_NDELAY 0
 
 /*#define DONT_HAVE_POSIX*/ /* I want Mathias' posixemu_ functions! */
@@ -158,10 +158,10 @@ extern void gui_message( const char *, ...);
 
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <direct.h>
-#include <winbase.h>
-#include <io.h>
-#include <direct.h>
+//#include <direct.h>
+//#include <winbase.h>
+//#include <io.h>
+//#include <direct.h>
 
 #define O_BINARY _O_BINARY
 #define O_WRONLY _O_WRONLY

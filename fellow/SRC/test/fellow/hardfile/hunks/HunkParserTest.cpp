@@ -17,10 +17,9 @@ namespace test::fellow::hardfile::hunks
     unique_ptr<UBY> _rawData;
     FileImage _fileImage;
 
-    ULO LoadFile(const char* filename)
+    ULO LoadFile(const char *filename)
     {
-      FILE *F = nullptr;
-      fopen_s(&F, filename, "rb");
+      FILE *F = fopen(filename, "rb");
       fseek(F, 0, SEEK_END);
       long size = ftell(F);
       _rawData.reset(new UBY[size]);
@@ -30,7 +29,7 @@ namespace test::fellow::hardfile::hunks
       return size;
     }
 
-    void CreateInstanceWithFile(const char* filename)
+    void CreateInstanceWithFile(const char *filename)
     {
       ULO size = LoadFile(filename);
       _instance.reset(new HunkParser(_rawData.get(), size, _fileImage));
@@ -74,7 +73,7 @@ namespace test::fellow::hardfile::hunks
       Assert::AreEqual<UBY>(0, lastByte);
 
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(0));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(0, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
@@ -133,7 +132,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(0));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
@@ -147,7 +146,7 @@ namespace test::fellow::hardfile::hunks
 
       // Second reloc 32 hunk
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(1)->GetID());
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(1));
+      reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(1));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
@@ -204,7 +203,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(0));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
@@ -218,7 +217,7 @@ namespace test::fellow::hardfile::hunks
 
       // Second reloc 32 hunk
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(1)->GetID());
-      reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(1));
+      reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(1));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(1, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());
@@ -297,7 +296,7 @@ namespace test::fellow::hardfile::hunks
 
       // First reloc 32 hunk
       Assert::AreEqual<ULO>(Reloc32HunkID, _fileImage.GetAdditionalHunk(0)->GetID());
-      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk*>(_fileImage.GetAdditionalHunk(0));
+      Reloc32Hunk *reloc32Hunk = dynamic_cast<Reloc32Hunk *>(_fileImage.GetAdditionalHunk(0));
 
       Assert::AreEqual<size_t>(1, reloc32Hunk->GetOffsetTableCount());
       Assert::AreEqual<ULO>(0, reloc32Hunk->GetOffsetTable(0)->GetRelatedHunkIndex());

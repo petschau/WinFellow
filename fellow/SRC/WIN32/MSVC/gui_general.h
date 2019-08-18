@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Von Microsoft Visual C++ generierte Includedatei.
-// Verwendet durch GUI_general.rc
+// Microsoft Visual C++ generated include file.
+// Used by GUI_general.rc
 //
 #define IDS_STRING_CLASSNAME_MAIN       1
 #define IDS_APP_TITLE                   2
@@ -139,9 +139,11 @@
 #define IDC_BUTTON_DF3_EJECT            1097
 #define IDC_LABEL_FLOPPY_ADF_CREATE_VOLUME 1098
 #define IDC_RADIO_BLITTER_NORMAL        1098
-#define IDC_RADIO_BLITTER_IMMEDIATE     1099
+#define IDC_RADIO_GRAPHICS_PER_CYCLE    1099
 #define IDC_IMAGE_POWER_LED_MAIN        1100
+#define IDC_RADIO_GRAPHICS_PER_LINE     1100
 #define IDC_STATIC_LINK                 1101
+#define IDC_RADIO_BLITTER_IMMEDIATE     1101
 #define IDC_CREATE_HARDFILE_SIZE        1102
 #define IDC_CREATE_HARDFILE_NAME        1103
 #define IDC_GAMEPORT0_UP                1104
@@ -167,7 +169,6 @@
 #define IDC_GAMEPORT1_AUTOFIRE1         1124
 #define IDC_CHECK_HORIZONTAL_SCALE      1125
 #define IDC_SLIDER_FRAME_SKIPPING       1127
-#define IDC_CHECK_MULTIPLE_BUFFERS      1128
 #define IDC_CHECK_SOUND_NOTIFICATION    1129
 #define IDC_SLIDER_SOUND_BUFFER_LENGTH  1130
 #define IDC_STATIC_BUFFER_LENGTH        1131
@@ -213,6 +214,16 @@
 #define IDC_TREE_HARDFILES              1168
 #define IDC_CHECK_HARDFILE_ADD_READONLY 1169
 #define IDC_EDIT_PREFIX_FILESYSTEMS     1170
+#define IDC_DEBUG_LOG                   1171
+#define IDC_FILTER_BITPLANE_DMA         1172
+#define IDC_FILTER_COPPER_DMA           1173
+#define IDC_BTN_STEP1_LINE              1174
+#define IDC_STEP1_FRAME                 1175
+#define IDC_BTN_STEP1_FRAME             1175
+#define IDC_FILTER_COPPER_DMA2          1176
+#define IDC_FILTER_DIWY                 1176
+#define IDC_FILTER_DIWY2                1178
+#define IDC_FILTER_SHIFTER              1178
 #define IDC_BUTTON_DF2_SWAP             2000
 #define IDC_BTN_RUN                     2001
 #define IDC_BUTTON_DF2_FILEDIALOG       2002
@@ -291,15 +302,20 @@
 #define ID_FILE_SAVESTATE               40016
 #define ID_FILE_SAVE_STATE              40017
 #define ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS 40018
+#define ID_FILE_RIPMODULES              40019
+#define ID_FILE_DUMPCHIPMEM             40020
+#define ID_OPTIONS_DEBUG                40021
+#define ID_OPTIONS_DEBUG_DELAYED_RENDERING 40022
+#define ID_OPTIONS_GFX_DEBUG_IMMEDIATE_RENDERING 40023
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        188
-#define _APS_NEXT_COMMAND_VALUE         40019
-#define _APS_NEXT_CONTROL_VALUE         1171
+#define _APS_NEXT_RESOURCE_VALUE        189
+#define _APS_NEXT_COMMAND_VALUE         40024
+#define _APS_NEXT_CONTROL_VALUE         1175
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

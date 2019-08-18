@@ -98,6 +98,12 @@
     <ClCompile Include="..\..\..\test\mock\fellow\api\service\RetroPlatformWrapperMock.cpp">
       <Filter>Source Files\mock\fellow\api\service</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\PerformanceCounterMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\test\mock\fellow\api\service\FileopsMock.cpp">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ContentWithTargetPath Include="..\..\..\test\testdata\fellow\hardfile\hunks\SmartFilesystem">
@@ -148,6 +154,12 @@
       <Filter>Source Files\mock\fellow\api\service</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\mock\fellow\api\service\RetroPlatformWrapperMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\PerformanceCounterMock.h">
+      <Filter>Source Files\mock\fellow\api\service</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\test\mock\fellow\api\service\FileopsMock.h">
       <Filter>Source Files\mock\fellow\api\service</Filter>
     </ClInclude>
   </ItemGroup>

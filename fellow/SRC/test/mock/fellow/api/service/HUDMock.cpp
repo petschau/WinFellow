@@ -1,14 +1,16 @@
 #include "test/mock/fellow/api/service/HUDMock.h"
 
-namespace test::mock::fellow::api::service
+namespace test::mock::fellow::api
 {
-  void HUDMock::SetFloppyLED(int driveIndex, bool active, bool write)
+  HudConfiguration &HUDMock::GetHudConfiguration()
   {
-    // Stub
+    return _hudConfiguration;
+  }
+  void HUDMock::NotifyFloppyLEDChanged(int driveIndex, bool active, bool write)
+  {
+  }
+  void HUDMock::NotifyHarddiskLEDChanged(int deviceIndex, bool active, bool write)
+  {
   }
 
-  void HUDMock::SetHarddiskLED(int deviceIndex, bool active, bool write)
-  {
-    // Stub
-  }
 }

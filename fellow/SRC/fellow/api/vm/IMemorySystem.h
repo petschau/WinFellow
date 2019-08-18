@@ -1,60 +1,41 @@
-#ifndef FELLOW_API_VM_IMEMORYSYSTEM_H
-#define FELLOW_API_VM_IMEMORYSYSTEM_H
+#pragma once
 
-#include "fellow/api/defs.h"
+#include <vector>
+#include "fellow/api/vm/MemorySystemTypes.h"
 
 namespace fellow::api::vm
 {
-  typedef void(*EmemCardInitFunc)();
-  typedef void(*EmemCardMapFunc)(ULO);
-
-  typedef UBY(*ReadByteFunc)(ULO);
-  typedef UWO(*ReadWordFunc)(ULO);
-  typedef ULO(*ReadLongFunc)(ULO);
-  typedef void(*WriteByteFunc)(UBY, ULO);
-  typedef void(*WriteWordFunc)(UWO, ULO);
-  typedef void(*WriteLongFunc)(ULO, ULO);
-
   class IMemorySystem
   {
   public:
-    virtual UBY ReadByte(ULO address) = 0;
-    virtual UWO ReadWord(ULO address) = 0;
-    virtual ULO ReadLong(ULO address) = 0;
-    virtual void WriteByte(UBY data, ULO address) = 0;
-    virtual void WriteWord(UWO data, ULO address) = 0;
-    virtual void WriteLong(ULO data, ULO address) = 0;
+    virtual uint8_t ReadByte(uint32_t address) = 0;
+    virtual uint16_t ReadWord(uint32_t address) = 0;
+    virtual uint32_t ReadLong(uint32_t address) = 0;
+    virtual void WriteByte(uint8_t data, uint32_t address) = 0;
+    virtual void WriteWord(uint16_t data, uint32_t address) = 0;
+    virtual void WriteLong(uint32_t data, uint32_t address) = 0;
 
-    virtual void DmemSetByte(UBY data) = 0;
-    virtual void DmemSetWord(UWO data) = 0;
-    virtual void DmemSetLong(ULO data) = 0;
-    virtual void DmemSetLongNoCounter(ULO data, ULO offset) = 0;
-    virtual void DmemSetString(const STR *data) = 0;
-    virtual void DmemSetCounter(ULO val) = 0;
-    virtual ULO DmemGetCounter() = 0;
-    virtual ULO DmemGetCounterWithoutOffset() = 0;
+    virtual void DmemSetByte(uint8_t data) = 0;
+    virtual void DmemSetWord(uint16_t data) = 0;
+    virtual void DmemSetLong(uint32_t data) = 0;
+    virtual void DmemSetLongNoCounter(uint32_t data, uint32_t offset) = 0;
+    virtual void DmemSetString(const char *data) = 0;
+    virtual void DmemSetCounter(uint32_t val) = 0;
+    virtual uint32_t DmemGetCounter() = 0;
+    virtual uint32_t DmemGetCounterWithoutOffset() = 0;
     virtual void DmemClear() = 0;
 
     virtual void EmemClear() = 0;
-    virtual void EmemSet(ULO index, ULO data) = 0;
+    virtual void EmemSet(uint32_t index, uint32_t data) = 0;
     virtual void EmemCardAdd(EmemCardInitFunc cardinit, EmemCardMapFunc cardmap) = 0;
-    virtual void EmemMirror(ULO emem_offset, UBY *src, ULO size) = 0;
+    virtual void EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size) = 0;
 
-    virtual void BankSet(
-      ReadByteFunc rb,
-      ReadWordFunc rw,
-      ReadLongFunc rl,
-      WriteByteFunc wb,
-      WriteWordFunc ww,
-      WriteLongFunc wl,
-      UBY *basep,
-      ULO bank,
-      ULO basebank,
-      BOOLE pointer_can_write) = 0;
+    virtual void BankSet(const MemoryBankDescriptor memoryBankDescriptor) = 0;
 
-    virtual UBY *AddressToPtr(ULO address) = 0;
-    virtual ULO GetKickImageVersion() = 0;
+    virtual uint8_t *AddressToPtr(uint32_t address) = 0;
+    virtual uint32_t GetKickImageVersion() = 0;
+
+    virtual bool GetAddressSpace32Bits() = 0;
+    virtual std::vector<MemoryMapDescriptor> GetMemoryMapDescriptors() = 0;
   };
 }
-
-#endif

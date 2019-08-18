@@ -1,13 +1,10 @@
-#ifndef JOYDRV_H
-#define JOYDRV_H
+#pragma once
 
-extern void joyDrvHardReset(void);
-extern void joyDrvEmulationStart(void);
-extern void joyDrvEmulationStop(void);
-extern void joyDrvStartup(void);
-extern void joyDrvShutdown(void);
+extern void joyDrvHardReset();
+extern void joyDrvEmulationStart();
+extern void joyDrvEmulationStop();
+extern void joyDrvStartup();
+extern void joyDrvShutdown();
 extern void joyDrvStateHasChanged(BOOLE);
-extern void joyDrvToggleFocus(void);
-extern void joyDrvMovementHandler(void);
-
-#endif
+extern void joyDrvToggleFocus();
+extern void joyDrvMovementHandler();

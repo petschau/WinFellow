@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKBASE_H
-#define FELLOW_HARDFILE_HUNKS_HUNKBASE_H
+#pragma once
 
 #include "fellow/hardfile/hunks/RawDataReader.h"
 #include "fellow/hardfile/hunks/HunkID.h"
@@ -10,10 +9,8 @@ namespace fellow::hardfile::hunks
   {
   public:
     virtual ULO GetID() = 0;
-    virtual void Parse(RawDataReader& rawReader) = 0;
+    virtual void Parse(RawDataReader &rawReader) = 0;
 
     virtual ~HunkBase() = default;
   };
 }
-
-#endif

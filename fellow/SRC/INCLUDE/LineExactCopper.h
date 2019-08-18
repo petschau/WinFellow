@@ -1,37 +1,35 @@
-#ifndef LINEEXACTCOPPER_H
-#define LINEEXACTCOPPER_H
+#pragma once
 
-#include "COPPER.H"
-
-class LineExactCopper : public Copper
+class LineExactCopper
 {
 private:
-  static ULO cycletable[16];
+  static ULO _cycletable[16];
 
-  /*============================================================================*/
-  /* Translation table for raster ypos to cycle translation                     */
-  /*============================================================================*/
-
-  ULO ytable[512];
+  // Translation table for raster ypos to cycle
+  ULO _ytable[512]{};
+  ULO _firstCopperCycle{};
 
   void YTableInit();
-  ULO GetCheckedWaitCycle(ULO waitCycle);
+  ULO GetCheckedWaitCycle(const ULO waitCycle);
   void RemoveEvent();
-  void InsertEvent(ULO cycle);
+  void InsertEvent(const ULO cycle);
+  UWO ReadWord();
 
 public:
-  virtual void NotifyDMAEnableChanged(bool new_dma_enable_state);
-  virtual void NotifyCop1lcChanged();
-  virtual void Load(ULO new_copper_pc);
-  virtual void EventHandler();
+  void NotifyDMAEnableChanged(const bool new_dma_enable_state);
+  void NotifyCop1lcChanged();
+  void Load(const ULO new_copper_pc);
+  void EventHandler();
 
-  virtual void EndOfFrame();
-  virtual void HardReset();
-  virtual void EmulationStart();
-  virtual void EmulationStop();
+  void EndOfFrame();
+  void HardReset();
+  void EmulationStart();
+  void EmulationStop();
+  void Startup();
+  void Shutdown();
 
   LineExactCopper();
-  virtual ~LineExactCopper();
+  ~LineExactCopper() = default;
 };
 
-#endif
+extern LineExactCopper line_exact_copper;

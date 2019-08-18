@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_RDB_RDBFILESYSTEMHANDLER_H
-#define FELLOW_HARDFILE_RDB_RDBFILESYSTEMHANDLER_H
+#pragma once
 
 #include <string>
 #include "fellow/hardfile/hunks/FileImage.h"
@@ -15,8 +14,6 @@ namespace fellow::hardfile::rdb
 
     RDBFileSystemHandler();
 
-    bool ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize);
+    bool ReadFromFile(RDBFileReader &reader, ULO blockChainStart, ULO blockSize);
   };
 }
-
-#endif

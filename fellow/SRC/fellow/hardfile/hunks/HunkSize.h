@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKSIZE_H
-#define FELLOW_HARDFILE_HUNKS_HUNKSIZE_H
+#pragma once
 
 #include "fellow/api/defs.h"
 
@@ -11,10 +10,8 @@ namespace fellow::hardfile::hunks
     ULO MemoryFlags;
     ULO AdditionalFlags;
 
-    const STR* GetMemoryFlagsToString();
+    const STR *GetMemoryFlagsToString();
 
     HunkSize(ULO sizeInLongwords, ULO memoryFlags, ULO additionalFlags);
   };
 }
-
-#endif

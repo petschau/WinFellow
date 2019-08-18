@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_BSSHUNK_H
-#define FELLOW_HARDFILE_HUNKS_BSSHUNK_H
+#pragma once
 
 #include "fellow/hardfile/hunks/InitialHunk.h"
 
@@ -12,10 +11,8 @@ namespace fellow::hardfile::hunks
 
   public:
     ULO GetID() override;
-    void Parse(RawDataReader& rawDataReader) override;
+    void Parse(RawDataReader &rawDataReader) override;
 
     BSSHunk(ULO allocateSizeInLongwords);
   };
 }
-
-#endif

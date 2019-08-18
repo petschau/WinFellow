@@ -8,7 +8,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::hunks
 {
-  HeaderHunk* HunkParser::ParseHeader()
+  HeaderHunk *HunkParser::ParseHeader()
   {
     ULO type = _rawDataReader.GetNextByteswappedLong();
     if (type != HeaderHunkID)
@@ -22,7 +22,7 @@ namespace fellow::hardfile::hunks
     return header;
   }
 
-  InitialHunk* HunkParser::ParseNextInitialHunk(ULO allocateSizeInLongwords)
+  InitialHunk *HunkParser::ParseNextInitialHunk(ULO allocateSizeInLongwords)
   {
     ULO type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateInitialHunk(type, allocateSizeInLongwords);
@@ -36,7 +36,7 @@ namespace fellow::hardfile::hunks
     return hunk;
   }
 
-  AdditionalHunk* HunkParser::ParseNextAdditionalHunk(ULO sourceHunkIndex)
+  AdditionalHunk *HunkParser::ParseNextAdditionalHunk(ULO sourceHunkIndex)
   {
     ULO type = _rawDataReader.GetNextByteswappedLong();
     auto hunk = HunkFactory::CreateAdditionalHunk(type, sourceHunkIndex);
@@ -88,8 +88,7 @@ namespace fellow::hardfile::hunks
     return true;
   }
 
-  HunkParser::HunkParser(UBY* rawData, ULO rawDataLength, FileImage& fileImage)
-    : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
+  HunkParser::HunkParser(UBY *rawData, ULO rawDataLength, FileImage &fileImage) : _rawDataReader(rawData, rawDataLength), _fileImage(fileImage)
   {
   }
 }

@@ -7,29 +7,28 @@
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
 using namespace fellow::hardfile::rdb;
-using namespace fellow::api::module;
+using namespace fellow::api::modules;
 
 namespace test::fellow::hardfile::rdb
 {
   TEST_CLASS(RDBTest)
   {
     unique_ptr<RDB> _instance;
-    const STR* BlankWithRDB_SFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_SFS.hdf)";
-    const STR* BlankWithRDB_PFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_PFS.hdf)";
-    const STR* BlankWithRDB_FFS13 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS13.hdf)";
-    const STR* BlankWithRDB_FFS31 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS31.hdf)";
-    const STR* BlankWithoutRDB_OFS = R"(testdata\fellow\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
-    const STR* ManyPartitionsWithRDB_ManyFS = R"(testdata\fellow\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf)";
-    const STR* RDBInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDSKMarkerInvalidChecksum.hdf)";
-    const STR* RDBPartitionInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
-    const STR* RDBFileSystemHeaderInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf)";
-    const STR* RDBLSegBlockInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf)";
+    const STR *BlankWithRDB_SFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_SFS.hdf)";
+    const STR *BlankWithRDB_PFS = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_PFS.hdf)";
+    const STR *BlankWithRDB_FFS13 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS13.hdf)";
+    const STR *BlankWithRDB_FFS31 = R"(testdata\fellow\hardfile\rdb\BlankWithRDB_FFS31.hdf)";
+    const STR *BlankWithoutRDB_OFS = R"(testdata\fellow\hardfile\rdb\BlankWithoutRDB_OFS.hdf)";
+    const STR *ManyPartitionsWithRDB_ManyFS = R"(testdata\fellow\hardfile\rdb\ManyPartitionsWithRDB_ManyFS.hdf)";
+    const STR *RDBInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDSKMarkerInvalidChecksum.hdf)";
+    const STR *RDBPartitionInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidPartitionCheckSum.hdf)";
+    const STR *RDBFileSystemHeaderInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidFileSystemHeaderCheckSum.hdf)";
+    const STR *RDBLSegBlockInvalidCheckSum = R"(testdata\fellow\hardfile\rdb\WithRDBInvalidLSegBlockCheckSum.hdf)";
 
-    void GetDriveInformation(const STR* filename)
+    void GetDriveInformation(const STR *filename)
     {
       _instance.release();
-      FILE *F = nullptr;
-      fopen_s(&F, filename, "rb");
+      FILE *F = fopen(filename, "rb");
       if (F != nullptr)
       {
         RDBFileReader fileReader(F);
@@ -38,11 +37,10 @@ namespace test::fellow::hardfile::rdb
       }
     }
 
-    rdb_status HasRigidDiskBlock(const STR* filename)
+    rdb_status HasRigidDiskBlock(const STR *filename)
     {
       rdb_status result;
-      FILE *F = nullptr;
-      fopen_s(&F, filename, "rb");
+      FILE *F = fopen(filename, "rb");
       if (F != nullptr)
       {
         RDBFileReader fileReader(F);
@@ -167,7 +165,7 @@ namespace test::fellow::hardfile::rdb
 
       Assert::AreEqual<size_t>(1, _instance->Partitions.size());
 
-      RDBPartition* partition = _instance->Partitions[0].get();
+      RDBPartition *partition = _instance->Partitions[0].get();
 
       Assert::AreEqual<string>("PART", partition->ID);
       Assert::AreEqual<ULO>(0x40, partition->SizeInLongs);

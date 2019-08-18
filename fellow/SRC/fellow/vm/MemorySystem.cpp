@@ -2,75 +2,76 @@
 #include "FMEM.H"
 
 using namespace fellow::api::vm;
+using namespace std;
 
 namespace fellow::vm
 {
-  UBY MemorySystem::ReadByte(ULO address)
+  uint8_t MemorySystem::ReadByte(uint32_t address)
   {
     return memoryReadByte(address);
   }
 
-  UWO MemorySystem::ReadWord(ULO address)
+  uint16_t MemorySystem::ReadWord(uint32_t address)
   {
     return memoryReadWord(address);
   }
 
-  ULO MemorySystem::ReadLong(ULO address)
+  uint32_t MemorySystem::ReadLong(uint32_t address)
   {
     return memoryReadLong(address);
   }
 
-  void MemorySystem::WriteByte(UBY data, ULO address)
+  void MemorySystem::WriteByte(uint8_t data, uint32_t address)
   {
     memoryWriteByte(data, address);
   }
 
-  void MemorySystem::WriteWord(UWO data, ULO address)
+  void MemorySystem::WriteWord(uint16_t data, uint32_t address)
   {
     memoryWriteWord(data, address);
   }
 
-  void MemorySystem::WriteLong(ULO data, ULO address)
+  void MemorySystem::WriteLong(uint32_t data, uint32_t address)
   {
     memoryWriteLong(data, address);
   }
 
-  void MemorySystem::DmemSetByte(UBY data)
+  void MemorySystem::DmemSetByte(uint8_t data)
   {
     memoryDmemSetByte(data);
   }
 
-  void MemorySystem::DmemSetWord(UWO data)
+  void MemorySystem::DmemSetWord(uint16_t data)
   {
     memoryDmemSetWord(data);
   }
 
-  void MemorySystem::DmemSetLong(ULO data)
+  void MemorySystem::DmemSetLong(uint32_t data)
   {
     memoryDmemSetLong(data);
   }
 
-  void MemorySystem::DmemSetLongNoCounter(ULO data, ULO offset)
+  void MemorySystem::DmemSetLongNoCounter(uint32_t data, uint32_t offset)
   {
     memoryDmemSetLongNoCounter(data, offset);
   }
 
-  void MemorySystem::DmemSetString(const STR *data)
+  void MemorySystem::DmemSetString(const char *data)
   {
     memoryDmemSetString(data);
   }
 
-  void MemorySystem::DmemSetCounter(ULO val)
+  void MemorySystem::DmemSetCounter(uint32_t val)
   {
     memoryDmemSetCounter(val);
   }
 
-  ULO MemorySystem::DmemGetCounter()
+  uint32_t MemorySystem::DmemGetCounter()
   {
     return memoryDmemGetCounter();
   }
 
-  ULO MemorySystem::DmemGetCounterWithoutOffset()
+  uint32_t MemorySystem::DmemGetCounterWithoutOffset()
   {
     return memoryDmemGetCounterWithoutOffset();
   }
@@ -85,7 +86,7 @@ namespace fellow::vm
     memoryEmemClear();
   }
 
-  void MemorySystem::EmemSet(ULO index, ULO data)
+  void MemorySystem::EmemSet(uint32_t index, uint32_t data)
   {
     memoryEmemSet(index, data);
   }
@@ -95,37 +96,42 @@ namespace fellow::vm
     memoryEmemCardAdd(cardinit, cardmap);
   }
 
-  void MemorySystem::EmemMirror(ULO emem_offset, UBY *src, ULO size)
+  void MemorySystem::EmemMirror(uint32_t emem_offset, uint8_t *src, uint32_t size)
   {
     memoryEmemMirror(emem_offset, src, size);
   }
 
-  void MemorySystem::BankSet(
-    ReadByteFunc rb,
-    ReadWordFunc rw,
-    ReadLongFunc rl,
-    WriteByteFunc wb,
-    WriteWordFunc ww,
-    WriteLongFunc wl,
-    UBY *basep,
-    ULO bank,
-    ULO basebank,
-    BOOLE pointer_can_write)
+  void MemorySystem::BankSet(const MemoryBankDescriptor memoryBankDescriptor)
   {
-    memoryBankSet(rb, rw, rl, wb, ww, wl, basep, bank, basebank, pointer_can_write);
+    memoryBankSet(memoryBankDescriptor);
   }
 
-  UBY *MemorySystem::AddressToPtr(ULO address)
+  uint8_t *MemorySystem::AddressToPtr(uint32_t address)
   {
     return memoryAddressToPtr(address);
   }
 
-  ULO MemorySystem::GetKickImageVersion()
+  uint32_t MemorySystem::GetKickImageVersion()
   {
     return memoryGetKickImageVersion();
   }
 
-  MemorySystem::MemorySystem()
+  bool MemorySystem::GetAddressSpace32Bits()
   {
+    return memoryGetAddressSpace32Bit();
+  }
+
+  vector<MemoryMapDescriptor> MemorySystem::GetMemoryMapDescriptors()
+  {
+    auto descriptors = memoryGetMemoryMapDescriptors();
+
+    vector<MemoryMapDescriptor> result;
+
+    for (const auto &descriptor : descriptors)
+    {
+      result.emplace_back(MemoryMapDescriptor{.Kind = descriptor.Kind, .StartAddress = descriptor.StartAddress, .EndAddress = descriptor.EndAddress});
+    }
+
+    return result;
   }
 }

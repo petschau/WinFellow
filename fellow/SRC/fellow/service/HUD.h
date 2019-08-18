@@ -1,18 +1,20 @@
-#ifndef FELLOW_SERVICE_HUD_H
-#define FELLOW_SERVICE_HUD_H
+#pragma once
 
 #include "fellow/api/service/IHUD.h"
 
 namespace fellow::service
 {
-  class HUD : public fellow::api::service::IHUD
+  class HUD : public fellow::api::IHUD
   {
+  private:
+    HudConfiguration _hudConfiguration;
+
   public:
-    void SetFloppyLED(int driveIndex, bool active, bool write) override;
-    void SetHarddiskLED(int deviceIndex, bool active, bool write) override;
+    HudConfiguration &GetHudConfiguration() override;
+
+    void NotifyFloppyLEDChanged(int driveIndex, bool active, bool write) override;
+    void NotifyHarddiskLEDChanged(int deviceIndex, bool active, bool write) override;
 
     HUD();
   };
 }
-
-#endif

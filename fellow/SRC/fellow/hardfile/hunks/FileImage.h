@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_FILEIMAGE_H
-#define FELLOW_HARDFILE_HUNKS_FILEIMAGE_H
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -17,19 +16,17 @@ namespace fellow::hardfile::hunks
     std::vector<std::unique_ptr<AdditionalHunk>> _additionalHunks;
 
   public:
-    void SetHeader(HeaderHunk* header);
-    HeaderHunk* GetHeader();
+    void SetHeader(HeaderHunk *header);
+    HeaderHunk *GetHeader();
 
-    InitialHunk* GetInitialHunk(ULO hunkIndex);
-    void AddInitialHunk(InitialHunk* hunk);
+    InitialHunk *GetInitialHunk(ULO hunkIndex);
+    void AddInitialHunk(InitialHunk *hunk);
     ULO GetInitialHunkCount();
 
-    AdditionalHunk* GetAdditionalHunk(ULO hunkIndex);
-    void AddAdditionalHunk(AdditionalHunk* hunk);
+    AdditionalHunk *GetAdditionalHunk(ULO hunkIndex);
+    void AddAdditionalHunk(AdditionalHunk *hunk);
     ULO GetAdditionalHunkCount();
 
     void Clear();
   };
 }
-
-#endif

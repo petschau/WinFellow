@@ -19,72 +19,74 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "DEFS.H"
-#include "FELLOW.H"
-#include "BUS.H"
-#include "GRAPH.H"
-#include "DRAW.H"
+#include "fellow/api/defs.h"
 #include "draw_interlace_control.h"
+#include "fellow/scheduler/Scheduler.h"
+#include "fellow/application/HostRenderer.h"
+#include "fellow/chipset/BitplaneRegisters.h"
 
-typedef struct
+struct draw_interlace_status
 {
   bool frame_is_interlaced;
   bool frame_is_long;
   bool enable_deinterlace;
   bool use_interlaced_rendering;
-} draw_interlace_status;
+  DisplayScaleStrategy display_scale_strategy;
+};
 
 draw_interlace_status interlace_status;
 
-bool drawGetUseInterlacedRendering(void)
+bool drawGetUseInterlacedRendering()
 {
   return interlace_status.use_interlaced_rendering;
 }
 
-bool drawGetFrameIsLong(void)
+bool drawGetFrameIsLong()
 {
   return interlace_status.frame_is_long;
 }
 
-bool drawDecideUseInterlacedRendering(void)
+bool drawDecideUseInterlacedRendering()
 {
   return interlace_status.enable_deinterlace && interlace_status.frame_is_interlaced;
 }
 
-void drawDecideInterlaceStatusForNextFrame(void)
+bool drawGetFrameIsInterlaced()
 {
-  bool lace_bit = ((bplcon0 & 4) == 4);
+  return interlace_status.frame_is_interlaced;
+}
+
+void drawDecideInterlaceStatusForNextFrame()
+{
+  bool lace_bit = ((bitplane_registers.bplcon0 & 4) == 4);
 
   interlace_status.frame_is_interlaced = lace_bit;
   if (interlace_status.frame_is_interlaced)
   {
     // Automatic long / short frame toggeling
-    lof = lof ^ 0x8000;
+    bitplane_registers.lof = bitplane_registers.lof ^ 0x8000;
   }
 
-  interlace_status.frame_is_long = ((lof & 0x8000) == 0x8000);
-  busSetScreenLimits(interlace_status.frame_is_long);
+  interlace_status.frame_is_long = ((bitplane_registers.lof & 0x8000) == 0x8000);
+  scheduler.SetScreenLimits(interlace_status.frame_is_long);
 
   bool use_interlaced_rendering = drawDecideUseInterlacedRendering();
   if (use_interlaced_rendering != interlace_status.use_interlaced_rendering)
   {
 
-    if ((drawGetDisplayScaleStrategy() == DISPLAYSCALE_STRATEGY_SCANLINES) &&
-        interlace_status.use_interlaced_rendering)
+    if ((interlace_status.display_scale_strategy == DisplayScaleStrategy::Scanlines) && interlace_status.use_interlaced_rendering)
     {
       // Clear buffers when switching back to scanlines from interlaced rendering
       // to avoid a ghost image remaining in the scanlines.
-      draw_clear_buffers = drawGetBufferCount();
+      Draw.SetClearAllBuffersFlag();
     }
 
     interlace_status.use_interlaced_rendering = use_interlaced_rendering;
-    drawReinitializeRendering();
+    Draw.ReinitializeRendering();
   }
-
-//    fellowAddLog("Frames are %s, frame no %I64d\n", (interlace_status.frame_is_long) ? "long" : "short", busGetRasterFrameCount());
 }
 
-void drawInterlaceStartup(void)
+void drawInterlaceStartup()
 {
   interlace_status.frame_is_interlaced = false;
   interlace_status.frame_is_long = true;
@@ -92,12 +94,13 @@ void drawInterlaceStartup(void)
   interlace_status.use_interlaced_rendering = false;
 }
 
-void drawInterlaceEndOfFrame(void)
+void drawInterlaceEndOfFrame()
 {
   drawDecideInterlaceStatusForNextFrame();
 }
 
-void drawSetDeinterlace(bool deinterlace)
+void drawInterlaceConfigure(bool deinterlace, DisplayScaleStrategy displayScaleStrategy)
 {
   interlace_status.enable_deinterlace = deinterlace;
+  interlace_status.display_scale_strategy = displayScaleStrategy;
 }

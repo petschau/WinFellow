@@ -6,7 +6,7 @@ using namespace fellow::api;
 
 namespace fellow::hardfile::rdb
 {
-  void RDBPartition::ReadFromFile(RDBFileReader& reader, ULO blockChainStart, ULO blockSize)
+  void RDBPartition::ReadFromFile(RDBFileReader &reader, ULO blockChainStart, ULO blockSize)
   {
     ULO index = blockSize * blockChainStart;
 
@@ -91,36 +91,10 @@ namespace fellow::hardfile::rdb
     Service->Log.AddLogDebug("204 - Bootblocks:               %u\n", Bootblocks);
   }
 
-  RDBPartition::RDBPartition() :
-    SizeInLongs(0),
-    CheckSum(0),
-    HostID(0),
-    Next(0),
-    Flags(0),
-    BadBlockList(0),
-    DevFlags(0),
-    DriveNameLength(0),
-    SizeOfVector(0),
-    SizeBlock(0),
-    SecOrg(0),
-    Surfaces(0),
-    SectorsPerBlock(0),
-    BlocksPerTrack(0),
-    Reserved(0),
-    PreAlloc(0),
-    Interleave(0),
-    LowCylinder(0),
-    HighCylinder(0),
-    NumBuffer(0),
-    BufMemType(0),
-    MaxTransfer(0),
-    Mask(0),
-    BootPri(0),
-    DOSType(0),
-    Baud(0),
-    Control(0),
-    Bootblocks(0),
-    HasValidCheckSum(false)
+  RDBPartition::RDBPartition()
+      : SizeInLongs(0), CheckSum(0), HostID(0), Next(0), Flags(0), BadBlockList(0), DevFlags(0), DriveNameLength(0), SizeOfVector(0), SizeBlock(0), SecOrg(0), Surfaces(0), SectorsPerBlock(0),
+        BlocksPerTrack(0), Reserved(0), PreAlloc(0), Interleave(0), LowCylinder(0), HighCylinder(0), NumBuffer(0), BufMemType(0), MaxTransfer(0), Mask(0), BootPri(0), DOSType(0), Baud(0), Control(0),
+        Bootblocks(0), HasValidCheckSum(false)
   {
   }
 }

@@ -1,8 +1,10 @@
 #include "uart.h"
-#include "BUS.H"
+#include "fellow/scheduler/Scheduler.h"
 #include "FMEM.H"
 #include "interrupt.h"
-#include "fileops.h"
+#include "fellow/api/Services.h"
+
+using namespace fellow::api;
 
 UART uart;
 
@@ -51,7 +53,7 @@ void UART::WriteSerdatRegister(UWO data)
 
 void UART::WriteSerperRegister(UWO data)
 {
-  _serper = data;  
+  _serper = data;
 }
 
 ULO UART::GetTransmitDoneTime()
@@ -59,7 +61,7 @@ ULO UART::GetTransmitDoneTime()
   int bitsToTransfer = 2 + (Is8BitMode() ? 8 : 9);
   ULO cyclesPerBit = GetBitPeriod() + 1;
 
-  return cyclesPerBit * bitsToTransfer;  
+  return cyclesPerBit * bitsToTransfer;
 }
 
 void UART::CopyTransmitBufferToShiftRegister()
@@ -69,7 +71,7 @@ void UART::CopyTransmitBufferToShiftRegister()
     _transmitShiftRegister = _transmitBuffer;
     _transmitShiftRegisterEmpty = false;
     _transmitBufferEmpty = true;
-    _transmitDoneTime = GetTransmitDoneTime() + busGetCycle();
+    _transmitDoneTime = GetTransmitDoneTime() + scheduler.GetFrameCycle();
 
     wintreq_direct(0x8001, 0xdff09c, true); // TBE interrupt
 
@@ -83,7 +85,7 @@ void UART::CopyTransmitBufferToShiftRegister()
 void UART::CopyReceiveShiftRegisterToBuffer()
 {
   _receiveBuffer = _receiveShiftRegister;
-  _receiveBufferFull = true;  
+  _receiveBufferFull = true;
   wintreq_direct(0x8400, 0xdff09c, true); // RBF interrupt
 }
 
@@ -91,7 +93,7 @@ void UART::NotifyInterruptRequestBitsChanged(UWO intreq)
 {
   // Clear only, or is it directly wired?
   // HRM says overrun is also mirrored from intreq? How?
-  _receiveBufferFull = (intreq & 0x0800) == 0x0800;  
+  _receiveBufferFull = (intreq & 0x0800) == 0x0800;
   if (!_receiveBufferFull)
   {
     _receiveBufferOverrun = false;
@@ -113,43 +115,13 @@ void UART::ClearState()
   _transmitShiftRegister = 0;
   _transmitBufferEmpty = true;
   _transmitShiftRegisterEmpty = true;
-  _transmitDoneTime = BUS_CYCLE_DISABLE;
+  _transmitDoneTime = SchedulerEvent::EventDisableCycle;
 
   _receiveBuffer = 0;
   _receiveShiftRegister = 0;
   _receiveBufferFull = false;
   _receiveBufferOverrun = false;
-  _receiveDoneTime = BUS_CYCLE_DISABLE;
-}
-
-void UART::LoadState(FILE *F)
-{
-  fread(&_serper, sizeof(_serper), 1, F);
-  fread(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
-  fread(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
-  fread(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
-  fread(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
-  fread(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
-  fread(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
-  fread(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
-  fread(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
-  fread(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
-  fread(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
-}
-
-void UART::SaveState(FILE *F)
-{
-  fwrite(&_serper, sizeof(_serper), 1, F);
-  fwrite(&_transmitBuffer, sizeof(_transmitBuffer), 1, F);
-  fwrite(&_transmitShiftRegister, sizeof(_transmitShiftRegister), 1, F);
-  fwrite(&_transmitDoneTime, sizeof(_transmitDoneTime), 1, F);
-  fwrite(&_transmitBufferEmpty, sizeof(_transmitBufferEmpty), 1, F);
-  fwrite(&_transmitShiftRegisterEmpty, sizeof(_transmitShiftRegisterEmpty), 1, F);
-  fwrite(&_receiveBuffer, sizeof(_receiveBuffer), 1, F);
-  fwrite(&_receiveShiftRegister, sizeof(_receiveShiftRegister), 1, F);
-  fwrite(&_receiveDoneTime, sizeof(_receiveDoneTime), 1, F);
-  fwrite(&_receiveBufferFull, sizeof(_receiveBufferFull), 1, F);
-  fwrite(&_receiveBufferOverrun, sizeof(_receiveBufferOverrun), 1, F);
+  _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 }
 
 bool UART::Is8BitMode()
@@ -176,17 +148,17 @@ void UART::CloseOutputFile()
   {
     fclose(_outputFile);
     _outputFile = nullptr;
-  }  
+  }
 }
 
 void UART::EndOfLine()
 {
   // (Put this in an event with an exact time-stamp)
 
-  if (_transmitDoneTime <= busGetCycle())
+  if (_transmitDoneTime <= scheduler.GetFrameCycle())
   {
     _transmitShiftRegisterEmpty = true;
-    _transmitDoneTime = BUS_CYCLE_DISABLE;
+    _transmitDoneTime = SchedulerEvent::EventDisableCycle;
 
     if (!_transmitBufferEmpty)
     {
@@ -194,9 +166,9 @@ void UART::EndOfLine()
     }
   }
 
-  if (_receiveDoneTime <= busGetCycle())
+  if (_receiveDoneTime <= scheduler.GetFrameCycle())
   {
-    _receiveDoneTime = BUS_CYCLE_DISABLE;
+    _receiveDoneTime = SchedulerEvent::EventDisableCycle;
 
     if (!_receiveBufferFull)
     {
@@ -211,17 +183,17 @@ void UART::EndOfLine()
 
 void UART::EndOfFrame()
 {
-  if (_transmitDoneTime != BUS_CYCLE_DISABLE)
+  if (_transmitDoneTime != SchedulerEvent::EventDisableCycle)
   {
-    _transmitDoneTime -= busGetCyclesInThisFrame();
+    _transmitDoneTime -= scheduler.GetCyclesInFrame();
     if ((int)_transmitDoneTime < 0)
     {
       _transmitDoneTime = 0;
     }
-  }  
-  if (_receiveDoneTime != BUS_CYCLE_DISABLE)
+  }
+  if (_receiveDoneTime != SchedulerEvent::EventDisableCycle)
   {
-    _receiveDoneTime -= busGetCyclesInThisFrame();
+    _receiveDoneTime -= scheduler.GetCyclesInFrame();
     if ((int)_receiveDoneTime < 0)
     {
       _receiveDoneTime = 0;
@@ -239,12 +211,19 @@ void UART::EmulationStop()
   CloseOutputFile();
 }
 
-UART::UART()
-  : _outputFile(nullptr)
+void UART::Startup()
 {
   char tempFileName[256];
-  fileopsGetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
+  Service->Fileops.GetGenericFileName(tempFileName, "WinFellow", "uart_output.bin");
   _outputFileName = tempFileName;
+}
+
+void UART::Shutdown()
+{
+}
+
+UART::UART() : _outputFile(nullptr)
+{
   ClearState();
 }
 

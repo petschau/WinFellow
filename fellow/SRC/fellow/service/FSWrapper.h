@@ -1,20 +1,16 @@
-#ifndef FELLOW_SERVICE_FSWRAPPER_H
-#define FELLOW_SERVICE_FSWRAPPER_H
+#pragma once
 
 #include "fellow/api/service/IFSWrapper.h"
-#include "FSWRAP.H"
 
 namespace fellow::service
 {
-  class FSWrapper : public fellow::api::service::IFSWrapper
+  class FSWrapper : public fellow::api::IFSWrapper
   {
   private:
-    fellow::api::service::fs_wrapper_file_types MapFileType(fs_navig_file_types type);
+    fellow::api::fs_wrapper_object_types GetFSObjectType(unsigned short st_mode);
+    bool GetFSObjectIsWriteable(unsigned short st_mode, const std::string &pathToObject);
 
   public:
-    fellow::api::service::fs_wrapper_point *MakePoint(const STR *point) override;
-    FSWrapper();
+    fellow::api::fs_wrapper_object_info *GetFSObjectInfo(const std::string &pathToObject) override;
   };
 }
-
-#endif

@@ -1,11 +1,8 @@
-#ifndef RTC_H
-#define RTC
+#pragma once
 
 bool rtcSetEnabled(bool enabled);
-void rtcMap(void);
+void rtcMap();
 
 #ifdef _DEBUG
 #define RTC_LOG
-#endif
-
 #endif

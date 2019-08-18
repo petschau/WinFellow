@@ -1,5 +1,4 @@
-#ifndef FELLOW_HARDFILE_HUNKS_HUNKPARSER_H
-#define FELLOW_HARDFILE_HUNKS_HUNKPARSER_H
+#pragma once
 
 #include "fellow/hardfile/hunks/RawDataReader.h"
 #include "fellow/hardfile/hunks/FileImage.h"
@@ -10,17 +9,15 @@ namespace fellow::hardfile::hunks
   {
   private:
     RawDataReader _rawDataReader;
-    FileImage& _fileImage;
+    FileImage &_fileImage;
 
-    HeaderHunk* ParseHeader();
-    InitialHunk* ParseNextInitialHunk(ULO allocateSizeInLongwords);
-    AdditionalHunk* ParseNextAdditionalHunk(ULO sourceHunkIndex);
+    HeaderHunk *ParseHeader();
+    InitialHunk *ParseNextInitialHunk(ULO allocateSizeInLongwords);
+    AdditionalHunk *ParseNextAdditionalHunk(ULO sourceHunkIndex);
 
   public:
     bool Parse();
 
-    HunkParser(UBY *rawData, ULO rawDataLength, FileImage& fileImage);
+    HunkParser(UBY *rawData, ULO rawDataLength, FileImage &fileImage);
   };
 }
-
-#endif
