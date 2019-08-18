@@ -4,7 +4,7 @@
 #include "sound.h"
 #include "CpuIntegration.h"
 #include "gameport.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "fellow/api/module/IHardfileHandler.h"
 
 #include <string>

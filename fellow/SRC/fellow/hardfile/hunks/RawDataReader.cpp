@@ -1,14 +1,6 @@
+#include "fellow/api/defs.h"
 #include "fellow/hardfile/hunks/RawDataReader.h"
 #include <stdexcept>
-
-#ifdef _DEBUG
-  #define _CRTDBG_MAP_ALLOC
-  #include <cstdlib>
-  #include <crtdbg.h>
-  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-  #define DBG_NEW new
-#endif
 
 using namespace std;
 
@@ -76,7 +68,7 @@ namespace fellow::hardfile::hunks
   {
     ULO lengthInBytes = lengthInLongwords * 4;
     AssertValidIndexAndLength(lengthInBytes);
-    UBY *bytes = DBG_NEW UBY[lengthInBytes];
+    UBY *bytes = new UBY[lengthInBytes];
     memcpy(bytes, _rawData + _index, lengthInBytes);
     _index += lengthInBytes;
     return bytes;

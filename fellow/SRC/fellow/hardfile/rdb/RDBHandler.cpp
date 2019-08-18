@@ -1,15 +1,7 @@
+#include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDBFileReader.h"
 #include "fellow/hardfile/rdb/RDBHandler.h"
 #include "fellow/hardfile/rdb/CheckSumCalculator.h"
-
-#ifdef _DEBUG
-  #define _CRTDBG_MAP_ALLOC
-  #include <cstdlib>
-  #include <crtdbg.h>
-  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-  #define DBG_NEW new
-#endif
 
 using namespace std;
 using namespace fellow::api::module;
@@ -66,7 +58,7 @@ namespace fellow::hardfile::rdb
       return nullptr;
     }
 
-    RDB* rdb = DBG_NEW RDB();
+    RDB* rdb = new RDB();
     rdb->ReadFromFile(reader, indexOfRDB, geometryOnly);
     rdb->Log();
     return rdb;

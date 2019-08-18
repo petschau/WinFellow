@@ -168,9 +168,6 @@
     <ClCompile Include="..\..\C\KBD.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\LISTTREE.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\modrip.c">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -489,6 +486,9 @@
     <ClCompile Include="..\..\C\xdmswrap.c">
       <Filter>core C Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\C\ListTree.cpp">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -570,9 +570,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\LISTTREE.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\modrip.h">
@@ -940,6 +937,9 @@
     </ClInclude>
     <ClInclude Include="..\Caps\include\caps.h">
       <Filter>Win32 C Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\ListTree.h">
+      <Filter>core C Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

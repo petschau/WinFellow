@@ -31,7 +31,7 @@
 #include "defs.h"
 #include "fellow.h"
 #include "sound.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "windrv.h"
 #include "sounddrv.h"
 #include "config.h"
@@ -254,7 +254,7 @@ sound_drv_dsound_mode *soundDrvFindMode(sound_drv_dsound_device *dsound_device,
 
 void soundDrvDSoundModeInformationRelease(sound_drv_dsound_device *dsound_device)
 {
-  listFreeAll(dsound_device->modes, TRUE);
+  listFreeAll(dsound_device->modes, true);
   dsound_device->modes = NULL;
 }
 

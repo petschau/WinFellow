@@ -1,4 +1,3 @@
-/* @(#) $Id: SPRITE.C,v 1.9 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Sprite emulation                                                        */
@@ -23,23 +22,13 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#ifndef DBG_NEW
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#define new DBG_NEW
-#endif
-#endif
-
-#include "defs.h"
+#include "fellow/api/defs.h"
 #include "fellow.h"
 #include "chipset.h"
 #include "fmem.h"
 #include "graph.h"
 #include "draw.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "bus.h"
 
 #include "SpriteRegisters.h"

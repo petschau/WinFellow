@@ -3,11 +3,16 @@
 
 /* Generic list */
 
-typedef struct _felist {
-  struct _felist *next;
-  struct _felist *prev;
+class felist
+{
+public:
+  felist *next;
+  felist *prev;
   void *node;
-} felist;
+
+  felist(void* nodeptr);
+  felist(felist* prevptr, void* nodeptr);
+};
 
 felist *listNew(void *node);
 felist *listAddFirst(felist *root, felist *l);
@@ -18,11 +23,11 @@ felist *listPrev(felist *l);
 felist *listLast(felist *l);
 felist *listCat(felist *l1, felist *l2);
 felist *listCopy(felist *, size_t);
-ULO listCount(felist *l);
+unsigned int listCount(felist *l);
 void *listNode(felist *l);
 void listRemove(felist *l);
 felist *listFree(felist *node);
-felist *listIndex(felist *l, ULO index);
-void listFreeAll(felist *l, BOOLE freenodes);
+felist *listIndex(felist *l, unsigned int index);
+void listFreeAll(felist *l, bool freenodes);
 
 #endif

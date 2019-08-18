@@ -1,15 +1,7 @@
+#include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDB.h"
 #include "fellow/hardfile/rdb/CheckSumCalculator.h"
 #include "fellow/api/Services.h"
-
-#ifdef _DEBUG
-  #define _CRTDBG_MAP_ALLOC
-  #include <cstdlib>
-  #include <crtdbg.h>
-  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-  #define DBG_NEW new
-#endif
 
 using namespace std;
 using namespace fellow::api;
@@ -67,7 +59,7 @@ namespace fellow::hardfile::rdb
     ULO nextPartition = PartitionList;
     while (nextPartition != 0xffffffff)
     {
-      RDBPartition* partition = DBG_NEW RDBPartition();
+      RDBPartition* partition = new RDBPartition();
       partition->ReadFromFile(reader, nextPartition, BlockSize);
       partition->Log();
 
@@ -96,7 +88,7 @@ namespace fellow::hardfile::rdb
       ULO nextFilesystemHeader = FilesystemHeaderList;
       while (nextFilesystemHeader != 0xffffffff)
       {
-        RDBFileSystemHeader* fileSystemHeader = DBG_NEW RDBFileSystemHeader();
+        RDBFileSystemHeader* fileSystemHeader = new RDBFileSystemHeader();
         fileSystemHeader->ReadFromFile(reader, nextFilesystemHeader, BlockSize);
         fileSystemHeader->Log();
 

@@ -59,24 +59,12 @@
 
 #define INITGUID
 
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#ifndef DBG_NEW
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#define new DBG_NEW
-#endif
-#endif
-
-#include "portable.h"
-
+#include "fellow/api/defs.h"
 #include <windowsx.h>
 #include "gui_general.h"
 #include <ddraw.h>
 #include <dsound.h>
 
-#include "defs.h"
 #include "fellow.h"
 #include "fmem.h"
 #include "sound.h"
@@ -84,7 +72,7 @@
 #include "draw.h"
 #include "kbd.h"
 #include "kbddrv.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "windrv.h"
 #include "gameport.h"
 #include "mousedrv.h"
@@ -493,7 +481,7 @@ void gfxDrvDDrawDeviceInformationRelease()
     free(tmpdev->lpDriverDescription);
     free(tmpdev->lpDriverName);
   }
-  listFreeAll(gfx_drv_ddraw_devices, TRUE);
+  listFreeAll(gfx_drv_ddraw_devices, true);
   gfx_drv_ddraw_device_current = nullptr;
   gfx_drv_ddraw_devices = nullptr;
 }
@@ -860,7 +848,7 @@ bool gfxDrvDDrawInitializeFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_
 
 void gfxDrvDDrawReleaseFullScreenModeInformation(gfx_drv_ddraw_device *ddraw_device)
 {
-  listFreeAll(ddraw_device->fullscreen_modes, TRUE);
+  listFreeAll(ddraw_device->fullscreen_modes, true);
   ddraw_device->fullscreen_modes = nullptr;
 }
 

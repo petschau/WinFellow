@@ -38,7 +38,7 @@
 #include "fellow.h"
 #include "windrv.h"
 #include "sound.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "gameport.h"
 #include "config.h"
 #include "draw.h"

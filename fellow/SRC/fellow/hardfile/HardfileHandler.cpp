@@ -34,15 +34,6 @@
 #include "fellow/hardfile/rdb/RDBHandler.h"
 #include "fellow/hardfile/hunks/HunkRelocator.h"
 
-#ifdef _DEBUG
-  #define _CRTDBG_MAP_ALLOC
-  #include <cstdlib>
-  #include <crtdbg.h>
-  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-  #define DBG_NEW new
-#endif
-
 using namespace fellow::hardfile::rdb;
 using namespace fellow::api::service;
 using namespace fellow::api::module;
@@ -51,7 +42,7 @@ using namespace std;
 
 namespace fellow::api::module
 {
-  IHardfileHandler *HardfileHandler = DBG_NEW fellow::hardfile::HardfileHandler();
+  IHardfileHandler *HardfileHandler = new fellow::hardfile::HardfileHandler();
 }
 
 namespace fellow::hardfile
@@ -287,7 +278,7 @@ namespace fellow::hardfile
       else if (_fileSystems[olderOrSameFileSystemIndex]->IsOlderVersion(header->Version))
       {
         // Replace older fs version with this one
-        _fileSystems[olderOrSameFileSystemIndex].reset(DBG_NEW HardfileFileSystemEntry(header.get(), 0));
+        _fileSystems[olderOrSameFileSystemIndex].reset(new HardfileFileSystemEntry(header.get(), 0));
       }
       // Ignore if newer or same fs version already added
     }
