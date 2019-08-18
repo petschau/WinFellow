@@ -1,4 +1,3 @@
-/* @(#) $Id: COPPER.C,v 1.6 2009-07-26 22:56:07 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* Copper Emulation Initialization                                         */
@@ -23,17 +22,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#ifdef _FELLOW_DEBUG_CRT_MALLOC
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-#ifndef DBG_NEW
-#define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#define new DBG_NEW
-#endif
-#endif
-
-#include "DEFS.H"
+#include "fellow/api/defs.h"
 #include "DRAW.H"
 #include "CopperRegisters.h"
 #include "LineExactCopper.h"

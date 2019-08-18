@@ -1,7 +1,6 @@
-/* @(#) $Id: LISTTREE.C,v 1.5 2009-07-25 10:23:59 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
-/* List and Tree                                                           */
+/* List                                                                    */
 /*                                                                         */
 /* Author: Petter Schau                                                    */
 /*                                                                         */
@@ -20,53 +19,67 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "portable.h"
-#include "defs.h"
-#include "listtree.h"
-
+#include "fellow/api/defs.h"
+#include "ListTree.h"
 
 /*==============*/
 /* Generic list */
 /*==============*/
 
+felist::felist(void* nodeptr)
+  : next(nullptr), prev(nullptr), node(nodeptr)
+{
+}
+
+felist::felist(felist* prevptr, void* nodeptr)
+  : next(nullptr), prev(prevptr), node(nodeptr)
+{
+}
+
 /*==============================================================================*/
 /* node = pointer to variable which must already be allocted in memory          */
 /*==============================================================================*/
-felist *listNew(void *node) {
-  felist *l;
-
-  l = (felist *) malloc(sizeof(felist));
-  l->next = l->prev = NULL;
-  l->node = node;
-  return l;
+felist *listNew(void *node)
+{
+  return new felist(node);
 }
 
-felist *listNext(felist *l) {
-  return (l != NULL) ? l->next : NULL;
+felist *listNext(felist *l)
+{
+  return l != nullptr ? l->next : nullptr;
 }
 
-felist *listPrev(felist *l) {
-  return (l != NULL) ? l->prev : NULL;
+felist *listPrev(felist *l)
+{
+  return l != nullptr ? l->prev : nullptr;
 }
 
-felist *listLast(felist *l) {
-  felist *t, *o;
-
-  t = l;
-  while ((o = listNext(t)) != NULL) t = o;
+felist *listLast(felist *l)
+{
+  felist* o;
+  felist* t = l;
+  while ((o = listNext(t)) != nullptr)
+  {
+    t = o;
+  }
   return t;
 }  
 
-void *listNode(felist *l) {
-  return (l != NULL) ? l->node : NULL;
+void *listNode(felist *l)
+{
+  return l != nullptr ? l->node : nullptr;
 }
 
-felist *listAddFirst(felist *root, felist *l) {
-  if (l != NULL) {
+felist *listAddFirst(felist *root, felist *l)
+{
+  if (l != nullptr)
+  {
     l->next = root;
-    l->prev = NULL;
-    if (root != NULL) {
-      if (root->prev != NULL) {
+    l->prev = nullptr;
+    if (root != nullptr)
+    {
+      if (root->prev != nullptr)
+      {
 	l->prev = root->prev;
 	root->prev->next = l;
       }
@@ -77,8 +90,10 @@ felist *listAddFirst(felist *root, felist *l) {
   return root;
 }
 
-felist *listAddLast(felist *root, felist *l) {
-  if (root != NULL) {
+felist *listAddLast(felist *root, felist *l)
+{
+  if (root != nullptr)
+  {
     felist *tmp = listLast(root);
     tmp->next = l;
     l->prev = tmp;
@@ -92,53 +107,71 @@ felist *listAddLast(felist *root, felist *l) {
 /* l = pointer to list object which we want to add                              */
 /* comp = pointer to a function which perform the compare for the sort          */
 /*==============================================================================*/
-felist *listAddSorted(felist *root, felist *l, int (*comp)(void *, void *)) {
-  felist *tmp;
+felist *listAddSorted(felist *root, felist *l, int (*comp)(void *, void *))
+{
+  felist* tmp = root;
+  if (l == nullptr)
+  {
+    return tmp;
+  }
 
-  tmp = root;
-  if (l == NULL) return tmp;
-  while (tmp != NULL) {
-    if (comp(listNode(tmp), listNode(l)) >= 0) {
+  while (tmp != nullptr)
+  {
+    if (comp(listNode(tmp), listNode(l)) >= 0)
+    {
       listAddFirst(tmp, l);
-      if (tmp == root) return l;
-      else return root;
+      if (tmp == root)
+      {
+        return l;
+      }
+      return root;
     }
     tmp = listNext(tmp);
   }
+
   return listAddLast(root, l);
 }
 
-felist *listCat(felist *l1, felist *l2) {
-  felist *t;
-
-  if (l1 == NULL) return l2;
-  else if (l2 == NULL) return l1;
-  else {
-    t = listLast(l1);
-    t->next = l2;
-    l2->prev = t;
+felist *listCat(felist *l1, felist *l2)
+{
+  if (l1 == nullptr)
+  {
+    return l2;
   }
+
+  if (l2 == nullptr)
+  {
+    return l1;
+  }
+
+  felist* t = listLast(l1);
+  t->next = l2;
+  l2->prev = t;
   return l1;
 }
 
-felist *listCopy(felist *srcfirstnode, size_t nodesize) {
-  felist *prevnode = NULL;
-  felist *currnode = srcfirstnode;
-  felist *result = NULL;
+felist *listCopy(felist *srcfirstnode, size_t nodesize)
+{
+  if (srcfirstnode == nullptr)
+  {
+    return nullptr;
+  }
 
-  if(srcfirstnode == NULL) return NULL;
-  
-  while(currnode != NULL) {
-    felist *newnode = (felist *) malloc(sizeof(felist));
-    newnode->prev = prevnode;
-    if(prevnode == NULL) { 
+  felist *prevnode = nullptr;
+  felist *currnode = srcfirstnode;
+  felist *result = nullptr;
+
+  while(currnode != nullptr)
+  {
+    felist* newnode = new felist(prevnode, (void*)malloc(nodesize));
+    if(prevnode == nullptr)
+    { 
       result = newnode;
     }
-    else {
+    else
+    {
       prevnode->next = newnode;
     }
-    newnode->next = NULL;
-    newnode->node = (void *) malloc(nodesize);
     memcpy(newnode->node, currnode->node, nodesize);
   
     prevnode = newnode;
@@ -147,13 +180,12 @@ felist *listCopy(felist *srcfirstnode, size_t nodesize) {
   return result;
 }
 
-ULO listCount(felist *l) {
-  felist *t;
-  ULO i;
-
-  t = l;
-  i = 0;
-  while (t != NULL) {
+unsigned int listCount(felist *l)
+{
+  felist* t = l;
+  unsigned int i = 0;
+  while (t != nullptr)
+  {
     t = listNext(t);
     i++;
   }
@@ -163,44 +195,61 @@ ULO listCount(felist *l) {
 /*==============================================================================*/
 /* listRemove removes the node from the list and connects the neighbours        */
 /*==============================================================================*/
-void listRemove(felist *l) {
-  if (l != NULL) {
-    if (l->prev != NULL) l->prev->next = l->next;
-    if (l->next != NULL) l->next->prev = l->prev;
+void listRemove(felist *l)
+{
+  if (l != nullptr)
+  {
+    if (l->prev != nullptr)
+    {
+      l->prev->next = l->next;
+    }
+    if (l->next != nullptr)
+    {
+      l->next->prev = l->prev;
+    }
   }
 }
 
 /*==============================================================================*/
 /* listFree removes the node from the list and memory                           */
 /*==============================================================================*/
-felist *listFree(felist *node) {
-  felist *t = NULL;
+felist *listFree(felist *node)
+{
+  felist *t = nullptr;
 
-  if (node != NULL)
+  if (node != nullptr)
+  {
     t = node->next;
+  }
   listRemove(node);
-  if (node != NULL) free(node);
+  delete node;
   return t;
 }
 
-felist *listIndex(felist *l, ULO index) {
-  while ((l != NULL) && (index != 0)) {
+felist *listIndex(felist *l, unsigned int index)
+{
+  while (l != nullptr && index != 0)
+  {
     l = listNext(l);
     index--;
   }
   if (index != 0)
-    return NULL;
+  {
+    return nullptr;
+  }
   return l;
 }
 
-void listFreeAll(felist *l, BOOLE freenodes) {
-  felist *tmp, *tmp2;
-
-  tmp = l;
-  while (tmp != NULL) {
-    if (freenodes && (listNode(tmp) != NULL))
+void listFreeAll(felist *l, bool freenodes)
+{
+  felist* tmp = l;
+  while (tmp != nullptr)
+  {
+    if (freenodes && listNode(tmp) != nullptr)
+    {
       free(listNode(tmp));
-    tmp2 = listNext(tmp);    
+    }
+    felist* tmp2 = listNext(tmp);    
     listFree(tmp);
     tmp = tmp2;
   }

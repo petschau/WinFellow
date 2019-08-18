@@ -51,7 +51,7 @@
 #include "wgui.h"
 #include "windrv.h"
 #include "sound.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "gameport.h"
 #include "fellow/api/module/IHardfileHandler.h"
 #include "config.h"

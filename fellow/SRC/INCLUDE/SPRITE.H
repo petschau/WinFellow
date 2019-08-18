@@ -27,6 +27,8 @@ public:
   virtual void HardReset() = 0;
   virtual void EmulationStart() = 0;
   virtual void EmulationStop() = 0;
+
+  virtual ~Sprites() = default;
 };
 
 class LineExactSprites;

@@ -32,7 +32,7 @@
 #include "fmem.h"
 #include "graph.h"
 #include "gfxdrv.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "timer.h"
 #include "fonts.h"
 #include "copper.h"

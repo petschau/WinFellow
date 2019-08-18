@@ -2,7 +2,7 @@
 #define FSNAVIG_H
 
 #include "fswrap.h"
-#include "listtree.h"
+#include "ListTree.h"
 
 typedef enum {
   FS_NAVIG_FILE,

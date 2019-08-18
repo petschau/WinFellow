@@ -39,7 +39,7 @@
 #include "draw.h"
 #include "blit.h"
 #include "fellow.h"
-#include "listtree.h"
+#include "ListTree.h"
 #include "eventid.h"
 #include "fswrap.h"
 #include "config.h"
@@ -670,7 +670,7 @@ void cfgHardfileRemove(cfg *config, ULO index)
 
 void cfgHardfilesFree(cfg *config)
 {
-  listFreeAll(config->m_hardfiles, TRUE);
+  listFreeAll(config->m_hardfiles, true);
   config->m_hardfiles = nullptr;
 }
 
@@ -726,7 +726,7 @@ void cfgFilesystemRemove(cfg *config, ULO index)
 
 void cfgFilesystemsFree(cfg *config)
 {
-  listFreeAll(config->m_filesystems, TRUE);
+  listFreeAll(config->m_filesystems, true);
   config->m_filesystems = nullptr;
 }
 

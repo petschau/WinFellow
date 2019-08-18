@@ -1,16 +1,8 @@
 #include <memory>
+#include "fellow/api/defs.h"
 #include "fellow/hardfile/hunks/HunkParser.h"
 #include "fellow/hardfile/hunks/HunkFactory.h"
 #include "fellow/api/Services.h"
-
-#ifdef _DEBUG
-  #define _CRTDBG_MAP_ALLOC
-  #include <cstdlib>
-  #include <crtdbg.h>
-  #define DBG_NEW new ( _NORMAL_BLOCK , __FILE__ , __LINE__ )
-#else
-  #define DBG_NEW new
-#endif
 
 using namespace fellow::api;
 
@@ -25,7 +17,7 @@ namespace fellow::hardfile::hunks
       return nullptr;
     }
 
-    auto header = DBG_NEW HeaderHunk();
+    auto header = new HeaderHunk();
     header->Parse(_rawDataReader);
     return header;
   }
