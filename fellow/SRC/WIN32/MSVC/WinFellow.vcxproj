@@ -600,6 +600,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\graphics\GraphicsEventQueue.cpp" />
     <ClCompile Include="..\..\graphics\CycleExactSprites.cpp" />
     <ClCompile Include="..\..\IPF\CapsPlug.cpp" />
+    <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp" />
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -1650,6 +1651,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\IPF\CapsAPI.h" />
     <ClInclude Include="..\..\IPF\CapsPlug.h" />
     <ClInclude Include="..\..\IPF\Comtype.h" />
+    <ClInclude Include="..\..\test\catch\catch.hpp" />
+    <ClInclude Include="..\..\test\catch\CustomCatchMain.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGI.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapter.h" />
     <ClInclude Include="..\DXGI\GfxDrvDXGIAdapterEnumerator.h" />
