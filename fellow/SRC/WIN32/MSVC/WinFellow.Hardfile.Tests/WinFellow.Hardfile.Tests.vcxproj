@@ -107,6 +107,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <FloatingPointModel>Fast</FloatingPointModel>
       <SupportJustMyCode>false</SupportJustMyCode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -136,6 +137,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <OmitFramePointers>false</OmitFramePointers>
       <SupportJustMyCode>false</SupportJustMyCode>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

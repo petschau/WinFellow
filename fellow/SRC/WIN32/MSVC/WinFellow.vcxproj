@@ -261,6 +261,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PreBuildEvent>
       <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\INCLUDE\versioninfo-wcrev.h -OutputFileName ..\INCLUDE\versioninfo.h
@@ -325,6 +326,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
+      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
     <PreBuildEvent>
       <Command>PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\INCLUDE\versioninfo-wcrev.h -OutputFileName ..\INCLUDE\versioninfo.h
