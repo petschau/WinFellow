@@ -571,6 +571,9 @@ static void sysinfoParseOSVersionInfo(void) {
             case 18362:
               sprintf(strOS, "Windows 10 version 1903");
               break;
+            case 18363:
+              sprintf(strOS, "Windows 10 version 1909");
+              break;
           }
           fellowAddTimelessLog("\toperating system : \t%s\n", strOS);
           break;
