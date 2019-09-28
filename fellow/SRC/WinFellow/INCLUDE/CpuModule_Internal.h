@@ -51,6 +51,8 @@ extern void cpuSetInstructionTime(ULO cycles);
 extern ULO cpuGetInstructionTime(void);
 extern void cpuSetOriginalPC(ULO pc);
 extern ULO cpuGetOriginalPC(void);
+extern void cpuSetInstructionAborted(bool aborted);
+extern bool cpuGetInstructionAborted();
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
@@ -169,6 +171,7 @@ extern ULO cpuGetRaiseInterruptLevel(void);
 // Exceptions
 extern void cpuThrowPrivilegeViolationException(void);
 extern void cpuThrowIllegalInstructionException(BOOLE executejmp);
+extern void cpuThrowIllegalInstructionExceptionFromBreakpoint();
 extern void cpuThrowFLineException(void);
 extern void cpuThrowALineException(void);
 extern void cpuThrowTrapVException(void);

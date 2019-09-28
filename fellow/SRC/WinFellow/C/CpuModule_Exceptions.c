@@ -60,7 +60,7 @@ static STR *cpuGetExceptionName(ULO vector_offset)
   char *name;
 
   if (vector_offset == 0x8)
-    name = "Exception: 2 - Access fault";
+    name = "Exception: 2 - Bus error";
   else if (vector_offset == 0xc)
     name = "Exception: 3 - Address error";
   else if (vector_offset == 0x10)
@@ -152,7 +152,40 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
     cpuSetStop(FALSE);
 
     cpuInitializeFromNewPC(vector_address);
-    cpuSetInstructionTime(40);
+
+    ULO exceptionCycles = 0;
+
+    switch (vector_offset)
+    {
+    case 0x08: exceptionCycles = 50; break; // Bus
+    case 0x0c: exceptionCycles = 50; break; // Address
+    case 0x10: exceptionCycles = 34; break; // Illegal
+    case 0x14: exceptionCycles = 42; break; // Division by zero
+    case 0x18: exceptionCycles = 28; break; // Chk
+    case 0x1c: exceptionCycles = 34; break; // Trapcc/trapv
+    case 0x20: exceptionCycles = 34; break; // Privilege
+    case 0x24: exceptionCycles = 34; break; // Trace
+    case 0x28: exceptionCycles = 34; break; // Line A
+    case 0x2c: exceptionCycles = 34; break; // Line F
+    case 0x80:
+    case 0x84:
+    case 0x88:
+    case 0x8c:
+    case 0x90:
+    case 0x94:
+    case 0x98:
+    case 0x9c:
+    case 0xa0:
+    case 0xa4:
+    case 0xa8:
+    case 0xac:
+    case 0xb0:
+    case 0xb4:
+    case 0xb8:
+    case 0xbc: exceptionCycles = 34; break; // TRAP
+    default: exceptionCycles = 4; break; // Should not come here
+    }
+    cpuSetInstructionTime(exceptionCycles);
   }
 
   // If the exception happened mid-instruction...
@@ -164,6 +197,7 @@ void cpuThrowException(ULO vector_offset, ULO pc, BOOLE executejmp)
 
 void cpuThrowPrivilegeViolationException(void)
 {
+  cpuSetInstructionAborted(true);
   // The saved pc points to the instruction causing the violation
   // (And the kickstart excpects pc in the stack frame to be the opcode PC.)
   cpuThrowException(0x20, cpuGetOriginalPC(), FALSE);
@@ -171,18 +205,28 @@ void cpuThrowPrivilegeViolationException(void)
 
 void cpuThrowIllegalInstructionException(BOOLE executejmp)
 {
+  cpuSetInstructionAborted(true);
   // The saved pc points to the illegal instruction
   cpuThrowException(0x10, cpuGetOriginalPC(), executejmp);
 }
 
+void cpuThrowIllegalInstructionExceptionFromBreakpoint()
+{
+  cpuSetInstructionAborted(true);
+  // The saved pc points to the illegal instruction
+  cpuThrowException(0x10, cpuGetPC(), FALSE);
+}
+
 void cpuThrowALineException(void)
 {
+  cpuSetInstructionAborted(true);
   // The saved pc points to the a-line instruction
   cpuThrowException(0x28, cpuGetOriginalPC(), FALSE);
 }
 
 void cpuThrowFLineException(void)
 {
+  cpuSetInstructionAborted(true);
   // The saved pc points to the f-line instruction
   cpuThrowException(0x2c, cpuGetOriginalPC(), FALSE);
 }
@@ -219,6 +263,7 @@ void cpuThrowTraceException(void)
 
 void cpuThrowAddressErrorException(void)
 {
+  cpuSetInstructionAborted(true);
   cpuThrowException(0xc, cpuGetPC() - 2, TRUE);
 }
 

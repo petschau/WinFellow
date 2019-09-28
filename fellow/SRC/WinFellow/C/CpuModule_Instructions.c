@@ -1,4 +1,3 @@
-/* @(#) $Id: CpuModule_Instructions.c,v 1.12 2013-01-08 18:55:48 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* CPU 68k functions                                                       */
@@ -119,6 +118,15 @@ void cpuUpdateSr(ULO new_sr)
     cpuSetAReg(7, cpuGetSspDirect());
   }
 
+  if (cpuGetModelMajor() < 2)
+  {
+    new_sr &= 0xa71f;
+  }
+  else
+  {
+    new_sr &= 0xf71f;
+  }
+
   cpuSetSR(new_sr);
 
   if (runlevel_old != runlevel_new)
@@ -134,7 +142,7 @@ static void cpuIllegal(void)
   {
     cpuThrowFLineException();
   }
-  else if ((opcode & 0xa000) == 0xa000)
+  else if ((opcode & 0xf000) == 0xa000)
   {
     if ((cpuGetPC() & 0xff0000) == 0xf00000)
     {
@@ -166,7 +174,7 @@ static void cpuIllegalInstruction(ULO *opcode_data)
 /// </summary>
 static void cpuBkpt(ULO vector)
 {
-  cpuIllegal();
+  cpuThrowIllegalInstructionExceptionFromBreakpoint();
 }
 
 /// <summary>
@@ -844,6 +852,7 @@ static void cpuAndCcrB()
 {
   UWO imm = cpuGetNextWord();
   cpuSetSR(cpuGetSR() & (0xffe0 | (imm & 0x1f)));
+  cpuSetInstructionTime(20);
 }
 
 /// <summary>
@@ -855,6 +864,7 @@ static void cpuAndSrW()
   {
     UWO imm = cpuGetNextWord();
     cpuUpdateSr(cpuGetSR() & imm);
+    cpuSetInstructionTime(20);
   }
   else
   {
@@ -869,6 +879,7 @@ static void cpuOrCcrB()
 {
   UWO imm = cpuGetNextWord();
   cpuSetSR(cpuGetSR() | (imm & 0x1f));
+  cpuSetInstructionTime(20);
 }
 
 /// <summary>
@@ -880,6 +891,7 @@ static void cpuOrSrW()
   {
     UWO imm = cpuGetNextWord();
     cpuUpdateSr(cpuGetSR() | imm);
+    cpuSetInstructionTime(20);
   }
   else
   {
@@ -894,6 +906,7 @@ static void cpuEorCcrB()
 {
   UWO imm = cpuGetNextWord();
   cpuSetSR(cpuGetSR() ^ (imm & 0x1f));
+  cpuSetInstructionTime(20);
 }
 
 /// <summary>
@@ -905,6 +918,7 @@ static void cpuEorSrW()
   {
     UWO imm = cpuGetNextWord();
     cpuUpdateSr(cpuGetSR() ^ imm);
+    cpuSetInstructionTime(20);
   }
   else
   {
@@ -925,14 +939,8 @@ static void cpuMoveToCcr(UWO src)
 /// </summary>
 static void cpuMoveToSr(UWO src)
 {
-  if (cpuGetFlagSupervisor())
-  {
-    cpuUpdateSr(src);
-  }
-  else
-  {
-    cpuThrowPrivilegeViolationException();
-  }
+  // Supervisor privilege for move to sr is checked in the instruction wrappers
+  cpuUpdateSr(src);
 }
 
 /// <summary>
@@ -948,19 +956,12 @@ static UWO cpuMoveFromCcr()
 /// </summary>
 static UWO cpuMoveFromSr()
 {
-  if (cpuGetModelMajor() == 0 || (cpuGetModelMajor() > 0 && cpuGetFlagSupervisor()))
-  {
-    return (UWO) cpuGetSR();
-  }
-  else
-  {
-    cpuThrowPrivilegeViolationException();
-  } 
-  return 0;
+  // Supervisor privilege for move from sr is checked in the instruction wrappers, privileged on 010+
+  return (UWO) cpuGetSR();
 }
 
 /// <summary>
-/// Scc byte. 
+/// Scc byte.
 /// </summary>
 static UBY cpuScc(ULO cc)
 {
@@ -1022,19 +1023,19 @@ static void cpuMulL(ULO src1, UWO extension)
     if (extension & 0x0400) // 32bx32b=64b
     {  
       ULO dh = extension & 7;
-      cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetDReg(dl, (ULO)result);
+      cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetFlagsNZ00New64(result);
     }
     else // 32bx32b=32b
     {
       BOOLE o;
       if (result >= 0)
-	o = (result & 0xffffffff00000000) != 0;
+	o = (result & 0xffffffff80000000) != 0;
       else
-	o = (result & 0xffffffff00000000) != 0xffffffff00000000;
+	o = (result & 0xffffffff80000000) != 0xffffffff80000000;
       cpuSetDReg(dl, (ULO)result);
-      cpuSetFlagsNZVC(result == 0, result < 0, o, FALSE);
+      cpuSetFlagsNZVC(((ULO)result) == 0, !!(result & 0x80000000), o, FALSE);
     }
   }
   else // mulu.l
@@ -1043,14 +1044,14 @@ static void cpuMulL(ULO src1, UWO extension)
     if (extension & 0x0400) // 32bx32b=64b
     {  
       ULO dh = extension & 7;
-      cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetDReg(dl, (ULO)result);
+      cpuSetDReg(dh, (ULO)(result >> 32));
       cpuSetFlagsNZ00New64(result);
     }
     else // 32bx32b=32b
     {
       cpuSetDReg(dl, (ULO)result);
-      cpuSetFlagsNZVC(result == 0, !!(result & 0x80000000), (result >> 32) != 0, FALSE);
+      cpuSetFlagsNZVC((ULO)result == 0, !!(result & 0x80000000), (result >> 32) != 0, FALSE);
     }
   }
   cpuSetInstructionTime(4);
@@ -1123,6 +1124,7 @@ static void cpuDivsW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_tim
   if (src1 == 0)
   {
     // Alcatraz odyssey assumes that PC in this exception points after the instruction.
+    cpuSetFlagsNZVC(TRUE, FALSE, FALSE, FALSE);
     cpuThrowDivisionByZeroException();
   }
   else
@@ -1135,7 +1137,7 @@ static void cpuDivsW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_tim
     if (res > 32767 || res < -32768)
     {
       result = dst;
-      cpuSetFlagsVC(TRUE, FALSE);
+      cpuSetFlagsNZVC(FALSE, TRUE, TRUE, FALSE);
     }
     else
     {
@@ -1155,6 +1157,7 @@ static void cpuDivuW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_tim
   if (src1 == 0)
   {
     // Alcatraz odyssey assumes that PC in this exception points after the instruction.
+    cpuSetFlagsNZVC((dst & 0xffff0000) == 0, (dst & 0x80000000) == 0x80000000, FALSE, FALSE);
     cpuThrowDivisionByZeroException();
   }
   else
@@ -1167,7 +1170,7 @@ static void cpuDivuW(ULO dst, UWO src1, ULO destination_reg, ULO instruction_tim
     if (res > 65535)
     {
       result = dst;
-      cpuSetFlagsVC(TRUE, FALSE);
+      cpuSetFlagsNZVC(FALSE, TRUE, TRUE, FALSE);
     }
     else
     {
@@ -1935,12 +1938,13 @@ static void cpuRte()
       cpuUpdateSr(newsr); // Because we can go from isp to msp here.
 
     } while (redo);
+
+    cpuSetInstructionTime(20);
   }
   else
   {
     cpuThrowPrivilegeViolationException();
   }
-  cpuSetInstructionTime(20);
 }
 
 /// <summary>
@@ -1960,8 +1964,9 @@ static void cpuSwap(ULO reg)
 static void cpuUnlk(ULO reg)
 {
   cpuSetAReg(7, cpuGetAReg(reg));
-  cpuSetAReg(reg, memoryReadLong(cpuGetAReg(7)));
+  ULO value = memoryReadLong(cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + 4);
+  cpuSetAReg(reg, value);
   cpuSetInstructionTime(12);
 }
 
@@ -1971,8 +1976,9 @@ static void cpuUnlk(ULO reg)
 static void cpuLinkW(ULO reg)
 {
   ULO disp = cpuGetNextWordSignExt();
+  ULO value = cpuGetAReg(reg);
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetAReg(reg), cpuGetAReg(7));
+  memoryWriteLong(value, cpuGetAReg(7));
   cpuSetAReg(reg, cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + disp);
   cpuSetInstructionTime(16);
@@ -1985,8 +1991,9 @@ static void cpuLinkW(ULO reg)
 static void cpuLinkL(ULO reg)
 {
   ULO disp = cpuGetNextLong();
+  ULO value = cpuGetAReg(reg);
   cpuSetAReg(7, cpuGetAReg(7) - 4);
-  memoryWriteLong(cpuGetAReg(reg), cpuGetAReg(7));
+  memoryWriteLong(value, cpuGetAReg(7));
   cpuSetAReg(reg, cpuGetAReg(7));
   cpuSetAReg(7, cpuGetAReg(7) + disp);
   cpuSetInstructionTime(4);
@@ -2070,8 +2077,6 @@ static void cpuMovemwPre(UWO regs, ULO reg)
   ULO dstea = cpuGetAReg(reg);
   ULO index = 1;
   LON i, j;
-  BOOLE ea_reg_seen = FALSE;
-  ULO ea_reg_ea = 0;
 
   i = 1;
   for (j = 7; j >= 0; j--)
@@ -2081,8 +2086,7 @@ static void cpuMovemwPre(UWO regs, ULO reg)
       dstea -= 2;
       if (cpuGetModelMajor() >= 2 && j == reg)
       {
-	ea_reg_seen = TRUE;
-	ea_reg_ea = dstea;
+	memoryWriteWord((UWO)dstea, dstea);
       }
       else
       {
@@ -2104,10 +2108,6 @@ static void cpuMovemwPre(UWO regs, ULO reg)
     }
     index = index << 1;
   }
-  if (ea_reg_seen)
-  {
-    memoryWriteWord((UWO)dstea, ea_reg_ea);
-  }
   cpuSetAReg(reg, dstea);
   cpuSetInstructionTime(cycles);
 }
@@ -2122,8 +2122,6 @@ static void cpuMovemlPre(UWO regs, ULO reg)
   ULO dstea = cpuGetAReg(reg);
   ULO index = 1;
   LON i, j;
-  BOOLE ea_reg_seen = FALSE;
-  ULO ea_reg_ea = 0;
 
   i = 1;
   for (j = 7; j >= 0; j--)
@@ -2133,8 +2131,7 @@ static void cpuMovemlPre(UWO regs, ULO reg)
       dstea -= 4;
       if (cpuGetModelMajor() >= 2 && j == reg)
       {
-	ea_reg_seen = TRUE;
-	ea_reg_ea = dstea;
+	memoryWriteLong(dstea, dstea);
       }
       else
       {
@@ -2157,10 +2154,6 @@ static void cpuMovemlPre(UWO regs, ULO reg)
     index = index << 1;
   }
 
-  if (ea_reg_seen)
-  {
-    memoryWriteLong(dstea, ea_reg_ea);
-  }
   cpuSetAReg(reg, dstea);
   cpuSetInstructionTime(cycles);
 }
@@ -2411,12 +2404,12 @@ static void cpuCmpML(ULO regx, ULO regy)
 }
 
 /// <summary>
-/// chk.w Dx, ea
+/// chk.w ea, dn  (upper bound, value to test)
 /// Undocumented features:
 /// Z is set from the register operand,
 /// V and C is always cleared.
 /// </summary>
-static void cpuChkW(UWO value, UWO ub)
+static void cpuChkW(UWO value, UWO ub, ULO instructionTime)
 {
   cpuSetFlagZ(value == 0);
   cpuClearFlagsVC();
@@ -2430,6 +2423,11 @@ static void cpuChkW(UWO value, UWO ub)
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
   }
+  else
+  {
+    cpuSetFlagN(FALSE);
+    cpuSetInstructionTime(instructionTime);
+  }
 }
 
 /// <summary>
@@ -2439,7 +2437,7 @@ static void cpuChkW(UWO value, UWO ub)
 /// Z is set from the register operand,
 /// V and C is always cleared.
 /// </summary>
-static void cpuChkL(ULO value, ULO ub)
+static void cpuChkL(ULO value, ULO ub, ULO instructionTime)
 {
   cpuSetFlagZ(value == 0);
   cpuClearFlagsVC();
@@ -2452,6 +2450,10 @@ static void cpuChkL(ULO value, ULO ub)
   {
     cpuSetFlagN(FALSE);
     cpuThrowChkException();
+  }
+  else
+  {
+    cpuSetInstructionTime(instructionTime);
   }
 }
 
@@ -2648,12 +2650,22 @@ static ULO cpuGetBfWidth(UWO ext, bool widthIsDataRegister)
   return width;
 }
 
+static ULO cpuRotateLeft(ULO value, ULO shift)
+{
+  return (value << shift) | (value >> (32 - shift));
+}
+
+static ULO cpuRotateRight(ULO value, ULO shift)
+{
+  return (value >> shift) | (value << (32 - shift));
+}
+
 static void cpuSetBfField(struct cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
 {
   if (has_ea)
   {
     ULO shift = bf_data->base_address_byte_count*8 - bf_data->normalized_offset - bf_data->width;
-    ULL field_value = (bf_data->field_memory & ~(bf_data->field_mask << shift)) | (bf_data->field << shift);
+    ULL field_value = (bf_data->field_memory & ~(bf_data->field_mask << shift)) | (((ULL)bf_data->field) << shift);
     ULO address = bf_data->base_address + bf_data->base_address_byte_offset;
 
     for (int i = bf_data->base_address_byte_count - 1; i >= 0; --i)
@@ -2665,9 +2677,20 @@ static void cpuSetBfField(struct cpuBfData *bf_data, ULO ea_or_reg, bool has_ea)
   }
   else
   {
-    ULO reg_shift = (32 - bf_data->offset - bf_data->width);
-    ULO reg_value = (cpuGetDReg(ea_or_reg) & ~(bf_data->field_mask << reg_shift)) | (bf_data->field << reg_shift);
-    cpuSetDReg(ea_or_reg, reg_value);
+    // Field from Dn wraps around if offset + width > 32
+    ULO offsetPlusWidth = (bf_data->offset & 0x1f) + bf_data->width;
+    if (offsetPlusWidth > 32)
+    {
+      ULO rotate = offsetPlusWidth - 32;
+      ULO reg_value = (cpuGetDReg(ea_or_reg) & ~cpuRotateRight((ULO)bf_data->field_mask, rotate)) | cpuRotateRight(bf_data->field, rotate);
+      cpuSetDReg(ea_or_reg, reg_value);
+    }
+    else
+    {
+      ULO reg_shift = 32 - offsetPlusWidth;
+      ULO reg_value = (cpuGetDReg(ea_or_reg) & ~(bf_data->field_mask << reg_shift)) | (bf_data->field << reg_shift);
+      cpuSetDReg(ea_or_reg, reg_value);
+    }
   }
 }
 
@@ -2709,7 +2732,16 @@ void cpuBfDecodeExtWordAndGetField(struct cpuBfData *bf_data, ULO ea_or_reg, boo
   }
   else
   {
-    bf_data->field = cpuGetDReg(ea_or_reg) >> (32 - bf_data->offset - bf_data->width);
+    // Field from Dn wraps around if offset + width > 32
+    const ULO offsetPlusWidth = (bf_data->offset & 0x1f) + bf_data->width;
+    if (offsetPlusWidth > 32)
+    {
+      bf_data->field = cpuRotateLeft(cpuGetDReg(ea_or_reg), offsetPlusWidth - 32);
+    }
+    else
+    {
+      bf_data->field = cpuGetDReg(ea_or_reg) >> (32 - offsetPlusWidth);
+    }
   }
   bf_data->field &= bf_data->field_mask;
 }
@@ -2723,7 +2755,7 @@ static void cpuBfChgCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 
-  bf_data.field = (~bf_data.field) & bf_data.field_mask;
+  bf_data.field = (~bf_data.field) & (ULO)bf_data.field_mask;
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }
@@ -3007,7 +3039,7 @@ static void cpuMovepLEa(ULO areg, ULO dreg)
 /// <summary>
 /// pack Dx, Dy, #adjustment
 /// </summary>
-static void cpuPackReg(ULO yreg, ULO xreg)
+static void cpuPackReg(ULO xreg, ULO yreg)
 {
   UWO adjustment = cpuGetNextWord();
   UWO src = cpuGetDRegWord(xreg) + adjustment;
@@ -3018,12 +3050,11 @@ static void cpuPackReg(ULO yreg, ULO xreg)
 /// <summary>
 /// pack -(Ax), -(Ay), #adjustment
 /// </summary>
-static void cpuPackEa(ULO yreg, ULO xreg)
+static void cpuPackEa(ULO xreg, ULO yreg)
 {
   UWO adjustment = cpuGetNextWord();
-  UBY b1 = memoryReadByte(cpuEA04(xreg, 1));
-  UBY b2 = memoryReadByte(cpuEA04(xreg, 1));
-  UWO result = ((((UWO)b1) << 8) | (UWO) b2) + adjustment;
+  UWO src = memoryReadWord(cpuEA04(xreg, 2));
+  UWO result = src + adjustment;
   memoryWriteByte((UBY) (((result >> 4) & 0xf0) | (result & 0xf)), cpuEA04(yreg, 1));
   cpuSetInstructionTime(4);
 }
@@ -3031,7 +3062,7 @@ static void cpuPackEa(ULO yreg, ULO xreg)
 /// <summary>
 /// unpk Dx, Dy, #adjustment
 /// </summary>
-static void cpuUnpkReg(ULO yreg, ULO xreg)
+static void cpuUnpkReg(ULO xreg, ULO yreg)
 {
   UWO adjustment = cpuGetNextWord();
   UBY b1 = cpuGetDRegByte(xreg);
@@ -3043,13 +3074,12 @@ static void cpuUnpkReg(ULO yreg, ULO xreg)
 /// <summary>
 /// unpk -(Ax), -(Ay), #adjustment
 /// </summary>
-static void cpuUnpkEa(ULO yreg, ULO xreg)
+static void cpuUnpkEa(ULO xreg, ULO yreg)
 {
   UWO adjustment = cpuGetNextWord();
   UBY b1 = memoryReadByte(cpuEA04(xreg, 1));
   UWO result = ((((UWO)(b1 & 0xf0)) << 4) | ((UWO)(b1 & 0xf))) + adjustment;
-  memoryWriteByte((UBY) (result >> 8), cpuEA04(yreg, 1));
-  memoryWriteByte((UBY) result, cpuEA04(yreg, 1));
+  memoryWriteWord(result, cpuEA04(yreg, 2));
   cpuSetInstructionTime(4);
 }
 
@@ -3293,7 +3323,7 @@ static void cpuTrapccW(ULO cc)
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
     return;
   }
-  cpuSetInstructionTime(4);	  
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3307,7 +3337,7 @@ static void cpuTrapccL(ULO cc)
     cpuThrowTrapVException(); // TrapV and Trapcc share the exception vector
     return;
   }
-  cpuSetInstructionTime(4);	  
+  cpuSetInstructionTime(4);
 }
 
 /// <summary>
@@ -3409,7 +3439,10 @@ static void cpuCas2W()
   else
   {
     cpuSetDRegWord(cmp1_regno, dst1);
-    cpuSetDRegWord(cmp2_regno, dst2);
+    if (cmp1_regno != cmp2_regno)
+    {
+      cpuSetDRegWord(cmp2_regno, dst2);
+    }
   }
   cpuSetInstructionTime(4);
 }
@@ -3447,7 +3480,10 @@ static void cpuCas2L()
   else
   {
     cpuSetDReg(cmp1_regno, dst1);
-    cpuSetDReg(cmp2_regno, dst2);
+    if (cmp1_regno != cmp2_regno)
+    {
+      cpuSetDReg(cmp2_regno, dst2);
+    }
   }
   cpuSetInstructionTime(4);
 }
@@ -3455,12 +3491,14 @@ static void cpuCas2L()
 /// <summary>
 /// Common code for chk2 ea, Rn / cmp2 ea, Rn
 /// </summary>
-static void cpuChkCmp(ULO lb, ULO ub, ULO val, BOOLE is_chk2)
+static void cpuChk2Cmp2(ULO lb, ULO ub, ULO val, BOOLE is_chk2)
 {
   BOOLE z = (val == lb || val == ub);
-  BOOLE c = ((lb <= ub) && (val < lb || val > ub)) || ((lb > ub) && (val < lb) && (val > ub)); 
+  BOOLE c = ((lb <= ub) && (val < lb || val > ub)) || ((lb > ub) && (val < lb) && (val > ub));
+  BOOLE v = (ub < lb) && (val > ub) && (val < lb);
   cpuSetFlagZ(z);
   cpuSetFlagC(c);
+  cpuSetFlagV(v);
   cpuSetInstructionTime(4);
   if (is_chk2 && c)
   {
@@ -3478,11 +3516,11 @@ static void cpuChkCmp2B(ULO ea, UWO extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChkCmp((ULO)(LON)(BYT)memoryReadByte(ea), (ULO)(LON)(BYT)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((ULO)(LON)(BYT)memoryReadByte(ea), (ULO)(LON)(BYT)memoryReadByte(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {
-    cpuChkCmp((ULO)memoryReadByte(ea), (ULO)memoryReadByte(ea + 1), (ULO)(UBY)cpuGetDReg(rn), is_chk2);
+    cpuChk2Cmp2((ULO)memoryReadByte(ea), (ULO)memoryReadByte(ea + 1), (ULO)(UBY)cpuGetDReg(rn), is_chk2);
   }
 }
 
@@ -3496,11 +3534,11 @@ static void cpuChkCmp2W(ULO ea, UWO extension)
   BOOLE is_chk2 = (extension & 0x0800);
   if (da == 1)
   {
-    cpuChkCmp((ULO)(LON)(WOR)memoryReadWord(ea), (ULO)(LON)(WOR)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
+    cpuChk2Cmp2((ULO)(LON)(WOR)memoryReadWord(ea), (ULO)(LON)(WOR)memoryReadWord(ea + 1), cpuGetAReg(rn), is_chk2);
   }
   else
   {
-    cpuChkCmp((ULO)memoryReadWord(ea), (ULO)memoryReadWord(ea + 2), (ULO)(UWO)cpuGetDReg(rn), is_chk2);
+    cpuChk2Cmp2((ULO)memoryReadWord(ea), (ULO)memoryReadWord(ea + 2), (ULO)(UWO)cpuGetDReg(rn), is_chk2);
   }
 }
 
@@ -3512,7 +3550,7 @@ static void cpuChkCmp2L(ULO ea, UWO extension)
   ULO da = (ULO) (extension >> 15);
   ULO rn = (ULO) (extension >> 12) & 7;
   BOOLE is_chk2 = (extension & 0x0800);
-  cpuChkCmp(memoryReadLong(ea), memoryReadLong(ea + 4), cpuGetReg(da, rn), is_chk2);
+  cpuChk2Cmp2(memoryReadLong(ea), memoryReadLong(ea + 4), cpuGetReg(da, rn), is_chk2);
 }
 
 /// <summary>
@@ -3694,14 +3732,14 @@ ULO cpuExecuteInstruction(void)
   else
   {
     ULO oldSr = cpuGetSR();
-    UWO opcode;
+    cpuSetInstructionAborted(false);
 
 #ifdef CPU_INSTRUCTION_LOGGING
     cpuCallInstructionLoggingFunc();
 #endif
 
     cpuSetOriginalPC(cpuGetPC()); // Store pc and opcode for exception logging
-    opcode = cpuGetNextWord();
+    UWO opcode = cpuGetNextWord();
 
 #ifdef CPU_INSTRUCTION_LOGGING
     cpuSetCurrentOpcode(opcode);
@@ -3709,9 +3747,9 @@ ULO cpuExecuteInstruction(void)
 
     cpuSetInstructionTime(0);
 
-	cpu_opcode_data_current[opcode].instruction_func(
-			cpu_opcode_data_current[opcode].data);
-    if (oldSr & 0xc000)
+    cpu_opcode_data_current[opcode].instruction_func(cpu_opcode_data_current[opcode].data);
+
+    if (oldSr & 0xc000 && !cpuGetInstructionAborted())
     {
       // This instruction was traced
       ULO cycles = cpuGetInstructionTime();

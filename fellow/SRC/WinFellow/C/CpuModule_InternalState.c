@@ -1,4 +1,3 @@
-/* @(#) $Id: CpuModule_InternalState.c,v 1.9 2012-08-12 16:51:02 peschau Exp $ */
 /*=========================================================================*/
 /* Fellow                                                                  */
 /* 68000 internal state                                                    */
@@ -64,6 +63,7 @@ static UWO cpu_current_opcode;
 #endif
 
 static ULO cpu_original_pc;
+static bool cpu_instruction_aborted;
 
 /* Number of cycles taken by the last intstruction */
 static ULO cpu_instruction_time;
@@ -189,6 +189,9 @@ ULO cpuGetInstructionTime(void) {return cpu_instruction_time;}
 
 void cpuSetOriginalPC(ULO pc) {cpu_original_pc = pc;}
 ULO cpuGetOriginalPC(void) {return cpu_original_pc;}
+
+void cpuSetInstructionAborted(bool aborted) {cpu_instruction_aborted = aborted;}
+bool cpuGetInstructionAborted() {return cpu_instruction_aborted;}
 
 #ifdef CPU_INSTRUCTION_LOGGING
 
