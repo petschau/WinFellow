@@ -31,6 +31,8 @@ installed and added to the search path:
 - NSIS - search path
 - Visual Studio Locator (vswhere.exe) must be located somewhere within the search path
 
+As an aid on a clean system, the fellow\SRC\WIN32\Scripts directory contains a Boxstarter script that can be used to quickly perform an unattended setup of all required components. This might later be used to achieve an automated build process.
+
 WinFellow was ported from DOS Fellow, which was based in large parts on assembler code that has been converted to C in the master branch.
 The assembler based code still exists in the assembly_based branch. To work with that branch, <a href="http://nasm.sourceforge.net|nasm2">NASM2</a> is needed additionally.
 
