@@ -101,7 +101,7 @@ Function Main()
 
     $SourceCodeBaseDir = Resolve-Path (git rev-parse --show-cdup)
     Write-Debug "Source Code Base Dir: $SourceCodeBaseDir"
-    $temp = [Environment]::GetEnvironmentVariable("TEMP", "User")
+    $temp = $env:temp
     Write-Debug "Temporary Dir       : $temp"
     $TargetOutputDir   = Resolve-Path ("$SourceCodeBaseDir\..")
     Write-Debug "Target Output Dir   : $TargetOutputDir"
