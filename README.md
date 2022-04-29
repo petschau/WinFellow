@@ -13,7 +13,7 @@ Introduction
 WinFellow is a high performance Amiga Emulator primarily targeted for Windows.
 Its distinguished API and core do however allow a fairly easy port to other operating systems.
 
-WinFellow is targeted for Windows XP/Vista/7/8/10.
+WinFellow is targeted for Windows XP/Vista/7/8/10/11.
 
 Obtaining these sources
 -----------------------
