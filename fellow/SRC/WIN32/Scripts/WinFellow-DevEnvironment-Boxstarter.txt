@@ -11,7 +11,11 @@ cinst doxygen.install
 cinst graphviz
 cinst Ghostscript
 
+# optional/nice-to-have components
 cinst msbuild-structured-log-viewer
+cinst github-desktop
+cinst vscode
+cinst notepadplusplus
 
 # add tools required for unattended builds to path variable
 $LyxPath  = Resolve-Path "${env:ProgramFiles(x86)}\LyX*\bin"
