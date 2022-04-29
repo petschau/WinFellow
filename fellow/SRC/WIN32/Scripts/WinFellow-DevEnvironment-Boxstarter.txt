@@ -1,5 +1,5 @@
-cinst visualstudio2019community --params "--add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.WinXP --add Microsoft.VisualStudio.Component.Windows10SDK.17134" # legacy XP toolset and Windows 10 1803 SDK
-# cinst visualstudio2019enterprise
+cinst visualstudio2022community --params "--add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.WinXP --add Microsoft.VisualStudio.Component.Windows10SDK.17134" # legacy XP toolset and Windows 10 1803 SDK
+# cinst visualstudio2022enterprise
 
 cinst vswhere
 cinst poshgit
