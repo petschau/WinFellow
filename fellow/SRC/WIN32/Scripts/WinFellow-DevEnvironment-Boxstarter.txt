@@ -16,6 +16,7 @@ cinst msbuild-structured-log-viewer
 cinst github-desktop
 cinst vscode
 cinst notepadplusplus
+cinst everything
 
 # add tools required for unattended builds to path variable
 $LyxPath  = Resolve-Path "${env:ProgramFiles(x86)}\LyX*\bin"
