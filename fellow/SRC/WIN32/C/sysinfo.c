@@ -544,7 +544,7 @@ static void sysinfoParseOSVersionInfo(void) {
 	  case 10:
       switch (osInfo.dwMinorVersion) {
         case 0:
-          STR strOS[24] = "Windows 10";
+          STR strOS[24] = "Windows 10 or 11";
           switch (osInfo.dwBuildNumber)
           {
             case 10240:
@@ -573,6 +573,21 @@ static void sysinfoParseOSVersionInfo(void) {
               break;
             case 18363:
               sprintf(strOS, "Windows 10 version 1909");
+              break;
+            case 19041:
+              sprintf(strOS, "Windows 10 version 2004");
+              break;
+            case 19042:
+              sprintf(strOS, "Windows 10 version 20H2");
+              break;
+            case 19043:
+              sprintf(strOS, "Windows 10 version 21H1");
+              break;
+            case 19044:
+              sprintf(strOS, "Windows 10 version 21H2");
+              break;
+            case 22000:
+              sprintf(strOS, "Windows 11 version 21H2");
               break;
           }
           fellowAddTimelessLog("\toperating system : \t%s\n", strOS);

@@ -1,5 +1,5 @@
-cinst visualstudio2019community --params "--add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.WinXP --add Microsoft.VisualStudio.Component.Windows10SDK.17134" # legacy XP toolset and Windows 10 1803 SDK
-# cinst visualstudio2019enterprise
+cinst visualstudio2022community --params "--add Microsoft.VisualStudio.Workload.NativeDesktop --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.WinXP --add Microsoft.VisualStudio.Component.Windows11SDK.22000" # legacy XP toolset and Windows 11 SDK
+# cinst visualstudio2022enterprise
 
 cinst vswhere
 cinst poshgit
@@ -11,7 +11,12 @@ cinst doxygen.install
 cinst graphviz
 cinst Ghostscript
 
+# optional/nice-to-have components
 cinst msbuild-structured-log-viewer
+cinst github-desktop
+cinst vscode
+cinst notepadplusplus
+cinst everything
 
 # add tools required for unattended builds to path variable
 $LyxPath  = Resolve-Path "${env:ProgramFiles(x86)}\LyX*\bin"
