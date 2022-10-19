@@ -64,7 +64,7 @@
 #include "fellow/chipset/HostFrameDelayedRenderer.h"
 #include "fellow/chipset/HostFrameCopier.h"
 
-#include "../automation/Automator.h"
+#include "fellow/automation/Automator.h"
 #include "fellow/api/Services.h"
 #include "fellow/service/CoreServicesFactory.h"
 #include "fellow/api/VM.h"

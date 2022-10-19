@@ -34,7 +34,7 @@ Tuesday, September 19, 2000
 #include "GAMEPORT.H"
 #include "MOUSEDRV.H"
 #include "JOYDRV.H"
-#include "../automation/Automator.h"
+#include "fellow/automation/Automator.h"
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
 #endif

@@ -52,9 +52,6 @@
     <Filter Include="icons">
       <UniqueIdentifier>{33d76fb7-c7ea-48f4-88c8-dc1922fdb79d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="automation">
-      <UniqueIdentifier>{b409784d-dbc0-4bf3-81f0-589234dd4554}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow">
       <UniqueIdentifier>{4cc17501-a676-4970-88e2-862c2940f346}</UniqueIdentifier>
     </Filter>
@@ -147,6 +144,9 @@
     </Filter>
     <Filter Include="fellow\cpu">
       <UniqueIdentifier>{f78aaf8c-79e2-444c-b7a6-4e61662eee7f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\automation">
+      <UniqueIdentifier>{fb201ff1-e138-4253-95d8-cecda7d556e9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -350,12 +350,6 @@
     </ClCompile>
     <ClCompile Include="..\..\c\uart.cpp">
       <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\automation\Automator.cpp">
-      <Filter>automation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\automation\Script.cpp">
-      <Filter>automation</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\vm\M68K.cpp">
       <Filter>fellow\vm</Filter>
@@ -735,6 +729,12 @@
     <ClCompile Include="..\..\fellow\cpu\CpuModule_StackFrameGen.cpp">
       <Filter>fellow\cpu</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\automation\Automator.cpp">
+      <Filter>fellow\automation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\automation\Script.cpp">
+      <Filter>fellow\automation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -940,12 +940,6 @@
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\uart.h">
       <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\automation\Automator.h">
-      <Filter>automation</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\automation\Script.h">
-      <Filter>automation</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\defs.h">
       <Filter>fellow\api</Filter>
@@ -1426,6 +1420,12 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\cpu\CpuModule_Profile.h">
       <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\automation\Automator.h">
+      <Filter>fellow\automation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\automation\Script.h">
+      <Filter>fellow\automation</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

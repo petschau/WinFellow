@@ -508,8 +508,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\automation\Automator.cpp" />
-    <ClCompile Include="..\..\automation\Script.cpp" />
     <ClCompile Include="..\..\C\BLIT.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -694,6 +692,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderer.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderStatistics.cpp" />
+    <ClCompile Include="..\..\fellow\automation\Automator.cpp" />
+    <ClCompile Include="..\..\fellow\automation\Script.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameCopier.cpp" />
@@ -2047,8 +2047,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\automation\Automator.h" />
-    <ClInclude Include="..\..\automation\Script.h" />
     <ClInclude Include="..\..\fellow\api\configuration\HudConfiguration.h" />
     <ClInclude Include="..\..\fellow\api\defs.h" />
     <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h" />
@@ -2076,6 +2074,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h" />
     <ClInclude Include="..\..\fellow\application\IFpsProvider.h" />
+    <ClInclude Include="..\..\fellow\automation\Automator.h" />
+    <ClInclude Include="..\..\fellow\automation\Script.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneDMA.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.h" />
     <ClInclude Include="..\..\fellow\chipset\HostFrameCopier.h" />
