@@ -58,7 +58,7 @@
 #include "GRAPH.H"
 #include "CIA.H"
 #include "fellow/scheduler/Scheduler.h"
-#include "CpuModule.h"
+#include "fellow/cpu/CpuModule.h"
 #include "interrupt.h"
 #include <sys/timeb.h>
 
@@ -143,8 +143,19 @@ void floppyLog(STR *msg)
 void floppyLogDMARead(ULO drive, ULO track, ULO side, ULO length, ULO ticks)
 {
   STR msg[256];
-  sprintf(msg, "DMA Read Started: FrameNo=%I64u Y=%.3u X=%.3u Drive=%u Track=%u Side=%u Pt=%.8X Length=%u Ticks=%u PC=%.6X\n", busGetRasterFrameCount(), busGetRasterY(), busGetRasterX(), drive, track,
-          side, dskpt, length, ticks, cpuGetPC());
+  sprintf(
+      msg,
+      "DMA Read Started: FrameNo=%I64u Y=%.3u X=%.3u Drive=%u Track=%u Side=%u Pt=%.8X Length=%u Ticks=%u PC=%.6X\n",
+      busGetRasterFrameCount(),
+      busGetRasterY(),
+      busGetRasterX(),
+      drive,
+      track,
+      side,
+      dskpt,
+      length,
+      ticks,
+      cpuGetPC());
   floppyLog(msg);
 }
 

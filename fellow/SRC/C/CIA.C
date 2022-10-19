@@ -31,7 +31,7 @@
 #include "FLOPPY.H"
 #include "CIA.H"
 
-#include "CpuModule.h"
+#include "fellow/cpu/CpuModule.h"
 #include "interrupt.h"
 
 using namespace fellow::api;
@@ -913,10 +913,40 @@ void ciaWriteNothing(ULO i, UBY data)
 
 /* Table of CIA read/write functions */
 
-ciaFetchFunc cia_read[16] = {ciaReadpra,  ciaReadprb,  ciaReadddra, ciaReadddrb,    ciaReadtalo, ciaReadtahi, ciaReadtblo, ciaReadtbhi,
-                             ciaReadevlo, ciaReadevmi, ciaReadevhi, ciaReadNothing, ciaReadsp,   ciaReadicr,  ciaReadcra,  ciaReadcrb};
-ciaWriteFunc cia_write[16] = {ciaWritepra,  ciaWriteprb,  ciaWriteddra, ciaWriteddrb,    ciaWritetalo, ciaWritetahi, ciaWritetblo, ciaWritetbhi,
-                              ciaWriteevlo, ciaWriteevmi, ciaWriteevhi, ciaWriteNothing, ciaWritesp,   ciaWriteicr,  ciaWritecra,  ciaWritecrb};
+ciaFetchFunc cia_read[16] = {
+    ciaReadpra,
+    ciaReadprb,
+    ciaReadddra,
+    ciaReadddrb,
+    ciaReadtalo,
+    ciaReadtahi,
+    ciaReadtblo,
+    ciaReadtbhi,
+    ciaReadevlo,
+    ciaReadevmi,
+    ciaReadevhi,
+    ciaReadNothing,
+    ciaReadsp,
+    ciaReadicr,
+    ciaReadcra,
+    ciaReadcrb};
+ciaWriteFunc cia_write[16] = {
+    ciaWritepra,
+    ciaWriteprb,
+    ciaWriteddra,
+    ciaWriteddrb,
+    ciaWritetalo,
+    ciaWritetahi,
+    ciaWritetblo,
+    ciaWritetbhi,
+    ciaWriteevlo,
+    ciaWriteevmi,
+    ciaWriteevhi,
+    ciaWriteNothing,
+    ciaWritesp,
+    ciaWriteicr,
+    ciaWritecra,
+    ciaWritecrb};
 
 UBY ciaReadByte(ULO address)
 {
@@ -980,17 +1010,18 @@ void ciaMemoryMap()
 
   for (ULO bank = startbank; bank < stopbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::CIA,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = startbank,
-                                       .ReadByteFunc = ciaReadByte,
-                                       .ReadWordFunc = ciaReadWord,
-                                       .ReadLongFunc = ciaReadLong,
-                                       .WriteByteFunc = ciaWriteByte,
-                                       .WriteWordFunc = ciaWriteWord,
-                                       .WriteLongFunc = ciaWriteLong,
-                                       .BasePointer = nullptr,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::CIA,
+        .BankNumber = bank,
+        .BaseBankNumber = startbank,
+        .ReadByteFunc = ciaReadByte,
+        .ReadWordFunc = ciaReadWord,
+        .ReadLongFunc = ciaReadLong,
+        .WriteByteFunc = ciaWriteByte,
+        .WriteWordFunc = ciaWriteWord,
+        .WriteLongFunc = ciaWriteLong,
+        .BasePointer = nullptr,
+        .IsBasePointerWritable = false});
   }
 }
 

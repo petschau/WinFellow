@@ -31,7 +31,7 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "SOUND.H"
 #include "LineExactSprites.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "draw_interlace_control.h"
 #include "draw_pixelrenderers.h"
 

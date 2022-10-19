@@ -145,6 +145,9 @@
     <Filter Include="fellow\os\windows\io">
       <UniqueIdentifier>{7e4bbcc3-acc6-47b1-9826-6e1cb8b37923}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\cpu">
+      <UniqueIdentifier>{f78aaf8c-79e2-444c-b7a6-4e61662eee7f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\C\BLIT.C">
@@ -498,39 +501,6 @@
     <ClCompile Include="..\..\C\CopperCommon.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\CpuIntegration.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Disassembler.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_EffectiveAddress.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Exceptions.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Flags.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Instructions.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_InternalState.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Interrupts.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_StackFrameGen.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_Logging.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\interrupt.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -732,39 +702,45 @@
     <ClCompile Include="..\..\fellow\debug\log\LineChangeLogEntry.cpp">
       <Filter>fellow\debug\log</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuIntegration.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Disassembler.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_EffectiveAddress.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Exceptions.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Flags.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Instructions.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_InternalState.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Interrupts.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Logging.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_StackFrameGen.cpp">
+      <Filter>fellow\cpu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\CIA.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuIntegration.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Code.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Data.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Decl.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Disassembler.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_DisassemblerFunc.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Internal.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Profile.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\EVENTID.H">
@@ -960,9 +936,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\LineExactSprites.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\uart.h">
@@ -1423,6 +1396,36 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\debug\log\LineChangeLogEntry.h">
       <Filter>fellow\debug\log</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuIntegration.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Code.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Data.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Decl.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Disassembler.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_DisassemblerFunc.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Internal.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Memory.h">
+      <Filter>fellow\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Profile.h">
+      <Filter>fellow\cpu</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SOUND.H"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "GAMEPORT.H"
 #include "LISTTREE.H"
 #include "fellow/api/modules/IHardfileHandler.h"

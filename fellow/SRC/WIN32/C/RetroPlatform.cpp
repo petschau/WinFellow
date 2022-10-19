@@ -99,7 +99,7 @@
 #include "GFXDRV.H"
 #include "MOUSEDRV.H"
 #include "JOYDRV.H"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "KBDDRV.H"
 #include "fellow/api/modules/IHardfileHandler.h"
@@ -205,7 +205,8 @@ BOOL RetroPlatformHandleIncomingGuestEventMessage(wchar_t *wcsEventMessage)
   {
     Service->Log.AddLog(
         "RetroPlatformHandleIncomingGuestEventMessage(): ERROR converting incoming guest event message with length %u to multi-byte string, ignoring message. Return code received was %u.\n",
-        lEventMessageLength, lReturnCode);
+        lEventMessageLength,
+        lReturnCode);
     free(strEventMessage);
     return FALSE;
   }
@@ -273,8 +274,8 @@ BOOL FAR PASCAL RetroPlatformEnumerateJoystick(LPCDIDEVICEINSTANCE pdinst, LPVOI
 LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam, LPARAM lParam, LPCVOID pData, DWORD dwDataSize, LPARAM lMsgFunctionParam)
 {
 #ifdef _DEBUG
-  Service->Log.AddLog("RetroPlatform::HostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n", RP.GetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize,
-                      lMsgFunctionParam);
+  Service->Log.AddLog(
+      "RetroPlatform::HostMessageFunction(%s [%d], %08x, %08x, %08x, %d, %08x)\n", RP.GetMessageText(uMessage), uMessage - WM_APP, wParam, lParam, pData, dwDataSize, lMsgFunctionParam);
 #endif
 
   switch (uMessage)
@@ -349,7 +350,8 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICEACTIVITY: return RetroPlatformHandleIncomingDeviceActivity(wParam, lParam);
-    case RP_IPC_TO_GUEST_DEVICECONTENT: {
+    case RP_IPC_TO_GUEST_DEVICECONTENT:
+    {
       struct RPDeviceContent *dc = (struct RPDeviceContent *)pData;
       STR name[CFG_FILENAME_LENGTH] = "";
       wcstombs(name, dc->szContent, CFG_FILENAME_LENGTH);
@@ -379,7 +381,8 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       }
       return ok;
     }
-    case RP_IPC_TO_GUEST_SCREENCAPTURE: {
+    case RP_IPC_TO_GUEST_SCREENCAPTURE:
+    {
       struct RPScreenCapture *rpsc = (struct RPScreenCapture *)pData;
       STR szScreenFiltered[CFG_FILENAME_LENGTH] = "", szScreenRaw[CFG_FILENAME_LENGTH] = "";
 
@@ -409,12 +412,14 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       }
       return RP_SCREENCAPTURE_ERROR;
     }
-    case RP_IPC_TO_GUEST_SCREENMODE: {
+    case RP_IPC_TO_GUEST_SCREENMODE:
+    {
       struct RPScreenMode *sm = (struct RPScreenMode *)pData;
       RP.SetScreenModeStruct(sm);
       return (LRESULT)INVALID_HANDLE_VALUE;
     }
-    case RP_IPC_TO_GUEST_DEVICEREADWRITE: {
+    case RP_IPC_TO_GUEST_DEVICEREADWRITE:
+    {
       DWORD ret = false;
       int device = LOBYTE(wParam);
       if (device == RP_DEVICECATEGORY_FLOPPY)
@@ -429,7 +434,8 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       return ret ? (LPARAM)1 : 0;
     }
     case RP_IPC_TO_GUEST_FLUSH: return 1;
-    case RP_IPC_TO_GUEST_GUESTAPIVERSION: {
+    case RP_IPC_TO_GUEST_GUESTAPIVERSION:
+    {
       return MAKELONG(3, 4);
     }
   }
@@ -971,8 +977,11 @@ bool RetroPlatform::PostHardDriveLED(const ULO lHardDriveNo, const bool bActive,
 
   if (bActive && (lastsent[lHardDriveNo] + RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS < RetroPlatform::GetTime()) || (bActive && bWriteActivity))
   {
-    RetroPlatform::PostMessageToHost(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD(RP_DEVICECATEGORY_HD, lHardDriveNo),
-                                     MAKELONG(RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS, bWriteActivity ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ), &GuestInfo);
+    RetroPlatform::PostMessageToHost(
+        RP_IPC_TO_HOST_DEVICEACTIVITY,
+        MAKEWORD(RP_DEVICECATEGORY_HD, lHardDriveNo),
+        MAKELONG(RETRO_PLATFORM_HARDDRIVE_BLINK_MSECS, bWriteActivity ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ),
+        &GuestInfo);
     lastsent[lHardDriveNo] = RetroPlatform::GetTime();
   }
   else
@@ -995,8 +1004,11 @@ bool RetroPlatform::PostFloppyDriveLED(const ULO lFloppyDriveNo, const bool bMot
 {
   if (lFloppyDriveNo > 3) return false;
 
-  return RetroPlatform::PostMessageToHost(RP_IPC_TO_HOST_DEVICEACTIVITY, MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo),
-                                          MAKELONG(bMotorActive ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ), &GuestInfo);
+  return RetroPlatform::PostMessageToHost(
+      RP_IPC_TO_HOST_DEVICEACTIVITY,
+      MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo),
+      MAKELONG(bMotorActive ? -1 : 0, (bWriteActivity) ? RP_DEVICEACTIVITY_WRITE : RP_DEVICEACTIVITY_READ),
+      &GuestInfo);
 }
 
 /** Send content of floppy drive to RetroPlatform host.
@@ -1033,8 +1045,12 @@ bool RetroPlatform::SendFloppyDriveContent(const ULO lFloppyDriveNo, const STR *
   rpDeviceContent.dwFlags = (bWriteProtected ? RP_DEVICEFLAGS_RW_READONLY : RP_DEVICEFLAGS_RW_READWRITE);
 
 #ifdef _DEBUG
-  Service->Log.AddLog("RetroPlatform::SendFloppyDriveContent(): RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n", rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber,
-                      rpDeviceContent.dwInputDevice, szImageName);
+  Service->Log.AddLog(
+      "RetroPlatform::SendFloppyDriveContent(): RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n",
+      rpDeviceContent.btDeviceCategory,
+      rpDeviceContent.btDeviceNumber,
+      rpDeviceContent.dwInputDevice,
+      szImageName);
 #endif
 
   bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, &rpDeviceContent, sizeof(struct RPDeviceContent), &GuestInfo, NULL);
@@ -1059,8 +1075,8 @@ bool RetroPlatform::SendFloppyDriveReadOnly(const ULO lFloppyDriveNo, const bool
 
   if (!floppy[lFloppyDriveNo].enabled) return false;
 
-  bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_DEVICEREADWRITE, MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), bWriteProtected ? RP_DEVICE_READONLY : RP_DEVICE_READWRITE, NULL, 0,
-                                             &GuestInfo, NULL);
+  bResult = RetroPlatform::SendMessageToHost(
+      RP_IPC_TO_HOST_DEVICEREADWRITE, MAKEWORD(RP_DEVICECATEGORY_FLOPPY, lFloppyDriveNo), bWriteProtected ? RP_DEVICE_READONLY : RP_DEVICE_READWRITE, NULL, 0, &GuestInfo, NULL);
 
   Service->Log.AddLog("RetroPlatform::SendFloppyDriveReadOnly(): %s.\n", bResult ? "successful" : "failed");
 
@@ -1147,8 +1163,8 @@ bool RetroPlatform::SendHardDriveContent(const ULO lHardDriveNo, const STR *szIm
   rpDeviceContent.dwFlags = (bWriteProtected ? RP_DEVICEFLAGS_RW_READONLY : RP_DEVICEFLAGS_RW_READWRITE);
 
 #ifdef _DEBUG
-  Service->Log.AddLog("RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n", rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, rpDeviceContent.dwInputDevice,
-                      rpDeviceContent.szContent);
+  Service->Log.AddLog(
+      "RP_IPC_TO_HOST_DEVICECONTENT cat=%d num=%d type=%d '%s'\n", rpDeviceContent.btDeviceCategory, rpDeviceContent.btDeviceNumber, rpDeviceContent.dwInputDevice, rpDeviceContent.szContent);
 #endif
 
   bResult = RetroPlatform::SendMessageToHost(RP_IPC_TO_HOST_DEVICECONTENT, 0, 0, &rpDeviceContent, sizeof(struct RPDeviceContent), &GuestInfo, NULL);
@@ -1329,8 +1345,8 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   lDisplay = RP_SCREENMODE_DISPLAY(sm->dwScreenMode);
 
 #ifdef _DEBUG
-  Service->Log.AddLog("RetroPlatform::SetScreenModeStruct(): dwScreenMode=0x%x, dwClipFlags=0x%x, lTargetWidth=%u, lTargetHeight=%u\n", sm->dwScreenMode, sm->dwClipFlags, sm->lTargetWidth,
-                      sm->lTargetHeight);
+  Service->Log.AddLog(
+      "RetroPlatform::SetScreenModeStruct(): dwScreenMode=0x%x, dwClipFlags=0x%x, lTargetWidth=%u, lTargetHeight=%u\n", sm->dwScreenMode, sm->dwClipFlags, sm->lTargetWidth, sm->lTargetHeight);
 
   Service->Log.AddLog("RetroPlatform::SetScreenModeStruct(): lClipWidth=%u, lClipHeight=%u, lClipLeft=%u, lClipTop=%u\n", sm->lClipWidth, sm->lClipHeight, sm->lClipLeft, sm->lClipTop);
 
@@ -1422,15 +1438,15 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
 
   // drawSetOutputClip(output_clip);
 
-  //if (cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config))
+  // if (cfgGetScreenWindowed(gfxDrvCommon->rp_startup_config))
   //{
-  //  Draw.SetWindowedMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-  //}
-  //else
+  //   Draw.SetWindowedMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
+  // }
+  // else
   //{
-  //  Draw.SetFullScreenMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config), cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
-  //                         cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config));
-  //}
+  //   Draw.SetFullScreenMode(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config), cfgGetScreenHeight(gfxDrvCommon->rp_startup_config), cfgGetScreenColorBits(gfxDrvCommon->rp_startup_config),
+  //                          cfgGetScreenRefresh(gfxDrvCommon->rp_startup_config));
+  // }
 }
 
 void RetroPlatform::SetWindowInstance(HINSTANCE hNewWindowInstance)

@@ -24,7 +24,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "CpuModule.h"
+#include "fellow/cpu/CpuModule.h"
 
 #include <WinDef.h>
 #include <Windows.h>
@@ -42,7 +42,7 @@
 #include "GAMEPORT.H"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderer.h"
-#include "CpuModule_Disassembler.h"
+#include "fellow/cpu/CpuModule_Disassembler.h"
 #include "KBD.H"
 #include "FMEM.H"
 #include "CIA.H"
@@ -203,13 +203,22 @@ INT_PTR CALLBACK wdbgSoundDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
 #define DEBUG_PROP_SHEETS 10
 
-UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {IDD_DEBUG_CPU,    IDD_DEBUG_MEMORY,  IDD_DEBUG_CIA,    IDD_DEBUG_FLOPPY, IDD_DEBUG_BLITTER,
-                                             IDD_DEBUG_COPPER, IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN, IDD_DEBUG_EVENTS, IDD_DEBUG_SOUND};
+UINT wdbg_propsheetRID[DEBUG_PROP_SHEETS] = {
+    IDD_DEBUG_CPU, IDD_DEBUG_MEMORY, IDD_DEBUG_CIA, IDD_DEBUG_FLOPPY, IDD_DEBUG_BLITTER, IDD_DEBUG_COPPER, IDD_DEBUG_SPRITES, IDD_DEBUG_SCREEN, IDD_DEBUG_EVENTS, IDD_DEBUG_SOUND};
 
 typedef INT_PTR(CALLBACK *wdbgDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
-wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {wdbgCPUDialogProc,    wdbgMemoryDialogProc, wdbgCIADialogProc,    wdbgFloppyDialogProc, wdbgBlitterDialogProc,
-                                                           wdbgCopperDialogProc, wdbgSpriteDialogProc, wdbgScreenDialogProc, wdbgEventDialogProc,  wdbgSoundDialogProc};
+wdbgDlgProc wdbg_propsheetDialogProc[DEBUG_PROP_SHEETS] = {
+    wdbgCPUDialogProc,
+    wdbgMemoryDialogProc,
+    wdbgCIADialogProc,
+    wdbgFloppyDialogProc,
+    wdbgBlitterDialogProc,
+    wdbgCopperDialogProc,
+    wdbgSpriteDialogProc,
+    wdbgScreenDialogProc,
+    wdbgEventDialogProc,
+    wdbgSoundDialogProc};
 
 /*===============================*/
 /* calculate DIP scaling factors */
@@ -334,8 +343,21 @@ void wdbgUpdateCPUState(HWND hwndDlg)
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
     ULO disasm_pc;
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
     SelectObject(hDC_image, myarrow);
@@ -375,8 +397,21 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -396,8 +431,14 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
     {
       if (memory_ascii)
       {
-        sprintf(st, "%.6X %.8X%.8X %.8X%.8X ", (memory_adress + i * 16) & 0xffffff, memoryReadLong(memory_adress + i * 16 + 0), memoryReadLong(memory_adress + i * 16 + 4),
-                memoryReadLong(memory_adress + i * 16 + 8), memoryReadLong(memory_adress + i * 16 + 12));
+        sprintf(
+            st,
+            "%.6X %.8X%.8X %.8X%.8X ",
+            (memory_adress + i * 16) & 0xffffff,
+            memoryReadLong(memory_adress + i * 16 + 0),
+            memoryReadLong(memory_adress + i * 16 + 4),
+            memoryReadLong(memory_adress + i * 16 + 8),
+            memoryReadLong(memory_adress + i * 16 + 12));
 
         for (ULO j = 0; j < 16; j++)
         {
@@ -412,9 +453,18 @@ void wdbgUpdateMemoryState(HWND hwndDlg)
       }
       else
       {
-        sprintf(st, "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X", (memory_adress + i * 32) & 0xffffff, memoryReadLong(memory_adress + i * 32), memoryReadLong(memory_adress + i * 32 + 4),
-                memoryReadLong(memory_adress + i * 32 + 8), memoryReadLong(memory_adress + i * 32 + 12), memoryReadLong(memory_adress + i * 32 + 16), memoryReadLong(memory_adress + i * 32 + 20),
-                memoryReadLong(memory_adress + i * 32 + 24), memoryReadLong(memory_adress + i * 32 + 28));
+        sprintf(
+            st,
+            "%.6X %.8X%.8X %.8X%.8X %.8X%.8X %.8X%.8X",
+            (memory_adress + i * 32) & 0xffffff,
+            memoryReadLong(memory_adress + i * 32),
+            memoryReadLong(memory_adress + i * 32 + 4),
+            memoryReadLong(memory_adress + i * 32 + 8),
+            memoryReadLong(memory_adress + i * 32 + 12),
+            memoryReadLong(memory_adress + i * 32 + 16),
+            memoryReadLong(memory_adress + i * 32 + 20),
+            memoryReadLong(memory_adress + i * 32 + 24),
+            memoryReadLong(memory_adress + i * 32 + 28));
         y = wdbgLineOut(hDC, st, x, y);
       }
     }
@@ -440,8 +490,21 @@ void wdbgUpdateCIAState(HWND hwndDlg)
   {
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -529,8 +592,21 @@ void wdbgUpdateFloppyState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -603,8 +679,21 @@ void wdbgUpdateBlitterState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -657,8 +746,21 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -690,8 +792,15 @@ void wdbgUpdateCopperState(HWND hwndDlg)
 
     for (ULO i = 0; i < 16; i++)
     {
-      sprintf(s, "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X", memoryReadWord(list1), memoryReadWord(list1 + 2), memoryReadWord(list2), memoryReadWord(list2 + 2), memoryReadWord(atpc),
-              memoryReadWord(atpc + 2));
+      sprintf(
+          s,
+          "$%.4X, $%.4X   $%.4X, $%.4X   $%.4X, $%.4X",
+          memoryReadWord(list1),
+          memoryReadWord(list1 + 2),
+          memoryReadWord(list2),
+          memoryReadWord(list2 + 2),
+          memoryReadWord(atpc),
+          memoryReadWord(atpc + 2));
       y = wdbgLineOut(hDC, s, x, y);
       list1 += 4;
       list2 += 4;
@@ -720,8 +829,21 @@ void wdbgUpdateSpriteState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -765,8 +887,21 @@ void wdbgUpdateScreenState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -782,16 +917,34 @@ void wdbgUpdateScreenState(HWND hwndDlg)
     BitBlt(hDC, x, y + 2, 14, 14, hDC_image, 0, 0, SRCCOPY);
     x += (ULO)(WDBG_DISASSEMBLY_INDENT * g_DPIScaleX);
 
-    sprintf(s, "DIWSTRT - %.4X DIWSTOP - %.4X DDFSTRT - %.4X DDFSTOP - %.4X LOF     - %.4X", bitplane_registers.diwstrt, bitplane_registers.diwstop, bitplane_registers.ddfstrt,
-            bitplane_registers.ddfstop, bitplane_registers.lof);
+    sprintf(
+        s,
+        "DIWSTRT - %.4X DIWSTOP - %.4X DDFSTRT - %.4X DDFSTOP - %.4X LOF     - %.4X",
+        bitplane_registers.diwstrt,
+        bitplane_registers.diwstop,
+        bitplane_registers.ddfstrt,
+        bitplane_registers.ddfstop,
+        bitplane_registers.lof);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "BPLCON0 - %.4X BPLCON1 - %.4X BPLCON2 - %.4X BPL1MOD - %.4X BPL2MOD - %.4X", bitplane_registers.bplcon0, bitplane_registers.bplcon1, bitplane_registers.bplcon2,
-            bitplane_registers.bpl1mod, bitplane_registers.bpl2mod);
+    sprintf(
+        s,
+        "BPLCON0 - %.4X BPLCON1 - %.4X BPLCON2 - %.4X BPL1MOD - %.4X BPL2MOD - %.4X",
+        bitplane_registers.bplcon0,
+        bitplane_registers.bplcon1,
+        bitplane_registers.bplcon2,
+        bitplane_registers.bpl1mod,
+        bitplane_registers.bpl2mod);
     y = wdbgLineOut(hDC, s, x, y);
 
-    sprintf(s, "BPL1PT -%.6X BPL2PT -%.6X BPL3PT -%.6X BPL4PT -%.6X BPL5PT -%.6X", bitplane_registers.bplpt[0], bitplane_registers.bplpt[1], bitplane_registers.bplpt[2], bitplane_registers.bplpt[3],
-            bitplane_registers.bplpt[4]);
+    sprintf(
+        s,
+        "BPL1PT -%.6X BPL2PT -%.6X BPL3PT -%.6X BPL4PT -%.6X BPL5PT -%.6X",
+        bitplane_registers.bplpt[0],
+        bitplane_registers.bplpt[1],
+        bitplane_registers.bplpt[2],
+        bitplane_registers.bplpt[3],
+        bitplane_registers.bplpt[4]);
     y = wdbgLineOut(hDC, s, x, y);
 
     sprintf(s, "BPL6PT -%.6X DMACON  - %.4X", bitplane_registers.bplpt[5], dmacon);
@@ -839,8 +992,21 @@ void wdbgUpdateEventState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -893,8 +1059,21 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 
     ULO y = (ULO)(WDBG_CPU_REGISTERS_Y * g_DPIScaleY);
     ULO x = (ULO)(WDBG_CPU_REGISTERS_X * g_DPIScaleX);
-    HFONT myfont = CreateFont((ULO)(8 * g_DPIScaleY), (ULO)(8 * g_DPIScaleX), 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                              FF_DONTCARE | FIXED_PITCH, "fixedsys");
+    HFONT myfont = CreateFont(
+        (ULO)(8 * g_DPIScaleY),
+        (ULO)(8 * g_DPIScaleX),
+        0,
+        0,
+        FW_NORMAL,
+        FALSE,
+        FALSE,
+        FALSE,
+        DEFAULT_CHARSET,
+        OUT_DEFAULT_PRECIS,
+        CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY,
+        FF_DONTCARE | FIXED_PITCH,
+        "fixedsys");
 
     HBITMAP myarrow = LoadBitmap(win_drv_hInstance, MAKEINTRESOURCE(IDB_DEBUG_ARROW));
     HDC hDC_image = CreateCompatibleDC(hDC);
@@ -915,14 +1094,21 @@ void wdbgUpdateSoundState(HWND hwndDlg)
 
     for (ULO i = 0; i < 4; i++)
     {
-      sprintf(s, "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u", i,
-              (audstate[i] == soundState0)   ? 0
-              : (audstate[i] == soundState1) ? 1
-              : (audstate[i] == soundState2) ? 2
-              : (audstate[i] == soundState3) ? 3
-              : (audstate[i] == soundState5) ? 5
-                                             : -1,
-              audlenw[i], audlen[i], audper[i], audpercounter[i], audvol[i]);
+      sprintf(
+          s,
+          "Ch%u State: %2d Lenw: %5u Len: %5u per: %5u Pcnt: %5X Vol: %5u",
+          i,
+          (audstate[i] == soundState0)   ? 0
+          : (audstate[i] == soundState1) ? 1
+          : (audstate[i] == soundState2) ? 2
+          : (audstate[i] == soundState3) ? 3
+          : (audstate[i] == soundState5) ? 5
+                                         : -1,
+          audlenw[i],
+          audlen[i],
+          audper[i],
+          audpercounter[i],
+          audvol[i]);
       y = wdbgLineOut(hDC, s, x, y);
     }
 

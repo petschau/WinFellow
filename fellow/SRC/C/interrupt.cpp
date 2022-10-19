@@ -21,8 +21,8 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "FMEM.H"
 #include "CIA.H"
-#include "CpuModule.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuModule.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "uart.h"
 
 /** @file

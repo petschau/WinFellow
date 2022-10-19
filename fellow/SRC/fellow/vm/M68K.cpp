@@ -1,6 +1,6 @@
 #include "fellow/vm/M68K.h"
-#include "CpuModule_Internal.h"
-#include "CpuModule_Disassembler.h"
+#include "fellow/cpu/CpuModule_Internal.h"
+#include "fellow/cpu/CpuModule_Disassembler.h"
 
 #include "FELLOW.H"
 

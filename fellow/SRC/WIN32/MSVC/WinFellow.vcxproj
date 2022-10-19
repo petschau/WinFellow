@@ -580,61 +580,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\..\C\LineExactCopper.cpp" />
-    <ClCompile Include="..\..\C\CpuIntegration.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Disassembler.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CpuModule_EffectiveAddress.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Exceptions.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Flags.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Instructions.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_InternalState.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Interrupts.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_Logging.cpp" />
-    <ClCompile Include="..\..\C\CpuModule_StackFrameGen.cpp" />
     <ClCompile Include="..\..\c\draw_interlace_control.cpp" />
     <ClCompile Include="..\..\c\draw_pixelrenderers.cpp" />
     <ClCompile Include="..\..\C\FELLOW.C">
@@ -773,6 +718,17 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\chipset\SpriteRegisters.cpp" />
     <ClCompile Include="..\..\fellow\configuration\Configuration.cpp" />
     <ClCompile Include="..\..\fellow\configuration\HostRenderConfigurationMapper.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuIntegration.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Disassembler.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_EffectiveAddress.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Exceptions.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Flags.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Instructions.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_InternalState.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Interrupts.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_Logging.cpp" />
+    <ClCompile Include="..\..\fellow\cpu\CpuModule_StackFrameGen.cpp" />
     <ClCompile Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.cpp" />
     <ClCompile Include="..\..\fellow\debug\commands\CPURegisterCommand.cpp" />
     <ClCompile Include="..\..\fellow\debug\commands\CPUStepCommand.cpp" />
@@ -2147,6 +2103,16 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\chipset\SpriteRegisters.h" />
     <ClInclude Include="..\..\fellow\configuration\Configuration.h" />
     <ClInclude Include="..\..\fellow\configuration\HostRenderConfigurationMapper.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuIntegration.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Code.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Data.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Decl.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Disassembler.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_DisassemblerFunc.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Internal.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Memory.h" />
+    <ClInclude Include="..\..\fellow\cpu\CpuModule_Profile.h" />
     <ClInclude Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.h" />
     <ClInclude Include="..\..\fellow\debug\commands\CPURegisterCommand.h" />
     <ClInclude Include="..\..\fellow\debug\commands\CPUStepCommand.h" />
@@ -2220,20 +2186,10 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\ChipsetBufferRuntimeSettings.h" />
     <ClInclude Include="..\..\INCLUDE\CIA.H" />
     <ClInclude Include="..\..\INCLUDE\CopperCommon.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Memory.h" />
     <ClInclude Include="..\..\INCLUDE\GfxDrvColorBitsInformation.h" />
     <ClInclude Include="..\..\INCLUDE\GfxDrvMappedBufferPointer.h" />
     <ClInclude Include="..\..\INCLUDE\KBD.H" />
     <ClInclude Include="..\..\INCLUDE\LineExactCopper.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuIntegration.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Code.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Data.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Decl.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Disassembler.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_DisassemblerFunc.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Internal.h" />
-    <ClInclude Include="..\..\INCLUDE\CpuModule_Profile.h" />
     <ClInclude Include="..\..\include\draw_interlace_control.h" />
     <ClInclude Include="..\..\include\draw_pixelrenderers.h" />
     <ClInclude Include="..\..\INCLUDE\EVENTID.H" />

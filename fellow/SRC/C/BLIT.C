@@ -14,7 +14,7 @@
 #include "GRAPH.H"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "interrupt.h"
 #include "fellow/chipset/CycleExactCopper.h"
@@ -75,11 +75,41 @@ blitter_state blitter;
 /* Unit is bus cycles (3.58MHz)						      */
 /*============================================================================*/
 
-ULO blit_cyclelength[16] = {2, 2, 2, 3, /* How long it takes for a blit to complete */
-                            3, 3, 3, 4, 2, 2, 2, 3, 3, 3, 3, 4};
+ULO blit_cyclelength[16] = {
+    2,
+    2,
+    2,
+    3, /* How long it takes for a blit to complete */
+    3,
+    3,
+    3,
+    4,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    4};
 
-ULO blit_cyclefree[16] = {2, 1, 1, 1, /* Free cycles during blit */
-                          2, 1, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0};
+ULO blit_cyclefree[16] = {
+    2,
+    1,
+    1,
+    1, /* Free cycles during blit */
+    2,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0,
+    0,
+    0};
 
 /*============================================================================*/
 /* Blitter fill-mode lookup tables                                            */
@@ -193,10 +223,29 @@ void blitterOperationLog()
     }
     if (F)
     {
-      fprintf(F, "%.7d\t%.3d\t%.3d\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n", draw_frame_count, busGetRasterY(), busGetRasterX(),
-              (blitter.bltcon >> 16) & 0xffff, blitter.bltcon & 0xffff, blitter.bltafwm & 0xffff, blitter.bltalwm & 0xffff, blitter.bltapt, blitter.bltbpt, blitter.bltcpt, blitter.bltdpt,
-              blitter.bltamod & 0xffff, blitter.bltbmod & 0xffff, blitter.bltcmod & 0xffff, blitter.bltdmod & 0xffff, blitter.bltadat & 0xffff, blitter.bltbdat & 0xffff, blitter.bltcdat & 0xffff,
-              blitter.height, blitter.width);
+      fprintf(
+          F,
+          "%.7d\t%.3d\t%.3d\t%.4X\t%.4X\t%.4X\t%.4X\t%.6X\t%.6X\t%.6X\t%.6X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%.4X\t%d\t%d\n",
+          draw_frame_count,
+          busGetRasterY(),
+          busGetRasterX(),
+          (blitter.bltcon >> 16) & 0xffff,
+          blitter.bltcon & 0xffff,
+          blitter.bltafwm & 0xffff,
+          blitter.bltalwm & 0xffff,
+          blitter.bltapt,
+          blitter.bltbpt,
+          blitter.bltcpt,
+          blitter.bltdpt,
+          blitter.bltamod & 0xffff,
+          blitter.bltbmod & 0xffff,
+          blitter.bltcmod & 0xffff,
+          blitter.bltdmod & 0xffff,
+          blitter.bltadat & 0xffff,
+          blitter.bltbdat & 0xffff,
+          blitter.bltcdat & 0xffff,
+          blitter.height,
+          blitter.width);
       fclose(F);
     }
   }

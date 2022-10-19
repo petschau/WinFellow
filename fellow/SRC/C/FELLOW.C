@@ -30,8 +30,8 @@
 #include "FELLOW.H"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
-#include "CpuModule.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuModule.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "FMEM.H"
 #include "FLOPPY.H"
 #include "SOUND.H"
@@ -178,8 +178,9 @@ static void fellowRuntimeErrorCheck()
   switch (fellowGetRuntimeErrorCode())
   {
     case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-      Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR,
-                                   "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
+      Service->Log.AddLogRequester(
+          FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR,
+          "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
       break;
     case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR: break;
   }

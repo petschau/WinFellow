@@ -44,7 +44,7 @@
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "FFILESYS.H"
 #include "Ini.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "rtc.h"
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
@@ -1418,11 +1418,13 @@ static const STR *cfgGetGraphicsEmulationModeToString(GRAPHICSEMULATIONMODE grap
 
 void cfgSynopsis(cfg *config)
 {
-  fprintf(stderr, "Synopsis: WinFellow.exe [-h] | [[-f configfile] | [-s option=value]]*\n\n"
-                  "Command-line options:\n"
-                  "-h              : Print this command-line symmary, then stop.\n"
-                  "-f configfile   : Specify configuration file to use.\n"
-                  "-s option=value : Set option to value. Legal options listed below.\n");
+  fprintf(
+      stderr,
+      "Synopsis: WinFellow.exe [-h] | [[-f configfile] | [-s option=value]]*\n\n"
+      "Command-line options:\n"
+      "-h              : Print this command-line symmary, then stop.\n"
+      "-f configfile   : Specify configuration file to use.\n"
+      "-s option=value : Set option to value. Legal options listed below.\n");
 }
 
 /*============================================================================*/

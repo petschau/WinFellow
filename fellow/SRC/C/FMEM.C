@@ -28,7 +28,7 @@
 #include "fellow/api/defs.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
-#include "CpuModule.h"
+#include "fellow/cpu/CpuModule.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "FMEM.H"
 #include "WGUI.H"
@@ -107,20 +107,21 @@ STR memory_kickimage_versionstr[80];
 ULO memory_kickimage_basebank;
 ULO memory_kickimage_ext_size = 0;
 ULO memory_kickimage_ext_basebank = 0;
-const STR *memory_kickimage_versionstrings[14] = {"Kickstart, version information unavailable",
-                                                  "Kickstart Pre-V1.0",
-                                                  "Kickstart V1.0",
-                                                  "Kickstart V1.1 (NTSC)",
-                                                  "Kickstart V1.1 (PAL)",
-                                                  "Kickstart V1.2",
-                                                  "Kickstart V1.3",
-                                                  "Kickstart V1.3",
-                                                  "Kickstart V2.0",
-                                                  "Kickstart V2.04",
-                                                  "Kickstart V2.1",
-                                                  "Kickstart V3.0",
-                                                  "Kickstart V3.1",
-                                                  "Kickstart Post-V3.1"};
+const STR *memory_kickimage_versionstrings[14] = {
+    "Kickstart, version information unavailable",
+    "Kickstart Pre-V1.0",
+    "Kickstart V1.0",
+    "Kickstart V1.1 (NTSC)",
+    "Kickstart V1.1 (PAL)",
+    "Kickstart V1.2",
+    "Kickstart V1.3",
+    "Kickstart V1.3",
+    "Kickstart V2.0",
+    "Kickstart V2.04",
+    "Kickstart V2.1",
+    "Kickstart V3.0",
+    "Kickstart V3.1",
+    "Kickstart Post-V3.1"};
 void memoryKickSettingsClear();
 
 /*============================================================================*/
@@ -250,7 +251,7 @@ bool memoryIsValidPointerAddress(ULO address, ULO size)
 // Datadirect is TRUE when data accesses can be made through a pointer
 //============================================================================
 
-void memoryBankSet(const MemoryBankDescriptor& bankDescriptor)
+void memoryBankSet(const MemoryBankDescriptor &bankDescriptor)
 {
   unsigned int bankMirrorStride = memoryGetAddressSpace32Bit() ? 65536 : 256;
   unsigned int bankNumber = bankDescriptor.BankNumber & 0xffff;
@@ -343,17 +344,18 @@ void memoryUnmappedWriteLong(ULO data, ULO address)
 
 void memoryBankClear(ULO bank)
 {
-  memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::UnmappedRandom,
-                                     .BankNumber = bank,
-                                     .BaseBankNumber = bank,
-                                     .ReadByteFunc = memoryUnmappedReadByte,
-                                     .ReadWordFunc = memoryUnmappedReadWord,
-                                     .ReadLongFunc = memoryUnmappedReadLong,
-                                     .WriteByteFunc = memoryUnmappedWriteByte,
-                                     .WriteWordFunc = memoryUnmappedWriteWord,
-                                     .WriteLongFunc = memoryUnmappedWriteLong,
-                                     .BasePointer = nullptr,
-                                     .IsBasePointerWritable = false});
+  memoryBankSet(MemoryBankDescriptor{
+      .Kind = MemoryKind::UnmappedRandom,
+      .BankNumber = bank,
+      .BaseBankNumber = bank,
+      .ReadByteFunc = memoryUnmappedReadByte,
+      .ReadWordFunc = memoryUnmappedReadWord,
+      .ReadLongFunc = memoryUnmappedReadLong,
+      .WriteByteFunc = memoryUnmappedWriteByte,
+      .WriteWordFunc = memoryUnmappedWriteWord,
+      .WriteLongFunc = memoryUnmappedWriteLong,
+      .BasePointer = nullptr,
+      .IsBasePointerWritable = false});
 }
 
 //============================================================================
@@ -542,17 +544,18 @@ void memoryEmemMap()
 
   if (memoryGetKickImageBaseBank() >= 0xf8)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::Autoconfig,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = bank,
-                                       .ReadByteFunc = memoryEmemReadByte,
-                                       .ReadWordFunc = memoryEmemReadWord,
-                                       .ReadLongFunc = memoryEmemReadLong,
-                                       .WriteByteFunc = memoryEmemWriteByte,
-                                       .WriteWordFunc = memoryEmemWriteWord,
-                                       .WriteLongFunc = memoryEmemWriteLong,
-                                       .BasePointer = nullptr,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::Autoconfig,
+        .BankNumber = bank,
+        .BaseBankNumber = bank,
+        .ReadByteFunc = memoryEmemReadByte,
+        .ReadWordFunc = memoryEmemReadWord,
+        .ReadLongFunc = memoryEmemReadLong,
+        .WriteByteFunc = memoryEmemWriteByte,
+        .WriteWordFunc = memoryEmemWriteWord,
+        .WriteLongFunc = memoryEmemWriteLong,
+        .BasePointer = nullptr,
+        .IsBasePointerWritable = false});
   }
 }
 
@@ -665,17 +668,18 @@ void memoryDmemMap()
 
   if (memory_useautoconfig && (memory_kickimage_basebank >= 0xf8))
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::FellowHardfileDataArea,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = bank,
-                                       .ReadByteFunc = memoryDmemReadByte,
-                                       .ReadWordFunc = memoryDmemReadWord,
-                                       .ReadLongFunc = memoryDmemReadLong,
-                                       .WriteByteFunc = memoryDmemWriteByte,
-                                       .WriteWordFunc = memoryDmemWriteWord,
-                                       .WriteLongFunc = memoryDmemWriteLong,
-                                       .BasePointer = memory_dmem,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::FellowHardfileDataArea,
+        .BankNumber = bank,
+        .BaseBankNumber = bank,
+        .ReadByteFunc = memoryDmemReadByte,
+        .ReadWordFunc = memoryDmemReadWord,
+        .ReadLongFunc = memoryDmemReadLong,
+        .WriteByteFunc = memoryDmemWriteByte,
+        .WriteWordFunc = memoryDmemWriteWord,
+        .WriteLongFunc = memoryDmemWriteLong,
+        .BasePointer = memory_dmem,
+        .IsBasePointerWritable = false});
   }
 }
 
@@ -791,17 +795,18 @@ void memoryChipMap(const bool overlay)
     // Map entire 512k ROM area to $0
     for (ULO bank = 0; bank < 8; bank++)
     {
-      memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::KickstartROMOverlay,
-                                         .BankNumber = bank,
-                                         .BaseBankNumber = 0,
-                                         .ReadByteFunc = memoryOverlayReadByte,
-                                         .ReadWordFunc = memoryOverlayReadWord,
-                                         .ReadLongFunc = memoryOverlayReadLong,
-                                         .WriteByteFunc = memoryOverlayWriteByte,
-                                         .WriteWordFunc = memoryOverlayWriteWord,
-                                         .WriteLongFunc = memoryOverlayWriteLong,
-                                         .BasePointer = memory_kick,
-                                         .IsBasePointerWritable = false});
+      memoryBankSet(MemoryBankDescriptor{
+          .Kind = MemoryKind::KickstartROMOverlay,
+          .BankNumber = bank,
+          .BaseBankNumber = 0,
+          .ReadByteFunc = memoryOverlayReadByte,
+          .ReadWordFunc = memoryOverlayReadWord,
+          .ReadLongFunc = memoryOverlayReadLong,
+          .WriteByteFunc = memoryOverlayWriteByte,
+          .WriteWordFunc = memoryOverlayWriteWord,
+          .WriteLongFunc = memoryOverlayWriteLong,
+          .BasePointer = memory_kick,
+          .IsBasePointerWritable = false});
     }
   }
 
@@ -810,17 +815,18 @@ void memoryChipMap(const bool overlay)
   const ULO lastbank = memoryChipGetLastBank();
   for (ULO bank = firstbank; bank < lastbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::ChipRAM,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = 0,
-                                       .ReadByteFunc = memoryChipReadByte,
-                                       .ReadWordFunc = memoryChipReadWord,
-                                       .ReadLongFunc = memoryChipReadLong,
-                                       .WriteByteFunc = memoryChipWriteByte,
-                                       .WriteWordFunc = memoryChipWriteWord,
-                                       .WriteLongFunc = memoryChipWriteLong,
-                                       .BasePointer = memory_chip,
-                                       .IsBasePointerWritable = true});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::ChipRAM,
+        .BankNumber = bank,
+        .BaseBankNumber = 0,
+        .ReadByteFunc = memoryChipReadByte,
+        .ReadWordFunc = memoryChipReadWord,
+        .ReadLongFunc = memoryChipReadLong,
+        .WriteByteFunc = memoryChipWriteByte,
+        .WriteWordFunc = memoryChipWriteWord,
+        .WriteLongFunc = memoryChipWriteLong,
+        .BasePointer = memory_chip,
+        .IsBasePointerWritable = true});
   }
 
   // In the case of 256k chip memory and not overlaying, clear the second 256k map
@@ -842,17 +848,18 @@ void memoryChipMap(const bool overlay)
       const ULO bank_end = bank_start + lastbank;
       for (ULO bank = bank_start; bank < bank_end; bank++)
       {
-        memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::ChipRAMMirror,
-                                           .BankNumber = bank,
-                                           .BaseBankNumber = bank_start,
-                                           .ReadByteFunc = memoryChipReadByte,
-                                           .ReadWordFunc = memoryChipReadWord,
-                                           .ReadLongFunc = memoryChipReadLong,
-                                           .WriteByteFunc = memoryChipWriteByte,
-                                           .WriteWordFunc = memoryChipWriteWord,
-                                           .WriteLongFunc = memoryChipWriteLong,
-                                           .BasePointer = memory_chip,
-                                           .IsBasePointerWritable = true});
+        memoryBankSet(MemoryBankDescriptor{
+            .Kind = MemoryKind::ChipRAMMirror,
+            .BankNumber = bank,
+            .BaseBankNumber = bank_start,
+            .ReadByteFunc = memoryChipReadByte,
+            .ReadWordFunc = memoryChipReadWord,
+            .ReadLongFunc = memoryChipReadLong,
+            .WriteByteFunc = memoryChipWriteByte,
+            .WriteWordFunc = memoryChipWriteWord,
+            .WriteLongFunc = memoryChipWriteLong,
+            .BasePointer = memory_chip,
+            .IsBasePointerWritable = true});
       }
     }
   }
@@ -980,17 +987,18 @@ void memoryFastCardMap(ULO mapping)
 
   for (ULO bank = memory_fast_baseaddress >> 16; bank < lastbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::FastRAM,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = memory_fast_baseaddress >> 16,
-                                       .ReadByteFunc = memoryFastReadByte,
-                                       .ReadWordFunc = memoryFastReadWord,
-                                       .ReadLongFunc = memoryFastReadLong,
-                                       .WriteByteFunc = memoryFastWriteByte,
-                                       .WriteWordFunc = memoryFastWriteWord,
-                                       .WriteLongFunc = memoryFastWriteLong,
-                                       .BasePointer = memory_fast,
-                                       .IsBasePointerWritable = true});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::FastRAM,
+        .BankNumber = bank,
+        .BaseBankNumber = memory_fast_baseaddress >> 16,
+        .ReadByteFunc = memoryFastReadByte,
+        .ReadWordFunc = memoryFastReadWord,
+        .ReadLongFunc = memoryFastReadLong,
+        .WriteByteFunc = memoryFastWriteByte,
+        .WriteWordFunc = memoryFastWriteWord,
+        .WriteLongFunc = memoryFastWriteLong,
+        .BasePointer = memory_fast,
+        .IsBasePointerWritable = true});
   }
 
   memset(memory_fast, 0, memoryGetFastSize());
@@ -1075,17 +1083,18 @@ void memorySlowMap()
 
   for (ULO bank = startbank; bank < lastbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::SlowRAM,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = startbank,
-                                       .ReadByteFunc = memorySlowReadByte,
-                                       .ReadWordFunc = memorySlowReadWord,
-                                       .ReadLongFunc = memorySlowReadLong,
-                                       .WriteByteFunc = memorySlowWriteByte,
-                                       .WriteWordFunc = memorySlowWriteWord,
-                                       .WriteLongFunc = memorySlowWriteLong,
-                                       .BasePointer = memory_slow_base,
-                                       .IsBasePointerWritable = true});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::SlowRAM,
+        .BankNumber = bank,
+        .BaseBankNumber = startbank,
+        .ReadByteFunc = memorySlowReadByte,
+        .ReadWordFunc = memorySlowReadWord,
+        .ReadLongFunc = memorySlowReadLong,
+        .WriteByteFunc = memorySlowWriteByte,
+        .WriteWordFunc = memorySlowWriteWord,
+        .WriteLongFunc = memorySlowWriteLong,
+        .BasePointer = memory_slow_base,
+        .IsBasePointerWritable = true});
   }
 }
 
@@ -1123,29 +1132,31 @@ void memoryMysteryWriteLong(ULO data, ULO address)
 
 void memoryMysteryMap()
 {
-  memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::UnmappedRandom,
-                                     .BankNumber = 0xe9,
-                                     .BaseBankNumber = 0xe9,
-                                     .ReadByteFunc = memoryMysteryReadByte,
-                                     .ReadWordFunc = memoryMysteryReadWord,
-                                     .ReadLongFunc = memoryMysteryReadLong,
-                                     .WriteByteFunc = memoryMysteryWriteByte,
-                                     .WriteWordFunc = memoryMysteryWriteWord,
-                                     .WriteLongFunc = memoryMysteryWriteLong,
-                                     .BasePointer = nullptr,
-                                     .IsBasePointerWritable = false});
+  memoryBankSet(MemoryBankDescriptor{
+      .Kind = MemoryKind::UnmappedRandom,
+      .BankNumber = 0xe9,
+      .BaseBankNumber = 0xe9,
+      .ReadByteFunc = memoryMysteryReadByte,
+      .ReadWordFunc = memoryMysteryReadWord,
+      .ReadLongFunc = memoryMysteryReadLong,
+      .WriteByteFunc = memoryMysteryWriteByte,
+      .WriteWordFunc = memoryMysteryWriteWord,
+      .WriteLongFunc = memoryMysteryWriteLong,
+      .BasePointer = nullptr,
+      .IsBasePointerWritable = false});
 
-  memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::UnmappedRandom,
-                                     .BankNumber = 0xde,
-                                     .BaseBankNumber = 0xde,
-                                     .ReadByteFunc = memoryMysteryReadByte,
-                                     .ReadWordFunc = memoryMysteryReadWord,
-                                     .ReadLongFunc = memoryMysteryReadLong,
-                                     .WriteByteFunc = memoryMysteryWriteByte,
-                                     .WriteWordFunc = memoryMysteryWriteWord,
-                                     .WriteLongFunc = memoryMysteryWriteLong,
-                                     .BasePointer = nullptr,
-                                     .IsBasePointerWritable = false});
+  memoryBankSet(MemoryBankDescriptor{
+      .Kind = MemoryKind::UnmappedRandom,
+      .BankNumber = 0xde,
+      .BaseBankNumber = 0xde,
+      .ReadByteFunc = memoryMysteryReadByte,
+      .ReadWordFunc = memoryMysteryReadWord,
+      .ReadLongFunc = memoryMysteryReadLong,
+      .WriteByteFunc = memoryMysteryWriteByte,
+      .WriteWordFunc = memoryMysteryWriteWord,
+      .WriteLongFunc = memoryMysteryWriteLong,
+      .BasePointer = nullptr,
+      .IsBasePointerWritable = false});
 }
 
 /*============================================================================*/
@@ -1221,17 +1232,18 @@ void memoryIoMap()
 
   for (ULO bank = startbank; bank < lastbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::ChipsetRegisters,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = startbank,
-                                       .ReadByteFunc = memoryIoReadByte,
-                                       .ReadWordFunc = memoryIoReadWord,
-                                       .ReadLongFunc = memoryIoReadLong,
-                                       .WriteByteFunc = memoryIoWriteByte,
-                                       .WriteWordFunc = memoryIoWriteWord,
-                                       .WriteLongFunc = memoryIoWriteLong,
-                                       .BasePointer = nullptr,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::ChipsetRegisters,
+        .BankNumber = bank,
+        .BaseBankNumber = startbank,
+        .ReadByteFunc = memoryIoReadByte,
+        .ReadWordFunc = memoryIoReadWord,
+        .ReadLongFunc = memoryIoReadLong,
+        .WriteByteFunc = memoryIoWriteByte,
+        .WriteWordFunc = memoryIoWriteWord,
+        .WriteLongFunc = memoryIoWriteLong,
+        .BasePointer = nullptr,
+        .IsBasePointerWritable = false});
   }
 }
 
@@ -1382,31 +1394,33 @@ void memoryKickMap()
   {
     if (!memory_a1000_bootstrap_mapped)
     {
-      memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::KickstartROM,
-                                         .BankNumber = bank,
-                                         .BaseBankNumber = memory_kickimage_basebank,
-                                         .ReadByteFunc = memoryKickReadByte,
-                                         .ReadWordFunc = memoryKickReadWord,
-                                         .ReadLongFunc = memoryKickReadLong,
-                                         .WriteByteFunc = memoryKickWriteByte,
-                                         .WriteWordFunc = memoryKickWriteWord,
-                                         .WriteLongFunc = memoryKickWriteLong,
-                                         .BasePointer = memory_kick,
-                                         .IsBasePointerWritable = false});
+      memoryBankSet(MemoryBankDescriptor{
+          .Kind = MemoryKind::KickstartROM,
+          .BankNumber = bank,
+          .BaseBankNumber = memory_kickimage_basebank,
+          .ReadByteFunc = memoryKickReadByte,
+          .ReadWordFunc = memoryKickReadWord,
+          .ReadLongFunc = memoryKickReadLong,
+          .WriteByteFunc = memoryKickWriteByte,
+          .WriteWordFunc = memoryKickWriteWord,
+          .WriteLongFunc = memoryKickWriteLong,
+          .BasePointer = memory_kick,
+          .IsBasePointerWritable = false});
     }
     else
     {
-      memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::A1000BootstrapROM,
-                                         .BankNumber = bank,
-                                         .BaseBankNumber = memory_kickimage_basebank,
-                                         .ReadByteFunc = memoryKickReadByte,
-                                         .ReadWordFunc = memoryKickReadWord,
-                                         .ReadLongFunc = memoryKickReadLong,
-                                         .WriteByteFunc = memoryKickWriteByteA1000WCS,
-                                         .WriteWordFunc = memoryKickWriteWordA1000WCS,
-                                         .WriteLongFunc = memoryKickWriteLongA1000WCS,
-                                         .BasePointer = memory_kick,
-                                         .IsBasePointerWritable = false});
+      memoryBankSet(MemoryBankDescriptor{
+          .Kind = MemoryKind::A1000BootstrapROM,
+          .BankNumber = bank,
+          .BaseBankNumber = memory_kickimage_basebank,
+          .ReadByteFunc = memoryKickReadByte,
+          .ReadWordFunc = memoryKickReadWord,
+          .ReadLongFunc = memoryKickReadLong,
+          .WriteByteFunc = memoryKickWriteByteA1000WCS,
+          .WriteWordFunc = memoryKickWriteWordA1000WCS,
+          .WriteLongFunc = memoryKickWriteLongA1000WCS,
+          .BasePointer = memory_kick,
+          .IsBasePointerWritable = false});
     }
   }
 }
@@ -1421,17 +1435,18 @@ void memoryKickExtendedMap()
 
   for (ULO bank = basebank; bank < lastbank; bank++)
   {
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::ExtendedROM,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = basebank,
-                                       .ReadByteFunc = memoryKickExtendedReadByte,
-                                       .ReadWordFunc = memoryKickExtendedReadWord,
-                                       .ReadLongFunc = memoryKickExtendedReadLong,
-                                       .WriteByteFunc = memoryKickExtendedWriteByte,
-                                       .WriteWordFunc = memoryKickExtendedWriteWord,
-                                       .WriteLongFunc = memoryKickExtendedWriteLong,
-                                       .BasePointer = memory_kick_ext,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::ExtendedROM,
+        .BankNumber = bank,
+        .BaseBankNumber = basebank,
+        .ReadByteFunc = memoryKickExtendedReadByte,
+        .ReadWordFunc = memoryKickExtendedReadWord,
+        .ReadLongFunc = memoryKickExtendedReadLong,
+        .WriteByteFunc = memoryKickExtendedWriteByte,
+        .WriteWordFunc = memoryKickExtendedWriteWord,
+        .WriteLongFunc = memoryKickExtendedWriteLong,
+        .BasePointer = memory_kick_ext,
+        .IsBasePointerWritable = false});
   }
 }
 

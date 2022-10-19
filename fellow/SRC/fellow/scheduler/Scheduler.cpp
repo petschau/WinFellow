@@ -24,8 +24,8 @@
 
 #include "fellow/api/defs.h"
 #include "FELLOW.H"
-#include "CpuModule.h"
-#include "CpuIntegration.h"
+#include "fellow/cpu/CpuModule.h"
+#include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "CIA.H"
 #include "CopperCommon.h"
