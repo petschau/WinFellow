@@ -7,7 +7,7 @@
 #include "fellow/chipset/HostFrameDelayedRenderer.h"
 #include "fellow/chipset/HostFrameImmediateRenderer.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 
 BitplaneRegisters bitplane_registers;
 

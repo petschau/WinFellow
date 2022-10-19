@@ -1,7 +1,7 @@
 #include "uart.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
-#include "interrupt.h"
+#include "fellow/memory/Memory.h"
+#include "fellow/application/Interrupt.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;

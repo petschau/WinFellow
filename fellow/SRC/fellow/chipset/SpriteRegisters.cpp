@@ -1,6 +1,6 @@
 #include "fellow/chipset/SpriteRegisters.h"
 #include "SPRITE.H"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/ChipsetInfo.h"
 
 SpriteRegisters sprite_registers;

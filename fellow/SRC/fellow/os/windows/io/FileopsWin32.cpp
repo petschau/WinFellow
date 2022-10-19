@@ -29,8 +29,8 @@
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
 
-#include "zlib.h" // crc32 function
-#include "FMEM.H" // decrypt AF2 kickstart
+#include "zlib.h"                 // crc32 function
+#include "fellow/memory/Memory.h" // decrypt AF2 kickstart
 
 #include <time.h>
 #include <io.h>

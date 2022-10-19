@@ -27,12 +27,12 @@
 #include "fellow/api/defs.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/application/Gameport.h"
-#include "FMEM.H"
-#include "FLOPPY.H"
-#include "CIA.H"
+#include "fellow/memory/Memory.h"
+#include "fellow/chipset/Floppy.h"
+#include "fellow/chipset/Cia.h"
 
 #include "fellow/cpu/CpuModule.h"
-#include "interrupt.h"
+#include "fellow/application/Interrupt.h"
 
 using namespace fellow::api;
 using namespace fellow::api::vm;

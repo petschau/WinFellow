@@ -40,7 +40,7 @@
 
 #include <stdio.h>
 #include "uae2fell.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "autoconf.h"
 
 using namespace fellow::api::vm;

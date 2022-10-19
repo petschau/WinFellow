@@ -2,7 +2,7 @@
 #include "fellow/chipset/BitplaneDMA.h"
 #include "fellow/chipset/SpriteDMA.h"
 #include "fellow/chipset/CycleExactCopper.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/scheduler/Scheduler.h"
 
 DMAController dma_controller;

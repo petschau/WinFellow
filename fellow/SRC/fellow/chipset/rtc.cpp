@@ -20,7 +20,7 @@
 /*=========================================================================*/
 
 #include "RtcOkiMsm6242rs.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "rtc.h"
 #include "fellow/api/Services.h"
 

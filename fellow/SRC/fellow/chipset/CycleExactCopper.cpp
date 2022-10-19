@@ -6,7 +6,7 @@
 #include "fellow/chipset/BitplaneUtility.h"
 #include "fellow/chipset/DMAController.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Blitter.h"
 
 CycleExactCopper cycle_exact_copper;

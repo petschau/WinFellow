@@ -1,7 +1,7 @@
 #include "fellow/vm/Copper.h"
 #include "fellow/chipset/CopperRegisters.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/CopperUtility.h"
 
 using namespace fellow::api::vm;

@@ -28,7 +28,7 @@
 #include "fellow/api/defs.h"
 
 /* own includes */
-#include "modrip.h"
+#include "fellow/application/modrip.h"
 
 extern BOOLE modripGuiInitialize();
 extern void modripGuiSetBusy();

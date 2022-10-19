@@ -27,7 +27,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/cpu/CpuModule.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/application/Fellow.h"
 
 

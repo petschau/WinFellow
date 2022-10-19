@@ -38,7 +38,7 @@
 #include <setjmp.h>
 #include "uae2fell.h"
 #include "autoconf.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 
 using namespace fellow::api::vm;
 

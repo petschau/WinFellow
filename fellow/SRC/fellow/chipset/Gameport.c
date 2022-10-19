@@ -23,7 +23,7 @@
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/HostRenderer.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/application/MouseDrv.h"
 #include "fellow/application/JoyDrv.h"

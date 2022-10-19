@@ -508,39 +508,16 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\C\FFILESYS.C">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\..\C\FMEM.C" />
-    <ClCompile Include="..\..\C\interrupt.cpp" />
     <ClCompile Include="..\..\C\xdmswrap.c" />
     <ClCompile Include="..\..\fellow\api\Services.cpp" />
     <ClCompile Include="..\..\fellow\application\DisplayMode.cpp" />
     <ClCompile Include="..\..\fellow\application\Fellow.c" />
+    <ClCompile Include="..\..\fellow\application\FellowFilesys.c" />
     <ClCompile Include="..\..\fellow\application\HostRenderConfiguration.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderer.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderStatistics.cpp" />
+    <ClCompile Include="..\..\fellow\application\Interrupt.cpp" />
     <ClCompile Include="..\..\fellow\application\ListTree.cpp" />
     <ClCompile Include="..\..\fellow\application\modrip.cpp" />
     <ClCompile Include="..\..\fellow\automation\Automator.cpp" />
@@ -626,6 +603,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\debug\log\EventQueueLogEntry.cpp" />
     <ClCompile Include="..\..\fellow\debug\log\LineChangeLogEntry.cpp" />
     <ClCompile Include="..\..\fellow\hud\HudPropertyProvider.cpp" />
+    <ClCompile Include="..\..\fellow\memory\Memory.c" />
     <ClCompile Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.cpp" />
@@ -1754,6 +1732,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\application\DisplayMode.h" />
     <ClInclude Include="..\..\fellow\application\DrawDimensionTypes.h" />
     <ClInclude Include="..\..\fellow\application\Fellow.h" />
+    <ClInclude Include="..\..\fellow\application\FellowFilesys.h" />
+    <ClInclude Include="..\..\fellow\application\FsNavig.h" />
     <ClInclude Include="..\..\fellow\application\Gameport.h" />
     <ClInclude Include="..\..\fellow\application\GfxDrv.h" />
     <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h" />
@@ -1763,9 +1743,12 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h" />
     <ClInclude Include="..\..\fellow\application\IFpsProvider.h" />
+    <ClInclude Include="..\..\fellow\application\Ini.h" />
+    <ClInclude Include="..\..\fellow\application\Interrupt.h" />
     <ClInclude Include="..\..\fellow\application\JoyDrv.h" />
     <ClInclude Include="..\..\fellow\application\KbdDrv.h" />
     <ClInclude Include="..\..\fellow\application\ListTree.h" />
+    <ClInclude Include="..\..\fellow\application\modrip.h" />
     <ClInclude Include="..\..\fellow\application\MouseDrv.h" />
     <ClInclude Include="..\..\fellow\application\SoundDrv.h" />
     <ClInclude Include="..\..\fellow\application\Timer.h" />
@@ -1860,6 +1843,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\debug\log\EventQueueLogEntry.h" />
     <ClInclude Include="..\..\fellow\debug\log\LineChangeLogEntry.h" />
     <ClInclude Include="..\..\fellow\hud\HudPropertyProvider.h" />
+    <ClInclude Include="..\..\fellow\memory\Memory.h" />
     <ClInclude Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h" />
     <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.h" />
     <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.h" />
@@ -1899,11 +1883,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\vm\EventLog.h" />
     <ClInclude Include="..\..\fellow\vm\M68K.h" />
     <ClInclude Include="..\..\fellow\vm\MemorySystem.h" />
-    <ClInclude Include="..\..\INCLUDE\FFILESYS.H" />
-    <ClInclude Include="..\..\INCLUDE\FMEM.H" />
-    <ClInclude Include="..\..\INCLUDE\Ini.h" />
-    <ClInclude Include="..\..\include\interrupt.h" />
-    <ClInclude Include="..\..\INCLUDE\modrip.h" />
     <ClInclude Include="..\..\IPF\CapsAPI.h" />
     <ClInclude Include="..\..\IPF\CapsPlug.h" />
     <ClInclude Include="..\..\IPF\Comtype.h" />

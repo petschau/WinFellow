@@ -4,7 +4,7 @@
 #include "fellow/chipset/CopperUtility.h"
 #include "fellow/chipset/LineExactCopper.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Blitter.h"
 
 LineExactCopper line_exact_copper;

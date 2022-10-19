@@ -25,7 +25,7 @@
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/application/ListTree.h"

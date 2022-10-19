@@ -2,7 +2,7 @@
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/CycleExactCopper.h"
 #include "LineExactCopper.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/scheduler/Scheduler.h"
 
 //============================================================================

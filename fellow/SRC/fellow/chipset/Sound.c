@@ -24,13 +24,13 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/chipset/ChipsetInfo.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "SOUND.H"
 #include "WAV.H"
 #include "CIA.H"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/application/SoundDrv.h"
-#include "interrupt.h"
+#include "fellow/application/Interrupt.h"
 
 #define MAX_BUFFER_SAMPLES 65536
 

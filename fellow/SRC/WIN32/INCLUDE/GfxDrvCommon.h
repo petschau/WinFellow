@@ -5,7 +5,7 @@
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/DisplayMode.h"
-#include "Ini.h"
+#include "fellow/application/Ini.h"
 
 class GfxDrvCommon
 {

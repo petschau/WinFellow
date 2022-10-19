@@ -2,7 +2,7 @@
 #include "fellow/chipset/BitplaneRegisters.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #undef new
 
 namespace test::fellow::chipset::BitplaneRegistersTests

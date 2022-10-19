@@ -148,11 +148,11 @@
     <Filter Include="fellow\automation">
       <UniqueIdentifier>{fb201ff1-e138-4253-95d8-cecda7d556e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\memory">
+      <UniqueIdentifier>{d5559118-86a9-4f93-addc-ce2a3eabcabc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\C\FFILESYS.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\zlibwrap.c">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -434,9 +434,6 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\api\Services.cpp">
       <Filter>fellow\api</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\interrupt.cpp">
-      <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\Ini.c">
       <Filter>Win32 C Files</Filter>
@@ -732,23 +729,17 @@
     <ClCompile Include="..\..\fellow\chipset\Wav.c">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\FMEM.C">
-      <Filter>core C Files</Filter>
+    <ClCompile Include="..\..\fellow\memory\Memory.c">
+      <Filter>fellow\memory</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\FellowFilesys.c">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\Interrupt.cpp">
+      <Filter>fellow\application</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\INCLUDE\FFILESYS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\FMEM.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\Ini.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\modrip.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -880,9 +871,6 @@
     </ClInclude>
     <ClInclude Include="..\INCLUDE\versioninfo-wcrev.h">
       <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\interrupt.h">
-      <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GUI_versioninfo.h">
       <Filter>Resource Files</Filter>
@@ -1429,6 +1417,24 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\Wav.h">
       <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\memory\Memory.h">
+      <Filter>fellow\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\FellowFilesys.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\FsNavig.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\Ini.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\Interrupt.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\modrip.h">
+      <Filter>fellow\application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

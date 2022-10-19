@@ -29,7 +29,7 @@
 
 /* fellow includes */
 #include "fellow/api/defs.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Floppy.h"
 #include "fellow/api/Services.h"
 

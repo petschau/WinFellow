@@ -52,14 +52,14 @@
 #include "fellow/api/Services.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Floppy.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/cpu/CpuModule.h"
-#include "interrupt.h"
+#include "fellow/application/Interrupt.h"
 #include <sys/timeb.h>
 
 #include "xdms.h"

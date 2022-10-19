@@ -10,13 +10,13 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/chipset/Blitter.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/ChipsetInfo.h"
-#include "interrupt.h"
+#include "fellow/application/Interrupt.h"
 #include "fellow/chipset/CycleExactCopper.h"
 
 //#define BLIT_VERIFY_MINTERMS

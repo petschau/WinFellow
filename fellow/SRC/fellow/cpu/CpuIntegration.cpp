@@ -24,13 +24,13 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "CpuModule.h"
 #include "CpuIntegration.h"
 #include "CpuModule_Internal.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/api/Services.h"
-#include "interrupt.h"
+#include "fellow/application/Interrupt.h"
 
 using namespace fellow::api;
 

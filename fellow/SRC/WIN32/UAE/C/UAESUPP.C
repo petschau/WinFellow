@@ -36,7 +36,7 @@
 #endif
 
 #include "uae2fell.h"
-#include "fmem.h"
+#include "fellow/memory/Memory.h"
 
 #include "fellow/api/Services.h"
 

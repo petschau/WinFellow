@@ -4,7 +4,7 @@
 #include "LineExactSprites.h"
 #include "fellow/api/Services.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/BitplaneRegisters.h"

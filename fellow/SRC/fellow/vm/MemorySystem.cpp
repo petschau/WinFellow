@@ -1,5 +1,5 @@
 #include "fellow/vm/MemorySystem.h"
-#include "FMEM.H"
+#include "fellow/memory/Memory.h"
 
 using namespace fellow::api::vm;
 using namespace std;
