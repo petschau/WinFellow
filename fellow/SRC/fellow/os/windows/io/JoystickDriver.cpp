@@ -23,9 +23,9 @@
 
 #include "fellow/api/defs.h"
 #include <windows.h>
-#include "gameport.h"
+#include "fellow/application/Gameport.h"
 #include "fellow/api/Services.h"
-#include "joydrv.h"
+#include "fellow/application/Joydrv.h"
 #include "windrv.h"
 #include "GfxDrvCommon.h"
 

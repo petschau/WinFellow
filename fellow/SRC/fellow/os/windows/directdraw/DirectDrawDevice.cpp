@@ -3,7 +3,7 @@
 #include "DirectDrawErrorLogger.h"
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/directdraw/GfxDrvDCScreenshot.h"
-#include "GRAPH.H"
+#include "fellow/chipset/Graphics.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"

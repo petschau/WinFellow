@@ -20,10 +20,10 @@
 #include "fellow/api/defs.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "FMEM.H"
-#include "CIA.H"
+#include "fellow/chipset/Cia.h"
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/cpu/CpuIntegration.h"
-#include "uart.h"
+#include "fellow/chipset/uart.h"
 
 /** @file
  *  Chipset side of interrupt control

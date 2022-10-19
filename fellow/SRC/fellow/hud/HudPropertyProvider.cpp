@@ -1,8 +1,8 @@
 #include "fellow/hud/HudPropertyProvider.h"
 
 #include "fellow/api/defs.h"
-#include "CIA.H"
-#include "FLOPPY.H"
+#include "fellow/chipset/Cia.h"
+#include "fellow/chipset/Floppy.h"
 
 unsigned int HudPropertyProvider::GetFps() const
 {

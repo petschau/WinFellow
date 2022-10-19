@@ -50,7 +50,7 @@
 #include "commoncontrol_wrap.h"
 #include "fellow/application/WGui.h"
 #include "WINDRV.H"
-#include "SOUND.H"
+#include "fellow/chipset/Sound.h"
 #include "fellow/application/ListTree.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/api/modules/IHardfileHandler.h"
@@ -58,12 +58,12 @@
 #include "fellow/application/HostRenderer.h"
 #include "WDBG.H"
 #include "Ini.h"
-#include "KBD.H"
+#include "fellow/chipset/Kbd.h"
 #include "fellow/application/KbdDrv.h"
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps.h"
 #endif
-#include "FLOPPY.H"
+#include "fellow/chipset/Floppy.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/GfxDrv.h"

@@ -1,7 +1,8 @@
 #pragma once
 
-#include "KEYCODES.H"
-#include "KBD.H"
+#include "fellow/api/defs.h"
+#include "fellow/chipset/Keycodes.h"
+#include "fellow/chipset/Kbd.h"
 
 constexpr unsigned int MAX_KEYS = 256;
 constexpr unsigned int MAX_JOYKEY_VALUE = 8;

@@ -95,7 +95,7 @@
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "WINDRV.H"
-#include "FLOPPY.H"
+#include "fellow/chipset/Floppy.h"
 #include "fellow/application/GfxDrv.H"
 #include "fellow/application/MouseDrv.H"
 #include "fellow/application/JoyDrv.H"

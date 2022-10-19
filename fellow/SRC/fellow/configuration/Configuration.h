@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SOUND.H"
+#include "fellow/chipset/Sound.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/application/ListTree.h"

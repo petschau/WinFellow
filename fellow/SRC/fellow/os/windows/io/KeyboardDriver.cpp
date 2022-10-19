@@ -22,12 +22,12 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "KEYCODES.H"
-#include "KBD.H"
-#include "KBDDRV.H"
-#include "MOUSEDRV.H"
-#include "JOYDRV.H"
-#include "GAMEPORT.H"
+#include "fellow/chipset/Keycodes.h"
+#include "fellow/chipset/Kbd.h"
+#include "fellow/application/KbdDrv.h"
+#include "fellow/application/MouseDrv.h"
+#include "fellow/application/JoyDrv.h"
+#include "fellow/application/Gameport.h"
 #include "WINDRV.H"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"

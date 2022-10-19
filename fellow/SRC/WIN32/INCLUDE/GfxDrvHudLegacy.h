@@ -5,7 +5,7 @@
 #include "fellow/api/configuration/HudConfiguration.h"
 #include "fellow/hud/HudPropertyProvider.h"
 #include "fellow/application/DrawDimensionTypes.h"
-#include "MappedChipsetFramebuffer.h"
+#include "fellow/chipset/MappedChipsetFramebuffer.h"
 
 class GfxDrvHudLegacy
 {

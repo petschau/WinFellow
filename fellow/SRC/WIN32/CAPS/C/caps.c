@@ -30,7 +30,7 @@
 
 #include "fellow/application/WGui.h"
 #include "fellow/api/Services.h"
-#include "FLOPPY.H"
+#include "fellow/chipset/Floppy.h"
 
 #ifdef __cplusplus
 extern "C"

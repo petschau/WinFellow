@@ -31,7 +31,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "sound.h"
+#include "fellow/chipset/Sound.h"
 #include "fellow/application/ListTree.h"
 #include "windrv.h"
 #include "fellow/application/SoundDrv.h"

@@ -8,13 +8,13 @@
 #include "gui_general.h"
 #include "fellow/application/GfxDrv.h"
 
-#include "SOUND.H"
+#include "fellow/chipset/Sound.h"
 #include "fellow/application/SoundDrv.h"
 #include "fellow/application/MouseDrv.h"
 #include "fellow/application/JoyDrv.h"
 #include "fellow/application/KbdDrv.h"
 #include "fellow/application/Timer.h"
-#include "GRAPH.H"
+#include "fellow/chipset/Graphics.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"

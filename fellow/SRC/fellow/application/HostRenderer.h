@@ -2,9 +2,9 @@
 
 #include "fellow/api/defs.h"
 
-#include "GRAPH.H"
+#include "fellow/chipset/Graphics.h"
 
-#include "MappedChipsetFramebuffer.h"
+#include "fellow/chipset/MappedChipsetFramebuffer.h"
 #include "GfxDrvColorBitsInformation.h"
 #include "fellow/chipset/ChipsetCallbacks.h"
 
@@ -14,7 +14,7 @@
 
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/HostRenderRuntimeSettings.h"
-#include "ChipsetBufferRuntimeSettings.h"
+#include "fellow/chipset/ChipsetBufferRuntimeSettings.h"
 #include "fellow/application/HostRenderStatistics.h"
 #include "fellow/hud/HudPropertyProvider.h"
 

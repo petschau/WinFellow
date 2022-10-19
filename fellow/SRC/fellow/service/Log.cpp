@@ -3,7 +3,7 @@
 #include <list>
 #include "fellow/service/Log.h"
 #include "fellow/api/Services.h"
-#include "WGUI.H"
+#include "fellow/application/WGui.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"

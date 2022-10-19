@@ -150,37 +150,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\C\BLIT.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CIA.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\FFILESYS.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\FLOPPY.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\FMEM.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\GAMEPORT.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\GRAPH.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\KBD.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\SOUND.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\SPRITE.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\WAV.C">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\zlibwrap.c">
@@ -306,12 +276,6 @@
     <ClCompile Include="..\C\RetroPlatform.cpp">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c\rtc.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\c\RtcOkiMsm6242rs.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\zlib\C\gzclose.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
@@ -327,26 +291,11 @@
     <ClCompile Include="..\..\zlib\C\infback.c">
       <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\c\draw_pixelrenderers.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\c\draw_interlace_control.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\GFXDRV.C">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\GfxDrvCommon.cpp">
       <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\LineExactCopper.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\LineExactSprites.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\c\uart.cpp">
-      <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\vm\M68K.cpp">
       <Filter>fellow\vm</Filter>
@@ -485,9 +434,6 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\api\Services.cpp">
       <Filter>fellow\api</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\CopperCommon.cpp">
-      <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\interrupt.cpp">
       <Filter>core C Files</Filter>
@@ -735,42 +681,72 @@
     <ClCompile Include="..\..\fellow\application\modrip.cpp">
       <Filter>fellow\application</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Blitter.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Cia.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\CopperCommon.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\draw_interlace_control.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\draw_pixelrenderers.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Floppy.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Gameport.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Graphics.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Kbd.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\LineExactSprites.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\rtc.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\RtcOkiMsm6242rs.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Sound.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Sprite.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\uart.cpp">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\chipset\Wav.c">
+      <Filter>fellow\chipset</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\C\FMEM.C">
+      <Filter>core C Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\INCLUDE\BLIT.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CIA.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\EVENTID.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\FFILESYS.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\FLOPPY.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\FMEM.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GRAPH.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\Ini.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\KEYCODES.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\modrip.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SPRITE.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\WAV.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
@@ -911,29 +887,8 @@
     <ClInclude Include="GUI_versioninfo.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\RtcOkiMsm6242rs.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\rtc.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\draw_pixelrenderers.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\draw_interlace_control.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\GfxDrvCommon.h">
       <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\LineExactCopper.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\LineExactSprites.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\uart.h">
-      <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\defs.h">
       <Filter>fellow\api</Filter>
@@ -1055,12 +1010,6 @@
     <ClInclude Include="..\..\fellow\chipset\DMAController.h">
       <Filter>fellow\chipset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SOUND.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\KBD.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\test\catch\catch_discover.hpp">
       <Filter>test\catch</Filter>
     </ClInclude>
@@ -1093,9 +1042,6 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\CopperRegisters.h">
       <Filter>fellow\chipset</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\CopperCommon.h">
-      <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\CopperUtility.h">
       <Filter>fellow\chipset</Filter>
@@ -1222,12 +1168,6 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\debug\console\CPUWriterUtils.h">
       <Filter>fellow\debug\console</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\MappedChipsetFramebuffer.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\ChipsetBufferRuntimeSettings.h">
-      <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.h">
       <Filter>fellow\os\windows\directdraw</Filter>
@@ -1426,6 +1366,69 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\WGui.h">
       <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Blitter.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\ChipsetBufferRuntimeSettings.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Cia.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\CopperCommon.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\draw_interlace_control.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\draw_pixelrenderers.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\EventId.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Floppy.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Fonts.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Graphics.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Kbd.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Keycodes.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\LineExactCopper.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\LineExactSprites.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\MappedChipsetFramebuffer.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\rtc.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\RtcOkiMsm6242rs.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Sound.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Sprite.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\uart.h">
+      <Filter>fellow\chipset</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\chipset\Wav.h">
+      <Filter>fellow\chipset</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

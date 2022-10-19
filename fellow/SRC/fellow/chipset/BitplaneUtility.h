@@ -26,7 +26,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/chipset/BitplaneRegisters.h"
-#include "GRAPH.H"
+#include "fellow/chipset/Graphics.h"
 
 // Bitplane data types
 typedef union ByteLongUnion_ {

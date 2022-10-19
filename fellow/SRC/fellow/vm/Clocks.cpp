@@ -1,5 +1,5 @@
 #include "fellow/vm/Clocks.h"
-#include "draw_interlace_control.h"
+#include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/scheduler/Scheduler.h"
 
 using namespace fellow::api::vm;

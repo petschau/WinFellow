@@ -22,7 +22,7 @@
 /*=========================================================================*/
 #include <list>
 #include "fellow/api/defs.h"
-#include "sound.h"
+#include "fellow/chipset/Sound.h"
 #include <windows.h>
 #include "fellow/api/Services.h"
 #include "fellow/application/Timer.h"

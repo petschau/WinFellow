@@ -30,7 +30,7 @@
 /* fellow includes */
 #include "fellow/api/defs.h"
 #include "FMEM.H"
-#include "FLOPPY.H"
+#include "fellow/chipset/Floppy.h"
 #include "fellow/api/Services.h"
 
 /* own includes */

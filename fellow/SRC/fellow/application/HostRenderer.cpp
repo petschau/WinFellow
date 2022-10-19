@@ -31,14 +31,14 @@
 #include "fellow/chipset/BitplaneRegisters.h"
 #include "fellow/chipset/DualPlayfieldMapper.h"
 #include "fellow/api/debug/DiagnosticFeatures.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/application/HostRenderer.h"
-#include "GRAPH.H"
-#include "GFXDRV.H"
-#include "FONTS.H"
+#include "fellow/chipset/Graphics.h"
+#include "fellow/application/GfxDrv.h"
+#include "fellow/chipset/Fonts.h"
 
-#include "draw_pixelrenderers.h"
-#include "draw_interlace_control.h"
+#include "fellow/chipset/draw_pixelrenderers.h"
+#include "fellow/chipset/draw_interlace_control.h"
 
 #include "fellow/chipset/BitplaneShifter.h"
 

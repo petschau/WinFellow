@@ -5,10 +5,10 @@
 #include "fellow/configuration/Configuration.h"
 #include "GfxDrvMappedBufferPointer.h"
 #include "GfxDrvColorBitsInformation.h"
-#include "MappedChipsetFramebuffer.h"
+#include "fellow/chipset/MappedChipsetFramebuffer.h"
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/HostRenderRuntimeSettings.h"
-#include "ChipsetBufferRuntimeSettings.h"
+#include "fellow/chipset/ChipsetBufferRuntimeSettings.h"
 #include "fellow/application/DisplayMode.h"
 #include "fellow/hud/HudPropertyProvider.h"
 

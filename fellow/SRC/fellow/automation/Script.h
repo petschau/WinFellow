@@ -2,7 +2,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/application/Gameport.h"
-#include "KBD.H"
+#include "fellow/chipset/Kbd.h"
 
 #include <vector>
 #include <string>
