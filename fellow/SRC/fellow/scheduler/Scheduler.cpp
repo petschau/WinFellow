@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -44,7 +44,7 @@
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
-#include "KBDDRV.H"
+#include "fellow/application/KbdDrv.h"
 #endif
 
 #include "fellow/chipset/DDFStateMachine.h"

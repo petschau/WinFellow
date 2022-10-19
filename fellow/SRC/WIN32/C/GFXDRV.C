@@ -1,7 +1,7 @@
 #include "GfxDrvCommon.h"
 #include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
-#include "GFXDRV.H"
+#include "fellow/application/GfxDrv.h"
 #include "fellow/api/Services.h"
 #include "fellow/hud/HudPropertyProvider.h"
 
@@ -15,7 +15,7 @@ using namespace fellow::api;
 bool gfx_drv_use_dxgi = false;
 
 GfxDrvCommon *gfxDrvCommon = nullptr;
-GfxDrvDirectDraw* gfxDrvDirectDraw = nullptr;
+GfxDrvDirectDraw *gfxDrvDirectDraw = nullptr;
 GfxDrvDXGI *gfxDrvDXGI = nullptr;
 
 void gfxDrvClearCurrentBuffer()
@@ -68,7 +68,7 @@ void gfxDrvBufferFlip()
   gfxDrvCommon->RunEventWait();
 }
 
-void gfxDrvDrawHUD(const MappedChipsetFramebuffer& mappedFramebuffer)
+void gfxDrvDrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer)
 {
   if (gfx_drv_use_dxgi)
   {
@@ -133,7 +133,11 @@ list<DisplayMode> gfxDrvGetDisplayModeList()
   return gfxDrvDirectDraw->GetDisplayModeList();
 }
 
-bool gfxDrvEmulationStart(const HostRenderConfiguration& hostRenderConfiguration, const HostRenderRuntimeSettings& hostRenderRuntimeSettings, const ChipsetBufferRuntimeSettings& chipsetBufferRuntimeSettings, HudPropertyProvider* hudPropertyProvider)
+bool gfxDrvEmulationStart(
+    const HostRenderConfiguration &hostRenderConfiguration,
+    const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
+    const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
+    HudPropertyProvider *hudPropertyProvider)
 {
   if (!gfxDrvCommon->EmulationStart(hostRenderConfiguration, hostRenderRuntimeSettings.DisplayMode))
   {

@@ -25,7 +25,7 @@
 #include "sound.h"
 #include <windows.h>
 #include "fellow/api/Services.h"
-#include "TIMER.H"
+#include "fellow/application/Timer.h"
 
 using namespace fellow::api;
 

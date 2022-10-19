@@ -23,12 +23,12 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "FMEM.H"
 #include "GRAPH.H"
 #include "fellow/application/HostRenderer.h"
-#include "LISTTREE.H"
+#include "fellow/application/ListTree.h"
 #include "fellow/scheduler/Scheduler.h"
 
 #include "fellow/chipset/SpriteRegisters.h"

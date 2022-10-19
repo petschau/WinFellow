@@ -8,7 +8,7 @@
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/HostRenderRuntimeSettings.h"
 #include "ChipsetBufferRuntimeSettings.h"
-#include "GfxDrvColorBitsInformation.h"
+#include "fellow/application/GfxDrvColorBitsInformation.h"
 
 struct DirectDrawFullscreenMode
 {

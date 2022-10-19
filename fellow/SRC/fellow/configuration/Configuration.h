@@ -2,8 +2,8 @@
 
 #include "SOUND.H"
 #include "fellow/cpu/CpuIntegration.h"
-#include "GAMEPORT.H"
-#include "LISTTREE.H"
+#include "fellow/application/Gameport.h"
+#include "fellow/application/ListTree.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 
 #include <string>

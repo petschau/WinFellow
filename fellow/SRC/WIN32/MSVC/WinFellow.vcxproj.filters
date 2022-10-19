@@ -156,9 +156,6 @@
     <ClCompile Include="..\..\C\CIA.C">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\FELLOW.C">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\C\FFILESYS.C">
       <Filter>core C Files</Filter>
     </ClCompile>
@@ -381,9 +378,6 @@
     <ClCompile Include="..\..\C\xdmswrap.c">
       <Filter>core C Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\C\ListTree.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
       <Filter>test\fellow\chipset</Filter>
     </ClCompile>
@@ -496,9 +490,6 @@
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\C\interrupt.cpp">
-      <Filter>core C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\modrip.cpp">
       <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\Ini.c">
@@ -735,6 +726,15 @@
     <ClCompile Include="..\..\fellow\automation\Script.cpp">
       <Filter>fellow\automation</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\application\Fellow.c">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\ListTree.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\application\modrip.cpp">
+      <Filter>fellow\application</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\INCLUDE\BLIT.H">
@@ -746,9 +746,6 @@
     <ClInclude Include="..\..\INCLUDE\EVENTID.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\FELLOW.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\FFILESYS.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
@@ -756,9 +753,6 @@
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\FMEM.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GAMEPORT.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\GRAPH.H">
@@ -1067,9 +1061,6 @@
     <ClInclude Include="..\..\INCLUDE\KBD.H">
       <Filter>core C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\LISTTREE.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\test\catch\catch_discover.hpp">
       <Filter>test\catch</Filter>
     </ClInclude>
@@ -1133,9 +1124,6 @@
     <ClInclude Include="..\INCLUDE\GfxDrvHudLegacy.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\WGUI.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\wgui_win32.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
@@ -1147,24 +1135,6 @@
     </ClInclude>
     <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H">
       <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GFXDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\JOYDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\KBDDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\MOUSEDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\SOUNDDRV.H">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\TIMER.H">
-      <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h">
       <Filter>fellow\api\modules</Filter>
@@ -1253,13 +1223,7 @@
     <ClInclude Include="..\..\fellow\debug\console\CPUWriterUtils.h">
       <Filter>fellow\debug\console</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GfxDrvMappedBufferPointer.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\INCLUDE\MappedChipsetFramebuffer.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\GfxDrvColorBitsInformation.h">
       <Filter>core C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\INCLUDE\ChipsetBufferRuntimeSettings.h">
@@ -1426,6 +1390,42 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\automation\Script.h">
       <Filter>fellow\automation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\Fellow.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\Gameport.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\GfxDrv.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\GfxDrvMappedBufferPointer.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\JoyDrv.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\KbdDrv.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\ListTree.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\MouseDrv.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\SoundDrv.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\Timer.h">
+      <Filter>fellow\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\application\WGui.h">
+      <Filter>fellow\application</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

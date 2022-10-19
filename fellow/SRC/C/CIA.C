@@ -26,7 +26,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "GAMEPORT.H"
+#include "fellow/application/Gameport.h"
 #include "FMEM.H"
 #include "FLOPPY.H"
 #include "CIA.H"

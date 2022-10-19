@@ -1,19 +1,19 @@
 #include "PORTABLE.H"
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "WINDRV.H"
 #include "Ini.h"
 #include "GfxDrvCommon.h"
 #include "gui_general.h"
-#include "GFXDRV.H"
+#include "fellow/application/GfxDrv.h"
 
 #include "SOUND.H"
-#include "SOUNDDRV.H"
-#include "MOUSEDRV.H"
-#include "JOYDRV.H"
-#include "KBDDRV.H"
-#include "TIMER.H"
+#include "fellow/application/SoundDrv.h"
+#include "fellow/application/MouseDrv.h"
+#include "fellow/application/JoyDrv.h"
+#include "fellow/application/KbdDrv.h"
+#include "fellow/application/Timer.h"
 #include "GRAPH.H"
 
 #ifdef RETRO_PLATFORM
@@ -263,7 +263,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
         return 0;
       }
       break;
-    case WM_SYSKEYDOWN: {
+    case WM_SYSKEYDOWN:
+    {
       int vkey = (int)wParam;
       _syskey_down = (vkey != VK_F10);
     }
@@ -503,10 +504,19 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
     }
 #endif
 
-    _hwnd = CreateWindowEx(dwExStyle, "FellowWindowClass", versionstring, dwStyle,
-                           0, // CW_USEDEFAULT,
-                           0, // SW_SHOW,
-                           width, height, hParent, nullptr, win_drv_hInstance, nullptr);
+    _hwnd = CreateWindowEx(
+        dwExStyle,
+        "FellowWindowClass",
+        versionstring,
+        dwStyle,
+        0, // CW_USEDEFAULT,
+        0, // SW_SHOW,
+        width,
+        height,
+        hParent,
+        nullptr,
+        win_drv_hInstance,
+        nullptr);
   }
   else
   {
@@ -560,7 +570,7 @@ void GfxDrvCommon::Flip()
   }
 }
 
-bool GfxDrvCommon::EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const DisplayMode& displayMode)
+bool GfxDrvCommon::EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const DisplayMode &displayMode)
 {
   SetDrawMode(displayMode);
 

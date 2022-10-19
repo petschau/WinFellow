@@ -36,7 +36,7 @@
 /*============================================================================*/
 
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "FFILESYS.H"
 #include "fellow/api/Services.h"
 #include "FILESYS.H"

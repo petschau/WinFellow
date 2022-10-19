@@ -2,7 +2,7 @@
 #include "fellow/automation/Script.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "KBD.H"
-#include "GAMEPORT.H"
+#include "fellow/application/Gameport.h"
 
 ScriptLine::ScriptLine(ULL frameNumber, ULO lineNumber, const string &command, const string &parameters) : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {

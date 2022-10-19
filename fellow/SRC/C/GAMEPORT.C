@@ -19,21 +19,14 @@
 /* along with this program; if not, write to the Free Software Foundation, */
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
-/* ---------------- CHANGE LOG -----------------
-Friday, January 05, 2001: nova
-- removed initialization of port 0 to GP_MOUSE0 in gameportEmulationStart
-
-Tuesday, September 19, 2000
-- added autofire support
-*/
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/HostRenderer.h"
 #include "FMEM.H"
-#include "GAMEPORT.H"
-#include "MOUSEDRV.H"
-#include "JOYDRV.H"
+#include "fellow/application/Gameport.h"
+#include "fellow/application/MouseDrv.h"
+#include "fellow/application/JoyDrv.h"
 #include "fellow/automation/Automator.h"
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"

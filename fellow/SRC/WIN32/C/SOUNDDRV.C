@@ -32,9 +32,9 @@
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
 #include "sound.h"
-#include "ListTree.h"
+#include "fellow/application/ListTree.h"
 #include "windrv.h"
-#include "sounddrv.h"
+#include "fellow/application/SoundDrv.h"
 #include "fellow/configuration/Configuration.h"
 #include "GfxDrvCommon.h"
 

@@ -580,37 +580,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\C\LineExactCopper.cpp" />
     <ClCompile Include="..\..\c\draw_interlace_control.cpp" />
     <ClCompile Include="..\..\c\draw_pixelrenderers.cpp" />
-    <ClCompile Include="..\..\C\FELLOW.C">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-      </ExceptionHandling>
-      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
-      </ExceptionHandling>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-      </ExceptionHandling>
-      <ExceptionHandling Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
-      </ExceptionHandling>
-    </ClCompile>
     <ClCompile Include="..\..\C\FFILESYS.C">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -688,10 +657,13 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\C\xdmswrap.c" />
     <ClCompile Include="..\..\fellow\api\Services.cpp" />
     <ClCompile Include="..\..\fellow\application\DisplayMode.cpp" />
+    <ClCompile Include="..\..\fellow\application\Fellow.c" />
     <ClCompile Include="..\..\fellow\application\HostRenderConfiguration.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderer.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderStatistics.cpp" />
+    <ClCompile Include="..\..\fellow\application\ListTree.cpp" />
+    <ClCompile Include="..\..\fellow\application\modrip.cpp" />
     <ClCompile Include="..\..\fellow\automation\Automator.cpp" />
     <ClCompile Include="..\..\fellow\automation\Script.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp" />
@@ -918,52 +890,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <ClCompile Include="..\..\C\KBD.C">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\..\C\ListTree.cpp">
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Disabled</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Disabled</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BrowseInformation>
-      <BrowseInformation Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</BrowseInformation>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|x64'">MaxSpeed</Optimization>
-      <Optimization Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">MaxSpeed</Optimization>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <ClCompile Include="..\..\C\modrip.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -2069,11 +1995,23 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\api\vm\MemorySystemTypes.h" />
     <ClInclude Include="..\..\fellow\application\DisplayMode.h" />
     <ClInclude Include="..\..\fellow\application\DrawDimensionTypes.h" />
+    <ClInclude Include="..\..\fellow\application\Fellow.h" />
+    <ClInclude Include="..\..\fellow\application\Gameport.h" />
+    <ClInclude Include="..\..\fellow\application\GfxDrv.h" />
+    <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h" />
+    <ClInclude Include="..\..\fellow\application\GfxDrvMappedBufferPointer.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderConfiguration.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderer.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h" />
     <ClInclude Include="..\..\fellow\application\IFpsProvider.h" />
+    <ClInclude Include="..\..\fellow\application\JoyDrv.h" />
+    <ClInclude Include="..\..\fellow\application\KbdDrv.h" />
+    <ClInclude Include="..\..\fellow\application\ListTree.h" />
+    <ClInclude Include="..\..\fellow\application\MouseDrv.h" />
+    <ClInclude Include="..\..\fellow\application\SoundDrv.h" />
+    <ClInclude Include="..\..\fellow\application\Timer.h" />
+    <ClInclude Include="..\..\fellow\application\WGui.h" />
     <ClInclude Include="..\..\fellow\automation\Automator.h" />
     <ClInclude Include="..\..\fellow\automation\Script.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneDMA.h" />
@@ -2186,24 +2124,19 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\ChipsetBufferRuntimeSettings.h" />
     <ClInclude Include="..\..\INCLUDE\CIA.H" />
     <ClInclude Include="..\..\INCLUDE\CopperCommon.h" />
-    <ClInclude Include="..\..\INCLUDE\GfxDrvColorBitsInformation.h" />
-    <ClInclude Include="..\..\INCLUDE\GfxDrvMappedBufferPointer.h" />
     <ClInclude Include="..\..\INCLUDE\KBD.H" />
     <ClInclude Include="..\..\INCLUDE\LineExactCopper.h" />
     <ClInclude Include="..\..\include\draw_interlace_control.h" />
     <ClInclude Include="..\..\include\draw_pixelrenderers.h" />
     <ClInclude Include="..\..\INCLUDE\EVENTID.H" />
-    <ClInclude Include="..\..\INCLUDE\FELLOW.H" />
     <ClInclude Include="..\..\INCLUDE\FFILESYS.H" />
     <ClInclude Include="..\..\INCLUDE\FLOPPY.H" />
     <ClInclude Include="..\..\INCLUDE\FMEM.H" />
-    <ClInclude Include="..\..\INCLUDE\GAMEPORT.H" />
     <ClInclude Include="..\..\INCLUDE\GRAPH.H" />
     <ClInclude Include="..\..\INCLUDE\Ini.h" />
     <ClInclude Include="..\..\include\interrupt.h" />
     <ClInclude Include="..\..\INCLUDE\KEYCODES.H" />
     <ClInclude Include="..\..\INCLUDE\LineExactSprites.h" />
-    <ClInclude Include="..\..\INCLUDE\LISTTREE.H" />
     <ClInclude Include="..\..\INCLUDE\MappedChipsetFramebuffer.h" />
     <ClInclude Include="..\..\INCLUDE\modrip.h" />
     <ClInclude Include="..\..\include\rtc.h" />
@@ -2226,20 +2159,13 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\INCLUDE\zlibwrap.h" />
     <ClInclude Include="..\Caps\include\caps.h" />
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h" />
-    <ClInclude Include="..\..\INCLUDE\GFXDRV.H" />
-    <ClInclude Include="..\..\INCLUDE\JOYDRV.H" />
-    <ClInclude Include="..\..\INCLUDE\KBDDRV.H" />
     <ClInclude Include="..\INCLUDE\modrip_win32.h" />
-    <ClInclude Include="..\..\INCLUDE\MOUSEDRV.H" />
-    <ClInclude Include="..\..\INCLUDE\SOUNDDRV.H" />
     <ClInclude Include="..\INCLUDE\RetroPlatform.h" />
     <ClInclude Include="..\INCLUDE\RetroPlatformGuestIPC.h" />
     <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h" />
     <ClInclude Include="..\INCLUDE\sysinfo.h" />
-    <ClInclude Include="..\..\INCLUDE\TIMER.H" />
     <ClInclude Include="..\INCLUDE\versioninfo-wcrev.h" />
     <ClInclude Include="..\INCLUDE\WDBG.H" />
-    <ClInclude Include="..\..\INCLUDE\WGUI.H" />
     <ClInclude Include="..\INCLUDE\wgui_win32.h" />
     <ClInclude Include="..\INCLUDE\WINDRV.H" />
     <ClInclude Include="..\..\UAE\INCLUDE\AUTOCONF.H" />

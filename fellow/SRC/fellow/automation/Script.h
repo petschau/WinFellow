@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fellow/api/defs.h"
-#include "GAMEPORT.H"
+#include "fellow/application/Gameport.h"
 #include "KBD.H"
 
 #include <vector>

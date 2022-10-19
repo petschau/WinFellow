@@ -35,7 +35,7 @@
 #include "dxver.h"
 #include <dinput.h>
 
-#include "GFXDRV.H"
+#include "fellow/application/GfxDrv.H"
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 #include "fellow/api/defs.h"

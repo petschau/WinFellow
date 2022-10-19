@@ -28,7 +28,7 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 
-#include "WGUI.H"
+#include "fellow/application/WGui.h"
 #include "fellow/api/Services.h"
 #include "FLOPPY.H"
 
@@ -234,8 +234,8 @@ BOOLE capsLoadTrack(ULO drive, ULO track, UBY *mfm_data, ULO *tracklength, ULO *
       timebuf[i] = (ULO)capsTrackInfo.timebuf[i];
 
 #if TRACECAPS
-  Service->Log.AddTimelessLog("CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n", drive, track, *flakey ? "TRUE " : "FALSE", capsTrackInfo.trackcnt,
-                              capsTrackInfo.timelen, type);
+  Service->Log.AddTimelessLog(
+      "CAPS Track Information: drive:%u track:%03u flakey:%s trackcnt:%d timelen:%05d type:%d\n", drive, track, *flakey ? "TRUE " : "FALSE", capsTrackInfo.trackcnt, capsTrackInfo.timelen, type);
 #endif
 
   return TRUE;

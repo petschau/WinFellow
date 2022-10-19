@@ -92,23 +92,22 @@
 #include "RetroPlatformIPC.h"
 
 #include "fellow/configuration/Configuration.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "WINDRV.H"
 #include "FLOPPY.H"
-#include "GFXDRV.H"
-#include "MOUSEDRV.H"
-#include "JOYDRV.H"
+#include "fellow/application/GfxDrv.H"
+#include "fellow/application/MouseDrv.H"
+#include "fellow/application/JoyDrv.H"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "KBDDRV.H"
+#include "fellow/application/KbdDrv.h"
 #include "fellow/api/modules/IHardfileHandler.h"
-#include "dxver.h"    /// needed for DirectInput based joystick detection code
-#include "SOUNDDRV.H" /// needed for DirectSound volume control
+#include "dxver.h"                       /// needed for DirectInput based joystick detection code
+#include "fellow/application/SoundDrv.h" /// needed for DirectSound volume control
 #include "GfxDrvCommon.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
 #include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
-#include "KBDDRV.H"
 
 using namespace fellow::api;
 

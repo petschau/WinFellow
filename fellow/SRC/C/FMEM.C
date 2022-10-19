@@ -31,7 +31,7 @@
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "FMEM.H"
-#include "WGUI.H"
+#include "fellow/application/WGui.h"
 #include "rtc.h"
 #include "zlib.h" // crc32 function
 #include "fellow/api/Services.h"

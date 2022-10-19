@@ -21,17 +21,17 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "KEYCODES.H"
 #include "KBD.H"
-#include "KBDDRV.H"
-#include "GAMEPORT.H"
+#include "fellow/application/KbdDrv.h"
+#include "fellow/application/Gameport.h"
 #include "GRAPH.H"
 #include "CIA.H"
 #include "fellow/application/HostRenderer.h"
 #include "FLOPPY.H"
-#include "GFXDRV.H"
+#include "fellow/application/GfxDrv.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 

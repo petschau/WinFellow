@@ -31,7 +31,7 @@
 #include <windows.h>
 #include <excpt.h>
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "sysinfo.h"
 
@@ -516,22 +516,15 @@ static void sysinfoParseOSVersionInfo()
                 case 17134: sprintf(strOS, "Windows 10 version 1803"); break;
                 case 17763: sprintf(strOS, "Windows 10 version 1809"); break;
                 case 18362: sprintf(strOS, "Windows 10 version 1903"); break;
-                case 18363: sprintf(strOS, "Windows 10 version 1909"); break;
-              break;
-            case 19041:
-              sprintf(strOS, "Windows 10 version 2004");
-              break;
-            case 19042:
-              sprintf(strOS, "Windows 10 version 20H2");
-              break;
-            case 19043:
-              sprintf(strOS, "Windows 10 version 21H1");
-              break;
-            case 19044:
-              sprintf(strOS, "Windows 10 version 21H2");
-              break;
-            case 22000:
-              sprintf(strOS, "Windows 11 version 21H2");
+                case 18363:
+                  sprintf(strOS, "Windows 10 version 1909");
+                  break;
+                  break;
+                case 19041: sprintf(strOS, "Windows 10 version 2004"); break;
+                case 19042: sprintf(strOS, "Windows 10 version 20H2"); break;
+                case 19043: sprintf(strOS, "Windows 10 version 21H1"); break;
+                case 19044: sprintf(strOS, "Windows 10 version 21H2"); break;
+                case 22000: sprintf(strOS, "Windows 11 version 21H2");
               }
               Service->Log.AddTimelessLog("\toperating system : \t%s\n", strOS);
               break;
@@ -543,8 +536,8 @@ static void sysinfoParseOSVersionInfo()
     default: Service->Log.AddTimelessLog("\toperating system: \tunknown\n");
   }
 
-  Service->Log.AddTimelessLog("\tparameters: \t\tOS %d.%d build %d, %s\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber,
-                              strcmp(osInfo.szCSDVersion, "") != 0 ? osInfo.szCSDVersion : "no servicepack");
+  Service->Log.AddTimelessLog(
+      "\tparameters: \t\tOS %d.%d build %d, %s\n", osInfo.dwMajorVersion, osInfo.dwMinorVersion, osInfo.dwBuildNumber, strcmp(osInfo.szCSDVersion, "") != 0 ? osInfo.szCSDVersion : "no servicepack");
 
   switch (osInfo.wProductType)
   {

@@ -23,7 +23,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "FMEM.H"
 #include "CpuModule.h"
 #include "CpuIntegration.h"

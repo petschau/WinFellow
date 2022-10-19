@@ -25,15 +25,15 @@
 #include "gui_general.h"
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
-#include "WGUI.H"
+#include "fellow/application/WGui.h"
 #include "WDBG.H"
 #include "fellow/scheduler/Scheduler.h"
 #include "WINDRV.H"
-#include "FELLOW.H"
-#include "MOUSEDRV.H"
-#include "KBD.H"
-#include "JOYDRV.H"
-#include "KBDDRV.H"
+#include "fellow/application/Fellow.h"
+#include "fellow/application/MouseDrv.h"
+#include "Kbd.h"
+#include "fellow/application/JoyDrv.h"
+#include "fellow/application/KbdDrv.h"
 #include "GfxDrvCommon.h"
 #include "fellow/os/windows/io/FileopsWin32.h"
 #include "fellow/api/Services.h"
@@ -87,12 +87,13 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, LPVOID in)
 {
   DWORD dwThreadId;
-  HANDLE hThread = CreateThread(nullptr,      // Security attr
-                                0,            // Stack Size
-                                func,         // Thread procedure
-                                in,           // Thread parameter
-                                0,            // Creation flags
-                                &dwThreadId); // ThreadId
+  HANDLE hThread = CreateThread(
+      nullptr,      // Security attr
+      0,            // Stack Size
+      func,         // Thread procedure
+      in,           // Thread parameter
+      0,            // Creation flags
+      &dwThreadId); // ThreadId
 
   bool success = hThread != nullptr;
   if (success)
@@ -141,16 +142,17 @@ bool winDrvDebugStartClient()
   PROCESS_INFORMATION pi{};
   si.cb = sizeof si;
 
-  if (!CreateProcess(nullptr,     // No module name (use command line)
-                     commandLine, // Command line
-                     nullptr,     // Process handle not inheritable
-                     nullptr,     // Thread handle not inheritable
-                     FALSE,       // Set handle inheritance to FALSE
-                     0,           // No creation flags
-                     nullptr,     // Use parent's environment block
-                     nullptr,     // Use parent's starting directory
-                     &si,         // Pointer to STARTUPINFO structure
-                     &pi))        // Pointer to PROCESS_INFORMATION structure
+  if (!CreateProcess(
+          nullptr,     // No module name (use command line)
+          commandLine, // Command line
+          nullptr,     // Process handle not inheritable
+          nullptr,     // Thread handle not inheritable
+          FALSE,       // Set handle inheritance to FALSE
+          0,           // No creation flags
+          nullptr,     // Use parent's environment block
+          nullptr,     // Use parent's starting directory
+          &si,         // Pointer to STARTUPINFO structure
+          &pi))        // Pointer to PROCESS_INFORMATION structure
   {
     Service->Log.AddLog("winDrvStartDebuggerClient(): CreateProcess failed (%d).\n", GetLastError());
     return false;
@@ -536,8 +538,14 @@ char **winDrvCmdLineMakeArgv(char *lpCmdLine, int *argc)
 /* exception handling to generate minidumps                                   */
 /*============================================================================*/
 
-typedef BOOL(__stdcall *tMDWD)(IN HANDLE hProcess, IN DWORD ProcessId, IN HANDLE hFile, IN MINIDUMP_TYPE DumpType, IN CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
-                               OPTIONAL IN CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam, OPTIONAL IN CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam OPTIONAL);
+typedef BOOL(__stdcall *tMDWD)(
+    IN HANDLE hProcess,
+    IN DWORD ProcessId,
+    IN HANDLE hFile,
+    IN MINIDUMP_TYPE DumpType,
+    IN CONST PMINIDUMP_EXCEPTION_INFORMATION ExceptionParam,
+    OPTIONAL IN CONST PMINIDUMP_USER_STREAM_INFORMATION UserStreamParam,
+    OPTIONAL IN CONST PMINIDUMP_CALLBACK_INFORMATION CallbackParam OPTIONAL);
 
 void winDrvWriteMinidump(EXCEPTION_POINTERS *e)
 {
@@ -581,10 +589,11 @@ LONG CALLBACK winDrvUnhandledExceptionHandler(EXCEPTION_POINTERS *e)
 
 // #endif
 
-int WINAPI WinMain(HINSTANCE hInstance,     // handle to current instance
-                   HINSTANCE hPrevInstance, // handle to previous instance
-                   LPSTR lpCmdLine,         // pointer to command line
-                   int nCmdShow)            // show state of window
+int WINAPI WinMain(
+    HINSTANCE hInstance,     // handle to current instance
+    HINSTANCE hPrevInstance, // handle to previous instance
+    LPSTR lpCmdLine,         // pointer to command line
+    int nCmdShow)            // show state of window
 {
   SetUnhandledExceptionFilter(winDrvUnhandledExceptionHandler);
 

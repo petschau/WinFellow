@@ -7,9 +7,9 @@
 #include <iostream>
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 
-#include "WGUI.H"
+#include "fellow/application/WGui.h"
 #include "GfxDrvCommon.h"
 
 using namespace std;

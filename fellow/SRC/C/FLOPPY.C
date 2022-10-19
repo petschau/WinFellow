@@ -50,7 +50,7 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "FELLOW.H"
+#include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "FMEM.H"
 #include "FLOPPY.H"

@@ -1,7 +1,7 @@
 #include "fellow/api/defs.h"
 #include "fellow/automation/Automator.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "GFXDRV.H"
+#include "fellow/application/GfxDrv.h"
 #
 Automator automator;
 

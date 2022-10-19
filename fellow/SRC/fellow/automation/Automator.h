@@ -1,7 +1,7 @@
 #pragma once
 
 #include "KBD.H"
-#include "GAMEPORT.H"
+#include "fellow/application/Gameport.h"
 #include "fellow/automation/Script.h"
 
 class Automator

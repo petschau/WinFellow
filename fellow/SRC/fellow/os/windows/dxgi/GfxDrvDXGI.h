@@ -12,7 +12,7 @@
 #include "GfxDrvDXGIAmigaScreenRenderer.h"
 #include "fellow/hud/HudPropertyProvider.h"
 #include "GfxDrvHudD2D1.h"
-#include "GfxDrvMappedBufferPointer.h"
+#include "fellow/application/GfxDrvMappedBufferPointer.h"
 #include "fellow/application/HostRenderer.h"
 
 using namespace DirectX;
@@ -105,7 +105,11 @@ public:
 
   std::list<DisplayMode> GetDisplayModeList();
 
-  bool EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings, const DisplayMode& displayMode, HudPropertyProvider *hudPropertyProvider);
+  bool EmulationStart(
+      const HostRenderConfiguration &hostRenderConfiguration,
+      const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
+      const DisplayMode &displayMode,
+      HudPropertyProvider *hudPropertyProvider);
   unsigned int EmulationStartPost();
   void EmulationStop();
 
