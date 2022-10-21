@@ -1,14 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="core C Files">
-      <UniqueIdentifier>{f1233a58-3b32-4d12-b31e-b80463b2a935}</UniqueIdentifier>
-      <Extensions>*.c</Extensions>
-    </Filter>
-    <Filter Include="core C Header Files">
-      <UniqueIdentifier>{dd317119-d22e-455c-949a-415b2b87611c}</UniqueIdentifier>
-      <Extensions>*.h</Extensions>
-    </Filter>
     <Filter Include="Win32 C Header Files">
       <UniqueIdentifier>{db7e3f8c-6554-4fa5-b54b-2db35888b35d}</UniqueIdentifier>
     </Filter>
@@ -23,25 +15,6 @@
     </Filter>
     <Filter Include="UAE Filesystem Files\UAE Filesystem Header Files">
       <UniqueIdentifier>{501f2bcf-b25b-44f3-83ee-5b631f868cbb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ADF Compression Files">
-      <UniqueIdentifier>{53d81c73-9144-4f38-bbc1-a64a69d1cf1d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ADF Compression Files\xDMS C Files">
-      <UniqueIdentifier>{d74d2d7b-243c-4a2a-a8d8-849fa6fb6a7e}</UniqueIdentifier>
-      <Extensions>.c</Extensions>
-    </Filter>
-    <Filter Include="ADF Compression Files\xDMS Header Files">
-      <UniqueIdentifier>{1c2810e7-946d-495e-a859-458fc7c8bf5d}</UniqueIdentifier>
-      <Extensions>.h</Extensions>
-    </Filter>
-    <Filter Include="ADF Compression Files\zlib C Files">
-      <UniqueIdentifier>{04159f5a-6409-4d14-96d2-2ca3ba131c19}</UniqueIdentifier>
-      <Extensions>.c</Extensions>
-    </Filter>
-    <Filter Include="ADF Compression Files\zlib Header Files">
-      <UniqueIdentifier>{8532dc41-612a-415f-87c3-16ede041b12d}</UniqueIdentifier>
-      <Extensions>.h</Extensions>
     </Filter>
     <Filter Include="bitmaps">
       <UniqueIdentifier>{53c498c0-e92d-450b-b0c1-8f9e89d6823e}</UniqueIdentifier>
@@ -151,11 +124,23 @@
     <Filter Include="fellow\memory">
       <UniqueIdentifier>{d5559118-86a9-4f93-addc-ce2a3eabcabc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\libs">
+      <UniqueIdentifier>{c0944436-989e-4b44-ac17-11c7326014f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\libs\zlib">
+      <UniqueIdentifier>{c91da807-fe52-4d1e-9ee8-837fba4db9c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\libs\xdms">
+      <UniqueIdentifier>{c69348cd-d020-4f46-a3cb-1794c9e8df40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\libs\xdms\src">
+      <UniqueIdentifier>{fdfb2cba-3879-4828-be19-de3d38600356}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\libs\zlib\src">
+      <UniqueIdentifier>{68630bb4-e663-45dd-b7ac-409a195aff6b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\C\zlibwrap.c">
-      <Filter>core C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\commoncontrol_wrap.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
@@ -207,89 +192,11 @@
     <ClCompile Include="..\UAE\C\UAESUPP.C">
       <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\xdms\C\crc_csum.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\getbits.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\maketbl.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\pfile.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\tables.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_deep.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_heavy.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_init.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_medium.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_quick.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\xdms\C\u_rle.c">
-      <Filter>ADF Compression Files\xDMS C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\adler32.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\compress.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\crc32.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\deflate.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\inffast.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\inflate.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\inftrees.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\trees.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\uncompr.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\zutil.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\RetroPlatformGuestIPC.c">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\RetroPlatform.cpp">
       <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\gzclose.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\gzlib.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\gzread.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\gzwrite.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\zlib\C\infback.c">
-      <Filter>ADF Compression Files\zlib C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\GFXDRV.C">
       <Filter>Win32 C Files</Filter>
@@ -323,9 +230,6 @@
     </ClCompile>
     <ClCompile Include="..\Caps\C\caps.c">
       <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\C\xdmswrap.c">
-      <Filter>core C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
       <Filter>test\fellow\chipset</Filter>
@@ -738,11 +642,95 @@
     <ClCompile Include="..\..\fellow\application\Interrupt.cpp">
       <Filter>fellow\application</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\xdmswrap.c">
+      <Filter>fellow\libs\xdms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\crc_csum.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\getbits.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\maketbl.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\pfile.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\tables.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_deep.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_heavy.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_init.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_medium.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_quick.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_rle.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\xdms.c">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.c">
+      <Filter>fellow\libs\zlib</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\adler32.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\compress.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\crc32.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\deflate.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzclose.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzlib.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzread.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzwrite.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\infback.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inffast.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inflate.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inftrees.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\trees.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\uncompr.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\zutil.c">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
-      <Filter>core C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
@@ -787,75 +775,6 @@
     </ClInclude>
     <ClInclude Include="..\..\UAE\INCLUDE\UAEFSYS.H">
       <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\cdata.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\crc_csum.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\getbits.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\maketbl.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\pfile.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\tables.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_deep.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_heavy.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_init.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_medium.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_quick.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\u_rle.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\xdms\include\xdms.h">
-      <Filter>ADF Compression Files\xDMS Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\crc32.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\deflate.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\inffast.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\inffixed.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\inflate.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\inftrees.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\trees.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\zconf.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\zlib.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\zlib\include\zutil.h">
-      <Filter>ADF Compression Files\zlib Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gui_general.h">
       <Filter>Resource Files</Filter>
@@ -1436,6 +1355,81 @@
     <ClInclude Include="..\..\fellow\application\modrip.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\cdata.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\crc_csum.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\getbits.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\maketbl.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\pfile.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\tables.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_deep.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_heavy.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_init.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_medium.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_quick.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\u_rle.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\xdms\src\xdms.h">
+      <Filter>fellow\libs\xdms\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\crc32.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\deflate.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\gzguts.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\inffast.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\inffixed.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\inflate.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\inftrees.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\trees.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\zconf.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\zlib.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\libs\zlib\src\zutil.h">
+      <Filter>fellow\libs\zlib\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
+      <Filter>fellow\libs\zlib</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="disk_led_disabled_cool.bmp">
@@ -1484,6 +1478,9 @@
       <Filter>bitmaps</Filter>
     </None>
     <None Include="WinFellow.ruleset" />
+    <None Include="..\..\fellow\libs\zlib\README">
+      <Filter>fellow\libs\zlib</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="GUI_general.rc">
@@ -1500,5 +1497,10 @@
     <FxCompile Include="..\..\fellow\os\windows\dxgi\VertexShader.hlsl">
       <Filter>fellow\os\windows\dxgi</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\fellow\libs\xdms\xdms.txt">
+      <Filter>fellow\libs\xdms</Filter>
+    </Text>
   </ItemGroup>
 </Project>

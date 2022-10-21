@@ -33,14 +33,14 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/chipset/Floppy.h"
-#include "KBD.H"
+#include "fellow/chipset/Kbd.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/chipset/Sprite.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/draw_interlace_control.h"
-#include "interrupt.h"
+#include "fellow/application/interrupt.h"
 #include "fellow/chipset/uart.h"
-#include "../automation/Automator.h"
+#include "fellow/automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
 #include "RetroPlatform.h"
