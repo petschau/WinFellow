@@ -17,6 +17,8 @@
 
    FELLOW IN (END)------------------- */
 
+#pragma once
+
 struct hardfiledata {
     unsigned long size;
     int nrcyls;

@@ -17,6 +17,8 @@
 
    FELLOW IN (END)------------------- */
 
+#pragma once
+
 #define CMD_INVALID 0
 #define CMD_RESET   1
 #define CMD_READ    2

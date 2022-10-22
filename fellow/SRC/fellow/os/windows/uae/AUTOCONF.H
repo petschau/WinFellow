@@ -17,6 +17,8 @@
 
    FELLOW IN (END)------------------- */
 
+#pragma once
+
 typedef uae_u32 (*TrapFunction) (void);
 
 extern int lasttrap;

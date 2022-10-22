@@ -732,9 +732,6 @@
     <ClCompile Include="..\..\fellow\os\windows\uae\HARDFILE.C">
       <Filter>fellow\os\windows\uae</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\POSIXEMU.C">
-      <Filter>fellow\os\windows\uae</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\uae\UAESUPP.C">
       <Filter>fellow\os\windows\uae</Filter>
     </ClCompile>
@@ -1436,9 +1433,6 @@
     <ClInclude Include="..\..\fellow\api\versioninfo.h">
       <Filter>fellow\api</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\os\windows\gui\gui_debugger.h">
-      <Filter>fellow\os\windows\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h">
       <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
@@ -1516,9 +1510,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_debugger.rc">
-      <Filter>fellow\os\windows\gui</Filter>
-    </ResourceCompile>
     <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_general.rc">
       <Filter>fellow\os\windows\gui</Filter>
     </ResourceCompile>

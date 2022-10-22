@@ -26,6 +26,8 @@
 
    FELLOW IN (END)------------------- */
 
+#pragma once
+
 /* Space usage statistics for a filesystem.  Blocks are 512-byte. */
 struct fs_usage
 {

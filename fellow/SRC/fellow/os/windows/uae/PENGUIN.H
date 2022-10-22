@@ -20,6 +20,8 @@
 
    FELLOW IN (END)------------------- */
 
+#pragma once
+
 #undef SUPPORT_PENGUINS
 #undef SUPPORT_THREADS
 

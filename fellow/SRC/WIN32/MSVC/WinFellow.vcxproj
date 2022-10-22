@@ -785,10 +785,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\POSIXEMU.C">
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
-      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\uae\UAESUPP.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
@@ -1006,7 +1002,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.h" />
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\gui_debugger.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h" />
@@ -1138,7 +1133,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <Image Include="..\..\fellow\os\windows\gui\icons\winfellow.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_debugger.rc" />
     <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_general.rc" />
     <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_versioninfo.rc" />
   </ItemGroup>

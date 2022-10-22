@@ -20,6 +20,8 @@
 
 /* FELLOW IN (START)----------------- */
 
+#pragma once
+
 #include "uae2fell.h"
 /* FELLOW IN (END)------------------- */
 
