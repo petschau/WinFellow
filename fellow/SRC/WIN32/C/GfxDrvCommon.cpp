@@ -3,9 +3,9 @@
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
 #include "WINDRV.H"
-#include "Ini.h"
+#include "fellow/application/Ini.h"
 #include "GfxDrvCommon.h"
-#include "gui_general.h"
+#include "WIN32/MSVC/gui_general.h"
 #include "fellow/application/GfxDrv.h"
 
 #include "fellow/chipset/Sound.h"

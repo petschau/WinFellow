@@ -22,7 +22,7 @@
 #include <Windows.h>
 #include "test/catch/CustomCatchMain.h"
 
-#include "gui_general.h"
+#include "WIN32/MSVC/gui_general.h"
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
 #include "fellow/application/WGui.h"

@@ -385,7 +385,7 @@ pwsh.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wcrev.rc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include;../include/msvc;../../uae/include;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include;../include/msvc;../../uae/include;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -602,40 +602,114 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\debug\log\EventQueueLogEntry.cpp" />
     <ClCompile Include="..\..\fellow\debug\log\LineChangeLogEntry.cpp" />
     <ClCompile Include="..\..\fellow\hud\HudPropertyProvider.cpp" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\crc_csum.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\getbits.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\maketbl.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\pfile.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\tables.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_deep.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_heavy.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_init.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_medium.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_quick.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_rle.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\xdms.c" />
-    <ClCompile Include="..\..\fellow\libs\xdms\xdmswrap.c" />
+    <ClCompile Include="..\..\fellow\libs\xdms\src\crc_csum.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\getbits.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\maketbl.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\pfile.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\tables.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_deep.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_heavy.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_init.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_medium.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_quick.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\src\u_rle.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\xdms\xdmswrap.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\src\adler32.c">
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</LanguageStandard_C>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\src\compress.c">
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</LanguageStandard_C>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\src\crc32.c">
-      <LanguageStandard_C Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Default</LanguageStandard_C>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\deflate.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzclose.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzlib.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzread.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzwrite.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\infback.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inffast.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inflate.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inftrees.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\trees.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\uncompr.c" />
-    <ClCompile Include="..\..\fellow\libs\zlib\src\zutil.c" />
+    <ClCompile Include="..\..\fellow\libs\zlib\src\deflate.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzclose.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzlib.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzread.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\gzwrite.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\infback.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inffast.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inflate.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\inftrees.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\trees.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\uncompr.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\libs\zlib\src\zutil.c">
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+    </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.c" />
     <ClCompile Include="..\..\fellow\memory\Memory.c" />
     <ClCompile Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp" />
@@ -1295,6 +1369,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\libs\zlib\src\zconf.h" />
     <ClInclude Include="..\..\fellow\libs\zlib\src\zlib.h" />
     <ClInclude Include="..\..\fellow\libs\zlib\src\zutil.h" />
+    <ClInclude Include="..\..\fellow\libs\zlib\zlibwrap.h" />
     <ClInclude Include="..\..\fellow\memory\Memory.h" />
     <ClInclude Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h" />
     <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.h" />
@@ -1346,7 +1421,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\INCLUDE\GfxDrvCommon.h" />
     <ClInclude Include="..\INCLUDE\GfxDrvHudLegacy.h" />
     <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H" />
-    <ClInclude Include="..\..\INCLUDE\zlibwrap.h" />
     <ClInclude Include="..\Caps\include\caps.h" />
     <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h" />
     <ClInclude Include="..\INCLUDE\modrip_win32.h" />

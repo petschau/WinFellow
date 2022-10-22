@@ -62,8 +62,8 @@
 #include "fellow/application/Interrupt.h"
 #include <sys/timeb.h>
 
-#include "xdms.h"
-#include "zlibwrap.h"
+#include "fellow/libs/xdms/src/xdms.h"
+#include "fellow/libs/zlib/zlibwrap.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
 #include "caps.h"

@@ -67,7 +67,7 @@
 #include "fellow/os/windows/directdraw/DirectDrawErrorLogger.h"
 
 #include <WindowsX.h>
-#include "gui_general.h"
+//#include "gui_general.h"
 //#include <dsound.h>
 
 #include "GfxDrvCommon.h"

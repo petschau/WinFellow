@@ -678,9 +678,6 @@
     <ClCompile Include="..\..\fellow\libs\xdms\src\u_rle.c">
       <Filter>fellow\libs\xdms\src</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\xdms.c">
-      <Filter>fellow\libs\xdms\src</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.c">
       <Filter>fellow\libs\zlib</Filter>
     </ClCompile>
@@ -1427,7 +1424,7 @@
     <ClInclude Include="..\..\fellow\libs\zlib\src\zutil.h">
       <Filter>fellow\libs\zlib\src</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\INCLUDE\zlibwrap.h">
+    <ClInclude Include="..\..\fellow\libs\zlib\zlibwrap.h">
       <Filter>fellow\libs\zlib</Filter>
     </ClInclude>
   </ItemGroup>

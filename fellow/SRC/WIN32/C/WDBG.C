@@ -32,8 +32,8 @@
 #include <CommCtrl.h>
 #include <PrSht.h>
 
-#include "gui_general.h"
-#include "gui_debugger.h"
+#include "WIN32/MSVC/gui_general.h"
+#include "WIN32/MSVC/gui_debugger.h"
 
 #include "fellow/application/Fellow.h"
 #include "WINDRV.H"

@@ -45,8 +45,8 @@
 #include <commctrl.h>
 #include <shlobj.h>
 #include <prsht.h>
-#include "gui_general.h"
-#include "gui_debugger.h"
+#include "WIN32/MSVC/gui_general.h"
+#include "WIN32/MSVC/gui_debugger.h"
 #include "commoncontrol_wrap.h"
 #include "fellow/application/WGui.h"
 #include "WINDRV.H"
