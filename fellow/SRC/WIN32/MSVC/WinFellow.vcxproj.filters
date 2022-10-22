@@ -139,14 +139,11 @@
     <Filter Include="fellow\libs\zlib\src">
       <UniqueIdentifier>{68630bb4-e663-45dd-b7ac-409a195aff6b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\os\windows\gui">
+      <UniqueIdentifier>{631a769e-48c9-4af8-9d1a-da12749661c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\C\commoncontrol_wrap.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\modrip_win32.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\C\SOUNDDRV.C">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
@@ -154,12 +151,6 @@
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\TIMER.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\WDBG.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\WGUI.C">
       <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\C\WINMAIN.C">
@@ -726,18 +717,21 @@
     <ClCompile Include="..\..\fellow\libs\zlib\src\zutil.c">
       <Filter>fellow\libs\zlib\src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.cpp">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\gui\WDbg.cpp">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\gui\WGui.cpp">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\INCLUDE\commoncontrol_wrap.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\modrip_win32.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\INCLUDE\sysinfo.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\WDBG.H">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\WINDRV.H">
@@ -972,9 +966,6 @@
       <Filter>fellow\api\vm</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\GfxDrvHudLegacy.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\wgui_win32.h">
       <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\INCLUDE\PerformanceCounterWin32.h">
@@ -1426,6 +1417,18 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\libs\zlib\zlibwrap.h">
       <Filter>fellow\libs\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\WDbg.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\wgui_win32.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h">
+      <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

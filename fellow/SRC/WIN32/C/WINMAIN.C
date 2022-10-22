@@ -26,7 +26,7 @@
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
 #include "fellow/application/WGui.h"
-#include "WDBG.H"
+#include "fellow/os/windows/gui/WDbg.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "WINDRV.H"
 #include "fellow/application/Fellow.h"

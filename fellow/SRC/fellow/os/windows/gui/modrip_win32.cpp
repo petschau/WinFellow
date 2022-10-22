@@ -27,7 +27,7 @@
 #include <windows.h>
 #include "fellow/application/modrip.h"
 #include "modrip_win32.h"
-#include "wgui_win32.h"
+#include "fellow/os/windows/gui/wgui_win32.h"
 #include "fellow/application/Ini.h"
 
 static HWND modrip_hWnd;
