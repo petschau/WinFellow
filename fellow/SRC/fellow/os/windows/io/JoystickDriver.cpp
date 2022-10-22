@@ -25,9 +25,9 @@
 #include <windows.h>
 #include "fellow/application/Gameport.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/Joydrv.h"
-#include "windrv.h"
-#include "GfxDrvCommon.h"
+#include "fellow/application/JoystickDriver.h"
+#include "fellow/os/windows/application/WindowsDriver.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 #include "dxver.h"
 #include <mmsystem.h>

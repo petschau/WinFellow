@@ -6,7 +6,7 @@
 #include "fellow/chipset/Graphics.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #include "fellow/configuration/Configuration.h"
 #endif
 

@@ -5,5 +5,5 @@
 #include "fellow/memory/Memory.h"
 
 // For trapping into the "UAE filesystem" driver
-#include "UAE2FELL.H"
-#include "AUTOCONF.H"
+#include "fellow/os/windows/uae/UAE2FELL.H"
+#include "fellow/os/windows/uae/AUTOCONF.H"

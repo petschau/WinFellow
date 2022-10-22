@@ -29,7 +29,7 @@
 #endif
 
 #include "fellow/api/defs.h"
-#include "versioninfo.h"
+#include "fellow/api/versioninfo.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/Floppy.h"
 #include "fellow/memory/Memory.h"
@@ -47,11 +47,11 @@
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/rtc.h"
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 #include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/application/WGui.h"
-#include "fellow/application/GfxDrv.h"
+#include "fellow/application/GraphicsDriver.h"
 #include "fellow/api/Services.h"
 
 #include "../automation/Automator.h"

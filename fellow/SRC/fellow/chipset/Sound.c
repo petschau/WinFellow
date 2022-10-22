@@ -29,7 +29,7 @@
 #include "WAV.H"
 #include "CIA.H"
 #include "fellow/chipset/Graphics.h"
-#include "fellow/application/SoundDrv.h"
+#include "fellow/application/SoundDriver.h"
 #include "fellow/application/Interrupt.h"
 
 #define MAX_BUFFER_SAMPLES 65536

@@ -24,19 +24,19 @@
 #include "fellow/api/defs.h"
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/chipset/Kbd.h"
-#include "fellow/application/KbdDrv.h"
-#include "fellow/application/MouseDrv.h"
-#include "fellow/application/JoyDrv.h"
+#include "fellow/application/KeyboardDriver.h"
+#include "fellow/application/MouseDriver.h"
+#include "fellow/application/JoystickDriver.h"
 #include "fellow/application/Gameport.h"
-#include "WINDRV.H"
+#include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 #include "dxver.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

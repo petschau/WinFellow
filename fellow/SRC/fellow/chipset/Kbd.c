@@ -25,20 +25,20 @@
 #include "fellow/api/Services.h"
 #include "KEYCODES.H"
 #include "KBD.H"
-#include "fellow/application/KbdDrv.h"
+#include "fellow/application/KeyboardDriver.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/Floppy.h"
-#include "fellow/application/GfxDrv.h"
+#include "fellow/application/GraphicsDriver.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 
 #include "fellow/automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

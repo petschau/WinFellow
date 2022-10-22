@@ -1,0 +1,275 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "gui_debugger.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "windows.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "gui_debugger.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DEBUG_CPU DIALOGEX 0, 0, 674, 346
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CPU"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    PUSHBUTTON      "Step",IDC_DEBUG_CPU_STEP,613,17,46,14
+    PUSHBUTTON      "Step Over",IDC_DEBUG_CPU_STEP_OVER,613,35,46,14
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,609,7,58,332
+    GROUPBOX        "Disassembly:",IDC_STATIC,7,50,440,289
+    PUSHBUTTON      "Run",IDC_DEBUG_CPU_RUN,613,53,46,14
+    PUSHBUTTON      "Break",IDC_DEBUG_CPU_BREAK,613,71,46,14
+    GROUPBOX        "Static",IDC_STATIC,448,7,159,154
+END
+
+IDD_DEBUG_MEMORY DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Memory"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Up",IDC_DEBUG_MEMORY_UP,457,17,46,14
+    PUSHBUTTON      "Page Up",IDC_DEBUG_MEMORY_PGUP,457,35,46,14
+    PUSHBUTTON      "Page Down",IDC_DEBUG_MEMORY_PGDN,457,53,46,14
+    PUSHBUTTON      "&Down",IDC_DEBUG_MEMORY_DOWN,457,71,46,14
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Memory Dump:",IDC_STATIC,7,49,440,200
+    PUSHBUTTON      "&ASCII view",IDC_DEBUG_MEMORY_ASCII,457,212,46,14
+    PUSHBUTTON      "&Hex view",IDC_DEBUG_MEMORY_HEX,457,230,46,14
+END
+
+IDD_DEBUG_CIA DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CIA"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "CIA Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_FLOPPY DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Floppy"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Floppy Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_COPPER DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Copper"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Copper Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_SPRITES DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sprites"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Sprite Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_SCREEN DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Screen"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Screen Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_EVENTS DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Events"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Event Information:",IDC_STATIC,7,49,440,200
+END
+
+IDD_DEBUG_SOUND DIALOG  0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Sound"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Sound Information:",IDC_STATIC,7,49,440,200
+    PUSHBUTTON      "Rip Modules",IDC_DEBUG_MODRIP,457,17,46,14
+    PUSHBUTTON      "Dump Mem.",IDC_DEBUG_DUMPCHIP,457,35,46,14
+END
+
+IDD_DEBUG_BLITTER DIALOGEX 0, 0, 516, 256
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Blitter"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "CPU Registers:",IDC_STATIC,7,7,440,40
+    GROUPBOX        "Commands:",IDC_STATIC,451,7,58,242
+    GROUPBOX        "Blitter Information:",IDC_STATIC,7,49,440,200
+    CONTROL         "Log blits",IDC_DEBUG_LOGBLT,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,457,17,42,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DEBUG_CPU, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 667
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 339
+    END
+
+    IDD_DEBUG_MEMORY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_CIA, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_FLOPPY, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_COPPER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_SPRITES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_SCREEN, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_EVENTS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_SOUND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+
+    IDD_DEBUG_BLITTER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 509
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 249
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

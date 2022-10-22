@@ -30,15 +30,15 @@
 #include <windows.h>
 #include "fellow/application/Gameport.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/MouseDrv.h"
-#include "windrv.h"
-#include "GfxDrvCommon.h"
+#include "fellow/application/MouseDriver.h"
+#include "fellow/os/windows/application/WindowsDriver.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 #include <initguid.h>
 #include "dxver.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

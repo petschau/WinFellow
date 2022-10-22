@@ -10,7 +10,7 @@
 #include "fellow/application/Fellow.h"
 
 #include "fellow/application/WGui.h"
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 using namespace std;
 using namespace fellow::api;

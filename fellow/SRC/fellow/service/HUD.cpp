@@ -4,7 +4,7 @@
 #include "fellow/application/HostRenderer.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

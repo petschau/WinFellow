@@ -6,7 +6,7 @@
 #include "fellow/application/WGui.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 #define WRITE_LOG_BUF_SIZE 512

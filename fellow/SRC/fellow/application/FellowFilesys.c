@@ -27,7 +27,7 @@
 #include "fellow/application/Fellow.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/api/Services.h"
-#include "FILESYS.H"
+#include "fellow/os/windows/uae/FILESYS.H"
 
 #include <string>
 

@@ -32,11 +32,11 @@
 #include <CommCtrl.h>
 #include <PrSht.h>
 
-#include "WIN32/MSVC/gui_general.h"
-#include "WIN32/MSVC/gui_debugger.h"
+#include "fellow/os/windows/gui/gui_general.h"
+#include "fellow/os/windows/gui/gui_debugger.h"
 
 #include "fellow/application/Fellow.h"
-#include "WINDRV.H"
+#include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/application/ListTree.h"
 #include "fellow/application/GamePort.h"
@@ -57,7 +57,7 @@
 #include "fellow/chipset/Blitter.h"
 #include "fellow/application/WGui.h"
 #include "commoncontrol_wrap.h"
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 

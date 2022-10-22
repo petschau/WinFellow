@@ -25,11 +25,11 @@
 #include "fellow/application/HostRenderer.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/application/Gameport.h"
-#include "fellow/application/MouseDrv.h"
-#include "fellow/application/JoyDrv.h"
+#include "fellow/application/MouseDriver.h"
+#include "fellow/application/JoystickDriver.h"
 #include "fellow/automation/Automator.h"
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

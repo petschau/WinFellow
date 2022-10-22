@@ -5,7 +5,7 @@
 #include "GfxDrvDXGIUtils.h"
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 #include "GfxDrvHudD2D1.h"
 
@@ -13,7 +13,7 @@
 #include "fellow/os/windows/directdraw/GfxDrvDCScreenshot.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace std;

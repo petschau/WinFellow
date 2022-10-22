@@ -34,7 +34,7 @@
 #include "fellow/application/Fellow.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/Graphics.h"
-#include "fellow/application/GfxDrv.h"
+#include "fellow/application/GraphicsDriver.h"
 #include "fellow/chipset/Fonts.h"
 
 #include "fellow/chipset/draw_pixelrenderers.h"
@@ -45,7 +45,7 @@
 #include <map>
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace std;

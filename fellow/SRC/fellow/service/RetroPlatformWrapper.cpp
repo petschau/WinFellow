@@ -1,7 +1,7 @@
 #include "fellow/service/RetroPlatformWrapper.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 namespace fellow::service

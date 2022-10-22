@@ -43,11 +43,11 @@
 #include <string.h>
 #include <sys/utime.h>
 
-#include "uae2fell.h"
-#include "penguin.h"
-#include "filesys.h"
-#include "autoconf.h"
-#include "fsusage.h"
+#include "fellow/os/windows/uae/UAE2FELL.H"
+#include "fellow/os/windows/uae/penguin.h"
+#include "fellow/os/windows/uae/filesys.h"
+#include "fellow/os/windows/uae/autoconf.h"
+#include "fellow/os/windows/uae/fsusage.h"
 
 /* references to stuff defined in filesys.c */
 

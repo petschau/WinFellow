@@ -11,7 +11,7 @@
 #include "fellow/application/DisplayMode.h"
 #include "fellow/chipset/ChipsetBufferRuntimeSettings.h"
 #include "fellow/application/HostRenderConfiguration.h"
-#include "GfxDrvHudLegacy.h"
+#include "fellow/os/windows/graphics/GfxDrvHudLegacy.h"
 #include "fellow/os/windows/directdraw/DirectDrawDevice.h"
 
 class GfxDrvDirectDraw

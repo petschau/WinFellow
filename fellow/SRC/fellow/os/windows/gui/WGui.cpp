@@ -45,11 +45,11 @@
 #include <commctrl.h>
 #include <shlobj.h>
 #include <prsht.h>
-#include "WIN32/MSVC/gui_general.h"
-#include "WIN32/MSVC/gui_debugger.h"
+#include "fellow/os/windows/gui/gui_general.h"
+#include "fellow/os/windows/gui/gui_debugger.h"
 #include "commoncontrol_wrap.h"
 #include "fellow/application/WGui.h"
-#include "WINDRV.H"
+#include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/application/ListTree.h"
 #include "fellow/application/Gameport.h"
@@ -59,15 +59,15 @@
 #include "WDBG.H"
 #include "fellow/application/Ini.h"
 #include "fellow/chipset/Kbd.h"
-#include "fellow/application/KbdDrv.h"
+#include "fellow/application/KeyboardDriver.h"
 #ifdef FELLOW_SUPPORT_CAPS
-#include "caps.h"
+#include "fellow/os/windows/caps/caps.h"
 #endif
 #include "fellow/chipset/Floppy.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/GfxDrv.h"
-#include "GfxDrvCommon.h"
+#include "fellow/application/GraphicsDriver.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/application/modrip.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -3152,11 +3152,6 @@ INT_PTR CALLBACK wguiHardfileDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, 
 
 INT_PTR CALLBACK wguiGameportDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  HWND gpChoice[2];
-
-  gpChoice[0] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT1);
-  gpChoice[1] = GetDlgItem(hwndDlg, IDC_COMBO_GAMEPORT2);
-
   switch (uMsg)
   {
     case WM_INITDIALOG:

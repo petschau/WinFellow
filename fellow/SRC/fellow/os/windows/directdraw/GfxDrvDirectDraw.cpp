@@ -67,10 +67,8 @@
 #include "fellow/os/windows/directdraw/DirectDrawErrorLogger.h"
 
 #include <WindowsX.h>
-//#include "gui_general.h"
-//#include <dsound.h>
 
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/os/windows/directdraw/DirectDrawDevice.h"
@@ -319,7 +317,8 @@ bool GfxDrvDirectDraw::EmulationStart(
     const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
     HudPropertyProvider *hudPropertyProvider)
 {
-  _ddrawDeviceCurrent->SetDisplayMode(hostRenderRuntimeSettings, chipsetBufferRuntimeSettings, hostRenderConfiguration.Scale); // Remembers the displayMode and finds corresponding fullscreen mode record
+  _ddrawDeviceCurrent->SetDisplayMode(
+      hostRenderRuntimeSettings, chipsetBufferRuntimeSettings, hostRenderConfiguration.Scale); // Remembers the displayMode and finds corresponding fullscreen mode record
 
   InitializeLegacyHud(hudPropertyProvider, chipsetBufferRuntimeSettings);
 

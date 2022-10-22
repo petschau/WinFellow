@@ -43,8 +43,8 @@
 #include "fellow/automation/Automator.h"
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
-#include "fellow/application/KbdDrv.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
+#include "fellow/application/KeyboardDriver.h"
 #endif
 
 #include "fellow/chipset/DDFStateMachine.h"

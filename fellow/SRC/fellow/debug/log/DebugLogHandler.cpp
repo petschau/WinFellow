@@ -88,8 +88,6 @@ void DebugLogHandler::AddEventQueueLogEntry(DebugLogSource source, uint64_t fram
 
 void DebugLogHandler::PrintLogToFile()
 {
-  constexpr auto descriptionBufferLength = 2048;
-  char descriptionBuffer[descriptionBufferLength];
   char filename[CFG_FILENAME_LENGTH];
   Service->Fileops.GetGenericFileName(filename, "WinFellow", "event.log");
   FILE *F = fopen(filename, "w");
@@ -97,7 +95,7 @@ void DebugLogHandler::PrintLogToFile()
   for (DebugLogEntry *logEntry : DebugLog)
   {
     string entryDescription = logEntry->GetDescription();
-    fprintf(F, "%llu\t%u\t%u\t%s\t%.*s\n", logEntry->FrameNumber, logEntry->Timestamp.Line, logEntry->Timestamp.Pixel, logEntry->GetSource(), descriptionBufferLength, entryDescription.c_str());
+    fprintf(F, "%llu\t%u\t%u\t%s\t%s\n", logEntry->FrameNumber, logEntry->Timestamp.Line, logEntry->Timestamp.Pixel, logEntry->GetSource(), entryDescription.c_str());
   }
   fclose(F);
 }

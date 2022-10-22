@@ -66,11 +66,11 @@
 #include "fellow/libs/zlib/zlibwrap.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
-#include "caps.h"
+#include "fellow/os/windows/caps/caps.h"
 #endif
 
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
 using namespace fellow::api;

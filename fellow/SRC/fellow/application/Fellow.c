@@ -26,7 +26,7 @@
 #include <ctime>
 
 #include "fellow/api/defs.h"
-#include "versioninfo.h"
+#include "fellow/api/versioninfo.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
@@ -49,11 +49,11 @@
 #include "fellow/application/WGui.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/application/Ini.h"
-#include "sysinfo.h"
+#include "fellow/os/windows/application/sysinfo.h"
 #include "fellow/application/Interrupt.h"
 #include "fellow/chipset/uart.h"
 #ifdef RETRO_PLATFORM
-#include "RetroPlatform.h"
+#include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 #include "fellow/chipset/DDFStateMachine.h"
 #include "fellow/chipset/DIWXStateMachine.h"

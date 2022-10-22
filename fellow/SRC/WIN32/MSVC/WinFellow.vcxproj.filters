@@ -4,27 +4,6 @@
     <Filter Include="Win32 C Header Files">
       <UniqueIdentifier>{db7e3f8c-6554-4fa5-b54b-2db35888b35d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Win32 C Files">
-      <UniqueIdentifier>{0adab2c7-b505-44b5-a2c6-67ce8f273312}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UAE Filesystem Files">
-      <UniqueIdentifier>{4264d31b-2942-4bd8-bdc6-cd6d14043e6e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UAE Filesystem Files\UAE Filesystem C Files %28Win32%29">
-      <UniqueIdentifier>{bc92b120-a438-4be9-92f5-5b79d2f71327}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="UAE Filesystem Files\UAE Filesystem Header Files">
-      <UniqueIdentifier>{501f2bcf-b25b-44f3-83ee-5b631f868cbb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="bitmaps">
-      <UniqueIdentifier>{53c498c0-e92d-450b-b0c1-8f9e89d6823e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{553e6015-3e36-47bc-9689-ba1e5cbb727c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="icons">
-      <UniqueIdentifier>{33d76fb7-c7ea-48f4-88c8-dc1922fdb79d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow">
       <UniqueIdentifier>{4cc17501-a676-4970-88e2-862c2940f346}</UniqueIdentifier>
     </Filter>
@@ -142,59 +121,35 @@
     <Filter Include="fellow\os\windows\gui">
       <UniqueIdentifier>{631a769e-48c9-4af8-9d1a-da12749661c6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\os\windows\graphics">
+      <UniqueIdentifier>{ac7f3395-60be-47ce-9d9d-a4a6387f1536}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\sound">
+      <UniqueIdentifier>{b96effbe-11ea-4a41-b8f3-8ba150dcfc27}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\timer">
+      <UniqueIdentifier>{a3046ef7-f57a-4109-9e4e-0901a1025fcc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\application">
+      <UniqueIdentifier>{bd220b24-779e-499f-bdb2-f0a0e0c0a9db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\retroplatform">
+      <UniqueIdentifier>{e29d64b6-92e0-483d-bbb5-6996db671f3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\caps">
+      <UniqueIdentifier>{4d40c911-ff2e-48dc-b0ec-a73c5ebc2ac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\uae">
+      <UniqueIdentifier>{efe5e79a-e08e-4ad0-839e-6911bd5832d3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\gui\icons">
+      <UniqueIdentifier>{486d1a91-5002-49d9-b3d2-ea7ac4e65a92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\gui\bitmaps">
+      <UniqueIdentifier>{e64b75c4-1148-4a22-be95-dfa1bc52c8a1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\C\SOUNDDRV.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\sysinfo.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\TIMER.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\WINMAIN.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\AUTOCONF.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\EXPANSIO.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\FILESYS.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\filesys_win32.c">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\fsdb.c">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\fsdb_win32.c">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\FSUSAGE.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\HARDFILE.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\UAE\C\UAESUPP.C">
-      <Filter>UAE Filesystem Files\UAE Filesystem C Files %28Win32%29</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\RetroPlatformGuestIPC.c">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\RetroPlatform.cpp">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\GFXDRV.C">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\GfxDrvCommon.cpp">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\vm\M68K.cpp">
       <Filter>fellow\vm</Filter>
     </ClCompile>
@@ -218,9 +173,6 @@
     </ClCompile>
     <ClCompile Include="..\..\IPF\CapsPlug.cpp">
       <Filter>IPF Access API</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Caps\C\caps.c">
-      <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
       <Filter>test\fellow\chipset</Filter>
@@ -315,23 +267,11 @@
     <ClCompile Include="..\..\fellow\vm\EventLog.cpp">
       <Filter>fellow\vm</Filter>
     </ClCompile>
-    <ClCompile Include="..\C\GfxDrvHudLegacy.cpp">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\PerformanceCounterWin32.cpp">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\service\CoreServicesFactory.cpp">
       <Filter>fellow\service</Filter>
     </ClCompile>
-    <ClCompile Include="..\C\OSServicesFactory.cpp">
-      <Filter>Win32 C Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\fellow\api\Services.cpp">
       <Filter>fellow\api</Filter>
-    </ClCompile>
-    <ClCompile Include="..\C\Ini.c">
-      <Filter>Win32 C Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\debug\commands\DisassembleCommand.cpp">
       <Filter>fellow\debug\commands</Filter>
@@ -729,65 +669,77 @@
     <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp">
       <Filter>fellow\os\windows\gui</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.cpp">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.cpp">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\graphics\GraphicsDriver.cpp">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\sound\SoundDriver.cpp">
+      <Filter>fellow\os\windows\sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.cpp">
+      <Filter>fellow\os\windows\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\timer\Timer.cpp">
+      <Filter>fellow\os\windows\timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.cpp">
+      <Filter>fellow\os\windows\retroplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c">
+      <Filter>fellow\os\windows\retroplatform</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\application\Ini.cpp">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\application\sysinfo.cpp">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\application\WindowsMain.cpp">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\caps\caps.c">
+      <Filter>fellow\os\windows\caps</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\AUTOCONF.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\EXPANSIO.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\FILESYS.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\filesys_win32.c">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\fsdb.c">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\fsdb_win32.c">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\FSUSAGE.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\HARDFILE.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\POSIXEMU.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\uae\UAESUPP.C">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\INCLUDE\sysinfo.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\WINDRV.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\AUTOCONF.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\EXECLIB.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\FILESYS.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\filesys_win32.h">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\fsdb.h">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\FSUSAGE.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\PENGUIN.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\POSIXEMU.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\UAE2FELL.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\UAE\INCLUDE\UAEFSYS.H">
-      <Filter>UAE Filesystem Files\UAE Filesystem Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="gui_general.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\RetroPlatformGuestIPC.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\RetroPlatformIPC.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\RetroPlatform.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\versioninfo-wcrev.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="GUI_versioninfo.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\GfxDrvCommon.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\api\defs.h">
       <Filter>fellow\api</Filter>
     </ClInclude>
@@ -844,9 +796,6 @@
     </ClInclude>
     <ClInclude Include="..\..\IPF\Comtype.h">
       <Filter>IPF Access API</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Caps\include\caps.h">
-      <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\test\catch\catch.hpp">
       <Filter>test\catch</Filter>
@@ -965,12 +914,6 @@
     <ClInclude Include="..\..\fellow\api\vm\IEventLog.h">
       <Filter>fellow\api\vm</Filter>
     </ClInclude>
-    <ClInclude Include="..\INCLUDE\GfxDrvHudLegacy.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\PerformanceCounterWin32.h">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\service\CoreServicesFactory.h">
       <Filter>fellow\service</Filter>
     </ClInclude>
@@ -1042,9 +985,6 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\service\IPerformanceCounter.h">
       <Filter>fellow\api\service</Filter>
-    </ClInclude>
-    <ClInclude Include="..\INCLUDE\OSServicesFactory.h">
-      <Filter>Win32 C Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\scheduler\Scheduler.h">
       <Filter>fellow\scheduler</Filter>
@@ -1232,7 +1172,7 @@
     <ClInclude Include="..\..\fellow\application\Gameport.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\GfxDrv.h">
+    <ClInclude Include="..\..\fellow\application\GraphicsDriver.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h">
@@ -1241,19 +1181,19 @@
     <ClInclude Include="..\..\fellow\application\GfxDrvMappedBufferPointer.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\JoyDrv.h">
+    <ClInclude Include="..\..\fellow\application\JoystickDriver.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\KbdDrv.h">
+    <ClInclude Include="..\..\fellow\application\KeyboardDriver.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\ListTree.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\MouseDrv.h">
+    <ClInclude Include="..\..\fellow\application\MouseDriver.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\SoundDrv.h">
+    <ClInclude Include="..\..\fellow\application\SoundDriver.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\Timer.h">
@@ -1430,65 +1370,87 @@
     <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h">
       <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.h">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.h">
+      <Filter>fellow\os\windows\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.h">
+      <Filter>fellow\os\windows\retroplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h">
+      <Filter>fellow\os\windows\retroplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformIPC.h">
+      <Filter>fellow\os\windows\retroplatform</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\application\OSServicesFactory.h">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\application\sysinfo.h">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\application\versioninfo-wcrev.h">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\application\WindowsDriver.h">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\caps\caps.h">
+      <Filter>fellow\os\windows\caps</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\AUTOCONF.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\EXECLIB.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\FILESYS.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\filesys_win32.h">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\fsdb.h">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\FSUSAGE.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\PENGUIN.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\POSIXEMU.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\UAE2FELL.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\uae\UAEFSYS.H">
+      <Filter>fellow\os\windows\uae</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\versioninfo.h">
+      <Filter>fellow\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\gui_debugger.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="disk_led_disabled_cool.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="disk_led_off_cool.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="disk_led_on_cool.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="power_led_off_cool.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="power_led_on_cool.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="winfellow_logo_small.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
-    <None Include="..\icons\cpu.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\dfloppy.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\display.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\filesystem.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\floppy.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\harddrives.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\sound.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="winfellow.ico">
-      <Filter>icons</Filter>
-    </None>
-    <None Include="..\icons\arrow.bmp">
-      <Filter>bitmaps</Filter>
-    </None>
     <None Include="WinFellow.ruleset" />
     <None Include="..\..\fellow\libs\zlib\README">
       <Filter>fellow\libs\zlib</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="GUI_general.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
-    <ResourceCompile Include="GUI_versioninfo.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="..\..\fellow\os\windows\dxgi\PixelShader.hlsl">
@@ -1502,5 +1464,66 @@
     <Text Include="..\..\fellow\libs\xdms\xdms.txt">
       <Filter>fellow\libs\xdms</Filter>
     </Text>
+    <Text Include="..\..\fellow\os\windows\uae\readme.txt">
+      <Filter>fellow\os\windows\uae</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\fellow\os\windows\gui\icons\arrow.bmp">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\cpu.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\dfloppy.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\display.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\filesystem.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\floppy.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\harddrives.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\sound.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\icons\winfellow.ico">
+      <Filter>fellow\os\windows\gui\icons</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_disabled_cool.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_off_cool.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_on_cool.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\power_led_off_cool.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\power_led_on_cool.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+    <Image Include="..\..\fellow\os\windows\gui\bitmaps\winfellow_logo_small.bmp">
+      <Filter>fellow\os\windows\gui\bitmaps</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_debugger.rc">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_general.rc">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ResourceCompile>
+    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_versioninfo.rc">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
