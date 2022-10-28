@@ -16,5 +16,5 @@ struct DisplayMode
   DisplayMode(int id, unsigned int width, unsigned int height, const std::string &name) noexcept;
   DisplayMode() noexcept;
 
-  std::string ToString();
+  std::string ToString() const;
 };

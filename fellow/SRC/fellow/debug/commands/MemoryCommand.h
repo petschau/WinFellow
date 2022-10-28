@@ -21,10 +21,10 @@ public:
 class MemoryCommand : public DebuggerCommand<MemoryParameters, MemoryResult>
 {
 private:
-  ULO ReadLongAsBytes(ULO address);
+  ULO ReadLongAsBytes(ULO address) const;
 
 public:
-  MemoryResult Execute(const MemoryParameters& parameters) override;
+  MemoryResult Execute(const MemoryParameters &parameters) override;
 
   virtual ~MemoryCommand() = default;
 };

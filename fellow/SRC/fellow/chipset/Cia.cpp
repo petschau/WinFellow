@@ -65,7 +65,7 @@ ULO cia_next_event_type; /* What type of event */
 
 /* Cia registers, index 0 is Cia A, index 1 is Cia B */
 
-typedef struct cia_state_
+struct cia_state
 {
   ULO ta;
   ULO tb;
@@ -90,7 +90,7 @@ typedef struct cia_state_
   UBY ddra;
   UBY ddrb;
   UBY sp;
-} cia_state;
+};
 
 cia_state cia[2];
 

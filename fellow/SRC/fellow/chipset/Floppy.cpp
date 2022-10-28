@@ -44,13 +44,12 @@
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC
 #define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
+#include <cstdlib>
 #include <crtdbg.h>
 #endif
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Floppy.h"

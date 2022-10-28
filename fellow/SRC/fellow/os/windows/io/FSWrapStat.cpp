@@ -30,9 +30,8 @@
 #include <AclAPI.h>
 #include <string>
 
-#include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "errno.h"
+#include <cerrno>
 
 using namespace std;
 using namespace fellow::api;
@@ -86,24 +85,24 @@ int fsWrapStat(const string &filename, struct stat *pStatBuffer)
     {
 
 #ifdef _DEBUG
-      LPTSTR szErrorMessage = NULL;
+      LPTSTR szErrorMessage = nullptr;
       DWORD hResult = GetLastError();
 
       Service->Log.AddLog("  fsWrapStat(): GetFileAttributesEx() failed, return code=%d", hResult);
 
       FormatMessage(
           FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_MAX_WIDTH_MASK,
-          NULL,
+          nullptr,
           hResult,
           MAKELANGID(0, SUBLANG_ENGLISH_US),
           (LPTSTR)&szErrorMessage,
           0,
-          NULL);
-      if (szErrorMessage != NULL)
+          nullptr);
+      if (szErrorMessage != nullptr)
       {
         Service->Log.AddTimelessLog(" (%s)\n", szErrorMessage);
         LocalFree(szErrorMessage);
-        szErrorMessage = NULL;
+        szErrorMessage = nullptr;
       }
       else
         Service->Log.AddTimelessLog("\n");

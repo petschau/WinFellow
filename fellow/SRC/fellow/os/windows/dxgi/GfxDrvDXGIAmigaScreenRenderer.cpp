@@ -9,9 +9,8 @@
 using namespace DirectX;
 
 #include "fellow/api/defs.h"
-#include <map>
 
-const static bool UseOverlay = false;
+constexpr static bool UseOverlay = false;
 
 struct VertexType
 {
@@ -203,8 +202,11 @@ RectFloat GfxDrvDXGIAmigaScreenRenderer::CalculateSourceRectangle()
   const float baseWidth = (float)_chipsetBufferSize.Width;
   const float baseHeight = (float)_chipsetBufferSize.Height;
 
-  return RectFloat(((float)_chipsetOutputClipPixels.Left) / baseWidth, ((float)_chipsetOutputClipPixels.Top) / baseHeight, ((float)_chipsetOutputClipPixels.Right) / baseWidth,
-                   ((float)_chipsetOutputClipPixels.Bottom) / baseHeight);
+  return RectFloat(
+      ((float)_chipsetOutputClipPixels.Left) / baseWidth,
+      ((float)_chipsetOutputClipPixels.Top) / baseHeight,
+      ((float)_chipsetOutputClipPixels.Right) / baseWidth,
+      ((float)_chipsetOutputClipPixels.Bottom) / baseHeight);
 }
 
 bool GfxDrvDXGIAmigaScreenRenderer::CreateVertexShader()
@@ -473,8 +475,8 @@ bool GfxDrvDXGIAmigaScreenRenderer::IsSameConfiguration(const DimensionsUInt &ho
   return _initialized && hostBufferSize == _hostBufferSize && chipsetBufferSize == _chipsetBufferSize && chipsetOutputClipPixels == _chipsetOutputClipPixels;
 }
 
-bool GfxDrvDXGIAmigaScreenRenderer::Configure(ID3D11Device *d3d11device, ID3D11DeviceContext *immediateContext, const DimensionsUInt &hostBufferSize, const DimensionsUInt &chipsetBufferSize,
-                                              const RectPixels &chipsetOutputClipPixels)
+bool GfxDrvDXGIAmigaScreenRenderer::Configure(
+    ID3D11Device *d3d11device, ID3D11DeviceContext *immediateContext, const DimensionsUInt &hostBufferSize, const DimensionsUInt &chipsetBufferSize, const RectPixels &chipsetOutputClipPixels)
 {
   if (IsSameConfiguration(hostBufferSize, chipsetBufferSize, chipsetOutputClipPixels))
   {

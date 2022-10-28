@@ -1,10 +1,5 @@
 #pragma once
 
-/* ---------------- CHANGE LOG -----------------
-Tuesday, September 19, 2000: nova
-- added autofire events
-*/
-
 enum class kbd_event
 {
   EVENT_INSERT_DF0,
@@ -96,8 +91,6 @@ extern void kbdShutdown();
 extern void kbdQueueHandler();
 extern void kbdEventEOLHandler();
 
-void kbdQueueHandler();
-void kbdEventEOLHandler();
 void kbdEventEOFHandler();
 
 extern void kbdQueueHandler();

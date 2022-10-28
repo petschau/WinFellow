@@ -1,40 +1,41 @@
 #pragma once
 
 #include "fellow/api/defs.h"
-#include "SPRITE.H"
+#include "fellow/chipset/Graphics.h"
+#include "fellow/chipset/Sprite.h"
 
-#define SPRITE_MAX_LIST_ITEMS 275
+constexpr auto SPRITE_MAX_LIST_ITEMS = 275;
 
 class LineExactSprites;
 
 typedef void (LineExactSprites::*spr_register_func)(UWO data, ULO address);
 
-typedef struct
+struct spr_action_list_item
 {
   ULO raster_y;
   ULO raster_x;
   spr_register_func called_function;
   UWO data;
   ULO address;
-} spr_action_list_item;
+};
 
-typedef struct
+struct spr_action_list_master
 {
   ULO count;
   spr_action_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
-} spr_action_list_master;
+};
 
-typedef struct
+struct spr_merge_list_item
 {
   UBY sprite_data[16];
   ULO sprx;
-} spr_merge_list_item;
+};
 
-typedef struct
+struct spr_merge_list_master
 {
   ULO count;
   spr_merge_list_item items[SPRITE_MAX_LIST_ITEMS]; /* How many is actually needed? */
-} spr_merge_list_master;
+};
 
 class LineExactSprites : public Sprites
 {

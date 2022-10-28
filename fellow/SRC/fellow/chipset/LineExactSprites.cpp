@@ -1,7 +1,7 @@
 #include "fellow/chipset/SpriteRegisters.h"
 #include "fellow/chipset/SpriteP2CDecoder.h"
 #include "fellow/chipset/SpriteMerger.h"
-#include "LineExactSprites.h"
+#include "fellow/chipset/LineExactSprites.h"
 #include "fellow/api/Services.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/memory/Memory.h"
@@ -11,11 +11,25 @@
 
 using namespace fellow::api;
 
-spr_register_func LineExactSprites::sprxptl_functions[8] = {&LineExactSprites::aspr0ptl, &LineExactSprites::aspr1ptl, &LineExactSprites::aspr2ptl, &LineExactSprites::aspr3ptl,
-                                                            &LineExactSprites::aspr4ptl, &LineExactSprites::aspr5ptl, &LineExactSprites::aspr6ptl, &LineExactSprites::aspr7ptl};
+spr_register_func LineExactSprites::sprxptl_functions[8] = {
+    &LineExactSprites::aspr0ptl,
+    &LineExactSprites::aspr1ptl,
+    &LineExactSprites::aspr2ptl,
+    &LineExactSprites::aspr3ptl,
+    &LineExactSprites::aspr4ptl,
+    &LineExactSprites::aspr5ptl,
+    &LineExactSprites::aspr6ptl,
+    &LineExactSprites::aspr7ptl};
 
-spr_register_func LineExactSprites::sprxpth_functions[8] = {&LineExactSprites::aspr0pth, &LineExactSprites::aspr1pth, &LineExactSprites::aspr2pth, &LineExactSprites::aspr3pth,
-                                                            &LineExactSprites::aspr4pth, &LineExactSprites::aspr5pth, &LineExactSprites::aspr6pth, &LineExactSprites::aspr7pth};
+spr_register_func LineExactSprites::sprxpth_functions[8] = {
+    &LineExactSprites::aspr0pth,
+    &LineExactSprites::aspr1pth,
+    &LineExactSprites::aspr2pth,
+    &LineExactSprites::aspr3pth,
+    &LineExactSprites::aspr4pth,
+    &LineExactSprites::aspr5pth,
+    &LineExactSprites::aspr6pth,
+    &LineExactSprites::aspr7pth};
 
 void LineExactSprites::aspr0pth(UWO data, ULO address)
 {
@@ -1099,10 +1113,15 @@ void LineExactSprites::NotifySprpthChanged(UWO data, const unsigned int sprite_n
   if (output_sprite_log == TRUE)
   {
     *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number,
-            (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
-            chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
-            chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
+    sprintf(
+        buffer,
+        "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
+        scheduler.GetRasterY(),
+        2 * (scheduler.GetRasterX() - 16),
+        sprite_number,
+        (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
+        chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
+        chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
     Service->Log.AddLog2(buffer);
   }
 }
@@ -1119,10 +1138,15 @@ void LineExactSprites::NotifySprptlChanged(UWO data, const unsigned int sprite_n
   if (output_sprite_log == TRUE)
   {
     *((UWO *)((UBY *)sprpt_debug + sprite_number * 4 + 2)) = (UWO)data & 0x01f;
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number,
-            (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
-            chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
-            chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
+    sprintf(
+        buffer,
+        "(y, x) = (%u, %u): call to spr%upth (sprx = %d, spry = %d, sprly = %d)\n",
+        scheduler.GetRasterY(),
+        2 * (scheduler.GetRasterX() - 16),
+        sprite_number,
+        (chipmemReadByte(sprpt_debug[sprite_number] + 1) << 1) | (chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x01),
+        chipmemReadByte(sprpt_debug[sprite_number]) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x04) << 6),
+        chipmemReadByte(sprpt_debug[sprite_number] + 2) | ((chipmemReadByte(sprpt_debug[sprite_number] + 3) & 0x02) << 7));
     Service->Log.AddLog2(buffer);
   }
 }
@@ -1142,8 +1166,14 @@ void LineExactSprites::NotifySprposChanged(UWO data, const unsigned int sprite_n
   spry_debug[sprite_number] = (spry_debug[sprite_number] & 0x100) | ((data & 0xff00) >> 8);
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number, sprx_debug[sprite_number],
-            sprly_debug[sprite_number]);
+    sprintf(
+        buffer,
+        "(y, x) = (%u, %u): call to spr%upos (sprx = %u, spry = %u)\n",
+        scheduler.GetRasterY(),
+        2 * (scheduler.GetRasterX() - 16),
+        sprite_number,
+        sprx_debug[sprite_number],
+        sprly_debug[sprite_number]);
     Service->Log.AddLog2(buffer);
   }
 }
@@ -1164,8 +1194,15 @@ void LineExactSprites::NotifySprctlChanged(UWO data, const unsigned int sprite_n
   sprly_debug[sprite_number] = ((data & 0xff00) >> 8) | ((data & 0x2) << 7);
   if (output_sprite_log == TRUE)
   {
-    sprintf(buffer, "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n", scheduler.GetRasterY(), 2 * (scheduler.GetRasterX() - 16), sprite_number, sprx_debug[sprite_number],
-            spry_debug[sprite_number], sprly_debug[sprite_number]);
+    sprintf(
+        buffer,
+        "(y, x) = (%u, %u): call to spr%uctl (sprx = %u, spry = %u, sprly = %u)\n",
+        scheduler.GetRasterY(),
+        2 * (scheduler.GetRasterX() - 16),
+        sprite_number,
+        sprx_debug[sprite_number],
+        spry_debug[sprite_number],
+        sprly_debug[sprite_number]);
     Service->Log.AddLog2(buffer);
   }
 }

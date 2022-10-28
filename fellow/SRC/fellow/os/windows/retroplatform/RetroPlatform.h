@@ -32,7 +32,7 @@
 // #define FELLOW_DELAY_RP_KEYBOARD_INPUT
 
 // DirectInput resources are used in interfaces
-#include "dxver.h"
+#include "fellow/os/windows/dxver.h"
 #include <dinput.h>
 
 #include "fellow/application/GraphicsDriver.h"

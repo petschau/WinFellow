@@ -1,4 +1,3 @@
-#include "PORTABLE.H"
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
@@ -396,9 +395,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
 
 bool GfxDrvCommon::InitializeWindowClass()
 {
-  WNDCLASSEX wc1;
+  WNDCLASSEX wc1 = {};
 
-  memset(&wc1, 0, sizeof(wc1));
   wc1.cbSize = sizeof(wc1);
   wc1.style = CS_HREDRAW | CS_VREDRAW;
   wc1.lpfnWndProc = EmulationWindowProc;

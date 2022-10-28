@@ -510,8 +510,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   <ItemGroup>
     <ClCompile Include="..\..\fellow\api\Services.cpp" />
     <ClCompile Include="..\..\fellow\application\DisplayMode.cpp" />
-    <ClCompile Include="..\..\fellow\application\Fellow.c" />
-    <ClCompile Include="..\..\fellow\application\FellowFilesys.c" />
+    <ClCompile Include="..\..\fellow\application\Fellow.cpp" />
+    <ClCompile Include="..\..\fellow\application\FellowFilesys.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderConfiguration.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
     <ClCompile Include="..\..\fellow\application\HostRenderer.cpp" />
@@ -523,14 +523,14 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\automation\Script.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Blitter.c" />
-    <ClCompile Include="..\..\fellow\chipset\Cia.c" />
+    <ClCompile Include="..\..\fellow\chipset\Blitter.cpp" />
+    <ClCompile Include="..\..\fellow\chipset\Cia.cpp" />
     <ClCompile Include="..\..\fellow\chipset\CopperCommon.cpp" />
     <ClCompile Include="..\..\fellow\chipset\draw_interlace_control.cpp" />
     <ClCompile Include="..\..\fellow\chipset\draw_pixelrenderers.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Floppy.c" />
-    <ClCompile Include="..\..\fellow\chipset\Gameport.c" />
-    <ClCompile Include="..\..\fellow\chipset\Graphics.c" />
+    <ClCompile Include="..\..\fellow\chipset\Floppy.cpp" />
+    <ClCompile Include="..\..\fellow\chipset\Gameport.cpp" />
+    <ClCompile Include="..\..\fellow\chipset\Graphics.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameCopier.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneRegisters.cpp" />
     <ClCompile Include="..\..\fellow\chipset\CopperRegisters.cpp" />
@@ -546,14 +546,14 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\chipset\HostFrame.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameDelayedRenderer.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameImmediateRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Kbd.c" />
+    <ClCompile Include="..\..\fellow\chipset\Kbd.cpp" />
     <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp" />
     <ClCompile Include="..\..\fellow\chipset\LineExactSprites.cpp" />
     <ClCompile Include="..\..\fellow\chipset\Planar2ChunkyDecoder.cpp" />
     <ClCompile Include="..\..\fellow\chipset\rtc.cpp" />
     <ClCompile Include="..\..\fellow\chipset\RtcOkiMsm6242rs.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Sound.c" />
-    <ClCompile Include="..\..\fellow\chipset\Sprite.c" />
+    <ClCompile Include="..\..\fellow\chipset\Sound.cpp" />
+    <ClCompile Include="..\..\fellow\chipset\Sprite.cpp" />
     <ClCompile Include="..\..\fellow\chipset\SpriteDMA.cpp" />
     <ClCompile Include="..\..\fellow\chipset\SpriteMerger.cpp" />
     <ClCompile Include="..\..\fellow\chipset\SpriteP2CDecoder.cpp" />
@@ -711,7 +711,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.c" />
-    <ClCompile Include="..\..\fellow\memory\Memory.c" />
+    <ClCompile Include="..\..\fellow\memory\Memory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\Ini.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\sysinfo.cpp" />
@@ -824,7 +824,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\api\service\ILog.h" />
     <ClInclude Include="..\..\fellow\api\service\IPerformanceCounter.h" />
     <ClInclude Include="..\..\fellow\api\service\IRetroPlatform.h" />
-    <ClInclude Include="..\..\fellow\api\versioninfo.h" />
     <ClInclude Include="..\..\fellow\api\VM.h" />
     <ClInclude Include="..\..\fellow\api\vm\IChipset.h" />
     <ClInclude Include="..\..\fellow\api\vm\IClocks.h" />
@@ -838,7 +837,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\application\DrawDimensionTypes.h" />
     <ClInclude Include="..\..\fellow\application\Fellow.h" />
     <ClInclude Include="..\..\fellow\application\FellowFilesys.h" />
-    <ClInclude Include="..\..\fellow\application\FsNavig.h" />
     <ClInclude Include="..\..\fellow\application\Gameport.h" />
     <ClInclude Include="..\..\fellow\application\GraphicsDriver.h" />
     <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h" />
@@ -870,7 +868,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\chipset\draw_pixelrenderers.h" />
     <ClInclude Include="..\..\fellow\chipset\EventId.h" />
     <ClInclude Include="..\..\fellow\chipset\Floppy.h" />
-    <ClInclude Include="..\..\fellow\chipset\Fonts.h" />
     <ClInclude Include="..\..\fellow\chipset\Graphics.h" />
     <ClInclude Include="..\..\fellow\chipset\HostFrameCopier.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneRegisters.h" />
@@ -999,6 +996,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.h" />
     <ClInclude Include="..\..\fellow\os\windows\dxgi\PixelShader.h" />
     <ClInclude Include="..\..\fellow\os\windows\dxgi\VertexShader.h" />
+    <ClInclude Include="..\..\fellow\os\windows\dxver.h" />
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.h" />
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.h" />
@@ -1010,6 +1008,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\os\windows\io\FileopsWin32.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\FSWrapStat.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\Keyparser.h" />
+    <ClInclude Include="..\..\fellow\os\windows\portable.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformIPC.h" />
@@ -1046,7 +1045,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\test\catch\catch.hpp" />
     <ClInclude Include="..\..\test\catch\catch_discover.hpp" />
     <ClInclude Include="..\..\test\catch\CustomCatchMain.h" />
-    <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\fellow\libs\zlib\README" />

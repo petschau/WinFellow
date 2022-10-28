@@ -4,24 +4,19 @@
 #include <vector>
 #include "fellow/api/defs.h"
 
-#define FHFILE_MAX_DEVICES 20
+constexpr auto FHFILE_MAX_DEVICES = 20;
 
 namespace fellow::api::modules
 {
   struct HardfileGeometry
   {
-    unsigned int LowCylinder;
-    unsigned int HighCylinder;
-    unsigned int BytesPerSector;
-    unsigned int SectorsPerTrack;
-    unsigned int Surfaces;
-    unsigned int Tracks;
-    unsigned int ReservedBlocks;
-
-    HardfileGeometry() noexcept
-    {
-      Clear();
-    }
+    unsigned int LowCylinder{};
+    unsigned int HighCylinder{};
+    unsigned int BytesPerSector{};
+    unsigned int SectorsPerTrack{};
+    unsigned int Surfaces{};
+    unsigned int Tracks{};
+    unsigned int ReservedBlocks{};
 
     void Clear() noexcept
     {
@@ -48,7 +43,6 @@ namespace fellow::api::modules
 
   struct HardfileConfiguration
   {
-  public:
     std::string Filename;
     bool Readonly = false;
     HardfileGeometry Geometry;
@@ -116,4 +110,4 @@ namespace fellow::api::modules
   };
 
   extern IHardfileHandler *HardfileHandler;
-} // namespace fellow::api::modules
+}

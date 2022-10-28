@@ -20,4 +20,5 @@ class IColorChangeEventHandler
 {
 public:
   virtual void ColorChangedHandler(const unsigned int colorIndex, const UWO color12Bit, const UWO halfbriteColor12Bit) = 0;
+  virtual ~IColorChangeEventHandler() = default;
 };

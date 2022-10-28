@@ -1,6 +1,5 @@
 #pragma once
 
-#include "KBD.H"
 #include "fellow/application/Gameport.h"
 #include "fellow/automation/Script.h"
 
@@ -14,9 +13,9 @@ private:
   void TakeSnapshot();
 
 public:
-  string ScriptFilename;
+  std::string ScriptFilename;
   bool RecordScript;
-  string SnapshotDirectory;
+  std::string SnapshotDirectory;
   int SnapshotFrequency;
   bool SnapshotEnable;
 
@@ -31,7 +30,6 @@ public:
   void Shutdown();
 
   Automator();
-  ~Automator();
 };
 
 extern Automator automator;

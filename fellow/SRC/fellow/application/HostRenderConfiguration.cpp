@@ -25,8 +25,8 @@ const char *HostRenderConfiguration::ToString(DisplayOutputKind outputKind)
   {
     case DisplayOutputKind::Windowed: return "Windowed";
     case DisplayOutputKind::Fullscreen: return "Fullscreen";
-    default: return "Unknown DisplayOutputKind";
   }
+  return "Unknown DisplayOutputKind";
 }
 
 const char *HostRenderConfiguration::ToString(DisplayColorDepth colorDepth)
@@ -36,8 +36,9 @@ const char *HostRenderConfiguration::ToString(DisplayColorDepth colorDepth)
     case DisplayColorDepth::Color16Bits: return "Color16Bits";
     case DisplayColorDepth::Color24Bits: return "Color24Bits";
     case DisplayColorDepth::Color32Bits: return "Color32Bits";
-    default: return "Unknown DisplayColorDepth";
+    case DisplayColorDepth::Unassigned: return "Unassigned";
   }
+  return "Unknown DisplayColorDepth";
 }
 
 const char *HostRenderConfiguration::ToString(DisplayScale scale)
@@ -49,8 +50,8 @@ const char *HostRenderConfiguration::ToString(DisplayScale scale)
     case DisplayScale::FixedScale2X: return "FixedScale2X";
     case DisplayScale::FixedScale3X: return "FixedScale3X";
     case DisplayScale::FixedScale4X: return "FixedScale4X";
-    default: return "Unknown DisplayScale";
   }
+  return "Unknown DisplayScale";
 }
 
 const char *HostRenderConfiguration::ToString(DisplayScaleStrategy scaleStrategy)
@@ -59,8 +60,8 @@ const char *HostRenderConfiguration::ToString(DisplayScaleStrategy scaleStrategy
   {
     case DisplayScaleStrategy::Solid: return "Solid";
     case DisplayScaleStrategy::Scanlines: return "Scanlines";
-    default: return "Unknown DisplayScaleStrategy";
   }
+  return "Unknown DisplayScaleStrategy";
 }
 
 const char *HostRenderConfiguration::ToString(DisplayDriver driver)
@@ -69,6 +70,6 @@ const char *HostRenderConfiguration::ToString(DisplayDriver driver)
   {
     case DisplayDriver::DirectDraw: return "DirectDraw";
     case DisplayDriver::Direct3D11: return "Direct3D11";
-    default: return "Unknown DisplayDriver";
   }
+  return "Unknown DisplayDriver";
 }

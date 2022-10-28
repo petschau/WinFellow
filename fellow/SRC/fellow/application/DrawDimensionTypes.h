@@ -24,7 +24,7 @@ public:
   {
     std::ostringstream oss;
     oss << "(" << Left << ", " << Top << "), (" << Right << ", " << Bottom << ")";
-    return oss.str();  
+    return oss.str();
   }
 
   bool operator==(const Rect<T> &other)

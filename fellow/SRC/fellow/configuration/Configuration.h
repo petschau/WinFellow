@@ -6,8 +6,6 @@
 #include "fellow/application/ListTree.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 
-#include <string>
-
 using namespace fellow::api::modules;
 
 /*============================================================================*/

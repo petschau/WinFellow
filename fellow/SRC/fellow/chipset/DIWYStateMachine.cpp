@@ -261,7 +261,9 @@ void DIWYStateMachine::Shutdown()
 }
 
 DIWYStateMachine::DIWYStateMachine()
-    : _currentState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, SHResTimestamp(0, 0)),
-      _nextState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, SHResTimestamp(0, scheduler.GetCycleFromCycle280ns(2))), _startLine(0), _stopLine(0)
+  : _currentState(DIWYStates::DIWY_STATE_WAITING_FOR_START_LINE, SHResTimestamp(0, 0)),
+    _nextState(DIWYStates::DIWY_STATE_WAITING_FOR_STOP_LINE, SHResTimestamp(0, scheduler.GetCycleFromCycle280ns(2))),
+    _startLine(0),
+    _stopLine(0)
 {
 }

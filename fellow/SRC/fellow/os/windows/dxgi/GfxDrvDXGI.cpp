@@ -68,12 +68,12 @@ bool GfxDrvDXGI::ValidateRequirements()
   return true;
 }
 
-bool GfxDrvDXGI::IsFullscreen()
+bool GfxDrvDXGI::IsFullscreen() const
 {
   return !_displayMode.IsWindowed;
 }
 
-bool GfxDrvDXGI::IsWindowed()
+bool GfxDrvDXGI::IsWindowed() const
 {
   return _displayMode.IsWindowed;
 }
@@ -257,7 +257,7 @@ bool GfxDrvDXGI::CreateSwapChain()
   UINT width = _displayMode.Width;
   UINT height = _displayMode.Height;
 
-  DXGI_SWAP_CHAIN_DESC swapChainDescription = {0};
+  DXGI_SWAP_CHAIN_DESC swapChainDescription = {};
   DXGI_SWAP_EFFECT swapEffect;
 
   if (UseFlipMode)
@@ -661,7 +661,8 @@ void GfxDrvDXGI::Uninitialize()
   DeleteD3D11Device();
 }
 
-bool GfxDrvDXGI::EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings, const DisplayMode& displayMode, HudPropertyProvider *hudPropertyProvider)
+bool GfxDrvDXGI::EmulationStart(
+    const HostRenderConfiguration &hostRenderConfiguration, const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings, const DisplayMode &displayMode, HudPropertyProvider *hudPropertyProvider)
 {
   _displayMode = displayMode;
   _chipsetBufferOutputClipPixels = chipsetBufferRuntimeSettings.OutputClipPixels;

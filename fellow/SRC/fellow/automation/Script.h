@@ -7,16 +7,14 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 struct ScriptLine
 {
   ULL FrameNumber;
   ULO LineNumber;
-  string Command;
-  string Parameters;
+  std::string Command;
+  std::string Parameters;
 
-  ScriptLine(ULL frameNumber, ULO lineNumber, const string &command, const string &parameters);
+  ScriptLine(ULL frameNumber, ULO lineNumber, const std::string &command, const std::string &parameters);
 };
 
 class Script
@@ -28,16 +26,16 @@ private:
   const char *EmulatorActionCommand = "EmulatorAction";
 
   unsigned int _nextLine;
-  vector<ScriptLine> _lines;
+  std::vector<ScriptLine> _lines;
   bool _record;
 
-  string GetStringForAction(kbd_event action);
-  kbd_event GetKbdEventForAction(const string &action);
+  std::string GetStringForAction(kbd_event action) const;
+  kbd_event GetKbdEventForAction(const std::string &action) const;
 
-  void ExecuteMouseCommand(const string &parameters);
-  void ExecuteKeyCommand(const string &parameters);
-  void ExecuteJoystickCommand(const string &parameters);
-  void ExecuteEmulatorActionCommand(const string &parameters);
+  void ExecuteMouseCommand(const std::string &parameters);
+  void ExecuteKeyCommand(const std::string &parameters);
+  void ExecuteJoystickCommand(const std::string &parameters);
+  void ExecuteEmulatorActionCommand(const std::string &parameters);
 
   void Execute(const ScriptLine &line);
 
@@ -48,9 +46,8 @@ public:
   void RecordEmulatorAction(kbd_event action);
 
   void ExecuteUntil(ULL frameNumber, ULO lineNumber);
-  void Load(const string &filename);
-  void Save(const string &filename);
+  void Load(const std::string &filename);
+  void Save(const std::string &filename);
 
   Script();
-  ~Script();
 };

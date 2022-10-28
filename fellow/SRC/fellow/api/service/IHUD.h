@@ -7,11 +7,10 @@ namespace fellow::api
   class IHUD
   {
   public:
-    virtual ~IHUD() = default;
-
     virtual HudConfiguration &GetHudConfiguration() = 0;
-
     virtual void NotifyFloppyLEDChanged(int driveIndex, bool active, bool write) = 0;
     virtual void NotifyHarddiskLEDChanged(int deviceIndex, bool active, bool write) = 0;
+
+    virtual ~IHUD() = default;
   };
-} // namespace fellow::api
+}

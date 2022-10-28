@@ -1,4 +1,4 @@
-#include <time.h>
+#include <ctime>
 #include <string>
 #include <list>
 #include "fellow/service/Log.h"
@@ -17,11 +17,13 @@ using namespace fellow::api;
 namespace fellow::service
 {
   Log::Log()
-      : _new_line(true), _first_time(true), _enabled(true),
+    : _new_line(true),
+      _first_time(true),
+      _enabled(true),
 #ifdef _DEBUG
-        _level(LogLevelDebug)
+      _level(LogLevelDebug)
 #else
-        _level(LogLevelInformation)
+      _level(LogLevelInformation)
 #endif
   {
   }

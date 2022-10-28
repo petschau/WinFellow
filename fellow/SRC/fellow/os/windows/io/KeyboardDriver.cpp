@@ -33,7 +33,7 @@
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
-#include "dxver.h"
+#include "fellow/os/windows/dxver.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -66,7 +66,7 @@ bool kbd_in_task_switcher = false;
 /* Map symbolic key to a description string                                  */
 /*===========================================================================*/
 
-STR *kbd_drv_pc_symbol_to_string[106] = {
+const char *kbd_drv_pc_symbol_to_string[106] = {
     "NONE",
     "ESCAPE",
     "F1",
@@ -174,42 +174,42 @@ STR *kbd_drv_pc_symbol_to_string[106] = {
     "NUMPAD_0",
     "NUMPAD_DOT"};
 
-STR *symbol_pretty_name[106] = {"none",        "Escape",      "F1",
-                                "F2",          "F3",          "F4",
-                                "F5",          "F6",          "F7",
-                                "F8",          "F9",          "F10",
-                                "F11",         "F12",         "Print screen",
-                                "Scroll lock", "Pause",       "Grave",
-                                "1",           "2",           "3",
-                                "4",           "5",           "6",
-                                "7",           "8",           "9",
-                                "0",           "-",           "=",
-                                "Backspace",   "Insert",      "Home",
-                                "Page up",     "Num lock",    "/ (numpad)",
-                                "* (numpad)",  "- (numpad)",  "Tab",
-                                "Q",           "W",           "E",
-                                "R",           "T",           "Y",
-                                "U",           "I",           "O",
-                                "P",           "[",           "]",
-                                "Return",      "Delete",      "End",
-                                "Page down",   "7 (numpad)",  "8 (numpad)",
-                                "9 (numpad)",  "+ (numpad)",  "Caps lock",
-                                "A",           "S",           "D",
-                                "F",           "G",           "H",
-                                "J",           "K",           "L",
-                                ";",           "'",           "\\",
-                                "4 (numpad)",  "5 (numpad)",  "6 (numpad)",
-                                "Left shift",  "<",           "Z",
-                                "X",           "C",           "V",
-                                "B",           "N",           "M",
-                                ",",           ".",           "/",
-                                "Right shift", "Arrow up",    "1 (numpad)",
-                                "2 (numpad)",  "3 (numpad)",  "Enter (numpad)",
-                                "Left ctrl",   "Left win",    "Left alt",
-                                " ",           "Right alt",   "Right win",
-                                "Right menu",  "Right ctrl",  "Arrow left",
-                                "Arrow down",  "Arrow right", "0 (numpad)",
-                                ". (numpad)"};
+const char *symbol_pretty_name[106] = {"none",        "Escape",      "F1",
+                                       "F2",          "F3",          "F4",
+                                       "F5",          "F6",          "F7",
+                                       "F8",          "F9",          "F10",
+                                       "F11",         "F12",         "Print screen",
+                                       "Scroll lock", "Pause",       "Grave",
+                                       "1",           "2",           "3",
+                                       "4",           "5",           "6",
+                                       "7",           "8",           "9",
+                                       "0",           "-",           "=",
+                                       "Backspace",   "Insert",      "Home",
+                                       "Page up",     "Num lock",    "/ (numpad)",
+                                       "* (numpad)",  "- (numpad)",  "Tab",
+                                       "Q",           "W",           "E",
+                                       "R",           "T",           "Y",
+                                       "U",           "I",           "O",
+                                       "P",           "[",           "]",
+                                       "Return",      "Delete",      "End",
+                                       "Page down",   "7 (numpad)",  "8 (numpad)",
+                                       "9 (numpad)",  "+ (numpad)",  "Caps lock",
+                                       "A",           "S",           "D",
+                                       "F",           "G",           "H",
+                                       "J",           "K",           "L",
+                                       ";",           "'",           "\\",
+                                       "4 (numpad)",  "5 (numpad)",  "6 (numpad)",
+                                       "Left shift",  "<",           "Z",
+                                       "X",           "C",           "V",
+                                       "B",           "N",           "M",
+                                       ",",           ".",           "/",
+                                       "Right shift", "Arrow up",    "1 (numpad)",
+                                       "2 (numpad)",  "3 (numpad)",  "Enter (numpad)",
+                                       "Left ctrl",   "Left win",    "Left alt",
+                                       " ",           "Right alt",   "Right win",
+                                       "Right menu",  "Right ctrl",  "Arrow left",
+                                       "Arrow down",  "Arrow right", "0 (numpad)",
+                                       ". (numpad)"};
 
 /*===========================================================================*/
 /* Map windows virtual key to intermediate key symbol                        */
@@ -415,7 +415,7 @@ void kbdDrvClearPressedKeys()
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *kbdDrvDInputErrorString(HRESULT hResult)
+const char *kbdDrvDInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -445,7 +445,7 @@ STR *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-STR *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+const char *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -459,12 +459,12 @@ STR *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void kbdDrvDInputFailure(STR *header, HRESULT err)
+void kbdDrvDInputFailure(const char *header, HRESULT err)
 {
   Service->Log.AddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
 }
 
-void kbdDrvDInputUnacquireFailure(STR *header, HRESULT err)
+void kbdDrvDInputUnacquireFailure(const char *header, HRESULT err)
 {
   Service->Log.AddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
 }
@@ -484,7 +484,7 @@ bool kbdDrvDInputSetCooperativeLevel()
   return true;
 }
 
-void kbdDrvDInputAcquireFailure(STR *header, HRESULT err)
+void kbdDrvDInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -542,7 +542,7 @@ void kbdDrvEOFHandler()
 
 void kbdDrvDInputUnacquire()
 {
-  if (kbd_drv_lpDID == NULL)
+  if (kbd_drv_lpDID == nullptr)
   {
     return;
   }
@@ -561,7 +561,7 @@ void kbdDrvDInputUnacquire()
 
 void kbdDrvDInputAcquire()
 {
-  if (kbd_drv_lpDID == NULL)
+  if (kbd_drv_lpDID == nullptr)
   {
     return;
   }
@@ -579,20 +579,20 @@ void kbdDrvDInputAcquire()
 
 void kbdDrvDInputRelease()
 {
-  if (kbd_drv_lpDID != NULL)
+  if (kbd_drv_lpDID != nullptr)
   {
     IDirectInputDevice_Release(kbd_drv_lpDID);
-    kbd_drv_lpDID = NULL;
+    kbd_drv_lpDID = nullptr;
   }
-  if (kbd_drv_DIevent != NULL)
+  if (kbd_drv_DIevent != nullptr)
   {
     CloseHandle(kbd_drv_DIevent);
-    kbd_drv_DIevent = NULL;
+    kbd_drv_DIevent = nullptr;
   }
-  if (kbd_drv_lpDI != NULL)
+  if (kbd_drv_lpDI != nullptr)
   {
     IDirectInput_Release(kbd_drv_lpDI);
-    kbd_drv_lpDI = NULL;
+    kbd_drv_lpDI = nullptr;
   }
 }
 
@@ -614,11 +614,11 @@ bool kbdDrvDInputInitialize()
 
   /* Create Direct Input object */
 
-  kbd_drv_lpDI = NULL;
-  kbd_drv_lpDID = NULL;
-  kbd_drv_DIevent = NULL;
+  kbd_drv_lpDI = nullptr;
+  kbd_drv_lpDID = nullptr;
+  kbd_drv_DIevent = nullptr;
   kbd_drv_initialization_failed = false;
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&kbd_drv_lpDI, NULL);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&kbd_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res);
@@ -660,8 +660,8 @@ bool kbdDrvDInputInitialize()
 
   /* Create event for notification */
 
-  kbd_drv_DIevent = CreateEvent(0, 0, 0, 0);
-  if (kbd_drv_DIevent == NULL)
+  kbd_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
+  if (kbd_drv_DIevent == nullptr)
   {
     Service->Log.AddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
     kbd_drv_initialization_failed = true;
@@ -731,8 +731,6 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 {
   ULO eol_evpos = kbd_state.eventsEOL.inpos;
   ULO eof_evpos = kbd_state.eventsEOF.inpos;
-
-  ULO port, setting;
 
   for (;;)
   {
@@ -863,16 +861,13 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     // Check joysticks replacements
     // New here: Must remember last value to decide if a change has happened
 
-    for (port = 0; port < 2; port++)
+    for (ULO port = 0; port < 2; port++)
     {
-      for (setting = 0; setting < 2; setting++)
+      for (ULO setting = 0; setting < 2; setting++)
       {
         if (kbd_drv_joykey_enabled[port][setting])
         {
-          // Here the gameport is set up for input from the specified set of joykeys
-          // Check each key for change
-          int direction;
-          for (direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
+          for (int direction = 0; direction < MAX_JOYKEY_VALUE; direction++)
           {
             if (symbol_key == kbd_drv_joykey[setting][direction])
             {
@@ -1057,7 +1052,7 @@ void kbdDrvKeypressHandler()
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-STR *kbdDrvKeyString(kbd_drv_pc_symbol symbolickey)
+const char *kbdDrvKeyString(kbd_drv_pc_symbol symbolickey)
 {
   if (symbolickey >= kbd_drv_pc_symbol::PCK_LAST_KEY)
   {
@@ -1066,7 +1061,7 @@ STR *kbdDrvKeyString(kbd_drv_pc_symbol symbolickey)
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-STR *kbdDrvKeyPrettyString(kbd_drv_pc_symbol symbolickey)
+const char *kbdDrvKeyPrettyString(kbd_drv_pc_symbol symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1075,7 +1070,7 @@ STR *kbdDrvKeyPrettyString(kbd_drv_pc_symbol symbolickey)
   return symbol_pretty_name[symbolickey];
 }
 
-STR *DikKeyString(int dikkey)
+const char *DikKeyString(int dikkey)
 {
   for (int j = kbd_drv_pc_symbol::PCK_NONE; j < kbd_drv_pc_symbol::PCK_LAST_KEY; j++)
   {
@@ -1372,8 +1367,8 @@ void kbdDrvStartup()
   prs_rewrite_mapping_file = prsReadFile(kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
 
   kbd_drv_active = FALSE;
-  kbd_drv_lpDI = NULL;
-  kbd_drv_lpDID = NULL;
+  kbd_drv_lpDI = nullptr;
+  kbd_drv_lpDID = nullptr;
 }
 
 /*===========================================================================*/

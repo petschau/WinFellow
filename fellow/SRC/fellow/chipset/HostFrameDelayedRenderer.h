@@ -175,7 +175,7 @@ public:
   ChangeList ChangeList;
 
   void ToStream(std::ostringstream &os);
-  void ToStream(std::ostringstream& os, unsigned int line);
+  void ToStream(std::ostringstream &os, unsigned int line);
 
   void UpdateDrawBatchFunc();
   DelayedDrawBatchFunc GetDrawBatchFunc() const

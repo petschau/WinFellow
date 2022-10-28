@@ -1,9 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Win32 C Header Files">
-      <UniqueIdentifier>{db7e3f8c-6554-4fa5-b54b-2db35888b35d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow">
       <UniqueIdentifier>{4cc17501-a676-4970-88e2-862c2940f346}</UniqueIdentifier>
     </Filter>
@@ -504,7 +501,7 @@
     <ClCompile Include="..\..\fellow\automation\Script.cpp">
       <Filter>fellow\automation</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\application\Fellow.c">
+    <ClCompile Include="..\..\fellow\application\Fellow.cpp">
       <Filter>fellow\application</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\application\ListTree.cpp">
@@ -513,10 +510,10 @@
     <ClCompile Include="..\..\fellow\application\modrip.cpp">
       <Filter>fellow\application</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Blitter.c">
+    <ClCompile Include="..\..\fellow\chipset\Blitter.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Cia.c">
+    <ClCompile Include="..\..\fellow\chipset\Cia.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\chipset\CopperCommon.cpp">
@@ -528,16 +525,16 @@
     <ClCompile Include="..\..\fellow\chipset\draw_pixelrenderers.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Floppy.c">
+    <ClCompile Include="..\..\fellow\chipset\Floppy.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Gameport.c">
+    <ClCompile Include="..\..\fellow\chipset\Gameport.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Graphics.c">
+    <ClCompile Include="..\..\fellow\chipset\Graphics.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Kbd.c">
+    <ClCompile Include="..\..\fellow\chipset\Kbd.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp">
@@ -552,10 +549,10 @@
     <ClCompile Include="..\..\fellow\chipset\RtcOkiMsm6242rs.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Sound.c">
+    <ClCompile Include="..\..\fellow\chipset\Sound.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Sprite.c">
+    <ClCompile Include="..\..\fellow\chipset\Sprite.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\chipset\uart.cpp">
@@ -564,10 +561,10 @@
     <ClCompile Include="..\..\fellow\chipset\Wav.c">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\memory\Memory.c">
+    <ClCompile Include="..\..\fellow\memory\Memory.cpp">
       <Filter>fellow\memory</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\application\FellowFilesys.c">
+    <ClCompile Include="..\..\fellow\application\FellowFilesys.cpp">
       <Filter>fellow\application</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\application\Interrupt.cpp">
@@ -914,9 +911,6 @@
     <ClInclude Include="..\..\fellow\service\CoreServicesFactory.h">
       <Filter>fellow\service</Filter>
     </ClInclude>
-    <ClInclude Include="..\INCLUDE\MSVC\PORTABLE.H">
-      <Filter>Win32 C Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h">
       <Filter>fellow\api\modules</Filter>
     </ClInclude>
@@ -1223,9 +1217,6 @@
     <ClInclude Include="..\..\fellow\chipset\Floppy.h">
       <Filter>fellow\chipset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\chipset\Fonts.h">
-      <Filter>fellow\chipset</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\Graphics.h">
       <Filter>fellow\chipset</Filter>
     </ClInclude>
@@ -1266,9 +1257,6 @@
       <Filter>fellow\memory</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\FellowFilesys.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\FsNavig.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\application\Ini.h">
@@ -1430,14 +1418,17 @@
     <ClInclude Include="..\..\fellow\os\windows\uae\UAEFSYS.H">
       <Filter>fellow\os\windows\uae</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\api\versioninfo.h">
-      <Filter>fellow\api</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h">
       <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h">
       <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\dxver.h">
+      <Filter>fellow\os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\portable.h">
+      <Filter>fellow\os\windows</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

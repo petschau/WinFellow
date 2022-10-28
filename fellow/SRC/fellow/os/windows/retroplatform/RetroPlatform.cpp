@@ -103,7 +103,7 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/application/KeyboardDriver.h"
 #include "fellow/api/modules/IHardfileHandler.h"
-#include "dxver.h"                          /// needed for DirectInput based joystick detection code
+#include "fellow/os/windows/dxver.h"        /// needed for DirectInput based joystick detection code
 #include "fellow/application/SoundDriver.h" /// needed for DirectSound volume control
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"

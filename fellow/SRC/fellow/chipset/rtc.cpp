@@ -112,17 +112,18 @@ void rtcMap()
   {
     constexpr ULO bank = 0xdc;
 
-    memoryBankSet(MemoryBankDescriptor{.Kind = MemoryKind::RTC,
-                                       .BankNumber = bank,
-                                       .BaseBankNumber = bank,
-                                       .ReadByteFunc = rtcReadByte,
-                                       .ReadWordFunc = rtcReadWord,
-                                       .ReadLongFunc = rtcReadLong,
-                                       .WriteByteFunc = rtcWriteByte,
-                                       .WriteWordFunc = rtcWriteWord,
-                                       .WriteLongFunc = rtcWriteLong,
-                                       .BasePointer = nullptr,
-                                       .IsBasePointerWritable = false});
+    memoryBankSet(MemoryBankDescriptor{
+        .Kind = MemoryKind::RTC,
+        .BankNumber = bank,
+        .BaseBankNumber = bank,
+        .ReadByteFunc = rtcReadByte,
+        .ReadWordFunc = rtcReadWord,
+        .ReadLongFunc = rtcReadLong,
+        .WriteByteFunc = rtcWriteByte,
+        .WriteWordFunc = rtcWriteWord,
+        .WriteLongFunc = rtcWriteLong,
+        .BasePointer = nullptr,
+        .IsBasePointerWritable = false});
 
 #ifdef RTC_LOG
     Service->Log.AddLogDebug("Mapped RTC at $DC0000\n");

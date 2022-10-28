@@ -40,7 +40,7 @@
 #include <fcntl.h>
 #include <direct.h>
 #include <io.h>
-#include <string.h>
+#include <cstring>
 #include <sys/utime.h>
 
 #include "fellow/os/windows/uae/UAE2FELL.H"
@@ -59,31 +59,29 @@ extern struct uaedev_mount_info mountinfo;
 
 void filesys_init(int automount_drives)
 {
-  int drive, drivetype, readonly, removable;
   UINT errormode = SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOOPENFILEERRORBOX);
   char volumename[MAX_PATH] = "";
-  char volumepath[6];
-  DWORD dwDriveMask;
-  char *result = NULL;
 
   mountinfo.num_units = 0;
   if (automount_drives)
   {
     if (memoryGetKickImageVersion() >= 36)
     {
-      dwDriveMask = GetLogicalDrives();
+      char volumepath[6];
+      char *result = nullptr;
+      DWORD dwDriveMask = GetLogicalDrives();
 
-      for (drive = 'A'; drive <= 'Z'; sprintf(volumepath, "%c:\\", ++drive))
+      for (int drive = 'A'; drive <= 'Z'; sprintf(volumepath, "%c:\\", ++drive))
       {
         if ((dwDriveMask & 1) && CheckRM(volumepath)) /* Is this drive-letter valid and media in drive? */
         {
-          drivetype = GetDriveType(volumepath);
+          int drivetype = GetDriveType(volumepath);
           if (drivetype == DRIVE_REMOTE)
             strcat(volumepath, ".");
           else
             strcat(volumepath, "..");
-          readonly = (drivetype == DRIVE_CDROM) ? 1 : 0;
-          removable = (drivetype == DRIVE_CDROM || drivetype == DRIVE_REMOVABLE) ? 1 : 0;
+          int readonly = (drivetype == DRIVE_CDROM) ? 1 : 0;
+          int removable = (drivetype == DRIVE_CDROM || drivetype == DRIVE_REMOVABLE) ? 1 : 0;
 
           if (get_volume_name(&mountinfo, volumepath, volumename, MAX_PATH, drive, drivetype, 1))
           {
@@ -102,7 +100,7 @@ static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, ch
 {
   int result = -1;
 
-  if (GetVolumeInformation(volumepath, volumename, size, NULL, NULL, NULL, NULL, 0) && volumename[0] && valid_volumename(mtinf, volumename, fullcheck))
+  if (GetVolumeInformation(volumepath, volumename, size, nullptr, nullptr, nullptr, nullptr, 0) && volumename[0] && valid_volumename(mtinf, volumename, fullcheck))
   {
     result = 1;
   }
@@ -127,11 +125,10 @@ static int get_volume_name(struct uaedev_mount_info *mtinf, char *volumepath, ch
 BOOLE CheckRM(char *DriveName)
 {
   char filename[MAX_PATH];
-  DWORD dwHold;
   BOOL result = FALSE;
 
   sprintf(filename, "%s.", DriveName);
-  dwHold = GetFileAttributes(filename);
+  DWORD dwHold = GetFileAttributes(filename);
   if (dwHold != 0xFFFFFFFF) result = TRUE;
   return result;
 }
@@ -141,7 +138,7 @@ illegal values: */
 
 int valid_volumename(struct uaedev_mount_info *mountinfo, char *volumename, int fullcheck)
 {
-  char *illegal_volumenames[7] = {"SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S"};
+  const char *illegal_volumenames[7] = {"SYS", "DEVS", "LIBS", "FONTS", "C", "L", "S"};
 
   int i, result = 1;
   for (i = 0; i < 7; i++)

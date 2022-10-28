@@ -59,14 +59,14 @@ enum class sound_notifications
 /* Sound device information */
 /*==========================*/
 
-typedef struct
+struct sound_device
 {
   BOOLE mono;
   BOOLE stereo;
   BOOLE bits8;
   BOOLE bits16;
   ULO rates_max[2][2]; // Maximum playback rate for [8/16 bits][mono/stereo]
-} sound_device;
+};
 
 extern sound_emulations sound_emulation;
 extern sound_rates sound_rate;

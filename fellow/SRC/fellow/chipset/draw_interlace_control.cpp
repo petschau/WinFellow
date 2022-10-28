@@ -19,7 +19,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "fellow/api/defs.h"
 #include "draw_interlace_control.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/application/HostRenderer.h"

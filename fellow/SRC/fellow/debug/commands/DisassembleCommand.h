@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fellow/api/defs.h"
 #include "fellow/debug/commands/DebuggerCommand.h"
 #include "fellow/api/VM.h"
 

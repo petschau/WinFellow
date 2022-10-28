@@ -31,7 +31,11 @@ extern std::list<DisplayMode> gfxDrvGetDisplayModeList();
 
 extern void gfxDrvDrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer);
 
-extern bool gfxDrvEmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const HostRenderRuntimeSettings& hostRenderRuntimeSettings, const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings, HudPropertyProvider* hudPropertyProvider);
+extern bool gfxDrvEmulationStart(
+    const HostRenderConfiguration &hostRenderConfiguration,
+    const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
+    const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
+    HudPropertyProvider *hudPropertyProvider);
 extern ULO gfxDrvEmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings);
 
 extern void gfxDrvEmulationStop();

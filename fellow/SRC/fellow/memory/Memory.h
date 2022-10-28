@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <vector>
 #include "fellow/api/defs.h"
 #include "fellow/api/vm/MemorySystemTypes.h"

@@ -12,8 +12,7 @@
 
 using namespace std;
 
-
-void DirectDrawDevice::LogError(const char* header, HRESULT err)
+void DirectDrawDevice::LogError(const char *header, HRESULT err)
 {
   DirectDrawErrorLogger::LogError(header, err);
 }
@@ -283,8 +282,8 @@ void DirectDrawDevice::LogFullscreenModeInformation()
   for (auto mode : fullscreen_modes)
   {
     ostringstream modeDescription;
-    modeDescription << "gfxdrv: Mode Description: id " << mode->id << " " << mode->width << "Wx" << mode->height << "Hx" << mode->depth << "BPPx" << mode->refresh << "Hz (" << mode->redpos << ", " << mode->redsize
-                    << ", " << mode->greenpos << ", " << mode->greensize << ", " << mode->bluepos << ", " << mode->bluesize << ")";
+    modeDescription << "gfxdrv: Mode Description: id " << mode->id << " " << mode->width << "Wx" << mode->height << "Hx" << mode->depth << "BPPx" << mode->refresh << "Hz (" << mode->redpos << ", "
+                    << mode->redsize << ", " << mode->greenpos << ", " << mode->greensize << ", " << mode->bluepos << ", " << mode->bluesize << ")";
 
     logmessages.emplace_back(modeDescription.str());
   }
@@ -409,10 +408,21 @@ ULO DirectDrawDevice::RGBMaskSize(ULO mask)
   return sz;
 }
 
-DirectDrawFullscreenMode *DirectDrawDevice::NewFullscreenMode(unsigned int id, ULO width, ULO height, ULO depth, ULO refresh, ULO redpos, ULO redsize, ULO greenpos, ULO greensize, ULO bluepos, ULO bluesize)
+DirectDrawFullscreenMode *DirectDrawDevice::NewFullscreenMode(
+    unsigned int id, ULO width, ULO height, ULO depth, ULO refresh, ULO redpos, ULO redsize, ULO greenpos, ULO greensize, ULO bluepos, ULO bluesize)
 {
   return new DirectDrawFullscreenMode{
-      .id = id, .width = width, .height = height, .depth = depth, .refresh = refresh, .redpos = redpos, .redsize = redsize, .greenpos = greenpos, .greensize = greensize, .bluepos = bluepos, .bluesize = bluesize};
+      .id = id,
+      .width = width,
+      .height = height,
+      .depth = depth,
+      .refresh = refresh,
+      .redpos = redpos,
+      .redsize = redsize,
+      .greenpos = greenpos,
+      .greensize = greensize,
+      .bluepos = bluepos,
+      .bluesize = bluesize};
 }
 
 //======================
@@ -471,7 +481,6 @@ void DirectDrawDevice::SurfaceClear(LPDIRECTDRAWSURFACE surface, RECT *dstrect)
 
   fellow::api::Service->Log.AddLog("gfxdrv: Clearing surface\n");
 }
-
 
 //==================
 // Restore a surface
@@ -1041,11 +1050,10 @@ void DirectDrawDevice::SetColorBitsInformation(const DDPIXELFORMAT &ddpf)
   _colorBitsInformation.BlueSize = RGBMaskSize(ddpf.dwBBitMask);
 }
 
-const GfxDrvColorBitsInformation& DirectDrawDevice::GetColorBitsInformation()
+const GfxDrvColorBitsInformation &DirectDrawDevice::GetColorBitsInformation()
 {
   return _colorBitsInformation;
 }
-
 
 bool DirectDrawDevice::SaveScreenshotFromSurfaceArea(LPDIRECTDRAWSURFACE surface, DWORD x, DWORD y, DWORD width, DWORD height, unsigned int lDisplayScale, const char *filename)
 {

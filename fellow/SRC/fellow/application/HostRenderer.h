@@ -9,7 +9,6 @@
 #include "fellow/chipset/ChipsetCallbacks.h"
 
 #include "fellow/configuration/Configuration.h"
-#include <map>
 #include <list>
 
 #include "fellow/application/HostRenderConfiguration.h"
@@ -64,8 +63,8 @@ private:
   void SetFullscreenMode(const DimensionsUInt &size, DisplayColorDepth colorDepth, unsigned int refreshRate);
   void SetWindowedMode(const DimensionsUInt &size);
 
-  const DisplayMode* GetFirstDisplayMode() const;
-  const DisplayMode* FindDisplayMode(unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const;
+  const DisplayMode *GetFirstDisplayMode() const;
+  const DisplayMode *FindDisplayMode(unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const;
   void ClearDisplayModeList();
 
   void InitializeFrameSkipCounter();
@@ -88,28 +87,17 @@ public:
 
   void ColorChangedHandler(unsigned int colorIndex, UWO color12Bit, UWO halfbriteColor12Bit) override;
 
-  unsigned int GetActiveBufferColorBits() const;
-
   void SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxClip);
-  void SetHostOutputClip(const RectShresi &chipsetBufferOutputClip);
+  void SetHostOutputClip(const RectShresi &hostOutputClip);
 
   const std::list<DisplayMode> &GetDisplayModes() const;
 
   unsigned int GetChipsetBufferScaleFactor() const;
   ULO GetOutputScaleFactor() const;
 
-  void SetDisplayScale(DISPLAYSCALE displayscale);
-  DISPLAYSCALE GetDisplayScale() const;
-
-  void SetDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayscalestrategy);
-  DISPLAYSCALE_STRATEGY GetDisplayScaleStrategy() const;
-
-  void SetDisplayDriver(DISPLAYDRIVER displaydriver);
-
-  void SetFrameskipRatio(unsigned int frameskipratio);
   ULO GetBufferCount() const;
 
-  void DrawModeFunctionTablesInitialize(unsigned int activeBufferColorBits);
+  void DrawModeFunctionTablesInitialize(unsigned int activeBufferColorBits) const;
   void SetClearAllBuffersFlag();
 
   void UpdateDrawFunctions();
@@ -117,10 +105,7 @@ public:
 
   bool RestartGraphicsDriver(DISPLAYDRIVER displaydriver);
 
-  // Fellow runtime events
   void EndOfFrame();
-
-  // Fellow offline events
   void HardReset();
   bool EmulationStart();
   bool EmulationStartPost();

@@ -12,4 +12,4 @@ namespace fellow::api
     virtual bool PostHardDriveLED(const ULO lHardDriveNo, const bool bActive, const bool bWriteActivity) = 0;
     virtual bool PostFloppyDriveLED(const ULO lDriveNo, const bool bActive, const bool bWriteActivity) = 0;
   };
-} // namespace fellow::api
+}

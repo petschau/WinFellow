@@ -8,10 +8,10 @@ namespace fellow::api::vm
   class IChipset
   {
   public:
-    fellow::api::vm::ICopper &Copper;
-    fellow::api::vm::IDisplay &Display;
+    ICopper &Copper;
+    IDisplay &Display;
 
-    IChipset(fellow::api::vm::ICopper &copper, fellow::api::vm::IDisplay &display) : Copper(copper), Display(display)
+    IChipset(ICopper &copper, IDisplay &display) : Copper(copper), Display(display)
     {
     }
 

@@ -19,7 +19,7 @@ MemoryResult MemoryCommand::Execute(const MemoryParameters &parameters)
   return result;
 }
 
-ULO MemoryCommand::ReadLongAsBytes(ULO address)
+ULO MemoryCommand::ReadLongAsBytes(ULO address) const
 {
   return VM->Memory.ReadByte(address) << 24 | VM->Memory.ReadByte(address + 1) << 16 | VM->Memory.ReadByte(address + 2) << 8 | VM->Memory.ReadByte(address + 3);
 }

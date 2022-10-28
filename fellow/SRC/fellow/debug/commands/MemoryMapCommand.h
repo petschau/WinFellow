@@ -26,7 +26,7 @@ class MemoryMapCommand : public DebuggerCommand<MemoryMapParameters, MemoryMapRe
 {
 private:
   std::vector<MemoryMapEntry> GetMemoryMapEntries();
-  std::string GetMemoryKindDescription(fellow::api::vm::MemoryKind kind);
+  std::string GetMemoryKindDescription(fellow::api::vm::MemoryKind kind) const;
 
 public:
   MemoryMapResult Execute(const MemoryMapParameters &parameters) override;

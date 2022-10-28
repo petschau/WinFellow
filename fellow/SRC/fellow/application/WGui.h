@@ -24,16 +24,18 @@ struct wgui_drawmode
   ULO colorbits;
   STR name[32];
 
-  bool operator<(const wgui_drawmode &dm)
+  bool operator<(const wgui_drawmode &dm) const
   {
     if (width < dm.width)
     {
       return true;
     }
-    else if (width == dm.width)
+
+    if (width == dm.width)
     {
       return height < dm.height;
     }
+
     return false;
   }
 
@@ -81,6 +83,6 @@ extern void wguiStartupPost();
 extern void wguiShutdown();
 extern bool wguiCheckEmulationNecessities();
 extern BOOLE wguiEnter();
-extern void wguiRequester(fellow::api::FELLOW_REQUESTER_TYPE type, STR *szMessage);
+extern void wguiRequester(fellow::api::FELLOW_REQUESTER_TYPE type, const char *szMessage);
 extern void wguiInsertCfgIntoHistory(STR *cfgfilenametoinsert);
 extern void wguiSetProcessDPIAwareness(const char *pszAwareness);

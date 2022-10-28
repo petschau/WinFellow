@@ -1,7 +1,8 @@
 #include "GfxDrvHudLegacy.h"
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
 
-void GfxDrvHudLegacy::DrawLED16(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint16_t color)
+void GfxDrvHudLegacy::DrawLED16(
+    const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint16_t color)
 {
   uint16_t *bufw = ((uint16_t *)(mappedChipsetFramebuffer.TopPointer + mappedChipsetFramebuffer.HostLinePitch * y)) + x;
   for (unsigned int y1 = 0; y1 < height; y1++)
@@ -14,7 +15,8 @@ void GfxDrvHudLegacy::DrawLED16(const MappedChipsetFramebuffer &mappedChipsetFra
   }
 }
 
-void GfxDrvHudLegacy::DrawLED24(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint32_t color)
+void GfxDrvHudLegacy::DrawLED24(
+    const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint32_t color)
 {
   uint8_t *bufb = mappedChipsetFramebuffer.TopPointer + mappedChipsetFramebuffer.HostLinePitch * y + x * 3;
   const uint8_t color24_1 = (uint8_t)((color & 0xff0000) >> 16);
@@ -32,7 +34,8 @@ void GfxDrvHudLegacy::DrawLED24(const MappedChipsetFramebuffer &mappedChipsetFra
   }
 }
 
-void GfxDrvHudLegacy::DrawLED32(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint32_t color)
+void GfxDrvHudLegacy::DrawLED32(
+    const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int x, const unsigned int y, const unsigned int width, const unsigned int height, const uint32_t color)
 {
   uint32_t *bufl = ((uint32_t *)(mappedChipsetFramebuffer.TopPointer + mappedChipsetFramebuffer.HostLinePitch * y)) + x;
   for (unsigned int y1 = 0; y1 < height; y1++)

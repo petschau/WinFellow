@@ -23,7 +23,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <windef.h>
-#include <stdio.h>
+#include <cstdio>
 #include <commctrl.h>
 
 #include "fellow/api/defs.h"
@@ -94,7 +94,7 @@ void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, UL
   ComboBox_SetCurSel(GetDlgItem(windowHandle, controlIdentifier), index);
 }
 
-void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, const char *text)
 {
   ComboBox_AddString(GetDlgItem(windowHandle, controlIdentifier), text);
 }
@@ -171,15 +171,14 @@ BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)
 bool ccwMenuCheckedToggleBool(HWND windowHandle, int menuIdentifier)
 {
   HMENU hMenu = GetMenu(windowHandle);
-  bool ischecked, result;
 
   MENUITEMINFO mii = {0};
   mii.cbSize = sizeof(MENUITEMINFO);
   mii.fMask = MIIM_STATE;
 
   GetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
-  ischecked = mii.fState & MFS_CHECKED;
-  result = !ischecked;
+  bool ischecked = mii.fState & MFS_CHECKED;
+  bool result = !ischecked;
 
   CheckMenuItem(hMenu, menuIdentifier, result ? MFS_CHECKED : MFS_UNCHECKED);
 

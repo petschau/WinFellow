@@ -22,7 +22,6 @@
 /*=========================================================================*/
 #include <list>
 #include "fellow/api/defs.h"
-#include "fellow/chipset/Sound.h"
 #include <windows.h>
 #include "fellow/api/Services.h"
 #include "fellow/application/Timer.h"
@@ -71,10 +70,9 @@ void timerAddCallback(timerCallbackFunction callback)
 void timerEmulationStart()
 {
   TIMECAPS timecaps;
-  MMRESULT mmres;
 
   timer_ticks = 0;
-  mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
+  MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
   if (mmres != TIMERR_NOERROR)
   {
     Service->Log.AddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");

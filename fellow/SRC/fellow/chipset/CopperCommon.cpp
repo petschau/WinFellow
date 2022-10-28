@@ -22,7 +22,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "fellow/api/defs.h"
 #include "fellow/chipset/CopperRegisters.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/CycleExactCopper.h"

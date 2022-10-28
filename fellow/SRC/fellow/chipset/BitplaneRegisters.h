@@ -2,7 +2,6 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/chipset/ChipsetCallbacks.h"
-#include "fellow/application/GfxDrvColorBitsInformation.h"
 
 extern UWO rvposr(ULO address);
 extern UWO rvhposr(ULO address);

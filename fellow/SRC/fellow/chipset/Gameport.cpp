@@ -22,7 +22,6 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/HostRenderer.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/application/MouseDriver.h"
@@ -167,9 +166,7 @@ UWO rpotgor(ULO address)
 
 void wjoytest(UWO data, ULO address)
 {
-  ULO i;
-
-  for (i = 0; i < 2; i++)
+  for (ULO i = 0; i < 2; i++)
   {
     gameport_x[i] = gameport_x_last_read[i] = (BYT)(data & 0xff);
     gameport_y[i] = gameport_y_last_read[i] = (BYT)((data >> 8) & 0xff);
@@ -189,11 +186,9 @@ void wjoytest(UWO data, ULO address)
 
 void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
 {
-  ULO i;
-
   automator.RecordMouse(mousedev, x, y, button1, button2, button3);
 
-  for (i = 0; i < 2; i++)
+  for (ULO i = 0; i < 2; i++)
   {
     if (gameport_input[i] == mousedev)
     {
@@ -217,11 +212,9 @@ void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, BOOLE button1,
 
 void gameportJoystickHandler(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
 {
-  ULO i;
-
   automator.RecordJoystick(joydev, left, up, right, down, button1, button2);
 
-  for (i = 0; i < 2; i++)
+  for (ULO i = 0; i < 2; i++)
     if (gameport_input[i] == joydev)
     {
       if ((!gameport_fire1[i]) && button2) potdat[i] = (potdat[i] + 0x100) & 0xffff;

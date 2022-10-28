@@ -53,16 +53,16 @@ enum class FLOPPY_ERROR_CODE
 
 /* Info about a track */
 
-typedef struct
+struct floppytrackinfostruct
 {
   ULO file_offset; /* Track starts at this offset in image file, used for writing back */
   ULO mfm_length;  /* Length of mfm data in bytes */
   UBY *mfm_data;   /* Pointer to MFM data for track, including GAP, pointer to somewhere in floppy[].mfm_data */
-} floppytrackinfostruct;
+};
 
 /* Info about a drive */
 
-typedef struct
+struct floppyinfostruct
 {
   FILE *F;                                        /* Open file for disk image */
   ULO tracks;                                     /* Number of tracks on drive */
@@ -93,11 +93,11 @@ typedef struct
   BOOLE flakey; /* introduced for CAPS support */
   ULO *timebuf; /* dito */
 #endif
-} floppyinfostruct;
+};
 
 /* Info about a started disk transfer */
 
-typedef struct
+struct floppyDMAinfostruct
 {
   ULO dskpt;     /* Amiga memory pt */
   ULO wordsleft; /* Words left to transfer */
@@ -105,7 +105,7 @@ typedef struct
   BOOLE wait_for_sync;
   BOOLE sync_found;
   BOOLE dont_use_gap;
-} floppyDMAinfostruct;
+};
 
 /* Config */
 

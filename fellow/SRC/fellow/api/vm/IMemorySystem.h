@@ -37,5 +37,7 @@ namespace fellow::api::vm
 
     virtual bool GetAddressSpace32Bits() = 0;
     virtual std::vector<MemoryMapDescriptor> GetMemoryMapDescriptors() = 0;
+
+    virtual ~IMemorySystem() = default;
   };
 }

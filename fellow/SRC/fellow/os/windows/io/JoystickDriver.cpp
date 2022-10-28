@@ -29,7 +29,7 @@
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
-#include "dxver.h"
+#include "fellow/os/windows/dxver.h"
 #include <mmsystem.h>
 
 using namespace fellow::api;
@@ -93,10 +93,10 @@ BOOLE joy_drv_in_use;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *joyDrvDInputErrorString(HRESULT hResult)
+const char *joyDrvDInputErrorString(HRESULT hResult)
 {
 #ifdef _DEBUG
-  STR *UnErr = NULL;
+  STR *UnErr = nullptr;
 #endif
 
   switch (hResult)
@@ -138,7 +138,7 @@ STR *joyDrvDInputErrorString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void joyDrvDInputFailure(STR *header, HRESULT err)
+void joyDrvDInputFailure(const char *header, HRESULT err)
 {
   Service->Log.AddLog("%s %s\n", header, joyDrvDInputErrorString(err));
 }
@@ -151,7 +151,6 @@ void joyDrvDInputSetCooperativeLevel(int port)
 {
   DIPROPRANGE diprg;
   DIPROPDWORD dipdw;
-  HRESULT res;
 
   Service->Log.AddLog("joyDrvDInputSetCooperativeLevel(%d)\n", port);
 
@@ -160,7 +159,7 @@ void joyDrvDInputSetCooperativeLevel(int port)
     return;
   }
 
-  res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
+  HRESULT res = IDirectInputDevice8_SetCooperativeLevel(joy_drv_lpDID[port], gfxDrvCommon->GetHWND(), ((joy_drv_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     joyDrvDInputFailure("joyDrvDInputSetCooperativeLevel():", res);
@@ -248,14 +247,10 @@ void joyDrvDInputAcquire(int port)
 
     if (joy_drv_in_use)
     {
-      HRESULT res;
-
-      // joyDrvDInputUnacquire(port);
-
       /* A new window is sometimes created, so set new hwnd cooperative level */
       joyDrvDInputSetCooperativeLevel(port);
 
-      res = IDirectInputDevice8_Acquire(joy_drv_lpDID[port]);
+      HRESULT res = IDirectInputDevice8_Acquire(joy_drv_lpDID[port]);
       if (res != DI_OK)
       {
         joyDrvDInputFailure("joyDrvDInputAcquire():", res);
@@ -270,7 +265,7 @@ BOOLE joyDrvDxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[
 
   if (!pDiD[port])
   {
-    res = CoCreateInstance(CLSID_DirectInputDevice8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID *)&(pDiD[port]));
+    res = CoCreateInstance(CLSID_DirectInputDevice8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInputDevice8, (LPVOID *)&(pDiD[port]));
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): DeviceCoCreateInstance()", res);
@@ -324,12 +319,11 @@ BOOL FAR PASCAL joyDrvInitJoystickInput(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef
 
 void joyDrvDInputInitialize()
 {
-  HRESULT res;
   Service->Log.AddLog("joyDrvDInputInitialize()\n");
 
   if (!joy_drv_lpDI)
   {
-    res = CoCreateInstance(CLSID_DirectInput8, NULL, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID *)&joy_drv_lpDI);
+    HRESULT res = CoCreateInstance(CLSID_DirectInput8, nullptr, CLSCTX_INPROC_SERVER, IID_IDirectInput8, (LPVOID *)&joy_drv_lpDI);
     if (res != DI_OK)
     {
       joyDrvDInputFailure("joyDrvDInputInitialize(): CoCreateInstance()", res);
@@ -365,24 +359,23 @@ void joyDrvDInputInitialize()
 
 void joyDrvDInputRelease()
 {
-  int port;
 
   Service->Log.AddLog("joyDrvDInputRelease()\n");
 
-  for (port = 0; port < MAX_JOY_PORT; port++)
+  for (int port = 0; port < MAX_JOY_PORT; port++)
   {
-    if (joy_drv_lpDID[port] != NULL)
+    if (joy_drv_lpDID[port] != nullptr)
     {
       joyDrvDInputUnacquire(port);
       IDirectInputDevice8_Release(joy_drv_lpDID[port]);
-      joy_drv_lpDID[port] = NULL;
+      joy_drv_lpDID[port] = nullptr;
     }
   }
 
-  if (joy_drv_lpDI != NULL)
+  if (joy_drv_lpDI != nullptr)
   {
     IDirectInput8_Release(joy_drv_lpDI);
-    joy_drv_lpDI = NULL;
+    joy_drv_lpDI = nullptr;
   }
 }
 
@@ -392,8 +385,6 @@ void joyDrvDInputRelease()
 
 void joyDrvStateHasChanged(BOOLE active)
 {
-  int port;
-
   if (joy_drv_failed)
   {
     return;
@@ -409,9 +400,9 @@ void joyDrvStateHasChanged(BOOLE active)
     joy_drv_in_use = FALSE;
   }
 
-  for (port = 0; port < MAX_JOY_PORT; port++)
+  for (int port = 0; port < MAX_JOY_PORT; port++)
   {
-    if (joy_drv_lpDID[port] != NULL)
+    if (joy_drv_lpDID[port] != nullptr)
     {
       joyDrvDInputAcquire(port);
     }
@@ -534,14 +525,14 @@ BOOLE joyDrvCheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOL
 
 void joyDrvMovementHandler()
 {
-  int gameport, joystickNo;
+  int joystickNo;
 
   if (joy_drv_failed || !joy_drv_in_use)
   {
     return;
   }
 
-  for (gameport = 0; gameport < 2; gameport++)
+  for (int gameport = 0; gameport < 2; gameport++)
   {
     if ((gameport_input[gameport] == gameport_inputs::GP_ANALOG0) || (gameport_input[gameport] == gameport_inputs::GP_ANALOG1))
     {
@@ -563,7 +554,7 @@ void joyDrvMovementHandler()
         joystickNo = 1;
       }
 
-      if (joy_drv_lpDID[joystickNo] == NULL)
+      if (joy_drv_lpDID[joystickNo] == nullptr)
       {
         return;
       }
@@ -625,11 +616,11 @@ void joyDrvStartup()
   joy_drv_active = FALSE;
   joy_drv_in_use = FALSE;
 
-  joy_drv_lpDI = NULL;
-  joy_drv_lpDID[0] = NULL;
-  joy_drv_lpDID[1] = NULL;
+  joy_drv_lpDI = nullptr;
+  joy_drv_lpDID[0] = nullptr;
+  joy_drv_lpDID[1] = nullptr;
 
-  HRESULT res = CoInitialize(NULL);
+  HRESULT res = CoInitialize(nullptr);
   if (res != S_OK)
   {
     Service->Log.AddLog("joyDrvStartup(): Could not initialize COM library: %d\n", res);

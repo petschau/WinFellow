@@ -1,4 +1,3 @@
-#include <string>
 #include "fellow/configuration/HostRenderConfigurationMapper.h"
 
 using namespace std;

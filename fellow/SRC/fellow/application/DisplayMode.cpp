@@ -12,11 +12,11 @@ DisplayMode::DisplayMode(int id, unsigned int width, unsigned int height, const 
 {
 }
 
-DisplayMode::DisplayMode() noexcept : Id(0), Width(0), Height(0), Bits(0), Refresh(0), Name(""), IsWindowed(false)
+DisplayMode::DisplayMode() noexcept : Id(0), Width(0), Height(0), Bits(0), Refresh(0), IsWindowed(false)
 {
 }
 
-string DisplayMode::ToString()
+string DisplayMode::ToString() const
 {
   ostringstream oss;
 

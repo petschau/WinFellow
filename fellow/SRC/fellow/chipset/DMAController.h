@@ -59,8 +59,8 @@ private:
   void Clear();
   void InitializeRefreshCycleTable();
 
-  DebugLogSource MapDMAChannelTypeToDebugLogSource(DMAChannelType dmaChannelType);
-  DebugLogChipBusMode MapDMAChannelModeToDebugLogChipBusMode(DMAChannelMode dmaChannelMode);
+  DebugLogSource MapDMAChannelTypeToDebugLogSource(DMAChannelType dmaChannelType) const;
+  DebugLogChipBusMode MapDMAChannelModeToDebugLogChipBusMode(DMAChannelMode dmaChannelMode) const;
   void AddLogEntry(const DMAChannel *operation, UWO value);
 
 public:

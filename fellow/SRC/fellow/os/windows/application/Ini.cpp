@@ -82,7 +82,7 @@ STR *iniGetDescription(ini *initdata)
   return initdata->m_description;
 }
 
-void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, STR *cfgfilename)
+void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, const char *cfgfilename)
 {
   strncpy(initdata->m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
 }

@@ -2,8 +2,8 @@
 
 #include <string>
 
-#define FFILESYS_MAX_DEVICES 20
-#define FFILESYS_MAX_VOLUMENAME 64
+constexpr auto FFILESYS_MAX_DEVICES = 20;
+constexpr auto FFILESYS_MAX_VOLUMENAME = 64;
 
 typedef enum
 {

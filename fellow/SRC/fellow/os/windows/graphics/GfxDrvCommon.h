@@ -73,7 +73,7 @@ public:
   bool GetPauseEmulationWhenWindowLosesFocus();
 
   void Flip();
-  bool EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const DisplayMode& displayMode);
+  bool EmulationStart(const HostRenderConfiguration &hostRenderConfiguration, const DisplayMode &displayMode);
   void EmulationStartPost();
   void EmulationStop();
   bool Startup();

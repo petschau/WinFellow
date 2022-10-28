@@ -1,7 +1,5 @@
 #include "fellow/service/HUD.h"
 #include "fellow/api/Services.h"
-#include "fellow/api/defs.h"
-#include "fellow/application/HostRenderer.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"

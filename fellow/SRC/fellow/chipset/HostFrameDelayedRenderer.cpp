@@ -276,9 +276,9 @@ void HostFrameDelayedRenderer::DrawFrameFromChangeLists()
     ostringstream oss;
     ToStream(oss);
 
-    //FILE *F = fopen("c:\\temp\\changelists.txt", "w+");
-    //fputs(oss.str().c_str(), F);
-    //fclose(F);
+    // FILE *F = fopen("c:\\temp\\changelists.txt", "w+");
+    // fputs(oss.str().c_str(), F);
+    // fclose(F);
   }
 
   PerformanceCounter->Stop();
@@ -334,7 +334,7 @@ ChangeReference *HostFrameDelayedRenderer::ProcessChangeList(unsigned int line)
   return changeReference;
 }
 
-void HostFrameDelayedRenderer::ToStream(ostringstream& os)
+void HostFrameDelayedRenderer::ToStream(ostringstream &os)
 {
   unsigned int firstLineInFrame = scheduler.GetVerticalBlankEnd();
   unsigned int linesInFrame = ChangeList.LinesInFrame;
@@ -349,7 +349,7 @@ void HostFrameDelayedRenderer::ToStream(ostringstream& os)
   }
 }
 
-void HostFrameDelayedRenderer::ToStream(ostringstream& os, unsigned int line)
+void HostFrameDelayedRenderer::ToStream(ostringstream &os, unsigned int line)
 {
   unsigned int count = ChangeList.Changes[line].Count;
 

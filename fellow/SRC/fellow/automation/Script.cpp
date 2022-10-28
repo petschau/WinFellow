@@ -4,6 +4,8 @@
 #include "fellow/chipset/Kbd.h"
 #include "fellow/application/Gameport.h"
 
+using namespace std;
+
 ScriptLine::ScriptLine(ULL frameNumber, ULO lineNumber, const string &command, const string &parameters) : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
 {
 }
@@ -63,7 +65,7 @@ void Script::Execute(const ScriptLine &line)
 
 void Script::ExecuteUntil(ULL frameNumber, ULO lineNumber)
 {
-  if (_lines.size() == 0)
+  if (_lines.empty())
   {
     return;
   }
@@ -78,7 +80,7 @@ void Script::RecordKey(UBY keyCode)
 {
   char parameters[32];
   sprintf(parameters, "%u", (ULO)keyCode);
-  _lines.push_back(ScriptLine(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), KeyCommand, parameters));
+  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), KeyCommand, parameters);
 }
 
 void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
@@ -86,7 +88,7 @@ void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, 
   ULO port = (mousedev == gameport_inputs::GP_MOUSE0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %d %d %d %d %d", port, x, y, button1, button2, button3);
-  _lines.push_back(ScriptLine(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), MouseCommand, parameters));
+  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), MouseCommand, parameters);
 }
 
 void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
@@ -94,10 +96,10 @@ void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE 
   ULO port = (joydev == gameport_inputs::GP_JOYKEY0 || joydev == gameport_inputs::GP_ANALOG0) ? 0 : 1;
   char parameters[128];
   sprintf(parameters, "%u %d %d %d %d %d %d", port, left, up, right, down, button1, button2);
-  _lines.push_back(ScriptLine(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), JoystickCommand, parameters));
+  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), JoystickCommand, parameters);
 }
 
-string Script::GetStringForAction(kbd_event action)
+string Script::GetStringForAction(kbd_event action) const
 {
   switch (action)
   {
@@ -109,7 +111,7 @@ string Script::GetStringForAction(kbd_event action)
   return "";
 }
 
-kbd_event Script::GetKbdEventForAction(const string &action)
+kbd_event Script::GetKbdEventForAction(const string &action) const
 {
   kbd_event kbdEvent = kbd_event::EVENT_NONE;
   if (action == "EVENT_EXIT")
@@ -134,12 +136,12 @@ kbd_event Script::GetKbdEventForAction(const string &action)
 void Script::RecordEmulatorAction(kbd_event action)
 {
   string actionString = GetStringForAction(action);
-  if (actionString == "")
+  if (actionString.empty())
   {
     return;
   }
 
-  _lines.push_back(ScriptLine(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), EmulatorActionCommand, actionString));
+  _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), EmulatorActionCommand, actionString);
 }
 
 void Script::Load(const string &filename)
@@ -169,7 +171,7 @@ void Script::Load(const string &filename)
       string command = s.substr(secondComma + 1, thirdComma - secondComma - 1);
       string parameters = s.substr(thirdComma + 1, s.length() - thirdComma - 2);
 
-      _lines.push_back(ScriptLine(atoll(frameNumber.c_str()), atoi(lineNumber.c_str()), command, parameters));
+      _lines.emplace_back(atoll(frameNumber.c_str()), atoi(lineNumber.c_str()), command, parameters);
     }
   }
   fclose(F);
@@ -187,9 +189,5 @@ void Script::Save(const string &filename)
 }
 
 Script::Script() : _nextLine(0)
-{
-}
-
-Script::~Script()
 {
 }

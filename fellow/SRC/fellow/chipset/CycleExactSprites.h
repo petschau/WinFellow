@@ -33,7 +33,7 @@ typedef union SpriteDecodedUnion_ {
   ByteLongUnion blu[4];
 } SpriteDecodedUnion;
 
-typedef struct Sprite_
+struct Sprite
 {
   bool armed;
   bool attached;
@@ -42,7 +42,7 @@ typedef struct Sprite_
   SpriteDecodedUnion dat_decoded; // The armed image, decoded
   bool serializing;
   ULO pixels_output;
-} Sprite;
+};
 
 class CycleExactSprites : public Sprites
 {

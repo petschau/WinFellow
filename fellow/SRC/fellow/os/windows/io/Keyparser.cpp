@@ -26,7 +26,7 @@
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"
-#include <stdio.h>
+#include <cstdio>
 
 using namespace fellow::api;
 
@@ -38,7 +38,7 @@ extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 constexpr unsigned int MAX_PC_NAMES = 106;
 
-extern STR *kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
+extern const char *kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
 #define pc_keys kbd_drv_pc_symbol_to_string
 
 extern int symbol_to_DIK_kbddrv[(int)kbd_drv_pc_symbol::PCK_LAST_KEY];
@@ -49,7 +49,7 @@ extern int symbol_to_DIK_kbddrv[(int)kbd_drv_pc_symbol::PCK_LAST_KEY];
 
 constexpr unsigned int MAX_AMIGA_NAMES = 96;
 
-STR *amiga_keys[MAX_AMIGA_NAMES] = {
+const char *amiga_keys[MAX_AMIGA_NAMES] = {
     "ESCAPE",
     "GRAVE",
     "1",
@@ -254,7 +254,7 @@ UBY amiga_scancode[MAX_AMIGA_NAMES] = {
 
 // the order of the replacement_keys array must coincide with the enum kbd_drv_joykey_directions in kbddrv.c
 
-STR *replacement_keys[MAX_KEY_REPLACEMENT] = {
+const char *replacement_keys[MAX_KEY_REPLACEMENT] = {
     "JOYKEY1_LEFT",
     "JOYKEY1_RIGHT",
     "JOYKEY1_UP",
@@ -276,7 +276,7 @@ STR *replacement_keys[MAX_KEY_REPLACEMENT] = {
 /* Get index of the key							     */
 /*===========================================================================*/
 
-int prsGetKeyIndex(STR *szKey, STR *Keys[], int MaxKeys)
+int prsGetKeyIndex(STR *szKey, const char *Keys[], int MaxKeys)
 {
   int i = 0;
   for (i = 0; i < MaxKeys; i++)
@@ -358,9 +358,9 @@ BOOLE prsGetAmigaName(STR *line, STR **pAm, STR **pWin)
 
 BOOLE prsReadFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8])
 {
-  FILE *f = NULL;
-  char line[256], *pAmigaName = NULL, *pWinName = NULL;
-  int AmigaIndex, PcIndex, ReplIndex;
+  FILE *f = nullptr;
+  char *pAmigaName = nullptr, *pWinName = nullptr;
+  int PcIndex;
 
   f = fopen(szFilename, "r");
   if (!f)
@@ -378,6 +378,7 @@ BOOLE prsReadFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2]
 
   while (!feof(f))
   {
+    char line[256];
     if (!fgets(line, 256, f))
     {
       break;
@@ -394,8 +395,8 @@ BOOLE prsReadFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2]
       continue;
     }
 
-    ReplIndex = -1;
-    AmigaIndex = prsGetKeyIndex(pAmigaName, amiga_keys, MAX_AMIGA_NAMES);
+    int ReplIndex = -1;
+    int AmigaIndex = prsGetKeyIndex(pAmigaName, amiga_keys, MAX_AMIGA_NAMES);
     PcIndex = prsGetKeyIndex(pWinName, pc_keys, MAX_PC_NAMES);
 
     if (AmigaIndex < 0)
@@ -438,9 +439,9 @@ BOOLE prsReadFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2]
 
 BOOLE prsWriteFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2][8])
 {
-  FILE *f = NULL;
+  FILE *f = nullptr;
   char line[256];
-  int AmigaIndex, PcIndex;
+  int AmigaIndex;
 
   f = fopen(szFilename, "w");
   if (!f)
@@ -456,7 +457,7 @@ BOOLE prsWriteFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
   for (AmigaIndex = 0; AmigaIndex < MAX_AMIGA_NAMES; AmigaIndex++)
   {
     line[0] = '\0';
-    for (PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++)
+    for (int PcIndex = 0; PcIndex < MAX_PC_NAMES; PcIndex++)
     {
       if (pc_to_am[PcIndex] == amiga_scancode[AmigaIndex])
       {

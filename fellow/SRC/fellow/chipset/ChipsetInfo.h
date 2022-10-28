@@ -1,6 +1,5 @@
 #pragma once
 
-#include "fellow/api/defs.h"
 #include <cstdint>
 
 struct chipset_information

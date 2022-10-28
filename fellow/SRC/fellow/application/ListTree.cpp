@@ -20,7 +20,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "LISTTREE.H"
+#include "ListTree.h"
 
 /*==============*/
 /* Generic list */

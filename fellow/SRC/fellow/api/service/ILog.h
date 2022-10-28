@@ -27,4 +27,4 @@ namespace fellow::api
 
     virtual ~ILog() = default;
   };
-} // namespace fellow::api
+}

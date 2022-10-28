@@ -26,4 +26,4 @@ namespace fellow::api
     virtual fs_wrapper_object_info *GetFSObjectInfo(const std::string &pathToObject) = 0;
     virtual ~IFSWrapper() = default;
   };
-} // namespace fellow::api
+}

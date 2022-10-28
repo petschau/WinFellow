@@ -1,7 +1,5 @@
 #pragma once
 
-#include <cstdio>
-
 extern void copperNotifyDMAEnableChanged(bool new_dma_enable_state);
 extern void copperEventHandler();
 extern void copperEndOfFrame();

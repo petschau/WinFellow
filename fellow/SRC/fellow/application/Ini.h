@@ -6,7 +6,7 @@
 /* struct that holds initialization data                                      */
 /*============================================================================*/
 
-typedef struct
+struct ini
 {
 
   STR m_description[256];
@@ -55,8 +55,7 @@ typedef struct
   // Debug options for graphics emulation, may change from release to release
   //==========================================================================
   bool m_gfxDebugImmediateRendering;
-
-} ini;
+};
 
 extern ini *wgui_ini;
 
@@ -71,10 +70,8 @@ extern int iniGetEmulationWindowYPos(ini *);
 
 extern void iniSetMainWindowPosition(ini *initdata, ULO mainwindowxpos, ULO mainwindowypos);
 extern void iniSetEmulationWindowPosition(ini *initdata, ULO emulationwindowxpos, ULO emulationwindowypos);
-extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
-extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *configuration);
-extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO position);
-extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO position, STR *cfgfilename);
+extern STR *iniGetConfigurationHistoryFilename(ini *initdata, ULO index);
+extern void iniSetConfigurationHistoryFilename(ini *initdata, ULO index, const char *cfgfilename);
 extern STR *iniGetCurrentConfigurationFilename(ini *initdata);
 extern void iniSetCurrentConfigurationFilename(ini *initdata, STR *configuration);
 extern void iniSetLastUsedCfgDir(ini *initdata, STR *directory);
@@ -108,11 +105,11 @@ extern BOOLE iniSaveOptions(ini *initdata, FILE *inifile);
 /* struct iniManager                                                          */
 /*============================================================================*/
 
-typedef struct
+struct iniManager
 {
   ini *m_current_ini;
   ini *m_default_ini;
-} iniManager;
+};
 
 /*============================================================================*/
 /* struct iniManager property access functions                                */

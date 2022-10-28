@@ -24,7 +24,6 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "fellow/application/Fellow.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/uae/FILESYS.H"
@@ -79,11 +78,9 @@ void ffilesysSetFilesys(ffilesys_dev filesys, ULO index)
 
 BOOLE ffilesysCompareFilesys(ffilesys_dev filesys, ULO index)
 {
-  size_t len;
-
   if (index >= FFILESYS_MAX_DEVICES) return FALSE;
 
-  len = strlen(filesys.rootpath) - 1;
+  size_t len = strlen(filesys.rootpath) - 1;
   if (filesys.rootpath[len] == '\\') filesys.rootpath[len] = '\0';
 
   return (ffilesys_devs[index].readonly == filesys.readonly) && (strncmp(ffilesys_devs[index].volumename, filesys.volumename, FFILESYS_MAX_VOLUMENAME) == 0) &&
@@ -112,19 +109,16 @@ const string &ffilesysGetDeviceNamePrefix()
 
 static BOOLE ffilesysHasZeroDevices()
 {
-  ULO i;
   ULO dev_count = 0;
 
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (ULO i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED) dev_count++;
   return (dev_count == 0) && !ffilesysGetAutomountDrives();
 }
 
 void ffilesysClear()
 {
-  ULO i;
-
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (ULO i = 0; i < FFILESYS_MAX_DEVICES; i++)
     ffilesysRemoveFilesys(i);
 }
 
@@ -134,13 +128,11 @@ void ffilesysClear()
 
 void ffilesysDumpConfig()
 {
-  ULO i;
   char filename[CFG_FILENAME_LENGTH];
-  FILE *F;
 
   Service->Fileops.GetGenericFileName(filename, "WinFellow", "fsysdump.txt");
-  F = fopen(filename, "w");
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  FILE *F = fopen(filename, "w");
+  for (ULO i = 0; i < FFILESYS_MAX_DEVICES; i++)
   {
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
       fprintf(F, "Slot: %u, %s, %s, %s\n", i, ffilesys_devs[i].volumename, ffilesys_devs[i].rootpath, ffilesys_devs[i].readonly ? "R" : "RW");
@@ -156,13 +148,11 @@ void ffilesysDumpConfig()
 
 void ffilesysInstall()
 {
-  ULO i;
-  size_t len;
 
-  for (i = 0; i < FFILESYS_MAX_DEVICES; i++)
+  for (ULO i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
     {
-      len = strlen(ffilesys_devs[i].rootpath) - 1;
+      size_t len = strlen(ffilesys_devs[i].rootpath) - 1;
       if (ffilesys_devs[i].rootpath[len] == '\\')
       {
         ffilesys_devs[i].rootpath[len] = '\0';
@@ -237,12 +227,12 @@ void ffilesysClearMountinfo()
     if (mountinfo.ui[mountinfo.num_units - 1].volname)
     {
       free(mountinfo.ui[mountinfo.num_units - 1].volname);
-      mountinfo.ui[mountinfo.num_units - 1].volname = NULL;
+      mountinfo.ui[mountinfo.num_units - 1].volname = nullptr;
     }
     if (mountinfo.ui[mountinfo.num_units - 1].rootdir)
     {
       free(mountinfo.ui[mountinfo.num_units - 1].rootdir);
-      mountinfo.ui[mountinfo.num_units - 1].rootdir = NULL;
+      mountinfo.ui[mountinfo.num_units - 1].rootdir = nullptr;
     }
   }
 }

@@ -2340,33 +2340,40 @@ void drawLineBG4x4_32Bit(const graph_line *const linedescription, uint8_t *frame
 /* host screen modes [color depth (3)][sizes (4)]                             */
 /*============================================================================*/
 
-draw_line_func draw_line_BPL_manage_funcs[3][4] = {{drawLineBPL2x1_16Bit, drawLineBPL2x2_16Bit, drawLineBPL4x2_16Bit, drawLineBPL4x4_16Bit},
-                                                   {drawLineBPL2x1_24Bit, drawLineBPL2x2_24Bit, drawLineBPL4x2_24Bit, drawLineBPL4x4_24Bit},
-                                                   {drawLineBPL2x1_32Bit, drawLineBPL2x2_32Bit, drawLineBPL4x2_32Bit, drawLineBPL4x4_32Bit}};
+draw_line_func draw_line_BPL_manage_funcs[3][4] = {
+    {drawLineBPL2x1_16Bit, drawLineBPL2x2_16Bit, drawLineBPL4x2_16Bit, drawLineBPL4x4_16Bit},
+    {drawLineBPL2x1_24Bit, drawLineBPL2x2_24Bit, drawLineBPL4x2_24Bit, drawLineBPL4x4_24Bit},
+    {drawLineBPL2x1_32Bit, drawLineBPL2x2_32Bit, drawLineBPL4x2_32Bit, drawLineBPL4x4_32Bit}};
 
-draw_line_func draw_line_BG_funcs[3][4] = {{drawLineBG2x1_16Bit, drawLineBG2x2_16Bit, drawLineBG4x2_16Bit, drawLineBG4x4_16Bit},
-                                           {drawLineBG2x1_24Bit, drawLineBG2x2_24Bit, drawLineBG4x2_24Bit, drawLineBG4x4_24Bit},
-                                           {drawLineBG2x1_32Bit, drawLineBG2x2_32Bit, drawLineBG4x2_32Bit, drawLineBG4x4_32Bit}};
+draw_line_func draw_line_BG_funcs[3][4] = {
+    {drawLineBG2x1_16Bit, drawLineBG2x2_16Bit, drawLineBG4x2_16Bit, drawLineBG4x4_16Bit},
+    {drawLineBG2x1_24Bit, drawLineBG2x2_24Bit, drawLineBG4x2_24Bit, drawLineBG4x4_24Bit},
+    {drawLineBG2x1_32Bit, drawLineBG2x2_32Bit, drawLineBG4x2_32Bit, drawLineBG4x4_32Bit}};
 
-draw_line_BPL_segment_func draw_line_lores_funcs[3][4] = {{drawLineNormal2x1_16Bit, drawLineNormal2x2_16Bit, drawLineNormal4x2_16Bit, drawLineNormal4x4_16Bit},
-                                                          {drawLineNormal2x1_24Bit, drawLineNormal2x2_24Bit, drawLineNormal4x2_24Bit, drawLineNormal4x4_24Bit},
-                                                          {drawLineNormal2x1_32Bit, drawLineNormal2x2_32Bit, drawLineNormal4x2_32Bit, drawLineNormal4x4_32Bit}};
+draw_line_BPL_segment_func draw_line_lores_funcs[3][4] = {
+    {drawLineNormal2x1_16Bit, drawLineNormal2x2_16Bit, drawLineNormal4x2_16Bit, drawLineNormal4x4_16Bit},
+    {drawLineNormal2x1_24Bit, drawLineNormal2x2_24Bit, drawLineNormal4x2_24Bit, drawLineNormal4x4_24Bit},
+    {drawLineNormal2x1_32Bit, drawLineNormal2x2_32Bit, drawLineNormal4x2_32Bit, drawLineNormal4x4_32Bit}};
 
-draw_line_BPL_segment_func draw_line_hires_funcs[3][4] = {{drawLineNormal1x1_16Bit, drawLineNormal1x2_16Bit, drawLineNormal2x2_16Bit, drawLineNormal2x4_16Bit},
-                                                          {drawLineNormal1x1_24Bit, drawLineNormal1x2_24Bit, drawLineNormal2x2_24Bit, drawLineNormal2x4_24Bit},
-                                                          {drawLineNormal1x1_32Bit, drawLineNormal1x2_32Bit, drawLineNormal2x2_32Bit, drawLineNormal2x4_32Bit}};
+draw_line_BPL_segment_func draw_line_hires_funcs[3][4] = {
+    {drawLineNormal1x1_16Bit, drawLineNormal1x2_16Bit, drawLineNormal2x2_16Bit, drawLineNormal2x4_16Bit},
+    {drawLineNormal1x1_24Bit, drawLineNormal1x2_24Bit, drawLineNormal2x2_24Bit, drawLineNormal2x4_24Bit},
+    {drawLineNormal1x1_32Bit, drawLineNormal1x2_32Bit, drawLineNormal2x2_32Bit, drawLineNormal2x4_32Bit}};
 
-draw_line_BPL_segment_func draw_line_dual_lores_funcs[3][4] = {{drawLineDual2x1_16Bit, drawLineDual2x2_16Bit, drawLineDual4x2_16Bit, drawLineDual4x4_16Bit},
-                                                               {drawLineDual2x1_24Bit, drawLineDual2x2_24Bit, drawLineDual4x2_24Bit, drawLineDual4x4_24Bit},
-                                                               {drawLineDual2x1_32Bit, drawLineDual2x2_32Bit, drawLineDual4x2_32Bit, drawLineDual4x4_32Bit}};
+draw_line_BPL_segment_func draw_line_dual_lores_funcs[3][4] = {
+    {drawLineDual2x1_16Bit, drawLineDual2x2_16Bit, drawLineDual4x2_16Bit, drawLineDual4x4_16Bit},
+    {drawLineDual2x1_24Bit, drawLineDual2x2_24Bit, drawLineDual4x2_24Bit, drawLineDual4x4_24Bit},
+    {drawLineDual2x1_32Bit, drawLineDual2x2_32Bit, drawLineDual4x2_32Bit, drawLineDual4x4_32Bit}};
 
-draw_line_BPL_segment_func draw_line_dual_hires_funcs[3][4] = {{drawLineDual1x1_16Bit, drawLineDual1x2_16Bit, drawLineDual2x2_16Bit, drawLineDual2x4_16Bit},
-                                                               {drawLineDual1x1_24Bit, drawLineDual1x2_24Bit, drawLineDual2x2_24Bit, drawLineDual2x4_24Bit},
-                                                               {drawLineDual1x1_32Bit, drawLineDual1x2_32Bit, drawLineDual2x2_32Bit, drawLineDual2x4_32Bit}};
+draw_line_BPL_segment_func draw_line_dual_hires_funcs[3][4] = {
+    {drawLineDual1x1_16Bit, drawLineDual1x2_16Bit, drawLineDual2x2_16Bit, drawLineDual2x4_16Bit},
+    {drawLineDual1x1_24Bit, drawLineDual1x2_24Bit, drawLineDual2x2_24Bit, drawLineDual2x4_24Bit},
+    {drawLineDual1x1_32Bit, drawLineDual1x2_32Bit, drawLineDual2x2_32Bit, drawLineDual2x4_32Bit}};
 
-draw_line_BPL_segment_func draw_line_HAM_lores_funcs[3][4] = {{drawLineHAM2x1_16Bit, drawLineHAM2x2_16Bit, drawLineHAM4x2_16Bit, drawLineHAM4x4_16Bit},
-                                                              {drawLineHAM2x1_24Bit, drawLineHAM2x2_24Bit, drawLineHAM4x2_24Bit, drawLineHAM4x4_24Bit},
-                                                              {drawLineHAM2x1_32Bit, drawLineHAM2x2_32Bit, drawLineHAM4x2_32Bit, drawLineHAM4x4_32Bit}};
+draw_line_BPL_segment_func draw_line_HAM_lores_funcs[3][4] = {
+    {drawLineHAM2x1_16Bit, drawLineHAM2x2_16Bit, drawLineHAM4x2_16Bit, drawLineHAM4x4_16Bit},
+    {drawLineHAM2x1_24Bit, drawLineHAM2x2_24Bit, drawLineHAM4x2_24Bit, drawLineHAM4x4_24Bit},
+    {drawLineHAM2x1_32Bit, drawLineHAM2x2_32Bit, drawLineHAM4x2_32Bit, drawLineHAM4x4_32Bit}};
 
 unsigned int ColorBitsToFunctionLookupIndex(const unsigned int colorBits)
 {

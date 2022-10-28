@@ -1,6 +1,6 @@
 #pragma once
 
-#include "fellow/chipset/Graphics.h"
+#include "fellow/api/defs.h"
 
 extern void spriteEndOfLine(ULO line);
 extern void spriteEndOfFrame();

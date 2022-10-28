@@ -31,11 +31,9 @@
 #include "fellow/chipset/BitplaneRegisters.h"
 #include "fellow/chipset/DualPlayfieldMapper.h"
 #include "fellow/api/debug/DiagnosticFeatures.h"
-#include "fellow/application/Fellow.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/application/GraphicsDriver.h"
-#include "fellow/chipset/Fonts.h"
 
 #include "fellow/chipset/draw_pixelrenderers.h"
 #include "fellow/chipset/draw_interlace_control.h"
@@ -107,7 +105,8 @@ void HostRenderer::Configure(const HostRenderConfiguration &hostRenderConfigurat
 // Only used by RP
 void HostRenderer::SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxClip)
 {
-  Service->Log.AddLogDebug("SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", chipsetBufferMaxClip.Left, chipsetBufferMaxClip.Top, chipsetBufferMaxClip.Right, chipsetBufferMaxClip.Bottom);
+  Service->Log.AddLogDebug(
+      "SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", chipsetBufferMaxClip.Left, chipsetBufferMaxClip.Top, chipsetBufferMaxClip.Right, chipsetBufferMaxClip.Bottom);
 
   _chipsetBufferRuntimeSettings.MaxClip = chipsetBufferMaxClip;
 }
@@ -152,7 +151,7 @@ void HostRenderer::ClearDisplayModeList()
 
 const DisplayMode *HostRenderer::FindDisplayMode(unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const
 {
-  auto item_iterator = find_if(_displayModes.begin(), _displayModes.end(), [width, height, bits, refresh, allowAnyRefresh](const DisplayMode& dm) {
+  auto item_iterator = ranges::find_if(_displayModes, [width, height, bits, refresh, allowAnyRefresh](const DisplayMode &dm) {
     return (dm.Width == width) && (dm.Height == height) && (dm.Bits == bits) && (allowAnyRefresh || (dm.Refresh == refresh));
   });
 
@@ -346,7 +345,7 @@ void HostRenderer::CalculateOutputClipPixels()
 // Selects drawing routines for the current mode
 //==============================================
 
-void HostRenderer::DrawModeFunctionTablesInitialize(const unsigned int activeBufferColorBits)
+void HostRenderer::DrawModeFunctionTablesInitialize(const unsigned int activeBufferColorBits) const
 {
   // Currently located in pixelrenderers
   drawModeFunctionsInitialize(activeBufferColorBits, GetChipsetBufferScaleFactor(), _hostRenderConfiguration.ScaleStrategy);
@@ -524,7 +523,8 @@ bool HostRenderer::EmulationStartPost()
   _buffer_show = 0;
   _buffer_draw = _buffer_count - 1;
 
-  // Color bit layout for the buffers are needed to finalize tables for the drawing. DirectDraw cannot provide this until after the ...post, dxgi does provide it earlier as it is fixed to 32-bit backbuffer
+  // Color bit layout for the buffers are needed to finalize tables for the drawing. DirectDraw cannot provide this until after the ...post, dxgi does provide it earlier as it is fixed to 32-bit
+  // backbuffer
   const GfxDrvColorBitsInformation colorBitsInformation = gfxDrvGetColorBitsInformation();
   _chipsetBufferRuntimeSettings.ColorBits = colorBitsInformation.ColorBits;
 
@@ -534,7 +534,8 @@ bool HostRenderer::EmulationStartPost()
 
   DrawModeFunctionTablesInitialize(_chipsetBufferRuntimeSettings.ColorBits);
 
-  Service->Log.AddLog("drawEmulationStartPost(): Chipset buffer is (%u,%u,%u)\n", _chipsetBufferRuntimeSettings.Dimensions.Width, _chipsetBufferRuntimeSettings.Dimensions.Height, colorBitsInformation.ColorBits);
+  Service->Log.AddLog(
+      "drawEmulationStartPost(): Chipset buffer is (%u,%u,%u)\n", _chipsetBufferRuntimeSettings.Dimensions.Width, _chipsetBufferRuntimeSettings.Dimensions.Height, colorBitsInformation.ColorBits);
 
   return true;
 }
@@ -640,7 +641,7 @@ void HostRenderer::DrawFrameInHostLineExact(const MappedChipsetFramebuffer &mapp
     {
       if (graph_line_ptr->linetype != graph_linetypes::GRAPH_LINE_SKIP && graph_line_ptr->linetype != graph_linetypes::GRAPH_LINE_BPL_SKIP)
       {
-        ((draw_line_func)graph_line_ptr->draw_line_routine)(graph_line_ptr, framebuffer, mappedChipsetFramebuffer.HostLinePitch);
+        graph_line_ptr->draw_line_routine(graph_line_ptr, framebuffer, mappedChipsetFramebuffer.HostLinePitch);
       }
 
       graph_line_ptr->sprite_ham_slot = 0xffffffff;
@@ -700,9 +701,9 @@ void HostRenderer::EndOfFrame()
   AdvanceFrameSkipCounter();
 }
 
-void HostRenderer::DrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer)
+void HostRenderer::DrawHUD(const MappedChipsetFramebuffer &mappedChipsetFramebuffer)
 {
-  gfxDrvDrawHUD(mappedFramebuffer);
+  gfxDrvDrawHUD(mappedChipsetFramebuffer);
 }
 
 HostRenderer::HostRenderer() : _hudPropertyProvider(_hostRenderStatistics)

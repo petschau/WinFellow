@@ -22,9 +22,7 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include "fellow/api/defs.h"
-#include "fellow/application/Fellow.h"
 #include "fellow/chipset/Sound.h"
-#include "fellow/chipset/Graphics.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/api/Services.h"
 

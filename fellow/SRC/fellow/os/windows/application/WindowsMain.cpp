@@ -137,7 +137,7 @@ void winDrvDebuggerRequestStopIfRunning()
 
 bool winDrvDebugStartClient()
 {
-  char *commandLine = "Debugger.exe";
+  char *commandLine = (char*)"Debugger.exe";
   STARTUPINFO si{};
   PROCESS_INFORMATION pi{};
   si.cb = sizeof si;

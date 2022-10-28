@@ -29,7 +29,7 @@
 #include "fellow/chipset/Blitter.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "SOUND.H"
+#include "fellow/chipset/Sound.h"
 #include "LineExactSprites.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "draw_interlace_control.h"

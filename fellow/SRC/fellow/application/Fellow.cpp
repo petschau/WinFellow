@@ -23,8 +23,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include <ctime>
-
 #include "fellow/api/defs.h"
 #include "fellow/api/versioninfo.h"
 #include "fellow/application/Fellow.h"
@@ -79,9 +77,9 @@ IPerformanceCounter *fellow_emulation_run_performance_counter = nullptr;
 
 void fellowLogPerformanceCounterPercentage(const IPerformanceCounter *counter, LLO ticksPerFrame, ULL frameCount)
 {
-  float callsPerFrame = ((float)counter->GetCallCount()) / (float)frameCount;
-  float timePerFrame = counter->GetAverage() * callsPerFrame;
-  float percentagePerFrame = (100.0f * timePerFrame) / (float)ticksPerFrame;
+  float callsPerFrame = (float)counter->GetCallCount() / (float)frameCount;
+  float timePerFrame = (float)counter->GetAverage() * callsPerFrame;
+  float percentagePerFrame = 100.0f * timePerFrame / (float)ticksPerFrame;
 
   Service->Log.AddLog("\t%s percentage per frame: %f\n", counter->GetName(), percentagePerFrame);
 }
@@ -637,7 +635,7 @@ static void fellowModulesShutdown()
   CoreServicesFactory::Delete(Service);
   Service = nullptr;
 
-  delete fellow::api::VM;
+  delete VM;
 
   delete fellow_emulation_run_performance_counter;
   fellow_emulation_run_performance_counter = nullptr;

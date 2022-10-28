@@ -16,5 +16,6 @@ namespace fellow::api
     virtual char *GetTemporaryFilename() = 0;
     virtual bool GetWinFellowInstallationPath(char *strBuffer, const size_t lBufferSize) = 0;
     virtual bool GetKickstartByCRC32(const char *strSearchPath, const ULO lCRC32, char *strDestFilename, const ULO strDestLen) = 0;
+    virtual ~IFileops() = default;
   };
 }

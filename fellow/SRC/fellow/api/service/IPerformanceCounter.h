@@ -27,4 +27,4 @@ namespace fellow::api
 
     virtual ~IPerformanceCounterFactory() = default;
   };
-} // namespace fellow::api
+}

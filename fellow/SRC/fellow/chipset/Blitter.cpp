@@ -12,7 +12,6 @@
 #include "fellow/chipset/Blitter.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Graphics.h"
-#include "fellow/application/HostRenderer.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -26,7 +25,7 @@
 /* Blitter registers                                                          */
 /*============================================================================*/
 
-typedef struct blitter_state_
+struct blitter_state
 {
   // Actual registers
   ULO bltcon;
@@ -65,8 +64,7 @@ typedef struct blitter_state_
   BOOLE dma_pending;
   ULO cycle_length; // Estimate for how many cycles the started blit will take
   ULO cycle_free;   // How many of these cycles are free to use by the CPU
-
-} blitter_state;
+};
 
 blitter_state blitter;
 

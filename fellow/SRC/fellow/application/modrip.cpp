@@ -153,8 +153,16 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
     const char *ID;
     const char *Desc;
     int channels;
-  } formats[9] = {{"M.K.", "Noisetracker", 4}, {"N.T.", "Noisetracker", 4},  {"M!K!", "Protracker", 4},    {"4CHN", "4 channel", 4},   {"6CHN", "6 channel", 6},
-                  {"8CHN", "8 channel", 8},    {"FLT4", "Startrekker 4", 4}, {"FLT8", "Startrekker 8", 8}, {"M&K!", "Noisetracker", 4}};
+  } formats[9] = {
+      {"M.K.", "Noisetracker", 4},
+      {"N.T.", "Noisetracker", 4},
+      {"M!K!", "Protracker", 4},
+      {"4CHN", "4 channel", 4},
+      {"6CHN", "6 channel", 6},
+      {"8CHN", "8 channel", 8},
+      {"FLT4", "Startrekker 4", 4},
+      {"FLT8", "Startrekker 8", 8},
+      {"M&K!", "Noisetracker", 4}};
 
   for (int type = 0; type < 9; type++)
   {

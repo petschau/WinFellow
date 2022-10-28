@@ -11,7 +11,7 @@ DMAChannel::DMAChannel() : ReadCallback(nullptr), WriteCallback(nullptr), NullCa
 {
 }
 
-DebugLogSource DMAController::MapDMAChannelTypeToDebugLogSource(DMAChannelType type)
+DebugLogSource DMAController::MapDMAChannelTypeToDebugLogSource(DMAChannelType type) const
 {
   switch (type)
   {
@@ -22,7 +22,7 @@ DebugLogSource DMAController::MapDMAChannelTypeToDebugLogSource(DMAChannelType t
   }
 }
 
-DebugLogChipBusMode DMAController::MapDMAChannelModeToDebugLogChipBusMode(DMAChannelMode mode)
+DebugLogChipBusMode DMAController::MapDMAChannelModeToDebugLogChipBusMode(DMAChannelMode mode) const
 {
   switch (mode)
   {
@@ -37,8 +37,14 @@ void DMAController::AddLogEntry(const DMAChannel *operation, UWO value)
 {
   if (DebugLog.Enabled)
   {
-    DebugLog.AddChipBusLogEntry(MapDMAChannelTypeToDebugLogSource(operation->Source), scheduler.GetRasterFrameCount(), scheduler.GetSHResTimestamp(),
-                                MapDMAChannelModeToDebugLogChipBusMode(operation->Mode), operation->Pt, value, operation->Channel);
+    DebugLog.AddChipBusLogEntry(
+        MapDMAChannelTypeToDebugLogSource(operation->Source),
+        scheduler.GetRasterFrameCount(),
+        scheduler.GetSHResTimestamp(),
+        MapDMAChannelModeToDebugLogChipBusMode(operation->Mode),
+        operation->Pt,
+        value,
+        operation->Channel);
   }
 }
 
@@ -46,19 +52,22 @@ void DMAController::Execute(const DMAChannel *operation)
 {
   switch (operation->Mode)
   {
-    case DMAChannelMode::ReadMode: {
+    case DMAChannelMode::ReadMode:
+    {
       const UWO value = chipmemReadWord(operation->Pt);
       AddLogEntry(operation, value);
       operation->ReadCallback(operation->Timestamp, value);
       break;
     }
-    case DMAChannelMode::WriteMode: {
+    case DMAChannelMode::WriteMode:
+    {
       AddLogEntry(operation, operation->Value);
       chipmemWriteWord(operation->Value, operation->Pt);
       operation->WriteCallback();
       break;
     }
-    case DMAChannelMode::NullMode: {
+    case DMAChannelMode::NullMode:
+    {
       AddLogEntry(operation, operation->Value);
       operation->NullCallback(operation->Timestamp);
       break;

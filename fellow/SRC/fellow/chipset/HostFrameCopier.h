@@ -37,14 +37,14 @@ private:
   static void DrawNothing_1X_1X(const unsigned int pixelCount_shres, uint64_t *bufferPtr, const uint64_t padColor);
   static void DrawNothing_1X_2X(const unsigned int pixelCount_shres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, const uint64_t padColor);
   static void DrawNothing_2X_2X(const unsigned int pixelCount_shres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, const uint64_t padColor);
-  static void DrawNothing_2X_4X(const unsigned int pixelCount_shres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr,
-                                const uint64_t padColor);
+  static void DrawNothing_2X_4X(
+      const unsigned int pixelCount_shres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr, const uint64_t padColor);
 
   static void DrawLineInHost_1X_1X(const unsigned int pixelCount_shres, const uint32_t *source, uint64_t *bufferFirstLinePtr);
   static void DrawLineInHost_1X_2X(const unsigned int pixelCount_shres, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr);
   static void DrawLineInHost_2X_2X(const unsigned int pixelCount_shres, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr);
-  static void DrawLineInHost_2X_4X(const unsigned int pixelCount_SHRes, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr,
-                                   uint64_t *bufferFourthLinePtr);
+  static void DrawLineInHost_2X_4X(
+      const unsigned int pixelCount_SHRes, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr);
 
   static void IncreaseBufferPtrs(uint64_t *&bufferFirstLinePtr, uint64_t *&bufferSecondLinePtr, const ptrdiff_t add);
   static void IncreaseBufferPtrs(uint64_t *&bufferFirstLinePtr, uint64_t *&bufferSecondLinePtr, uint64_t *&bufferThirdLinePtr, uint64_t *&bufferFourthLinePtr, const ptrdiff_t add);
@@ -52,8 +52,8 @@ private:
   static void DrawFrameInHost1X(HostFrame &frame, const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const RectShresi &outputClipShresi, const uint64_t padColor);
   static void DrawFrameInHost2X(HostFrame &frame, const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const RectShresi &outputClipShresi, const uint64_t padColor);
 
-  static void DrawFrameInHostInternal(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi,
-                                      const uint64_t padColor);
+  static void DrawFrameInHostInternal(
+      const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi, const uint64_t padColor);
 
 public:
   fellow::api::IPerformanceCounter *PerformanceCounter;

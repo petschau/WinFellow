@@ -79,8 +79,8 @@ void HostFrameCopier::DrawNothing_2X_2X(const unsigned int pixelCountShres, uint
   }
 }
 
-void HostFrameCopier::DrawNothing_2X_4X(const unsigned int pixelCountShres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr,
-                                        const uint64_t padColor)
+void HostFrameCopier::DrawNothing_2X_4X(
+    const unsigned int pixelCountShres, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr, const uint64_t padColor)
 {
   const unsigned int iterations = pixelCountShres / 2;
 
@@ -157,8 +157,8 @@ void HostFrameCopier::DrawLineInHost_2X_2X(const unsigned int pixelCountShres, c
 }
 
 // shres width, source line expands to 4 host lines
-void HostFrameCopier::DrawLineInHost_2X_4X(const unsigned int pixelCountShres, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr,
-                                           uint64_t *bufferFourthLinePtr)
+void HostFrameCopier::DrawLineInHost_2X_4X(
+    const unsigned int pixelCountShres, const uint32_t *source, uint64_t *bufferFirstLinePtr, uint64_t *bufferSecondLinePtr, uint64_t *bufferThirdLinePtr, uint64_t *bufferFourthLinePtr)
 {
   const uint64_t *source_uint64 = (const uint64_t *)source;
   const unsigned int iterations = pixelCountShres / 2;
@@ -306,8 +306,8 @@ void HostFrameCopier::DrawFrameInHost2X(HostFrame &frame, const MappedChipsetFra
   }
 }
 
-void HostFrameCopier::DrawFrameInHostInternal(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi,
-                                              const uint64_t padColor)
+void HostFrameCopier::DrawFrameInHostInternal(
+    const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi, const uint64_t padColor)
 {
   if (chipset_info.GfxDebugDisableCopier) return;
 
@@ -321,8 +321,8 @@ void HostFrameCopier::DrawFrameInHostInternal(const MappedChipsetFramebuffer &ma
   }
 }
 
-void HostFrameCopier::DrawFrameInHost(const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi,
-                                      const uint64_t padColor)
+void HostFrameCopier::DrawFrameInHost(
+    const MappedChipsetFramebuffer &mappedChipsetFramebuffer, const unsigned int chipsetBufferScaleFactor, const RectShresi &outputClipShresi, const uint64_t padColor)
 {
   PerformanceCounter->Start();
 

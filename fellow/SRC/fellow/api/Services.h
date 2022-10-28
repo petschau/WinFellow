@@ -12,16 +12,15 @@ namespace fellow::api
   class Services
   {
   public:
-    fellow::api::IHUD &HUD;
-    fellow::api::IFSWrapper &FSWrapper;
-    fellow::api::ILog &Log;
-    fellow::api::IRetroPlatform &RP;
-    fellow::api::IPerformanceCounterFactory &PerformanceCounterFactory;
-    fellow::api::IFileops &Fileops;
+    IHUD &HUD;
+    IFSWrapper &FSWrapper;
+    ILog &Log;
+    IRetroPlatform &RP;
+    IPerformanceCounterFactory &PerformanceCounterFactory;
+    IFileops &Fileops;
 
-    Services(fellow::api::IHUD &hud, fellow::api::IFSWrapper &fsWrapper, fellow::api::ILog &log, fellow::api::IRetroPlatform &retroPlatform,
-             fellow::api::IPerformanceCounterFactory &performanceCounterFactory, fellow::api::IFileops &fileops)
-        : HUD(hud), FSWrapper(fsWrapper), Log(log), RP(retroPlatform), PerformanceCounterFactory(performanceCounterFactory), Fileops(fileops)
+    Services(IHUD &hud, IFSWrapper &fsWrapper, ILog &log, IRetroPlatform &retroPlatform, IPerformanceCounterFactory &performanceCounterFactory, IFileops &fileops)
+      : HUD(hud), FSWrapper(fsWrapper), Log(log), RP(retroPlatform), PerformanceCounterFactory(performanceCounterFactory), Fileops(fileops)
     {
     }
   };

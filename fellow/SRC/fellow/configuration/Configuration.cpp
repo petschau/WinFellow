@@ -49,10 +49,8 @@
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
-#include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/application/WGui.h"
 #include "fellow/application/GraphicsDriver.h"
-#include "fellow/api/Services.h"
 
 #include "../automation/Automator.h"
 

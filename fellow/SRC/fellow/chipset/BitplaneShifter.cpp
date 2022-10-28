@@ -99,8 +99,14 @@ void BitplaneShifter::AddOutputUntilLogEntry(ULO outputLine, ULO startX, ULO pix
 {
   if (DebugLog.Enabled)
   {
-    DebugLog.AddBitplaneShifterLogEntry(DebugLogSource::BITPLANESHIFTER_ACTION, scheduler.GetRasterFrameCount(), scheduler.GetSHResTimestamp(), BitplaneShifterLogReasons::BitplaneShifter_output_until,
-                                        outputLine, startX, pixelCount);
+    DebugLog.AddBitplaneShifterLogEntry(
+        DebugLogSource::BITPLANESHIFTER_ACTION,
+        scheduler.GetRasterFrameCount(),
+        scheduler.GetSHResTimestamp(),
+        BitplaneShifterLogReasons::BitplaneShifter_output_until,
+        outputLine,
+        startX,
+        pixelCount);
   }
 }
 
@@ -108,8 +114,8 @@ void BitplaneShifter::AddDuplicateLogEntry(ULO outputLine, ULO startX)
 {
   if (DebugLog.Enabled)
   {
-    DebugLog.AddBitplaneShifterLogEntry(DebugLogSource::BITPLANESHIFTER_ACTION, scheduler.GetRasterFrameCount(), scheduler.GetSHResTimestamp(), BitplaneShifterLogReasons::BitplaneShifter_output_until,
-                                        outputLine, startX, 0);
+    DebugLog.AddBitplaneShifterLogEntry(
+        DebugLogSource::BITPLANESHIFTER_ACTION, scheduler.GetRasterFrameCount(), scheduler.GetSHResTimestamp(), BitplaneShifterLogReasons::BitplaneShifter_output_until, outputLine, startX, 0);
   }
 }
 
@@ -577,8 +583,8 @@ void BitplaneShifter::UpdateDrawBatchFunc()
 void BitplaneShifter::NewChangelistBatch(ULO line, ULO pixel) const
 {
   Planar2ChunkyDecoder::NewChangelistBatch();
-  host_frame_delayed_renderer.ChangeList.AddBufferChange(line, pixel, Planar2ChunkyDecoder::GetOddPlayfieldStart<UBY>(), Planar2ChunkyDecoder::GetEvenPlayfieldStart<UBY>(),
-                                                         Planar2ChunkyDecoder::GetHamSpritesPlayfieldStart<UBY>());
+  host_frame_delayed_renderer.ChangeList.AddBufferChange(
+      line, pixel, Planar2ChunkyDecoder::GetOddPlayfieldStart<UBY>(), Planar2ChunkyDecoder::GetEvenPlayfieldStart<UBY>(), Planar2ChunkyDecoder::GetHamSpritesPlayfieldStart<UBY>());
 }
 
 void BitplaneShifter::Clear()

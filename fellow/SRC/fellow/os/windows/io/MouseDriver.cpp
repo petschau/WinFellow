@@ -35,7 +35,7 @@
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 #include <initguid.h>
-#include "dxver.h"
+#include "fellow/os/windows/dxver.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -49,9 +49,9 @@ using namespace fellow::api;
 /* Mouse specific data                                                       */
 /*===========================================================================*/
 
-LPDIRECTINPUT mouse_drv_lpDI = NULL;
-LPDIRECTINPUTDEVICE mouse_drv_lpDID = NULL;
-HANDLE mouse_drv_DIevent = NULL;
+LPDIRECTINPUT mouse_drv_lpDI = nullptr;
+LPDIRECTINPUTDEVICE mouse_drv_lpDID = nullptr;
+HANDLE mouse_drv_DIevent = nullptr;
 BOOLE mouse_drv_focus;
 BOOLE mouse_drv_active;
 BOOLE mouse_drv_in_use;
@@ -66,7 +66,7 @@ int num_mouse_attached = 0;
 /* Returns textual error message. Adapted from DX SDK                       */
 /*==========================================================================*/
 
-STR *mouseDrvDInputErrorString(HRESULT hResult)
+const char *mouseDrvDInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -95,7 +95,7 @@ STR *mouseDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-STR *mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
+const char *mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -109,17 +109,17 @@ STR *mouseDrvDInputUnaquireReturnValueString(HRESULT hResult)
 /* Logs a sensible error message                                            */
 /*==========================================================================*/
 
-void mouseDrvDInputFailure(STR *header, HRESULT err)
+void mouseDrvDInputFailure(const char *header, HRESULT err)
 {
   Service->Log.AddLog("%s %s\n", header, mouseDrvDInputErrorString(err));
 }
 
-void mouseDrvDInputUnacquireFailure(STR *header, HRESULT err)
+void mouseDrvDInputUnacquireFailure(const char *header, HRESULT err)
 {
   Service->Log.AddLog("%s %s\n", header, mouseDrvDInputUnaquireReturnValueString(err));
 }
 
-void mouseDrvDInputAcquireFailure(STR *header, HRESULT err)
+void mouseDrvDInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -139,7 +139,7 @@ void mouseDrvDInputAcquire()
 {
   if (mouse_drv_in_use)
   {
-    if (mouse_drv_lpDID != NULL)
+    if (mouse_drv_lpDID != nullptr)
     {
       HRESULT res = IDirectInputDevice_Acquire(mouse_drv_lpDID);
       if (res != DI_OK)
@@ -154,7 +154,7 @@ void mouseDrvDInputAcquire()
   }
   else
   {
-    if (mouse_drv_lpDID != NULL && !mouse_drv_unacquired)
+    if (mouse_drv_lpDID != nullptr && !mouse_drv_unacquired)
     {
       mouse_drv_unacquired = true;
       HRESULT res = IDirectInputDevice_Unacquire(mouse_drv_lpDID);
@@ -173,20 +173,20 @@ void mouseDrvDInputAcquire()
 
 void mouseDrvDInputRelease()
 {
-  if (mouse_drv_lpDID != NULL)
+  if (mouse_drv_lpDID != nullptr)
   {
     IDirectInputDevice_Release(mouse_drv_lpDID);
-    mouse_drv_lpDID = NULL;
+    mouse_drv_lpDID = nullptr;
   }
-  if (mouse_drv_DIevent != NULL)
+  if (mouse_drv_DIevent != nullptr)
   {
     CloseHandle(mouse_drv_DIevent);
-    mouse_drv_DIevent = NULL;
+    mouse_drv_DIevent = nullptr;
   }
-  if (mouse_drv_lpDI != NULL)
+  if (mouse_drv_lpDI != nullptr)
   {
     IDirectInput_Release(mouse_drv_lpDI);
-    mouse_drv_lpDI = NULL;
+    mouse_drv_lpDI = nullptr;
   }
 }
 
@@ -224,13 +224,13 @@ BOOLE mouseDrvDInputInitialize()
 
   /* Create Direct Input object */
 
-  mouse_drv_lpDI = NULL;
-  mouse_drv_lpDID = NULL;
-  mouse_drv_DIevent = NULL;
+  mouse_drv_lpDI = nullptr;
+  mouse_drv_lpDID = nullptr;
+  mouse_drv_DIevent = nullptr;
   mouse_drv_initialization_failed = FALSE;
   mouse_drv_unacquired = true;
 
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&mouse_drv_lpDI, NULL);
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&mouse_drv_lpDI, nullptr);
   if (res != DI_OK)
   {
     mouseDrvDInputFailure("mouseDrvDInputInitialize(): DirectInput8Create()", res);
@@ -279,8 +279,8 @@ BOOLE mouseDrvDInputInitialize()
   }
 
   /* Create event for notification */
-  mouse_drv_DIevent = CreateEvent(0, 0, 0, 0);
-  if (mouse_drv_DIevent == NULL)
+  mouse_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
+  if (mouse_drv_DIevent == nullptr)
   {
     Service->Log.AddLog("mouseDrvDInputInitialize(): CreateEvent() failed\n");
     mouse_drv_initialization_failed = TRUE;
@@ -500,9 +500,9 @@ void mouseDrvStartup()
   mouse_drv_in_use = FALSE;
   mouse_drv_initialization_failed = TRUE;
   mouse_drv_unacquired = true;
-  mouse_drv_lpDI = NULL;
-  mouse_drv_lpDID = NULL;
-  mouse_drv_DIevent = NULL;
+  mouse_drv_lpDI = nullptr;
+  mouse_drv_lpDID = nullptr;
+  mouse_drv_DIevent = nullptr;
   bLeftButton = FALSE;
   bRightButton = FALSE;
 }

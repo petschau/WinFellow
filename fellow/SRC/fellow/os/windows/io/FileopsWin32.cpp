@@ -32,7 +32,7 @@
 #include "zlib.h"                 // crc32 function
 #include "fellow/memory/Memory.h" // decrypt AF2 kickstart
 
-#include <time.h>
+#include <ctime>
 #include <io.h>
 
 #include "fellow/os/windows/io/FileopsWin32.h"
@@ -106,20 +106,18 @@ bool FileopsWin32::GetGenericFileName(char *szPath, const char *szSubDir, const 
 
 BOOLE FileopsWin32::GetScreenshotFileName(char *szFilename)
 {
-  HRESULT hr;
   char szFolderPath[MAX_PATH];
 
-  hr = SHGetFolderPath(NULL, CSIDL_MYPICTURES, NULL, SHGFP_TYPE_CURRENT, szFolderPath);
+  HRESULT hr = SHGetFolderPath(nullptr, CSIDL_MYPICTURES, nullptr, SHGFP_TYPE_CURRENT, szFolderPath);
   if (hr == S_OK)
   {
     time_t rawtime;
-    struct tm *timeinfo;
     char szTime[255] = "";
     ULO i = 1;
     bool done = false;
 
     time(&rawtime);
-    timeinfo = localtime(&rawtime);
+    struct tm *timeinfo = localtime(&rawtime);
 
     strftime(szTime, 255, "%Y%m%d%H%M%S", timeinfo);
     while (done != true)
@@ -160,7 +158,7 @@ bool FileopsWin32::GetDefaultConfigFileName(char *szPath)
 /* writes WinFellow executable full path into strBuffer             */
 BOOLE FileopsWin32::GetWinFellowExecutablePath(char *strBuffer, const DWORD lBufferSize)
 {
-  if (GetModuleFileName(NULL, strBuffer, lBufferSize) != 0)
+  if (GetModuleFileName(nullptr, strBuffer, lBufferSize) != 0)
     return TRUE;
   else
     return FALSE;
@@ -214,7 +212,7 @@ bool FileopsWin32::GetWinFellowPresetPath(char *strBuffer, const size_t lBufferS
       // in debug mode, look for presets directory also with relative path from output exe
       GetWinFellowInstallationPath(strWinFellowInstallPath, CFG_FILENAME_LENGTH);
 #ifdef X64
-      strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\..\\Presets", 24);
+      strncat(strWinFellowInstallPath, R"(\..\..\..\..\..\Presets)", 24);
 #else
       strncat(strWinFellowInstallPath, "\\..\\..\\..\\..\\Presets", 21);
 #endif
@@ -241,17 +239,16 @@ bool FileopsWin32::GetWinFellowPresetPath(char *strBuffer, const size_t lBufferS
 
 char *FileopsWin32::GetTemporaryFilename()
 {
-  char *tempvar;
   char *result;
 
-  tempvar = getenv("TEMP");
-  if (tempvar != NULL)
+  char *tempvar = getenv("TEMP");
+  if (tempvar != nullptr)
   {
     result = _tempnam(tempvar, "wftemp");
   }
   else
   {
-    result = tmpnam(NULL);
+    result = tmpnam(nullptr);
   }
   return result;
 }
@@ -262,7 +259,7 @@ bool FileopsWin32::GetKickstartByCRC32(const char *strSearchPath, const ULO lCRC
   WIN32_FIND_DATA ffd;
   HANDLE hFind = INVALID_HANDLE_VALUE;
   UBY memory_kick[0x080000 + 32];
-  FILE *F = NULL;
+  FILE *F = nullptr;
   STR strFilename[CFG_FILENAME_LENGTH] = "";
   ULO lCurrentCRC32 = 0;
 #ifdef FILEOPS_ROMSEARCH_RECURSIVE
@@ -308,7 +305,7 @@ bool FileopsWin32::GetKickstartByCRC32(const char *strSearchPath, const ULO lCRC
           fread(memory_kick, ffd.nFileSizeLow, 1, F);
 
           fclose(F);
-          F = NULL;
+          F = nullptr;
 
           lCurrentCRC32 = crc32(0, memory_kick, ffd.nFileSizeLow);
 
@@ -331,7 +328,7 @@ bool FileopsWin32::GetKickstartByCRC32(const char *strSearchPath, const ULO lCRC
           int result = memoryKickLoadAF2(strFilename, F, memory_kick, true);
 
           fclose(F);
-          F = NULL;
+          F = nullptr;
 
           if (result == TRUE)
           {

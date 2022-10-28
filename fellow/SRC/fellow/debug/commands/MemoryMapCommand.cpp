@@ -10,7 +10,7 @@ MemoryMapResult MemoryMapCommand::Execute(const MemoryMapParameters &parameters)
   return MemoryMapResult{.Bits = VM->Memory.GetAddressSpace32Bits() ? 32U : 24U, .Entries = GetMemoryMapEntries()};
 }
 
-string MemoryMapCommand::GetMemoryKindDescription(MemoryKind kind)
+string MemoryMapCommand::GetMemoryKindDescription(MemoryKind kind) const
 {
   switch (kind)
   {

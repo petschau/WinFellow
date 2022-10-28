@@ -152,8 +152,14 @@ void CopperWaitParameters::Initialize(UWO ir1, UWO ir2, ULO linesInFrame, ULO ma
 }
 
 CopperWaitParameters::CopperWaitParameters()
-    : VerticalBeamPosition(0), HorizontalBeamPosition(0), VerticalPositionCompareEnable(0), HorizontalPositionCompareEnable(0), LinesInFrame(0), MaxCycle(0), BlitterFinishedDisable(false),
-      IsWaitingForBlitter(false)
+  : VerticalBeamPosition(0),
+    HorizontalBeamPosition(0),
+    VerticalPositionCompareEnable(0),
+    HorizontalPositionCompareEnable(0),
+    LinesInFrame(0),
+    MaxCycle(0),
+    BlitterFinishedDisable(false),
+    IsWaitingForBlitter(false)
 {
 }
 

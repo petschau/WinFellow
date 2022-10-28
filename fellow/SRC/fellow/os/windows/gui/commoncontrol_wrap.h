@@ -12,7 +12,7 @@ extern void ccwButtonEnableConditional(HWND windowHandle, int controlIdentifier,
 extern void ccwSliderSetRange(HWND windowHandle, int controlIdentifier, ULO minPos, ULO maxPos);
 extern ULO ccwComboBoxGetCurrentSelection(HWND windowHandle, int controlIdentifier);
 extern void ccwComboBoxSetCurrentSelection(HWND windowHandle, int controlIdentifier, ULO index);
-extern void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, STR *text);
+extern void ccwComboBoxAddString(HWND windowHandle, int controlIdentifier, const char *text);
 extern ULO ccwSliderGetPosition(HWND windowHandle, int controlIdentifier);
 extern void ccwSliderSetPosition(HWND windowHandle, int controlIdentifier, LONG position);
 extern void ccwSliderEnable(HWND windowHandle, int controlIdentifier, BOOL enable);

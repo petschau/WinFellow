@@ -407,8 +407,17 @@ void RtcOkiMsm6242rs::logRtcTime(STR *msg)
 
   if (datetime)
   {
-    Service->Log.AddLog("RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n", msg, datetime->tm_year + 1900, datetime->tm_mon + 1, datetime->tm_mday,
-                        datetime->tm_wday, datetime->tm_wday + _rtcWeekdayModifier, datetime->tm_hour, datetime->tm_min, datetime->tm_sec);
+    Service->Log.AddLog(
+        "RTC %s: Year %d Month %d Monthday %d Actual-weekday %d RTC-weekday %d %.2d:%.2d.%.2d\n",
+        msg,
+        datetime->tm_year + 1900,
+        datetime->tm_mon + 1,
+        datetime->tm_mday,
+        datetime->tm_wday,
+        datetime->tm_wday + _rtcWeekdayModifier,
+        datetime->tm_hour,
+        datetime->tm_min,
+        datetime->tm_sec);
   }
 }
 

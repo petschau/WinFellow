@@ -21,7 +21,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 #include "fellow/api/defs.h"
-#include "CpuModule.h"
 #include "CpuModule_Internal.h"
 
 /// Sets the Z flag for bit operations
