@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <stdio.h>
+
 #define FLOPPY_TRACKS 180
 
 /* Status symbols */

@@ -38,7 +38,7 @@
 #include "fellow/chipset/Sprite.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/draw_interlace_control.h"
-#include "fellow/application/interrupt.h"
+#include "fellow/application/Interrupt.h"
 #include "fellow/chipset/uart.h"
 #include "fellow/automation/Automator.h"
 

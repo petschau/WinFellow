@@ -21,7 +21,7 @@
 
 #include "fellow/chipset/ChipsetInfo.h"
 
-#include "SPRITE.H"
+#include "fellow/chipset/Sprite.h"
 
 chipset_information chipset_info;
 

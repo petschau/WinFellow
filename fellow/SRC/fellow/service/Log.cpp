@@ -1,6 +1,7 @@
 #include <ctime>
 #include <string>
 #include <list>
+
 #include "fellow/service/Log.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/WGui.h"
@@ -159,7 +160,7 @@ namespace fellow::service
       // log date/time into buffer
       time_t thetime = time(NULL);
       struct tm timedata;
-      localtime_s(&timedata, &thetime);
+      localtime_r(&thetime, &timedata);
       strftime(buffer, 255, "%c: ", &timedata);
       // move buffer pointer ahead to log additional text after date/time
       return buffer + strlen(buffer);

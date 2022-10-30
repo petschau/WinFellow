@@ -29,7 +29,7 @@
 #endif
 
 #include "fellow/api/defs.h"
-#include "fellow/api/versioninfo.h"
+#include "versioninfo.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/chipset/Floppy.h"
 #include "fellow/memory/Memory.h"

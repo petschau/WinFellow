@@ -24,7 +24,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
-#include "fellow/api/versioninfo.h"
+#include "versioninfo.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
@@ -42,7 +42,7 @@
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Blitter.h"
 #include "fellow/chipset/Sprite.h"
-#include "TIMER.H"
+#include "fellow/application/Timer.h"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/WGui.h"
 #include "fellow/application/FellowFilesys.h"

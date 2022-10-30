@@ -1,5 +1,5 @@
 #include "fellow/chipset/SpriteRegisters.h"
-#include "SPRITE.H"
+#include "fellow/chipset/Sprite.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/ChipsetInfo.h"
 

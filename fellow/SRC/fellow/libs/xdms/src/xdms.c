@@ -251,7 +251,7 @@ int main(int argc, char **argv){
 
 
 		if (opt == OPT_VERBOSE) {
-			if ((cmd == CMD_UNPACK)) {
+			if (cmd == CMD_UNPACK) {
 				if (inm)
 					fprintf(stderr,"Unpacking file %s to ",inm);
 				else
@@ -435,7 +435,8 @@ static void strcatmax(char *s1, char *s2, int max){
 static void Usage(void)
 {
 	printf("\n");
-	printf(" xDMS  v%s  -  Portable DMS archive unpacker  -  Public Domain\n", VERSION);
+	printf(" xDMS -  Portable DMS archive unpacker  -  Public Domain\n");
+    //printf(" xDMS  v%s  -  Portable DMS archive unpacker  -  Public Domain\n", VERSION); // VERSION undefined
 	printf(" Written by     Andre Rodrigues de la Rocha  <adlroc@usa.net>\n");
 	printf(" Maintained by  Heikki Orsila <heikki.orsila@iki.fi>\n\n");
 	printf(" Usage: xdms [options] <command> {<dms_file[.dms]> [+output]} \n\n");

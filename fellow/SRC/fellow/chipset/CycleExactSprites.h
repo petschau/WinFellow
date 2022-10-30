@@ -25,7 +25,7 @@
 #pragma once
 
 #include "fellow/api/defs.h"
-#include "SPRITE.H"
+#include "fellow/chipset/Sprite.h"
 #include "BitplaneUtility.h"
 
 typedef union SpriteDecodedUnion_ {

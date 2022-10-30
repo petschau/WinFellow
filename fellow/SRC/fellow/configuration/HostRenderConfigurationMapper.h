@@ -20,3 +20,9 @@ private:
 
   static void ThrowInvalidOption();
 };
+
+class InvalidOptionException : public std::exception
+{
+public:
+    InvalidOptionException() = default;
+};

@@ -222,7 +222,7 @@ void ffilesysStartup()
 
 void ffilesysClearMountinfo()
 {
-  for (mountinfo.num_units; mountinfo.num_units > 0; mountinfo.num_units--)
+  for (; mountinfo.num_units > 0; mountinfo.num_units--)
   {
     if (mountinfo.ui[mountinfo.num_units - 1].volname)
     {

@@ -31,7 +31,7 @@
 #include "fellow/chipset/HostFrameImmediateRenderer.h"
 #include "fellow/chipset/HostFrameDelayedRenderer.h"
 #include "fellow/debug/log/DebugLogHandler.h"
-#include "SPRITE.H"
+#include "fellow/chipset/Sprite.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/chipset/ChipsetInfo.h"

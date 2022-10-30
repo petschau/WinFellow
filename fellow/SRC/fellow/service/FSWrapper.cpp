@@ -2,6 +2,8 @@
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/io/FSWrapStat.h"
 
+#include <sys/stat.h>
+
 using namespace std;
 using namespace fellow::api;
 
@@ -39,15 +41,15 @@ namespace fellow::service
 
   fs_wrapper_object_types FSWrapper::GetFSObjectType(unsigned short st_mode)
   {
-    if (st_mode & _S_IFREG) return fs_wrapper_object_types::FILE;
-    if (st_mode & _S_IFDIR) return fs_wrapper_object_types::DIRECTORY;
+    if (st_mode & S_IFREG) return fs_wrapper_object_types::FILE;
+    if (st_mode & S_IFDIR) return fs_wrapper_object_types::DIRECTORY;
 
     return fs_wrapper_object_types::OTHER;
   }
 
   bool FSWrapper::GetFSObjectIsWriteable(unsigned short st_mode, const string &pathToObject)
   {
-    bool isWriteable = st_mode & _S_IWRITE;
+    bool isWriteable = st_mode & S_IWRITE;
     if (isWriteable)
     {
       FILE *file_ptr = fopen(pathToObject.c_str(), "a");

@@ -169,6 +169,7 @@ void kbdEventEOFHandler()
         cpuIntegrationHardReset();
         break;
       case kbd_event::EVENT_BMP_DUMP: gfxDrvSaveScreenshot(true, ""); break;
+      default: break;
     }
     kbd_state.eventsEOF.outpos++;
   }
@@ -262,6 +263,7 @@ void kbdEventEOLHandler()
       case kbd_event::EVENT_JOY1_AUTOFIRE0_INACTIVE: gameport_autofire0[1] = (thisev == kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE); break;
       case kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE:
       case kbd_event::EVENT_JOY1_AUTOFIRE1_INACTIVE: gameport_autofire1[1] = (thisev == kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE); break;
+      default: break;
     }
     kbd_state.eventsEOL.outpos++;
   }

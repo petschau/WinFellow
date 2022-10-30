@@ -36,8 +36,10 @@ DisplayColorDepth HostRenderConfigurationMapper::MapDisplayColorDepth(bool isScr
     case 16: return DisplayColorDepth::Color16Bits;
     case 24: return DisplayColorDepth::Color24Bits;
     case 32: return DisplayColorDepth::Color32Bits;
-    default: ThrowInvalidOption();
+    default: break;
   }
+
+  ThrowInvalidOption();
 }
 
 unsigned int HostRenderConfigurationMapper::MapDisplayRefreshRate(bool isScreenWindowed, unsigned int screenRefresh)
@@ -85,5 +87,5 @@ RectShresi HostRenderConfigurationMapper::MapChipsetOutputClip(unsigned int outp
 
 void HostRenderConfigurationMapper::ThrowInvalidOption()
 {
-  throw exception("Invalid configuration option");
+  throw InvalidOptionException();
 }

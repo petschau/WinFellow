@@ -911,7 +911,7 @@ void blitterOperationLog()
   }
 
 #define blitterReadC(pt, dat, enabled, ascending)                                                                                                                                                      \
-  if (enabled) blitterReadWord(pt, dat, dat, enabled, ascending);
+  if (enabled) {blitterReadWord(pt, dat, dat, enabled, ascending);}
 
 #define blitterWriteD(pt, pt_tmp, dat, enabled, ascending) blitterWriteWord(pt, pt_tmp, dat, enabled, ascending);
 

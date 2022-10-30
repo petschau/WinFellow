@@ -19,19 +19,13 @@
 #define fileno _fileno
 #define access _access
 
-/*================================*/
-/* stat structure and field names */
-/*================================*/
-
-#include <sys/stat.h>
-
-/*=====================*/
-/* string manipulation */
-/*=====================*/
+//====================
+// string manipulation
+//====================
 
 #include <cstring>
 
-#define strcmpi _strcmpi
+// These assume the compiler uses Microsoft library
 #define stricmp _stricmp
 #define strnicmp _strnicmp
 #define strlwr _strlwr
@@ -56,14 +50,5 @@
 
 #endif
 
-/*========*/
-/* setjmp */
-/*========*/
-
-#include <csetjmp>
-
-/*=====================*/
-/* Integer types       */
-/*=====================*/
-
+// 64-bit signed integer
 #define FELLOW_LONG_LONG __int64

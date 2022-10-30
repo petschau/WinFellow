@@ -107,6 +107,7 @@ string Script::GetStringForAction(kbd_event action) const
     case kbd_event::EVENT_DF1_INTO_DF0: return "EVENT_DF1_INTO_DF0";
     case kbd_event::EVENT_DF2_INTO_DF0: return "EVENT_DF2_INTO_DF0";
     case kbd_event::EVENT_DF3_INTO_DF0: return "EVENT_DF3_INTO_DF0";
+    default: break;
   }
   return "";
 }
