@@ -1,5 +1,5 @@
 #include "fellow/hardfile/rdb/RDBPartition.h"
-#include "fellow/hardfile/rdb/CheckSumCalculator.h"
+#include "fellow/hardfile/rdb/ChecksumCalculator.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;

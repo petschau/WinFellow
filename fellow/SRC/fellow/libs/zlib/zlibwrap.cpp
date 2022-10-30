@@ -25,6 +25,7 @@
 
 #include "fellow/api/defs.h"
 #include "zlib.h"
+#include <stdio.h>
 
 /*========================================================*/
 /* Decompress the file named src into the file named dest */

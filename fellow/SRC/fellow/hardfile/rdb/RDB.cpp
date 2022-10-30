@@ -1,6 +1,6 @@
 #include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDB.h"
-#include "fellow/hardfile/rdb/CheckSumCalculator.h"
+#include "fellow/hardfile/rdb/ChecksumCalculator.h"
 #include "fellow/api/Services.h"
 
 using namespace std;

@@ -1,4 +1,4 @@
-#include "fellow/debug/console/MemoryMaphandler.h"
+#include "fellow/debug/console/MemoryMapHandler.h"
 #include "fellow/debug/console/DebugWriter.h"
 
 using namespace std;

@@ -1,7 +1,7 @@
 #include "fellow/api/defs.h"
 #include "fellow/hardfile/rdb/RDBFileReader.h"
 #include "fellow/hardfile/rdb/RDBHandler.h"
-#include "fellow/hardfile/rdb/CheckSumCalculator.h"
+#include "fellow/hardfile/rdb/ChecksumCalculator.h"
 
 using namespace std;
 using namespace fellow::api::modules;
