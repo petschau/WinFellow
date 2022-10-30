@@ -1648,7 +1648,7 @@ void wguiInstallFilesystemConfig(HWND hwndDlg, cfg *conf)
     else
       colwidth += 16;
 
-    lvc.pszText = (char*) colheads[i];
+    lvc.pszText = (char *)colheads[i];
     lvc.cchTextMax = (int)strlen(colheads[i]);
     lvc.cx = colwidth;
     ListView_InsertColumn(lvHWND, i, &lvc);

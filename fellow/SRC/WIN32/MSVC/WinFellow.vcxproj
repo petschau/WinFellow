@@ -385,7 +385,7 @@ pwsh.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wcrev.rc
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../include;../include/msvc;../../uae/include;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../../uae/include;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -430,8 +430,7 @@ pwsh.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wcrev.rc
       <Profile>false</Profile>
     </Link>
     <PreBuildEvent>
-      <Command>pwsh.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\..\fellow\os\windows\application\versioninfo-wcrev.h -OutputFileName ..\..\fellow\api\versioninfo.h
-pwsh.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\..\fellow\os\windows\gui\GUI_versioninfo-wcrev.rc -OutputFileName ..\..\fellow\os\windows\gui\GUI_versioninfo.rc</Command>
+      <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate version information include</Message>
@@ -559,7 +558,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\chipset\SpriteP2CDecoder.cpp" />
     <ClCompile Include="..\..\fellow\chipset\SpriteRegisters.cpp" />
     <ClCompile Include="..\..\fellow\chipset\uart.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Wav.c" />
+    <ClCompile Include="..\..\fellow\chipset\Wav.cpp" />
     <ClCompile Include="..\..\fellow\configuration\Configuration.cpp" />
     <ClCompile Include="..\..\fellow\configuration\HostRenderConfigurationMapper.cpp" />
     <ClCompile Include="..\..\fellow\cpu\CpuIntegration.cpp" />
@@ -710,7 +709,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.c" />
+    <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.cpp" />
     <ClCompile Include="..\..\fellow\memory\Memory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\Ini.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
@@ -816,7 +815,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\api\configuration\HudConfiguration.h" />
     <ClInclude Include="..\..\fellow\api\defs.h" />
     <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h" />
-    <ClInclude Include="..\..\fellow\api\portable.h" />
     <ClInclude Include="..\..\fellow\api\Services.h" />
     <ClInclude Include="..\..\fellow\api\service\IFileops.h" />
     <ClInclude Include="..\..\fellow\api\service\IFSWrapper.h" />
@@ -1048,6 +1046,13 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\fellow\libs\zlib\README" />
+    <None Include="..\..\fellow\os\windows\scripts\CompileReleaseBuild.ps1" />
+    <None Include="..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1" />
+    <None Include="..\..\fellow\os\windows\scripts\GitWCRev.ps1" />
+    <None Include="..\..\fellow\os\windows\scripts\Microsoft.PowerShell_profile-GitHub.ps1" />
+    <None Include="..\..\fellow\os\windows\scripts\PowerShellExecutionPolicyUnrestricted.reg" />
+    <None Include="..\..\fellow\os\windows\scripts\PreparePowerShellEnvironment-GitHub.cmd" />
+    <None Include="..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.ps1" />
     <None Include="WinFellow.ruleset" />
   </ItemGroup>
   <ItemGroup>
@@ -1111,6 +1116,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\fellow\libs\xdms\xdms.txt" />
+    <Text Include="..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.txt" />
     <Text Include="..\..\fellow\os\windows\uae\readme.txt" />
   </ItemGroup>
   <ItemGroup>

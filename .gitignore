@@ -1,5 +1,6 @@
 *.suo
-fellow/SRC/fellow/api/versioninfo.h
+*.aps
+fellow/SRC/fellow/os/windows/versioninfo.h
 fellow/SRC/fellow/os/windows/gui/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/.vs/
 fellow/SRC/WIN32/MSVC/Debug/

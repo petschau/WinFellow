@@ -273,7 +273,7 @@ set (SOURCE_FILES
 
         ${FELLOW_LIBS_XDMS_SOURCE_FILES}
         ${FELLOW_LIBS_ZLIB_SOURCE_FILES}
-        )
+        ../../fellow/os/null/SoundDriver.cpp ../../fellow/os/null/SoundDriver.h ../../fellow/os/windows/sound/SoundDriver.h)
 
 include_directories(${FELLOW_INCLUDE_DIR} ${FELLOW_OS_DIR} ${FELLOW_LIBS_XDMS_INCLUDE_DIR} ${FELLOW_LIBS_ZLIB_INCLUDE_DIR})
 

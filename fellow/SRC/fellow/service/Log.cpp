@@ -158,9 +158,13 @@ namespace fellow::service
     if (_new_line)
     {
       // log date/time into buffer
-      time_t thetime = time(NULL);
-      struct tm timedata;
-      localtime_r(&thetime, &timedata);
+      time_t thetime = time(nullptr);
+      tm timedata;
+
+      // C11 standard - Microsoft messed up localtime_s and reversed the parameters
+      // This is the correct order, and it points to a macro defined in portable.h
+      localtime_s_wrapper(&thetime, &timedata);
+
       strftime(buffer, 255, "%c: ", &timedata);
       // move buffer pointer ahead to log additional text after date/time
       return buffer + strlen(buffer);

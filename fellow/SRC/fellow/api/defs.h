@@ -12,14 +12,14 @@ constexpr auto KICKMEM = 0x080000;
 // Kinda obsolete as C++ now has sized types, but lots of code use the typedef ones
 #include <cstdint>
 
-using std::uint8_t;
-using std::uint16_t;
-using std::uint32_t;
-using std::uint64_t;
-using std::int8_t;
 using std::int16_t;
 using std::int32_t;
 using std::int64_t;
+using std::int8_t;
+using std::uint16_t;
+using std::uint32_t;
+using std::uint64_t;
+using std::uint8_t;
 
 // Include ptrdiff_t
 #include <cstddef>

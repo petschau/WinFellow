@@ -24,7 +24,7 @@
 
 #include "fellow/os/windows/gui/gui_general.h"
 #include "fellow/api/defs.h"
-#include "fellow/api/versioninfo.h"
+#include "versioninfo.h"
 #include "fellow/application/WGui.h"
 #include "fellow/os/windows/gui/WDbg.h"
 #include "fellow/scheduler/Scheduler.h"

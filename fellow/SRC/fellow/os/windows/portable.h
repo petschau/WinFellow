@@ -9,6 +9,9 @@
 
 #include <windows.h>
 
+// Fix Microsoft localtime_s parameter reversal vs C11 standard
+#define localtime_s_wrapper(thetime, timedata) localtime_s(timedata, thetime)
+
 /*=======*/
 /* stdio */
 /*=======*/

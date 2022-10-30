@@ -60,7 +60,6 @@
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/application/Interrupt.h"
 #include <sys/timeb.h>
-#include <unistd.h>
 
 #include "fellow/libs/xdms/src/xdms.h"
 #include "fellow/libs/zlib/zlibwrap.h"

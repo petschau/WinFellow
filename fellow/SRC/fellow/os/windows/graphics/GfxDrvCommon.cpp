@@ -8,7 +8,7 @@
 #include "fellow/application/GraphicsDriver.h"
 
 #include "fellow/chipset/Sound.h"
-#include "fellow/application/SoundDriver.h"
+#include "fellow/application/ISoundDriver.h"
 #include "fellow/application/MouseDriver.h"
 #include "fellow/application/JoystickDriver.h"
 #include "fellow/application/KeyboardDriver.h"

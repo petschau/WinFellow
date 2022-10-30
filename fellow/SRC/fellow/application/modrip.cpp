@@ -38,7 +38,6 @@
 #include <memory.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 
 #include "modrip.h"
 #include "fellow/os/windows/gui/modrip_win32.h"
