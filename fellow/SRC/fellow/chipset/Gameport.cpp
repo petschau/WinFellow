@@ -22,10 +22,9 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/application/Gameport.h"
-#include "fellow/application/MouseDriver.h"
-#include "fellow/application/JoystickDriver.h"
 #include "fellow/automation/Automator.h"
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -292,30 +291,30 @@ void gameportIORegistersClear(BOOLE clear_pot)
 void gameportHardReset()
 {
   gameportIORegistersClear(TRUE);
-  mouseDrvHardReset();
-  joyDrvHardReset();
+  Driver->Mouse.HardReset();
+  Driver->Joystick.HardReset();
 }
 
 void gameportEmulationStart()
 {
   gameportIOHandlersInstall();
   Service->Log.AddLog("gameportEmulationStart()\n");
-  mouseDrvEmulationStart();
-  joyDrvEmulationStart();
+  Driver->Mouse.EmulationStart();
+  Driver->Joystick.EmulationStart();
   gameportIORegistersClear(FALSE);
 }
 
 void gameportEmulationStop()
 {
-  joyDrvEmulationStop();
-  mouseDrvEmulationStop();
+  Driver->Joystick.EmulationStop();
+  Driver->Mouse.EmulationStop();
 }
 
 void gameportStartup()
 {
   gameportIORegistersClear(TRUE);
-  mouseDrvStartup();
-  joyDrvStartup();
+  Driver->Mouse.Startup();
+  Driver->Joystick.Startup();
 
   // -- nova --
   // this is only an initial settings, they will be overrided
@@ -327,6 +326,6 @@ void gameportStartup()
 
 void gameportShutdown()
 {
-  joyDrvShutdown();
-  mouseDrvShutdown();
+  Driver->Joystick.Shutdown();
+  Driver->Mouse.Shutdown();
 }

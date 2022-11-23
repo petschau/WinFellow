@@ -13,6 +13,5 @@ namespace test::mock::fellow::api
     void AddLog2(STR *msg) override;
     void AddLogList(const std::list<std::string> &messages) override;
     void AddTimelessLog(const char *format, ...) override;
-    void AddLogRequester(::fellow::api::FELLOW_REQUESTER_TYPE type, const char *format, ...) override;
   };
 }

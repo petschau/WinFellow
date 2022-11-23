@@ -1,0 +1,3 @@
+/home/petschau/git/WinFellow/fellow/SRC/build/cmake/CMakeFiles/NullFellow.dir
+/home/petschau/git/WinFellow/fellow/SRC/build/cmake/CMakeFiles/edit_cache.dir
+/home/petschau/git/WinFellow/fellow/SRC/build/cmake/CMakeFiles/rebuild_cache.dir

@@ -23,16 +23,19 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/chipset/Wav.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Graphics.h"
-#include "fellow/application/ISoundDriver.h"
+#include "fellow/api/drivers/ISoundDriver.h"
 #include "fellow/application/Interrupt.h"
 
-#define MAX_BUFFER_SAMPLES 65536
+using namespace fellow::api;
+
+constexpr auto MAX_BUFFER_SAMPLES = 65536;
 
 /*===========================================================================*/
 /* Sound emulation configuration                                             */
@@ -62,7 +65,7 @@ ULO sound_buffer_sample_count_max;                                         /* Ma
 /* Information about the sound device                                        */
 /*===========================================================================*/
 
-sound_device sound_dev;
+sound_device_capabilities sound_dev;
 
 /*===========================================================================*/
 /* Run-time data                                                             */
@@ -730,9 +733,9 @@ void soundPlaybackInitialize()
 /* Clear a device struct                                                     */
 /*===========================================================================*/
 
-void soundDeviceClear(sound_device *sd)
+void soundDeviceClear(sound_device_capabilities *sd)
 {
-  memset(sd, 0, sizeof(sound_device));
+  memset(sd, 0, sizeof(sound_device_capabilities));
 }
 
 /*===========================================================================*/
@@ -806,7 +809,7 @@ void soundEndOfLine()
     {
       if (soundGetEmulation() == sound_emulations::SOUND_PLAY)
       {
-        soundDrvPlay(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
+        Driver->Sound.Play(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
       }
       if (soundGetWAVDump())
       {
@@ -841,7 +844,7 @@ void soundEmulationStart()
   {
     /* Allow sound driver to override buffer length */
     ULO buffer_length = soundGetBufferSampleCountMax();
-    if (!soundDrvEmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
+    if (!Driver->Sound.EmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
     {
       soundSetEmulation(sound_emulations::SOUND_EMULATE); /* Driver failed, slient emulation */
     }
@@ -858,8 +861,15 @@ void soundEmulationStart()
 
 void soundEmulationStop()
 {
-  if (soundGetEmulation() != sound_emulations::SOUND_NONE && soundGetEmulation() != sound_emulations::SOUND_EMULATE) soundDrvEmulationStop();
-  if (soundGetWAVDump() && (soundGetEmulation() != sound_emulations::SOUND_NONE)) wavEmulationStop();
+  if (soundGetEmulation() != sound_emulations::SOUND_NONE && soundGetEmulation() != sound_emulations::SOUND_EMULATE)
+  {
+    Driver->Sound.EmulationStop();
+  }
+
+  if (soundGetWAVDump() && (soundGetEmulation() != sound_emulations::SOUND_NONE))
+  {
+    wavEmulationStop();
+  }
 }
 
 /*===========================================================================*/
@@ -870,10 +880,6 @@ void soundHardReset()
 {
   soundIORegistersClear();
 }
-
-/*===========================================================================*/
-/* Called once on emulator startup                                           */
-/*===========================================================================*/
 
 BOOLE soundStartup()
 {
@@ -886,19 +892,24 @@ BOOLE soundStartup()
   soundSetWAVDump(FALSE);
   soundSetBufferLength(40);
   soundIORegistersClear();
+
   soundDeviceClear(&sound_dev);
-  soundSetDeviceFound(soundDrvStartup(&sound_dev));
+  bool driverStartupResult = Driver->Sound.Startup(&sound_dev);
+  soundSetDeviceFound(driverStartupResult);
   wavStartup();
+
   if (!soundGetDeviceFound())
-    if (soundGetEmulation() == sound_emulations::SOUND_PLAY) soundSetEmulation(sound_emulations::SOUND_NONE);
+  {
+    if (soundGetEmulation() == sound_emulations::SOUND_PLAY)
+    {
+        soundSetEmulation(sound_emulations::SOUND_NONE);
+    }
+  }
+
   return soundGetDeviceFound();
 }
 
-/*===========================================================================*/
-/* Called once on emulator shutdown                                          */
-/*===========================================================================*/
-
 void soundShutdown()
 {
-  soundDrvShutdown();
+  Driver->Sound.Shutdown();
 }

@@ -41,7 +41,7 @@ private:
     void HardReset();
     bool EmulationStart(ULO rate, bool bits16, bool stereo, ULO *sample_count_max);
     void EmulationStop();
-    bool Startup(sound_device *devinfo);
+    bool Startup(sound_device_capabilities *devinfo);
     void Shutdown();
 
 public:

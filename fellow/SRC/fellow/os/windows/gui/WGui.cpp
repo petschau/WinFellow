@@ -488,8 +488,9 @@ void wguiConvertDrawModeListToGuiDrawModes()
 
   if (has8BitDesktop)
   {
-    Service->Log.AddLogRequester(
-        FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available");
+    const char *errorMessage = "Your desktop is currently running an 8-bit color resolution.\nThis is not supported.\nOnly fullscreen modes will be available";
+    Service->Log.AddLog(errorMessage);
+    Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
 
   for (const DisplayMode &dm : Draw.GetDisplayModes())
@@ -2626,7 +2627,9 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
                     Service->Log.AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
                     displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
                     cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
-                    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "DirectX 11 is required but could not be loaded, revert back to DirectDraw.");
+                    const char *errorMessage = "DirectX 11 is required but could not be loaded, revert back to DirectDraw.";
+                    Service->Log.AddLog(errorMessage);
+                    Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
                   }
                 }
 
@@ -2636,7 +2639,10 @@ INT_PTR CALLBACK wguiDisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, L
                   Service->Log.AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
                   displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
                   cfgSetDisplayDriver(wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
-                  Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failed to restart display driver");
+
+                  const char *errorMessage = "Failed to restart display driver";
+                  Service->Log.AddLog(errorMessage);
+                  Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
                 }
                 wguiConvertDrawModeListToGuiDrawModes();
                 wguiInstallDisplayConfig(hwndDlg, wgui_cfg);

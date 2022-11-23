@@ -48,8 +48,11 @@
 #include <crtdbg.h>
 #endif
 
+#include <sstream>
+
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Floppy.h"
@@ -72,6 +75,7 @@
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
 
+using namespace std;
 using namespace fellow::api;
 
 #define MFM_FILLB 0xaa
@@ -118,7 +122,7 @@ static UBY floppyBootBlockFFS[] = {
     0x64, 0x6F, 0x73, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x65, 0x78, 0x70, 0x61, 0x6E, 0x73, 0x69, 0x6F, 0x6E, 0x2E, 0x6C, 0x69, 0x62, 0x72, 0x61, 0x72, 0x79, 0x00, 0x00, 0x00,
 };
 
-//#define FLOPPY_LOG
+// #define FLOPPY_LOG
 #ifdef FLOPPY_LOG
 
 char floppylogfilename[MAX_PATH];
@@ -936,7 +940,11 @@ BOOLE floppyImageCompressedDMSPrepare(const STR *diskname, ULO drive)
 
     dmsErrMsg(result, (char *)diskname, gzname, (char *)szErrorMessage);
 
-    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "ERROR extracting DMS floppy image: %s", szErrorMessage);
+    ostringstream oss;
+    oss << "ERROR extracting DMS floppy image: " << szErrorMessage;
+
+    Service->Log.AddLog(oss.str());
+    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, oss.str().c_str());
 
     free(gzname);
     return FALSE;

@@ -1,5 +1,7 @@
 #include "fellow/application/HostRenderStatistics.h"
-#include "fellow/application/Timer.h"
+#include "fellow/api/Drivers.h"
+
+using namespace fellow::api;
 
 void HostRenderStatistics::FpsStatsClear()
 {
@@ -10,11 +12,11 @@ void HostRenderStatistics::FpsStatsClear()
 
 void HostRenderStatistics::FpsStatsTimestamp()
 {
-  const unsigned int timestamp = timerGetTimeMs(); /* Get current time */
+  const unsigned int timestamp = Driver->Timer.GetTimeMs(); /* Get current time */
 
   if (_frame_count == 0)
   {
-    _first_frame_timestamp = timerGetTimeMs();
+    _first_frame_timestamp = Driver->Timer.GetTimeMs();
     _last_frame_timestamp = _first_frame_timestamp;
     _last_50_timestamp = _first_frame_timestamp;
   }

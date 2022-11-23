@@ -4,7 +4,6 @@
 
 #include "fellow/service/Log.h"
 #include "fellow/api/Services.h"
-#include "fellow/application/WGui.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -129,22 +128,6 @@ namespace fellow::service
     va_end(parms);
 
     Service->Log.AddLog2(buffer);
-  }
-  void Log::AddLogRequester(FELLOW_REQUESTER_TYPE type, const char *format, ...)
-  {
-    char buffer[WRITE_LOG_BUF_SIZE];
-    va_list parms;
-
-    va_start(parms, format);
-    vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
-    va_end(parms);
-
-    AddLog(buffer);
-
-#ifdef RETRO_PLATFORM
-    if (!RP.GetHeadlessMode())
-#endif
-      wguiRequester(type, buffer);
   }
 
   void Log::AddLogInternal(FILE *F, STR *msg)

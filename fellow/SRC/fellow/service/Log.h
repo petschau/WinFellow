@@ -30,7 +30,6 @@ namespace fellow::service
     void AddLogList(const std::list<std::string> &messages) override;
     void AddLog2(STR *msg) override;
     void AddTimelessLog(const char *format, ...) override;
-    void AddLogRequester(fellow::api::FELLOW_REQUESTER_TYPE, const char *, ...) override;
 
     Log();
   };

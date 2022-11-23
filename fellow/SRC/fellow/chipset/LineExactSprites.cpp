@@ -3,6 +3,7 @@
 #include "fellow/chipset/SpriteMerger.h"
 #include "fellow/chipset/LineExactSprites.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/application/HostRenderer.h"
@@ -159,7 +160,9 @@ spr_action_list_item *LineExactSprites::ActionListAddLast(spr_action_list_master
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+    const char *errorMessage = "Failure: Exceeded max count of sprite action list items";
+    Service->Log.AddLog(errorMessage);
+    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
 #endif
 
@@ -203,7 +206,9 @@ spr_action_list_item *LineExactSprites::ActionListAddSorted(spr_action_list_mast
       }
       if (l->count >= SPRITE_MAX_LIST_ITEMS)
       {
-        Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite action list items");
+        const char *errorMessage = "Failure: Exceeded max count of sprite action list items";
+        Service->Log.AddLog(errorMessage);
+        Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
       }
 #endif
 
@@ -224,7 +229,9 @@ spr_merge_list_item *LineExactSprites::MergeListAddLast(spr_merge_list_master *l
   }
   if (l->count >= SPRITE_MAX_LIST_ITEMS)
   {
-    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Failure: Exceeded max count of sprite merge list items");
+    const char *errorMessage = "Failure: Exceeded max count of sprite merge list items";
+    Service->Log.AddLog(errorMessage);
+    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
 #endif
   return &l->items[l->count++];

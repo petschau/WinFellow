@@ -39,6 +39,7 @@
 #include "fellow/application/HostRenderer.h"
 #include "fellow/chipset/Blitter.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/application/ListTree.h"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/api/modules/IHardfileHandler.h"
@@ -49,8 +50,6 @@
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
 #endif
-#include "fellow/application/WGui.h"
-#include "fellow/application/GraphicsDriver.h"
 
 #include "../automation/Automator.h"
 
@@ -374,7 +373,7 @@ void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
 {
   config->m_displaydriver = display_driver;
 
-  if (!gfxDrvValidateRequirements())
+  if (!Driver->Graphics.ValidateRequirements())
   {
     Service->Log.AddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
     config->m_displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;

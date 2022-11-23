@@ -1,8 +1,15 @@
+#include <sstream>
+#include <iomanip>
+
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/automation/Automator.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "fellow/application/GraphicsDriver.h"
-#
+#include "fellow/api/drivers/IGraphicsDriver.h"
+
+using namespace std;
+using namespace fellow::api;
+
 Automator automator;
 
 void Automator::TakeSnapshot()
@@ -16,9 +23,11 @@ void Automator::TakeSnapshot()
   {
     _snapshotCounter = 0;
     _snapshotsTaken++;
-    char filename[CFG_FILENAME_LENGTH];
-    sprintf(filename, "%s\\Snap%.4d_%llu.bmp", SnapshotDirectory.c_str(), _snapshotsTaken, scheduler.GetRasterFrameCount() + 1);
-    gfxDrvSaveScreenshot(false, filename);
+
+    ostringstream filename;
+    filename << SnapshotDirectory << '\\' << setfill('0') << setw(4) << _snapshotsTaken << '_' << scheduler.GetRasterFrameCount() + 1 << ".bmp";
+
+    Driver->Graphics.SaveScreenshot(false, filename.str().c_str());
   }
 }
 

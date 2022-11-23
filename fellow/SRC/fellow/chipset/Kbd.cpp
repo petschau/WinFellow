@@ -23,13 +23,12 @@
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/chipset/Kbd.h"
-#include "fellow/application/KeyboardDriver.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Floppy.h"
-#include "fellow/application/GraphicsDriver.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 
@@ -168,7 +167,7 @@ void kbdEventEOFHandler()
         Service->Log.AddLog("kbd: keyboard-initiated reset triggered...\n");
         cpuIntegrationHardReset();
         break;
-      case kbd_event::EVENT_BMP_DUMP: gfxDrvSaveScreenshot(true, ""); break;
+      case kbd_event::EVENT_BMP_DUMP: Driver->Graphics.SaveScreenshot(true, ""); break;
       default: break;
     }
     kbd_state.eventsEOF.outpos++;
@@ -185,10 +184,11 @@ void kbdEventEOLHandler()
   BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
   BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
   BOOLE fire0_changed[2], fire1_changed[2];
-  ULO i;
 
-  for (i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; i++)
+  {
     left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] = fire0_changed[i] = fire1_changed[i] = FALSE;
+  }
 
   while (kbd_state.eventsEOL.outpos < kbd_state.eventsEOL.inpos)
   {
@@ -267,10 +267,13 @@ void kbdEventEOLHandler()
     }
     kbd_state.eventsEOL.outpos++;
   }
-  for (i = 0; i < 2; i++)
+
+  for (unsigned int i = 0; i < 2; i++)
+  {
     if (left_changed[i] || up_changed[i] || right_changed[i] || down_changed[i] || fire0_changed[i] || fire1_changed[i])
     {
       if ((gameport_input[i] == gameport_inputs::GP_JOYKEY0) || (gameport_input[i] == gameport_inputs::GP_JOYKEY1))
+      {
         gameportJoystickHandler(
             gameport_input[i],
             (left_changed[i]) ? left[i] : gameport_left[i],
@@ -279,7 +282,9 @@ void kbdEventEOLHandler()
             (down_changed[i]) ? down[i] : gameport_down[i],
             (fire0_changed[i]) ? fire0[i] : gameport_fire0[i],
             (fire1_changed[i]) ? fire1[i] : gameport_fire1[i]);
+      }
     }
+  }
 }
 
 /*===========================================================================*/
@@ -323,29 +328,30 @@ void kbdHardReset()
   kbd_state.scancodes.buffer[0] = 0xfd; /* Start of keys pressed on reset */
   kbd_state.scancodes.buffer[1] = 0xfe; /* End of keys pressed during reset */
   kbd_time_to_wait = 10;
-  kbdDrvHardReset();
+  Driver->Keyboard.HardReset();
 }
 
 void kbdEmulationStart()
 {
-  ULO i;
-
-  for (i = 0; i < 4; i++)
+  for (unsigned int i = 0; i < 4; i++)
+  {
     insert_dfX[i] = FALSE;
-  kbdDrvEmulationStart();
+  }
+
+  Driver->Keyboard.EmulationStart();
 }
 
 void kbdEmulationStop()
 {
-  kbdDrvEmulationStop();
+  Driver->Keyboard.EmulationStop();
 }
 
 void kbdStartup()
 {
-  kbdDrvStartup();
+  Driver->Keyboard.Startup();
 }
 
 void kbdShutdown()
 {
-  kbdDrvShutdown();
+  Driver->Keyboard.Shutdown();
 }

@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "fellow/api/Services.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 
@@ -90,14 +92,16 @@ void DebugLogHandler::PrintLogToFile()
 {
   char filename[CFG_FILENAME_LENGTH];
   Service->Fileops.GetGenericFileName(filename, "WinFellow", "event.log");
-  FILE *F = fopen(filename, "w");
+  ofstream ofs;
+  ofs.open(filename);
 
   for (DebugLogEntry *logEntry : DebugLog)
   {
     string entryDescription = logEntry->GetDescription();
-    fprintf(F, "%llu\t%u\t%u\t%s\t%s\n", logEntry->FrameNumber, logEntry->Timestamp.Line, logEntry->Timestamp.Pixel, logEntry->GetSource(), entryDescription.c_str());
+    ofs << logEntry->FrameNumber << '\t' << logEntry->Timestamp.Line << '\t' << logEntry->Timestamp.Pixel << '\t' << logEntry->GetSource() << '\t' << entryDescription << endl;
   }
-  fclose(F);
+
+  ofs.close();
 }
 
 DebugLogHandler::DebugLogHandler() : Enabled(false), _preallocateCount(100000)

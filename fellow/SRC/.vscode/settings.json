@@ -1,0 +1,7 @@
+{
+    "cmake.sourceDirectory": "${workspaceFolder}/build/cmake",
+    "files.associations": {
+        "cmath": "cpp"
+    },
+    "editor.formatOnSave": true
+}

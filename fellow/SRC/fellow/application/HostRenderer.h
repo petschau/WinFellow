@@ -1,16 +1,13 @@
 #pragma once
 
-#include "fellow/api/defs.h"
-
-#include "fellow/chipset/Graphics.h"
-
-#include "fellow/chipset/MappedChipsetFramebuffer.h"
-#include "GfxDrvColorBitsInformation.h"
-#include "fellow/chipset/ChipsetCallbacks.h"
-
-#include "fellow/configuration/Configuration.h"
 #include <list>
 
+#include "fellow/api/defs.h"
+#include "fellow/chipset/Graphics.h"
+#include "fellow/chipset/MappedChipsetFramebuffer.h"
+#include "fellow/api/drivers/GfxDrvColorBitsInformation.h"
+#include "fellow/chipset/ChipsetCallbacks.h"
+#include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/HostRenderRuntimeSettings.h"
 #include "fellow/chipset/ChipsetBufferRuntimeSettings.h"

@@ -25,6 +25,8 @@
 
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
+#include "fellow/api/Drivers.h"
+#include "fellow/api/Services.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
@@ -42,9 +44,7 @@
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Blitter.h"
 #include "fellow/chipset/Sprite.h"
-#include "fellow/application/Timer.h"
 #include "fellow/configuration/Configuration.h"
-#include "fellow/application/WGui.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/application/Ini.h"
 #include "fellow/os/windows/application/sysinfo.h"
@@ -63,7 +63,6 @@
 #include "fellow/chipset/HostFrameCopier.h"
 
 #include "fellow/automation/Automator.h"
-#include "fellow/api/Services.h"
 #include "fellow/service/CoreServicesFactory.h"
 #include "fellow/api/VM.h"
 
@@ -171,15 +170,18 @@ char *fellowGetVersionString()
 /* Runtime Error Check                                                        */
 /*============================================================================*/
 
+void fellowHandleCpuPcBadBank()
+{
+  const char *errorMessage = "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.";
+  Service->Log.AddLog(errorMessage);
+  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+}
+
 static void fellowRuntimeErrorCheck()
 {
   switch (fellowGetRuntimeErrorCode())
   {
-    case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK:
-      Service->Log.AddLogRequester(
-          FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR,
-          "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.");
-      break;
+    case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_CPU_PC_BAD_BANK: fellowHandleCpuPcBadBank(); break;
     case fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR: break;
   }
   fellowSetRuntimeErrorCode(fellow_runtime_error_codes::FELLOW_RUNTIME_ERROR_NO_ERROR);
@@ -302,10 +304,12 @@ bool fellowEmulationStart()
   scheduler.EmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
-  timerEmulationStart();
+  Driver->Timer.EmulationStart();
+
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStart();
 #endif
+
   if (chipsetIsCycleExact())
   {
     ddf_state_machine.EmulationStart();
@@ -335,7 +339,7 @@ void fellowEmulationStop()
   if (RP.GetHeadlessMode()) RP.EmulationStop();
 #endif
   HardfileHandler->EmulationStop();
-  timerEmulationStop();
+  Driver->Timer.EmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
   scheduler.EmulationStop();
@@ -538,7 +542,9 @@ void fellowNastyExit()
 
 static void fellowDrawFailed()
 {
-  Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.");
+  const char *errorMessage = "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.";
+  Service->Log.AddLog(errorMessage);
+  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   exit(EXIT_FAILURE);
 }
 
@@ -551,7 +557,7 @@ static void fellowModulesStartup(int argc, char *argv[])
   fellow_emulation_run_performance_counter = Service->PerformanceCounterFactory.Create("Fellow emulation runtime");
 
   chipsetStartup();
-  timerStartup();
+  Driver->Timer.Startup();
   HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
@@ -570,7 +576,7 @@ static void fellowModulesStartup(int argc, char *argv[])
   interruptStartup();
   graphStartup();
   cpuIntegrationStartup();
-  wguiStartup();
+  Driver->Gui.Startup();
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Startup();
 #endif
@@ -609,7 +615,7 @@ static void fellowModulesShutdown()
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Shutdown();
 #endif
-  wguiShutdown();
+  Driver->Gui.Shutdown();
   cpuIntegrationShutdown();
   graphShutdown();
   interruptShutdown();
@@ -628,7 +634,7 @@ static void fellowModulesShutdown()
   spriteShutdown();
   ffilesysShutdown();
   HardfileHandler->Shutdown();
-  timerShutdown();
+  Driver->Timer.Shutdown();
 
   delete HardfileHandler;
 
@@ -656,7 +662,7 @@ void fellowDeleteServices()
 /* main....                                                                   */
 /*============================================================================*/
 
-int __cdecl main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   fellowCreateServices();
   sysinfoLogSysInfo();
@@ -668,8 +674,8 @@ int __cdecl main(int argc, char *argv[])
   {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
-    wguiSetProcessDPIAwareness("2");
-    while (!wguiEnter())
+    Driver->Gui.SetProcessDPIAwareness("2");
+    while (!Driver->Gui.Enter())
       fellowRun();
 #ifdef RETRO_PLATFORM
   }

@@ -27,9 +27,4 @@ namespace test::mock::fellow::api
   void LogMock::AddTimelessLog(const char *format, ...)
   {
   }
-
-  void LogMock::AddLogRequester(::fellow::api::FELLOW_REQUESTER_TYPE type, const char *format, ...)
-  {
-  }
-
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "fellow/api/defs.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/application/Gameport.h"

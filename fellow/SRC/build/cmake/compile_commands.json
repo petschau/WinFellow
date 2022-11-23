@@ -1,0 +1,867 @@
+[
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/api/Services.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/api/Services.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/api/Services.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/api/Drivers.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/api/Drivers.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/api/Drivers.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/DisplayMode.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/DisplayMode.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/DisplayMode.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/Fellow.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/Fellow.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/Fellow.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/FellowFilesys.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/FellowFilesys.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/FellowFilesys.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderConfiguration.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderConfiguration.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderConfiguration.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderer.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderer.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderer.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderRuntimeSettings.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderRuntimeSettings.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderRuntimeSettings.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderStatistics.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderStatistics.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/HostRenderStatistics.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/Interrupt.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/Interrupt.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/Interrupt.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/ListTree.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/ListTree.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/ListTree.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/application/modrip.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/application/modrip.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/application/modrip.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Automator.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Automator.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Automator.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Script.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Script.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/automation/Script.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMA.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMA.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMA.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMAFetchPrograms.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMAFetchPrograms.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneDMAFetchPrograms.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneRegisters.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneRegisters.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneRegisters.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneShifter.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneShifter.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/BitplaneShifter.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Blitter.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Blitter.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Blitter.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/ChipsetInfo.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/ChipsetInfo.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/ChipsetInfo.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Cia.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Cia.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Cia.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperCommon.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperCommon.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperCommon.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperRegisters.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperRegisters.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CopperRegisters.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactCopper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactCopper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactCopper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactSprites.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactSprites.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/CycleExactSprites.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DDFStateMachine.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DDFStateMachine.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DDFStateMachine.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWXStateMachine.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWXStateMachine.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWXStateMachine.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWYStateMachine.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWYStateMachine.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DIWYStateMachine.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DMAController.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DMAController.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DMAController.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_interlace_control.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_interlace_control.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_interlace_control.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_pixelrenderers.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_pixelrenderers.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/draw_pixelrenderers.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DualPlayfieldMapper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DualPlayfieldMapper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/DualPlayfieldMapper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Floppy.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Floppy.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Floppy.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Gameport.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Gameport.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Gameport.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Graphics.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Graphics.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Graphics.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrame.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrame.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrame.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameCopier.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameCopier.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameCopier.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameDelayedRenderer.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameDelayedRenderer.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameDelayedRenderer.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameImmediateRenderer.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameImmediateRenderer.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/HostFrameImmediateRenderer.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Kbd.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Kbd.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Kbd.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactCopper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactCopper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactCopper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactSprites.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactSprites.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/LineExactSprites.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Planar2ChunkyDecoder.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Planar2ChunkyDecoder.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Planar2ChunkyDecoder.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/rtc.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/rtc.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/rtc.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/RtcOkiMsm6242rs.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/RtcOkiMsm6242rs.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/RtcOkiMsm6242rs.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sound.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sound.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sound.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sprite.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sprite.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Sprite.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteDMA.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteDMA.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteDMA.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteMerger.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteMerger.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteMerger.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteP2CDecoder.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteP2CDecoder.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteP2CDecoder.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteRegisters.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteRegisters.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/SpriteRegisters.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/uart.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/uart.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/uart.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Wav.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Wav.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/chipset/Wav.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/Configuration.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/Configuration.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/Configuration.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/HostRenderConfigurationMapper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/HostRenderConfigurationMapper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/configuration/HostRenderConfigurationMapper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuIntegration.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuIntegration.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuIntegration.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Disassembler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Disassembler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Disassembler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_EffectiveAddress.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_EffectiveAddress.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_EffectiveAddress.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Exceptions.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Exceptions.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Exceptions.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Flags.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Flags.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Flags.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Instructions.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Instructions.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Instructions.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_InternalState.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_InternalState.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_InternalState.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Interrupts.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Interrupts.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Interrupts.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Logging.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Logging.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_Logging.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_StackFrameGen.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_StackFrameGen.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/cpu/CpuModule_StackFrameGen.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/ChipsetRegisterCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/ChipsetRegisterCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/ChipsetRegisterCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPURegisterCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPURegisterCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPURegisterCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPUStepCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPUStepCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/CPUStepCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/DisassembleCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/DisassembleCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/DisassembleCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/LogCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/LogCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/LogCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryMapCommand.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryMapCommand.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/commands/MemoryMapCommand.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ChipsetRegisterHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ChipsetRegisterHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ChipsetRegisterHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ConsoleDebugger.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ConsoleDebugger.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ConsoleDebugger.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPURegisterHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPURegisterHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPURegisterHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUStepHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUStepHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUStepHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUWriterUtils.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUWriterUtils.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/CPUWriterUtils.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DebugWriter.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DebugWriter.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DebugWriter.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DisassembleHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DisassembleHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/DisassembleHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/HelpHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/HelpHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/HelpHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/LogHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/LogHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/LogHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryMapHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryMapHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/MemoryMapHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ParameterUtils.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ParameterUtils.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/console/ParameterUtils.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/BitplaneShifterLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/BitplaneShifterLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/BitplaneShifterLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/ChipBusLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/ChipBusLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/ChipBusLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DebugLogHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DiagnosticFeatures.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DiagnosticFeatures.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DiagnosticFeatures.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWXLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWXLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWXLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWYLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWYLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/DIWYLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/EventQueueLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/EventQueueLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/EventQueueLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/LineChangeLogEntry.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/LineChangeLogEntry.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/debug/log/LineChangeLogEntry.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/AdditionalHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/AdditionalHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/AdditionalHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/BSSHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/BSSHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/BSSHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/CodeHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/CodeHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/CodeHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/DataHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/DataHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/DataHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/EndHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/EndHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/EndHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/FileImage.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/FileImage.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/FileImage.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HeaderHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HeaderHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HeaderHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkFactory.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkFactory.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkFactory.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkParser.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkParser.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkParser.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkRelocator.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkRelocator.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkRelocator.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkSize.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkSize.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/HunkSize.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/InitialHunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/InitialHunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/InitialHunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/RawDataReader.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/RawDataReader.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/RawDataReader.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32Hunk.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32Hunk.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32Hunk.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32OffsetTable.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32OffsetTable.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/hunks/Reloc32OffsetTable.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/ChecksumCalculator.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/ChecksumCalculator.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/ChecksumCalculator.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDB.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDB.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDB.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileReader.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileReader.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileReader.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHeader.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHeader.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBFileSystemHeader.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBLSegBlock.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBLSegBlock.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBLSegBlock.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBPartition.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBPartition.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/rdb/RDBPartition.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileHandler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileHandler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileHandler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileStructs.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileStructs.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hardfile/HardfileStructs.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/hud/HudPropertyProvider.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/hud/HudPropertyProvider.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/hud/HudPropertyProvider.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/memory/Memory.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/memory/Memory.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/memory/Memory.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/Scheduler.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/Scheduler.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/Scheduler.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerEvent.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerEvent.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerEvent.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerQueue.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerQueue.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/scheduler/SchedulerQueue.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/service/CoreServicesFactory.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/service/CoreServicesFactory.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/service/CoreServicesFactory.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/service/FSWrapper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/service/FSWrapper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/service/FSWrapper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/service/HUD.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/service/HUD.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/service/HUD.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/service/Log.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/service/Log.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/service/Log.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/service/RetroPlatformWrapper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/service/RetroPlatformWrapper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/service/RetroPlatformWrapper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/time/Timestamps.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/time/Timestamps.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/time/Timestamps.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Chipset.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Chipset.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Chipset.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Clocks.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Clocks.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Clocks.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Copper.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Copper.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Copper.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Display.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Display.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/Display.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/DisplayRegisters.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/DisplayRegisters.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/DisplayRegisters.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/EventLog.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/EventLog.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/EventLog.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/M68K.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/M68K.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/M68K.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/MemorySystem.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/MemorySystem.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/MemorySystem.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/VM.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/vm/VM.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/vm/VM.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/xdmswrap.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/xdmswrap.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/xdmswrap.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/zlibwrap.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/zlibwrap.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/zlibwrap.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/crc_csum.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/crc_csum.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/crc_csum.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/getbits.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/getbits.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/getbits.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/maketbl.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/maketbl.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/maketbl.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/pfile.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/pfile.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/pfile.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/tables.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/tables.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/tables.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_deep.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_deep.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_deep.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_heavy.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_heavy.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_heavy.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_init.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_init.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_init.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_medium.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_medium.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_medium.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_quick.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_quick.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_quick.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_rle.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_rle.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/xdms/src/u_rle.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/adler32.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/adler32.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/adler32.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/compress.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/compress.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/compress.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/crc32.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/crc32.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/crc32.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/deflate.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/deflate.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/deflate.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzclose.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzclose.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzclose.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzlib.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzlib.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzlib.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzread.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzread.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzread.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzwrite.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzwrite.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/gzwrite.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/infback.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/infback.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/infback.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inffast.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inffast.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inffast.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inflate.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inflate.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inflate.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inftrees.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inftrees.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/inftrees.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/trees.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/trees.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/trees.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/uncompr.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/uncompr.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/uncompr.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src  -Wno-deprecated-non-prototype -g -std=gnu90 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/zutil.c.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/zutil.c",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/libs/zlib/src/zutil.c"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/SoundDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/SoundDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/SoundDriver.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/GraphicsDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/GraphicsDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/GraphicsDriver.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/TimerDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/TimerDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/TimerDriver.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/KeyboardDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/KeyboardDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/KeyboardDriver.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/MouseDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/MouseDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/MouseDriver.cpp"
+},
+{
+  "directory": "/home/petschau/git/WinFellow/fellow/SRC/build/cmake",
+  "command": "/usr/bin/clang++ -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../.. -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/os/null -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/xdms/src -I/home/petschau/git/WinFellow/fellow/SRC/build/cmake/../../fellow/libs/zlib/src -g -std=gnu++20 -o CMakeFiles/NullFellow.dir/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/JoystickDriver.cpp.o -c /home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/JoystickDriver.cpp",
+  "file": "/home/petschau/git/WinFellow/fellow/SRC/fellow/os/null/JoystickDriver.cpp"
+}
+]

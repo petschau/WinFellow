@@ -6,6 +6,8 @@
  *
  */
 
+/* FELLOW NOTE: This file must not be included in the build */
+
 #include <stdio.h>
 
 #ifdef _FELLOW_DEBUG_CRT_MALLOC

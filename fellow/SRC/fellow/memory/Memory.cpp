@@ -31,10 +31,10 @@
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/memory/Memory.h"
-#include "fellow/application/WGui.h"
 #include "fellow/chipset/rtc.h"
 #include "zlib.h" // crc32 function
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 
 #ifdef WIN32
 #include <tchar.h>
@@ -1493,25 +1493,29 @@ void memoryKickA1000BootstrapFree()
 
 void memoryKickError(ULO errorcode, ULO data)
 {
-  static STR error1[80], error2[160], error3[160];
+  ostringstream errorMessage;
 
-  sprintf(error1, "Kickstart file could not be loaded");
-  sprintf(error2, "%s", memory_kickimage);
-  error3[0] = '\0';
+  errorMessage << "Kickstart file could not be loaded" << endl << memory_kickimage << endl;
+
   switch (errorcode)
   {
-    case MEMORY_ROM_ERROR_SIZE: sprintf(error3, "Illegal size: %u bytes, size must be either 8kB (A1000 bootstrap ROM), 256kB or 512kB.", data); break;
-    case MEMORY_ROM_ERROR_AMIROM_VERSION: sprintf(error3, "Unsupported encryption method, version found was %u", data); break;
-    case MEMORY_ROM_ERROR_AMIROM_READ: sprintf(error3, "Read error in encrypted Kickstart or keyfile"); break;
-    case MEMORY_ROM_ERROR_KEYFILE: sprintf(error3, "Unable to access keyfile %s", memory_key); break;
-    case MEMORY_ROM_ERROR_EXISTS_NOT: sprintf(error3, "File does not exist"); break;
-    case MEMORY_ROM_ERROR_FILE: sprintf(error3, "File is a directory"); break;
-    case MEMORY_ROM_ERROR_KICKDISK_NOT: sprintf(error3, "The ADF-image is not a kickdisk"); break;
-    case MEMORY_ROM_ERROR_CHECKSUM: sprintf(error3, "The Kickstart image has a checksum error, checksum is %X", data); break;
-    case MEMORY_ROM_ERROR_KICKDISK_SUPER: sprintf(error3, "The ADF-image contains a superkickstart. Fellow can not handle it."); break;
-    case MEMORY_ROM_ERROR_BAD_BANK: sprintf(error3, "The ROM has a bad baseaddress: %X", memory_kickimage_basebank * 0x10000); break;
+    case MEMORY_ROM_ERROR_SIZE: errorMessage << "Illegal size: " << data << " bytes, size must be either 8kB (A1000 bootstrap ROM), 256kB or 512kB."; break;
+    case MEMORY_ROM_ERROR_AMIROM_VERSION: errorMessage << "Unsupported encryption method, version found was " << data; break;
+    case MEMORY_ROM_ERROR_AMIROM_READ: errorMessage << "Read error in encrypted Kickstart or keyfile"; break;
+    case MEMORY_ROM_ERROR_KEYFILE: errorMessage << "Unable to access keyfile " << memory_key; break;
+    case MEMORY_ROM_ERROR_EXISTS_NOT: errorMessage << "File does not exist"; break;
+    case MEMORY_ROM_ERROR_FILE: errorMessage << "File is a directory"; break;
+    case MEMORY_ROM_ERROR_KICKDISK_NOT: errorMessage << "The ADF-image is not a kickdisk"; break;
+    case MEMORY_ROM_ERROR_CHECKSUM: errorMessage << "The Kickstart image has a checksum error, checksum is " << hex << data; break;
+    case MEMORY_ROM_ERROR_KICKDISK_SUPER: errorMessage << "The ADF-image contains a superkickstart. Fellow can not handle it."; break;
+    case MEMORY_ROM_ERROR_BAD_BANK: errorMessage << "The ROM has a bad baseaddress: " << hex << memory_kickimage_basebank * 0x10000; break;
   }
-  Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "%s\n%s\n%s\n", error1, error2, error3);
+
+  string errorMessageString = errorMessage.str();
+
+  Service->Log.AddLog(errorMessageString);
+  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessageString.c_str());
+
   memoryKickSettingsClear();
 }
 

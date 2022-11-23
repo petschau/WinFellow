@@ -55,19 +55,6 @@ enum class sound_notifications
   SOUND_MMTIMER_NOTIFICATION
 };
 
-/*==========================*/
-/* Sound device information */
-/*==========================*/
-
-struct sound_device
-{
-  BOOLE mono;
-  BOOLE stereo;
-  BOOLE bits8;
-  BOOLE bits16;
-  ULO rates_max[2][2]; // Maximum playback rate for [8/16 bits][mono/stereo]
-};
-
 extern sound_emulations sound_emulation;
 extern sound_rates sound_rate;
 extern bool sound_stereo;

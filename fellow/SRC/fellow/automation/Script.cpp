@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include "fellow/api/defs.h"
 #include "fellow/automation/Script.h"
 #include "fellow/scheduler/Scheduler.h"
@@ -180,13 +182,15 @@ void Script::Load(const string &filename)
 
 void Script::Save(const string &filename)
 {
-  FILE *F = fopen(filename.c_str(), "w");
+  ofstream ofs;
+  ofs.open(filename);
 
   for (const ScriptLine &line : _lines)
   {
-    fprintf(F, "%llu,%u,%s,%s\n", line.FrameNumber, line.LineNumber, line.Command.c_str(), line.Parameters.c_str());
+    ofs << line.FrameNumber << ',' << line.LineNumber << ',' << line.Command << ',' << line.Parameters << endl;
   }
-  fclose(F);
+
+  ofs.close();
 }
 
 Script::Script() : _nextLine(0)

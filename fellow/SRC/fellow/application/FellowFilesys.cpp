@@ -148,7 +148,6 @@ void ffilesysDumpConfig()
 
 void ffilesysInstall()
 {
-
   for (ULO i = 0; i < FFILESYS_MAX_DEVICES; i++)
     if (ffilesys_devs[i].status == FFILESYS_INSERTED)
     {

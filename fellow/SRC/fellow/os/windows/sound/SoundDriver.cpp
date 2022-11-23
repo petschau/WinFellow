@@ -1055,7 +1055,7 @@ void SoundDriver::EmulationStop()
   soundDrvReleaseMutex(&sound_drv_dsound_device_current);
 }
 
-bool SoundDriver::Startup(sound_device *devinfo)
+bool SoundDriver::Startup(sound_device_capabilities *devinfo)
 {
   bool result = soundDrvDSoundInitialize(); /* Create a direct sound object */
   if (result)

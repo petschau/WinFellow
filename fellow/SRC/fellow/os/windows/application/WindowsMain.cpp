@@ -137,7 +137,7 @@ void winDrvDebuggerRequestStopIfRunning()
 
 bool winDrvDebugStartClient()
 {
-  char *commandLine = (char*)"Debugger.exe";
+  char *commandLine = (char *)"Debugger.exe";
   STARTUPINFO si{};
   PROCESS_INFORMATION pi{};
   si.cb = sizeof si;
@@ -402,7 +402,9 @@ void winDrvEmulationStart()
   }
   else
   {
-    Service->Log.AddLogRequester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, "Emulation session failed to start up");
+    const char *errorMessage = "Emulation session failed to start up";
+    Service->Log.AddLog(errorMessage);
+    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
   fellowEmulationStop();
 }

@@ -40,6 +40,7 @@ DisplayColorDepth HostRenderConfigurationMapper::MapDisplayColorDepth(bool isScr
   }
 
   ThrowInvalidOption();
+  return DisplayColorDepth::Unassigned;
 }
 
 unsigned int HostRenderConfigurationMapper::MapDisplayRefreshRate(bool isScreenWindowed, unsigned int screenRefresh)
