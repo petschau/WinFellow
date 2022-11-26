@@ -2,20 +2,21 @@
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
+using namespace std;
 
-ULO IniDriver::GetULOFromString(STR *value)
+ULO IniDriver::GetULOFromString(const string &value)
 {
-  return atoi(value);
+  return stoul(value);
 }
 
-int IniDriver::GetintFromString(STR *value)
+int IniDriver::GetintFromString(const string &value)
 {
-  return atoi(value);
+  return stol(value);
 }
 
-BOOLE IniDriver::GetBOOLEFromString(STR *value)
+BOOLE IniDriver::GetBOOLEFromString(const string &value)
 {
-  return (atoi(value) == 1);
+  return stoul(value) == 1;
 }
 
 void IniDriver::StripTrailingNewlines(STR *line)
@@ -30,129 +31,126 @@ void IniDriver::StripTrailingNewlines(STR *line)
 /* Returns TRUE if the option was recognized                                  */
 /*============================================================================*/
 
-BOOLE IniDriver::SetOption(IniValues *initdata, STR *initoptionstr)
+BOOLE IniDriver::SetOption(IniValues *initdata, const string &initoptionstr)
 {
-  STR *option, *value;
-  BOOLE result;
-
-  value = strchr(initoptionstr, '=');
-  result = (value != NULL);
-  if (result)
+  size_t splitPosition = initoptionstr.find('=');
+  if (splitPosition == string::npos)
   {
-    option = initoptionstr;
-    *value++ = '\0';
+    return FALSE;
+  }
 
-    /* Standard initialization options */
+  string option = initoptionstr.substr(0, splitPosition);
+  string value = initoptionstr.substr(splitPosition + 1);
 
-    if (stricmp(option, "last_used_configuration") == 0)
+  /* Standard initialization options */
+
+  if (option == "last_used_configuration")
+  {
+    if (value.empty())
     {
-      if (strcmp(value, "") == 0)
+      // Config option was empty
+      STR defaultConfigurationFilename[CFG_FILENAME_LENGTH];
+      Service->Fileops.GetDefaultConfigFileName(defaultConfigurationFilename);
+      initdata->SetCurrentConfigurationFilename(defaultConfigurationFilename);
+    }
+    else
+    {
+      fs_wrapper_object_info *fwoi = Service->FSWrapper.GetFSObjectInfo(value);
+      if (fwoi == nullptr)
       {
-        // Config option was empty
+        // Error, no-access etc.
         STR defaultConfigurationFilename[CFG_FILENAME_LENGTH];
         Service->Fileops.GetDefaultConfigFileName(defaultConfigurationFilename);
         initdata->SetCurrentConfigurationFilename(defaultConfigurationFilename);
       }
       else
       {
-        fs_wrapper_object_info *fwoi = Service->FSWrapper.GetFSObjectInfo(value);
-        if (fwoi == nullptr)
-        {
-          // Error, no-access etc.
-          STR defaultConfigurationFilename[CFG_FILENAME_LENGTH];
-          Service->Fileops.GetDefaultConfigFileName(defaultConfigurationFilename);
-          initdata->SetCurrentConfigurationFilename(defaultConfigurationFilename);
-        }
-        else
-        {
-          // File appears ok
-          initdata->SetCurrentConfigurationFilename(value);
-          delete fwoi;
-        }
+        // File appears ok
+        initdata->SetCurrentConfigurationFilename(value);
+        delete fwoi;
       }
     }
-    else if (stricmp(option, "last_used_cfg_dir") == 0)
-    {
-      initdata->SetLastUsedCfgDir(value);
-    }
-    else if (stricmp(option, "main_window_x_pos") == 0)
-    {
-      initdata->SetMainWindowXPos(GetintFromString(value));
-    }
-    else if (stricmp(option, "main_window_y_pos") == 0)
-    {
-      initdata->SetMainWindowYPos(GetintFromString(value));
-    }
-    else if (stricmp(option, "emu_window_x_pos") == 0)
-    {
-      initdata->SetEmulationWindowXPos(GetintFromString(value));
-    }
-    else if (stricmp(option, "emu_window_y_pos") == 0)
-    {
-      initdata->SetEmulationWindowYPos(GetintFromString(value));
-    }
-    else if (stricmp(option, "config_history_0") == 0)
-    {
-      initdata->SetConfigurationHistoryFilename(0, value);
-    }
-    else if (stricmp(option, "config_history_1") == 0)
-    {
-      initdata->SetConfigurationHistoryFilename(1, value);
-    }
-    else if (stricmp(option, "config_history_2") == 0)
-    {
-      initdata->SetConfigurationHistoryFilename(2, value);
-    }
-    else if (stricmp(option, "config_history_3") == 0)
-    {
-      initdata->SetConfigurationHistoryFilename(3, value);
-    }
-    else if (stricmp(option, "last_used_kick_image_dir") == 0)
-    {
-      initdata->SetLastUsedKickImageDir(value);
-    }
-    else if (stricmp(option, "last_used_key_dir") == 0)
-    {
-      initdata->SetLastUsedKeyDir(value);
-    }
-    else if (stricmp(option, "last_used_global_disk_dir") == 0)
-    {
-      initdata->SetLastUsedGlobalDiskDir(value);
-    }
-    else if (stricmp(option, "last_used_hdf_dir") == 0)
-    {
-      initdata->SetLastUsedHdfDir(value);
-    }
-    else if (stricmp(option, "last_used_mod_dir") == 0)
-    {
-      initdata->SetLastUsedModDir(value);
-    }
-    else if (stricmp(option, "last_used_cfg_tab") == 0)
-    {
-      initdata->SetLastUsedCfgTab(GetULOFromString(value));
-    }
-    else if (stricmp(option, "last_used_statefile_dir") == 0)
-    {
-      initdata->SetLastUsedStateFileDir(value);
-    }
-    else if (stricmp(option, "last_used_preset_rom_dir") == 0)
-    {
-      initdata->SetLastUsedPresetROMDir(value);
-    }
-    else if (stricmp(option, "pause_emulation_when_window_loses_focus") == 0)
-    {
-      initdata->SetPauseEmulationWhenWindowLosesFocus(stricmp(value, "true") == 0);
-    }
-    else if (stricmp(option, "gfx_debug_immediate_rendering") == 0)
-    {
-      initdata->SetGfxDebugImmediateRendering(stricmp(value, "true") == 0);
-    }
-    else
-      result = FALSE;
+  }
+  else if (option == "last_used_cfg_dir")
+  {
+    initdata->SetLastUsedCfgDir(value);
+  }
+  else if (option == "main_window_x_pos")
+  {
+    initdata->SetMainWindowXPos(GetintFromString(value));
+  }
+  else if (option == "main_window_y_pos")
+  {
+    initdata->SetMainWindowYPos(GetintFromString(value));
+  }
+  else if (option == "emu_window_x_pos")
+  {
+    initdata->SetEmulationWindowXPos(GetintFromString(value));
+  }
+  else if (option == "emu_window_y_pos")
+  {
+    initdata->SetEmulationWindowYPos(GetintFromString(value));
+  }
+  else if (option == "config_history_0")
+  {
+    initdata->SetConfigurationHistoryFilename(0, value);
+  }
+  else if (option == "config_history_1")
+  {
+    initdata->SetConfigurationHistoryFilename(1, value);
+  }
+  else if (option == "config_history_2")
+  {
+    initdata->SetConfigurationHistoryFilename(2, value);
+  }
+  else if (option == "config_history_3")
+  {
+    initdata->SetConfigurationHistoryFilename(3, value);
+  }
+  else if (option == "last_used_kick_image_dir")
+  {
+    initdata->SetLastUsedKickImageDir(value);
+  }
+  else if (option == "last_used_key_dir")
+  {
+    initdata->SetLastUsedKeyDir(value);
+  }
+  else if (option == "last_used_global_disk_dir")
+  {
+    initdata->SetLastUsedGlobalDiskDir(value);
+  }
+  else if (option == "last_used_hdf_dir")
+  {
+    initdata->SetLastUsedHdfDir(value);
+  }
+  else if (option == "last_used_mod_dir")
+  {
+    initdata->SetLastUsedModDir(value);
+  }
+  else if (option == "last_used_cfg_tab")
+  {
+    initdata->SetLastUsedCfgTab(GetULOFromString(value));
+  }
+  else if (option == "last_used_statefile_dir")
+  {
+    initdata->SetLastUsedStateFileDir(value);
+  }
+  else if (option == "last_used_preset_rom_dir")
+  {
+    initdata->SetLastUsedPresetROMDir(value);
+  }
+  else if (option == "pause_emulation_when_window_loses_focus")
+  {
+    initdata->SetPauseEmulationWhenWindowLosesFocus(value == "true");
+  }
+  else if (option == "gfx_debug_immediate_rendering")
+  {
+    initdata->SetGfxDebugImmediateRendering(value == "true");
   }
   else
-    result = FALSE;
-  return result;
+    return FALSE;
+
+  return TRUE;
 }
 
 BOOLE IniDriver::LoadIniFile(IniValues *initdata, FILE *inifile)
@@ -162,7 +160,7 @@ BOOLE IniDriver::LoadIniFile(IniValues *initdata, FILE *inifile)
   {
     fgets(line, 256, inifile);
     StripTrailingNewlines(line);
-    initdata->SetOption(line);
+    SetOption(initdata, line);
   }
   return TRUE;
 }
@@ -187,42 +185,41 @@ BOOLE IniDriver::SaveToFile(IniValues *initdata, FILE *inifile)
   return SaveOptions(initdata, inifile);
 }
 
-BOOLE IniDriver::SaveToFilename(IniValues *initdata, STR *filename)
+BOOLE IniDriver::SaveToFilename(IniValues *initdata, const string &filename)
 {
-  FILE *inifile;
-  BOOLE result;
-
-  inifile = fopen(filename, "w");
-  result = (inifile != NULL);
-  if (result)
+  FILE *inifile = fopen(filename.c_str(), "w");
+  if (inifile == nullptr)
   {
-    result = SaveToFile(initdata, inifile);
-    fclose(inifile);
+    return FALSE;
   }
+
+  BOOLE result = SaveToFile(initdata, inifile);
+  fclose(inifile);
+
   return result;
 }
 
 BOOLE IniDriver::SaveOptions(IniValues *initdata, FILE *inifile)
 {
-  fprintf(inifile, "ini_description=%s\n", initdata->GetDescription());
+  fprintf(inifile, "ini_description=%s\n", initdata->GetDescription().c_str());
   fprintf(inifile, "main_window_x_pos=%d\n", initdata->GetMainWindowXPos());
   fprintf(inifile, "main_window_y_pos=%d\n", initdata->GetMainWindowYPos());
   fprintf(inifile, "emu_window_x_pos=%d\n", initdata->GetEmulationWindowXPos());
   fprintf(inifile, "emu_window_y_pos=%d\n", initdata->GetEmulationWindowYPos());
-  fprintf(inifile, "config_history_0=%s\n", initdata->GetConfigurationHistoryFilename(0));
-  fprintf(inifile, "config_history_1=%s\n", initdata->GetConfigurationHistoryFilename(1));
-  fprintf(inifile, "config_history_2=%s\n", initdata->GetConfigurationHistoryFilename(2));
-  fprintf(inifile, "config_history_3=%s\n", initdata->GetConfigurationHistoryFilename(3));
-  fprintf(inifile, "last_used_configuration=%s\n", initdata->GetCurrentConfigurationFilename());
-  fprintf(inifile, "last_used_cfg_dir=%s\n", initdata->GetLastUsedCfgDir());
+  fprintf(inifile, "config_history_0=%s\n", initdata->GetConfigurationHistoryFilename(0).c_str());
+  fprintf(inifile, "config_history_1=%s\n", initdata->GetConfigurationHistoryFilename(1).c_str());
+  fprintf(inifile, "config_history_2=%s\n", initdata->GetConfigurationHistoryFilename(2).c_str());
+  fprintf(inifile, "config_history_3=%s\n", initdata->GetConfigurationHistoryFilename(3).c_str());
+  fprintf(inifile, "last_used_configuration=%s\n", initdata->GetCurrentConfigurationFilename().c_str());
+  fprintf(inifile, "last_used_cfg_dir=%s\n", initdata->GetLastUsedCfgDir().c_str());
   fprintf(inifile, "last_used_cfg_tab=%u\n", initdata->GetLastUsedCfgTab());
-  fprintf(inifile, "last_used_kick_image_dir=%s\n", initdata->GetLastUsedKickImageDir());
-  fprintf(inifile, "last_used_key_dir=%s\n", initdata->GetLastUsedKeyDir());
-  fprintf(inifile, "last_used_global_disk_dir=%s\n", initdata->GetLastUsedGlobalDiskDir());
-  fprintf(inifile, "last_used_hdf_dir=%s\n", initdata->GetLastUsedHdfDir());
-  fprintf(inifile, "last_used_mod_dir=%s\n", initdata->GetLastUsedModDir());
-  fprintf(inifile, "last_used_statefile_dir=%s\n", initdata->GetLastUsedStateFileDir());
-  fprintf(inifile, "last_used_preset_rom_dir=%s\n", initdata->GetLastUsedPresetROMDir());
+  fprintf(inifile, "last_used_kick_image_dir=%s\n", initdata->GetLastUsedKickImageDir().c_str());
+  fprintf(inifile, "last_used_key_dir=%s\n", initdata->GetLastUsedKeyDir().c_str());
+  fprintf(inifile, "last_used_global_disk_dir=%s\n", initdata->GetLastUsedGlobalDiskDir().c_str());
+  fprintf(inifile, "last_used_hdf_dir=%s\n", initdata->GetLastUsedHdfDir().c_str());
+  fprintf(inifile, "last_used_mod_dir=%s\n", initdata->GetLastUsedModDir().c_str());
+  fprintf(inifile, "last_used_statefile_dir=%s\n", initdata->GetLastUsedStateFileDir().c_str());
+  fprintf(inifile, "last_used_preset_rom_dir=%s\n", initdata->GetLastUsedPresetROMDir().c_str());
   fprintf(inifile, "pause_emulation_when_window_loses_focus=%s\n", initdata->GetPauseEmulationWhenWindowLosesFocus() ? "true" : "false");
   fprintf(inifile, "gfx_debug_immediate_rendering=%s\n", initdata->GetGfxDebugImmediateRendering() ? "true" : "false");
 
@@ -279,6 +276,8 @@ void IniDriver::Startup()
   STR defaultFilepath[CFG_FILENAME_LENGTH];
   Service->Fileops.GetGenericFileName(defaultFilepath, "WinFellow", INI_FILENAME);
 
+  _defaultIniFilePath = defaultFilepath;
+
   if (LoadIniFromFilename(initdata, defaultFilepath) == FALSE)
   {
     Service->Log.AddLog("ini-file not found\n");
@@ -295,7 +294,7 @@ void IniDriver::Startup()
 void IniDriver::Shutdown()
 {
   // save the m_current_initdata data structure to the ini-file
-  SaveToFilename(GetCurrentInitdata(), ini_filename);
+  SaveToFilename(GetCurrentInitdata(), _defaultIniFilePath);
 
   FreeIni(m_default_ini);
   FreeIni(m_current_ini);

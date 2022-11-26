@@ -1,37 +1,38 @@
 #include "fellow/api/drivers/IniValues.h"
-
+#include "versioninfo.h"
 #include "fellow/api/Services.h"
 
 using namespace fellow::api;
+using namespace std;
 
-void IniValues::SetDescription(STR *description)
+void IniValues::SetDescription(const string &description)
 {
-  strcpy(m_description, description);
+  _description = description;
 }
 
-STR *IniValues::GetDescription()
+const string &IniValues::GetDescription() const
 {
-  return m_description;
+  return _description;
 }
 
 void IniValues::SetMainWindowXPos(int xpos)
 {
-  m_mainwindowxposition = xpos;
+  _mainwindowxposition = xpos;
 }
 
-int IniValues::GetMainWindowXPos()
+int IniValues::GetMainWindowXPos() const
 {
-  return m_mainwindowxposition;
+  return _mainwindowxposition;
 }
 
 void IniValues::SetMainWindowYPos(int ypos)
 {
-  m_mainwindowyposition = ypos;
+  _mainwindowyposition = ypos;
 }
 
-int IniValues::GetMainWindowYPos()
+int IniValues::GetMainWindowYPos() const
 {
-  return m_mainwindowyposition;
+  return _mainwindowyposition;
 }
 
 void IniValues::SetMainWindowPosition(ULO mainwindowxpos, ULO mainwindowypos)
@@ -42,22 +43,22 @@ void IniValues::SetMainWindowPosition(ULO mainwindowxpos, ULO mainwindowypos)
 
 void IniValues::SetEmulationWindowXPos(int xpos)
 {
-  m_emulationwindowxposition = xpos;
+  _emulationwindowxposition = xpos;
 }
 
-int IniValues::GetEmulationWindowXPos()
+int IniValues::GetEmulationWindowXPos() const
 {
-  return m_emulationwindowxposition;
+  return _emulationwindowxposition;
 }
 
 void IniValues::SetEmulationWindowYPos(int ypos)
 {
-  m_emulationwindowyposition = ypos;
+  _emulationwindowyposition = ypos;
 }
 
-int IniValues::GetEmulationWindowYPos()
+int IniValues::GetEmulationWindowYPos() const
 {
-  return m_emulationwindowyposition;
+  return _emulationwindowyposition;
 }
 
 void IniValues::SetEmulationWindowPosition(ULO emulationwindowxpos, ULO emulationwindowypos)
@@ -66,134 +67,134 @@ void IniValues::SetEmulationWindowPosition(ULO emulationwindowxpos, ULO emulatio
   SetEmulationWindowYPos(emulationwindowypos);
 }
 
-void IniValues::SetConfigurationHistoryFilename(ULO index, const char *cfgfilename)
+void IniValues::SetConfigurationHistoryFilename(ULO index, const string &cfgfilename)
 {
-  strncpy(m_configuration_history[index], cfgfilename, CFG_FILENAME_LENGTH);
+  _configurationHistory[index] = cfgfilename;
 }
 
-STR *IniValues::GetConfigurationHistoryFilename(ULO index)
+const string &IniValues::GetConfigurationHistoryFilename(ULO index) const
 {
-  return m_configuration_history[index];
+  return _configurationHistory[index];
 }
 
-void IniValues::SetCurrentConfigurationFilename(STR *configuration)
+void IniValues::SetCurrentConfigurationFilename(const string &configuration)
 {
-  strncpy(m_current_configuration, configuration, CFG_FILENAME_LENGTH);
+  _currentConfiguration = configuration;
 }
 
-STR *IniValues::GetCurrentConfigurationFilename()
+const string &IniValues::GetCurrentConfigurationFilename() const
 {
-  return m_current_configuration;
+  return _currentConfiguration;
 }
 
-void IniValues::SetLastUsedCfgDir(STR *directory)
+void IniValues::SetLastUsedCfgDir(const string &directory)
 {
-  strncpy(m_lastusedconfigurationdir, directory, CFG_FILENAME_LENGTH);
+  _lastusedconfigurationdir = directory;
 }
 
-STR *IniValues::GetLastUsedCfgDir()
+const string &IniValues::GetLastUsedCfgDir() const
 {
-  return m_lastusedconfigurationdir;
+  return _lastusedconfigurationdir;
 }
 
 void IniValues::SetLastUsedCfgTab(ULO cfgTab)
 {
-  m_lastusedconfigurationtab = cfgTab;
+  _lastusedconfigurationtab = cfgTab;
 }
 
-ULO IniValues::GetLastUsedCfgTab()
+ULO IniValues::GetLastUsedCfgTab() const
 {
-  return m_lastusedconfigurationtab;
+  return _lastusedconfigurationtab;
 }
 
-void IniValues::SetLastUsedStateFileDir(STR *directory)
+void IniValues::SetLastUsedStateFileDir(const string &directory)
 {
-  strncpy(m_lastusedstatefiledir, directory, CFG_FILENAME_LENGTH);
+  _lastusedstatefiledir = directory;
 }
 
-STR *IniValues::GetLastUsedStateFileDir()
+const string &IniValues::GetLastUsedStateFileDir() const
 {
-  return m_lastusedstatefiledir;
+  return _lastusedstatefiledir;
 }
 
-void IniValues::SetLastUsedPresetROMDir(STR *directory)
+void IniValues::SetLastUsedPresetROMDir(const string &directory)
 {
-  strncpy(m_lastusedpresetromdir, directory, CFG_FILENAME_LENGTH);
+  _lastusedpresetromdir = directory;
 }
 
-STR *IniValues::GetLastUsedPresetROMDir()
+const string &IniValues::GetLastUsedPresetROMDir() const
 {
-  return m_lastusedpresetromdir;
+  return _lastusedpresetromdir;
 }
 
-void IniValues::SetLastUsedKickImageDir(STR *directory)
+void IniValues::SetLastUsedKickImageDir(const string &directory)
 {
-  strncpy(m_lastusedkickimagedir, directory, CFG_FILENAME_LENGTH);
+  _lastusedkickimagedir = directory;
 }
 
-STR *IniValues::GetLastUsedKickImageDir()
+const string &IniValues::GetLastUsedKickImageDir() const
 {
-  return m_lastusedkickimagedir;
+  return _lastusedkickimagedir;
 }
 
-void IniValues::SetLastUsedKeyDir(STR *directory)
+void IniValues::SetLastUsedKeyDir(const string &directory)
 {
-  strncpy(m_lastusedkeydir, directory, CFG_FILENAME_LENGTH);
+  _lastusedkeydir = directory;
 }
 
-STR *IniValues::GetLastUsedKeyDir()
+const string &IniValues::GetLastUsedKeyDir() const
 {
-  return m_lastusedkeydir;
+  return _lastusedkeydir;
 }
 
-void IniValues::SetLastUsedGlobalDiskDir(STR *directory)
+void IniValues::SetLastUsedGlobalDiskDir(const string &directory)
 {
-  strncpy(m_lastusedglobaldiskdir, directory, CFG_FILENAME_LENGTH);
+  _lastusedglobaldiskdir = directory;
 }
 
-STR *IniValues::GetLastUsedGlobalDiskDir()
+const string &IniValues::GetLastUsedGlobalDiskDir() const
 {
-  return m_lastusedglobaldiskdir;
+  return _lastusedglobaldiskdir;
 }
 
-void IniValues::SetLastUsedHdfDir(STR *directory)
+void IniValues::SetLastUsedHdfDir(const string &directory)
 {
-  strncpy(m_lastusedhdfdir, directory, CFG_FILENAME_LENGTH);
+  _lastusedhdfdir = directory;
 }
 
-STR *IniValues::GetLastUsedHdfDir()
+const string &IniValues::GetLastUsedHdfDir() const
 {
-  return m_lastusedhdfdir;
+  return _lastusedhdfdir;
 }
 
-void IniValues::SetLastUsedModDir(STR *directory)
+void IniValues::SetLastUsedModDir(const string &directory)
 {
-  strncpy(m_lastusedmoddir, directory, CFG_FILENAME_LENGTH);
+  _lastusedmoddir = directory;
 }
 
-STR *IniValues::GetLastUsedModDir()
+const string &IniValues::GetLastUsedModDir() const
 {
-  return m_lastusedmoddir;
-}
-
-BOOLE IniValues::GetPauseEmulationWhenWindowLosesFocus()
-{
-  return m_pauseemulationwhenwindowlosesfocus;
+  return _lastusedmoddir;
 }
 
 void IniValues::SetPauseEmulationWhenWindowLosesFocus(BOOLE pause)
 {
-  m_pauseemulationwhenwindowlosesfocus = pause;
+  _pauseemulationwhenwindowlosesfocus = pause;
 }
 
-bool IniValues::GetGfxDebugImmediateRendering()
+BOOLE IniValues::GetPauseEmulationWhenWindowLosesFocus() const
 {
-  return m_gfxDebugImmediateRendering;
+  return _pauseemulationwhenwindowlosesfocus;
 }
 
 void IniValues::SetGfxDebugImmediateRendering(bool gfxDebugImmediateRendering)
 {
-  m_gfxDebugImmediateRendering = gfxDebugImmediateRendering;
+  _gfxDebugImmediateRendering = gfxDebugImmediateRendering;
+}
+
+bool IniValues::GetGfxDebugImmediateRendering() const
+{
+  return _gfxDebugImmediateRendering;
 }
 
 void IniValues::SetDefaults()

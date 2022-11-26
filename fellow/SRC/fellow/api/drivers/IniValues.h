@@ -1,116 +1,114 @@
 #pragma once
 
 #include <cstdio>
+#include <string>
 
 #include "fellow/api/defs.h"
 
 class IniValues
 {
 private:
-  STR m_description[256];
+  std::string _description;
 
   /*==========================================================================*/
   /* Holds current used configuration filename                                */
   /*==========================================================================*/
 
-  STR m_current_configuration[CFG_FILENAME_LENGTH];
+  std::string _currentConfiguration;
 
   /*==========================================================================*/
   /* Window positions (Main Window, Emulation Window)                         */
   /*==========================================================================*/
 
-  int m_mainwindowxposition;
-  int m_mainwindowyposition;
-  int m_emulationwindowxposition;
-  int m_emulationwindowyposition;
+  int _mainwindowxposition;
+  int _mainwindowyposition;
+  int _emulationwindowxposition;
+  int _emulationwindowyposition;
 
   /*==========================================================================*/
   /* History of used config files                                             */
   /*==========================================================================*/
 
-  STR m_configuration_history[4][CFG_FILENAME_LENGTH];
+  std::string _configurationHistory[4];
 
   /*==========================================================================*/
   /* Holds last used directories                                              */
   /*==========================================================================*/
 
-  STR m_lastusedkeydir[CFG_FILENAME_LENGTH];
-  STR m_lastusedkickimagedir[CFG_FILENAME_LENGTH];
-  STR m_lastusedconfigurationdir[CFG_FILENAME_LENGTH];
-  ULO m_lastusedconfigurationtab;
-  STR m_lastusedglobaldiskdir[CFG_FILENAME_LENGTH];
-  STR m_lastusedhdfdir[CFG_FILENAME_LENGTH];
-  STR m_lastusedmoddir[CFG_FILENAME_LENGTH];
-  STR m_lastusedstatefiledir[CFG_FILENAME_LENGTH];
-  STR m_lastusedpresetromdir[CFG_FILENAME_LENGTH];
+  std::string _lastusedkeydir;
+  std::string _lastusedkickimagedir;
+  std::string _lastusedconfigurationdir;
+  ULO _lastusedconfigurationtab;
+  std::string _lastusedglobaldiskdir;
+  std::string _lastusedhdfdir;
+  std::string _lastusedmoddir;
+  std::string _lastusedstatefiledir;
+  std::string _lastusedpresetromdir;
 
   /*==========================================================================*/
   /* pause emulation when window loses focus                                  */
   /*==========================================================================*/
-  BOOLE m_pauseemulationwhenwindowlosesfocus;
+  BOOLE _pauseemulationwhenwindowlosesfocus;
 
   //==========================================================================
   // Debug options for graphics emulation, may change from release to release
   //==========================================================================
-  bool m_gfxDebugImmediateRendering;
+  bool _gfxDebugImmediateRendering;
 
 public:
-  void SetDescription(STR *description);
-  STR *GetDescription();
+  void SetDescription(const std::string &description);
+  const std::string &GetDescription() const;
 
   void SetMainWindowXPos(int xpos);
-  int GetMainWindowXPos();
+  int GetMainWindowXPos() const;
   void SetMainWindowYPos(int ypos);
-  int GetMainWindowYPos();
+  int GetMainWindowYPos() const;
   void SetMainWindowPosition(ULO mainwindowxpos, ULO mainwindowypos);
 
   void SetEmulationWindowXPos(int xpos);
-  int GetEmulationWindowXPos();
+  int GetEmulationWindowXPos() const;
   void SetEmulationWindowYPos(int ypos);
-  int GetEmulationWindowYPos();
+  int GetEmulationWindowYPos() const;
   void SetEmulationWindowPosition(ULO emulationwindowxpos, ULO emulationwindowypos);
 
-  void SetConfigurationHistoryFilename(ULO index, const char *cfgfilename);
-  STR *GetConfigurationHistoryFilename(ULO index);
+  void SetConfigurationHistoryFilename(ULO index, const std::string &cfgfilename);
+  const std::string &GetConfigurationHistoryFilename(ULO index) const;
 
-  void SetCurrentConfigurationFilename(STR *configuration);
-  STR *GetCurrentConfigurationFilename();
+  void SetCurrentConfigurationFilename(const std::string &configuration);
+  const std::string &GetCurrentConfigurationFilename() const;
 
-  void SetLastUsedCfgDir(STR *directory);
-  STR *GetLastUsedCfgDir();
+  void SetLastUsedCfgDir(const std::string &directory);
+  const std::string &GetLastUsedCfgDir() const;
 
   void SetLastUsedCfgTab(ULO cfgTab);
-  ULO GetLastUsedCfgTab();
+  ULO GetLastUsedCfgTab() const;
 
-  void SetLastUsedStateFileDir(STR *directory);
-  STR *GetLastUsedStateFileDir();
+  void SetLastUsedStateFileDir(const std::string &directory);
+  const std::string &GetLastUsedStateFileDir() const;
 
-  void SetLastUsedPresetROMDir(STR *directory);
-  STR *GetLastUsedPresetROMDir();
+  void SetLastUsedPresetROMDir(const std::string &directory);
+  const std::string &GetLastUsedPresetROMDir() const;
 
-  void SetLastUsedKickImageDir(STR *directory);
-  STR *GetLastUsedKickImageDir();
+  void SetLastUsedKickImageDir(const std::string &directory);
+  const std::string &GetLastUsedKickImageDir() const;
 
-  void SetLastUsedKeyDir(STR *directory);
-  STR *GetLastUsedKeyDir();
+  void SetLastUsedKeyDir(const std::string &directory);
+  const std::string &GetLastUsedKeyDir() const;
 
-  void SetLastUsedGlobalDiskDir(STR *directory);
-  STR *GetLastUsedGlobalDiskDir();
+  void SetLastUsedGlobalDiskDir(const std::string &directory);
+  const std::string &GetLastUsedGlobalDiskDir() const;
 
-  void SetLastUsedHdfDir(STR *directory);
-  STR *GetLastUsedHdfDir();
+  void SetLastUsedHdfDir(const std::string &directory);
+  const std::string &GetLastUsedHdfDir() const;
 
-  void SetLastUsedModDir(STR *directory);
-  STR *GetLastUsedModDir();
+  void SetLastUsedModDir(const std::string &directory);
+  const std::string &GetLastUsedModDir() const;
 
-  BOOLE GetPauseEmulationWhenWindowLosesFocus();
   void SetPauseEmulationWhenWindowLosesFocus(BOOLE pause);
+  BOOLE GetPauseEmulationWhenWindowLosesFocus() const;
 
-  bool GetGfxDebugImmediateRendering();
   void SetGfxDebugImmediateRendering(bool gfxDebugImmediateRendering);
+  bool GetGfxDebugImmediateRendering() const;
 
   void SetDefaults();
-
-  BOOLE SetOption(STR *initoptionstr);
-  BOOLE SaveOptions(FILE *inifile);
 };

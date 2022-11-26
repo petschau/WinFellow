@@ -44,7 +44,6 @@
 #include "fellow/configuration/Configuration.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/application/FellowFilesys.h"
-#include "fellow/application/Ini.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/chipset/rtc.h"
 #ifdef RETRO_PLATFORM
@@ -58,7 +57,7 @@
 using namespace fellow::api::modules;
 using namespace fellow::api;
 
-ini *cfg_initdata; /* CONFIG copy of initialization data */
+IniValues *cfg_initdata; /* CONFIG copy of initialization data */
 
 /*============================================================================*/
 /* The actual cfgManager instance                                             */
@@ -2515,8 +2514,8 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
     if (!cfgGetConfigAppliedOnce(config))
     {
       // load configuration that the initdata contains
-      cfg_initdata = iniManagerGetCurrentInitdata(&ini_manager);
-      cfgLoadFromFilename(config, iniGetCurrentConfigurationFilename(cfg_initdata), false);
+      cfg_initdata = Driver->Ini.GetCurrentInitdata();
+      cfgLoadFromFilename(config, cfg_initdata->GetCurrentConfigurationFilename().c_str(), false);
     }
 #ifdef RETRO_PLATFORM
   }
