@@ -1548,14 +1548,24 @@ STR *memoryKickIdentify(STR *s)
 
   ULO ver = (rom[12] << 8) | rom[13];
   ULO rev = (rom[14] << 8) | rom[15];
+
   if (ver == 65535)
+  {
     memory_kickimage_version = 28;
+  }
   else if (ver < 29)
+  {
     memory_kickimage_version = 29;
+  }
   else if (ver > 41)
+  {
     memory_kickimage_version = 41;
+  }
   else
+  {
     memory_kickimage_version = ver;
+  }
+
   sprintf(s, "%s (%u.%u)", memory_kickimage_versionstrings[memory_kickimage_version - 28], ver, rev);
   return s;
 }

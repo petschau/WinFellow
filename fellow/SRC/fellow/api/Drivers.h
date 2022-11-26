@@ -7,6 +7,7 @@
 #include "fellow/api/drivers/IMouseDriver.h"
 #include "fellow/api/drivers/ITimerDriver.h"
 #include "fellow/api/drivers/IGuiDriver.h"
+#include "fellow/api/drivers/IIniDriver.h"
 
 namespace fellow::api
 {
@@ -20,9 +21,10 @@ namespace fellow::api
     IMouseDriver &Mouse;
     ITimerDriver &Timer;
     IGuiDriver &Gui;
+    IIniDriver &Ini;
 
-    Drivers(ISoundDriver &sound, IGraphicsDriver &graphics, IJoystickDriver &joystick, IKeyboardDriver &keyboard, IMouseDriver &mouse, ITimerDriver &timer, IGuiDriver &gui)
-      : Sound(sound), Graphics(graphics), Joystick(joystick), Keyboard(keyboard), Mouse(mouse), Timer(timer), Gui(gui)
+    Drivers(ISoundDriver &sound, IGraphicsDriver &graphics, IJoystickDriver &joystick, IKeyboardDriver &keyboard, IMouseDriver &mouse, ITimerDriver &timer, IGuiDriver &gui, IIniDriver &ini)
+      : Sound(sound), Graphics(graphics), Joystick(joystick), Keyboard(keyboard), Mouse(mouse), Timer(timer), Gui(gui), Ini(ini)
     {
     }
   };

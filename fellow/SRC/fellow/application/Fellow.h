@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "fellow/api/defs.h"
 
 enum class fellow_runtime_error_codes
@@ -18,7 +20,7 @@ extern void fellowStepOver();
 extern void fellowRunDebug(ULO breakpoint);
 extern void fellowSetRuntimeErrorCode(fellow_runtime_error_codes error_code);
 extern void fellowNastyExit();
-extern char *fellowGetVersionString();
+extern std::string fellowGetVersionString();
 extern void fellowSetPreStartReset(bool reset);
 extern bool fellowGetPreStartReset();
 extern void fellowSoftReset();

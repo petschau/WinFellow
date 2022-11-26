@@ -3266,16 +3266,7 @@ INT_PTR CALLBACK wguiAboutDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 {
   switch (uMsg)
   {
-    case WM_INITDIALOG:
-    {
-      char *versionstring = fellowGetVersionString();
-      if (versionstring)
-      {
-        ccwStaticSetText(hwndDlg, IDC_STATIC_ABOUT_VERSION, versionstring);
-        free(versionstring);
-      }
-    }
-      return TRUE;
+    case WM_INITDIALOG: ccwStaticSetText(hwndDlg, IDC_STATIC_ABOUT_VERSION, fellowGetVersionString().c_str()); return TRUE;
     case WM_COMMAND:
       switch (LOWORD(wParam))
       {
@@ -3312,12 +3303,7 @@ INT_PTR CALLBACK wguiDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM l
   {
     case WM_INITDIALOG:
       SendMessage(hwndDlg, WM_SETICON, (WPARAM)ICON_BIG, (LPARAM)LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW)));
-
-      if (versionstring = fellowGetVersionString())
-      {
-        SetWindowText(hwndDlg, versionstring);
-        free(versionstring);
-      }
+      SetWindowText(hwndDlg, fellowGetVersionString().c_str());
       return TRUE;
 
     case WM_COMMAND:

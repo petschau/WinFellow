@@ -18,18 +18,19 @@ namespace fellow::service
     unsigned int _level;
     std::string _logfilename;
 
-    STR *LogTime(STR *buffer);
+    char *LogTime(char *buffer);
     FILE *OpenLogFile();
     void CloseLogFile(FILE *F);
-    void AddLogInternal(FILE *F, STR *msg);
+    void AddLogInternal(FILE *F, const char *msg);
 
   public:
     void AddLogDebug(const char *format, ...) override;
-    void AddLog(const char *, ...) override;
+    void AddLog(const char *format, ...) override;
     void AddLog(const std::string &message) override;
     void AddLogList(const std::list<std::string> &messages) override;
-    void AddLog2(STR *msg) override;
+    void AddLog2(const char *msg) override;
     void AddTimelessLog(const char *format, ...) override;
+    void AddTimelessLog(const std::string &message) override;
 
     Log();
   };

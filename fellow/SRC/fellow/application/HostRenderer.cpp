@@ -152,11 +152,16 @@ void HostRenderer::ClearDisplayModeList()
 
 const DisplayMode *HostRenderer::FindDisplayMode(unsigned int width, unsigned int height, unsigned int bits, unsigned int refresh, bool allowAnyRefresh) const
 {
-  auto item_iterator = ranges::find_if(_displayModes, [width, height, bits, refresh, allowAnyRefresh](const DisplayMode &dm) {
-    return (dm.Width == width) && (dm.Height == height) && (dm.Bits == bits) && (allowAnyRefresh || (dm.Refresh == refresh));
-  });
+  for (list<DisplayMode>::const_iterator i = _displayModes.begin(); i != _displayModes.end(); ++i)
+  {
+    const DisplayMode &dm = *i;
+    if ((dm.Width == width) && (dm.Height == height) && (dm.Bits == bits) && (allowAnyRefresh || (dm.Refresh == refresh)))
+    {
+      return &dm;
+    }
+  }
 
-  return (item_iterator != _displayModes.end()) ? &(*item_iterator) : nullptr;
+  return nullptr;
 }
 
 const list<DisplayMode> &HostRenderer::GetDisplayModes() const

@@ -1,10 +1,11 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.25)
 project(NullFellow)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_C_STANDARD 90)
+set(CMAKE_C_STANDARD 11)
 
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-deprecated-non-prototype")
+SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-deprecated-non-prototype -DHAVE_UNISTD_H=1")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -DHAVE_UNISTD_H=1")
 
 set(FELLOW_ROOT_DIR ../..)
 
@@ -69,6 +70,7 @@ set(FELLOW_LIBS_ZLIB_SOURCE_FILES
 set(FELLOW_API_SOURCE_FILES
         ${FELLOW_API_DIR}/Services.cpp
         ${FELLOW_API_DIR}/Drivers.cpp
+        ${FELLOW_API_DIR}/drivers/IniValues.cpp
         )
 
 set(FELLOW_APPLICATION_SOURCE_FILES
@@ -262,6 +264,7 @@ set(FELLOW_OS_SOURCE_FILES
         ${FELLOW_OS_DIR}/KeyboardDriver.cpp
         ${FELLOW_OS_DIR}/MouseDriver.cpp
         ${FELLOW_OS_DIR}/JoystickDriver.cpp
+        ${FELLOW_OS_DIR}/IniDriver.cpp
         )
 
 set (SOURCE_FILES

@@ -604,9 +604,7 @@ static void sysinfoParseMemoryStatus()
 
 static void sysinfoVersionInfo()
 {
-  char *versionstring = fellowGetVersionString();
-  Service->Log.AddTimelessLog(versionstring);
-  free(versionstring);
+  Service->Log.AddTimelessLog(fellowGetVersionString());
 
 #ifdef _DEBUG
   Service->Log.AddTimelessLog(" (debug build)\n");

@@ -66,6 +66,7 @@
 #include "fellow/service/CoreServicesFactory.h"
 #include "fellow/api/VM.h"
 
+using namespace std;
 using namespace fellow::api::modules;
 using namespace fellow::api;
 using namespace fellow::service;
@@ -144,26 +145,19 @@ static fellow_runtime_error_codes fellowGetRuntimeErrorCode()
   return fellow_runtime_error_code;
 }
 
-/*============================================================================*/
-/* The run-time log                                                           */
-/*============================================================================*/
-
-char *fellowGetVersionString()
+string fellowGetVersionString()
 {
-  char *result = (char *)malloc(strlen(FELLOWVERSION) + 12);
-
-  if (!result)
-  {
-    return nullptr;
-  }
+  ostringstream versionstring;
 
 #ifdef X64
-  sprintf(result, "%s - %d bit", FELLOWVERSION, 64);
+  unsigned int bits = 64;
 #else
-  sprintf(result, "%s - %d bit", FELLOWVERSION, 32);
+  unsigned int bits = 32;
 #endif
 
-  return result;
+  versionstring << FELLOWVERSION << " - " << bits;
+
+  return versionstring.str();
 }
 
 /*============================================================================*/
@@ -277,7 +271,7 @@ void fellowRequestEmulationStopClear()
 bool fellowEmulationStart()
 {
   fellowRequestEmulationStopClear();
-  iniEmulationStart();
+  Driver->Ini.EmulationStart();
   memoryEmulationStart();
   interruptEmulationStart();
   ciaEmulationStart();
@@ -355,7 +349,7 @@ void fellowEmulationStop()
   ciaEmulationStop();
   interruptEmulationStop();
   memoryEmulationStop();
-  iniEmulationStop();
+  Driver->Ini.EmulationStop();
   if (chipsetIsCycleExact())
   {
     ddf_state_machine.EmulationStop();
@@ -561,7 +555,7 @@ static void fellowModulesStartup(int argc, char *argv[])
   HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
-  iniStartup();
+  Driver->Ini.Startup();
   kbdStartup();
   cfgStartup(argc, argv);
   if (!Draw.Startup()) fellowDrawFailed();
@@ -630,7 +624,7 @@ static void fellowModulesShutdown()
   Draw.Shutdown();
   cfgShutdown();
   kbdShutdown();
-  iniShutdown();
+  Driver->Ini.Shutdown();
   spriteShutdown();
   ffilesysShutdown();
   HardfileHandler->Shutdown();

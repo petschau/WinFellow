@@ -477,7 +477,7 @@ HWND GfxDrvCommon::GetHWND()
 
 bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
 {
-  char *versionstring = fellowGetVersionString();
+  string versionstring = fellowGetVersionString();
 
   SizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
   unsigned int width = _current_draw_mode.Width;
@@ -505,7 +505,7 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
     _hwnd = CreateWindowEx(
         dwExStyle,
         "FellowWindowClass",
-        versionstring,
+        versionstring.c_str(),
         dwStyle,
         0, // CW_USEDEFAULT,
         0, // SW_SHOW,
@@ -518,10 +518,10 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
   }
   else
   {
-    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring, WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, nullptr);
+    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, nullptr);
   }
+
   Service->Log.AddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
-  free(versionstring);
 
   return (_hwnd != nullptr);
 }

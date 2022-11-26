@@ -137,7 +137,7 @@ bool ConsoleDebuggerHost::RunInDebugger()
     return false;
   }
 
-  WriteLine(string(fellowGetVersionString()) + "\r\n");
+  WriteLine(fellowGetVersionString() + "\r\n");
   WriteLine(string("Console debugger - type h for command summary") + "\r\n");
 
   ReadCommands();

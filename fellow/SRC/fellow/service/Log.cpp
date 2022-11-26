@@ -103,7 +103,7 @@ namespace fellow::service
     CloseLogFile(F);
   }
 
-  void Log::AddLog2(STR *msg)
+  void Log::AddLog2(const char *msg)
   {
     if (!_enabled)
     {
@@ -127,16 +127,21 @@ namespace fellow::service
     vsnprintf(buffer, WRITE_LOG_BUF_SIZE - 1, format, parms);
     va_end(parms);
 
-    Service->Log.AddLog2(buffer);
+    AddLog2(buffer);
   }
 
-  void Log::AddLogInternal(FILE *F, STR *msg)
+  void Log::AddTimelessLog(const string &message)
+  {
+    AddLog2(message.c_str());
+  }
+
+  void Log::AddLogInternal(FILE *F, const char *msg)
   {
     fprintf(F, "%s", msg);
     _new_line = (msg[strlen(msg) - 1] == '\n');
   }
 
-  STR *Log::LogTime(STR *buffer)
+  char *Log::LogTime(char *buffer)
   {
     if (_new_line)
     {
@@ -145,7 +150,9 @@ namespace fellow::service
       tm timedata;
 
       // C11 standard - Microsoft messed up localtime_s and reversed the parameters
-      // This is the correct order, and it points to a macro defined in portable.h
+      // so that nobody can ever use the standard function and be portable
+      // This macro uses the correct parameter order, and it points to a macro defined in portable.h
+      // that reverses the parameters if your platform is messed up
       localtime_s_wrapper(&thetime, &timedata);
 
       strftime(buffer, 255, "%c: ", &timedata);

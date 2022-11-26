@@ -1,7 +1,9 @@
 {
     "cmake.sourceDirectory": "${workspaceFolder}/build/cmake",
+    "editor.formatOnSave": true,
+    "cmake.buildDirectory": "${workspaceFolder}/build/cmake/output",
     "files.associations": {
-        "cmath": "cpp"
-    },
-    "editor.formatOnSave": true
+        "gzguts.h": "c",
+        "zlib.h": "c"
+    }
 }

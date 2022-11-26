@@ -63,6 +63,7 @@
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/application/Interrupt.h"
 #include <sys/timeb.h>
+#include <unistd.h> // For access()
 
 #include "fellow/libs/xdms/src/xdms.h"
 #include "fellow/libs/zlib/zlibwrap.h"
@@ -910,9 +911,9 @@ BOOLE floppyImageCompressedBZipPrepare(const STR *diskname, ULO drive)
     return FALSE;
   }
 
-  STR cmdline[512];
-  sprintf(cmdline, "bzip2.exe -k -d -s -c %s > %s", diskname, gzname);
-  system(cmdline);
+  ostringstream cmdline;
+  cmdline << "bzip2.exe -k -d -s -c " << diskname << " > " << gzname;
+  system(cmdline.str().c_str());
   strcpy(floppy[drive].imagenamereal, gzname);
   free(gzname);
   floppy[drive].zipped = TRUE;
@@ -978,6 +979,7 @@ BOOLE floppyImageCompressedGZipPrepare(const STR *diskname, ULO drive)
   strcpy(floppy[drive].imagenamereal, gzname);
   free(gzname);
   floppy[drive].zipped = TRUE;
+
   if ((access(diskname, 2)) == -1)
   {
     floppySetReadOnlyEnforced(drive, true);

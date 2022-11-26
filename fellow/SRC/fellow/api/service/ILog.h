@@ -2,7 +2,6 @@
 
 #include <string>
 #include <list>
-#include "fellow/api/defs.h"
 
 namespace fellow::api
 {
@@ -13,8 +12,9 @@ namespace fellow::api
     virtual void AddLog(const char *format, ...) = 0;
     virtual void AddLog(const std::string &message) = 0;
     virtual void AddLogList(const std::list<std::string> &messages) = 0;
-    virtual void AddLog2(STR *msg) = 0;
+    virtual void AddLog2(const char *msg) = 0;
     virtual void AddTimelessLog(const char *format, ...) = 0;
+    virtual void AddTimelessLog(const std::string &message) = 0;
 
     virtual ~ILog() = default;
   };

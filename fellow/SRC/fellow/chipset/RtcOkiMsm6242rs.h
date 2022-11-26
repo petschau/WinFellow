@@ -1,5 +1,6 @@
 #pragma once
 
+#include <time.h>
 #include "fellow/api/defs.h"
 
 class RtcOkiMsm6242rs;
