@@ -1,6 +1,6 @@
 *.suo
 *.aps
-fellow/SRC/build/cmake/output
+fellow/SRC/build/cmake
 fellow/SRC/fellow/os/windows/versioninfo.h
 fellow/SRC/fellow/os/windows/gui/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/.vs/
