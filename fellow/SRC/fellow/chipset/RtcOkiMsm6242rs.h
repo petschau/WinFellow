@@ -82,6 +82,6 @@ private:
 public:
   UWO read(ULO address);
   void write(UWO data, ULO address);
-  void logRtcTime(STR *msg);
+  void logRtcTime(const char *msg);
   RtcOkiMsm6242rs();
 };

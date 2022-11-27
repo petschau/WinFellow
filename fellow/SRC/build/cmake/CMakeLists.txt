@@ -4,8 +4,16 @@ project(NullFellow)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-deprecated-non-prototype -DHAVE_UNISTD_H=1")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -DHAVE_UNISTD_H=1")
+# Keeping these around while experimenting with cmake
+# Clang is unhappy about stone-age C as found in zlib etc so some warnings need to be disabled to avoid excessive warning spam
+# Additionally, on Mac, it becomes apparent that Zlib isn't properly "configure"'d as the zlib source files are simply just included in the build
+# so some flags to include the platform appropriate headers are missing (unistd), this needs further investigation
+
+#SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-non-prototype -DHAVE_UNISTD_H=1")
+#SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations -DHAVE_UNISTD_H=1")
+
+SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 set(FELLOW_ROOT_DIR ../..)
 

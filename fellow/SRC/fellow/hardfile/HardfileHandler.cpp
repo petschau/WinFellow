@@ -2389,25 +2389,6 @@ namespace fellow::hardfile
   {
     bool result = false;
 
-#ifdef WIN32
-    HANDLE hf;
-
-    if (!configuration.Filename.empty() && size != 0)
-    {
-      if ((hf = CreateFile(configuration.Filename.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL | FILE_FLAG_SEQUENTIAL_SCAN, NULL)) != INVALID_HANDLE_VALUE)
-      {
-        LONG high = 0;
-        if (SetFilePointer(hf, size, &high, FILE_BEGIN) == size)
-          result = SetEndOfFile(hf) == TRUE;
-        else
-          Service->Log.AddLog("SetFilePointer() failure.\n");
-        CloseHandle(hf);
-      }
-      else
-        Service->Log.AddLog("CreateFile() failed.\n");
-    }
-    return result;
-#else /* os independent implementation */
 #define BUFSIZE 32768
     unsigned int tobewritten;
     char buffer[BUFSIZE];
@@ -2447,7 +2428,6 @@ namespace fellow::hardfile
         Service->Log.AddLog("fhfileCreate is unable to open output file.\n");
     }
     return result;
-#endif
   }
 
   rdb_status HardfileHandler::HasRDB(const std::string &filename)

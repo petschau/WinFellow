@@ -401,7 +401,7 @@ void RtcOkiMsm6242rs::write(UWO data, ULO address)
 
 #ifdef RTC_LOG
 
-void RtcOkiMsm6242rs::logRtcTime(STR *msg)
+void RtcOkiMsm6242rs::logRtcTime(const char *msg)
 {
   struct tm *datetime = GetCurrentOrHeldTime();
 
