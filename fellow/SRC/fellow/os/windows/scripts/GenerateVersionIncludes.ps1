@@ -3,7 +3,7 @@
 ##                                                                         ##
 ## GenerateVersionIncludes.ps1                                             ##
 ##                                                                         ##
-## Author: Petter Schau                                                    ##
+## Author: Torsten Enderling, Petter Schau                                 ##
 ##                                                                         ##
 ## Copyright (C) 1991, 1992, 1996 Free Software Foundation, Inc.           ##
 ##                                                                         ##
@@ -49,7 +49,7 @@ function GenerateVersionIncludeForFile {
 
 	$VersionInfoTemporaryFile = New-TemporaryFile
 
-	Write-Host "Transforming file" $VersionInfoOutput
+	Write-Host "Updating versioninfo in file '$VersionInfoOutput'"
 
 	& "$PSScriptRoot\GitWCRev.ps1" -InputFileName $VersionInfoInput -OutputFileName $VersionInfoTemporaryFile
 
@@ -74,14 +74,11 @@ if ($fileCount -ne $OutputFileNames.Length) {
 	Exit 1;
 }
 
-for ($i = 0; $i -le $fileCount; $i++) {
+for ($i = 0; $i -lt $fileCount; $i++) {
 	$InputFilename = "$PSScriptRoot\" + $InputFileNames[$i]
 	$OutputFilename = "$PSScriptRoot\" + $OutputFileNames[$i]
 
-	Write-Host "Input file is" $InputFilename
-	Write-Host "Output file is" $OutputFilename
-
-	GenerateVersionIncludeForFile $InputFilename, $OutputFilename
+	GenerateVersionIncludeForFile -VersionInfoInput $InputFilename -VersionInfoOutput $OutputFilename
 }
 
 Exit 0

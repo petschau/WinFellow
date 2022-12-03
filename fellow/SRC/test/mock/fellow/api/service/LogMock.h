@@ -10,8 +10,9 @@ namespace test::mock::fellow::api
     void AddLogDebug(const char *, ...) override;
     void AddLog(const char *, ...) override;
     void AddLog(const std::string &message) override;
-    void AddLog2(STR *msg) override;
+    void AddLog2(const char *msg) override;
     void AddLogList(const std::list<std::string> &messages) override;
     void AddTimelessLog(const char *format, ...) override;
+    void AddTimelessLog(const std::string &message) override;
   };
 }

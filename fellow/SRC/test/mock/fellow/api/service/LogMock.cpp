@@ -16,7 +16,7 @@ namespace test::mock::fellow::api
   {
   }
 
-  void LogMock::AddLog2(STR *msg)
+  void LogMock::AddLog2(const char *msg)
   {
   }
 
@@ -25,6 +25,10 @@ namespace test::mock::fellow::api
   }
 
   void LogMock::AddTimelessLog(const char *format, ...)
+  {
+  }
+
+  void LogMock::AddTimelessLog(const string &msg)
   {
   }
 }
