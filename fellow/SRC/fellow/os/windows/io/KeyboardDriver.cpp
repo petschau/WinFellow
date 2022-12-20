@@ -21,16 +21,15 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include "fellow/api/defs.h"
+#include "fellow/os/windows/io/KeyboardDriver.h"
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/chipset/Kbd.h"
 #include "fellow/api/Drivers.h"
-#include "fellow/os/windows/io/KeyboardDriver.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -443,7 +442,8 @@ void KeyboardDriver::DInputUnacquireFailure(const char *header, HRESULT err)
 
 bool KeyboardDriver::DInputSetCooperativeLevel()
 {
-  HRESULT res = IDirectInputDevice_SetCooperativeLevel(_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HRESULT res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     DInputFailure("kbdDrvDInputSetCooperativeLevel():", res);
@@ -874,7 +874,7 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
     Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
-    _kbd_in_task_switcher = gfxDrvCommon->IsHostBufferWindowed();
+    _kbd_in_task_switcher = ((GraphicsDriver&)Driver->Graphics).IsHostBufferWindowed();
 
     // Don't pass this TAB press along to emulation, pass left-ALT release instead
     keycode = map(PCK_LEFT_ALT);

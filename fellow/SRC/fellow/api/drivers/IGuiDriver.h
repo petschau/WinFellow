@@ -13,6 +13,7 @@ enum class FELLOW_REQUESTER_TYPE
 class IGuiDriver
 {
 public:
+  virtual bool CheckEmulationNecessities() = 0;
   virtual void Requester(FELLOW_REQUESTER_TYPE type, const char *szMessage) = 0;
   virtual void SetProcessDPIAwareness(const char *pszAwareness) = 0;
   virtual BOOLE Enter() = 0;

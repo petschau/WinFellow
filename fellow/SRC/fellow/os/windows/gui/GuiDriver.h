@@ -153,9 +153,9 @@ private:
   UINT GetRequesterTypeFromFellowRequesterType(FELLOW_REQUESTER_TYPE fellowRequesterType);
 
   static bool InitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_presets);
-  bool CheckEmulationNecessities();
 
   public:
+  bool CheckEmulationNecessities() override;
   INT_PTR VariousDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
   INT_PTR ConfigurationDialog();
@@ -186,8 +186,7 @@ private:
   wgui_drawmode *GetUIDrawModeFromIndex(unsigned int index, wgui_drawmode_list &list);
   void GetResolutionStrWithIndex(LONG index, char char_buffer[]);
   void GetFrameSkippingStrWithIndex(LONG index, char char_buffer[]);
-  void SetSliderTextAccordingToPosition(
-      HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, std::function<void(LONG, char[])> getSliderStrWithIndex);
+  void SetSliderTextAccordingToPosition(HWND windowHandle, int sliderIdentifier, int sliderTextIdentifier, std::function<void(LONG, char[])> getSliderStrWithIndex);
   ULO GetColorBitsFromComboboxIndex(LONG index);
   LONG GetComboboxIndexFromColorBits(ULO colorbits);
   DISPLAYDRIVER GetDisplayDriverFromComboboxIndex(LONG index);

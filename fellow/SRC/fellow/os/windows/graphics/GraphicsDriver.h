@@ -2,6 +2,10 @@
 
 #include "fellow/api/drivers/IGraphicsDriver.h"
 
+class GfxDrvCommon;
+class GfxDrvDirectDraw;
+class GfxDrvDXGI;
+
 class GraphicsDriver : public IGraphicsDriver
 {
 private:
@@ -12,6 +16,13 @@ private:
   GfxDrvDXGI *_gfxDrvDXGI = nullptr;
 
 public:
+  // The windows os drivers depends on some shared information about the window such as HWND or fullscreen/window mode
+  // The functions provide that
+  bool IsHostBufferWindowed() const;
+  HWND GetHWND();
+  void SetPauseEmulationWhenWindowLosesFocus(bool pause);
+  bool GetDisplayChange() const;
+
   void ClearCurrentBuffer() override;
   void BufferFlip() override;
   void SizeChanged(unsigned int width, unsigned int height) override;
@@ -34,4 +45,6 @@ public:
   void EmulationStop() override;
   bool Startup(DISPLAYDRIVER displaydriver) override;
   void Shutdown() override;
+
+  virtual ~GraphicsDriver() = default;
 };

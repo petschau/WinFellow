@@ -26,8 +26,13 @@ void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
   gfxDrvCommon->DelayFlipTimerCallback(timeMilliseconds);
 }
 
-void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
+bool GfxDrvCommon::GetDisplayChange() const
 {
+  return _displayChange;
+}
+
+void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
+  {
   _time = timeMilliseconds;
 
   if (_wait_for_time > 0)
@@ -349,7 +354,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     case WM_DISPLAYCHANGE:
       if (IsHostBufferWindowed())
       {
-        _displaychange = (wParam != _current_draw_mode.Bits);
+        _displayChange = (wParam != _current_draw_mode.Bits);
         fellow_request_emulation_stop = TRUE;
       }
       break;
@@ -575,7 +580,7 @@ bool GfxDrvCommon::EmulationStart(const HostRenderConfiguration &hostRenderConfi
   _win_active_original = false;
   _win_minimized_original = false;
   _syskey_down = false;
-  _displaychange = false;
+  _displayChange = false;
 
   if (!InitializeWindow(hostRenderConfiguration.Scale))
   {

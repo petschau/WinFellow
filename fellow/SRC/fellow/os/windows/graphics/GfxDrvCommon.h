@@ -14,7 +14,7 @@ private:
   HWND _hwnd;        // The emulation output window
   volatile bool _syskey_down;
   volatile bool _win_active;
-    volatile bool _win_active_original;
+  volatile bool _win_active_original;
   volatile bool _win_minimized_original;
   bool _pause_emulation_when_window_loses_focus;
   DisplayMode _current_draw_mode;
@@ -27,6 +27,8 @@ private:
   volatile int _wait_for_time;
   HANDLE _delay_flip_event;
 
+  bool _displayChange;
+
   void MaybeDelayFlip();
   void DelayFlipWait(int milliseconds);
   void RememberFlipTime();
@@ -37,7 +39,6 @@ private:
   void SetDrawMode(const DisplayMode &dm);
 
 public:
-  bool _displaychange;
 
 #ifdef RETRO_PLATFORM
   cfg *rp_startup_config;
@@ -45,6 +46,7 @@ public:
 
   const DimensionsUInt &GetHostBufferSize() const;
 
+  bool GetDisplayChange() const;
   bool IsHostBufferWindowed() const;
   void SizeChanged(unsigned int width, unsigned int height);
 

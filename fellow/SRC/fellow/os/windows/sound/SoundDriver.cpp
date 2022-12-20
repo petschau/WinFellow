@@ -30,12 +30,13 @@
 #include <dsound.h>
 
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/api/Services.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/application/ListTree.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/os/windows/sound/SoundDriver.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 using namespace fellow::api;
 
@@ -330,10 +331,10 @@ bool SoundDriver::DSoundSetCurrentSoundDeviceVolume(const int volume)
 
 bool SoundDriver::DSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device)
 {
-  // We need the HWND of the amiga emulation window, which means sound is
-  // initialized after the gfx stuff
+  // We need the HWND of the amiga emulation window, which means sound must be initialized after the gfx stuff
 
-  HRESULT setCooperativeLevelResult = IDirectSound_SetCooperativeLevel(dsound_device->lpDS, gfxDrvCommon->GetHWND(), DSSCL_PRIORITY);
+  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HRESULT setCooperativeLevelResult = IDirectSound_SetCooperativeLevel(dsound_device->lpDS, hwnd, DSSCL_PRIORITY);
   if (setCooperativeLevelResult != DS_OK)
   {
     DSoundFailure("soundDrvDSoundSetCooperativeLevel", setCooperativeLevelResult);

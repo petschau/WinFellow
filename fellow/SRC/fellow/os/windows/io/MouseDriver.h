@@ -15,8 +15,8 @@ private:
   BOOLE _in_use;
   BOOLE _initialization_failed;
   bool _unacquired;
-  static BOOLE bLeftButton;
-  static BOOLE bRightButton;
+  static BOOLE _bLeftButton;
+  static BOOLE _bRightButton;
   int _num_mouse_attached = 0;
 
   static BOOL FAR PASCAL GetMouseInfoCallback(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);

@@ -22,11 +22,12 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/io/JoystickDriver.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 #include <mmsystem.h>
 
@@ -125,7 +126,8 @@ void JoystickDriver::DInputSetCooperativeLevel(int port)
     return;
   }
 
-  HRESULT res = IDirectInputDevice8_SetCooperativeLevel(_lpDID[port], gfxDrvCommon->GetHWND(), ((_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
+  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HRESULT res = IDirectInputDevice8_SetCooperativeLevel(_lpDID[port], hwnd, ((_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     DInputFailure("JoystickDriver::DInputSetCooperativeLevel():", res);

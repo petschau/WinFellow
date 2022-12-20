@@ -1,7 +1,7 @@
-#include "GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
+#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
-#include "fellow/os/windows/graphics/GraphicsDriver.h"
 #include "fellow/api/Services.h"
 #include "fellow/hud/HudPropertyProvider.h"
 
@@ -11,6 +11,26 @@
 
 using namespace std;
 using namespace fellow::api;
+
+bool GraphicsDriver::IsHostBufferWindowed() const
+{
+  return _gfxDrvCommon->IsHostBufferWindowed();
+}
+
+HWND GraphicsDriver::GetHWND()
+{
+  return _gfxDrvCommon->GetHWND();
+}
+
+void GraphicsDriver::SetPauseEmulationWhenWindowLosesFocus(bool pause)
+{
+  _gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(pause);
+}
+
+bool GraphicsDriver::GetDisplayChange() const
+{
+  return _gfxDrvCommon->GetDisplayChange();
+}
 
 void GraphicsDriver::ClearCurrentBuffer()
 {
@@ -155,7 +175,7 @@ ULO GraphicsDriver::EmulationStartPost(const ChipsetBufferRuntimeSettings &chips
     return _gfxDrvDXGI->EmulationStartPost();
   }
 
-  return _gfxDrvDirectDraw->EmulationStartPost(chipsetBufferRuntimeSettings, gfxDrvCommon->GetHWND());
+  return _gfxDrvDirectDraw->EmulationStartPost(chipsetBufferRuntimeSettings, GetHWND());
 }
 
 void GraphicsDriver::EmulationStop()

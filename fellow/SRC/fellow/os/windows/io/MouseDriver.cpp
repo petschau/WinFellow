@@ -31,7 +31,7 @@
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/io/MouseDriver.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 #include <initguid.h>
 
@@ -42,6 +42,9 @@
 using namespace fellow::api;
 
 #define DINPUT_BUFFERSIZE 16
+
+BOOLE MouseDriver::_bLeftButton;
+BOOLE MouseDriver::_bRightButton;
 
 const char *MouseDriver::DInputErrorString(HRESULT hResult)
 {
@@ -237,7 +240,8 @@ BOOLE MouseDriver::DInputInitialize()
   }
 
   /* Set cooperative level */
-  res = IDirectInputDevice_SetCooperativeLevel(_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
     DInputFailure("MouseDriver::DInputInitialize(): SetCooperativeLevel()", res);
@@ -397,7 +401,7 @@ void MouseDriver::MovementHandler()
           if ((i == itemcount) ||                  // if there are no other objects
               (rgod[i].dwSequence != oldSequence)) // or the current objects is a different event
           {
-            gameportMouseHandler(gameport_inputs::GP_MOUSE0, lx, ly, bLeftButton, FALSE, bRightButton);
+            gameportMouseHandler(gameport_inputs::GP_MOUSE0, lx, ly, _bLeftButton, FALSE, _bRightButton);
             lx = ly = 0;
           }
           if (i == itemcount) // no other objects to examine, exit
@@ -409,9 +413,9 @@ void MouseDriver::MovementHandler()
 
         switch (rgod[i].dwOfs)
         {
-          case DIMOFS_BUTTON0: bLeftButton = (rgod[i].dwData & 0x80); break;
+          case DIMOFS_BUTTON0: _bLeftButton = (rgod[i].dwData & 0x80); break;
 
-          case DIMOFS_BUTTON1: bRightButton = (rgod[i].dwData & 0x80); break;
+          case DIMOFS_BUTTON1: _bRightButton = (rgod[i].dwData & 0x80); break;
 
           case DIMOFS_X: lx += rgod[i].dwData; break;
 
@@ -455,8 +459,8 @@ void MouseDriver::Startup()
   _lpDI = nullptr;
   _lpDID = nullptr;
   _DIevent = nullptr;
-  bLeftButton = FALSE;
-  bRightButton = FALSE;
+  _bLeftButton = FALSE;
+  _bRightButton = FALSE;
 }
 
 void MouseDriver::Shutdown()

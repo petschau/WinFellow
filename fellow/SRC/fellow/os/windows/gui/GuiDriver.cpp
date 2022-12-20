@@ -58,6 +58,7 @@
 #include "fellow/application/HostRenderer.h"
 #include "WDBG.H"
 #include "fellow/api/Drivers.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 #include "fellow/chipset/Kbd.h"
 #ifdef FELLOW_SUPPORT_CAPS
 #include "fellow/os/windows/caps/caps.h"
@@ -65,7 +66,6 @@
 #include "fellow/chipset/Floppy.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/application/FellowFilesys.h"
 #include "fellow/application/modrip.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -1267,14 +1267,14 @@ void GuiDriver::ExtractVariousConfig(HWND hwndDlg, cfg *conf)
 void GuiDriver::InstallMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
 {
   ccwMenuCheckedSetConditionalBool(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, ini->GetPauseEmulationWhenWindowLosesFocus());
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
+  ((GraphicsDriver&) Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
 }
 
 void GuiDriver::ToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
 {
   bool ischecked = ccwMenuCheckedToggleBool(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS);
   _wgui_ini->SetPauseEmulationWhenWindowLosesFocus(ischecked);
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(ischecked);
+  ((GraphicsDriver &)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
 // configure option gfx debug immediate rendering menu item
@@ -3573,7 +3573,7 @@ BOOLE GuiDriver::Enter()
       do
       {
         winDrvEmulationStart();
-      } while (gfxDrvCommon->_displaychange);
+      } while (((GraphicsDriver&) Driver->Graphics).GetDisplayChange());
 
       if (!cfgGetUseGUI(_wgui_cfg))
       {
