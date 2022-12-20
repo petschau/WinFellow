@@ -25,15 +25,12 @@
 #include "fellow/os/windows/gui/gui_general.h"
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
-#include "fellow/application/WGui.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/os/windows/gui/WDbg.h"
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/application/Fellow.h"
-#include "fellow/application/MouseDriver.h"
 #include "Kbd.h"
-#include "fellow/application/JoystickDriver.h"
-#include "fellow/application/KeyboardDriver.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/io/FileopsWin32.h"
 #include "fellow/api/Services.h"
@@ -319,11 +316,11 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
           break;
         case met_mouse_data:
           /* Deal with mouse input */
-          mouseDrvMovementHandler();
+          Driver->Mouse.MovementHandler();
           break;
         case met_kbd_data:
           /* Deal with kbd input */
-          kbdDrvKeypressHandler();
+          Driver->Keyboard.KeypressHandler();
           break;
         case met_messages:
           /* Deal with windows messages */
@@ -370,11 +367,11 @@ void winDrvDebugMessageLoop()
           break;
         case met_mouse_data:
           /* Deal with mouse input */
-          mouseDrvMovementHandler();
+          Driver->Mouse.MovementHandler();
           break;
         case met_kbd_data:
           /* Deal with kbd input */
-          kbdDrvKeypressHandler();
+          Driver->Keyboard.KeypressHandler();
           break;
         case met_messages:
           /* Deal with windows messages */
@@ -415,7 +412,7 @@ void winDrvEmulationStart()
 
 void winDrvHandleInputDevices()
 {
-  joyDrvMovementHandler();
+  Driver->Joystick.MovementHandler();
 }
 
 /*===========================================================================*/

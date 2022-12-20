@@ -27,9 +27,9 @@
 #include <commctrl.h>
 
 #include "fellow/api/defs.h"
-#include "commoncontrol_wrap.h"
+#include "fellow/os/windows/gui/commoncontrol_wrap.h"
 
-//#include "windrv.h"
+using namespace std;
 
 void ccwButtonSetCheck(HWND windowHandle, int controlIdentifier)
 {
@@ -49,9 +49,13 @@ void ccwButtonCheckConditional(HWND windowHandle, int controlIdentifier, BOOLE c
 void ccwButtonCheckConditionalBool(HWND windowHandle, int controlIdentifier, bool check)
 {
   if (check)
+  {
     ccwButtonSetCheck(windowHandle, controlIdentifier);
+  }
   else
+  {
     ccwButtonUncheck(windowHandle, controlIdentifier);
+  }
 }
 
 BOOLE ccwButtonGetCheck(HWND windowHandle, int controlIdentifier)
@@ -119,14 +123,24 @@ void ccwSliderEnableBool(HWND windowHandle, int controlIdentifier, bool enable)
   EnableWindow(GetDlgItem(windowHandle, controlIdentifier), enable ? 1 : 0);
 }
 
-void ccwStaticSetText(HWND windowHandle, int controlIdentifier, STR *text)
+void ccwStaticSetText(HWND windowHandle, int controlIdentifier, const STR *text)
 {
   Static_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
+}
+
+void ccwStaticSetTextString(HWND windowHandle, int controlIdentifier, const string& text)
+{
+  ccwStaticSetText(windowHandle, controlIdentifier, text.c_str());
 }
 
 void ccwEditSetText(HWND windowHandle, int controlIdentifier, const STR *text)
 {
   Edit_SetText(GetDlgItem(windowHandle, controlIdentifier), text);
+}
+
+void ccwEditSetTextString(HWND windowHandle, int controlIdentifier, const string& text)
+{
+  ccwEditSetText(windowHandle, controlIdentifier, text.c_str());
 }
 
 void ccwEditGetText(HWND windowHandle, int controlIdentifier, STR *text, ULO n)
@@ -161,6 +175,11 @@ void ccwMenuCheckedSetConditional(HWND windowHandle, int menuIdentifier, BOOLE e
 
   mii.fState |= enable ? MFS_CHECKED : MFS_UNCHECKED;
   SetMenuItemInfo(hMenu, menuIdentifier, FALSE, &mii);
+}
+
+void ccwMenuCheckedSetConditionalBool(HWND windowHandle, int menuIdentifier, bool enable)
+{
+  ccwMenuCheckedSetConditional(windowHandle, menuIdentifier, enable ? TRUE : FALSE);
 }
 
 BOOLE ccwMenuCheckedToggle(HWND windowHandle, int menuIdentifier)

@@ -148,6 +148,9 @@
     <Filter Include="fellow\os\windows\scripts">
       <UniqueIdentifier>{84ed4694-8f23-4999-ae2e-f6ad7a111627}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\api\drivers">
+      <UniqueIdentifier>{9cfb0d45-dd86-4a8f-95d0-d5965f95e00d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\fellow\vm\M68K.cpp">
@@ -663,7 +666,7 @@
     <ClCompile Include="..\..\fellow\os\windows\gui\WDbg.cpp">
       <Filter>fellow\os\windows\gui</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\gui\WGui.cpp">
+    <ClCompile Include="..\..\fellow\os\windows\gui\GuiDriver.cpp">
       <Filter>fellow\os\windows\gui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp">
@@ -684,7 +687,7 @@
     <ClCompile Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.cpp">
       <Filter>fellow\os\windows\timer</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\timer\Timer.cpp">
+    <ClCompile Include="..\..\fellow\os\windows\timer\TimerDriver.cpp">
       <Filter>fellow\os\windows\timer</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.cpp">
@@ -692,9 +695,6 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c">
       <Filter>fellow\os\windows\retroplatform</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\application\Ini.cpp">
-      <Filter>fellow\os\windows\application</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp">
       <Filter>fellow\os\windows\application</Filter>
@@ -734,6 +734,12 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\os\windows\uae\UAESUPP.C">
       <Filter>fellow\os\windows\uae</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\api\drivers\IniValues.cpp">
+      <Filter>fellow\api\drivers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\api\Drivers.cpp">
+      <Filter>fellow\api</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1259,9 +1265,6 @@
     <ClInclude Include="..\..\fellow\application\FellowFilesys.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\Ini.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\application\Interrupt.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
@@ -1349,9 +1352,6 @@
     <ClInclude Include="..\..\fellow\os\windows\gui\WDbg.h">
       <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\os\windows\gui\wgui_win32.h">
-      <Filter>fellow\os\windows\gui</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h">
       <Filter>fellow\os\windows\gui</Filter>
     </ClInclude>
@@ -1429,6 +1429,75 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\os\windows\portable.h">
       <Filter>fellow\os\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvColorBitsInformation.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvMappedBufferPointer.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IGraphicsDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IGuiDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IIniDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IJoystickDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IKeyboardDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IModRipGuiDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IMouseDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\IniValues.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\ISoundDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\drivers\ITimerDriver.h">
+      <Filter>fellow\api\drivers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\timer\TimerDriver.h">
+      <Filter>fellow\os\windows\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\sound\SoundDriver.h">
+      <Filter>fellow\os\windows\sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\graphics\GraphicsDriver.h">
+      <Filter>fellow\os\windows\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\MouseDriver.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\JoystickDriver.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\io\KeyboardDriver.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h\Header.h">
+      <Filter>fellow\os\windows\io</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDriver.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiPresets.h">
+      <Filter>fellow\os\windows\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\api\Drivers.h">
+      <Filter>fellow\api</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

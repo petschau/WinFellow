@@ -177,12 +177,12 @@ const string &IniValues::GetLastUsedModDir() const
   return _lastusedmoddir;
 }
 
-void IniValues::SetPauseEmulationWhenWindowLosesFocus(BOOLE pause)
+void IniValues::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 {
   _pauseemulationwhenwindowlosesfocus = pause;
 }
 
-BOOLE IniValues::GetPauseEmulationWhenWindowLosesFocus() const
+bool IniValues::GetPauseEmulationWhenWindowLosesFocus() const
 {
   return _pauseemulationwhenwindowlosesfocus;
 }

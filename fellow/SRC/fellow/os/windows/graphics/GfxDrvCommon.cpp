@@ -1,18 +1,14 @@
+
+#include <string>
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
-#include "fellow/application/Ini.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/gui/gui_general.h"
-#include "fellow/application/GraphicsDriver.h"
 
 #include "fellow/chipset/Sound.h"
-#include "fellow/application/ISoundDriver.h"
-#include "fellow/application/MouseDriver.h"
-#include "fellow/application/JoystickDriver.h"
-#include "fellow/application/KeyboardDriver.h"
-#include "fellow/application/Timer.h"
 #include "fellow/chipset/Graphics.h"
 
 #ifdef RETRO_PLATFORM
@@ -22,6 +18,7 @@
 
 #include "windowsx.h"
 
+using namespace std;
 using namespace fellow::api;
 
 void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
@@ -62,7 +59,7 @@ void GfxDrvCommon::InitializeDelayFlipTimerCallback()
   _time = 0;
   _wait_for_time = 0;
   SetEvent(_delay_flip_event);
-  timerAddCallback(GfxDrvCommonDelayFlipTimerCallback);
+  Driver->Timer.AddCallback(GfxDrvCommonDelayFlipTimerCallback);
 }
 
 int GfxDrvCommon::GetTimeSinceLastFlip()
@@ -156,7 +153,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
       if (_pause_emulation_when_window_loses_focus) RunEventReset();
     }
 
-    gfxDrvNotifyActiveStatus(_win_active);
+    Driver->Graphics.NotifyActiveStatus(_win_active);
 #ifdef RETRO_PLATFORM
   }
 #endif
@@ -164,7 +161,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
 
 void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 {
-  mouseDrvStateHasChanged(active);
+  Driver->Mouse.StateHasChanged(active);
 
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
@@ -172,8 +169,8 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
   {
 #endif
 #endif
-    joyDrvStateHasChanged(active);
-    kbdDrvStateHasChanged(active);
+    Driver->Joystick.StateHasChanged(active);
+    Driver->Keyboard.StateHasChanged(active);
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
   }
@@ -258,7 +255,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       if (wParam == 1)
       {
         winDrvHandleInputDevices();
-        soundDrvPollBufferPosition();
+        Driver->Sound.PollBufferPosition();
         return 0;
       }
       break;
@@ -276,8 +273,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
         case VK_RETURN: /* Full screen vs windowed */ break;
       }
       break;
-    case WM_MOVE: gfxDrvPositionChanged(); break;
-    case WM_SIZE: gfxDrvSizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
+    case WM_MOVE: Driver->Graphics.PositionChanged(); break;
+    case WM_SIZE: Driver->Graphics.SizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
     case WM_ACTIVATE:
       /* WM_ACTIVATE tells us whether our window is active or not */
       /* It is monitored so that we can know whether we should claim */
@@ -343,7 +340,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       if (IsHostBufferWindowed())
       {
         GetWindowRect(hWnd, &emulationRect);
-        iniSetEmulationWindowPosition(_ini, emulationRect.left, emulationRect.top);
+        _iniValues->SetEmulationWindowPosition(emulationRect.left, emulationRect.top);
       }
       NotifyDirectInputDevicesAboutActiveState(false);
       return 0;
@@ -366,14 +363,14 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     case WM_LBUTTONUP:
       if (RP.GetHeadlessMode())
       {
-        if (mouseDrvGetFocus())
+        if (Driver->Mouse.GetFocus())
         {
           NotifyDirectInputDevicesAboutActiveState(_win_active_original);
           RP.SendMouseCapture(true);
         }
         else
         {
-          mouseDrvSetFocus(TRUE, FALSE);
+          Driver->Mouse.SetFocus(TRUE, FALSE);
         }
         return 0;
       }
@@ -432,8 +429,8 @@ void GfxDrvCommon::DisplayWindow()
   Service->Log.AddLog("GfxDrvCommon::DisplayWindow()\n");
   if (IsHostBufferWindowed())
   {
-    ULO x = iniGetEmulationWindowXPos(_ini);
-    ULO y = iniGetEmulationWindowYPos(_ini);
+    ULO x = _iniValues->GetEmulationWindowXPos();
+    ULO y = _iniValues->GetEmulationWindowYPos();
     RECT rc1;
     SetRect(&rc1, x, y, x + _current_draw_mode.Width, y + _current_draw_mode.Height);
     AdjustWindowRectEx(&rc1, GetWindowStyle(_hwnd), GetMenu(_hwnd) != nullptr, GetWindowExStyle(_hwnd));
@@ -441,7 +438,7 @@ void GfxDrvCommon::DisplayWindow()
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
 
-    gfxDrvSizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
+    Driver->Graphics.SizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
   }
   else
   {
@@ -614,7 +611,7 @@ void GfxDrvCommon::EmulationStop()
 
 bool GfxDrvCommon::Startup()
 {
-  _ini = iniManagerGetCurrentInitdata(&ini_manager);
+  _iniValues = Driver->Ini.GetCurrentInitdata();
   bool initialized = InitializeRunEvent();
   if (initialized)
   {
@@ -634,7 +631,7 @@ void GfxDrvCommon::Shutdown()
   ReleaseDelayFlipEvent();
 }
 
-GfxDrvCommon::GfxDrvCommon() : _run_event(nullptr), _hwnd(nullptr), _ini(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
+GfxDrvCommon::GfxDrvCommon() : _run_event(nullptr), _hwnd(nullptr), _iniValues(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
 {
 }
 

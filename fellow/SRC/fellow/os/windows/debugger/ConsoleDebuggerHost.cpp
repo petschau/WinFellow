@@ -9,7 +9,6 @@
 #include "fellow/api/Services.h"
 #include "fellow/application/Fellow.h"
 
-#include "fellow/application/WGui.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 using namespace std;

@@ -28,6 +28,8 @@
 #include <crtdbg.h>
 #endif
 
+#include <string>
+
 #include "fellow/api/defs.h"
 #include "versioninfo.h"
 #include "fellow/chipset/ChipsetInfo.h"
@@ -54,6 +56,7 @@
 
 #include "fellow/configuration/HostRenderConfigurationMapper.h"
 
+using namespace std;
 using namespace fellow::api::modules;
 using namespace fellow::api;
 
@@ -2090,11 +2093,11 @@ static bool cfgLoadFromFile(cfg *config, FILE *cfgfile)
   return true;
 }
 
-bool cfgLoadFromFilename(cfg *config, const STR *filename, const bool bIsPreset)
+bool cfgLoadFromFilename(cfg *config, const string& filename, const bool bIsPreset)
 {
   STR newfilename[CFG_FILENAME_LENGTH];
 
-  Service->Fileops.ResolveVariables(filename, newfilename);
+  Service->Fileops.ResolveVariables(filename.c_str(), newfilename);
 
   if (!bIsPreset)
   {
@@ -2133,9 +2136,9 @@ static bool cfgSaveToFile(cfg *config, FILE *cfgfile)
   return cfgSaveOptions(config, cfgfile);
 }
 
-bool cfgSaveToFilename(cfg *config, STR *filename)
+bool cfgSaveToFilename(cfg *config, const string& filename)
 {
-  FILE *cfgfile = fopen(filename, "w");
+  FILE *cfgfile = fopen(filename.c_str(), "w");
   bool result = (cfgfile != nullptr);
   if (result)
   {
@@ -2224,7 +2227,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-        wguiSetProcessDPIAwareness(argv[i]);
+        Driver->Gui.SetProcessDPIAwareness(argv[i]);
       }
       i++;
     }

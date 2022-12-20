@@ -23,6 +23,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/cpu/CpuModule.h"
 #include "fellow/cpu/CpuIntegration.h"
@@ -44,7 +45,7 @@
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
-#include "fellow/application/KeyboardDriver.h"
+#include "fellow/api/Drivers.h"
 #endif
 
 #include "fellow/chipset/DDFStateMachine.h"
@@ -55,6 +56,8 @@
 #include "fellow/chipset/SpriteDMA.h"
 #include "fellow/chipset/BitplaneShifter.h"
 #include "fellow/debug/log/DebugLogHandler.h"
+
+using namespace fellow::api;
 
 Scheduler scheduler;
 
@@ -213,7 +216,10 @@ void Scheduler::EndOfFrame()
   // Handle keyboard events like insert/eject disk, BMP dump, exit
   //===============================================================
 #ifdef RETRO_PLATFORM
-  if (RP.GetHeadlessMode()) kbdDrvEOFHandler();
+  if (RP.GetHeadlessMode())
+  {
+    Driver->Keyboard.EOFHandler();
+  }
 #endif
   kbdEventEOFHandler();
 

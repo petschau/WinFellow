@@ -27,11 +27,13 @@
 #include <windows.h>
 #include "fellow/application/modrip.h"
 #include "modrip_win32.h"
-#include "fellow/os/windows/gui/wgui_win32.h"
-#include "fellow/application/Ini.h"
+#include "fellow/api/Drivers.h"
+#include "fellow/os/windows/gui/GuiDriver.h"
 
 static HWND modrip_hWnd;
 extern HWND wdbg_hDialog;
+
+using namespace fellow::api;
 
 /*========================================================*/
 /* GUI initializations                                    */
@@ -41,6 +43,7 @@ extern HWND wdbg_hDialog;
 
 BOOLE modripGuiInitialize()
 {
+  // TODO: Change this, modrip used run from within the debugger, but has now moved to a menu in the config dialog
   modrip_hWnd = wdbg_hDialog;
   return TRUE;
 }
@@ -52,7 +55,7 @@ BOOLE modripGuiInitialize()
 
 void modripGuiSetBusy()
 {
-  HCURSOR BusyCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_WAIT));
+  HCURSOR BusyCursor = LoadCursor(NULL, IDC_WAIT);
   if (BusyCursor) SetCursor(BusyCursor);
 }
 
@@ -63,7 +66,7 @@ void modripGuiSetBusy()
 
 void modripGuiUnSetBusy()
 {
-  HCURSOR NormalCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+  HCURSOR NormalCursor = LoadCursor(NULL, IDC_ARROW);
   if (NormalCursor) SetCursor(NormalCursor);
 }
 
@@ -136,7 +139,8 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
 
   if (MessageBox(modrip_hWnd, message, "Module found.", MB_YESNO | MB_ICONQUESTION) == IDYES)
   {
-    if (wguiSaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", SelectFileFlags::FSEL_MOD))
+    GuiDriver &guiWin32 = (GuiDriver &)(Driver->Gui);
+    if (guiWin32.SaveFile(modrip_hWnd, info->filename, MODRIP_TEMPSTRLEN, "Save Module As:", SelectFileFlags::FSEL_MOD))
     {
       if (!modripSaveMem(info, func))
       {
@@ -145,7 +149,7 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
       }
       else
       {
-        iniSetLastUsedModDir(wgui_ini, (STR *)wguiExtractPath(info->filename));
+        Driver->Ini.GetCurrentInitdata()->SetLastUsedModDir((STR *)((GuiDriver &)Driver->Gui).ExtractPath(info->filename));
         return TRUE;
       }
     }

@@ -96,15 +96,11 @@
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/chipset/Floppy.h"
-#include "fellow/application/GraphicsDriver.H"
-#include "fellow/application/MouseDriver.H"
-#include "fellow/application/JoystickDriver.H"
+#include "fellow/api/Drivers.h"
 #include "fellow/cpu/CpuIntegration.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "fellow/application/KeyboardDriver.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/os/windows/dxver.h"        /// needed for DirectInput based joystick detection code
-#include "fellow/application/SoundDriver.h" /// needed for DirectSound volume control
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
 #include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
@@ -140,7 +136,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if (strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-      kbdDrvKeypressRaw(lRawKeyCode, TRUE);
+      Driver->Keyboard.KeypressRaw(lRawKeyCode, TRUE);
     }
     blnMatch = TRUE;
   }
@@ -150,7 +146,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if (strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-      kbdDrvKeypressRaw(lRawKeyCode, FALSE);
+      Driver->Keyboard.KeypressRaw(lRawKeyCode, FALSE);
     }
 
     blnMatch = TRUE;
@@ -336,7 +332,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
       }
     case RP_IPC_TO_GUEST_VOLUME:
       soundSetVolume((ULO)wParam);
-      soundDrvDSoundSetCurrentSoundDeviceVolume((int)wParam);
+      Driver->Sound.SetCurrentSoundDeviceVolume((int)wParam);
       return true;
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     case RP_IPC_TO_GUEST_ESCAPEKEY:
@@ -346,7 +342,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
 #endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       Service->Log.AddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
-      mouseDrvSetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
+      Driver->Mouse.SetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICEACTIVITY: return RetroPlatformHandleIncomingDeviceActivity(wParam, lParam);
     case RP_IPC_TO_GUEST_DEVICECONTENT:
@@ -396,10 +392,10 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
         Service->Log.AddLog("RetroPlatform::HostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", szScreenFiltered, szScreenRaw);
 
         if (szScreenFiltered[0])
-          if (!gfxDrvSaveScreenshot(true, szScreenFiltered)) bResult = false;
+          if (!Driver->Graphics.SaveScreenshot(true, szScreenFiltered)) bResult = false;
 
         if (szScreenRaw[0])
-          if (!gfxDrvSaveScreenshot(false, szScreenRaw)) bResult = false;
+          if (!Driver->Graphics.SaveScreenshot(false, szScreenRaw)) bResult = false;
 
         if (bResult)
         {
@@ -547,9 +543,9 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
   Service->Log.AddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
 
   // keys not (always) configured via custom layouts
-  kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE1_ACTIVE : kbd_event::EVENT_JOY0_FIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
-  kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
-  kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE1_ACTIVE : kbd_event::EVENT_JOY0_FIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
 
   while (*pszKeys)
   {
@@ -568,24 +564,24 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
 
       // perform the individual mappings
       if (strnicmp(CustomLayoutKeys[n], "up", strlen("up")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_UP_ACTIVE : kbd_event::EVENT_JOY0_UP_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_UP_ACTIVE : kbd_event::EVENT_JOY0_UP_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "down", strlen("down")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_DOWN_ACTIVE : kbd_event::EVENT_JOY0_DOWN_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_DOWN_ACTIVE : kbd_event::EVENT_JOY0_DOWN_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "left", strlen("left")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_LEFT_ACTIVE : kbd_event::EVENT_JOY0_LEFT_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_LEFT_ACTIVE : kbd_event::EVENT_JOY0_LEFT_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "right", strlen("right")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_RIGHT_ACTIVE : kbd_event::EVENT_JOY0_RIGHT_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_RIGHT_ACTIVE : kbd_event::EVENT_JOY0_RIGHT_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "fire", strlen("fire")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE0_ACTIVE : kbd_event::EVENT_JOY0_FIRE0_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE0_ACTIVE : kbd_event::EVENT_JOY0_FIRE0_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "fire.autorepeat", strlen("fire.autorepeat")) == 0)
-        kbdDrvJoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, l[n]);
+        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, l[n]);
     }
     for (; *pszKeys != ' ' && *pszKeys != 0; pszKeys++)
       ; // reach next key definition
   }
 
   for (n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++)
-    Service->Log.AddLog(" Direction %s mapped to key %s.\n", CustomLayoutKeys[n], kbdDrvKeyString(l[n]));
+    Service->Log.AddLog(" Direction %s mapped to key %s.\n", CustomLayoutKeys[n], Driver->Keyboard.KeyString(l[n]));
 }
 
 /** Attach input devices to gameports during runtime of the emulator.
@@ -604,7 +600,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
     case RP_INPUTDEVICE_EMPTY:
       Service->Log.AddLog(" Removing input device from gameport..\n");
       gameportSetInput(lGameport, gameport_inputs::GP_NONE);
-      kbdDrvSetJoyKeyEnabled(lGameport, lGameport, FALSE);
+      Driver->Keyboard.SetJoyKeyEnabled(lGameport, lGameport, FALSE);
       return true;
     case RP_INPUTDEVICE_MOUSE:
       Service->Log.AddLog(" Attaching mouse device to gameport..\n");
@@ -627,13 +623,13 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
         gameportSetInput(lGameport, (lGameport == 1) ? gameport_inputs::GP_JOYKEY1 : gameport_inputs::GP_JOYKEY0);
         if (lGameport == 0)
         {
-          kbdDrvSetJoyKeyEnabled(lGameport, 0, TRUE);
-          kbdDrvSetJoyKeyEnabled(lGameport, 1, FALSE);
+          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 0, TRUE);
+          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 1, FALSE);
         }
         else if (lGameport == 1)
         {
-          kbdDrvSetJoyKeyEnabled(lGameport, 0, FALSE);
-          kbdDrvSetJoyKeyEnabled(lGameport, 1, TRUE);
+          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 0, FALSE);
+          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 1, TRUE);
         }
       }
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
@@ -1195,7 +1191,7 @@ bool RetroPlatform::PostPowerLEDIntensityPercent(const WPARAM wIntensityPercent)
 void RetroPlatform::SetEscapeKey(const ULO lNewEscapeKey)
 {
   lEscapeKey = lNewEscapeKey;
-  Service->Log.AddLog("RetroPlatform::SetEscapeKey(): escape key configured to %s.\n", kbdDrvKeyString((kbd_drv_pc_symbol)lEscapeKey));
+  Service->Log.AddLog("RetroPlatform::SetEscapeKey(): escape key configured to %s.\n", Driver->Keyboard.KeyString((kbd_drv_pc_symbol)lEscapeKey));
 }
 
 void RetroPlatform::SetEscapeKeyHoldTime(const ULO lNewEscapeKeyHoldtime)

@@ -12,7 +12,7 @@
 #include "GfxDrvDXGIAmigaScreenRenderer.h"
 #include "fellow/hud/HudPropertyProvider.h"
 #include "GfxDrvHudD2D1.h"
-#include "fellow/application/GfxDrvMappedBufferPointer.h"
+#include "fellow/api/drivers/GfxDrvMappedBufferPointer.h"
 #include "fellow/application/HostRenderer.h"
 
 using namespace DirectX;

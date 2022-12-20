@@ -24,6 +24,7 @@
 /*=========================================================================*/
 
 #include "fellow/api/defs.h"
+#include "fellow/api/Drivers.h"
 #include "fellow/cpu/CpuModule.h"
 
 #include <WinDef.h>
@@ -55,11 +56,12 @@
 #include "fellow/chipset/SpriteRegisters.h"
 #include "fellow/application/modrip.h"
 #include "fellow/chipset/Blitter.h"
-#include "fellow/application/WGui.h"
 #include "commoncontrol_wrap.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/debug/log/DebugLogHandler.h"
+
+using namespace fellow::api;
 
 /*===============================*/
 /* Handle of the main dialog box */
@@ -1850,10 +1852,9 @@ void wdebDoMessages()
 
 void wdebDebug()
 {
-  /* The configuration has been activated, but we must prepare the modules */
-  /* for emulation ourselves */
+  // The configuration has been activated, but we must prepare the modules for emulation ourselves
 
-  if (wguiCheckEmulationNecessities())
+  if (Driver->Gui.CheckEmulationNecessities())
   {
     bool previousPauseEmulationOnLostFocus = gfxDrvCommon->GetPauseEmulationWhenWindowLosesFocus();
     gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(false);

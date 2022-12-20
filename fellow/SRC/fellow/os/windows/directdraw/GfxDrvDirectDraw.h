@@ -5,8 +5,8 @@
 
 #include "fellow/api/defs.h"
 #include "fellow/hud/HudPropertyProvider.h"
-#include "fellow/application/GfxDrvMappedBufferPointer.h"
-#include "fellow/application/GfxDrvColorBitsInformation.h"
+#include "fellow/api/drivers/GfxDrvMappedBufferPointer.h"
+#include "fellow/api/drivers/GfxDrvColorBitsInformation.h"
 #include "fellow/chipset/MappedChipsetFramebuffer.h"
 #include "fellow/application/DisplayMode.h"
 #include "fellow/chipset/ChipsetBufferRuntimeSettings.h"

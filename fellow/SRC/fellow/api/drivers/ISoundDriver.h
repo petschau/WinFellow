@@ -21,6 +21,7 @@ public:
     virtual void Play(WOR *leftBuffer, WOR *rightBuffer, ULO sampleCount) = 0;
     virtual void PollBufferPosition() = 0;
     virtual bool SetVolume(const int) = 0;
+    virtual void SetCurrentSoundDeviceVolume(int volume) = 0;
 
     virtual bool EmulationStart(ULO outputRate, bool bits16, bool stereo, ULO *bufferSampleCountMax) = 0;
     virtual void EmulationStop() = 0;

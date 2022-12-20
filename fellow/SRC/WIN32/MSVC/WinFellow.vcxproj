@@ -507,6 +507,8 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\fellow\api\Drivers.cpp" />
+    <ClCompile Include="..\..\fellow\api\drivers\IniValues.cpp" />
     <ClCompile Include="..\..\fellow\api\Services.cpp" />
     <ClCompile Include="..\..\fellow\application\DisplayMode.cpp" />
     <ClCompile Include="..\..\fellow\application\Fellow.cpp" />
@@ -711,7 +713,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.cpp" />
     <ClCompile Include="..\..\fellow\memory\Memory.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\application\Ini.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\sysinfo.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\WindowsMain.cpp" />
@@ -739,7 +740,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\gui\WDbg.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\gui\WGui.cpp" />
+    <ClCompile Include="..\..\fellow\os\windows\gui\GuiDriver.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FileopsWin32.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FSWrapStat.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FilesystemAutomount.cpp" />
@@ -751,7 +752,7 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c" />
     <ClCompile Include="..\..\fellow\os\windows\sound\SoundDriver.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\timer\Timer.cpp" />
+    <ClCompile Include="..\..\fellow\os\windows\timer\TimerDriver.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\uae\AUTOCONF.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
@@ -814,6 +815,19 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
   <ItemGroup>
     <ClInclude Include="..\..\fellow\api\configuration\HudConfiguration.h" />
     <ClInclude Include="..\..\fellow\api\defs.h" />
+    <ClInclude Include="..\..\fellow\api\Drivers.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvColorBitsInformation.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvMappedBufferPointer.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IGraphicsDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IGuiDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IIniDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IJoystickDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IKeyboardDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IModRipGuiDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IMouseDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\IniValues.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\ISoundDriver.h" />
+    <ClInclude Include="..\..\fellow\api\drivers\ITimerDriver.h" />
     <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h" />
     <ClInclude Include="..\..\fellow\api\Services.h" />
     <ClInclude Include="..\..\fellow\api\service\IFileops.h" />
@@ -844,7 +858,6 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h" />
     <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h" />
     <ClInclude Include="..\..\fellow\application\IFpsProvider.h" />
-    <ClInclude Include="..\..\fellow\application\Ini.h" />
     <ClInclude Include="..\..\fellow\application\Interrupt.h" />
     <ClInclude Include="..\..\fellow\application\JoystickDriver.h" />
     <ClInclude Include="..\..\fellow\application\KeyboardDriver.h" />
@@ -997,20 +1010,29 @@ PowerShell.exe ..\Scripts\GitWCRev.ps1 -InputFileName ..\MSVC\GUI_versioninfo-wc
     <ClInclude Include="..\..\fellow\os\windows\dxver.h" />
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.h" />
     <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h" />
+    <ClInclude Include="..\..\fellow\os\windows\graphics\GraphicsDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.h" />
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h" />
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h\Header.h" />
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDriver.h" />
+    <ClInclude Include="..\..\fellow\os\windows\gui\GuiPresets.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\WDbg.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\wgui_win32.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\FileopsWin32.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\FSWrapStat.h" />
+    <ClInclude Include="..\..\fellow\os\windows\io\JoystickDriver.h" />
+    <ClInclude Include="..\..\fellow\os\windows\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\Keyparser.h" />
+    <ClInclude Include="..\..\fellow\os\windows\io\MouseDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\portable.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h" />
     <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformIPC.h" />
+    <ClInclude Include="..\..\fellow\os\windows\sound\SoundDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.h" />
+    <ClInclude Include="..\..\fellow\os\windows\timer\TimerDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\uae\AUTOCONF.H" />
     <ClInclude Include="..\..\fellow\os\windows\uae\EXECLIB.H" />
     <ClInclude Include="..\..\fellow\os\windows\uae\FILESYS.H" />

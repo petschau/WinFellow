@@ -24,16 +24,13 @@
 #include "fellow/api/defs.h"
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/chipset/Kbd.h"
-#include "fellow/application/KeyboardDriver.h"
-#include "fellow/application/MouseDriver.h"
-#include "fellow/application/JoystickDriver.h"
+#include "fellow/api/Drivers.h"
+#include "fellow/os/windows/io/KeyboardDriver.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
-
-#include "fellow/os/windows/dxver.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -41,26 +38,9 @@
 
 using namespace fellow::api;
 
-#define DINPUT_BUFFERSIZE 256
+constexpr auto DINPUT_BUFFERSIZE = 256;
 
-#define MAPPING_FILENAME "mapping.key"
-
-/*===========================================================================*/
-/* Keyboard specific data                                                    */
-/*===========================================================================*/
-
-BOOLE kbd_drv_active;
-BOOLE kbd_drv_in_use;
-LPDIRECTINPUT kbd_drv_lpDI;
-LPDIRECTINPUTDEVICE kbd_drv_lpDID;
-HANDLE kbd_drv_DIevent;
-BYTE keys[MAX_KEYS];     // contains boolean values (pressed/not pressed) for actual keystroke
-BYTE prevkeys[MAX_KEYS]; // contains boolean values (pressed/not pressed) for past keystroke
-bool kbd_drv_initialization_failed;
-BOOLE prs_rewrite_mapping_file;
-char kbd_drv_mapping_filename[MAX_PATH];
-
-bool kbd_in_task_switcher = false;
+constexpr auto MAPPING_FILENAME = "mapping.key";
 
 /*===========================================================================*/
 /* Map symbolic key to a description string                                  */
@@ -403,19 +383,15 @@ kbd_event kbd_drv_joykey_event[2][2][MAX_JOYKEY_VALUE]; /* Event ID for each joy
 volatile kbd_drv_pc_symbol kbd_drv_captured_key;
 BOOLE kbd_drv_capture;
 
-void kbdDrvClearPressedKeys()
+void KeyboardDriver::ClearPressedKeys()
 {
   kbd_drv_home_pressed = FALSE;
   kbd_drv_end_pressed = FALSE;
-  memset(prevkeys, 0, sizeof(prevkeys));
-  memset(keys, 0, sizeof(keys));
+  memset(_prevkeys, 0, sizeof(_prevkeys));
+  memset(_keys, 0, sizeof(_keys));
 }
 
-/*==========================================================================*/
-/* Returns textual error message. Adapted from DX SDK                       */
-/*==========================================================================*/
-
-const char *kbdDrvDInputErrorString(HRESULT hResult)
+const char *KeyboardDriver::DInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -445,7 +421,7 @@ const char *kbdDrvDInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-const char *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
+const char *KeyboardDriver::DInputUnaquireReturnValueString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -455,36 +431,28 @@ const char *kbdDrvDInputUnaquireReturnValueString(HRESULT hResult)
   return "Not a known Unacquire() DirectInput return value.";
 }
 
-/*==========================================================================*/
-/* Logs a sensible error message                                            */
-/*==========================================================================*/
-
-void kbdDrvDInputFailure(const char *header, HRESULT err)
+void KeyboardDriver::DInputFailure(const char *header, HRESULT err)
 {
-  Service->Log.AddLog("%s %s\n", header, kbdDrvDInputErrorString(err));
+  Service->Log.AddLog("%s %s\n", header, DInputErrorString(err));
 }
 
-void kbdDrvDInputUnacquireFailure(const char *header, HRESULT err)
+void KeyboardDriver::DInputUnacquireFailure(const char *header, HRESULT err)
 {
-  Service->Log.AddLog("%s %s\n", header, kbdDrvDInputUnaquireReturnValueString(err));
+  Service->Log.AddLog("%s %s\n", header, DInputUnaquireReturnValueString(err));
 }
 
-/*===========================================================================*/
-/* Set keyboard cooperative level                                            */
-/*===========================================================================*/
-
-bool kbdDrvDInputSetCooperativeLevel()
+bool KeyboardDriver::DInputSetCooperativeLevel()
 {
-  HRESULT res = IDirectInputDevice_SetCooperativeLevel(kbd_drv_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
+  HRESULT res = IDirectInputDevice_SetCooperativeLevel(_lpDID, gfxDrvCommon->GetHWND(), DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputSetCooperativeLevel():", res);
+    DInputFailure("kbdDrvDInputSetCooperativeLevel():", res);
     return false;
   }
   return true;
 }
 
-void kbdDrvDInputAcquireFailure(const char *header, HRESULT err)
+void KeyboardDriver::DInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -492,7 +460,7 @@ void kbdDrvDInputAcquireFailure(const char *header, HRESULT err)
   }
   else
   {
-    kbdDrvDInputFailure(header, err);
+    DInputFailure(header, err);
   }
 }
 
@@ -502,7 +470,7 @@ void kbdDrvDInputAcquireFailure(const char *header, HRESULT err)
 /// it's purpose is to relay simulated escape key presses to the Amiga, as well as to
 /// escape devices when the escape key has been held longer than the configured interval
 
-void kbdDrvEOFHandler()
+void KeyboardDriver::EOFHandler()
 {
   ULONGLONG t = 0;
 
@@ -536,71 +504,55 @@ void kbdDrvEOFHandler()
 
 #endif
 
-/*===========================================================================*/
-/* Unacquire DirectInput keyboard device                                     */
-/*===========================================================================*/
-
-void kbdDrvDInputUnacquire()
+void KeyboardDriver::DInputUnacquire()
 {
-  if (kbd_drv_lpDID == nullptr)
+  if (_lpDID == nullptr)
   {
     return;
   }
 
-  HRESULT res = IDirectInputDevice_Unacquire(kbd_drv_lpDID);
+  HRESULT res = IDirectInputDevice_Unacquire(_lpDID);
   if (res != DI_OK)
   {
     // Should only "fail" if device is not acquired, it is not an error.
-    kbdDrvDInputUnacquireFailure("kbdDrvDInputUnacquire():", res);
+    DInputUnacquireFailure("kbdDrvDInputUnacquire():", res);
   }
 }
 
-/*===========================================================================*/
-/* Acquire DirectInput keyboard device                                       */
-/*===========================================================================*/
-
-void kbdDrvDInputAcquire()
+void KeyboardDriver::DInputAcquire()
 {
-  if (kbd_drv_lpDID == nullptr)
+  if (_lpDID == nullptr)
   {
     return;
   }
 
-  HRESULT res = IDirectInputDevice_Acquire(kbd_drv_lpDID);
+  HRESULT res = IDirectInputDevice_Acquire(_lpDID);
   if (res != DI_OK)
   {
-    kbdDrvDInputAcquireFailure("kbdDrvDInputAcquire():", res);
+    DInputAcquireFailure("kbdDrvDInputAcquire():", res);
   }
 }
 
-/*===========================================================================*/
-/* Release DirectInput for keyboard                                          */
-/*===========================================================================*/
-
-void kbdDrvDInputRelease()
+void KeyboardDriver::DInputRelease()
 {
-  if (kbd_drv_lpDID != nullptr)
+  if (_lpDID != nullptr)
   {
-    IDirectInputDevice_Release(kbd_drv_lpDID);
-    kbd_drv_lpDID = nullptr;
+    IDirectInputDevice_Release(_lpDID);
+    _lpDID = nullptr;
   }
-  if (kbd_drv_DIevent != nullptr)
+  if (_DIevent != nullptr)
   {
-    CloseHandle(kbd_drv_DIevent);
-    kbd_drv_DIevent = nullptr;
+    CloseHandle(_DIevent);
+    _DIevent = nullptr;
   }
-  if (kbd_drv_lpDI != nullptr)
+  if (_lpDI != nullptr)
   {
-    IDirectInput_Release(kbd_drv_lpDI);
-    kbd_drv_lpDI = nullptr;
+    IDirectInput_Release(_lpDI);
+    _lpDI = nullptr;
   }
 }
 
-/*===========================================================================*/
-/* Initialize DirectInput for keyboard                                       */
-/*===========================================================================*/
-
-bool kbdDrvDInputInitialize()
+bool KeyboardDriver::DInputInitialize()
 {
   DIPROPDWORD dipdw = {
       {
@@ -614,105 +566,101 @@ bool kbdDrvDInputInitialize()
 
   /* Create Direct Input object */
 
-  kbd_drv_lpDI = nullptr;
-  kbd_drv_lpDID = nullptr;
-  kbd_drv_DIevent = nullptr;
-  kbd_drv_initialization_failed = false;
-  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&kbd_drv_lpDI, nullptr);
+  _lpDI = nullptr;
+  _lpDID = nullptr;
+  _DIevent = nullptr;
+  _initialization_failed = false;
+  HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&_lpDI, nullptr);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res);
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    DInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res);
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Create Direct Input 1 keyboard device */
 
-  res = IDirectInput_CreateDevice(kbd_drv_lpDI, GUID_SysKeyboard, &kbd_drv_lpDID, NULL);
+  res = IDirectInput_CreateDevice(_lpDI, GUID_SysKeyboard, &_lpDID, NULL);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): CreateDevice()", res);
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    DInputFailure("kbdDrvDInputInitialize(): CreateDevice()", res);
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Set data format for mouse device */
 
-  res = IDirectInputDevice_SetDataFormat(kbd_drv_lpDID, &c_dfDIKeyboard);
+  res = IDirectInputDevice_SetDataFormat(_lpDID, &c_dfDIKeyboard);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetDataFormat()", res);
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    DInputFailure("kbdDrvDInputInitialize(): SetDataFormat()", res);
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Set cooperative level */
 
-  if (!kbdDrvDInputSetCooperativeLevel())
+  if (!DInputSetCooperativeLevel())
   {
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Create event for notification */
 
-  kbd_drv_DIevent = CreateEvent(nullptr, 0, 0, nullptr);
-  if (kbd_drv_DIevent == nullptr)
+  _DIevent = CreateEvent(nullptr, 0, 0, nullptr);
+  if (_DIevent == nullptr)
   {
     Service->Log.AddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Set property for buffered data */
-  res = IDirectInputDevice_SetProperty(kbd_drv_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
+  res = IDirectInputDevice_SetProperty(_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetProperty()", res);
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    DInputFailure("kbdDrvDInputInitialize(): SetProperty()", res);
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
 
   /* Set event notification */
-  res = IDirectInputDevice_SetEventNotification(kbd_drv_lpDID, kbd_drv_DIevent);
+  res = IDirectInputDevice_SetEventNotification(_lpDID, _DIevent);
   if (res != DI_OK)
   {
-    kbdDrvDInputFailure("kbdDrvDInputInitialize(): SetEventNotification()", res);
-    kbd_drv_initialization_failed = true;
-    kbdDrvDInputRelease();
+    DInputFailure("kbdDrvDInputInitialize(): SetEventNotification()", res);
+    _initialization_failed = true;
+    DInputRelease();
     return false;
   }
   return true;
 }
 
-/*===========================================================================*/
-/* keyboard grab status has changed                                          */
-/*===========================================================================*/
-
-void kbdDrvStateHasChanged(BOOLE active)
+void KeyboardDriver::StateHasChanged(BOOLE active)
 {
-  kbd_drv_active = active;
-  if (kbd_drv_active)
+  _active = active;
+  if (_active)
   {
-    kbdDrvDInputAcquire();
+    DInputAcquire();
   }
   else
   {
-    kbdDrvDInputUnacquire();
-    kbdDrvClearPressedKeys();
+    DInputUnacquire();
+    ClearPressedKeys();
   }
 }
 
 #define map(sym) symbol_to_DIK_kbddrv[(sym)]
 #define symbolickey(scancode) kbddrv_DIK_to_symbol[scancode]
-#define ispressed(sym) (keys[map(sym)])
-#define waspressed(sym) (prevkeys[map(sym)])
+#define ispressed(sym) (_keys[map(sym)])
+#define waspressed(sym) (_prevkeys[map(sym)])
 #define issue_event(the_event)                                                                                                                                                                         \
   {                                                                                                                                                                                                    \
     kbdEventEOFAdd((the_event));                                                                                                                                                                       \
@@ -727,7 +675,7 @@ void kbdDrvStateHasChanged(BOOLE active)
 /* which means it must not be passed to the emulator                         */
 /*===========================================================================*/
 
-BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
+BOOLE KeyboardDriver::EventChecker(kbd_drv_pc_symbol symbol_key)
 {
   ULO eol_evpos = kbd_state.eventsEOL.inpos;
   ULO eof_evpos = kbd_state.eventsEOF.inpos;
@@ -739,7 +687,7 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     {
 
 #ifdef _DEBUG
-      Service->Log.AddLog("Key captured: %s\n", kbdDrvKeyString(symbol_key));
+      Service->Log.AddLog("Key captured: %s\n", KeyString(symbol_key));
 #endif
 
       kbd_drv_captured_key = symbol_key;
@@ -776,16 +724,31 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
     }
 
     if (ispressed(PCK_RIGHT_WINDOWS) || ispressed(PCK_START_MENU))
+    {
       if (ispressed(PCK_LEFT_WINDOWS))
-        if (ispressed(PCK_LEFT_CTRL)) issue_event(kbd_event::EVENT_HARD_RESET);
+      {
+        if (ispressed(PCK_LEFT_CTRL))
+        {
+          issue_event(kbd_event::EVENT_HARD_RESET);
+        }
+      }
+    }
 
-    if (ispressed(PCK_PRINT_SCREEN)) issue_event(kbd_event::EVENT_BMP_DUMP);
+    if (ispressed(PCK_PRINT_SCREEN))
+    {
+      issue_event(kbd_event::EVENT_BMP_DUMP);
+    }
 
 #ifdef RETRO_PLATFORM
     if (RP.GetHeadlessMode())
     {
       if (ispressed(PCK_LEFT_ALT))
-        if (ispressed(PCK_F4)) issue_event(kbd_event::EVENT_EXIT);
+      {
+        if (ispressed(PCK_F4))
+        {
+          issue_event(kbd_event::EVENT_EXIT);
+        }
+      }
 
       if (!RP.GetEmulationPaused())
       {
@@ -833,8 +796,8 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 #endif
       if (released(PCK_F12))
       {
-        mouseDrvToggleFocus();
-        joyDrvToggleFocus();
+        Driver->Mouse.ToggleFocus();
+        Driver->Joystick.ToggleFocus();
         break;
       }
 
@@ -890,15 +853,15 @@ BOOLE kbdDrvEventChecker(kbd_drv_pc_symbol symbol_key)
 /* Handle one specific keycode change                                        */
 /*===========================================================================*/
 
-void kbdDrvKeypress(ULO keycode, BOOL pressed)
+void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
 {
   kbd_drv_pc_symbol symbolic_key = symbolickey(keycode);
   BOOLE keycode_pressed = pressed;
-  BOOLE keycode_was_pressed = prevkeys[keycode];
+  BOOLE keycode_was_pressed = _prevkeys[keycode];
 
   /* DEBUG info, not needed now*/
 #ifdef _DEBUG
-  Service->Log.AddLog("Keypress %s %s%s\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released", kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
+  Service->Log.AddLog("Keypress %s %s%s\n", KeyString(symbolic_key), pressed ? "pressed" : "released", _kbd_in_task_switcher ? " ignored due to ALT-TAB" : "");
 #endif
 
   // Bad hack
@@ -906,45 +869,45 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
   // unless you use a hook in the windows accessibility framework.
 
   // left-alt already pressed, and now TAB pressed as well
-  if (!kbd_in_task_switcher && keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
+  if (!_kbd_in_task_switcher && _keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
   {
     Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
-    kbd_in_task_switcher = gfxDrvCommon->IsHostBufferWindowed();
+    _kbd_in_task_switcher = gfxDrvCommon->IsHostBufferWindowed();
 
     // Don't pass this TAB press along to emulation, pass left-ALT release instead
     keycode = map(PCK_LEFT_ALT);
     symbolic_key = symbolickey(keycode);
     pressed = false;
     keycode_pressed = pressed;
-    keycode_was_pressed = prevkeys[keycode];
+    keycode_was_pressed = _prevkeys[keycode];
 
 #ifdef _DEBUG
-    Service->Log.AddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", kbdDrvKeyString(symbolic_key), pressed ? "pressed" : "released");
+    Service->Log.AddLog("Keypress TAB converted to %s %s due to ALT-TAB started\n", KeyString(symbolic_key), pressed ? "pressed" : "released");
 #endif
   }
-  else if (kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
+  else if (_kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
   {
     Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
-    kbd_in_task_switcher = false;
+    _kbd_in_task_switcher = false;
 
 #ifdef _DEBUG
     Service->Log.AddLog("Keypress LEFT-ALT released ignored due to ALT-TAB ending\n");
 #endif
     return;
   }
-  else if (kbd_in_task_switcher)
+  else if (_kbd_in_task_switcher)
   {
     return;
   }
 
-  keys[keycode] = pressed;
+  _keys[keycode] = pressed;
 
   if ((!keycode_pressed) && keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-    if (!kbdDrvEventChecker(symbolic_key))
+    if (!EventChecker(symbolic_key))
     {
       UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code | 0x80);
@@ -953,20 +916,20 @@ void kbdDrvKeypress(ULO keycode, BOOL pressed)
   else if (keycode_pressed && !keycode_was_pressed)
   {
     // If key is not eaten by a Fellow "event", add it to Amiga kbd queue
-    if (!kbdDrvEventChecker(symbolic_key))
+    if (!EventChecker(symbolic_key))
     {
       UBY a_code = kbd_drv_pc_symbol_to_amiga_scancode[symbolic_key];
       kbdKeyAdd(a_code);
     }
   }
-  prevkeys[keycode] = pressed;
+  _prevkeys[keycode] = pressed;
 }
 
 /*===========================================================================*/
 /* Handle one specific RAW keycode change                                    */
 /*===========================================================================*/
 
-void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOLE pressed)
+void KeyboardDriver::KeypressRaw(ULO lRawKeyCode, BOOLE pressed)
 {
 #ifdef FELLOW_DELAY_RP_KEYBOARD_INPUT
   BOOLE keycode_was_pressed = prevkeys[lRawKeyCode];
@@ -1003,21 +966,13 @@ void kbdDrvKeypressRaw(ULO lRawKeyCode, BOOLE pressed)
 #endif
 }
 
-/*===========================================================================*/
-/* Keyboard keypress handler                                                 */
-/*===========================================================================*/
-
-void kbdDrvBufferOverflowHandler()
+void KeyboardDriver::BufferOverflowHandler()
 {
 }
 
-/*===========================================================================*/
-/* Keyboard keypress handler                                                 */
-/*===========================================================================*/
-
-void kbdDrvKeypressHandler()
+void KeyboardDriver:: KeypressHandler()
 {
-  if (!kbd_drv_active)
+  if (!_active)
   {
     return;
   }
@@ -1028,22 +983,22 @@ void kbdDrvKeypressHandler()
 
   do
   {
-    res = IDirectInputDevice_GetDeviceData(kbd_drv_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
+    res = IDirectInputDevice_GetDeviceData(_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
     if (res == DIERR_INPUTLOST)
     {
-      kbdDrvDInputAcquire();
+      DInputAcquire();
     }
   } while (res == DIERR_INPUTLOST);
 
   if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
   {
-    kbdDrvDInputFailure("kbdDrvKeypressHandler(): GetDeviceData()", res);
+    DInputFailure("kbdDrvKeypressHandler(): GetDeviceData()", res);
   }
   else
   {
     for (ULO i = 0; i < itemcount; i++)
     {
-      kbdDrvKeypress(rgod[i].dwOfs, (rgod[i].dwData & 0x80));
+      Keypress(rgod[i].dwOfs, (rgod[i].dwData & 0x80));
     }
   }
 }
@@ -1052,7 +1007,7 @@ void kbdDrvKeypressHandler()
 /* Return string describing the given symbolic key                           */
 /*===========================================================================*/
 
-const char *kbdDrvKeyString(kbd_drv_pc_symbol symbolickey)
+const char *KeyboardDriver::KeyString(kbd_drv_pc_symbol symbolickey)
 {
   if (symbolickey >= kbd_drv_pc_symbol::PCK_LAST_KEY)
   {
@@ -1061,7 +1016,7 @@ const char *kbdDrvKeyString(kbd_drv_pc_symbol symbolickey)
   return kbd_drv_pc_symbol_to_string[symbolickey];
 }
 
-const char *kbdDrvKeyPrettyString(kbd_drv_pc_symbol symbolickey)
+const char *KeyboardDriver::KeyPrettyString(kbd_drv_pc_symbol symbolickey)
 {
   if (symbolickey >= 106)
   {
@@ -1070,13 +1025,13 @@ const char *kbdDrvKeyPrettyString(kbd_drv_pc_symbol symbolickey)
   return symbol_pretty_name[symbolickey];
 }
 
-const char *DikKeyString(int dikkey)
+const char *KeyboardDriver::DikKeyString(int dikkey)
 {
   for (int j = kbd_drv_pc_symbol::PCK_NONE; j < kbd_drv_pc_symbol::PCK_LAST_KEY; j++)
   {
     if (dikkey == symbol_to_DIK_kbddrv[j])
     {
-      return kbdDrvKeyString((kbd_drv_pc_symbol)j);
+      return KeyString((kbd_drv_pc_symbol)j);
     }
   }
   return "UNKNOWN";
@@ -1086,7 +1041,7 @@ const char *DikKeyString(int dikkey)
 /* Set joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-void kbdDrvJoystickReplacementSet(kbd_event event, kbd_drv_pc_symbol symbolickey)
+void KeyboardDriver::JoystickReplacementSet(kbd_event event, kbd_drv_pc_symbol symbolickey)
 {
   switch (event)
   {
@@ -1113,7 +1068,7 @@ void kbdDrvJoystickReplacementSet(kbd_event event, kbd_drv_pc_symbol symbolickey
 /* Get joystick replacement for a given joystick and direction               */
 /*===========================================================================*/
 
-kbd_drv_pc_symbol kbdDrvJoystickReplacementGet(kbd_event event)
+kbd_drv_pc_symbol KeyboardDriver::JoystickReplacementGet(kbd_event event)
 {
   switch (event)
   {
@@ -1137,7 +1092,7 @@ kbd_drv_pc_symbol kbdDrvJoystickReplacementGet(kbd_event event)
   return kbd_drv_pc_symbol::PCK_NONE;
 }
 
-void kbdDrvInitializeDIKToSymbolKeyTable()
+void KeyboardDriver::InitializeDIKToSymbolKeyTable()
 {
   for (int i = 0; i < PCK_LAST_KEY; i++)
   {
@@ -1254,24 +1209,16 @@ void kbdDrvInitializeDIKToSymbolKeyTable()
   kbddrv_DIK_to_symbol[DIK_DECIMAL] = PCK_NUMPAD_DOT;
 }
 
-void kbdDrvSetJoyKeyEnabled(ULO lGameport, ULO lSetting, BOOLE bEnabled)
+void KeyboardDriver::SetJoyKeyEnabled(ULO lGameport, ULO lSetting, BOOLE bEnabled)
 {
   kbd_drv_joykey_enabled[lGameport][lSetting] = bEnabled;
 }
 
-/*===========================================================================*/
-/* Hard Reset                                                                */
-/*===========================================================================*/
-
-void kbdDrvHardReset()
+void KeyboardDriver::HardReset()
 {
 }
 
-/*===========================================================================*/
-/* Emulation Starting                                                        */
-/*===========================================================================*/
-
-void kbdDrvEmulationStart()
+void KeyboardDriver::EmulationStart()
 {
   for (ULO port = 0; port < 2; port++)
   {
@@ -1279,25 +1226,17 @@ void kbdDrvEmulationStart()
     kbd_drv_joykey_enabled[port][1] = (gameport_input[port] == gameport_inputs::GP_JOYKEY1);
   }
 
-  kbdDrvClearPressedKeys();
-  kbdDrvDInputInitialize();
-  kbd_in_task_switcher = false;
+  ClearPressedKeys();
+  DInputInitialize();
+  _kbd_in_task_switcher = false;
 }
 
-/*===========================================================================*/
-/* Emulation Stopping                                                        */
-/*===========================================================================*/
-
-void kbdDrvEmulationStop()
+void KeyboardDriver::EmulationStop()
 {
-  kbdDrvDInputRelease();
+  DInputRelease();
 }
 
-/*===========================================================================*/
-/* Emulation Startup                                                         */
-/*===========================================================================*/
-
-void kbdDrvStartup()
+void KeyboardDriver::Startup()
 {
   kbd_drv_joykey_event[0][0][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_INACTIVE;
   kbd_drv_joykey_event[0][1][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_ACTIVE;
@@ -1360,25 +1299,21 @@ void kbdDrvStartup()
   kbd_drv_capture = FALSE;
   kbd_drv_captured_key = PCK_NONE;
 
-  kbdDrvInitializeDIKToSymbolKeyTable();
+  InitializeDIKToSymbolKeyTable();
 
-  Service->Fileops.GetGenericFileName(kbd_drv_mapping_filename, "WinFellow", MAPPING_FILENAME);
+  Service->Fileops.GetGenericFileName(_mapping_filename, "WinFellow", MAPPING_FILENAME);
 
-  prs_rewrite_mapping_file = prsReadFile(kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
+  _prs_rewrite_mapping_file = prsReadFile(_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
 
-  kbd_drv_active = FALSE;
-  kbd_drv_lpDI = nullptr;
-  kbd_drv_lpDID = nullptr;
+  _active = FALSE;
+  _lpDI = nullptr;
+  _lpDID = nullptr;
 }
 
-/*===========================================================================*/
-/* Emulation Shutdown                                                        */
-/*===========================================================================*/
-
-void kbdDrvShutdown()
+void KeyboardDriver::Shutdown()
 {
-  if (prs_rewrite_mapping_file)
+  if (_prs_rewrite_mapping_file)
   {
-    prsWriteFile(kbd_drv_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
+    prsWriteFile(_mapping_filename, kbd_drv_pc_symbol_to_amiga_scancode, kbd_drv_joykey);
   }
 }

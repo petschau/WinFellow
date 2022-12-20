@@ -35,7 +35,7 @@
 #include "fellow/os/windows/dxver.h"
 #include <dinput.h>
 
-#include "fellow/application/GraphicsDriver.h"
+#include "fellow/api/Drivers.h"
 #include "RetroPlatformGuestIPC.h"
 #include "RetroPlatformIPC.h"
 #include "fellow/api/defs.h"

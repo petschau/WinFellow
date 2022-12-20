@@ -41,8 +41,6 @@
 #include <ctype.h>
 #include <time.h>
 
-#include <unistd.h>
-
 #include "modrip.h"
 #include "fellow/os/windows/gui/modrip_win32.h"
 

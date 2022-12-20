@@ -28,7 +28,6 @@
 
 #ifdef FELLOW_SUPPORT_CAPS
 
-#include "fellow/application/WGui.h"
 #include "fellow/api/Services.h"
 #include "fellow/api/Drivers.h"
 #include "fellow/chipset/Floppy.h"

@@ -386,8 +386,8 @@ extern bool cfgGetMeasureSpeed(cfg *config);
 extern void cfgSetDefaults(cfg *config);
 extern BOOLE cfgSetOption(cfg *config, STR *optionstr);
 extern bool cfgSaveOptions(cfg *config, FILE *cfgfile);
-extern bool cfgLoadFromFilename(cfg *, const STR *, const bool);
-extern bool cfgSaveToFilename(cfg *config, STR *filename);
+extern bool cfgLoadFromFilename(cfg *config, const std::string& filename, const bool bIsPreset);
+extern bool cfgSaveToFilename(cfg *config, const std::string& filename);
 extern void cfgSynopsis(cfg *config);
 
 /*============================================================================*/

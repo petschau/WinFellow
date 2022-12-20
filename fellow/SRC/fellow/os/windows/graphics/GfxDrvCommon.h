@@ -5,7 +5,7 @@
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderConfiguration.h"
 #include "fellow/application/DisplayMode.h"
-#include "fellow/application/Ini.h"
+#include "fellow/api/Drivers.h"
 
 class GfxDrvCommon
 {
@@ -14,11 +14,11 @@ private:
   HWND _hwnd;        // The emulation output window
   volatile bool _syskey_down;
   volatile bool _win_active;
-  volatile bool _win_active_original;
+    volatile bool _win_active_original;
   volatile bool _win_minimized_original;
   bool _pause_emulation_when_window_loses_focus;
   DisplayMode _current_draw_mode;
-  ini *_ini;
+  IniValues *_iniValues;
 
   DimensionsUInt _hostBufferSize;
   int _frametime_target;

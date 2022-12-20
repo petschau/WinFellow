@@ -45,14 +45,11 @@ private:
   std::string _lastusedstatefiledir;
   std::string _lastusedpresetromdir;
 
-  /*==========================================================================*/
-  /* pause emulation when window loses focus                                  */
-  /*==========================================================================*/
-  BOOLE _pauseemulationwhenwindowlosesfocus;
+  bool _pauseemulationwhenwindowlosesfocus;
 
-  //==========================================================================
+  //=========================================================================
   // Debug options for graphics emulation, may change from release to release
-  //==========================================================================
+  //=========================================================================
   bool _gfxDebugImmediateRendering;
 
 public:
@@ -104,8 +101,8 @@ public:
   void SetLastUsedModDir(const std::string &directory);
   const std::string &GetLastUsedModDir() const;
 
-  void SetPauseEmulationWhenWindowLosesFocus(BOOLE pause);
-  BOOLE GetPauseEmulationWhenWindowLosesFocus() const;
+  void SetPauseEmulationWhenWindowLosesFocus(bool pause);
+  bool GetPauseEmulationWhenWindowLosesFocus() const;
 
   void SetGfxDebugImmediateRendering(bool gfxDebugImmediateRendering);
   bool GetGfxDebugImmediateRendering() const;

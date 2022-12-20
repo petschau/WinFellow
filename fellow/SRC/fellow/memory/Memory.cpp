@@ -1644,7 +1644,7 @@ STR* memoryDecodeKickstartUsingAmigaForever()
     PFN_GetKey pfnGetKey = (PFN_GetKey)GetProcAddress(hAmigaForeverDLL, "GetKey");
     if (pfnGetKey)
     {
-      keysize = pfnGetKey(nullptr, 0);
+      ULO keysize = pfnGetKey(nullptr, 0);
       if (keysize)
       {
         keybuffer = (STR *)malloc(keysize);
