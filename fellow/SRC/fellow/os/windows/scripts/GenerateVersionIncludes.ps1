@@ -36,7 +36,7 @@
 [CmdletBinding()]
 Param(
 	[Parameter()][string[]]$InputFileNames = @("..\application\versioninfo-wcrev.h", "..\gui\GUI_versioninfo-wcrev.rc"),
-	[Parameter()][string[]]$OutputFileNames = @("..\versioninfo.h", "..\gui\GUI_versioninfo-wcrev.rc"),
+	[Parameter()][string[]]$OutputFileNames = @("..\versioninfo.h", "..\gui\GUI_versioninfo.rc"),
     [switch]$PreventLocalModifications=$false
 )
 
@@ -53,7 +53,14 @@ function GenerateVersionIncludeForFile {
 
 	& "$PSScriptRoot\GitWCRev.ps1" -InputFileName $VersionInfoInput -OutputFileName $VersionInfoTemporaryFile
 
-	$oldFile = Get-Content $VersionInfoOutput -Raw
+	$OldVersionExists = Test-Path $VersionInfoOutput -PathType leaf
+	if ($OldVersionExists -eq $True) {
+		$oldFile = Get-Content $VersionInfoOutput -Raw
+	}
+	else {
+		$oldFile = ''
+	}
+
 	$newFile = Get-Content $VersionInfoTemporaryFile -Raw
 
 	if ($oldFile.Equals($newFile)) {
