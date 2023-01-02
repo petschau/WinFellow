@@ -16,7 +16,7 @@ extern bool winDrvDebugStart(dbg_operations operation, ULO breakpoint);
 extern void winDrvDebugMessageLoop();
 extern void winDrvDebugStopMessageLoop();
 
-extern bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, LPVOID in);
+extern bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, ptrdiff_t threadParameter);
 extern void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName);
 
 extern void winDrvHandleInputDevices();

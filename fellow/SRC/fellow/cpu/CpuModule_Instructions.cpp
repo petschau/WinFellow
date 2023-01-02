@@ -2660,7 +2660,7 @@ static void cpuBfChgCommon(ULO ea_or_reg, bool has_ea, UWO ext)
   cpuBfDecodeExtWordAndGetField(&bf_data, ea_or_reg, false, has_ea, ext);
   cpuSetFlagsNZVC(bf_data.field == 0, bf_data.field & (1 << (bf_data.width - 1)), FALSE, FALSE);
 
-  bf_data.field = (~bf_data.field) & bf_data.field_mask;
+  bf_data.field = (~bf_data.field) & (ULO)bf_data.field_mask;
 
   cpuSetBfField(&bf_data, ea_or_reg, has_ea);
 }

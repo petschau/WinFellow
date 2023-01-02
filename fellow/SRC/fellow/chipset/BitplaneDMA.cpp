@@ -117,7 +117,7 @@ bool BitplaneDMA::CalculateIsLastFetch(ULO atCycle)
   }
 
   // Or this is OCS and we ran into the hard stop that ends the line
-  return (!chipsetGetECS() && (atCycle >= (chipsetGetMaximumDDF() - 4)));
+  return (!chipsetGetECS() && (atCycle >= (chipsetGetMaximumDDF() - 4U)));
 }
 
 void BitplaneDMA::HandleEvent()

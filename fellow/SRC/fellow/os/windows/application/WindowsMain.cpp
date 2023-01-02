@@ -84,14 +84,14 @@ void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
   }
 }
 
-bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, LPVOID in)
+bool winDrvRunInNewThread(LPTHREAD_START_ROUTINE func, ptrdiff_t threadParameter)
 {
   DWORD dwThreadId;
   HANDLE hThread = CreateThread(
       nullptr,      // Security attr
       0,            // Stack Size
       func,         // Thread procedure
-      in,           // Thread parameter
+      (void*) threadParameter, // Thread parameter
       0,            // Creation flags
       &dwThreadId); // ThreadId
 
@@ -181,7 +181,7 @@ DWORD WINAPI winDrvFellowRunStart(LPVOID param)
 DWORD WINAPI winDrvFellowRunDebugStart(LPVOID breakpoint)
 {
   winDrvSetThreadName(-1, "fellowRunDebug()");
-  fellowRunDebug((ULO)breakpoint);
+  fellowRunDebug((ULO)(size_t)breakpoint);
   winDrvDebuggerClearIsRunning();
   return 0;
 }
@@ -241,11 +241,11 @@ bool winDrvDebugStart(dbg_operations operation, ULO breakpoint)
 
   switch (operation)
   {
-    case dbg_operations::DBG_RUN: winDrvRunInNewThread(winDrvFellowRunDebugStart, (LPVOID)breakpoint); break;
-    case dbg_operations::DBG_STEP: winDrvRunInNewThread(winDrvFellowStepOneStart, nullptr); break;
-    case dbg_operations::DBG_STEP_OVER: winDrvRunInNewThread(winDrvFellowStepOverStart, nullptr); break;
-    case dbg_operations::DBG_STEP_LINE: winDrvRunInNewThread(winDrvFellowStepLineStart, nullptr); break;
-    case dbg_operations::DBG_STEP_FRAME: winDrvRunInNewThread(winDrvFellowStepFrameStart, nullptr); break;
+    case dbg_operations::DBG_RUN: winDrvRunInNewThread(winDrvFellowRunDebugStart, breakpoint); break;
+    case dbg_operations::DBG_STEP: winDrvRunInNewThread(winDrvFellowStepOneStart, 0); break;
+    case dbg_operations::DBG_STEP_OVER: winDrvRunInNewThread(winDrvFellowStepOverStart, 0); break;
+    case dbg_operations::DBG_STEP_LINE: winDrvRunInNewThread(winDrvFellowStepLineStart, 0); break;
+    case dbg_operations::DBG_STEP_FRAME: winDrvRunInNewThread(winDrvFellowStepFrameStart, 0); break;
   }
 
   return true;
@@ -282,14 +282,14 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *
   return event_count;
 }
 
-void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
+void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc)
 {
   Service->Log.AddLog("Emulation message-loop started\n");
 
   // In regular run mode this event signals that the emulation thread has ended
   win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-  winDrvRunInNewThread(startfunc, param); // Starts emulation in a separate thread
+  winDrvRunInNewThread(startfunc, 0); // Starts emulation in a separate thread
 
   SetTimer(((GraphicsDriver&)(Driver->Graphics)).GetHWND(), 1, 10, nullptr);
 
@@ -393,7 +393,7 @@ void winDrvEmulationStart()
 {
   if (fellowEmulationStart())
   {
-    winDrvEmulate(winDrvFellowRunStart, nullptr);
+    winDrvEmulate(winDrvFellowRunStart);
   }
   else
   {
