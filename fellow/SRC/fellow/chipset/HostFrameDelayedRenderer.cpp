@@ -343,7 +343,7 @@ void HostFrameDelayedRenderer::ToStream(ostringstream &os)
   os << "VerticalBlankEnd: " << firstLineInFrame << endl;
   os << "LinesInFrame: " << linesInFrame << endl;
 
-  for (auto line = 0; line < ChangeList.LinesInFrame; line++)
+  for (unsigned int line = 0; line < ChangeList.LinesInFrame; line++)
   {
     ToStream(os, line);
   }

@@ -17,8 +17,6 @@ private:
   static DisplayScaleStrategy MapDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayScaleStrategy);
   static DisplayDriver MapDisplayDriver(DISPLAYDRIVER displayDriver);
   static RectShresi MapChipsetOutputClip(unsigned int outputClipLeft, unsigned int outputClipTop, unsigned int outputClipRight, unsigned int outputClipBottom);
-
-  static void ThrowInvalidOption();
 };
 
 class InvalidOptionException : public std::exception

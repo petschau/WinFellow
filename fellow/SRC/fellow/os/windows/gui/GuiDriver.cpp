@@ -3187,8 +3187,6 @@ void GuiDriver::About(HWND hwndDlg)
 
 INT_PTR GuiDriver::MainDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-  char *versionstring;
-
   switch (uMsg)
   {
     case WM_INITDIALOG:

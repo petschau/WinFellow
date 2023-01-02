@@ -39,13 +39,12 @@ DisplayColorDepth HostRenderConfigurationMapper::MapDisplayColorDepth(bool isScr
     default: break;
   }
 
-  ThrowInvalidOption();
-  return DisplayColorDepth::Unassigned;
+  throw InvalidOptionException();
 }
 
 unsigned int HostRenderConfigurationMapper::MapDisplayRefreshRate(bool isScreenWindowed, unsigned int screenRefresh)
 {
-  return (isScreenWindowed) ? 0 : screenRefresh;
+  return isScreenWindowed ? 0 : screenRefresh;
 }
 
 DisplayScale HostRenderConfigurationMapper::MapDisplayScale(DISPLAYSCALE displayScale)
@@ -59,7 +58,7 @@ DisplayScale HostRenderConfigurationMapper::MapDisplayScale(DISPLAYSCALE display
     case DISPLAYSCALE::DISPLAYSCALE_4X: return DisplayScale::FixedScale4X;
   }
 
-   ThrowInvalidOption();
+   throw InvalidOptionException();
 }
 
 DisplayScaleStrategy HostRenderConfigurationMapper::MapDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayScaleStrategy)
@@ -70,7 +69,7 @@ DisplayScaleStrategy HostRenderConfigurationMapper::MapDisplayScaleStrategy(DISP
     case DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES: return DisplayScaleStrategy::Scanlines;
   }
 
-  ThrowInvalidOption();
+  throw InvalidOptionException();
 }
 
 DisplayDriver HostRenderConfigurationMapper::MapDisplayDriver(DISPLAYDRIVER displayDriver)
@@ -81,15 +80,10 @@ DisplayDriver HostRenderConfigurationMapper::MapDisplayDriver(DISPLAYDRIVER disp
     case DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11: return DisplayDriver::Direct3D11;
   }
 
-  ThrowInvalidOption();
+  throw InvalidOptionException();
 }
 
 RectShresi HostRenderConfigurationMapper::MapChipsetOutputClip(unsigned int outputClipLeft, unsigned int outputClipTop, unsigned int outputClipRight, unsigned int outputClipBottom)
 {
   return RectShresi(outputClipLeft, outputClipTop, outputClipRight, outputClipBottom);
-}
-
-void HostRenderConfigurationMapper::ThrowInvalidOption()
-{
-  throw InvalidOptionException();
 }
