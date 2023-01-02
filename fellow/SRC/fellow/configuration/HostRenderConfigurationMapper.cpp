@@ -57,8 +57,9 @@ DisplayScale HostRenderConfigurationMapper::MapDisplayScale(DISPLAYSCALE display
     case DISPLAYSCALE::DISPLAYSCALE_2X: return DisplayScale::FixedScale2X;
     case DISPLAYSCALE::DISPLAYSCALE_3X: return DisplayScale::FixedScale3X;
     case DISPLAYSCALE::DISPLAYSCALE_4X: return DisplayScale::FixedScale4X;
-    default: ThrowInvalidOption();
   }
+
+   ThrowInvalidOption();
 }
 
 DisplayScaleStrategy HostRenderConfigurationMapper::MapDisplayScaleStrategy(DISPLAYSCALE_STRATEGY displayScaleStrategy)
@@ -67,8 +68,9 @@ DisplayScaleStrategy HostRenderConfigurationMapper::MapDisplayScaleStrategy(DISP
   {
     case DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID: return DisplayScaleStrategy::Solid;
     case DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES: return DisplayScaleStrategy::Scanlines;
-    default: ThrowInvalidOption();
   }
+
+  ThrowInvalidOption();
 }
 
 DisplayDriver HostRenderConfigurationMapper::MapDisplayDriver(DISPLAYDRIVER displayDriver)
@@ -77,8 +79,9 @@ DisplayDriver HostRenderConfigurationMapper::MapDisplayDriver(DISPLAYDRIVER disp
   {
     case DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW: return DisplayDriver::DirectDraw;
     case DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11: return DisplayDriver::Direct3D11;
-    default: ThrowInvalidOption();
   }
+
+  ThrowInvalidOption();
 }
 
 RectShresi HostRenderConfigurationMapper::MapChipsetOutputClip(unsigned int outputClipLeft, unsigned int outputClipTop, unsigned int outputClipRight, unsigned int outputClipBottom)
