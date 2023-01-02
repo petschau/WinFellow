@@ -10,8 +10,8 @@ private:
   const char *INI_FILENAME = "WinFellow.ini";
   std::string _defaultIniFilePath;
 
-  IniValues *m_current_ini;
-  IniValues *m_default_ini;
+  IniValues *m_current_ini = nullptr;
+  IniValues *m_default_ini = nullptr;
 
   BOOLE SetOption(IniValues *initdata, const std::string &initoptionstr);
   ULO GetULOFromString(const std::string &value);
@@ -40,4 +40,6 @@ public:
   void EmulationStop() override;
   void Initialize() override;
   void Release() override;
+
+  virtual ~IniDriver() = default;
 };

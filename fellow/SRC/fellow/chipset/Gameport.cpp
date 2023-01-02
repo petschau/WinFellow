@@ -32,25 +32,25 @@
 
 using namespace fellow::api;
 
-/*===========================================================================*/
-/* IO-Registers                                                              */
-/*===========================================================================*/
+//=============
+// IO-Registers
+//=============
 
 ULO potgor, potdat[2];
 
-/*===========================================================================*/
-/* Gameport state                                                            */
-/*===========================================================================*/
+//===============
+// Gameport state
+//===============
 
-BOOLE gameport_fire0[2], gameport_fire1[2], gameport_autofire0[2], gameport_autofire1[2];
-BOOLE gameport_left[2], gameport_right[2], gameport_up[2], gameport_down[2];
+bool gameport_fire0[2], gameport_fire1[2], gameport_autofire0[2], gameport_autofire1[2];
+bool gameport_left[2], gameport_right[2], gameport_up[2], gameport_down[2];
 LON gameport_x[2], gameport_y[2];
 LON gameport_x_last_read[2], gameport_y_last_read[2];
-BOOLE gameport_mouse_first_time[2];
+bool gameport_mouse_first_time[2];
 
-/*===========================================================================*/
-/* Configuration information                                                 */
-/*===========================================================================*/
+//==========================
+// Configuration information
+//==========================
 
 gameport_inputs gameport_input[2];
 
@@ -59,135 +59,166 @@ void gameportSetInput(ULO index, gameport_inputs gameportinput)
   gameport_input[index] = gameportinput;
 }
 
-BOOLE gameportGetAnalogJoystickInUse()
+bool gameportGetAnalogJoystickInUse()
 {
-  BOOLE result = FALSE;
-
-  for (ULO i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; i++)
   {
     if (gameport_input[i] == gameport_inputs::GP_ANALOG0 || gameport_input[i] == gameport_inputs::GP_ANALOG1)
     {
-      result = TRUE;
+      return true;      
     }
   }
 
-  return result;
+  return false;
 }
 
-/*===========================================================================*/
-/* IO-Registers                                                              */
-/*===========================================================================*/
-
-/*===========================================================================*/
-/* General joydat calculation                                                */
-/* This routine will try to avoid overflow in the mouse counters             */
-/*===========================================================================*/
+//==============================================================
+// General joydat calculation
+// This routine will try to avoid overflow in the mouse counters
+//==============================================================
 
 static ULO rjoydat(ULO i)
 {
   if (gameport_input[i] == gameport_inputs::GP_MOUSE0)
-  { /* Gameport input is mouse */
+  { // Gameport input is mouse
     LON diffx = gameport_x[i] - gameport_x_last_read[i];
     LON diffy = gameport_y[i] - gameport_y_last_read[i];
+    
     if (diffx > 127)
-      diffx = 127; /* Find relative movement */
+    {
+      diffx = 127; // Find relative movement
+    }
     else if (diffx < -127)
+    {
       diffx = -127;
+    }
+
     if (diffy > 127)
+    {
       diffy = 127;
+    }
     else if (diffy < -127)
+    {
       diffy = -127;
+    }
+
     gameport_x_last_read[i] += diffx;
     gameport_y_last_read[i] += diffy;
 
     return ((gameport_y_last_read[i] & 0xff) << 8) | (gameport_x_last_read[i] & 0xff);
   }
   else
-  { /* Gameport input is of joystick type */
+  { // Gameport input is of joystick type
     ULO retval = 0;
 
-    if (gameport_right[i]) retval |= 3;
+    if (gameport_right[i])
+    {
+      retval |= 3;
+    }
 
-    if (gameport_left[i]) retval |= 0x300;
+    if (gameport_left[i])
+    {
+      retval |= 0x300;
+    }
 
-    if (gameport_up[i]) retval ^= 0x100;
+    if (gameport_up[i])
+    {
+      retval ^= 0x100;
+    }
 
-    if (gameport_down[i]) retval ^= 1;
+    if (gameport_down[i])
+    {
+      retval ^= 1;
+    }
 
     return retval;
   }
 }
 
-/* JOY0DATR - $A */
+// JOY0DATR - $A
 
 UWO rjoy0dat(ULO address)
 {
   return (UWO)rjoydat(0);
 }
 
-/* JOY1DATR - $C */
+// JOY1DATR - $C
 
 UWO rjoy1dat(ULO address)
 {
   return (UWO)rjoydat(1);
 }
 
-/* POT0DATR - $12 */
+// POT0DATR - $12
 
 UWO rpot0dat(ULO address)
 {
   return (UWO)potdat[0];
 }
 
-/* POT1DATR - $14 */
+// POT1DATR - $14
 
 UWO rpot1dat(ULO address)
 {
   return (UWO)potdat[1];
 }
 
-/* POTGOR - $16 */
+// POTGOR - $16
 
 UWO rpotgor(ULO address)
 {
   UWO val = potgor & 0xbbff;
 
-  if (gameport_autofire1[0]) gameport_fire1[0] = !gameport_fire1[0];
+  if (gameport_autofire1[0])
+  {
+    gameport_fire1[0] = !gameport_fire1[0];
+  }
 
-  if (gameport_autofire1[1]) gameport_fire1[1] = !gameport_fire1[1];
+  if (gameport_autofire1[1])
+  {
+    gameport_fire1[1] = !gameport_fire1[1];
+  }
 
-  if (!gameport_fire1[0]) val |= 0x400;
-  if (!gameport_fire1[1]) val |= 0x4000;
+  if (!gameport_fire1[0])
+  {
+    val |= 0x400;
+  }
+
+  if (!gameport_fire1[1])
+  {
+    val |= 0x4000;
+  }
+
   return val;
 }
 
-/* JOYTEST $36 */
+// JOYTEST $36
 
 void wjoytest(UWO data, ULO address)
 {
-  for (ULO i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; i++)
   {
     gameport_x[i] = gameport_x_last_read[i] = (BYT)(data & 0xff);
     gameport_y[i] = gameport_y_last_read[i] = (BYT)((data >> 8) & 0xff);
   }
 }
 
-/*===========================================================================*/
-/* Mouse movement handler                                                    */
-/* Called by mousedrv.c whenever a change occurs                             */
-/* The input coordinates are used raw. There can be a granularity problem.   */
-/*                                                                           */
-/* Parameters:                                                               */
-/* mouseno                   - mouse 0 or mouse 1                            */
-/* x, y                      - New relative position of mouse                */
-/* button1, button2, button3 - State of the mouse buttons, button2 not used  */
-/*===========================================================================*/
+//=========================================================================
+// Mouse movement handler
+// Called by MouseDriverwhenever a change occurs
+// The input coordinates are used raw. There can be a granularity problem.
+//
+// Parameters:
+// mouseno                   - mouse 0 or mouse 1
+// x, y                      - New relative position of mouse
+// button1, button2, button3 - State of the mouse buttons, button2 not used
+//=========================================================================
 
-void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
+void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, bool button1, bool button2, bool button3)
 {
   automator.RecordMouse(mousedev, x, y, button1, button2, button3);
 
-  for (ULO i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; i++)
   {
     if (gameport_input[i] == mousedev)
     {
@@ -200,23 +231,27 @@ void gameportMouseHandler(gameport_inputs mousedev, LON x, LON y, BOOLE button1,
   }
 }
 
-/*===========================================================================*/
-/* Joystick movement handler                                                 */
-/* Called by joydrv.c or kbddrv.c whenever a change occurs                   */
-/*                                                                           */
-/* Parameters:                                                               */
-/* left, up, right, down     - New state of the joystick                     */
-/* button1, button2, button3 - State of the joystick buttons                 */
-/*===========================================================================*/
+//==========================================================
+// Joystick movement handler
+// Called by joydrv.c or kbddrv.c whenever a change occurs
+//
+// Parameters:
+// left, up, right, down     - New state of the joystick
+// button1, button2, button3 - State of the joystick buttons
+//==========================================================
 
-void gameportJoystickHandler(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
+void gameportJoystickHandler(gameport_inputs joydev, bool left, bool up, bool right, bool down, bool button1, bool button2)
 {
   automator.RecordJoystick(joydev, left, up, right, down, button1, button2);
 
-  for (ULO i = 0; i < 2; i++)
+  for (unsigned int i = 0; i < 2; i++)
+  {
     if (gameport_input[i] == joydev)
     {
-      if ((!gameport_fire1[i]) && button2) potdat[i] = (potdat[i] + 0x100) & 0xffff;
+      if ((!gameport_fire1[i]) && button2)
+      {
+        potdat[i] = (potdat[i] + 0x100) & 0xffff;
+      }
 
       gameport_fire0[i] = button1;
       gameport_fire1[i] = button2;
@@ -242,11 +277,8 @@ void gameportJoystickHandler(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE
 #endif
 #endif
     }
+  }
 }
-
-/*===========================================================================*/
-/* Initialize the register stubs for the gameports                           */
-/*===========================================================================*/
 
 void gameportIOHandlersInstall()
 {
@@ -258,63 +290,61 @@ void gameportIOHandlersInstall()
   memorySetIoWriteStub(0x36, wjoytest);
 }
 
-/*===========================================================================*/
-/* Clear all gameport state                                                  */
-/*===========================================================================*/
-
-void gameportIORegistersClear(BOOLE clear_pot)
+void gameportIORegistersClear(bool clear_pot)
 {
-  if (clear_pot) potgor = 0xffff;
-  for (ULO i = 0; i < 2; i++)
+  if (clear_pot)
   {
-    if (clear_pot) potdat[i] = 0;
-    gameport_autofire0[i] = FALSE;
-    gameport_autofire1[i] = FALSE;
-    gameport_fire0[i] = FALSE;
-    gameport_fire1[i] = FALSE;
-    gameport_left[i] = FALSE;
-    gameport_right[i] = FALSE;
-    gameport_up[i] = FALSE;
-    gameport_down[i] = FALSE;
+    potgor = 0xffff;
+  }
+
+  for (unsigned int i = 0; i < 2; i++)
+  {
+    if (clear_pot)
+    {
+      potdat[i] = 0;
+    }
+
+    gameport_autofire0[i] = false;
+    gameport_autofire1[i] = false;
+    gameport_fire0[i] = false;
+    gameport_fire1[i] = false;
+    gameport_left[i] = false;
+    gameport_right[i] = false;
+    gameport_up[i] = false;
+    gameport_down[i] = false;
     gameport_x[i] = 0;
     gameport_y[i] = 0;
     gameport_x_last_read[i] = 0;
     gameport_y_last_read[i] = 0;
-    gameport_mouse_first_time[i] = FALSE;
+    gameport_mouse_first_time[i] = false;
   }
 }
 
-/*===========================================================================*/
-/* Standard Fellow module functions                                          */
-/*===========================================================================*/
-
 void gameportHardReset()
 {
-  gameportIORegistersClear(TRUE);
-  Driver->Mouse.HardReset();
-  Driver->Joystick.HardReset();
+  gameportIORegistersClear(true);
+  Driver->Mouse->HardReset();
+  Driver->Joystick->HardReset();
 }
 
 void gameportEmulationStart()
 {
   gameportIOHandlersInstall();
   Service->Log.AddLog("gameportEmulationStart()\n");
-  Driver->Mouse.EmulationStart();
-  Driver->Joystick.EmulationStart();
-  gameportIORegistersClear(FALSE);
+  Driver->Mouse->EmulationStart();
+  Driver->Joystick->EmulationStart();
+  gameportIORegistersClear(false);
 }
 
 void gameportEmulationStop()
 {
-  Driver->Joystick.EmulationStop();
-  Driver->Mouse.EmulationStop();
+  Driver->Joystick->EmulationStop();
+  Driver->Mouse->EmulationStop();
 }
 
 void gameportStartup()
 {
-  gameportIORegistersClear(TRUE);
-  Driver->Mouse.Startup();
-  Driver->Joystick.Startup();
+  gameportIORegistersClear(true);
 
   // -- nova --
   // this is only an initial settings, they will be overrided
@@ -326,6 +356,4 @@ void gameportStartup()
 
 void gameportShutdown()
 {
-  Driver->Joystick.Shutdown();
-  Driver->Mouse.Shutdown();
 }

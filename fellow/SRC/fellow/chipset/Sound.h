@@ -108,5 +108,5 @@ extern void soundEndOfLine();
 extern void soundHardReset();
 extern void soundEmulationStart();
 extern void soundEmulationStop();
-extern BOOLE soundStartup();
+extern void soundStartup();
 extern void soundShutdown();

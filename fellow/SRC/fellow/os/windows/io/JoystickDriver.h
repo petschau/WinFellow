@@ -9,40 +9,39 @@ constexpr auto MAX_JOY_PORT = 2;
 class JoystickDriver : public IJoystickDriver
 {
 private:
-  BOOLE _failed;
+  bool _failed = false;
 
-  IDirectInput8 *_lpDI;
+  IDirectInput8 *_lpDI = nullptr;
   IDirectInputDevice8 *_lpDID[MAX_JOY_PORT];
 
-  int num_joy_supported;
-  int num_joy_attached;
+  int num_joy_attached = 0;
 
-  BOOLE _active;
-  BOOLE _focus;
-  BOOLE _in_use;
+  bool _active = false;
+  bool _focus = false;
+  bool _in_use = false;
 
   const char *DInputErrorString(HRESULT hResult);
   void DInputFailure(const char *header, HRESULT err);
   void DInputSetCooperativeLevel(int port);
   void DInputUnacquire(int port);
   void DInputAcquire(int port);
-  BOOLE DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[], GUID guid, int port);
+  bool DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[], GUID guid, int port);
   static BOOL FAR PASCAL InitJoystickInputCallback(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);
   void DInputInitialize();
   void DInputRelease();
-  BOOLE CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Right, BOOLE *Button1, BOOLE *Button2);
+  bool CheckJoyMovement(int port, bool *Up, bool *Down, bool *Left, bool *Right, bool *Button1, bool *Button2);
 
 public:
   BOOL HandleInitJoystickInputCallback(LPCDIDEVICEINSTANCE pdinst);
-  void StateHasChanged(BOOLE active) override;
+  void StateHasChanged(bool active) override;
   void ToggleFocus() override;
   void MovementHandler() override;
 
   void HardReset() override;
   void EmulationStart() override;
   void EmulationStop() override;
-  void Startup() override;
-  void Shutdown() override;
+  void Initialize() override;
+  void Release() override;
 
   virtual ~JoystickDriver() = default;
 };

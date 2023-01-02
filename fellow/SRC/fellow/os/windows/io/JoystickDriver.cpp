@@ -219,7 +219,7 @@ void JoystickDriver::DInputAcquire(int port)
   }
 }
 
-BOOLE JoystickDriver::DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[], GUID guid, int port)
+bool JoystickDriver::DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevice8 *pDiD[], GUID guid, int port)
 {
   HRESULT res;
 
@@ -229,14 +229,14 @@ BOOLE JoystickDriver::DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevi
     if (res != DI_OK)
     {
       DInputFailure("JoystickDriver::DInputInitialize(): DeviceCoCreateInstance()", res);
-      return TRUE;
+      return true;
     }
 
     res = IDirectInputDevice8_Initialize(pDiD[port], win_drv_hInstance, DIRECTINPUT_VERSION, guid);
     if (res != DI_OK)
     {
       DInputFailure("JoystickDriver::DInputInitialize(): DeviceInitialize()", res);
-      return TRUE;
+      return true;
     }
   }
 
@@ -244,10 +244,10 @@ BOOLE JoystickDriver::DxCreateAndInitDevice(IDirectInput8 *pDi, IDirectInputDevi
   if (res != DI_OK)
   {
     DInputFailure("JoystickDriver::DInputInitialize(): SetDataFormat()", res);
-    return TRUE;
+    return true;
   }
 
-  return FALSE;
+  return false;
 }
 
 BOOL FAR PASCAL JoystickDriver::InitJoystickInputCallback(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
@@ -288,7 +288,7 @@ void JoystickDriver::DInputInitialize()
     if (res != DI_OK)
     {
       DInputFailure("JoystickDriver::DInputInitialize(): CoCreateInstance()", res);
-      _failed = TRUE;
+      _failed = true;
       return;
     }
 
@@ -296,7 +296,7 @@ void JoystickDriver::DInputInitialize()
     if (res != DI_OK)
     {
       DInputFailure("JoystickDriver::DInputInitialize(): Initialize()", res);
-      _failed = TRUE;
+      _failed = true;
       return;
     }
 
@@ -306,7 +306,7 @@ void JoystickDriver::DInputInitialize()
     if (res != DI_OK)
     {
       DInputFailure("JoystickDriver::DInputInitialize(): EnumDevices()", res);
-      _failed = TRUE;
+      _failed = true;
       return;
     }
 
@@ -335,7 +335,7 @@ void JoystickDriver::DInputRelease()
   }
 }
 
-void JoystickDriver::StateHasChanged(BOOLE active)
+void JoystickDriver::StateHasChanged(bool active)
 {
   if (_failed)
   {
@@ -343,14 +343,7 @@ void JoystickDriver::StateHasChanged(BOOLE active)
   }
 
   _active = active;
-  if (_active && _focus)
-  {
-    _in_use = TRUE;
-  }
-  else
-  {
-    _in_use = FALSE;
-  }
+  _in_use = _active && _focus;
 
   for (int port = 0; port < MAX_JOY_PORT; port++)
   {
@@ -367,13 +360,13 @@ void JoystickDriver::ToggleFocus()
   StateHasChanged(_active);
 }
 
-BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *Left, BOOLE *Right, BOOLE *Button1, BOOLE *Button2)
+bool JoystickDriver::CheckJoyMovement(int port, bool *Up, bool *Down, bool *Left, bool *Right, bool *Button1, bool *Button2)
 {
   DIJOYSTATE dims;
   HRESULT res;
   int LostCounter = 25;
 
-  *Button1 = *Button2 = *Left = *Right = *Up = *Down = FALSE;
+  *Button1 = *Button2 = *Left = *Right = *Up = *Down = false;
 
   do
   {
@@ -394,8 +387,8 @@ BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *
       if (LostCounter-- < 0)
       {
         DInputFailure("JoystickDriver::MovementHandler(): abort --", res);
-        _failed = TRUE;
-        return TRUE;
+        _failed = true;
+        return true;
       }
     }
   } while (res == DIERR_INPUTLOST);
@@ -403,28 +396,28 @@ BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *
   if (res != DI_OK)
   {
     DInputFailure("JoystickDriver::MovementHandler(): GetDeviceState()", res);
-    return TRUE;
+    return true;
   }
 
   if (dims.rgbButtons[0] & 0x80)
   {
-    *Button1 = TRUE;
+    *Button1 = true;
   }
 
   if (dims.rgbButtons[1] & 0x80)
   {
-    *Button2 = TRUE;
+    *Button2 = true;
   }
 
   if (dims.rgbButtons[2] & 0x80)
   {
     if (gameport_fire0[port])
     {
-      *Button1 = FALSE;
+      *Button1 = false;
     }
     else
     {
-      *Button1 = TRUE;
+      *Button1 = true;
     }
   }
 
@@ -432,11 +425,11 @@ BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *
   {
     if (gameport_fire1[port])
     {
-      *Button2 = FALSE;
+      *Button2 = false;
     }
     else
     {
-      *Button2 = TRUE;
+      *Button2 = true;
     }
   }
 
@@ -444,11 +437,11 @@ BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *
   {
     if (dims.lX > MEDX)
     {
-      *Right = TRUE;
+      *Right = true;
     }
     else
     {
-      *Left = TRUE;
+      *Left = true;
     }
   }
 
@@ -456,15 +449,15 @@ BOOLE JoystickDriver::CheckJoyMovement(int port, BOOLE *Up, BOOLE *Down, BOOLE *
   {
     if (dims.lY > MEDY)
     {
-      *Down = TRUE;
+      *Down = true;
     }
     else
     {
-      *Up = TRUE;
+      *Up = true;
     }
   }
 
-  return FALSE;
+  return false;
 }
 
 void JoystickDriver::MovementHandler()
@@ -480,14 +473,14 @@ void JoystickDriver::MovementHandler()
   {
     if ((gameport_input[gameport] == gameport_inputs::GP_ANALOG0) || (gameport_input[gameport] == gameport_inputs::GP_ANALOG1))
     {
-      BOOLE Button1;
-      BOOLE Button2;
-      BOOLE Left;
-      BOOLE Right;
-      BOOLE Up;
-      BOOLE Down;
+      bool Button1;
+      bool Button2;
+      bool Left;
+      bool Right;
+      bool Up;
+      bool Down;
 
-      Button1 = Button2 = Left = Right = Up = Down = FALSE;
+      Button1 = Button2 = Left = Right = Up = Down = false;
 
       if (gameport_input[gameport] == gameport_inputs::GP_ANALOG0)
       {
@@ -524,25 +517,25 @@ void JoystickDriver::HardReset()
 
 void JoystickDriver::EmulationStart()
 {
-  _failed = FALSE;
-  _focus = TRUE;
-  _active = FALSE;
-  _in_use = FALSE;
+  _failed = false;
+  _focus = true;
+  _active = false;
+  _in_use = false;
   DInputInitialize();
 }
 
 void JoystickDriver::EmulationStop()
 {
   DInputRelease();
-  _failed = TRUE;
+  _failed = true;
 }
 
-void JoystickDriver::Startup()
+void JoystickDriver::Initialize()
 {
-  _failed = FALSE;
-  _focus = TRUE;
-  _active = FALSE;
-  _in_use = FALSE;
+  _failed = false;
+  _focus = true;
+  _active = false;
+  _in_use = false;
 
   _lpDI = nullptr;
   _lpDID[0] = nullptr;
@@ -554,11 +547,10 @@ void JoystickDriver::Startup()
     Service->Log.AddLog("JoystickDriver::Startup(): Could not initialize COM library: %d\n", res);
   }
 
-  num_joy_supported = 0;
   num_joy_attached = 0;
 }
 
-void JoystickDriver::Shutdown()
+void JoystickDriver::Release()
 {
   CoUninitialize();
 }

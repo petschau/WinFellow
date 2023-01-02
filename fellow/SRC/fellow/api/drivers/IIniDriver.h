@@ -13,6 +13,6 @@ public:
 
   virtual void EmulationStart() = 0;
   virtual void EmulationStop() = 0;
-  virtual void Startup() = 0;
-  virtual void Shutdown() = 0;
+  virtual void Initialize() = 0;
+  virtual void Release() = 0;
 };

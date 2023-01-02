@@ -1,5 +1,7 @@
 #pragma once
 
+#include "fellow/api/defs.h"
+
 enum class kbd_event
 {
   EVENT_INSERT_DF0,

@@ -75,7 +75,7 @@ BOOLE capsStartup()
   {
     const char* errorMessage = "IPF Images need a current C.A.P.S. Plug-In!\nYou can download it from:\nhttp://www.softpres.org/download";
     Service->Log.AddLog(errorMessage);
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_INFO, errorMessage);
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_INFO, errorMessage);
     capsUserIsNotified = TRUE;
     Service->Log.AddLog("capsStartup(): Unable to open the CAPS Plug-In.\n");
     return FALSE;

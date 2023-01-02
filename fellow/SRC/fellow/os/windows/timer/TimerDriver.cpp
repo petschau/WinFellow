@@ -20,8 +20,6 @@
 /* Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.          */
 /*=========================================================================*/
 
-#include <list>
-#include "fellow/api/defs.h"
 #include <windows.h>
 #include "fellow/api/Services.h"
 #include "fellow/os/windows/timer/TimerDriver.h"
@@ -51,13 +49,13 @@ void TimerDriver::HandleCallback()
 {
   _ticks++;
 
-  for (timerCallbackFunction callback : _callbacks)
+  for (const auto& callback : _callbacks)
   {
     callback(_ticks);
   }
 }
 
-void TimerDriver::AddCallback(timerCallbackFunction callback)
+void TimerDriver::AddCallback(const function<void(ULO)>& callback)
 {
   _callbacks.push_back(callback);
 }
@@ -114,12 +112,12 @@ void TimerDriver::EmulationStop()
   _callbacks.clear();
 }
 
-void TimerDriver::Startup()
+void TimerDriver::Initialize()
 {
   _callbacks.clear();
   _running = false;
 }
 
-void TimerDriver::Shutdown()
+void TimerDriver::Release()
 {
 }

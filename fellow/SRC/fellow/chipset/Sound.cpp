@@ -62,12 +62,6 @@ ULO sound_buffer_sample_count;                                             /* Cu
 ULO sound_buffer_sample_count_max;                                         /* Maximum capacity of the buffer */
 
 /*===========================================================================*/
-/* Information about the sound device                                        */
-/*===========================================================================*/
-
-sound_device_capabilities sound_dev;
-
-/*===========================================================================*/
 /* Run-time data                                                             */
 /*===========================================================================*/
 
@@ -730,15 +724,6 @@ void soundPlaybackInitialize()
 }
 
 /*===========================================================================*/
-/* Clear a device struct                                                     */
-/*===========================================================================*/
-
-void soundDeviceClear(sound_device_capabilities *sd)
-{
-  memset(sd, 0, sizeof(sound_device_capabilities));
-}
-
-/*===========================================================================*/
 /* Set IO register stubs                                                     */
 /*===========================================================================*/
 
@@ -809,7 +794,7 @@ void soundEndOfLine()
     {
       if (soundGetEmulation() == sound_emulations::SOUND_PLAY)
       {
-        Driver->Sound.Play(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
+        Driver->Sound->Play(sound_left[sound_current_buffer], sound_right[sound_current_buffer], soundGetBufferSampleCountMax());
       }
       if (soundGetWAVDump())
       {
@@ -844,7 +829,7 @@ void soundEmulationStart()
   {
     /* Allow sound driver to override buffer length */
     ULO buffer_length = soundGetBufferSampleCountMax();
-    if (!Driver->Sound.EmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
+    if (!Driver->Sound->EmulationStart(soundGetRateReal(), soundGet16Bits(), soundGetStereo(), &buffer_length))
     {
       soundSetEmulation(sound_emulations::SOUND_EMULATE); /* Driver failed, slient emulation */
     }
@@ -863,7 +848,7 @@ void soundEmulationStop()
 {
   if (soundGetEmulation() != sound_emulations::SOUND_NONE && soundGetEmulation() != sound_emulations::SOUND_EMULATE)
   {
-    Driver->Sound.EmulationStop();
+    Driver->Sound->EmulationStop();
   }
 
   if (soundGetWAVDump() && (soundGetEmulation() != sound_emulations::SOUND_NONE))
@@ -872,18 +857,14 @@ void soundEmulationStop()
   }
 }
 
-/*===========================================================================*/
-/* Called every time we do a hard-reset                                      */
-/*===========================================================================*/
-
 void soundHardReset()
 {
   soundIORegistersClear();
 }
 
-BOOLE soundStartup()
+void soundStartup()
 {
-  soundSetEmulation(sound_emulations::SOUND_NONE);
+  soundSetEmulation(sound_emulations::SOUND_EMULATE);
   soundSetFilter(sound_filters::SOUND_FILTER_ORIGINAL);
   soundSetRate(sound_rates::SOUND_15650);
   soundSetStereo(FALSE);
@@ -893,23 +874,10 @@ BOOLE soundStartup()
   soundSetBufferLength(40);
   soundIORegistersClear();
 
-  soundDeviceClear(&sound_dev);
-  bool driverStartupResult = Driver->Sound.Startup(&sound_dev);
-  soundSetDeviceFound(driverStartupResult);
+  soundSetDeviceFound(Driver->Sound->IsInitialized());
   wavStartup();
-
-  if (!soundGetDeviceFound())
-  {
-    if (soundGetEmulation() == sound_emulations::SOUND_PLAY)
-    {
-        soundSetEmulation(sound_emulations::SOUND_NONE);
-    }
-  }
-
-  return soundGetDeviceFound();
 }
 
 void soundShutdown()
 {
-  Driver->Sound.Shutdown();
 }

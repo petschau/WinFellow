@@ -101,13 +101,18 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/os/windows/dxver.h"        /// needed for DirectInput based joystick detection code
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 #include "fellow/os/windows/directdraw/GfxDrvDirectDraw.h"
 #include "fellow/os/windows/dxgi/GfxDrvDXGI.h"
 
 using namespace fellow::api;
 
 RetroPlatform RP;
+
+GraphicsDriver &GraphicsDriverWin32()
+{
+  return ((GraphicsDriver &)Driver->Graphics);
+}
 
 /** event handler function for events that are sent to WinFellow from Amiga Forever
  *  handles multiple incoming events like keyboard or joystick input events that are queued within the event message
@@ -136,7 +141,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if (strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-      Driver->Keyboard.KeypressRaw(lRawKeyCode, TRUE);
+      Driver->Keyboard->KeypressRaw(lRawKeyCode, true);
     }
     blnMatch = TRUE;
   }
@@ -146,7 +151,7 @@ BOOL RetroPlatformHandleIncomingGuestEvent(STR *strCurrentEvent)
     if (strRawKeyCode = strchr(strCurrentEvent, ' '))
     {
       lRawKeyCode = (ULO)strtol(strRawKeyCode, NULL, 0);
-      Driver->Keyboard.KeypressRaw(lRawKeyCode, FALSE);
+      Driver->Keyboard->KeypressRaw(lRawKeyCode, false);
     }
 
     blnMatch = TRUE;
@@ -281,13 +286,13 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_CLOSE:
       Service->Log.AddLog("RetroPlatform::HostMessageFunction(): received close event.\n");
       fellowRequestEmulationStop();
-      gfxDrvCommon->RunEventSet();
+      GraphicsDriverWin32().RunEventSet();
       RP.SetEmulatorQuit(true);
       return true;
     case RP_IPC_TO_GUEST_RESET:
-      if (wParam == RP_RESET_HARD) fellowSetPreStartReset(true);
+      if (wParam == RP_RESET_HARD) fellowSetPerformResetBeforeStartingEmulation(true);
       RP.SetEmulationPaused(false);
-      gfxDrvCommon->RunEventSet();
+      GraphicsDriverWin32().RunEventSet();
       fellowRequestEmulationStop();
       return true;
     case RP_IPC_TO_GUEST_TURBO:
@@ -318,21 +323,21 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_PAUSE:
       if (wParam != 0)
       { // pause emulation
-        gfxDrvCommon->RunEventReset();
+        GraphicsDriverWin32().RunEventReset();
         RP.SetEmulationPaused(true);
         RP.SetEmulationState(false);
         return 1;
       }
       else
       { // resume emulation
-        gfxDrvCommon->RunEventSet();
+        GraphicsDriverWin32().RunEventSet();
         RP.SetEmulationPaused(false);
         RP.SetEmulationState(true);
         return 1;
       }
     case RP_IPC_TO_GUEST_VOLUME:
       soundSetVolume((ULO)wParam);
-      Driver->Sound.SetCurrentSoundDeviceVolume((int)wParam);
+      Driver->Sound->SetCurrentSoundDeviceVolume((int)wParam);
       return true;
 #ifndef FELLOW_SUPPORT_RP_API_VERSION_71
     case RP_IPC_TO_GUEST_ESCAPEKEY:
@@ -342,7 +347,7 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
 #endif
     case RP_IPC_TO_GUEST_MOUSECAPTURE:
       Service->Log.AddLog("RetroPlatform::HostMessageFunction(): mousecapture: %d.\n", wParam & RP_MOUSECAPTURE_CAPTURED);
-      Driver->Mouse.SetFocus(wParam & RP_MOUSECAPTURE_CAPTURED ? true : false, true);
+      Driver->Mouse->SetFocus((wParam & RP_MOUSECAPTURE_CAPTURED) == RP_MOUSECAPTURE_CAPTURED, true);
       return true;
     case RP_IPC_TO_GUEST_DEVICEACTIVITY: return RetroPlatformHandleIncomingDeviceActivity(wParam, lParam);
     case RP_IPC_TO_GUEST_DEVICECONTENT:
@@ -392,10 +397,10 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
         Service->Log.AddLog("RetroPlatform::HostMessageFunction(): screenshot request received; filtered '%s', raw '%s'\n", szScreenFiltered, szScreenRaw);
 
         if (szScreenFiltered[0])
-          if (!Driver->Graphics.SaveScreenshot(true, szScreenFiltered)) bResult = false;
+          if (!Driver->Graphics->SaveScreenshot(true, szScreenFiltered)) bResult = false;
 
         if (szScreenRaw[0])
-          if (!Driver->Graphics.SaveScreenshot(false, szScreenRaw)) bResult = false;
+          if (!Driver->Graphics->SaveScreenshot(false, szScreenRaw)) bResult = false;
 
         if (bResult)
         {
@@ -543,9 +548,9 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
   Service->Log.AddLog(" Configuring keyboard layout %d to %s.\n", lGameport, pszKeys);
 
   // keys not (always) configured via custom layouts
-  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE1_ACTIVE : kbd_event::EVENT_JOY0_FIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
-  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
-  Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE1_ACTIVE : kbd_event::EVENT_JOY0_FIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
+  Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE1_ACTIVE, kbd_drv_pc_symbol::PCK_NONE);
 
   while (*pszKeys)
   {
@@ -560,28 +565,28 @@ void RetroPlatform::SetCustomKeyboardLayout(const ULO lGameport, const STR *pszK
     if (n < RETRO_PLATFORM_KEYSET_COUNT)
     {
       pszKeys += ln + 1;
-      l[n] = kbddrv_DIK_to_symbol[strtoul(pszKeys, &psz, 0)]; // convert DIK_* DirectInput key codes to symbolic keycodes
+      l[n] = Driver->Keyboard->GetPCSymbolFromDIK(strtoul(pszKeys, &psz, 0)); // convert DIK_* DirectInput key codes to symbolic keycodes
 
       // perform the individual mappings
       if (strnicmp(CustomLayoutKeys[n], "up", strlen("up")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_UP_ACTIVE : kbd_event::EVENT_JOY0_UP_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_UP_ACTIVE : kbd_event::EVENT_JOY0_UP_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "down", strlen("down")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_DOWN_ACTIVE : kbd_event::EVENT_JOY0_DOWN_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_DOWN_ACTIVE : kbd_event::EVENT_JOY0_DOWN_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "left", strlen("left")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_LEFT_ACTIVE : kbd_event::EVENT_JOY0_LEFT_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_LEFT_ACTIVE : kbd_event::EVENT_JOY0_LEFT_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "right", strlen("right")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_RIGHT_ACTIVE : kbd_event::EVENT_JOY0_RIGHT_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_RIGHT_ACTIVE : kbd_event::EVENT_JOY0_RIGHT_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "fire", strlen("fire")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE0_ACTIVE : kbd_event::EVENT_JOY0_FIRE0_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_FIRE0_ACTIVE : kbd_event::EVENT_JOY0_FIRE0_ACTIVE, l[n]);
       else if (strnicmp(CustomLayoutKeys[n], "fire.autorepeat", strlen("fire.autorepeat")) == 0)
-        Driver->Keyboard.JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, l[n]);
+        Driver->Keyboard->JoystickReplacementSet((lGameport == 1) ? kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE : kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE, l[n]);
     }
     for (; *pszKeys != ' ' && *pszKeys != 0; pszKeys++)
       ; // reach next key definition
   }
 
   for (n = 0; n < RETRO_PLATFORM_KEYSET_COUNT; n++)
-    Service->Log.AddLog(" Direction %s mapped to key %s.\n", CustomLayoutKeys[n], Driver->Keyboard.KeyString(l[n]));
+    Service->Log.AddLog(" Direction %s mapped to key %s.\n", CustomLayoutKeys[n], Driver->Keyboard->GetPCSymbolDescription(l[n]));
 }
 
 /** Attach input devices to gameports during runtime of the emulator.
@@ -600,7 +605,7 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
     case RP_INPUTDEVICE_EMPTY:
       Service->Log.AddLog(" Removing input device from gameport..\n");
       gameportSetInput(lGameport, gameport_inputs::GP_NONE);
-      Driver->Keyboard.SetJoyKeyEnabled(lGameport, lGameport, FALSE);
+      Driver->Keyboard->SetJoyKeyEnabled(lGameport, lGameport, FALSE);
       return true;
     case RP_INPUTDEVICE_MOUSE:
       Service->Log.AddLog(" Attaching mouse device to gameport..\n");
@@ -623,13 +628,13 @@ bool RetroPlatform::ConnectInputDeviceToPort(const ULO lGameport, const ULO lDev
         gameportSetInput(lGameport, (lGameport == 1) ? gameport_inputs::GP_JOYKEY1 : gameport_inputs::GP_JOYKEY0);
         if (lGameport == 0)
         {
-          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 0, TRUE);
-          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 1, FALSE);
+          Driver->Keyboard->SetJoyKeyEnabled(lGameport, 0, TRUE);
+          Driver->Keyboard->SetJoyKeyEnabled(lGameport, 1, FALSE);
         }
         else if (lGameport == 1)
         {
-          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 0, FALSE);
-          Driver->Keyboard.SetJoyKeyEnabled(lGameport, 1, TRUE);
+          Driver->Keyboard->SetJoyKeyEnabled(lGameport, 0, FALSE);
+          Driver->Keyboard->SetJoyKeyEnabled(lGameport, 1, TRUE);
         }
       }
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
@@ -1191,7 +1196,7 @@ bool RetroPlatform::PostPowerLEDIntensityPercent(const WPARAM wIntensityPercent)
 void RetroPlatform::SetEscapeKey(const ULO lNewEscapeKey)
 {
   lEscapeKey = lNewEscapeKey;
-  Service->Log.AddLog("RetroPlatform::SetEscapeKey(): escape key configured to %s.\n", Driver->Keyboard.KeyString((kbd_drv_pc_symbol)lEscapeKey));
+  Service->Log.AddLog("RetroPlatform::SetEscapeKey(): escape key configured to %s.\n", Driver->Keyboard->GetPCSymbolDescription((kbd_drv_pc_symbol)lEscapeKey));
 }
 
 void RetroPlatform::SetEscapeKeyHoldTime(const ULO lNewEscapeKeyHoldtime)
@@ -1386,7 +1391,7 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
-  gfxDrvCommon->RunEventSet();
+  GraphicsDriverWin32().RunEventSet();
   RegisterRetroPlatformScreenMode(false);
   fellowRequestEmulationStop();
 }
@@ -1396,22 +1401,22 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   ULO lHeight, lWidth, lDisplayScale;
 
   if (RP.GetScanlines())
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
+    cfgSetDisplayScaleStrategy(GraphicsDriverWin32().rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
   else
-    cfgSetDisplayScaleStrategy(gfxDrvCommon->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
+    cfgSetDisplayScaleStrategy(GraphicsDriverWin32().rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
 
   if (bStartup)
   {
-    RP.SetScreenHeight(cfgGetScreenHeight(gfxDrvCommon->rp_startup_config));
-    RP.SetScreenWidth(cfgGetScreenWidth(gfxDrvCommon->rp_startup_config));
+    RP.SetScreenHeight(cfgGetScreenHeight(GraphicsDriverWin32().rp_startup_config));
+    RP.SetScreenWidth(cfgGetScreenWidth(GraphicsDriverWin32().rp_startup_config));
   }
 
   lHeight = RP.GetScreenHeightAdjusted();
   lWidth = RP.GetScreenWidthAdjusted();
   lDisplayScale = RP.GetDisplayScale();
 
-  cfgSetScreenHeight(gfxDrvCommon->rp_startup_config, lHeight);
-  cfgSetScreenWidth(gfxDrvCommon->rp_startup_config, lWidth);
+  cfgSetScreenHeight(GraphicsDriverWin32().rp_startup_config, lHeight);
+  cfgSetScreenWidth(GraphicsDriverWin32().rp_startup_config, lWidth);
 
   // drawSetInternalClip(draw_rect(92, 26, 468, 314));
   Draw.SetChipsetBufferMaxClip(RectShresi(92 * 4, 26 * 2, 468 * 4, 314 * 2));
@@ -1419,10 +1424,10 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   // TODO: Clear up, if rp clip offset is shres, should not this have been div by 4 ?
   RectShresi output_clip((RP.GetClippingOffsetLeft() / 2), RP.GetClippingOffsetTop(), ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 2), (RP.GetClippingOffsetTop() + RP.GetScreenHeight()));
 
-  cfgSetClipAmigaLeft(gfxDrvCommon->rp_startup_config, output_clip.Left);
-  cfgSetClipAmigaTop(gfxDrvCommon->rp_startup_config, output_clip.Top);
-  cfgSetClipAmigaRight(gfxDrvCommon->rp_startup_config, output_clip.Right);
-  cfgSetClipAmigaBottom(gfxDrvCommon->rp_startup_config, output_clip.Bottom);
+  cfgSetClipAmigaLeft(GraphicsDriverWin32().rp_startup_config, output_clip.Left);
+  cfgSetClipAmigaTop(GraphicsDriverWin32().rp_startup_config, output_clip.Top);
+  cfgSetClipAmigaRight(GraphicsDriverWin32().rp_startup_config, output_clip.Right);
+  cfgSetClipAmigaBottom(GraphicsDriverWin32().rp_startup_config, output_clip.Bottom);
 
   Draw.SetHostOutputClip(output_clip);
 
@@ -1823,7 +1828,7 @@ void RetroPlatform::EnterHeadlessMode(void)
     cfgManagerSetCurrentConfig(&cfg_manager, pConfig);
     // check for manual or needed reset
     bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-    fellowSetPreStartReset(fellowGetPreStartReset() || needResetAfterConfigurationActivation);
+    fellowSetPerformResetBeforeStartingEmulation(fellowGetPerformResetBeforeStartingEmulation() || needResetAfterConfigurationActivation);
 
     RetroPlatform::SendEnabledFloppyDrives();
     RetroPlatform::SendEnabledHardDrives();
@@ -1853,7 +1858,7 @@ void RetroPlatform::Shutdown(void)
 
 void RetroPlatform::EmulationStart(void)
 {
-  RetroPlatform::SendScreenMode(gfxDrvCommon->GetHWND());
+  RetroPlatform::SendScreenMode(GraphicsDriverWin32().GetHWND());
 }
 
 void RetroPlatform::EmulationStop(void)

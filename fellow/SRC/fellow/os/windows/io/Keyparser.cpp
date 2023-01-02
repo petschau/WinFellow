@@ -26,11 +26,10 @@
 #include "fellow/chipset/Keycodes.h"
 #include "fellow/os/windows/io/Keyparser.h"
 #include "fellow/api/Services.h"
+#include "fellow/api/Drivers.h"
 #include <cstdio>
 
 using namespace fellow::api;
-
-extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 /*===========================================================================*/
 /* windows key names to be used in the mapfile				     */
@@ -38,10 +37,10 @@ extern UBY kbd_drv_pc_symbol_to_amiga_scancode[106];
 
 constexpr unsigned int MAX_PC_NAMES = 106;
 
-extern const char *kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
-#define pc_keys kbd_drv_pc_symbol_to_string
 
-extern int symbol_to_DIK_kbddrv[(int)kbd_drv_pc_symbol::PCK_LAST_KEY];
+// There is a method KeyString(pc_symbol) that does the same task as accessing this array directly
+//extern const char *kbd_drv_pc_symbol_to_string[MAX_PC_NAMES];
+//#define pc_keys kbd_drv_pc_symbol_to_string
 
 /*===========================================================================*/
 /* amiga key names to be used in the mapfile				     */
@@ -272,10 +271,6 @@ const char *replacement_keys[MAX_KEY_REPLACEMENT] = {
     "JOYKEY2_AUTOFIRE0",
     "JOYKEY2_AUTOFIRE1"};
 
-/*===========================================================================*/
-/* Get index of the key							     */
-/*===========================================================================*/
-
 int prsGetKeyIndex(STR *szKey, const char *Keys[], int MaxKeys)
 {
   int i = 0;
@@ -397,7 +392,7 @@ BOOLE prsReadFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2]
 
     int ReplIndex = -1;
     int AmigaIndex = prsGetKeyIndex(pAmigaName, amiga_keys, MAX_AMIGA_NAMES);
-    PcIndex = prsGetKeyIndex(pWinName, pc_keys, MAX_PC_NAMES);
+    PcIndex = Driver->Keyboard->GetPCSymbolFromDescription(pWinName);
 
     if (AmigaIndex < 0)
     {
@@ -465,7 +460,7 @@ BOOLE prsWriteFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
         {
           fputs(line, f);
         }
-        sprintf(line, "%s = %s\n", amiga_keys[AmigaIndex], pc_keys[PcIndex]);
+        sprintf(line, "%s = %s\n", amiga_keys[AmigaIndex], Driver->Keyboard->GetPCSymbolDescription((kbd_drv_pc_symbol) PcIndex));
       }
     }
     if (line[0])
@@ -482,11 +477,12 @@ BOOLE prsWriteFile(char *szFilename, UBY *pc_to_am, kbd_drv_pc_symbol key_repl[2
   {
     if (AmigaIndex < FIRST_KEY2_REPLACEMENT)
     {
-      sprintf(line, "%s = %s\n", replacement_keys[AmigaIndex], pc_keys[(int)key_repl[0][AmigaIndex]]);
+      sprintf(line, "%s = %s\n", replacement_keys[AmigaIndex], Driver->Keyboard->GetPCSymbolDescription(key_repl[0][AmigaIndex]));
     }
     else
     {
-      sprintf(line, "%s = %s\n", replacement_keys[AmigaIndex], pc_keys[(int)key_repl[1][AmigaIndex - FIRST_KEY2_REPLACEMENT]]);
+      sprintf(
+          line, "%s = %s\n", replacement_keys[AmigaIndex], Driver->Keyboard->GetPCSymbolDescription(key_repl[1][AmigaIndex - FIRST_KEY2_REPLACEMENT]));
     }
 
     fputs(line, f);

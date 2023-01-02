@@ -8,8 +8,10 @@
 #include "fellow/api/defs.h"
 #include "fellow/api/Services.h"
 #include "fellow/application/Fellow.h"
+#include "fellow/api/Drivers.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+//#include "fellow/os/windows/graphics/GfxDrvCommon.h"
 
 using namespace std;
 using namespace fellow::api;
@@ -97,8 +99,8 @@ bool ConsoleDebuggerHost::StartVM()
 {
   // The configuration has been activated
   // Prepare the modules for emulation
-  _previousPauseEmulationOnLostFocus = gfxDrvCommon->GetPauseEmulationWhenWindowLosesFocus();
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(false);
+  _previousPauseEmulationOnLostFocus = ((GraphicsDriver &)(Driver->Graphics)).GetPauseEmulationWhenWindowLosesFocus();
+  ((GraphicsDriver &)(Driver->Graphics)).SetPauseEmulationWhenWindowLosesFocus(false);
 
   if (!fellowEmulationStart())
   {
@@ -108,7 +110,7 @@ bool ConsoleDebuggerHost::StartVM()
     return false;
   }
 
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -119,7 +121,7 @@ bool ConsoleDebuggerHost::StartVM()
 void ConsoleDebuggerHost::StopVM()
 {
   fellowEmulationStop();
-  gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(_previousPauseEmulationOnLostFocus);
+  ((GraphicsDriver &)(Driver->Graphics)) .SetPauseEmulationWhenWindowLosesFocus(_previousPauseEmulationOnLostFocus);
 }
 
 bool ConsoleDebuggerHost::RunInDebugger()

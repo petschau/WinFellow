@@ -162,7 +162,7 @@ spr_action_list_item *LineExactSprites::ActionListAddLast(spr_action_list_master
   {
     const char *errorMessage = "Failure: Exceeded max count of sprite action list items";
     Service->Log.AddLog(errorMessage);
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
 #endif
 
@@ -208,7 +208,7 @@ spr_action_list_item *LineExactSprites::ActionListAddSorted(spr_action_list_mast
       {
         const char *errorMessage = "Failure: Exceeded max count of sprite action list items";
         Service->Log.AddLog(errorMessage);
-        Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+        Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
       }
 #endif
 
@@ -231,7 +231,7 @@ spr_merge_list_item *LineExactSprites::MergeListAddLast(spr_merge_list_master *l
   {
     const char *errorMessage = "Failure: Exceeded max count of sprite merge list items";
     Service->Log.AddLog(errorMessage);
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
 #endif
   return &l->items[l->count++];

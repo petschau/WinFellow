@@ -7,40 +7,51 @@
 class MouseDriver : public IMouseDriver
 {
 private:
-  LPDIRECTINPUT _lpDI;
-  LPDIRECTINPUTDEVICE _lpDID;
-  HANDLE _DIevent;
-  BOOLE _focus;
-  BOOLE _active;
-  BOOLE _in_use;
-  BOOLE _initialization_failed;
-  bool _unacquired;
-  static BOOLE _bLeftButton;
-  static BOOLE _bRightButton;
-  int _num_mouse_attached = 0;
+  LPDIRECTINPUT _lpDI = nullptr;
+  LPDIRECTINPUTDEVICE _lpDID = nullptr;
+  HANDLE _DIevent = nullptr;
+
+  bool _focus = false;
+  bool _active = false;
+  bool _inUse = false;
+  bool _initializationFailed = false;
+  bool _unacquired = true;
+  bool _bLeftButton = false;
+  bool _bRightButton = false;
+  int _numMouseAttached = 0;
 
   static BOOL FAR PASCAL GetMouseInfoCallback(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef);
   BOOL HandleGetMouseInfoCallback();
 
-  const char *DInputErrorString(HRESULT hResult);
-  const char *DInputUnaquireReturnValueString(HRESULT hResult);
-  void DInputFailure(const char *header, HRESULT err);
-  void DInputUnacquireFailure(const char *header, HRESULT err);
-  void DInputAcquireFailure(const char *header, HRESULT err);
-  void DInputAcquire();
-  void DInputRelease();
-  BOOLE DInputInitialize();
+  const char *GetDirectInputErrorString(HRESULT hResult);
+  void LogDirectInputFailure(const char *header, HRESULT err);
+  bool FailInitializationAndReleaseResources();
+
+  const char *GetDirectInputUnaquireErrorDescription(HRESULT hResult);
+  void LogDirectInputUnacquireFailure(const char *header, HRESULT err);
+  void LogDirectInputAcquireFailure(const char *header, HRESULT err);
+  void DirectInputAcquire();
+  void DirectInputRelease();
+
+  bool DirectInputInitialize();
 
 public:
-   BOOLE GetFocus() override;
-   void StateHasChanged(BOOLE active) override;
-   void ToggleFocus() override;
-   void MovementHandler() override;
-   void SetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) override;
+  HANDLE GetDirectInputEvent();
 
-   void HardReset() override;
-   BOOLE EmulationStart() override;
-   void EmulationStop() override;
-   void Startup() override;
-   void Shutdown() override;
+  void StateHasChanged(bool active) override;
+  void MovementHandler() override;
+
+  void SetFocus(const bool bNewFocus, const bool bRequestedByRPHost) override;
+  bool GetFocus() override;
+  void ToggleFocus() override;
+
+  bool GetInitializationFailed() override;
+
+  void HardReset() override;
+  bool EmulationStart() override;
+  void EmulationStop() override;
+  void Initialize() override;
+  void Release() override;
+
+  virtual ~MouseDriver() = default;
 };

@@ -30,10 +30,13 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/os/windows/application/WindowsDriver.h"
 #include "fellow/application/Fellow.h"
-#include "Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #include "fellow/os/windows/graphics/GfxDrvCommon.h"
 #include "fellow/os/windows/io/FileopsWin32.h"
 #include "fellow/api/Services.h"
+#include "fellow/os/windows/io/MouseDriver.h"
+#include "fellow/os/windows/io/KeyboardDriver.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 #ifdef RETRO_PLATFORM
 #include "fellow/os/windows/retroplatform/RetroPlatform.h"
@@ -256,11 +259,6 @@ enum MultiEventTypes
   met_messages = 3
 };
 
-extern BOOLE mouse_drv_initialization_failed;
-extern HANDLE mouse_drv_DIevent;
-extern bool kbd_drv_initialization_failed;
-extern HANDLE kbd_drv_DIevent;
-
 ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *object_mapping)
 {
   ULO event_count = 0;
@@ -268,15 +266,15 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *
   multi_events[event_count] = win_drv_emulation_ended;
   object_mapping[event_count++] = met_emulation_ended;
 
-  if (!mouse_drv_initialization_failed)
+  if (!Driver->Mouse->GetInitializationFailed())
   {
-    multi_events[event_count] = mouse_drv_DIevent;
+    multi_events[event_count] = ((MouseDriver&)(Driver->Mouse)).GetDirectInputEvent();
     object_mapping[event_count++] = met_mouse_data;
   }
 
-  if (!kbd_drv_initialization_failed)
+  if (!Driver->Keyboard->GetInitializationFailed())
   {
-    multi_events[event_count] = kbd_drv_DIevent;
+    multi_events[event_count] = ((KeyboardDriver &)(Driver->Keyboard)).GetDirectInputEvent();
     object_mapping[event_count++] = met_kbd_data;
   }
 
@@ -293,7 +291,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
 
   winDrvRunInNewThread(startfunc, param); // Starts emulation in a separate thread
 
-  SetTimer(gfxDrvCommon->GetHWND(), 1, 10, nullptr);
+  SetTimer(((GraphicsDriver&)(Driver->Graphics)).GetHWND(), 1, 10, nullptr);
 
   HANDLE multi_events[3];
   enum MultiEventTypes object_mapping[4];
@@ -316,11 +314,11 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc, void *param)
           break;
         case met_mouse_data:
           /* Deal with mouse input */
-          Driver->Mouse.MovementHandler();
+          Driver->Mouse->MovementHandler();
           break;
         case met_kbd_data:
           /* Deal with kbd input */
-          Driver->Keyboard.KeypressHandler();
+          Driver->Keyboard->KeypressHandler();
           break;
         case met_messages:
           /* Deal with windows messages */
@@ -344,7 +342,7 @@ void winDrvDebugMessageLoop()
   // In debug mode this event signals that the debugger has been closed
   win_drv_emulation_ended = CreateEvent(nullptr, FALSE, FALSE, nullptr);
 
-  SetTimer(gfxDrvCommon->GetHWND(), 1, 10, nullptr);
+  SetTimer(((GraphicsDriver &)(Driver->Graphics)).GetHWND(), 1, 10, nullptr);
 
   HANDLE multi_events[3];
   enum MultiEventTypes object_mapping[4];
@@ -367,11 +365,11 @@ void winDrvDebugMessageLoop()
           break;
         case met_mouse_data:
           /* Deal with mouse input */
-          Driver->Mouse.MovementHandler();
+          Driver->Mouse->MovementHandler();
           break;
         case met_kbd_data:
           /* Deal with kbd input */
-          Driver->Keyboard.KeypressHandler();
+          Driver->Keyboard->KeypressHandler();
           break;
         case met_messages:
           /* Deal with windows messages */
@@ -401,7 +399,7 @@ void winDrvEmulationStart()
   {
     const char *errorMessage = "Emulation session failed to start up";
     Service->Log.AddLog(errorMessage);
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
   fellowEmulationStop();
 }
@@ -412,7 +410,7 @@ void winDrvEmulationStart()
 
 void winDrvHandleInputDevices()
 {
-  Driver->Joystick.MovementHandler();
+  Driver->Joystick->MovementHandler();
 }
 
 /*===========================================================================*/

@@ -16,7 +16,8 @@ public:
   virtual bool CheckEmulationNecessities() = 0;
   virtual void Requester(FELLOW_REQUESTER_TYPE type, const char *szMessage) = 0;
   virtual void SetProcessDPIAwareness(const char *pszAwareness) = 0;
+  virtual void BeforeEnter() = 0;
   virtual BOOLE Enter() = 0;
-  virtual void Startup() = 0;
-  virtual void Shutdown() = 0;
+  virtual void Initialize() = 0;
+  virtual void Release() = 0;
 };

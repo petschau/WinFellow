@@ -263,7 +263,7 @@ static void modripDetectProTracker(ULO address, MemoryAccessFunc func)
           sprintf(info.filename, "mod%u.mod", modripModsFound++);
         }
 
-        Driver->ModRipGui.SaveRequest(&info, func);
+        Driver->ModRipGui->SaveRequest(&info, func);
       }
     }
   }
@@ -362,7 +362,7 @@ static void modripDetectSoundFX(ULO address, MemoryAccessFunc func)
         /* set filename for the module file */
         sprintf(info.filename, "SFX.Mod%u.amod", modripModsFound++);
 
-        Driver->ModRipGui.SaveRequest(&info, func);
+        Driver->ModRipGui->SaveRequest(&info, func);
       }
     }
   }
@@ -493,7 +493,7 @@ static void modripDetectSoundMon(ULO address, MemoryAccessFunc func)
       sprintf(info.filename, "BP.Mod%u.amod", modripModsFound++);
     }
 
-    Driver->ModRipGui.SaveRequest(&info, func);
+    Driver->ModRipGui->SaveRequest(&info, func);
   }
 }
 
@@ -616,7 +616,7 @@ static void modripDetectFred(ULO address, MemoryAccessFunc func)
   {
     sprintf(info.filename, "FRED.Mod%u.amod", modripModsFound++);
 
-    Driver->ModRipGui.SaveRequest(&info, func);
+    Driver->ModRipGui->SaveRequest(&info, func);
   }
 }
 
@@ -669,7 +669,7 @@ static void modripDetectProRunner2(ULO address, MemoryAccessFunc func)
   {
     sprintf(info.filename, "PR2.Mod%u.amod", modripModsFound++);
 
-    Driver->ModRipGui.SaveRequest(&info, func);
+    Driver->ModRipGui->SaveRequest(&info, func);
   }
 }
 
@@ -765,7 +765,7 @@ static void modripDetectThePlayer4(ULO address, MemoryAccessFunc func)
   if ((info.end - info.start < MODRIP_MAXMODLEN))
   {
     sprintf(info.filename, "%s.Mod%u.amod", info.typesig, modripModsFound++);
-    Driver->ModRipGui.SaveRequest(&info, func);
+    Driver->ModRipGui->SaveRequest(&info, func);
   }
 }
 
@@ -789,7 +789,7 @@ static void modripScanFellowMemory()
 {
   ULO ChipSize = 0, BogoSize = 0, FastSize = 0;
 
-  if (Driver->ModRipGui.RipMemory())
+  if (Driver->ModRipGui->RipMemory())
   {
     ChipSize = memoryGetChipSize();
     BogoSize = memoryGetSlowSize();
@@ -860,7 +860,7 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
     {
       fclose(f);
       sprintf(message, "The disk image %s is of a wrong size (read %zd bytes).", filename, readbytes);
-      Driver->ModRipGui.Error(message);
+      Driver->ModRipGui->Error(message);
       return FALSE;
     }
     fclose(f);
@@ -869,7 +869,7 @@ static BOOLE modripReadFloppyImage(char *filename, char *cache)
   else
   {
     sprintf(message, "Couldn't open file %s for reading.", filename);
-    Driver->ModRipGui.Error(message);
+    Driver->ModRipGui->Error(message);
     return FALSE;
   }
 }
@@ -888,7 +888,7 @@ static void modripScanFellowFloppies()
   { /* for each drive */
     if (floppy[driveNo].inserted)
     { /* check if a floppy is inserted */
-      if (Driver->ModRipGui.RipFloppy(driveNo))
+      if (Driver->ModRipGui->RipFloppy(driveNo))
       { /* does the user want to rip? */
         memset(cache, 0, MODRIP_FLOPCACHE);
         BOOLE Read = FALSE;
@@ -932,7 +932,7 @@ void modripChipDump()
 {
   BOOLE Saved = FALSE;
 
-  if (Driver->ModRipGui.DumpChipMem())
+  if (Driver->ModRipGui->DumpChipMem())
   {
     char filenamechip[CFG_FILENAME_LENGTH];
 
@@ -955,7 +955,7 @@ void modripChipDump()
       if (!access("prowiz.exe", 04))
       {
         /* prowiz.exe has been found */
-        if (Driver->ModRipGui.RunProWiz())
+        if (Driver->ModRipGui->RunProWiz())
         {
           char commandline[CFG_FILENAME_LENGTH];
           int result;
@@ -975,16 +975,16 @@ void modripChipDump()
 
 void modripRIP()
 {
-  if (!Driver->ModRipGui.Initialize())
+  if (!Driver->ModRipGui->Initialize())
   {
     return;
   }
 
-  Driver->ModRipGui.SetBusy();
+  Driver->ModRipGui->SetBusy();
 
   modripScanFellowMemory();
   modripScanFellowFloppies();
 
-  Driver->ModRipGui.UnSetBusy();
-  Driver->ModRipGui.UnInitialize();
+  Driver->ModRipGui->UnSetBusy();
+  Driver->ModRipGui->UnInitialize();
 }

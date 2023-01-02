@@ -41,12 +41,9 @@
 
 using namespace fellow::api;
 
-#define DINPUT_BUFFERSIZE 16
+constexpr auto DINPUT_BUFFERSIZE = 16;
 
-BOOLE MouseDriver::_bLeftButton;
-BOOLE MouseDriver::_bRightButton;
-
-const char *MouseDriver::DInputErrorString(HRESULT hResult)
+const char *MouseDriver::GetDirectInputErrorString(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -76,7 +73,7 @@ const char *MouseDriver::DInputErrorString(HRESULT hResult)
   return "Not a DirectInput Error";
 }
 
-const char *MouseDriver::DInputUnaquireReturnValueString(HRESULT hResult)
+const char *MouseDriver::GetDirectInputUnaquireErrorDescription(HRESULT hResult)
 {
   switch (hResult)
   {
@@ -87,17 +84,17 @@ const char *MouseDriver::DInputUnaquireReturnValueString(HRESULT hResult)
   return "Not a known Unacquire() DirectInput return value.";
 }
 
-void MouseDriver::DInputFailure(const char *header, HRESULT err)
+void MouseDriver::LogDirectInputFailure(const char *header, HRESULT err)
 {
-  Service->Log.AddLog("%s %s\n", header, DInputErrorString(err));
+  Service->Log.AddLog("%s %s\n", header, GetDirectInputErrorString(err));
 }
 
-void MouseDriver::DInputUnacquireFailure(const char *header, HRESULT err)
+void MouseDriver::LogDirectInputUnacquireFailure(const char *header, HRESULT err)
 {
-  Service->Log.AddLog("%s %s\n", header, DInputUnaquireReturnValueString(err));
+  Service->Log.AddLog("%s %s\n", header, GetDirectInputUnaquireErrorDescription(err));
 }
 
-void MouseDriver::DInputAcquireFailure(const char *header, HRESULT err)
+void MouseDriver::LogDirectInputAcquireFailure(const char *header, HRESULT err)
 {
   if (err == DI_NOEFFECT)
   {
@@ -105,20 +102,20 @@ void MouseDriver::DInputAcquireFailure(const char *header, HRESULT err)
   }
   else
   {
-    DInputFailure(header, err);
+    LogDirectInputFailure(header, err);
   }
 }
 
-void MouseDriver::DInputAcquire()
+void MouseDriver::DirectInputAcquire()
 {
-  if (_in_use)
+  if (_inUse)
   {
     if (_lpDID != nullptr)
     {
       HRESULT res = IDirectInputDevice_Acquire(_lpDID);
       if (res != DI_OK)
       {
-        DInputAcquireFailure("MouseDriver::DInputAcquire():", res);
+        LogDirectInputAcquireFailure("MouseDriver::DInputAcquire():", res);
       }
       else
       {
@@ -135,24 +132,26 @@ void MouseDriver::DInputAcquire()
       if (res != DI_OK)
       {
         // Should only "fail" if device is not acquired, it is not an error.
-        DInputUnacquireFailure("MouseDriver::DInputUnacquire():", res);
+        LogDirectInputUnacquireFailure("MouseDriver::DInputUnacquire():", res);
       }
     }
   }
 }
 
-void MouseDriver::DInputRelease()
+void MouseDriver::DirectInputRelease()
 {
   if (_lpDID != nullptr)
   {
     IDirectInputDevice_Release(_lpDID);
     _lpDID = nullptr;
   }
+
   if (_DIevent != nullptr)
   {
     CloseHandle(_DIevent);
     _DIevent = nullptr;
   }
+
   if (_lpDI != nullptr)
   {
     IDirectInput_Release(_lpDI);
@@ -160,6 +159,7 @@ void MouseDriver::DInputRelease()
   }
 }
 
+// TODO: Enumeration does not seem to be used for anything? Even if the enumeration fails, the code just continues to initialize the driver
 BOOL FAR PASCAL MouseDriver::GetMouseInfoCallback(LPCDIDEVICEINSTANCE pdinst, LPVOID pvRef)
 {
   return ((MouseDriver *)pvRef)->HandleGetMouseInfoCallback();
@@ -167,11 +167,29 @@ BOOL FAR PASCAL MouseDriver::GetMouseInfoCallback(LPCDIDEVICEINSTANCE pdinst, LP
 
 BOOL MouseDriver::HandleGetMouseInfoCallback()
 {
-  Service->Log.AddLog("**** mouse %d ****\n", _num_mouse_attached++);
+  Service->Log.AddLog("**** mouse %d ****\n", _numMouseAttached);
+  _numMouseAttached += 1;
   return DIENUM_CONTINUE;
 }
 
-BOOLE MouseDriver::DInputInitialize()
+HANDLE MouseDriver::GetDirectInputEvent()
+{
+  return _DIevent;
+}
+
+bool MouseDriver::GetInitializationFailed()
+{
+  return _initializationFailed;
+}
+
+bool MouseDriver::FailInitializationAndReleaseResources()
+{
+  _initializationFailed = true;
+  DirectInputRelease();
+  return false;
+}
+
+bool MouseDriver::DirectInputInitialize()
 {
 #define INITDIPROP(diprp, obj, how)                                                                                                                                                                    \
   {                                                                                                                                                                                                    \
@@ -183,103 +201,88 @@ BOOLE MouseDriver::DInputInitialize()
 
   DIPROPDWORD dipdw = {
       {
-          sizeof(DIPROPDWORD),  /* diph.dwSize */
-          sizeof(DIPROPHEADER), /* diph.dwHeaderSize */
-          0,                    /* diph.dwObj */
-          DIPH_DEVICE,          /* diph.dwHow */
+          sizeof(DIPROPDWORD),  // diph.dwSize
+          sizeof(DIPROPHEADER), // diph.dwHeaderSize
+          0,                    // diph.dwObj
+          DIPH_DEVICE,          // diph.dwHow
       },
       DINPUT_BUFFERSIZE /* dwData */
   };
 
   Service->Log.AddLog("MouseDriver::DInputInitialize()\n");
 
-  /* Create Direct Input object */
+  // Create Direct Input object
 
   _lpDI = nullptr;
   _lpDID = nullptr;
   _DIevent = nullptr;
-  _initialization_failed = FALSE;
+  _initializationFailed = false;
   _unacquired = true;
 
   HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&_lpDI, nullptr);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): DirectInput8Create()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): DirectInput8Create()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  _num_mouse_attached = 0;
+  _numMouseAttached = 0;
   res = IDirectInput_EnumDevices(_lpDI, DI8DEVTYPE_MOUSE, GetMouseInfoCallback, this, DIEDFL_ALLDEVICES);
   if (res != DI_OK)
   {
-    Service->Log.AddLog("MouseDriver enumerate devices failed %s\n", DInputErrorString(res));
+    Service->Log.AddLog("MouseDriver enumerate devices failed %s\n", GetDirectInputErrorString(res));
   }
 
-  /* Create Direct Input 1 mouse device */
-
-  res = IDirectInput_CreateDevice(_lpDI, GUID_SysMouse, &_lpDID, NULL);
+  // Create Direct Input 1 mouse device
+  res = IDirectInput_CreateDevice(_lpDI, GUID_SysMouse, &_lpDID, nullptr);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): CreateDevice()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): CreateDevice()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  /* Set data format for mouse device */
-
+  // Set data format for mouse device
   res = IDirectInputDevice_SetDataFormat(_lpDID, &c_dfDIMouse);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): SetDataFormat()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): SetDataFormat()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  /* Set cooperative level */
+  // Set cooperative level
   HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
   res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): SetCooperativeLevel()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): SetCooperativeLevel()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  /* Create event for notification */
+  // Create event for notification
   _DIevent = CreateEvent(nullptr, 0, 0, nullptr);
   if (_DIevent == nullptr)
   {
     Service->Log.AddLog("MouseDriver::DInputInitialize(): CreateEvent() failed\n");
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    return FailInitializationAndReleaseResources();
   }
 
-  /* Set property for buffered data */
+  // Set property for buffered data
   res = IDirectInputDevice_SetProperty(_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): SetProperty()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): SetProperty()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  /* Set event notification */
+  // Set event notification
   res = IDirectInputDevice_SetEventNotification(_lpDID, _DIevent);
   if (res != DI_OK)
   {
-    DInputFailure("MouseDriver::DInputInitialize(): SetEventNotification()", res);
-    _initialization_failed = TRUE;
-    DInputRelease();
-    return FALSE;
+    LogDirectInputFailure("MouseDriver::DInputInitialize(): SetEventNotification()", res);
+    return FailInitializationAndReleaseResources();
   }
 
-  return TRUE;
+  return true;
 
 #undef INITDIPROP
 }
@@ -288,18 +291,12 @@ BOOLE MouseDriver::DInputInitialize()
 // Mouse grab status has changed
 //==============================
 
-void MouseDriver::StateHasChanged(BOOLE active)
+void MouseDriver::StateHasChanged(bool active)
 {
   _active = active;
-  if (_active && _focus)
-  {
-    _in_use = TRUE;
-  }
-  else
-  {
-    _in_use = FALSE;
-  }
-  DInputAcquire();
+  _inUse = (_active && _focus);
+
+  DirectInputAcquire();
 }
 
 //===================
@@ -310,11 +307,12 @@ void MouseDriver::ToggleFocus()
 {
   _focus = !_focus;
   StateHasChanged(_active);
+
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
   {
     Service->Log.AddLog("MouseDriver::ToggleFocus(): mouse focus changed to to %s\n", _focus ? "true" : "false");
-    RP.SendMouseCapture(_focus ? true : false);
+    RP.SendMouseCapture(_focus);
   }
 #endif
 }
@@ -327,7 +325,7 @@ void MouseDriver::ToggleFocus()
  * by the player itself.
  * @callergraph
  */
-void MouseDriver::SetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost)
+void MouseDriver::SetFocus(const bool bNewFocus, const bool bRequestedByRPHost)
 {
   if (bNewFocus != _focus)
   {
@@ -341,7 +339,7 @@ void MouseDriver::SetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost
       if (!bRequestedByRPHost)
       {
         Service->Log.AddLog("MouseDriver::SetFocus(%s): notifiying, as not requested by host.\n", bNewFocus ? "true" : "false");
-        RP.SendMouseCapture(_focus ? true : false);
+        RP.SendMouseCapture(_focus);
       }
 #endif
   }
@@ -353,80 +351,76 @@ void MouseDriver::SetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost
 
 void MouseDriver::MovementHandler()
 {
-  if (_in_use)
+  if (!_inUse) return;
+
+  static LON lx = 0;
+  static LON ly = 0;
+  HRESULT res{};
+
+  DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE]{};
+  DWORD itemcount = DINPUT_BUFFERSIZE;
+
+  do
   {
-    static LON lx = 0;
-    static LON ly = 0;
-    HRESULT res{};
-
-    DIDEVICEOBJECTDATA rgod[DINPUT_BUFFERSIZE]{};
-    DWORD itemcount = DINPUT_BUFFERSIZE;
-
-    do
+    res = IDirectInputDevice_GetDeviceData(_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
+    if (res != DI_OK)
     {
-      res = IDirectInputDevice_GetDeviceData(_lpDID, sizeof(DIDEVICEOBJECTDATA), rgod, &itemcount, 0);
-      if (res != DI_OK)
-      {
-        DInputFailure("MouseDriver::MovementHandler(): GetDeviceData()", res);
-      }
-      if (res == DIERR_INPUTLOST)
-      {
-        DInputAcquire();
-      }
-    } while (res == DIERR_INPUTLOST);
-
-    if (res == DI_OK || res == DI_BUFFEROVERFLOW)
+      LogDirectInputFailure("MouseDriver::MovementHandler(): GetDeviceData()", res);
+    }
+    if (res == DIERR_INPUTLOST)
     {
-      ULO i = 0;
-      DWORD oldSequence = 0;
+      DirectInputAcquire();
+    }
+  } while (res == DIERR_INPUTLOST);
 
-      /*
-      ** Sometimes in a buffered input of a device, some simultaneous events are stored
-      ** in different - but contigous - objects in the array. For every event object
-      ** there is a sequence number - automatically handled by dinput - stored together
-      ** with the event. Simultaneous events are assigned the same sequence number.
-      ** Events are always placed in the buffer in chronological order.
-      */
+  if (res == DI_OK || res == DI_BUFFEROVERFLOW)
+  {
+    ULO i = 0;
+    DWORD oldSequence = 0;
 
-      if (itemcount == 0) // exit if there are no objects to examine
+    /*
+    ** Sometimes in a buffered input of a device, some simultaneous events are stored
+    ** in different - but contigous - objects in the array. For every event object
+    ** there is a sequence number - automatically handled by dinput - stored together
+    ** with the event. Simultaneous events are assigned the same sequence number.
+    ** Events are always placed in the buffer in chronological order.
+    */
+
+    if (itemcount == 0) // exit if there are no objects to examine
+    {
+      return;
+    }
+
+    lx = ly = 0;
+    for (i = 0; i <= itemcount; i++)
+    {
+      if (i != 0)
       {
-        return;
+        if ((i == itemcount) ||                  // if there are no other objects
+            (rgod[i].dwSequence != oldSequence)) // or the current objects is a different event
+        {
+          gameportMouseHandler(gameport_inputs::GP_MOUSE0, lx, ly, _bLeftButton, false, _bRightButton);
+          lx = ly = 0;
+        }
+        if (i == itemcount) // no other objects to examine, exit
+        {
+          break;
+        }
       }
+      oldSequence = rgod[i].dwSequence;
 
-      lx = ly = 0;
-      for (i = 0; i <= itemcount; i++)
+      switch (rgod[i].dwOfs)
       {
-        if (i != 0)
-        {
-          if ((i == itemcount) ||                  // if there are no other objects
-              (rgod[i].dwSequence != oldSequence)) // or the current objects is a different event
-          {
-            gameportMouseHandler(gameport_inputs::GP_MOUSE0, lx, ly, _bLeftButton, FALSE, _bRightButton);
-            lx = ly = 0;
-          }
-          if (i == itemcount) // no other objects to examine, exit
-          {
-            break;
-          }
-        }
-        oldSequence = rgod[i].dwSequence;
-
-        switch (rgod[i].dwOfs)
-        {
-          case DIMOFS_BUTTON0: _bLeftButton = (rgod[i].dwData & 0x80); break;
-
-          case DIMOFS_BUTTON1: _bRightButton = (rgod[i].dwData & 0x80); break;
-
-          case DIMOFS_X: lx += rgod[i].dwData; break;
-
-          case DIMOFS_Y: ly += rgod[i].dwData; break;
-        }
+        case DIMOFS_BUTTON0: _bLeftButton = (rgod[i].dwData & 0x80) == 0x80; break;
+        case DIMOFS_BUTTON1: _bRightButton = (rgod[i].dwData & 0x80) == 0x80; break;
+        case DIMOFS_X: lx += rgod[i].dwData; break;
+        case DIMOFS_Y: ly += rgod[i].dwData; break;
       }
     }
   }
 }
 
-BOOLE MouseDriver::GetFocus()
+bool MouseDriver::GetFocus()
 {
   return _focus;
 }
@@ -436,34 +430,37 @@ void MouseDriver::HardReset()
   Service->Log.AddLog("MouseDriver::HardReset()\n");
 }
 
-BOOLE MouseDriver::EmulationStart()
+bool MouseDriver::EmulationStart()
 {
   Service->Log.AddLog("MouseDriver::EmulationStart()\n");
-  return DInputInitialize();
+
+  return DirectInputInitialize();
 }
 
 void MouseDriver::EmulationStop()
 {
   Service->Log.AddLog("MouseDriver::EmulationStop()\n");
-  DInputRelease();
+
+  DirectInputRelease();
 }
 
-void MouseDriver::Startup()
+void MouseDriver::Initialize()
 {
   Service->Log.AddLog("MouseDriver::Startup()\n");
-  _active = FALSE;
-  _focus = TRUE;
-  _in_use = FALSE;
-  _initialization_failed = TRUE;
+
+  _active = false;
+  _focus = true;
+  _inUse = false;
+  _initializationFailed = true;
   _unacquired = true;
   _lpDI = nullptr;
   _lpDID = nullptr;
   _DIevent = nullptr;
-  _bLeftButton = FALSE;
-  _bRightButton = FALSE;
+  _bLeftButton = false;
+  _bRightButton = false;
 }
 
-void MouseDriver::Shutdown()
+void MouseDriver::Release()
 {
   Service->Log.AddLog("MouseDriver::Shutdown()\n");
 }

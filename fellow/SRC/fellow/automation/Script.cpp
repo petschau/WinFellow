@@ -3,24 +3,18 @@
 #include "fellow/api/defs.h"
 #include "fellow/automation/Script.h"
 #include "fellow/scheduler/Scheduler.h"
-#include "fellow/chipset/Kbd.h"
-#include "fellow/application/Gameport.h"
 
 using namespace std;
-
-ScriptLine::ScriptLine(ULL frameNumber, ULO lineNumber, const string &command, const string &parameters) : FrameNumber(frameNumber), LineNumber(lineNumber), Command(command), Parameters(parameters)
-{
-}
 
 void Script::ExecuteMouseCommand(const string &parameters)
 {
   ULO port;
   LON x, y;
-  BOOLE button1, button2, button3;
+  unsigned int button1, button2, button3;
 
-  sscanf(parameters.c_str(), "%u %d %d %d %d %d", &port, &x, &y, &button1, &button2, &button3);
+  sscanf(parameters.c_str(), "%u %d %d %u %u %u", &port, &x, &y, &button1, &button2, &button3);
 
-  gameportMouseHandler((port == 0) ? gameport_inputs::GP_MOUSE0 : gameport_inputs::GP_MOUSE1, x, y, button1, button2, button3);
+  gameportMouseHandler((port == 0) ? gameport_inputs::GP_MOUSE0 : gameport_inputs::GP_MOUSE1, x, y, BoolFromUnsignedInt(button1), BoolFromUnsignedInt(button2), BoolFromUnsignedInt(button3));
 }
 
 void Script::ExecuteKeyCommand(const string &parameters)
@@ -31,9 +25,10 @@ void Script::ExecuteKeyCommand(const string &parameters)
 void Script::ExecuteJoystickCommand(const string &parameters)
 {
   ULO port;
-  BOOLE left, up, right, down, button1, button2;
-  sscanf(parameters.c_str(), "%u %d %d %d %d %d %d", &port, &left, &up, &right, &down, &button1, &button2);
-  gameportJoystickHandler((port == 0) ? gameport_inputs::GP_JOYKEY0 : gameport_inputs::GP_JOYKEY1, left, up, right, down, button1, button2);
+  unsigned int left, up, right, down, button1, button2;
+
+  sscanf(parameters.c_str(), "%u %u %u %u %u %u %u", &port, &left, &up, &right, &down, &button1, &button2);
+  gameportJoystickHandler((port == 0) ? gameport_inputs::GP_JOYKEY0 : gameport_inputs::GP_JOYKEY1, BoolFromUnsignedInt(left), BoolFromUnsignedInt(up), BoolFromUnsignedInt(right), BoolFromUnsignedInt(down), BoolFromUnsignedInt(button1), BoolFromUnsignedInt(button2));
 }
 
 void Script::ExecuteEmulatorActionCommand(const string &parameters)
@@ -85,19 +80,31 @@ void Script::RecordKey(UBY keyCode)
   _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), KeyCommand, parameters);
 }
 
-void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
+unsigned int Script::BoolToUnsignedInt(bool value)
+{
+  return value ? 1 : 0;
+}
+
+bool Script::BoolFromUnsignedInt(unsigned int value)
+{
+  return !!value;
+}
+
+void Script::RecordMouse(gameport_inputs mousedev, LON x, LON y, bool button1, bool button2, bool button3)
 {
   ULO port = (mousedev == gameport_inputs::GP_MOUSE0) ? 0 : 1;
   char parameters[128];
-  sprintf(parameters, "%u %d %d %d %d %d", port, x, y, button1, button2, button3);
+
+  sprintf(parameters, "%u %d %d %u %u %u", port, x, y, BoolToUnsignedInt(button1), BoolToUnsignedInt(button2), BoolToUnsignedInt(button3));
   _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), MouseCommand, parameters);
 }
 
-void Script::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
+void Script::RecordJoystick(gameport_inputs joydev, bool left, bool up, bool right, bool down, bool button1, bool button2)
 {
   ULO port = (joydev == gameport_inputs::GP_JOYKEY0 || joydev == gameport_inputs::GP_ANALOG0) ? 0 : 1;
   char parameters[128];
-  sprintf(parameters, "%u %d %d %d %d %d %d", port, left, up, right, down, button1, button2);
+
+  sprintf(parameters, "%u %u %u %u %u %u %u", port, BoolToUnsignedInt(left), BoolToUnsignedInt(up), BoolToUnsignedInt(right), BoolToUnsignedInt(down), BoolToUnsignedInt(button1), BoolToUnsignedInt(button2));
   _lines.emplace_back(scheduler.GetRasterFrameCount(), scheduler.GetRasterY(), JoystickCommand, parameters);
 }
 

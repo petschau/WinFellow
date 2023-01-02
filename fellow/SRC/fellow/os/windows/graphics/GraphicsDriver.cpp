@@ -14,22 +14,47 @@ using namespace fellow::api;
 
 bool GraphicsDriver::IsHostBufferWindowed() const
 {
-  return _gfxDrvCommon->IsHostBufferWindowed();
+  return _gfxDrvCommon.IsHostBufferWindowed();
 }
 
 HWND GraphicsDriver::GetHWND()
 {
-  return _gfxDrvCommon->GetHWND();
+  return _gfxDrvCommon.GetHWND();
 }
 
 void GraphicsDriver::SetPauseEmulationWhenWindowLosesFocus(bool pause)
 {
-  _gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(pause);
+  _gfxDrvCommon.SetPauseEmulationWhenWindowLosesFocus(pause);
+}
+
+bool GraphicsDriver::GetPauseEmulationWhenWindowLosesFocus()
+{
+  return _gfxDrvCommon.GetPauseEmulationWhenWindowLosesFocus();
 }
 
 bool GraphicsDriver::GetDisplayChange() const
 {
-  return _gfxDrvCommon->GetDisplayChange();
+  return _gfxDrvCommon.GetDisplayChange();
+}
+
+const DimensionsUInt &GraphicsDriver::GetHostBufferSize() const
+{
+  return _gfxDrvCommon.GetHostBufferSize();
+}
+
+void GraphicsDriver::HideWindow()
+{
+  return _gfxDrvCommon.HideWindow();
+}
+
+void GraphicsDriver::RunEventSet()
+{
+  _gfxDrvCommon.RunEventSet();
+}
+
+void GraphicsDriver::RunEventReset()
+{
+  _gfxDrvCommon.RunEventReset();
 }
 
 void GraphicsDriver::ClearCurrentBuffer()
@@ -68,7 +93,7 @@ void GraphicsDriver::UnmapChipsetFramebuffer()
 
 void GraphicsDriver::BufferFlip()
 {
-  _gfxDrvCommon->Flip();
+  _gfxDrvCommon.Flip();
 
   if (_use_dxgi)
   {
@@ -79,7 +104,7 @@ void GraphicsDriver::BufferFlip()
     _gfxDrvDirectDraw->Flip();
   }
 
-  _gfxDrvCommon->RunEventWait();
+  _gfxDrvCommon.RunEventWait();
 }
 
 void GraphicsDriver::DrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer)
@@ -103,7 +128,7 @@ void GraphicsDriver::NotifyActiveStatus(bool active)
 
 void GraphicsDriver::SizeChanged(unsigned int width, unsigned int height)
 {
-  _gfxDrvCommon->SizeChanged(width, height);
+  _gfxDrvCommon.SizeChanged(width, height);
 
   if (_use_dxgi)
   {
@@ -153,7 +178,7 @@ bool GraphicsDriver::EmulationStart(
     const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings,
     HudPropertyProvider *hudPropertyProvider)
 {
-  if (!_gfxDrvCommon->EmulationStart(hostRenderConfiguration, hostRenderRuntimeSettings.DisplayMode))
+  if (!_gfxDrvCommon.EmulationStart(hostRenderConfiguration, hostRenderRuntimeSettings.DisplayMode))
   {
     return false;
   }
@@ -168,7 +193,7 @@ bool GraphicsDriver::EmulationStart(
 
 ULO GraphicsDriver::EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings)
 {
-  _gfxDrvCommon->EmulationStartPost();
+  _gfxDrvCommon.EmulationStartPost();
 
   if (_use_dxgi)
   {
@@ -189,7 +214,7 @@ void GraphicsDriver::EmulationStop()
     _gfxDrvDirectDraw->EmulationStop();
   }
 
-  _gfxDrvCommon->EmulationStop();
+  _gfxDrvCommon.EmulationStop();
 }
 
 bool GraphicsDriver::SaveScreenshot(const bool bSaveFilteredScreenshot, const char *szFilename)
@@ -221,76 +246,135 @@ bool GraphicsDriver::SaveScreenshot(const bool bSaveFilteredScreenshot, const ch
   return result;
 }
 
-// Called when the application starts up
-bool GraphicsDriver::Startup(DISPLAYDRIVER displaydriver)
+bool GraphicsDriver::SwitchDisplayDriver(DISPLAYDRIVER displaydriver)
 {
-  _use_dxgi = (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
+  Release();
+  InitializeGraphicsDriver(displaydriver);
+  return _isInitialized;
+}
 
-  _gfxDrvCommon = new GfxDrvCommon();
-
-  if (!_gfxDrvCommon->Startup())
+bool GraphicsDriver::InitializeDXGI()
+{
+  if (!ValidateRequirements())
   {
+    Service->Log.AddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
     return false;
+  }
+
+  _gfxDrvDXGI = new GfxDrvDXGI();
+  bool result = _gfxDrvDXGI->Startup();
+  if (!result)
+  {
+    Service->Log.AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    delete _gfxDrvDXGI;
+    _gfxDrvDXGI = nullptr;
+  }
+
+  return result;
+}
+
+void GraphicsDriver::ReleaseDXGI()
+{
+  if (_gfxDrvDXGI != nullptr)
+  {
+    _gfxDrvDXGI->Shutdown();
+    delete _gfxDrvDXGI;
+    _gfxDrvDXGI = nullptr;
+  }
+}
+
+bool GraphicsDriver::InitializeDirectDraw()
+{
+  _gfxDrvDirectDraw = new GfxDrvDirectDraw();
+  bool result = _gfxDrvDirectDraw->Startup();
+  if (!result)
+  {
+    Service->Log.AddLog("gfxDrv ERROR: DirectDraw initialization failed.\n");
+    delete _gfxDrvDirectDraw;
+    _gfxDrvDirectDraw = nullptr;
+  }
+
+  return result;
+}
+
+void GraphicsDriver::ReleaseDirectDraw()
+{
+  if (_gfxDrvDirectDraw != nullptr)
+  {
+    _gfxDrvDirectDraw->Shutdown();
+    delete _gfxDrvDirectDraw;
+    _gfxDrvDirectDraw = nullptr;
+  }
+}
+
+bool GraphicsDriver::InitializeCommon()
+{
+  _gfxDrvCommon.Initialize();
+  return _gfxDrvCommon.IsInitialized();
+}
+
+void GraphicsDriver::ReleaseCommon()
+{
+  _gfxDrvCommon.Release();
+}
+
+bool GraphicsDriver::IsInitialized() const
+{
+  return _isInitialized;
+}
+
+void GraphicsDriver::InitializeGraphicsDriver(DISPLAYDRIVER displaydriver)
+{
+  _isInitialized = InitializeCommon();
+  if (!_isInitialized)
+  {
+    return;
   }
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
   {
-    _gfxDrvCommon->rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
+    rp_startup_config = cfgManagerGetCurrentConfig(&cfg_manager);
     RP.RegisterRetroPlatformScreenMode(true);
   }
 #endif
 
+  _use_dxgi = displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
   if (_use_dxgi)
   {
-    if (!ValidateRequirements())
+    _isInitialized = InitializeDXGI();
+    if (_isInitialized)
     {
-      Service->Log.AddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
-      _use_dxgi = false;
-      _gfxDrvDirectDraw = new GfxDrvDirectDraw();
-      return _gfxDrvDirectDraw->Startup();
+      return;
     }
-
-    _gfxDrvDXGI = new GfxDrvDXGI();
-    bool dxgiStartupResult = _gfxDrvDXGI->Startup();
-    if (dxgiStartupResult)
-    {
-      return true;
-    }
-    Service->Log.AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
-    _use_dxgi = false;
   }
 
-  _gfxDrvDirectDraw = new GfxDrvDirectDraw();
-  return _gfxDrvDirectDraw->Startup();
+  // Fallback or DirectDraw selected
+  _use_dxgi = false;
+  _isInitialized = InitializeDirectDraw();
+  if (!_isInitialized)
+  {
+    _gfxDrvCommon.Release();
+  }
 }
 
-// Called when the application is closed
-void GraphicsDriver::Shutdown()
+void GraphicsDriver::Initialize()
 {
-  if (_use_dxgi)
+  InitializeGraphicsDriver(DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
+}
+
+void GraphicsDriver::Release()
+{
+  if (!_isInitialized)
   {
-    if (_gfxDrvDXGI != nullptr)
-    {
-      delete _gfxDrvDXGI;
-      _gfxDrvDXGI = nullptr;
-    }
-  }
-  else
-  {
-    _gfxDrvDirectDraw->Shutdown();
-    if (_gfxDrvDirectDraw != nullptr)
-    {
-      delete _gfxDrvDirectDraw;
-      _gfxDrvDirectDraw = nullptr;
-    }
+    return;
   }
 
-  if (_gfxDrvCommon != nullptr)
-  {
-    delete _gfxDrvCommon;
-    _gfxDrvCommon = nullptr;
-  }
+  ReleaseDXGI();
+  ReleaseDirectDraw();
+  ReleaseCommon();
+
+  _isInitialized = false;
 }
 
 bool GraphicsDriver::ValidateRequirements()

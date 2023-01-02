@@ -20,8 +20,8 @@ public:
   bool SnapshotEnable;
 
   void RecordKey(UBY keyCode);
-  void RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3);
-  void RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2);
+  void RecordMouse(gameport_inputs mousedev, LON x, LON y, bool button1, bool button2, bool button3);
+  void RecordJoystick(gameport_inputs joydev, bool left, bool up, bool right, bool down, bool button1, bool button2);
   void RecordEmulatorAction(kbd_event action);
 
   void EndOfLine();

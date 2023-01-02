@@ -59,7 +59,7 @@
 #include "WDBG.H"
 #include "fellow/api/Drivers.h"
 #include "fellow/os/windows/graphics/GraphicsDriver.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #ifdef FELLOW_SUPPORT_CAPS
 #include "fellow/os/windows/caps/caps.h"
 #endif
@@ -1205,7 +1205,7 @@ void GuiDriver::InstallGameportConfig(HWND hwndDlg, cfg *conf)
       ccwStaticSetText(
           hwndDlg,
           _gameport_keys_labels[i][j],
-          (char *)Driver->Keyboard.KeyPrettyString(Driver->Keyboard.JoystickReplacementGet(_gameport_keys_events[i][j])));
+          (char *)Driver->Keyboard->GetPCSymbolPrettyDescription(Driver->Keyboard->JoystickReplacementGet(_gameport_keys_events[i][j])));
     }
   }
 }
@@ -1809,7 +1809,7 @@ void GuiDriver::InstallDisplayDriverConfigInGUI(HWND hwndDlg, cfg *conf)
   HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
   ComboBox_ResetContent(displayDriverComboboxHWND);
   ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
-  if (Driver->Graphics.ValidateRequirements())
+  if (Driver->Graphics->ValidateRequirements())
   {
     ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
   }
@@ -2498,7 +2498,7 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
 
                 if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
                 {
-                  if (!Driver->Graphics.ValidateRequirements())
+                  if (!Driver->Graphics->ValidateRequirements())
                   {
                     Service->Log.AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
                     displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
@@ -2509,7 +2509,7 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                   }
                 }
 
-                bool result = Draw.RestartGraphicsDriver(displaydriver);
+                bool result = ((GraphicsDriver*)Driver->Graphics)->SwitchDisplayDriver(displaydriver);
                 if (!result)
                 {
                   Service->Log.AddLog("ERROR: failed to restart display driver, falling back to DirectDraw.\n");
@@ -2520,6 +2520,7 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
                   Service->Log.AddLog(errorMessage);
                   Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
                 }
+                Draw.RefreshDisplayModeList();
                 ConvertDrawModeListToGuiDrawModes();
                 InstallDisplayConfig(hwndDlg, _wgui_cfg);
               }
@@ -3240,7 +3241,7 @@ INT_PTR GuiDriver::MainDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPARAM
             break;
           }
           case IDC_HARD_RESET:
-            fellowSetPreStartReset(true);
+            fellowSetPerformResetBeforeStartingEmulation(true);
             LoadBitmaps();
             SendMessage(GetDlgItem(_hMainDialog, IDC_IMAGE_POWER_LED_MAIN), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)_power_led_off_bitmap);
             _wgui_emulation_state = false;
@@ -3366,7 +3367,7 @@ BOOLE GuiDriver::Enter()
     _hMainDialog = CreateDialogBox<&GuiDriver::MainDialogProc>(win_drv_hInstance, MAKEINTRESOURCE(IDD_MAIN), (HWND)nullptr);
 
     SetWindowPos(_hMainDialog, HWND_TOP, _wgui_ini->GetMainWindowXPos(), _wgui_ini->GetMainWindowYPos(), 0, 0, SWP_NOSIZE | SWP_ASYNCWINDOWPOS);
-    StartupPost();
+    UpdatePowerLedButtonImage();
     InstallFloppyMain(_hMainDialog, _wgui_cfg);
 
     // install history into menu
@@ -3396,7 +3397,7 @@ BOOLE GuiDriver::Enter()
             ExtractFloppyMain(_hMainDialog, _wgui_cfg);
             cfgManagerSetCurrentConfig(&cfg_manager, _wgui_cfg);
             bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-            fellowSetPreStartReset(fellowGetPreStartReset() || needResetAfterConfigurationActivation);
+            fellowSetPerformResetBeforeStartingEmulation(fellowGetPerformResetBeforeStartingEmulation() || needResetAfterConfigurationActivation);
             break;
           }
           ShowMessageForMainDialog("Specified KickImage does not exist", "Configuration Error");
@@ -3515,7 +3516,7 @@ BOOLE GuiDriver::Enter()
           ExtractFloppyMain(_hMainDialog, _wgui_cfg);
           cfgManagerSetCurrentConfig(&cfg_manager, _wgui_cfg);
           bool needResetAfterConfigurationActivation = cfgManagerConfigurationActivate(&cfg_manager);
-          fellowSetPreStartReset(needResetAfterConfigurationActivation || fellowGetPreStartReset());
+          fellowSetPerformResetBeforeStartingEmulation(needResetAfterConfigurationActivation || fellowGetPerformResetBeforeStartingEmulation());
           debugger_start = true;
         }
         break;
@@ -3702,34 +3703,8 @@ void GuiDriver::SetProcessDPIAwareness(const char *pszAwareness)
   }
 }
 
-void GuiDriver::Startup()
+void GuiDriver::UpdatePowerLedButtonImage()
 {
-  _propsheetDialogProc[0] = DialogCallbackWrapper<&GuiDriver::PresetDialogProc>();
-  _propsheetDialogProc[1] = DialogCallbackWrapper<&GuiDriver::CPUDialogProc>();
-  _propsheetDialogProc[2] = DialogCallbackWrapper<&GuiDriver::FloppyDialogProc>();
-  _propsheetDialogProc[3] = DialogCallbackWrapper<&GuiDriver::MemoryDialogProc>();
-  _propsheetDialogProc[4] = DialogCallbackWrapper<&GuiDriver::DisplayDialogProc>();
-  _propsheetDialogProc[5] = DialogCallbackWrapper<&GuiDriver::SoundDialogProc>();
-  _propsheetDialogProc[6] = DialogCallbackWrapper<&GuiDriver::FilesystemDialogProc>();
-  _propsheetDialogProc[7] = DialogCallbackWrapper<&GuiDriver::HardfileDialogProc>();
-  _propsheetDialogProc[8] = DialogCallbackWrapper<&GuiDriver::GameportDialogProc>();
-  _propsheetDialogProc[9] = DialogCallbackWrapper<&GuiDriver::VariousDialogProc>();
-
-  _wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
-  _wgui_ini = Driver->Ini.GetCurrentInitdata();
-  ConvertDrawModeListToGuiDrawModes();
-
-  if (Service->Fileops.GetWinFellowPresetPath(_preset_path, CFG_FILENAME_LENGTH))
-  {
-    Service->Log.AddLog("wguiStartup(): preset path = %s\n", _preset_path);
-    InitializePresets(&_presets, &_num_presets);
-  }
-}
-
-void GuiDriver::StartupPost()
-{
-  LoadBitmaps();
-
   if (_wgui_emulation_state)
   {
     SendMessage(GetDlgItem(_hMainDialog, IDC_IMAGE_POWER_LED_MAIN), STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)_power_led_on_bitmap);
@@ -3740,7 +3715,37 @@ void GuiDriver::StartupPost()
   }
 }
 
-void GuiDriver::Shutdown()
+void GuiDriver::BeforeEnter()
+{
+  LoadBitmaps();
+
+  _wgui_cfg = cfgManagerGetCurrentConfig(&cfg_manager);
+  _wgui_ini = Driver->Ini->GetCurrentInitdata();
+  ConvertDrawModeListToGuiDrawModes();
+}
+
+void GuiDriver::Initialize()
+{
+  _propsheetDialogProc[0] = PropertySheetCallbackWrapper<&GuiDriver::PresetDialogProc>();
+  _propsheetDialogProc[1] = PropertySheetCallbackWrapper<&GuiDriver::CPUDialogProc>();
+  _propsheetDialogProc[2] = PropertySheetCallbackWrapper<&GuiDriver::FloppyDialogProc>();
+  _propsheetDialogProc[3] = PropertySheetCallbackWrapper<&GuiDriver::MemoryDialogProc>();
+  _propsheetDialogProc[4] = PropertySheetCallbackWrapper<&GuiDriver::DisplayDialogProc>();
+  _propsheetDialogProc[5] = PropertySheetCallbackWrapper<&GuiDriver::SoundDialogProc>();
+  _propsheetDialogProc[6] = PropertySheetCallbackWrapper<&GuiDriver::FilesystemDialogProc>();
+  _propsheetDialogProc[7] = PropertySheetCallbackWrapper<&GuiDriver::HardfileDialogProc>();
+  _propsheetDialogProc[8] = PropertySheetCallbackWrapper<&GuiDriver::GameportDialogProc>();
+  _propsheetDialogProc[9] = PropertySheetCallbackWrapper<&GuiDriver::VariousDialogProc>();
+
+  if (Service->Fileops.GetWinFellowPresetPath(_preset_path, CFG_FILENAME_LENGTH))
+  {
+    Service->Log.AddLog("wguiStartup(): preset path = %s\n", _preset_path);
+    InitializePresets(&_presets, &_num_presets);
+  }
+}
+
+
+void GuiDriver::Release()
 {
   ReleaseBitmaps();
   FreeGuiDrawModesLists();

@@ -27,7 +27,7 @@ void Automator::TakeSnapshot()
     ostringstream filename;
     filename << SnapshotDirectory << '\\' << setfill('0') << setw(4) << _snapshotsTaken << '_' << scheduler.GetRasterFrameCount() + 1 << ".bmp";
 
-    Driver->Graphics.SaveScreenshot(false, filename.str().c_str());
+    Driver->Graphics->SaveScreenshot(false, filename.str().c_str());
   }
 }
 
@@ -39,7 +39,7 @@ void Automator::RecordKey(UBY keyCode)
   }
 }
 
-void Automator::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button1, BOOLE button2, BOOLE button3)
+void Automator::RecordMouse(gameport_inputs mousedev, LON x, LON y, bool button1, bool button2, bool button3)
 {
   if (RecordScript)
   {
@@ -47,7 +47,7 @@ void Automator::RecordMouse(gameport_inputs mousedev, LON x, LON y, BOOLE button
   }
 }
 
-void Automator::RecordJoystick(gameport_inputs joydev, BOOLE left, BOOLE up, BOOLE right, BOOLE down, BOOLE button1, BOOLE button2)
+void Automator::RecordJoystick(gameport_inputs joydev, bool left, bool up, bool right, bool down, bool button1, bool button2)
 {
   if (RecordScript)
   {

@@ -9,7 +9,7 @@
 #include "fellow/os/windows/gui/GuiPresets.h"
 #include "fellow/configuration/Configuration.h"
 #include "fellow/api/drivers/IniValues.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 
 enum class SelectFileFlags
 {
@@ -65,13 +65,13 @@ constexpr unsigned int PROP_SHEETS = 10;
 class GuiDriver : public IGuiDriver
 {
 private:
-  HWND _hMainDialog;
-  STR _extractedfilename[CFG_FILENAME_LENGTH];
-  STR _extractedpathname[CFG_FILENAME_LENGTH];
-  cfg *_wgui_cfg;       // GUI copy of configuration
-  IniValues *_wgui_ini; // GUI copy of initdata
-  wgui_drawmodes _wgui_dm; // data structure for resolution data
-  wgui_drawmode *_pwgui_dm_match;
+  HWND _hMainDialog = nullptr;
+  STR _extractedfilename[CFG_FILENAME_LENGTH]{};
+  STR _extractedpathname[CFG_FILENAME_LENGTH]{};
+  cfg *_wgui_cfg = nullptr;       // GUI copy of configuration
+  IniValues *_wgui_ini = nullptr; // GUI copy of initdata
+  wgui_drawmodes _wgui_dm{};      // data structure for resolution data
+  wgui_drawmode *_pwgui_dm_match = nullptr;
   bool _wgui_emulation_state = false;
   HBITMAP _power_led_on_bitmap = nullptr;
   HBITMAP _power_led_off_bitmap = nullptr;
@@ -95,7 +95,7 @@ private:
   ULO _num_presets = 0;
   wgui_preset *_presets = nullptr;
 
-  wguiActions _wgui_action;
+  wguiActions _wgui_action = wguiActions::WGUI_NO_ACTION;
 
   //====================================================================
   // The following tables defines the data needed to create the property
@@ -114,7 +114,7 @@ private:
 
   typedef INT_PTR (*wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
-  wguiDlgProc _propsheetDialogProc[PROP_SHEETS];
+  wguiDlgProc _propsheetDialogProc[PROP_SHEETS]{};
 
   template <INT_PTR (GuiDriver::*P)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)>
   wguiDlgProc DialogCallbackWrapper()
@@ -126,7 +126,20 @@ private:
         SetWindowLongPtr(hWnd, DWLP_USER, lParam);
       }
 
-      GuiDriver *pThis = reinterpret_cast<GuiDriver *>(GetWindowLongPtr(hWnd, DWLP_USER));
+      GuiDriver *pThis = (GuiDriver *) (GetWindowLongPtr(hWnd, DWLP_USER));
+      return pThis ? (pThis->*P)(hWnd, uMsg, wParam, lParam) : FALSE;
+    };
+  };
+
+  template <INT_PTR (GuiDriver::*P)(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)> wguiDlgProc PropertySheetCallbackWrapper()
+  {
+    return [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> INT_PTR {
+      if (uMsg == WM_INITDIALOG)
+      {
+        SetWindowLongPtr(hWnd, DWLP_USER, ((PROPSHEETPAGE*)lParam)->lParam);
+      }
+
+      GuiDriver *pThis = (GuiDriver *)(GetWindowLongPtr(hWnd, DWLP_USER));
       return pThis ? (pThis->*P)(hWnd, uMsg, wParam, lParam) : FALSE;
     };
   };
@@ -153,6 +166,7 @@ private:
   UINT GetRequesterTypeFromFellowRequesterType(FELLOW_REQUESTER_TYPE fellowRequesterType);
 
   static bool InitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_presets);
+  void UpdatePowerLedButtonImage();
 
   public:
   bool CheckEmulationNecessities() override;
@@ -273,8 +287,10 @@ public:
   STR *ExtractPath(STR *fullpathname);
   void Requester(FELLOW_REQUESTER_TYPE type, const char *szMessage) override;
   void SetProcessDPIAwareness(const char *pszAwareness) override;
+
+  void BeforeEnter() override;
   BOOLE Enter() override;
-  void Startup() override;
-  void StartupPost();
-  void Shutdown() override;
+
+  void Initialize() override;
+  void Release() override;
 };

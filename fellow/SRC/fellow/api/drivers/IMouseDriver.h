@@ -1,19 +1,19 @@
 #pragma once
 
-#include "fellow/api/defs.h"
-
 class IMouseDriver
 {
 public:
-  virtual BOOLE GetFocus() = 0;
-  virtual void StateHasChanged(BOOLE active) = 0;
+  virtual void SetFocus(const bool bNewFocus, const bool bRequestedByRPHost) = 0;
+  virtual bool GetFocus() = 0;
   virtual void ToggleFocus() = 0;
+  virtual void StateHasChanged(bool active) = 0;
   virtual void MovementHandler() = 0;
-  virtual void SetFocus(const BOOLE bNewFocus, const BOOLE bRequestedByRPHost) = 0;
+
+  virtual bool GetInitializationFailed() = 0;
 
   virtual void HardReset() = 0;
-  virtual BOOLE EmulationStart() = 0;
+  virtual bool EmulationStart() = 0;
   virtual void EmulationStop() = 0;
-  virtual void Startup() = 0;
-  virtual void Shutdown() = 0;
+  virtual void Initialize() = 0;
+  virtual void Release() = 0;
 };

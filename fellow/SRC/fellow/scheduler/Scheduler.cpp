@@ -34,7 +34,7 @@
 #include "fellow/scheduler/Scheduler.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/chipset/Floppy.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/chipset/Sprite.h"
 #include "fellow/application/HostRenderer.h"
@@ -218,7 +218,7 @@ void Scheduler::EndOfFrame()
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode())
   {
-    Driver->Keyboard.EOFHandler();
+    Driver->Keyboard->EOFHandler();
   }
 #endif
   kbdEventEOFHandler();

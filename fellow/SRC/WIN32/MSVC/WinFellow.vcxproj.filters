@@ -151,6 +151,9 @@
     <Filter Include="fellow\api\drivers">
       <UniqueIdentifier>{9cfb0d45-dd86-4a8f-95d0-d5965f95e00d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fellow\os\windows\ini">
+      <UniqueIdentifier>{f0699edd-d205-466d-9d40-89a2835b84ad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\fellow\vm\M68K.cpp">
@@ -540,7 +543,7 @@
     <ClCompile Include="..\..\fellow\chipset\Graphics.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\chipset\Kbd.cpp">
+    <ClCompile Include="..\..\fellow\chipset\Keyboard.cpp">
       <Filter>fellow\chipset</Filter>
     </ClCompile>
     <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp">
@@ -740,6 +743,15 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\api\Drivers.cpp">
       <Filter>fellow\api</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\automation\ScriptLine.cpp">
+      <Filter>fellow\automation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\application\DriversFactory.cpp">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\fellow\os\windows\ini\IniDriver.cpp">
+      <Filter>fellow\os\windows\ini</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1226,7 +1238,7 @@
     <ClInclude Include="..\..\fellow\chipset\Graphics.h">
       <Filter>fellow\chipset</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\chipset\Kbd.h">
+    <ClInclude Include="..\..\fellow\chipset\Keyboard.h">
       <Filter>fellow\chipset</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\Keycodes.h">
@@ -1498,6 +1510,15 @@
     </ClInclude>
     <ClInclude Include="..\..\fellow\api\Drivers.h">
       <Filter>fellow\api</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\automation\ScriptLine.h">
+      <Filter>fellow\automation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\application\DriversFactory.h">
+      <Filter>fellow\os\windows\application</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\fellow\os\windows\ini\IniDriver.h">
+      <Filter>fellow\os\windows\ini</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

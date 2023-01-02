@@ -1514,7 +1514,7 @@ void memoryKickError(ULO errorcode, ULO data)
   string errorMessageString = errorMessage.str();
 
   Service->Log.AddLog(errorMessageString);
-  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessageString.c_str());
+  Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessageString.c_str());
 
   memoryKickSettingsClear();
 }

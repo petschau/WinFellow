@@ -25,7 +25,7 @@
 #include "fellow/api/Services.h"
 #include "fellow/api/Drivers.h"
 #include "fellow/chipset/Keycodes.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #include "fellow/application/Gameport.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Floppy.h"
@@ -40,20 +40,12 @@
 
 using namespace fellow::api;
 
-/*===========================================================================*/
-/* Data collected in struct, for easy locking in IRQs by kbddrv.c            */
-/*===========================================================================*/
-
 kbd_state_type kbd_state;
 ULO kbd_time_to_wait;
 
-/*===========================================================================*/
-/* Stuff that later goes other places                                        */
-/*===========================================================================*/
+UBY insert_dfX[4]; // 0 - nothing 1- insert 2-eject
 
-UBY insert_dfX[4]; /* 0 - nothing 1- insert 2-eject */
-
-/* Add an EOL event to the core, used by kbddrv */
+// Add an EOL event to the core, used by KeyboardDriver
 
 void kbdEventEOLAdd(kbd_event eventId)
 {
@@ -61,7 +53,7 @@ void kbdEventEOLAdd(kbd_event eventId)
   kbd_state.eventsEOL.inpos++;
 }
 
-/* Add an EOF event to the core, used by kbddrv */
+// Add an EOF event to the core, used by KeyboardDriver
 
 void kbdEventEOFAdd(kbd_event eventId)
 {
@@ -69,7 +61,7 @@ void kbdEventEOFAdd(kbd_event eventId)
   kbd_state.eventsEOF.inpos++;
 }
 
-/* Add a key to the core, used by kbddrv */
+// Add a key to the core, used by KeyboardDriver
 
 void kbdKeyAdd(UBY keyCode)
 {
@@ -101,9 +93,9 @@ void kbdEventDebugToggleLogging()
   DebugLog.Enabled = !DebugLog.Enabled;
 }
 
-/*===========================================================================*/
-/* Called from the main end of frame handler                                 */
-/*===========================================================================*/
+//==========================================
+// Called from the main end of frame handler
+//==========================================
 
 void kbdEventEOFHandler()
 {
@@ -167,27 +159,27 @@ void kbdEventEOFHandler()
         Service->Log.AddLog("kbd: keyboard-initiated reset triggered...\n");
         cpuIntegrationHardReset();
         break;
-      case kbd_event::EVENT_BMP_DUMP: Driver->Graphics.SaveScreenshot(true, ""); break;
+      case kbd_event::EVENT_BMP_DUMP: Driver->Graphics->SaveScreenshot(true, ""); break;
       default: break;
     }
     kbd_state.eventsEOF.outpos++;
   }
 }
 
-/*===========================================================================*/
-/* Called from the main end of line handler                                  */
-/*===========================================================================*/
+//=========================================
+// Called from the main end of line handler
+//=========================================
 
 void kbdEventEOLHandler()
 {
   kbd_event thisev;
-  BOOLE left[2], up[2], right[2], down[2], fire0[2], fire1[2];
-  BOOLE left_changed[2], up_changed[2], right_changed[2], down_changed[2];
-  BOOLE fire0_changed[2], fire1_changed[2];
+  bool left[2], up[2], right[2], down[2], fire0[2], fire1[2];
+  bool left_changed[2], up_changed[2], right_changed[2], down_changed[2];
+  bool fire0_changed[2], fire1_changed[2];
 
   for (unsigned int i = 0; i < 2; i++)
   {
-    left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] = fire0_changed[i] = fire1_changed[i] = FALSE;
+    left_changed[i] = up_changed[i] = right_changed[i] = down_changed[i] = fire0_changed[i] = fire1_changed[i] = false;
   }
 
   while (kbd_state.eventsEOL.outpos < kbd_state.eventsEOL.inpos)
@@ -198,32 +190,32 @@ void kbdEventEOLHandler()
       case kbd_event::EVENT_JOY0_UP_ACTIVE:
       case kbd_event::EVENT_JOY0_UP_INACTIVE:
         up[0] = (thisev == kbd_event::EVENT_JOY0_UP_ACTIVE);
-        up_changed[0] = TRUE;
+        up_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_DOWN_ACTIVE:
       case kbd_event::EVENT_JOY0_DOWN_INACTIVE:
         down[0] = (thisev == kbd_event::EVENT_JOY0_DOWN_ACTIVE);
-        down_changed[0] = TRUE;
+        down_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_LEFT_ACTIVE:
       case kbd_event::EVENT_JOY0_LEFT_INACTIVE:
         left[0] = (thisev == kbd_event::EVENT_JOY0_LEFT_ACTIVE);
-        left_changed[0] = TRUE;
+        left_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_RIGHT_ACTIVE:
       case kbd_event::EVENT_JOY0_RIGHT_INACTIVE:
         right[0] = (thisev == kbd_event::EVENT_JOY0_RIGHT_ACTIVE);
-        right_changed[0] = TRUE;
+        right_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_FIRE0_ACTIVE:
       case kbd_event::EVENT_JOY0_FIRE0_INACTIVE:
         fire0[0] = (thisev == kbd_event::EVENT_JOY0_FIRE0_ACTIVE);
-        fire0_changed[0] = TRUE;
+        fire0_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_FIRE1_ACTIVE:
       case kbd_event::EVENT_JOY0_FIRE1_INACTIVE:
         fire1[0] = (thisev == kbd_event::EVENT_JOY0_FIRE1_ACTIVE);
-        fire1_changed[0] = TRUE;
+        fire1_changed[0] = true;
         break;
       case kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE:
       case kbd_event::EVENT_JOY0_AUTOFIRE0_INACTIVE: gameport_autofire0[0] = (thisev == kbd_event::EVENT_JOY0_AUTOFIRE0_ACTIVE); break;
@@ -232,32 +224,32 @@ void kbdEventEOLHandler()
       case kbd_event::EVENT_JOY1_UP_ACTIVE:
       case kbd_event::EVENT_JOY1_UP_INACTIVE:
         up[1] = (thisev == kbd_event::EVENT_JOY1_UP_ACTIVE);
-        up_changed[1] = TRUE;
+        up_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_DOWN_ACTIVE:
       case kbd_event::EVENT_JOY1_DOWN_INACTIVE:
         down[1] = (thisev == kbd_event::EVENT_JOY1_DOWN_ACTIVE);
-        down_changed[1] = TRUE;
+        down_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_LEFT_ACTIVE:
       case kbd_event::EVENT_JOY1_LEFT_INACTIVE:
         left[1] = (thisev == kbd_event::EVENT_JOY1_LEFT_ACTIVE);
-        left_changed[1] = TRUE;
+        left_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_RIGHT_ACTIVE:
       case kbd_event::EVENT_JOY1_RIGHT_INACTIVE:
         right[1] = (thisev == kbd_event::EVENT_JOY1_RIGHT_ACTIVE);
-        right_changed[1] = TRUE;
+        right_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_FIRE0_ACTIVE:
       case kbd_event::EVENT_JOY1_FIRE0_INACTIVE:
         fire0[1] = (thisev == kbd_event::EVENT_JOY1_FIRE0_ACTIVE);
-        fire0_changed[1] = TRUE;
+        fire0_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_FIRE1_ACTIVE:
       case kbd_event::EVENT_JOY1_FIRE1_INACTIVE:
         fire1[1] = (thisev == kbd_event::EVENT_JOY1_FIRE1_ACTIVE);
-        fire1_changed[1] = TRUE;
+        fire1_changed[1] = true;
         break;
       case kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE:
       case kbd_event::EVENT_JOY1_AUTOFIRE0_INACTIVE: gameport_autofire0[1] = (thisev == kbd_event::EVENT_JOY1_AUTOFIRE0_ACTIVE); break;
@@ -265,6 +257,7 @@ void kbdEventEOLHandler()
       case kbd_event::EVENT_JOY1_AUTOFIRE1_INACTIVE: gameport_autofire1[1] = (thisev == kbd_event::EVENT_JOY1_AUTOFIRE1_ACTIVE); break;
       default: break;
     }
+
     kbd_state.eventsEOL.outpos++;
   }
 
@@ -287,10 +280,10 @@ void kbdEventEOLHandler()
   }
 }
 
-/*===========================================================================*/
-/* Move a scancode to the CIA SP register                                    */
-/* Called from end_of_line                                                   */
-/*===========================================================================*/
+//=======================================
+// Move a scancode to the CIA SP register
+// Called from end_of_line
+//=======================================
 
 void kbdQueueHandler()
 {
@@ -313,10 +306,6 @@ void kbdQueueHandler()
   }
 }
 
-/*===========================================================================*/
-/* Fellow standard functions                                                 */
-/*===========================================================================*/
-
 void kbdHardReset()
 {
   kbd_state.eventsEOL.inpos = 0;
@@ -328,7 +317,7 @@ void kbdHardReset()
   kbd_state.scancodes.buffer[0] = 0xfd; /* Start of keys pressed on reset */
   kbd_state.scancodes.buffer[1] = 0xfe; /* End of keys pressed during reset */
   kbd_time_to_wait = 10;
-  Driver->Keyboard.HardReset();
+  Driver->Keyboard->HardReset();
 }
 
 void kbdEmulationStart()
@@ -338,20 +327,20 @@ void kbdEmulationStart()
     insert_dfX[i] = FALSE;
   }
 
-  Driver->Keyboard.EmulationStart();
+  Driver->Keyboard->EmulationStart();
 }
 
 void kbdEmulationStop()
 {
-  Driver->Keyboard.EmulationStop();
+  Driver->Keyboard->EmulationStop();
 }
 
 void kbdStartup()
 {
-  Driver->Keyboard.Startup();
+  Driver->Keyboard->Startup();
 }
 
 void kbdShutdown()
 {
-  Driver->Keyboard.Shutdown();
+  Driver->Keyboard->Shutdown();
 }

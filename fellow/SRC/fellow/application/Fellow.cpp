@@ -27,6 +27,7 @@
 #include "versioninfo.h"
 #include "fellow/api/Drivers.h"
 #include "fellow/api/Services.h"
+#include "fellow/os/windows/application/DriversFactory.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/chipset/ChipsetInfo.h"
 #include "fellow/application/HostRenderer.h"
@@ -36,7 +37,7 @@
 #include "fellow/chipset/Floppy.h"
 #include "fellow/chipset/Sound.h"
 #include "fellow/application/Gameport.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #include "fellow/chipset/Graphics.h"
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/scheduler/Scheduler.h"
@@ -111,20 +112,16 @@ void fellowLogPerformanceReport()
   }
 }
 
-/*============================================================================*/
-/* Perform reset before starting emulation flag                               */
-/*============================================================================*/
+bool fellowPerformResetBeforeStartingEmulation;
 
-bool fellow_pre_start_reset;
-
-void fellowSetPreStartReset(bool reset)
+void fellowSetPerformResetBeforeStartingEmulation(bool reset)
 {
-  fellow_pre_start_reset = reset;
+  fellowPerformResetBeforeStartingEmulation = reset;
 }
 
-bool fellowGetPreStartReset()
+bool fellowGetPerformResetBeforeStartingEmulation()
 {
-  return fellow_pre_start_reset;
+  return fellowPerformResetBeforeStartingEmulation;
 }
 
 /*============================================================================*/
@@ -167,7 +164,7 @@ void fellowHandleCpuPcBadBank()
 {
   const char *errorMessage = "A serious emulation runtime error occured:\nThe emulated CPU entered Amiga memory that can not hold\nexecutable data. Emulation could not continue.";
   Service->Log.AddLog(errorMessage);
-  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+  Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
 }
 
 static void fellowRuntimeErrorCheck()
@@ -210,7 +207,7 @@ void fellowSoftReset()
   graphHardReset();
   ffilesysHardReset();
   memoryHardResetPost();
-  fellowSetPreStartReset(false);
+  fellowSetPerformResetBeforeStartingEmulation(false);
 }
 
 /*============================================================================*/
@@ -245,7 +242,7 @@ void fellowHardReset()
   ffilesysHardReset();
   memoryHardResetPost();
   cpuIntegrationHardReset();
-  fellowSetPreStartReset(false);
+  fellowSetPerformResetBeforeStartingEmulation(false);
 }
 
 /*============================================================================*/
@@ -270,7 +267,7 @@ void fellowRequestEmulationStopClear()
 bool fellowEmulationStart()
 {
   fellowRequestEmulationStopClear();
-  Driver->Ini.EmulationStart();
+  Driver->Ini->EmulationStart();
   memoryEmulationStart();
   interruptEmulationStart();
   ciaEmulationStart();
@@ -297,7 +294,7 @@ bool fellowEmulationStart()
   scheduler.EmulationStart();
   floppyEmulationStart();
   ffilesysEmulationStart();
-  Driver->Timer.EmulationStart();
+  Driver->Timer->EmulationStart();
 
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.EmulationStart();
@@ -332,7 +329,7 @@ void fellowEmulationStop()
   if (RP.GetHeadlessMode()) RP.EmulationStop();
 #endif
   HardfileHandler->EmulationStop();
-  Driver->Timer.EmulationStop();
+  Driver->Timer->EmulationStop();
   ffilesysEmulationStop();
   floppyEmulationStop();
   scheduler.EmulationStop();
@@ -348,7 +345,7 @@ void fellowEmulationStop()
   ciaEmulationStop();
   interruptEmulationStop();
   memoryEmulationStop();
-  Driver->Ini.EmulationStop();
+  Driver->Ini->EmulationStop();
   if (chipsetIsCycleExact())
   {
     ddf_state_machine.EmulationStop();
@@ -369,7 +366,7 @@ void fellowEmulationStop()
 
 void fellowRun()
 {
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -391,7 +388,7 @@ void fellowRun()
 void fellowStepOne()
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -411,7 +408,7 @@ void fellowStepOne()
 void fellowStepOver()
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -442,7 +439,7 @@ void fellowStepOver()
 void fellowRunDebug(ULO breakpoint)
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -468,7 +465,7 @@ void fellowRunDebug(ULO breakpoint)
 void fellowStepLine()
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -496,7 +493,7 @@ void fellowStepLine()
 void fellowStepFrame()
 {
   fellowRequestEmulationStopClear();
-  if (fellowGetPreStartReset())
+  if (fellowGetPerformResetBeforeStartingEmulation())
   {
     fellowHardReset();
   }
@@ -537,7 +534,7 @@ static void fellowDrawFailed()
 {
   const char *errorMessage = "Graphics subsystem failed to start.\nPlease check your OS graphics driver setup.\nClosing down application.";
   Service->Log.AddLog(errorMessage);
-  Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+  Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   exit(EXIT_FAILURE);
 }
 
@@ -550,11 +547,9 @@ static void fellowModulesStartup(int argc, char *argv[])
   fellow_emulation_run_performance_counter = Service->PerformanceCounterFactory.Create("Fellow emulation runtime");
 
   chipsetStartup();
-  Driver->Timer.Startup();
   HardfileHandler->Startup();
   ffilesysStartup();
   spriteStartup();
-  Driver->Ini.Startup();
   kbdStartup();
   cfgStartup(argc, argv);
   if (!Draw.Startup()) fellowDrawFailed();
@@ -569,7 +564,6 @@ static void fellowModulesStartup(int argc, char *argv[])
   interruptStartup();
   graphStartup();
   cpuIntegrationStartup();
-  Driver->Gui.Startup();
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Startup();
 #endif
@@ -588,10 +582,6 @@ static void fellowModulesStartup(int argc, char *argv[])
   fellow_emulation_run_performance_counter->LogTimerProperties();
 }
 
-/*============================================================================*/
-/* Release all modules in the emulator, called on shutdown                    */
-/*============================================================================*/
-
 static void fellowModulesShutdown()
 {
   fellowLogPerformanceReport();
@@ -608,7 +598,6 @@ static void fellowModulesShutdown()
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Shutdown();
 #endif
-  Driver->Gui.Shutdown();
   cpuIntegrationShutdown();
   graphShutdown();
   interruptShutdown();
@@ -623,11 +612,9 @@ static void fellowModulesShutdown()
   Draw.Shutdown();
   cfgShutdown();
   kbdShutdown();
-  Driver->Ini.Shutdown();
   spriteShutdown();
   ffilesysShutdown();
   HardfileHandler->Shutdown();
-  Driver->Timer.Shutdown();
 
   delete HardfileHandler;
 
@@ -638,6 +625,40 @@ static void fellowModulesShutdown()
 
   delete fellow_emulation_run_performance_counter;
   fellow_emulation_run_performance_counter = nullptr;
+}
+
+void fellowCreateDrivers()
+{
+  Driver = DriversFactory::Create();
+}
+
+void fellowDeleteDrivers()
+{
+  DriversFactory::Delete(Driver);
+  Driver = nullptr;
+}
+
+
+void fellowInitializeDrivers()
+{
+  Driver->Sound->Initialize();
+  Driver->Joystick->Initialize();
+  Driver->Mouse->Initialize();
+  Driver->Timer->Initialize();
+  Driver->Ini->Initialize();
+  Driver->Graphics->Initialize();
+  Driver->Gui->Initialize();
+}
+
+void fellowReleaseDrivers()
+{
+  Driver->Gui->Release();
+  Driver->Graphics->Release();
+  Driver->Ini->Release();
+  Driver->Timer->Release();
+  Driver->Mouse->Release();
+  Driver->Joystick->Release();
+  Driver->Sound->Release();
 }
 
 void fellowCreateServices()
@@ -651,15 +672,18 @@ void fellowDeleteServices()
   Service = nullptr;
 }
 
-/*============================================================================*/
-/* main....                                                                   */
-/*============================================================================*/
-
 int main(int argc, char *argv[])
 {
+  // Move this to startup
+  fellowSetPerformResetBeforeStartingEmulation(true);
+
   fellowCreateServices();
+
   sysinfoLogSysInfo();
-  fellowSetPreStartReset(true);
+
+  fellowCreateDrivers();
+  fellowInitializeDrivers();
+
   fellowModulesStartup(argc, argv);
 
 #ifdef RETRO_PLATFORM
@@ -667,9 +691,12 @@ int main(int argc, char *argv[])
   {
 #endif
     // set DPI awareness in standalone GUI mode to system DPI aware
-    Driver->Gui.SetProcessDPIAwareness("2");
-    while (!Driver->Gui.Enter())
+    Driver->Gui->SetProcessDPIAwareness("2");
+    Driver->Gui->BeforeEnter();
+    while (!Driver->Gui->Enter())
+    {
       fellowRun();
+    }
 #ifdef RETRO_PLATFORM
   }
   else
@@ -677,6 +704,11 @@ int main(int argc, char *argv[])
 #endif
 
   fellowModulesShutdown();
+
+  fellowReleaseDrivers();
+  fellowDeleteDrivers();
+
   fellowDeleteServices();
+
   return EXIT_SUCCESS;
 }

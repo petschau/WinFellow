@@ -33,5 +33,6 @@ namespace fellow::service
     void AddTimelessLog(const std::string &message) override;
 
     Log();
+    virtual ~Log() = default;
   };
 }

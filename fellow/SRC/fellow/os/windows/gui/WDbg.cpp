@@ -44,7 +44,7 @@
 #include "fellow/configuration/Configuration.h"
 #include "fellow/application/HostRenderer.h"
 #include "fellow/cpu/CpuModule_Disassembler.h"
-#include "fellow/chipset/Kbd.h"
+#include "fellow/chipset/Keyboard.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/Cia.h"
 #include "fellow/chipset/Floppy.h"
@@ -57,7 +57,7 @@
 #include "fellow/application/modrip.h"
 #include "fellow/chipset/Blitter.h"
 #include "commoncontrol_wrap.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 #include "fellow/chipset/draw_interlace_control.h"
 #include "fellow/debug/log/DebugLogHandler.h"
 
@@ -1854,20 +1854,20 @@ void wdebDebug()
 {
   // The configuration has been activated, but we must prepare the modules for emulation ourselves
 
-  if (Driver->Gui.CheckEmulationNecessities())
+  if (Driver->Gui->CheckEmulationNecessities())
   {
-    bool previousPauseEmulationOnLostFocus = gfxDrvCommon->GetPauseEmulationWhenWindowLosesFocus();
-    gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(false);
+    bool previousPauseEmulationOnLostFocus = ((GraphicsDriver&)Driver->Graphics).GetPauseEmulationWhenWindowLosesFocus();
+    ((GraphicsDriver&)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(false);
 
     if (!fellowEmulationStart())
     {
       MessageBox(nullptr, "Emulation debug session failed to start", "Startup Error", 0);
       fellowEmulationStop();
-      gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
+      ((GraphicsDriver &)Driver->Graphics) .SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
       return;
     }
 
-    if (fellowGetPreStartReset())
+    if (fellowGetPerformResetBeforeStartingEmulation())
     {
       fellowHardReset();
     }
@@ -1878,7 +1878,7 @@ void wdebDebug()
     wdebCloseDialog();
 
     fellowEmulationStop();
-    gfxDrvCommon->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
+    ((GraphicsDriver &)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
   }
   else
   {

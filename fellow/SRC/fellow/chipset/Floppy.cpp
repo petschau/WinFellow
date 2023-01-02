@@ -944,7 +944,7 @@ BOOLE floppyImageCompressedDMSPrepare(const STR *diskname, ULO drive)
     oss << "ERROR extracting DMS floppy image: " << szErrorMessage;
 
     Service->Log.AddLog(oss.str());
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, oss.str().c_str());
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, oss.str().c_str());
 
     free(gzname);
     return FALSE;

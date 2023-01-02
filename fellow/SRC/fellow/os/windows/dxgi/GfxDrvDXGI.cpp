@@ -5,7 +5,8 @@
 #include "GfxDrvDXGIUtils.h"
 #include "GfxDrvDXGIAdapterEnumerator.h"
 #include "GfxDrvDXGIErrorLogger.h"
-#include "fellow/os/windows/graphics/GfxDrvCommon.h"
+#include "fellow/api/Drivers.h"
+#include "fellow/os/windows/graphics/GraphicsDriver.h"
 
 #include "GfxDrvHudD2D1.h"
 
@@ -233,7 +234,7 @@ void GfxDrvDXGI::DeleteChipsetTextures()
 bool GfxDrvDXGI::CreateAmigaScreenRenderer()
 {
   const GfxDrvDXGIAmigaScreenTexture &chipsetTexture = GetActiveChipsetTexture();
-  return _amigaScreenRenderer.Configure(_d3d11device, _immediateContext, gfxDrvCommon->GetHostBufferSize(), chipsetTexture.GetSize(), _chipsetBufferOutputClipPixels);
+  return _amigaScreenRenderer.Configure(_d3d11device, _immediateContext, ((GraphicsDriver&)Driver->Graphics).GetHostBufferSize(), chipsetTexture.GetSize(), _chipsetBufferOutputClipPixels);
 }
 
 void GfxDrvDXGI::DeleteAmigaScreenRenderer()
@@ -274,7 +275,7 @@ bool GfxDrvDXGI::CreateSwapChain()
   swapChainDescription.BufferDesc.Height = height;
   swapChainDescription.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
   swapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDescription.OutputWindow = gfxDrvCommon->GetHWND();
+  swapChainDescription.OutputWindow = ((GraphicsDriver &)Driver->Graphics).GetHWND();
   swapChainDescription.SampleDesc.Count = 1;
   swapChainDescription.SampleDesc.Quality = 0;
   swapChainDescription.Windowed = TRUE;
@@ -406,7 +407,10 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
     _fullscreenActive = active;
     _fullscreenAndSizeChangeMutex.unlock();
 
-    if (!_fullscreenActive) gfxDrvCommon->HideWindow(); // Sends WM_SIZE
+    if (!_fullscreenActive)
+    {
+      ((GraphicsDriver &)Driver->Graphics).HideWindow(); // Sends WM_SIZE
+    }
   }
 }
 

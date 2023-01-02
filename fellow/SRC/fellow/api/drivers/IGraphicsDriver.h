@@ -13,10 +13,6 @@
 #include "fellow/application/DisplayMode.h"
 #include "fellow/hud/HudPropertyProvider.h"
 
-//==================================
-// Interface for the graphics driver
-//==================================
-
 class IGraphicsDriver
 {
   public:
@@ -40,6 +36,8 @@ class IGraphicsDriver
     HudPropertyProvider *hudPropertyProvider) = 0;
   virtual ULO EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings) = 0;
   virtual void EmulationStop() = 0;
-  virtual bool Startup(DISPLAYDRIVER displaydriver) = 0;
-  virtual void Shutdown() = 0;
+
+  virtual bool IsInitialized() const = 0;
+  virtual void Initialize() = 0;
+  virtual void Release() = 0;
 };

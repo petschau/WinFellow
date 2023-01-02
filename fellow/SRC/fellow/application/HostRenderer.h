@@ -100,7 +100,7 @@ public:
   void UpdateDrawFunctions();
   void ReinitializeRendering();
 
-  bool RestartGraphicsDriver(DISPLAYDRIVER displaydriver);
+  void RefreshDisplayModeList();
 
   void EndOfFrame();
   void HardReset();

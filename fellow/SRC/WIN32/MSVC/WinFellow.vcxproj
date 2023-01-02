@@ -515,6 +515,7 @@
     <ClCompile Include="..\..\fellow\application\modrip.cpp" />
     <ClCompile Include="..\..\fellow\automation\Automator.cpp" />
     <ClCompile Include="..\..\fellow\automation\Script.cpp" />
+    <ClCompile Include="..\..\fellow\automation\ScriptLine.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp" />
     <ClCompile Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp" />
     <ClCompile Include="..\..\fellow\chipset\Blitter.cpp" />
@@ -540,7 +541,7 @@
     <ClCompile Include="..\..\fellow\chipset\HostFrame.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameDelayedRenderer.cpp" />
     <ClCompile Include="..\..\fellow\chipset\HostFrameImmediateRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Kbd.cpp" />
+    <ClCompile Include="..\..\fellow\chipset\Keyboard.cpp" />
     <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp" />
     <ClCompile Include="..\..\fellow\chipset\LineExactSprites.cpp" />
     <ClCompile Include="..\..\fellow\chipset\Planar2ChunkyDecoder.cpp" />
@@ -766,6 +767,7 @@
     </ClCompile>
     <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.cpp" />
     <ClCompile Include="..\..\fellow\memory\Memory.cpp" />
+    <ClCompile Include="..\..\fellow\os\windows\application\DriversFactory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\sysinfo.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\application\WindowsMain.cpp" />
@@ -794,6 +796,7 @@
     <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\gui\WDbg.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\gui\GuiDriver.cpp" />
+    <ClCompile Include="..\..\fellow\os\windows\ini\IniDriver.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FileopsWin32.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FSWrapStat.cpp" />
     <ClCompile Include="..\..\fellow\os\windows\io\FilesystemAutomount.cpp" />
@@ -922,6 +925,7 @@
     <ClInclude Include="..\..\fellow\application\WGui.h" />
     <ClInclude Include="..\..\fellow\automation\Automator.h" />
     <ClInclude Include="..\..\fellow\automation\Script.h" />
+    <ClInclude Include="..\..\fellow\automation\ScriptLine.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneDMA.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.h" />
     <ClInclude Include="..\..\fellow\chipset\Blitter.h" />
@@ -951,7 +955,7 @@
     <ClInclude Include="..\..\fellow\chipset\DIWYStateMachine.h" />
     <ClInclude Include="..\..\fellow\chipset\BitplaneShifter.h" />
     <ClInclude Include="..\..\fellow\chipset\DualPlayfieldMapper.h" />
-    <ClInclude Include="..\..\fellow\chipset\Kbd.h" />
+    <ClInclude Include="..\..\fellow\chipset\Keyboard.h" />
     <ClInclude Include="..\..\fellow\chipset\Keycodes.h" />
     <ClInclude Include="..\..\fellow\chipset\LineExactCopper.h" />
     <ClInclude Include="..\..\fellow\chipset\LineExactSprites.h" />
@@ -1035,6 +1039,7 @@
     <ClInclude Include="..\..\fellow\libs\zlib\src\zutil.h" />
     <ClInclude Include="..\..\fellow\libs\zlib\zlibwrap.h" />
     <ClInclude Include="..\..\fellow\memory\Memory.h" />
+    <ClInclude Include="..\..\fellow\os\windows\application\DriversFactory.h" />
     <ClInclude Include="..\..\fellow\os\windows\application\OSServicesFactory.h" />
     <ClInclude Include="..\..\fellow\os\windows\application\sysinfo.h" />
     <ClInclude Include="..\..\fellow\os\windows\application\versioninfo-wcrev.h" />
@@ -1073,6 +1078,7 @@
     <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h" />
     <ClInclude Include="..\..\fellow\os\windows\gui\WDbg.h" />
+    <ClInclude Include="..\..\fellow\os\windows\ini\IniDriver.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\FileopsWin32.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\FSWrapStat.h" />
     <ClInclude Include="..\..\fellow\os\windows\io\JoystickDriver.h" />

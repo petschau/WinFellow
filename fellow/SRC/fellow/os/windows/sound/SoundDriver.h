@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+#include <dsound.h>
 #include "fellow/api/defs.h"
 #include "fellow/api/drivers/ISoundDriver.h"
 
@@ -18,8 +20,10 @@ struct sound_drv_dsound_device
   LPDIRECTSOUNDBUFFER lpDSB;  // Primary buffer
   LPDIRECTSOUNDBUFFER lpDSBS; // Secondary buffer
   LPDIRECTSOUNDNOTIFY lpDSN;  // Notificaton object
-  felist *modes;
-  sound_drv_dsound_mode *mode_current;
+
+  std::list<sound_drv_dsound_mode*> modes;
+  sound_drv_dsound_mode mode_current;
+
   HANDLE notifications[3];
   HANDLE data_available;
   HANDLE can_add_data;
@@ -35,22 +39,26 @@ struct sound_drv_dsound_device
   DWORD lastreadpos;
 };
 
-class SoundDriver : ISoundDriver
+class SoundDriver : public ISoundDriver
 {
 private:
-    static void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
-  void HandleTimerCallback();
+  sound_drv_dsound_device _dsound_device_current{};
+  bool _isInitialized = false;
+
+  static void CALLBACK timercb(UINT uID, UINT uMsg, DWORD_PTR dwUser, DWORD_PTR dw1, DWORD_PTR dw2);
+    void HandleTimerCallback();
     const char *DSoundErrorString(HRESULT hResult);
     void DSoundFailure(const char *header, HRESULT err);
     void DSoundRelease();
     bool DSoundInitialize();
-    void AddMode(sound_drv_dsound_device *dsound_device, bool stereo, bool bits16, ULO rate);
-    sound_drv_dsound_mode *FindMode(sound_drv_dsound_device *dsound_device, bool stereo, bool bits16, ULO rate);
-    void DSoundModeInformationRelease(sound_drv_dsound_device *dsound_device);
-    void YesNoLog(const char *intro, bool pred);
+
     bool DSoundModeInformationInitialize(sound_drv_dsound_device *dsound_device);
+    void DSoundModeInformationRelease(sound_drv_dsound_device *dsound_device);
+    void AddMode(sound_drv_dsound_device *dsound_device, bool stereo, bool bits16, ULO rate);
+    const sound_drv_dsound_mode *FindMode(sound_drv_dsound_device *dsound_device, bool stereo, bool bits16, ULO rate) const;
+    
+    void YesNoLog(const char *intro, bool pred);
     bool DSoundSetVolume(sound_drv_dsound_device *dsound_device, const int volume);
-    bool DSoundSetCurrentSoundDeviceVolume(const int volume);
     bool DSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_device);
     void DSoundPrimaryBufferRelease(sound_drv_dsound_device *dsound_device);
     bool DSoundPrimaryBufferInitialize(sound_drv_dsound_device *dsound_device);
@@ -76,12 +84,15 @@ private:
 public:
     void Play(WOR *leftBuffer, WOR *rightBuffer, ULO sampleCount) override;
     void PollBufferPosition() override;
-    bool SetVolume(const int) override;
-    void SetCurrentSoundDeviceVolume(int volume) override;
+    bool SetCurrentSoundDeviceVolume(int volume) override;
 
     void HardReset();
     bool EmulationStart(ULO outputRate, bool bits16, bool stereo, ULO *bufferSampleCountMax) override;
     void EmulationStop() override;
-    bool Startup(sound_device_capabilities *devInfo) override;
-    void Shutdown() override;
+
+    bool IsInitialized() override;
+    bool Initialize() override;
+    void Release() override;
+
+    virtual ~SoundDriver() = default;
 };

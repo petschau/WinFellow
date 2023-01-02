@@ -375,7 +375,7 @@ void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
 {
   config->m_displaydriver = display_driver;
 
-  if (!Driver->Graphics.ValidateRequirements())
+  if (!Driver->Graphics->ValidateRequirements())
   {
     Service->Log.AddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
     config->m_displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
@@ -2227,7 +2227,7 @@ static BOOLE cfgParseCommandLine(cfg *config, int argc, char *argv[])
       i++;
       if (i < argc)
       {
-        Driver->Gui.SetProcessDPIAwareness(argv[i]);
+        Driver->Gui->SetProcessDPIAwareness(argv[i]);
       }
       i++;
     }
@@ -2517,7 +2517,7 @@ void cfgManagerStartup(cfgManager *configmanager, int argc, char *argv[])
     if (!cfgGetConfigAppliedOnce(config))
     {
       // load configuration that the initdata contains
-      cfg_initdata = Driver->Ini.GetCurrentInitdata();
+      cfg_initdata = Driver->Ini->GetCurrentInitdata();
       cfgLoadFromFilename(config, cfg_initdata->GetCurrentConfigurationFilename().c_str(), false);
     }
 #ifdef RETRO_PLATFORM

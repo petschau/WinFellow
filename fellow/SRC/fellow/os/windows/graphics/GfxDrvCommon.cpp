@@ -1,5 +1,6 @@
 
 #include <string>
+#include <functional>
 #include "fellow/api/defs.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"
@@ -21,11 +22,6 @@
 using namespace std;
 using namespace fellow::api;
 
-void GfxDrvCommonDelayFlipTimerCallback(ULO timeMilliseconds)
-{
-  gfxDrvCommon->DelayFlipTimerCallback(timeMilliseconds);
-}
-
 bool GfxDrvCommon::GetDisplayChange() const
 {
   return _displayChange;
@@ -44,9 +40,10 @@ void GfxDrvCommon::DelayFlipTimerCallback(ULO timeMilliseconds)
   }
 }
 
-void GfxDrvCommon::InitializeDelayFlipEvent()
+bool GfxDrvCommon::InitializeDelayFlipEvent()
 {
   _delay_flip_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  return _delay_flip_event != nullptr;
 }
 
 void GfxDrvCommon::ReleaseDelayFlipEvent()
@@ -64,7 +61,8 @@ void GfxDrvCommon::InitializeDelayFlipTimerCallback()
   _time = 0;
   _wait_for_time = 0;
   SetEvent(_delay_flip_event);
-  Driver->Timer.AddCallback(GfxDrvCommonDelayFlipTimerCallback);
+
+  Driver->Timer->AddCallback([this](ULO timeMilliseconds) { this->DelayFlipTimerCallback(timeMilliseconds); });
 }
 
 int GfxDrvCommon::GetTimeSinceLastFlip()
@@ -158,7 +156,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
       if (_pause_emulation_when_window_loses_focus) RunEventReset();
     }
 
-    Driver->Graphics.NotifyActiveStatus(_win_active);
+    Driver->Graphics->NotifyActiveStatus(_win_active);
 #ifdef RETRO_PLATFORM
   }
 #endif
@@ -166,7 +164,7 @@ void GfxDrvCommon::EvaluateRunEventStatus()
 
 void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 {
-  Driver->Mouse.StateHasChanged(active);
+  Driver->Mouse->StateHasChanged(active);
 
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
@@ -174,8 +172,8 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
   {
 #endif
 #endif
-    Driver->Joystick.StateHasChanged(active);
-    Driver->Keyboard.StateHasChanged(active);
+    Driver->Joystick->StateHasChanged(active);
+    Driver->Keyboard->StateHasChanged(active);
 #ifdef RETRO_PLATFORM
 #ifdef FELLOW_SUPPORT_RP_API_VERSION_71
   }
@@ -185,10 +183,10 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 
 #define WM_DIACQUIRE (WM_USER + 0)
 
-LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-{
-  return gfxDrvCommon->EmulationWindowProcedure(hWnd, message, wParam, lParam);
-}
+//LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+//{
+//  return gfxDrvCommon->EmulationWindowProcedure(hWnd, message, wParam, lParam);
+//}
 
 /***********************************************************************/
 /**
@@ -260,7 +258,7 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
       if (wParam == 1)
       {
         winDrvHandleInputDevices();
-        Driver->Sound.PollBufferPosition();
+        Driver->Sound->PollBufferPosition();
         return 0;
       }
       break;
@@ -278,8 +276,8 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
         case VK_RETURN: /* Full screen vs windowed */ break;
       }
       break;
-    case WM_MOVE: Driver->Graphics.PositionChanged(); break;
-    case WM_SIZE: Driver->Graphics.SizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
+    case WM_MOVE: Driver->Graphics->PositionChanged(); break;
+    case WM_SIZE: Driver->Graphics->SizeChanged(LOWORD(lParam), HIWORD(lParam)); break;
     case WM_ACTIVATE:
       /* WM_ACTIVATE tells us whether our window is active or not */
       /* It is monitored so that we can know whether we should claim */
@@ -368,14 +366,14 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
     case WM_LBUTTONUP:
       if (RP.GetHeadlessMode())
       {
-        if (Driver->Mouse.GetFocus())
+        if (Driver->Mouse->GetFocus())
         {
           NotifyDirectInputDevicesAboutActiveState(_win_active_original);
           RP.SendMouseCapture(true);
         }
         else
         {
-          Driver->Mouse.SetFocus(TRUE, FALSE);
+          Driver->Mouse->SetFocus(true, false);
         }
         return 0;
       }
@@ -401,7 +399,7 @@ bool GfxDrvCommon::InitializeWindowClass()
 
   wc1.cbSize = sizeof(wc1);
   wc1.style = CS_HREDRAW | CS_VREDRAW;
-  wc1.lpfnWndProc = EmulationWindowProc;
+  wc1.lpfnWndProc = WindowProcWrapper<&GfxDrvCommon::EmulationWindowProcedure>();
   wc1.cbClsExtra = 0;
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;
@@ -443,7 +441,7 @@ void GfxDrvCommon::DisplayWindow()
     ShowWindow(_hwnd, SW_SHOWNORMAL);
     UpdateWindow(_hwnd);
 
-    Driver->Graphics.SizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
+    Driver->Graphics->SizeChanged(_current_draw_mode.Width, _current_draw_mode.Height);
   }
   else
   {
@@ -516,11 +514,11 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
         hParent,
         nullptr,
         win_drv_hInstance,
-        nullptr);
+        this);
   }
   else
   {
-    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, nullptr);
+    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, this);
   }
 
   Service->Log.AddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
@@ -614,33 +612,41 @@ void GfxDrvCommon::EmulationStop()
   ReleaseWindow();
 }
 
-bool GfxDrvCommon::Startup()
+bool GfxDrvCommon::IsInitialized() const
 {
-  _iniValues = Driver->Ini.GetCurrentInitdata();
-  bool initialized = InitializeRunEvent();
-  if (initialized)
-  {
-    initialized = InitializeWindowClass();
-  }
-
-  InitializeDelayFlipEvent();
-
-  return initialized;
+  return _isInitialized;
 }
 
-void GfxDrvCommon::Shutdown()
+void GfxDrvCommon::Initialize()
+{
+  _isInitialized = InitializeRunEvent();
+  if (!_isInitialized)
+  {
+    return;
+  }
+
+  _isInitialized = InitializeWindowClass();
+  if (!_isInitialized)
+  {
+    ReleaseRunEvent();
+    return;
+  }
+
+  _isInitialized = InitializeDelayFlipEvent();
+  if (!_isInitialized)
+  {
+    ReleaseWindowClass();
+    ReleaseRunEvent();
+    return;
+  }
+
+  _iniValues = Driver->Ini->GetCurrentInitdata();
+}
+
+void GfxDrvCommon::Release()
 {
   ReleaseWindow();
   ReleaseWindowClass();
-  ReleaseRunEvent();
   ReleaseDelayFlipEvent();
-}
-
-GfxDrvCommon::GfxDrvCommon() : _run_event(nullptr), _hwnd(nullptr), _iniValues(nullptr), _frametime_target(18), _previous_flip_time(0), _time(0), _wait_for_time(0), _delay_flip_event(nullptr)
-{
-}
-
-GfxDrvCommon::~GfxDrvCommon()
-{
-  Shutdown();
+  ReleaseRunEvent();
 }

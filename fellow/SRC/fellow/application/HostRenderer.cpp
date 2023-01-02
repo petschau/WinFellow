@@ -169,17 +169,9 @@ const list<DisplayMode> &HostRenderer::GetDisplayModes() const
   return _displayModes;
 }
 
-bool HostRenderer::RestartGraphicsDriver(DISPLAYDRIVER displaydriver)
+void HostRenderer::RefreshDisplayModeList()
 {
-  Driver->Graphics.Shutdown();
-  ClearDisplayModeList();
-  bool startupOk = Driver->Graphics.Startup(displaydriver);
-  if (startupOk)
-  {
-    _displayModes = Driver->Graphics.GetDisplayModeList();
-  }
-
-  return startupOk;
+  _displayModes = Driver->Graphics->GetDisplayModeList();
 }
 
 void HostRenderer::SetFullscreenMode(const DimensionsUInt &size, DisplayColorDepth colorDepth, unsigned int refreshRate)
@@ -382,7 +374,7 @@ void HostRenderer::FlipBuffer()
     _buffer_draw = 0;
   }
 
-  Driver->Graphics.BufferFlip();
+  Driver->Graphics->BufferFlip();
 }
 
 const uint64_t *HostRenderer::GetHostColors() const
@@ -444,7 +436,7 @@ void HostRenderer::ColorChangedHandler(const unsigned int colorIndex, const UWO 
 
 MappedChipsetFramebuffer HostRenderer::MapChipsetFramebuffer()
 {
-  GfxDrvMappedBufferPointer mappedBufferPointer = Driver->Graphics.MapChipsetFramebuffer();
+  GfxDrvMappedBufferPointer mappedBufferPointer = Driver->Graphics->MapChipsetFramebuffer();
 
   if (!mappedBufferPointer.IsValid)
   {
@@ -468,7 +460,7 @@ MappedChipsetFramebuffer HostRenderer::MapChipsetFramebuffer()
 
 void HostRenderer::UnmapChipsetFramebuffer()
 {
-  Driver->Graphics.UnmapChipsetFramebuffer();
+  Driver->Graphics->UnmapChipsetFramebuffer();
 }
 
 void HostRenderer::SetClearAllBuffersFlag()
@@ -513,18 +505,18 @@ bool HostRenderer::EmulationStart()
 
   _hostRenderRuntimeSettings.Log();
 
-  return Driver->Graphics.EmulationStart(_hostRenderConfiguration, _hostRenderRuntimeSettings, _chipsetBufferRuntimeSettings, &_hudPropertyProvider);
+  return Driver->Graphics->EmulationStart(_hostRenderConfiguration, _hostRenderRuntimeSettings, _chipsetBufferRuntimeSettings, &_hudPropertyProvider);
 }
 
 bool HostRenderer::EmulationStartPost()
 {
-  _buffer_count = Driver->Graphics.EmulationStartPost(_chipsetBufferRuntimeSettings);
+  _buffer_count = Driver->Graphics->EmulationStartPost(_chipsetBufferRuntimeSettings);
 
   if (_buffer_count == 0)
   {
     const char *errorMessage = "Failure: The graphics driver failed to start. See fellow.log for more details.";
     Service->Log.AddLog(errorMessage);
-    Driver->Gui.Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+    Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
     return false;
   }
 
@@ -533,7 +525,7 @@ bool HostRenderer::EmulationStartPost()
 
   // Color bit layout for the buffers are needed to finalize tables for the drawing. DirectDraw cannot provide this until after the ...post, dxgi does provide it earlier as it is fixed to 32-bit
   // backbuffer
-  const GfxDrvColorBitsInformation colorBitsInformation = Driver->Graphics.GetColorBitsInformation();
+  const GfxDrvColorBitsInformation colorBitsInformation = Driver->Graphics->GetColorBitsInformation();
   _chipsetBufferRuntimeSettings.ColorBits = colorBitsInformation.ColorBits;
 
   // Remember also clear HostColor() on reset
@@ -554,23 +546,17 @@ bool HostRenderer::EmulationStartPost()
 
 void HostRenderer::EmulationStop()
 {
-  Driver->Graphics.EmulationStop();
+  Driver->Graphics->EmulationStop();
 }
-
-//===========================
-// Called on emulator startup
-//===========================
 
 bool HostRenderer::Startup()
 {
-  // This config contains default values with command line parameters applied
-  auto startupConfig = cfgManagerGetCurrentConfig(&cfg_manager);
-
-  ClearDisplayModeList();
-  if (!Driver->Graphics.Startup(cfgGetDisplayDriver(startupConfig)))
+  if (!Driver->Graphics->IsInitialized())
   {
     return false;
   }
+
+  ClearDisplayModeList();
   DualPlayfieldMapper::InitializeMappingTable();
 
 #ifdef RETRO_PLATFORM
@@ -591,14 +577,9 @@ bool HostRenderer::Startup()
   return true;
 }
 
-/*============================================================================*/
-/* Things uninitialized at emulator shutdown                                  */
-/*============================================================================*/
-
 void HostRenderer::Shutdown()
 {
   ClearDisplayModeList();
-  Driver->Graphics.Shutdown();
 }
 
 void HostRenderer::UpdateDrawFunctions()
@@ -669,7 +650,7 @@ void HostRenderer::EndOfFrame()
   {
     if (_clear_buffers > 0)
     {
-      Driver->Graphics.ClearCurrentBuffer();
+      Driver->Graphics->ClearCurrentBuffer();
       --_clear_buffers;
     }
 
@@ -711,7 +692,7 @@ void HostRenderer::EndOfFrame()
 
 void HostRenderer::DrawHUD(const MappedChipsetFramebuffer &mappedChipsetFramebuffer)
 {
-  Driver->Graphics.DrawHUD(mappedChipsetFramebuffer);
+  Driver->Graphics->DrawHUD(mappedChipsetFramebuffer);
 }
 
 HostRenderer::HostRenderer() : _hudPropertyProvider(_hostRenderStatistics)
