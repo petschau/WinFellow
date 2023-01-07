@@ -112,7 +112,7 @@ private:
   // so that a refresh can be triggered by the presets propery sheet
   HWND _propsheetHWND[PROP_SHEETS] = {nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr};
 
-  typedef INT_PTR (*wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
+  typedef INT_PTR (CALLBACK *wguiDlgProc)(HWND, UINT, WPARAM, LPARAM);
 
   wguiDlgProc _propsheetDialogProc[PROP_SHEETS]{};
 
@@ -293,4 +293,6 @@ public:
 
   void Initialize() override;
   void Release() override;
+
+  virtual ~GuiDriver() = default;
 };

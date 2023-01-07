@@ -7,7 +7,7 @@
 
 #include "pfile.h"
 
-extern "C" USHORT dmsUnpack(char *, char *);
-extern "C" void dmsErrMsg(USHORT, char *, char *, char *);
+extern USHORT dmsUnpack(char *, char *);
+extern void dmsErrMsg(USHORT, char *, char *, char *);
 
 #endif

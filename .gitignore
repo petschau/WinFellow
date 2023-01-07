@@ -4,8 +4,7 @@ fellow/SRC/build/cmake
 fellow/SRC/fellow/os/windows/versioninfo.h
 fellow/SRC/fellow/os/windows/gui/GUI_versioninfo.rc
 fellow/SRC/WIN32/MSVC/.vs/
-fellow/SRC/WIN32/MSVC/Debug/
-fellow/SRC/WIN32/MSVC/Release/
+fellow/SRC/WIN32/MSVC/Win32/
 fellow/SRC/WIN32/MSVC/x64/
 fellow/SRC/WIN32/MSVC/ARM64/
 fellow/SRC/WIN32/MSVC/68kgenerate/

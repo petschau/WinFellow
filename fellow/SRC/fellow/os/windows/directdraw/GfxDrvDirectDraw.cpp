@@ -228,7 +228,7 @@ void GfxDrvDirectDraw::Release()
 
 GfxDrvMappedBufferPointer GfxDrvDirectDraw::MapChipsetFramebuffer()
 {
-  ULO pitch;
+  ptrdiff_t pitch;
   UBY *buffer = _ddrawDeviceCurrent->SurfaceLock(&pitch);
   if (buffer == nullptr)
   {

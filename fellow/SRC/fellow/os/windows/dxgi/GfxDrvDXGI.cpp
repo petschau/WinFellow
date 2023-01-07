@@ -234,7 +234,7 @@ void GfxDrvDXGI::DeleteChipsetTextures()
 bool GfxDrvDXGI::CreateAmigaScreenRenderer()
 {
   const GfxDrvDXGIAmigaScreenTexture &chipsetTexture = GetActiveChipsetTexture();
-  return _amigaScreenRenderer.Configure(_d3d11device, _immediateContext, ((GraphicsDriver&)Driver->Graphics).GetHostBufferSize(), chipsetTexture.GetSize(), _chipsetBufferOutputClipPixels);
+  return _amigaScreenRenderer.Configure(_d3d11device, _immediateContext, ((GraphicsDriver*)Driver->Graphics)->GetHostBufferSize(), chipsetTexture.GetSize(), _chipsetBufferOutputClipPixels);
 }
 
 void GfxDrvDXGI::DeleteAmigaScreenRenderer()

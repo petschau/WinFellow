@@ -30,20 +30,7 @@ private:
   bool _displayChange{};
   bool _isInitialized{};
 
-  typedef LRESULT (*gfxDrvCommonWindowProc)(HWND, UINT, WPARAM, LPARAM);
-
-  template <LRESULT (GfxDrvCommon::*P)(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)> gfxDrvCommonWindowProc WindowProcWrapper()
-  {
-    return [](HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) -> INT_PTR {
-      if (uMsg == WM_INITDIALOG)
-      {
-        SetWindowLongPtr(hWnd, DWLP_USER, lParam);
-      }
-
-      GfxDrvCommon *pThis = (GfxDrvCommon *) GetWindowLongPtr(hWnd, DWLP_USER);
-      return pThis ? (pThis->*P)(hWnd, uMsg, wParam, lParam) : FALSE;
-    };
-  };
+  static LRESULT CALLBACK EmulationWindowProcedureStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   void MaybeDelayFlip();
   void DelayFlipWait(int milliseconds);
@@ -60,6 +47,8 @@ private:
   void SetDrawMode(const DisplayMode &dm);
 
 public:
+  LRESULT EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+
   const DimensionsUInt &GetHostBufferSize() const;
 
   bool GetDisplayChange() const;
@@ -80,7 +69,6 @@ public:
   void HideWindow();
   bool InitializeWindow(DisplayScale displayScale);
   void ReleaseWindow();
-  LRESULT EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   HWND GetHWND();
   const DisplayMode &GetDrawMode() const;

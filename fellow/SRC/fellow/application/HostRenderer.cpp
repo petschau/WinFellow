@@ -450,7 +450,7 @@ MappedChipsetFramebuffer HostRenderer::MapChipsetFramebuffer()
   return MappedChipsetFramebuffer{
       .TopPointer = mappedBufferPointer.Buffer,
       .HostLinePitch = mappedBufferPointer.Pitch,
-      .AmigaLinePitch = mappedBufferPointer.Pitch * GetChipsetBufferScaleFactor() * 2, // Pitch to go to next line in field
+      .AmigaLinePitch = (ptrdiff_t) (mappedBufferPointer.Pitch * GetChipsetBufferScaleFactor() * 2), // Pitch to go to next line in field
       .IsValid = true};
 }
 

@@ -877,7 +877,7 @@ void DirectDrawDevice::ClearWindowBorders()
 // Lock the current drawing surface
 //=================================
 
-uint8_t *DirectDrawDevice::SurfaceLock(ULO *pitch)
+uint8_t *DirectDrawDevice::SurfaceLock(ptrdiff_t *pitch)
 {
   if (_clearBorders)
   {

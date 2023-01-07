@@ -317,10 +317,6 @@ bool fellowEmulationStart()
   return memoryGetKickImageOK();
 }
 
-/*============================================================================*/
-/* Controls the process of halting actual emulation                           */
-/*============================================================================*/
-
 void fellowEmulationStop()
 {
   fellow_emulation_run_performance_counter->Stop();
@@ -629,8 +625,9 @@ static void fellowModulesShutdown()
 
 void fellowCreateDrivers()
 {
-  Driver = DriversFactory::Create();
-}
+  Drivers *drivers = DriversFactory::Create();
+  Driver = drivers;
+  }
 
 void fellowDeleteDrivers()
 {
@@ -672,7 +669,7 @@ void fellowDeleteServices()
   Service = nullptr;
 }
 
-int main(int argc, char *argv[])
+int __cdecl main(int argc, char *argv[])
 {
   // Move this to startup
   fellowSetPerformResetBeforeStartingEmulation(true);

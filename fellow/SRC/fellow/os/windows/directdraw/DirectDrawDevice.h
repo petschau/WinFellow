@@ -100,7 +100,7 @@ public:
   std::string DriverDescription;
   std::string DriverName;
 
-  uint8_t *SurfaceLock(ULO *pitch);
+  uint8_t *SurfaceLock(ptrdiff_t *pitch);
   void SurfaceUnlock();
   void ClearCurrentBuffer();
 

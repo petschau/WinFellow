@@ -8,7 +8,7 @@
 struct GfxDrvDXGIMapResult
 {
   unsigned char *Buffer;
-  unsigned int Pitch;
+  ptrdiff_t Pitch;
 };
 
 class GfxDrvDXGIAmigaScreenTexture

@@ -268,13 +268,13 @@ ULO winDrvInitializeMultiEventArray(HANDLE *multi_events, enum MultiEventTypes *
 
   if (!Driver->Mouse->GetInitializationFailed())
   {
-    multi_events[event_count] = ((MouseDriver&)(Driver->Mouse)).GetDirectInputEvent();
+    multi_events[event_count] = ((MouseDriver*)(Driver->Mouse))->GetDirectInputEvent();
     object_mapping[event_count++] = met_mouse_data;
   }
 
   if (!Driver->Keyboard->GetInitializationFailed())
   {
-    multi_events[event_count] = ((KeyboardDriver &)(Driver->Keyboard)).GetDirectInputEvent();
+    multi_events[event_count] = ((KeyboardDriver*)(Driver->Keyboard))->GetDirectInputEvent();
     object_mapping[event_count++] = met_kbd_data;
   }
 
@@ -291,7 +291,7 @@ void winDrvEmulate(LPTHREAD_START_ROUTINE startfunc)
 
   winDrvRunInNewThread(startfunc, 0); // Starts emulation in a separate thread
 
-  SetTimer(((GraphicsDriver&)(Driver->Graphics)).GetHWND(), 1, 10, nullptr);
+  SetTimer(((GraphicsDriver*)(Driver->Graphics))->GetHWND(), 1, 10, nullptr);
 
   HANDLE multi_events[3];
   enum MultiEventTypes object_mapping[4];

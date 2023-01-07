@@ -20,4 +20,6 @@ public:
   virtual BOOLE Enter() = 0;
   virtual void Initialize() = 0;
   virtual void Release() = 0;
+
+  virtual ~IGuiDriver() = default;
 };

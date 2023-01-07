@@ -1267,7 +1267,7 @@ void GuiDriver::ExtractVariousConfig(HWND hwndDlg, cfg *conf)
 void GuiDriver::InstallMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
 {
   ccwMenuCheckedSetConditionalBool(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS, ini->GetPauseEmulationWhenWindowLosesFocus());
-  ((GraphicsDriver&) Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
+  ((GraphicsDriver*) Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(ini->GetPauseEmulationWhenWindowLosesFocus());
 }
 
 void GuiDriver::ToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniValues *ini)
@@ -3572,7 +3572,7 @@ BOOLE GuiDriver::Enter()
       do
       {
         winDrvEmulationStart();
-      } while (((GraphicsDriver&) Driver->Graphics).GetDisplayChange());
+      } while (((GraphicsDriver*) Driver->Graphics)->GetDisplayChange());
 
       if (!cfgGetUseGUI(_wgui_cfg))
       {

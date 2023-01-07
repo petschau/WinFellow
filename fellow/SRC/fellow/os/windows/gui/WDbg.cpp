@@ -1856,14 +1856,14 @@ void wdebDebug()
 
   if (Driver->Gui->CheckEmulationNecessities())
   {
-    bool previousPauseEmulationOnLostFocus = ((GraphicsDriver&)Driver->Graphics).GetPauseEmulationWhenWindowLosesFocus();
+    bool previousPauseEmulationOnLostFocus = ((GraphicsDriver*)Driver->Graphics)->GetPauseEmulationWhenWindowLosesFocus();
     ((GraphicsDriver&)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(false);
 
     if (!fellowEmulationStart())
     {
       MessageBox(nullptr, "Emulation debug session failed to start", "Startup Error", 0);
       fellowEmulationStop();
-      ((GraphicsDriver &)Driver->Graphics) .SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
+      ((GraphicsDriver*)Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
       return;
     }
 

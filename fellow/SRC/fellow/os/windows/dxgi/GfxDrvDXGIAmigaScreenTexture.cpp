@@ -16,7 +16,7 @@ GfxDrvDXGIMapResult GfxDrvDXGIAmigaScreenTexture::MapAmigaScreen()
     return GfxDrvDXGIMapResult{.Buffer = nullptr, .Pitch = 0};
   }
 
-  return GfxDrvDXGIMapResult{.Buffer = (unsigned char *)mappedRect.pData, .Pitch = mappedRect.RowPitch};
+  return GfxDrvDXGIMapResult{.Buffer = (unsigned char *)mappedRect.pData, .Pitch = (ptrdiff_t)mappedRect.RowPitch};
 }
 
 void GfxDrvDXGIAmigaScreenTexture::UnmapAmigaScreen()

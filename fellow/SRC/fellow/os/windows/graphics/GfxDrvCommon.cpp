@@ -183,10 +183,16 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 
 #define WM_DIACQUIRE (WM_USER + 0)
 
-//LRESULT FAR PASCAL EmulationWindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
-//{
-//  return gfxDrvCommon->EmulationWindowProcedure(hWnd, message, wParam, lParam);
-//}
+LRESULT CALLBACK GfxDrvCommon::EmulationWindowProcedureStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+  if (message == WM_INITDIALOG)
+  {
+    SetWindowLongPtr(hWnd, DWLP_USER, lParam);
+  }
+
+  GfxDrvCommon *pThis = (GfxDrvCommon *)GetWindowLongPtr(hWnd, DWLP_USER);
+  return pThis ? pThis->EmulationWindowProcedure(hWnd, message, wParam, lParam) : FALSE;
+}
 
 /***********************************************************************/
 /**
@@ -399,7 +405,7 @@ bool GfxDrvCommon::InitializeWindowClass()
 
   wc1.cbSize = sizeof(wc1);
   wc1.style = CS_HREDRAW | CS_VREDRAW;
-  wc1.lpfnWndProc = WindowProcWrapper<&GfxDrvCommon::EmulationWindowProcedure>();
+  wc1.lpfnWndProc = &GfxDrvCommon::EmulationWindowProcedureStatic;
   wc1.cbClsExtra = 0;
   wc1.cbWndExtra = 0;
   wc1.hInstance = win_drv_hInstance;

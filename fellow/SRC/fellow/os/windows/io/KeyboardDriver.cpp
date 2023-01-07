@@ -940,7 +940,7 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
     Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
-    _kbd_in_task_switcher = ((GraphicsDriver&)Driver->Graphics).IsHostBufferWindowed();
+    _kbd_in_task_switcher = ((GraphicsDriver*)Driver->Graphics)->IsHostBufferWindowed();
 
     // Don't pass this TAB press along to emulation, pass left-ALT release instead
     keycode = map(PCK_LEFT_ALT);
