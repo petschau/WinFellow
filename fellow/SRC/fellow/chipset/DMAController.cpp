@@ -18,7 +18,6 @@ DebugLogSource DMAController::MapDMAChannelTypeToDebugLogSource(DMAChannelType t
     case DMAChannelType::BitplaneChannel: return DebugLogSource::CHIP_BUS_BITPLANE_DMA;
     case DMAChannelType::CopperChannel: return DebugLogSource::CHIP_BUS_COPPER_DMA;
     case DMAChannelType::SpriteChannel: return DebugLogSource::CHIP_BUS_SPRITE_DMA;
-    default: F_ASSERT(false);
   }
 }
 
@@ -29,7 +28,6 @@ DebugLogChipBusMode DMAController::MapDMAChannelModeToDebugLogChipBusMode(DMACha
     case DMAChannelMode::ReadMode: return DebugLogChipBusMode::Read;
     case DMAChannelMode::WriteMode: return DebugLogChipBusMode::Write;
     case DMAChannelMode::NullMode: return DebugLogChipBusMode::Null;
-    default: F_ASSERT(false);
   }
 }
 

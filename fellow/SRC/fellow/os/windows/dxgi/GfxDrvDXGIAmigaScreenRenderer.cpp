@@ -2,8 +2,8 @@
 #include "GfxDrvDXGIErrorLogger.h"
 #include "GfxDrvDXGIUtils.h"
 
-#include "VertexShader.h"
-#include "PixelShader.h"
+#include "fellow/os/windows/dxgi/VertexShader.h"
+#include "fellow/os/windows/dxgi/PixelShader.h"
 
 #include <DirectXMath.h>
 using namespace DirectX;

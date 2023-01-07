@@ -114,7 +114,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -135,7 +135,8 @@
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+      <BasicRuntimeChecks>
+      </BasicRuntimeChecks>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -143,7 +144,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;dwrite.lib;D2d1.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -188,7 +188,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -209,6 +209,7 @@
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <MinimalRebuild>false</MinimalRebuild>
+      <BasicRuntimeChecks />
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -255,7 +256,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../..;../../fellow/os/windows;../../../lib/win32/msvc/DirectXMath;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;.;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../fellow/os/windows;../../../../lib/win32/msvc/DirectXMath;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -275,6 +276,7 @@
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
+      <BasicRuntimeChecks />
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -317,7 +319,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../include/msvc;../../include;../include;../../uae/include;../DXGI;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -340,7 +342,7 @@
       <CallingConvention>FastCall</CallingConvention>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>UninitializedLocalUsageCheck</BasicRuntimeChecks>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <StringPooling>true</StringPooling>
     </ClCompile>
     <ResourceCompile>
@@ -349,7 +351,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;dwrite.lib;D2d1.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -363,7 +364,8 @@
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
       <ImageHasSafeExceptionHandlers>true</ImageHasSafeExceptionHandlers>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
       <Profile>false</Profile>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
@@ -390,9 +392,9 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../../uae/include;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../../../uae/include;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -423,7 +425,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;dwrite.lib;D2d1.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\$(Platform)\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/ddraw/x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -434,7 +435,8 @@
       <TargetMachine>MachineX64</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
       <Profile>false</Profile>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
@@ -460,15 +462,14 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../lib/win32/msvc/DirectXMath;../../fellow/os/windows;../include/msvc;../../include;../include;../../uae/include;../../fellow/libs/xdms/src;../../fellow/libs/zlib/src;../CAPS/include;../../IPF;.;../DXGI;../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../DXGI;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
-      <AssemblerOutput>
-      </AssemblerOutput>
+      <AssemblerOutput>NoListing</AssemblerOutput>
       <BrowseInformation>false</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -484,6 +485,7 @@
       <AdditionalOptions>/Zc:strictStrings- %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <StringPooling>true</StringPooling>
+      <CallingConvention>FastCall</CallingConvention>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -491,7 +493,6 @@
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>shlwapi.lib;odbc32.lib;odbccp32.lib;ddraw.lib;winmm.lib;dinput8.lib;dxgi.lib;d3d11.lib;dwrite.lib;D2d1.lib;comctl32.lib;dsound.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>.\$(Platform)\$(Configuration)\WinFellow.exe</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
@@ -501,7 +502,8 @@
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <LinkTimeCodeGeneration>
+      </LinkTimeCodeGeneration>
       <Profile>false</Profile>
       <ShowProgress>NotSet</ShowProgress>
     </Link>
@@ -517,152 +519,152 @@
     </Manifest>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\fellow\api\Drivers.cpp" />
-    <ClCompile Include="..\..\fellow\api\drivers\IniValues.cpp" />
-    <ClCompile Include="..\..\fellow\api\Services.cpp" />
-    <ClCompile Include="..\..\fellow\application\DisplayMode.cpp" />
-    <ClCompile Include="..\..\fellow\application\Fellow.cpp" />
-    <ClCompile Include="..\..\fellow\application\FellowFilesys.cpp" />
-    <ClCompile Include="..\..\fellow\application\HostRenderConfiguration.cpp" />
-    <ClCompile Include="..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
-    <ClCompile Include="..\..\fellow\application\HostRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\application\HostRenderStatistics.cpp" />
-    <ClCompile Include="..\..\fellow\application\Interrupt.cpp" />
-    <ClCompile Include="..\..\fellow\application\ListTree.cpp" />
-    <ClCompile Include="..\..\fellow\application\modrip.cpp" />
-    <ClCompile Include="..\..\fellow\automation\Automator.cpp" />
-    <ClCompile Include="..\..\fellow\automation\Script.cpp" />
-    <ClCompile Include="..\..\fellow\automation\ScriptLine.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\BitplaneDMA.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Blitter.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Cia.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\CopperCommon.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\draw_interlace_control.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\draw_pixelrenderers.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Floppy.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Gameport.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Graphics.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\HostFrameCopier.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\BitplaneRegisters.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\CopperRegisters.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\DMAController.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\ChipsetInfo.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\CycleExactCopper.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\CycleExactSprites.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\DDFStateMachine.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\DIWXStateMachine.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\DIWYStateMachine.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\BitplaneShifter.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\DualPlayfieldMapper.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\HostFrame.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\HostFrameDelayedRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\HostFrameImmediateRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Keyboard.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\LineExactCopper.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\LineExactSprites.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Planar2ChunkyDecoder.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\rtc.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\RtcOkiMsm6242rs.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Sound.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Sprite.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\SpriteDMA.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\SpriteMerger.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\SpriteP2CDecoder.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\SpriteRegisters.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\uart.cpp" />
-    <ClCompile Include="..\..\fellow\chipset\Wav.cpp" />
-    <ClCompile Include="..\..\fellow\configuration\Configuration.cpp" />
-    <ClCompile Include="..\..\fellow\configuration\HostRenderConfigurationMapper.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuIntegration.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Disassembler.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_EffectiveAddress.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Exceptions.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Flags.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Instructions.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_InternalState.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Interrupts.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_Logging.cpp" />
-    <ClCompile Include="..\..\fellow\cpu\CpuModule_StackFrameGen.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\CPURegisterCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\CPUStepCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\LogCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\DisassembleCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\MemoryCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\commands\MemoryMapCommand.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\ChipsetRegisterHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\ConsoleDebugger.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\CPURegisterHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\CPUStepHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\CPUWriterUtils.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\DebugWriter.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\LogHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\DisassembleHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\HelpHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\MemoryMapHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\MemoryHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\console\ParameterUtils.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\BitplaneShifterLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\ChipBusLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\DebugLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\DebugLogHandler.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\DiagnosticFeatures.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\DIWXLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\DIWYLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\EventQueueLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\debug\log\LineChangeLogEntry.cpp" />
-    <ClCompile Include="..\..\fellow\hud\HudPropertyProvider.cpp" />
-    <ClCompile Include="..\..\fellow\libs\xdms\src\crc_csum.c">
+    <ClCompile Include="..\..\..\fellow\api\Drivers.cpp" />
+    <ClCompile Include="..\..\..\fellow\api\drivers\IniValues.cpp" />
+    <ClCompile Include="..\..\..\fellow\api\Services.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\DisplayMode.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\Fellow.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\FellowFilesys.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\HostRenderConfiguration.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\HostRenderRuntimeSettings.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\HostRenderer.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\HostRenderStatistics.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\Interrupt.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\ListTree.cpp" />
+    <ClCompile Include="..\..\..\fellow\application\modrip.cpp" />
+    <ClCompile Include="..\..\..\fellow\automation\Automator.cpp" />
+    <ClCompile Include="..\..\..\fellow\automation\Script.cpp" />
+    <ClCompile Include="..\..\..\fellow\automation\ScriptLine.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\BitplaneDMA.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\BitplaneDMAFetchPrograms.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Blitter.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Cia.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\CopperCommon.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\draw_interlace_control.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\draw_pixelrenderers.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Floppy.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Gameport.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Graphics.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\HostFrameCopier.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\BitplaneRegisters.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\CopperRegisters.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\DMAController.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\ChipsetInfo.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\CycleExactCopper.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\CycleExactSprites.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\DDFStateMachine.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\DIWXStateMachine.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\DIWYStateMachine.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\BitplaneShifter.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\DualPlayfieldMapper.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\HostFrame.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\HostFrameDelayedRenderer.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\HostFrameImmediateRenderer.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Keyboard.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\LineExactCopper.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\LineExactSprites.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Planar2ChunkyDecoder.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\rtc.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\RtcOkiMsm6242rs.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Sound.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Sprite.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\SpriteDMA.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\SpriteMerger.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\SpriteP2CDecoder.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\SpriteRegisters.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\uart.cpp" />
+    <ClCompile Include="..\..\..\fellow\chipset\Wav.cpp" />
+    <ClCompile Include="..\..\..\fellow\configuration\Configuration.cpp" />
+    <ClCompile Include="..\..\..\fellow\configuration\HostRenderConfigurationMapper.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuIntegration.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Disassembler.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_EffectiveAddress.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Exceptions.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Flags.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Instructions.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_InternalState.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Interrupts.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_Logging.cpp" />
+    <ClCompile Include="..\..\..\fellow\cpu\CpuModule_StackFrameGen.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\ChipsetRegisterCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\CPURegisterCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\CPUStepCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\LogCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\DisassembleCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\MemoryCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\commands\MemoryMapCommand.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\ChipsetRegisterHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\ConsoleDebugger.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\CPURegisterHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\CPUStepHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\CPUWriterUtils.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\DebugWriter.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\LogHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\DisassembleHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\HelpHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\MemoryMapHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\MemoryHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\console\ParameterUtils.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\BitplaneShifterLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\ChipBusLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\DebugLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\DebugLogHandler.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\DiagnosticFeatures.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\DIWXLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\DIWYLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\EventQueueLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\debug\log\LineChangeLogEntry.cpp" />
+    <ClCompile Include="..\..\..\fellow\hud\HudPropertyProvider.cpp" />
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\crc_csum.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\getbits.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\getbits.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\maketbl.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\maketbl.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\pfile.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\pfile.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\tables.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\tables.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_deep.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_deep.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_heavy.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_heavy.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_init.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_init.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_medium.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_medium.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_quick.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_quick.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\src\u_rle.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_rle.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\xdms\xdmswrap.c">
+    <ClCompile Include="..\..\..\fellow\libs\xdms\xdmswrap.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\adler32.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\adler32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
@@ -670,7 +672,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\compress.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\compress.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
@@ -678,7 +680,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\crc32.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\crc32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -686,7 +688,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\deflate.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\deflate.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -694,7 +696,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzclose.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\gzclose.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -702,7 +704,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzlib.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\gzlib.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -710,7 +712,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzread.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\gzread.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -718,7 +720,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\gzwrite.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\gzwrite.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -726,7 +728,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\infback.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\infback.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -734,7 +736,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inffast.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\inffast.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -742,7 +744,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inflate.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\inflate.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -750,7 +752,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\inftrees.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\inftrees.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -758,7 +760,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\trees.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\trees.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -766,7 +768,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\uncompr.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\uncompr.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -774,7 +776,7 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\src\zutil.c">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\src\zutil.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -782,460 +784,468 @@
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\libs\zlib\zlibwrap.cpp" />
-    <ClCompile Include="..\..\fellow\memory\Memory.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\application\DriversFactory.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\application\sysinfo.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\application\WindowsMain.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\caps\caps.c" />
-    <ClCompile Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGI.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\graphics\GraphicsDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\gui\modrip_win32.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\gui\WDbg.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\gui\GuiDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\ini\IniDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\FileopsWin32.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\FSWrapStat.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\FilesystemAutomount.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\JoystickDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\KeyboardDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\Keyparser.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\io\MouseDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c" />
-    <ClCompile Include="..\..\fellow\os\windows\sound\SoundDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\timer\TimerDriver.cpp" />
-    <ClCompile Include="..\..\fellow\os\windows\uae\AUTOCONF.C">
+    <ClCompile Include="..\..\..\fellow\libs\zlib\zlibwrap.cpp" />
+    <ClCompile Include="..\..\..\fellow\memory\Memory.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\application\DriversFactory.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\application\sysinfo.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\application\WindowsMain.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\caps\caps.c" />
+    <ClCompile Include="..\..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\directdraw\DirectDrawDevice.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGI.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\graphics\GfxDrvCommon.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\graphics\GraphicsDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\gui\commoncontrol_wrap.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\gui\modrip_win32.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\gui\WDbg.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\gui\GuiDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\ini\IniDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\FileopsWin32.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\FSWrapStat.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\FilesystemAutomount.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\JoystickDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\KeyboardDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\Keyparser.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\io\MouseDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatform.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c" />
+    <ClCompile Include="..\..\..\fellow\os\windows\sound\SoundDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\timer\PerformanceCounterWin32.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\timer\TimerDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\AUTOCONF.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\EXPANSIO.C">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\EXPANSIO.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\FILESYS.C">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\FILESYS.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\filesys_win32.c">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\filesys_win32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\fsdb.c">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\fsdb.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\fsdb_win32.c">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\fsdb_win32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\FSUSAGE.C">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\FSUSAGE.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\HARDFILE.C">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\HARDFILE.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\os\windows\uae\UAESUPP.C">
+    <ClCompile Include="..\..\..\fellow\os\windows\uae\UAESUPP.C">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsCpp</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsCpp</CompileAs>
     </ClCompile>
-    <ClCompile Include="..\..\fellow\scheduler\Scheduler.cpp" />
-    <ClCompile Include="..\..\fellow\scheduler\SchedulerEvent.cpp" />
-    <ClCompile Include="..\..\fellow\scheduler\SchedulerQueue.cpp" />
-    <ClCompile Include="..\..\fellow\service\FSWrapper.cpp" />
-    <ClCompile Include="..\..\fellow\service\HUD.cpp" />
-    <ClCompile Include="..\..\fellow\service\Log.cpp" />
-    <ClCompile Include="..\..\fellow\service\RetroPlatformWrapper.cpp" />
-    <ClCompile Include="..\..\fellow\service\CoreServicesFactory.cpp" />
-    <ClCompile Include="..\..\fellow\time\Timestamps.cpp" />
-    <ClCompile Include="..\..\fellow\vm\Chipset.cpp" />
-    <ClCompile Include="..\..\fellow\vm\Clocks.cpp" />
-    <ClCompile Include="..\..\fellow\vm\Copper.cpp" />
-    <ClCompile Include="..\..\fellow\vm\Display.cpp" />
-    <ClCompile Include="..\..\fellow\vm\EventLog.cpp" />
-    <ClCompile Include="..\..\fellow\vm\M68K.cpp" />
-    <ClCompile Include="..\..\fellow\vm\MemorySystem.cpp" />
-    <ClCompile Include="..\..\fellow\vm\VM.cpp" />
-    <ClCompile Include="..\..\IPF\CapsPlug.cpp" />
-    <ClCompile Include="..\..\test\fellow\chipset\BitplaneRegistersTest.cpp" />
-    <ClCompile Include="..\..\test\fellow\chipset\BitplaneUtilityTest.cpp" />
-    <ClCompile Include="..\..\test\fellow\chipset\DIWYStateMachineTest.cpp" />
-    <ClCompile Include="..\..\test\fellow\chipset\HostColorMapTest.cpp" />
+    <ClCompile Include="..\..\..\fellow\scheduler\Scheduler.cpp" />
+    <ClCompile Include="..\..\..\fellow\scheduler\SchedulerEvent.cpp" />
+    <ClCompile Include="..\..\..\fellow\scheduler\SchedulerQueue.cpp" />
+    <ClCompile Include="..\..\..\fellow\service\FSWrapper.cpp" />
+    <ClCompile Include="..\..\..\fellow\service\HUD.cpp" />
+    <ClCompile Include="..\..\..\fellow\service\Log.cpp" />
+    <ClCompile Include="..\..\..\fellow\service\RetroPlatformWrapper.cpp" />
+    <ClCompile Include="..\..\..\fellow\service\CoreServicesFactory.cpp" />
+    <ClCompile Include="..\..\..\fellow\time\Timestamps.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\Chipset.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\Clocks.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\Copper.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\Display.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\EventLog.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\M68K.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\MemorySystem.cpp" />
+    <ClCompile Include="..\..\..\fellow\vm\VM.cpp" />
+    <ClCompile Include="..\..\..\IPF\CapsPlug.cpp" />
+    <ClCompile Include="..\..\..\test\fellow\chipset\BitplaneRegistersTest.cpp" />
+    <ClCompile Include="..\..\..\test\fellow\chipset\BitplaneUtilityTest.cpp" />
+    <ClCompile Include="..\..\..\test\fellow\chipset\DIWYStateMachineTest.cpp" />
+    <ClCompile Include="..\..\..\test\fellow\chipset\HostColorMapTest.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\fellow\api\configuration\HudConfiguration.h" />
-    <ClInclude Include="..\..\fellow\api\defs.h" />
-    <ClInclude Include="..\..\fellow\api\Drivers.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvColorBitsInformation.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\GfxDrvMappedBufferPointer.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IGraphicsDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IGuiDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IIniDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IJoystickDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IKeyboardDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IModRipGuiDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IMouseDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\IniValues.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\ISoundDriver.h" />
-    <ClInclude Include="..\..\fellow\api\drivers\ITimerDriver.h" />
-    <ClInclude Include="..\..\fellow\api\modules\IHardfileHandler.h" />
-    <ClInclude Include="..\..\fellow\api\Services.h" />
-    <ClInclude Include="..\..\fellow\api\service\IFileops.h" />
-    <ClInclude Include="..\..\fellow\api\service\IFSWrapper.h" />
-    <ClInclude Include="..\..\fellow\api\service\IHUD.h" />
-    <ClInclude Include="..\..\fellow\api\service\ILog.h" />
-    <ClInclude Include="..\..\fellow\api\service\IPerformanceCounter.h" />
-    <ClInclude Include="..\..\fellow\api\service\IRetroPlatform.h" />
-    <ClInclude Include="..\..\fellow\api\VM.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IChipset.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IClocks.h" />
-    <ClInclude Include="..\..\fellow\api\vm\ICopper.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IDisplay.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IEventLog.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IM68K.h" />
-    <ClInclude Include="..\..\fellow\api\vm\IMemorySystem.h" />
-    <ClInclude Include="..\..\fellow\api\vm\MemorySystemTypes.h" />
-    <ClInclude Include="..\..\fellow\application\DisplayMode.h" />
-    <ClInclude Include="..\..\fellow\application\DrawDimensionTypes.h" />
-    <ClInclude Include="..\..\fellow\application\Fellow.h" />
-    <ClInclude Include="..\..\fellow\application\FellowFilesys.h" />
-    <ClInclude Include="..\..\fellow\application\Gameport.h" />
-    <ClInclude Include="..\..\fellow\application\HostRenderConfiguration.h" />
-    <ClInclude Include="..\..\fellow\application\HostRenderer.h" />
-    <ClInclude Include="..\..\fellow\application\HostRenderRuntimeSettings.h" />
-    <ClInclude Include="..\..\fellow\application\HostRenderStatistics.h" />
-    <ClInclude Include="..\..\fellow\application\IFpsProvider.h" />
-    <ClInclude Include="..\..\fellow\application\Interrupt.h" />
-    <ClInclude Include="..\..\fellow\application\ListTree.h" />
-    <ClInclude Include="..\..\fellow\application\modrip.h" />
-    <ClInclude Include="..\..\fellow\automation\Automator.h" />
-    <ClInclude Include="..\..\fellow\automation\Script.h" />
-    <ClInclude Include="..\..\fellow\automation\ScriptLine.h" />
-    <ClInclude Include="..\..\fellow\chipset\BitplaneDMA.h" />
-    <ClInclude Include="..\..\fellow\chipset\BitplaneDMAFetchPrograms.h" />
-    <ClInclude Include="..\..\fellow\chipset\Blitter.h" />
-    <ClInclude Include="..\..\fellow\chipset\ChipsetBufferRuntimeSettings.h" />
-    <ClInclude Include="..\..\fellow\chipset\Cia.h" />
-    <ClInclude Include="..\..\fellow\chipset\CopperCommon.h" />
-    <ClInclude Include="..\..\fellow\chipset\draw_interlace_control.h" />
-    <ClInclude Include="..\..\fellow\chipset\draw_pixelrenderers.h" />
-    <ClInclude Include="..\..\fellow\chipset\EventId.h" />
-    <ClInclude Include="..\..\fellow\chipset\Floppy.h" />
-    <ClInclude Include="..\..\fellow\chipset\Graphics.h" />
-    <ClInclude Include="..\..\fellow\chipset\HostFrameCopier.h" />
-    <ClInclude Include="..\..\fellow\chipset\BitplaneRegisters.h" />
-    <ClInclude Include="..\..\fellow\chipset\BitplaneUtility.h" />
-    <ClInclude Include="..\..\fellow\chipset\ChipsetCallbacks.h" />
-    <ClInclude Include="..\..\fellow\chipset\HostFrame.h" />
-    <ClInclude Include="..\..\fellow\chipset\HostFrameDelayedRenderer.h" />
-    <ClInclude Include="..\..\fellow\chipset\HostFrameImmediateRenderer.h" />
-    <ClInclude Include="..\..\fellow\chipset\CopperRegisters.h" />
-    <ClInclude Include="..\..\fellow\chipset\CopperUtility.h" />
-    <ClInclude Include="..\..\fellow\chipset\DMAController.h" />
-    <ClInclude Include="..\..\fellow\chipset\ChipsetInfo.h" />
-    <ClInclude Include="..\..\fellow\chipset\CycleExactCopper.h" />
-    <ClInclude Include="..\..\fellow\chipset\CycleExactSprites.h" />
-    <ClInclude Include="..\..\fellow\chipset\DDFStateMachine.h" />
-    <ClInclude Include="..\..\fellow\chipset\DIWXStateMachine.h" />
-    <ClInclude Include="..\..\fellow\chipset\DIWYStateMachine.h" />
-    <ClInclude Include="..\..\fellow\chipset\BitplaneShifter.h" />
-    <ClInclude Include="..\..\fellow\chipset\DualPlayfieldMapper.h" />
-    <ClInclude Include="..\..\fellow\chipset\Keyboard.h" />
-    <ClInclude Include="..\..\fellow\chipset\Keycodes.h" />
-    <ClInclude Include="..\..\fellow\chipset\LineExactCopper.h" />
-    <ClInclude Include="..\..\fellow\chipset\LineExactSprites.h" />
-    <ClInclude Include="..\..\fellow\chipset\MappedChipsetFramebuffer.h" />
-    <ClInclude Include="..\..\fellow\chipset\Planar2ChunkyDecoder.h" />
-    <ClInclude Include="..\..\fellow\chipset\rtc.h" />
-    <ClInclude Include="..\..\fellow\chipset\RtcOkiMsm6242rs.h" />
-    <ClInclude Include="..\..\fellow\chipset\Sound.h" />
-    <ClInclude Include="..\..\fellow\chipset\Sprite.h" />
-    <ClInclude Include="..\..\fellow\chipset\SpriteDMA.h" />
-    <ClInclude Include="..\..\fellow\chipset\SpriteMerger.h" />
-    <ClInclude Include="..\..\fellow\chipset\SpriteP2CDecoder.h" />
-    <ClInclude Include="..\..\fellow\chipset\SpriteRegisters.h" />
-    <ClInclude Include="..\..\fellow\chipset\uart.h" />
-    <ClInclude Include="..\..\fellow\chipset\Wav.h" />
-    <ClInclude Include="..\..\fellow\configuration\Configuration.h" />
-    <ClInclude Include="..\..\fellow\configuration\HostRenderConfigurationMapper.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuIntegration.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Code.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Data.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Decl.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Disassembler.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_DisassemblerFunc.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Internal.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Memory.h" />
-    <ClInclude Include="..\..\fellow\cpu\CpuModule_Profile.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\ChipsetRegisterCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\CPURegisterCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\CPUStepCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\DebuggerCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\LogCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\DisassembleCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\MemoryCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\commands\MemoryMapCommand.h" />
-    <ClInclude Include="..\..\fellow\debug\console\ChipsetRegisterHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\ConsoleCommandHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\ConsoleDebugger.h" />
-    <ClInclude Include="..\..\fellow\debug\console\CPURegisterHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\CPUStepHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\CPUWriterUtils.h" />
-    <ClInclude Include="..\..\fellow\debug\console\DebugWriter.h" />
-    <ClInclude Include="..\..\fellow\debug\console\LogHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\DisassembleHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\HelpHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\MemoryMapHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\MemoryHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\console\ParameterUtils.h" />
-    <ClInclude Include="..\..\fellow\debug\log\BitplaneShifterLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\ChipBusLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\DebugLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\DebugLogHandler.h" />
-    <ClInclude Include="..\..\fellow\debug\log\DIWXLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\DIWYLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\EventQueueLogEntry.h" />
-    <ClInclude Include="..\..\fellow\debug\log\LineChangeLogEntry.h" />
-    <ClInclude Include="..\..\fellow\hud\HudPropertyProvider.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\cdata.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\crc_csum.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\getbits.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\maketbl.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\pfile.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\tables.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_deep.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_heavy.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_init.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_medium.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_quick.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\u_rle.h" />
-    <ClInclude Include="..\..\fellow\libs\xdms\src\xdms.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\crc32.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\deflate.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\gzguts.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\inffast.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\inffixed.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\inflate.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\inftrees.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\trees.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\zconf.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\zlib.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\src\zutil.h" />
-    <ClInclude Include="..\..\fellow\libs\zlib\zlibwrap.h" />
-    <ClInclude Include="..\..\fellow\memory\Memory.h" />
-    <ClInclude Include="..\..\fellow\os\windows\application\DriversFactory.h" />
-    <ClInclude Include="..\..\fellow\os\windows\application\OSServicesFactory.h" />
-    <ClInclude Include="..\..\fellow\os\windows\application\sysinfo.h" />
-    <ClInclude Include="..\..\fellow\os\windows\application\versioninfo-wcrev.h" />
-    <ClInclude Include="..\..\fellow\os\windows\application\WindowsDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\caps\caps.h" />
-    <ClInclude Include="..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h" />
-    <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawDevice.h" />
-    <ClInclude Include="..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.h" />
-    <ClInclude Include="..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.h" />
-    <ClInclude Include="..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGI.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvDXGIUtils.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\PixelShader.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxgi\VertexShader.h" />
-    <ClInclude Include="..\..\fellow\os\windows\dxver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvCommon.h" />
-    <ClInclude Include="..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h" />
-    <ClInclude Include="..\..\fellow\os\windows\graphics\GraphicsDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\commoncontrol_wrap.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDrawmode.h\Header.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\GuiDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\GuiPresets.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\gui_general.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\GUI_versioninfo.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\modrip_win32.h" />
-    <ClInclude Include="..\..\fellow\os\windows\gui\WDbg.h" />
-    <ClInclude Include="..\..\fellow\os\windows\ini\IniDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\FileopsWin32.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\FSWrapStat.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\JoystickDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\KeyboardDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\Keyparser.h" />
-    <ClInclude Include="..\..\fellow\os\windows\io\MouseDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\portable.h" />
-    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatform.h" />
-    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h" />
-    <ClInclude Include="..\..\fellow\os\windows\retroplatform\RetroPlatformIPC.h" />
-    <ClInclude Include="..\..\fellow\os\windows\sound\SoundDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\timer\PerformanceCounterWin32.h" />
-    <ClInclude Include="..\..\fellow\os\windows\timer\TimerDriver.h" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\AUTOCONF.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\EXECLIB.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\FILESYS.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\filesys_win32.h" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\fsdb.h" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\FSUSAGE.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\PENGUIN.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\POSIXEMU.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\UAE2FELL.H" />
-    <ClInclude Include="..\..\fellow\os\windows\uae\UAEFSYS.H" />
-    <ClInclude Include="..\..\fellow\scheduler\Scheduler.h" />
-    <ClInclude Include="..\..\fellow\scheduler\SchedulerEvent.h" />
-    <ClInclude Include="..\..\fellow\scheduler\SchedulerQueue.h" />
-    <ClInclude Include="..\..\fellow\service\CoreServicesFactory.h" />
-    <ClInclude Include="..\..\fellow\service\FSWrapper.h" />
-    <ClInclude Include="..\..\fellow\service\HUD.h" />
-    <ClInclude Include="..\..\fellow\service\Log.h" />
-    <ClInclude Include="..\..\fellow\service\RetroPlatformWrapper.h" />
-    <ClInclude Include="..\..\fellow\time\Timestamps.h" />
-    <ClInclude Include="..\..\fellow\vm\Chipset.h" />
-    <ClInclude Include="..\..\fellow\vm\Clocks.h" />
-    <ClInclude Include="..\..\fellow\vm\Copper.h" />
-    <ClInclude Include="..\..\fellow\vm\Display.h" />
-    <ClInclude Include="..\..\fellow\vm\EventLog.h" />
-    <ClInclude Include="..\..\fellow\vm\M68K.h" />
-    <ClInclude Include="..\..\fellow\vm\MemorySystem.h" />
-    <ClInclude Include="..\..\IPF\CapsAPI.h" />
-    <ClInclude Include="..\..\IPF\CapsPlug.h" />
-    <ClInclude Include="..\..\IPF\Comtype.h" />
-    <ClInclude Include="..\..\test\catch\catch.hpp" />
-    <ClInclude Include="..\..\test\catch\catch_discover.hpp" />
-    <ClInclude Include="..\..\test\catch\CustomCatchMain.h" />
+    <ClInclude Include="..\..\..\fellow\api\configuration\HudConfiguration.h" />
+    <ClInclude Include="..\..\..\fellow\api\defs.h" />
+    <ClInclude Include="..\..\..\fellow\api\Drivers.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\GfxDrvColorBitsInformation.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\GfxDrvMappedBufferPointer.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IGraphicsDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IGuiDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IIniDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IJoystickDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IKeyboardDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IModRipGuiDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IMouseDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\IniValues.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\ISoundDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\drivers\ITimerDriver.h" />
+    <ClInclude Include="..\..\..\fellow\api\modules\IHardfileHandler.h" />
+    <ClInclude Include="..\..\..\fellow\api\Services.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\IFileops.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\IFSWrapper.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\IHUD.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\ILog.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\IPerformanceCounter.h" />
+    <ClInclude Include="..\..\..\fellow\api\service\IRetroPlatform.h" />
+    <ClInclude Include="..\..\..\fellow\api\VM.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IChipset.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IClocks.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\ICopper.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IDisplay.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IEventLog.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IM68K.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\IMemorySystem.h" />
+    <ClInclude Include="..\..\..\fellow\api\vm\MemorySystemTypes.h" />
+    <ClInclude Include="..\..\..\fellow\application\DisplayMode.h" />
+    <ClInclude Include="..\..\..\fellow\application\DrawDimensionTypes.h" />
+    <ClInclude Include="..\..\..\fellow\application\Fellow.h" />
+    <ClInclude Include="..\..\..\fellow\application\FellowFilesys.h" />
+    <ClInclude Include="..\..\..\fellow\application\Gameport.h" />
+    <ClInclude Include="..\..\..\fellow\application\HostRenderConfiguration.h" />
+    <ClInclude Include="..\..\..\fellow\application\HostRenderer.h" />
+    <ClInclude Include="..\..\..\fellow\application\HostRenderRuntimeSettings.h" />
+    <ClInclude Include="..\..\..\fellow\application\HostRenderStatistics.h" />
+    <ClInclude Include="..\..\..\fellow\application\IFpsProvider.h" />
+    <ClInclude Include="..\..\..\fellow\application\Interrupt.h" />
+    <ClInclude Include="..\..\..\fellow\application\ListTree.h" />
+    <ClInclude Include="..\..\..\fellow\application\modrip.h" />
+    <ClInclude Include="..\..\..\fellow\automation\Automator.h" />
+    <ClInclude Include="..\..\..\fellow\automation\Script.h" />
+    <ClInclude Include="..\..\..\fellow\automation\ScriptLine.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\BitplaneDMA.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\BitplaneDMAFetchPrograms.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Blitter.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\ChipsetBufferRuntimeSettings.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Cia.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\CopperCommon.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\draw_interlace_control.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\draw_pixelrenderers.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\EventId.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Floppy.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Graphics.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\HostFrameCopier.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\BitplaneRegisters.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\BitplaneUtility.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\ChipsetCallbacks.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\HostFrame.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\HostFrameDelayedRenderer.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\HostFrameImmediateRenderer.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\CopperRegisters.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\CopperUtility.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\DMAController.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\ChipsetInfo.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\CycleExactCopper.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\CycleExactSprites.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\DDFStateMachine.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\DIWXStateMachine.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\DIWYStateMachine.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\BitplaneShifter.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\DualPlayfieldMapper.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Keyboard.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Keycodes.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\LineExactCopper.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\LineExactSprites.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\MappedChipsetFramebuffer.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Planar2ChunkyDecoder.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\rtc.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\RtcOkiMsm6242rs.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Sound.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Sprite.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\SpriteDMA.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\SpriteMerger.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\SpriteP2CDecoder.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\SpriteRegisters.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\uart.h" />
+    <ClInclude Include="..\..\..\fellow\chipset\Wav.h" />
+    <ClInclude Include="..\..\..\fellow\configuration\Configuration.h" />
+    <ClInclude Include="..\..\..\fellow\configuration\HostRenderConfigurationMapper.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuIntegration.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Code.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Data.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Decl.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Disassembler.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_DisassemblerFunc.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Internal.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Memory.h" />
+    <ClInclude Include="..\..\..\fellow\cpu\CpuModule_Profile.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\ChipsetRegisterCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\CPURegisterCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\CPUStepCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\DebuggerCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\LogCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\DisassembleCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\MemoryCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\commands\MemoryMapCommand.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\ChipsetRegisterHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\ConsoleCommandHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\ConsoleDebugger.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\CPURegisterHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\CPUStepHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\CPUWriterUtils.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\DebugWriter.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\LogHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\DisassembleHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\HelpHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\MemoryMapHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\MemoryHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\console\ParameterUtils.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\BitplaneShifterLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\ChipBusLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\DebugLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\DebugLogHandler.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\DIWXLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\DIWYLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\EventQueueLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\debug\log\LineChangeLogEntry.h" />
+    <ClInclude Include="..\..\..\fellow\hud\HudPropertyProvider.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\cdata.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\crc_csum.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\getbits.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\maketbl.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\pfile.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\tables.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_deep.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_heavy.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_init.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_medium.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_quick.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\u_rle.h" />
+    <ClInclude Include="..\..\..\fellow\libs\xdms\src\xdms.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\crc32.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\deflate.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\gzguts.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\inffast.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\inffixed.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\inflate.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\inftrees.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\trees.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\zconf.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\zlib.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\src\zutil.h" />
+    <ClInclude Include="..\..\..\fellow\libs\zlib\zlibwrap.h" />
+    <ClInclude Include="..\..\..\fellow\memory\Memory.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\application\DriversFactory.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\application\OSServicesFactory.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\application\sysinfo.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\application\versioninfo-wcrev.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\application\WindowsDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\caps\caps.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\directdraw\DirectDrawDevice.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\directdraw\GfxDrvDCScreenshot.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\directdraw\GfxDrvDirectDraw.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGI.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapter.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAdapterEnumerator.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenRenderer.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIAmigaScreenTexture.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIErrorLogger.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIHudD2D1_1.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIMode.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIModeEnumerator.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutput.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIOutputEnumerator.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvDXGIUtils.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\GfxDrvHudD2D1.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\PixelShader.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxgi\VertexShader.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\dxver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\graphics\GfxDrvCommon.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\graphics\GfxDrvHudLegacy.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\graphics\GraphicsDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\commoncontrol_wrap.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\GuiDrawmode.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\GuiDrawmode.h\Header.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\GuiDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\GuiPresets.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\gui_general.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\GUI_versioninfo.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\modrip_win32.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\gui\WDbg.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\ini\IniDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\FileopsWin32.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\FSWrapStat.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\JoystickDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\KeyboardDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\Keyparser.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\io\MouseDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\portable.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatform.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatformIPC.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\sound\SoundDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\timer\PerformanceCounterWin32.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\timer\TimerDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\AUTOCONF.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\EXECLIB.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\FILESYS.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\filesys_win32.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\fsdb.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\FSUSAGE.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\PENGUIN.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\POSIXEMU.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\UAE2FELL.H" />
+    <ClInclude Include="..\..\..\fellow\os\windows\uae\UAEFSYS.H" />
+    <ClInclude Include="..\..\..\fellow\scheduler\Scheduler.h" />
+    <ClInclude Include="..\..\..\fellow\scheduler\SchedulerEvent.h" />
+    <ClInclude Include="..\..\..\fellow\scheduler\SchedulerQueue.h" />
+    <ClInclude Include="..\..\..\fellow\service\CoreServicesFactory.h" />
+    <ClInclude Include="..\..\..\fellow\service\FSWrapper.h" />
+    <ClInclude Include="..\..\..\fellow\service\HUD.h" />
+    <ClInclude Include="..\..\..\fellow\service\Log.h" />
+    <ClInclude Include="..\..\..\fellow\service\RetroPlatformWrapper.h" />
+    <ClInclude Include="..\..\..\fellow\time\Timestamps.h" />
+    <ClInclude Include="..\..\..\fellow\vm\Chipset.h" />
+    <ClInclude Include="..\..\..\fellow\vm\Clocks.h" />
+    <ClInclude Include="..\..\..\fellow\vm\Copper.h" />
+    <ClInclude Include="..\..\..\fellow\vm\Display.h" />
+    <ClInclude Include="..\..\..\fellow\vm\EventLog.h" />
+    <ClInclude Include="..\..\..\fellow\vm\M68K.h" />
+    <ClInclude Include="..\..\..\fellow\vm\MemorySystem.h" />
+    <ClInclude Include="..\..\..\IPF\CapsAPI.h" />
+    <ClInclude Include="..\..\..\IPF\CapsPlug.h" />
+    <ClInclude Include="..\..\..\IPF\Comtype.h" />
+    <ClInclude Include="..\..\..\test\catch\catch.hpp" />
+    <ClInclude Include="..\..\..\test\catch\catch_discover.hpp" />
+    <ClInclude Include="..\..\..\test\catch\CustomCatchMain.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\fellow\libs\zlib\README" />
-    <None Include="..\..\fellow\os\windows\scripts\CompileReleaseBuild.ps1" />
-    <None Include="..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1" />
-    <None Include="..\..\fellow\os\windows\scripts\GitWCRev.ps1" />
-    <None Include="..\..\fellow\os\windows\scripts\Microsoft.PowerShell_profile-GitHub.ps1" />
-    <None Include="..\..\fellow\os\windows\scripts\PowerShellExecutionPolicyUnrestricted.reg" />
-    <None Include="..\..\fellow\os\windows\scripts\PreparePowerShellEnvironment-GitHub.cmd" />
-    <None Include="..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.ps1" />
+    <None Include="..\..\..\fellow\libs\zlib\README" />
+    <None Include="..\..\..\fellow\os\windows\scripts\CompileReleaseBuild.ps1" />
+    <None Include="..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1" />
+    <None Include="..\..\..\fellow\os\windows\scripts\GitWCRev.ps1" />
+    <None Include="..\..\..\fellow\os\windows\scripts\Microsoft.PowerShell_profile-GitHub.ps1" />
+    <None Include="..\..\..\fellow\os\windows\scripts\PowerShellExecutionPolicyUnrestricted.reg" />
+    <None Include="..\..\..\fellow\os\windows\scripts\PreparePowerShellEnvironment-GitHub.cmd" />
+    <None Include="..\..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.ps1" />
     <None Include="WinFellow.ruleset" />
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="..\..\fellow\os\windows\dxgi\PixelShader.hlsl">
+    <FxCompile Include="..\..\..\fellow\os\windows\dxgi\PixelShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TexturePixelShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pixel_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TexturePixelShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pixel_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TexturePixelShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pixel</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pixel_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TexturePixelShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pixel</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pixel_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">TexturePixelShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Pixel</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Pixel</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">TexturePixelShader</EntryPointName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">..\..\..\fellow\os\windows\dxgi\PixelShader.h</HeaderFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">pixel_shader</VariableName>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">pixel_shader</VariableName>
     </FxCompile>
-    <FxCompile Include="..\..\fellow\os\windows\dxgi\VertexShader.hlsl">
+    <FxCompile Include="..\..\..\fellow\os\windows\dxgi\VertexShader.hlsl">
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">TextureVertexShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">vertex_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\fellow\os\windows\dxgi\VertextShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">TextureVertexShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">vertex_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\fellow\os\windows\dxgi\VertextShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">TextureVertexShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">vertex_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">TextureVertexShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">vertex_shader</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
       </ObjectFileOutput>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">TextureVertexShader</EntryPointName>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">Vertex</ShaderType>
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">TextureVertexShader</EntryPointName>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">..\..\..\fellow\os\windows\dxgi\VertexShader.h</HeaderFileOutput>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">vertex_shader</VariableName>
+      <VariableName Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">vertex_shader</VariableName>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="WinFellow.Hardfile\WinFellow.Hardfile.vcxproj">
+    <Text Include="..\..\..\fellow\libs\xdms\xdms.txt" />
+    <Text Include="..\..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.txt" />
+    <Text Include="..\..\..\fellow\os\windows\uae\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\disk_led_disabled_cool.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\disk_led_off_cool.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\disk_led_on_cool.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\power_led_off_cool.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\power_led_on_cool.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\bitmaps\winfellow_logo_small.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\arrow.bmp" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\cpu.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\dfloppy.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\display.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\filesystem.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\floppy.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\harddrives.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\sound.ico" />
+    <Image Include="..\..\..\fellow\os\windows\gui\icons\winfellow.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\fellow\os\windows\gui\GUI_general.rc" />
+    <ResourceCompile Include="..\..\..\fellow\os\windows\gui\GUI_versioninfo.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WinFellow.Hardfile\WinFellow.Hardfile.vcxproj">
       <Project>{4ab5c2b7-fa35-46be-82ca-97d5874c9333}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="..\..\fellow\libs\xdms\xdms.txt" />
-    <Text Include="..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.txt" />
-    <Text Include="..\..\fellow\os\windows\uae\readme.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_disabled_cool.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_off_cool.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\disk_led_on_cool.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\power_led_off_cool.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\power_led_on_cool.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\bitmaps\winfellow_logo_small.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\arrow.bmp" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\cpu.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\dfloppy.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\display.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\filesystem.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\floppy.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\harddrives.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\sound.ico" />
-    <Image Include="..\..\fellow\os\windows\gui\icons\winfellow.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_general.rc" />
-    <ResourceCompile Include="..\..\fellow\os\windows\gui\GUI_versioninfo.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
