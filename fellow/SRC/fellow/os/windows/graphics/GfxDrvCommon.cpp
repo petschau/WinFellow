@@ -191,7 +191,7 @@ LRESULT CALLBACK GfxDrvCommon::EmulationWindowProcedureStatic(HWND hWnd, UINT me
   }
 
   GfxDrvCommon *pThis = (GfxDrvCommon *)GetWindowLongPtr(hWnd, DWLP_USER);
-  return pThis ? pThis->EmulationWindowProcedure(hWnd, message, wParam, lParam) : FALSE;
+  return pThis ? pThis->EmulationWindowProcedure(hWnd, message, wParam, lParam) : DefWindowProc(hWnd, message, wParam, lParam);
 }
 
 /***********************************************************************/
@@ -394,10 +394,9 @@ LRESULT GfxDrvCommon::EmulationWindowProcedure(HWND hWnd, UINT message, WPARAM w
   return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-/*==========================================================================*/
-/* Create window classes for Amiga display                                  */
-/* Called on emulator startup                                               */
-/*==========================================================================*/
+//========================================
+// Create window classes for Amiga display
+//========================================
 
 bool GfxDrvCommon::InitializeWindowClass()
 {
@@ -414,15 +413,15 @@ bool GfxDrvCommon::InitializeWindowClass()
 #endif
   wc1.hIcon = LoadIcon(win_drv_hInstance, MAKEINTRESOURCE(IDI_ICON_WINFELLOW));
   wc1.hCursor = LoadCursor(nullptr, IDC_ARROW);
-  wc1.lpszClassName = "FellowWindowClass";
-  wc1.lpszMenuName = "Fellow";
+  wc1.lpszClassName = _fellowWindowClassName;
+  wc1.lpszMenuName = _fellowMenuName;
   wc1.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-  return (RegisterClassEx(&wc1) != 0);
+  return RegisterClassEx(&wc1) != 0;
 }
 
 void GfxDrvCommon::ReleaseWindowClass()
 {
-  UnregisterClass("FellowWindowClass", win_drv_hInstance);
+  UnregisterClass(_fellowWindowClassName, win_drv_hInstance);
 }
 
 /***********************************************************************/
@@ -477,8 +476,6 @@ HWND GfxDrvCommon::GetHWND()
 
 //==========================================
 // Create a window to host the Amiga display
-// Called on emulation start
-// Returns TRUE if succeeded
 //==========================================
 
 bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
@@ -510,7 +507,7 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
 
     _hwnd = CreateWindowEx(
         dwExStyle,
-        "FellowWindowClass",
+        _fellowWindowClassName,
         versionstring.c_str(),
         dwStyle,
         0, // CW_USEDEFAULT,
@@ -524,12 +521,19 @@ bool GfxDrvCommon::InitializeWindow(DisplayScale displayScale)
   }
   else
   {
-    _hwnd = CreateWindowEx(WS_EX_TOPMOST, "FellowWindowClass", versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, this);
+    _hwnd = CreateWindowEx(WS_EX_TOPMOST, _fellowWindowClassName, versionstring.c_str(), WS_POPUP, 0, 0, width, height, nullptr, nullptr, win_drv_hInstance, this);
+  }
+
+  if (_hwnd == nullptr)
+  {
+    DWORD errorcode = GetLastError();
+    Service->Log.AddLog("GfxDrvCommon::InitializeWindow() CreateWindowEx() failed with error code %u\n", errorcode);
+    return false;
   }
 
   Service->Log.AddLog("GfxDrvCommon::InitializeWindow(): Window created\n");
 
-  return (_hwnd != nullptr);
+  return true;
 }
 
 /*==========================================================================*/

@@ -1181,34 +1181,7 @@
     <ClInclude Include="..\..\fellow\application\Gameport.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\fellow\application\GraphicsDriver.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\GfxDrvColorBitsInformation.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\GfxDrvMappedBufferPointer.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\JoystickDriver.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\KeyboardDriver.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\fellow\application\ListTree.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\MouseDriver.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\SoundDriver.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\Timer.h">
-      <Filter>fellow\application</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\fellow\application\WGui.h">
       <Filter>fellow\application</Filter>
     </ClInclude>
     <ClInclude Include="..\..\fellow\chipset\Blitter.h">

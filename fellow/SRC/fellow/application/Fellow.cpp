@@ -614,9 +614,6 @@ static void fellowModulesShutdown()
 
   delete HardfileHandler;
 
-  CoreServicesFactory::Delete(Service);
-  Service = nullptr;
-
   delete VM;
 
   delete fellow_emulation_run_performance_counter;
@@ -625,16 +622,14 @@ static void fellowModulesShutdown()
 
 void fellowCreateDrivers()
 {
-  Drivers *drivers = DriversFactory::Create();
-  Driver = drivers;
-  }
+  Driver = DriversFactory::Create();
+}
 
 void fellowDeleteDrivers()
 {
   DriversFactory::Delete(Driver);
   Driver = nullptr;
 }
-
 
 void fellowInitializeDrivers()
 {

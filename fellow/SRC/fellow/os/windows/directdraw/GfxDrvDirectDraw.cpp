@@ -353,11 +353,6 @@ void GfxDrvDirectDraw::EmulationStop()
   ReleaseLegacyHud();
 }
 
-//=====================================================================
-// Collects information about the DirectX capabilities of this computer
-// After this, a DDraw object exists
-//=====================================================================
-
 bool GfxDrvDirectDraw::Startup()
 {
   graph_buffer_lost = false;
@@ -365,11 +360,7 @@ bool GfxDrvDirectDraw::Startup()
   return _initialized;
 }
 
-//=====================
-// Free DDraw resources
-//=====================
-
-void GfxDrvDirectDraw::Shutdown()
+GfxDrvDirectDraw::~GfxDrvDirectDraw()
 {
   if (_initialized)
   {

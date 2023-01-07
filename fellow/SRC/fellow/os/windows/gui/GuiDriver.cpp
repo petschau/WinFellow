@@ -1809,7 +1809,11 @@ void GuiDriver::InstallDisplayDriverConfigInGUI(HWND hwndDlg, cfg *conf)
   HWND displayDriverComboboxHWND = GetDlgItem(hwndDlg, IDC_COMBO_DISPLAY_DRIVER);
   ComboBox_ResetContent(displayDriverComboboxHWND);
   ComboBox_AddString(displayDriverComboboxHWND, "Direct Draw");
-  if (Driver->Graphics->ValidateRequirements())
+  auto supportedDrivers = Driver->Graphics->GetListOfInitializedDrivers();
+  auto ptrToFoundValue = find_if(supportedDrivers.begin(), supportedDrivers.end(), [](DISPLAYDRIVER displaydriver) -> bool {
+    return displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
+  });
+  if (ptrToFoundValue != supportedDrivers.end())
   {
     ComboBox_AddString(displayDriverComboboxHWND, "Direct3D 11");
   }
@@ -2495,19 +2499,24 @@ INT_PTR GuiDriver::DisplayDialogProc(HWND hwndDlg, UINT uMsg, WPARAM wParam, LPA
               {
                 ExtractDisplayConfig(hwndDlg, _wgui_cfg);
                 FreeGuiDrawModesLists();
-
-                if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
-                {
-                  if (!Driver->Graphics->ValidateRequirements())
-                  {
-                    Service->Log.AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
-                    displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
-                    cfgSetDisplayDriver(_wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
-                    const char *errorMessage = "DirectX 11 is required but could not be loaded, revert back to DirectDraw.";
-                    Service->Log.AddLog(errorMessage);
-                    Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
-                  }
-                }
+                
+                // Trying to remove this because, it is checked on startup and UI will not add direct 3d 11 option if it did not meet requirements
+                // 
+                // Also when loading a config file or taking in command line options, this should be checked and changed before going to the UI or starting up
+                // actual emulation
+                // 
+                //if (displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
+                //{
+                //  if (!Driver->Graphics->ValidateRequirements())
+                //  {
+                //    Service->Log.AddLog("ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+                //    displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
+                //    cfgSetDisplayDriver(_wgui_cfg, DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
+                //    const char *errorMessage = "DirectX 11 is required but could not be loaded, revert back to DirectDraw.";
+                //    Service->Log.AddLog(errorMessage);
+                //    Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
+                //  }
+                //}
 
                 bool result = ((GraphicsDriver*)Driver->Graphics)->SwitchDisplayDriver(displaydriver);
                 if (!result)
@@ -3596,7 +3605,7 @@ bool GuiDriver::InitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_pres
   hFind = FindFirstFile(strSearchPattern, &ffd);
   if (hFind == INVALID_HANDLE_VALUE)
   {
-    Service->Log.AddLog("wguiInitializePresets(): FindFirstFile failed.\n");
+    Service->Log.AddLog("GuiDriver::InitializePresets(): FindFirstFile failed.\n");
     return false;
   }
 
@@ -3610,7 +3619,7 @@ bool GuiDriver::InitializePresets(wgui_preset **wgui_presets, ULO *wgui_num_pres
   } while (FindNextFile(hFind, &ffd) != 0);
   FindClose(hFind);
 
-  Service->Log.AddLog("wguiInitializePresets(): %u preset(s) found.\n", *wgui_num_presets);
+  Service->Log.AddLog("GuiDriver::InitializePresets(): %u preset(s) found.\n", *wgui_num_presets);
 
   // then we allocate the memory to store preset information, and read the information
   if (*wgui_num_presets > 0)
@@ -3670,7 +3679,7 @@ void GuiDriver::SetProcessDPIAwareness(const char *pszAwareness)
   typedef HRESULT(WINAPI * PFN_SetProcessDpiAwareness)(Process_DPI_Awareness);
   typedef BOOL(WINAPI * PFN_SetProcessDPIAware)(void);
 
-  Service->Log.AddLog("wguiSetProcessDPIAwareness(%s)\n", pszAwareness);
+  Service->Log.AddLog("GuiDriver::SetProcessDPIAwareness(%s)\n", pszAwareness);
 
   Process_DPI_Awareness nAwareness = (Process_DPI_Awareness)strtoul(pszAwareness, nullptr, 0);
   HRESULT hr = E_NOTIMPL;
@@ -3737,7 +3746,7 @@ void GuiDriver::Initialize()
 
   if (Service->Fileops.GetWinFellowPresetPath(_preset_path, CFG_FILENAME_LENGTH))
   {
-    Service->Log.AddLog("wguiStartup(): preset path = %s\n", _preset_path);
+    Service->Log.AddLog("GuiDriver::Initialize(): preset path = %s\n", _preset_path);
     InitializePresets(&_presets, &_num_presets);
   }
 }

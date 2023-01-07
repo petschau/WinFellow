@@ -248,16 +248,33 @@ bool GraphicsDriver::SaveScreenshot(const bool bSaveFilteredScreenshot, const ch
 
 bool GraphicsDriver::SwitchDisplayDriver(DISPLAYDRIVER displaydriver)
 {
-  Release();
-  InitializeGraphicsDriver(displaydriver);
-  return _isInitialized;
+  if (_use_dxgi && displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11)
+  {
+    return true;
+  }
+
+  if (!_use_dxgi && displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW)
+  {
+    return true;
+  }
+
+  if (_use_dxgi)
+  {
+    ReleaseDXGI();
+    _use_dxgi = false;
+    return InitializeDirectDraw();
+  }
+
+  ReleaseDirectDraw();
+  _use_dxgi = true;
+  return InitializeDXGI();
 }
 
 bool GraphicsDriver::InitializeDXGI()
 {
-  if (!ValidateRequirements())
+  if (!GfxDrvDXGI::HasRequiredDlls())
   {
-    Service->Log.AddLog("gfxDrv ERROR: Direct3D requirements not met, falling back to DirectDraw.\n");
+    Service->Log.AddLog("GraphicsDriver::InitializeDXGI() ERROR: DXGI/Direct3D dlls not found on the machine.\n");
     return false;
   }
 
@@ -265,7 +282,7 @@ bool GraphicsDriver::InitializeDXGI()
   bool result = _gfxDrvDXGI->Startup();
   if (!result)
   {
-    Service->Log.AddLog("gfxDrv ERROR: Direct3D present but no adapters found, falling back to DirectDraw.\n");
+    Service->Log.AddLog("GraphicsDriver::InitializeDXGI() ERROR: DXGI/Direct3D appears to be present on the machine but failed to initialize it.\n");
     delete _gfxDrvDXGI;
     _gfxDrvDXGI = nullptr;
   }
@@ -277,7 +294,6 @@ void GraphicsDriver::ReleaseDXGI()
 {
   if (_gfxDrvDXGI != nullptr)
   {
-    _gfxDrvDXGI->Shutdown();
     delete _gfxDrvDXGI;
     _gfxDrvDXGI = nullptr;
   }
@@ -289,7 +305,7 @@ bool GraphicsDriver::InitializeDirectDraw()
   bool result = _gfxDrvDirectDraw->Startup();
   if (!result)
   {
-    Service->Log.AddLog("gfxDrv ERROR: DirectDraw initialization failed.\n");
+    Service->Log.AddLog("GraphicsDriver::InitializeDirectDraw() ERROR: DirectDraw initialization failed.\n");
     delete _gfxDrvDirectDraw;
     _gfxDrvDirectDraw = nullptr;
   }
@@ -301,7 +317,6 @@ void GraphicsDriver::ReleaseDirectDraw()
 {
   if (_gfxDrvDirectDraw != nullptr)
   {
-    _gfxDrvDirectDraw->Shutdown();
     delete _gfxDrvDirectDraw;
     _gfxDrvDirectDraw = nullptr;
   }
@@ -323,7 +338,12 @@ bool GraphicsDriver::IsInitialized() const
   return _isInitialized;
 }
 
-void GraphicsDriver::InitializeGraphicsDriver(DISPLAYDRIVER displaydriver)
+list<DISPLAYDRIVER> GraphicsDriver::GetListOfInitializedDrivers() const
+{
+  return _listOfInitializedDrivers;
+}
+
+void GraphicsDriver::Initialize()
 {
   _isInitialized = InitializeCommon();
   if (!_isInitialized)
@@ -339,28 +359,28 @@ void GraphicsDriver::InitializeGraphicsDriver(DISPLAYDRIVER displaydriver)
   }
 #endif
 
-  _use_dxgi = displaydriver == DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11;
-  if (_use_dxgi)
+  // Two options, dxgi/direct3d11 and directdraw
+  // Assume directdraw is always present
+
+  _listOfInitializedDrivers.clear();
+  _listOfInitializedDrivers.emplace_back(DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW);
+
+  // By default try to use dxgi with direct3d 11, this also records whether dxgi is available on the system, it also checks for a card and display attached
+  _use_dxgi = true;
+  _isInitialized = InitializeDXGI();
+  if (_isInitialized)
   {
-    _isInitialized = InitializeDXGI();
-    if (_isInitialized)
-    {
-      return;
-    }
+    _listOfInitializedDrivers.emplace_back(DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
+    return;
   }
 
-  // Fallback or DirectDraw selected
+  // Fallback to DirectDraw
   _use_dxgi = false;
   _isInitialized = InitializeDirectDraw();
   if (!_isInitialized)
   {
     _gfxDrvCommon.Release();
   }
-}
-
-void GraphicsDriver::Initialize()
-{
-  InitializeGraphicsDriver(DISPLAYDRIVER::DISPLAYDRIVER_DIRECT3D11);
 }
 
 void GraphicsDriver::Release()
@@ -375,9 +395,5 @@ void GraphicsDriver::Release()
   ReleaseCommon();
 
   _isInitialized = false;
-}
-
-bool GraphicsDriver::ValidateRequirements()
-{
-  return GfxDrvDXGI::ValidateRequirements();
+  _listOfInitializedDrivers.clear();
 }

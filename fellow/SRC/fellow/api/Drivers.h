@@ -38,6 +38,8 @@ namespace fellow::api
       : Sound(sound), Graphics(graphics), Joystick(joystick), Keyboard(keyboard), Mouse(mouse), Timer(timer), Gui(gui), Ini(ini), ModRipGui(modRipGui)
     {
     }
+
+    virtual ~Drivers() = default;
   };
 
   extern Drivers *Driver;

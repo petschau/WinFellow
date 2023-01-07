@@ -20,52 +20,39 @@
 using namespace std;
 using namespace fellow::api;
 
-bool GfxDrvDXGI::_requirementsValidated = false;
-bool GfxDrvDXGI::_requirementsValidationResult = false;
+bool GfxDrvDXGI::_hasCheckedDlls = false;
+bool GfxDrvDXGI::_dllCheckPassed = false;
 
-bool GfxDrvDXGI::ValidateRequirements()
+bool GfxDrvDXGI::HasRequiredDlls()
 {
-  if (_requirementsValidated)
-  {
-    return _requirementsValidationResult;
-  }
+  if (_hasCheckedDlls) return _dllCheckPassed;
 
-  _requirementsValidated = true;
+  _hasCheckedDlls = true;
+  _dllCheckPassed = false;
 
-  HINSTANCE hDll = LoadLibrary("d3d11.dll");
-  if (hDll)
+  HINSTANCE hD3D11Dll = LoadLibrary("d3d11.dll");
+  if (hD3D11Dll)
   {
-    FreeLibrary(hDll);
+    FreeLibrary(hD3D11Dll);
   }
   else
   {
-    Service->Log.AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: d3d11.dll could not be loaded.\n");
-    _requirementsValidationResult = false;
+    Service->Log.AddLog("GfxDrvDXGI::HasRequiredDlls() ERROR: d3d11.dll could not be loaded.\n");
     return false;
   }
 
-  hDll = LoadLibrary("dxgi.dll");
-  if (hDll)
+  HINSTANCE hDXGIDll = LoadLibrary("dxgi.dll");
+  if (hDXGIDll)
   {
-    FreeLibrary(hDll);
+    FreeLibrary(hDXGIDll);
   }
   else
   {
-    Service->Log.AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: dxgi.dll could not be loaded.\n");
-    _requirementsValidationResult = false;
+    Service->Log.AddLog("GfxDrvDXGI::HasRequiredDlls() ERROR: dxgi.dll could not be loaded.\n");
     return false;
   }
 
-  GfxDrvDXGI dxgi;
-  bool adaptersFound = dxgi.CreateAdapterList();
-  if (!adaptersFound)
-  {
-    Service->Log.AddLog("GfxDrvDXGI::ValidateRequirements() ERROR: Direct3D 11 present but no DXGI capable adapters found, falling back to DirectDraw.\n");
-    _requirementsValidationResult = false;
-    return false;
-  }
-
-  _requirementsValidationResult = true;
+  _dllCheckPassed = true;
   return true;
 }
 
@@ -96,7 +83,13 @@ bool GfxDrvDXGI::CreateAdapterList()
 
   ReleaseCOM(&enumerationFactory);
 
-  return _adapters != nullptr && !_adapters->empty();
+  bool hasAdapters = _adapters != nullptr && !_adapters->empty();
+  if (!hasAdapters)
+  {
+    Service->Log.AddLog("GfxDrvDXGI::CreateAdapterList() ERROR: Direct3D 11 present but no DXGI capable adapters found.\n");
+  }
+
+  return hasAdapters;
 }
 
 void GfxDrvDXGI::DeleteAdapterList()
@@ -753,22 +746,13 @@ bool GfxDrvDXGI::Startup()
   return success;
 }
 
-void GfxDrvDXGI::Shutdown()
+GfxDrvDXGI::~GfxDrvDXGI()
 {
   Service->Log.AddLog("GfxDrvDXGI: Starting to shut down DXGI driver\n");
 
   DeleteAdapterList();
 
   Service->Log.AddLog("GfxDrvDXGI: Finished shutdown of DXGI driver\n");
-}
-
-GfxDrvDXGI::GfxDrvDXGI()
-{
-}
-
-GfxDrvDXGI::~GfxDrvDXGI()
-{
-  Shutdown();
 }
 
 /**

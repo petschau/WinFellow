@@ -24,8 +24,8 @@ constexpr bool UseFlipMode = true;
 class GfxDrvDXGI
 {
 private:
-  static bool _requirementsValidated;
-  static bool _requirementsValidationResult;
+  static bool _hasCheckedDlls;
+  static bool _dllCheckPassed;
 
   std::recursive_mutex _fullscreenAndSizeChangeMutex;
 
@@ -114,7 +114,6 @@ public:
   void EmulationStop();
 
   bool Startup();
-  void Shutdown();
 
   GfxDrvMappedBufferPointer MapChipsetFramebuffer();
   void UnmapChipsetFramebuffer();
@@ -125,8 +124,7 @@ public:
 
   bool SaveScreenshot(bool, const STR *);
 
-  static bool ValidateRequirements();
+  static bool HasRequiredDlls();
 
-  GfxDrvDXGI();
   ~GfxDrvDXGI();
 };

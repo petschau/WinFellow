@@ -11,6 +11,7 @@ class GraphicsDriver : public IGraphicsDriver
 private:
   bool _use_dxgi = false;
   bool _isInitialized = false;
+  std::list<DISPLAYDRIVER> _listOfInitializedDrivers;
 
   GfxDrvCommon _gfxDrvCommon;
   GfxDrvDirectDraw *_gfxDrvDirectDraw = nullptr;
@@ -25,7 +26,7 @@ private:
   bool InitializeCommon();
   void ReleaseCommon();
 
-  void InitializeGraphicsDriver(DISPLAYDRIVER displaydriver);
+  void SwitchGraphicsDriver(DISPLAYDRIVER displaydriver);
 
 public:
   // The windows os drivers depends on some shared information about the window such as HWND or fullscreen/window mode
@@ -58,8 +59,6 @@ public:
   void NotifyActiveStatus(bool active) override;
   bool SaveScreenshot(const bool, const char *filename) override;
 
-  bool ValidateRequirements() override;
-
   bool EmulationStart(
     const HostRenderConfiguration &hostRenderConfiguration,
     const HostRenderRuntimeSettings &hostRenderRuntimeSettings,
@@ -68,7 +67,8 @@ public:
   ULO EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings) override;
   void EmulationStop() override;
 
-  bool IsInitialized() const;
+  std::list<DISPLAYDRIVER> GetListOfInitializedDrivers() const override;
+  bool IsInitialized() const override;
   void Initialize() override;
   void Release() override;
 

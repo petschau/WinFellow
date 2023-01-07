@@ -46,13 +46,10 @@
 #include <DbgHelp.h>
 #include <mutex>
 
+using namespace std;
 using namespace fellow::api;
 
 extern int __cdecl main(int, char **);
-
-/*===========================================================================*/
-/* Records some startup data                                                 */
-/*===========================================================================*/
 
 HINSTANCE win_drv_hInstance;
 int win_drv_nCmdShow;
@@ -69,7 +66,7 @@ typedef struct tagTHREADNAME_INFO
   DWORD dwThreadID; // thread ID (-1=caller thread)
   DWORD dwFlags;    // reserved for future use, must be zero
 } THREADNAME_INFO;
-const DWORD MS_VC_EXCEPTION = 0x406D1388;
+constexpr DWORD MS_VC_EXCEPTION = 0x406D1388;
 
 void winDrvSetThreadName(DWORD dwThreadID, LPCSTR szThreadName)
 {
@@ -161,9 +158,9 @@ bool winDrvDebugStartClient()
   return true;
 }
 
-/*===========================================================================*/
-/* Start Fellow and main message loop                                        */
-/*===========================================================================*/
+//===================================
+// Start Fellow and main message loop
+//===================================
 
 HANDLE win_drv_emulation_ended;
 
@@ -398,7 +395,7 @@ void winDrvEmulationStart()
   else
   {
     const char *errorMessage = "Emulation session failed to start up";
-    Service->Log.AddLog(errorMessage);
+    Service->Log.AddLog(string(errorMessage) + '\n');
     Driver->Gui->Requester(FELLOW_REQUESTER_TYPE::FELLOW_REQUESTER_TYPE_ERROR, errorMessage);
   }
   fellowEmulationStop();
@@ -558,7 +555,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS *e)
 
   GetSystemTime(&t);
 
-  wsprintfA(filename, "WinFellow_%s_%4d%02d%02d_%02d%02d%02d.dmp", FELLOWNUMERICVERSION, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+  wsprintfA(filename, "WinFellow_%s_%4u%02u%02u_%02u%02u%02u.dmp", FELLOWNUMERICVERSION, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
 
   Service->Fileops.GetGenericFileName(name, "WinFellow", filename);
 
@@ -568,7 +565,7 @@ void winDrvWriteMinidump(EXCEPTION_POINTERS *e)
 
   if (hFile == INVALID_HANDLE_VALUE) return;
 
-  MINIDUMP_EXCEPTION_INFORMATION exceptionInfo;
+  MINIDUMP_EXCEPTION_INFORMATION exceptionInfo{};
   exceptionInfo.ThreadId = GetCurrentThreadId();
   exceptionInfo.ExceptionPointers = e;
   exceptionInfo.ClientPointers = FALSE;

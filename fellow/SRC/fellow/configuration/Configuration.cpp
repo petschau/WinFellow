@@ -374,12 +374,6 @@ bool cfgGetScreenDrawLEDs(cfg *config)
 void cfgSetDisplayDriver(cfg *config, DISPLAYDRIVER display_driver)
 {
   config->m_displaydriver = display_driver;
-
-  if (!Driver->Graphics->ValidateRequirements())
-  {
-    Service->Log.AddLog("cfgSetDisplayDriver(): Direct3D requirements not met, falling back to DirectDraw.\n");
-    config->m_displaydriver = DISPLAYDRIVER::DISPLAYDRIVER_DIRECTDRAW;
-  }
 }
 
 DISPLAYDRIVER cfgGetDisplayDriver(cfg *config)
@@ -2101,7 +2095,7 @@ bool cfgLoadFromFilename(cfg *config, const string& filename, const bool bIsPres
 
   if (!bIsPreset)
   {
-    Service->Log.AddLog("cfg: loading configuration filename %s...\n", filename);
+    Service->Log.AddLog("cfg: loading configuration filename %s (expands to %s)\n", filename.c_str(), newfilename);
 
     // remove existing hardfiles
     cfgHardfilesFree(config);

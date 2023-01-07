@@ -27,7 +27,6 @@ class IGraphicsDriver
   virtual void DrawHUD(const MappedChipsetFramebuffer &mappedFramebuffer) = 0;
   virtual void NotifyActiveStatus(bool active) = 0;
   virtual bool SaveScreenshot(const bool, const char *filename) = 0;
-  virtual bool ValidateRequirements() = 0;
   
   virtual bool EmulationStart(
     const HostRenderConfiguration &hostRenderConfiguration,
@@ -37,6 +36,7 @@ class IGraphicsDriver
   virtual ULO EmulationStartPost(const ChipsetBufferRuntimeSettings &chipsetBufferRuntimeSettings) = 0;
   virtual void EmulationStop() = 0;
 
+  virtual std::list<DISPLAYDRIVER> GetListOfInitializedDrivers() const = 0;
   virtual bool IsInitialized() const = 0;
   virtual void Initialize() = 0;
   virtual void Release() = 0;

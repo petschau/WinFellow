@@ -62,5 +62,5 @@ public:
   void EmulationStop();
 
   bool Startup();
-  void Shutdown();
+  ~GfxDrvDirectDraw();
 };

@@ -30,6 +30,9 @@ private:
   bool _displayChange{};
   bool _isInitialized{};
 
+  const char *_fellowWindowClassName = "FellowWindowClass";
+  const char *_fellowMenuName = "Fellow";
+
   static LRESULT CALLBACK EmulationWindowProcedureStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 
   void MaybeDelayFlip();

@@ -26,5 +26,15 @@ Drivers *DriversFactory::Create()
 
 void DriversFactory::Delete(Drivers *drivers)
 {
+  delete drivers->Sound;
+  delete drivers->Graphics;
+  delete drivers->Joystick;
+  delete drivers->Keyboard;
+  delete drivers->Mouse;
+  delete drivers->Timer;
+  delete drivers->Gui;
+  delete drivers->Ini;
+  delete drivers->ModRipGui;
+
   delete drivers;
 }
