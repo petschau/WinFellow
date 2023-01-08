@@ -250,7 +250,7 @@ bool MouseDriver::DirectInputInitialize()
   }
 
   // Set cooperative level
-  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HWND hwnd = ((GraphicsDriver *)Driver->Graphics)->GetHWND();
   res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {

@@ -93,6 +93,8 @@ private:
   bool IsFullscreen() const;
   bool IsWindowed() const;
 
+  DXGI_SWAP_EFFECT GetActiveSwapEffect() const;
+
 public:
   ID3D11Device *_d3d11device{};
   IDXGISwapChain *_swapChain{};

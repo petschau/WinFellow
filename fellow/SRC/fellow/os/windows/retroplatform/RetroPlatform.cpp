@@ -109,9 +109,9 @@ using namespace fellow::api;
 
 RetroPlatform RP;
 
-GraphicsDriver &GraphicsDriverWin32()
+GraphicsDriver *GraphicsDriverWin32()
 {
-  return ((GraphicsDriver &)Driver->Graphics);
+  return ((GraphicsDriver *)Driver->Graphics);
 }
 
 /** event handler function for events that are sent to WinFellow from Amiga Forever
@@ -286,13 +286,13 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_CLOSE:
       Service->Log.AddLog("RetroPlatform::HostMessageFunction(): received close event.\n");
       fellowRequestEmulationStop();
-      GraphicsDriverWin32().RunEventSet();
+      GraphicsDriverWin32()->RunEventSet();
       RP.SetEmulatorQuit(true);
       return true;
     case RP_IPC_TO_GUEST_RESET:
       if (wParam == RP_RESET_HARD) fellowSetPerformResetBeforeStartingEmulation(true);
       RP.SetEmulationPaused(false);
-      GraphicsDriverWin32().RunEventSet();
+      GraphicsDriverWin32()->RunEventSet();
       fellowRequestEmulationStop();
       return true;
     case RP_IPC_TO_GUEST_TURBO:
@@ -323,14 +323,14 @@ LRESULT CALLBACK RetroPlatform::HostMessageFunction(UINT uMessage, WPARAM wParam
     case RP_IPC_TO_GUEST_PAUSE:
       if (wParam != 0)
       { // pause emulation
-        GraphicsDriverWin32().RunEventReset();
+        GraphicsDriverWin32()->RunEventReset();
         RP.SetEmulationPaused(true);
         RP.SetEmulationState(false);
         return 1;
       }
       else
       { // resume emulation
-        GraphicsDriverWin32().RunEventSet();
+        GraphicsDriverWin32()->RunEventSet();
         RP.SetEmulationPaused(false);
         RP.SetEmulationState(true);
         return 1;
@@ -1391,7 +1391,7 @@ void RetroPlatform::SetScreenModeStruct(struct RPScreenMode *sm)
   // Resume emulation, as graph module will crash otherwise if emulation is paused.
   // As the pause mode is not changed, after the restart of the session it will be
   // paused again.
-  GraphicsDriverWin32().RunEventSet();
+  GraphicsDriverWin32()->RunEventSet();
   RegisterRetroPlatformScreenMode(false);
   fellowRequestEmulationStop();
 }
@@ -1401,22 +1401,22 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   ULO lHeight, lWidth, lDisplayScale;
 
   if (RP.GetScanlines())
-    cfgSetDisplayScaleStrategy(GraphicsDriverWin32().rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
+    cfgSetDisplayScaleStrategy(GraphicsDriverWin32()->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SCANLINES);
   else
-    cfgSetDisplayScaleStrategy(GraphicsDriverWin32().rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
+    cfgSetDisplayScaleStrategy(GraphicsDriverWin32()->rp_startup_config, DISPLAYSCALE_STRATEGY::DISPLAYSCALE_STRATEGY_SOLID);
 
   if (bStartup)
   {
-    RP.SetScreenHeight(cfgGetScreenHeight(GraphicsDriverWin32().rp_startup_config));
-    RP.SetScreenWidth(cfgGetScreenWidth(GraphicsDriverWin32().rp_startup_config));
+    RP.SetScreenHeight(cfgGetScreenHeight(GraphicsDriverWin32()->rp_startup_config));
+    RP.SetScreenWidth(cfgGetScreenWidth(GraphicsDriverWin32()->rp_startup_config));
   }
 
   lHeight = RP.GetScreenHeightAdjusted();
   lWidth = RP.GetScreenWidthAdjusted();
   lDisplayScale = RP.GetDisplayScale();
 
-  cfgSetScreenHeight(GraphicsDriverWin32().rp_startup_config, lHeight);
-  cfgSetScreenWidth(GraphicsDriverWin32().rp_startup_config, lWidth);
+  cfgSetScreenHeight(GraphicsDriverWin32()->rp_startup_config, lHeight);
+  cfgSetScreenWidth(GraphicsDriverWin32()->rp_startup_config, lWidth);
 
   // drawSetInternalClip(draw_rect(92, 26, 468, 314));
   Draw.SetChipsetBufferMaxClip(RectShresi(92 * 4, 26 * 2, 468 * 4, 314 * 2));
@@ -1424,10 +1424,10 @@ void RetroPlatform::RegisterRetroPlatformScreenMode(const bool bStartup)
   // TODO: Clear up, if rp clip offset is shres, should not this have been div by 4 ?
   RectShresi output_clip((RP.GetClippingOffsetLeft() / 2), RP.GetClippingOffsetTop(), ((RP.GetClippingOffsetLeft() + RP.GetScreenWidth()) / 2), (RP.GetClippingOffsetTop() + RP.GetScreenHeight()));
 
-  cfgSetClipAmigaLeft(GraphicsDriverWin32().rp_startup_config, output_clip.Left);
-  cfgSetClipAmigaTop(GraphicsDriverWin32().rp_startup_config, output_clip.Top);
-  cfgSetClipAmigaRight(GraphicsDriverWin32().rp_startup_config, output_clip.Right);
-  cfgSetClipAmigaBottom(GraphicsDriverWin32().rp_startup_config, output_clip.Bottom);
+  cfgSetClipAmigaLeft(GraphicsDriverWin32()->rp_startup_config, output_clip.Left);
+  cfgSetClipAmigaTop(GraphicsDriverWin32()->rp_startup_config, output_clip.Top);
+  cfgSetClipAmigaRight(GraphicsDriverWin32()->rp_startup_config, output_clip.Right);
+  cfgSetClipAmigaBottom(GraphicsDriverWin32()->rp_startup_config, output_clip.Bottom);
 
   Draw.SetHostOutputClip(output_clip);
 
@@ -1858,7 +1858,7 @@ void RetroPlatform::Shutdown(void)
 
 void RetroPlatform::EmulationStart(void)
 {
-  RetroPlatform::SendScreenMode(GraphicsDriverWin32().GetHWND());
+  RetroPlatform::SendScreenMode(GraphicsDriverWin32()->GetHWND());
 }
 
 void RetroPlatform::EmulationStop(void)

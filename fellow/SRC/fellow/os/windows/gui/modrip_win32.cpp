@@ -149,7 +149,7 @@ BOOLE modripGuiSaveRequest(struct ModuleInfo *info, MemoryAccessFunc func)
       }
       else
       {
-        Driver->Ini->GetCurrentInitdata()->SetLastUsedModDir((STR *)((GuiDriver &)Driver->Gui).ExtractPath(info->filename));
+        Driver->Ini->GetCurrentInitdata()->SetLastUsedModDir((STR *)((GuiDriver *)Driver->Gui)->ExtractPath(info->filename));
         return TRUE;
       }
     }

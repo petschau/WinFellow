@@ -8,13 +8,13 @@
 class GfxDrvDXGIAdapter
 {
 private:
-  char _name[255];
   GfxDrvDXGIOutputList _outputs;
 
   void EnumerateOutputs(IDXGIAdapter *adapter);
-  void LogCapabilities(IDXGIAdapter *adapter);
 
 public:
+  static void LogCapabilities(IDXGIAdapter *adapter);
+
   const GfxDrvDXGIOutputList &GetOutputs();
 
   GfxDrvDXGIAdapter(IDXGIAdapter *adapter);

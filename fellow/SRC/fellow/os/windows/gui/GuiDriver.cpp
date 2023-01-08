@@ -1276,7 +1276,7 @@ void GuiDriver::ToggleMenuPauseEmulationWhenWindowLosesFocus(HWND hwndDlg, IniVa
 {
   bool ischecked = ccwMenuCheckedToggleBool(hwndDlg, ID_OPTIONS_PAUSE_EMULATION_WHEN_WINDOW_LOSES_FOCUS);
   _wgui_ini->SetPauseEmulationWhenWindowLosesFocus(ischecked);
-  ((GraphicsDriver &)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(ischecked);
+  ((GraphicsDriver *)Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(ischecked);
 }
 
 // configure option gfx debug immediate rendering menu item

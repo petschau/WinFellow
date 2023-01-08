@@ -155,21 +155,21 @@ bool GfxDrvDXGI::CreateD3D11Device()
     return false;
   }
 
-  Service->Log.AddLog("The adapter we got was:\n\n");
-  GfxDrvDXGIAdapter adapter(dxgiAdapter); // Note: This will eventually release dxgiAdapter in COM. Maybe restructure the enum code later, the code structure ended up not being very practical.
+  Service->Log.AddLog("The adapter we got was:\n");
+  GfxDrvDXGIAdapter::LogCapabilities(dxgiAdapter);
   Service->Log.AddLog("Feature level is: %s\n", GetFeatureLevelString(featureLevelsSupported));
 
   hr = dxgiAdapter->GetParent(__uuidof(IDXGIFactory), (void **)&_dxgiFactory); // Used later to create the swap-chain
 
+  ReleaseCOM(&dxgiAdapter);
+  ReleaseCOM(&dxgiDevice);
+
   if (FAILED(hr))
   {
-    ReleaseCOM(&dxgiDevice);
-
     Service->Log.AddLog("Failed to get IDXGIFactory via GetParent() on IDXGIAdapter\n");
     return false;
   }
 
-  ReleaseCOM(&dxgiDevice);
   return true;
 }
 
@@ -246,29 +246,25 @@ GfxDrvColorBitsInformation GfxDrvDXGI::GetColorBitsInformation() const
   return GfxDrvColorBitsInformation{.ColorBits = 32, .RedSize = 8, .RedPosition = 16, .GreenSize = 8, .GreenPosition = 8, .BlueSize = 8, .BluePosition = 0};
 }
 
+DXGI_SWAP_EFFECT GfxDrvDXGI::GetActiveSwapEffect() const
+{
+  return UseFlipMode ? DXGI_SWAP_EFFECT_FLIP_DISCARD : DXGI_SWAP_EFFECT_DISCARD;
+}
+
 bool GfxDrvDXGI::CreateSwapChain()
 {
   UINT width = _displayMode.Width;
   UINT height = _displayMode.Height;
 
   DXGI_SWAP_CHAIN_DESC swapChainDescription = {};
-  DXGI_SWAP_EFFECT swapEffect;
-
-  if (UseFlipMode)
-  {
-    swapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-  }
-  else
-  {
-    swapEffect = DXGI_SWAP_EFFECT_DISCARD;
-  }
+  DXGI_SWAP_EFFECT swapEffect = GetActiveSwapEffect();
 
   swapChainDescription.BufferCount = BackBufferCount;
   swapChainDescription.BufferDesc.Width = width;
   swapChainDescription.BufferDesc.Height = height;
   swapChainDescription.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
   swapChainDescription.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-  swapChainDescription.OutputWindow = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  swapChainDescription.OutputWindow = ((GraphicsDriver *)Driver->Graphics)->GetHWND();
   swapChainDescription.SampleDesc.Count = 1;
   swapChainDescription.SampleDesc.Quality = 0;
   swapChainDescription.Windowed = TRUE;
@@ -402,7 +398,7 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
 
     if (!_fullscreenActive)
     {
-      ((GraphicsDriver &)Driver->Graphics).HideWindow(); // Sends WM_SIZE
+      ((GraphicsDriver *)Driver->Graphics)->HideWindow(); // Sends WM_SIZE
     }
   }
 }
@@ -410,7 +406,7 @@ void GfxDrvDXGI::NotifyActiveStatus(bool active)
 // Runs on the message thread, or maybe not always? Looks like the swapchain can also call this one. Driver dependent?
 void GfxDrvDXGI::SizeChanged(unsigned int width, unsigned int height)
 {
-  Service->Log.AddLog("GfxDrvDXGI: SizeChanged(%u, %u)\n", width, height);
+  Service->Log.AddLog("GfxDrvDXGI::SizeChanged(%u, %u)\n", width, height);
 
   // TODO: Either remove or improve, this did not lead to any improvements as it is now
   if (_swapChain != nullptr)
@@ -437,7 +433,7 @@ UINT GfxDrvDXGI::GetSwapChainFlags()
 
 bool GfxDrvDXGI::ResizeSwapChainBuffers()
 {
-  Service->Log.AddLog("GfxDrvDXGI: ResizeSwapChainBuffers()\n");
+  Service->Log.AddLog("GfxDrvDXGI::ResizeSwapChainBuffers()\n");
 
   _hud.Resizing();
 
@@ -502,7 +498,7 @@ void GfxDrvDXGI::ExecuteFullscreenAndSizeChanges()
 
   if (_sizeChanged)
   {
-    Service->Log.AddLog("Execute size changed active changed\n");
+    Service->Log.AddLog("Execute windowed size changed\n");
     ResizeSwapChainBuffers();
     _sizeChanged = false;
   }

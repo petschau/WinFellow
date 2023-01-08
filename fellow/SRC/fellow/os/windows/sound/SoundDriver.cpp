@@ -302,7 +302,7 @@ bool SoundDriver::DSoundSetCooperativeLevel(sound_drv_dsound_device *dsound_devi
 {
   // We need the HWND of the amiga emulation window, which means sound must be initialized after the gfx stuff
 
-  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HWND hwnd = ((GraphicsDriver *)Driver->Graphics)->GetHWND();
   HRESULT setCooperativeLevelResult = IDirectSound_SetCooperativeLevel(dsound_device->lpDS, hwnd, DSSCL_PRIORITY);
   if (setCooperativeLevelResult != DS_OK)
   {

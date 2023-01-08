@@ -126,7 +126,7 @@ void JoystickDriver::DInputSetCooperativeLevel(int port)
     return;
   }
 
-  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HWND hwnd = ((GraphicsDriver *)Driver->Graphics)->GetHWND();
   HRESULT res = IDirectInputDevice8_SetCooperativeLevel(_lpDID[port], hwnd, ((_focus) ? DISCL_EXCLUSIVE : DISCL_NONEXCLUSIVE) | DISCL_FOREGROUND);
   if (res != DI_OK)
   {

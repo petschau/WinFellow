@@ -185,12 +185,12 @@ void GfxDrvCommon::NotifyDirectInputDevicesAboutActiveState(bool active)
 
 LRESULT CALLBACK GfxDrvCommon::EmulationWindowProcedureStatic(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
-  if (message == WM_INITDIALOG)
+  if (message == WM_NCCREATE)
   {
-    SetWindowLongPtr(hWnd, DWLP_USER, lParam);
+    SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG_PTR)((CREATESTRUCT *)lParam)->lpCreateParams);
   }
 
-  GfxDrvCommon *pThis = (GfxDrvCommon *)GetWindowLongPtr(hWnd, DWLP_USER);
+  GfxDrvCommon *pThis = (GfxDrvCommon *)GetWindowLongPtr(hWnd, GWLP_USERDATA);
   return pThis ? pThis->EmulationWindowProcedure(hWnd, message, wParam, lParam) : DefWindowProc(hWnd, message, wParam, lParam);
 }
 

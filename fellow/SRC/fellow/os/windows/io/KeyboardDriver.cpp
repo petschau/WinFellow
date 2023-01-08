@@ -427,7 +427,7 @@ void KeyboardDriver::DInputUnacquireFailure(const char *header, HRESULT err)
 
 bool KeyboardDriver::DInputSetCooperativeLevel()
 {
-  HWND hwnd = ((GraphicsDriver &)Driver->Graphics).GetHWND();
+  HWND hwnd = ((GraphicsDriver *)Driver->Graphics)->GetHWND();
   HRESULT res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {

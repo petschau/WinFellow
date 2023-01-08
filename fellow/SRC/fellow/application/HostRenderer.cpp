@@ -107,7 +107,7 @@ void HostRenderer::Configure(const HostRenderConfiguration &hostRenderConfigurat
 void HostRenderer::SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxClip)
 {
   Service->Log.AddLogDebug(
-      "SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", chipsetBufferMaxClip.Left, chipsetBufferMaxClip.Top, chipsetBufferMaxClip.Right, chipsetBufferMaxClip.Bottom);
+      "HostRenderer::SetChipsetMaxClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", chipsetBufferMaxClip.Left, chipsetBufferMaxClip.Top, chipsetBufferMaxClip.Right, chipsetBufferMaxClip.Bottom);
 
   _chipsetBufferRuntimeSettings.MaxClip = chipsetBufferMaxClip;
 }
@@ -115,7 +115,7 @@ void HostRenderer::SetChipsetBufferMaxClip(const RectShresi &chipsetBufferMaxCli
 // Only used by RP
 void HostRenderer::SetHostOutputClip(const RectShresi &hostOutputClip)
 {
-  Service->Log.AddLogDebug("SetHostOutputClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", hostOutputClip.Left, hostOutputClip.Top, hostOutputClip.Right, hostOutputClip.Bottom);
+  Service->Log.AddLogDebug("HostRenderer::SetHostOutputClip(shresi rect left=%u, top=%u, right=%u, bottom=%u)\n", hostOutputClip.Left, hostOutputClip.Top, hostOutputClip.Right, hostOutputClip.Bottom);
 
   _hostRenderConfiguration.ChipsetOutputClip = hostOutputClip;
 }
@@ -535,7 +535,7 @@ bool HostRenderer::EmulationStartPost()
   DrawModeFunctionTablesInitialize(_chipsetBufferRuntimeSettings.ColorBits);
 
   Service->Log.AddLog(
-      "drawEmulationStartPost(): Chipset buffer is (%u,%u,%u)\n", _chipsetBufferRuntimeSettings.Dimensions.Width, _chipsetBufferRuntimeSettings.Dimensions.Height, colorBitsInformation.ColorBits);
+      "HostRenderer::EmulationStartPost(): Chipset buffer is (%u,%u,%u)\n", _chipsetBufferRuntimeSettings.Dimensions.Width, _chipsetBufferRuntimeSettings.Dimensions.Height, colorBitsInformation.ColorBits);
 
   return true;
 }

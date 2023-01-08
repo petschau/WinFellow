@@ -68,19 +68,19 @@ void TimerDriver::EmulationStart()
   MMRESULT mmres = timeGetDevCaps(&timecaps, sizeof(TIMECAPS));
   if (mmres != TIMERR_NOERROR)
   {
-    Service->Log.AddLog("timer: timerEmulationStart() timeGetDevCaps() failed\n");
+    Service->Log.AddLog("TimerDriver::EmulationStart() timeGetDevCaps() failed\n");
     _running = false;
     return;
   }
 
-  Service->Log.AddLog("timer: timerEmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
+  Service->Log.AddLog("TimerDriver::EmulationStart() timeGetDevCaps: min: %u, max %u\n", timecaps.wPeriodMin, timecaps.wPeriodMax);
 
   _mmresolution = timecaps.wPeriodMin;
 
   mmres = timeBeginPeriod(_mmresolution);
   if (mmres != TIMERR_NOERROR)
   {
-    Service->Log.AddLog("timer: timerEmulationStart() timeBeginPeriod() failed\n");
+    Service->Log.AddLog("TimerDriver::EmulationStart() timeBeginPeriod() failed\n");
     _running = false;
     return;
   }
@@ -88,7 +88,7 @@ void TimerDriver::EmulationStart()
   mmres = timeSetEvent(1, 0, TimerDriver::Callback, (DWORD_PTR)this, (UINT)TIME_PERIODIC);
   if (mmres == 0)
   {
-    Service->Log.AddLog("timer: timerEmulationStart() timeSetEvent() failed\n");
+    Service->Log.AddLog("TimerDriver::EmulationStart() timeSetEvent() failed\n");
     _running = false;
     return;
   }
@@ -104,7 +104,7 @@ void TimerDriver::EmulationStop()
     mmres = timeEndPeriod(_mmresolution);
     if (mmres != TIMERR_NOERROR)
     {
-      Service->Log.AddLog("timer: timerEmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
+      Service->Log.AddLog("TimerDriver::EmulationStop() timeEndPeriod() failed, unable to restore previous timer resolution.");
     }
     _running = false;
   }

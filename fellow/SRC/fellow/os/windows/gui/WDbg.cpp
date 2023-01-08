@@ -1856,14 +1856,15 @@ void wdebDebug()
 
   if (Driver->Gui->CheckEmulationNecessities())
   {
-    bool previousPauseEmulationOnLostFocus = ((GraphicsDriver*)Driver->Graphics)->GetPauseEmulationWhenWindowLosesFocus();
-    ((GraphicsDriver&)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(false);
+    auto graphicsDriver = (GraphicsDriver*)Driver->Graphics;
+    bool previousPauseEmulationOnLostFocus = graphicsDriver->GetPauseEmulationWhenWindowLosesFocus();
+    graphicsDriver->SetPauseEmulationWhenWindowLosesFocus(false);
 
     if (!fellowEmulationStart())
     {
       MessageBox(nullptr, "Emulation debug session failed to start", "Startup Error", 0);
       fellowEmulationStop();
-      ((GraphicsDriver*)Driver->Graphics)->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
+      graphicsDriver->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
       return;
     }
 
@@ -1878,7 +1879,7 @@ void wdebDebug()
     wdebCloseDialog();
 
     fellowEmulationStop();
-    ((GraphicsDriver &)Driver->Graphics).SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
+    graphicsDriver->SetPauseEmulationWhenWindowLosesFocus(previousPauseEmulationOnLostFocus);
   }
   else
   {
