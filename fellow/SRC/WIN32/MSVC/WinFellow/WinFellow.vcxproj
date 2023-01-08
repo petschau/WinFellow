@@ -152,7 +152,6 @@
       <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
       <StackReserveSize>2097152</StackReserveSize>
-      <LargeAddressAware>false</LargeAddressAware>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX86</TargetMachine>
@@ -188,7 +187,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -221,7 +220,6 @@
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <StackReserveSize>2097152</StackReserveSize>
-      <LargeAddressAware>false</LargeAddressAware>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <TargetMachine>MachineX64</TargetMachine>
@@ -256,7 +254,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../..;../../../fellow/os/windows;../../../../lib/win32/msvc/DirectXMath;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -288,7 +286,6 @@
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <SubSystem>Windows</SubSystem>
       <StackReserveSize>2097152</StackReserveSize>
-      <LargeAddressAware>false</LargeAddressAware>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
       <DataExecutionPrevention>true</DataExecutionPrevention>
       <Profile>false</Profile>
@@ -344,6 +341,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -370,7 +368,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PreBuildEvent>
-      <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
+      <Command>pwsh.exe ..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate version information include</Message>
@@ -392,7 +390,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../../../uae/include;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -418,6 +416,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -441,7 +440,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PreBuildEvent>
-      <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
+      <Command>pwsh.exe ..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate version information include</Message>
@@ -462,7 +461,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../DXGI;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -486,6 +485,7 @@
       <LanguageStandard_C>stdc17</LanguageStandard_C>
       <StringPooling>true</StringPooling>
       <CallingConvention>FastCall</CallingConvention>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -508,7 +508,7 @@
       <ShowProgress>NotSet</ShowProgress>
     </Link>
     <PreBuildEvent>
-      <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
+      <Command>pwsh.exe ..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
     </PreBuildEvent>
     <PreBuildEvent>
       <Message>generate version information include</Message>

@@ -32,7 +32,7 @@
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/memory/Memory.h"
 #include "fellow/chipset/rtc.h"
-#include "zlib.h" // crc32 function
+#include "fellow/libs/zlib/src/zlib.h" // crc32 function
 #include "fellow/api/Services.h"
 #include "fellow/api/Drivers.h"
 

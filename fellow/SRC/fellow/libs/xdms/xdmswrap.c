@@ -36,9 +36,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "cdata.h"
-#include "pfile.h"
-#include "crc_csum.h"
+#include "fellow/libs/xdms/src/cdata.h"
+#include "fellow/libs/xdms/src/pfile.h"
+#include "fellow/libs/xdms/src/crc_csum.h"
 
 USHORT dmsUnpack(char *src, char *dest)
 {
