@@ -5,8 +5,6 @@
 #include "fellow/api/modules/IHardfileHandler.h"
 #include "fellow/hardfile/HardfileStructs.h"
 
-#define FHFILE_MAX_DEVICES 20
-
 namespace fellow::hardfile
 {
   class HardfileHandler : public fellow::api::modules::IHardfileHandler

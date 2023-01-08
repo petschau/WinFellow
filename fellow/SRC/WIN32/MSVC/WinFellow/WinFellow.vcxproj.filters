@@ -19,9 +19,6 @@
     <Filter Include="fellow\api\vm">
       <UniqueIdentifier>{3fd128fb-e4d3-49ad-a62f-72d00f4b2e54}</UniqueIdentifier>
     </Filter>
-    <Filter Include="IPF Access API">
-      <UniqueIdentifier>{8a43c7b9-d400-45fc-8ff4-a80b9c0718be}</UniqueIdentifier>
-    </Filter>
     <Filter Include="test">
       <UniqueIdentifier>{b998d08b-26fd-4475-bd87-eb41177f7a69}</UniqueIdentifier>
     </Filter>
@@ -133,9 +130,6 @@
     <Filter Include="fellow\os\windows\retroplatform">
       <UniqueIdentifier>{e29d64b6-92e0-483d-bbb5-6996db671f3e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="fellow\os\windows\caps">
-      <UniqueIdentifier>{4d40c911-ff2e-48dc-b0ec-a73c5ebc2ac1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="fellow\os\windows\uae">
       <UniqueIdentifier>{efe5e79a-e08e-4ad0-839e-6911bd5832d3}</UniqueIdentifier>
     </Filter>
@@ -153,6 +147,15 @@
     </Filter>
     <Filter Include="fellow\os\windows\ini">
       <UniqueIdentifier>{f0699edd-d205-466d-9d40-89a2835b84ad}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\libs">
+      <UniqueIdentifier>{d4742548-58a1-41f6-9d25-6cd9056fb715}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\libs\caps">
+      <UniqueIdentifier>{4d40c911-ff2e-48dc-b0ec-a73c5ebc2ac1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fellow\os\windows\libs\caps\src">
+      <UniqueIdentifier>{d3259058-ab1f-4e20-ac04-4196381ff008}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -176,9 +179,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\service\RetroPlatformWrapper.cpp">
       <Filter>fellow\service</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\IPF\CapsPlug.cpp">
-      <Filter>IPF Access API</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\test\fellow\chipset\BitplaneUtilityTest.cpp">
       <Filter>test\fellow\chipset</Filter>
@@ -708,9 +708,6 @@
     <ClCompile Include="..\..\..\fellow\os\windows\application\WindowsMain.cpp">
       <Filter>fellow\os\windows\application</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\fellow\os\windows\caps\caps.c">
-      <Filter>fellow\os\windows\caps</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\fellow\os\windows\uae\AUTOCONF.C">
       <Filter>fellow\os\windows\uae</Filter>
     </ClCompile>
@@ -752,6 +749,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\os\windows\ini\IniDriver.cpp">
       <Filter>fellow\os\windows\ini</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\fellow\os\windows\libs\caps\src\CapsPlug.cpp">
+      <Filter>fellow\os\windows\libs\caps\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\fellow\os\windows\libs\caps\caps.c">
+      <Filter>fellow\os\windows\libs\caps</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -799,15 +802,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\fellow\service\RetroPlatformWrapper.h">
       <Filter>fellow\service</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\IPF\CapsAPI.h">
-      <Filter>IPF Access API</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\IPF\CapsPlug.h">
-      <Filter>IPF Access API</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\IPF\Comtype.h">
-      <Filter>IPF Access API</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\test\catch\catch.hpp">
       <Filter>test\catch</Filter>
@@ -1370,9 +1364,6 @@
     <ClInclude Include="..\..\..\fellow\os\windows\application\WindowsDriver.h">
       <Filter>fellow\os\windows\application</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\fellow\os\windows\caps\caps.h">
-      <Filter>fellow\os\windows\caps</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\fellow\os\windows\uae\AUTOCONF.H">
       <Filter>fellow\os\windows\uae</Filter>
     </ClInclude>
@@ -1493,6 +1484,18 @@
     <ClInclude Include="..\..\..\fellow\os\windows\ini\IniDriver.h">
       <Filter>fellow\os\windows\ini</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\CapsAPI.h">
+      <Filter>fellow\os\windows\libs\caps\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\CapsPlug.h">
+      <Filter>fellow\os\windows\libs\caps\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\Comtype.h">
+      <Filter>fellow\os\windows\libs\caps\src</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\caps.h">
+      <Filter>fellow\os\windows\libs\caps</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="WinFellow.ruleset" />
@@ -1538,6 +1541,9 @@
     </Text>
     <Text Include="..\..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.txt">
       <Filter>fellow\os\windows\scripts</Filter>
+    </Text>
+    <Text Include="..\..\..\fellow\os\windows\libs\caps\src\LICENSE.txt">
+      <Filter>fellow\os\windows\libs\caps\src</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>

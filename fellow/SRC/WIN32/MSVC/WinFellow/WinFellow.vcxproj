@@ -69,16 +69,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">true</LinkIncremental>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">false</LinkIncremental>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">WinFellow.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
@@ -114,7 +112,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;../../../graphics;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -148,7 +146,8 @@
       <AdditionalLibraryDirectories>../../../lib/win32/msvc/ddraw/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Release/WinFellow.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <GenerateMapFile>false</GenerateMapFile>
       <SubSystem>Windows</SubSystem>
       <StackReserveSize>2097152</StackReserveSize>
@@ -187,7 +186,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -227,6 +226,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ShowProgress>NotSet</ShowProgress>
+      <ProgramDatabaseFile />
     </Link>
     <PreBuildEvent>
       <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
@@ -254,7 +254,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -292,6 +292,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
       <ShowProgress>NotSet</ShowProgress>
+      <ProgramDatabaseFile />
     </Link>
     <PreBuildEvent>
       <Command>pwsh.exe ..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
@@ -316,7 +317,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../..;../../../../lib/win32/msvc/DirectXMath;../../../fellow/os/windows;../include/msvc;../../../include;../include;../../../uae/include;../DXGI;../../../fellow/libs/xdms/src;../../../fellow/libs/zlib/src;../CAPS/include;../../../IPF;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;FELLOW_SUPPORT_CAPS;_CRT_SECURE_NO_WARNINGS;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ExceptionHandling>Sync</ExceptionHandling>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -353,9 +354,11 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <DelayLoadDLLs>dxgi.dll;d3d11.dll;dwrite.dll;d2d1.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>.\Debug/WinFellow.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>.\Debug/WinFellow.map</MapFileName>
+      <MapFileName>
+      </MapFileName>
       <SubSystem>Windows</SubSystem>
       <StackReserveSize>2097152</StackReserveSize>
       <RandomizedBaseAddress>true</RandomizedBaseAddress>
@@ -390,7 +393,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;FELLOW_SUPPORT_CAPS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -438,6 +441,7 @@
       </LinkTimeCodeGeneration>
       <Profile>false</Profile>
       <ShowProgress>NotSet</ShowProgress>
+      <ProgramDatabaseFile />
     </Link>
     <PreBuildEvent>
       <Command>pwsh.exe ..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
@@ -461,7 +465,7 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../;../../../fellow/os/windows;../../../fellow/os/windows/libs/caps/src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_FELLOW_DEBUG_CRT_MALLOC;_CRT_SECURE_NO_WARNINGS;X64;RETRO_PLATFORM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -505,7 +509,8 @@
       <LinkTimeCodeGeneration>
       </LinkTimeCodeGeneration>
       <Profile>false</Profile>
-      <ShowProgress>NotSet</ShowProgress>
+      <ShowProgress>LinkVerbose</ShowProgress>
+      <ProgramDatabaseFile />
     </Link>
     <PreBuildEvent>
       <Command>pwsh.exe ..\..\..\fellow\os\windows\scripts\GenerateVersionIncludes.ps1</Command>
@@ -619,50 +624,98 @@
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\crc_csum.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\getbits.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\maketbl.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\pfile.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\tables.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_deep.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_heavy.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_init.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_medium.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_quick.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\src\u_rle.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\xdms\xdmswrap.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">CompileAsC</CompileAs>
     </ClCompile>
     <ClCompile Include="..\..\..\fellow\libs\zlib\src\adler32.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CompileAsC</CompileAs>
@@ -790,7 +843,6 @@
     <ClCompile Include="..\..\..\fellow\os\windows\application\OSServicesFactory.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\application\sysinfo.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\application\WindowsMain.cpp" />
-    <ClCompile Include="..\..\..\fellow\os\windows\caps\caps.c" />
     <ClCompile Include="..\..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\directdraw\DirectDrawDevice.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.cpp" />
@@ -823,6 +875,8 @@
     <ClCompile Include="..\..\..\fellow\os\windows\io\KeyboardDriver.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\io\Keyparser.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\io\MouseDriver.cpp" />
+    <ClCompile Include="..\..\..\fellow\os\windows\libs\caps\caps.c" />
+    <ClCompile Include="..\..\..\fellow\os\windows\libs\caps\src\CapsPlug.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatform.cpp" />
     <ClCompile Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.c" />
     <ClCompile Include="..\..\..\fellow\os\windows\sound\SoundDriver.cpp" />
@@ -881,7 +935,6 @@
     <ClCompile Include="..\..\..\fellow\vm\M68K.cpp" />
     <ClCompile Include="..\..\..\fellow\vm\MemorySystem.cpp" />
     <ClCompile Include="..\..\..\fellow\vm\VM.cpp" />
-    <ClCompile Include="..\..\..\IPF\CapsPlug.cpp" />
     <ClCompile Include="..\..\..\test\fellow\chipset\BitplaneRegistersTest.cpp" />
     <ClCompile Include="..\..\..\test\fellow\chipset\BitplaneUtilityTest.cpp" />
     <ClCompile Include="..\..\..\test\fellow\chipset\DIWYStateMachineTest.cpp" />
@@ -1054,7 +1107,6 @@
     <ClInclude Include="..\..\..\fellow\os\windows\application\sysinfo.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\application\versioninfo-wcrev.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\application\WindowsDriver.h" />
-    <ClInclude Include="..\..\..\fellow\os\windows\caps\caps.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\debugger\ConsoleDebuggerHost.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\directdraw\DirectDrawDevice.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\directdraw\DirectDrawErrorLogger.h" />
@@ -1095,6 +1147,10 @@
     <ClInclude Include="..\..\..\fellow\os\windows\io\KeyboardDriver.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\io\Keyparser.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\io\MouseDriver.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\caps.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\CapsAPI.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\CapsPlug.h" />
+    <ClInclude Include="..\..\..\fellow\os\windows\libs\caps\src\Comtype.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\portable.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatform.h" />
     <ClInclude Include="..\..\..\fellow\os\windows\retroplatform\RetroPlatformGuestIPC.h" />
@@ -1128,9 +1184,6 @@
     <ClInclude Include="..\..\..\fellow\vm\EventLog.h" />
     <ClInclude Include="..\..\..\fellow\vm\M68K.h" />
     <ClInclude Include="..\..\..\fellow\vm\MemorySystem.h" />
-    <ClInclude Include="..\..\..\IPF\CapsAPI.h" />
-    <ClInclude Include="..\..\..\IPF\CapsPlug.h" />
-    <ClInclude Include="..\..\..\IPF\Comtype.h" />
     <ClInclude Include="..\..\..\test\catch\catch.hpp" />
     <ClInclude Include="..\..\..\test\catch\catch_discover.hpp" />
     <ClInclude Include="..\..\..\test\catch\CustomCatchMain.h" />
@@ -1218,6 +1271,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="..\..\..\fellow\libs\xdms\xdms.txt" />
+    <Text Include="..\..\..\fellow\os\windows\libs\caps\src\LICENSE.txt" />
     <Text Include="..\..\..\fellow\os\windows\scripts\WinFellow-DevEnvironment-Boxstarter.txt" />
     <Text Include="..\..\..\fellow\os\windows\uae\readme.txt" />
   </ItemGroup>
@@ -1247,9 +1301,6 @@
       <Project>{4ab5c2b7-fa35-46be-82ca-97d5874c9333}</Project>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
   <PropertyGroup>
     <GraphVersion>
     </GraphVersion>
@@ -1257,30 +1308,35 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x86</ExecutablePath>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64</ExecutablePath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
     <ExecutablePath>$(VC_ExecutablePath_ARM64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH)</ExecutablePath>
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IntDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ExecutablePath>$(VC_ExecutablePath_x86);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(SystemRoot)\SysWow64;$(FxCopDir);$(PATH);C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x86</ExecutablePath>
-    <OutDir>$(SolutionDir)$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ExecutablePath>$(VC_ExecutablePath_x64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH);C:\Program Files (x86)\Windows Kits\10\bin\10.0.17763.0\x64</ExecutablePath>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ExecutablePath>$(VC_ExecutablePath_ARM64);$(WindowsSdk_71A_ExecutablePath);$(WindowsSDK_ExecutablePath);$(VS_ExecutablePath);$(MSBuild_ExecutablePath);$(FxCopDir);$(PATH)</ExecutablePath>
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
 </Project>

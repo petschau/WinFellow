@@ -68,7 +68,7 @@
 #include "fellow/libs/zlib/zlibwrap.h"
 
 #ifdef FELLOW_SUPPORT_CAPS
-#include "fellow/os/windows/caps/caps.h"
+#include "fellow/os/windows/libs/caps/caps.h"
 #endif
 
 #ifdef RETRO_PLATFORM

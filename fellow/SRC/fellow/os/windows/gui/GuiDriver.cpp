@@ -60,9 +60,11 @@
 #include "fellow/api/Drivers.h"
 #include "fellow/os/windows/graphics/GraphicsDriver.h"
 #include "fellow/chipset/Keyboard.h"
+
 #ifdef FELLOW_SUPPORT_CAPS
-#include "fellow/os/windows/caps/caps.h"
+#include "fellow/os/windows/libs/caps/caps.h"
 #endif
+
 #include "fellow/chipset/Floppy.h"
 #include "fellow/application/Fellow.h"
 #include "fellow/api/Services.h"

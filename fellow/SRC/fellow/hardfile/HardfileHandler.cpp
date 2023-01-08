@@ -2389,7 +2389,7 @@ namespace fellow::hardfile
   {
     bool result = false;
 
-#define BUFSIZE 32768
+    constexpr auto BUFSIZE = 32768;
     unsigned int tobewritten;
     char buffer[BUFSIZE];
     FILE *hf;
