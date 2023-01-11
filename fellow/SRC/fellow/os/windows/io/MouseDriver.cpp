@@ -444,23 +444,12 @@ void MouseDriver::EmulationStop()
   DirectInputRelease();
 }
 
-void MouseDriver::Initialize()
+MouseDriver::MouseDriver() : IMouseDriver()
 {
-  Service->Log.AddLog("MouseDriver::Startup()\n");
-
-  _active = false;
-  _focus = true;
-  _inUse = false;
-  _initializationFailed = true;
-  _unacquired = true;
-  _lpDI = nullptr;
-  _lpDID = nullptr;
-  _DIevent = nullptr;
-  _bLeftButton = false;
-  _bRightButton = false;
+  Service->Log.AddLog("MouseDriver created\n");
 }
 
-void MouseDriver::Release()
+MouseDriver::~MouseDriver()
 {
-  Service->Log.AddLog("MouseDriver::Shutdown()\n");
+  Service->Log.AddLog("MouseDriver destroyed\n");
 }

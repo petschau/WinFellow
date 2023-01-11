@@ -14,6 +14,7 @@ public:
   virtual void HardReset() = 0;
   virtual bool EmulationStart() = 0;
   virtual void EmulationStop() = 0;
-  virtual void Initialize() = 0;
-  virtual void Release() = 0;
+
+  IMouseDriver() = default;
+  virtual ~IMouseDriver() = default;
 };

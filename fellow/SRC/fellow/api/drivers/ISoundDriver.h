@@ -13,6 +13,7 @@ public:
     virtual void EmulationStop() = 0;
 
     virtual bool IsInitialized() = 0;
-    virtual bool Initialize() = 0;
-    virtual void Release() = 0;
+
+    ISoundDriver() = default;
+    ~ISoundDriver() = default;
 };

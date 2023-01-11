@@ -530,7 +530,7 @@ void JoystickDriver::EmulationStop()
   _failed = true;
 }
 
-void JoystickDriver::Initialize()
+JoystickDriver::JoystickDriver() : IJoystickDriver()
 {
   _failed = false;
   _focus = true;
@@ -550,7 +550,7 @@ void JoystickDriver::Initialize()
   num_joy_attached = 0;
 }
 
-void JoystickDriver::Release()
+JoystickDriver::~JoystickDriver()
 {
   CoUninitialize();
 }

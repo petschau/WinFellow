@@ -1009,20 +1009,21 @@ bool SoundDriver::IsInitialized()
   return _isInitialized;
 }
 
-bool SoundDriver::Initialize()
+SoundDriver::SoundDriver()
+  : ISoundDriver()
 {
   _isInitialized = false;
   _isInitialized = DSoundInitialize();
   if (!_isInitialized)
   {
-    return false;
+    return;
   }
 
   _isInitialized = DSoundModeInformationInitialize(&_dsound_device_current);
   if (!_isInitialized)
   {
     DSoundRelease();
-    return false;
+    return;
   }
 
   _dsound_device_current.mutex = CreateMutex(nullptr, 0, nullptr);
@@ -1031,13 +1032,10 @@ bool SoundDriver::Initialize()
   {
     DSoundModeInformationRelease(&_dsound_device_current);
     DSoundRelease();
-    return false;
   }
-
-  return true;
 }
 
-void SoundDriver::Release()
+SoundDriver::~SoundDriver()
 {
   DSoundModeInformationRelease(&_dsound_device_current);
   DSoundRelease();

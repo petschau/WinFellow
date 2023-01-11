@@ -337,10 +337,8 @@ void kbdEmulationStop()
 
 void kbdStartup()
 {
-  Driver->Keyboard->Startup();
 }
 
 void kbdShutdown()
 {
-  Driver->Keyboard->Shutdown();
 }

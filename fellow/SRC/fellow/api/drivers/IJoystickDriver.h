@@ -10,6 +10,7 @@ public:
   virtual void HardReset() = 0;
   virtual void EmulationStart() = 0;
   virtual void EmulationStop() = 0;
-  virtual void Initialize() = 0;
-  virtual void Release() = 0;
+
+  IJoystickDriver() = default;
+  virtual ~IJoystickDriver() = default;
 };

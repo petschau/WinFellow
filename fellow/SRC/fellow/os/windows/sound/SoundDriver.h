@@ -91,8 +91,7 @@ public:
     void EmulationStop() override;
 
     bool IsInitialized() override;
-    bool Initialize() override;
-    void Release() override;
 
-    virtual ~SoundDriver() = default;
+    SoundDriver();
+    virtual ~SoundDriver();
 };

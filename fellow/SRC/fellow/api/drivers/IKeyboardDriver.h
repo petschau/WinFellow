@@ -28,8 +28,10 @@ public:
 #endif
 
   virtual void HardReset() = 0;
+
   virtual void EmulationStart() = 0;
   virtual void EmulationStop() = 0;
-  virtual void Startup() = 0;
-  virtual void Shutdown() = 0;
+
+  IKeyboardDriver() = default;
+  virtual ~IKeyboardDriver() = default;
 };

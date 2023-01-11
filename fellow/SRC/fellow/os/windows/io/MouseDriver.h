@@ -11,7 +11,7 @@ private:
   LPDIRECTINPUTDEVICE _lpDID = nullptr;
   HANDLE _DIevent = nullptr;
 
-  bool _focus = false;
+  bool _focus = true;
   bool _active = false;
   bool _inUse = false;
   bool _initializationFailed = false;
@@ -48,10 +48,10 @@ public:
   bool GetInitializationFailed() override;
 
   void HardReset() override;
+
   bool EmulationStart() override;
   void EmulationStop() override;
-  void Initialize() override;
-  void Release() override;
 
-  virtual ~MouseDriver() = default;
+  MouseDriver();
+  virtual ~MouseDriver();
 };

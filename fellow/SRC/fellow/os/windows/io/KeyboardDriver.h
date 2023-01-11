@@ -15,9 +15,9 @@ private:
   HANDLE _DIevent = nullptr;
   BYTE _keys[DIKSymbolCount] = {};     // contains boolean values (pressed/not pressed) for actual keystroke
   BYTE _prevkeys[DIKSymbolCount] = {}; // contains boolean values (pressed/not pressed) for past keystroke
-  bool _initializationFailed = false;
   bool _prs_rewrite_mapping_file = false;
   char _mapping_filename[MAX_PATH];
+  bool _initializationFailed = false;
   bool _kbd_in_task_switcher = false;
 
   bool kbd_drv_home_pressed = false;
@@ -83,8 +83,7 @@ public:
   void HardReset() override;
   void EmulationStart() override;
   void EmulationStop() override;
-  void Startup() override;
-  void Shutdown() override;
 
-  virtual ~KeyboardDriver() = default;
+  KeyboardDriver();
+  virtual ~KeyboardDriver();
 };

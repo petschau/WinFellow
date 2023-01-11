@@ -431,7 +431,7 @@ bool KeyboardDriver::DInputSetCooperativeLevel()
   HRESULT res = IDirectInputDevice_SetCooperativeLevel(_lpDID, hwnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputSetCooperativeLevel():", res);
+    DInputFailure("KeyboardDriver::DInputSetCooperativeLevel():", res);
     return false;
   }
   return true;
@@ -500,7 +500,7 @@ void KeyboardDriver::DInputUnacquire()
   if (res != DI_OK)
   {
     // Should only "fail" if device is not acquired, it is not an error.
-    DInputUnacquireFailure("kbdDrvDInputUnacquire():", res);
+    DInputUnacquireFailure("KeyboardDriver::DInputUnacquire():", res);
   }
 }
 
@@ -514,7 +514,7 @@ void KeyboardDriver::DInputAcquire()
   HRESULT res = IDirectInputDevice_Acquire(_lpDID);
   if (res != DI_OK)
   {
-    DInputAcquireFailure("kbdDrvDInputAcquire():", res);
+    DInputAcquireFailure("KeyboardDriver::DInputAcquire():", res);
   }
 }
 
@@ -558,7 +558,7 @@ bool KeyboardDriver::DInputInitialize()
   HRESULT res = DirectInput8Create(win_drv_hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void **)&_lpDI, nullptr);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputInitialize(): DirectInput8Create()", res);
+    DInputFailure("KeyboardDriver::DInputInitialize(): DirectInput8Create()", res);
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -569,7 +569,7 @@ bool KeyboardDriver::DInputInitialize()
   res = IDirectInput_CreateDevice(_lpDI, GUID_SysKeyboard, &_lpDID, NULL);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputInitialize(): CreateDevice()", res);
+    DInputFailure("KeyboardDriver::DInputInitialize(): CreateDevice()", res);
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -580,7 +580,7 @@ bool KeyboardDriver::DInputInitialize()
   res = IDirectInputDevice_SetDataFormat(_lpDID, &c_dfDIKeyboard);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputInitialize(): SetDataFormat()", res);
+    DInputFailure("KeyboardDriver::DInputInitialize(): SetDataFormat()", res);
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -600,7 +600,7 @@ bool KeyboardDriver::DInputInitialize()
   _DIevent = CreateEvent(nullptr, 0, 0, nullptr);
   if (_DIevent == nullptr)
   {
-    Service->Log.AddLog("kbdDrvDInputInitialize(): CreateEvent() failed\n");
+    Service->Log.AddLog("KeyboardDriver::DInputInitialize(): CreateEvent() failed\n");
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -610,7 +610,7 @@ bool KeyboardDriver::DInputInitialize()
   res = IDirectInputDevice_SetProperty(_lpDID, DIPROP_BUFFERSIZE, &dipdw.diph);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputInitialize(): SetProperty()", res);
+    DInputFailure("KeyboardDriver::DInputInitialize(): SetProperty()", res);
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -620,7 +620,7 @@ bool KeyboardDriver::DInputInitialize()
   res = IDirectInputDevice_SetEventNotification(_lpDID, _DIevent);
   if (res != DI_OK)
   {
-    DInputFailure("kbdDrvDInputInitialize(): SetEventNotification()", res);
+    DInputFailure("KeyboardDriver::DInputInitialize(): SetEventNotification()", res);
     _initializationFailed = true;
     DInputRelease();
     return false;
@@ -937,7 +937,7 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
   // left-alt already pressed, and now TAB pressed as well
   if (!_kbd_in_task_switcher && _keys[map(PCK_LEFT_ALT)] && keycode == map(PCK_TAB) && pressed)
   {
-    Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB start detected\n");
+    Service->Log.AddLog("KeyboardDriver::Keypress(): ALT-TAB start detected\n");
 
     // Apart from the fake LEFT-ALT release event, full-screen does not need additional handling.
     _kbd_in_task_switcher = ((GraphicsDriver*)Driver->Graphics)->IsHostBufferWindowed();
@@ -955,7 +955,7 @@ void KeyboardDriver::Keypress(ULO keycode, BOOL pressed)
   }
   else if (_kbd_in_task_switcher && symbolic_key == PCK_LEFT_ALT && !pressed)
   {
-    Service->Log.AddLog("kbdDrvKeypress(): ALT-TAB end detected\n");
+    Service->Log.AddLog("KeyboardDriver::Keypress(): ALT-TAB end detected\n");
     _kbd_in_task_switcher = false;
 
 #ifdef _DEBUG
@@ -1058,7 +1058,7 @@ void KeyboardDriver:: KeypressHandler()
 
   if ((res != DI_OK) && (res != DI_BUFFEROVERFLOW))
   {
-    DInputFailure("kbdDrvKeypressHandler(): GetDeviceData()", res);
+    DInputFailure("KeyboardDriver::KeypressHandler(): GetDeviceData()", res);
   }
   else
   {
@@ -1327,11 +1327,6 @@ HANDLE KeyboardDriver::GetDirectInputEvent()
   return _DIevent;
 }
 
-bool KeyboardDriver::GetInitializationFailed()
-{
-  return _initializationFailed;
-}
-
 void KeyboardDriver::HardReset()
 {
 }
@@ -1354,7 +1349,8 @@ void KeyboardDriver::EmulationStop()
   DInputRelease();
 }
 
-void KeyboardDriver::Startup()
+KeyboardDriver::KeyboardDriver()
+  : IKeyboardDriver()
 {
   kbd_drv_joykey_event[0][0][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_INACTIVE;
   kbd_drv_joykey_event[0][1][JOYKEY_UP] = kbd_event::EVENT_JOY0_UP_ACTIVE;
@@ -1428,7 +1424,7 @@ void KeyboardDriver::Startup()
   _lpDID = nullptr;
 }
 
-void KeyboardDriver::Shutdown()
+KeyboardDriver::~KeyboardDriver()
 {
   if (_prs_rewrite_mapping_file)
   {

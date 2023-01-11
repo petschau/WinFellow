@@ -9,15 +9,13 @@ constexpr auto MAX_JOY_PORT = 2;
 class JoystickDriver : public IJoystickDriver
 {
 private:
-  bool _failed = false;
-
-  IDirectInput8 *_lpDI = nullptr;
-  IDirectInputDevice8 *_lpDID[MAX_JOY_PORT];
+  IDirectInput8 *_lpDI{};
+  IDirectInputDevice8 *_lpDID[MAX_JOY_PORT]{};
 
   int num_joy_attached = 0;
-
+  bool _failed = false;
   bool _active = false;
-  bool _focus = false;
+  bool _focus = true;
   bool _in_use = false;
 
   const char *DInputErrorString(HRESULT hResult);
@@ -40,8 +38,7 @@ public:
   void HardReset() override;
   void EmulationStart() override;
   void EmulationStop() override;
-  void Initialize() override;
-  void Release() override;
 
-  virtual ~JoystickDriver() = default;
+  JoystickDriver();
+  virtual ~JoystickDriver();
 };

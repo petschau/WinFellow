@@ -534,12 +534,14 @@ static void fellowDrawFailed()
   exit(EXIT_FAILURE);
 }
 
-/*============================================================================*/
-/* Inititalize all modules in the emulator, called on startup                 */
-/*============================================================================*/
+//===========================================================
+// Inititalize all modules in the emulator, called on startup
+//===========================================================
 
 static void fellowModulesStartup(int argc, char *argv[])
 {
+  fellowSetPerformResetBeforeStartingEmulation(true);
+
   fellow_emulation_run_performance_counter = Service->PerformanceCounterFactory.Create("Fellow emulation runtime");
 
   chipsetStartup();
@@ -560,6 +562,7 @@ static void fellowModulesStartup(int argc, char *argv[])
   interruptStartup();
   graphStartup();
   cpuIntegrationStartup();
+
 #ifdef RETRO_PLATFORM
   if (RP.GetHeadlessMode()) RP.Startup();
 #endif
@@ -623,34 +626,22 @@ static void fellowModulesShutdown()
 void fellowCreateDrivers()
 {
   Driver = DriversFactory::Create();
-}
 
-void fellowDeleteDrivers()
-{
-  DriversFactory::Delete(Driver);
-  Driver = nullptr;
-}
-
-void fellowInitializeDrivers()
-{
-  Driver->Sound->Initialize();
-  Driver->Joystick->Initialize();
-  Driver->Mouse->Initialize();
   Driver->Timer->Initialize();
   Driver->Ini->Initialize();
   Driver->Graphics->Initialize();
   Driver->Gui->Initialize();
 }
 
-void fellowReleaseDrivers()
+void fellowDeleteDrivers()
 {
   Driver->Gui->Release();
   Driver->Graphics->Release();
   Driver->Ini->Release();
   Driver->Timer->Release();
-  Driver->Mouse->Release();
-  Driver->Joystick->Release();
-  Driver->Sound->Release();
+
+  DriversFactory::Delete(Driver);
+  Driver = nullptr;
 }
 
 void fellowCreateServices()
@@ -666,15 +657,11 @@ void fellowDeleteServices()
 
 int __cdecl main(int argc, char *argv[])
 {
-  // Move this to startup
-  fellowSetPerformResetBeforeStartingEmulation(true);
-
   fellowCreateServices();
 
   sysinfoLogSysInfo();
 
   fellowCreateDrivers();
-  fellowInitializeDrivers();
 
   fellowModulesStartup(argc, argv);
 
@@ -697,9 +684,7 @@ int __cdecl main(int argc, char *argv[])
 
   fellowModulesShutdown();
 
-  fellowReleaseDrivers();
   fellowDeleteDrivers();
-
   fellowDeleteServices();
 
   return EXIT_SUCCESS;
